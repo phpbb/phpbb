@@ -1420,7 +1420,7 @@ function validate_language_iso_name($lang_iso)
 */
 function phpbb_validate_timezone($timezone)
 {
-	return (in_array($timezone, DateTimeZone::listIdentifiers())) ? false : 'TIMEZONE_INVALID';
+	return (in_array($timezone, phpbb_get_timezone_identifiers($timezone))) ? false : 'TIMEZONE_INVALID';
 }
 
 /**

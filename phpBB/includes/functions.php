@@ -1139,6 +1139,40 @@ function phpbb_tz_select_compare($a, $b)
 }
 
 /**
+* Return list of timezone identifiers
+* We also add the selected timezone if we can create an object with it.
+* DateTimeZone::listIdentifiers seems to not add all identifiers to the list,
+* because some are only kept for backward compatible reasons. If the user has
+* a deprecated value, we add it here, so it can still be kept. Once the user
+* changed his value, there is no way back to deprecated values.
+*
+* @param	string		$selected_timezone		Additional timezone that shall
+*												be added to the list of identiers
+* @return		array		DateTimeZone::listIdentifiers and additional
+*							selected_timezone if it is a valid timezone.
+*/
+function phpbb_get_timezone_identifiers($selected_timezone)
+{
+	$timezones = DateTimeZone::listIdentifiers();
+
+	if (!in_array($selected_timezone, $timezones))
+	{
+		try
+		{
+			// Add valid timezones that are currently selected but not returned
+			// by DateTimeZone::listIdentifiers
+			$validate_timezone = new DateTimeZone($selected_timezone);
+			$timezones[] = $selected_timezone;
+		}
+		catch (Exception $e)
+		{
+		}
+	}
+
+	return $timezones;
+}
+
+/**
 * Pick a timezone
 *
 * @param	string		$default			A timezone to select
@@ -1171,9 +1205,9 @@ function phpbb_timezone_select($default = '', $truncate = false)
 	$default_offset = '';
 	if (!isset($timezones))
 	{
-		$unsorted_timezones = DateTimeZone::listIdentifiers();
-		$timezones = array();
+		$unsorted_timezones = phpbb_get_timezone_identifiers($default);
 
+		$timezones = array();
 		foreach ($unsorted_timezones as $timezone)
 		{
 			$tz = new DateTimeZone($timezone);
@@ -1207,7 +1241,7 @@ function phpbb_timezone_select($default = '', $truncate = false)
 			$opt_group = $timezone['offest'];
 
 			$selected = ($default_offset == $timezone['offest']) ? ' selected="selected"' : '';
-			$tz_dates .= '<option value="' . $timezone['offest'] . ' - ' . $timezone['current'] . '"' . $selected . '>' . $timezone['offest'] . ' - ' . $timezone['current'] . ($selected ? ' ' . $user->lang['TIMEZONE_SELECTED'] : '') . '</option>';
+			$tz_dates .= '<option value="' . $timezone['offest'] . ' - ' . $timezone['current'] . '"' . $selected . '>' . $timezone['offest'] . ' - ' . $timezone['current'] . '</option>';
 		}
 
 		if (isset($user->lang['timezones'][$timezone['tz']]))
@@ -1229,7 +1263,7 @@ function phpbb_timezone_select($default = '', $truncate = false)
 		}
 
 		$selected = ($timezone['tz'] === $default) ? ' selected="selected"' : '';
-		$tz_select .= '<option title="' . $title . '" value="' . $timezone['tz'] . '"' . $selected . '>' . $label . ($selected ? ' ' . $user->lang['TIMEZONE_SELECTED'] : '') . '</option>';
+		$tz_select .= '<option title="' . $title . '" value="' . $timezone['tz'] . '"' . $selected . '>' . $label . '</option>';
 	}
 	$tz_select .= '</optgroup>';
 
