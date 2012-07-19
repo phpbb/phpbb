@@ -916,7 +916,14 @@ class acp_board
 
 		// Let the format_date function operate with the acp values
 		$old_tz = $user->timezone;
-		$user->timezone = new DateTimeZone($config['board_timezone']);
+		try
+		{
+			$user->timezone = new DateTimeZone($config['board_timezone']);
+		}
+		catch (Exception $e)
+		{
+			// If the board timezone is invalid, we just use the users timezone.
+		}
 
 		$dateformat_options = '';
 

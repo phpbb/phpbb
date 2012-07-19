@@ -127,7 +127,15 @@ class phpbb_user extends phpbb_session
 			*/
 		}
 
-		$this->timezone = new DateTimeZone($user_timezone);
+		try
+		{
+			$this->timezone = new DateTimeZone($user_timezone);
+		}
+		catch (Exception $e)
+		{
+			// If the timezone the user has selected is invalid, we fall back to UTC.
+			$this->timezone = new DateTimeZone('UTC');
+		}
 
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
