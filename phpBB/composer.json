@@ -1,0 +1,6 @@
+{
+	"minimum-stability": "beta",
+	"require-dev": {
+		"fabpot/goutte": "1.0.x-dev"
+	}
+}
