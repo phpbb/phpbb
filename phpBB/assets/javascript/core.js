@@ -420,6 +420,12 @@ phpbb.timezone_switch_date = function(keep_selection) {
 	$('#timezone > optgroup').css('display', 'none');
 	$("#timezone > optgroup[label='" + $('#tz_date').val() + "']").css('display', 'block');
 
+	if ($('#tz_date').val() == $('#tz_select_date_suggest').attr('data-suggested-tz')) {
+		$('#tz_select_date_suggest').css('display', 'none');
+	} else {
+		$('#tz_select_date_suggest').css('display', 'inline');
+	}
+
 	if ($("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option").size() == 1) {
 		// If there is only one timezone for the selected date, we just select that automatically.
 		$("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option:first").attr('selected', true);
@@ -485,10 +491,12 @@ phpbb.timezone_preselect_select = function(force_selector) {
 				$('#tz_select_date_suggest').css('display', 'inline');
 				$('#tz_select_date_suggest').attr('title', $('#tz_select_date_suggest').attr('data-l-suggestion').replace("%s", option.innerHTML));
 				$('#tz_select_date_suggest').attr('value', $('#tz_select_date_suggest').attr('data-l-suggestion').replace("%s", option.innerHTML.substring(0, 9)));
+				$('#tz_select_date_suggest').attr('data-suggested-tz', option.innerHTML);
 				phpbb.timezone_switch_date(true);
 			} else {
 				option.selected = true;
 				phpbb.timezone_switch_date(!force_selector);
+				$('#tz_select_date_suggest').attr('data-suggested-tz', option.innerHTML);
 				$('#tz_select_date_suggest').css('display', 'none');
 			}
 			break;
