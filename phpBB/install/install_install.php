@@ -1795,7 +1795,7 @@ class install_install extends module
 				'user_email'			=> '',
 				'user_lang'				=> $data['default_lang'],
 				'user_style'			=> 1,
-				'user_timezone'			=> 0,
+				'user_timezone'			=> 'UTC',
 				'user_dateformat'		=> $lang['default_dateformat'],
 				'user_allow_massemail'	=> 0,
 			);
