@@ -36,7 +36,7 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $configr)
+	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config)
 	{
 		$this->request = $request;
 		$this->db = $db;

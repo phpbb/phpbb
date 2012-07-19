@@ -51,7 +51,7 @@ class phpbb_auth_manager
 			{
 				$provider->set_user($this->user);
 			}
-			return new $provider;
+			return $provider;
 		}
 		else
 		{
@@ -73,6 +73,10 @@ class phpbb_auth_manager
 		foreach($providers as &$provider)
 		{
 			$provider = $this->get_provider($provider);
+			if ($this->user instanceof phpbb_user)
+			{
+				$provider->set_user($this->user);
+			}
 		}
 
 		return $providers;
@@ -102,8 +106,7 @@ class phpbb_auth_manager
 		$common_providers = array();
 		foreach($providers as $provider)
 		{
-			$provider_config = $provider->get_configuration();
-			if ($provider_config['CUSTOM_LOGIN_BOX'] == false)
+			if (!($provider instanceof phpbb_auth_provider_custom_login_interface))
 			{
 				$common_providers[] = $provider;
 			}
@@ -120,7 +123,7 @@ class phpbb_auth_manager
 		foreach ($providers as $provider)
 		{
 			$provider_config = $provider->get_configuration();
-			if ($provider_config['CUSTOM_LOGIN_BOX'] == false && $provider_config['OPTIONS']['enabled']['setting'] == 1)
+			if (!($provider instanceof phpbb_auth_provider_custom_login_interface) && $provider_config['OPTIONS']['enabled']['setting'] == 1)
 			{
 				$enabled_common_providers[] = $provider;
 			}
