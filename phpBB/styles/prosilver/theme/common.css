@@ -623,9 +623,10 @@ li.pagination {
 }
 
 div.rules {
-	padding: 0 10px;
 	margin: 10px 0;
 	font-size: 1.1em;
+	padding: 5px 10px;
+	border-radius: 7px;
 }
 
 div.rules ul, div.rules ol {
