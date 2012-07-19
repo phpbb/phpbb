@@ -297,7 +297,10 @@ class mcp_pm_reports
 						}
 					}
 				}
-
+				
+				$base_url = $this->u_action . "&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
+				
 				// Now display the page
 				$template->assign_vars(array(
 					'L_EXPLAIN'				=> ($mode == 'pm_reports') ? $user->lang['MCP_PM_REPORTS_OPEN_EXPLAIN'] : $user->lang['MCP_PM_REPORTS_CLOSED_EXPLAIN'],
@@ -307,8 +310,7 @@ class mcp_pm_reports
 					'S_MCP_ACTION'			=> $this->u_action,
 					'S_CLOSED'				=> ($mode == 'pm_reports_closed') ? true : false,
 
-					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
-					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $total, $config['topics_per_page'], $start),
 					'TOTAL'					=> $total,
 					'TOTAL_REPORTS'			=> $user->lang('LIST_REPORTS', (int) $total),
 					)
