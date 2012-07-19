@@ -1069,32 +1069,209 @@ function style_select($default = '', $all = false)
 }
 
 /**
+* Format the timezone offset with hours and minutes
+*
+* @param	int		$tz_offset	Timezone offset in seconds
+* @return	string		Normalized offset string:	-7200 => -02:00
+*													16200 => +04:30
+*/
+function phpbb_format_timezone_offset($tz_offset)
+{
+	$sign = ($tz_offset < 0) ? '-' : '+';
+	$time_offset = abs($tz_offset);
+
+	$offset_seconds	= $time_offset % 3600;
+	$offset_minutes	= $offset_seconds / 60;
+	$offset_hours	= ($time_offset - $offset_seconds) / 3600;
+
+	$offset_string	= sprintf("%s%02d:%02d", $sign, $offset_hours, $offset_minutes);
+	return $offset_string;
+}
+
+/**
+* Compares two time zone labels.
+* Arranges them in increasing order by timezone offset.
+* Places UTC before other timezones in the same offset.
+*/
+function phpbb_tz_select_compare($a, $b)
+{
+	$a_sign = $a[3];
+	$b_sign = $b[3];
+	if ($a_sign != $b_sign)
+	{
+		return $a_sign == '-' ? -1 : 1;
+	}
+
+	$a_offset = substr($a, 4, 5);
+	$b_offset = substr($b, 4, 5);
+	if ($a_offset == $b_offset)
+	{
+		$a_name = substr($a, 12);
+		$b_name = substr($b, 12);
+		if ($a_name == $b_name)
+		{
+			return 0;
+		}
+		else if ($a_name == 'UTC')
+		{
+			return -1;
+		}
+		else if ($b_name == 'UTC')
+		{
+			return 1;
+		}
+		else
+		{
+			return $a_name < $b_name ? -1 : 1;
+		}
+	}
+	else
+	{
+		if ($a_sign == '-')
+		{
+			return $a_offset > $b_offset ? -1 : 1;
+		}
+		else
+		{
+			return $a_offset < $b_offset ? -1 : 1;
+		}
+	}
+}
+
+/**
+* Return list of timezone identifiers
+* We also add the selected timezone if we can create an object with it.
+* DateTimeZone::listIdentifiers seems to not add all identifiers to the list,
+* because some are only kept for backward compatible reasons. If the user has
+* a deprecated value, we add it here, so it can still be kept. Once the user
+* changed his value, there is no way back to deprecated values.
+*
+* @param	string		$selected_timezone		Additional timezone that shall
+*												be added to the list of identiers
+* @return		array		DateTimeZone::listIdentifiers and additional
+*							selected_timezone if it is a valid timezone.
+*/
+function phpbb_get_timezone_identifiers($selected_timezone)
+{
+	$timezones = DateTimeZone::listIdentifiers();
+
+	if (!in_array($selected_timezone, $timezones))
+	{
+		try
+		{
+			// Add valid timezones that are currently selected but not returned
+			// by DateTimeZone::listIdentifiers
+			$validate_timezone = new DateTimeZone($selected_timezone);
+			$timezones[] = $selected_timezone;
+		}
+		catch (Exception $e)
+		{
+		}
+	}
+
+	return $timezones;
+}
+
+/**
 * Pick a timezone
+*
+* @param	string		$default			A timezone to select
+* @param	boolean		$truncate			Shall we truncate the options text
+*
+* @return		string		Returns the options for timezone selector only
+*
+* @deprecated
 */
 function tz_select($default = '', $truncate = false)
 {
 	global $user;
 
-	$tz_select = '';
-	foreach ($user->lang['tz_zones'] as $offset => $zone)
+	$timezone_select = phpbb_timezone_select($user, $default, $truncate);
+	return $timezone_select['tz_select'];
+}
+
+/**
+* Options to pick a timezone and date/time
+*
+* @param	phpbb_user	$user				Object of the current user
+* @param	string		$default			A timezone to select
+* @param	boolean		$truncate			Shall we truncate the options text
+*
+* @return		array		Returns an array, also containing the options for the time selector.
+*/
+function phpbb_timezone_select($user, $default = '', $truncate = false)
+{
+	static $timezones;
+
+	$default_offset = '';
+	if (!isset($timezones))
 	{
-		if ($truncate)
+		$unsorted_timezones = phpbb_get_timezone_identifiers($default);
+
+		$timezones = array();
+		foreach ($unsorted_timezones as $timezone)
 		{
-			$zone_trunc = truncate_string($zone, 50, 255, false, '...');
+			$tz = new DateTimeZone($timezone);
+			$dt = new phpbb_datetime($user, 'now', $tz);
+			$offset = $dt->getOffset();
+			$current_time = $dt->format($user->lang['DATETIME_FORMAT'], true);
+			$offset_string = phpbb_format_timezone_offset($offset);
+			$timezones['GMT' . $offset_string . ' - ' . $timezone] = array(
+				'tz'		=> $timezone,
+				'offest'	=> 'GMT' . $offset_string,
+				'current'	=> $current_time,
+			);
+			if ($timezone === $default)
+			{
+				$default_offset = 'GMT' . $offset_string;
+			}
+		}
+		unset($unsorted_timezones);
+
+		uksort($timezones, 'phpbb_tz_select_compare');
+	}
+
+	$tz_select = $tz_dates = $opt_group = '';
+
+	foreach ($timezones as $timezone)
+	{
+		if ($opt_group != $timezone['offest'])
+		{
+			$tz_select .= ($opt_group) ? '</optgroup>' : '';
+			$tz_select .= '<optgroup label="' . $timezone['offest'] . ' - ' . $timezone['current'] . '">';
+			$opt_group = $timezone['offest'];
+
+			$selected = ($default_offset == $timezone['offest']) ? ' selected="selected"' : '';
+			$tz_dates .= '<option value="' . $timezone['offest'] . ' - ' . $timezone['current'] . '"' . $selected . '>' . $timezone['offest'] . ' - ' . $timezone['current'] . '</option>';
+		}
+
+		if (isset($user->lang['timezones'][$timezone['tz']]))
+		{
+			$title = $label = $user->lang['timezones'][$timezone['tz']];
 		}
 		else
 		{
-			$zone_trunc = $zone;
+			// No label, we'll figure one out
+			$bits = explode('/', str_replace('_', ' ', $timezone['tz']));
+
+			$label = implode(' - ', $bits);
+			$title = $timezone['offest'] . ' - ' . $label;
 		}
 
-		if (is_numeric($offset))
+		if ($truncate)
 		{
-			$selected = ($offset == $default) ? ' selected="selected"' : '';
-			$tz_select .= '<option title="' . $zone . '" value="' . $offset . '"' . $selected . '>' . $zone_trunc . '</option>';
+			$label = truncate_string($label, 50, 255, false, '...');
 		}
-	}
 
-	return $tz_select;
+		$selected = ($timezone['tz'] === $default) ? ' selected="selected"' : '';
+		$tz_select .= '<option title="' . $title . '" value="' . $timezone['tz'] . '"' . $selected . '>' . $label . '</option>';
+	}
+	$tz_select .= '</optgroup>';
+
+	return array(
+		'tz_select'		=> $tz_select,
+		'tz_dates'		=> $tz_dates,
+	);
 }
 
 // Functions handling topic/post tracking/marking
@@ -4701,9 +4878,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	$board_url = generate_board_url() . '/';
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
 
-	// Which timezone?
-	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
-
 	// Send a proper content-language to the output
 	$user_lang = $user->lang['USER_LANG'];
 	if (strpos($user_lang, '-x-') !== false)
@@ -4724,6 +4898,14 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 			$url_param = explode('=', $url_param, 2);
 			$s_search_hidden_fields[$url_param[0]] = $url_param[1];
 		}
+	}
+
+	$dt = new phpbb_datetime($user, 'now', $user->timezone);
+	$timezone_offset = 'GMT' . phpbb_format_timezone_offset($dt->getOffset());
+	$timezone_name = $user->timezone->getName();
+	if (isset($user->lang['timezones'][$timezone_name]))
+	{
+		$timezone_name = $user->lang['timezones'][$timezone_name];
 	}
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
@@ -4793,7 +4975,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
 		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_TIMEZONE'			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
+		'S_TIMEZONE'			=> sprintf($user->lang['ALL_TIMES'], $timezone_offset, $timezone_name),
 		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
 		'S_DISPLAY_SEARCH'		=> (!$config['load_search']) ? 0 : (isset($auth) ? ($auth->acl_get('u_search') && $auth->acl_getf_global('f_search')) : 1),
 		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && !empty($user->data['is_registered']) && ($auth->acl_get('u_readpm') || $auth->acl_get('u_sendpm'))) ? true : false,
