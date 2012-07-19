@@ -15,8 +15,7 @@ before_script:
   - pyrus install --force phpunit/DbUnit
   - phpenv rehash
   - cd phpBB
-  - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install
+  - php ../composer.phar install --dev
   - cd ../
 
 script:
