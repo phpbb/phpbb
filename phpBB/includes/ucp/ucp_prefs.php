@@ -131,7 +131,7 @@ class ucp_prefs
 				}
 				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
-				$timezone_selects = phpbb_timezone_select($data['tz'], true, false);
+				$timezone_selects = phpbb_timezone_select($user, $data['tz'], true);
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 

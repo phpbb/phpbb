@@ -1184,22 +1184,23 @@ function phpbb_get_timezone_identifiers($selected_timezone)
 */
 function tz_select($default = '', $truncate = false)
 {
-	$timezone_select = phpbb_timezone_select($default, $truncate);
+	global $user;
+
+	$timezone_select = phpbb_timezone_select($user, $default, $truncate);
 	return $timezone_select['tz_select'];
 }
 
 /**
 * Options to pick a timezone and date/time
 *
+* @param	phpbb_user	$user				Object of the current user
 * @param	string		$default			A timezone to select
 * @param	boolean		$truncate			Shall we truncate the options text
 *
 * @return		array		Returns an array, also containing the options for the time selector.
 */
-function phpbb_timezone_select($default = '', $truncate = false)
+function phpbb_timezone_select($user, $default = '', $truncate = false)
 {
-	global $user;
-
 	static $timezones;
 
 	$default_offset = '';

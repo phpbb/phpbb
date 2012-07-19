@@ -442,7 +442,7 @@ class ucp_register
 			break;
 		}
 
-		$timezone_selects = phpbb_timezone_select($data['tz'], true, false);
+		$timezone_selects = phpbb_timezone_select($user, $data['tz'], true);
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> $data['username'],
