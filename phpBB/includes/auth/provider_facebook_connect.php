@@ -21,6 +21,7 @@ if (!defined('IN_PHPBB'))
 * @package auth
 */
 class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
+	implements phpbb_auth_provider_custom_login_interface, phpbb_auth_provider_custom_registration_interface
 {
 	protected $request;
 	protected $db;
@@ -54,10 +55,6 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
 	public function get_configuration()
 	{
 		return array(
-			'CUSTOM_ACP'		=> false,
-			'CUSTOM_LOGIN_BOX'	=> true,
-			'CUSTOM_REGISTER'	=> true,
-
 			'NAME'		=> 'facebook_connect',
 			'OPTIONS'	=> array(
 				'enabled'	=> array('setting' => $this->config['auth_provider_facebook_connect_enabled'],	'lang' => 'AUTH_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => false),
@@ -71,6 +68,13 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
 	 */
 	public function generate_login_box(phpbb_template $template, $redirect = '', $admin = false, $s_display = true)
 	{
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function generate_registration(phpbb_template $template) {
 		return null;
 	}
 

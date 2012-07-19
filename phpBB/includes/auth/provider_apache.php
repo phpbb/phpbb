@@ -20,7 +20,8 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-class phpbb_auth_provider_apache extends phpbb_auth_common_provider implements phpbb_auth_provider_sso_interface
+class phpbb_auth_provider_apache extends phpbb_auth_common_provider
+	implements phpbb_auth_provider_sso_interface
 {
 	protected $request;
 	protected $db;
@@ -54,10 +55,6 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider implements p
 	public function get_configuration()
 	{
 		return array(
-			'CUSTOM_ACP'		=> false,
-			'CUSTOM_LOGIN_BOX'	=> false,
-			'CUSTOM_REGISTER'	=> false,
-
 			'NAME'		=> 'apache',
 			'OPTIONS'	=> array(
 				'enabled'	=> array('setting' => $this->config['auth_provider_apache_enabled'],	'lang' => 'AUTH_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => false),

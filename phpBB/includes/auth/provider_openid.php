@@ -21,6 +21,7 @@ if (!defined('IN_PHPBB'))
 * @package auth
 */
 class phpbb_auth_provider_openid extends phpbb_auth_common_provider
+	implements phpbb_auth_provider_custom_login_interface, phpbb_auth_provider_custom_registration_interface
 {
 	protected $request;
 	protected $db;
@@ -72,10 +73,6 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	public function get_configuration()
 	{
 		return array(
-			'CUSTOM_ACP'		=> false,
-			'CUSTOM_LOGIN_BOX'	=> true,
-			'CUSTOM_REGISTER'	=> true,
-
 			'NAME'		=> 'openid',
 			'OPTIONS'	=> array(
 				'enabled'	=> array('setting' => $this->config['auth_provider_openid_enabled'],	'lang' => 'AUTH_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => false),

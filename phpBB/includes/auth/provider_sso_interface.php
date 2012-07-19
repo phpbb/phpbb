@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* This auth provider uses apache to authenticate users.
+* This interface defines functions for single sign on providers
 *
 * @package auth
 */

@@ -54,10 +54,6 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 	public function get_configuration()
 	{
 		return array(
-			'CUSTOM_ACP'		=> false,
-			'CUSTOM_LOGIN_BOX'	=> false,
-			'CUSTOM_REGISTER'	=> false,
-
 			'NAME'		=> 'native',
 			'OPTIONS'	=> array(
 				'enabled'	=> array('setting' => $this->config['auth_provider_native_enabled'],	'lang' => 'AUTH_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => false),

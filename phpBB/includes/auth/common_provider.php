@@ -44,41 +44,6 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	}
 
 	/**
-	 * Implements phpbb_auth_provider_interface->generate_login_box(). Returns
-	 * null. Providers should override this for a custom login box.
-	 *
-	 * @param phpbb_template $template
-	 * @param string $redirect
-	 * @param boolean $admin
-	 * @param boolean $s_display
-	 * @return null
-	 */
-	public function generate_login_box(phpbb_template $template, $redirect, $admin, $s_display)
-	{
-		return null;
-	}
-
-	public function generate_registration(phpbb_template $template)
-	{
-		return null;
-	}
-
-	/**
-	 * Returns null when not enabled, otherwise, returns false or a string.
-	 * $submit and $err should be used to check if config values were changed.
-	 *
-	 * @param phpbb_template $template
-	 * @param phpbb_config $new_config
-	 * @param boolean $submit
-	 * @param boolean $err
-	 * @return null
-	 */
-	public function generate_acp_options(phpbb_template $template, phpbb_config $new_config, $submit, $err)
-	{
-		return null;
-	}
-
-	/**
 	 * Links a user to provider and an index.
 	 *
 	 * @param int $user_id The user id of the account requested to be linked.
