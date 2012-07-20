@@ -23,6 +23,25 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 		$this->login();
 	}
 
+	public function tearDown()
+	{
+		$iterator = new DirectoryIterator(__DIR__ . '/../../phpBB/files/');
+		foreach ($iterator as $fileinfo)
+		{
+			if (
+				$fileinfo->isDot()
+				|| $fileinfo->isDir()
+				|| $fileinfo->getFilename() === 'index.htm'
+				|| $fileinfo->getFilename() === '.htaccess'
+			)
+			{
+				continue;
+			}
+
+			unlink($fileinfo->getPathname());
+		}
+	}
+
 	public function test_chunked_upload()
 	{
 		$this->markTestIncomplete('Newer version of Goutte needed for headers to work.');
