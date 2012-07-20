@@ -43,6 +43,23 @@ class phpbb_plupload
 	private $phpbb_root_path;
 
 	/**
+	 * An array of extension => mime-type mappings
+	 * @var array
+	 */
+	private $extension_map = array(
+		'jpg' => 'image/jpeg',
+		'jpeg' => 'image/jpeg',
+		'png' => 'image/png',
+		'gif' => 'image/gif',
+		'psd' => 'image/vnd.adobe.photoshop',
+		'tif' => 'image/tiff',
+		'tiff' => 'image/tiff',
+		'bmp' => 'image/x-bmp',
+		'ico' => 'image/vnd.microsoft.icon',
+		'svg' => 'image/svg+xml',
+	);
+
+	/**
 	 * Whether the current page request is from plupload or not
 	 * @var boolean
 	 */
@@ -221,6 +238,24 @@ class phpbb_plupload
 	}
 
 	/**
+	 * Guesses an appropriate mime-type based on the file extension
+	 *
+	 * @param string $filename The filename with extension
+	 *
+	 * @return string
+	 */
+	private function get_mimetype($filename)
+	{
+		$ext = strtolower(filespec::get_extension($filename));
+		if ($ext === '' || !isset($this->extension_map[$ext]))
+		{
+			return 'application/octet-stream';
+		}
+
+		return $this->extension_map[$ext];
+	}
+
+	/**
 	 * Checks various php.ini values and the maximum file size to determine
 	 * the maximum size chunks a file can be split up into for upload
 	 *
@@ -312,6 +347,7 @@ class phpbb_plupload
 				'tmp_name' => $file_path,
 				'name' => $realname,
 				'size' => filesize($file_path),
+				'type' => $this->get_mimetype($file_path),
 			);
 		}
 		else
