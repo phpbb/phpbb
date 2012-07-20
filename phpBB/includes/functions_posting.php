@@ -385,6 +385,16 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 /**
 * Upload Attachment - filedata is generated here
 * Uses upload class
+*
+* @param string $form_name		The form name of the file upload input
+* @param int	$forum_id		The id of the forum
+* @param bool	$local			Whether the file is local or not
+* @param string	$local_storage	The path to the local file
+* @param bool	$is_message		Whether it is a PM or not
+* @param object	$local_filedata	A filespec object created for the local file
+* @param object	$plupload		The plupload object if one is being used
+*
+* @return object filespec
 */
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, $plupload = false)
 {
