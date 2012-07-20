@@ -25,28 +25,28 @@ class phpbb_plupload
 	/**
 	 * @var array
 	 */
-	private $config;
+	protected $config;
 
 	/**
 	 * @var object phpbb_request
 	 */
-	private $request;
+	protected $request;
 
 	/**
 	 * @var object phpbb_user
 	 */
-	private $user;
+	protected $user;
 
 	/**
 	 * @var string
 	 */
-	private $phpbb_root_path;
+	protected $phpbb_root_path;
 
 	/**
 	 * An array of extension => mime-type mappings
 	 * @var array
 	 */
-	private $extension_map = array(
+	protected $extension_map = array(
 		'jpg' => 'image/jpeg',
 		'jpeg' => 'image/jpeg',
 		'png' => 'image/png',
@@ -87,7 +87,7 @@ class phpbb_plupload
 	 *
 	 * @return null
 	 */
-	private function check_file_valid($is_multipart, $form_name)
+	protected function check_file_valid($is_multipart, $form_name)
 	{
 		if (
 			$is_multipart
@@ -109,7 +109,7 @@ class phpbb_plupload
 	 *
 	 * @return null
 	 */
-	private function check_tmp_dir($tmp_dir)
+	protected function check_tmp_dir($tmp_dir)
 	{
 		if (!file_exists($tmp_dir))
 		{
@@ -178,7 +178,7 @@ class phpbb_plupload
 	 *
 	 * @return string
 	 */
-	private function gen_filter_string($cache, $forum_id)
+	protected function gen_filter_string($cache, $forum_id)
 	{
 		$attach_extensions = $cache->obtain_attach_extensions($forum_id);
 		unset($attach_extensions['_allowed_']);
@@ -214,7 +214,7 @@ class phpbb_plupload
 	 *
 	 * @return string
 	 */
-	private function gen_resize_string()
+	protected function gen_resize_string()
 	{
 		$resize = '';
 		if ($this->config['img_max_height'] > 0 && $this->config['img_max_width'] > 0)
@@ -236,7 +236,7 @@ class phpbb_plupload
 	 *
 	 * @return string
 	 */
-	private function get_mimetype($filename)
+	protected function get_mimetype($filename)
 	{
 		$ext = strtolower(filespec::get_extension($filename));
 		if ($ext === '' || !isset($this->extension_map[$ext]))
@@ -253,7 +253,7 @@ class phpbb_plupload
 	 *
 	 * @return int
 	 */
-	private function get_chunk_size()
+	protected function get_chunk_size()
 	{
 		$ini = new phpbb_php_ini();
 		return min(
@@ -372,7 +372,7 @@ class phpbb_plupload
 	 *
 	 * @return string The full path of the newly-moved chunk
 	 */
-	private function move_chunk_tmp_dir($tmp_dir, $form_name)
+	protected function move_chunk_tmp_dir($tmp_dir, $form_name)
 	{
 		$tmp_file =
 			$tmp_dir
@@ -395,7 +395,7 @@ class phpbb_plupload
 	 *
 	 * @return null
 	 */
-	private function write_chunk($in, $out)
+	protected function write_chunk($in, $out)
 	{
 		while ($buf = fread($in, 4096))
 		{
