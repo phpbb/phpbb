@@ -44,7 +44,6 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 	public function test_chunked_upload()
 	{
-		$this->markTestIncomplete('Newer version of Goutte needed for headers to work.');
 		$chunk_size = ceil(filesize($this->path . 'valid.jpg') / self::CHUNKS);
 		$handle = fopen($this->path . 'valid.jpg', 'rb');
 
@@ -83,8 +82,8 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 			}
 			else
 			{
-				$this->assertEquals(0, $crawler->filter('p.error')->count());
-				$this->assertContains($this->lang('POSTED_ATTACHMENTS'), $crawler->filter('#postform h3')->eq(1)->text());
+				$response = json_decode($this->client->getResponse()->getContent(), true);
+				$this->assertEquals('valid.jpg', $response[0]['real_filename']);
 			}
 
 			unlink($this->path . 'chunk');
