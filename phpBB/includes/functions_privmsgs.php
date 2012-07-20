@@ -1144,7 +1144,9 @@ function phpbb_delete_user_pms($user_id)
 	if (!empty($undelivered_msg))
 	{
 		// A pm is delivered, if for any receipt the message was moved
-		// from their NO_BOX to another folder.
+		// from their NO_BOX to another folder. We do not delete such
+		// messages, but only delete them for users, who have not yet
+		// received them.
 		$sql = 'SELECT msg_id
 			FROM ' . PRIVMSGS_TO_TABLE . '
 			WHERE author_id = ' . $user_id . '
@@ -1153,54 +1155,64 @@ function phpbb_delete_user_pms($user_id)
 				AND folder_id <> ' . PRIVMSGS_SENTBOX;
 		$result = $db->sql_query($sql);
 
+		$delivered_msg = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$msg_id = (int) $row['msg_id'];
+			$delivered_msg[$msg_id] = $msg_id;
 			unset($undelivered_msg[$msg_id]);
 		}
 		$db->sql_freeresult($result);
 
-		if (!empty($undelivered_msg))
+		$undelivered_user = array();
+
+		// Count the messages we delete, so we can correct the user pm data
+		$sql = 'SELECT user_id, COUNT(msg_id) as num_undelivered_privmsgs
+			FROM ' . PRIVMSGS_TO_TABLE . '
+			WHERE author_id = ' . $user_id . '
+				AND folder_id = ' . PRIVMSGS_NO_BOX . '
+					AND ' . $db->sql_in_set('msg_id', array_merge($undelivered_msg, $delivered_msg)) . '
+			GROUP BY user_id';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$undelivered_user = array();
+			$num_pms = (int) $row['num_undelivered_privmsgs'];
+			$undelivered_user[$num_pms][] = (int) $row['user_id'];
 
-			// Count the messages we delete, so we can correct the user pm data
-			$sql = 'SELECT user_id, COUNT(msg_id) as num_undelivered_privmsgs
-				FROM ' . PRIVMSGS_TO_TABLE . '
-				WHERE author_id = ' . $user_id . '
-					AND folder_id = ' . PRIVMSGS_NO_BOX . '
-					AND ' . $db->sql_in_set('msg_id', $undelivered_msg) . '
-				GROUP BY user_id';
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
+			if (sizeof($undelivered_user[$num_pms]) > 50)
 			{
-				$num_pms = (int) $row['num_undelivered_privmsgs'];
-				$undelivered_user[$num_pms][] = (int) $row['user_id'];
-
-				if (sizeof($undelivered_user[$num_pms]) > 50)
-				{
-					// If there are too many users affected the query might get
-					// too long, so we update the value for the first bunch here.
-					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_new_privmsg = user_new_privmsg - ' . $num_pms . ',
-							user_unread_privmsg = user_unread_privmsg - ' . $num_pms . '
-						WHERE ' . $db->sql_in_set('user_id', $undelivered_user[$num_pms]);
-					$db->sql_query($sql);
-					unset($undelivered_user[$num_pms]);
-				}
-			}
-			$db->sql_freeresult($result);
-
-			foreach ($undelivered_user as $num_pms => $undelivered_user_set)
-			{
+				// If there are too many users affected the query might get
+				// too long, so we update the value for the first bunch here.
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_new_privmsg = user_new_privmsg - ' . $num_pms . ',
 						user_unread_privmsg = user_unread_privmsg - ' . $num_pms . '
-					WHERE ' . $db->sql_in_set('user_id', $undelivered_user_set);
+					WHERE ' . $db->sql_in_set('user_id', $undelivered_user[$num_pms]);
 				$db->sql_query($sql);
+				unset($undelivered_user[$num_pms]);
 			}
+		}
+		$db->sql_freeresult($result);
 
+		foreach ($undelivered_user as $num_pms => $undelivered_user_set)
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_new_privmsg = user_new_privmsg - ' . $num_pms . ',
+					user_unread_privmsg = user_unread_privmsg - ' . $num_pms . '
+				WHERE ' . $db->sql_in_set('user_id', $undelivered_user_set);
+			$db->sql_query($sql);
+		}
+
+		if (!empty($delivered_msg))
+		{
+			$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
+				WHERE folder_id = ' . PRIVMSGS_NO_BOX . '
+					AND ' . $db->sql_in_set('msg_id', $delivered_msg);
+			$db->sql_query($sql);
+		}
+
+		if (!empty($undelivered_msg))
+		{
 			$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
 				WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
 			$db->sql_query($sql);
