@@ -98,7 +98,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 			array('X-PHPBB-USING-PLUPLOAD' => '1')
 		);
 
-		$this->assertEquals(0, $crawler->filter('p.error')->count());
-		$this->assertContains($this->lang('POSTED_ATTACHMENTS'), $crawler->filter('#postform h3')->eq(1)->text());
+		$response = json_decode($this->client->getResponse()->getContent(), true);
+		$this->assertEquals('valid.jpg', $response[0]['real_filename']);
 	}
 }
