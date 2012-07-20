@@ -422,7 +422,7 @@ if ($mode == 'edit')
 $orig_poll_options_size = sizeof($post_data['poll_options']);
 
 $message_parser = new parse_message();
-$plupload = new phpbb_plupload($config, $request, $user, $phpbb_root_path, $phpbb_php_ini);
+$plupload = new phpbb_plupload($config, $request, $user, $phpbb_root_path, $phpbb_php_ini, $phpbb_mimetype_extension_map);
 $message_parser->set_plupload($plupload);
 
 if (isset($post_data['post_text']))

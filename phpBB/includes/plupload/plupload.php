@@ -43,26 +43,14 @@ class phpbb_plupload
 	protected $ini;
 
 	/**
+	 * @var object phpbb_mimetype_extension_map
+	 */
+	protected $extension_map;
+
+	/**
 	 * @var string
 	 */
 	protected $phpbb_root_path;
-
-	/**
-	 * An array of extension => mime-type mappings
-	 * @var array
-	 */
-	protected $extension_map = array(
-		'jpg' => 'image/jpeg',
-		'jpeg' => 'image/jpeg',
-		'png' => 'image/png',
-		'gif' => 'image/gif',
-		'psd' => 'image/vnd.adobe.photoshop',
-		'tif' => 'image/tiff',
-		'tiff' => 'image/tiff',
-		'bmp' => 'image/x-bmp',
-		'ico' => 'image/vnd.microsoft.icon',
-		'svg' => 'image/svg+xml',
-	);
 
 	/**
 	 * Constructor function, just used to store the class variables and check
@@ -75,13 +63,14 @@ class phpbb_plupload
 	 *
 	 * @return null
 	 */
-	public function __construct($config, $request, $user, $phpbb_root_path, $phpbb_php_ini)
+	public function __construct($config, $request, $user, $phpbb_root_path, $phpbb_php_ini, $phpbb_mimetype_extension_map)
 	{
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->ini = $phpbb_php_ini;
+		$this->extension_map = $phpbb_mimetype_extension_map;
 	}
 
 	/**
@@ -236,24 +225,6 @@ class phpbb_plupload
 	}
 
 	/**
-	 * Guesses an appropriate mime-type based on the file extension
-	 *
-	 * @param string $filename The filename with extension
-	 *
-	 * @return string
-	 */
-	protected function get_mimetype($filename)
-	{
-		$ext = strtolower(filespec::get_extension($filename));
-		if ($ext === '' || !isset($this->extension_map[$ext]))
-		{
-			return 'application/octet-stream';
-		}
-
-		return $this->extension_map[$ext];
-	}
-
-	/**
 	 * Checks various php.ini values and the maximum file size to determine
 	 * the maximum size chunks a file can be split up into for upload
 	 *
@@ -344,7 +315,7 @@ class phpbb_plupload
 				'tmp_name' => $file_path,
 				'name' => $realname,
 				'size' => filesize($file_path),
-				'type' => $this->get_mimetype($file_path),
+				'type' => $this->extension_map->get_mimetype($ext),
 			);
 		}
 		else
