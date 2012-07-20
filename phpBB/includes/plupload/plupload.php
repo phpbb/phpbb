@@ -60,12 +60,6 @@ class phpbb_plupload
 	);
 
 	/**
-	 * Whether the current page request is from plupload or not
-	 * @var boolean
-	 */
-	public $active;
-
-	/**
 	 * Constructor function, just used to store the class variables and check
 	 * whether plupload is sending the page request or not
 	 *
@@ -82,8 +76,6 @@ class phpbb_plupload
 		$this->request = $request;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
-
-		$this->is_active();
 	}
 
 	/**
@@ -364,11 +356,11 @@ class phpbb_plupload
 	/**
 	 * Checks whether the page request was sent by plupload or not
 	 *
-	 * @return null
+	 * @return boolean
 	 */
-	private function is_active()
+	public function is_active()
 	{
-		$this->active = $this->request->header('X-PHPBB-USING-PLUPLOAD', false);
+		return $this->request->header('X-PHPBB-USING-PLUPLOAD', false);
 	}
 
 	/**

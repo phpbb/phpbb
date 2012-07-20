@@ -168,7 +168,7 @@ class filespec
 	*/
 	function is_uploaded()
 	{
-		$is_plupload = ($this->plupload && $this->plupload->active);
+		$is_plupload = ($this->plupload && $this->plupload->is_active());
 
 		if (!$this->local && !$is_plupload && !is_uploaded_file($this->filename))
 		{

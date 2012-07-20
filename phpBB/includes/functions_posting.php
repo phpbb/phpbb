@@ -446,7 +446,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	{
 		$file->remove();
 
-		if ($plupload && $plupload->active)
+		if ($plupload && $plupload->is_active())
 		{
 			$plupload->emit_error(104, 'ATTACHED_IMAGE_NOT_IMAGE');
 		}
