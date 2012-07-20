@@ -1118,8 +1118,8 @@ function phpbb_delete_user_pms($user_id)
 	}
 	$db->sql_freeresult($result);
 
-	// Part 2: get PMs the user sent, but has yet to be received
-	// We can not simply delete them. First we have to check,
+	// Part 2: get PMs the user sent, but have yet to be received
+	// We cannot simply delete them. First we have to check,
 	// whether another user already received and read the message.
 	$sql = 'SELECT msg_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
@@ -1143,7 +1143,7 @@ function phpbb_delete_user_pms($user_id)
 
 	if (!empty($undelivered_msg))
 	{
-		// A pm is delivered, if for any receipt the message was moved
+		// A pm is delivered, if for any recipient the message was moved
 		// from their NO_BOX to another folder. We do not delete such
 		// messages, but only delete them for users, who have not yet
 		// received them.
