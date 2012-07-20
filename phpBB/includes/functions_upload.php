@@ -53,7 +53,7 @@ class filespec
 	* File Class
 	* @access private
 	*/
-	function filespec($upload_ary, $upload_namespace, $plupload = false)
+	function filespec($upload_ary, $upload_namespace, phpbb_plupload $plupload = null)
 	{
 		if (!isset($upload_ary))
 		{

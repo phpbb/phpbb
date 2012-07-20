@@ -396,7 +396,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 *
 * @return object filespec
 */
-function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, $plupload = false)
+function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, phpbb_plupload $plupload = null)
 {
 	global $auth, $user, $config, $db, $cache;
 	global $phpbb_root_path, $phpEx;
