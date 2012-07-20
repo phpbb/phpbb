@@ -371,7 +371,6 @@ class phpbb_plupload
 		$this->active = $this->request->header('X-PHPBB-USING-PLUPLOAD', false);
 	}
 
-
 	/**
 	 * Move the file safely to our working tmp dir to read from it
 	 *
