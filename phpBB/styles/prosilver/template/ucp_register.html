@@ -53,10 +53,8 @@
 		<dt><label for="lang">{L_LANGUAGE}:</label></dt>
 		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
 	</dl>
-	<dl>
-		<dt><label for="tz">{L_TIMEZONE}:</label></dt>
-		<dd><select name="tz" id="tz" tabindex="7" class="autowidth">{S_TZ_OPTIONS}</select></dd>
-	</dl>
+
+	<!-- INCLUDE timezone_option.html -->
 
 	<!-- IF .profile_fields -->
 		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>
@@ -105,5 +103,8 @@
 	</div>
 </div>
 </form>
+
+<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/timezone.js"></script>
+<script type="text/javascript">phpbb_preselect_tz_select();</script>
 
 <!-- INCLUDE overall_footer.html -->

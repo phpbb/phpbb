@@ -110,6 +110,14 @@ class dbal_mssql_odbc extends dbal
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return $expr1 . ' + ' . $expr2;
+	}
+
+	/**
 	* SQL Transaction
 	* @access private
 	*/

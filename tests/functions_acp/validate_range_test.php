@@ -7,7 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/lang.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
 

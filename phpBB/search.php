@@ -596,13 +596,25 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
 	$u_search .= ($return_chars != 300) ? '&amp;ch=' . $return_chars : '';
 
+	// Check if search backend supports phrase search or not
+	$phrase_search_disabled = '';
+	if (strpos(html_entity_decode($keywords), '"') !== false && method_exists($search, 'supports_phrase_search'))
+	{
+		$phrase_search_disabled = $search->supports_phrase_search() ? false : true;
+	}
+
+	phpbb_generate_template_pagination($template, $u_search, 'pagination', 'start', $total_match_count, $per_page, $start);
+	
 	$template->assign_vars(array(
 		'SEARCH_TITLE'		=> $l_search_title,
 		'SEARCH_MATCHES'	=> $l_search_matches,
-		'SEARCH_WORDS'		=> $search->search_query,
+		'SEARCH_WORDS'		=> $keywords,
+		'SEARCHED_QUERY'	=> $search->search_query,
 		'IGNORED_WORDS'		=> (sizeof($search->common_words)) ? implode(' ', $search->common_words) : '',
-		'PAGINATION'		=> generate_pagination($u_search, $total_match_count, $per_page, $start),
-		'PAGE_NUMBER'		=> on_page($total_match_count, $per_page, $start),
+		'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $u_search, $total_match_count, $per_page, $start),
+
+		'PHRASE_SEARCH_DISABLED'		=> $phrase_search_disabled,
+
 		'TOTAL_MATCHES'		=> $total_match_count,
 		'SEARCH_IN_RESULTS'	=> ($search_id) ? false : true,
 
@@ -888,7 +900,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 					'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 
-					'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
 					'TOPIC_TYPE'		=> $topic_type,
 
 					'TOPIC_IMG_STYLE'		=> $folder_img,
@@ -992,6 +1003,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '')
 			));
+			
+			if ($show_results == 'topics')
+			{
+				phpbb_generate_template_pagination($template, $view_topic_url, 'searchresults.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
+			}
 		}
 
 		if ($topic_id && ($topic_id == $result_topic_id))

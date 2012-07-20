@@ -1178,7 +1178,7 @@ class install_install extends module
 
 		$sql_query = preg_replace('#phpbb_#i', $data['table_prefix'], $sql_query);
 
-		$sql_query = remove_comments($sql_query);
+		$sql_query = phpbb_remove_comments($sql_query);
 
 		$sql_query = split_sql_file($sql_query, $delimiter);
 
@@ -1216,7 +1216,7 @@ class install_install extends module
 		// Change language strings...
 		$sql_query = preg_replace_callback('#\{L_([A-Z0-9\-_]*)\}#s', 'adjust_language_keys_callback', $sql_query);
 
-		$sql_query = remove_comments($sql_query);
+		$sql_query = phpbb_remove_comments($sql_query);
 		$sql_query = split_sql_file($sql_query, ';');
 
 		foreach ($sql_query as $sql)
@@ -1795,7 +1795,7 @@ class install_install extends module
 				'user_email'			=> '',
 				'user_lang'				=> $data['default_lang'],
 				'user_style'			=> 1,
-				'user_timezone'			=> 0,
+				'user_timezone'			=> 'UTC',
 				'user_dateformat'		=> $lang['default_dateformat'],
 				'user_allow_massemail'	=> 0,
 			);

@@ -34,16 +34,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static protected $config = array();
 	static protected $already_installed = false;
 
-	static public function setUpBeforeClass()
-	{
-		if (!extension_loaded('phar'))
-		{
-			self::markTestSkipped('phar extension is not loaded');
-		}
-
-		require_once 'phar://' . __DIR__ . '/../../vendor/goutte.phar';
-	}
-
 	public function setUp()
 	{
 		if (!isset(self::$config['phpbb_functional_url']))
@@ -52,7 +42,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 
 		$this->cookieJar = new CookieJar;
-		$this->client = new Goutte\Client(array(), array(), null, $this->cookieJar);
+		$this->client = new Goutte\Client(array(), null, $this->cookieJar);
+		// Reset the curl handle because it is 0 at this point and not a valid
+		// resource
+		$this->client->getClient()->getCurlMulti()->reset(true);
 		$this->root_url = self::$config['phpbb_functional_url'];
 		// Clear the language array so that things
 		// that were added in other tests are gone
@@ -251,9 +244,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$cookies = $this->cookieJar->all();
 
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-		foreach ($cookies as $key => $cookie);
+		foreach ($cookies as $cookie);
 		{
-			if (substr($key, -4) == '_sid')
+			if (substr($cookie->getName(), -4) == '_sid')
 			{
 				$this->sid = $cookie->getValue();
 			}

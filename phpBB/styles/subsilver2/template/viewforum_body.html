@@ -48,8 +48,17 @@
 				<!-- IF topicrow.S_TOPIC_REPORTED -->
 					<a href="{topicrow.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
-				<!-- IF topicrow.PAGINATION -->
-					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
+				<!-- IF .topicrow.pagination -->
+					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: 
+					<!-- BEGIN pagination -->
+						<!-- IF topicrow.pagination.S_IS_PREV -->
+						<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><strong>{topicrow.pagination.PAGE_NUMBER}</strong>
+						<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --> {L_ELLIPSIS} 
+						<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
+						<!-- ELSE --><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a>
+						<!-- ENDIF -->
+					<!-- END pagination -->
+					] </p>
 				<!-- ENDIF -->
 			</td>
 			<td class="row2" width="130" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR_FULL}</p></td>
@@ -154,7 +163,7 @@
 			<td class="cat" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->">
 				<table width="100%" cellspacing="0">
 				<tr class="nav">
-					<td valign="middle">&nbsp;<!-- IF S_WATCH_FORUM_LINK and not S_IS_BOT --><a href="{S_WATCH_FORUM_LINK}">{S_WATCH_FORUM_TITLE}</a><!-- ENDIF --></td>
+					<td valign="middle">&nbsp;<!-- IF U_WATCH_FORUM_LINK and not S_IS_BOT --><a href="{U_WATCH_FORUM_LINK}">{S_WATCH_FORUM_TITLE}</a><!-- ENDIF --></td>
 					<td align="{S_CONTENT_FLOW_END}" valign="middle"><!-- IF not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}">{L_MARK_TOPICS_READ}</a><!-- ENDIF -->&nbsp;</td>
 				</tr>
 				</table>
@@ -199,8 +208,17 @@
 					<!-- IF topicrow.S_TOPIC_REPORTED -->
 						<a href="{topicrow.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
 					<!-- ENDIF -->
-					<!-- IF topicrow.PAGINATION -->
-						<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
+					<!-- IF .topicrow.pagination -->
+						<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: 
+						<!-- BEGIN pagination -->
+							<!-- IF topicrow.pagination.S_IS_PREV -->
+							<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><strong>{topicrow.pagination.PAGE_NUMBER}</strong>
+							<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --> {L_ELLIPSIS} 
+							<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
+							<!-- ELSE --><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a>
+							<!-- ENDIF -->
+						<!-- END pagination -->
+						] </p>
 					<!-- ENDIF -->
 					<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --><p class="gensmall">{L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a></p><!-- ENDIF -->
 				</td>

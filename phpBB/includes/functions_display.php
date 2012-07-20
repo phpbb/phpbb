@@ -640,48 +640,6 @@ function get_forum_parents(&$forum_data)
 }
 
 /**
-* Generate topic pagination
-*/
-function topic_generate_pagination($replies, $url)
-{
-	global $config, $user;
-
-	// Make sure $per_page is a valid value
-	$per_page = ($config['posts_per_page'] <= 0) ? 1 : $config['posts_per_page'];
-
-	if (($replies + 1) > $per_page)
-	{
-		$total_pages = ceil(($replies + 1) / $per_page);
-		$pagination = '';
-
-		$times = 1;
-		for ($j = 0; $j < $replies + 1; $j += $per_page)
-		{
-			$pagination .= '<a href="' . $url . ($j == 0 ? '' : '&amp;start=' . $j) . '">' . $times . '</a>';
-			if ($times == 1 && $total_pages > 5)
-			{
-				$pagination .= '<span class="page-dots"> ... </span>';
-
-				// Display the last three pages
-				$times = $total_pages - 3;
-				$j += ($total_pages - 4) * $per_page;
-			}
-			else if ($times < $total_pages)
-			{
-				$pagination .= '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
-			}
-			$times++;
-		}
-	}
-	else
-	{
-		$pagination = '';
-	}
-
-	return $pagination;
-}
-
-/**
 * Obtain list of moderators of each forum
 */
 function get_moderators(&$forum_moderators, $forum_id = false)
@@ -1221,7 +1179,9 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	if ($can_watch)
 	{
 		$s_watching['link'] = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;" . (($is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start&amp;hash=" . generate_link_hash("{$mode}_$match_id"));
+		$s_watching['link_toggle'] = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;" . ((!$is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start&amp;hash=" . generate_link_hash("{$mode}_$match_id"));
 		$s_watching['title'] = $user->lang[(($is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
+		$s_watching['title_toggle'] = $user->lang[((!$is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
 		$s_watching['is_watching'] = $is_watching;
 	}
 

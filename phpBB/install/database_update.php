@@ -1113,6 +1113,9 @@ function database_update_info()
 				USERS_TABLE		=> array(
 					'user_avatar_type'		=> array('VCHAR:32', 0),
 				),
+				USERS_TABLE			=> array(
+					'user_timezone'		=> array('VCHAR:100', ''),
+				),
 			),
 		),
 	);
@@ -1126,6 +1129,8 @@ function database_update_info()
 function change_database_data(&$no_updates, $version)
 {
 	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $db_tools;
+
+	$update_helpers = new phpbb_update_helpers();
 
 	switch ($version)
 	{
@@ -1972,7 +1977,7 @@ function change_database_data(&$no_updates, $version)
 					'user_email'			=> '',
 					'user_lang'				=> $config['default_lang'],
 					'user_style'			=> $config['default_style'],
-					'user_timezone'			=> 0,
+					'user_timezone'			=> 'UTC',
 					'user_dateformat'		=> $config['default_dateformat'],
 					'user_allow_massemail'	=> 0,
 				);
@@ -2247,6 +2252,21 @@ function change_database_data(&$no_updates, $version)
 				// try to guess the new auto loaded search class name
 				// works for native and mysql fulltext
 				set_config('search_type', 'phpbb_search_' . $config['search_type']);
+			}
+
+			if (!isset($config['fulltext_postgres_ts_name']))
+			{
+				set_config('fulltext_postgres_ts_name', 'simple');
+			}
+
+			if (!isset($config['fulltext_postgres_min_word_len']))
+			{
+				set_config('fulltext_postgres_min_word_len', 4);
+			}
+
+			if (!isset($config['fulltext_postgres_max_word_len']))
+			{
+				set_config('fulltext_postgres_max_word_len', 254);
 			}
 
 			if (!isset($config['load_jquery_cdn']))
@@ -2614,6 +2634,32 @@ function change_database_data(&$no_updates, $version)
 			if (!isset($config['assets_version']))
 			{
 				$config->set('assets_version', '1');
+			}
+
+			// If the column exists, we did not yet update the users timezone
+			if ($db_tools->sql_column_exists(USERS_TABLE, 'user_dst'))
+			{
+				// Update user timezones
+				$sql = 'SELECT user_dst, user_timezone
+					FROM ' . USERS_TABLE . '
+					GROUP BY user_timezone, user_dst';
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$sql = 'UPDATE ' . USERS_TABLE . "
+						SET user_timezone = '" . $db->sql_escape($update_helpers->convert_phpbb30_timezone($row['user_timezone'], $row['user_dst'])) . "'
+						WHERE user_timezone = '" . $db->sql_escape($row['user_timezone']) . "'
+							AND user_dst = " . (int) $row['user_dst'];
+					_sql($sql, $errored, $error_ary);
+				}
+				$db->sql_freeresult($result);
+
+				// Update board default timezone
+				set_config('board_timezone', $update_helpers->convert_phpbb30_timezone($config['board_timezone'], $config['board_dst']));
+
+				// After we have calculated the timezones we can delete user_dst column from user table.
+				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
 			}
 
 		break;
