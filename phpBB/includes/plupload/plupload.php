@@ -38,6 +38,11 @@ class phpbb_plupload
 	protected $user;
 
 	/**
+	 * @var object phpbb_php_ini
+	 */
+	protected $ini;
+
+	/**
 	 * @var string
 	 */
 	protected $phpbb_root_path;
@@ -70,12 +75,13 @@ class phpbb_plupload
 	 *
 	 * @return null
 	 */
-	public function __construct($config, $request, $user, $phpbb_root_path)
+	public function __construct($config, $request, $user, $phpbb_root_path, $phpbb_php_ini)
 	{
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->ini = $phpbb_php_ini;
 	}
 
 	/**
@@ -255,11 +261,10 @@ class phpbb_plupload
 	 */
 	protected function get_chunk_size()
 	{
-		$ini = new phpbb_php_ini();
 		return min(
-			$ini->get_bytes('upload_max_filesize'),
-			$ini->get_bytes('post_max_size'),
-			$ini->get_bytes('memory_limit'),
+			$this->ini->get_bytes('upload_max_filesize'),
+			$this->ini->get_bytes('post_max_size'),
+			$this->ini->get_bytes('memory_limit'),
 			$this->config['max_filesize']
 		);
 	}
