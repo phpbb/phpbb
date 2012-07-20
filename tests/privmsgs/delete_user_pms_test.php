@@ -31,7 +31,6 @@ class phpbb_privmsgs_delete_user_pms_test extends phpbb_database_test_case
 				),
 				array(
 					array('msg_id' => 1, 'user_id' => 3),
-					array('msg_id' => 1, 'user_id' => 4),
 				),
 			),
 			array(
