@@ -439,7 +439,7 @@ class install_install extends module
 			'LEGEND_EXPLAIN'	=> $lang['FILES_REQUIRED_EXPLAIN'],
 		));
 
-		$directories = array('cache/', 'files/', 'store/');
+		$directories = array('cache/', 'files/', 'store/', 'files/plupload/');
 
 		umask(0);
 
