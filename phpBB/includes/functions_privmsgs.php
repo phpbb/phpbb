@@ -1118,7 +1118,7 @@ function phpbb_delete_user_pms($user_id)
 	}
 	$db->sql_freeresult($result);
 
-	// Part 2: get PMs the user sent, but has yet to be received
+	// Part 2: get PMs the user sent, but have yet to be received
 	// We can not simply delete them. First we have to check,
 	// whether another user already received and read the message.
 	$sql = 'SELECT msg_id
