@@ -166,7 +166,7 @@ class phpbb_search_fulltext_sphinx
 				array('sql_user',					$dbuser),
 				array('sql_pass',					$dbpasswd),
 				array('sql_db',						$dbname),
-				array('sql_port',					$this->config['fulltext_sphinx_port']),
+				array('sql_port',					$dbport),
 				array('sql_query_pre',				'SET NAMES \'utf8\''),
 				array('sql_query_pre',				'UPDATE ' . SPHINX_TABLE . ' SET max_doc_id = (SELECT MAX(post_id) FROM ' . POSTS_TABLE . ') WHERE counter_id = 1'),
 				array('sql_query_range',			'SELECT MIN(post_id), MAX(post_id) FROM ' . POSTS_TABLE . ''),
@@ -241,8 +241,7 @@ class phpbb_search_fulltext_sphinx
 			),
 			'searchd' => array(
 				array('compat_sphinxql_magics'	,	'0'),
-				array('listen'	,					'127.0.0.1'),
-				array('port',						($this->config['fulltext_sphinx_port']) ? $this->config['fulltext_sphinx_port'] : '3312'),
+				array('listen'	,					'localhost' . ':' . ($this->config['fulltext_sphinx_port'] ? $this->config['fulltext_sphinx_port'] : '3312')),
 				array('log',						$this->config['fulltext_sphinx_data_path'] . 'log/searchd.log'),
 				array('query_log',					$this->config['fulltext_sphinx_data_path'] . 'log/sphinx-query.log'),
 				array('read_timeout',				'5'),
@@ -759,7 +758,7 @@ class phpbb_search_fulltext_sphinx
 		$config_vars = array(
 			'fulltext_sphinx_data_path' => 'string',
 			'fulltext_sphinx_host' => 'string',
-			'fulltext_sphinx_port' => 'int',
+			'fulltext_sphinx_port' => 'string',
 			'fulltext_sphinx_indexer_mem_limit' => 'int',
 		);
 
