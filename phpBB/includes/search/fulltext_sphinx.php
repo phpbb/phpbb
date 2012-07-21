@@ -788,7 +788,7 @@ class phpbb_search_fulltext_sphinx
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_config_file">' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN'] . '</dt>
-			<dd>' . (($this->config_generate()) ? '<textarea disabled="disabled" rows="6">' . $this->config_file_data . '</textarea>' : $this->config_file_data) . '</dd>
+			<dd>' . (($this->config_generate()) ? '<textarea readonly="readonly" rows="6">' . $this->config_file_data . '</textarea>' : $this->config_file_data) . '</dd>
 		<dl>
 		';
 
