@@ -29,10 +29,19 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected $lang = array();
 
 	static protected $config = array();
-	static protected $already_installed = false;
 
 	public function setUp()
 	{
+		self::$config['table_prefix'] = 'phpbb_func_';
+
+		global $phpbb_functional_already_installed;
+		if (!$phpbb_functional_already_installed)
+		{
+			$this->install_board();
+			$this->bootstrap();
+			$phpbb_functional_already_installed = true;
+		}
+
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
 			$this->markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
@@ -66,16 +75,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		parent::__construct($name, $data, $dataName);
 
-		$this->backupStaticAttributesBlacklist += array(
-			'phpbb_functional_test_case' => array('config', 'already_installed', 'webserver'),
-			'phpbb_builtin_webserver' => array('process', 'pipes'),
-		);
-
-		if (!static::$already_installed)
+		if (!self::$config)
 		{
-			$this->install_board();
-			$this->bootstrap();
-			static::$already_installed = true;
+			self::$config = phpbb_test_case_helpers::get_test_config();
+			self::start_builtin_webserver();
 		}
 	}
 
@@ -83,15 +86,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		self::$config = phpbb_test_case_helpers::get_test_config();
-		self::start_builtin_webserver();
-
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
 			return;
 		}
 
-		self::$config['table_prefix'] = 'phpbb_';
 		$this->recreate_database(self::$config);
 
 		if (file_exists($phpbb_root_path . "config.$phpEx"))
