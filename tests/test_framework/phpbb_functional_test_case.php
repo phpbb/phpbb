@@ -9,6 +9,7 @@
 use Symfony\Component\BrowserKit\CookieJar;
 
 require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
+require_once __DIR__ . '/phpbb_builtin_webserver.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
@@ -66,7 +67,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 		parent::__construct($name, $data, $dataName);
 
 		$this->backupStaticAttributesBlacklist += array(
-			'phpbb_functional_test_case' => array('config', 'already_installed'),
+			'phpbb_functional_test_case' => array('config', 'already_installed', 'webserver'),
+			'phpbb_builtin_webserver' => array('process', 'pipes'),
 		);
 
 		if (!static::$already_installed)
@@ -82,6 +84,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		global $phpbb_root_path, $phpEx;
 
 		self::$config = phpbb_test_case_helpers::get_test_config();
+		self::start_builtin_webserver();
 
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
@@ -184,7 +187,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$login = $this->client->submit($form, array('username' => 'admin', 'password' => 'admin'));
 
 		$cookies = $this->cookieJar->all();
-		
+
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
 		foreach ($cookies as $cookie);
 		{
@@ -230,5 +233,34 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$args[0] = $this->lang[$key];
 
 		return call_user_func_array('sprintf', $args);
+	}
+
+	static protected function start_builtin_webserver()
+	{
+		if (isset(self::$config['phpbb_functional_url']) && !isset(self::$config['phpbb_use_php_builtin_webserver']))
+		{
+			return;
+		}
+
+		global $php_builtin_webserver;
+
+		if ($php_builtin_webserver)
+		{
+			return;
+		}
+
+		$php_builtin_webserver = new phpbb_builtin_webserver();
+
+		if ($php_builtin_webserver->start())
+		{
+			self::$config['phpbb_functional_url'] = 'http://localhost:8000/';
+			self::$config['phpbb_use_php_builtin_webserver'] = true;
+		}
+	}
+
+	static protected function stop_builtin_webserver()
+	{
+		global $php_builtin_webserver;
+		$php_builtin_webserver = null;
 	}
 }

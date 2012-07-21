@@ -24,6 +24,11 @@ class phpbb_test_case extends PHPUnit_Framework_TestCase
 
 			'phpbb_database_test_case' => array('already_connected'),
 		);
+
+		$this->backupGlobalsBlacklist = array_merge(
+			$this->backupGlobalsBlacklist,
+			array('php_builtin_webserver')
+		);
 	}
 
 	public function get_test_case_helpers()
