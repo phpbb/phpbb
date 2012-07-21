@@ -126,3 +126,10 @@ services:
             - cron_lock
             - @config
             - @dbal.conn
+
+    processor.config:
+        class: phpbb_di_processor_ext
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: container.processor }

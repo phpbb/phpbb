@@ -8,7 +8,6 @@
 */
 
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Compiler\Compiler;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
@@ -61,6 +60,12 @@ if (isset($_GET['avatar']))
 
 	$phpbb_class_loader = $phpbb_container->get('class_loader');
 	$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
+
+	$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
+	foreach ($ids as $id) {
+		$processor = $phpbb_container->get($id);
+		$processor->process($phpbb_container);
+	}
 
 	// set up caching
 	$cache = $phpbb_container->get('cache');
