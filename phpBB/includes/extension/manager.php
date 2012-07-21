@@ -39,7 +39,7 @@ class phpbb_extension_manager
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(dbal $db, $extension_table, $phpbb_root_path, $phpEx = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(phpbb_db_driver $db, $extension_table, $phpbb_root_path, $phpEx = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
@@ -432,7 +432,7 @@ class phpbb_extension_manager
 		}
 		return $disabled;
 	}
-	
+
 	/**
 	* Check to see if a given extension is available on the filesystem
 	*

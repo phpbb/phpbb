@@ -79,7 +79,6 @@ require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Set PHP error handler to ours
@@ -102,7 +101,7 @@ $phpbb_dispatcher = new phpbb_event_dispatcher();
 $request	= new phpbb_request();
 $user		= new phpbb_user();
 $auth		= new phpbb_auth();
-$db			= new $sql_db();
+$db			= new $dbms();
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function

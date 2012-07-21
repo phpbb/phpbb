@@ -91,7 +91,6 @@ phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 phpbb_require_updated('includes/db/db_tools.' . $phpEx);
@@ -121,7 +120,7 @@ $phpbb_class_loader->set_cache($cache->get_driver());
 $phpbb_dispatcher = new phpbb_event_dispatcher();
 $request = new phpbb_request();
 $user = new phpbb_user();
-$db = new $sql_db();
+$db = new $dbms();
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
@@ -2601,10 +2600,10 @@ function change_database_data(&$no_updates, $version)
 
 			// Create config value for displaying last subject on forum list
 			if (!isset($config['display_last_subject']))
-			{			
+			{
 				$config->set('display_last_subject', '1');
 			}
-			
+
 			$no_updates = false;
 
 			if (!isset($config['assets_version']))

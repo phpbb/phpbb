@@ -87,12 +87,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// so we don't reopen an open connection
 		if (!($this->db instanceof dbal))
 		{
-			if (!class_exists('dbal_' . self::$config['dbms']))
-			{
-				include($phpbb_root_path . 'includes/db/' . self::$config['dbms'] . ".$phpEx");
-			}
-			$sql_db = 'dbal_' . self::$config['dbms'];
-			$this->db = new $sql_db();
+			$dbms = self::$config['dbms'];
+			$this->db = new $dbms();
 			$this->db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
 		}
 		return $this->db;

@@ -39,7 +39,6 @@ if (isset($_GET['avatar']))
 	}
 
 	require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
@@ -58,7 +57,7 @@ if (isset($_GET['avatar']))
 
 	$phpbb_dispatcher = new phpbb_event_dispatcher();
 	$request = new phpbb_request();
-	$db = new $sql_db();
+	$db = new $dbms();
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))

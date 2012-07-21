@@ -250,7 +250,7 @@ class install_install extends module
 			'S_EXPLAIN'		=> true,
 			'S_LEGEND'		=> false,
 		));
-		
+
 		// Check for php json support
 		if (@extension_loaded('json'))
 		{
@@ -1144,11 +1144,8 @@ class install_install extends module
 
 		$dbms = $available_dbms[$data['dbms']]['DRIVER'];
 
-		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-
 		// Instantiate the database
-		$db = new $sql_db();
+		$db = new $dbms();
 		$db->sql_connect($data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], false, false);
 
 		// NOTE: trigger_error does not work here.
@@ -1444,11 +1441,8 @@ class install_install extends module
 
 		$dbms = $available_dbms[$data['dbms']]['DRIVER'];
 
-		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-
 		// Instantiate the database
-		$db = new $sql_db();
+		$db = new $dbms();
 		$db->sql_connect($data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], false, false);
 
 		// NOTE: trigger_error does not work here.

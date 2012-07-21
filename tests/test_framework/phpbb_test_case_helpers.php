@@ -54,7 +54,7 @@ class phpbb_test_case_helpers
 		if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
 		{
 			$config = array_merge($config, array(
-				'dbms'		=> 'sqlite',
+				'dbms'		=> 'phpbb_db_driver_sqlite',
 				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite2', // filename
 				'dbport'	=> '',
 				'dbname'	=> '',

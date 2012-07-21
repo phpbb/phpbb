@@ -46,7 +46,7 @@ class phpbb_config_db extends phpbb_config
 	* @param phpbb_cache_driver_interface $cache Cache instance
 	* @param string                       $table Configuration table name
 	*/
-	public function __construct(dbal $db, phpbb_cache_driver_interface $cache, $table)
+	public function __construct(phpbb_db_driver $db, phpbb_cache_driver_interface $cache, $table)
 	{
 		$this->db = $db;
 		$this->cache = $cache;

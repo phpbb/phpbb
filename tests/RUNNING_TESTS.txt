@@ -30,7 +30,7 @@ example for mysqli can be found below. More information on configuration
 options can be found on the wiki (see below).
 
     <?php
-    $dbms = 'mysqli';
+    $dbms = 'phpbb_db_driver_mysqli';
     $dbhost = 'localhost';
     $dbport = '';
     $dbname = 'database';

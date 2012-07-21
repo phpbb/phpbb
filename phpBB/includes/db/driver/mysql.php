@@ -15,8 +15,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
-
 /**
 * MySQL4 Database Abstraction Layer
 * Compatible with:
@@ -26,7 +24,7 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 * MySQL 5.0+
 * @package dbal
 */
-class dbal_mysql extends dbal
+class phpbb_db_driver_mysql extends phpbb_db_driver
 {
 	var $multi_insert = true;
 

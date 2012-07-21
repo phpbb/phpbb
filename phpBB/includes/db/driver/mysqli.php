@@ -15,15 +15,13 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
-
 /**
 * MySQLi Database Abstraction Layer
 * mysqli-extension has to be compiled with:
 * MySQL 4.1+ or MySQL 5.0+
 * @package dbal
 */
-class dbal_mysqli extends dbal
+class phpbb_db_driver_mysqli extends phpbb_db_driver
 {
 	var $multi_insert = true;
 
