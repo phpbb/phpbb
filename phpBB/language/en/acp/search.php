@@ -71,7 +71,7 @@ $lang = array_merge($lang, array(
 
 	'FULLTEXT_SPHINX_CONFIGURE'				=> 'Configure the following settings to generate sphinx config file',
 	'FULLTEXT_SPHINX_DATA_PATH'				=> 'Path to data directory',
-	'FULLTEXT_SPHINX_DATA_PATH_EXPLAIN'		=> 'It will be used to store the indexes and log files. You should create this directory outside the web accessable directories.',
+	'FULLTEXT_SPHINX_DATA_PATH_EXPLAIN'		=> 'It will be used to store the indexes and log files. You should create this directory outside the web accessible directories. (should have a trailing slash)',
 	'FULLTEXT_SPHINX_DELTA_POSTS'			=> 'Number of posts in frequently updated delta index',
 	'FULLTEXT_SPHINX_HOST'					=> 'SQL server host',
 	'FULLTEXT_SPHINX_HOST_EXPLAIN'			=> 'SQL server host, which the sphinx search daemon (searchd) connects to. Leave empty to use the default SQL server host',
