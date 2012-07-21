@@ -24,6 +24,9 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 {
 	private $stats = array();
 	private $split_words = array();
+	private $config;
+	private $db;
+	private $user;
 	public $word_length = array();
 	public $search_query;
 	public $common_words = array();
@@ -34,11 +37,13 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
 	 */
-	public function __construct(&$error)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $config, $db, $user)
 	{
-		global $config;
+		$this->config = $config;
+		$this->db = $db;
+		$this->user = $user;
 
-		$this->word_length = array('min' => $config['fulltext_mysql_min_word_len'], 'max' => $config['fulltext_mysql_max_word_len']);
+		$this->word_length = array('min' => $this->config['fulltext_mysql_min_word_len'], 'max' => $this->config['fulltext_mysql_max_word_len']);
 
 		$error = false;
 	}
@@ -64,16 +69,14 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function init()
 	{
-		global $db, $user;
-
-		if ($db->sql_layer != 'mysql4' && $db->sql_layer != 'mysqli')
+		if ($this->db->sql_layer != 'mysql4' && $this->db->sql_layer != 'mysqli')
 		{
-			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE'];
+			return $this->user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE'];
 		}
 
-		$result = $db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
-		$info = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
+		$info = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
 
 		$engine = '';
 		if (isset($info['Engine']))
@@ -87,19 +90,19 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 		if ($engine != 'MyISAM')
 		{
-			return $user->lang['FULLTEXT_MYSQL_NOT_MYISAM'];
+			return $this->user->lang['FULLTEXT_MYSQL_NOT_MYISAM'];
 		}
 
 		$sql = 'SHOW VARIABLES
 			LIKE \'ft\_%\'';
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
 		$mysql_info = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$mysql_info[$row['Variable_name']] = $row['Value'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		set_config('fulltext_mysql_max_word_len', $mysql_info['ft_max_word_len']);
 		set_config('fulltext_mysql_min_word_len', $mysql_info['ft_min_word_len']);
@@ -119,8 +122,6 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function split_keywords(&$keywords, $terms)
 	{
-		global $config, $user;
-
 		if ($terms == 'all')
 		{
 			$match		= array('#\sand\s#iu', '#\sor\s#iu', '#\snot\s#iu', '#(^|\s)\+#', '#(^|\s)-#', '#(^|\s)\|#');
@@ -139,9 +140,9 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		$this->split_words = $matches[1];
 
 		// We limit the number of allowed keywords to minimize load on the database
-		if ($config['max_num_search_keywords'] && sizeof($this->split_words) > $config['max_num_search_keywords'])
+		if ($this->config['max_num_search_keywords'] && sizeof($this->split_words) > $this->config['max_num_search_keywords'])
 		{
-			trigger_error($user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', $config['max_num_search_keywords'], sizeof($this->split_words)));
+			trigger_error($this->user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', $this->config['max_num_search_keywords'], sizeof($this->split_words)));
 		}
 
 		// to allow phrase search, we need to concatenate quoted words
@@ -183,7 +184,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 			// check word length
 			$clean_len = utf8_strlen(str_replace('*', '', $clean_word));
-			if (($clean_len < $config['fulltext_mysql_min_word_len']) || ($clean_len > $config['fulltext_mysql_max_word_len']))
+			if (($clean_len < $this->config['fulltext_mysql_min_word_len']) || ($clean_len > $this->config['fulltext_mysql_max_word_len']))
 			{
 				$this->common_words[] = $word;
 				unset($this->split_words[$i]);
@@ -241,8 +242,6 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function split_message($text)
 	{
-		global $config;
-
 		// Split words
 		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
 		$matches = array();
@@ -254,7 +253,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
 		{
 			$text[$i] = trim($text[$i]);
-			if (utf8_strlen($text[$i]) < $config['fulltext_mysql_min_word_len'] || utf8_strlen($text[$i]) > $config['fulltext_mysql_max_word_len'])
+			if (utf8_strlen($text[$i]) < $this->config['fulltext_mysql_min_word_len'] || utf8_strlen($text[$i]) > $this->config['fulltext_mysql_max_word_len'])
 			{
 				unset($text[$i]);
 			}
@@ -287,8 +286,6 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
-		global $config, $db;
-
 		// No keywords? No posts.
 		if (!$this->search_query)
 		{
@@ -377,7 +374,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $this->db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		$sql_select			= (!$result_count) ? 'SQL_CALC_FOUND_ROWS ' : '';
@@ -387,11 +384,11 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		if (sizeof($author_ary) && $author_name)
 		{
 			// first one matches post of registered users, second one guests and deleted users
-			$sql_author = ' AND (' . $db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
+			$sql_author = ' AND (' . $this->db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
 		}
 		else if (sizeof($author_ary))
 		{
-			$sql_author = ' AND ' . $db->sql_in_set('p.poster_id', $author_ary);
+			$sql_author = ' AND ' . $this->db->sql_in_set('p.poster_id', $author_ary);
 		}
 		else
 		{
@@ -401,7 +398,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		$sql_where_options = $sql_sort_join;
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
-		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
+		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_where_options .= $m_approve_fid_sql;
 		$sql_where_options .= $sql_author;
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -409,16 +406,16 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 		$sql = "SELECT $sql_select
 			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
-			WHERE MATCH ($sql_match) AGAINST ('" . $db->sql_escape(htmlspecialchars_decode($this->search_query)) . "' IN BOOLEAN MODE)
+			WHERE MATCH ($sql_match) AGAINST ('" . $this->db->sql_escape(htmlspecialchars_decode($this->search_query)) . "' IN BOOLEAN MODE)
 				$sql_where_options
 			ORDER BY $sql_sort";
-		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$id_ary[] = (int) $row[$field];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		$id_ary = array_unique($id_ary);
 
@@ -431,9 +428,9 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		if (!$result_count)
 		{
 			$sql = 'SELECT FOUND_ROWS() as result_count';
-			$result = $db->sql_query($sql);
-			$result_count = (int) $db->sql_fetchfield('result_count');
-			$db->sql_freeresult($result);
+			$result = $this->db->sql_query($sql);
+			$result_count = (int) $this->db->sql_fetchfield('result_count');
+			$this->db->sql_freeresult($result);
 
 			if (!$result_count)
 			{
@@ -471,8 +468,6 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
-		global $config, $db;
-
 		// No author? No posts.
 		if (!sizeof($author_ary))
 		{
@@ -508,13 +503,13 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		if ($author_name)
 		{
 			// first one matches post of registered users, second one guests and deleted users
-			$sql_author = '(' . $db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
+			$sql_author = '(' . $this->db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
 		}
 		else
 		{
-			$sql_author = $db->sql_in_set('p.poster_id', $author_ary);
+			$sql_author = $this->db->sql_in_set('p.poster_id', $author_ary);
 		}
-		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
+		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_firstpost = ($firstpost_only) ? ' AND p.post_id = t.topic_first_post_id' : '';
@@ -550,7 +545,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $this->db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		// If the cache was completely empty count the results
@@ -589,21 +584,21 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		}
 
 		// Only read one block of posts from the db and then cache it
-		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$id_ary[] = (int) $row[$field];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		// retrieve the total result count if needed
 		if (!$result_count)
 		{
 			$sql = 'SELECT FOUND_ROWS() as result_count';
-			$result = $db->sql_query($sql);
-			$result_count = (int) $db->sql_fetchfield('result_count');
-			$db->sql_freeresult($result);
+			$result = $this->db->sql_query($sql);
+			$result_count = (int) $this->db->sql_fetchfield('result_count');
+			$this->db->sql_freeresult($result);
 
 			if (!$result_count)
 			{
@@ -635,8 +630,6 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
-		global $db;
-
 		// Split old and new post/subject to obtain array of words
 		$split_text = $this->split_message($message);
 		$split_title = ($subject) ? $this->split_message($subject) : array();
@@ -669,8 +662,6 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function tidy()
 	{
-		global $db, $config;
-
 		// destroy too old cached search results
 		$this->destroy_cache(array());
 
@@ -686,8 +677,6 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function create_index($acp_module, $u_action)
 	{
-		global $db;
-
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
 		{
@@ -703,7 +692,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 		if (!isset($this->stats['post_subject']))
 		{
-			if ($db->sql_layer == 'mysqli' || version_compare($db->sql_server_info(true), '4.1.3', '>='))
+			if ($this->db->sql_layer == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 			{
 				$alter[] = 'MODIFY post_subject varchar(255) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
 			}
@@ -716,7 +705,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 		if (!isset($this->stats['post_text']))
 		{
-			if ($db->sql_layer == 'mysqli' || version_compare($db->sql_server_info(true), '4.1.3', '>='))
+			if ($this->db->sql_layer == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 			{
 				$alter[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
 			}
@@ -734,10 +723,10 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 		if (sizeof($alter))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
+			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
 		}
 
-		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
 		return false;
 	}
@@ -751,8 +740,6 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function delete_index($acp_module, $u_action)
 	{
-		global $db;
-
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
 		{
@@ -783,10 +770,10 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 		if (sizeof($alter))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
+			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
 		}
 
-		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
 		return false;
 	}
@@ -813,15 +800,13 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function index_stats()
 	{
-		global $user;
-
 		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}
 
 		return array(
-			$user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
+			$this->user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
 		);
 	}
 
@@ -832,9 +817,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	 */
 	function get_stats()
 	{
-		global $db;
-
-		if (strpos($db->sql_layer, 'mysql') === false)
+		if (strpos($this->db->sql_layer, 'mysql') === false)
 		{
 			$this->stats = array();
 			return;
@@ -842,9 +825,9 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 		$sql = 'SHOW INDEX
 			FROM ' . POSTS_TABLE;
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			// deal with older MySQL versions which didn't use Index_type
 			$index_type = (isset($row['Index_type'])) ? $row['Index_type'] : $row['Comment'];
@@ -865,9 +848,9 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 				}
 			}
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
-		$this->stats['total_posts'] = empty($this->stats) ? 0 : $db->get_estimated_row_count(POSTS_TABLE);
+		$this->stats['total_posts'] = empty($this->stats) ? 0 : $this->db->get_estimated_row_count(POSTS_TABLE);
 	}
 
 	/**
@@ -879,16 +862,14 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function acp()
 	{
-		global $user, $config;
-
 		$tpl = '
 		<dl>
-			<dt><label>' . $user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
-			<dd>' . $config['fulltext_mysql_min_word_len'] . '</dd>
+			<dt><label>' . $this->user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dd>' . $this->config['fulltext_mysql_min_word_len'] . '</dd>
 		</dl>
 		<dl>
-			<dt><label>' . $user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
-			<dd>' . $config['fulltext_mysql_max_word_len'] . '</dd>
+			<dt><label>' . $this->user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dd>' . $this->config['fulltext_mysql_max_word_len'] . '</dd>
 		</dl>
 		';
 
