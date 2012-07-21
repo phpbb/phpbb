@@ -69,8 +69,6 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_POSTGRES_MIN_WORD_LEN_EXPLAIN'			=> 'Words with at least this many characters will be included in the query to the database.',
 	'FULLTEXT_POSTGRES_MAX_WORD_LEN_EXPLAIN'			=> 'Words with no more than this many characters will be included in the query to the database.',
 
-	'FULLTEXT_SPHINX_CONFIG_PATH'			=> 'Path to config directory',
-	'FULLTEXT_SPHINX_CONFIG_PATH_EXPLAIN'	=> 'You should put the sphinx.conf file in this directory. This config directory should be outside the web accessible directories.',
 	'FULLTEXT_SPHINX_CONFIGURE'				=> 'Configure the following settings to generate sphinx config file',
 	'FULLTEXT_SPHINX_DATA_PATH'				=> 'Path to data directory',
 	'FULLTEXT_SPHINX_DATA_PATH_EXPLAIN'		=> 'It will be used to store the indexes and log files. You should create this directory outside the web accessable directories.',
@@ -83,8 +81,6 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_SPHINX_PORT'					=> 'Sphinx search daemon port',
 	'FULLTEXT_SPHINX_PORT_EXPLAIN'			=> 'Port on which the sphinx search daemon (searchd) listens. Leave empty to use the default 3312',
 	'FULLTEXT_SPHINX_WRONG_DATABASE'		=> 'The sphinx search for phpBB supports MySQL and PostgreSQL only.',
-	'FULLTEXT_SPHINX_STOPWORDS_FILE'		=> 'Stopwords activated',
-	'FULLTEXT_SPHINX_STOPWORDS_FILE_EXPLAIN'	=> 'You can place a file called sphinx_stopwords.txt containing one word in each line in your config directory. If this file is present these words will be excluded from the indexing process.',
 	'FULLTEXT_SPHINX_CONFIG_FILE'			=> 'Sphinx config file',
 	'FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN'	=> 'The generated content of the sphinx config file. This data needs to be pasted into the sphinx.conf which is used by sphinx search daemon.',
 	'FULLTEXT_SPHINX_NO_CONFIG_DATA'		=> 'The sphinx data and config directory paths are not defined. Please define them to generate the config file.',
