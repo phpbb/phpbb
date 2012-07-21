@@ -334,47 +334,47 @@ class phpbb_database_test_connection_manager
 	protected function get_dbms_data($dbms)
 	{
 		$available_dbms = array(
-			'firebird'	=> array(
+			'phpbb_db_driver_firebird'	=> array(
 				'SCHEMA'		=> 'firebird',
 				'DELIM'			=> ';;',
 				'PDO'			=> 'firebird',
 			),
-			'mysqli'	=> array(
+			'phpbb_db_driver_mysqli'	=> array(
 				'SCHEMA'		=> 'mysql_41',
 				'DELIM'			=> ';',
 				'PDO'			=> 'mysql',
 			),
-			'mysql'		=> array(
+			'phpbb_db_driver_mysql'		=> array(
 				'SCHEMA'		=> 'mysql',
 				'DELIM'			=> ';',
 				'PDO'			=> 'mysql',
 			),
-			'mssql'		=> array(
+			'phpbb_db_driver_mssql'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'odbc',
 			),
-			'mssql_odbc'=>	array(
+			'phpbb_db_driver_mssql_odbc'=>	array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'odbc',
 			),
-			'mssqlnative'		=> array(
+			'phpbb_db_driver_mssqlnative'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'sqlsrv',
 			),
-			'oracle'	=>	array(
+			'phpbb_db_driver_oracle'	=>	array(
 				'SCHEMA'		=> 'oracle',
 				'DELIM'			=> '/',
 				'PDO'			=> 'oci',
 			),
-			'postgres' => array(
+			'phpbb_db_driver_postgres' => array(
 				'SCHEMA'		=> 'postgres',
 				'DELIM'			=> ';',
 				'PDO'			=> 'pgsql',
 			),
-			'sqlite'		=> array(
+			'phpbb_db_driver_sqlite'		=> array(
 				'SCHEMA'		=> 'sqlite',
 				'DELIM'			=> ';',
 				'PDO'			=> 'sqlite2',
