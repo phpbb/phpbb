@@ -162,11 +162,11 @@ class phpbb_search_fulltext_sphinx
 		$config_data = array(
 			'source source_phpbb_' . $this->id . '_main' => array(
 				array('type',						$this->dbtype),
-				array('sql_host',					$dbhost),
+				array('sql_host',					$this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : $dbhost),
 				array('sql_user',					$dbuser),
 				array('sql_pass',					$dbpasswd),
 				array('sql_db',						$dbname),
-				array('sql_port',					$dbport),
+				array('sql_port',					$this->config['fulltext_sphinx_port']),
 				array('sql_query_pre',				'SET NAMES \'utf8\''),
 				array('sql_query_pre',				'UPDATE ' . SPHINX_TABLE . ' SET max_doc_id = (SELECT MAX(post_id) FROM ' . POSTS_TABLE . ') WHERE counter_id = 1'),
 				array('sql_query_range',			'SELECT MIN(post_id), MAX(post_id) FROM ' . POSTS_TABLE . ''),
@@ -759,6 +759,7 @@ class phpbb_search_fulltext_sphinx
 		$config_vars = array(
 			'fulltext_sphinx_config_path' => 'string',
 			'fulltext_sphinx_data_path' => 'string',
+			'fulltext_sphinx_host' => 'string',
 			'fulltext_sphinx_port' => 'int',
 			'fulltext_sphinx_stopwords'	=> 'bool',
 			'fulltext_sphinx_indexer_mem_limit' => 'int',
@@ -777,6 +778,10 @@ class phpbb_search_fulltext_sphinx
 		<dl>
 			<dt><label for="fulltext_sphinx_stopwords">' . $this->user->lang['FULLTEXT_SPHINX_STOPWORDS_FILE'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_STOPWORDS_FILE_EXPLAIN'] . '</span></dt>
 			<dd><label><input type="radio" id="fulltext_sphinx_stopwords" name="config[fulltext_sphinx_stopwords]" value="1"' . (($this->config['fulltext_sphinx_stopwords']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_sphinx_stopwords]" value="0"' . ((!$this->config['fulltext_sphinx_stopwords']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['NO'] . '</label></dd>
+		</dl>
+		<dl>
+			<dt><label for="fulltext_sphinx_host">' . $this->user->lang['FULLTEXT_SPHINX_HOST'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_HOST_EXPLAIN'] . '</span></dt>
+			<dd><input id="fulltext_sphinx_host" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_host]" value="' . $this->config['fulltext_sphinx_host'] . '" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_port">' . $this->user->lang['FULLTEXT_SPHINX_PORT'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_PORT_EXPLAIN'] . '</span></dt>
