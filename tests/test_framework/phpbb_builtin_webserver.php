@@ -14,6 +14,17 @@ class phpbb_builtin_webserver
 {
 	protected $process = null;
 	protected $pipes = null;
+	protected $port;
+
+	/**
+	* Creates an instance of the php webserver wrapper but does not start it
+	*
+	* @param int $port The port to run the webserver on
+	*/
+	public function __construct($port)
+	{
+		$this->port = $port;
+	}
 
 	/**
 	* Makes sure the webserver is stopped before terminating php as the
@@ -50,7 +61,7 @@ class phpbb_builtin_webserver
 		}
 
 		$this->process = proc_open(
-			'php -S localhost:8000',
+			'php -S localhost:' . $port,
 			array(
 				0 => array('pipe', 'r'), // STDIN
 				1 => array('file', '/dev/null', 'w'), // STDOUT

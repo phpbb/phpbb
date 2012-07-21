@@ -86,6 +86,10 @@ class phpbb_test_case_helpers
 			{
 				$config['phpbb_functional_url'] = $phpbb_functional_url;
 			}
+			if (isset($phpbb_functional_port))
+			{
+				$config['phpbb_functional_port'] = $phpbb_functional_port;
+			}
 		}
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
@@ -105,6 +109,13 @@ class phpbb_test_case_helpers
 		{
 			$config = array_merge($config, array(
 				'phpbb_functional_url'	=> isset($_SERVER['PHPBB_FUNCTIONAL_URL']) ? $_SERVER['PHPBB_FUNCTIONAL_URL'] : '',
+			));
+		}
+
+		if (isset($_SERVER['PHPBB_FUNCTIONAL_PORT']))
+		{
+			$config = array_merge($config, array(
+				'phpbb_functional_port'	=> isset($_SERVER['PHPBB_FUNCTIONAL_PORT']) ? $_SERVER['PHPBB_FUNCTIONAL_PORT'] : '',
 			));
 		}
 

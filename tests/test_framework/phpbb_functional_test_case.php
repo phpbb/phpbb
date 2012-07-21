@@ -240,6 +240,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			return;
 		}
+		self::$config['phpbb_functional_port'] = (isset(self::$config['phpbb_functional_port'])) ? (int) self::$config['phpbb_functional_port'] : 8743;
 
 		global $php_builtin_webserver;
 
@@ -248,11 +249,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 			return;
 		}
 
-		$php_builtin_webserver = new phpbb_builtin_webserver();
+		$php_builtin_webserver = new phpbb_builtin_webserver(self::$config['phpbb_functional_port']);
 
 		if ($php_builtin_webserver->start())
 		{
-			self::$config['phpbb_functional_url'] = 'http://localhost:8000/';
+			self::$config['phpbb_functional_url'] = 'http://localhost:' . self::$config['phpbb_functional_port'] . '/';
 			self::$config['phpbb_use_php_builtin_webserver'] = true;
 		}
 	}
