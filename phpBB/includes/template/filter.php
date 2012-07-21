@@ -1048,6 +1048,12 @@ class phpbb_template_filter extends php_user_filter
 		}
 	}
 	
+	/**
+	* Generate a string representing the array list assigned to a template variable
+	*
+	* @param string $array_list represents the array value to access (example: ->data1->data2)
+	* @return string repesenting the actual array element to access (example: ['data1']['data2'])
+	*/
 	private function generate_array_varref($array_list)
 	{
 		if (!sizeof($array_list))
