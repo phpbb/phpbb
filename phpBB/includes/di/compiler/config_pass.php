@@ -38,7 +38,7 @@ class phpbb_di_compiler_config_pass implements CompilerPassInterface
 
         $container->setParameter('core.table_prefix', $table_prefix);
         $container->setParameter('cache.driver.class', $acm_type);
-        $container->setParameter('dbal.driver.class', $dbms);
+        $container->setParameter('dbal.driver.class', 'dbal_'.$dbms);
         $container->setParameter('dbal.dbhost', $dbhost);
         $container->setParameter('dbal.dbuser', $dbuser);
         $container->setParameter('dbal.dbpasswd', $dbpasswd);
