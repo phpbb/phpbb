@@ -54,7 +54,7 @@ class phpbb_template
 	* PHP file extension
 	* @var string
 	*/
-	private $phpEx;
+	private $php_ext;
 
 	/**
 	* phpBB config instance
@@ -87,10 +87,10 @@ class phpbb_template
 	* @param user $user current user
 	* @param phpbb_template_locator $locator template locator
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_template_locator $locator)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_locator $locator)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
 		$this->locator = $locator;
@@ -313,7 +313,7 @@ class phpbb_template
 	private function _compiled_file_for_handle($handle)
 	{
 		$source_file = $this->locator->get_filename_for_handle($handle);
-		$compiled_file = $this->cachepath . str_replace('/', '.', $source_file) . '.' . $this->phpEx;
+		$compiled_file = $this->cachepath . str_replace('/', '.', $source_file) . '.' . $this->php_ext;
 		return $compiled_file;
 	}
 
