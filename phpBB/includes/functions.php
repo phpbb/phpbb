@@ -4926,6 +4926,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'RECORD_USERS'					=> $l_online_record,
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
+		'USER_DATA'						=> $user->data, 
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
@@ -5034,7 +5035,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 
-		'A_USER_DATA'			=> $user->data, 
 		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
 	));
 
