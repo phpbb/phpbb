@@ -1001,6 +1001,13 @@ class acp_users
 				$user_row['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 				$db->sql_freeresult($result);
 
+				$sql = 'SELECT post_id
+					FROM ' . POSTS_TABLE . '
+					WHERE poster_id = '. $user_id;
+				$result = $db->sql_query_limit($sql, 1);
+				$user_row['user_has_posts'] = (bool) $db->sql_fetchfield('post_id');
+				$db->sql_freeresult($result);
+
 				$template->assign_vars(array(
 					'L_NAME_CHARS_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars']), $user->lang('CHARACTERS', (int) $config['max_pass_chars'])),
@@ -1028,6 +1035,7 @@ class acp_users
 					'USER_EMAIL'		=> $user_row['user_email'],
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
 					'USER_POSTS'		=> $user_row['user_posts'],
+					'USER_HAS_POSTS'	=> $user_row['user_has_posts'],
 					'USER_INACTIVE_REASON'	=> $inactive_reason,
 				));
 
@@ -1112,10 +1120,12 @@ class acp_users
 				$log_count = 0;
 				$start = view_log('user', $log_data, $log_count, $config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
 
+				$base_url = $this->u_action . "&amp;u=$user_id&amp;$u_sort_param";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+				
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
-					'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
-					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
+					'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
 
 					'S_LIMIT_DAYS'	=> $s_limit_days,
 					'S_SORT_KEY'	=> $s_sort_key,
@@ -1450,9 +1460,8 @@ class acp_users
 				$data = array(
 					'dateformat'		=> utf8_normalize_nfc(request_var('dateformat', $user_row['user_dateformat'], true)),
 					'lang'				=> basename(request_var('lang', $user_row['user_lang'])),
-					'tz'				=> request_var('tz', (float) $user_row['user_timezone']),
+					'tz'				=> request_var('tz', $user_row['user_timezone']),
 					'style'				=> request_var('style', $user_row['user_style']),
-					'dst'				=> request_var('dst', $user_row['user_dst']),
 					'viewemail'			=> request_var('viewemail', $user_row['user_allow_viewemail']),
 					'massemail'			=> request_var('massemail', $user_row['user_allow_massemail']),
 					'hideonline'		=> request_var('hideonline', !$user_row['user_allow_viewonline']),
@@ -1487,7 +1496,7 @@ class acp_users
 					$error = validate_data($data, array(
 						'dateformat'	=> array('string', false, 1, 30),
 						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
-						'tz'			=> array('num', false, -14, 14),
+						'tz'			=> array('timezone'),
 
 						'topic_sk'		=> array('string', false, 1, 1),
 						'topic_sd'		=> array('string', false, 1, 1),
@@ -1523,7 +1532,6 @@ class acp_users
 							'user_notify_type'		=> $data['notifymethod'],
 							'user_notify_pm'		=> $data['notifypm'],
 
-							'user_dst'				=> $data['dst'],
 							'user_dateformat'		=> $data['dateformat'],
 							'user_lang'				=> $data['lang'],
 							'user_timezone'			=> $data['tz'],
@@ -1633,6 +1641,7 @@ class acp_users
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
+				$timezone_selects = phpbb_timezone_select($user, $data['tz'], true);
 				$template->assign_vars(array(
 					'S_PREFS'			=> true,
 					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
@@ -1646,7 +1655,6 @@ class acp_users
 					'NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
 					'NOTIFY_PM'			=> $data['notifypm'],
 					'POPUP_PM'			=> $data['popuppm'],
-					'DST'				=> $data['dst'],
 					'BBCODE'			=> $data['bbcode'],
 					'SMILIES'			=> $data['smilies'],
 					'ATTACH_SIG'		=> $data['sig'],
@@ -1673,7 +1681,8 @@ class acp_users
 
 					'S_LANG_OPTIONS'	=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
-					'S_TZ_OPTIONS'		=> tz_select($data['tz'], true),
+					'S_TZ_OPTIONS'			=> $timezone_selects['tz_select'],
+					'S_TZ_DATE_OPTIONS'		=> $timezone_selects['tz_dates'],
 					)
 				);
 
@@ -2027,14 +2036,15 @@ class acp_users
 				}
 				$db->sql_freeresult($result);
 
+				$base_url = $this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
+				
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
-					'S_ON_PAGE'			=> on_page($num_attachments, $config['topics_per_page'], $start),
+					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $num_attachments, $config['topics_per_page'], $start),
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir,
-
-					'PAGINATION'		=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start, true))
-				);
+				));
 
 			break;
 

@@ -150,7 +150,7 @@ if (function_exists('date_default_timezone_set') && function_exists('date_defaul
 // Autoloading of dependencies.
 // Three options are supported:
 // 1. If dependencies are installed with Composer, Composer will create a
-//    vendor/.composer/autoload.php. If this file exists it will be
+//    vendor/autoload.php. If this file exists it will be
 //    automatically used by phpBB. This is the default mode that phpBB
 //    will use when shipped.
 // 2. To disable composer autoloading, PHPBB_NO_COMPOSER_AUTOLOAD can be specified.
@@ -171,11 +171,11 @@ if (getenv('PHPBB_NO_COMPOSER_AUTOLOAD'))
 }
 else
 {
-	if (!file_exists($phpbb_root_path . 'vendor/.composer/autoload.php'))
+	if (!file_exists($phpbb_root_path . 'vendor/autoload.php'))
 	{
 		trigger_error('You have not set up composer dependencies. See http://getcomposer.org/.', E_USER_ERROR);
 	}
-	require($phpbb_root_path . 'vendor/.composer/autoload.php');
+	require($phpbb_root_path . 'vendor/autoload.php');
 }
 
 $starttime = explode(' ', microtime());

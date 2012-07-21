@@ -61,10 +61,7 @@ function generate_smilies($mode, $forum_id)
 			'body' => 'posting_smilies.html')
 		);
 
-		$template->assign_var('PAGINATION',
-			generate_pagination(append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id),
-				$smiley_count, $config['smilies_per_page'], $start, true)
-		);
+		generate_pagination(append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id), $smiley_count, $config['smilies_per_page'], $start);	
 	}
 
 	$display_link = false;
@@ -1657,8 +1654,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	// First of all make sure the subject and topic title are having the correct length.
 	// To achieve this without cutting off between special chars we convert to an array and then count the elements.
-	$subject = truncate_string($subject);
-	$data['topic_title'] = truncate_string($data['topic_title']);
+	$subject = truncate_string($subject, 120);
+	$data['topic_title'] = truncate_string($data['topic_title'], 120);
 
 	// Collect some basic information about which tables and which rows to update/insert
 	$sql_data = $topic_row = array();

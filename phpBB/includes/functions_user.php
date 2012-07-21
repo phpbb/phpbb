@@ -197,7 +197,6 @@ function user_add($user_row, $cp_data = false)
 		'user_lastpost_time'	=> 0,
 		'user_lastpage'			=> '',
 		'user_posts'			=> 0,
-		'user_dst'				=> (int) $config['board_dst'],
 		'user_colour'			=> '',
 		'user_occ'				=> '',
 		'user_interests'		=> '',
@@ -527,62 +526,12 @@ function user_delete($mode, $user_id, $post_username = false)
 		WHERE session_user_id = ' . $user_id;
 	$db->sql_query($sql);
 
-	// Remove any undelivered mails...
-	$sql = 'SELECT msg_id, user_id
-		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE author_id = ' . $user_id . '
-			AND folder_id = ' . PRIVMSGS_NO_BOX;
-	$result = $db->sql_query($sql);
-
-	$undelivered_msg = $undelivered_user = array();
-	while ($row = $db->sql_fetchrow($result))
+	// Clean the private messages tables from the user
+	if (!function_exists('phpbb_delete_user_pms'))
 	{
-		$undelivered_msg[] = $row['msg_id'];
-		$undelivered_user[$row['user_id']][] = true;
+		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 	}
-	$db->sql_freeresult($result);
-
-	if (sizeof($undelivered_msg))
-	{
-		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
-			WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
-		$db->sql_query($sql);
-	}
-
-	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE author_id = ' . $user_id . '
-			AND folder_id = ' . PRIVMSGS_NO_BOX;
-	$db->sql_query($sql);
-
-	// Delete all to-information
-	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE user_id = ' . $user_id;
-	$db->sql_query($sql);
-
-	// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
-	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
-	$db->sql_query($sql);
-
-	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
-	$db->sql_query($sql);
-
-	foreach ($undelivered_user as $_user_id => $ary)
-	{
-		if ($_user_id == $user_id)
-		{
-			continue;
-		}
-
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_new_privmsg = user_new_privmsg - ' . sizeof($ary) . ',
-				user_unread_privmsg = user_unread_privmsg - ' . sizeof($ary) . '
-			WHERE user_id = ' . $_user_id;
-		$db->sql_query($sql);
-	}
+	phpbb_delete_user_pms($user_id);
 
 	$db->sql_transaction('commit');
 
@@ -727,8 +676,10 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			if (sizeof($ban_other) == 3 && ((int)$ban_other[0] < 9999) &&
 				(strlen($ban_other[0]) == 4) && (strlen($ban_other[1]) == 2) && (strlen($ban_other[2]) == 2))
 			{
-				$time_offset = (isset($user->timezone) && isset($user->dst)) ? (int) $user->timezone + (int) $user->dst : 0;
-				$ban_end = max($current_time, gmmktime(0, 0, 0, (int)$ban_other[1], (int)$ban_other[2], (int)$ban_other[0]) - $time_offset);
+				$ban_end = max($current_time, $user->create_datetime()
+					->setDate((int) $ban_other[0], (int) $ban_other[1], (int) $ban_other[2])
+					->setTime(0, 0, 0)
+					->getTimestamp() + $user->timezone->getOffset(new DateTime('UTC')));
 			}
 			else
 			{
@@ -1297,10 +1248,21 @@ function validate_data($data, $val_ary)
 			$function = array_shift($validate);
 			array_unshift($validate, $data[$var]);
 
-			if ($result = call_user_func_array('validate_' . $function, $validate))
+			if (function_exists('phpbb_validate_' . $function))
 			{
-				// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
-				$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				if ($result = call_user_func_array('phpbb_validate_' . $function, $validate))
+				{
+					// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
+					$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				}
+			}
+			else
+			{
+				if ($result = call_user_func_array('validate_' . $function, $validate))
+				{
+					// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
+					$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				}
 			}
 		}
 	}
@@ -1443,6 +1405,22 @@ function validate_language_iso_name($lang_iso)
 	$db->sql_freeresult($result);
 
 	return ($lang_id) ? false : 'WRONG_DATA';
+}
+
+/**
+* Validate Timezone Name
+*
+* Tests whether a timezone name is valid
+*
+* @param string $timezone	The timezone string to test
+*
+* @return bool|string		Either false if validation succeeded or
+*							a string which will be used as the error message
+*							(with the variable name appended)
+*/
+function phpbb_validate_timezone($timezone)
+{
+	return (in_array($timezone, phpbb_get_timezone_identifiers($timezone))) ? false : 'TIMEZONE_INVALID';
 }
 
 /**

@@ -7,7 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/extension_manager.php';
 require_once dirname(__FILE__) . '/includes/cron/task/core/dummy_task.php';
 require_once dirname(__FILE__) . '/includes/cron/task/core/second_dummy_task.php';
 require_once dirname(__FILE__) . '/ext/testext/cron/dummy_task.php';

@@ -5,15 +5,19 @@
 <h2>{L_TITLE}</h2>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 	
 	<p>{L_ATTACHMENTS_EXPLAIN}</p>
 
 	<!-- IF .attachrow -->
 		<ul class="linklist">
 			<li class="rightside pagination">
-				<!-- IF TOTAL_ATTACHMENTS -->{TOTAL_ATTACHMENTS} {L_TITLE}<!-- ENDIF -->
-				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+				<!-- IF TOTAL_ATTACHMENTS -->{TOTAL_ATTACHMENTS} {L_TITLE} &bull; <!-- ENDIF -->
+				<!-- IF .pagination --> 
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE --> 
+					{PAGE_NUMBER}
+				<!-- ENDIF -->
 			</li>
 		</ul>	
 		
@@ -55,15 +59,19 @@
 		
 		<ul class="linklist">
 			<li class="rightside pagination">
-				<!-- IF TOTAL_ATTACHMENTS -->{TOTAL_ATTACHMENTS} {L_TITLE}<!-- ENDIF -->
-				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+				<!-- IF TOTAL_ATTACHMENTS -->{TOTAL_ATTACHMENTS} {L_TITLE} &bull; <!-- ENDIF -->
+				<!-- IF .pagination --> 
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE --> 
+					{PAGE_NUMBER}
+				<!-- ENDIF -->
 			</li>
 		</ul>
 	<!-- ELSE -->
 		<p><strong>{L_UCP_NO_ATTACHMENTS}</strong></p>
 	<!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 	
 <!-- IF S_ATTACHMENT_ROWS -->

@@ -79,7 +79,7 @@ services:
         class: phpbb_style_path_provider
 
     template:
-        class: phpbb_style_template
+        class: phpbb_template
         arguments:
             - %core.root_path%
             - %core.php_ext%

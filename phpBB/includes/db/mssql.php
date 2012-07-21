@@ -92,6 +92,14 @@ class dbal_mssql extends dbal
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return $expr1 . ' + ' . $expr2;
+	}
+
+	/**
 	* SQL Transaction
 	* @access private
 	*/
@@ -322,6 +330,14 @@ class dbal_mssql extends dbal
 	function sql_escape($msg)
 	{
 		return str_replace(array("'", "\0"), array("''", ''), $msg);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_lower_text($column_name)
+	{
+		return "LOWER(SUBSTRING($column_name, 1, DATALENGTH($column_name)))";
 	}
 
 	/**

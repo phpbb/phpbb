@@ -9,7 +9,6 @@
 *
 */
 
-
 //
 // Security message:
 //
@@ -176,7 +175,7 @@ foreach ($schema_data as $table_name => $table_data)
 			$column_type = $dbms_type_map['mysql_41'][$column_data[0]];
 		}
 
-		// Adjust default value if db-dependant specified
+		// Adjust default value if db-dependent specified
 		if (is_array($column_data[1]))
 		{
 			$column_data[1] = (isset($column_data[1][$dbms])) ? $column_data[1][$dbms] : $column_data[1]['default'];
@@ -1230,8 +1229,7 @@ function get_schema_struct()
 			'user_inactive_time'		=> array('TIMESTAMP', 0),
 			'user_posts'				=> array('UINT', 0),
 			'user_lang'					=> array('VCHAR:30', ''),
-			'user_timezone'				=> array('DECIMAL', 0),
-			'user_dst'					=> array('BOOL', 0),
+			'user_timezone'				=> array('VCHAR:100', 'UTC'),
 			'user_dateformat'			=> array('VCHAR_UNI:30', 'd M Y H:i'),
 			'user_style'				=> array('UINT', 0),
 			'user_rank'					=> array('UINT', 0),

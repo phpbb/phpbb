@@ -63,9 +63,19 @@ class phpbb_test_case_helpers
 			));
 		}
 
-		if (file_exists(dirname(__FILE__) . '/../test_config.php'))
+		if (isset($_SERVER['PHPBB_TEST_CONFIG']))
 		{
-			include(dirname(__FILE__) . '/../test_config.php');
+			// Could be an absolute path
+			$test_config = $_SERVER['PHPBB_TEST_CONFIG'];
+		}
+		else
+		{
+			$test_config = dirname(__FILE__) . '/../test_config.php';
+		}
+
+		if (file_exists($test_config))
+		{
+			include($test_config);
 
 			$config = array_merge($config, array(
 				'dbms'		=> $dbms,
@@ -74,6 +84,7 @@ class phpbb_test_case_helpers
 				'dbname'	=> $dbname,
 				'dbuser'	=> $dbuser,
 				'dbpasswd'	=> $dbpasswd,
+				'custom_dsn'	=> isset($custom_dsn) ? $custom_dsn : '',
 			));
 
 			if (isset($phpbb_functional_url))
@@ -90,7 +101,8 @@ class phpbb_test_case_helpers
 				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
 				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
 				'dbuser'	=> isset($_SERVER['PHPBB_TEST_DBUSER']) ? $_SERVER['PHPBB_TEST_DBUSER'] : '',
-				'dbpasswd'	=> isset($_SERVER['PHPBB_TEST_DBPASSWD']) ? $_SERVER['PHPBB_TEST_DBPASSWD'] : ''
+				'dbpasswd'	=> isset($_SERVER['PHPBB_TEST_DBPASSWD']) ? $_SERVER['PHPBB_TEST_DBPASSWD'] : '',
+				'custom_dsn'	=> isset($_SERVER['PHPBB_TEST_CUSTOM_DSN']) ? $_SERVER['PHPBB_TEST_CUSTOM_DSN'] : '',
 			));
 		}
 

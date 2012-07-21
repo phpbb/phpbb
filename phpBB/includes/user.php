@@ -27,10 +27,13 @@ class phpbb_user extends phpbb_session
 {
 	var $lang = array();
 	var $help = array();
-	var $theme = array();
+	var $style = array();
 	var $date_format;
-	var $timezone;
-	var $dst;
+
+	/**
+	* DateTimeZone object holding the timezone of the user
+	*/
+	public $timezone;
 
 	var $lang_name = false;
 	var $lang_id = false;
@@ -72,22 +75,20 @@ class phpbb_user extends phpbb_session
 	*/
 	function setup($lang_set = false, $style_id = false)
 	{
-		global $db, $style, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
+		global $db, $phpbb_style, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
 			$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
 
 			$this->date_format = $this->data['user_dateformat'];
-			$this->timezone = $this->data['user_timezone'] * 3600;
-			$this->dst = $this->data['user_dst'] * 3600;
+			$user_timezone = $this->data['user_timezone'];
 		}
 		else
 		{
 			$this->lang_name = basename($config['default_lang']);
 			$this->date_format = $config['default_dateformat'];
-			$this->timezone = $config['board_timezone'] * 3600;
-			$this->dst = $config['board_dst'] * 3600;
+			$user_timezone = $config['board_timezone'];
 
 			/**
 			* If a guest user is surfing, we try to guess his/her language first by obtaining the browser language
@@ -126,6 +127,16 @@ class phpbb_user extends phpbb_session
 			*/
 		}
 
+		try
+		{
+			$this->timezone = new DateTimeZone($user_timezone);
+		}
+		catch (Exception $e)
+		{
+			// If the timezone the user has selected is invalid, we fall back to UTC.
+			$this->timezone = new DateTimeZone('UTC');
+		}
+
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
 
@@ -159,11 +170,11 @@ class phpbb_user extends phpbb_session
 			FROM ' . STYLES_TABLE . " s
 			WHERE s.style_id = $style_id";
 		$result = $db->sql_query($sql, 3600);
-		$this->theme = $db->sql_fetchrow($result);
+		$this->style = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		// User has wrong style
-		if (!$this->theme && $style_id == $this->data['user_style'])
+		if (!$this->style && $style_id == $this->data['user_style'])
 		{
 			$style_id = $this->data['user_style'] = $config['default_style'];
 
@@ -176,20 +187,17 @@ class phpbb_user extends phpbb_session
 				FROM ' . STYLES_TABLE . " s
 				WHERE s.style_id = $style_id";
 			$result = $db->sql_query($sql, 3600);
-			$this->theme = $db->sql_fetchrow($result);
+			$this->style = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		}
 
-		if (!$this->theme)
+		if (!$this->style)
 		{
 			trigger_error('Could not get style data', E_USER_ERROR);
 		}
 
 		// Now parse the cfg file and cache it
-		$parsed_items = $cache->obtain_cfg_items($this->theme);
-
-		// We are only interested in the theme configuration for now
-		$parsed_items = $parsed_items['theme'];
+		$parsed_items = $cache->obtain_cfg_items($this->style);
 
 		$check_for = array(
 			'pagination_sep'    => (string) ', '
@@ -197,16 +205,16 @@ class phpbb_user extends phpbb_session
 
 		foreach ($check_for as $key => $default_value)
 		{
-			$this->theme[$key] = (isset($parsed_items[$key])) ? $parsed_items[$key] : $default_value;
-			settype($this->theme[$key], gettype($default_value));
+			$this->style[$key] = (isset($parsed_items[$key])) ? $parsed_items[$key] : $default_value;
+			settype($this->style[$key], gettype($default_value));
 
 			if (is_string($default_value))
 			{
-				$this->theme[$key] = htmlspecialchars($this->theme[$key]);
+				$this->style[$key] = htmlspecialchars($this->style[$key]);
 			}
 		}
 
-		$style->set_style();
+		$phpbb_style->set_style();
 
 		$this->img_lang = $this->lang_name;
 
@@ -615,70 +623,46 @@ class phpbb_user extends phpbb_session
 	*/
 	function format_date($gmepoch, $format = false, $forcedate = false)
 	{
-		static $midnight;
-		static $date_cache;
+		static $utc;
 
-		$format = (!$format) ? $this->date_format : $format;
-		$now = time();
-		$delta = $now - $gmepoch;
-
-		if (!isset($date_cache[$format]))
+		if (!isset($utc))
 		{
-			// Is the user requesting a friendly date format (i.e. 'Today 12:42')?
-			$date_cache[$format] = array(
-				'is_short'      => strpos($format, '|'),
-				'format_short'  => substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1),
-				'format_long'   => str_replace('|', '', $format),
-				'lang'          => $this->lang['datetime'],
-			);
-
-			// Short representation of month in format? Some languages use different terms for the long and short format of May
-			if ((strpos($format, '\M') === false && strpos($format, 'M') !== false) || (strpos($format, '\r') === false && strpos($format, 'r') !== false))
-			{
-				$date_cache[$format]['lang']['May'] = $this->lang['datetime']['May_short'];
-			}
+			$utc = new DateTimeZone('UTC');
 		}
 
-		// Zone offset
-		$zone_offset = $this->timezone + $this->dst;
+		$time = new phpbb_datetime($this, "@$gmepoch", $utc);
+		$time->setTimezone($this->timezone);
 
-		// Show date < 1 hour ago as 'xx min ago' but not greater than 60 seconds in the future
-		// A small tolerence is given for times in the future but in the same minute are displayed as '< than a minute ago'
-		if ($delta < 3600 && $delta > -60 && ($delta >= -5 || (($now / 60) % 60) == (($gmepoch / 60) % 60)) && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
-		{
-			return $this->lang(array('datetime', 'AGO'), max(0, (int) floor($delta / 60)));
-		}
+		return $time->format($format, $forcedate);
+	}
 
-		if (!$midnight)
-		{
-			list($d, $m, $y) = explode(' ', gmdate('j n Y', time() + $zone_offset));
-			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $zone_offset;
-		}
+	/**
+	* Create a phpbb_datetime object in the context of the current user
+	*
+	* @since 3.1
+	* @param string $time String in a format accepted by strtotime().
+	* @param DateTimeZone $timezone Time zone of the time.
+	* @return phpbb_datetime Date time object linked to the current users locale
+	*/
+	public function create_datetime($time = 'now', DateTimeZone $timezone = null)
+	{
+		$timezone = $timezone ?: $this->timezone;
+		return new phpbb_datetime($this, $time, $timezone);
+	}
 
-		if ($date_cache[$format]['is_short'] !== false && !$forcedate && !($gmepoch < $midnight - 86400 || $gmepoch > $midnight + 172800))
-		{
-			$day = false;
-
-			if ($gmepoch > $midnight + 86400)
-			{
-				$day = 'TOMORROW';
-			}
-			else if ($gmepoch > $midnight)
-			{
-				$day = 'TODAY';
-			}
-			else if ($gmepoch > $midnight - 86400)
-			{
-				$day = 'YESTERDAY';
-			}
-
-			if ($day !== false)
-			{
-				return str_replace('||', $this->lang['datetime'][$day], strtr(@gmdate($date_cache[$format]['format_short'], $gmepoch + $zone_offset), $date_cache[$format]['lang']));
-			}
-		}
-
-		return strtr(@gmdate($date_cache[$format]['format_long'], $gmepoch + $zone_offset), $date_cache[$format]['lang']);
+	/**
+	* Get the UNIX timestamp for a datetime in the users timezone, so we can store it in the database.
+	*
+	* @param	string			$format		Format of the entered date/time
+	* @param	string			$time		Date/time with the timezone applied
+	* @param	DateTimeZone	$timezone	Timezone of the date/time, falls back to timezone of current user
+	* @return	int			Returns the unix timestamp
+	*/
+	public function get_timestamp_from_format($format, $time, DateTimeZone $timezone = null)
+	{
+		$timezone = $timezone ?: $this->timezone;
+		$date = DateTime::createFromFormat($format, $time, $timezone);
+		return ($date !== false) ? $date->format('U') : false;
 	}
 
 	/**

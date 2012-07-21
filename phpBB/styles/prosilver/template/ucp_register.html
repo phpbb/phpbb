@@ -21,7 +21,7 @@
 <form method="post" action="{S_UCP_ACTION}" id="register">
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h2>{SITENAME} - {L_REGISTRATION}</h2>
 
@@ -53,10 +53,8 @@
 		<dt><label for="lang">{L_LANGUAGE}:</label></dt>
 		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
 	</dl>
-	<dl>
-		<dt><label for="tz">{L_TIMEZONE}:</label></dt>
-		<dd><select name="tz" id="tz" tabindex="7" class="autowidth">{S_TZ_OPTIONS}</select></dd>
-	</dl>
+
+	<!-- INCLUDE timezone_option.html -->
 
 	<!-- IF .profile_fields -->
 		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>
@@ -72,7 +70,7 @@
 	<!-- ENDIF -->
 
 	</fieldset>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 <!-- IF CAPTCHA_TEMPLATE -->
 	<!-- DEFINE $CAPTCHA_TAB_INDEX = 8 -->
@@ -83,17 +81,17 @@
 
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h4>{L_COPPA_COMPLIANCE}</h4>
 
 	<p>{L_COPPA_EXPLAIN}</p>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 <!-- ENDIF -->
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
@@ -102,8 +100,11 @@
 		{S_FORM_TOKEN}
 	</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 </form>
+
+<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/timezone.js"></script>
+<script type="text/javascript">phpbb_preselect_tz_select();</script>
 
 <!-- INCLUDE overall_footer.html -->

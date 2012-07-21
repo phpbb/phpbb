@@ -237,7 +237,7 @@ $supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', '
 
 foreach ($supported_dbms as $dbms)
 {
-	$fp = fopen($schema_path . $dbms . '_schema.sql', 'wt');
+	$fp = fopen($schema_path . $dbms . '_schema.sql', 'wb');
 
 	$line = '';
 
@@ -397,7 +397,7 @@ foreach ($supported_dbms as $dbms)
 				}
 			}
 
-			// Adjust default value if db-dependant specified
+			// Adjust default value if db-dependent specified
 			if (is_array($column_data[1]))
 			{
 				$column_data[1] = (isset($column_data[1][$dbms])) ? $column_data[1][$dbms] : $column_data[1]['default'];
@@ -1794,8 +1794,7 @@ function get_schema_struct()
 			'user_inactive_time'		=> array('TIMESTAMP', 0),
 			'user_posts'				=> array('UINT', 0),
 			'user_lang'					=> array('VCHAR:30', ''),
-			'user_timezone'				=> array('DECIMAL', 0),
-			'user_dst'					=> array('BOOL', 0),
+			'user_timezone'				=> array('VCHAR:100', 'UTC'),
 			'user_dateformat'			=> array('VCHAR_UNI:30', 'd M Y H:i'),
 			'user_style'				=> array('UINT', 0),
 			'user_rank'					=> array('UINT', 0),

@@ -175,6 +175,9 @@ class mcp_warn
 			));
 		}
 
+		$base_url = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=warn&amp;mode=list&amp;st=$st&amp;sk=$sk&amp;sd=$sd");
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $user_count, $config['topics_per_page'], $start);
+		
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
@@ -182,8 +185,7 @@ class mcp_warn
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 
-			'PAGE_NUMBER'		=> on_page($user_count, $config['topics_per_page'], $start),
-			'PAGINATION'		=> generate_pagination(append_sid("{$phpbb_root_path}mcp.$phpEx", "i=warn&amp;mode=list&amp;st=$st&amp;sk=$sk&amp;sd=$sd"), $user_count, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $user_count, $config['topics_per_page'], $start),
 			'TOTAL_USERS'		=> $user->lang('LIST_USERS', (int) $user_count),
 		));
 	}
@@ -307,7 +309,7 @@ class mcp_warn
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
 
-		$rank_title = $rank_img = '';
+		get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img, $rank_img_src);
 		$avatar_img = get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']);
 
 		$template->assign_vars(array(
@@ -412,7 +414,7 @@ class mcp_warn
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
 
-		$rank_title = $rank_img = '';
+		get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img, $rank_img_src);
 		$avatar_img = get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']);
 
 		// OK, they didn't submit a warning so lets build the page for them to do so

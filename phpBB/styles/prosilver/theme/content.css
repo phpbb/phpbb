@@ -336,6 +336,10 @@ div[class].topic-actions {
 	line-height: 1.4em;
 }
 
+span.corners-top, span.corners-bottom {
+    display: none;
+}
+
 dl.faq {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.1em;

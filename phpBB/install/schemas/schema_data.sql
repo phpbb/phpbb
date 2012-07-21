@@ -8,10 +8,10 @@
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_attachments', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_autologin', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_local', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote_upload', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_birthdays', '1');
@@ -54,12 +54,11 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_salt', 'php
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact', 'contact@yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable_msg', '');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_dst', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email', 'address@yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig', '{L_CONFIG_BOARD_EMAIL_SIG}');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_hide_emails', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone', 'UTC');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_interval', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_type', 'd');
@@ -88,6 +87,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('dbms_version', '')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat', 'D M d, Y g:i a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_edited', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_subject', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_order', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('delete_time', '0');
@@ -99,7 +99,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_http_auth', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit_post', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit_topic', '10');
@@ -124,6 +124,9 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_co
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_load_upd', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_max_chars', '14');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_min_chars', '3');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_max_word_len', '254');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_min_word_len', '4');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_ts_name', 'simple');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path', 'images/icons');

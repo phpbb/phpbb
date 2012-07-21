@@ -463,17 +463,21 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 }
 
 /**
-* Removes comments from schema files
+* Removes "/* style" as well as "# style" comments from $input.
+*
+* @param string $input		Input string
+*
+* @return string			Input string with comments removed
 */
-function remove_comments($sql)
+function phpbb_remove_comments($input)
 {
 	// Remove /* */ comments (http://ostermiller.org/findcomment.html)
-	$sql = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $sql);
+	$input = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $input);
 
 	// Remove # style comments
-	$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
+	$input = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $input));
 
-	return $sql;
+	return $input;
 }
 
 /**
@@ -511,12 +515,22 @@ function adjust_language_keys_callback($matches)
 	}
 }
 
+/**
+* Creates the output to be stored in a phpBB config.php file
+*
+* @param	array	$data Array containing the database connection information
+* @param	string	$dbms The name of the DBAL class to use
+* @param	array	$load_extensions Array of additional extensions that should be loaded
+* @param	bool	$debug If the debug constants should be enabled by default or not
+*
+* @return	string	The output to write to the file
+*/
 function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = false)
 {
 	$load_extensions = implode(',', $load_extensions);
 
 	$config_data = "<?php\n";
-	$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
+	$config_data .= "// phpBB 3.1.x auto-generated configuration file\n// Do not change anything in this file!\n";
 
 	$config_data_array = array(
 		'dbms'			=> $dbms,
@@ -547,8 +561,6 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 		$config_data .= "// @define('DEBUG', true);\n";
 		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
 	}
-
-	$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
 	return $config_data;
 }

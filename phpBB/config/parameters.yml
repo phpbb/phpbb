@@ -5,7 +5,7 @@ parameters:
     dbal.dbhost:
     dbal.dbuser: root
     dbal.dbpasswd:
-    dbal.dbname: phpbb_dev
+    dbal.dbname: phpbb
     dbal.dbport:
     dbal.new_link: false
     tables.config: %core.table_prefix%config

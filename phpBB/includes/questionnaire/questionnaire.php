@@ -304,7 +304,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'avatar_max_width' => true,
 			'avatar_min_height' => true,
 			'avatar_min_width' => true,
-			'board_dst' => true,
 			'board_email_form' => true,
 			'board_hide_emails' => true,
 			'board_timezone' => true,

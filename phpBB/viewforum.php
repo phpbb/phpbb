@@ -208,7 +208,9 @@ if (!$config['use_system_cron'])
 // Forum rules and subscription info
 $s_watching_forum = array(
 	'link'			=> '',
+	'link_toggle'	=> '',
 	'title'			=> '',
+	'title_toggle'	=> '',
 	'is_watching'	=> false,
 );
 
@@ -322,8 +324,10 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_KEY'		=> $s_sort_key,
 	'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 	'S_TOPIC_ICONS'			=> ($s_display_active && sizeof($active_forum_ary)) ? max($active_forum_ary['enable_icons']) : (($forum_data['enable_icons']) ? true : false),
-	'S_WATCH_FORUM_LINK'	=> $s_watching_forum['link'],
+	'U_WATCH_FORUM_LINK'	=> $s_watching_forum['link'],
+	'U_WATCH_FORUM_TOGGLE'	=> $s_watching_forum['link_toggle'],
 	'S_WATCH_FORUM_TITLE'	=> $s_watching_forum['title'],
+	'S_WATCH_FORUM_TOGGLE'	=> $s_watching_forum['title_toggle'],
 	'S_WATCHING_FORUM'		=> $s_watching_forum['is_watching'],
 	'S_FORUM_ACTION'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . (($start == 0) ? '' : "&amp;start=$start")),
 	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('u_search') && $auth->acl_get('f_search', $forum_id) && $config['load_search']) ? true : false,
@@ -590,9 +594,11 @@ if ($s_display_active)
 // otherwise the number is different from the one on the forum list
 $total_topic_count = $topics_count - sizeof($global_announce_forums);
 
+$base_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''));
+phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
+
 $template->assign_vars(array(
-	'PAGINATION'	=> generate_pagination(append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '')), $topics_count, $config['topics_per_page'], $start),
-	'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
+	'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $base_url, $topics_count, $config['topics_per_page'], $start),
 	'TOTAL_TOPICS'	=> ($s_display_active) ? false : $user->lang('VIEW_FORUM_TOPICS', (int) $total_topic_count),
 ));
 
@@ -702,7 +708,6 @@ if (sizeof($topic_list))
 			'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 			'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 
-			'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
 			'REPLIES'			=> $replies,
 			'VIEWS'				=> $row['topic_views'],
 			'TOPIC_TITLE'		=> censor_text($row['topic_title']),
@@ -744,6 +749,8 @@ if (sizeof($topic_list))
 			'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test)
 		);
 
+		phpbb_generate_template_pagination($template, $view_topic_url, 'topicrow.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
+		
 		$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 
 		if ($unread_topic)

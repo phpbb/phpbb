@@ -7,10 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/includes/cron/task/core/dummy_task.php';
-require_once dirname(__FILE__) . '/includes/cron/task/core/second_dummy_task.php';
-require_once dirname(__FILE__) . '/ext/testext/cron/dummy_task.php';
-
 class phpbb_cron_task_provider_test extends PHPUnit_Framework_TestCase
 {
 	public function setUp()

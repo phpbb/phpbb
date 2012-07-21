@@ -194,6 +194,49 @@ class dbal
 	}
 
 	/**
+	* Seek to given row number
+	* rownum is zero-based
+	*/
+	function sql_rowseek($rownum, &$query_id)
+	{
+		global $cache;
+
+		if ($query_id === false)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_rowseek($rownum, $query_id);
+		}
+
+		if ($query_id === false)
+		{
+			return false;
+		}
+
+		$this->sql_freeresult($query_id);
+		$query_id = $this->sql_query($this->last_query_text);
+
+		if ($query_id === false)
+		{
+			return false;
+		}
+
+		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
+		for ($i = 0; $i < $rownum; $i++)
+		{
+			if (!$this->sql_fetchrow($query_id))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	* Fetch field
 	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
 	*/
@@ -238,6 +281,37 @@ class dbal
 		$expression = utf8_str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
 
 		return $this->_sql_like_expression('LIKE \'' . $this->sql_escape($expression) . '\'');
+	}
+
+	/**
+	* Build a case expression
+	*
+	* Note: The two statements action_true and action_false must have the same data type (int, vchar, ...) in the database!
+	*
+	* @param	string	$condition		The condition which must be true, to use action_true rather then action_else
+	* @param	string	$action_true	SQL expression that is used, if the condition is true
+	* @param	string	$action_else	SQL expression that is used, if the condition is false, optional
+	* @return	string			CASE expression including the condition and statements
+	*/
+	public function sql_case($condition, $action_true, $action_false = false)
+	{
+		$sql_case = 'CASE WHEN ' . $condition;
+		$sql_case .= ' THEN ' . $action_true;
+		$sql_case .= ($action_false !== false) ? ' ELSE ' . $action_false : '';
+		$sql_case .= ' END';
+		return $sql_case;
+	}
+
+	/**
+	* Build a concatenated expression
+	*
+	* @param	string	$expr1		Base SQL expression where we append the second one
+	* @param	string	$expr2		SQL expression that is appended to the first expression
+	* @return	string		Concatenated string
+	*/
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return $expr1 . ' || ' . $expr2;
 	}
 
 	/**
@@ -476,6 +550,18 @@ class dbal
 	function cast_expr_to_string($expression)
 	{
 		return $expression;
+	}
+
+	/**
+	* Run LOWER() on DB column of type text (i.e. neither varchar nor char).
+	*
+	* @param string $column_name	The column name to use
+	*
+	* @return string				A SQL statement like "LOWER($column_name)"
+	*/
+	function sql_lower_text($column_name)
+	{
+		return "LOWER($column_name)";
 	}
 
 	/**

@@ -8,7 +8,6 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../mock/extension_manager.php';
 
 class phpbb_template_template_test_case extends phpbb_test_case
 {
@@ -17,6 +16,8 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	protected $template_path;
 	protected $style_resource_locator;
 	protected $style_provider;
+
+	protected $test_path = 'tests/template';
 
 	// Keep the contents of the cache for debugging?
 	const PRESERVE_CACHE = true;
@@ -63,10 +64,10 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$defaults = $this->config_defaults();
 		$config = new phpbb_config(array_merge($defaults, $new_config));
 
-		$this->template_path = dirname(__FILE__) . '/templates';
+		$this->template_path = $this->test_path . '/templates';
 		$this->style_resource_locator = new phpbb_style_resource_locator();
 		$this->style_provider = new phpbb_style_path_provider();
-		$this->template = new phpbb_style_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider);
+		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator);
 		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider, $this->template);
 		$this->style->set_custom_style('tests', $this->template_path, '');
 	}

@@ -1,8 +1,13 @@
 {
+    "minimum-stability": "beta",
     "require": {
         "symfony/config": "2.0.*",
         "symfony/dependency-injection": "2.0.*",
+		"symfony/event-dispatcher": "2.1.*",
         "symfony/event-dispatcher": "2.0.*",
         "symfony/yaml": "2.0.*"
-    }
+    },
+	"require-dev": {
+		"fabpot/goutte": "1.0.x-dev"
+	}
 }
