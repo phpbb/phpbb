@@ -7,6 +7,11 @@
 *
 */
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Compiler\Compiler;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 /**
 * @ignore
 */
@@ -38,6 +43,8 @@ if (isset($_GET['avatar']))
 	}
 
 	require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
+	require($phpbb_root_path . 'includes/di/compiler/config_pass.' . $phpEx);
+
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
@@ -46,12 +53,11 @@ if (isset($_GET['avatar']))
 
 	$phpbb_container = new ContainerBuilder();
 	$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/../config'));
-	$loader->load('parameters.yml');
 	$loader->load('services.yml');
 
-	$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
-	$phpbb_container->setParameter('core.php_ext', $phpEx);
-	$phpbb_container->set('container', $phpbb_container);
+	$phpbb_compiler = new Compiler();
+	$phpbb_compiler->addPass(new phpbb_di_compiler_config_pass($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx));
+	$phpbb_compiler->compile($phpbb_container);
 
 	$phpbb_class_loader = $phpbb_container->get('class_loader');
 	$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');

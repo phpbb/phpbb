@@ -1,4 +1,5 @@
 imports:
+    - { resource: tables.yml }
     - { resource: cron_tasks.yml }
 
 services:

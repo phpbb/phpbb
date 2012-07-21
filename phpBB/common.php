@@ -8,17 +8,17 @@
 * Minimum Requirement: PHP 5.3.2
 */
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Compiler\Compiler;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 /**
 */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
-
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
 
@@ -77,25 +77,26 @@ if (!empty($load_extensions) && function_exists('dl'))
 
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
+require($phpbb_root_path . 'includes/di/compiler/config_pass.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+require($phpbb_root_path . 'includes/db/' . ltrim($dbms, 'dbal_') . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+
 
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 $phpbb_container = new ContainerBuilder();
 $loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/config'));
-$loader->load('parameters.yml');
 $loader->load('services.yml');
 
-$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
-$phpbb_container->setParameter('core.php_ext', $phpEx);
-$phpbb_container->set('container', $phpbb_container);
+$phpbb_compiler = new Compiler();
+$phpbb_compiler->addPass(new phpbb_di_compiler_config_pass($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx));
+$phpbb_compiler->compile($phpbb_container);
 
 // Setup class loader first
 $phpbb_class_loader = $phpbb_container->get('class_loader');
