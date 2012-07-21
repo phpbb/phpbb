@@ -673,7 +673,7 @@ class ucp_main
 			phpbb_generate_template_pagination($template, $this->u_action, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
 		
 			$template->assign_vars(array(
-				'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $this->u_action, $topics_count, $config['topics_per_page'], $start),
+				'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $this->u_action, 'start', $topics_count, $config['topics_per_page'], $start),
 				'TOTAL_TOPICS'	=> $user->lang('VIEW_FORUM_TOPICS', (int) $topics_count),
 			));
 		}

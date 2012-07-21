@@ -137,7 +137,7 @@ class acp_logs
 			'L_EXPLAIN'		=> $l_title_explain,
 			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param$keywords_param&amp;start=$start",
 
-			'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
+			'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, 'start', $log_count, $config['topics_per_page'], $start),
 
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,

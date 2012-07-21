@@ -850,7 +850,7 @@ class ucp_groups
 						$template->assign_vars(array(
 							'S_LIST'			=> true,
 							'S_ACTION_OPTIONS'	=> $s_action_options,
-							'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $total_members, $config['topics_per_page'], $start),
+							'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, 'start', $total_members, $config['topics_per_page'], $start),
 
 							'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;g=$group_id",

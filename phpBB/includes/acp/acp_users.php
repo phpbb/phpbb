@@ -1125,7 +1125,7 @@ class acp_users
 				
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
-					'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
+					'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, 'start', $log_count, $config['topics_per_page'], $start),
 
 					'S_LIMIT_DAYS'	=> $s_limit_days,
 					'S_SORT_KEY'	=> $s_sort_key,
@@ -2041,7 +2041,7 @@ class acp_users
 				
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
-					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $num_attachments, $config['topics_per_page'], $start),
+					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, 'start', $num_attachments, $config['topics_per_page'], $start),
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir,
 				));

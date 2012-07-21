@@ -2186,26 +2186,31 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 * @param object $template the template object
 * @param object $user the user object
 * @param string $base_url the base url used to call this page, used by Javascript for popup jump to page
+* @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
 * @param int $num_items the total number of items, posts, topics, etc.
 * @param int $per_page the number of items, posts, etc. per page
 * @param int $start the item which should be considered currently active, used to determine the page we're on
 * @return null
 */
-function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $start)
+function phpbb_on_page($template, $user, $base_url, $start_name, $num_items, $per_page, $start)
 {
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
+	$total_pages = max(ceil($num_items / $per_page), 1);
 
 	$on_page = floor($start / $per_page) + 1;
+	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
 
 	$template->assign_vars(array(
 		'PER_PAGE'		=> $per_page,
 		'ON_PAGE'		=> $on_page, 
+		'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page),
+		'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page),
 		
 		'A_BASE_URL'	=> addslashes($base_url), 
 	));
 
-	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
+	return sprintf($user->lang['PAGE_OF'], $on_page, $total_pages);
 }
 
 // Server functions (building urls, redirecting...)

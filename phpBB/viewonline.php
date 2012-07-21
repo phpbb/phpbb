@@ -393,7 +393,7 @@ $template->assign_vars(array(
 	'TOTAL_GUEST_USERS_ONLINE'		=> $user->lang('GUEST_USERS_ONLINE', (int) $guest_counter),
 	'LEGEND'						=> $legend,
 	'PAGINATION'					=> $pagination,
-	'PAGE_NUMBER'					=> phpbb_on_page($template, $user, $base_url, $counter, $config['topics_per_page'], $start),
+	'PAGE_NUMBER'					=> phpbb_on_page($template, $user, $base_url, 'start', $counter, $config['topics_per_page'], $start),
 
 	'U_SORT_USERNAME'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
 	'U_SORT_UPDATED'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
