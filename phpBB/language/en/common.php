@@ -836,6 +836,35 @@ $lang = array_merge($lang, array(
 		'Dec'		=> 'Dec',
 	),
 
+	// Timezones can be translated. We use this for the Etc/GMT timezones here,
+	// because they are named invers to their offset.
+	'timezones'		=> array(
+		'Etc/GMT-12'	=> 'GMT+12',
+		'Etc/GMT-11'	=> 'GMT+11',
+		'Etc/GMT-10'	=> 'GMT+10',
+		'Etc/GMT-9'		=> 'GMT+9',
+		'Etc/GMT-8'		=> 'GMT+8',
+		'Etc/GMT-7'		=> 'GMT+7',
+		'Etc/GMT-6'		=> 'GMT+6',
+		'Etc/GMT-5'		=> 'GMT+5',
+		'Etc/GMT-4'		=> 'GMT+4',
+		'Etc/GMT-3'		=> 'GMT+3',
+		'Etc/GMT-2'		=> 'GMT+2',
+		'Etc/GMT-1'		=> 'GMT+1',
+		'Etc/GMT+1'		=> 'GMT-1',
+		'Etc/GMT+2'		=> 'GMT-2',
+		'Etc/GMT+3'		=> 'GMT-3',
+		'Etc/GMT+4'		=> 'GMT-4',
+		'Etc/GMT+5'		=> 'GMT-5',
+		'Etc/GMT+6'		=> 'GMT-6',
+		'Etc/GMT+7'		=> 'GMT-7',
+		'Etc/GMT+8'		=> 'GMT-8',
+		'Etc/GMT+9'		=> 'GMT-9',
+		'Etc/GMT+10'	=> 'GMT-10',
+		'Etc/GMT+11'	=> 'GMT-11',
+		'Etc/GMT+12'	=> 'GMT-12',
+	),
+
 	// The value is only an example and will get replaced by the current time on view
 	'dateformats'	=> array(
 		'd M Y, H:i'			=> '01 Jan 2007, 13:37',
