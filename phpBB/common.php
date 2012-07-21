@@ -77,7 +77,8 @@ if (!empty($load_extensions) && function_exists('dl'))
 
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-require($phpbb_root_path . 'includes/di/compiler/config_pass.' . $phpEx);
+require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
+require($phpbb_root_path . 'includes/di/processor/config.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
@@ -94,9 +95,8 @@ $phpbb_container = new ContainerBuilder();
 $loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/config'));
 $loader->load('services.yml');
 
-$phpbb_compiler = new Compiler();
-$phpbb_compiler->addPass(new phpbb_di_compiler_config_pass($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx));
-$phpbb_compiler->compile($phpbb_container);
+$processor = new phpbb_di_processor_config($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx);
+$processor->process($phpbb_container);
 
 // Setup class loader first
 $phpbb_class_loader = $phpbb_container->get('class_loader');

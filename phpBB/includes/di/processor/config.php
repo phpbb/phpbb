@@ -15,12 +15,13 @@ if (!defined('IN_PHPBB'))
     exit;
 }
 
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class phpbb_di_compiler_config_pass implements CompilerPassInterface
+class phpbb_di_processor_config implements phpbb_di_processor_interface
 {
     private $config_file;
+    private $phpbb_root_path;
+    private $php_ext;
 
     public function __construct($config_file, $phpbb_root_path, $php_ext)
     {
