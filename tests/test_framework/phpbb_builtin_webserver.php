@@ -83,7 +83,7 @@ class phpbb_builtin_webserver
 			$status = proc_get_status($this->process);
 
 			// kill process and all children
-			posix_kill(-$status['pid'], 9);
+			posix_kill(-$status['pid']);
 
 			proc_close($this->process);
 		}
