@@ -42,6 +42,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				'value',
 			),
 			array(
+				'variable_array.html',
+				array('VARIABLE' => array('test1' => 'a', 'test2' => 'b')),
+				array(),
+				array(),
+				"a\nb",
+			),
+			array(
 				'if.html',
 				array(),
 				array(),
@@ -68,6 +75,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array(),
 				'2',
+			),
+			array(
+				'if.html',
+				array('S_VALUE' => false, 'S_OTHER_VALUE' => false, 'S_ARRAY_VALUE' => array('test1' => true)),
+				array(),
+				array(),
+				"03\n\n05",
 			),
 			array(
 				'loop.html',
@@ -124,6 +138,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('loop' => array(array(), array(), array(), array(), array(), array(), array())),
 				array(),
 				"101234561\nx\n101234561\nx\n101234561\nx\n1234561\nx\n1\nx\n101\nx\n234\nx\n10\nx\n561\nx\n561",
+			),
+			array(
+				'loop_vars_array.html',
+				array(),
+				array('loop' => array(array('VARIABLE' => array('test1' => 'x')), array('VARIABLE' => array('test1' => 'y')))),
+				array(),
+				"x - 0\ny - 0",
 			),
 			array(
 				'define.html',
