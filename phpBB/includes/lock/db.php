@@ -61,7 +61,7 @@ class phpbb_lock_db
 	* @param	array	$config			The phpBB configuration
 	* @param	dbal	$db				A database connection
 	*/
-	public function __construct($config_name, phpbb_config $config, dbal $db)
+	public function __construct($config_name, phpbb_config $config, phpbb_db_driver $db)
 	{
 		$this->config_name = $config_name;
 		$this->config = $config;
