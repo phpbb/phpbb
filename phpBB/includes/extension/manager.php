@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_extension_manager
 {
 	protected $cache;
-	protected $phpEx;
+	protected $php_ext;
 	protected $extensions;
 	protected $extension_table;
 	protected $phpbb_root_path;
@@ -35,16 +35,16 @@ class phpbb_extension_manager
 	* @param dbal $db A database connection
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
-	* @param string $phpEx php file extension
+	* @param string $php_ext php file extension
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(dbal $db, $extension_table, $phpbb_root_path, $phpEx = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(dbal $db, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
 		$this->cache = $cache;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 		$this->extension_table = $extension_table;
 		$this->cache_name = $cache_name;
 
@@ -362,7 +362,7 @@ class phpbb_extension_manager
 			RecursiveIteratorIterator::SELF_FIRST);
 		foreach ($iterator as $file_info)
 		{
-			if ($file_info->isFile() && $file_info->getFilename() == 'ext' . $this->phpEx)
+			if ($file_info->isFile() && $file_info->getFilename() == 'ext' . $this->php_ext)
 			{
 				$ext_name = $iterator->getInnerIterator()->getSubPath();
 
@@ -432,7 +432,7 @@ class phpbb_extension_manager
 		}
 		return $disabled;
 	}
-	
+
 	/**
 	* Check to see if a given extension is available on the filesystem
 	*
@@ -462,6 +462,6 @@ class phpbb_extension_manager
 	*/
 	public function get_finder()
 	{
-		return new phpbb_extension_finder($this, $this->phpbb_root_path, $this->cache, $this->phpEx, $this->cache_name . '_finder');
+		return new phpbb_extension_finder($this, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
 	}
 }
