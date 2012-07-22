@@ -643,10 +643,10 @@ td.name {
 }
 
 /* Deactivated row */
-.row-inactive { 
-	color: #999; 
+.row-inactive {
+	color: #999;
 }
-.row-inactive a, .row-inactive strong { 
+.row-inactive a, .row-inactive strong {
 	color: #888;
 }
 .row-inactive a:hover {
@@ -875,6 +875,10 @@ select#full_folder_action {
 dl {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.00em;
+}
+
+dl.disabled dt label, dl.disabled dt label span {
+	color: graytext !important;
 }
 
 dt {

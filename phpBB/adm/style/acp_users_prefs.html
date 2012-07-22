@@ -44,25 +44,25 @@
 		<dd><label><input type="radio" class="radio" name="popuppm" value="1"<!-- IF POPUP_PM --> id="popuppm" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 			<label><input type="radio" class="radio" name="popuppm" value="0"<!-- IF not POPUP_PM --> id="popuppm" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
-	<dl>
-		<dt><label for="lang">{L_BOARD_LANGUAGE}:</label></dt>
+	<dl<!-- IF S_IS_BOT or S_IS_ANONYMOUS --> class="disabled"<!-- ENDIF -->>
+		<dt><label for="lang">{L_BOARD_LANGUAGE}:</label><!-- IF S_IS_BOT or S_IS_ANONYMOUS --><br /><span>{L_SETTING_DISABLED_OVERWRITTEN}</span><!-- ENDIF --></dt>
 		<dd><select id="lang" name="lang"<!-- IF S_IS_BOT or S_IS_ANONYMOUS --> disabled="disabled"<!-- ENDIF -->>{S_LANG_OPTIONS}</select></dd>
 	</dl>
 	<dl>
 		<dt><label for="style">{L_BOARD_STYLE}:</label></dt>
 		<dd><select id="style" name="style">{S_STYLE_OPTIONS}</select></dd>
 	</dl>
-	<dl>
-		<dt><label for="tz">{L_BOARD_TIMEZONE}:</label></dt>
+	<dl<!-- IF S_IS_BOT or S_IS_ANONYMOUS --> class="disabled"<!-- ENDIF -->>
+		<dt><label for="tz">{L_BOARD_TIMEZONE}:</label><!-- IF S_IS_BOT or S_IS_ANONYMOUS --><br /><span>{L_SETTING_DISABLED_OVERWRITTEN}</span><!-- ENDIF --></dt>
 		<dd><select id="tz" name="tz" style="width: 100%;"<!-- IF S_IS_BOT or S_IS_ANONYMOUS --> disabled="disabled"<!-- ENDIF -->>{S_TZ_OPTIONS}</select></dd>
 	</dl>
-	<dl>
-		<dt><label for="dst">{L_BOARD_DST}:</label></dt>
+	<dl<!-- IF S_IS_BOT or S_IS_ANONYMOUS --> class="disabled"<!-- ENDIF -->>
+		<dt><label for="dst">{L_BOARD_DST}:</label><!-- IF S_IS_BOT or S_IS_ANONYMOUS --><br /><span>{L_SETTING_DISABLED_OVERWRITTEN}</span><!-- ENDIF --></dt>
 		<dd><label><input type="radio" class="radio" name="dst" value="1"<!-- IF DST --> id="dst" checked="checked"<!-- ENDIF --><!-- IF S_IS_BOT or S_IS_ANONYMOUS --> disabled="disabled"<!-- ENDIF --> /> {L_YES}</label>
 			<label><input type="radio" class="radio" name="dst" value="0"<!-- IF not DST --> id="dst" checked="checked"<!-- ENDIF --><!-- IF S_IS_BOT or S_IS_ANONYMOUS --> disabled="disabled"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
-	<dl>
-		<dt><label for="dateoptions">{L_BOARD_DATE_FORMAT}:</label><br /><span>{L_BOARD_DATE_FORMAT_EXPLAIN}</span></dt>
+	<dl<!-- IF S_IS_BOT or S_IS_ANONYMOUS --> class="disabled"<!-- ENDIF -->>
+		<dt><label for="dateoptions">{L_BOARD_DATE_FORMAT}:</label><br /><span><!-- IF S_IS_BOT or S_IS_ANONYMOUS -->{L_SETTING_DISABLED_OVERWRITTEN}<!-- ELSE -->{L_BOARD_DATE_FORMAT_EXPLAIN}<!-- ENDIF --></span></dt>
 		<dd><select name="dateoptions" id="dateoptions" onchange="if(this.value=='custom'){dE('custom_date',1);}else{dE('custom_date',-1);} if (this.value == 'custom') { document.getElementById('dateformat').value = default_dateformat; } else { document.getElementById('dateformat').value = this.value; }"<!-- IF S_IS_BOT or S_IS_ANONYMOUS --> disabled="disabled"<!-- ENDIF -->>{S_DATEFORMAT_OPTIONS}</select></dd>
 		<dd><div id="custom_date"<!-- IF not S_CUSTOM_DATEFORMAT --> style="display:none;"<!-- ENDIF -->><input type="text" name="dateformat" id="dateformat" value="{DATE_FORMAT}" maxlength="30" /></div></dd>
 	</dl>
