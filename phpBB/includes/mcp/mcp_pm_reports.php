@@ -291,7 +291,7 @@ class mcp_pm_reports
 								'REPORT_ID'				=> $row['report_id'],
 								'REPORT_TIME'			=> $user->format_date($row['report_time']),
 
-								'RECIPIENTS'			=> implode(', ', $address_list[$row['msg_id']]),
+								'RECIPIENTS'			=> implode($user->lang['COMMA_SEPARATOR'], $address_list[$row['msg_id']]),
 								'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $row['message_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 							));
 						}

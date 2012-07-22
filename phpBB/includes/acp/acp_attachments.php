@@ -1074,7 +1074,7 @@ class acp_attachments
 								$error[] = $user->lang['FILES_GONE'];
 							}
 							add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode(', ', $deleted_filenames));
-							$notify[] = sprintf($user->lang['LOG_ATTACHMENTS_DELETED'], implode(', ', $deleted_filenames));
+							$notify[] = sprintf($user->lang['LOG_ATTACHMENTS_DELETED'], implode($user->lang['COMMA_SEPARATOR'], $deleted_filenames));
 						}
 						else
 						{
