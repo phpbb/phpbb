@@ -105,7 +105,7 @@ class phpbb_builtin_webserver
 			else
 			{
 				// kill process and all children
-				posix_kill(-$status['pid'], SIGTERM);
+				posix_kill(-$status['pid'], 15);
 			}
 
 			proc_close($this->process);
