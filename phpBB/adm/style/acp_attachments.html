@@ -427,9 +427,11 @@
 	<hr />
 
 	<div class="pagination">
-		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}<!-- IF S_ON_PAGE --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {S_ON_PAGE}<!-- ENDIF --><!-- ENDIF -->
+		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}
+		<!-- IF .pagination -->
+			<!-- INCLUDE pagination.html -->	
+		<!-- ENDIF -->
 	</div>
-	<!-- ENDIF -->
 
 	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;

@@ -53,17 +53,17 @@
 </table>
 
 <fieldset class="display-options">
-	{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}<!-- IF PAGINATION -->&nbsp;Users per page: <input class="inputbox autowidth" type="text" name="users_per_page" id="users_per_page" size="3" value="{USERS_PER_PAGE}" /><!-- ENDIF -->
+	{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}<!-- IF .pagination -->&nbsp;Users per page: <input class="inputbox autowidth" type="text" name="users_per_page" id="users_per_page" size="3" value="{USERS_PER_PAGE}" /><!-- ENDIF -->
 	<input class="button2" type="submit" value="{L_GO}" name="sort" />
 </fieldset>
 
 <hr />
 
-<!-- IF PAGINATION -->
-	<div class="pagination">
-		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-	</div>
+<div class="pagination">
+<!-- IF .pagination -->
+	<!-- INCLUDE pagination.html -->	
 <!-- ENDIF -->
+</div>
 
 <fieldset class="quick">
 	<select name="action">{S_INACTIVE_OPTIONS}</select>
