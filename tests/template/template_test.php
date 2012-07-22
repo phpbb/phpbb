@@ -43,10 +43,10 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			),
 			array(
 				'variable_array.html',
-				array('VARIABLE' => array('test1' => 'a', 'test2' => 'b', 'test3' => array('test4' => 'c'), 'test5' => array('test6' => array('test7' => 'd')))),
+				array('VARIABLE' => array('test1' => 'a', 'test2' => 'b', 'test3' => array('test4' => 'c'), 'test5' => array('test6' => array('test7' => 'd')), array('test8' => 'e'), array('test9' => 'f'))),
 				array(),
 				array(),
-				"a\nb\nc\nd",
+				"a\nb\nc\nd\ne\nf",
 			),
 			array(
 				'if.html',

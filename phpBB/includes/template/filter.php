@@ -41,11 +41,11 @@ class phpbb_template_filter extends php_user_filter
 
 	const REGEX_VAR = '[A-Z_][A-Z_0-9]+';
 	const REGEX_VAR_SUFFIX = '[A-Z_0-9]+';
-	const REGEX_VAR_ARY = '[a-z_0-9]+';
+	const REGEX_VAR_ARRAY = '[a-z_0-9]+';
 
 	const REGEX_TAG = '<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->';
 
-	const REGEX_TOKENS = '~<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->|{(((?:[a-z_][a-z_0-9]+\.)*\\$?[A-Z][A-Z_0-9]+(?:[A-Z0-9]))((?:->)([a-z_0-9]+))*)}~';
+	const REGEX_TOKENS = '~<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->|{(((?:[a-z_][a-z_0-9]+\.)*\\$?[A-Z][A-Z_0-9]+(?:[A-Z0-9]))((?:\[[a-z_0-9]+\])+)*)}~';
 
 	/**
 	* @var array
@@ -339,7 +339,7 @@ class phpbb_template_filter extends php_user_filter
 		$varrefs = array();
 
 		// This one will handle varrefs WITH namespaces
-		preg_match_all('#\{((?:' . self::REGEX_NS . '\.)+)(\$)?(' . self::REGEX_VAR . ')((->(?:' . self::REGEX_VAR_ARY . '))+)*\}#', $text_blocks, $varrefs, PREG_SET_ORDER);
+		preg_match_all('#\{((?:' . self::REGEX_NS . '\.)+)(\$)?(' . self::REGEX_VAR . ')((?:\[' . self::REGEX_VAR_ARRAY . '\])+)*\}#', $text_blocks, $varrefs, PREG_SET_ORDER);
 
 		foreach ($varrefs as $var_val)
 		{
@@ -359,7 +359,7 @@ class phpbb_template_filter extends php_user_filter
 			$text_blocks = preg_replace('#\{(' . self::REGEX_VAR . ')\}#', "\$_rootref['\\1']", $text_blocks);
 			$text_blocks = preg_replace('#\{\$(' . self::REGEX_VAR . ')\}#', "\$_tpldata['DEFINE']['.']['\\1']", $text_blocks);
 			
-			if (preg_match('#\{(' . self::REGEX_VAR . ')((->(?:' . self::REGEX_VAR_ARY . '))+)\}#', $text_blocks, $varrefs))
+			if (preg_match('#\{(' . self::REGEX_VAR . ')((?:\[' . self::REGEX_VAR_ARRAY . '\])+)\}#', $text_blocks, $varrefs))
 			{
 				$vararray = ($varrefs[2]) ? $this->generate_array_varref($varrefs[2]) : '';
 				$text_blocks = "\$_rootref['" . $varrefs[1] . "']" . $vararray;
@@ -644,7 +644,7 @@ class phpbb_template_filter extends php_user_filter
 
 				default:
 					$varrefs = array();
-					if (preg_match('#^((?:' . self::REGEX_NS . '\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+[A-Z0-9])((->(?:' . self::REGEX_VAR_ARY . '))+)*#s', $token, $varrefs))
+					if (preg_match('#^((?:' . self::REGEX_NS . '\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+[A-Z0-9])((?:\[' . self::REGEX_VAR_ARRAY . '\])+)*#s', $token, $varrefs))
 					{
 						if (!empty($varrefs[1]))
 						{
@@ -1056,14 +1056,14 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function generate_array_varref($array_list)
 	{
-		if (!sizeof($array_list))
+		if (empty($array_list))
 		{
 			return '';
 		}
 		
-		$elements = explode('->', $array_list);
+		$elements = explode('[', $array_list);
 		array_shift($elements);
 		
-		return implode('', preg_replace('#^(.*)$#', "['\\1']", $elements));
+		return implode('', preg_replace(array('#^([0-9]+)\]$#', '#^([a-z_0-9]+)\]$#i'), array('[\1]', "['\\1']"), $elements));
 	}
 }
