@@ -42,7 +42,20 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 		}
 	}
 
-	public function test_chunked_upload()
+	public function get_urls()
+	{
+		// Cannot test PMs yet due to the ucp module not being able to be
+		// loaded in the test site.
+		return array(
+			array('posting.php?mode=reply&f=2&t=1'),
+// 			array('ucp.php?i=pm&mode=compose'),
+		);
+	}
+
+	/**
+	 * @dataProvider get_urls
+	 */
+	public function test_chunked_upload($url)
 	{
 		$chunk_size = ceil(filesize($this->path . 'valid.jpg') / self::CHUNKS);
 		$handle = fopen($this->path . 'valid.jpg', 'rb');
@@ -64,7 +77,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 			$crawler = $this->client->request(
 				'POST',
-				'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid,
+				$url . '&sid=' . $this->sid,
 				array(
 					'chunk' => $i,
 					'chunks' => self::CHUNKS,
@@ -92,7 +105,10 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 		fclose($handle);
 	}
 
-	public function test_normal_upload()
+	/**
+	 * @dataProvider get_urls
+	 */
+	public function test_normal_upload($url)
 	{
 		$file = array(
 			'tmp_name' => $this->path . 'valid.jpg',
@@ -104,7 +120,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 		$crawler = $this->client->request(
 			'POST',
-			'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid,
+			$url . '&sid=' . $this->sid,
 			array(
 				'chunk' => '0',
 				'chunks' => '1',
