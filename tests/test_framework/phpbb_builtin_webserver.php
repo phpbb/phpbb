@@ -68,8 +68,8 @@ class phpbb_builtin_webserver
 			'php -S localhost:' . $this->port,
 			array(
 				0 => array('pipe', 'r'), // STDIN
-				1 => array('file', '/dev/null', 'w'), // STDOUT
-				2 => array('file', '/dev/null', 'w') // STDERR
+				1 => STDOUT, // array('file', $null_device, 'w')
+				2 => STDERR, // array('file', $null_device, 'w')
 			),
 			$this->pipes,
 			__DIR__ . '/../../phpBB/',
