@@ -28,6 +28,9 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	private $version;
 	private $tsearch_query;
 	private $phrase_search = false;
+	private $config;
+	private $db;
+	private $user;
 	public $search_query;
 	public $common_words = array();
 	public $word_length = array();
@@ -38,16 +41,17 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
 	 */
-	public function __construct(&$error)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $config, $db, $user)
 	{
-		global $db, $config;
+		$this->config = $config;
+		$this->db = $db;
+		$this->user = $user;
 
-		$this->word_length = array('min' => $config['fulltext_postgres_min_word_len'], 'max' => $config['fulltext_postgres_max_word_len']);
+		$this->word_length = array('min' => $this->config['fulltext_postgres_min_word_len'], 'max' => $this->config['fulltext_postgres_max_word_len']);
 
-
-		if ($db->sql_layer == 'postgres')
+		if ($this->db->sql_layer == 'postgres')
 		{
-			$pgsql_version = explode(',', substr($db->sql_server_info(), 10));
+			$pgsql_version = explode(',', substr($this->db->sql_server_info(), 10));
 			$this->version = trim($pgsql_version[0]);
 			if (version_compare($this->version, '8.3', '>='))
 			{
@@ -91,16 +95,14 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function init()
 	{
-		global $db, $user;
-
-		if ($db->sql_layer != 'postgres')
+		if ($this->db->sql_layer != 'postgres')
 		{
-			return $user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'];
+			return $this->user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'];
 		}
 
 		if (!$this->tsearch_usable)
 		{
-			return $user->lang['FULLTEXT_POSTGRES_TS_NOT_USABLE'];
+			return $this->user->lang['FULLTEXT_POSTGRES_TS_NOT_USABLE'];
 		}
 
 		return false;
@@ -118,8 +120,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function split_keywords(&$keywords, $terms)
 	{
-		global $config;
-
 		if ($terms == 'all')
 		{
 			$match		= array('#\sand\s#iu', '#\sor\s#iu', '#\snot\s#iu', '#\+#', '#-#', '#\|#');
@@ -143,7 +143,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 			// check word length
 			$clean_len = utf8_strlen(str_replace('*', '', $clean_word));
-			if (($clean_len < $config['fulltext_postgres_min_word_len']) || ($clean_len > $config['fulltext_postgres_max_word_len']))
+			if (($clean_len < $this->config['fulltext_postgres_min_word_len']) || ($clean_len > $this->config['fulltext_postgres_max_word_len']))
 			{
 				$this->common_words[] = $word;
 				unset($this->split_words[$i]);
@@ -213,8 +213,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function split_message($text)
 	{
-		global $config;
-
 		// Split words
 		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
 		$matches = array();
@@ -226,7 +224,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
 		{
 			$text[$i] = trim($text[$i]);
-			if (utf8_strlen($text[$i]) < $config['fulltext_postgres_min_word_len'] || utf8_strlen($text[$i]) > $config['fulltext_postgres_max_word_len'])
+			if (utf8_strlen($text[$i]) < $this->config['fulltext_postgres_min_word_len'] || utf8_strlen($text[$i]) > $this->config['fulltext_postgres_max_word_len'])
 			{
 				unset($text[$i]);
 			}
@@ -259,8 +257,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
-		global $config, $db;
-
 		// No keywords? No posts.
 		if (!$this->search_query)
 		{
@@ -349,7 +345,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $this->db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		$sql_select			= ($type == 'posts') ? 'p.post_id' : 'DISTINCT t.topic_id';
@@ -360,11 +356,11 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		if (sizeof($author_ary) && $author_name)
 		{
 			// first one matches post of registered users, second one guests and deleted users
-			$sql_author = '(' . $db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
+			$sql_author = '(' . $this->db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
 		}
 		else if (sizeof($author_ary))
 		{
-			$sql_author = ' AND ' . $db->sql_in_set('p.poster_id', $author_ary);
+			$sql_author = ' AND ' . $this->db->sql_in_set('p.poster_id', $author_ary);
 		}
 		else
 		{
@@ -374,7 +370,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		$sql_where_options = $sql_sort_join;
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
-		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
+		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_where_options .= $m_approve_fid_sql;
 		$sql_where_options .= $sql_author;
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -383,7 +379,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		$tmp_sql_match = array();
 		foreach (explode(',', $sql_match) as $sql_match_column)
 		{
-			$tmp_sql_match[] = "to_tsvector ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', " . $sql_match_column . ") @@ to_tsquery ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', '" . $db->sql_escape($this->tsearch_query) . "')";
+			$tmp_sql_match[] = "to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', " . $sql_match_column . ") @@ to_tsquery ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', '" . $this->db->sql_escape($this->tsearch_query) . "')";
 		}
 
 		$sql = "SELECT $sql_select
@@ -391,13 +387,13 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			WHERE (" . implode(' OR ', $tmp_sql_match) . ")
 			$sql_where_options
 			ORDER BY $sql_sort";
-		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$id_ary[] = $row[$field];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		$id_ary = array_unique($id_ary);
 
@@ -447,8 +443,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
-		global $config, $db;
-
 		// No author? No posts.
 		if (!sizeof($author_ary))
 		{
@@ -484,13 +478,13 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		if ($author_name)
 		{
 			// first one matches post of registered users, second one guests and deleted users
-			$sql_author = '(' . $db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
+			$sql_author = '(' . $this->db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
 		}
 		else
 		{
-			$sql_author = $db->sql_in_set('p.poster_id', $author_ary);
+			$sql_author = $this->db->sql_in_set('p.poster_id', $author_ary);
 		}
-		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
+		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_firstpost = ($firstpost_only) ? ' AND p.post_id = t.topic_first_post_id' : '';
@@ -526,7 +520,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $this->db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		// Build the query for really selecting the post_ids
@@ -562,13 +556,13 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		}
 
 		// Only read one block of posts from the db and then cache it
-		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$id_ary[] = $row[$field];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		// retrieve the total result count if needed
 		if (!$result_count)
@@ -605,8 +599,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
-		global $db;
-
 		// Split old and new post/subject to obtain array of words
 		$split_text = $this->split_message($message);
 		$split_title = ($subject) ? $this->split_message($subject) : array();
@@ -639,8 +631,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function tidy()
 	{
-		global $db, $config;
-
 		// destroy too old cached search results
 		$this->destroy_cache(array());
 
@@ -656,8 +646,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function create_index($acp_module, $u_action)
 	{
-		global $db, $config;
-
 		// Make sure we can actually use PostgreSQL with fulltext indexes
 		if ($error = $this->init())
 		{
@@ -671,15 +659,15 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 		if (!isset($this->stats['post_subject']))
 		{
-			$db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $config['fulltext_postgres_ts_name'] . "_post_subject ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', post_subject))");
+			$this->db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_subject ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_subject))");
 		}
 
 		if (!isset($this->stats['post_text']))
 		{
-			$db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $config['fulltext_postgres_ts_name'] . "_post_text ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', post_text))");
+			$this->db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_text ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_text))");
 		}
 
-		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
 		return false;
 	}
@@ -693,8 +681,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function delete_index($acp_module, $u_action)
 	{
-		global $db;
-
 		// Make sure we can actually use PostgreSQL with fulltext indexes
 		if ($error = $this->init())
 		{
@@ -708,15 +694,15 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 		if (isset($this->stats['post_subject']))
 		{
-			$db->sql_query('DROP INDEX ' . $this->stats['post_subject']['relname']);
+			$this->db->sql_query('DROP INDEX ' . $this->stats['post_subject']['relname']);
 		}
 
 		if (isset($this->stats['post_text']))
 		{
-			$db->sql_query('DROP INDEX ' . $this->stats['post_text']['relname']);
+			$this->db->sql_query('DROP INDEX ' . $this->stats['post_text']['relname']);
 		}
 
-		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
 		return false;
 	}
@@ -743,15 +729,13 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function index_stats()
 	{
-		global $user;
-
 		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}
 
 		return array(
-			$user->lang['FULLTEXT_POSTGRES_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
+			$this->user->lang['FULLTEXT_POSTGRES_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
 		);
 	}
 
@@ -762,9 +746,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	 */
 	function get_stats()
 	{
-		global $db, $config;
-
-		if ($db->sql_layer != 'postgres')
+		if ($this->db->sql_layer != 'postgres')
 		{
 			$this->stats = array();
 			return;
@@ -776,26 +758,26 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			   AND pg_catalog.pg_table_is_visible(c1.oid)
 			   AND c1.oid = i.indrelid
 			   AND i.indexrelid = c2.oid";
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			// deal with older PostgreSQL versions which didn't use Index_type
 			if (strpos($row['indexdef'], 'to_tsvector') !== false)
 			{
-				if ($row['relname'] == POSTS_TABLE . '_' . $config['fulltext_postgres_ts_name'] . '_post_text' || $row['relname'] == POSTS_TABLE . '_post_text')
+				if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_text' || $row['relname'] == POSTS_TABLE . '_post_text')
 				{
 					$this->stats['post_text'] = $row;
 				}
-				else if ($row['relname'] == POSTS_TABLE . '_' . $config['fulltext_postgres_ts_name'] . '_post_subject' || $row['relname'] == POSTS_TABLE . '_post_subject')
+				else if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_subject' || $row['relname'] == POSTS_TABLE . '_post_subject')
 				{
 					$this->stats['post_subject'] = $row;
 				}
 			}
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
-		$this->stats['total_posts'] = $config['num_posts'];
+		$this->stats['total_posts'] = $this->config['num_posts'];
 	}
 
 	/**
@@ -807,43 +789,41 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function acp()
 	{
-		global $user, $config, $db;
-
 		$tpl = '
 		<dl>
-			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_VERSION_CHECK'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_VERSION_CHECK_EXPLAIN'] . '</span></dt>
-			<dd>' . (($this->tsearch_usable) ? $user->lang['YES'] : $user->lang['NO']) . ' (PostgreSQL ' . $this->version . ')</dd>
+			<dt><label>' . $this->user->lang['FULLTEXT_POSTGRES_VERSION_CHECK'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_VERSION_CHECK_EXPLAIN'] . '</span></dt>
+			<dd>' . (($this->tsearch_usable) ? $this->user->lang['YES'] : $this->user->lang['NO']) . ' (PostgreSQL ' . $this->version . ')</dd>
 		</dl>
 		<dl>
-			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
+			<dt><label>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
 			<dd><select name="config[fulltext_postgres_ts_name]">';
 
-		if ($db->sql_layer == 'postgres' && $this->tsearch_usable)
+		if ($this->db->sql_layer == 'postgres' && $this->tsearch_usable)
 		{
 			$sql = 'SELECT cfgname AS ts_name
 				  FROM pg_ts_config';
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$tpl .= '<option value="' . $row['ts_name'] . '"' . ($row['ts_name'] === $config['fulltext_postgres_ts_name'] ? ' selected="selected"' : '') . '>' . $row['ts_name'] . '</option>';
+				$tpl .= '<option value="' . $row['ts_name'] . '"' . ($row['ts_name'] === $this->config['fulltext_postgres_ts_name'] ? ' selected="selected"' : '') . '>' . $row['ts_name'] . '</option>';
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 		}
 		else
 		{
-			$tpl .= '<option value="' . $config['fulltext_postgres_ts_name'] . '" selected="selected">' . $config['fulltext_postgres_ts_name'] . '</option>';
+			$tpl .= '<option value="' . $this->config['fulltext_postgres_ts_name'] . '" selected="selected">' . $this->config['fulltext_postgres_ts_name'] . '</option>';
 		}
 
 		$tpl .= '</select></dd>
 		</dl>
                 <dl>
-                        <dt><label for="fulltext_postgres_min_word_len">' . $user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN'] . ':</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN_EXPLAIN'] . '</span></dt>
-                        <dd><input id="fulltext_postgres_min_word_len" type="text" size="3" maxlength="3" name="config[fulltext_postgres_min_word_len]" value="' . (int) $config['fulltext_postgres_min_word_len'] . '" /></dd>
+                        <dt><label for="fulltext_postgres_min_word_len">' . $this->user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN_EXPLAIN'] . '</span></dt>
+                        <dd><input id="fulltext_postgres_min_word_len" type="text" size="3" maxlength="3" name="config[fulltext_postgres_min_word_len]" value="' . (int) $this->config['fulltext_postgres_min_word_len'] . '" /></dd>
                 </dl>
                 <dl>
-                        <dt><label for="fulltext_postgres_max_word_len">' . $user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN'] . ':</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN_EXPLAIN'] . '</span></dt>
-                        <dd><input id="fulltext_postgres_max_word_len" type="text" size="3" maxlength="3" name="config[fulltext_postgres_max_word_len]" value="' . (int) $config['fulltext_postgres_max_word_len'] . '" /></dd>
+                        <dt><label for="fulltext_postgres_max_word_len">' . $this->user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN_EXPLAIN'] . '</span></dt>
+                        <dd><input id="fulltext_postgres_max_word_len" type="text" size="3" maxlength="3" name="config[fulltext_postgres_max_word_len]" value="' . (int) $this->config['fulltext_postgres_max_word_len'] . '" /></dd>
                 </dl>
 		';
 
