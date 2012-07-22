@@ -659,7 +659,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 	$db->sql_query($sql);
 
 	$ban_list = (!is_array($ban)) ? array_unique(explode("\n", $ban)) : $ban;
-	$ban_list_log = implode($user->lang['COMMA_SEPARATOR'], $ban_list);
+	$ban_list_log = implode(', ', $ban_list);
 
 	$current_time = time();
 
@@ -2923,7 +2923,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	$log = ($leader) ? 'LOG_MODS_ADDED' : (($pending) ? 'LOG_USERS_PENDING' : 'LOG_USERS_ADDED');
 
-	add_log('admin', $log, $group_name, implode($user->lang['COMMA_SEPARATOR'], $username_ary));
+	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
 	group_update_listings($group_id);
 
@@ -3056,7 +3056,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	if ($group_name)
 	{
-		add_log('admin', $log, $group_name, implode($user->lang['COMMA_SEPARATOR'], $username_ary));
+		add_log('admin', $log, $group_name, implode(', ', $username_ary));
 	}
 
 	group_update_listings($group_id);
@@ -3296,7 +3296,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	// Clear permissions cache of relevant users
 	$auth->acl_clear_prefetch($user_id_ary);
 
-	add_log('admin', $log, $group_name, implode($user->lang['COMMA_SEPARATOR'], $username_ary));
+	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
 	group_update_listings($group_id);
 

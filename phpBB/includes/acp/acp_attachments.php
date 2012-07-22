@@ -916,7 +916,7 @@ class acp_attachments
 							WHERE ' . $db->sql_in_set('attach_id', array_keys($delete_files));
 						$db->sql_query($sql);
 
-						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode($user->lang['COMMA_SEPARATOR'], $delete_files));
+						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode(', ', $delete_files));
 						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode($user->lang['COMMA_SEPARATOR'], $delete_files));
 					}
 
@@ -1470,7 +1470,7 @@ class acp_attachments
 			// Grab the list of entries
 			$ips = request_var('ips', '');
 			$ip_list = array_unique(explode("\n", $ips));
-			$ip_list_log = implode($user->lang['COMMA_SEPARATOR'], $ip_list);
+			$ip_list_log = implode(', ', $ip_list);
 
 			$ip_exclude = (int) $request->variable('ipexclude', false, false, phpbb_request_interface::POST);
 

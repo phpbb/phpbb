@@ -123,7 +123,7 @@ class acp_bots
 
 						$cache->destroy('_bots');
 
-						add_log('admin', 'LOG_BOT_DELETE', implode($user->lang['COMMA_SEPARATOR'], $bot_name_ary));
+						add_log('admin', 'LOG_BOT_DELETE', implode(', ', $bot_name_ary));
 						trigger_error($user->lang['BOT_DELETED'] . adm_back_link($this->u_action));
 					}
 					else

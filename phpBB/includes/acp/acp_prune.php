@@ -273,7 +273,7 @@ class acp_prune
 						}
 					}
 
-					add_log('admin', $l_log, implode($user->lang['COMMA_SEPARATOR'], $usernames));
+					add_log('admin', $l_log, implode(', ', $usernames));
 					$msg = $user->lang['USER_' . strtoupper($action) . '_SUCCESS'];
 				}
 				else
