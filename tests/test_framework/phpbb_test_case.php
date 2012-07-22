@@ -24,7 +24,7 @@ class phpbb_test_case extends PHPUnit_Framework_TestCase
 
 			'phpbb_database_test_case' => array('already_connected'),
 
-			'phpbb_functional_test_case' => array('config')
+			'phpbb_functional_test_case' => array('config'),
 		);
 
 		$this->backupGlobalsBlacklist = array_merge(
