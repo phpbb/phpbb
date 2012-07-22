@@ -15,6 +15,7 @@ class phpbb_builtin_webserver
 	protected $process = null;
 	protected $pipes = null;
 	protected $port;
+	protected $is_win;
 
 	/**
 	* Creates an instance of the php webserver wrapper but does not start it
@@ -24,6 +25,7 @@ class phpbb_builtin_webserver
 	public function __construct($port)
 	{
 		$this->port = $port;
+		$this->is_win = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
 	}
 
 	/**
@@ -55,10 +57,12 @@ class phpbb_builtin_webserver
 
 		exec('php -r "echo phpversion();"', $output, $exit_code);
 
-		if (version_compare(trim(implode("\n", $output)), '5.4-dev', '<'))
+		if (version_compare(trim(implode("\n", $output)), '5.4-dev', '<') || $exit_code)
 		{
 			return false;
 		}
+
+		$null_device = $this->is_win ? 'nul': '/dev/null';
 
 		$this->process = proc_open(
 			'php -S localhost:' . $this->port,
@@ -68,7 +72,8 @@ class phpbb_builtin_webserver
 				2 => array('file', '/dev/null', 'w') // STDERR
 			),
 			$this->pipes,
-			__DIR__ . '/../../phpBB/'
+			__DIR__ . '/../../phpBB/',
+			array('bypass_shell' => true)
 		);
 
 		fclose($this->pipes[0]);
@@ -93,8 +98,15 @@ class phpbb_builtin_webserver
 		{
 			$status = proc_get_status($this->process);
 
-			// kill process and all children
-			posix_kill(-$status['pid']);
+			if ($this->is_win)
+			{
+				exec("taskkill /f /t /pid " . escapeshellarg($status['pid']));
+			}
+			else
+			{
+				// kill process and all children
+				posix_kill(-$status['pid']);
+			}
 
 			proc_close($this->process);
 		}
