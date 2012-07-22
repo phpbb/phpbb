@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -137,6 +136,8 @@ class acp_inactive
 								add_log('admin', 'LOG_USER_ACTIVE', $row['username']);
 								add_log('user', $row['user_id'], 'LOG_USER_ACTIVE_USER');
 							}
+
+							trigger_error(sprintf($user->lang['LOG_INACTIVE_ACTIVATE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 
 						// For activate we really need to redirect, else a refresh can result in users being deactivated again
@@ -160,6 +161,8 @@ class acp_inactive
 							}
 
 							add_log('admin', 'LOG_INACTIVE_' . strtoupper($action), implode(', ', $user_affected));
+
+							trigger_error(sprintf($user->lang['LOG_INACTIVE_DELETE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 						else
 						{
@@ -231,7 +234,8 @@ class acp_inactive
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_INACTIVE_REMIND', implode(', ', $usernames));
-						unset($usernames);
+
+						trigger_error(sprintf($user->lang['LOG_INACTIVE_REMIND'], implode($user->lang['COMMA_SEPARATOR'], $usernames) . ' ' . adm_back_link($this->u_action)));
 					}
 					$db->sql_freeresult($result);
 
@@ -284,6 +288,9 @@ class acp_inactive
 			$option_ary += array('remind' => 'REMIND');
 		}
 
+		$base_url = $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page";
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $inactive_count, $per_page, $start);		
+		
 		$template->assign_vars(array(
 			'S_INACTIVE_USERS'		=> true,
 			'S_INACTIVE_OPTIONS'	=> build_select($option_ary),
@@ -291,8 +298,8 @@ class acp_inactive
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
-			'S_ON_PAGE'		=> on_page($inactive_count, $per_page, $start),
-			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page", $inactive_count, $per_page, $start, true),
+			'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $inactive_count, $per_page, $start),
+			
 			'USERS_PER_PAGE'	=> $per_page,
 
 			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page&amp;start=$start",
@@ -302,5 +309,3 @@ class acp_inactive
 		$this->page_title = 'ACP_INACTIVE_USERS';
 	}
 }
-
-?>

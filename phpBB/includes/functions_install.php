@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -50,7 +49,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'firebird',
 			'MODULE'		=> 'interbase',
 			'DELIM'			=> ';;',
-			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'firebird',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -60,7 +58,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'mysqli',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -70,7 +67,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mysql',
 			'MODULE'		=> 'mysql',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'mysql',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -80,7 +76,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'mssql',
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'mssql',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -90,7 +85,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc',
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'mssql_odbc',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -100,17 +94,15 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'sqlsrv',
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'mssqlnative',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
-		),			
+		),
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
 			'MODULE'		=> 'oci8',
 			'DELIM'			=> '/',
-			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'oracle',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -120,7 +112,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'postgres',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -130,7 +121,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'sqlite',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -473,19 +463,6 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 }
 
 /**
-* Removes comments from schema files
-*
-* @deprecated		Use phpbb_remove_comments() instead.
-*/
-function remove_remarks(&$sql)
-{
-	// Remove # style comments
-	$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
-
-	// Return by reference
-}
-
-/**
 * Removes "/* style" as well as "# style" comments from $input.
 *
 * @param string $input		Input string
@@ -494,17 +471,11 @@ function remove_remarks(&$sql)
 */
 function phpbb_remove_comments($input)
 {
-	if (!function_exists('remove_comments'))
-	{
-		global $phpbb_root_path, $phpEx;
-		require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-	}
-
-	// Remove /* */ comments
-	remove_comments($input);
+	// Remove /* */ comments (http://ostermiller.org/findcomment.html)
+	$input = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $input);
 
 	// Remove # style comments
-	remove_remarks($input);
+	$input = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $input));
 
 	return $input;
 }
@@ -559,7 +530,7 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 	$load_extensions = implode(',', $load_extensions);
 
 	$config_data = "<?php\n";
-	$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
+	$config_data .= "// phpBB 3.1.x auto-generated configuration file\n// Do not change anything in this file!\n";
 
 	$config_data_array = array(
 		'dbms'			=> $dbms,
@@ -593,5 +564,3 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 
 	return $config_data;
 }
-
-?>

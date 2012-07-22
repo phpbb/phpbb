@@ -2,9 +2,8 @@
 /**
 *
 * @package search
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -17,16 +16,11 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @ignore
-*/
-include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
-
-/**
 * fulltext_native
 * phpBB's own db driven fulltext search, version 2
 * @package search
 */
-class fulltext_native extends search_backend
+class phpbb_search_fulltext_native extends phpbb_search_base
 {
 	var $stats = array();
 	var $word_length = array();
@@ -41,10 +35,8 @@ class fulltext_native extends search_backend
 	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded.
 	*
 	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure.
-	*
-	* @access	public
 	*/
-	function fulltext_native(&$error)
+	public function __construct(&$error)
 	{
 		global $phpbb_root_path, $phpEx, $config;
 
@@ -58,8 +50,17 @@ class fulltext_native extends search_backend
 			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 		}
 
-
 		$error = false;
+	}
+
+	/**
+	* Returns the name of this search backend to be displayed to administrators
+	*
+	* @return string Name
+	*/
+	public function get_name()
+	{
+		return 'phpBB Native Fulltext';
 	}
 
 	/**
@@ -333,7 +334,7 @@ class fulltext_native extends search_backend
 				// throw an error if we shall not ignore unexistant words
 				else if (!$ignore_no_id && sizeof($non_common_words))
 				{
-					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], implode(', ', $non_common_words)));
+					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], implode($user->lang['COMMA_SEPARATOR'], $non_common_words)));
 				}
 				unset($non_common_words);
 			}
@@ -1745,5 +1746,3 @@ class fulltext_native extends search_backend
 		);
 	}
 }
-
-?>

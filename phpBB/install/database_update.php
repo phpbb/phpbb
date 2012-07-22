@@ -2,13 +2,12 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
-define('UPDATES_TO_VERSION', '3.0.12-dev');
+define('UPDATES_TO_VERSION', '3.1.0-dev');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 define('DEBUG_FROM_VERSION', false);
@@ -84,11 +83,7 @@ if (!empty($load_extensions) && function_exists('dl'))
 }
 
 // Include files
-require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-require($phpbb_root_path . 'includes/cache.' . $phpEx);
-require($phpbb_root_path . 'includes/template.' . $phpEx);
-require($phpbb_root_path . 'includes/session.' . $phpEx);
-require($phpbb_root_path . 'includes/auth.' . $phpEx);
+require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
@@ -107,10 +102,29 @@ if (!defined('LOGIN_ATTEMPT_TABLE'))
 {
 	define('LOGIN_ATTEMPT_TABLE', $table_prefix . 'login_attempts');
 }
+if (!defined('EXT_TABLE'))
+{
+	define('EXT_TABLE', $table_prefix . 'ext');
+}
 
-$user = new user();
-$cache = new cache();
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
+$phpbb_class_loader_ext->register();
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
+$phpbb_class_loader->register();
+
+// set up caching
+$cache_factory = new phpbb_cache_factory($acm_type);
+$cache = $cache_factory->get_service();
+$phpbb_class_loader_ext->set_cache($cache->get_driver());
+$phpbb_class_loader->set_cache($cache->get_driver());
+
+$phpbb_dispatcher = new phpbb_event_dispatcher();
+$request = new phpbb_request();
+$user = new phpbb_user();
 $db = new $sql_db();
+
+// make sure request_var uses this request instance
+request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
@@ -134,8 +148,11 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 // We do not need this any longer, unset for safety purposes
 unset($dbpasswd);
 
-$user->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
-$user->ip = (stripos($user->ip, '::ffff:') === 0) ? substr($user->ip, 7) : $user->ip;
+$user->ip = '';
+if ($request->server('REMOTE_ADDR'))
+{
+	$user->ip = (function_exists('phpbb_ip_normalise')) ? phpbb_ip_normalise($request->server('REMOTE_ADDR')) : $request->server('REMOTE_ADDR');
+}
 
 $sql = "SELECT config_value
 	FROM " . CONFIG_TABLE . "
@@ -168,17 +185,15 @@ include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
 $inline_update = (request_var('type', 0)) ? true : false;
 
 // To let set_config() calls succeed, we need to make the config array available globally
-$config = array();
+$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
+set_config(null, null, null, $config);
+set_config_count(null, null, null, $config);
 
-$sql = 'SELECT *
-	FROM ' . CONFIG_TABLE;
-$result = $db->sql_query($sql);
-
-while ($row = $db->sql_fetchrow($result))
+// Update asset_version
+if (isset($config['assets_version']))
 {
-	$config[$row['config_name']] = $row['config_value'];
+	set_config('assets_version', $config['assets_version'] + 1);
 }
-$db->sql_freeresult($result);
 
 // phpbb_db_tools will be taken from new files (under install/update/new)
 // if possible, falling back to the board's copy.
@@ -189,17 +204,72 @@ $database_update_info = database_update_info();
 $error_ary = array();
 $errored = false;
 
+$sql = 'SELECT topic_id
+	FROM ' . TOPICS_TABLE . '
+	WHERE forum_id = 0
+		AND topic_type = ' . POST_GLOBAL;
+$result = $db->sql_query_limit($sql, 1);
+$has_global = (int) $db->sql_fetchfield('topic_id');
+$db->sql_freeresult($result);
+$ga_forum_id = request_var('ga_forum_id', 0);
+
+if ($has_global && !$ga_forum_id)
+{
+	?>
+	<!DOCTYPE html>
+	<html dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>">
+	<head>
+	<meta charset="utf-8">
+
+	<title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
+
+	<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+
+	</head>
+
+	<body>
+	<div id="wrap">
+		<div id="page-header">&nbsp;</div>
+
+		<div id="page-body">
+			<div id="acp">
+			<div class="panel">
+				<span class="corners-top"><span></span></span>
+					<div id="content">
+						<div id="main" class="install-body">
+
+		<h1><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></h1>
+
+		<br />
+
+		<form action="" method="post" id="select_ga_forum_id">
+			<?php
+				if (isset($lang['SELECT_FORUM_GA']))
+				{
+					// Language string is available:
+					echo $lang['SELECT_FORUM_GA'];
+				}
+				else
+				{
+					echo 'In phpBB 3.1 the global announcements are linked to forums. Select a forum for your current global announcements (can be moved later):';
+				}
+			?>
+			<select id="ga_forum_id" name="ga_forum_id"><?php echo make_forum_select(false, false, true, true) ?></select>
+
+			<input type="submit" name="post" value="<?php echo $lang['SUBMIT']; ?>" class="button1" />
+		</form>
+	<?php
+	_print_footer();
+	exit_handler();
+}
+
 header('Content-type: text/html; charset=UTF-8');
 
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>" xml:lang="<?php echo $lang['USER_LANG']; ?>">
+<!DOCTYPE html>
+<html dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<meta http-equiv="content-language" content="<?php echo $lang['USER_LANG']; ?>" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="imagetoolbar" content="no" />
+<meta charset="utf-8">
 
 <title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
@@ -613,7 +683,13 @@ function _write_result($no_updates, $errored, $error_ary)
 
 function _add_modules($modules_to_install)
 {
-	global $phpbb_root_path, $phpEx, $db;
+	global $phpbb_root_path, $phpEx, $db, $phpbb_extension_manager;
+
+	// modules require an extension manager
+	if (empty($phpbb_extension_manager))
+	{
+		$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+	}
 
 	include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
@@ -997,6 +1073,47 @@ function database_update_info()
 		'3.0.10'		=> array(),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 */
+
+		// Changes from 3.1.0-dev to 3.1.0-A1
+		'3.1.0-dev'		=> array(
+			'add_tables'		=> array(
+				EXT_TABLE				=> array(
+					'COLUMNS'			=> array(
+						'ext_name'		=> array('VCHAR', ''),
+						'ext_active'	=> array('BOOL', 0),
+						'ext_state'		=> array('TEXT', ''),
+					),
+					'KEYS'				=> array(
+						'ext_name'		=> array('UNIQUE', 'ext_name'),
+					),
+				),
+			),
+			'add_columns'		=> array(
+				GROUPS_TABLE		=> array(
+					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
+				),
+				PROFILE_FIELDS_TABLE	=> array(
+					'field_show_on_pm'		=> array('BOOL', 0),
+				),
+				STYLES_TABLE		=> array(
+					'style_path'			=> array('VCHAR:100', ''),
+					'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
+					'style_parent_id'		=> array('UINT:4', 0),
+					'style_parent_tree'		=> array('TEXT', ''),
+				),
+				REPORTS_TABLE		=> array(
+					'reported_post_text'	=> array('MTEXT_UNI', ''),
+				),
+			),
+			'change_columns'	=> array(
+				GROUPS_TABLE		=> array(
+					'group_legend'		=> array('UINT', 0),
+				),
+				USERS_TABLE			=> array(
+					'user_timezone'		=> array('VCHAR:100', ''),
+				),
+			),
+		),
 	);
 }
 
@@ -1007,7 +1124,9 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx;
+	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $db_tools;
+
+	$update_helpers = new phpbb_update_helpers();
 
 	switch ($version)
 	{
@@ -1854,7 +1973,7 @@ function change_database_data(&$no_updates, $version)
 					'user_email'			=> '',
 					'user_lang'				=> $config['default_lang'],
 					'user_style'			=> $config['default_style'],
-					'user_timezone'			=> 0,
+					'user_timezone'			=> 'UTC',
 					'user_dateformat'		=> $config['default_dateformat'],
 					'user_allow_massemail'	=> 0,
 				);
@@ -2090,7 +2209,435 @@ function change_database_data(&$no_updates, $version)
 
 			$no_updates = false;
 		break;
+
+		// Changes from 3.1.0-dev to 3.1.0-A1
+		case '3.1.0-dev':
+
+			// rename all module basenames to full classname
+			$sql = 'SELECT module_id, module_basename, module_class
+				FROM ' . MODULES_TABLE;
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$module_id = (int) $row['module_id'];
+				unset($row['module_id']);
+
+				if (!empty($row['module_basename']) && !empty($row['module_class']))
+				{
+					// all the class names start with class name or with phpbb_ for auto loading
+					if (strpos($row['module_basename'], $row['module_class'] . '_') !== 0 &&
+						strpos($row['module_basename'], 'phpbb_') !== 0)
+					{
+						$row['module_basename'] = $row['module_class'] . '_' . $row['module_basename'];
+
+						$sql_update = $db->sql_build_array('UPDATE', $row);
+
+						$sql = 'UPDATE ' . MODULES_TABLE . '
+							SET ' . $sql_update . '
+							WHERE module_id = ' . $module_id;
+						_sql($sql, $errored, $error_ary);
+					}
+				}
+			}
+
+			$db->sql_freeresult($result);
+
+			if (substr($config['search_type'], 0, 6) !== 'phpbb_')
+			{
+				// try to guess the new auto loaded search class name
+				// works for native and mysql fulltext
+				set_config('search_type', 'phpbb_search_' . $config['search_type']);
+			}
+
+			if (!isset($config['fulltext_postgres_ts_name']))
+			{
+				set_config('fulltext_postgres_ts_name', 'simple');
+			}
+
+			if (!isset($config['fulltext_postgres_min_word_len']))
+			{
+				set_config('fulltext_postgres_min_word_len', 4);
+			}
+
+			if (!isset($config['fulltext_postgres_max_word_len']))
+			{
+				set_config('fulltext_postgres_max_word_len', 254);
+			}
+
+			if (!isset($config['load_jquery_cdn']))
+			{
+				set_config('load_jquery_cdn', 0);
+				set_config('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
+			}
+
+			if (!isset($config['use_system_cron']))
+			{
+				set_config('use_system_cron', 0);
+			}
+
+			$sql = 'SELECT group_teampage
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_teampage > 0';
+			$result = $db->sql_query_limit($sql, 1);
+			$added_groups_teampage = (bool) $db->sql_fetchfield('group_teampage');
+			$db->sql_freeresult($result);
+
+			if (!$added_groups_teampage)
+			{
+				$sql = 'UPDATE ' . GROUPS_TABLE . '
+					SET group_teampage = 1
+					WHERE group_type = ' . GROUP_SPECIAL . "
+						AND group_name = 'ADMINISTRATORS'";
+				_sql($sql, $errored, $error_ary);
+
+				$sql = 'UPDATE ' . GROUPS_TABLE . '
+					SET group_teampage = 2
+					WHERE group_type = ' . GROUP_SPECIAL . "
+						AND group_name = 'GLOBAL_MODERATORS'";
+				_sql($sql, $errored, $error_ary);
+			}
+
+			if (!isset($config['legend_sort_groupname']))
+			{
+				set_config('legend_sort_groupname', '0');
+				set_config('teampage_forums', '1');
+			}
+
+			$sql = 'SELECT group_legend
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_teampage > 1';
+			$result = $db->sql_query_limit($sql, 1);
+			$updated_group_legend = (bool) $db->sql_fetchfield('group_teampage');
+			$db->sql_freeresult($result);
+
+			if (!$updated_group_legend)
+			{
+				$sql = 'SELECT group_id
+					FROM ' . GROUPS_TABLE . '
+					WHERE group_legend = 1
+					ORDER BY group_name ASC';
+				$result = $db->sql_query($sql);
+
+				$next_legend = 1;
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$sql = 'UPDATE ' . GROUPS_TABLE . '
+						SET group_legend = ' . $next_legend . '
+						WHERE group_id = ' . (int) $row['group_id'];
+					_sql($sql, $errored, $error_ary);
+
+					$next_legend++;
+				}
+				$db->sql_freeresult($result);
+				unset($next_legend);
+			}
+
+			// Install modules
+			$modules_to_install = array(
+				'position'	=> array(
+					'base'		=> 'acp_groups',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_GROUPS_POSITION',
+					'auth'		=> 'acl_a_group',
+					'cat'		=> 'ACP_GROUPS',
+				),
+				'manage'	=> array(
+					'base'		=> 'acp_attachments',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_MANAGE_ATTACHMENTS',
+					'auth'		=> 'acl_a_attach',
+					'cat'		=> 'ACP_ATTACHMENTS',
+				),
+				'install'	=> array(
+					'base'		=> 'acp_styles',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_STYLES_INSTALL',
+					'auth'		=> 'acl_a_styles',
+					'cat'		=> 'ACP_STYLE_MANAGEMENT',
+				),
+				'cache'	=> array(
+					'base'		=> 'acp_styles',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_STYLES_CACHE',
+					'auth'		=> 'acl_a_styles',
+					'cat'		=> 'ACP_STYLE_MANAGEMENT',
+				),
+				'autologin_keys'	=> array(
+					'base'		=> 'ucp_profile',
+					'class'		=> 'ucp',
+					'title'		=> 'UCP_PROFILE_AUTOLOGIN_KEYS',
+					'auth'		=> '',
+					'cat'		=> 'UCP_PROFILE',
+				),
+			);
+
+			_add_modules($modules_to_install);
+
+			$sql = 'DELETE FROM ' . MODULES_TABLE . "
+				WHERE (module_basename = 'styles' OR module_basename = 'acp_styles') AND (module_mode = 'imageset' OR module_mode = 'theme' OR module_mode = 'template')";
+			_sql($sql, $errored, $error_ary);
+
+			// Localise Global Announcements
+			$sql = 'SELECT topic_id, topic_approved, (topic_replies + 1) AS topic_posts, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
+				FROM ' . TOPICS_TABLE . '
+				WHERE forum_id = 0
+					AND topic_type = ' . POST_GLOBAL;
+			$result = $db->sql_query($sql);
+
+			$global_announcements = $update_lastpost_data = array();
+			$update_lastpost_data['forum_last_post_time'] = 0;
+			$update_forum_data = array(
+				'forum_posts'		=> 0,
+				'forum_topics'		=> 0,
+				'forum_topics_real'	=> 0,
+			);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$global_announcements[] = (int) $row['topic_id'];
+
+				$update_forum_data['forum_posts'] += (int) $row['topic_posts'];
+				$update_forum_data['forum_topics_real']++;
+				if ($row['topic_approved'])
+				{
+					$update_forum_data['forum_topics']++;
+				}
+
+				if ($update_lastpost_data['forum_last_post_time'] < $row['topic_last_post_time'])
+				{
+					$update_lastpost_data = array(
+						'forum_last_post_id'		=> (int) $row['topic_last_post_id'],
+						'forum_last_post_subject'	=> $row['topic_last_post_subject'],
+						'forum_last_post_time'		=> (int) $row['topic_last_post_time'],
+						'forum_last_poster_id'		=> (int) $row['topic_last_poster_id'],
+						'forum_last_poster_name'	=> $row['topic_last_poster_name'],
+						'forum_last_poster_colour'	=> $row['topic_last_poster_colour'],
+					);
+				}
+			}
+			$db->sql_freeresult($result);
+
+			if (!empty($global_announcements))
+			{
+				// Update the post/topic-count for the forum and the last-post if needed
+				$ga_forum_id = request_var('ga_forum_id', 0);
+
+				$sql = 'SELECT forum_last_post_time
+					FROM ' . FORUMS_TABLE . '
+					WHERE forum_id = ' . $ga_forum_id;
+				$result = $db->sql_query($sql);
+				$lastpost = (int) $db->sql_fetchfield('forum_last_post_time');
+				$db->sql_freeresult($result);
+
+				$sql_update = 'forum_posts = forum_posts + ' . $update_forum_data['forum_posts'] . ', ';
+				$sql_update .= 'forum_topics_real = forum_topics_real + ' . $update_forum_data['forum_topics_real'] . ', ';
+				$sql_update .= 'forum_topics = forum_topics + ' . $update_forum_data['forum_topics'];
+				if ($lastpost < $update_lastpost_data['forum_last_post_time'])
+				{
+					$sql_update .= ', ' . $db->sql_build_array('UPDATE', $update_lastpost_data);
+				}
+
+				$sql = 'UPDATE ' . FORUMS_TABLE . '
+					SET ' . $sql_update . '
+					WHERE forum_id = ' . $ga_forum_id;
+				_sql($sql, $errored, $error_ary);
+
+				// Update some forum_ids
+				$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
+				foreach ($table_ary as $table)
+				{
+					$sql = "UPDATE $table
+						SET forum_id = $ga_forum_id
+						WHERE " . $db->sql_in_set('topic_id', $global_announcements);
+					_sql($sql, $errored, $error_ary);
+				}
+				unset($table_ary);
+			}
+
+			// Allow custom profile fields in pm templates
+			if (!isset($config['load_cpf_pm']))
+			{
+				set_config('load_cpf_pm', '0');
+			}
+
+			if (!isset($config['teampage_memberships']))
+			{
+				set_config('teampage_memberships', '1');
+			}
+
+			// Check if styles table was already updated
+			if ($db_tools->sql_table_exists(STYLES_THEME_TABLE))
+			{
+				// Get list of valid 3.1 styles
+				$available_styles = array('prosilver');
+
+				$iterator = new DirectoryIterator($phpbb_root_path . 'styles');
+				$skip_dirs = array('.', '..', 'prosilver');
+				foreach ($iterator as $fileinfo)
+				{
+					if ($fileinfo->isDir() && !in_array($fileinfo->getFilename(), $skip_dirs) && file_exists($fileinfo->getPathname() . '/style.cfg'))
+					{
+						$style_cfg = parse_cfg_file($fileinfo->getPathname() . '/style.cfg');
+						if (isset($style_cfg['phpbb_version']) && version_compare($style_cfg['phpbb_version'], '3.1.0-dev', '>='))
+						{
+							// 3.1 style
+							$available_styles[] = $fileinfo->getFilename();
+						}
+					}
+				}
+
+				// Get all installed styles
+				if ($db_tools->sql_table_exists(STYLES_IMAGESET_TABLE))
+				{
+					$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_id, i.imageset_path
+						FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . " i
+						WHERE t.template_id = s.template_id
+							AND c.theme_id = s.theme_id
+							AND i.imageset_id = s.imageset_id";
+				}
+				else
+				{
+					$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_id
+						FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . " c
+						WHERE t.template_id = s.template_id
+							AND c.theme_id = s.theme_id";
+				}
+				$result = $db->sql_query($sql);
+
+				$styles = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$styles[] = $row;
+				}
+				$db->sql_freeresult($result);
+
+				// Decide which styles to keep, all others will be deleted
+				$valid_styles = array();
+				foreach ($styles as $style_row)
+				{
+					if (
+						// Delete styles with parent style (not supported yet)
+						$style_row['template_inherits_id'] == 0 &&
+						// Check if components match
+						$style_row['template_path'] == $style_row['theme_path'] && (!isset($style_row['imageset_path']) || $style_row['template_path'] == $style_row['imageset_path']) &&
+						// Check if components are valid
+						in_array($style_row['template_path'], $available_styles)
+						)
+					{
+						// Valid style. Keep it
+						$sql_ary = array(
+							'style_path'	=> $style_row['template_path'],
+							'bbcode_bitfield'	=> $style_row['bbcode_bitfield'],
+							'style_parent_id'	=> 0,
+							'style_parent_tree'	=> '',
+						);
+						_sql('UPDATE ' . STYLES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE style_id = ' . $style_row['style_id'], $errored, $error_ary);
+						$valid_styles[] = (int) $style_row['style_id'];
+					}
+				}
+
+				// Remove old styles tables
+				$changes = array(
+					'drop_columns'	=> array(
+						STYLES_TABLE		=> array(
+							'imageset_id',
+							'template_id',
+							'theme_id',
+						),
+					),
+
+					'drop_tables'	=> array(
+						STYLES_IMAGESET_TABLE,
+						STYLES_IMAGESET_DATA_TABLE,
+						STYLES_TEMPLATE_TABLE,
+						STYLES_TEMPLATE_DATA_TABLE,
+						STYLES_THEME_TABLE,
+					)
+				);
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
+				{
+					_sql($sql, $errored, $error_ary);
+				}
+
+				// Remove old entries from styles table
+				if (!sizeof($valid_styles))
+				{
+					// No valid styles: remove everything and add prosilver
+					_sql('DELETE FROM ' . STYLES_TABLE, $errored, $error_ary);
+
+					$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '')";
+					_sql($sql, $errored, $error_ary);
+
+					$sql = 'SELECT style_id
+						FROM ' . $table . "
+						WHERE style_name = 'prosilver'";
+					$result = _sql($sql, $errored, $error_ary);
+					$default_style = $db->sql_fetchfield($result);
+					$db->sql_freeresult($result);
+
+					set_config('default_style', $default_style);
+
+					$sql = 'UPDATE ' . USERS_TABLE . ' SET user_style = 0';
+					_sql($sql, $errored, $error_ary);
+				}
+				else
+				{
+					// There are valid styles in styles table. Remove styles that are outdated
+					_sql('DELETE FROM ' . STYLES_TABLE . ' WHERE ' . $db->sql_in_set('style_id', $valid_styles, true), $errored, $error_ary);
+
+					// Change default style
+					if (!in_array($config['default_style'], $valid_styles))
+					{
+						set_config('default_style', $valid_styles[0]);
+					}
+
+					// Reset styles for users
+					_sql('UPDATE ' . USERS_TABLE . ' SET user_style = 0 WHERE ' . $db->sql_in_set('user_style', $valid_styles, true), $errored, $error_ary);
+				}
+			}
+
+			// Create config value for displaying last subject on forum list
+			if (!isset($config['display_last_subject']))
+			{			
+				$config->set('display_last_subject', '1');
+			}
+			
+			$no_updates = false;
+
+			if (!isset($config['assets_version']))
+			{
+				$config->set('assets_version', '1');
+			}
+
+			// If the column exists, we did not yet update the users timezone
+			if ($db_tools->sql_column_exists(USERS_TABLE, 'user_dst'))
+			{
+				// Update user timezones
+				$sql = 'SELECT user_dst, user_timezone
+					FROM ' . USERS_TABLE . '
+					GROUP BY user_timezone, user_dst';
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$sql = 'UPDATE ' . USERS_TABLE . "
+						SET user_timezone = '" . $db->sql_escape($update_helpers->convert_phpbb30_timezone($row['user_timezone'], $row['user_dst'])) . "'
+						WHERE user_timezone = '" . $db->sql_escape($row['user_timezone']) . "'
+							AND user_dst = " . (int) $row['user_dst'];
+					_sql($sql, $errored, $error_ary);
+				}
+				$db->sql_freeresult($result);
+
+				// Update board default timezone
+				set_config('board_timezone', $update_helpers->convert_phpbb30_timezone($config['board_timezone'], $config['board_dst']));
+
+				// After we have calculated the timezones we can delete user_dst column from user table.
+				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
+			}
+
+		break;
 	}
 }
-
-?>

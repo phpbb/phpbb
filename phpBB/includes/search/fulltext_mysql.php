@@ -2,9 +2,8 @@
 /**
 *
 * @package search
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -17,47 +16,35 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @ignore
-*/
-include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
-
-/**
 * fulltext_mysql
 * Fulltext search for MySQL
 * @package search
 */
-class fulltext_mysql extends search_backend
+class phpbb_search_fulltext_mysql extends phpbb_search_base
 {
 	var $stats = array();
 	var $word_length = array();
 	var $split_words = array();
 	var $search_query;
 	var $common_words = array();
-	var $pcre_properties = false;
-	var $mbstring_regex = false;
 
-	function fulltext_mysql(&$error)
+	public function __construct(&$error)
 	{
 		global $config;
 
 		$this->word_length = array('min' => $config['fulltext_mysql_min_word_len'], 'max' => $config['fulltext_mysql_max_word_len']);
 
-		if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
-		{
-			// While this is the proper range of PHP versions, PHP may not be linked with the bundled PCRE lib and instead with an older version
-			if (@preg_match('/\p{L}/u', 'a') !== false)
-			{
-				$this->pcre_properties = true;
-			}
-		}
-
-		if (function_exists('mb_ereg'))
-		{
-			$this->mbstring_regex = true;
-			mb_regex_encoding('UTF-8');
-		}
-
 		$error = false;
+	}
+
+	/**
+	* Returns the name of this search backend to be displayed to administrators
+	*
+	* @return string Name
+	*/
+	public function get_name()
+	{
+		return 'MySQL Fulltext';
 	}
 
 	/**
@@ -69,7 +56,7 @@ class fulltext_mysql extends search_backend
 
 		if ($db->sql_layer != 'mysql4' && $db->sql_layer != 'mysqli')
 		{
-			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
+			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE'];
 		}
 
 		$result = $db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
@@ -132,40 +119,10 @@ class fulltext_mysql extends search_backend
 		$split_keywords = preg_replace("#[\n\r\t]+#", ' ', trim(htmlspecialchars_decode($keywords)));
 
 		// Split words
-		if ($this->pcre_properties)
-		{
-			$split_keywords = preg_replace('#([^\p{L}\p{N}\'*"()])#u', '$1$1', str_replace('\'\'', '\' \'', trim($split_keywords)));
-		}
-		else if ($this->mbstring_regex)
-		{
-			$split_keywords = mb_ereg_replace('([^\w\'*"()])', '\\1\\1', str_replace('\'\'', '\' \'', trim($split_keywords)));
-		}
-		else
-		{
-			$split_keywords = preg_replace('#([^\w\'*"()])#u', '$1$1', str_replace('\'\'', '\' \'', trim($split_keywords)));
-		}
-
-		if ($this->pcre_properties)
-		{
-			$matches = array();
-			preg_match_all('#(?:[^\p{L}\p{N}*"()]|^)([+\-|]?(?:[\p{L}\p{N}*"()]+\'?)*[\p{L}\p{N}*"()])(?:[^\p{L}\p{N}*"()]|$)#u', $split_keywords, $matches);
-			$this->split_words = $matches[1];
-		}
-		else if ($this->mbstring_regex)
-		{
-			mb_ereg_search_init($split_keywords, '(?:[^\w*"()]|^)([+\-|]?(?:[\w*"()]+\'?)*[\w*"()])(?:[^\w*"()]|$)');
-
-			while (($word = mb_ereg_search_regs()))
-			{
-				$this->split_words[] = $word[1];
-			}
-		}
-		else
-		{
-			$matches = array();
-			preg_match_all('#(?:[^\w*"()]|^)([+\-|]?(?:[\w*"()]+\'?)*[\w*"()])(?:[^\w*"()]|$)#u', $split_keywords, $matches);
-			$this->split_words = $matches[1];
-		}
+		$split_keywords = preg_replace('#([^\p{L}\p{N}\'*"()])#u', '$1$1', str_replace('\'\'', '\' \'', trim($split_keywords)));
+		$matches = array();
+		preg_match_all('#(?:[^\p{L}\p{N}*"()]|^)([+\-|]?(?:[\p{L}\p{N}*"()]+\'?)*[\p{L}\p{N}*"()])(?:[^\p{L}\p{N}*"()]|$)#u', $split_keywords, $matches);
+		$this->split_words = $matches[1];
 
 		// We limit the number of allowed keywords to minimize load on the database
 		if ($config['max_num_search_keywords'] && sizeof($this->split_words) > $config['max_num_search_keywords'])
@@ -270,41 +227,10 @@ class fulltext_mysql extends search_backend
 		global $config;
 
 		// Split words
-		if ($this->pcre_properties)
-		{
-			$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
-		}
-		else if ($this->mbstring_regex)
-		{
-			$text = mb_ereg_replace('([^\w\'*])', '\\1\\1', str_replace('\'\'', '\' \'', trim($text)));
-		}
-		else
-		{
-			$text = preg_replace('#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
-		}
-
-		if ($this->pcre_properties)
-		{
-			$matches = array();
-			preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
-			$text = $matches[1];
-		}
-		else if ($this->mbstring_regex)
-		{
-			mb_ereg_search_init($text, '(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)');
-
-			$text = array();
-			while (($word = mb_ereg_search_regs()))
-			{
-				$text[] = $word[1];
-			}
-		}
-		else
-		{
-			$matches = array();
-			preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $text, $matches);
-			$text = $matches[1];
-		}
+		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
+		$matches = array();
+		preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
+		$text = $matches[1];
 
 		// remove too short or too long words
 		$text = array_values($text);
@@ -908,14 +834,6 @@ class fulltext_mysql extends search_backend
 
 		$tpl = '
 		<dl>
-			<dt><label>' . $user->lang['FULLTEXT_MYSQL_PCRE'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_PCRE_EXPLAIN'] . '</span></dt>
-			<dd>' . (($this->pcre_properties) ? $user->lang['YES'] : $user->lang['NO']) . ' (PHP ' . PHP_VERSION . ')</dd>
-		</dl>
-		<dl>
-			<dt><label>' . $user->lang['FULLTEXT_MYSQL_MBSTRING'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MBSTRING_EXPLAIN'] . '</span></dt>
-			<dd>' . (($this->mbstring_regex) ? $user->lang['YES'] : $user->lang['NO']). '</dd>
-		</dl>
-		<dl>
 			<dt><label>' . $user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
 			<dd>' . $config['fulltext_mysql_min_word_len'] . '</dd>
 		</dl>
@@ -932,5 +850,3 @@ class fulltext_mysql extends search_backend
 		);
 	}
 }
-
-?>

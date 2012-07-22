@@ -1,7 +1,10 @@
 {
-    "hash": "a5d02c59e3a91c84c1a96aca0f1ae81a",
+    "hash": "b2daff7465c71d924e915e72454ac266",
     "packages": [
-
+        {
+            "package": "symfony/event-dispatcher",
+            "version": "v2.1.0-BETA3"
+        }
     ],
     "packages-dev": [
         {
@@ -30,10 +33,6 @@
         },
         {
             "package": "symfony/dom-crawler",
-            "version": "v2.1.0-BETA3"
-        },
-        {
-            "package": "symfony/event-dispatcher",
             "version": "v2.1.0-BETA3"
         },
         {

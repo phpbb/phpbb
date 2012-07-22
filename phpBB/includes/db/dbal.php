@@ -2,9 +2,8 @@
 /**
 *
 * @package dbal
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -285,6 +284,37 @@ class dbal
 	}
 
 	/**
+	* Build a case expression
+	*
+	* Note: The two statements action_true and action_false must have the same data type (int, vchar, ...) in the database!
+	*
+	* @param	string	$condition		The condition which must be true, to use action_true rather then action_else
+	* @param	string	$action_true	SQL expression that is used, if the condition is true
+	* @param	string	$action_else	SQL expression that is used, if the condition is false, optional
+	* @return	string			CASE expression including the condition and statements
+	*/
+	public function sql_case($condition, $action_true, $action_false = false)
+	{
+		$sql_case = 'CASE WHEN ' . $condition;
+		$sql_case .= ' THEN ' . $action_true;
+		$sql_case .= ($action_false !== false) ? ' ELSE ' . $action_false : '';
+		$sql_case .= ' END';
+		return $sql_case;
+	}
+
+	/**
+	* Build a concatenated expression
+	*
+	* @param	string	$expr1		Base SQL expression where we append the second one
+	* @param	string	$expr2		SQL expression that is appended to the first expression
+	* @return	string		Concatenated string
+	*/
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return $expr1 . ' || ' . $expr2;
+	}
+
+	/**
 	* Returns whether results of a query need to be buffered to run a transaction while iterating over them.
 	*
 	* @return bool Whether buffering is required.
@@ -498,6 +528,28 @@ class dbal
 		}
 
 		return $column_name . ' | ' . (1 << $bit) . (($compare) ? ' ' . $compare : '');
+	}
+
+	/**
+	* Returns SQL string to cast a string expression to an int.
+	*
+	* @param  string $expression An expression evaluating to string
+	* @return string             Expression returning an int
+	*/
+	function cast_expr_to_bigint($expression)
+	{
+		return $expression;
+	}
+
+	/**
+	* Returns SQL string to cast an integer expression to a string.
+	*
+	* @param  string $expression An expression evaluating to int
+	* @return string             Expression returning a string
+	*/
+	function cast_expr_to_string($expression)
+	{
+		return $expression;
 	}
 
 	/**
@@ -771,8 +823,9 @@ class dbal
 	function sql_report($mode, $query = '')
 	{
 		global $cache, $starttime, $phpbb_root_path, $user;
+		global $request;
 
-		if (empty($_REQUEST['explain']))
+		if (is_object($request) && !$request->variable('explain', false))
 		{
 			return false;
 		}
@@ -794,12 +847,10 @@ class dbal
 				$mtime = explode(' ', microtime());
 				$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-				echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-					<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+				echo '<!DOCTYPE html>
+					<html dir="ltr">
 					<head>
-						<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-						<meta http-equiv="Content-Style-Type" content="text/css" />
-						<meta http-equiv="imagetoolbar" content="no" />
+						<meta charset="utf-8">
 						<title>SQL Report</title>
 						<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 					</head>
@@ -996,5 +1047,3 @@ class dbal
 * This variable holds the class name to use later
 */
 $sql_db = (!empty($dbms)) ? 'dbal_' . basename($dbms) : 'dbal';
-
-?>

@@ -1,5 +1,8 @@
 {
 	"minimum-stability": "beta",
+	"require": {
+		"symfony/event-dispatcher": "2.1.*"
+	},
 	"require-dev": {
 		"fabpot/goutte": "1.0.x-dev"
 	}

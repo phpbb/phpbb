@@ -175,7 +175,7 @@ foreach ($schema_data as $table_name => $table_data)
 			$column_type = $dbms_type_map['mysql_41'][$column_data[0]];
 		}
 
-		// Adjust default value if db-dependant specified
+		// Adjust default value if db-dependent specified
 		if (is_array($column_data[1]))
 		{
 			$column_data[1] = (isset($column_data[1][$dbms])) ? $column_data[1][$dbms] : $column_data[1]['default'];
@@ -687,6 +687,7 @@ function get_schema_struct()
 		'PRIMARY_KEY'	=> 'log_id',
 		'KEYS'			=> array(
 			'log_type'				=> array('INDEX', 'log_type'),
+			'log_time'				=> array('INDEX', 'log_time'),
 			'forum_id'				=> array('INDEX', 'forum_id'),
 			'topic_id'				=> array('INDEX', 'topic_id'),
 			'reportee_id'			=> array('INDEX', 'reportee_id'),
@@ -1089,92 +1090,14 @@ function get_schema_struct()
 			'style_name'			=> array('VCHAR_UNI:255', ''),
 			'style_copyright'		=> array('VCHAR_UNI', ''),
 			'style_active'			=> array('BOOL', 1),
-			'template_id'			=> array('UINT', 0),
-			'theme_id'				=> array('UINT', 0),
-			'imageset_id'			=> array('UINT', 0),
+			'style_path'			=> array('VCHAR:100', ''),
+			'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
+			'style_parent_id'		=> array('UINT:4', 0),
+			'style_parent_tree'		=> array('TEXT', ''),
 		),
 		'PRIMARY_KEY'	=> 'style_id',
 		'KEYS'			=> array(
 			'style_name'		=> array('UNIQUE', 'style_name'),
-			'template_id'		=> array('INDEX', 'template_id'),
-			'theme_id'			=> array('INDEX', 'theme_id'),
-			'imageset_id'		=> array('INDEX', 'imageset_id'),
-		),
-	);
-
-	$schema_data['phpbb_styles_template'] = array(
-		'COLUMNS'		=> array(
-			'template_id'			=> array('UINT', NULL, 'auto_increment'),
-			'template_name'			=> array('VCHAR_UNI:255', ''),
-			'template_copyright'	=> array('VCHAR_UNI', ''),
-			'template_path'			=> array('VCHAR:100', ''),
-			'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
-			'template_storedb'		=> array('BOOL', 0),
-			'template_inherits_id'		=> array('UINT:4', 0),
-			'template_inherit_path'		=> array('VCHAR', ''),
-		),
-		'PRIMARY_KEY'	=> 'template_id',
-		'KEYS'			=> array(
-			'tmplte_nm'				=> array('UNIQUE', 'template_name'),
-		),
-	);
-
-	$schema_data['phpbb_styles_template_data'] = array(
-		'COLUMNS'		=> array(
-			'template_id'			=> array('UINT', 0),
-			'template_filename'		=> array('VCHAR:100', ''),
-			'template_included'		=> array('TEXT', ''),
-			'template_mtime'		=> array('TIMESTAMP', 0),
-			'template_data'			=> array('MTEXT_UNI', ''),
-		),
-		'KEYS'			=> array(
-			'tid'					=> array('INDEX', 'template_id'),
-			'tfn'					=> array('INDEX', 'template_filename'),
-		),
-	);
-
-	$schema_data['phpbb_styles_theme'] = array(
-		'COLUMNS'		=> array(
-			'theme_id'				=> array('UINT', NULL, 'auto_increment'),
-			'theme_name'			=> array('VCHAR_UNI:255', ''),
-			'theme_copyright'		=> array('VCHAR_UNI', ''),
-			'theme_path'			=> array('VCHAR:100', ''),
-			'theme_storedb'			=> array('BOOL', 0),
-			'theme_mtime'			=> array('TIMESTAMP', 0),
-			'theme_data'			=> array('MTEXT_UNI', ''),
-		),
-		'PRIMARY_KEY'	=> 'theme_id',
-		'KEYS'			=> array(
-			'theme_name'		=> array('UNIQUE', 'theme_name'),
-		),
-	);
-
-	$schema_data['phpbb_styles_imageset'] = array(
-		'COLUMNS'		=> array(
-			'imageset_id'				=> array('UINT', NULL, 'auto_increment'),
-			'imageset_name'				=> array('VCHAR_UNI:255', ''),
-			'imageset_copyright'		=> array('VCHAR_UNI', ''),
-			'imageset_path'				=> array('VCHAR:100', ''),
-		),
-		'PRIMARY_KEY'		=> 'imageset_id',
-		'KEYS'				=> array(
-			'imgset_nm'			=> array('UNIQUE', 'imageset_name'),
-		),
-	);
-
-	$schema_data['phpbb_styles_imageset_data'] = array(
-		'COLUMNS'		=> array(
-			'image_id'				=> array('UINT', NULL, 'auto_increment'),
-			'image_name'			=> array('VCHAR:200', ''),
-			'image_filename'		=> array('VCHAR:200', ''),
-			'image_lang'			=> array('VCHAR:30', ''),
-			'image_height'			=> array('USINT', 0),
-			'image_width'			=> array('USINT', 0),
-			'imageset_id'			=> array('UINT', 0),
-		),
-		'PRIMARY_KEY'		=> 'image_id',
-		'KEYS'				=> array(
-			'i_d'			=> array('INDEX', 'imageset_id'),
 		),
 	);
 
@@ -1306,8 +1229,7 @@ function get_schema_struct()
 			'user_inactive_time'		=> array('TIMESTAMP', 0),
 			'user_posts'				=> array('UINT', 0),
 			'user_lang'					=> array('VCHAR:30', ''),
-			'user_timezone'				=> array('DECIMAL', 0),
-			'user_dst'					=> array('BOOL', 0),
+			'user_timezone'				=> array('VCHAR:100', 'UTC'),
 			'user_dateformat'			=> array('VCHAR_UNI:30', 'd M Y H:i'),
 			'user_style'				=> array('UINT', 0),
 			'user_rank'					=> array('UINT', 0),
@@ -1396,5 +1318,3 @@ function get_schema_struct()
 
 	return $schema_data;
 }
-
-?>

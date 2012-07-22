@@ -116,5 +116,3 @@ function utf8_normalize_nfkc($strings)
 
 	return $strings;
 }
-
-?>

@@ -122,5 +122,3 @@ $db->sql_freeresult($result);
 
 // Done
 $db->sql_close();
-
-?>

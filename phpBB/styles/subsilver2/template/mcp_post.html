@@ -98,7 +98,7 @@
 </tr>
 <tr>
 	<td class="row1" colspan="2">
-	<!-- IF U_EDIT --><div class="gen" style="float: {S_CONTENT_FLOW_END};"><a href="{U_EDIT}">{EDIT_IMG}</a></div><!-- ENDIF -->
+	<!-- IF U_EDIT --><div class="gen" style="float: {S_CONTENT_FLOW_END};"><a href="{U_EDIT}" class="imageset">{EDIT_IMG}</a></div><!-- ENDIF -->
 
 	<div class="postbody">{POST_PREVIEW}</div>
 
@@ -173,7 +173,7 @@
 		<!-- BEGIN userrow -->
 			<!-- IF userrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 				<td><span class="gen"><!-- IF userrow.U_PROFILE --><a href="{userrow.U_PROFILE}">{userrow.USERNAME}</a><!-- ELSE -->{userrow.USERNAME}<!-- ENDIF --> [ {userrow.NUM_POSTS} {userrow.L_POST_S} ]</span></td>
-				<td align="center"><a href="{userrow.U_SEARCHPOSTS}">{SEARCH_IMG}</a></td>
+				<td align="center"><a href="{userrow.U_SEARCHPOSTS}" class="imageset">{SEARCH_IMG}</a></td>
 			</tr>
 		<!-- BEGINELSE -->
 			<tr class="row1">

@@ -23,9 +23,8 @@ select {
 	font-weight: normal;
 	cursor: pointer;
 	vertical-align: middle;
-	border: 1px solid #666666;
+	border: 1px solid transparent;
 	padding: 1px;
-	background-color: #FAFAFA;
 	font-size: 1em;
 }
 
@@ -33,8 +32,9 @@ option {
 	padding-right: 1em;
 }
 
-option.disabled-option {
-	color: graytext;
+select optgroup option {
+	padding-right: 1em;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
 }
 
 textarea {
@@ -48,7 +48,6 @@ textarea {
 label {
 	cursor: default;
 	padding-right: 5px;
-	color: #676767;
 }
 
 label input {
@@ -89,10 +88,6 @@ fieldset.fields1 dd {
 	border-left-width: 0;
 }
 
-fieldset.fields1 {
-	background-color: transparent;
-}
-
 fieldset.fields1 div {
 	margin-bottom: 3px;
 }
@@ -121,7 +116,6 @@ dt label {
 
 dd label {
 	white-space: nowrap;
-	color: #333;
 }
 
 dd input, dd textarea {
@@ -137,20 +131,8 @@ dd textarea {
 }
 
 /* Hover effects */
-fieldset dl:hover dt label {
-	color: #000000;
-}
-
-fieldset.fields2 dl:hover dt label {
-	color: inherit;
-}
-
 #timezone {
 	width: 95%;
-}
-
-* html #timezone {
-	width: 50%;
 }
 
 /* Quick-login on index page */
@@ -166,7 +148,6 @@ fieldset.quick-login input.inputbox {
 	width: 15%;
 	vertical-align: middle;
 	margin-right: 5px;
-	background-color: #f3f3f3;
 }
 
 fieldset.quick-login label {
@@ -268,7 +249,6 @@ fieldset.submit-buttons input {
 	min-width: 100%;
 	max-width: 100%;
 	font-size: 1.2em;
-	color: #333333;
 }
 
 /* Emoticons panel */
@@ -284,20 +264,13 @@ fieldset.submit-buttons input {
 /* Input field styles
 ---------------------------------------- */
 .inputbox {
-	background-color: #FFFFFF;
-	border: 1px solid #c0c0c0;
-	color: #333333;
+	border: 1px solid transparent;
 	padding: 2px;
 	cursor: text;
 }
 
-.inputbox:hover {
-	border: 1px solid #eaeaea;
-}
-
-.inputbox:focus {
-	border: 1px solid #eaeaea;
-	color: #4b4b4b;
+.inputbox:hover, .inputbox:focus {
+	border: 1px solid transparent;
 }
 
 input.inputbox	{ width: 85%; }
@@ -324,13 +297,12 @@ a.button1, input.button1, input.button3, a.button2, input.button2 {
 	padding-top: 1px;
 	padding-bottom: 1px;
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	color: #000;
-	background: #FAFAFA none repeat-x top left;
+	background: transparent none repeat-x top left;
 }
 
 a.button1, input.button1 {
 	font-weight: bold;
-	border: 1px solid #666666;
+	border: 1px solid transparent;
 }
 
 input.button3 {
@@ -344,13 +316,12 @@ input.button3 {
 
 /* Alternative button */
 a.button2, input.button2, input.button3 {
-	border: 1px solid #666666;
+	border: 1px solid transparent;
 }
 
 /* <a> button in the style of the form buttons */
 a.button1, a.button1:link, a.button1:visited, a.button1:active, a.button2, a.button2:link, a.button2:visited, a.button2:active {
 	text-decoration: none;
-	color: #000000;
 	padding: 2px 8px;
 	line-height: 250%;
 	vertical-align: text-bottom;
@@ -359,14 +330,12 @@ a.button1, a.button1:link, a.button1:visited, a.button1:active, a.button2, a.but
 
 /* Hover states */
 a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, input.button3:hover {
-	border: 1px solid #BCBCBC;
+	border: 1px solid transparent;
 	background-position: 0 100%;
-	color: #BCBCBC;
 }
 
 input.disabled {
 	font-weight: normal;
-	color: #666666;
 }
 
 /* Topic and forum Search */

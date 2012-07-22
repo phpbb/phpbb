@@ -42,6 +42,11 @@ class phpbb_test_case_helpers
 		$this->test_case->setExpectedException($exceptionName, (string) $message, $errno);
 	}
 
+	public function makedirs($path)
+	{
+		mkdir($path, 0777, true);
+	}
+
 	static public function get_test_config()
 	{
 		$config = array();

@@ -4,9 +4,8 @@
 * posting [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -122,13 +121,29 @@ $lang = array_merge($lang, array(
 	'LOGIN_EXPLAIN_QUOTE'		=> 'You need to login in order to quote posts within this forum.',
 	'LOGIN_EXPLAIN_REPLY'		=> 'You need to login in order to reply to topics within this forum.',
 
-	'MAX_FONT_SIZE_EXCEEDED'	=> 'You may only use fonts up to size %1$d.',
-	'MAX_FLASH_HEIGHT_EXCEEDED'	=> 'Your flash files may only be up to %1$d pixels high.',
-	'MAX_FLASH_WIDTH_EXCEEDED'	=> 'Your flash files may only be up to %1$d pixels wide.',
-	'MAX_IMG_HEIGHT_EXCEEDED'	=> 'Your images may only be up to %1$d pixels high.',
-	'MAX_IMG_WIDTH_EXCEEDED'	=> 'Your images may only be up to %1$d pixels wide.',
+	'MAX_FONT_SIZE_EXCEEDED'	=> 'You may only use fonts up to size %d.',
+	'MAX_FLASH_HEIGHT_EXCEEDED'	=> array(
+		1	=> 'Your flash files may only be up to %d pixel high.',
+		2	=> 'Your flash files may only be up to %d pixels high.',
+	),
+	'MAX_FLASH_WIDTH_EXCEEDED'	=> array(
+		1	=> 'Your flash files may only be up to %d pixel wide.',
+		2	=> 'Your flash files may only be up to %d pixels wide.',
+	),
+	'MAX_IMG_HEIGHT_EXCEEDED'	=> array(
+		1	=> 'Your images may only be up to %1$d pixel high.',
+		2	=> 'Your images may only be up to %1$d pixels high.',
+	),
+	'MAX_IMG_WIDTH_EXCEEDED'	=> array(
+		1	=> 'Your images may only be up to %d pixel wide.',
+		2	=> 'Your images may only be up to %d pixels wide.',
+	),
 
-	'MESSAGE_BODY_EXPLAIN'		=> 'Enter your message here, it may contain no more than <strong>%d</strong> characters.',
+	'MESSAGE_BODY_EXPLAIN'		=> array(
+		0	=> '', // zero means no limit, so we don't view a message here.
+		1	=> 'Enter your message here, it may contain no more than <strong>%d</strong> character.',
+		2	=> 'Enter your message here, it may contain no more than <strong>%d</strong> characters.',
+	),
 	'MESSAGE_DELETED'			=> 'This message has been deleted successfully.',
 	'MORE_SMILIES'				=> 'View more smilies',
 
@@ -150,8 +165,14 @@ $lang = array_merge($lang, array(
 	'POLL_MAX_OPTIONS'			=> 'Options per user',
 	'POLL_MAX_OPTIONS_EXPLAIN'	=> 'This is the number of options each user may select when voting.',
 	'POLL_OPTIONS'				=> 'Poll options',
-	'POLL_OPTIONS_EXPLAIN'		=> 'Place each option on a new line. You may enter up to <strong>%d</strong> options.',
-	'POLL_OPTIONS_EDIT_EXPLAIN'	=> 'Place each option on a new line. You may enter up to <strong>%d</strong> options. If you remove or add options all previous votes will be reset.',
+	'POLL_OPTIONS_EXPLAIN'		=> array(
+		1	=> 'Place each option on a new line. You may enter <strong>%d</strong> option.',
+		2	=> 'Place each option on a new line. You may enter up to <strong>%d</strong> options.',
+	),
+	'POLL_OPTIONS_EDIT_EXPLAIN'		=> array(
+		1	=> 'Place each option on a new line. You may enter <strong>%d</strong> option. If you remove or add options all previous votes will be reset.',
+		2	=> 'Place each option on a new line. You may enter up to <strong>%d</strong> options. If you remove or add options all previous votes will be reset.',
+	),
 	'POLL_QUESTION'				=> 'Poll question',
 	'POLL_TITLE_TOO_LONG'		=> 'The poll title must contain fewer than 100 characters.',
 	'POLL_TITLE_COMP_TOO_LONG'	=> 'The parsed size of your poll title is too large, consider removing BBCodes or smilies.',
@@ -176,7 +197,10 @@ $lang = array_merge($lang, array(
 	'POST_TOPIC_AS'				=> 'Post topic as',
 	'PROGRESS_BAR'				=> 'Progress bar',
 
-	'QUOTE_DEPTH_EXCEEDED'		=> 'You may embed only %1$d quotes within each other.',
+	'QUOTE_DEPTH_EXCEEDED'		=> array(
+		1	=> 'You may embed only %d quote within each other.',
+		2	=> 'You may embed only %d quotes within each other.',
+	),
 
 	'SAVE'						=> 'Save',
 	'SAVE_DATE'					=> 'Saved at',
@@ -191,12 +215,19 @@ $lang = array_merge($lang, array(
 	'STYLES_TIP'				=> 'Tip: Styles can be applied quickly to selected text.',
 
 	'TOO_FEW_CHARS'				=> 'Your message contains too few characters.',
-	'TOO_FEW_CHARS_LIMIT'		=> 'Your message contains %1$d characters. The minimum number of characters you need to enter is %2$d.',
+	'TOO_FEW_CHARS_LIMIT'		=> array(
+		1	=> 'Your message contains %1$d character. The minimum number of characters you need to enter is %2$d.',
+		2	=> 'Your message contains %1$d characters. The minimum number of characters you need to enter is %2$d.',
+	),
 	'TOO_FEW_POLL_OPTIONS'		=> 'You must enter at least two poll options.',
 	'TOO_MANY_ATTACHMENTS'		=> 'Cannot add another attachment, %d is the maximum.',
 	'TOO_MANY_CHARS'			=> 'Your message contains too many characters.',
-	'TOO_MANY_CHARS_POST'		=> 'Your message contains %1$d characters. The maximum number of allowed characters is %2$d.',
-	'TOO_MANY_CHARS_SIG'		=> 'Your signature contains %1$d characters. The maximum number of allowed characters is %2$d.',
+	'TOO_MANY_CHARS_POST'		=> array(
+		2	=> 'Your message contains %1$d characters. The maximum number of allowed characters is %2$d.',
+	),
+	'TOO_MANY_CHARS_SIG'		=> array(
+		2	=> 'Your signature contains %1$d characters. The maximum number of allowed characters is %2$d.',
+	),
 	'TOO_MANY_POLL_OPTIONS'		=> 'You have tried to enter too many poll options.',
 	'TOO_MANY_SMILIES'			=> 'Your message contains too many smilies. The maximum number of smilies allowed is %d.',
 	'TOO_MANY_URLS'				=> 'Your message contains too many URLs. The maximum number of URLs allowed is %d.',
@@ -220,7 +251,5 @@ $lang = array_merge($lang, array(
 	'VIEW_PRIVATE_MESSAGE'		=> '%sView your submitted private message%s',
 
 	'WRONG_FILESIZE'			=> 'The file is too big, maximum allowed size is %1d %2s.',
-	'WRONG_SIZE'				=> 'The image must be at least %1$d pixels wide, %2$d pixels high and at most %3$d pixels wide and %4$d pixels high. The submitted image is %5$d pixels wide and %6$d pixels high.',
+	'WRONG_SIZE'				=> 'The image must be at least %1$s wide, %2$s high and at most %3$s wide and %4$s high. The submitted image is %5$s wide and %6$s high.',
 ));
-
-?>
