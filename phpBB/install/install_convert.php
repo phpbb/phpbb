@@ -933,7 +933,7 @@ class install_convert extends module
 				}
 				else if (sizeof($missing_tables))
 				{
-					$this->p_master->error(sprintf($user->lang['TABLES_MISSING'], implode(', ', $missing_tables)) . '<br /><br />' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
+					$this->p_master->error(sprintf($user->lang['TABLES_MISSING'], implode($user->lang['COMMA_SEPARATOR'], $missing_tables)) . '<br /><br />' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
 				}
 
 				$url = $this->save_convert_progress('&amp;confirm=1');

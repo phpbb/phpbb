@@ -497,7 +497,7 @@ class acp_permissions
 
 				$template->assign_vars(array(
 					'S_FORUM_NAMES'		=> (sizeof($forum_names)) ? true : false,
-					'FORUM_NAMES'		=> implode(', ', $forum_names))
+					'FORUM_NAMES'		=> implode($user->lang['COMMA_SEPARATOR'], $forum_names))
 				);
 			}
 

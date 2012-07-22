@@ -104,7 +104,7 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-$legend = implode(', ', $legend);
+$legend = implode($user->lang['COMMA_SEPARATOR'], $legend);
 
 // Generate birthday list if required ...
 $birthday_list = array();
@@ -157,7 +157,7 @@ $template->assign_vars(array(
 	'NEWEST_USER'	=> $user->lang('NEWEST_USER', get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
 
 	'LEGEND'		=> $legend,
-	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode(', ', $birthday_list),
+	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode($user->lang['COMMA_SEPARATOR'], $birthday_list),
 
 	'FORUM_IMG'				=> $user->img('forum_read', 'NO_UNREAD_POSTS'),
 	'FORUM_UNREAD_IMG'			=> $user->img('forum_unread', 'UNREAD_POSTS'),

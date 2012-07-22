@@ -98,7 +98,7 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
-				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
+				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode($user->lang['COMMA_SEPARATOR'], $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
 
 				$display_vars = array(
 					'title'	=> 'ACP_ATTACHMENT_SETTINGS',
@@ -917,7 +917,7 @@ class acp_attachments
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode(', ', $delete_files));
-						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode(', ', $delete_files));
+						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode($user->lang['COMMA_SEPARATOR'], $delete_files));
 					}
 
 					$upload_list = array();
@@ -1074,7 +1074,7 @@ class acp_attachments
 								$error[] = $user->lang['FILES_GONE'];
 							}
 							add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode(', ', $deleted_filenames));
-							$notify[] = sprintf($user->lang['LOG_ATTACHMENTS_DELETED'], implode(', ', $deleted_filenames));
+							$notify[] = sprintf($user->lang['LOG_ATTACHMENTS_DELETED'], implode($user->lang['COMMA_SEPARATOR'], $deleted_filenames));
 						}
 						else
 						{

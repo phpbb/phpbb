@@ -2084,7 +2084,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 			'SUBJECT'			=> $subject,
 			'SENT_DATE'			=> $user->format_date($row['message_time']),
 			'MESSAGE'			=> $message,
-			'FOLDER'			=> implode(', ', $row['folder']),
+			'FOLDER'			=> implode($user->lang['COMMA_SEPARATOR'], $row['folder']),
 			'DECODED_MESSAGE'	=> $decoded_message,
 
 			'S_CURRENT_MSG'		=> ($row['msg_id'] == $msg_id),
