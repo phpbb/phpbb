@@ -61,7 +61,7 @@ class phpbb_builtin_webserver
 		}
 
 		$this->process = proc_open(
-			'php -S localhost:' . $port,
+			'php -S localhost:' . $this->port,
 			array(
 				0 => array('pipe', 'r'), // STDIN
 				1 => array('file', '/dev/null', 'w'), // STDOUT
