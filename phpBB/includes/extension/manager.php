@@ -22,6 +22,7 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_extension_manager
 {
+	protected $db;
 	protected $cache;
 	protected $php_ext;
 	protected $extensions;
@@ -118,6 +119,18 @@ class phpbb_extension_manager
 		{
 			return new phpbb_extension_base;
 		}
+	}
+
+	/**
+	* Instantiates the metadata manager for the extension with the given name
+	*
+	* @param string $name The extension name
+	* @param string $template The template manager
+	* @return phpbb_extension_metadata_manager Instance of the metadata manager
+	*/
+	public function get_extension_metadata($name, phpbb_template $template)
+	{
+		return new phpbb_extension_metadata_manager($name, $this->db, $this, $this->phpbb_root_path, $this->phpEx, $template);
 	}
 
 	/**

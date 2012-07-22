@@ -40,23 +40,10 @@
 			<td><strong>{disabled.EXT_NAME}</strong></a></td>
 			<td style="text-align: center;"><a href="{disabled.U_DETAILS}">{L_DETAILS}</a></td>
 			<td style="text-align: center;"><a href="{disabled.U_ENABLE}">{L_ENABLE}</a>&nbsp;
-			|&nbsp;<a href="{disabled.U_PURGE}">{L_PURGE}</a>&nbsp;
-			|&nbsp;<a href="{disabled.U_DELETE}">{L_DELETE}</a></td>
+			<!-- IF disabled.U_PURGE -->|&nbsp;<a href="{disabled.U_PURGE}">{L_PURGE}</a>&nbsp;<!-- ENDIF -->
+			<!-- IF disabled.U_DELETE -->|&nbsp;<a href="{disabled.U_DELETE}">{L_DELETE}</a><!-- ENDIF --></td>
 		</tr>
 		<!-- END disabled -->
-		<!-- ENDIF -->
-		<!-- IF .avaliable -->
-		<tr>
-			<td class="row3" colspan="3"><strong>{L_AVALIABLE} {L_EXTENSIONS}</strong></td>
-		</tr>
-		<!-- BEGIN avaliable -->
-		<tr>
-			<td><strong>{avaliable.EXT_NAME}</strong></a></td>
-			<td style="text-align: center;"><a href="{avaliable.U_DETAILS}">{L_DETAILS}</a></td>
-			<td style="text-align: center;"><a href="{avaliable.U_ENABLE}">{L_ENABLE}</a>&nbsp;
-			|&nbsp;<a href="{avaliable.U_DELETE}">{L_DELETE}</a></td>
-		</tr>
-		<!-- END avaliable -->
 		<!-- ENDIF -->
 	</tbody>
 	</table>
