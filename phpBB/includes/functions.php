@@ -4911,7 +4911,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// Set additional values in $user->data for avatar and rank
 	$user->data['avatar_img'] = get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height']);
 	get_user_rank($user->data['user_rank'], $user->data['user_posts'], $user->data['rank_title'], $user->data['rank_image'], $user->data['rank_image_src']);
-	
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -5032,7 +5032,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_ICONS'				=> $config['icons_path'],
 		'T_RANKS'				=> $config['ranks_path'],
 		'T_UPLOAD'				=> $config['upload_path'],
-		
+
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 
 		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
