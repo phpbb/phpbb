@@ -80,8 +80,8 @@ abstract class phpbb_revisions_diff_engine_base
 		$this->to = $to_text;
 		$this->from = $from_text;
 
-		$this->get_diff_obj();
 		$this->set_granularity($granularity);
+		$this->get_diff_obj();
 		$this->process();
 	}
 

@@ -30,6 +30,10 @@ class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_b
 	*/
 	public function set_granularity($granularity)
 	{
+		if (!class_exists('FineDiff'))
+		{
+			require($this->phpbb_root_path . 'includes/revisions/finediff.' . $this->phpEx);
+		}
 		switch ($granularity)
 		{
 			default:
@@ -129,7 +133,6 @@ class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_b
 		{
 			require($this->phpbb_root_path . 'includes/revisions/finediff.' . $this->phpEx);
 		}
-
 		$this->diff = new FineDiff($this->from, $this->to, $this->granularity);
 	}
 }

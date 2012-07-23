@@ -215,13 +215,12 @@ if ($compare && $first_id && $last_id)
 {
 	$first = $revisions[$first_id];
 	$last = $revisions[$last_id];
-
-	$reverse = $first_id < $last_id || !$last->is_current();
-
-	if ($reverse)
-	{
-		$revisions = array_reverse($revisions, true);
-	}
+}
+// Handle comparison cases e.g. 2... with no final number in the comparison
+else if ($compare && $first_id)
+{
+	$first = $revisions[$first_id];
+	$last = $current;
 }
 else if ($revert_id)
 {
@@ -279,18 +278,40 @@ $template->assign_vars(array(
 
 if ($display_comparison)
 {
+	// By default, revisions are listed oldest first. However, if we are comparing
+	// a new revision to an old revision, we need to reverse the list. Basically,
+	// we always want the first revision in the comparison shown at the top.
+	if ($first_id > $last_id)
+	{
+		$revisions = array_reverse($revisions, true);
+	}
+
+	$range_ids = array();
+	foreach ($revisions as $revision)
+	{
+		if ($revision != $first && !sizeof($range_ids))
+		{
+			continue;
+		}
+
+		$range_ids[] = $revision->get_id();
+
+		if ($revision == $last)
+		{
+			break;
+		}
+	}
+
 	$revision_number = 1;
 	$revision_users = array();
 	foreach ($revisions as $revision)
 	{
-		$in_range = ($first == $current && $revision->get_id() <= $last->get_id())
-			|| ($last == $current && $revision->get_id() >= $first->get_id())
-			|| ($revision->get_id() <= $first->get_id() && $revision->get_id() >= $last->get_id());
+		$this_revision_id = $revision->get_id();
 
 		$template->assign_block_vars('revision', array(
 			'DATE'				=> $user->format_date($revision->get_time()),
-			'ID'				=> $revision->get_id(),
-			'IN_RANGE'			=> $in_range,
+			'ID'				=> $this_revision_id,
+			'IN_RANGE'			=> in_array($this_revision_id, $range_ids),
 			'NUMBER'			=> $revision_number,
 			'REASON'			=> $revision->get_reason(),
 			'USERNAME'			=> $revision->get_username(),
@@ -299,8 +320,8 @@ if ($display_comparison)
 
 			'S_DELETE'			=> $auth->acl_get('m_revisions'),
 
-			'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $revision->get_id())) : '',
-			'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id())),
+			'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $this_revision_id)) : '',
+			'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $this_revision_id)),
 			'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
 		));
 
@@ -323,6 +344,11 @@ if ($display_comparison)
 		'SUBJECT_DIFF'			=> $subject_diff_renedered,
 		'L_COMPARE_SUMMARY'		=> $l_compare_summary,
 		'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
+
+		'FIRST_REVISION'		=> $first->get_id() ? strtolower($user->lang('REVISION')) . ' ' . $first->get_id() : $user->lang('CURRENT_REVISION'),
+		'U_FIRST_REVISION'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", ($first->get_id() ? array('r' => $first->get_id()) : array('p' => $post_id))),
+		'LAST_REVISION'			=> $last->get_id() ? strtolower($user->lang('REVISION')) . ' ' . $last->get_id() : $user->lang('CURRENT_REVISION'),
+		'U_LAST_REVISION'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", ($last->get_id() ? array('r' => $last->get_id()) : array('p' => $post_id))),
 	));
 }
 
@@ -334,7 +360,7 @@ $navlinks = array(
 	),
 	array(
 		'name'	=> $post_data['topic_title'],
-		'link'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'])),
+		'link'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'])) . "#p$post_id",
 	),
 );
 
