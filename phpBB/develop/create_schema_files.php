@@ -1448,6 +1448,7 @@ function get_schema_struct()
 			'field_default_value'	=> array('VCHAR_UNI', ''),
 			'field_validation'		=> array('VCHAR_UNI:20', ''),
 			'field_required'		=> array('BOOL', 0),
+			'field_show_novalue'	=> array('BOOL', 0),
 			'field_show_on_reg'		=> array('BOOL', 0),
 			'field_show_on_vt'		=> array('BOOL', 0),
 			'field_show_profile'	=> array('BOOL', 0),
