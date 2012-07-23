@@ -417,8 +417,19 @@ phpbb.ajaxify = function(options) {
 * @param	bool	keep_selection		Shall we keep the value selected, or shall the user be forced to repick one.
 */
 phpbb.timezone_switch_date = function(keep_selection) {
-	$('#timezone > optgroup').css('display', 'none');
-	$("#timezone > optgroup[label='" + $('#tz_date').val() + "']").css('display', 'block');
+	if ($('#timezone_copy').length == 0) {
+		// We make a backup of the original dropdown, so we can remove optgroups
+		// instead of setting display to none, because IE and chrome will not
+		// hide options inside of optgroups and selects via css
+		$('#timezone').clone().attr('id', 'timezone_copy').css('display', 'none').attr('name', 'tz_copy').insertAfter('#timezone');
+	} else {
+		// Copy the content of our backup, so we can remove all unneeded options
+		$('#timezone').replaceWith($('#timezone_copy').clone().attr('id', 'timezone').css('display', 'block').attr('name', 'tz'));
+	}
+
+	if ($('#tz_date').val() != '') {
+		$('#timezone > optgroup').remove(":not([label='" + $('#tz_date').val() + "'])");
+	}
 
 	if ($('#tz_date').val() == $('#tz_select_date_suggest').attr('data-suggested-tz')) {
 		$('#tz_select_date_suggest').css('display', 'none');
