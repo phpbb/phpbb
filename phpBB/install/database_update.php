@@ -8,7 +8,7 @@
 *
 */
 
-define('UPDATES_TO_VERSION', '3.0.11-RC1');
+define('UPDATES_TO_VERSION', '3.0.11-RC2');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 define('DEBUG_FROM_VERSION', false);
@@ -2097,6 +2097,10 @@ function change_database_data(&$no_updates, $version)
 			while (sizeof($delete_pms) == $batch_size);
 
 			$no_updates = false;
+		break;
+
+		// No changes from 3.0.11-RC1 to 3.0.11-RC2
+		case '3.0.11-RC1':
 		break;
 	}
 }
