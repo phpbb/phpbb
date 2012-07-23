@@ -216,7 +216,7 @@ if ($compare && $first_id && $last_id)
 	$first = $revisions[$first_id];
 	$last = $revisions[$last_id];
 }
-// Handle comparison cases e.g. 2... with no final number in the comparison
+// Handle comparison cases with no final number in the comparison, e.g. 2...
 else if ($compare && $first_id)
 {
 	$first = $revisions[$first_id];
@@ -247,40 +247,9 @@ if ($display_comparison)
 
 	$text_diff_rendered = bbcode_nl2br($text_diff->render());
 	$subject_diff_renedered = $subject_diff->render();
-}
 
-$template->assign_vars(array(
-	'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-	'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-	
-	'RANK_TITLE'		=> $post_data['rank_title'],
-	'RANK_IMG'			=> $post_data['rank_image'],
-
-	'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
-
-	'POST_DATE'			=> $user->format_date($post_data['post_time']),
-	'POST_SUBJECT'		=> $revert_id && !$revert_confirm && $display_comparison ? $subject_diff_renedered : $current->get_subject(),
-	'MESSAGE'			=> $revert_id && !$revert_confirm && $display_comparison ? $text_diff_rendered : $current->get_text(),
-	'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
-
-	'POSTER_JOINED'		=> $user->format_date($post_data['user_regdate']),
-	'POSTER_POSTS'		=> $post_data['user_posts'],
-	'POSTER_LOCATION'	=> $post_data['user_from'],
-
-	'POST_IMG'		=> $user->img('icon_post_target', 'POST'),
-
-	'POST_ID'			=> $post_data['post_id'],
-	'POSTER_ID'			=> $post_data['poster_id'],
-
-	'U_VIEW_REVISIONS'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)),
-	'U_VIEW_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
-));
-
-if ($display_comparison)
-{
-	// By default, revisions are listed oldest first. However, if we are comparing
-	// a new revision to an old revision, we need to reverse the list. Basically,
-	// we always want the first revision in the comparison shown at the top.
+	// We always want the first revision in the comparison at the top, so if
+	// the start revision is newer than the ending revision, reverse the list
 	if ($first_id > $last_id)
 	{
 		$revisions = array_reverse($revisions, true);
@@ -340,8 +309,6 @@ if ($display_comparison)
 		'S_DISPLAY_COMPARISON'	=> true,
 		'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($current->get_time())),
 
-		'TEXT_DIFF'				=> $text_diff_rendered,
-		'SUBJECT_DIFF'			=> $subject_diff_renedered,
 		'L_COMPARE_SUMMARY'		=> $l_compare_summary,
 		'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
 
@@ -349,6 +316,28 @@ if ($display_comparison)
 		'U_FIRST_REVISION'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", ($first->get_id() ? array('r' => $first->get_id()) : array('p' => $post_id))),
 		'LAST_REVISION'			=> $last->get_id() ? strtolower($user->lang('REVISION')) . ' ' . $last->get_id() : $user->lang('CURRENT_REVISION'),
 		'U_LAST_REVISION'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", ($last->get_id() ? array('r' => $last->get_id()) : array('p' => $post_id))),
+
+		'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+		'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+		
+		'RANK_TITLE'		=> $post_data['rank_title'],
+		'RANK_IMG'			=> $post_data['rank_image'],
+
+		'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
+
+		'POST_DATE'			=> $user->format_date($post_data['post_time']),
+		'POST_SUBJECT'		=> $display_comparison ? $subject_diff_renedered : $current->get_subject(),
+		'MESSAGE'			=> $display_comparison ? $text_diff_rendered : $current->get_text(),
+		'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
+
+		'POSTER_JOINED'		=> $user->format_date($post_data['user_regdate']),
+		'POSTER_POSTS'		=> $post_data['user_posts'],
+		'POSTER_LOCATION'	=> $post_data['user_from'],
+
+		'POST_IMG'			=> $user->img('icon_post_target', 'POST'),
+
+		'POST_ID'			=> $post_data['post_id'],
+		'POSTER_ID'			=> $post_data['poster_id'],
 	));
 }
 
@@ -418,6 +407,11 @@ foreach ($navlinks as $link)
 		'U_VIEW_FORUM'	=> $link['link'],
 	));
 }
+
+$template->assign_vars(array(
+	'U_VIEW_REVISIONS'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)),
+	'U_VIEW_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
+));
 
 page_header($page_title, false);
 
