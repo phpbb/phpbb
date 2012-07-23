@@ -25,7 +25,7 @@ class acp_extensions
 	function main()
 	{
 		// Start the page
-		global $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx;
 
 		$user->add_lang(array('install', 'acp/extensions'));
 
@@ -33,6 +33,17 @@ class acp_extensions
 
 		$action = $request->variable('action', 'list');
 		$ext_name = $request->variable('ext_name', '');
+
+		// If they've specificed an extension, let's load the metadata manager and validate it.
+		if ($ext_name)
+		{
+			$md_manager = new phpbb_extension_metadata_manager($ext_name, $db, $phpbb_extension_manager, $phpbb_root_path, ".$phpEx", $template, $config);
+
+			if ($md_manager->get_metadata('all') === false)
+			{
+				trigger_error('EXTENSION_INVALID');
+			}
+		}
 
 		// What are we doing?
 		switch ($action)
@@ -47,6 +58,11 @@ class acp_extensions
 			break;
 
 			case 'enable_pre':
+				if (!$md_manager->validate_enable())
+				{
+					trigger_error('EXTENSION_NOT_AVAILABLE');
+				}
+
 				$this->tpl_name = 'acp_ext_enable';
 
 				$template->assign_vars(array(
@@ -56,10 +72,15 @@ class acp_extensions
 			break;
 
 			case 'enable':
+				if (!$md_manager->validate_enable())
+				{
+					trigger_error('EXTENSION_NOT_AVAILABLE');
+				}
+
 				if ($phpbb_extension_manager->enable_step($ext_name))
 				{
 					$template->assign_var('S_NEXT_STEP', true);
-					
+
 					meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . $ext_name);
 				}
 
@@ -76,14 +97,14 @@ class acp_extensions
 				$template->assign_vars(array(
 					'PRE'		=> true,
 					'U_DISABLE'	=> $this->u_action . '&amp;action=disable&amp;ext_name=' . $ext_name,
-				));				
-			break;	
+				));
+			break;
 
 			case 'disable':
 				if ($phpbb_extension_manager->disable_step($ext_name))
 				{
 					$template->assign_var('S_NEXT_STEP', true);
-					
+
 					meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . $ext_name);
 				}
 
@@ -101,13 +122,13 @@ class acp_extensions
 					'PRE'		=> true,
 					'U_PURGE'	=> $this->u_action . '&amp;action=purge&amp;ext_name=' . $ext_name,
 				));
-			break;		
+			break;
 
 			case 'purge':
 				if ($phpbb_extension_manager->purge_step($ext_name))
 				{
 					$template->assign_var('S_NEXT_STEP', true);
-					
+
 					meta_refresh(0, $this->u_action . '&amp;action=purge&amp;ext_name=' . $ext_name);
 				}
 
@@ -132,12 +153,8 @@ class acp_extensions
 			break;*/
 
 			case 'details':
-				$md_manager = new phpbb_extension_metadata_manager($ext_name, $db, $phpbb_extension_manager, $phpbb_root_path, ".$phpEx", $template);
-				
-				if ($md_manager->get_metadata('all', true) === false)
-				{
-					trigger_error('EXTENSION_INVALID');
-				}
+				// Output it to the template
+				$md_manager->output_template_data();
 
 				$this->tpl_name = 'acp_ext_details';
 			break;
@@ -146,7 +163,7 @@ class acp_extensions
 
 	/**
 	 * Lists all the enabled extensions and dumps to the template
-	 * 
+	 *
 	 * @param  $phpbb_extension_manager     An instance of the extension manager
 	 * @param  $template 					An instance of the template engine
 	 * @return null
@@ -156,7 +173,7 @@ class acp_extensions
 		foreach ($phpbb_extension_manager->all_enabled() as $name => $location)
 		{
 			$md_manager = $phpbb_extension_manager->get_extension_metadata($name, $template);
-			
+
 			$template->assign_block_vars('enabled', array(
 				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
@@ -169,7 +186,7 @@ class acp_extensions
 
 	/**
 	 * Lists all the disabled extensions and dumps to the template
-	 * 
+	 *
 	 * @param  $phpbb_extension_manager     An instance of the extension manager
 	 * @param  $template 					An instance of the template engine
 	 * @return null
@@ -179,7 +196,7 @@ class acp_extensions
 		foreach ($phpbb_extension_manager->all_disabled() as $name => $location)
 		{
 			$md_manager = $phpbb_extension_manager->get_extension_metadata($name, $template);
-			
+
 			$template->assign_block_vars('disabled', array(
 				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
@@ -193,7 +210,7 @@ class acp_extensions
 
 	/**
 	 * Lists all the available extensions and dumps to the template
-	 * 
+	 *
 	 * @param  $phpbb_extension_manager     An instance of the extension manager
 	 * @param  $template 					An instance of the template engine
 	 * @return null

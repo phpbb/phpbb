@@ -6,10 +6,12 @@
 
 	<fieldset>
 		<legend>{L_EXT_DETAILS}</legend>
+		<!-- IF MD_DISPLAY_NAME -->
 		<dl>
 			<dt><label for="md_display_name">{L_DISPLAY_NAME}:</label></dt>
 			<dd><strong id="md_display_name">{MD_DISPLAY_NAME}</strong></dd>
 		</dl>
+		<!-- ENDIF -->
 		<dl>
 			<dt><label for="md_name">{L_CLEAN_NAME}:</label></dt>
 			<dd><strong id="md_name">{MD_NAME}</strong></dd>
@@ -43,7 +45,7 @@
 			<dd><p id="md_license">{MD_LICENCE}</p></dd>
 		</dl>
 	</fieldset>
-	
+
 	<fieldset>
 		<legend>{L_REQUIREMENTS}</legend>
 		<!-- IF MD_REQUIRE_PHPBB -->
@@ -85,9 +87,9 @@
 			<dd><strong id="md_author_role">{md_authors.AUTHOR_ROLE}</strong></dd>
 		</dl>
 		<!-- ENDIF -->
-		
+
 		<br /><br />
 		<!-- END md_authors -->
 	</fieldset>
-	
+
 <!-- INCLUDE overall_footer.html -->

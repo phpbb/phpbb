@@ -77,7 +77,7 @@ if (isset($_GET['avatar']))
 	set_config_count(null, null, null, $config);
 
 	// load extensions
-	$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
+	$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
 
 	$phpbb_subscriber_loader = new phpbb_event_extension_subscriber_loader($phpbb_dispatcher, $phpbb_extension_manager);
 	$phpbb_subscriber_loader->load();

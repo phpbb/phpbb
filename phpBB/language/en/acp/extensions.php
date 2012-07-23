@@ -1,11 +1,11 @@
 <?php
-/** 
+/**
 *
 * acp_extensions [English]
 *
 * @package language
-* @copyright (c) 2012 phpBB Group 
-* @license http://opensource.org/licenses/gpl-2.0.php GNU Public License 
+* @copyright (c) 2012 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU Public License
 *
 */
 /**
@@ -23,7 +23,7 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE 
+// DEVELOPERS PLEASE NOTE
 //
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
@@ -35,11 +35,12 @@ if (empty($lang) || !is_array($lang))
 
 
 $lang = array_merge($lang, array(
-	'EXTENSION'				=> 'Extension',
-	'EXTENSIONS'			=> 'Extensions',
-	'EXTENSIONS_ADMIN'		=> 'Extensions Manager',
-	'EXTENSIONS_EXPLAIN'	=> 'The Extensions Manager is a tool in your phpBB Board which allows you to manage all of your extensions statuses and view information about them.',
-	'EXTENSION_INVALID'		=> 'The selected extension is not valid.',
+	'EXTENSION'					=> 'Extension',
+	'EXTENSIONS'				=> 'Extensions',
+	'EXTENSIONS_ADMIN'			=> 'Extensions Manager',
+	'EXTENSIONS_EXPLAIN'		=> 'The Extensions Manager is a tool in your phpBB Board which allows you to manage all of your extensions statuses and view information about them.',
+	'EXTENSION_INVALID'			=> 'The selected extension is not valid.',
+	'EXTENSION_NOT_AVAILABLE'	=> 'The selected extension is not available for this board, please verify your phpBB and PHP versions are allowed (see the details page).',
 
 	'DETAILS'				=> 'Details',
 
@@ -63,27 +64,27 @@ $lang = array_merge($lang, array(
 	'DISABLE_IN_PROGRESS'	=> 'The extension is currently being disabled, please do not leave this page or refresh until it is completed.',
 	'ENABLE_IN_PROGRESS'	=> 'The extension is currently being installed, please do not leave this page or refresh until it is completed.',
 	'PURGE_IN_PROGRESS'		=> 'The extension is currently being purged, please do not leave this page or refresh until it is completed.',
-	'ENABLE_SUCCESS'			=> 'The extension was enabled successfully',
+	'ENABLE_SUCCESS'		=> 'The extension was enabled successfully',
 	'DISABLE_SUCCESS'		=> 'The extension was disabled successfully',
 	'PURGE_SUCCESS'			=> 'The extension was purged successfully',
-	'DELETE_SUCCESS'			=> 'The extension was deleted successfully',
+	'DELETE_SUCCESS'		=> 'The extension was deleted successfully',
 
 	'ENABLE_FAIL'			=> 'The extension could not be enabled',
 	'DISABLE_FAIL'			=> 'The extension could not be disabled',
 	'PURGE_FAIL'			=> 'The extension could not be purged',
 	'DELETE_FAIL'			=> 'The extension could not be deleted',
 
-	'EXTENSION_NAME'			=> 'Extension Name',
-	'EXTENSION_ACTIONS'			=> 'Actions',
-	'EXTENSION_OPTIONS'			=> 'Options',
+	'EXTENSION_NAME'		=> 'Extension Name',
+	'EXTENSION_ACTIONS'		=> 'Actions',
+	'EXTENSION_OPTIONS'		=> 'Options',
 
-	'ENABLE_CONFIRM'			=> 'Are you sure that you wish to enable this extension?',
-	'DISABLE_CONFIRM'			=> 'Are you sure that you wish to disable this extension?',
-	'PURGE_CONFIRM'				=> 'Are you sure that you wish to purge this extension&#39;s data? This cannot be undone.',
-	'DELETE_CONFIRM'			=> 'Are you sure that you wish to data this extension&#39;s files and clear its data? This cannot be undone.',
+	'ENABLE_CONFIRM'		=> 'Are you sure that you wish to enable this extension?',
+	'DISABLE_CONFIRM'		=> 'Are you sure that you wish to disable this extension?',
+	'PURGE_CONFIRM'			=> 'Are you sure that you wish to purge this extension&#39;s data? This cannot be undone.',
+	'DELETE_CONFIRM'		=> 'Are you sure that you wish to data this extension&#39;s files and clear its data? This cannot be undone.',
 
-	'WARNING'			=> 'Warning',
-	'RETURN'			=> 'Return',
+	'WARNING'				=> 'Warning',
+	'RETURN'				=> 'Return',
 
 	'EXT_DETAILS'			=> 'Extension Details',
 	'DISPLAY_NAME'			=> 'Display Name',

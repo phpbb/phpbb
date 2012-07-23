@@ -119,7 +119,7 @@ set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
 // load extensions
-$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
+$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
 
 // Initialize style
 $phpbb_style_resource_locator = new phpbb_style_resource_locator();
