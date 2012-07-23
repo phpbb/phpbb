@@ -82,7 +82,7 @@ class phpbb_extension_metadata_manager
 
 				if ($template_output) 
 				{
-					$this->output_template_data($template);
+					$this->output_template_data();
 				}
 
 				return $this->metadata;
@@ -138,7 +138,7 @@ class phpbb_extension_metadata_manager
 	 */
 	private function clean_metadata_array()
 	{		
-		if (!$this->validate_name() || !$this->validate_type() || !$this->validate_license() || !$this->validate_description() || !$this->validate_version() || !$this->validate_require_phpbb() || !$this->validate_extra_display_name())
+		if (!$this->validate_name() || !$this->validate_type() || !$this->validate_licence() || !$this->validate_description() || !$this->validate_version() || !$this->validate_require_phpbb() || !$this->validate_extra_display_name())
 		{
 			return false;
 		}
@@ -178,7 +178,7 @@ class phpbb_extension_metadata_manager
 	 */
 	private function validate_description()
 	{
-		return preg_match('#^{10,}$#', $this->metadata['description']);
+		return true;//preg_match('#^{10,}$#', $this->metadata['description']);
 	}
 
 	/**
@@ -196,10 +196,10 @@ class phpbb_extension_metadata_manager
 	 * 
 	 * @return boolean True when passes validation
 	 */
-	private function validate_license()
+	private function validate_licence()
 	{
 		// Nothing to validate except existence
-		return isset($this->metadata['version']);
+		return isset($this->metadata['licence']);
 	}
 
 	/**
@@ -219,7 +219,7 @@ class phpbb_extension_metadata_manager
 	 */
 	private function validate_extra_display_name()
 	{
-		return preg_match('#^[a-zA-Z0-9_]{2,0}$#', $this->metadata['name']);
+		return true;//preg_match('#^[a-zA-Z0-9_]{2,0}$#', $this->metadata['name']);
 	}
 
 	/**
@@ -328,31 +328,32 @@ class phpbb_extension_metadata_manager
 	 * 
 	 * @return null
 	 */
-	public function output_template_data(phpbb_template $template)
+	public function output_template_data()
 	{
-		$template->assign_vars(array(
+
+		$this->template->assign_vars(array(
 			'MD_NAME'			=> htmlspecialchars($this->metadata['name']),
 			'MD_TYPE'			=> htmlspecialchars($this->metadata['type']),
 			'MD_DESCRIPTION'	=> htmlspecialchars($this->metadata['description']),
-			'MD_HOMEPAGE'		=> $this->metadata['homepage'],
+			'MD_HOMEPAGE'		=> (isset($this->metadata['homepage'])) ? $this->metadata['homepage'] : '',
 			'MD_VERSION'		=> htmlspecialchars($this->metadata['version']),
 			'MD_TIME'			=> htmlspecialchars($this->metadata['time']),
-			'MD_LICENSE'		=> htmlspecialchars($this->metadata['license']),
-			'MD_REQUIRE_PHP'	=> htmlspecialchars($this->metadata['require']['php']),
-			'MD_REQUIRE_PHPBB'	=> htmlspecialchars($this->metadata['require']['phpbb']),
-			'MD_DISPLAY_NAME'	=> htmlspecialchars($this->metadata['extra']['display-name']),
+			'MD_LICENCE'		=> htmlspecialchars($this->metadata['licence']),
+			'MD_REQUIRE_PHP'	=> (isset($this->metadata['require']['php'])) ? htmlspecialchars($this->metadata['require']['php']) : '',
+			'MD_REQUIRE_PHPBB'	=> (isset($this->metadata['require']['phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb']) : '',
+			'MD_DISPLAY_NAME'	=> (isset($this->metadata['extra']['display-name'])) ? htmlspecialchars($this->metadata['extra']['display-name']) : '',
 		));
 
 		foreach ($this->metadata['authors'] as $author)
 		{
-			$template->assign_block_vars('md_authors', array(
+			$this->template->assign_block_vars('md_authors', array(
 				'AUTHOR_NAME'		=> htmlspecialchars($author['name']),
 				'AUTHOR_EMAIL'		=> $author['email'],
-				'AUTHOR_HOMEPAGE'	=> $author['homepage'],
-				'AUTHOR_ROLE'		=> htmlspecialchars($author['role']),
+				'AUTHOR_HOMEPAGE'	=> (isset($author['homepage'])) ? $author['homepage'] : '',
+				'AUTHOR_ROLE'		=> (isset($author['role'])) ? htmlspecialchars($author['role']) : '',
 			));
 		}
-
+		
 		return;
 	}
 }
