@@ -80,7 +80,7 @@ $lang = array_merge($lang, array(
 
 	'ENABLE_CONFIRM'		=> 'Are you sure that you wish to enable this extension?',
 	'DISABLE_CONFIRM'		=> 'Are you sure that you wish to disable this extension?',
-	'PURGE_CONFIRM'			=> 'Are you sure that you wish to purge this extension&#39;s data? This cannot be undone.',
+	'PURGE_CONFIRM'			=> 'Are you sure that you wish to purge this extension&#39;s data? This will remove all settings stored for this extension and cannot be undone!',
 	'DELETE_CONFIRM'		=> 'Are you sure that you wish to data this extension&#39;s files and clear its data? This cannot be undone.',
 
 	'WARNING'				=> 'Warning',
