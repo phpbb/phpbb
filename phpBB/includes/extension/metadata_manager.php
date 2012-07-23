@@ -232,22 +232,29 @@ class phpbb_extension_metadata_manager
 	 */
 	public function validate_metadata_array()
 	{
-		$validate = array(
-			'name',
-			'type',
-			'licence',
-			'description',
-			'version',
-			'extra_display-name',
-		);
-
-		foreach ($validate as $type)
+		foreach ($this->validation as $name => $regex)
 		{
-			$type = 'validate_' . $type;
-
-			if (!$this->$type())
+			if (is_array($regex))
 			{
-				return false;
+				foreach ($regex as $extra_name => $extra_regex)
+				{
+					$type = 'validate_' . $name . '_' . $extra_name;
+
+					if (!$this->$type())
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+
+				$type = 'validate_' . $name;
+
+				if (!$this->$type())
+				{
+					return false;
+				}
 			}
 		}
 
