@@ -11,7 +11,7 @@
 <!-- ENDIF -->
 
 <h2><!-- IF S_DISPLAY_COMPARISON -->{L_VIEWING_POST_REVISION_HISTORY}<!-- ELSE -->{L_VIEWING_POST_REVISION}<!-- ENDIF --></h2>
-<div class="post bg1">
+<!-- IF S_VIEWING_REVERT --><div class="post bg1">
 	<div class="inner">
 		<div class="postbody">
 			<h3 class="first"><a href="{U_VIEW_POST}">{POST_SUBJECT}</a></h3>
@@ -34,7 +34,7 @@
 			<!-- IF POSTER_LOCATION --><dd><strong>{L_LOCATION}:</strong> {POSTER_LOCATION}</dd><!-- ENDIF -->
 		</dl>
 	</div>
-</div>
+</div><!-- ENDIF -->
 <!-- IF S_DISPLAY_COMPARISON -->
 	<p><div class="left-box"><strong>{L_LAST_REVISION_TIME}</strong></div>
 	<div class="right-box"></div></p>
@@ -42,6 +42,7 @@
 	<p><div class="left-box">{L_COMPARE_SUMMARY} {L_WITH} {L_LINES_ADDED_REMOVED}</div></p>
 	<br class="clear" />
 	<div class="center">
+		<p>{L_COMPARING} <a href="{U_FIRST_REVISION}">{FIRST_REVISION}</a> {L_WITH} <a href="{U_LAST_REVISION}">{LAST_REVISION}</a></p>
 		<form name="revision_list" action="{U_VIEW_REVISIONS}" method="post" />
 			<!-- BEGIN revision -->
 			<ul class="revisions<!-- IF revision.S_ROW_COUNT is odd --> odd<!-- ELSE --> even<!-- ENDIF --><!-- IF not revision.IN_RANGE --> out_of_range<!-- ENDIF --><!-- IF revision.CURRENT_REVISION --> current<!-- ENDIF -->">
