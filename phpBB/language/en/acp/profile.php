@@ -131,6 +131,8 @@ $lang = array_merge($lang, array(
 
 	'SAVE'							=> 'Save',
 	'SECOND_OPTION'					=> 'Second option',
+	'SHOW_NOVALUE_FIELD'			=> 'Show field if no value was selected',
+	'SHOW_NOVALUE_FIELD_EXPLAIN'	=> 'Determines if the profile field should be displayed if no value was selected for optional fields or if no value has been selected yet for required fields.',
 	'STEP_1_EXPLAIN_CREATE'			=> 'Here you can enter the first basic parameters of your new profile field. This information is needed for the second step where you’ll be able to set remaining options and tweak your profile field further.',
 	'STEP_1_EXPLAIN_EDIT'			=> 'Here you can change the basic parameters of your profile field. The relevant options are re-calculated within the second step.',
 	'STEP_1_TITLE_CREATE'			=> 'Add profile field',

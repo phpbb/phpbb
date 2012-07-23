@@ -807,6 +807,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	field_validation VARCHAR(20) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	field_required INTEGER DEFAULT 0 NOT NULL,
+	field_show_novalue INTEGER DEFAULT 0 NOT NULL,
 	field_show_on_reg INTEGER DEFAULT 0 NOT NULL,
 	field_show_on_vt INTEGER DEFAULT 0 NOT NULL,
 	field_show_profile INTEGER DEFAULT 0 NOT NULL,

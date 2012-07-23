@@ -554,6 +554,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value varchar(255) NOT NULL DEFAULT '',
 	field_validation varchar(20) NOT NULL DEFAULT '',
 	field_required INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	field_show_novalue INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_reg INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_vt INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_profile INTEGER UNSIGNED NOT NULL DEFAULT '0',
