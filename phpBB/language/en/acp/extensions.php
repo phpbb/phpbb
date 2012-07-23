@@ -48,13 +48,11 @@ $lang = array_merge($lang, array(
 	'ENABLED'				=> 'Enabled',
 	'DISABLED'				=> 'Disabled',
 	'PURGED'				=> 'Purged',
-	'DELETED'				=> 'Deleted',
 	'UPLOADED'				=> 'Uploaded',
 
 	'ENABLE'				=> 'Enable',
 	'DISABLE'				=> 'Disable',
 	'PURGE'					=> 'Purge',
-	'DELETE'				=> 'Delete',
 
 	'ENABLE_EXPLAIN'		=> 'Enabling an extension allows you to use it on your board.',
 	'DISABLE_EXPLAIN'		=> 'Disabling an extension retains its files and settings but removes any functionality added by the extension.',
@@ -67,12 +65,10 @@ $lang = array_merge($lang, array(
 	'ENABLE_SUCCESS'		=> 'The extension was enabled successfully',
 	'DISABLE_SUCCESS'		=> 'The extension was disabled successfully',
 	'PURGE_SUCCESS'			=> 'The extension was purged successfully',
-	'DELETE_SUCCESS'		=> 'The extension was deleted successfully',
 
 	'ENABLE_FAIL'			=> 'The extension could not be enabled',
 	'DISABLE_FAIL'			=> 'The extension could not be disabled',
 	'PURGE_FAIL'			=> 'The extension could not be purged',
-	'DELETE_FAIL'			=> 'The extension could not be deleted',
 
 	'EXTENSION_NAME'		=> 'Extension Name',
 	'EXTENSION_ACTIONS'		=> 'Actions',
@@ -81,7 +77,6 @@ $lang = array_merge($lang, array(
 	'ENABLE_CONFIRM'		=> 'Are you sure that you wish to enable this extension?',
 	'DISABLE_CONFIRM'		=> 'Are you sure that you wish to disable this extension?',
 	'PURGE_CONFIRM'			=> 'Are you sure that you wish to purge this extension&#39;s data? This will remove all settings stored for this extension and cannot be undone!',
-	'DELETE_CONFIRM'		=> 'Are you sure that you wish to data this extension&#39;s files and clear its data? This cannot be undone.',
 
 	'WARNING'				=> 'Warning',
 	'RETURN'				=> 'Return',

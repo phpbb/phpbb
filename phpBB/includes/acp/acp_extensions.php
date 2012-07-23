@@ -139,19 +139,6 @@ class acp_extensions
 				));
 			break;
 
-			/*case 'delete_pre':
-				$this->tpl_name = 'acp_ext_delete';
-
-				$template->assign_vars(array(
-					'PRE'		=> true,
-					'U_DELETE'	=> $this->u_action . '&amp;action=delete&amp;ext_name=' . $ext_name,
-				));
-			break;
-
-			case 'delete':
-				$this->tpl_name = 'acp_ext_delete';
-			break;*/
-
 			case 'details':
 				// Output it to the template
 				$md_manager->output_template_data();
@@ -202,7 +189,6 @@ class acp_extensions
 
 				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
 				'U_PURGE'		=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . $name,
-				//'U_DELETE'		=> $this->u_action . '&amp;action=delete_pre&amp;ext_name=' . $name,
 				'U_ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . $name,
 			));
 		}
@@ -227,7 +213,6 @@ class acp_extensions
 				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
 				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
-				//'U_DELETE'		=> $this->u_action . '&amp;action=delete_pre&amp;ext_name=' . $name,
 				'U_ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . $name,
 			));
 		}
