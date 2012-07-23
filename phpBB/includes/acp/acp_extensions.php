@@ -155,11 +155,11 @@ class acp_extensions
 	 * @param  $template 					An instance of the template engine
 	 * @return null
 	 */
-	private function list_enabled_exts(phpbb_extension_manager $phpbb_extension_manager, phpbb_template $template)
+	public function list_enabled_exts(phpbb_extension_manager $phpbb_extension_manager, phpbb_template $template)
 	{
 		foreach ($phpbb_extension_manager->all_enabled() as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->get_extension_metadata($name, $template);
+			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $template);
 
 			$template->assign_block_vars('enabled', array(
 				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
@@ -178,11 +178,11 @@ class acp_extensions
 	 * @param  $template 					An instance of the template engine
 	 * @return null
 	 */
-	private function list_disabled_exts(phpbb_extension_manager $phpbb_extension_manager, phpbb_template $template)
+	public function list_disabled_exts(phpbb_extension_manager $phpbb_extension_manager, phpbb_template $template)
 	{
 		foreach ($phpbb_extension_manager->all_disabled() as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->get_extension_metadata($name, $template);
+			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $template);
 
 			$template->assign_block_vars('disabled', array(
 				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
@@ -201,13 +201,13 @@ class acp_extensions
 	 * @param  $template 					An instance of the template engine
 	 * @return null
 	 */
-	function list_available_exts(phpbb_extension_manager $phpbb_extension_manager, phpbb_template $template)
+	public function list_available_exts(phpbb_extension_manager $phpbb_extension_manager, phpbb_template $template)
 	{
 		$uninstalled = array_diff_key($phpbb_extension_manager->all_available(), $phpbb_extension_manager->all_configured());
 
 		foreach ($uninstalled as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->get_extension_metadata($name, $template);
+			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $template);
 
 			$template->assign_block_vars('disabled', array(
 				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),

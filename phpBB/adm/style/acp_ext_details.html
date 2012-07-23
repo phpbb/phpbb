@@ -16,36 +16,35 @@
 			<dt><label for="md_name">{L_CLEAN_NAME}:</label></dt>
 			<dd><strong id="md_name">{MD_NAME}</strong></dd>
 		</dl>
-		<dl>
-			<dt><label for="md_type">{L_TYPE}:</label></dt>
-			<dd><p id="md_type">{MD_TYPE}</p></dd>
-		</dl>
+		<!-- IF MD_DESCRIPTION -->
 		<dl>
 			<dt><label for="md_description">{L_DESCRIPTION}:</label></dt>
 			<dd><p id="md_description">{MD_DESCRIPTION}</p></dd>
 		</dl>
+		<!-- ENDIF -->
 		<dl>
 			<dt><label for="md_version">{L_VERSION}:</label></dt>
 			<dd><p id="md_version">{MD_VERSION}</p></dd>
 		</dl>
+		<!-- IF MD_HOMEPAGE -->
 		<dl>
 			<dt><label for="md_homepage">{L_HOMEPAGE}:</label></dt>
 			<dd><p id="md_homepage">{MD_HOMEPAGE}</p></dd>
 		</dl>
-<!-- 		<dl>
-			<dt><label for="path">{L_PATH}:</label></dt>
-			<dd><p id="path">{PATH}</p></dd>
-		</dl> -->
+		<!-- ENDIF -->
+		<!-- IF MD_TIME -->
 		<dl>
 			<dt><label for="md_time">{L_TIME}:</label></dt>
 			<dd><p id="md_time">{MD_TIME}</p></dd>
 		</dl>
+		<!-- ENDIF -->
 		<dl>
 			<dt><label for="md_license">{L_LICENCE}:</label></dt>
 			<dd><p id="md_license">{MD_LICENCE}</p></dd>
 		</dl>
 	</fieldset>
 
+	<!-- IF MD_REQUIRE_PHPBB || MD_REQUIRE_PHP -->
 	<fieldset>
 		<legend>{L_REQUIREMENTS}</legend>
 		<!-- IF MD_REQUIRE_PHPBB -->
@@ -61,34 +60,35 @@
 		</dl>
 		<!-- ENDIF -->
 	</fieldset>
+	<!-- ENDIF -->
 
 	<fieldset>
 		<legend>{L_AUTHOR_INFORMATION}</legend>
 		<!-- BEGIN md_authors -->
-		<dl>
-			<dt><label for="md_author_name">{L_AUTHOR_NAME}:</label></dt>
-			<dd><strong id="md_author_name">{md_authors.AUTHOR_NAME}</strong></dd>
-		</dl>
-		<!-- IF md_authors.AUTHOR_EMAIL -->
-		<dl>
-			<dt><label for="md_author_email">{L_AUTHOR_EMAIL}:</label></dt>
-			<dd><strong id="md_author_email"><a href="mailto:{md_authors.AUTHOR_EMAIL}">{md_authors.AUTHOR_EMAIL}</a></strong></dd>
-		</dl>
-		<!-- ENDIF -->
-		<!-- IF md_authors.AUTHOR_HOMEPAGE -->
-		<dl>
-			<dt><label for="md_author_url">{L_AUTHOR_HOMEPAGE}:</label></dt>
-			<dd><strong id="md_author_url"><a href="{md_authors.AUTHOR_HOMEPAGE}">{md_authors.AUTHOR_HOMEPAGE}</a></strong></dd>
-		</dl>
-		<!-- ENDIF -->
-		<!-- IF md_authors.AUTHOR_ROLE -->
-		<dl>
-			<dt><label for="author_role">{L_AUTHOR_ROLE}:</label></dt>
-			<dd><strong id="md_author_role">{md_authors.AUTHOR_ROLE}</strong></dd>
-		</dl>
-		<!-- ENDIF -->
-
-		<br /><br />
+		<fieldset>
+			<dl>
+				<dt><label for="md_author_name">{L_AUTHOR_NAME}:</label></dt>
+				<dd><strong id="md_author_name">{md_authors.AUTHOR_NAME}</strong></dd>
+			</dl>
+			<!-- IF md_authors.AUTHOR_EMAIL -->
+			<dl>
+				<dt><label for="md_author_email">{L_AUTHOR_EMAIL}:</label></dt>
+				<dd><strong id="md_author_email"><a href="mailto:{md_authors.AUTHOR_EMAIL}">{md_authors.AUTHOR_EMAIL}</a></strong></dd>
+			</dl>
+			<!-- ENDIF -->
+			<!-- IF md_authors.AUTHOR_HOMEPAGE -->
+			<dl>
+				<dt><label for="md_author_url">{L_AUTHOR_HOMEPAGE}:</label></dt>
+				<dd><strong id="md_author_url"><a href="{md_authors.AUTHOR_HOMEPAGE}">{md_authors.AUTHOR_HOMEPAGE}</a></strong></dd>
+			</dl>
+			<!-- ENDIF -->
+			<!-- IF md_authors.AUTHOR_ROLE -->
+			<dl>
+				<dt><label for="author_role">{L_AUTHOR_ROLE}:</label></dt>
+				<dd><strong id="md_author_role">{md_authors.AUTHOR_ROLE}</strong></dd>
+			</dl>
+			<!-- ENDIF -->
+		</fieldset>
 		<!-- END md_authors -->
 	</fieldset>
 

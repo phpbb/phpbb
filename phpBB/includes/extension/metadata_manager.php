@@ -28,61 +28,8 @@ class phpbb_extension_metadata_manager
 	protected $phpbb_root_path;
 	protected $template;
 	protected $ext_name;
-	public $metadata;
+	protected $metadata;
 	protected $metadata_file;
-
-	/**
-	* Array of validation regular expressions, see __call()
-	*
-	* @var mixed
-	*/
-	protected $validation = array(
-		'name'					=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
-		'type'					=> '#^phpbb3-extension$#',
-		'description'			=> '#.*#',
-		'version'				=> '#.+#',
-		'licence'				=> '#.+#',
-		//'homepage'				=> '#([\d\w-.]+?\.(a[cdefgilmnoqrstuwz]|b[abdefghijmnorstvwyz]|c[acdfghiklmnoruvxyz]|d[ejkmnoz]|e[ceghrst]|f[ijkmnor]|g[abdefghilmnpqrstuwy]|h[kmnrtu]|i[delmnoqrst]|j[emop]|k[eghimnprwyz]|l[abcikrstuvy]|m[acdghklmnopqrstuvwxyz]|n[acefgilopruz]|om|p[aefghklmnrstwy]|qa|r[eouw]|s[abcdeghijklmnortuvyz]|t[cdfghjkmnoprtvwz]|u[augkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw]|aero|arpa|biz|com|coop|edu|info|int|gov|mil|museum|name|net|org|pro)(\b|\W(?<!&|=)(?!\.\s|\.{3}).*?))(\s|$)#',
-		'extra'					=> array(
-			'display-name'			=> '#.*#',
-		),
-	);
-
-	/**
-	* Magic method to catch validation calls
-	*
-	* @param string $name
-	* @param mixed $arguments
-	* @return int
-	*/
-	public function __call($name, $arguments)
-    {
-    	// Validation Magic methods
-        if (strpos($name, 'validate_') === 0)
-        {
-        	// Remove validate_
-        	$name = substr($name, 9);
-
-        	// Replace underscores with dashes (underscores are not used)
-        	$name = str_replace('_', '-', $name);
-
-        	if (strpos($name, 'extra-') === 0)
-        	{
-        		// Remove extra_
-        		$name = substr($name, 6);
-
-        		if (isset($this->validation['extra'][$name]))
-        		{
-        			// Extra means it's optional, so return true if it does not exist
-        			return (isset($this->metadata['extra'][$name])) ? preg_match($this->validation['extra'][$name], $this->metadata['extra'][$name]) : true;
-				}
-			}
-			else if (isset($this->validation[$name]) && isset($this->metadata[$name]))
-	        {
-        		return preg_match($this->validation[$name], $this->metadata[$name]);
-			}
-		}
-    }
 
 	/**
 	* Creates the metadata manager
@@ -136,7 +83,7 @@ class phpbb_extension_metadata_manager
 			case 'all':
 			default:
 				// Validate the metadata
-				if (!$this->validate_metadata_array())
+				if (!$this->validate())
 				{
 					return false;
 				}
@@ -145,17 +92,17 @@ class phpbb_extension_metadata_manager
 			break;
 
 			case 'name':
-				return ($this->validate_name()) ? $this->metadata['name'] : false;
+				return ($this->validate('name')) ? $this->metadata['name'] : false;
 			break;
 
 			case 'display-name':
-				if (isset($this->metadata['extra']['display-name']) && $this->validate_extra_display_name())
+				if (isset($this->metadata['extra']['display-name']))
 				{
 					return $this->metadata['extra']['display-name'];
 				}
 				else
 				{
-					return ($this->validate_name()) ? $this->metadata['name'] : false;
+					return ($this->validate('name')) ? $this->metadata['name'] : false;
 				}
 			break;
 			// TODO: Add remaining cases as needed
@@ -216,7 +163,7 @@ class phpbb_extension_metadata_manager
 	/**
 	 * This array handles the validation and cleaning of the array
 	 *
-	 * @return array Contains the cleaned and validated metadata array
+	 * @return array Contains the cleaned metadata array
 	 */
 	private function clean_metadata_array()
 	{
@@ -227,40 +174,44 @@ class phpbb_extension_metadata_manager
 	}
 
 	/**
-	 * This array handles the validation of strings
-	 *
-	 * @return bool True if validation succeeded, False if failed
-	 */
-	public function validate_metadata_array()
-	{
-		foreach ($this->validation as $name => $regex)
-		{
-			if (is_array($regex))
+	* Validate fields
+	*
+	* @param string $name  ("all" for display and enable validation
+	* 						"display" for name, type, and authors
+	* 						"name", "type")
+	* @return Bool False if validation fails, true if valid
+	*/
+	public function validate($name = 'display')
+    {
+    	// Basic fields
+    	$fields = array(
+    		'name'		=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
+    		'type'		=> '#^phpbb3-extension$#',
+    		'licence'	=> '#.+#',
+    		'version'	=> '#.+#',
+    	);
+
+    	if (isset($fields[$name]))
+    	{
+    		return (isset($this->metadata[$name])) ? (bool) preg_match($this->validation[$name], $this->metadata[$name]) : false;
+		}
+
+    	// Validate all fields
+    	if ($name == 'all')
+    	{
+    		foreach ($fields as $field => $data)
 			{
-				foreach ($regex as $extra_name => $extra_regex)
-				{
-					$type = 'validate_' . $name . '_' . $extra_name;
-
-					if (!$this->$type())
-					{
-						return false;
-					}
-				}
-			}
-			else
-			{
-
-				$type = 'validate_' . $name;
-
-				if (!$this->$type())
+				if (!$this->validate($field))
 				{
 					return false;
 				}
 			}
+
+			return $this->validate_authors();
 		}
 
-		return $this->validate_authors();
-	}
+		return true;
+    }
 
 	/**
 	 * Validates the contents of the authors field
@@ -292,19 +243,10 @@ class phpbb_extension_metadata_manager
 	 */
 	public function validate_enable()
 	{
-		$validate = array(
-			'require_phpbb',
-			'require_php',
-		);
-
-		foreach ($validate as $type)
+		// Check for phpBB, PHP versions
+		if (!$this->validate_require_phpbb || !$this->validate_require_php)
 		{
-			$type = 'validate_' . $type;
-
-			if (!$this->$type())
-			{
-				return false;
-			}
+			return false;
 		}
 
 		return true;
@@ -372,10 +314,10 @@ class phpbb_extension_metadata_manager
 		$this->template->assign_vars(array(
 			'MD_NAME'			=> htmlspecialchars($this->metadata['name']),
 			'MD_TYPE'			=> htmlspecialchars($this->metadata['type']),
-			'MD_DESCRIPTION'	=> htmlspecialchars($this->metadata['description']),
+			'MD_DESCRIPTION'	=> (isset($this->metadata['description'])) ? htmlspecialchars($this->metadata['description']) : '',
 			'MD_HOMEPAGE'		=> (isset($this->metadata['homepage'])) ? $this->metadata['homepage'] : '',
-			'MD_VERSION'		=> htmlspecialchars($this->metadata['version']),
-			'MD_TIME'			=> htmlspecialchars($this->metadata['time']),
+			'MD_VERSION'		=> (isset($this->metadata['version'])) ? htmlspecialchars($this->metadata['version']) : '',
+			'MD_TIME'			=> (isset($this->metadata['time'])) ? htmlspecialchars($this->metadata['time']) : '',
 			'MD_LICENCE'		=> htmlspecialchars($this->metadata['licence']),
 			'MD_REQUIRE_PHP'	=> (isset($this->metadata['require']['php'])) ? htmlspecialchars($this->metadata['require']['php']) : '',
 			'MD_REQUIRE_PHPBB'	=> (isset($this->metadata['require']['phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb']) : '',
@@ -386,7 +328,7 @@ class phpbb_extension_metadata_manager
 		{
 			$this->template->assign_block_vars('md_authors', array(
 				'AUTHOR_NAME'		=> htmlspecialchars($author['name']),
-				'AUTHOR_EMAIL'		=> $author['email'],
+				'AUTHOR_EMAIL'		=> (isset($author['email'])) ? $author['email'] : '',
 				'AUTHOR_HOMEPAGE'	=> (isset($author['homepage'])) ? $author['homepage'] : '',
 				'AUTHOR_ROLE'		=> (isset($author['role'])) ? htmlspecialchars($author['role']) : '',
 			));
