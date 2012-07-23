@@ -185,13 +185,11 @@ class acp_extensions
 	 */
 	function list_available_exts(phpbb_extension_manager $phpbb_extension_manager, phpbb_template $template)
 	{
-		$all_available = array_keys($phpbb_extension_manager->all_available());
-		$all_configured = array_keys($phpbb_extension_manager->all_configured());
-		$uninstalled = array_diff($all_available, $all_configured);
+		$uninstalled = array_diff_key($phpbb_extension_manager->all_available(), $phpbb_extension_manager->all_configured());
 
 		foreach ($uninstalled as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->get_extension_metadata($ext, $template);
+			$md_manager = $phpbb_extension_manager->get_extension_metadata($name, $template);
 
 			$template->assign_block_vars('disabled', array(
 				'EXT_NAME'		=> $md_manager->get_metadata('name'),
