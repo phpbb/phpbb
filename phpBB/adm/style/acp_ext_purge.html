@@ -16,7 +16,11 @@
 		<input class="button1" type="submit" name="{L_PURGE}" value="{L_PURGE}" />
 	</fieldset>
 	</form>
-	<!-- ELSE IF -->
+	<!-- ELSEIF S_NEXT_STEP -->
+		<div class="errorbox">
+			<p>{L_PURGE_IN_PROGRESS}</p>
+		</div>
+	<!-- ELSE -->
 		<div class="successbox">
 			<p>{L_PURGE_SUCCESS}</p>
 			<br />

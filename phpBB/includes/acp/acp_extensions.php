@@ -56,7 +56,12 @@ class acp_extensions
 			break;
 
 			case 'enable':
-				$phpbb_extension_manager->enable($ext_name);
+				if ($phpbb_extension_manager->enable_step($ext_name))
+				{
+					$template->assign_var('S_NEXT_STEP', true);
+					
+					meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . $ext_name);
+				}
 
 				$this->tpl_name = 'acp_ext_enable';
 
@@ -75,7 +80,12 @@ class acp_extensions
 			break;	
 
 			case 'disable':
-				$phpbb_extension_manager->disable($ext_name);
+				if ($phpbb_extension_manager->disable_step($ext_name))
+				{
+					$template->assign_var('S_NEXT_STEP', true);
+					
+					meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . $ext_name);
+				}
 
 				$this->tpl_name = 'acp_ext_disable';
 
@@ -94,7 +104,12 @@ class acp_extensions
 			break;		
 
 			case 'purge':
-				$phpbb_extension_manager->purge($ext_name);
+				if ($phpbb_extension_manager->purge_step($ext_name))
+				{
+					$template->assign_var('S_NEXT_STEP', true);
+					
+					meta_refresh(0, $this->u_action . '&amp;action=purge&amp;ext_name=' . $ext_name);
+				}
 
 				$this->tpl_name = 'acp_ext_purge';
 

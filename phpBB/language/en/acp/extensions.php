@@ -60,10 +60,13 @@ $lang = array_merge($lang, array(
 	'PURGE_EXPLAIN'			=> 'Purging an extension clears an extensions data while retaining its files.',
 	'DELETE_EXPLAIN'		=> 'Deleting an extension removes all of its files and settings. Log entries will remain, although any language variables added by the extension will not be available.',
 
-	'ENABLE_SUCESS'			=> 'The extension was enabled successfully',
-	'DISABLE_SUCESS'		=> 'The extension was disabled successfully',
-	'PURGE_SUCESS'			=> 'The extension was purged successfully',
-	'DELETE_SUCESS'			=> 'The extension was deleted successfully',
+	'DISABLE_IN_PROGRESS'	=> 'The extension is currently being disabled, please do not leave this page or refresh until it is completed.',
+	'ENABLE_IN_PROGRESS'	=> 'The extension is currently being installed, please do not leave this page or refresh until it is completed.',
+	'PURGE_IN_PROGRESS'		=> 'The extension is currently being purged, please do not leave this page or refresh until it is completed.',
+	'ENABLE_SUCCESS'			=> 'The extension was enabled successfully',
+	'DISABLE_SUCCESS'		=> 'The extension was disabled successfully',
+	'PURGE_SUCCESS'			=> 'The extension was purged successfully',
+	'DELETE_SUCCESS'			=> 'The extension was deleted successfully',
 
 	'ENABLE_FAIL'			=> 'The extension could not be enabled',
 	'DISABLE_FAIL'			=> 'The extension could not be disabled',
