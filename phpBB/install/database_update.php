@@ -1071,6 +1071,14 @@ function database_update_info()
 		'3.0.10-RC3'	=> array(),
 		// No changes from 3.0.10 to 3.0.11-RC1
 		'3.0.10'		=> array(),
+		// Changes from 3.0.11-RC1 to 3.0.11-RC2
+		'3.0.11-RC1'	=> array(
+			'add_columns'		=> array(
+				PROFILE_FIELDS_TABLE			=> array(
+					'field_show_novalue'		=> array('BOOL', 0),
+				),
+			),
+		),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 */
 
