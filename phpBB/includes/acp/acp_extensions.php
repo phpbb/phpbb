@@ -158,7 +158,7 @@ class acp_extensions
 			$md_manager = $phpbb_extension_manager->get_extension_metadata($name, $template);
 			
 			$template->assign_block_vars('enabled', array(
-				'EXT_NAME'		=> $md_manager->get_metadata('name'),
+				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
 				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
 				'U_PURGE'		=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . $name,
@@ -181,7 +181,7 @@ class acp_extensions
 			$md_manager = $phpbb_extension_manager->get_extension_metadata($name, $template);
 			
 			$template->assign_block_vars('disabled', array(
-				'EXT_NAME'		=> $md_manager->get_metadata('name'),
+				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
 				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
 				'U_PURGE'		=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . $name,
@@ -207,7 +207,7 @@ class acp_extensions
 			$md_manager = $phpbb_extension_manager->get_extension_metadata($name, $template);
 
 			$template->assign_block_vars('disabled', array(
-				'EXT_NAME'		=> $md_manager->get_metadata('name'),
+				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
 				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
 				//'U_DELETE'		=> $this->u_action . '&amp;action=delete_pre&amp;ext_name=' . $name,

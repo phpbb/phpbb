@@ -55,7 +55,7 @@ class phpbb_extension_metadata_manager
 	 * Processes and gets the metadata requested
 	 * 
 	 * @param  string $element         All for all metadata that it has and is valid, otherwise specify which section you want by its shorthand term.
-	 * @param  boolean $template_output   True if you want the requested metadata assigned to template vars
+	 * @param  boolean $template_output   True if you want the requested metadata assigned to template vars (only works on the 'all" case
 	 * @return array                   Contains all of the requested metadata
 	 */
 	public function get_metadata($element = 'all', $template_output = false)
@@ -89,20 +89,17 @@ class phpbb_extension_metadata_manager
 			break;
 			
 			case 'name':
-				if ($this->validate_name())
+				return ($this->validate_name()) ? $this->metadata['name'] : false;
+			break;
+			
+			case 'display-name':
+				if ($this->validate_extra_display_name())
 				{
-					if ($template_output)
-					{
-						$template->assign_vars(array(
-							'MD_NAME'	=> htmlspecialchars($this->metadata['name']),
-						));
-					}
-					
-					return $this->metadata['name'];
+					return $this->metadata['extra']['display-name'];
 				}
 				else
 				{
-					return false;
+					return ($this->validate_name()) ? $this->metadata['name'] : false;
 				}
 			break;
 			// TODO: Add remaining cases as needed
