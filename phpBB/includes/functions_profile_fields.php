@@ -469,8 +469,11 @@ class custom_profile
 
 				foreach ($user_ids as $user_id)
 				{
-					$user_fields[$user_id][$used_ident]['value'] = '';
-					$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
+					if (!isset($user_fields[$user_id][$used_ident]) && $this->profile_cache[$used_ident]['field_show_novalue'])
+					{
+						$user_fields[$user_id][$used_ident]['value'] = '';
+						$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
+					}
 				}
 			}
 
