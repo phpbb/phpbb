@@ -42,6 +42,7 @@ class phpbb_extension_metadata_manager
 		'description'			=> '#.*#',
 		'version'				=> '#.+#',
 		'licence'				=> '#.+#',
+		//'homepage'				=> '#([\d\w-.]+?\.(a[cdefgilmnoqrstuwz]|b[abdefghijmnorstvwyz]|c[acdfghiklmnoruvxyz]|d[ejkmnoz]|e[ceghrst]|f[ijkmnor]|g[abdefghilmnpqrstuwy]|h[kmnrtu]|i[delmnoqrst]|j[emop]|k[eghimnprwyz]|l[abcikrstuvy]|m[acdghklmnopqrstuvwxyz]|n[acefgilopruz]|om|p[aefghklmnrstwy]|qa|r[eouw]|s[abcdeghijklmnortuvyz]|t[cdfghjkmnoprtvwz]|u[augkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw]|aero|arpa|biz|com|coop|edu|info|int|gov|mil|museum|name|net|org|pro)(\b|\W(?<!&|=)(?!\.\s|\.{3}).*?))(\s|$)#',
 		'extra'					=> array(
 			'display-name'			=> '#.*#',
 		),
@@ -76,7 +77,7 @@ class phpbb_extension_metadata_manager
         			return (isset($this->metadata['extra'][$name])) ? preg_match($this->validation['extra'][$name], $this->metadata['extra'][$name]) : true;
 				}
 			}
-			else if (isset($this->validation[$name]))
+			else if (isset($this->validation[$name]) && isset($this->metadata[$name]))
 	        {
         		return preg_match($this->validation[$name], $this->metadata[$name]);
 			}
@@ -258,6 +259,29 @@ class phpbb_extension_metadata_manager
 			}
 		}
 
+		return $this->validate_authors();
+	}
+
+	/**
+	 * Validates the contents of the authors field
+	 *
+	 * @return boolean True when passes validation
+	 */
+	private function validate_authors()
+	{
+		if (empty($this->metadata['authors']))
+		{
+			return false;
+		}
+
+		foreach ($this->metadata['authors'] as $author)
+		{
+			if (!isset($author['name']))
+			{
+				return false;
+			}
+		}
+
 		return true;
 	}
 
@@ -339,62 +363,12 @@ class phpbb_extension_metadata_manager
 	}
 
 	/**
-	 * Validates the contents of the time field
-	 *
-	 * @return boolean True when passes validation
-	 */
-	private function validate_time()
-	{
-		// Need to validate
-		return true;
-	}
-
-	/**
-	 * Validates the contents of the homepage field
-	 *
-	 * @return boolean True when passes validation
-	 */
-	private function validate_homepage()
-	{
-		return preg_match('#([\d\w-.]+?\.(a[cdefgilmnoqrstuwz]|b[abdefghijmnorstvwyz]|c[acdfghiklmnoruvxyz]|d[ejkmnoz]|e[ceghrst]|f[ijkmnor]|g[abdefghilmnpqrstuwy]|h[kmnrtu]|i[delmnoqrst]|j[emop]|k[eghimnprwyz]|l[abcikrstuvy]|m[acdghklmnopqrstuvwxyz]|n[acefgilopruz]|om|p[aefghklmnrstwy]|qa|r[eouw]|s[abcdeghijklmnortuvyz]|t[cdfghjkmnoprtvwz]|u[augkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw]|aero|arpa|biz|com|coop|edu|info|int|gov|mil|museum|name|net|org|pro)(\b|\W(?<!&|=)(?!\.\s|\.{3}).*?))(\s|$)#', $this->metadata['homepage']);
-	}
-
-	/**
-	 * Validates the contents of the authors field
-	 *
-	 * @return boolean True when passes validation
-	 */
-	private function validate_authors()
-	{
-		// Need to validate
-		$number_authors = sizeof($this->metadata['authors']); // Might be helpful later on
-
-		if (!isset($this->metadata['authors']['1']))
-		{
-			return false;
-		}
-		else
-		{
-			foreach ($this->metadata['authors'] as $author)
-			{
-				if (!isset($author['name']))
-				{
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
 	 * Outputs the metadata into the template
 	 *
 	 * @return null
 	 */
 	public function output_template_data()
 	{
-
 		$this->template->assign_vars(array(
 			'MD_NAME'			=> htmlspecialchars($this->metadata['name']),
 			'MD_TYPE'			=> htmlspecialchars($this->metadata['type']),
