@@ -455,12 +455,20 @@ class custom_profile
 
 			$user_fields = array();
 
+			$user_ids = $user_id;
+
 			// Go through the fields in correct order
 			foreach (array_keys($this->profile_cache) as $used_ident)
 			{
 				foreach ($field_data as $user_id => $row)
 				{
 					$user_fields[$user_id][$used_ident]['value'] = $row['pf_' . $used_ident];
+					$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
+				}
+
+				foreach ($user_ids as $user_id)
+				{
+					$user_fields[$user_id][$used_ident]['value'] = '';
 					$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
 				}
 			}
