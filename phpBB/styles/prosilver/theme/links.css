@@ -66,6 +66,11 @@ a.topictitle:hover {
 	text-decoration: underline;
 }
 
+a.lastsubject {
+	font-weight: bold;
+	text-decoration: none;
+}
+
 /* Post body links */
 .postlink {
 	text-decoration: none;
