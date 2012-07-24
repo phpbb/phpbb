@@ -114,7 +114,7 @@ class phpbb_extension_metadata_manager
 
 		if (!file_exists($this->metadata_file))
 		{
-    		throw new phpbb_exception_metadata(phpbb_exception_metadata::FILE_DOES_NOT_EXIST, $this->metadata_file);
+    		throw new phpbb_extension_exception('The required file does not exist: ' . $this->metadata_file);
 		}
 	}
 
@@ -127,18 +127,18 @@ class phpbb_extension_metadata_manager
 	{
 		if (!file_exists($this->metadata_file))
 		{
-			throw new phpbb_exception_metadata(phpbb_exception_metadata::FILE_DOES_NOT_EXIST, $this->metadata_file);
+			throw new phpbb_extension_exception('The required file does not exist: ' . $this->metadata_file);
 		}
 		else
 		{
 			if (!($file_contents = file_get_contents($this->metadata_file)))
 			{
-    			throw new phpbb_exception_metadata(phpbb_exception_metadata::FILE_GET_CONTENTS, $this->metadata_file);
+    			throw new phpbb_extension_exception('file_get_contents failed on ' . $this->metadata_file);
 			}
 
 			if (($metadata = json_decode($file_contents, true)) === NULL)
 			{
-    			throw new phpbb_exception_metadata(phpbb_exception_metadata::JSON_DECODE, $this->metadata_file);
+    			throw new phpbb_extension_exception('json_decode failed on ' . $this->metadata_file);
 			}
 
 			$this->metadata = $metadata;
@@ -182,12 +182,12 @@ class phpbb_extension_metadata_manager
     	{
     		if (!isset($this->metadata[$name]))
     		{
-    			throw new phpbb_exception_metadata(phpbb_exception_metadata::NOT_SET, $name);
+    			throw new phpbb_extension_exception("Required meta field '$name' has not been set.");
 			}
 
 			if (!preg_match($fields[$name], $this->metadata[$name]))
 			{
-    			throw new phpbb_exception_metadata(phpbb_exception_metadata::INVALID, $name);
+    			throw new phpbb_extension_exception("Meta field '$name' is invalid.");
 			}
 		}
 
@@ -222,14 +222,14 @@ class phpbb_extension_metadata_manager
 	{
 		if (empty($this->metadata['authors']))
 		{
-    		throw new phpbb_exception_metadata(phpbb_exception_metadata::NOT_SET, 'authors');
+    		throw new phpbb_extension_exception("Required meta field 'authors' has not been set.");
 		}
 
 		foreach ($this->metadata['authors'] as $author)
 		{
 			if (!isset($author['name']))
 			{
-    			throw new phpbb_exception_metadata(phpbb_exception_metadata::NOT_SET, 'author name');
+    			throw new phpbb_extension_exception("Required meta field 'author name' has not been set.");
 			}
 		}
 

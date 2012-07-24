@@ -49,9 +49,12 @@ class acp_extensions
 		{
 			$md_manager = new phpbb_extension_metadata_manager($ext_name, $db, $phpbb_extension_manager, $phpbb_root_path, ".$phpEx", $template, $config);
 
-			try{
+			try
+			{
 				$md_manager->get_metadata('all');
-			} catch( Exception $e ) {
+			}
+			catch(phpbb_extension_exception $e)
+			{
 				trigger_error($e);
 			}
 		}
@@ -172,7 +175,8 @@ class acp_extensions
 		{
 			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $this->template);
 
-			try {
+			try
+			{
 				$this->template->assign_block_vars('enabled', array(
 					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
@@ -183,7 +187,9 @@ class acp_extensions
 					'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . $name,
 					'PURGE'			=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . $name,
 				));
-			} catch( Exception $e ) {
+			}
+			catch(phpbb_extension_exception $e)
+			{
 				$this->template->assign_block_vars('disabled', array(
 					'EXT_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
 				));
@@ -204,7 +210,8 @@ class acp_extensions
 		{
 			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $this->template);
 
-			try {
+			try
+			{
 				$this->template->assign_block_vars('disabled', array(
 					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
@@ -215,7 +222,9 @@ class acp_extensions
 					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . $name,
 					'PURGE'			=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . $name,
 				));
-			} catch( Exception $e ) {
+			}
+			catch(phpbb_extension_exception $e)
+			{
 				$this->template->assign_block_vars('disabled', array(
 					'EXT_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
 				));
@@ -238,7 +247,8 @@ class acp_extensions
 		{
 			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $this->template);
 
-			try {
+			try
+			{
 				$this->template->assign_block_vars('disabled', array(
 					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
@@ -248,7 +258,9 @@ class acp_extensions
 				$this->output_actions('disabled', array(
 					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . $name,
 				));
-			} catch( Exception $e ) {
+			}
+			catch(phpbb_extension_exception $e)
+			{
 				$this->template->assign_block_vars('disabled', array(
 					'EXT_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
 				));
