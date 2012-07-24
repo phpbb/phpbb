@@ -375,10 +375,13 @@ class phpbb_template_filter extends php_user_filter
 	{
 		$matches = array();
 		$replace = array();
+		$vars = array();
+		$is_expr = true;
 
-		preg_match_all('/{[^}]+}/', $path, $matches);
+		preg_match_all('#\{((?:' . self::REGEX_NS . '\.)*)(\$)?(' . self::REGEX_VAR . ')\}#', $path, $matches);
 		foreach ($matches[0] as $var_str)
 		{
+			$tmp_is_expr = false;
 			$var = $this->get_varref($var_str, $tmp_is_expr);
 			$is_expr = $is_expr && $tmp_is_expr;
 			$vars[] = "isset($var)";
@@ -387,7 +390,7 @@ class phpbb_template_filter extends php_user_filter
 
 		if (!$is_expr)
 		{
-			return ' if (' . implode(' && ', $vars) . ") { \$_template->$include_type('" . str_replace($matches[0], $replace, $path) . "', true); }";
+			return " \$_template->$include_type('" . str_replace($matches[0], $replace, $path) . "', true);";
 		}
 		else
 		{
