@@ -22,10 +22,20 @@ class acp_extensions
 {
 	var $u_action;
 
+	private $db;
+	private $config;
+	private $template;
+	private $user;
+
 	function main()
 	{
 		// Start the page
 		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx;
+
+		$this->db = $db;
+		$this->config = $config;
+		$this->template = $template;
+		$this->user = $user;
 
 		$user->add_lang(array('install', 'acp/extensions'));
 
@@ -39,9 +49,10 @@ class acp_extensions
 		{
 			$md_manager = new phpbb_extension_metadata_manager($ext_name, $db, $phpbb_extension_manager, $phpbb_root_path, ".$phpEx", $template, $config);
 
-			if ($md_manager->get_metadata('all') === false)
-			{
-				trigger_error('EXTENSION_INVALID');
+			try{
+				$md_manager->get_metadata('all');
+			} catch( Exception $e ) {
+				trigger_error($e);
 			}
 		}
 
@@ -50,9 +61,9 @@ class acp_extensions
 		{
 			case 'list':
 			default:
-				$this->list_enabled_exts($phpbb_extension_manager, $template);
-				$this->list_disabled_exts($phpbb_extension_manager, $template);
-				$this->list_available_exts($phpbb_extension_manager, $template);
+				$this->list_enabled_exts($phpbb_extension_manager);
+				$this->list_disabled_exts($phpbb_extension_manager);
+				$this->list_available_exts($phpbb_extension_manager);
 
 				$this->tpl_name = 'acp_ext_list';
 			break;
@@ -155,19 +166,28 @@ class acp_extensions
 	 * @param  $template 					An instance of the template engine
 	 * @return null
 	 */
-	public function list_enabled_exts(phpbb_extension_manager $phpbb_extension_manager, phpbb_template $template)
+	public function list_enabled_exts(phpbb_extension_manager $phpbb_extension_manager)
 	{
 		foreach ($phpbb_extension_manager->all_enabled() as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $template);
+			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $this->template);
 
-			$template->assign_block_vars('enabled', array(
-				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
+			try {
+				$this->template->assign_block_vars('enabled', array(
+					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
-				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
-				'U_PURGE'		=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . $name,
-				'U_DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . $name,
-			));
+					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
+				));
+
+				$this->output_actions('enabled', array(
+					'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . $name,
+					'PURGE'			=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . $name,
+				));
+			} catch( Exception $e ) {
+				$this->template->assign_block_vars('disabled', array(
+					'EXT_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
+				));
+			}
 		}
 	}
 
@@ -178,19 +198,28 @@ class acp_extensions
 	 * @param  $template 					An instance of the template engine
 	 * @return null
 	 */
-	public function list_disabled_exts(phpbb_extension_manager $phpbb_extension_manager, phpbb_template $template)
+	public function list_disabled_exts(phpbb_extension_manager $phpbb_extension_manager)
 	{
 		foreach ($phpbb_extension_manager->all_disabled() as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $template);
+			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $this->template);
 
-			$template->assign_block_vars('disabled', array(
-				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
+			try {
+				$this->template->assign_block_vars('disabled', array(
+					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
-				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
-				'U_PURGE'		=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . $name,
-				'U_ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . $name,
-			));
+					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
+				));
+
+				$this->output_actions('disabled', array(
+					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . $name,
+					'PURGE'			=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . $name,
+				));
+			} catch( Exception $e ) {
+				$this->template->assign_block_vars('disabled', array(
+					'EXT_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
+				));
+			}
 		}
 	}
 
@@ -201,19 +230,45 @@ class acp_extensions
 	 * @param  $template 					An instance of the template engine
 	 * @return null
 	 */
-	public function list_available_exts(phpbb_extension_manager $phpbb_extension_manager, phpbb_template $template)
+	public function list_available_exts(phpbb_extension_manager $phpbb_extension_manager)
 	{
 		$uninstalled = array_diff_key($phpbb_extension_manager->all_available(), $phpbb_extension_manager->all_configured());
 
 		foreach ($uninstalled as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $template);
+			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $this->template);
 
-			$template->assign_block_vars('disabled', array(
-				'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
+			try {
+				$this->template->assign_block_vars('disabled', array(
+					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
-				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
-				'U_ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . $name,
+					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
+				));
+
+				$this->output_actions('disabled', array(
+					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . $name,
+				));
+			} catch( Exception $e ) {
+				$this->template->assign_block_vars('disabled', array(
+					'EXT_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
+				));
+			}
+		}
+	}
+
+	/**
+	* Output actions to a block
+	*
+	* @param string $block
+	* @param array $actions
+	*/
+	private function output_actions($block, $actions)
+	{
+		foreach ($actions as $lang => $url)
+		{
+			$this->template->assign_block_vars($block . '.actions', array(
+				'L_ACTION'		=> $this->user->lang($lang),
+				'U_ACTION'		=> $url,
 			));
 		}
 	}

@@ -56,27 +56,18 @@ class phpbb_extension_metadata_manager
 	 * Processes and gets the metadata requested
 	 *
 	 * @param  string $element			All for all metadata that it has and is valid, otherwise specify which section you want by its shorthand term.
-	 * @return bool|array				Contains all of the requested metadata or bool False if not valid
+	 * @return array					Contains all of the requested metadata, throws an exception on failure
 	 */
 	public function get_metadata($element = 'all')
 	{
 		// TODO: Check ext_name exists and is an extension that exists
-		if (!$this->set_metadata_file())
-		{
-			return false;
-		}
+		$this->set_metadata_file();
 
 		// Fetch the metadata
-		if (!$this->fetch_metadata())
-		{
-			return false;
-		}
+		$this->fetch_metadata();
 
 		// Clean the metadata
-		if (!$this->clean_metadata_array())
-		{
-			return false;
-		}
+		$this->clean_metadata_array();
 
 		switch ($element)
 		{
@@ -112,46 +103,42 @@ class phpbb_extension_metadata_manager
 	/**
 	 * Sets the filepath of the metadata file
 	 *
-	 * @return boolean  Set to true if it exists
+	 * @return boolean  Set to true if it exists, throws an exception on failure
 	 */
 	private function set_metadata_file()
 	{
 		$ext_filepath = $this->extension_manager->get_extension_path($this->ext_name);
-		$metadata_filepath = $this->phpbb_root_path . $ext_filepath . '/composer.json';
+		$metadata_filepath = $this->phpbb_root_path . $ext_filepath . 'composer.json';
 
 		$this->metadata_file = $metadata_filepath;
 
 		if (!file_exists($this->metadata_file))
 		{
-			return false;
-		}
-		else
-		{
-			return true;
+    		throw new phpbb_exception_metadata(phpbb_exception_metadata::FILE_DOES_NOT_EXIST, $this->metadata_file);
 		}
 	}
 
 	/**
 	 * Gets the contents of the composer.json file
 	 *
-	 * @return bool True of false (if loading succeeded or failed)
+	 * @return bool True if success, throws an exception on failure
 	 */
 	private function fetch_metadata()
 	{
 		if (!file_exists($this->metadata_file))
 		{
-			return false;
+			throw new phpbb_exception_metadata(phpbb_exception_metadata::FILE_DOES_NOT_EXIST, $this->metadata_file);
 		}
 		else
 		{
 			if (!($file_contents = file_get_contents($this->metadata_file)))
 			{
-				return false;
+    			throw new phpbb_exception_metadata(phpbb_exception_metadata::FILE_GET_CONTENTS, $this->metadata_file);
 			}
 
 			if (($metadata = json_decode($file_contents, true)) === NULL)
 			{
-				return false;
+    			throw new phpbb_exception_metadata(phpbb_exception_metadata::JSON_DECODE, $this->metadata_file);
 			}
 
 			$this->metadata = $metadata;
@@ -161,7 +148,7 @@ class phpbb_extension_metadata_manager
 	}
 
 	/**
-	 * This array handles the validation and cleaning of the array
+	 * This array handles the cleaning of the array
 	 *
 	 * @return array Contains the cleaned metadata array
 	 */
@@ -179,7 +166,7 @@ class phpbb_extension_metadata_manager
 	* @param string $name  ("all" for display and enable validation
 	* 						"display" for name, type, and authors
 	* 						"name", "type")
-	* @return Bool False if validation fails, true if valid
+	* @return Bool True if valid, throws an exception if invalid
 	*/
 	public function validate($name = 'display')
     {
@@ -193,21 +180,34 @@ class phpbb_extension_metadata_manager
 
     	if (isset($fields[$name]))
     	{
-    		return (isset($this->metadata[$name])) ? (bool) preg_match($this->validation[$name], $this->metadata[$name]) : false;
+    		if (!isset($this->metadata[$name]))
+    		{
+    			throw new phpbb_exception_metadata(phpbb_exception_metadata::NOT_SET, $name);
+			}
+
+			if (!preg_match($fields[$name], $this->metadata[$name]))
+			{
+    			throw new phpbb_exception_metadata(phpbb_exception_metadata::INVALID, $name);
+			}
 		}
 
     	// Validate all fields
     	if ($name == 'all')
     	{
+    		$this->validate('display');
+
+			$this->validate_enable();
+		}
+
+    	// Validate display fields
+    	if ($name == 'display')
+    	{
     		foreach ($fields as $field => $data)
 			{
-				if (!$this->validate($field))
-				{
-					return false;
-				}
+				$this->validate($field);
 			}
 
-			return $this->validate_authors();
+			$this->validate_authors();
 		}
 
 		return true;
@@ -216,20 +216,20 @@ class phpbb_extension_metadata_manager
 	/**
 	 * Validates the contents of the authors field
 	 *
-	 * @return boolean True when passes validation
+	 * @return boolean True when passes validation, throws exception if invalid
 	 */
 	private function validate_authors()
 	{
 		if (empty($this->metadata['authors']))
 		{
-			return false;
+    		throw new phpbb_exception_metadata(phpbb_exception_metadata::NOT_SET, 'authors');
 		}
 
 		foreach ($this->metadata['authors'] as $author)
 		{
 			if (!isset($author['name']))
 			{
-				return false;
+    			throw new phpbb_exception_metadata(phpbb_exception_metadata::NOT_SET, 'author name');
 			}
 		}
 
@@ -244,7 +244,7 @@ class phpbb_extension_metadata_manager
 	public function validate_enable()
 	{
 		// Check for phpBB, PHP versions
-		if (!$this->validate_require_phpbb || !$this->validate_require_php)
+		if (!$this->validate_require_phpbb() || !$this->validate_require_php())
 		{
 			return false;
 		}

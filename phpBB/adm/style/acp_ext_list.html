@@ -26,11 +26,16 @@
 		<tr>
 			<td><strong>{enabled.EXT_NAME}</strong></a></td>
 			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
-			<td style="text-align: center;"><a href="{enabled.U_DISABLE}">{L_DISABLE}</a>&nbsp;
-			|&nbsp;<a href="{enabled.U_PURGE}">{L_PURGE}</a></td>
+			<td style="text-align: center;">
+				<!-- BEGIN actions -->
+					<a href="{enabled.actions.U_ACTION}" alt="{enabled.actions.L_ACTION}">{enabled.actions.L_ACTION}</a>
+					<!-- IF not enabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
+				<!-- END actions -->
+			</td>
 		</tr>
 		<!-- END enabled -->
 		<!-- ENDIF -->
+
 		<!-- IF .disabled -->
 		<tr>
 			<td class="row3" colspan="3"><strong>{L_DISABLED} {L_EXTENSIONS}</strong></td>
@@ -38,9 +43,15 @@
 		<!-- BEGIN disabled -->
 		<tr>
 			<td><strong>{disabled.EXT_NAME}</strong></a></td>
-			<td style="text-align: center;"><a href="{disabled.U_DETAILS}">{L_DETAILS}</a></td>
-			<td style="text-align: center;"><a href="{disabled.U_ENABLE}">{L_ENABLE}</a>&nbsp;
-			<!-- IF disabled.U_PURGE -->|&nbsp;<a href="{disabled.U_PURGE}">{L_PURGE}</a>&nbsp;<!-- ENDIF --></td>
+			<td style="text-align: center;">
+				<!-- IF disabled.U_DETAILS --><a href="{disabled.U_DETAILS}">{L_DETAILS}</a><!-- ENDIF -->
+			</td>
+			<td style="text-align: center;">
+				<!-- BEGIN actions -->
+					<a href="{disabled.actions.U_ACTION}" alt="{disabled.actions.L_ACTION}">{disabled.actions.L_ACTION}</a>
+					<!-- IF not disabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
+				<!-- END actions -->
+			</td>
 		</tr>
 		<!-- END disabled -->
 		<!-- ENDIF -->
