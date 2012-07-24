@@ -422,6 +422,15 @@ a.topictitle:visited {
 	text-decoration: none;
 }
 
+a.lastsubject {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a.lastsubject:hover {
+	text-decoration: underline;
+}
+
 th a,
 th a:visited {
 	color: #FFA34F !important;
