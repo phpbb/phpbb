@@ -71,6 +71,10 @@ a.lastsubject {
 	text-decoration: none;
 }
 
+a.lastsubject:hover {
+	text-decoration: underline;
+}
+
 /* Post body links */
 .postlink {
 	text-decoration: none;

@@ -427,6 +427,10 @@ a.lastsubject {
 	text-decoration: none;
 }
 
+a.lastsubject:hover {
+	text-decoration: underline;
+}
+
 th a,
 th a:visited {
 	color: #FFA34F !important;
