@@ -173,7 +173,7 @@ class acp_extensions
 	{
 		foreach ($phpbb_extension_manager->all_enabled() as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $this->template);
+			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
 
 			try
 			{
@@ -208,7 +208,7 @@ class acp_extensions
 	{
 		foreach ($phpbb_extension_manager->all_disabled() as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $this->template);
+			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
 
 			try
 			{
@@ -245,7 +245,7 @@ class acp_extensions
 
 		foreach ($uninstalled as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->get_extension_metadata_manager($name, $this->template);
+			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
 
 			try
 			{

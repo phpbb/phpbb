@@ -131,7 +131,7 @@ class phpbb_extension_manager
 	* @param string $template The template manager
 	* @return phpbb_extension_metadata_manager Instance of the metadata manager
 	*/
-	public function get_extension_metadata_manager($name, phpbb_template $template)
+	public function create_extension_metadata_manager($name, phpbb_template $template)
 	{
 		return new phpbb_extension_metadata_manager($name, $this->db, $this, $this->phpbb_root_path, $this->php_ext, $template, $this->config);
 	}
