@@ -342,11 +342,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 				// throw an error if we shall not ignore unexistant words
 				else if (!$ignore_no_id && sizeof($non_common_words))
 				{
-<<<<<<< HEAD
 					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], implode($user->lang['COMMA_SEPARATOR'], $non_common_words)));
-=======
-					trigger_error(sprintf($this->user->lang['WORDS_IN_NO_POST'], implode(', ', $non_common_words)));
->>>>>>> 1ee5f46... [ticket/11011] remove global keyword in native search
 				}
 				unset($non_common_words);
 			}
