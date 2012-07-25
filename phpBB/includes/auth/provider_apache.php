@@ -243,4 +243,60 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 
 		return false;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function autologin()
+	{
+		if (!$this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
+		{
+			return array();
+		}
+
+		$php_auth_user = htmlspecialchars_decode($this->request->server('PHP_AUTH_USER'));
+		$php_auth_pw = htmlspecialchars_decode($this->request->server('PHP_AUTH_PW'));
+
+		if (!empty($php_auth_user) && !empty($php_auth_pw))
+		{
+			set_var($php_auth_user, $php_auth_user, 'string', true);
+			set_var($php_auth_pw, $php_auth_pw, 'string', true);
+
+			$sql = 'SELECT *
+				FROM ' . USERS_TABLE . "
+				WHERE username = '" . $this->db->sql_escape($php_auth_user) . "'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			if ($row)
+			{
+				return ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE) ? array() : $row;
+			}
+
+			if (!function_exists('user_add'))
+			{
+				global $phpbb_root_path, $phpEx;
+
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
+
+			// create the user if he does not exist yet
+			$this->login_create_profile($this->login_user_row($php_auth_user, $php_auth_pw));
+
+			$sql = 'SELECT *
+				FROM ' . USERS_TABLE . "
+				WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($php_auth_user)) . "'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			if ($row)
+			{
+				return $row;
+			}
+		}
+
+		return array();
+	}
 }

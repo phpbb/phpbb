@@ -93,6 +93,19 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 	}
 
 	/**
+	 *
+	 * @param string $username
+	 * @param string $password
+	 */
+	public function process_install_login($username, $password)
+	{
+		$this->request->overwrite('username', $username, phpbb_request_interface::POST);
+		$this->request->overwrite('password', $password, phpbb_request_interface::POST);
+		$this->request->overwrite('autologin', false, phpbb_request_interface::POST);
+		$this->request->overwrite('viewonline', true, phpbb_request_interface::POST);
+		return $this->internal_login(true, true);
+	}
+	/**
 	 * Generates the registration template.
 	 *
 	 * @param phpbb_template $template
@@ -194,13 +207,14 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 	 * Processes the nitty, gritty, ugly part of login.
 	 *
 	 * @param boolean $admin Is this admin authentication?
+	 * @param boolean $install_login Is this login ocurring as part of installation?
 	 * @return int	The user id of the user.
 	 * @throws phpbb_auth_exception
 	 */
-	protected function internal_login($admin)
+	protected function internal_login($admin, $install_login = false)
 	{
 		// Get credential
-		if ($admin)
+		if ($admin && !$install_login)
 		{
 			$credential = $this->request->variable('credential', '');
 
@@ -245,7 +259,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		$viewonline = ($admin) ? $this->user->data['session_viewonline'] : $viewonline;
 
 		// Check if the supplied username is equal to the one stored within the database if re-authenticating
-		if ($admin && utf8_clean_string($username) != utf8_clean_string($this->user->data['username']))
+		if ($admin && utf8_clean_string($username) != utf8_clean_string($this->user->data['username']) && !$install_login)
 		{
 			// We log the attempt to use a different username...
 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
@@ -328,6 +342,10 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 
 			// Complete login.
 			$this->login($row['user_id'], $admin, $autologin, $viewonline);
+			if ($install_login)
+			{
+				return;
+			}
 			$this->redirect($this->request->variable('redirect', ''));
 		}
 

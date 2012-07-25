@@ -502,7 +502,7 @@ class phpbb_session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx;
+		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx, $phpbb_auth_manager, $request;
 
 		$this->data = array();
 
@@ -565,18 +565,22 @@ class phpbb_session
 			}
 		}
 
-		$method = basename(trim($config['auth_method']));
-		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-		$method = 'autologin_' . $method;
-		if (function_exists($method))
+		if (!($phpbb_auth_manager instanceof phpbb_auth_manager))
 		{
-			$this->data = $method();
-
-			if (sizeof($this->data))
+			$phpbb_auth_manager = new phpbb_auth_manager($request, $db, $config);
+		}
+		$providers = $phpbb_auth_manager->get_enabled_providers();
+		foreach ($providers as $provider)
+		{
+			if ($provider instanceof phpbb_auth_provider_sso_interface)
 			{
-				$this->cookie_data['k'] = '';
-				$this->cookie_data['u'] = $this->data['user_id'];
+				$this->data = $provider->autologin();
+
+				if (sizeof($this->data))
+				{
+					$this->cookie_data['k'] = '';
+					$this->cookie_data['u'] = $this->data['user_id'];
+				}
 			}
 		}
 
