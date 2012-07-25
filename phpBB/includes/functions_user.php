@@ -753,14 +753,10 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		}
 		else
 		{
-			$ban_other = explode('-', $ban_len_other);
-			if (sizeof($ban_other) == 3 && ((int)$ban_other[0] < 9999) &&
-				(strlen($ban_other[0]) == 4) && (strlen($ban_other[1]) == 2) && (strlen($ban_other[2]) == 2))
+			$ban_end = $user->get_timestamp_from_format('Y-m-d', $ban_len_other);
+			if ($ban_end !== false)
 			{
-				$ban_end = max($current_time, $user->create_datetime()
-					->setDate((int) $ban_other[0], (int) $ban_other[1], (int) $ban_other[2])
-					->setTime(0, 0, 0)
-					->getTimestamp() + $user->timezone->getOffset(new DateTime('UTC')));
+				$ban_end = max($current_time, $ban_end);
 			}
 			else
 			{

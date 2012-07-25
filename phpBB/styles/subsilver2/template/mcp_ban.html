@@ -49,7 +49,15 @@
 </tr>
 <tr>
 	<td class="row1" valign="top"><b>{L_BAN_LENGTH}{L_COLON}</b></td>
-	<td class="row2"><select name="banlength">{S_BAN_END_OPTIONS}</select><br /><input type="text" name="banlengthother" class="post" /> {L_YEAR_MONTH_DAY}</td>
+	<td class="row2">
+		<select name="banlength" onchange="if(this.value==-1){document.getElementById('banlengthother_div').style.display = 'block';}else{document.getElementById('banlengthother_div').style.display='none';}">{S_BAN_END_OPTIONS}</select><br />
+		<div id="banlengthother_div" style="display: none;">
+			<!-- DEFINE $DATETIME_INPUTBOX_NAME = 'banlengthother' -->
+			<!-- DEFINE $DATETIME_INPUTBOX_VALUE = '' -->
+			<!-- DEFINE $DATETIME_INPUTBOX_DATE = false -->
+			<!-- INCLUDE datetime_inputbox.html -->
+		</div>
+	</td>
 </tr>
 <tr>
 	<td class="row1" valign="top"><b>{L_BAN_EXCLUDE}{L_COLON}</b><br /><span class="gensmall">{L_BAN_EXCLUDE_EXPLAIN}</span></td>
