@@ -27,7 +27,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 		$this->extension_manager = new phpbb_extension_manager(
 			$this->new_dbal(),
-			new phpbb_config(array())
+			new phpbb_config(array()),
 			'phpbb_ext',
 			dirname(__FILE__) . '/',
 			'.php',
