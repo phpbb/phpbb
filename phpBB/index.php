@@ -156,8 +156,7 @@ $s_login_hidden_fields = array(
 );
 $s_login_hidden_fields = build_hidden_fields($s_login_hidden_fields);
 
-$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
-$count_common_providers = count($auth_manager->get_enabled_common_login_providers());
+$count_common_providers = count($phpbb_auth_manager->get_enabled_common_login_providers());
 
 // Assign index specific vars
 $template->assign_vars(array(

@@ -27,7 +27,7 @@ class ucp_register
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
-		global $request;
+		global $request, $phpbb_auth_manager;
 
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE)
@@ -49,7 +49,7 @@ class ucp_register
 		{
 			$submit = true;
 		}
-		$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
+		$phpbb_auth_manager->set_user($user);
 
 		if ($agreed)
 		{
@@ -96,7 +96,7 @@ class ucp_register
 			);
 
 			// If we change the language, we want to pass on some more possible parameter.
-			if ($change_lang && $common_provider_enabled)
+			if ($change_lang && $auth_provider = 'native')
 			{
 				// We do not include the password
 				$s_hidden_fields = array_merge($s_hidden_fields, array(
@@ -166,7 +166,7 @@ class ucp_register
 		if ($auth_action & $auth_provider)
 		{
 			$auth_step = $request->variable('auth_step', 'process');
-			$provider = $auth_manager->get_provider($auth_provider);
+			$provider = $phpbb_auth_manager->get_provider($auth_provider);
 			if (!method_exists($provider, $auth_step))
 			{
 				$error['NO_AUTH_STEP'] = 'NO_AUTH_STEP';
@@ -252,7 +252,7 @@ class ucp_register
 			}
 		}
 
-		$providers = $auth_manager->get_enabled_providers();
+		$providers = $phpbb_auth_manager->get_enabled_providers();
 		$rendered_template = false;
 		foreach ($providers as $provider)
 		{

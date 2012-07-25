@@ -2967,7 +2967,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
 	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
-	global $request;
+	global $request, $phpbb_auth_manager;
 
 	if (!class_exists('phpbb_captcha_factory', false))
 	{
@@ -2994,8 +2994,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
-	// Initialize the authentication manager for use in generating the template and processing login.
-	$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
+	// Indicate that this script requires the phpbb_user.
+	$phpbb_auth_manager->set_user($user);
 
 	// Process login requests.
 	if ($request->is_set('auth_provider'))
@@ -3003,7 +3003,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$auth_provider = $request->variable('auth_provider', '');
 		if ($auth_provider == 'common')
 		{
-			$auth_providers = $auth_manager->get_enabled_common_login_providers();
+			$auth_providers = $phpbb_auth_manager->get_enabled_common_login_providers();
 			foreach ($auth_providers as $auth_provider)
 			{
 				// Perform any additional procedures requested by the provider.
@@ -3040,7 +3040,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 		else
 		{
-			$auth_provider = $auth_manager->get_provider($auth_provider);
+			$auth_provider = $phpbb_auth_manager->get_provider($auth_provider);
 			// Perform any additional procedures requested by the provider.
 			$auth_step = $request->variable('auth_step', '');
 			if ($auth_step != '' && method_exists($auth_provider, $auth_step))
@@ -3117,7 +3117,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'S_ADMIN_AUTH'			=> $admin,
 	));
 
-	$providers = $auth_manager->get_enabled_providers();
+	$providers = $phpbb_auth_manager->get_enabled_providers();
 	$rendered_template = false;
 	$common_template = false;
 	foreach($providers as $provider)
@@ -3131,7 +3131,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			}
 		}
 
-		if ($provider_config['CUSTOM_LOGIN_BOX'] == false)
+		if (!($provider instanceof phpbb_auth_provider_custom_login_interface))
 		{
 			$common_template = $rendered_template =  true;
 			continue;
@@ -3149,7 +3149,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	if ($common_template)
 	{
-		$common_tpl = $auth_manager->generate_common_login_box($template, $redirect, $admin, $s_display);
+		$common_tpl = $phpbb_auth_manager->generate_common_login_box($template, $redirect, $admin, $s_display);
 		$template->assign_vars(array(
 			'COMMON_TPL'	=> $common_tpl,
 		));

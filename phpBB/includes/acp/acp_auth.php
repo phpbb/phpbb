@@ -25,7 +25,7 @@ class acp_auth
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $request;
+		global $db, $user, $auth, $template, $request, $phpbb_auth_manager;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/auth');
@@ -66,8 +66,7 @@ class acp_auth
 			$submit = false;
 		}
 
-		$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
-		$providers = $auth_manager->get_registered_providers();
+		$providers = $phpbb_auth_manager->get_registered_providers();
 
 		foreach($providers as $provider)
 		{
