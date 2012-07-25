@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStorage
+class phpbb_auth_zend_openid_storage extends \Zend\OpenId\Consumer\Storage\AbstractStorage
 {
 
 	protected $db;

@@ -223,7 +223,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			throw new phpbb_auth_exception('AUTH_DISABLED');
 		}
 
-		$storage = new phpbb_auth_zend_storage($this->db);
+		$storage = new phpbb_auth_zend_openid_storage($this->db);
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
 		if ($this->request->variable('openid_identifier', '') == '')
@@ -304,7 +304,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			throw new phpbb_auth_exception('AUTH_DISABLED');
 		}
 
-		$storage = new phpbb_auth_zend_storage($this->db);
+		$storage = new phpbb_auth_zend_openid_storage($this->db);
 		$storage->purgeNonces(time());
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
@@ -407,7 +407,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		}
 
 		//Get the SREG data
-		$storage = new phpbb_auth_zend_storage($this->db);
+		$storage = new phpbb_auth_zend_openid_storage($this->db);
 		$storage->purgeNonces(time());
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
