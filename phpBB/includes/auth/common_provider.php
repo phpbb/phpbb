@@ -289,6 +289,15 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		return true;
 	}
 
+	/**
+	 * Performs registration of account with given data with the phpBB databse.
+	 *
+	 * @param array $data
+	 * @param boolean $coppa
+	 * @param array $cp_data
+	 * @return integer The ID of the new user
+	 * @throws phpbb_auth_exception
+	 */
 	protected function register($data, $coppa = false, $cp_data = false)
 	{
 		if (empty($data))
@@ -403,9 +412,8 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 
 		if ($this->config['email_enable'])
 		{
-			global $phpbb_root_path, $phpEx;
 			$server_url = generate_board_url();
-			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+			include_once($this->phpbb_root_path . 'includes/functions_messenger.' . $this->phpEx);
 
 			$messenger = new messenger(false);
 

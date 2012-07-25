@@ -71,6 +71,12 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 		);
 	}
 
+	/**
+	 * Hands off a login request to internal_login.
+	 *
+	 * @param boolean $admin
+	 * @throws phpbb_auth_exception
+	 */
 	public function process($admin = false)
 	{
 		$provider_config = $this->get_configuration();
@@ -86,13 +92,17 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 			case 'login':
 				$this->internal_login($admin);
 				break;
-			case 'register':
-				break;
 			default:
 				throw new phpbb_auth_exception('INVALID_AUTH_ACTION');
 		}
 	}
 
+	/**
+	 * Processes the actual login attempt and will create an account if it must.
+	 *
+	 * @param boolean $admin
+	 * @throws phpbb_auth_exception
+	 */
 	protected function internal_login($admin)
 	{
 		// Get credential

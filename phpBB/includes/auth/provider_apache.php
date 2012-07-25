@@ -63,6 +63,13 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 		);
 	}
 
+	/**
+	 * Processes a login attempt for this auth provider. If the account does not
+	 * exist, internal_login will create it.
+	 *
+	 * @param boolean $admin
+	 * @throws phpbb_auth_exception
+	 */
 	public function process($admin = false)
 	{
 		$provider_config = $this->get_configuration();
@@ -78,13 +85,18 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 			case 'login':
 				$this->internal_login($admin);
 				break;
-			case 'register':
-				break;
 			default:
 				throw new phpbb_auth_exception('INVALID_AUTH_ACTION');
 		}
 	}
 
+	/**
+	 * Processes a login request and will create accounts for valid logins if
+	 * one does not exist.
+	 *
+	 * @param boolean $admin
+	 * @throws phpbb_auth_exception 
+	 */
 	protected function internal_login($admin)
 	{
 		// Get credential

@@ -26,15 +26,35 @@ class phpbb_auth_captcha
 	protected $db;
 	protected $config;
 	protected $user;
+	protected $phpbb_root_path;
+	protected $phpEx;
 	protected static $captcha = null;
 
+	/**
+	 * @global string $phpbb_root_path
+	 * @global string $phpEx
+	 * @param dbal $db
+	 * @param phpbb_config_db $config
+	 * @param phpbb_user $user
+	 */
 	public function __construct(dbal $db, phpbb_config_db $config, phpbb_user $user)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->user = $user;
+
+		global $phpbb_root_path, $phpEx;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
 	}
 
+	/**
+	 * Prepares captcha for use and stores it for later use as only one captcha
+	 * object may be called per script execution.
+	 *
+	 * @param int $init_type
+	 * @return void
+	 */
 	protected function get_captcha($init_type)
 	{
 		if (self::$captcha !== null)
@@ -44,8 +64,7 @@ class phpbb_auth_captcha
 
 		if (!class_exists('phpbb_captcha_factory', false))
 		{
-			global $phpbb_root_path, $phpEx;
-			include ($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+			include ($this->phpbb_root_path . 'includes/captcha/captcha_factory.' . $this->phpEx);
 		}
 
 		$captcha = phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
@@ -55,6 +74,13 @@ class phpbb_auth_captcha
 		return;
 	}
 
+	/**
+	 * Determines whether captcha needs to be shown or not. Used by default in
+	 * common login.
+	 *
+	 * @param int $user_login_attempts
+	 * @return boolean
+	 */
 	public function need_captcha($user_login_attempts = 0)
 	{
 		// Get number of login attempts
@@ -86,6 +112,12 @@ class phpbb_auth_captcha
 			($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']);
 	}
 
+	/**
+	 * Confirms whether or not the visual captcha is correct or not.
+	 *
+	 * @param array $row
+	 * @return boolean
+	 */
 	public function confirm_visual_login_captcha($row)
 	{
 		$this->get_captcha(CONFIRM_LOGIN);
@@ -101,6 +133,12 @@ class phpbb_auth_captcha
 		}
 	}
 
+	/**
+	 * Validates the captcha on registration if requested by a provider.
+	 *
+	 * @param array $data
+	 * @return array|boolean Return an array of errors on failure or true on success
+	 */
 	public function confirm_visual_registration_captcha($data)
 	{
 		$this->get_captcha(CONFIRM_REG);
@@ -126,18 +164,33 @@ class phpbb_auth_captcha
 		}
 	}
 
+	/**
+	 * Resets registration captcha.
+	 */
 	public function reset_registration_captcha()
 	{
 		$this->get_captcha(CONFIRM_REG);
 		self::$captcha->reset();
 	}
 
+	/**
+	 * Returns an array of the hidden fields for the active captcha.
+	 *
+	 * @param int $init_type
+	 * @return array
+	 */
 	public function get_hidden_fields($init_type)
 	{
 		$this->get_captcha($init_type);
 		return self::$captcha->get_hidden_fields();
 	}
 
+	/**
+	 * Returns the template code for a given captcha.
+	 *
+	 * @param int $init_type
+	 * @return string
+	 */
 	public function get_template($init_type)
 	{
 		$this->get_captcha($init_type);

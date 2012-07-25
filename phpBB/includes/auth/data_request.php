@@ -22,6 +22,13 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_auth_data_request
 {
+	/**
+	 * Populates the phpbb_auth_data_request with information about the request.
+	 *
+	 * @param phpbb_user $user
+	 * @param array $args
+	 * @throws InvalidArgumentException
+	 */
 	public function __construct(phpbb_user $user, $args)
 	{
 		if (!is_array($args))

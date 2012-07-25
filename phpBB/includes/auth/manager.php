@@ -36,11 +36,24 @@ class phpbb_auth_manager
 		$this->config = $config;
 	}
 
+	/**
+	 * Sets $this->user so that the phpbb_auth_manager knows that the script
+	 * needs to know information about the current user.
+	 *
+	 * @param phpbb_user $user
+	 */
 	public function set_user(phpbb_user $user)
 	{
  		$this->user = $user;
  	}
 
+	/**
+	 * Returns the requested authentication provider if it exists.
+	 *
+	 * @param string $auth_type
+	 * @return \provider
+	 * @throws phpbb_auth_exception
+	 */
 	public function get_provider($auth_type)
 	{
 		$provider = 'phpbb_auth_provider_' . $auth_type;
@@ -59,7 +72,11 @@ class phpbb_auth_manager
 		}
 	}
 
-	// Return temporary set array of providers.
+	/**
+	 * Returns an array of all providers.
+	 *
+	 * @return array
+	 */
 	public function get_registered_providers()
 	{
 		$providers = array(
@@ -82,6 +99,11 @@ class phpbb_auth_manager
 		return $providers;
 	}
 
+	/**
+	 * Returns an array of all enabled providers.
+	 *
+	 * @return array
+	 */
 	public function get_enabled_providers()
 	{
 		$providers = $this->get_registered_providers();
@@ -99,7 +121,12 @@ class phpbb_auth_manager
 		return $enabled_providers;
 	}
 
-	public function get_common_providers()
+	/**
+	 * Returns an array of all common login providers.
+	 *
+	 * @return array
+	 */
+	public function get_common_login_providers()
 	{
 		$providers = $this->get_registered_providers();
 
@@ -115,6 +142,11 @@ class phpbb_auth_manager
 		return $common_providers;
 	}
 
+	/**
+	 * Returns an array of all enabled common login providers.
+	 *
+	 * @return array
+	 */
 	public function get_enabled_common_login_providers()
 	{
 		$providers = $this->get_registered_providers();
@@ -132,6 +164,17 @@ class phpbb_auth_manager
 		return $enabled_common_providers;
 	}
 
+	/**
+	 * Generates the common login tempalte for display.
+	 *
+	 * @global type $phpbb_root_path
+	 * @global type $phpEx
+	 * @param phpbb_template $template
+	 * @param string $redirect
+	 * @param boolean $admin
+	 * @param boolean $full_login
+	 * @return string|boolean Template string on success|False on template error
+	 */
 	public function generate_common_login_box(phpbb_template $template, $redirect = '', $admin = false, $full_login = true)
 	{
 		global $phpbb_root_path, $phpEx;

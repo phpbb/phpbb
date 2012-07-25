@@ -26,7 +26,12 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 
 	protected $db;
 
-	public function __construct($db)
+	/**
+	 * Store phpbb_dbal for later.
+	 *
+	 * @param phpbb_dbal $db
+	 */
+	public function __construct(phpbb_dbal $db)
 	{
 		$this->db = $db;
 	}

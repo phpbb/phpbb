@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * @package auth
 */
 class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
-	implements phpbb_auth_provider_custom_login_interface, phpbb_auth_provider_custom_registration_interface
+	implements phpbb_auth_provider_custom_login_interface, phpbb_auth_provider_registration_interface
 {
 	protected $request;
 	protected $db;

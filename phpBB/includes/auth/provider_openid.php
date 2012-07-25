@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * @package auth
 */
 class phpbb_auth_provider_openid extends phpbb_auth_common_provider
-	implements phpbb_auth_provider_custom_login_interface, phpbb_auth_provider_custom_registration_interface
+	implements phpbb_auth_provider_custom_login_interface, phpbb_auth_provider_registration_interface
 {
 	protected $request;
 	protected $db;
@@ -392,6 +392,12 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		return false;
 	}
 
+	/**
+	 * Handles a data request as part of registration.
+	 *
+	 * @return phpbb_auth_data_request|boolean
+	 * @throws phpbb_auth_exception
+	 */
 	public function register_req_data()
 	{
 		$provider_config = $this->get_configuration();

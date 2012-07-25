@@ -21,6 +21,7 @@ if (!defined('IN_PHPBB'))
 * @package auth
 */
 class phpbb_auth_provider_native extends phpbb_auth_common_provider
+	implements phpbb_auth_provider_registration_interface
 {
 	protected $request;
 	protected $db;
@@ -62,6 +63,12 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		);
 	}
 
+	/**
+	 * Hands off a registration or login to the appropriate function.
+	 *
+	 * @param boolean $admin
+	 * @throws phpbb_auth_exception
+	 */
 	public function process($admin = false)
 	{
 		$provider_config = $this->get_configuration();
@@ -85,6 +92,12 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		}
 	}
 
+	/**
+	 * Generates the registration template.
+	 *
+	 * @param phpbb_template $template
+	 * @return string|boolean Template string on success|False on error
+	 */
 	public function generate_registration(phpbb_template $template)
 	{
 		if ($this->config['enable_confirm'])
@@ -388,6 +401,12 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		return $row;
 	}
 
+	/**
+	 * Performs the actual login.
+	 *
+	 * @return void
+	 * @throws phpbb_auth_exception
+	 */
 	protected function internal_register()
 	{
 		if (!check_form_key('ucp_register'))
