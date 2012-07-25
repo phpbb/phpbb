@@ -194,6 +194,10 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 				$this->login((int)$row['user_id'], $admin, $autologin, $viewonline);
 				$this->redirect($this->request->variable('redirect', ''));
 			}
+
+			$user_id = $this->login_create_profile($this->login_user_row($php_auth_user, $php_auth_pw));
+			$this->login((int)$user_id, $admin, $autologin, $viewonline);
+			$this->redirect($this->request->variable('redirect', ''));
 		}
 
 		if ($admin && $this->user->data['is_registered'])

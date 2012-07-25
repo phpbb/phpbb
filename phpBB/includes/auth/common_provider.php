@@ -238,6 +238,70 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	}
 
 	/**
+	 * Creates an empty profile when a provider needs to handle registration and
+	 * login in the same script.
+	 *
+	 * @param array $data
+	 * @return integer
+	 * @throws phpbb_auth_exception
+	 */
+	protected function login_create_profile($data)
+	{
+		user_add($data['user_row'], (isset($data['cp_data'])) ? $data['cp_data'] : false);
+
+		$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
+			FROM ' . USERS_TABLE . "
+			WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'";
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (!$row)
+		{
+			throw new phpbb_auth_exception('AUTH_NO_PROFILE_CREATED');
+		}
+
+		return (int)$row['user_id'];
+	}
+
+	/**
+	 * This function generates an array which can be passed to the phpbb_auth_common_provider::login_create_profile() function.
+	 *
+	 * @param string $username
+	 * @param string $password
+	 * @param string $email
+	 * @return array
+	 * @throws phpbb_auth_exception
+	 */
+	protected function login_user_row($username, $password, $email = null)
+	{
+		// first retrieve default group id
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $this->db->sql_escape('REGISTERED') . "'
+				AND group_type = " . GROUP_SPECIAL;
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (!$row)
+		{
+			throw new phpbb_auth_exception('NO_GROUP');
+		}
+
+		// generate user account data
+		return array(
+			'username'		=> $username,
+			'user_password'	=> phpbb_hash($password),
+			'user_email'	=> (isset($email)) ? utf8_htmlspecialchars($email) : '',
+			'group_id'		=> (int) $row['group_id'],
+			'user_type'		=> USER_NORMAL,
+			'user_ip'		=> $this->user->ip,
+			'user_new'		=> ($this->config['new_member_post_limit']) ? 1 : 0,
+		);
+	}
+
+	/**
 	 * Redirects the user to the specified page after the authentication action
 	 * is completed.
 	 *

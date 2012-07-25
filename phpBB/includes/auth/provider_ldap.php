@@ -240,11 +240,13 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 					$this->login((int)$row['user_id'], $admin, $autologin, $viewonline);
 					$this->redirect($this->request->variable('redirect', ''));
 				}
-				if ($admin && $this->user->data['is_registered'])
+				else
 				{
-					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+					$ldap_email = (!empty($config['ldap_email'])) ? utf8_htmlspecialchars($ldap_result[0][htmlspecialchars_decode($config['ldap_email'])][0]) : null;
+					$user_id = $this->login_create_profile($this->login_user_row($username, phpbb_hash($password), $ldap_email));
+					$this->login((int)$user_id, $admin, $autologin, $viewonline);
+					$this->redirect($this->request->variable('redirect', ''));
 				}
-				throw new phpbb_auth_exception('USER_NOT_FOUND');
 			}
 			else
 			{
