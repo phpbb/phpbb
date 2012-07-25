@@ -20,7 +20,8 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-interface phpbb_auth_provider_custom_registration_interface {
+interface phpbb_auth_provider_custom_registration_interface
+{
 	/**
 	 * Generates the registration box.
 	 *

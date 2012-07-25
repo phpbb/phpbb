@@ -132,7 +132,7 @@ class phpbb_auth_manager
 		return $enabled_common_providers;
 	}
 
-	public function generate_common_login_box(phpbb_template $template, $redirect = '', $admin = false, $s_display = true)
+	public function generate_common_login_box(phpbb_template $template, $redirect = '', $admin = false, $full_login = true)
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -174,7 +174,7 @@ class phpbb_auth_manager
 			'PASSWORD_CREDENTIAL'	=> $password_credential,
 
 			'S_AUTOLOGIN_ENABLED'	=> $s_autologin_enabled,
-			'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
+			'S_DISPLAY_FULL_LOGIN'	=> ($full_login) ? true : false,
 			'S_LOGIN_ACTION'		=> $s_login_action,
 			'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 

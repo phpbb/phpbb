@@ -21,6 +21,7 @@ if (!defined('IN_PHPBB'))
 * @package auth
 */
 class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
+	implements phpbb_auth_provider_acp_init_interface
 {
 	protected $request;
 	protected $db;
@@ -293,7 +294,6 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 	 * Only allow changing authentication to ldap if we can connect to the ldap server
 	 * Called in acp_board while setting authentication plugins
 	 *
-	 * @return boolean false if the user is identified
 	 * @throws phpbb_auth_exception
 	 */
 	public function init()
@@ -360,7 +360,5 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 		{
 			throw new phpbb_auth_exception($this->user->lang['LDAP_NO_EMAIL']);
 		}
-
-		return false;
 	}
 }

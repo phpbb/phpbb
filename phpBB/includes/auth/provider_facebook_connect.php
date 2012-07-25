@@ -66,7 +66,7 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function generate_login_box(phpbb_template $template, $redirect = '', $admin = false, $s_display = true)
+	public function generate_login_box(phpbb_template $template, $redirect = '', $admin = false, $full_login_box = true)
 	{
 		return null;
 	}

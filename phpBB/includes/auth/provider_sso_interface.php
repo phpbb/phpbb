@@ -20,11 +20,12 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-interface phpbb_auth_provider_sso_interface {
+interface phpbb_auth_provider_sso_interface
+{
 	/**
-	 * The session validation function checks whether the user is still logged in
+	 * The session validation function checks whether the user is still logged in.
 	 *
 	 * @return boolean true if the given user is authenticated or false if the session should be closed
 	 */
-	public function validate_session(&$user);
+	public function validate_session($user);
 }

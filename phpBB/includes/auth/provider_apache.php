@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * @package auth
 */
 class phpbb_auth_provider_apache extends phpbb_auth_common_provider
-	implements phpbb_auth_provider_sso_interface
+	implements phpbb_auth_provider_sso_interface, phpbb_auth_provider_acp_init_interface
 {
 	protected $request;
 	protected $db;
@@ -196,21 +196,20 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 	 * Only allow changing authentication to apache if the user is identified
 	 * Called in acp_board while setting authentication plugins
 	 *
-	 * @return boolean|string false if the user is identified and else an error message
+	 * @throws phpbb_auth_exception On failure
 	 */
 	public function init()
 	{
 		if (!$this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER) || $this->user->data['username'] !== htmlspecialchars_decode($this->request->server('PHP_AUTH_USER')))
 		{
-			return $this->user->lang['APACHE_SETUP_BEFORE_USE'];
+			throw new phpbb_auth_exception($this->user->lang['APACHE_SETUP_BEFORE_USE']);
 		}
-		return false;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function validate_session(&$user)
+	public function validate_session($user)
 	{
 		// Check if PHP_AUTH_USER is set and handle this case
 		if ($this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))

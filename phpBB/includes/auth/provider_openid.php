@@ -84,7 +84,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function generate_login_box(phpbb_template $template, $redirect = '', $admin = false, $s_display = true)
+	public function generate_login_box(phpbb_template $template, $redirect = '', $admin = false, $full_login_box = true)
 	{
 		$provider_config = $this->get_configuration();
 		if (!$provider_config['OPTIONS']['enabled']['setting']
