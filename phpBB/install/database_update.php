@@ -2838,8 +2838,20 @@ function change_database_data(&$no_updates, $version)
 					AND module_mode = 'profile_info'";
 			_sql($sql, $errored, $error_ary);
 
-			$no_updates = false;
+			// Update topic_time_limit column
+			// Currently we store the time from topic start to the end of
+			// sticky time. In 3.1 we simply store the end timestamp. The old
+			// system was limited to 999 days, so if we have a
+			// topic_time_limit <= 999 * 86400 seconds,we need to update it.
+			// As this timestamp was back in 1972, there can not be any
+			// collision of old and new system.
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET topic_time_limit = topic_time + topic_time_limit
+				WHERE topic_time_limit > 0
+					AND topic_time_limit <= (999 * 86400)';
+			_sql($sql, $errored, $error_ary);
 
+			$no_updates = false;
 		break;
 	}
 }
