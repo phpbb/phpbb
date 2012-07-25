@@ -384,7 +384,7 @@ else
 $post_data['post_edit_locked']	= (isset($post_data['post_edit_locked'])) ? (int) $post_data['post_edit_locked'] : 0;
 $post_data['post_subject_md5']	= (isset($post_data['post_subject']) && $mode == 'edit') ? md5($post_data['post_subject']) : '';
 $post_data['post_subject']		= (in_array($mode, array('quote', 'edit'))) ? $post_data['post_subject'] : ((isset($post_data['topic_title'])) ? $post_data['topic_title'] : '');
-$post_data['topic_time_limit']	= (isset($post_data['topic_time_limit'])) ? (($post_data['topic_time_limit']) ? (int) $post_data['topic_time_limit'] / 86400 : (int) $post_data['topic_time_limit']) : 0;
+$post_data['topic_time_limit']	= (isset($post_data['topic_time_limit'])) ? (int) $post_data['topic_time_limit'] : 0;
 $post_data['poll_length']		= (!empty($post_data['poll_length'])) ? (int) $post_data['poll_length'] / 86400 : 0;
 $post_data['poll_start']		= (!empty($post_data['poll_start'])) ? (int) $post_data['poll_start'] : 0;
 $post_data['icon_id']			= (!isset($post_data['icon_id']) || in_array($mode, array('quote', 'reply'))) ? 0 : (int) $post_data['icon_id'];
@@ -671,7 +671,9 @@ if ($submit || $preview || $refresh)
 
 	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
-	$post_data['topic_time_limit']	= request_var('topic_time_limit', (($mode != 'post') ? (int) $post_data['topic_time_limit'] : 0));
+
+	$topic_time_limit				= request_var('topic_time_limit', '');
+	$post_data['topic_time_limit']	= ($topic_time_limit) ? (int) $user->get_timestamp_from_format('Y-m-d H:i', $topic_time_limit) : $post_data['topic_time_limit'];
 
 	if ($post_data['enable_icons'] && $auth->acl_get('f_icons', $forum_id))
 	{
@@ -1410,7 +1412,7 @@ $template->assign_vars(array(
 	'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['POST']),
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
-	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
+	'TOPIC_TIME_LIMIT'		=> ($post_data['topic_time_limit']) ? $user->format_date($post_data['topic_time_limit'], 'Y-m-d H:i') : '',
 	'EDIT_REASON'			=> $request->variable('edit_reason', ''),
 	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
 	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',

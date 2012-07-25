@@ -210,8 +210,8 @@ $lang = array_merge($lang, array(
 	'SMILIES_ARE_OFF'			=> 'Smilies are <em>OFF</em>',
 	'SMILIES_ARE_ON'			=> 'Smilies are <em>ON</em>',
 	'STICKY_ANNOUNCE_TIME_LIMIT'=> 'Sticky/Announcement time limit',
-	'STICK_TOPIC_FOR'			=> 'Stick topic for',
-	'STICK_TOPIC_FOR_EXPLAIN'	=> 'Enter 0 or leave blank for a never ending Sticky/Announcement. Please note that this number is relative to the date of the post.',
+	'STICK_TOPIC_UNTIL'			=> 'Stick topic until',
+	'STICK_TOPIC_UNTIL_EXPLAIN'	=> 'Leave blank for a never ending Sticky/Announcement.',
 	'STYLES_TIP'				=> 'Tip: Styles can be applied quickly to selected text.',
 
 	'TOO_FEW_CHARS'				=> 'Your message contains too few characters.',
