@@ -91,8 +91,8 @@ class phpbb_search_sphinx_config
 
 		foreach ($config_data as $i => $line)
 		{
-			/* If the value of a variable continues to the next line because the line
-			break was escaped then we don't trim leading space but treat it as a part of the value */
+			// If the value of a variable continues to the next line because the line
+			// break was escaped then we don't trim leading space but treat it as a part of the value
 			if ($in_value)
 			{
 				$line = rtrim($line);
@@ -105,8 +105,8 @@ class phpbb_search_sphinx_config
 			// If we're not inside a section look for one
 			if (!$section)
 			{
-				/* Add empty lines and comments as comment objects to the section list
-				that way they're not deleted when reassembling the file from the sections*/
+				// Add empty lines and comments as comment objects to the section list
+				// that way they're not deleted when reassembling the file from the sections
 				if (!$line || $line[0] == '#')
 				{
 					$this->sections[] = new phpbb_search_sphinx_config_comment($config_file[$i]);
@@ -114,8 +114,8 @@ class phpbb_search_sphinx_config
 				}
 				else
 				{
-					/* Otherwise we scan the line reading the section name until we find
-					an opening curly bracket or a comment */
+					// Otherwise we scan the line reading the section name until we find
+					// an opening curly bracket or a comment
 					$section_name = '';
 					$section_name_comment = '';
 					$found_opening_bracket = false;
@@ -154,16 +154,16 @@ class phpbb_search_sphinx_config
 				// If we're not in a value continuing over the line feed
 				if (!$in_value)
 				{
-					/* Then add empty lines and comments as comment objects to the variable list
-					of this section so they're not deleted on reassembly */
+					// Then add empty lines and comments as comment objects to the variable list
+					// of this section so they're not deleted on reassembly
 					if (!$line || $line[0] == '#')
 					{
 						$section->add_variable(new phpbb_search_sphinx_config_comment($config_file[$i]));
 						continue;
 					}
 	
-					/* As long as we haven't yet actually found an opening bracket for this section
-					we treat everything as comments so it's not deleted either */
+					// As long as we haven't yet actually found an opening bracket for this section
+					// we treat everything as comments so it's not deleted either
 					if (!$found_opening_bracket)
 					{
 						if ($line[0] == '{')
@@ -180,8 +180,8 @@ class phpbb_search_sphinx_config
 					}
 				}
 
-				/* If we did not find a comment in this line or still add to the previous 
-				line's value ... */
+				// If we did not find a comment in this line or still add to the previous 
+				// line's value ...
 				if ($line || $in_value)
 				{
 					if (!$in_value)
@@ -239,8 +239,8 @@ class phpbb_search_sphinx_config
 						}
 					}
 
-					/* If a name and an equal sign were found then we have append a 
-					new variable object to the section */
+					// If a name and an equal sign were found then we have append a 
+					// new variable object to the section
 					if ($name && $found_assignment)
 					{
 						$section->add_variable(new phpbb_search_sphinx_config_variable(trim($name), trim($value), ($end_section) ? '' : $comment));
@@ -259,8 +259,8 @@ class phpbb_search_sphinx_config
 					}
 				}
 
-				/* If we did not find anything meaningful up to here, then just treat it
-				as a comment */
+				// If we did not find anything meaningful up to here, then just treat it
+				// as a comment
 				$comment = ($skip_first) ? "\t" . substr(ltrim($config_file[$i]), 1) : $config_file[$i];
 				$section->add_variable(new phpbb_search_sphinx_config_comment($comment));
 			}

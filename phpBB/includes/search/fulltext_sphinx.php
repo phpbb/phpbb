@@ -483,8 +483,8 @@ class phpbb_search_fulltext_sphinx
 		$this->sphinx->SetLimits($start, (int) $per_page, SPHINX_MAX_MATCHES);
 		$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
 
-		/* Could be connection to localhost:3312 failed (errno=111,
-		msg=Connection refused) during rotate, retry if so */
+		// Could be connection to localhost:3312 failed (errno=111,
+		// msg=Connection refused) during rotate, retry if so
 		$retries = SPHINX_CONNECT_RETRIES;
 		while (!$result && (strpos($this->sphinx->_error, "errno=111,") !== false) && $retries--)
 		{
