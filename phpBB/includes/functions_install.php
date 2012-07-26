@@ -540,7 +540,7 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 		'dbuser'		=> $data['dbuser'],
 		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
 		'table_prefix'	=> $data['table_prefix'],
-		'acm_type'		=> 'file',
+		'acm_type'		=> 'phpbb_cache_driver_file',
 		'load_extensions'	=> $load_extensions,
 	);
 
