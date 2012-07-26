@@ -22,12 +22,12 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 {
-	private $phpbb_root_path, $phpEx, $config;
+	private $phpbb_root_path, $php_ext, $config;
 
-	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config)
+	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 		$this->config = $config;
 	}
 
@@ -40,7 +40,7 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 	{
 		if (!class_exists('queue'))
 		{
-			include($this->phpbb_root_path . 'includes/functions_messenger.' . $this->phpEx);
+			include($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
 		}
 		$queue = new queue();
 		$queue->process();
@@ -55,7 +55,7 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		return file_exists($this->phpbb_root_path . 'cache/queue.' . $this->phpEx);
+		return file_exists($this->phpbb_root_path . 'cache/queue.' . $this->php_ext);
 	}
 
 	/**

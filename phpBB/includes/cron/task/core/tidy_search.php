@@ -24,12 +24,12 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 {
-	private $phpbb_root_path, $phpEx, $config;
+	private $phpbb_root_path, $php_ext, $config;
 
-	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config)
+	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 		$this->config = $config;
 	}
 
@@ -45,7 +45,7 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 
 		if (!class_exists($search_type))
 		{
-			include($this->phpbb_root_path . "includes/search/$search_type." . $this->phpEx);
+			include($this->phpbb_root_path . "includes/search/$search_type." . $this->php_ext);
 		}
 
 		// We do some additional checks in the module to ensure it can actually be utilised
@@ -72,7 +72,7 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 		// Select the search method
 		$search_type = basename($this->config['search_type']);
 
-		return file_exists($this->phpbb_root_path . 'includes/search/' . $search_type . '.' . $this->phpEx);
+		return file_exists($this->phpbb_root_path . 'includes/search/' . $search_type . '.' . $this->php_ext);
 	}
 
 	/**

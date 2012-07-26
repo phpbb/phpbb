@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_wrapper
 {
-	private $task, $phpbb_root_path, $phpEx;
+	private $task, $phpbb_root_path, $php_ext;
 
 	/**
 	* Constructor.
@@ -32,11 +32,11 @@ class phpbb_cron_task_wrapper
 	*
 	* @param phpbb_cron_task $task The cron task to wrap.
 	*/
-	public function __construct(phpbb_cron_task $task, $phpbb_root_path, $phpEx)
+	public function __construct(phpbb_cron_task $task, $phpbb_root_path, $php_ext)
 	{
 		$this->task = $task;
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -90,7 +90,7 @@ class phpbb_cron_task_wrapper
 		{
 			$extra = '';
 		}
-		$url = append_sid($this->phpbb_root_path . 'cron.' . $this->phpEx, 'cron_type=' . $name . $extra);
+		$url = append_sid($this->phpbb_root_path . 'cron.' . $this->php_ext, 'cron_type=' . $name . $extra);
 		return $url;
 	}
 

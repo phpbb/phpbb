@@ -26,13 +26,13 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements phpbb_cron_task_parametrized
 {
-	private $phpbb_root_path, $phpEx, $config, $db;
+	private $phpbb_root_path, $php_ext, $config, $db;
 	private $forum_data;
 
-	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config, dbal $db)
+	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config, dbal $db)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->db = $db;
 	}
@@ -56,7 +56,7 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	{
 		if (!function_exists('auto_prune'))
 		{
-			include($this->phpbb_root_path . 'includes/functions_admin.' . $this->phpEx);
+			include($this->phpbb_root_path . 'includes/functions_admin.' . $this->php_ext);
 		}
 
 		if ($this->forum_data['prune_days'])

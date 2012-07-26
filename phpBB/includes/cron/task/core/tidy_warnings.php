@@ -24,12 +24,12 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_tidy_warnings extends phpbb_cron_task_base
 {
-	private $phpbb_root_path, $phpEx, $config;
+	private $phpbb_root_path, $php_ext, $config;
 
-	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config)
+	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 		$this->config = $config;
 	}
 
@@ -42,7 +42,7 @@ class phpbb_cron_task_core_tidy_warnings extends phpbb_cron_task_base
 	{
 		if (!function_exists('tidy_warnings'))
 		{
-			include($this->phpbb_root_path . 'includes/functions_admin.' . $this->phpEx);
+			include($this->phpbb_root_path . 'includes/functions_admin.' . $this->php_ext);
 		}
 		tidy_warnings();
 	}
