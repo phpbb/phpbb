@@ -784,7 +784,6 @@ $lang = array_merge($lang, array(
 	'WROTE'						=> 'wrote',
 
 	'YEAR'				=> 'Year',
-	'YEAR_MONTH_DAY'	=> '(YYYY-MM-DD)',
 	'YES'				=> 'Yes',
 	'YIM'				=> 'YIM',
 	'YOU_LAST_VISIT'	=> 'Last visit was: %s',

@@ -46,9 +46,9 @@ $lang = array_merge($lang, array(
 	'DELETE_USER_POSTS'			=> 'Delete pruned user posts',
 	'DELETE_USER_POSTS_EXPLAIN' => 'Removes posts made by deleted users, has no effect if users are deactivated.',
 
-	'JOINED_EXPLAIN'			=> 'Enter a date in <kbd>YYYY-MM-DD</kbd> format. You may use both fields to specify an interval, or leave one blank for an open date range.',
+	'JOINED_EXPLAIN'			=> 'You may use both fields to specify an interval, or leave one blank for an open date range.',
 
-	'LAST_ACTIVE_EXPLAIN'		=> 'Enter a date in <kbd>YYYY-MM-DD</kbd> format. Enter <kbd>0000-00-00</kbd> to prune users who never logged in, <em>Before</em> and <em>After</em> conditions will be ignored.',
+	'LAST_ACTIVE_EXPLAIN'		=> 'Enter <kbd>0000-00-00</kbd> to prune users who never logged in, <em>Before</em> and <em>After</em> conditions will be ignored.',
 
 	'POSTS_ON_QUEUE'			=> 'Posts Awaiting Approval',
 	'PRUNE_USERS_GROUP_EXPLAIN'	=> 'Selects all members of the group for pruning.',

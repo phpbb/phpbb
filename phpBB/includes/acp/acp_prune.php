@@ -389,6 +389,9 @@ class acp_prune
 			$joined_before = request_var('joined_before', '');
 			$joined_after = request_var('joined_after', '');
 			$active = request_var('active', '');
+			$joined_before = ($joined_before) ? (int) $user->get_timestamp_from_format('Y-m-d', $joined_before) : '';
+			$joined_after = ($joined_after) ? (int) $user->get_timestamp_from_format('Y-m-d', $joined_after) : '';
+			$active = ($active) ? (($active == '0000-00-00') ? 0 : (int) $user->get_timestamp_from_format('Y-m-d', $active)) : '';
 
 			$count = request_var('count', 0);
 
@@ -398,27 +401,26 @@ class acp_prune
 
 			// calculate the conditions required by the join time criteria
 			$joined_sql = '';
-			if (!empty($joined_before) && !empty($joined_after))
+			if ($joined_before !== false && $joined_after !== false)
 			{
 				// if the two entered dates are equal, we need to adjust
 				// so that our time range is a full day instead of 1 second
 				if ($joined_after == $joined_before)
 				{
-					$joined_after[2] += 1;
+					$joined_after += 86400;
 				}
 
-				$joined_sql = ' AND user_regdate BETWEEN ' . gmmktime(0, 0, 0, (int) $joined_after[1], (int) $joined_after[2], (int) $joined_after[0]) .
-					' AND ' . gmmktime(0, 0, 0, (int) $joined_before[1], (int) $joined_before[2], (int) $joined_before[0]);
+				$joined_sql = ' AND user_regdate BETWEEN ' . $joined_after . ' AND ' . $joined_before;
 			}
-			else if (empty($joined_before) && !empty($joined_after))
+			else if ($joined_before === false && $joined_after !== false)
 			{
-				$joined_sql = ' AND user_regdate > ' . gmmktime(0, 0, 0, (int) $joined_after[1], (int) $joined_after[2], (int) $joined_after[0]);
+				$joined_sql = ' AND user_regdate > ' . $joined_after;
 			}
-			else if (empty($joined_after) && !empty($joined_before))
+			else if ($joined_before !== false && $joined_after === false)
 			{
-				$joined_sql = ' AND user_regdate < ' . gmmktime(0, 0, 0, (int) $joined_before[1], (int) $joined_before[2], (int) $joined_before[0]);
+				$joined_sql = ' AND user_regdate < ' . $joined_before;
 			}
-			// implicit else when both arrays are empty do nothing
+			// implicit else when both values are empty do nothing
 
 			if ((sizeof($active) && sizeof($active) != 3) || (sizeof($joined_before) && sizeof($joined_before) != 3) || (sizeof($joined_after) && sizeof($joined_after) != 3))
 			{
@@ -436,17 +438,17 @@ class acp_prune
 			$where_sql .= ($count) ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
 			// First handle pruning of users who never logged in, last active date is 0000-00-00
-			if (sizeof($active) && (int) $active[0] == 0 && (int) $active[1] == 0 && (int) $active[2] == 0)
+			if ($active === 0)
 			{
 				$where_sql .= ' AND user_lastvisit = 0';
-			}			
-			else if (sizeof($active) && $active_select != 'lt')
-			{
-				$where_sql .= ' AND user_lastvisit ' . $key_match[$active_select] . ' ' . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]);
 			}
-			else if (sizeof($active))
+			else if (($active !== '') && $active_select != 'lt')
 			{
-				$where_sql .= ' AND (user_lastvisit > 0 AND user_lastvisit < ' . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]) . ')';
+				$where_sql .= ' AND user_lastvisit ' . $key_match[$active_select] . ' ' . $active;
+			}
+			else if ($active !== '')
+			{
+				$where_sql .= ' AND (user_lastvisit > 0 AND user_lastvisit < ' . $active . ')';
 			}
 		}
 
