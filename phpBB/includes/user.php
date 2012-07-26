@@ -674,6 +674,8 @@ class phpbb_user extends phpbb_session
 
 	/**
 	* Get the UNIX timestamp for a datetime in the users timezone, so we can store it in the database.
+	* If the format is Y-m-d, hours, minutes and seconds are being added with value 0.
+	* If the format is Y-m-d H:i, the seconds are being added with value 0.
 	*
 	* @param	string			$format		Format of the entered date/time
 	* @param	string			$time		Date/time with the timezone applied
@@ -682,6 +684,17 @@ class phpbb_user extends phpbb_session
 	*/
 	public function get_timestamp_from_format($format, $time, DateTimeZone $timezone = null)
 	{
+		if ($format == 'Y-m-d')
+		{
+			$format .= ' H:i:s';
+			$time .= ' 00:00:00';
+		}
+		else if ($format == 'Y-m-d H:i')
+		{
+			$format .= ':s';
+			$time .= ':00';
+		}
+
 		$timezone = $timezone ?: $this->timezone;
 		$date = DateTime::createFromFormat($format, $time, $timezone);
 		return ($date !== false) ? $date->format('U') : false;
