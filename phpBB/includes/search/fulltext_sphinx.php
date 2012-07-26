@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 * function and the variables used are in global space.
 */
 global $phpbb_root_path, $phpEx, $table_prefix;
-require($phpbb_root_path . 'includes/sphinxapi-0.9.8.' . $phpEx);
+require($phpbb_root_path . 'includes/sphinxapi.' . $phpEx);
 
 define('SPHINX_MAX_MATCHES', 20000);
 define('SPHINX_CONNECT_RETRIES', 3);
@@ -82,7 +82,7 @@ class phpbb_search_fulltext_sphinx
 
 		$this->sphinx = new SphinxClient();
 
-		$this->sphinx->SetServer(($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost'), ($this->config['fulltext_sphinx_port'] ? (int) $this->config['fulltext_sphinx_port'] : 3312));
+		$this->sphinx->SetServer(($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost'), ($this->config['fulltext_sphinx_port'] ? (int) $this->config['fulltext_sphinx_port'] : 9312));
 
 		$error = false;
 	}
@@ -241,7 +241,7 @@ class phpbb_search_fulltext_sphinx
 			),
 			'searchd' => array(
 				array('compat_sphinxql_magics'	,	'0'),
-				array('listen'	,					($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost') . ':' . ($this->config['fulltext_sphinx_port'] ? $this->config['fulltext_sphinx_port'] : '3312')),
+				array('listen'	,					($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost') . ':' . ($this->config['fulltext_sphinx_port'] ? $this->config['fulltext_sphinx_port'] : '9312')),
 				array('log',						$this->config['fulltext_sphinx_data_path'] . 'log/searchd.log'),
 				array('query_log',					$this->config['fulltext_sphinx_data_path'] . 'log/sphinx-query.log'),
 				array('read_timeout',				'5'),
@@ -493,7 +493,7 @@ class phpbb_search_fulltext_sphinx
 		$this->sphinx->SetLimits($start, (int) $per_page, SPHINX_MAX_MATCHES);
 		$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
 
-		// Could be connection to localhost:3312 failed (errno=111,
+		// Could be connection to localhost:9312 failed (errno=111,
 		// msg=Connection refused) during rotate, retry if so
 		$retries = SPHINX_CONNECT_RETRIES;
 		while (!$result && (strpos($this->sphinx->_error, "errno=111,") !== false) && $retries--)
