@@ -134,7 +134,7 @@ $lang = array_merge($lang, array(
 	'COLLAPSE_VIEW'			=> 'Collapse view',
 	'CLOSE_WINDOW'			=> 'Close window',
 	'COLOUR_SWATCH'			=> 'Colour swatch',
-	'COMMA_SEPARATOR'		=> ', ',	// Used in pagination of ACP & prosilver, use localised comma if appropriate, eg: Ideographic or Arabic
+	'COMMA_SEPARATOR'		=> ', ',	// Comma used to join lists into a single string, use localised comma if appropriate, eg: Ideographic or Arabic
 	'CONFIRM'				=> 'Confirm',
 	'CONFIRM_CODE'			=> 'Confirmation code',
 	'CONFIRM_CODE_EXPLAIN'	=> 'Enter the code exactly as it appears. All letters are case insensitive.',
@@ -834,6 +834,35 @@ $lang = array_merge($lang, array(
 		'Oct'		=> 'Oct',
 		'Nov'		=> 'Nov',
 		'Dec'		=> 'Dec',
+	),
+
+	// Timezones can be translated. We use this for the Etc/GMT timezones here,
+	// because they are named invers to their offset.
+	'timezones'		=> array(
+		'Etc/GMT-12'	=> 'GMT+12',
+		'Etc/GMT-11'	=> 'GMT+11',
+		'Etc/GMT-10'	=> 'GMT+10',
+		'Etc/GMT-9'		=> 'GMT+9',
+		'Etc/GMT-8'		=> 'GMT+8',
+		'Etc/GMT-7'		=> 'GMT+7',
+		'Etc/GMT-6'		=> 'GMT+6',
+		'Etc/GMT-5'		=> 'GMT+5',
+		'Etc/GMT-4'		=> 'GMT+4',
+		'Etc/GMT-3'		=> 'GMT+3',
+		'Etc/GMT-2'		=> 'GMT+2',
+		'Etc/GMT-1'		=> 'GMT+1',
+		'Etc/GMT+1'		=> 'GMT-1',
+		'Etc/GMT+2'		=> 'GMT-2',
+		'Etc/GMT+3'		=> 'GMT-3',
+		'Etc/GMT+4'		=> 'GMT-4',
+		'Etc/GMT+5'		=> 'GMT-5',
+		'Etc/GMT+6'		=> 'GMT-6',
+		'Etc/GMT+7'		=> 'GMT-7',
+		'Etc/GMT+8'		=> 'GMT-8',
+		'Etc/GMT+9'		=> 'GMT-9',
+		'Etc/GMT+10'	=> 'GMT-10',
+		'Etc/GMT+11'	=> 'GMT-11',
+		'Etc/GMT+12'	=> 'GMT-12',
 	),
 
 	// The value is only an example and will get replaced by the current time on view

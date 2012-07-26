@@ -26,7 +26,7 @@
 	{
 		for (var i = 0; i < onload_functions.length; i++)
 		{
-			eval(onload_functions[i]);
+			onload_functions[i]();
 		}
 	}
 
@@ -34,7 +34,7 @@
 	{
 		for (var i = 0; i < onunload_functions.length; i++)
 		{
-			eval(onunload_functions[i]);
+			onunload_functions[i]();
 		}
 	}
 
