@@ -1,24 +1,69 @@
 {
-    "hash": "e4f5efe460878599e6fed6bb13584cfd",
+    "hash": "7024226b03c2abdfa95c76b11c1ec74d",
     "packages": [
         {
             "package": "symfony/config",
-            "version": "v2.0.16"
+            "version": "v2.1.0-BETA4"
         },
         {
             "package": "symfony/dependency-injection",
-            "version": "v2.0.16"
+            "version": "v2.1.0-BETA4"
         },
         {
             "package": "symfony/event-dispatcher",
-            "version": "v2.0.16"
+            "version": "v2.1.0-BETA4"
         },
         {
             "package": "symfony/yaml",
-            "version": "v2.0.16"
+            "version": "v2.1.0-BETA4"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+        {
+            "package": "fabpot/goutte",
+            "version": "dev-master",
+            "alias-pretty-version": "1.0.x-dev",
+            "alias-version": "1.0.9999999.9999999-dev"
+        },
+        {
+            "package": "fabpot/goutte",
+            "version": "dev-master",
+            "source-reference": "df14259688c7d6f1d366aa073a589695d2b9f451",
+            "commit-date": "1343194442"
+        },
+        {
+            "package": "guzzle/common",
+            "version": "v2.8.1"
+        },
+        {
+            "package": "guzzle/http",
+            "version": "v2.8.1"
+        },
+        {
+            "package": "guzzle/parser",
+            "version": "v2.8.1"
+        },
+        {
+            "package": "symfony/browser-kit",
+            "version": "v2.1.0-BETA4"
+        },
+        {
+            "package": "symfony/css-selector",
+            "version": "v2.1.0-BETA4"
+        },
+        {
+            "package": "symfony/dom-crawler",
+            "version": "v2.1.0-BETA4"
+        },
+        {
+            "package": "symfony/finder",
+            "version": "v2.1.0-BETA4"
+        },
+        {
+            "package": "symfony/process",
+            "version": "v2.1.0-BETA4"
+        }
+    ],
     "aliases": [
 
     ],
