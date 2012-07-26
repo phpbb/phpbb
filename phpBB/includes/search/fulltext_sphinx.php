@@ -47,7 +47,6 @@ class phpbb_search_fulltext_sphinx
 	private $dbtype;
 	private $user;
 	private $config_file_data = '';
-	public $word_length = array();
 	public $search_query;
 	public $common_words = array();
 
