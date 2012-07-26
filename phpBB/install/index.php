@@ -90,19 +90,13 @@ $phpbb_container = new ContainerBuilder();
 $loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/../config'));
 $loader->load('services.yml');
 
-$processor = new phpbb_di_processor_config($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx);
-$processor->process($phpbb_container);
+$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
+$phpbb_container->setParameter('core.php_ext', $phpEx);
 
-$phpbb_container->setAlias('cache.driver.install', 'cache.driver');
+$phpbb_container->setAlias('cache.driver', 'cache.driver.install');
 
 $phpbb_class_loader = $phpbb_container->get('class_loader');
 $phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
-
-$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
-foreach ($ids as $id) {
-	$processor = $phpbb_container->get($id);
-	$processor->process($phpbb_container);
-}
 
 // set up caching
 $cache = $phpbb_container->get('cache');
