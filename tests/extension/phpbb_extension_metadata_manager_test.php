@@ -36,7 +36,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$phpbb_extension_metadata_manager = new phpbb_extension_metadata_manager(
 			'bar',
 			$this->new_dbal(),
-			new phpbb_config(array()),
 			$this->extension_manager,
 			dirname(__FILE__) . '/',
 			'.php',
@@ -47,7 +46,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 				new phpbb_user(),
 				new phpbb_style_resource_locator()
 			),
-			new phpbb_mock_cache
+			new phpbb_config(array())
 		);
 
 		//$this->assertEquals(array('bar', 'foo', 'vendor/moo'), array_keys($this->extension_manager->all_available()));
