@@ -38,7 +38,7 @@ class phpbb_di_processor_config implements phpbb_di_processor_interface
         $container->setParameter('core.php_ext', $this->php_ext);
 
         $container->setParameter('core.table_prefix', $table_prefix);
-        $container->setParameter('cache.driver.class', $acm_type);
+        $container->setParameter('cache.driver.class', $this->fix_acm_type($acm_type));
         $container->setParameter('dbal.driver.class', 'dbal_'.$dbms);
         $container->setParameter('dbal.dbhost', $dbhost);
         $container->setParameter('dbal.dbuser', $dbuser);
@@ -48,5 +48,14 @@ class phpbb_di_processor_config implements phpbb_di_processor_interface
         $container->setParameter('dbal.new_link', defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK);
 
         $container->set('container', $container);
+    }
+
+    protected function fix_acm_type($acm_type)
+    {
+        if (preg_match('#^[a-z]+$#', $acm_type)) {
+            return 'phpbb_cache_driver_'.$acm_type;
+        }
+
+        return $acm_type;
     }
 }
