@@ -103,7 +103,7 @@ class phpbb_search_fulltext_sphinx
 	/**
 	* Checks permissions and paths, if everything is correct it generates the config file
 	*
-	* @return string|bool Language key of the error/incompatiblity occured
+	* @return string|bool Language key of the error/incompatiblity encountered, or false if successful
 	*
 	* @access public
 	*/
@@ -381,14 +381,19 @@ class phpbb_search_fulltext_sphinx
 				case 'a':
 					$this->sphinx->SetGroupBy('topic_id', SPH_GROUPBY_ATTR, 'poster_id ' . (($sort_dir == 'a') ? 'ASC' : 'DESC'));
 				break;
+
 				case 'f':
 					$this->sphinx->SetGroupBy('topic_id', SPH_GROUPBY_ATTR, 'forum_id ' . (($sort_dir == 'a') ? 'ASC' : 'DESC'));
 				break;
+
 				case 'i':
+
 				case 's':
 					$this->sphinx->SetGroupBy('topic_id', SPH_GROUPBY_ATTR, 'post_subject ' . (($sort_dir == 'a') ? 'ASC' : 'DESC'));
 				break;
+
 				case 't':
+
 				default:
 					$this->sphinx->SetGroupBy('topic_id', SPH_GROUPBY_ATTR, 'topic_last_post_time ' . (($sort_dir == 'a') ? 'ASC' : 'DESC'));
 				break;
@@ -401,14 +406,19 @@ class phpbb_search_fulltext_sphinx
 				case 'a':
 					$this->sphinx->SetSortMode(($sort_dir == 'a') ? SPH_SORT_ATTR_ASC : SPH_SORT_ATTR_DESC, 'poster_id');
 				break;
+
 				case 'f':
 					$this->sphinx->SetSortMode(($sort_dir == 'a') ? SPH_SORT_ATTR_ASC : SPH_SORT_ATTR_DESC, 'forum_id');
 				break;
+
 				case 'i':
+
 				case 's':
 					$this->sphinx->SetSortMode(($sort_dir == 'a') ? SPH_SORT_ATTR_ASC : SPH_SORT_ATTR_DESC, 'post_subject');
 				break;
+
 				case 't':
+
 				default:
 					$this->sphinx->SetSortMode(($sort_dir == 'a') ? SPH_SORT_ATTR_ASC : SPH_SORT_ATTR_DESC, 'post_time');
 				break;
@@ -619,7 +629,7 @@ class phpbb_search_fulltext_sphinx
 	}
 
 	/**
-	* Destroy old cache entries
+	* Nothing needs to be destroyed
 	*
 	* @access public
 	*/
