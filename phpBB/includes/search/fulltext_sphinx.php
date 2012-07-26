@@ -82,8 +82,7 @@ class phpbb_search_fulltext_sphinx
 
 		$this->sphinx = new SphinxClient();
 
-		// We only support localhost for now
-		$this->sphinx->SetServer('localhost', (isset($this->config['fulltext_sphinx_port']) && $this->config['fulltext_sphinx_port']) ? (int) $this->config['fulltext_sphinx_port'] : 3312);
+		$this->sphinx->SetServer(($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost'), ($this->config['fulltext_sphinx_port'] ? (int) $this->config['fulltext_sphinx_port'] : 3312));
 
 		$error = false;
 	}
@@ -162,7 +161,8 @@ class phpbb_search_fulltext_sphinx
 		$config_data = array(
 			'source source_phpbb_' . $this->id . '_main' => array(
 				array('type',						$this->dbtype),
-				array('sql_host',					$this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : $dbhost),
+				// This config value sql_host needs to be changed incase sphinx and sql are on different servers
+				array('sql_host',					$dbhost),
 				array('sql_user',					$dbuser),
 				array('sql_pass',					$dbpasswd),
 				array('sql_db',						$dbname),
@@ -241,7 +241,7 @@ class phpbb_search_fulltext_sphinx
 			),
 			'searchd' => array(
 				array('compat_sphinxql_magics'	,	'0'),
-				array('listen'	,					'localhost' . ':' . ($this->config['fulltext_sphinx_port'] ? $this->config['fulltext_sphinx_port'] : '3312')),
+				array('listen'	,					($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost') . ':' . ($this->config['fulltext_sphinx_port'] ? $this->config['fulltext_sphinx_port'] : '3312')),
 				array('log',						$this->config['fulltext_sphinx_data_path'] . 'log/searchd.log'),
 				array('query_log',					$this->config['fulltext_sphinx_data_path'] . 'log/sphinx-query.log'),
 				array('read_timeout',				'5'),
