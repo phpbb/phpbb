@@ -598,7 +598,7 @@ class acp_search
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
-		if (!class_exists($type) || !method_exists($type, 'get_name'))
+		if (!class_exists($type) || !method_exists($type, 'keyword_search'))
 		{
 			$error = $user->lang['NO_SUCH_SEARCH_MODULE'];
 			return $error;

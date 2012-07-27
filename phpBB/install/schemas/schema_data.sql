@@ -127,6 +127,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_mi
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_max_word_len', '254');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_min_word_len', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_ts_name', 'simple');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_indexer_mem_limit', '512');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_stopwords', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path', 'images/icons');
