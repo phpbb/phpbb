@@ -1399,100 +1399,45 @@ class install_install extends module
 		$db = new $sql_db();
 		$db->sql_connect($data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], false, false);
 
-		// Set default config and post data, this applies to all DB's
-		$sql_ary = array(
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['server_name']) . "'
-				WHERE config_name = 'server_name'",
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
 
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['server_port']) . "'
-				WHERE config_name = 'server_port'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['board_email']) . "'
-				WHERE config_name = 'board_email'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['board_email']) . "'
-				WHERE config_name = 'board_contact'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($cookie_domain) . "'
-				WHERE config_name = 'cookie_domain'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($lang['default_dateformat']) . "'
-				WHERE config_name = 'default_dateformat'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['email_enable']) . "'
-				WHERE config_name = 'email_enable'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['smtp_delivery']) . "'
-				WHERE config_name = 'smtp_delivery'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['smtp_host']) . "'
-				WHERE config_name = 'smtp_host'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['smtp_auth']) . "'
-				WHERE config_name = 'smtp_auth_method'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['smtp_user']) . "'
-				WHERE config_name = 'smtp_username'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['smtp_pass']) . "'
-				WHERE config_name = 'smtp_password'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['cookie_secure']) . "'
-				WHERE config_name = 'cookie_secure'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['force_server_vars']) . "'
-				WHERE config_name = 'force_server_vars'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['script_path']) . "'
-				WHERE config_name = 'script_path'",
-
-			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['server_protocol']) . "'
-				WHERE config_name = 'server_protocol'",
+		// Set default config data
+		$copy_config_from_data = array(
+			'server_name',
+			'server_port',
+			'board_email',
+			'email_enable',
+			'smtp_delivery',
+			'smtp_host',
+			'cookie_secure',
+			'force_server_vars',
+			'script_path',
+			'server_protocol',
 		);
+		foreach ($copy_config_from_data as $config_name)
+		{
+			$config->set($config_name, $data[$config_name]);
+		}
+
+		$config->set('board_contact', $data['board_email']);
+		$config->set('cookie_domain', $cookie_domain);
+		$config->set('default_dateformat', $lang['default_dateformat']);
+		$config->set('smtp_auth_method', $data['smtp_auth']);
+		$config->set('smtp_username', $data['smtp_user']);
+		$config->set('smtp_password', $data['smtp_pass']);
 
 		if (@extension_loaded('gd') || can_load_dll('gd'))
 		{
-			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = 'phpbb_captcha_gd'
-				WHERE config_name = 'captcha_plugin'";
-
-			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '1'
-				WHERE config_name = 'captcha_gd'";
+			$config->set('captcha_plugin', 'phpbb_captcha_gd');
+			$config->set('captcha_gd', '1');
 		}
 
 		$ref = substr($referer, strpos($referer, '://') + 3);
 
 		if (!(stripos($ref, $server_name) === 0))
 		{
-			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '0'
-				WHERE config_name = 'referer_validation'";
-		}
-
-		foreach ($sql_ary as $sql)
-		{
-			if (!$db->sql_query($sql))
-			{
-				$error = $db->sql_error();
-				$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
-			}
+			$config->set('referer_validation', '0');
 		}
 	}
 
