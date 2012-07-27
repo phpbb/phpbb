@@ -224,7 +224,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		}
 
 		$storage = new phpbb_auth_zend_openid_storage($this->db);
-		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
+		$consumer = new ZendOpenId\Consumer\GenericConsumer($storage);
 
 		if ($this->request->variable('openid_identifier', '') == '')
 		{
@@ -306,13 +306,13 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 		$storage = new phpbb_auth_zend_openid_storage($this->db);
 		$storage->purgeNonces(time());
-		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
+		$consumer = new ZendOpenId\Consumer\GenericConsumer($storage);
 
 		$auth_action = $this->request->variable('auth_action', '');
 		if ($auth_action === 'register')
 		{
 			$extensions = array(
-				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.1),
+				'sreg'	=> new ZendOpenId\Extension\Sreg($this->sreg_props, null, 1.1),
 			);
 		}
 		else if ($auth_action === 'login' || $auth_action === 'link')
@@ -409,10 +409,10 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		//Get the SREG data
 		$storage = new phpbb_auth_zend_openid_storage($this->db);
 		$storage->purgeNonces(time());
-		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
+		$consumer = new ZendOpenId\Consumer\GenericConsumer($storage);
 
 		$extensions = array(
-			'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.1),
+			'sreg'	=> new ZendOpenId\Extension\Sreg($this->sreg_props, null, 1.1),
 		);
 
 		$this->request->enable_super_globals();

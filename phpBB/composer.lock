@@ -1,5 +1,5 @@
 {
-    "hash": "f6ae4153285f1605af647efd11107832",
+    "hash": "8cd16dcd507c6a2e556ff82ea2226fdc",
     "packages": [
         {
             "package": "symfony/event-dispatcher",
@@ -16,10 +16,6 @@
         {
             "package": "zendframework/zend-loader",
             "version": "2.0.0-rc1"
-        },
-        {
-            "package": "zendframework/zend-openid",
-            "version": "2.0.0-beta5"
         },
         {
             "package": "zendframework/zend-registry",
@@ -39,6 +35,10 @@
         },
         {
             "package": "zendframework/zend-validator",
+            "version": "2.0.0-rc1"
+        },
+        {
+            "package": "zendframework/zendopenid",
             "version": "2.0.0-rc1"
         }
     ],

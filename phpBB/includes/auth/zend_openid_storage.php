@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-class phpbb_auth_zend_openid_storage extends \Zend\OpenId\Consumer\Storage\AbstractStorage
+class phpbb_auth_zend_openid_storage extends \ZendOpenId\Consumer\Storage\AbstractStorage
 {
 
 	protected $db;
@@ -181,7 +181,7 @@ class phpbb_auth_zend_openid_storage extends \Zend\OpenId\Consumer\Storage\Abstr
 			$sql = 'INSERT INTO ' . AUTH_OPENID_NONCE_TABLE . ' ' . $this->db->sql_build_array('INSERT', $data);;
 			$return = $this->db->sql_query($sql);
 		}
-		catch (Zend_Db_Statement_Exception $e)
+		catch (Exception $e)
 		{
 			return false;
 		}
