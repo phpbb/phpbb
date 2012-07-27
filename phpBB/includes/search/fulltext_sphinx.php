@@ -477,7 +477,7 @@ class phpbb_search_fulltext_sphinx
 		if (sizeof($ex_fid_ary))
 		{
 			// All forums that a user is allowed to access
-			$fid_ary = array_unique(array_intersect(array_keys($this->auth->acl_getf('f_read', true)), array_keys($auth->acl_getf('f_search', true))));
+			$fid_ary = array_unique(array_intersect(array_keys($this->auth->acl_getf('f_read', true)), array_keys($this->auth->acl_getf('f_search', true))));
 			// All forums that the user wants to and can search in
 			$search_forums = array_diff($fid_ary, $ex_fid_ary);
 
