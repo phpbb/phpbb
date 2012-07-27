@@ -96,6 +96,8 @@ $m_permissions = array(
 	'm_ip'		=> array(1, 1),
 	'm_info'	=> array(1, 1),
 	'm_revisions' => array(1, 1),
+	'm_delete_revisions'	=> array(1, 1),
+	'm_protect_revisions'	=> array(1, 1),
 );
 
 $a_permissions = array(
