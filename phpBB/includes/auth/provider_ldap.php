@@ -281,10 +281,10 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 	 */
 	protected function ldap_user_filter($username)
 	{
-		$filter = '(' . $this->config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($username)) . ')';
-		if ($this->config['ldap_user_filter'])
+		$filter = '(' . $this->config['auth_provider_ldap_uid'] . '=' . $this->ldap_escape(htmlspecialchars_decode($username)) . ')';
+		if ($this->config['auth_provider_ldap_user_filter'])
 		{
-			$_filter = ($this->config['ldap_user_filter'][0] == '(' && substr($this->config['ldap_user_filter'], -1) == ')') ? $this->config['ldap_user_filter'] : "({$this->config['ldap_user_filter']})";
+			$_filter = ($this->config['auth_provider_ldap_user_filter'][0] == '(' && substr($this->config['auth_provider_ldap_user_filter'], -1) == ')') ? $this->config['auth_provider_ldap_user_filter'] : "({$this->config['auth_provider_ldap_user_filter']})";
 			$filter = "(&{$filter}{$_filter})";
 		}
 		return $filter;
@@ -314,14 +314,14 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 			throw new phpbb_auth_exception($this->user->lang['LDAP_NO_LDAP_EXTENSION']);
 		}
 
-		$this->config['ldap_port'] = (int) $this->config['ldap_port'];
-		if ($this->config['ldap_port'])
+		$this->config['auth_provider_ldap_port'] = (int) $this->config['auth_provider_ldap_port'];
+		if ($this->config['auth_provider_ldap_port'])
 		{
-			$ldap = @ldap_connect($this->config['ldap_server'], $this->config['ldap_port']);
+			$ldap = @ldap_connect($this->config['auth_provider_ldap_server'], $this->config['auth_provider_ldap_port']);
 		}
 		else
 		{
-			$ldap = @ldap_connect($this->config['ldap_server']);
+			$ldap = @ldap_connect($this->config['auth_provider_ldap_server']);
 		}
 
 		if (!$ldap)
@@ -332,9 +332,9 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 		@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 		@ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
 
-		if ($this->config['ldap_user'] || $this->config['ldap_password'])
+		if ($this->config['auth_provider_ldap_user'] || $this->config['auth_provider_ldap_password'])
 		{
-			if (!@ldap_bind($ldap, htmlspecialchars_decode($this->config['ldap_user']), htmlspecialchars_decode($this->config['ldap_password'])))
+			if (!@ldap_bind($ldap, htmlspecialchars_decode($this->config['auth_provider_ldap_user']), htmlspecialchars_decode($this->config['auth_provider_ldap_password'])))
 			{
 				throw new phpbb_auth_exception($this->user->lang['LDAP_INCORRECT_USER_PASSWORD']);
 			}
@@ -343,11 +343,11 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 		// ldap_connect only checks whether the specified server is valid, so the connection might still fail
 		$search = @ldap_search(
 			$ldap,
-			htmlspecialchars_decode($this->config['ldap_base_dn']),
-			ldap_user_filter($this->user->data['username']),
-			(empty($this->config['ldap_email'])) ?
-				array(htmlspecialchars_decode($this->config['ldap_uid'])) :
-				array(htmlspecialchars_decode($this->config['ldap_uid']), htmlspecialchars_decode($this->config['ldap_email'])),
+			htmlspecialchars_decode($this->config['auth_provider_ldap_base_dn']),
+			$this->ldap_user_filter($this->user->data['username']),
+			(empty($this->config['auth_provider_ldap_email'])) ?
+				array(htmlspecialchars_decode($this->config['auth_provider_ldap_uid'])) :
+				array(htmlspecialchars_decode($this->config['auth_provider_ldap_uid']), htmlspecialchars_decode($this->config['auth_provider_ldap_email'])),
 			0,
 			1
 		);
@@ -361,13 +361,12 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 
 		@ldap_close($ldap);
 
-
 		if (!is_array($result) || sizeof($result) < 2)
 		{
 			throw new phpbb_auth_exception(sprintf($this->user->lang['LDAP_NO_IDENTITY'], $this->user->data['username']));
 		}
 
-		if (!empty($this->config['ldap_email']) && !isset($result[0][htmlspecialchars_decode($this->config['ldap_email'])]))
+		if (!empty($this->config['auth_provider_ldap_email']) && !isset($result[0][htmlspecialchars_decode($this->config['auth_provider_ldap_email'])]))
 		{
 			throw new phpbb_auth_exception($this->user->lang['LDAP_NO_EMAIL']);
 		}
