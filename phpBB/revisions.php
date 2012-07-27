@@ -26,7 +26,7 @@ $post_id		= $request->variable('p', 0);
 $revision_id	= $request->variable('r', 0);
 $revert_id		= $request->variable('revert', 0);
 $compare		= $request->variable('compare', '');
-$delete_ids		= $request->variable('delete_ids', array(0));
+$action_ids		= $request->variable('delete_ids', array(0));
 
 $display_comparison = true;
 $revert_confirm = $request->is_set_post('confirm');
@@ -107,11 +107,15 @@ if (!$can_view_post_revisions)
 $l_return = '<br /><a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id" . '">' . $user->lang('RETURN_POST') . '</a>
 			<br /><a href="' . append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)) . '">' . $user->lang('RETURN_REVISION') . '</a>';
 
-if (sizeof($delete_ids))
+if (sizeof($action_ids) && ($request->is_set_post('delete') || $request->is_set_post('protect')))
 {
-	if (!$auth->acl_get('m_revisions'))
+	if ($request->is_set_post('delete') && !$auth->acl_get('m_delete_revisions', $post->post_data['forum_id']))
 	{
 		trigger_error($user->lang('NO_AUTH_DELETE_REVISIONS') . $l_return);
+	}
+	else if ($request->is_set_post('protect') && !$auth->acl_get('m_protect_revisions', $post->post_data['forum_id']))
+	{
+		trigger_error($user->lang('NO_AUTH_PROTECT_REVISIONS') . $l_return);
 	}
 
 	if (confirm_box(true))
@@ -119,17 +123,19 @@ if (sizeof($delete_ids))
 		// We have a separate counter instead of relying on sizeof()
 		// because we can potentially skip IDs within the loop
 		$count = 0;
-		foreach ($delete_ids as $delete_id)
+		foreach ($action_ids as $action_id)
 		{
 			// We only want to delete IDs of revisions on the current post
 			// If somehow someone injected IDs of revisions on another post
 			// we skip them
-			if (empty($revisions[$delete_id]))
+			if (empty($revisions[$action_id]))
 			{	
 				continue;
 			}
 
-			$revisions[$delete_id]->delete();
+			$action = $request->is_set_post('delete') ? 'delete' : 'protect';
+
+			$revisions[$action_id]->$action();
 			$count++;
 		}
 
@@ -137,8 +143,9 @@ if (sizeof($delete_ids))
 		if ($count)
 		{
 			$template->assign_vars(array(
-				'S_REVISION_DELETED'			=> true,
-				'L_REVISIONS_DELETED_SUCCESS'	=> $user->lang('REVISIONS_DELETED_SUCCESS', $count),
+				'S_REVISION_DELETED'			=> $request->is_set_post('delete'),
+				'S_REVISION_PROTECTED'			=> $request->is_set_post('protect'),
+				'L_REVISIONS_ACTION_SUCCESS'	=> $request->is_set_post('delete') ? $user->lang('REVISIONS_DELETED_SUCCESS', $count) : $user->lang('REVISIONS_PROTECTED_SUCCESS', $count),
 			));
 
 			$post_data = $post->get_post_data(true);
@@ -287,7 +294,8 @@ if ($display_comparison)
 			'USER_AVATAR'		=> $revision->get_avatar(20, 20),
 			'PROTECTED'			=> $revision->is_protected(), // @todo - Find a good "lock" icon (maybe phpBB already has one?)
 
-			'S_DELETE'			=> $auth->acl_get('m_revisions'),
+			'S_DELETE'			=> $auth->acl_get('m_delete_revisions'),
+			'S_PROTECT'			=> $auth->acl_get('m_protect_revisions'),
 
 			'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $this_revision_id)) : '',
 			'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $this_revision_id)),

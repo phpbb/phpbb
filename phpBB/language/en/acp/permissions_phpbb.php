@@ -181,6 +181,8 @@ $lang = array_merge($lang, array(
 	'acl_m_report'		=> array('lang' => 'Can close and delete reports', 'cat' => 'post_actions'),
 	'acl_m_chgposter'	=> array('lang' => 'Can change post author', 'cat' => 'post_actions'),
 	'acl_m_revisions'	=> array('lang' => 'Can view and manage post revisions', 'cat' => 'post_actions'),
+	'acl_m_delete_revisions'	=> array('lang' => 'Can delete post revisions', 'cat' => 'post_actions'),
+	'acl_m_protect_revisions'	=> array('lang' => 'Can protect post revisions', 'cat' => 'post_actions'),
 
 	'acl_m_move'	=> array('lang' => 'Can move topics', 'cat' => 'topic_actions'),
 	'acl_m_lock'	=> array('lang' => 'Can lock topics', 'cat' => 'topic_actions'),

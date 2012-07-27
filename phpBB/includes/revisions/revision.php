@@ -279,6 +279,20 @@ class phpbb_revisions_revision
 	}
 
 	/**
+	* Marks this revision as protected. No authentication is checked,
+	* so only call this after checking it yourself.
+	*
+	* @return void
+	*/
+	public function protect()
+	{
+		$sql = 'UPDATE ' . POST_REVISIONS_TABLE . '
+			SET revision_protected = 1
+			WHERE revision_id = ' . $this->get_id();
+		$this->db->sql_query($sql);
+	}
+
+	/**
 	* Returns the Avatar of the user who made the revision
 	*
 	* @param int $width Custom width
