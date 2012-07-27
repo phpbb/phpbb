@@ -83,6 +83,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		{
 			case 'login':
 				$this->internal_login($admin);
+				$this->redirect($this->request->variable('redirect', ''));
 				break;
 			case 'register':
 				$this->internal_register();
@@ -96,6 +97,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 	 *
 	 * @param string $username
 	 * @param string $password
+	 * @return @see phpbb_auth_provider::internal_login
 	 */
 	public function process_install_login($username, $password)
 	{
@@ -208,7 +210,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 	 *
 	 * @param boolean $admin Is this admin authentication?
 	 * @param boolean $install_login Is this login ocurring as part of installation?
-	 * @return int	The user id of the user.
+	 * @return void
 	 * @throws phpbb_auth_exception
 	 */
 	protected function internal_login($admin, $install_login = false)
@@ -342,11 +344,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 
 			// Complete login.
 			$this->login($row['user_id'], $admin, $autologin, $viewonline);
-			if ($install_login)
-			{
-				return;
-			}
-			$this->redirect($this->request->variable('redirect', ''));
+			return;
 		}
 
 		// Give status about wrong password...

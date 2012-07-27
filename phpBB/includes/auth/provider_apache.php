@@ -84,6 +84,7 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 		{
 			case 'login':
 				$this->internal_login($admin);
+				$this->redirect($this->request->variable('redirect', ''));
 				break;
 			default:
 				throw new phpbb_auth_exception('INVALID_AUTH_ACTION');
@@ -192,12 +193,12 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 				}
 
 				$this->login((int)$row['user_id'], $admin, $autologin, $viewonline);
-				$this->redirect($this->request->variable('redirect', ''));
+				return;
 			}
 
 			$user_id = $this->login_create_profile($this->login_user_row($php_auth_user, $php_auth_pw));
 			$this->login((int)$user_id, $admin, $autologin, $viewonline);
-			$this->redirect($this->request->variable('redirect', ''));
+			return;
 		}
 
 		if ($admin && $this->user->data['is_registered'])
