@@ -5,6 +5,17 @@
 <!-- IF TITLE --><h1>{TITLE}</h1><!-- ENDIF -->
 <!-- IF BODY --><p>{BODY}</p><!-- ENDIF -->
 
+<!-- IF L_SKIP_STEP -->
+<div class="successbox notice">
+	<h3>{L_NOTIFY}</h3>
+	<p>{L_SKIP_STEP_EXPLAIN}</p>
+	<fieldset class="submit-buttons skip-button">
+		<input class="button1" type="submit" id="skip" onclick="this.className = 'button1 disabled';" name="skip" value="{L_SKIP_STEP}" />
+	</fieldset>
+</div>
+<!-- ENDIF -->
+
+
 <!-- IF .checks -->
 	<fieldset>
 
@@ -68,7 +79,7 @@
 	<fieldset class="submit-buttons">
 		<legend>{L_SUBMIT}</legend>
 		{S_HIDDEN}
-		<!-- IF L_SUBMIT --><input class="button1" type="submit" id="submit" onclick="this.className = 'button1 disabled';" name="submit" value="{L_SUBMIT}" /><!-- ENDIF -->
+		<input class="button1" type="submit" id="submit" onclick="this.className = 'button1 disabled';" name="submit" value="{L_SUBMIT}" />
 	</fieldset>
 <!-- ENDIF -->
 
