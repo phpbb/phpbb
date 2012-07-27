@@ -66,6 +66,24 @@ class phpbb_revisions_post
 	* @var array
 	*/
 	private $revisions;
+
+	/**
+	* The total number of revisions for the post
+	* @var int
+	*/
+	private $revision_count;
+
+	/**
+	* The total number of unprotected revisions for the post
+	* @var int
+	*/
+	private $unprotected_revision_count;
+
+	/**
+	* The total number of protected revisions for the post
+	* @var int
+	*/
+	private $protected_revision_count;
 	
 	/**
 	* Constructor, initialize some class properties
@@ -208,6 +226,122 @@ class phpbb_revisions_post
 		$this->db->sql_freeresult($result);
 
 		return $this->revisions;
+	}
+
+	/**
+	* Get the total number of revisions on this post
+	*
+	* @return int The number of revisions
+	*/
+	public function get_revision_count($refresh = true)
+	{
+		if ($this->revision_count && !$refresh)
+		{
+			return $this->revision_count;
+		}
+		else if (sizeof($this->revisions) && !$refresh)
+		{
+			return $this->revision_count = sizeof($this->revisions);
+		}
+
+		$sql = 'SELECT COUNT(revision_id) as revision_count
+			FROM ' . POST_REVISIONS_TABLE . '
+			WHERE post_id = ' . $this->post_id;
+		$result = $db->sql_query($sql);
+		$this->revision_count = (int) $db->sql_fetchfield('revision_count');
+		$db->sql_freeresult($result);
+
+		return $this->revision_count;
+	}
+
+	/**
+	* Get the total number of protected revisions on this post
+	*
+	* @return int The number of protected revisions
+	*/
+	public function get_protected_revision_count($refresh = false)
+	{
+		if ($this->protected_revision_count && !$refresh)
+		{
+			return $this->protected_revision_count;
+		}
+		else if ($this->revision_count && $this->unprotected_revision_count && !$refresh)
+		{
+			return $this->protected_revision_count = $this->revision_count - $this->unprotected_revision_count;
+		}
+
+		$sql = 'SELECT COUNT(revision_id) as revision_count
+			FROM ' . POST_REVISIONS_TABLE . '
+			WHERE post_id = ' . $this->post_id . '
+				AND revision_protected = 1';
+		$result = $db->sql_query($sql);
+		$this->protected_revision_count = (int) $db->sql_fetchfield('revision_count');
+		$db->sql_freeresult($result);
+
+		return $this->protected_revision_count;
+	}
+
+	/**
+	* Get the total number of unprotected revisions on this post
+	*
+	* @return int The number of unprotected revisions
+	*/
+	public function get_unprotected_revision_count($refresh = false)
+	{
+		if ($this->unprotected_revision_count && !$refresh)
+		{
+			return $this->unprotected_revision_count;
+		}
+		else if ($this->revision_count && $this->protected_revision_count && !$refresh)
+		{
+			return $this->unprotected_revision_count = $this->revision_count - $this->protected_revision_count;
+		}
+
+		$sql = 'SELECT COUNT(revision_id) as revision_count
+			FROM ' . POST_REVISIONS_TABLE . '
+			WHERE post_id = ' . $this->post_id . '
+				AND revision_protected = 0';
+		$result = $db->sql_query($sql);
+		$this->unprotected_revision_count = (int) $db->sql_fetchfield('revision_count');
+		$db->sql_freeresult($result);
+
+		return $this->unprotected_revision_count;
+	}
+
+	/**
+	* If a post has more than the maximum number of revisions per post
+	* this deletes the excess ones (starting with the oldest, ignoring
+	* protected revisions)
+	*
+	* @return null
+	*/
+	public function delete_excess_revisions()
+	{
+		$count = $this->get_unprotected_revision_count();
+
+		$ids = array();
+
+		$db->sql_transaction('begin');
+
+		$sql = 'SELECT revision_id
+			FROM ' . POST_REVISIONS_TABLE . '
+			WHERE revision_protected = 0
+				AND post_id = ' . $this->post_id . '
+			LIMIT ' . ($count - $conig['max_revisions_per_post']) . '
+			ORDER BY revision_id ASC';
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$ids[] = $row['revision_id'];
+		}
+
+		$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
+			WHERE ' . $db->sql_in_set('revision_id', implode(',', $ids));
+		$db->sql_query($sql);
+
+		$db->sql_transaction('commit');
+
+		return true;
 	}
 
 	/**

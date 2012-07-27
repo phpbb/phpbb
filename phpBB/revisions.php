@@ -171,6 +171,10 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 	{
 		trigger_error($user->lang('ERROR_REVISION_NOT_FOUND') . $l_return);
 	}
+	else if ($this->post_data['post_edit_locked'] && !$this->auth->acl_get('m_revisions'))
+	{
+		trigger_error($lang->('ERROR_POST_EDIT_LOCKED') . $l_return);
+	}
 
 	$revert_result = $post->revert($revert_id);
 	if ($revert_result === phpbb_revisions_post::REVISION_REVERT_SUCCESS)
@@ -198,10 +202,6 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 
 			case phpbb_revisions_post::REVISION_POST_UPDATE_FAIL:
 				$lang = 'ERROR_REVISION_POST_UPDATE_FAIL';
-			break;
-
-			case phpbb_revisions_post::POST_EDIT_LOCKED:
-				$lang = 'ERROR_POST_EDIT_LOCKED';
 			break;
 		}
 
