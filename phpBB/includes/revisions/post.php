@@ -400,12 +400,6 @@ class phpbb_revisions_post
 			return self::REVISION_NOT_FOUND;
 		}
 
-		// Only a moderator can revert a post if it is edit locked
-		if ($this->post_data['post_edit_locked'] && !$this->auth->acl_get('m_revisions'))
-		{
-			return self::POST_EDIT_LOCKED;
-		}
-
 		$this->db->sql_transaction('begin');
 
 		// We need to create a new revision with the current post information.
@@ -431,19 +425,7 @@ class phpbb_revisions_post
 			return self::REVISION_INSERT_FAIL;
 		}
 
-		// But we do want to make sure we only have the maximum number of revisions allowed on a post
-		$remove_amount = sizeof($this->revisions) - $this->config['max_revisions_per_post'];
-		if ($this->config['max_revisions_per_post'] && $remove_amount)
-		{
-			for ($i = 0; $i < $remove_amount; $i++)
-			{
-				// Delete the oldest one(s) until there aren't more than the max amount
-				$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-					WHERE post_id = ' . $this->post_id . '
-					ORDER BY revision_time ASC';
-				$db->sql_query($sql);
-			}
-		}
+		$this->delete_excess_revisions();
 
 		$new_revision = $this->revisions[$new_revision_id];
 
