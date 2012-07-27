@@ -277,9 +277,7 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 
 			if (!function_exists('user_add'))
 			{
-				global $phpbb_root_path, $phpEx;
-
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				include($phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
 			}
 
 			// create the user if he does not exist yet

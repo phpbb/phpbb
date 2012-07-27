@@ -281,12 +281,10 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 	 */
 	protected function ldap_user_filter($username)
 	{
-		global $config;
-
-		$filter = '(' . $config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($username)) . ')';
-		if ($config['ldap_user_filter'])
+		$filter = '(' . $this->config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($username)) . ')';
+		if ($this->config['ldap_user_filter'])
 		{
-			$_filter = ($config['ldap_user_filter'][0] == '(' && substr($config['ldap_user_filter'], -1) == ')') ? $config['ldap_user_filter'] : "({$config['ldap_user_filter']})";
+			$_filter = ($this->config['ldap_user_filter'][0] == '(' && substr($this->config['ldap_user_filter'], -1) == ')') ? $this->config['ldap_user_filter'] : "({$this->config['ldap_user_filter']})";
 			$filter = "(&{$filter}{$_filter})";
 		}
 		return $filter;

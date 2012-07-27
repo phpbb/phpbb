@@ -93,9 +93,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			return null;
 		}
 
-		global $phpbb_root_path, $phpEx;
-
-		$s_login_action = ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $this->user->session_id));
+		$s_login_action = ((!defined('ADMIN_START')) ? append_sid("{$this->phpbb_root_path}ucp.$this->phpEx", 'mode=login') : append_sid("index.$this->phpEx", false, true, $this->user->session_id));
 		$s_autologin_enabled = ($this->config['allow_autologin']) ? true : false;
 
 		$s_hidden_fields = array(
@@ -118,7 +116,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 		$board_url = generate_board_url() . '/';
-		$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
+		$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $this->phpbb_root_path;
 		$theme_path = $web_path . 'styles/' . rawurlencode($this->user->theme['style_path']) . '/theme';
 
 		$openid_identifier = 'openid_identifier';
@@ -146,13 +144,10 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	public function generate_registration(phpbb_template $template)
 	{
 		$provider_config = $this->get_configuration();
-		if (!$provider_config['OPTIONS']['enabled']['setting']
-				|| (!$provider_config['OPTIONS']['admin']['setting'] && $admin == true))
+		if (!$provider_config['OPTIONS']['enabled']['setting'])
 		{
 			return null;
 		}
-
-		global $phpbb_root_path, $phpEx;
 
 		$s_hidden_fields = array(
 			'agreed'		=> 'true',
@@ -183,7 +178,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		}
 
 		$board_url = generate_board_url() . '/';
-		$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
+		$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $this->phpbb_root_path;
 		$theme_path = $web_path . 'styles/' . rawurlencode($this->user->theme['style_path']) . '/theme';
 
 		$openid_identifier = 'openid_identifier';
@@ -194,7 +189,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			'S_REGISTRATION'	=> true,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+			'S_UCP_ACTION'		=> append_sid("{$this->phpbb_root_path}ucp.$this->phpEx", 'mode=register'),
 
 			'OPENID_IDENTIFIER'		=> $openid_identifier,
 			'THEME_PATH'			=> $theme_path,
@@ -265,7 +260,6 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		}
 		else if ($auth_action === 'register')
 		{
-			global $phpEx;
 			$coppa = $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
 			$return_to = 'ucp.' . $this->phpEx . '?mode=register&auth_step=verify&auth_provider=openid&auth_action=register&coppa=' . (int)$coppa . '&agreed=1';
 			$extensions = array(
