@@ -55,6 +55,7 @@ $lang = array_merge($lang, array(
 	'NO_REVISIONS_POST'			=> 'There are no revisions associated with the specified post ID.',
 
 	'POST_REVERTED_SUCCESS'		=> 'The post has been reverted to the selected revision.',
+	'PROTECT_MARKED'			=> 'Protect marked',
 
 	'RETURN_POST'				=> 'Return to the post',
 	'RETURN_REVISION'			=> 'Return to the post revisions page',
