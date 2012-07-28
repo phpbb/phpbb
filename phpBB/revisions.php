@@ -109,11 +109,11 @@ $l_return = '<br /><a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx",
 
 if (sizeof($action_ids) && ($request->is_set_post('delete') || $request->is_set_post('protect')))
 {
-	if ($request->is_set_post('delete') && !$auth->acl_get('m_delete_revisions', $post->post_data['forum_id']))
+	if ($request->is_set_post('delete') && !$auth->acl_get('m_delete_revisions', $post_data['forum_id']))
 	{
 		trigger_error($user->lang('NO_AUTH_DELETE_REVISIONS') . $l_return);
 	}
-	else if ($request->is_set_post('protect') && !$auth->acl_get('m_protect_revisions', $post->post_data['forum_id']))
+	else if ($request->is_set_post('protect') && !$auth->acl_get('m_protect_revisions', $post_data['forum_id']))
 	{
 		trigger_error($user->lang('NO_AUTH_PROTECT_REVISIONS') . $l_return);
 	}
