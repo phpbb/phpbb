@@ -357,6 +357,18 @@ function user_delete($mode, $user_id, $post_username = false)
 		return false;
 	}
 
+	/**
+	* Event before an user is deleted
+	*
+	* @event core.delete_user_before
+	* @var	string	mode			Mode of deletion (retain/delete posts)
+	* @var	int		user_id			ID of the deleted user
+	* @var	mixed	post_username	Guest username that is being used or false
+	* @since 3.1-A1
+	*/
+	$vars = array('mode', 'user_id', 'post_username');
+	extract($phpbb_dispatcher->trigger_event('core.delete_user_before', compact($vars)));
+
 	// Before we begin, we will remove the reports the user issued.
 	$sql = 'SELECT r.post_id, p.topic_id
 		FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p
