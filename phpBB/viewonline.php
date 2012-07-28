@@ -133,8 +133,16 @@ $sql_ary = array(
 	'ORDER_BY'	=> $order_by,
 );
 
+/**
+* Modify the SQL query for getting the user data to display viewonline list
+*
+* @event core.viewonline_modify_sql
+* @var	array	sql_ary			The SQL array
+* @var	bool	show_guests		Do we display guests in the list
+* @since 3.1-A1
+*/
 $vars = array('sql_ary', 'show_guests');
-extract($phpbb_dispatcher->trigger_event('core.viewonline_get_userdata', compact($vars)));
+extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
 
 $result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
