@@ -178,36 +178,37 @@ class phpbb_extension_metadata_manager
     		'version'	=> '#.+#',
     	);
 
-    	if (isset($fields[$name]))
+    	switch ($name)
     	{
-    		if (!isset($this->metadata[$name]))
-    		{
-    			throw new phpbb_extension_exception("Required meta field '$name' has not been set.");
-			}
+    		case 'all':
+    			$this->validate('display');
 
-			if (!preg_match($fields[$name], $this->metadata[$name]))
-			{
-    			throw new phpbb_extension_exception("Meta field '$name' is invalid.");
-			}
-		}
+				$this->validate_enable();
+    		break;
 
-    	// Validate all fields
-    	if ($name == 'all')
-    	{
-    		$this->validate('display');
+    		case 'display':
+    			foreach ($fields as $field => $data)
+				{
+					$this->validate($field);
+				}
 
-			$this->validate_enable();
-		}
+				$this->validate_authors();
+    		break;
 
-    	// Validate display fields
-    	if ($name == 'display')
-    	{
-    		foreach ($fields as $field => $data)
-			{
-				$this->validate($field);
-			}
+    		default:
+    			if (isset($fields[$name]))
+    			{
+    				if (!isset($this->metadata[$name]))
+    				{
+    					throw new phpbb_extension_exception("Required meta field '$name' has not been set.");
+					}
 
-			$this->validate_authors();
+					if (!preg_match($fields[$name], $this->metadata[$name]))
+					{
+    					throw new phpbb_extension_exception("Meta field '$name' is invalid.");
+					}
+				}
+			break;
 		}
 
 		return true;
@@ -218,7 +219,7 @@ class phpbb_extension_metadata_manager
 	 *
 	 * @return boolean True when passes validation, throws exception if invalid
 	 */
-	private function validate_authors()
+	public function validate_authors()
 	{
 		if (empty($this->metadata['authors']))
 		{
@@ -258,7 +259,7 @@ class phpbb_extension_metadata_manager
 	 *
 	 * @return boolean True when passes validation
 	 */
-	private function validate_require_phpbb()
+	public function validate_require_phpbb()
 	{
 		if (!isset($this->metadata['require']['phpbb']))
 		{
@@ -273,7 +274,7 @@ class phpbb_extension_metadata_manager
 	 *
 	 * @return boolean True when passes validation
 	 */
-	private function validate_require_php()
+	public function validate_require_php()
 	{
 		if (!isset($this->metadata['require']['php']))
 		{
