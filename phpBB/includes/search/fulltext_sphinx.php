@@ -17,13 +17,6 @@ if (!defined('IN_PHPBB'))
 /**
 * @ignore
 */
-/**
-* This statement is necessary as this file is sometimes included from within a
-* function and the variables used are in global space.
-*/
-global $phpbb_root_path, $phpEx, $table_prefix;
-require($phpbb_root_path . 'includes/sphinxapi.' . $phpEx);
-
 define('SPHINX_MAX_MATCHES', 20000);
 define('SPHINX_CONNECT_RETRIES', 3);
 define('SPHINX_CONNECT_WAIT_TIME', 300);
@@ -82,6 +75,12 @@ class phpbb_search_fulltext_sphinx
 		$this->id = $this->config['fulltext_sphinx_id'];
 		$this->indexes = 'index_phpbb_' . $this->id . '_delta;index_phpbb_' . $this->id . '_main';
 
+		if (!class_exists('SphinxClient'))
+		{
+			require($this->phpbb_root_path . 'includes/sphinxapi.' . $this->phpEx);
+		}
+
+		// Initialize sphinx client
 		$this->sphinx = new SphinxClient();
 
 		$this->sphinx->SetServer(($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost'), ($this->config['fulltext_sphinx_port'] ? (int) $this->config['fulltext_sphinx_port'] : 9312));
