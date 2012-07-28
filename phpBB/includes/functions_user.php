@@ -2843,9 +2843,6 @@ function group_delete($group_id, $group_name = false)
 	$teampage->delete_group($group_id);
 	unset($teampage);
 
-	$vars = array('group_id', 'group_name');
-	extract($phpbb_dispatcher->trigger_event('core.group_delete', compact($vars)));
-
 	// Delete group
 	$sql = 'DELETE FROM ' . GROUPS_TABLE . "
 		WHERE group_id = $group_id";
@@ -2855,6 +2852,17 @@ function group_delete($group_id, $group_name = false)
 	$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
 		WHERE group_id = $group_id";
 	$db->sql_query($sql);
+
+	/**
+	* Event after a group is deleted
+	*
+	* @event core.delete_group_after
+	* @var	int		group_id	ID of the deleted group
+	* @var	string	group_name	Name of the deleted group
+	* @since 3.1-A1
+	*/
+	$vars = array('group_id', 'group_name');
+	extract($phpbb_dispatcher->trigger_event('core.delete_group_after', compact($vars)));
 
 	// Re-cache moderators
 	if (!function_exists('cache_moderators'))
