@@ -119,8 +119,15 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'ORDER_BY'	=> 'f.left_id',
 	);
 
+	/**
+	* Event to modify the SQL query before the forum data is queried
+	*
+	* @event core.display_forums_modify_sql
+	* @var	array	sql_ary		The SQL array to get the data of the forums
+	* @since 3.1-A1
+	*/
 	$vars = array('sql_ary');
-	extract($phpbb_dispatcher->trigger_event('core.display_forums_build_query', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_sql', compact($vars)));
 
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
