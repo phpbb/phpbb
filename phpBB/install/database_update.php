@@ -2277,6 +2277,16 @@ function change_database_data(&$no_updates, $version)
 				set_config('fulltext_postgres_max_word_len', 254);
 			}
 
+			if (!isset($config['fulltext_sphinx_stopwords']))
+			{
+				set_config('fulltext_sphinx_stopwords', 0);
+			}
+
+			if (!isset($config['fulltext_sphinx_indexer_mem_limit']))
+			{
+				set_config('fulltext_sphinx_indexer_mem_limit', 512);
+			}
+
 			if (!isset($config['load_jquery_cdn']))
 			{
 				set_config('load_jquery_cdn', 0);
