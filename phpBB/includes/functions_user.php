@@ -137,8 +137,16 @@ function user_update_name($old_name, $new_name)
 		set_config('newest_username', $new_name, true);
 	}
 
+	/**
+	* Update username when it is changed
+	*
+	* @event core.update_username
+	* @var	string	old_name	The old username that is replaced
+	* @var	string	new_name	The new username
+	* @since 3.1-A1
+	*/
 	$vars = array('old_name', 'new_name');
-	extract($phpbb_dispatcher->trigger_event('core.user_update_name', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.update_username', compact($vars)));
 
 	// Because some tables/caches use username-specific data we need to purge this here.
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
