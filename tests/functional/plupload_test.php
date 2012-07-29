@@ -15,9 +15,21 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 	const CHUNKS = 4;
 	private $path;
 
+	protected function set_extension_group_perm($val)
+	{
+		$db = $this->get_db();
+		$query = "
+			UPDATE " . self::$config['table_prefix'] . "extension_groups
+			SET allow_in_pm = '$val'
+			WHERE group_name = 'IMAGES'
+		";
+		$db->sql_query($query);
+	}
+
 	public function setUp()
 	{
 		parent::setUp();
+		$this->set_extension_group_perm(1);
 		$this->path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
 		$this->login();
@@ -25,6 +37,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 	public function tearDown()
 	{
+		$this->set_extension_group_perm(0);
 		$iterator = new DirectoryIterator(__DIR__ . '/../../phpBB/files/');
 		foreach ($iterator as $fileinfo)
 		{
@@ -48,7 +61,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 		// loaded in the test site.
 		return array(
 			array('posting.php?mode=reply&f=2&t=1'),
-// 			array('ucp.php?i=pm&mode=compose'),
+			array('ucp.php?i=pm&mode=compose'),
 		);
 	}
 
