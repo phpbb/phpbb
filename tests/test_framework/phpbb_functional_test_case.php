@@ -196,14 +196,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertContains('Welcome to Installation', $content);
 
 		$this->do_request('create_table', $data);
+		$this->do_request('config_file', $data);
+		$this->do_request('final', $data);
 
 		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], array(), true));
-
-		$this->do_request('config_file', $data);
-
 		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
-
-		$this->do_request('final', $data);
 	}
 
 	private function do_request($sub, $post_data = null)
