@@ -2,39 +2,15 @@
 
 <!-- IF VIEWING_REVERT or not DISPLAY_COMPARISON --><a href="{U_VIEW_REVISIONS}">{L_RETURN_TO} {L_VIEWING_POST_REVISION_HISTORY}</a><!-- ELSEIF DISPLAY_COMPARISON --><a href="{U_VIEW_POST}">{L_RETURN_TO} {POST_SUBJECT}</a><!-- ENDIF -->
 
-<!-- IF S_POST_REVERTED  or S_REVISION_DELETED-->
+<!-- IF S_POST_REVERTED  or S_REVISION_DELETED or S_REVISION_PROTECTED -->
 		<div class="revision_action_success">
 			<div class="inner">
-				<strong><!-- IF S_POST_REVERTED -->{L_POST_REVERTED_SUCCESS}<!-- ELSE -->{L_REVISIONS_DELETED_SUCCESS}<!-- ENDIF --></strong>
+				<strong><!-- IF S_POST_REVERTED -->{L_POST_REVERTED_SUCCESS}<!-- ELSEIF S_REVISION_DELETED or S_REVISION_PROTECTED -->{L_REVISIONS_ACTION_SUCCESS}<!-- ENDIF --></strong>
 			</div>
 		</div>
 <!-- ENDIF -->
 
 <h2><!-- IF S_DISPLAY_COMPARISON -->{L_VIEWING_POST_REVISION_HISTORY}<!-- ELSE -->{L_VIEWING_POST_REVISION}<!-- ENDIF --></h2>
-<!-- IF S_VIEWING_REVERT --><div class="post bg1">
-	<div class="inner">
-		<div class="postbody">
-			<h3 class="first"><a href="{U_VIEW_POST}">{POST_SUBJECT}</a></h3>
-			<p class="author"><a href="{U_VIEW_POST}">{POST_IMG}</a>{L_POST_BY_AUTHOR} <strong>{POST_USERNAME}</strong> &raquo; {POST_DATE} </p>
-
-			<div class="content">{MESSAGE}</div>
-		</div>
-		<dl class="postprofile" id="profile{POST_ID}">
-			<dt>
-				<!-- IF AVATAR -->
-					<a href="{U_PROFILE}">{AVATAR}</a><br />
-				<!-- ENDIF -->
-				<strong>{POST_USERNAME}</strong>
-			</dt>
-
-			<!-- IF RANK_TITLE or RANK_IMG --><dd>{RANK_TITLE}<!-- IF RANK_TITLE and RANK_IMG --><br /><!-- ENDIF -->{RANK_IMG}</dd><!-- ENDIF -->
-			<dd>&nbsp;</dd>
-			<dd><strong>{L_JOINED}:</strong> {POSTER_JOINED}</dd>
-			<dd><strong>{L_POSTS}:</strong> {POSTER_POSTS}</dd>
-			<!-- IF POSTER_LOCATION --><dd><strong>{L_LOCATION}:</strong> {POSTER_LOCATION}</dd><!-- ENDIF -->
-		</dl>
-	</div>
-</div><!-- ENDIF -->
 <!-- IF S_DISPLAY_COMPARISON -->
 	<p><div class="left-box"><strong>{L_LAST_REVISION_TIME}</strong></div>
 	<div class="right-box"></div></p>
