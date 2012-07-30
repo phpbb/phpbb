@@ -210,6 +210,7 @@ $lang = array_merge($lang, array(
 	'acl_a_words'		=> array('lang' => 'Can alter word censors', 'cat' => 'posting'),
 	'acl_a_bbcode'		=> array('lang' => 'Can define BBCode tags', 'cat' => 'posting'),
 	'acl_a_attach'		=> array('lang' => 'Can alter attachment related settings', 'cat' => 'posting'),
+	'acl_a_revisions'	=> array('lang' => 'Can alter post revision tracking settings', 'cat' => 'posting'),
 
 	'acl_a_user'		=> array('lang' => 'Can manage users<br /><em>This also includes seeing the users browser agent within the viewonline list.</em>', 'cat' => 'user_group'),
 	'acl_a_userdel'		=> array('lang' => 'Can delete/prune users', 'cat' => 'user_group'),
