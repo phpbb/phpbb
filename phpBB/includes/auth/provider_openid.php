@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-class phpbb_auth_provider_openid extends phpbb_auth_common_provider
+class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 	implements phpbb_auth_interface_provider_custom_login, phpbb_auth_interface_provider_registration
 {
 	protected $request;
