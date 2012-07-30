@@ -931,6 +931,12 @@ function display_custom_bbcodes()
 	}
 	$db->sql_freeresult($result);
 
+	/**
+	* Display custom bbcodes
+	*
+	* @event core.display_custom_bbcodes
+	* @since 3.1-A1
+	*/
 	$phpbb_dispatcher->dispatch('core.display_custom_bbcodes');
 }
 
