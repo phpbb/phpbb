@@ -144,7 +144,7 @@ class dbal_mssql extends dbal
 				$this->sql_report('start', $query);
 			}
 
-			$this->query_result = ($cache_ttl && method_exists($cache->get_driver(), 'sql_load')) ? $cache->sql_load($query) : false;
+			$this->query_result = ($cache_ttl) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
 			if ($this->query_result === false)
@@ -159,7 +159,7 @@ class dbal_mssql extends dbal
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl && method_exists($cache->get_driver(), 'sql_save'))
+				if ($cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$cache->sql_save($query, $this->query_result, $cache_ttl);
