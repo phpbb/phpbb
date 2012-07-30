@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interface
+abstract class phpbb_auth_common_provider implements phpbb_auth_interface_provider
 {
 	protected $request;
 	protected $db;

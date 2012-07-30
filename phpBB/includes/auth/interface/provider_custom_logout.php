@@ -20,7 +20,8 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-interface provider_custom_logout_interface {
+interface phpbb_auth_interface_provider_custom_logout
+{
 
 	/**
 	 * Handles a non-standard logout of a user from phpBB.

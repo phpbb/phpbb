@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-interface phpbb_auth_provider_custom_acp_auth_interface
+interface phpbb_auth_interface_provider_custom_acp_auth
 {
 	/**
 	 * $submit and $err should be used to check if config values were changed.

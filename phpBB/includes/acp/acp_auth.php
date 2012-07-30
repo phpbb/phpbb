@@ -89,7 +89,7 @@ class acp_auth
 			}
 
 			$custom_tpl = false;
-			if ($provider instanceof phpbb_auth_provider_custom_acp_auth_interface)
+			if ($provider instanceof phpbb_auth_interface_provider_custom_acp_auth)
 			{
 				$custom_tpl = $provider->generate_acp_options($template, $this->new_config, $submit, $err);
 			}
@@ -105,7 +105,7 @@ class acp_auth
 			foreach ($provider_configuration['OPTIONS'] as $config_key_orig => $vars)
 			{
 				$config_key = 'auth_provider_' . $provider_configuration['NAME'] . '_' . $config_key_orig;
-				if ($config_key_orig === 'enabled' && $cfg_array[$config_key] == true && $provider instanceof phpbb_auth_provider_acp_init_interface)
+				if ($config_key_orig === 'enabled' && $cfg_array[$config_key] == true && $provider instanceof phpbb_auth_interface_provider_acp_init)
 				{
 					$init = true;
 				}

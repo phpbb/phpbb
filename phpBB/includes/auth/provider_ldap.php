@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * @package auth
 */
 class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
-	implements phpbb_auth_provider_acp_init_interface
+	implements phpbb_auth_interface_provider_acp_init
 {
 	protected $request;
 	protected $db;

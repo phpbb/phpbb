@@ -256,7 +256,7 @@ class ucp_register
 		$rendered_template = false;
 		foreach ($providers as $provider)
 		{
-			if (!($provider instanceof phpbb_auth_provider_registration_interface))
+			if (!($provider instanceof phpbb_auth_interface_provider_registration))
 			{
 				continue;
 			}

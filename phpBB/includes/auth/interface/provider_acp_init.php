@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-interface phpbb_auth_provider_acp_init_interface
+interface phpbb_auth_interface_provider_acp_init
 {
 	/**
 	 * Checks whether the user is identified to apache

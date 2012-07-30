@@ -133,7 +133,7 @@ class phpbb_auth_manager
 		$common_providers = array();
 		foreach($providers as $provider)
 		{
-			if (!($provider instanceof phpbb_auth_provider_custom_login_interface))
+			if (!($provider instanceof phpbb_auth_interface_provider_custom_login))
 			{
 				$common_providers[] = $provider;
 			}
@@ -155,7 +155,7 @@ class phpbb_auth_manager
 		foreach ($providers as $provider)
 		{
 			$provider_config = $provider->get_configuration();
-			if (!($provider instanceof phpbb_auth_provider_custom_login_interface) && $provider_config['OPTIONS']['enabled']['setting'] == 1)
+			if (!($provider instanceof phpbb_auth_interface_provider_custom_login) && $provider_config['OPTIONS']['enabled']['setting'] == 1)
 			{
 				$enabled_common_providers[] = $provider;
 			}

@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-interface phpbb_auth_provider_sso_interface
+interface phpbb_auth_interface_provider_sso
 {
 	/**
 	 * The session validation function checks whether the user is still logged in.

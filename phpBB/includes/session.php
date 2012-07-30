@@ -404,7 +404,7 @@ class phpbb_session
 					$providers = $phpbb_auth_manager->get_enabled_providers();
 					foreach ($providers as $provider)
  					{
-						if ($provider instanceof phpbb_auth_provider_sso_interface && !$provider->validate_session($this->data))
+						if ($provider instanceof phpbb_auth_interface_provider_sso && !$provider->validate_session($this->data))
  						{
  							$session_expired = true;
 							break;
@@ -572,7 +572,7 @@ class phpbb_session
 		$providers = $phpbb_auth_manager->get_enabled_providers();
 		foreach ($providers as $provider)
 		{
-			if ($provider instanceof phpbb_auth_provider_sso_interface)
+			if ($provider instanceof phpbb_auth_interface_provider_sso)
 			{
 				$this->data = $provider->autologin();
 
@@ -897,7 +897,7 @@ class phpbb_session
 		$providers = $phpbb_auth_manager->get_enabled_providers();
 		foreach ($providers as $provider)
 		{
-			if ($provider instanceof phpbb_auth_custom_logout_interface)
+			if ($provider instanceof phpbb_auth_interface_custom_logout)
 			{
 				$provider->logout($this->data, $new_session);
 			}

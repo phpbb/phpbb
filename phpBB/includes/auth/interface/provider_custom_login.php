@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-interface phpbb_auth_provider_custom_login_interface
+interface phpbb_auth_interface_provider_custom_login
 {
 	/**
 	 * Generates a rendered template for use in login.

@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-interface phpbb_auth_provider_interface
+interface phpbb_auth_interface_provider
 {
 	/**
 	 * Stores the request and db variable for later use.

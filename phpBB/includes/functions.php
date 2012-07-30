@@ -3126,7 +3126,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			}
 		}
 
-		if (!($provider instanceof phpbb_auth_provider_custom_login_interface))
+		if (!($provider instanceof phpbb_auth_interface_provider_custom_login))
 		{
 			$common_template = $rendered_template =  true;
 			continue;
