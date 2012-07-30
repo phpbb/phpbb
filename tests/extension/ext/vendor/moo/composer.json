@@ -1,5 +1,5 @@
 {
-	"name": "foo/example",
+	"name": "moo/example",
 	"type": "phpbb3-extension",
 	"description": "An example/sample extension to be used for testing purposes in phpBB Development.",
 	"version": "1.0.0",
@@ -17,6 +17,6 @@
 		"phpbb": "3.1.0-dev"
 	},
 	"extra": {
-		"display-name": "phpBB Foo Extension"
+		"display-name": "phpBB Moo Extension"
 	}
 }

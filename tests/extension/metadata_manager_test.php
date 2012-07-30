@@ -11,7 +11,14 @@ class metadata_manager_test extends phpbb_database_test_case
 {
 	protected $class_loader;
 	protected $extension_manager;
+
+	protected $cache;
+	protected $config;
+	protected $db;
 	protected $phpbb_root_path;
+	protected $phpEx;
+	protected $template;
+	protected $user;
 
 	public function getDataSet()
 	{
@@ -22,15 +29,30 @@ class metadata_manager_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
+		$this->cache = new phpbb_mock_cache();
+		$this->config = new phpbb_config(array(
+			'version'		=> '3.1.0',
+		));
+		$this->db = $this->new_dbal();
 		$this->phpbb_root_path = dirname(__FILE__) . '/';
+		$this->phpEx = '.php';
+		$this->user = new phpbb_user();
+
+		$this->template = new phpbb_template(
+			$this->phpbb_root_path,
+			$this->phpEx,
+			$this->config,
+			$this->user,
+			new phpbb_style_resource_locator()
+		);
 
 		$this->extension_manager = new phpbb_extension_manager(
-			$this->new_dbal(),
-			new phpbb_config(array()),
+			$this->db(),
+			$this->config,
 			'phpbb_ext',
 			$this->phpbb_root_path,
-			'.php',
-			new phpbb_mock_cache
+			$this->phpEx,
+			$this->cache
 		);
 	}
 
@@ -39,21 +61,7 @@ class metadata_manager_test extends phpbb_database_test_case
 	{
 		$ext_name = 'bar';
 
-		$manager = new phpbb_extension_metadata_manager_test(
-			$ext_name,
-			$this->new_dbal(),
-			$this->extension_manager,
-			$this->phpbb_root_path,
-			'.php',
-			new phpbb_template(
-				$this->phpbb_root_path,
-				'.php',
-				new phpbb_config(array()),
-				new phpbb_user(),
-				new phpbb_style_resource_locator()
-			),
-			new phpbb_config(array())
-		);
+		$manager = $this->get_metadata_manager($ext_name);
 
 		try
 		{
@@ -69,21 +77,7 @@ class metadata_manager_test extends phpbb_database_test_case
 	{
 		$ext_name = 'foo';
 
-		$manager = new phpbb_extension_metadata_manager_test(
-			$ext_name,
-			$this->new_dbal(),
-			$this->extension_manager,
-			$this->phpbb_root_path,
-			'.php',
-			new phpbb_template(
-				$this->phpbb_root_path,
-				'.php',
-				new phpbb_config(array()),
-				new phpbb_user(),
-				new phpbb_style_resource_locator()
-			),
-			new phpbb_config(array())
-		);
+		$manager = $this->get_metadata_manager($ext_name);
 
 		try
 		{
@@ -103,23 +97,7 @@ class metadata_manager_test extends phpbb_database_test_case
 	{
 		$ext_name = 'validator';
 
-		$manager = new phpbb_extension_metadata_manager_test(
-			$ext_name,
-			$this->new_dbal(),
-			$this->extension_manager,
-			$this->phpbb_root_path,
-			'.php',
-			new phpbb_template(
-				$this->phpbb_root_path,
-				'.php',
-				new phpbb_config(array()),
-				new phpbb_user(),
-				new phpbb_style_resource_locator()
-			),
-			new phpbb_config(array(
-				'version'		=> '3.1.0',
-			))
-		);
+		$manager = $this->get_metadata_manager($ext_name);
 
 		// Non-existant data
 		try
@@ -357,6 +335,25 @@ class metadata_manager_test extends phpbb_database_test_case
 		{
 			$this->fail($e);
 		}
+	}
+
+	/**
+	* Get an instance of the metadata manager
+	*
+	* @param string $ext_name
+	* @return phpbb_extension_metadata_manager_test
+	*/
+	private function get_metadata_manager($ext_name)
+	{
+		return new phpbb_extension_metadata_manager_test(
+			$ext_name,
+			$this->new_dbal(),
+			$this->extension_manager,
+			$this->phpbb_root_path,
+			$this->phpEx,
+			$this->template,
+			$this->config
+		);
 	}
 }
 

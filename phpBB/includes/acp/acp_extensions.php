@@ -72,7 +72,7 @@ class acp_extensions
 			break;
 
 			case 'enable_pre':
-				if (!$md_manager->validate_enable())
+				if (!$md_manager->validate_enable() || $phpbb_extension_manager->enabled($ext_name))
 				{
 					trigger_error('EXTENSION_NOT_AVAILABLE');
 				}
@@ -81,7 +81,7 @@ class acp_extensions
 
 				$template->assign_vars(array(
 					'PRE'		=> true,
-					'U_ENABLE'	=> $this->u_action . '&amp;action=enable&amp;ext_name=' . $ext_name,
+					'U_ENABLE'	=> $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name),
 				));
 			break;
 
@@ -95,7 +95,7 @@ class acp_extensions
 				{
 					$template->assign_var('S_NEXT_STEP', true);
 
-					meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . $ext_name);
+					meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name));
 				}
 
 				$this->tpl_name = 'acp_ext_enable';
@@ -106,11 +106,16 @@ class acp_extensions
 			break;
 
 			case 'disable_pre':
+				if (!$phpbb_extension_manager->enabled($ext_name))
+				{
+					trigger_error('EXTENSION_NOT_AVAILABLE');
+				}
+
 				$this->tpl_name = 'acp_ext_disable';
 
 				$template->assign_vars(array(
 					'PRE'		=> true,
-					'U_DISABLE'	=> $this->u_action . '&amp;action=disable&amp;ext_name=' . $ext_name,
+					'U_DISABLE'	=> $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name),
 				));
 			break;
 
@@ -119,7 +124,7 @@ class acp_extensions
 				{
 					$template->assign_var('S_NEXT_STEP', true);
 
-					meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . $ext_name);
+					meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name));
 				}
 
 				$this->tpl_name = 'acp_ext_disable';
@@ -134,7 +139,7 @@ class acp_extensions
 
 				$template->assign_vars(array(
 					'PRE'		=> true,
-					'U_PURGE'	=> $this->u_action . '&amp;action=purge&amp;ext_name=' . $ext_name,
+					'U_PURGE'	=> $this->u_action . '&amp;action=purge&amp;ext_name=' . urlencode($ext_name),
 				));
 			break;
 
@@ -143,7 +148,7 @@ class acp_extensions
 				{
 					$template->assign_var('S_NEXT_STEP', true);
 
-					meta_refresh(0, $this->u_action . '&amp;action=purge&amp;ext_name=' . $ext_name);
+					meta_refresh(0, $this->u_action . '&amp;action=purge&amp;ext_name=' . urlencode($ext_name));
 				}
 
 				$this->tpl_name = 'acp_ext_purge';
@@ -166,7 +171,6 @@ class acp_extensions
 	 * Lists all the enabled extensions and dumps to the template
 	 *
 	 * @param  $phpbb_extension_manager     An instance of the extension manager
-	 * @param  $template 					An instance of the template engine
 	 * @return null
 	 */
 	public function list_enabled_exts(phpbb_extension_manager $phpbb_extension_manager)
@@ -180,12 +184,12 @@ class acp_extensions
 				$this->template->assign_block_vars('enabled', array(
 					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
-					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
+					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
 				));
 
 				$this->output_actions('enabled', array(
-					'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . $name,
-					'PURGE'			=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . $name,
+					'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($name),
+					'PURGE'			=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . urlencode($name),
 				));
 			}
 			catch(phpbb_extension_exception $e)
@@ -201,7 +205,6 @@ class acp_extensions
 	 * Lists all the disabled extensions and dumps to the template
 	 *
 	 * @param  $phpbb_extension_manager     An instance of the extension manager
-	 * @param  $template 					An instance of the template engine
 	 * @return null
 	 */
 	public function list_disabled_exts(phpbb_extension_manager $phpbb_extension_manager)
@@ -215,12 +218,12 @@ class acp_extensions
 				$this->template->assign_block_vars('disabled', array(
 					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
-					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
+					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
 				));
 
 				$this->output_actions('disabled', array(
-					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . $name,
-					'PURGE'			=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . $name,
+					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
+					'PURGE'			=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . urlencode($name),
 				));
 			}
 			catch(phpbb_extension_exception $e)
@@ -236,7 +239,6 @@ class acp_extensions
 	 * Lists all the available extensions and dumps to the template
 	 *
 	 * @param  $phpbb_extension_manager     An instance of the extension manager
-	 * @param  $template 					An instance of the template engine
 	 * @return null
 	 */
 	public function list_available_exts(phpbb_extension_manager $phpbb_extension_manager)
@@ -252,11 +254,11 @@ class acp_extensions
 				$this->template->assign_block_vars('disabled', array(
 					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
 
-					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . $name,
+					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
 				));
 
 				$this->output_actions('disabled', array(
-					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . $name,
+					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
 				));
 			}
 			catch(phpbb_extension_exception $e)
