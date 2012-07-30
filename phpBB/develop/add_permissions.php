@@ -135,6 +135,7 @@ $a_permissions = array(
 	'a_search'	=> array(0, 1),
 	'a_events'	=> array(0, 1),
 	'a_cron'	=> array(0, 1),
+	'a_revisions'	=> array(0, 1),
 );
 
 $u_permissions = array(

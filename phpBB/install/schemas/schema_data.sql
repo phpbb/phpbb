@@ -385,6 +385,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_profile', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_prune', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_ranks', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_reasons', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_revisions', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_roles', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_search', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_server', 1);

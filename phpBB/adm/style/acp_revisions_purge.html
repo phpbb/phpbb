@@ -1,0 +1,33 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<h1>{L_ACP_REVISIONS_PURGE}</h1>
+
+<p>{L_PURGE_REVISIONS_EXPLAIN}</p>
+
+<!-- IF S_ERROR -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+<!-- ENDIF -->
+
+<form id="acp_board" method="post" action="{U_ACTION}">
+<fieldset>
+	<legend>{L_PURGE_REVISIONS_TITLE}</legend>
+
+	<dl>
+		<dt><label for="purge_confirm">{L_PURGE_REVISIONS_CONFIRM}:</label><br /><span>{L_PURGE_REVISIONS_CONFIRM_EXPLAIN}</span><!-- ENDIF --></dt>
+		<dd><input type="text" name="purge_confirm" value="" /></dd>
+	</dl>
+
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="confirm" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</p>
+	{S_FORM_TOKEN}
+</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

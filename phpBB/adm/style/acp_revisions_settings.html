@@ -1,0 +1,53 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<h1>{L_ACP_REVISION_SETTINGS}</h1>
+
+<p>{L_REVISION_SETTINGS_EXPLAIN}</p>
+
+<!-- IF S_ERROR -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+<!-- ENDIF -->
+
+<form id="acp_board" method="post" action="{U_ACTION}">
+<fieldset>
+	<legend>{L_REVISION_SETTINGS}</legend>
+
+	<dl>
+		<dt><label for="track_post_revisions">{L_REVISION_HISTORY}:</label><br /><span>{L_REVISION_HISTORY_EXPLAIN}</span></dt>
+		<dd>{L_YES} <input type="radio" name="track_post_revisions" value="1"{S_REVISION_HISTORY_NO_SELECTED} /><br />{L_NO} <input type="radio" name="track_post_revisions" value="0"{S_REVISION_HISTORY_NO_SELECTED} /></dd>
+	</dl>
+
+	<dl>
+		<dt><label for="post_revisions_max_age">{L_REVISION_MAX_AGE}:</label><br /><span>{L_REVISION_MAX_AGE_EXPLAIN}</span></dt>
+		<dd>{L_YES} <input type="radio" name="post_revisions_max_age" value="{REVISIONS_MAX_AGE}" /></dd>
+	</dl>
+
+	<dl>
+		<dt><label for="post_revisions_max_age">{L_REVISION_LIMIT}:</label><br /><span>{L_REVISION_LIMIT_EXPLAIN}</span></dt>
+		<dd>{L_YES} <input type="radio" name="post_revisions_max_age" value="{REVISIONS_PER_POST}" /></dd>
+	</dl>
+
+	<dl>
+		<dt><label for="post_revisions_max_age">{L_REVISION_MAX_AGE}:</label><br /><span>{L_REVISION_MAX_AGE_EXPLAIN}</span></dt>
+		<dd>{L_YES} <input type="radio" name="post_revisions_max_age" value="{REVISIONS_MAX_AGE}" /></dd>
+	</dl>
+
+	<dl>
+		<dt><label for="post_revisions_max_age">{L_REVISION_LIMIT}:</label><br /><span>{L_REVISION_LIMIT_EXPLAIN}</span></dt>
+		<dd>{L_YES} <input type="radio" name="post_revisions_max_age" value="{REVISIONS_PER_POST}" /></dd>
+	</dl>
+
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</p>
+	{S_FORM_TOKEN}
+</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

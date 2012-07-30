@@ -377,11 +377,6 @@ $lang = array_merge($lang, array(
 	'PURGE_CACHE_EXPLAIN'	=> 'Purge all cache related items, this includes any cached template files or queries.',
 	'PURGE_CACHE_SUCCESS'	=> 'Cache successfully purged.',
 
-	'PURGE_REVISIONS'			=> 'Purge all post revisions',
-	'PURGE_REVISIONS_CONFIRM'	=> 'Are you sure you wish to purge all post revisions? This cannot be undone.',
-	'PURGE_REVISIONS_EXPLAIN'	=> 'Purge all post revisions, even those marked as protected.',
-	'PURGE_REVISIONS_SUCCESS'	=> 'Post revisions successfully purged.',
-
 	'PURGE_SESSIONS'			=> 'Purge all sessions',
 	'PURGE_SESSIONS_CONFIRM'	=> 'Are you sure you wish to purge all sessions? This will log out all users.',
 	'PURGE_SESSIONS_EXPLAIN'	=> 'Purge all sessions. This will log out all users by truncating the session table.',
