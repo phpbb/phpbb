@@ -912,8 +912,18 @@ function display_custom_bbcodes()
 			'A_BBCODE_HELPLINE'	=> str_replace(array('&amp;', '&quot;', "'", '&lt;', '&gt;'), array('&', '"', "\'", '<', '>'), $row['bbcode_helpline']),
 		);
 
+		/**
+		* Modify the template data block of a bbcode
+		*
+		* This event is triggered once per bbcode
+		*
+		* @event core.display_custom_bbcodes_modify_row
+		* @var	array	custom_tags		Template data of the bbcode
+		* @var	array	row				The data of the bbcode
+		* @since 3.1-A1
+		*/
 		$vars = array('custom_tags', 'row');
-		extract($phpbb_dispatcher->trigger_event('core.display_custom_bbcodes_row', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.display_custom_bbcodes_modify_row', compact($vars)));
 
 		$template->assign_block_vars('custom_tags', $custom_tags);
 
