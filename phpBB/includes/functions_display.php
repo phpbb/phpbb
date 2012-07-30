@@ -246,9 +246,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 			$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
 			$forum_rows[$parent_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
-
-			$vars = array('forum_rows', 'parent_id', 'row');
-			extract($phpbb_dispatcher->trigger_event('core.display_forums_row_values_inject', compact($vars)));
 		}
 		else if ($row['forum_type'] != FORUM_CAT)
 		{
@@ -286,6 +283,22 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
 			}
 		}
+
+		/**
+		* Event to modify the forum rows data set
+		*
+		* This event is triggered once per forum
+		*
+		* @event core.display_forums_modify_forum_rows
+		* @var	array	forum_rows		Data array of all forums we display
+		* @var	array	subforums		Data array of all subforums we display
+		* @var	int		branch_root_id	Current top-level forum
+		* @var	int		parent_id		Current parent forum
+		* @var	array	row				The data of the forum
+		* @since 3.1-A1
+		*/
+		$vars = array('forum_rows', 'subforums', 'branch_root_id', 'parent_id', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_forum_rows', compact($vars)));
 	}
 	$db->sql_freeresult($result);
 
