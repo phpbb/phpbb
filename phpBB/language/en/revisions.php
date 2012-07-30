@@ -37,6 +37,8 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'BY'			=> 'by',
 
+	'CURRENT_REVISION'	=> 'Current Revision',
+
 	'ERROR_REVISION_NOT_FOUND'			=> 'The specified revision could not be found.',
 	'ERROR_REVISION_INSERT_FAIL'		=> 'An error occurred when attempting to insert a new revisions.',
 	'ERROR_REVISION_POST_UPDATE_FAIL'	=> 'An error occurred when attempting to update the post to the specified revision.',
@@ -95,6 +97,10 @@ $lang = array_merge($lang, array(
 		2 => 'The selected revisions have been deleted. There are no more revisions to display.',
 	),
 	'REVISIONS_FROM_DIFFERENT_POSTS'	=> 'You cannot compare revisions from separate posts.',
+	'REVISIONS_PROTECTED_SUCCESS'		=> array(
+		1 => 'The selected revision has been marked as protected.',
+		2 => 'The selected revisions have been marked as protected.',
+	),
 	'REVISIONS_REVERT_TITLE'			=> 'Revert Post to Selected Revision',
 	'REVISIONS_REVERT_EXPLAIN'			=> 'The changes between the current revision and the selected revision are displayed below. If you are satisfied with those changes, click Submit.',
 
