@@ -180,7 +180,7 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 	}
 	else if ($this->post_data['post_edit_locked'] && !$this->auth->acl_get('m_revisions'))
 	{
-		trigger_error($lang->('ERROR_POST_EDIT_LOCKED') . $l_return);
+		trigger_error($user->lang('ERROR_POST_EDIT_LOCKED') . $l_return);
 	}
 
 	$revert_result = $post->revert($revert_id);

@@ -1467,8 +1467,10 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			{
 				$display_username = get_username_string('full', $row['post_edit_user'], $post_edit_list[$row['post_edit_user']]['username'], $post_edit_list[$row['post_edit_user']]['user_colour']);
 			}
-
-			$l_edited_by = $user->lang('EDITED_TIMES_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true), append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $row['post_id'])));
+			
+			$l_edited_by = $config['track_post_revisions'] ? 
+				$user->lang('EDITED_REVISIONS_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true), append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $row['post_id']))) :
+				$user->lang('EDITED_TIMES_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true));;
 		}
 		else
 		{
@@ -1487,7 +1489,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 				$display_username = get_username_string('full', $row['post_edit_user'], $user_cache[$row['post_edit_user']]['username'], $user_cache[$row['post_edit_user']]['user_colour']);
 			}
 
-			$l_edited_by = $user->lang('EDITED_TIMES_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true), append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $row['post_id'])));
+			$l_edited_by = $config['track_post_revisions'] ?
+				$user->lang('EDITED_REVISIONS_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true), append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $row['post_id']))) :
+				$user->lang('EDITED_TIMES_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true));
 		}
 	}
 	else
