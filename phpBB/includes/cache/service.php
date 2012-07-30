@@ -337,7 +337,7 @@ class phpbb_cache_service
 
 		if (!file_exists($filename))
 		{
-			continue;
+			return array();
 		}
 
 		if (!isset($parsed_array['filetime']) || (($config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
