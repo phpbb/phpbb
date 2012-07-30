@@ -47,7 +47,7 @@ class metadata_manager_test extends phpbb_database_test_case
 		);
 
 		$this->extension_manager = new phpbb_extension_manager(
-			$this->db(),
+			$this->db,
 			$this->config,
 			'phpbb_ext',
 			$this->phpbb_root_path,
@@ -347,7 +347,7 @@ class metadata_manager_test extends phpbb_database_test_case
 	{
 		return new phpbb_extension_metadata_manager_test(
 			$ext_name,
-			$this->new_dbal(),
+			$this->db,
 			$this->extension_manager,
 			$this->phpbb_root_path,
 			$this->phpEx,
