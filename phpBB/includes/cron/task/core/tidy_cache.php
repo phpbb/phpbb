@@ -44,7 +44,7 @@ class phpbb_cron_task_core_tidy_cache extends phpbb_cron_task_base
 	public function is_runnable()
 	{
 		global $cache;
-		return method_exists($cache, 'tidy');
+		return method_exists($cache->get_driver(), 'tidy');
 	}
 
 	/**
