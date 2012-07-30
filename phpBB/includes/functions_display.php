@@ -522,8 +522,18 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'U_LAST_POST'		=> $last_post_url,
 		);
 
-		$vars = array('row', 'forum_row');
-		extract($phpbb_dispatcher->trigger_event('core.display_forums_assign_block_vars', compact($vars)));
+		/**
+		* Modify the template data block of the forum
+		*
+		* This event is triggered once per forum
+		*
+		* @event core.display_forums_modify_template_vars
+		* @var	array	forum_row		Template data of the forum
+		* @var	array	row				The data of the forum
+		* @since 3.1-A1
+		*/
+		$vars = array('forum_row', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_template_vars', compact($vars)));
 
 		$template->assign_block_vars('forumrow', $forum_row);
 
