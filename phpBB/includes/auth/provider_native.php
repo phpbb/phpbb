@@ -171,7 +171,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 			break;
 		}
 
-		$timezone_selects = phpbb_timezone_select($user, $data['tz'], true);
+		$timezone_selects = phpbb_timezone_select($this->user, $data['tz'], true);
 		$template->assign_vars(array(
 			'USERNAME'			=> $data['username'],
 			'PASSWORD'			=> $data['new_password'],
@@ -441,7 +441,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 			'password_confirm'	=> $this->request->variable('password_confirm', '', true),
 			'email'				=> strtolower($this->request->variable('email', '')),
 			'lang'				=> basename($this->request->variable('lang', $this->user->lang_name)),
-			'tz'				=> $this->request->variable('tz', (float) $this->config['board_timezone']),
+			'tz'				=> $this->request->variable('tz', $this->config['board_timezone']),
 		);
 
 		// Replace "error" strings with their real, localised form

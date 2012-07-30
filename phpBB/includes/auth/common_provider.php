@@ -429,7 +429,6 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 			'user_email'			=> $data['email'],
 			'group_id'				=> (int) $group_id,
 			'user_timezone'			=> $data['tz'],
-			'user_dst'				=> $this->config['board_dst'],
 			'user_lang'				=> $data['lang'],
 			'user_type'				=> $user_type,
 			'user_actkey'			=> $user_actkey,
@@ -491,7 +490,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 				'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($this->user->lang['WELCOME_SUBJECT'], $this->config['sitename'])),
 				'USERNAME'		=> htmlspecialchars_decode($data['username']),
 				'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
-				'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
+				'U_ACTIVATE'	=> "$server_url/ucp.$this->phpEx?mode=activate&u=$user_id&k=$user_actkey")
 			);
 
 			if ($coppa)

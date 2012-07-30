@@ -2969,11 +2969,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
 	global $request, $phpbb_auth_manager;
 
-	if (!class_exists('phpbb_captcha_factory', false))
-	{
-		include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-	}
-
 	$err = '';
 
 	// Make sure user->setup() has been called
@@ -3080,7 +3075,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			}
 			elseif ($err == 'LOGIN_ERROR_ATTEMPTS')
 			{
-				$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+				$captcha = new phpbb_auth_captcha($db, $config, $user);
 				$captcha->init(CONFIRM_LOGIN);
 				// $captcha->reset();
 
@@ -3154,7 +3149,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			'COMMON_TPL'	=> $common_tpl,
 		));
 	}
-	elseif (!$rendered_template)
+	else if (!$rendered_template)
 	{
 		trigger_error('NO_PROVIDERS');
 	}

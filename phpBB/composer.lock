@@ -1,5 +1,5 @@
 {
-    "hash": "8cd16dcd507c6a2e556ff82ea2226fdc",
+    "hash": "1a2955690bfa6def817b10257037fc18",
     "packages": [
         {
             "package": "symfony/event-dispatcher",
@@ -42,7 +42,52 @@
             "version": "2.0.0-rc1"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+        {
+            "package": "fabpot/goutte",
+            "version": "dev-master",
+            "alias-pretty-version": "1.0.x-dev",
+            "alias-version": "1.0.9999999.9999999-dev"
+        },
+        {
+            "package": "fabpot/goutte",
+            "version": "dev-master",
+            "source-reference": "5f7fd00c7f1c47a66e552f636450ff883e02cf33",
+            "commit-date": "1343461948"
+        },
+        {
+            "package": "guzzle/common",
+            "version": "v2.8.2"
+        },
+        {
+            "package": "guzzle/http",
+            "version": "v2.8.2"
+        },
+        {
+            "package": "guzzle/parser",
+            "version": "v2.8.2"
+        },
+        {
+            "package": "symfony/browser-kit",
+            "version": "v2.1.0-BETA4"
+        },
+        {
+            "package": "symfony/css-selector",
+            "version": "v2.1.0-BETA4"
+        },
+        {
+            "package": "symfony/dom-crawler",
+            "version": "v2.1.0-BETA4"
+        },
+        {
+            "package": "symfony/finder",
+            "version": "v2.1.0-BETA4"
+        },
+        {
+            "package": "symfony/process",
+            "version": "v2.1.0-BETA4"
+        }
+    ],
     "aliases": [
 
     ],

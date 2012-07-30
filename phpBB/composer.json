@@ -1,11 +1,11 @@
 {
+	"minimum-stability": "beta",
 	"repositories": [
 		{
 			"type": "composer",
 			"url": "http://packages.zendframework.com/"
 		}
 	],
-	"minimum-stability": "beta",
 	"require": {
 		"symfony/event-dispatcher": "2.1.*",
 		"zendframework/zend-eventmanager": "2.0.*",

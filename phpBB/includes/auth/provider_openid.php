@@ -117,7 +117,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 		$board_url = generate_board_url() . '/';
 		$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $this->phpbb_root_path;
-		$theme_path = $web_path . 'styles/' . rawurlencode($this->user->theme['style_path']) . '/theme';
+		$theme_path = $web_path . 'styles/' . rawurlencode($this->user->style['style_path']) . '/theme';
 
 		$openid_identifier = 'openid_identifier';
 
@@ -179,7 +179,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 		$board_url = generate_board_url() . '/';
 		$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $this->phpbb_root_path;
-		$theme_path = $web_path . 'styles/' . rawurlencode($this->user->theme['style_path']) . '/theme';
+		$theme_path = $web_path . 'styles/' . rawurlencode($this->user->style['style_path']) . '/theme';
 
 		$openid_identifier = 'openid_identifier';
 

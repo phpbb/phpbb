@@ -886,7 +886,7 @@ class phpbb_session
 	*/
 	function session_kill($new_session = true)
 	{
-		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx;
+		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx, $phpbb_auth_manager;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
@@ -894,13 +894,13 @@ class phpbb_session
 		$db->sql_query($sql);
 
 		// Allow connecting logout with external auth method logout
-		$method = basename(trim($config['auth_method']));
-		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-		$method = 'logout_' . $method;
-		if (function_exists($method))
+		$providers = $phpbb_auth_manager->get_enabled_providers();
+		foreach ($providers as $provider)
 		{
-			$method($this->data, $new_session);
+			if ($provider instanceof phpbb_auth_custom_logout_interface)
+			{
+				$provider->logout($this->data, $new_session);
+			}
 		}
 
 		if ($this->data['user_id'] != ANONYMOUS)
