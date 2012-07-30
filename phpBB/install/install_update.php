@@ -349,7 +349,7 @@ class install_update extends module
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
 				$update_list = ($request->variable('check_again', false, false, phpbb_request_interface::POST)) ? false : $cache->get('_update_list');
-				$modified = ($update_list !== false) ? @filemtime($cache->cache_dir . 'data_update_list.' . $phpEx) : 0;
+				$modified = ($update_list !== false) ? @filemtime($cache->get_driver()->cache_dir . 'data_update_list.' . $phpEx) : 0;
 
 				// Make sure the list is up-to-date
 				if ($update_list !== false)

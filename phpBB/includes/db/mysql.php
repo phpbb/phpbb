@@ -249,7 +249,7 @@ class dbal_mysql extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -270,7 +270,7 @@ class dbal_mysql extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
@@ -298,7 +298,7 @@ class dbal_mysql extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_freeresult($query_id);
 		}
