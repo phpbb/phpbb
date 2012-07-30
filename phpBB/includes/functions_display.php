@@ -137,8 +137,18 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$vars = array('row');
-		extract($phpbb_dispatcher->trigger_event('core.display_forums_row_inject', compact($vars)));
+		/**
+		* Event to modify the data set of a forum
+		*
+		* This event is triggered once per forum
+		*
+		* @event core.display_forums_modify_row
+		* @var	int		branch_root_id	Last top-level forum
+		* @var	array	row				The data of the forum
+		* @since 3.1-A1
+		*/
+		$vars = array('branch_root_id', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_row', compact($vars)));
 
 		$forum_id = $row['forum_id'];
 
