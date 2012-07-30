@@ -1327,17 +1327,33 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 	global $user, $config, $phpbb_root_path, $phpEx;
 	global $phpbb_dispatcher;
 
+	$overwrite_avatar = '';
+
+	/**
+	* Overwrite users avatar
+	*
+	* @event core.display_custom_bbcodes_modify_row
+	* @var	string	avatar			Users assigned avatar name
+	* @var	int		avatar_type		Type of avatar
+	* @var	string	avatar_width	Width of users avatar
+	* @var	string	avatar_height	Height of users avatar
+	* @var	string	alt				Language string for alt tag within image
+	*								Can be a language key or text
+	* @var	bool	ignore_config	Ignores config and force displaying avatar
+	* @var	string	overwrite_avatar	If set, this string will be the avatar
+	* @since 3.1-A1
+	*/
+	$vars = array('avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'alt', 'ignore_config', 'overwrite_avatar');
+	extract($phpbb_dispatcher->trigger_event('core.user_get_avatar', compact($vars)));
+
+	if ($overwrite_avatar)
+	{
+		return $overwrite_avatar;
+	}
+
 	if (empty($avatar) || !$avatar_type || (!$config['allow_avatar'] && !$ignore_config))
 	{
-		$default_avatar = '';
-		if ($config['allow_avatar'] || $ignore_config)
-		{
-			// This allows extensions to change the default return when no avatar is given
-			// Useful for default avatars
-			$vars = array('avatar', 'avatar_type', 'ignore_config', 'default_avatar');
-			extract($phpbb_dispatcher->trigger_event('core.get_user_avatar_default', compact($vars)));
-		}
-		return $default_avatar;
+		return '';
 	}
 
 	$avatar_img = '';
