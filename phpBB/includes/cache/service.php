@@ -23,6 +23,10 @@ class phpbb_cache_service
 {
 	private $driver;
 
+	// SQL Cache data
+	private $sql_rowset;
+	private $sql_row_pointer;
+
 	/**
 	* Creates a cache service around a cache driver
 	*
@@ -62,7 +66,7 @@ class phpbb_cache_service
 	* Obtain list of naughty words and build preg style replacement arrays for use by the
 	* calling script
 	*/
-	function obtain_word_list()
+	public function obtain_word_list()
 	{
 		global $db;
 
@@ -89,7 +93,7 @@ class phpbb_cache_service
 	/**
 	* Obtain currently listed icons
 	*/
-	function obtain_icons()
+	public function obtain_icons()
 	{
 		if (($icons = $this->driver->get('_icons')) === false)
 		{
@@ -120,7 +124,7 @@ class phpbb_cache_service
 	/**
 	* Obtain ranks
 	*/
-	function obtain_ranks()
+	public function obtain_ranks()
 	{
 		if (($ranks = $this->driver->get('_ranks')) === false)
 		{
@@ -165,7 +169,7 @@ class phpbb_cache_service
 	*
 	* @return array allowed extensions array.
 	*/
-	function obtain_attach_extensions($forum_id)
+	public function obtain_attach_extensions($forum_id)
 	{
 		if (($extensions = $this->driver->get('_extensions')) === false)
 		{
@@ -271,7 +275,7 @@ class phpbb_cache_service
 	/**
 	* Obtain active bots
 	*/
-	function obtain_bots()
+	public function obtain_bots()
 	{
 		if (($bots = $this->driver->get('_bots')) === false)
 		{
@@ -321,7 +325,7 @@ class phpbb_cache_service
 	/**
 	* Obtain cfg file data
 	*/
-	function obtain_cfg_items($style)
+	public function obtain_cfg_items($style)
 	{
 		global $config, $phpbb_root_path;
 
@@ -354,7 +358,7 @@ class phpbb_cache_service
 	/**
 	* Obtain disallowed usernames
 	*/
-	function obtain_disallowed_usernames()
+	public function obtain_disallowed_usernames()
 	{
 		if (($usernames = $this->driver->get('_disallowed_usernames')) === false)
 		{
@@ -380,7 +384,7 @@ class phpbb_cache_service
 	/**
 	* Obtain hooks...
 	*/
-	function obtain_hooks()
+	public function obtain_hooks()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -407,5 +411,137 @@ class phpbb_cache_service
 		}
 
 		return $hook_files;
+	}
+
+	/**
+	* Load cached sql query
+	*
+	* @param string $query SQL Query
+	* @return int|bool Integer query_id on success, bool false on failure
+	*/
+	public function sql_load($query)
+	{
+		// Remove extra spaces and tabs
+		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
+
+		if (($rowset = $this->driver->get('_sql_' . md5($query))) === false)
+		{
+			return false;
+		}
+
+		$query_id = sizeof($this->sql_rowset);
+		$this->sql_rowset[$query_id] = $rowset;
+		$this->sql_row_pointer[$query_id] = 0;
+
+		return $query_id;
+	}
+
+	/**
+	* Save sql query
+	*
+	* @param string $query SQL Query
+	* @param object $query_result Query result (sql result object)
+	* @param int $ttl Time in seconds from now to store the query result
+	* @return int query_id (to load the results from)
+	*/
+	public function sql_save($query, $query_result, $ttl)
+	{
+		global $db;
+
+		// Remove extra spaces and tabs
+		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
+
+		$query_id = sizeof($this->sql_rowset);
+		$this->sql_rowset[$query_id] = array();
+		$this->sql_row_pointer[$query_id] = 0;
+
+		$this->sql_rowset[$query_id] = $db->sql_fetchrowset($query_result);
+		$db->sql_freeresult($query_result);
+
+		$this->put('_sql_' . md5($query), $this->sql_rowset[$query_id], $ttl + time(), $query);
+
+		return $query_id;
+	}
+
+	/**
+	* Check if a given sql query id exist in cache
+	*
+	* @param int $query_id (to load the results from)
+	* @return bool True if the query_id exists in the rowset, False if not
+	*/
+	public function sql_exists($query_id)
+	{
+		return isset($this->sql_rowset[$query_id]);
+	}
+
+	/**
+	* Fetch row from cache (database)
+	*
+	* @param int $query_id (to load the results from)
+	* @return array|bool Array of row data, False if query_id isn't set or past the last row
+	*/
+	public function sql_fetchrow($query_id)
+	{
+		if ($this->sql_exists($query_id) && $this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
+		{
+			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++];
+		}
+
+		return false;
+	}
+
+	/**
+	* Fetch a field from the current row of a cached database result (database)
+	*
+	* @param int $query_id (to load the results from)
+	* @param string $field Column to return
+	* @return mixed Field on success, Bool False if the query does not exist or past the last row
+	*/
+	public function sql_fetchfield($query_id, $field)
+	{
+		if ($this->sql_exists($query_id) && $this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
+		{
+			return (isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field])) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++][$field] : false;
+		}
+
+		return false;
+	}
+
+	/**
+	* Seek a specific row in an a cached database result (database)
+	*
+	* @param int $rownum Row to seek to
+	* @param int $query_id (to load the results from)
+	* @return bool False if the query does not exist or past the last row, True on success
+	*/
+	public function sql_rowseek($rownum, $query_id)
+	{
+		if ($this->sql_exists($query_id) && $rownum >= sizeof($this->sql_rowset[$query_id]))
+		{
+			return false;
+		}
+
+		$this->sql_row_pointer[$query_id] = $rownum;
+
+		return true;
+	}
+
+	/**
+	* Free memory used for a cached database result (database)
+	*
+	* @param int $query_id (to clear the results from)
+	* @return bool False if the query does not exist, True on success
+	*/
+	public function sql_freeresult($query_id)
+	{
+		if (!$this->sql_exists($query_id))
+		{
+			return false;
+		}
+
+		unset($this->sql_rowset[$query_id]);
+		unset($this->sql_row_pointer[$query_id]);
+
+		return true;
 	}
 }

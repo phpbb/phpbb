@@ -66,39 +66,4 @@ interface phpbb_cache_driver_interface
 	* Check if a given cache entry exist
 	*/
 	public function _exists($var_name);
-
-	/**
-	* Load cached sql query
-	*/
-	public function sql_load($query);
-
-	/**
-	* Save sql query
-	*/
-	public function sql_save($query, $query_result, $ttl);
-
-	/**
-	* Ceck if a given sql query exist in cache
-	*/
-	public function sql_exists($query_id);
-
-	/**
-	* Fetch row from cache (database)
-	*/
-	public function sql_fetchrow($query_id);
-
-	/**
-	* Fetch a field from the current row of a cached database result (database)
-	*/
-	public function sql_fetchfield($query_id, $field);
-
-	/**
-	* Seek a specific row in an a cached database result (database)
-	*/
-	public function sql_rowseek($rownum, $query_id);
-
-	/**
-	* Free memory used for a cached database result (database)
-	*/
-	public function sql_freeresult($query_id);
 }

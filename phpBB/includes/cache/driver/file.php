@@ -25,8 +25,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	var $var_expires = array();
 	var $is_modified = false;
 
-	var $sql_rowset = array();
-	var $sql_row_pointer = array();
 	var $cache_dir = '';
 
 	/**
@@ -339,118 +337,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 			return (time() > $this->var_expires[$var_name]) ? false : isset($this->vars[$var_name]);
 		}
-	}
-
-	/**
-	* Load cached sql query
-	*/
-	function sql_load($query)
-	{
-		// Remove extra spaces and tabs
-		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-
-		if (($rowset = $this->_read('sql_' . md5($query))) === false)
-		{
-			return false;
-		}
-
-		$query_id = sizeof($this->sql_rowset);
-		$this->sql_rowset[$query_id] = $rowset;
-		$this->sql_row_pointer[$query_id] = 0;
-
-		return $query_id;
-	}
-
-	/**
-	* Save sql query
-	*/
-	function sql_save($query, $query_result, $ttl)
-	{
-		global $db;
-
-		// Remove extra spaces and tabs
-		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-
-		$query_id = sizeof($this->sql_rowset);
-		$this->sql_rowset[$query_id] = array();
-		$this->sql_row_pointer[$query_id] = 0;
-
-		while ($row = $db->sql_fetchrow($query_result))
-		{
-			$this->sql_rowset[$query_id][] = $row;
-		}
-		$db->sql_freeresult($query_result);
-
-		if ($this->_write('sql_' . md5($query), $this->sql_rowset[$query_id], $ttl + time(), $query))
-		{
-			$query_result = $query_id;
-		}
-
-		return $query_id;
-	}
-
-	/**
-	* Ceck if a given sql query exist in cache
-	*/
-	function sql_exists($query_id)
-	{
-		return isset($this->sql_rowset[$query_id]);
-	}
-
-	/**
-	* Fetch row from cache (database)
-	*/
-	function sql_fetchrow($query_id)
-	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
-		{
-			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++];
-		}
-
-		return false;
-	}
-
-	/**
-	* Fetch a field from the current row of a cached database result (database)
-	*/
-	function sql_fetchfield($query_id, $field)
-	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
-		{
-			return (isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field])) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++][$field] : false;
-		}
-
-		return false;
-	}
-
-	/**
-	* Seek a specific row in an a cached database result (database)
-	*/
-	function sql_rowseek($rownum, $query_id)
-	{
-		if ($rownum >= sizeof($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-
-		$this->sql_row_pointer[$query_id] = $rownum;
-		return true;
-	}
-
-	/**
-	* Free memory used for a cached database result (database)
-	*/
-	function sql_freeresult($query_id)
-	{
-		if (!isset($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-
-		unset($this->sql_rowset[$query_id]);
-		unset($this->sql_row_pointer[$query_id]);
-
-		return true;
 	}
 
 	/**
