@@ -100,5 +100,7 @@ class phpbb_cache_test extends phpbb_database_test_case
 		$result = $db->sql_query($sql, 300);
 
 		$this->assertNotEquals($first_result, $db->sql_fetchrow($result));
+
+		$db->sql_close();
 	}
 }
