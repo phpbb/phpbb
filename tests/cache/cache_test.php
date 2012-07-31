@@ -20,11 +20,13 @@ class phpbb_cache_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return array();
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
 	}
 
 	protected function setUp()
 	{
+		parent::setUp();
+
 		if (file_exists($this->cache_dir))
 		{
 			// cache directory possibly left after aborted
@@ -40,6 +42,8 @@ class phpbb_cache_test extends phpbb_database_test_case
 		{
 			$this->remove_cache_dir();
 		}
+
+		parent::tearDown();
 	}
 
 	private function create_cache_dir()
@@ -72,29 +76,29 @@ class phpbb_cache_test extends phpbb_database_test_case
 			'File ACM put and get'
 		);
 	}
-	
+
 	public function test_cache_sql()
 	{
 		$driver = new phpbb_cache_driver_file($this->cache_dir);
-		
+
 		global $db, $cache;
 		$db = $this->new_dbal();
 		$cache = new phpbb_cache_service($driver);
-		
-		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'board_disable\'';
+
+		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'foo\'';
 		$result = $db->sql_query($sql, 300);
 		$first_result = $db->sql_fetchrow($result);
-		
+
 		$this->assertFileExists($this->cache_dir . 'sql_' . md5($sql) . '.php');
-		
-		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'board_disable\'';
+
+		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'foo\'';
 		$result = $db->sql_query($sql, 300);
-		
+
 		$this->assertEquals($first_result, $db->sql_fetchrow($result));
-		
-		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'version\'';
+
+		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'bar\'';
 		$result = $db->sql_query($sql, 300);
-		
+
 		$this->assertNotEquals($first_result, $db->sql_fetchrow($result));
 	}
 }
