@@ -144,4 +144,17 @@ if (!$config['use_system_cron'])
 	$cron = new phpbb_cron_manager(new phpbb_cron_task_provider($phpbb_extension_manager), $cache->get_driver());
 }
 
+/**
+* Main event which is triggered on every page
+*
+* You can use this event to load function files and initiate objects
+*
+* NOTE:	At this point the global session ($user) and permissions ($auth)
+*		do NOT exist yet. If you need to use the user objec
+*		(f.e. to use language files) or need to check permissions, please use
+*		the core.user_setup event instead!
+*
+* @event core.common
+* @since 3.1-A1
+*/
 $phpbb_dispatcher->dispatch('core.common');
