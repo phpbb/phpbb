@@ -43,6 +43,13 @@ class acp_extensions
 
 		$action = $request->variable('action', 'list');
 		$ext_name = $request->variable('ext_name', '');
+			
+		// Cancel action
+		if ($request->is_set_post('cancel'))
+		{
+			$action = 'list';
+			$ext_name = '';
+		}
 
 		// If they've specificed an extension, let's load the metadata manager and validate it.
 		if ($ext_name)
@@ -161,6 +168,8 @@ class acp_extensions
 			case 'details':
 				// Output it to the template
 				$md_manager->output_template_data();
+
+				$template->assign_var('U_BACK', $this->u_action . '&amp;action=list');
 
 				$this->tpl_name = 'acp_ext_details';
 			break;

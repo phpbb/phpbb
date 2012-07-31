@@ -5,7 +5,7 @@
 	<h1>{L_EXTENSIONS_ADMIN}</h1>
 
 	<p>{L_EXTENSIONS_EXPLAIN}</p>
-	<p>{L_ENABLE_EXPLAIN}</p>
+	<p>{L_PURGE_EXPLAIN}</p>
 
 	<!-- IF PRE -->
 	<div class="errorbox">
@@ -15,7 +15,8 @@
 	<form id="acp_extensions" method="post" action="{U_PURGE}">
 	<fieldset class="submit-buttons">
 		<legend>{L_PURGE}</legend>
-		<input class="button1" type="submit" name="{L_PURGE}" value="{L_PURGE}" />
+		<input class="button1" type="submit" name="purge" value="{L_PURGE}" />
+		<input class="button2" type="submit" name="cancel" value="{L_CANCEL}" />
 	</fieldset>
 	</form>
 	<!-- ELSEIF S_NEXT_STEP -->
