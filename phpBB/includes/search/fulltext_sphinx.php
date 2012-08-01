@@ -500,7 +500,7 @@ class phpbb_search_fulltext_sphinx
 		// Could be connection to localhost:9312 failed (errno=111,
 		// msg=Connection refused) during rotate, retry if so
 		$retries = SPHINX_CONNECT_RETRIES;
-		while (!$result && (strpos($this->sphinx->_error, "errno=111,") !== false) && $retries--)
+		while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
 		{
 			usleep(SPHINX_CONNECT_WAIT_TIME);
 			$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
