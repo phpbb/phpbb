@@ -24,22 +24,32 @@
 
 	<dl>
 		<dt><label for="post_revisions_max_age">{L_REVISION_MAX_AGE}:</label><br /><span>{L_REVISION_MAX_AGE_EXPLAIN}</span></dt>
-		<dd>{L_YES} <input type="radio" name="post_revisions_max_age" value="{REVISIONS_MAX_AGE}" /></dd>
+		<dd><input type="text" name="post_revisions_max_age" value="{REVISIONS_MAX_AGE}" /></dd>
 	</dl>
 
 	<dl>
 		<dt><label for="post_revisions_max_age">{L_REVISION_LIMIT}:</label><br /><span>{L_REVISION_LIMIT_EXPLAIN}</span></dt>
-		<dd>{L_YES} <input type="radio" name="post_revisions_max_age" value="{REVISIONS_PER_POST}" /></dd>
+		<dd><input type="text" name="post_revisions_max_age" value="{REVISIONS_PER_POST}" /></dd>
 	</dl>
 
 	<dl>
-		<dt><label for="post_revisions_max_age">{L_REVISION_MAX_AGE}:</label><br /><span>{L_REVISION_MAX_AGE_EXPLAIN}</span></dt>
-		<dd>{L_YES} <input type="radio" name="post_revisions_max_age" value="{REVISIONS_MAX_AGE}" /></dd>
+		<dt><label for="revision_cron_excess_frequency">{L_REVISION_CRON_EXCESS_FREQUENCY}:</label><br /><span>{L_REVISION_CRON_EXCESS_FREQUENCY_EXPLAIN}</span></dt>
+		<dd><input type="text" name="revision_cron_excess_frequency" value="{REVISIONS_EXCESS_PRUNE_FREQUENCY}" /></dd>
 	</dl>
 
 	<dl>
-		<dt><label for="post_revisions_max_age">{L_REVISION_LIMIT}:</label><br /><span>{L_REVISION_LIMIT_EXPLAIN}</span></dt>
-		<dd>{L_YES} <input type="radio" name="post_revisions_max_age" value="{REVISIONS_PER_POST}" /></dd>
+		<dt><label for="revision_cron_age_frequency">{L_REVISION_CRON_AGE_FREQUENCY}:</label><br /><span>{L_REVISION_CRON_AGE_FREQUENCY_EXPLAIN}</span></dt>
+		<dd><input type="text" name="revision_cron_age_frequency" value="{REVISIONS_OLD_PRUNE_FREQUENCY}" /></dd>
+	</dl>
+
+	<dl>
+		<dt><label for="revisions_wiki_allow">{L_REVISION_WIKI_ALLOW}:</label><br /><span>{L_REVISION_WIKI_ALLOW_EXPLAIN}</span></dt>
+		<dd>{L_YES} <input type="radio" name="revisions_wiki_allow" value="1"{S_REVISION_WIKI_NO_SELECTED} /><br />{L_NO} <input type="radio" name="revisions_wiki_allow" value="0"{S_REVISION_WIKI_NO_SELECTED} /></dd>
+	</dl>
+
+	<dl>
+		<dt><label for="max_revisions_per_wiki_post">{L_REVISION_WIKI_LIMIT}:</label><br /><span>{L_REVISION_WIKI_LIMIT_EXPLAIN}</span></dt>
+		<dd><input type="text" name="max_revisions_per_wiki_post" value="{REVISIONS_PER_WIKI_POST}" /></dd>
 	</dl>
 
 	<p class="submit-buttons">

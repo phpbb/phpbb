@@ -19,8 +19,8 @@ class acp_revisions_info
 			'title'		=> 'ACP_REVISIONS',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'settings'		=> array('title' => 'ACP_REVISION_SETTINGS', 'auth' => 'acl_a_revisions', 'cat' => array('ACP_POSTING')),
-				'purge'			=> array('title' => 'ACP_REVISIONS_PURGE', 'auth' => 'acl_a_revisions', 'cat' => array('ACP_POSTING')),
+				'settings'		=> array('title' => 'ACP_REVISION_SETTINGS', 'auth' => 'acl_a_revisions', 'cat' => array('ACP_REVISIONS')),
+				'purge'			=> array('title' => 'ACP_REVISIONS_PURGE', 'auth' => 'acl_a_revisions', 'cat' => array('ACP_REVISIONS')),
 			),
 		);
 	}
