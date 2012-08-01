@@ -114,7 +114,7 @@ $phpbb_class_loader->register();
 
 // set up caching
 $cache_factory = new phpbb_cache_factory($acm_type);
-$cache = $cache_factory->get_service();
+$cache = $cache_factory->get_service($phpbb_root_path, $phpEx);
 $phpbb_class_loader_ext->set_cache($cache->get_driver());
 $phpbb_class_loader->set_cache($cache->get_driver());
 
@@ -2629,10 +2629,10 @@ function change_database_data(&$no_updates, $version)
 
 			// Create config value for displaying last subject on forum list
 			if (!isset($config['display_last_subject']))
-			{			
+			{
 				$config->set('display_last_subject', '1');
 			}
-			
+
 			$no_updates = false;
 
 			if (!isset($config['assets_version']))

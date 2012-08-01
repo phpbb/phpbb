@@ -458,7 +458,7 @@ class phpbb_cache_service
 		$this->sql_rowset[$query_id] = $db->sql_fetchrowset($query_result);
 		$db->sql_freeresult($query_result);
 
-		$this->put('_sql_' . md5($query), $this->sql_rowset[$query_id], $ttl + time(), $query);
+		$this->put('_sql_' . md5($query), $this->sql_rowset[$query_id], $ttl, $query);
 
 		return $query_id;
 	}

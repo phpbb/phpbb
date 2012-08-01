@@ -31,11 +31,12 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 	/**
 	* Set cache path
 	*/
-	function __construct()
+	function __construct($phpbb_root_path, $phpEx, $cache_dir = 'cache/')
 	{
-		global $phpbb_root_path, $dbname, $table_prefix;
+		parent::__construct($phpbb_root_path, $phpEx, $cache_dir = 'cache/');
 
-		$this->cache_dir	= $phpbb_root_path . 'cache/';
+		global $dbname, $table_prefix;
+
 		$this->key_prefix	= substr(md5($dbname . $table_prefix), 0, 8) . '_';
 
 		if (!isset($this->extension) || !extension_loaded($this->extension))
@@ -76,12 +77,8 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 	{
 		$this->save();
 		unset($this->vars);
-		unset($this->sql_rowset);
-		unset($this->sql_row_pointer);
 
 		$this->vars = array();
-		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
 	}
 
 	/**
@@ -160,7 +157,7 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 
 		while (($entry = readdir($dir)) !== false)
 		{
-			if (strpos($entry, 'sql_') !== 0 && strpos($entry, 'data_') !== 0 && strpos($entry, 'ctpl_') !== 0 && strpos($entry, 'tpl_') !== 0)
+			if (strpos($entry, 'data_') !== 0 && strpos($entry, 'ctpl_') !== 0 && strpos($entry, 'tpl_') !== 0)
 			{
 				continue;
 			}
@@ -170,12 +167,8 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 		closedir($dir);
 
 		unset($this->vars);
-		unset($this->sql_rowset);
-		unset($this->sql_row_pointer);
 
 		$this->vars = array();
-		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
 
 		$this->is_modified = false;
 	}
@@ -253,26 +246,6 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 
 			return isset($this->vars[$var_name]);
 		}
-	}
-
-	/**
-	* Removes/unlinks file
-	*/
-	function remove_file($filename, $check = false)
-	{
-		if (!function_exists('phpbb_is_writable'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/functions.' . $phpEx);
-		}
-
-		if ($check && !phpbb_is_writable($this->cache_dir))
-		{
-			// E_USER_ERROR - not using language entry - intended.
-			trigger_error('Unable to remove files within ' . $this->cache_dir . '. Please check directory permissions.', E_USER_ERROR);
-		}
-
-		return @unlink($filename);
 	}
 
 	/**
