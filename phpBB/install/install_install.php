@@ -1479,6 +1479,7 @@ class install_install extends module
 			foreach ($this->module_categories[$module_class] as $cat_name => $subs)
 			{
 				$basename = '';
+				// Check if this sub-category has a basename. If it has, use it.
 				if (isset($this->module_categories_basenames[$cat_name]))
 				{
 					$basename = $this->module_categories_basenames[$cat_name];
@@ -1513,6 +1514,7 @@ class install_install extends module
 					foreach ($subs as $level2_name)
 					{
 						$basename = '';
+						// Check if this sub-category has a basename. If it has, use it.
 						if (isset($this->module_categories_basenames[$level2_name]))
 						{
 							$basename = $this->module_categories_basenames[$level2_name];
