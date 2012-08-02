@@ -1314,6 +1314,11 @@ if (sizeof($attach_list))
 	}
 }
 
+$template->assign_vars(array(
+	'S_HAS_ATTACHMENTS' => !empty($attachments),
+	'U_DL_ALL_LINK' => append_sid("{$phpbb_root_path}download/file.$phpEx", "topic_id=$topic_id"),
+));
+
 // Instantiate BBCode if need be
 if ($bbcode_bitfield !== '')
 {
@@ -1556,6 +1561,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POSTER_ID'			=> $poster_id,
 
 		'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
+		'S_MULTIPLE_ATTACH'	=> !empty($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]) > 1,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $forum_id)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'],
@@ -1567,6 +1573,8 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		'S_IGNORE_POST'		=> ($row['hide_post']) ? true : false,
 		'L_IGNORE_POST'		=> ($row['hide_post']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
+
+		'U_DL_ALL_LINK'		=> append_sid("{$phpbb_root_path}download/file.$phpEx", 'post_id=' . $row['post_id']),
 	);
 
 	if (isset($cp_row['row']) && sizeof($cp_row['row']))

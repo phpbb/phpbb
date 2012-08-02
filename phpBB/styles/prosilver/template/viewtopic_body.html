@@ -45,6 +45,10 @@
 		</div>
 	<!-- ENDIF -->
 
+	<!-- IF S_HAS_ATTACHMENTS -->
+		<span>[ <a href="{U_DL_ALL_LINK}">{L_DOWNLOAD_ALL_ATTACH}</a> ]</span>
+	<!-- ENDIF -->
+
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
 			<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS} &bull; 
@@ -157,7 +161,7 @@
 
 			<!-- IF postrow.S_HAS_ATTACHMENTS -->
 				<dl class="attachbox">
-					<dt>{L_ATTACHMENTS}</dt>
+					<dt>{L_ATTACHMENTS}<!-- IF postrow.S_MULTIPLE_ATTACH --> [ <a href="{postrow.U_DL_ALL_LINK}">{L_DOWNLOAD_ALL}</a> ]<!-- ENDIF --></dt>
 					<!-- BEGIN attachment -->
 						<dd>{postrow.attachment.DISPLAY_ATTACHMENT}</dd>
 					<!-- END attachment -->
