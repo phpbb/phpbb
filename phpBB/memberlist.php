@@ -575,8 +575,25 @@ switch ($mode)
 			unset($module);
 		}
 
-		$vars = array('member', 'user_notes_enabled', 'warn_user_enabled');
-		extract($phpbb_dispatcher->trigger_event('core.memberlist_viewprofile', compact($vars)));
+		/**
+		* Modify user data before we display the profile
+		*
+		* @event core.memberlist_view_profile
+		* @var	array	member					Title of the index page
+		* @var	bool	user_notes_enabled		Is the mcp user notes module
+		*										enabled?
+		* @var	bool	warn_user_enabled		Is the mcp warnings module
+		*										enabled?
+		* @var	bool	zebra_enabled			Is the ucp zebra module
+		*										enabled?
+		* @var	bool	friends_enabled			Is the ucp friends module
+		*										enabled?
+		* @var	bool	foes_enabled			Is the ucp foes module
+		*										enabled?
+		* @since 3.1-A1
+		*/
+		$vars = array('member', 'user_notes_enabled', 'warn_user_enabled', 'zebra_enabled', 'friends_enabled', 'foes_enabled');
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_view_profile', compact($vars)));
 
 		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
 
