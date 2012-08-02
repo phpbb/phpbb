@@ -173,8 +173,15 @@ $template->assign_vars(array(
 
 $page_title = $user->lang['INDEX'];
 
+/**
+* You can use this event to modify the page title and load data for the index
+*
+* @event core.index_modify_page_title
+* @var	string	page_title		Title of the index page
+* @since 3.1-A1
+*/
 $vars = array('page_title');
-extract($phpbb_dispatcher->trigger_event('core.index_page_title', compact($vars)));
+extract($phpbb_dispatcher->trigger_event('core.index_modify_page_title', compact($vars)));
 
 // Output page
 page_header($page_title);
