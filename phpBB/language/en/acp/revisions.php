@@ -40,16 +40,16 @@ $lang = array_merge($lang, array(
 	'ACP_REVISION_SETTINGS'			=> 'Revision Settings',
 
 	// Purging
-	'PURGE_REVISIONS_TITLE'				=> 'Purge post revisions',
-	'PURGE_REVISIONS_EXPLAIN'			=> 'All post revision will be purged from the database. This cannot be undone.',
-	'PURGE_REVISIONS_CONFIRM'			=> 'Are you sure you wish to purge all post revisions?'
-	'PURGE_REVISIONS_CONFIRM_EXPLAIN'	=> 'To purge post revisions, type <strong>%s</strong> into the box and press Submit',
-	'PURGE_REVISIONS_CONFIRM_WORD'		=> 'yes',
-	'REVISIONS_PURGED_SUCCESS'			=> 'All post revisions have been purged from the database.',
+	'PURGE_REVISIONS_TITLE'					=> 'Purge post revisions',
+	'PURGE_REVISIONS_EXPLAIN'				=> 'All post revision will be purged from the database. This cannot be undone.',
+	'PURGE_REVISIONS_CONFIRM'				=> 'Are you sure you wish to purge all post revisions?',
+	'PURGE_REVISIONS_CONFIRM_EXPLAIN'		=> 'To purge post revisions, type <strong>%1$s</strong> into the box and press Submit',
+	'PURGE_REVISIONS_CONFIRM_WORD'			=> 'confirm',
+	'REVISIONS_PURGED_SUCCESS'				=> 'All post revisions have been purged from the database.',
 
 	// Settings
 	'REVISION_SETTINGS'				=> 'Revision settings',
-	'REVISION_SETTINGS_EXPLAIN'		=> 'Here you can configure post revision tracking.'
+	'REVISION_SETTINGS_EXPLAIN'		=> 'Here you can configure post revision tracking.',
 	'REVISION_SETTINGS_UPDATED'		=> 'Revision tracking configuration updated successfully.',
 
 	'REVISION_HISTORY'							=> 'Track post revision history',

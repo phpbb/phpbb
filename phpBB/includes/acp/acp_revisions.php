@@ -44,9 +44,9 @@ class acp_revisions
 				{
 					$settings = array(
 						'track_post_revisions',
-						'max_revisions_age',
-						'max_revisions_per_post',
-						'max_revisions_per_wiki_post',
+						'post_revisions_max_age',
+						'revisions_per_post_max',
+						'revisions_per_wiki_post_max',
 						'revisions_allow_wiki',
 						'revision_cron_age_frequency',
 						'revision_cron_excess_frequency',
@@ -67,13 +67,13 @@ class acp_revisions
 
 				// Settings form options
 				$template->assign_vars(array(
-					'S_REVISION_HISTORY_YES_SELECTED'	=> $config['track_post_revisions'] ? ' selected="selected"' : '',
-					'S_REVISION_HISTORY_NO_SELECTED'	=> !$config['track_post_revisions'] ? ' selected="selected"' : '',
-					'S_REVISION_WIKI_YES_SELECTED'		=> $config['revisions_allow_wiki'] ? ' selected="selected"' : '',
-					'S_REVISION_WIKI_NO_SELECTED'		=> !$config['revisions_allow_wiki'] ? ' selected="selected"' : '',
+					'S_REVISION_HISTORY_YES_SELECTED'	=> $config['track_post_revisions'] ? ' checked="checked"' : '',
+					'S_REVISION_HISTORY_NO_SELECTED'	=> $config['track_post_revisions'] ? '' : ' checked="checked"',
+					'S_REVISION_WIKI_YES_SELECTED'		=> $config['revisions_allow_wiki'] ? ' checked="checked"' : '',
+					'S_REVISION_WIKI_NO_SELECTED'		=> $config['revisions_allow_wiki'] ? '' : ' checked="checked"',
 
-					'REVISIONS_EXCESS_PRUNE_FREQUENCY'	=> $config['revision_cron_age_frequency'],
-					'REVISIONS_OLD_PRUNE_FREQUENCY'		=> $config['revision_cron_excess_frequency'],
+					'REVISIONS_EXCESS_PRUNE_FREQUENCY'	=> $config['revision_cron_excess_frequency'],
+					'REVISIONS_OLD_PRUNE_FREQUENCY'		=> $config['revision_cron_age_frequency'],
 					'REVISIONS_MAX_AGE'					=> $config['post_revisions_max_age'],
 					'REVISIONS_PER_POST'				=> $config['revisions_per_post_max'],
 					'REVISIONS_PER_WIKI_POST'			=> $config['revisions_per_wiki_post_max'],
@@ -86,7 +86,7 @@ class acp_revisions
 
 				if ($request->is_set_post('confirm'))
 				{
-					if ($request->variable('purge_confirm') == $user->lang('PURGE_REVISIONS_CONFIRM_WORD'))
+					if ($request->variable('purge_confirm', '') == $user->lang('PURGE_REVISIONS_CONFIRM_WORD'))
 					{
 						if (!function_exists('phpbb_purge_post_revisions'))
 						{
@@ -99,11 +99,14 @@ class acp_revisions
 
 						trigger_error($user->lang('REVISIONS_PURGED_SUCCESS') . adm_back_link($this->u_action));
 					}
-
-					$template->assign_vars(array(
-						'L_PURGE_REVISIONS_CONFIRM'	=> $user->lang('PURGE_REVISIONS_CONFIRM', $user->lang('PURGE_REVISIONS_CONFIRM_WORD')),
-					));
+					else
+					{
+						trigger_error($user->lang('PURGE_REVISIONS_CONFIRM_EXPLAIN', $user->lang('PURGE_REVISIONS_CONFIRM_WORD')) . adm_back_link($this->u_action), E_USER_WARNING);
+					}
 				}
+				$template->assign_vars(array(
+					'L_PURGE_REVISIONS_CONFIRM_EXPLAIN'	=> $user->lang('PURGE_REVISIONS_CONFIRM_EXPLAIN', $user->lang('PURGE_REVISIONS_CONFIRM_WORD')),
+				));
 			break;
 		}
 	}
