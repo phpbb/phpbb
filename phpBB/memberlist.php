@@ -1762,8 +1762,16 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
 	);
 
+	/**
+	* Preparing user's data before displaying it in profile and memberlist
+	*
+	* @event core.memberlist_prepare_profile_data
+	* @var	array	data				Array with user's data
+	* @var	array	template_data		Template array with user's data
+	* @since 3.1-A1
+	*/
 	$vars = array('data', 'template_data');
-	extract($phpbb_dispatcher->trigger_event('core.memberlist_profile_data', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.memberlist_prepare_profile_data', compact($vars)));
 
 	return $template_data;
 }
