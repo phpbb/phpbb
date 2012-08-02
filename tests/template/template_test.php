@@ -42,6 +42,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				'value',
 			),
 			array(
+				'variable_array.html',
+				array('VARIABLE' => array('test1' => 'a', 'test2' => 'b', 'test3' => array('test4' => 'c'), 'test5' => array('test6' => array('test7' => 'd')), array('test8' => 'e'), array('test9' => 'f'))),
+				array(),
+				array(),
+				"a\nb\nc\nd\ne\nf",
+			),
+			array(
 				'if.html',
 				array(),
 				array(),
@@ -68,6 +75,20 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array(),
 				'2',
+			),
+			array(
+				'if.html',
+				array('S_VALUE' => false, 'S_OTHER_VALUE' => false, 'S_ARRAY_VALUE' => array('test1' => true)),
+				array(),
+				array(),
+				"03\n\n05",
+			),
+			array(
+				'if.html',
+				array('S_VALUE' => false, 'S_OTHER_VALUE' => false, 'S_ARRAY_VALUE' => array('test2' => array('test3' => true))),
+				array(),
+				array(),
+				"03\n\n06",
 			),
 			array(
 				'loop.html',
@@ -124,6 +145,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('loop' => array(array(), array(), array(), array(), array(), array(), array())),
 				array(),
 				"101234561\nx\n101234561\nx\n101234561\nx\n1234561\nx\n1\nx\n101\nx\n234\nx\n10\nx\n561\nx\n561",
+			),
+			array(
+				'loop_vars_array.html',
+				array(),
+				array('loop' => array(array('VARIABLE' => array('test1' => 'x', 'test2' => array('test3' => 'a'))), array('VARIABLE' => array('test1' => 'y', 'test2' => array('test3' => 'b'))))),
+				array(),
+				"x - 0\na - 1\ny - 0\nb - 1",
 			),
 			array(
 				'define.html',
@@ -250,6 +278,14 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				// I don't completely understand this output, hopefully it's correct
 				"top-level content\nouter\nmiddle\ninner z\nfirst row of 2 in inner\n\ninner zz",
 			),
+			array(
+				'loop_nested_var_array.html',
+				array(),
+				array('outer' => array(array()), 'outer.inner' => array(array('VARIABLE' => array('test1' => true, 'test2' => array('test3' => false))), array('VARIABLE' => array('test1' => false, 'test2' => array('test3' => true))))),
+				array(),
+				"top-level content\n\na\nx\ny\n\nx\nb\ny",
+			),
+			
 			array(
 				'loop_size.html',
 				array(),

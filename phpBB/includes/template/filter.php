@@ -41,10 +41,11 @@ class phpbb_template_filter extends php_user_filter
 
 	const REGEX_VAR = '[A-Z_][A-Z_0-9]+';
 	const REGEX_VAR_SUFFIX = '[A-Z_0-9]+';
+	const REGEX_VAR_ARRAY = '[a-z_0-9]+';
 
 	const REGEX_TAG = '<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->';
 
-	const REGEX_TOKENS = '~<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->|{((?:[a-z_][a-z_0-9]+\.)*\\$?[A-Z][A-Z_0-9]+)}~';
+	const REGEX_TOKENS = '~<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->|{(((?:[a-z_][a-z_0-9]+\.)*\\$?[A-Z][A-Z_0-9]+(?:[A-Z0-9]))((?:\[[a-z_0-9]+\])+)*)}~';
 
 	/**
 	* @var array
@@ -338,13 +339,14 @@ class phpbb_template_filter extends php_user_filter
 		$varrefs = array();
 
 		// This one will handle varrefs WITH namespaces
-		preg_match_all('#\{((?:' . self::REGEX_NS . '\.)+)(\$)?(' . self::REGEX_VAR . ')\}#', $text_blocks, $varrefs, PREG_SET_ORDER);
+		preg_match_all('#\{((?:' . self::REGEX_NS . '\.)+)(\$)?(' . self::REGEX_VAR . ')((?:\[' . self::REGEX_VAR_ARRAY . '\])+)*\}#', $text_blocks, $varrefs, PREG_SET_ORDER);
 
 		foreach ($varrefs as $var_val)
 		{
 			$namespace = $var_val[1];
 			$varname = $var_val[3];
-			$new = $this->generate_block_varref($namespace, $varname, $is_expr, $var_val[2]);
+			$vararray = $this->generate_array_varref($var_val[4]);
+			$new = $this->generate_block_varref($namespace, $varname, $vararray, $is_expr, $var_val[2]);
 
 			$text_blocks = str_replace($var_val[0], $new, $text_blocks);
 		}
@@ -356,6 +358,12 @@ class phpbb_template_filter extends php_user_filter
 			// This will handle the remaining root-level varrefs
 			$text_blocks = preg_replace('#\{(' . self::REGEX_VAR . ')\}#', "\$_rootref['\\1']", $text_blocks);
 			$text_blocks = preg_replace('#\{\$(' . self::REGEX_VAR . ')\}#', "\$_tpldata['DEFINE']['.']['\\1']", $text_blocks);
+			
+			if (preg_match('#\{(' . self::REGEX_VAR . ')((?:\[' . self::REGEX_VAR_ARRAY . '\])+)\}#', $text_blocks, $varrefs))
+			{
+				$vararray = ($varrefs[2]) ? $this->generate_array_varref($varrefs[2]) : '';
+				$text_blocks = "\$_rootref['" . $varrefs[1] . "']" . $vararray;
+			}
 		}
 
 		return $text_blocks;
@@ -636,7 +644,7 @@ class phpbb_template_filter extends php_user_filter
 
 				default:
 					$varrefs = array();
-					if (preg_match('#^((?:' . self::REGEX_NS . '\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $token, $varrefs))
+					if (preg_match('#^((?:' . self::REGEX_NS . '\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+[A-Z0-9])((?:\[' . self::REGEX_VAR_ARRAY . '\])+)*#s', $token, $varrefs))
 					{
 						if (!empty($varrefs[1]))
 						{
@@ -674,6 +682,10 @@ class phpbb_template_filter extends php_user_filter
 
 								default:
 									$token = $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']';
+									if ($varrefs[4])
+									{
+										$token .= $this->generate_array_varref($varrefs[4]);
+									}
 									$token = '(isset(' . $token . ') ? ' . $token . ' : null)';
 								break;
 							}
@@ -681,6 +693,10 @@ class phpbb_template_filter extends php_user_filter
 						else
 						{
 							$token = ($varrefs[2]) ? '$_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$_rootref[\'' . $varrefs[3] . '\']';
+							if ($varrefs[4])
+							{
+								$token .= $this->generate_array_varref($varrefs[4]);
+							}
 							$token = '(isset(' . $token . ') ? ' . $token . ' : null)';
 						}
 
@@ -925,7 +941,7 @@ class phpbb_template_filter extends php_user_filter
 	* @param bool $defop If true this is a variable created with the DEFINE construct, otherwise template variable
 	* @return string Code to access variable or echo it if $echo is true
 	*/
-	private function generate_block_varref($namespace, $varname, &$expr, $defop = false)
+	private function generate_block_varref($namespace, $varname, $vararray, &$expr, $defop = false)
 	{
 		// Strip the trailing period.
 		$namespace = substr($namespace, 0, -1);
@@ -973,6 +989,12 @@ class phpbb_template_filter extends php_user_filter
 
 				// Append the variable reference.
 				$varref .= "['$varname']";
+				
+				// Append the array
+				if ($vararray)
+				{
+					$varref .= $vararray;
+				}
 
 				$expr = false;
 			break;
@@ -1024,5 +1046,24 @@ class phpbb_template_filter extends php_user_filter
 		{
 			return '$_'. $blocks[$blockcount - 1] . '_val[\''. $blocks[$blockcount]. '\']';
 		}
+	}
+	
+	/**
+	* Generate a string representing the array list assigned to a template variable
+	*
+	* @param string $array_list represents the array value to access (example: ->data1->data2)
+	* @return string repesenting the actual array element to access (example: ['data1']['data2'])
+	*/
+	private function generate_array_varref($array_list)
+	{
+		if (empty($array_list))
+		{
+			return '';
+		}
+		
+		$elements = explode('[', $array_list);
+		array_shift($elements);
+		
+		return implode('', preg_replace(array('#^([0-9]+)\]$#', '#^([a-z_0-9]+)\]$#i'), array('[\1]', "['\\1']"), $elements));
 	}
 }
