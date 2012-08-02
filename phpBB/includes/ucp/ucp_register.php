@@ -202,11 +202,9 @@ class ucp_register
 					));
 				}
 
-				$get_vars = $request->variable_names(phpbb_request_interface::GET);
 				$post_vars = $request->variable_names(phpbb_request_interface::POST);
-				$vars = array_merge($get_vars, $post_vars);
 				$s_hidden_fields = array();
-				foreach ($vars as $var)
+				foreach ($post_vars as $var)
 				{
 					if ($var == 'auth_step')
 					{
@@ -219,9 +217,30 @@ class ucp_register
 				}
 				$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
+				$s_ucp_action = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register');
+				$get_vars = $request->variable_names(phpbb_request_interface::GET);
+				$query_vars = array();
+				foreach ($get_vars as $var)
+				{
+					if ($var == 'mode')
+					{
+						continue;
+					}
+					else if ($var == 'auth_step')
+					{
+						$query_vars[$var] = $request->variable('auth_action', '') . '_req_data';
+					}
+					else
+					{
+						$query_vars[$var] = $request->variable($var, '');
+					}
+				}
+				$s_ucp_action .= '&' . http_build_query($query_vars);
+
 				$template->assign_vars(array(
 					'ERROR'				=> implode('<br />', $error),
 					'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+					'S_UCP_ACTION'		=> $s_ucp_action,
 				));
 
 				$this->tpl_name = 'ucp_register_request_data';

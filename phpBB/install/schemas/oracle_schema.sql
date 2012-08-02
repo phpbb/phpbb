@@ -211,9 +211,9 @@ CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id)
 /
 
 /*
-	Table: 'phpbb_auth_link'
+	Table: 'phpbb_auth_links'
 */
-CREATE TABLE phpbb_auth_link (
+CREATE TABLE phpbb_auth_links (
 	user_id number(8) DEFAULT '0' NOT NULL,
 	link_provider varchar2(255) DEFAULT '0' NOT NULL,
 	link_index varchar2(255) DEFAULT '0' NOT NULL

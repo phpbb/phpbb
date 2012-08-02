@@ -263,7 +263,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 			$coppa = $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
 			$return_to = 'ucp.' . $this->phpEx . '?mode=register&auth_step=verify&auth_provider=openid&auth_action=register&coppa=' . (int)$coppa . '&agreed=1';
 			$extensions = array(
-				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.1),
+				'sreg'	=> new ZendOpenId\Extension\Sreg($this->sreg_props, null, 1.1),
 			);
 		}
 		else

@@ -90,8 +90,8 @@ CREATE TABLE phpbb_acl_users (
 );
 
 
-# Table: 'phpbb_auth_link'
-CREATE TABLE phpbb_auth_link (
+# Table: 'phpbb_auth_links'
+CREATE TABLE phpbb_auth_links (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	link_provider varbinary(255) DEFAULT '0' NOT NULL,
 	link_index varbinary(255) DEFAULT '0' NOT NULL

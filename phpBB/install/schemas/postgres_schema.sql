@@ -189,9 +189,9 @@ CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id);
 CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id);
 
 /*
-	Table: 'phpbb_auth_link'
+	Table: 'phpbb_auth_links'
 */
-CREATE TABLE phpbb_auth_link (
+CREATE TABLE phpbb_auth_links (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	link_provider varchar(255) DEFAULT '0' NOT NULL,
 	link_index varchar(255) DEFAULT '0' NOT NULL

@@ -923,7 +923,7 @@ function get_schema_struct()
 		),
 	);
 
-	$schema_data['phpbb_auth_link'] = array(
+	$schema_data['phpbb_auth_links'] = array(
 		'COLUMNS'		=> array(
 			'user_id'		=> array('UINT', 0),
 			'link_provider'	=> array('VCHAR', 0),

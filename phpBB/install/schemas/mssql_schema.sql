@@ -167,9 +167,9 @@ GO
 
 
 /*
-	Table: 'phpbb_auth_link'
+	Table: 'phpbb_auth_links'
 */
-CREATE TABLE [phpbb_auth_link] (
+CREATE TABLE [phpbb_auth_links] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[link_provider] [varchar] (255) DEFAULT (0) NOT NULL ,
 	[link_index] [varchar] (255) DEFAULT (0) NOT NULL 
