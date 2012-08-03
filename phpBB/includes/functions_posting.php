@@ -1825,7 +1825,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			' . $db->sql_build_array('INSERT', $sql_data[POST_REVISIONS_TABLE]['sql']);
 		$db->sql_query($sql);
 
-		$revision_post = new phpbb_revisions_post($data['post_id'], $db, $auth);
+		$revision_post = new phpbb_revisions_post($data['post_id'], $db, $config, $auth);
 
 		// The first revision of a post is the original post content
 		// We want to hold onto the original post revision, so we

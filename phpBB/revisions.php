@@ -26,7 +26,7 @@ $post_id		= $request->variable('p', 0);
 $revision_id	= $request->variable('r', 0);
 $revert_id		= $request->variable('revert', 0);
 $compare		= $request->variable('compare', '');
-$action_ids		= $request->variable('delete_ids', array(0));
+$action_ids		= $request->variable('action_ids', array(0));
 
 $display_comparison = true;
 $revert_confirm = $request->is_set_post('confirm');
@@ -162,9 +162,11 @@ if (sizeof($action_ids) && ($request->is_set_post('delete') || $request->is_set_
 	{
 		$s_hidden_fields = build_hidden_fields(array(
 			'p'				=> $post_id,
-			'delete_ids'	=> $delete_ids,
+			'action_ids'	=> $action_ids,
+			'delete'		=> $request->is_set_post('delete'),
+			'protect'		=> $request->is_set_post('protect'),
 		));
-		confirm_box(false, 'REVISION_DELETE', $s_hidden_fields);
+		confirm_box(false, ($request->is_set_post('delete') ? 'REVISION_DELETE' : 'REVISION_PROTECT'), $s_hidden_fields);
 	}
 }
 
@@ -250,10 +252,10 @@ if ($display_comparison)
 	// @todo #1 - either pick a diff engine to use forever, or make this dynamic; for now we go with what we have
 	// @todo #2 - make a new function for this... e.g. generate_text_diff($from, $to[, $engine = 'finediff'])
 	$text_diff = new phpbb_revisions_diff_engine_finediff($first->get_text_decoded(), $last->get_text_decoded());
-	$subject_diff = new phpbb_revisions_diff_engine_finediff($first->get_subject(), $first->get_subject());
+	$subject_diff = new phpbb_revisions_diff_engine_finediff($first->get_subject(), $last->get_subject());
 
 	$text_diff_rendered = bbcode_nl2br($text_diff->render());
-	$subject_diff_renedered = $subject_diff->render();
+	$subject_diff_rendered = $subject_diff->render();
 
 	// We always want the first revision in the comparison at the top, so if
 	// the start revision is newer than the ending revision, reverse the list
@@ -324,31 +326,44 @@ if ($display_comparison)
 		'U_FIRST_REVISION'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", ($first->get_id() ? array('r' => $first->get_id()) : array('p' => $post_id))),
 		'LAST_REVISION'			=> $last->get_id() ? strtolower($user->lang('REVISION')) . ' ' . $last->get_id() : $user->lang('CURRENT_REVISION'),
 		'U_LAST_REVISION'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", ($last->get_id() ? array('r' => $last->get_id()) : array('p' => $post_id))),
-
-		'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-		'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-		
-		'RANK_TITLE'		=> $post_data['rank_title'],
-		'RANK_IMG'			=> $post_data['rank_image'],
-
-		'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
-
-		'POST_DATE'			=> $user->format_date($post_data['post_time']),
-		'POST_SUBJECT'		=> $display_comparison ? $subject_diff_renedered : $current->get_subject(),
-		'MESSAGE'			=> $display_comparison ? $text_diff_rendered : $current->get_text(),
-		'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
-
-		'POSTER_JOINED'		=> $user->format_date($post_data['user_regdate']),
-		'POSTER_POSTS'		=> $post_data['user_posts'],
-		'POSTER_LOCATION'	=> $post_data['user_from'],
-
-		'POST_IMG'			=> $user->img('icon_post_target', 'POST'),
-
-		'POST_ID'			=> $post_data['post_id'],
-		'POSTER_ID'			=> $post_data['poster_id'],
 	));
 }
 
+$template->assign_vars(array(
+	'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+	'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+	
+	'RANK_TITLE'		=> $post_data['rank_title'],
+	'RANK_IMG'			=> $post_data['rank_image'],
+
+	'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
+
+	'POST_DATE'			=> $user->format_date($post_data['post_time']),
+	'POST_SUBJECT'		=> $display_comparison ? $subject_diff_rendered : $current->get_subject(),
+	'MESSAGE'			=> $display_comparison ? $text_diff_rendered : $current->get_text(),
+	'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
+
+	'POSTER_JOINED'		=> $user->format_date($post_data['user_regdate']),
+	'POSTER_POSTS'		=> $post_data['user_posts'],
+	'POSTER_LOCATION'	=> $post_data['user_from'],
+
+	'POST_IMG'			=> $user->img('icon_post_target', 'POST'),
+
+	'POST_ID'			=> $post_data['post_id'],
+	'POSTER_ID'			=> $post_data['poster_id'],
+));
+
+if ($revision_id)
+{
+	$revision_username = $revisions[$revision_id]->get_username();
+	$revision_avatar = $revisions[$revision_id]->get_avatar(20, 20);
+	$username_string = $revision_avatar . $revision_username;
+	$revision_time = $user->format_date($revisions[$revision_id]->get_time());
+
+	$template->assign_vars(array(
+		'L_VIEWING_POST_REVISION_EXPLAIN'	=> $user->lang('VIEWING_POST_REVISION_EXPLAIN', $username_string, $revision_time),
+	));
+}
 
 $navlinks = array(
 	array(
@@ -361,8 +376,8 @@ $navlinks = array(
 	),
 );
 
-$page_title = 'REVISIONS_COMPARE_TITLE';
-$tpl_name = 'revisions_body.html';
+$page_title = $display_comparison ? 'REVISIONS_COMPARE_TITLE' : 'REVISION_VIEW_TITLE';
+$tpl_name = $display_comparison ? 'revisions_body.html' : 'revisions_view_body.html';
 
 $bad_form = ($revert_confirm && !check_form_key('revert_form', 120));
 if ($revert_id && (!$revert_confirm || $bad_form))
