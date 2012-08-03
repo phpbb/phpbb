@@ -20,7 +20,7 @@
 		<!-- ELSE -->
 
 			<dl>
-				<dt>{checks.TITLE}:<!-- IF checks.S_EXPLAIN --><br /><span class="explain">{checks.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+				<dt>{checks.TITLE}{L_COLON}<!-- IF checks.S_EXPLAIN --><br /><span class="explain">{checks.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
 				<dd>{checks.RESULT}</dd>
 			</dl>
 		<!-- ENDIF -->
@@ -43,7 +43,7 @@
 		<!-- ELSE -->
 
 			<dl>
-				<dt><label for="{options.KEY}">{options.TITLE}:</label><!-- IF options.S_EXPLAIN --><br /><span class="explain">{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+				<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span class="explain">{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
 				<dd>{options.CONTENT}</dd>
 			</dl>
 
