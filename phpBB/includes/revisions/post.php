@@ -247,9 +247,9 @@ class phpbb_revisions_post
 		$sql = 'SELECT COUNT(revision_id) as revision_count
 			FROM ' . POST_REVISIONS_TABLE . '
 			WHERE post_id = ' . $this->post_id;
-		$result = $db->sql_query($sql);
-		$this->revision_count = (int) $db->sql_fetchfield('revision_count');
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$this->revision_count = (int) $this->db->sql_fetchfield('revision_count');
+		$this->db->sql_freeresult($result);
 
 		return $this->revision_count;
 	}
@@ -274,9 +274,9 @@ class phpbb_revisions_post
 			FROM ' . POST_REVISIONS_TABLE . '
 			WHERE post_id = ' . $this->post_id . '
 				AND revision_protected = 1';
-		$result = $db->sql_query($sql);
-		$this->protected_revision_count = (int) $db->sql_fetchfield('revision_count');
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$this->protected_revision_count = (int) $this->db->sql_fetchfield('revision_count');
+		$this->db->sql_freeresult($result);
 
 		return $this->protected_revision_count;
 	}
@@ -301,9 +301,9 @@ class phpbb_revisions_post
 			FROM ' . POST_REVISIONS_TABLE . '
 			WHERE post_id = ' . $this->post_id . '
 				AND revision_protected = 0';
-		$result = $db->sql_query($sql);
-		$this->unprotected_revision_count = (int) $db->sql_fetchfield('revision_count');
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$this->unprotected_revision_count = (int) $this->db->sql_fetchfield('revision_count');
+		$this->db->sql_freeresult($result);
 
 		return $this->unprotected_revision_count;
 	}
@@ -317,31 +317,42 @@ class phpbb_revisions_post
 	*/
 	public function delete_excess_revisions()
 	{
-		$count = $this->get_unprotected_revision_count();
+		$delete_amount = $this->get_unprotected_revision_count(true) - $this->config['revisions_per_post_max'];
 
-		$ids = array();
-
-		$db->sql_transaction('begin');
-
-		$sql = 'SELECT revision_id
-			FROM ' . POST_REVISIONS_TABLE . '
-			WHERE revision_protected = 0
-				AND post_id = ' . $this->post_id . '
-			LIMIT ' . ($count - $conig['max_revisions_per_post']) . '
-			ORDER BY revision_id ASC';
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		// When there are less revisions than the max, $delete amount is negative
+		// Because negative numbers evaluate to true, we have to specifically check
+		// to make sure the number is greater than 0.
+		if ($delete_amount > 0)
 		{
-			$ids[] = $row['revision_id'];
+			$ids = array();
+
+			$this->db->sql_transaction('begin');
+
+			$sql = 'SELECT revision_id
+				FROM ' . POST_REVISIONS_TABLE . '
+				WHERE revision_protected = 0
+					AND post_id = ' . $this->post_id . '
+				ORDER BY revision_id ASC
+				LIMIT ' . $delete_amount;
+			$result = $this->db->sql_query($sql);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$ids[] = $row['revision_id'];
+			}
+			$this->db->sql_freeresult($result);
+
+			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
+				WHERE ' . $this->db->sql_in_set('revision_id', implode(',', $ids));
+			$this->db->sql_query($sql);
+
+			// Update post_edit_count
+			$sql = 'UPDATE ' . POSTS_TABLE . '
+				SET post_edit_count = ' . $this->get_revision_count(true) . '
+				WHERE post_id = ' . $this->post_id;
+			$this->db->sql_query($sql);
+
+			$this->db->sql_transaction('commit');
 		}
-
-		$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-			WHERE ' . $db->sql_in_set('revision_id', implode(',', $ids));
-		$db->sql_query($sql);
-
-		$db->sql_transaction('commit');
-
-		return true;
 	}
 
 	/**

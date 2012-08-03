@@ -62,7 +62,7 @@ class acp_revisions
 						}
 					}
 
-					trigger_error($user->lang('REVISION_SETTINGS_UPDATED') . adm_back_link($u->action));
+					trigger_error($user->lang('REVISION_SETTINGS_UPDATED') . adm_back_link($this->u_action));
 				}
 
 				// Settings form options

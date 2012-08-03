@@ -2,11 +2,10 @@
 
 <a href="{U_VIEW_REVISIONS}">{L_RETURN_TO} {L_VIEWING_POST_REVISION_HISTORY}</a>
 
-<h2>{L_REVISIONS_REVERT_TITLE}</h2>
-<p>{L_REVISIONS_REVERT_EXPLAIN}</p>
-<!-- IF BAD_FORM -->
-	<p class="error">{L_SUBMIT_FORM_AGAIN}</p>
-<!-- ENDIF -->
+<h2>{L_VIEWING_POST_REVISION}</h2>
+
+<p>{L_VIEWING_POST_REVISION_EXPLAIN}</p>
+
 <div class="post bg1">
 	<div class="inner">
 		<div class="postbody">
@@ -31,16 +30,5 @@
 		</dl>
 	</div>
 </div>
-<form action="{U_ACTION}" method="post" name="revert">
-<div class="panel bg2">
-	<div class="inner">
-	<fieldset class="submit-buttons">
-		{S_FORM_TOKEN}
-		{S_HIDDEN_FIELDS}
-		<input type="submit" accesskey="s" tabindex="6" name="confirm" value="{L_SUBMIT}" class="button1 default-submit-action" />&nbsp;
-	</fieldset>
-	</div>
-</div>
-</form>
 
 <!-- INCLUDE overall_footer.html -->

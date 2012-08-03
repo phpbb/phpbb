@@ -37,6 +37,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'BY'			=> 'by',
 
+	'COMPARING'			=> 'Comparing',
 	'CURRENT_REVISION'	=> 'Current Revision',
 
 	'ERROR_REVISION_NOT_FOUND'			=> 'The specified revision could not be found.',
@@ -77,6 +78,8 @@ $lang = array_merge($lang, array(
 	),
 	'REVISION_DELETE'			=> 'Delete revision(s)',
 	'REVISION_DELETE_CONFIRM'	=> 'Are you sure you wish to delete the selected revision(s)? This cannot be undone.',
+	'REVISION_PROTECT'			=> 'Protect revision(s)',
+	'REVISION_PROTECT_CONFIRM'	=> 'Are you sure you wish to mark the selected revision(s) as protected? These revisions will not be deleted in the pruning tasks.',
 	'REVISION_DELETIONS'		=> array(
 		1 =>'1 deletion',
 		2 => '%1$s deletions',
@@ -86,8 +89,10 @@ $lang = array_merge($lang, array(
 		1		=> '1 user',
 		2		=> '%1$s users',
 	),
+	'REVISION_VIEW_TITLE'				=> 'Viewing a Post Revision',
 
 	'REVISIONS'							=> 'Revisions',
+	'REVISIONS_COMPARE_TITLE'			=> 'Comparing Post Revisions',
 	'REVISIONS_DELETED_SUCCESS'			=> array(
 		1 => 'The selected revision has been deleted.',
 		2 => 'The selected revisions have been deleted.',
@@ -109,5 +114,6 @@ $lang = array_merge($lang, array(
 	'WITH'						=> 'with',
 
 	'VIEWING_POST_REVISION'			=> 'Viewing Post Revision',
+	'VIEWING_POST_REVISION_EXPLAIN'	=> 'This page displays the revision made by %1$s on %2$s.',
 	'VIEWING_POST_REVISION_HISTORY'	=> 'Viewing Post Revision History',
 ));
