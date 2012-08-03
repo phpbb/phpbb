@@ -745,8 +745,16 @@ if (sizeof($topic_list))
 			'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test,
 		);
 
+		/**
+		* Modify the topic data before it is assigned to the template
+		*
+		* @event core.viewforum_modify_topicrow
+		* @var	array	row			Array with topic data
+		* @var	array	topic_row	Template array with topic data
+		* @since 3.1-A1
+		*/
 		$vars = array('row', 'topic_row');
-		extract($phpbb_dispatcher->trigger_event('core.viewforum_topicrow', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topicrow', compact($vars)));
 
 		$template->assign_block_vars('topicrow', $topic_row);
 
