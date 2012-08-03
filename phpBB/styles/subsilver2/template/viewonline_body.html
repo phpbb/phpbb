@@ -21,7 +21,7 @@
 </tr>
 <!-- BEGIN user_row -->
 	<tr>
-		<td class="row1"><p class="gen">{user_row.USERNAME_FULL}</p><!-- IF user_row.USER_IP --><p class="gensmall">{L_IP}: <a href="{user_row.U_USER_IP}">{user_row.USER_IP}</a> &#187; <a href="{user_row.U_WHOIS}" onclick="popup(this.href, 750, 500); return false;">{L_WHOIS}</a></p><!-- ENDIF -->
+		<td class="row1"><p class="gen">{user_row.USERNAME_FULL}</p><!-- IF user_row.USER_IP --><p class="gensmall">{L_IP}{L_COLON} <a href="{user_row.U_USER_IP}">{user_row.USER_IP}</a> &#187; <a href="{user_row.U_WHOIS}" onclick="popup(this.href, 750, 500); return false;">{L_WHOIS}</a></p><!-- ENDIF -->
 			<!-- IF user_row.USER_BROWSER -->{user_row.USER_BROWSER}<!-- ENDIF --></td>
 		<td class="row2" align="center" nowrap="nowrap"><p class="genmed">&nbsp;{user_row.LASTUPDATE}</p></td>
 		<td class="row1"><p class="genmed"><a href="{user_row.U_FORUM_LOCATION}">{user_row.FORUM_LOCATION}</a></p></td>

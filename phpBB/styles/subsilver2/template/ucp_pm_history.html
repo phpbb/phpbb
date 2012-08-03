@@ -26,7 +26,7 @@
 				</table>
 			</td>
 			<td width="100%"<!-- IF history_row.S_CURRENT_MSG --> style="background-color:lightblue"<!-- ENDIF -->>
-				<div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};"><b>{L_PM_SUBJECT}:</b>&nbsp;{history_row.SUBJECT}</div><div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><b>{L_FOLDER}:</b>&nbsp;{history_row.FOLDER}</div>
+				<div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};"><b>{L_PM_SUBJECT}{L_COLON}</b>&nbsp;{history_row.SUBJECT}</div><div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><b>{L_FOLDER}{L_COLON}</b>&nbsp;{history_row.FOLDER}</div>
 			</td>
 		</tr>
 
@@ -48,7 +48,7 @@
 						<tr valign="middle">
 							<td width="100%">&nbsp;</td>
 							<td width="10" nowrap="nowrap">{history_row.MINI_POST_IMG}</td>
-							<td class="gensmall" nowrap="nowrap"><b>{L_SENT_AT}:</b> {history_row.SENT_DATE}</td>
+							<td class="gensmall" nowrap="nowrap"><b>{L_SENT_AT}{L_COLON}</b> {history_row.SENT_DATE}</td>
 						</tr>
 						</table>
 					</td>
