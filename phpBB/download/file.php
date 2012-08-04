@@ -173,7 +173,7 @@ if ($download_id)
 
 if ($topic_id)
 {
-	$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, a.poster_id, filetime
+	$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
 		FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . " a
 		WHERE p.topic_id = $topic_id
 			AND p.post_attachment = 1
