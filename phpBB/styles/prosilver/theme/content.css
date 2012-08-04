@@ -57,11 +57,25 @@ ul.topiclist li.row dt a.subforum {
 	padding: 0 0 0 12px;
 }
 
+div.revisions_block {
+	display: block;
+	width: 75%;
+	margin: 0 auto;
+	margin-bottom: 40px;
+}
+
+fieldset.actions-left {
+	float: left;
+}
+
+fieldset.actions-right {
+	float: right;
+}
+
 ul.revisions {
 	display: block;
 	list-style-type: none;
-	margin: 0 auto;
-	width: 75%;
+	width: 100%;
 	border: 1px solid #CADCEB;
 }
 
@@ -82,7 +96,7 @@ ul.revisions.odd {
 }
 
 ul.revisions.out_of_range {
-	opacity: 0.4;
+	opacity: 0.6;
 }
 
 ul.revisions.current {
@@ -95,13 +109,21 @@ ul.revisions li {
 	padding:10px;
 }
 
+ul.revisions li.revision_compare {
+	width: 5%;
+}
+
 ul.revisions li.revision_id {
+	width: 5%;
+}
+
+ul.revisions li.revision_revert {
 	width: 5%;
 }
 
 ul.revisions li.revision_user {
 	vertical-align: middle;
-	width:10%;
+	width:15%;
 }
 
 ul.revisions li.revision_user span {
@@ -109,7 +131,7 @@ ul.revisions li.revision_user span {
 }
 
 ul.revisions li.revision_reason {
-	width:55%;
+	width:35%;
 }
 
 ul.revisions li.revision_date {

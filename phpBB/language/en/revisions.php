@@ -38,6 +38,7 @@ $lang = array_merge($lang, array(
 	'BY'			=> 'by',
 
 	'COMPARING'			=> 'Comparing',
+	'COMPARE_SELECTED'	=> 'Compare selected',
 	'CURRENT_REVISION'	=> 'Current Revision',
 
 	'ERROR_REVISION_NOT_FOUND'			=> 'The specified revision could not be found.',
