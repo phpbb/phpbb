@@ -318,26 +318,20 @@ else
 
 	// disallowed?
 	$extensions = $cache->obtain_attach_extensions($row['forum_id']);
-
-	if ($attachments)
+	if ($attachment)
 	{
-		// Remove attachments with disallowed extensions
-		$new_ary = array();
-		foreach ($attachments as $attach)
-		{
-			if (isset($extensions['_allowed_'][$attach['extension']]))
-			{
-				$new_ary[] = $attach;
-			}
-		}
-
-		$attachments = $new_ary;
+		$ary = array($attachment);
+	}
+	else
+	{
+		$ary = &$attachments;
 	}
 
-	if (($attachments && empty($attachments)) || ($attachment && !isset($extensions['_allowed_'][$attachment['extension']])))
+	if (!phpbb_check_attach_extensions($extensions, $ary))
 	{
 		send_status_line(404, 'Forbidden');
-		trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
+		$ext = ($attachment) ? $attachment['extension'] : $attachments[0]['extension'];
+		trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $ext));
 	}
 }
 
