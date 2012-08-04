@@ -199,8 +199,18 @@ class ucp_zebra
 										);
 									}
 
+									/**
+									* Add users to friends/foes
+									*
+									* @event core.ucp_add_zebra
+									* @var	string	mode		Zebra type:
+									*							friends|foes
+									* @var	array	sql_ary		Array of
+									*							entries we add
+									* @since 3.1-A1
+									*/
 									$vars = array('mode', 'sql_ary');
-									extract($phpbb_dispatcher->trigger_event('core.ucp_zebra_add', compact($vars)));
+									extract($phpbb_dispatcher->trigger_event('core.ucp_add_zebra', compact($vars)));
 
 									$db->sql_multi_insert(ZEBRA_TABLE, $sql_ary);
 
