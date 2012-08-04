@@ -206,13 +206,7 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 
 $current = $post->get_current_revision();
 
-if ($first_id && $last_id)
-{
-	$first = $revisions[$first_id];
-	$last = $revisions[$last_id];
-}
-// Handle comparison cases with no final number in the comparison, e.g. 2...
-else if ($first_id || $last_id)
+if ($first_id || $last_id)
 {
 	$first = $first_id ? $revisions[$first_id] : $current;
 	$last = $last_id ? $revisions[$last_id] : $current;
@@ -233,79 +227,11 @@ else
 	$last = $current;
 }
 
+$comparison = null;
 if ($display_comparison)
 {
-	// @todo #1 - either pick a diff engine to use forever, or make this dynamic; for now we go with what we have
-	// @todo #2 - make a new function for this... e.g. generate_text_diff($from, $to[, $engine = 'finediff'])
-	$text_diff = new phpbb_revisions_diff_engine_finediff($first->get_text_decoded(), $last->get_text_decoded());
-	$subject_diff = new phpbb_revisions_diff_engine_finediff($first->get_subject(), $last->get_subject());
-
-	$text_diff_rendered = bbcode_nl2br($text_diff->render());
-	$subject_diff_rendered = $subject_diff->render();
-
-	$range_ids = array();
-	foreach ($revisions as $revision)
-	{
-		if ($revision != ($first_id > $last_id ? $last : $first) && !sizeof($range_ids))
-		{
-			continue;
-		}
-
-		$range_ids[] = $revision->get_id();
-
-		if ($revision == ($first_id > $last_id ? $first : $last))
-		{
-			break;
-		}
-	}
-
-	$revision_number = 1;
-	$revision_users = array();
-	foreach ($revisions as $revision)
-	{
-		$this_revision_id = $revision->get_id();
-
-		$template->assign_block_vars('revision', array(
-			'DATE'				=> $user->format_date($revision->get_time()),
-			'ID'				=> $this_revision_id,
-			'IN_RANGE'			=> in_array($this_revision_id, $range_ids),
-			'NUMBER'			=> $revision_number,
-			'REASON'			=> $revision->get_reason(),
-			'USERNAME'			=> $revision->get_username(),
-			'USER_AVATAR'		=> $revision->get_avatar(20, 20),
-			'PROTECTED'			=> $revision->is_protected(), // @todo - Find a good "lock" icon (maybe phpBB already has one?)
-
-			'FIRST_IN_COMPARE'	=> $revision->get_id() == $first_id,
-			'LAST_IN_COMPARE'	=> $revision->get_id() == $last_id,
-
-			'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $this_revision_id)) : '',
-			'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $this_revision_id)),
-			'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
-		));
-
-		$revision_users[$revision->get_user_id()] = true;
-		$revision_number++;
-	}
-
-	$l_compare_summary = $user->lang('REVISION_COUNT', $total_revisions) . '
-		' . $user->lang('BY') . '
-		' . $user->lang('REVISION_USER_COUNT', sizeof($revision_users));
-	$l_lines_added_removed = $user->lang('REVISION_ADDITIONS', $text_diff->additions_count() + $subject_diff->additions_count()) . '
-		' . $user->lang('AND') . '
-		' . $user->lang('REVISION_DELETIONS', $text_diff->deletions_count() + $subject_diff->deletions_count());
-
-	$template->assign_vars(array(
-		'S_DISPLAY_COMPARISON'	=> true,
-		'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($current->get_time())),
-
-		'L_COMPARE_SUMMARY'		=> $l_compare_summary,
-		'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
-
-		'FIRST_REVISION'		=> $first->get_id() ? strtolower($user->lang('REVISION')) . ' ' . $first->get_id() : $user->lang('CURRENT_REVISION'),
-		'U_FIRST_REVISION'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", ($first->get_id() ? array('r' => $first->get_id()) : array('p' => $post_id))),
-		'LAST_REVISION'			=> $last->get_id() ? strtolower($user->lang('REVISION')) . ' ' . $last->get_id() : $user->lang('CURRENT_REVISION'),
-		'U_LAST_REVISION'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", ($last->get_id() ? array('r' => $last->get_id()) : array('p' => $post_id))),
-	));
+	$comparison = new phpbb_revisions_comparison($first, $last);
+	$comparison->output_template_block($post, $template, $user, $can_revert, $phpbb_root_path, $phpEx);
 }
 
 $template->assign_vars(array(
@@ -318,9 +244,9 @@ $template->assign_vars(array(
 	'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
 
 	'POST_DATE'			=> $user->format_date($post_data['post_time']),
-	'POST_SUBJECT'		=> $display_comparison ? $subject_diff_rendered : $current->get_subject(),
+	'POST_SUBJECT'		=> $comparison ? $comparison->get_subject_diff_rendered() : $current->get_subject(),
 	'CURRENT_SUBJECT' 	=> $current->get_subject(),
-	'MESSAGE'			=> $display_comparison ? $text_diff_rendered : $current->get_text(),
+	'MESSAGE'			=> $comparison ? $comparison->get_text_diff_rendered() : $current->get_text(),
 	'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
 
 	'POSTER_JOINED'		=> $user->format_date($post_data['user_regdate']),
