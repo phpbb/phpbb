@@ -173,13 +173,11 @@ if ($download_id)
 
 if ($topic_id)
 {
-	$sql = "
-		SELECT attach_id, in_message, post_msg_id, extension, is_orphan, a.poster_id, filetime
-		FROM " . POSTS_TABLE . " p, " . ATTACHMENTS_TABLE . " a
+	$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, a.poster_id, filetime
+		FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . " a
 		WHERE p.topic_id = $topic_id
-		AND p.post_attachment = 1
-		AND a.post_msg_id = p.post_id
-	";
+			AND p.post_attachment = 1
+			AND a.post_msg_id = p.post_id";
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -192,11 +190,9 @@ if ($topic_id)
 
 if ($post_id)
 {
-	$sql = "
-		SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
-		FROM " . ATTACHMENTS_TABLE . "
-		WHERE post_msg_id = $post_id
-	";
+	$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
+		FROM ' . ATTACHMENTS_TABLE . "
+		WHERE post_msg_id = $post_id";
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -249,12 +245,10 @@ else
 
 		if ($topic_id)
 		{
-			$sql = "
-				SELECT t.forum_id, f.forum_password, f.parent_id
-				FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
+			$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
+				FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 				WHERE t.topic_id = $topic_id
-				AND t.forum_id = f.forum_id
-			";
+					AND t.forum_id = f.forum_id";
 		}
 		
 		$result = $db->sql_query_limit($sql, 1);
@@ -370,13 +364,10 @@ if ($attachments)
 	{
 		$attach_ids[] = $attach['attach_id'];
 	}
-	$attach_ids = implode(',', $attach_ids);
 
-	$sql = "
-		SELECT attach_id, is_orphan, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype, filesize, filetime
-		FROM " . ATTACHMENTS_TABLE . "
-		WHERE attach_id IN ($attach_ids)
-	";
+	$sql = 'SELECT attach_id, is_orphan, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype, filesize, filetime
+		FROM ' . ATTACHMENTS_TABLE . '
+		WHERE ' . $db->sql_in_set('attach_id', $attach_ids);
 	$result = $db->sql_query($sql);
 	$attachments = array();
 
@@ -452,11 +443,9 @@ if ($attachment)
 
 if ($attachments)
 {
-	$sql = "
-		UPDATE " . ATTACHMENTS_TABLE . "
+	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 		SET download_count = download_count + 1
-		WHERE attach_id IN ($attach_ids)
-	";
+		WHERE ' . $db->sql_in_set('attach_id', $attach_ids);
 	$db->sql_query($sql);
 
 	if (!in_array($archive, compress::methods()))
