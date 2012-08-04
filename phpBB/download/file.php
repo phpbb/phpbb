@@ -407,10 +407,7 @@ if ($attachment)
 	else if (($display_cat == ATTACHMENT_CATEGORY_NONE/* || $display_cat == ATTACHMENT_CATEGORY_IMAGE*/) && !$attachment['is_orphan'] && !phpbb_http_byte_range($attachment['filesize']))
 	{
 		// Update download count
-		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
-			SET download_count = download_count + 1
-			WHERE attach_id = ' . $attachment['attach_id'];
-		$db->sql_query($sql);
+		phpbb_increment_downloads($db, $attachment['attach_id']);
 	}
 
 	if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && ((strpos(strtolower($user->browser), 'msie') !== false) && (strpos(strtolower($user->browser), 'msie 8.0') === false)))
@@ -443,10 +440,7 @@ if ($attachment)
 
 if ($attachments)
 {
-	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
-		SET download_count = download_count + 1
-		WHERE ' . $db->sql_in_set('attach_id', $attach_ids);
-	$db->sql_query($sql);
+	phpbb_increment_downloads($db, $attach_ids);
 
 	if (!in_array($archive, compress::methods()))
 	{

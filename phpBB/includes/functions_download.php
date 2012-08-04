@@ -592,3 +592,24 @@ function phpbb_parse_range_request($request_array, $filesize)
 		);
 	}
 }
+
+/**
+* Increments the download count of all provided attachments
+*
+* @param dbal $db The database object
+* @param array|int $ids The attach_id of each attachment
+*
+* @return null
+*/
+function phpbb_increment_downloads($db, $ids)
+{
+	if (!is_array($ids))
+	{
+		$ids = array($ids);
+	}
+
+	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+		SET download_count = download_count + 1
+		WHERE ' . $db->sql_in_set('attach_id', $ids);
+	$db->sql_query($sql);
+}
