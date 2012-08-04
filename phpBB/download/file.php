@@ -158,8 +158,8 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
-$attachment = false;
-$attachments = false;
+$attachment = ($download_id) ? array() : false;
+$attachments = ($topic_id || $post_id) ? array() : false;
 
 if ($download_id)
 {
