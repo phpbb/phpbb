@@ -204,7 +204,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		}
 	}
 
-	$template->assign_vars(array(
+	$msg_data = array(
 		'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
@@ -265,11 +265,27 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'S_CUSTOM_FIELDS'	=> (!empty($cp_row['row'])) ? true : false,
 
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
-		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')
+		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 	);
 
-	$vars = array('id', 'mode', 'folder_id', 'msg_id', 'folder', 'message_row', 'cp_row');
-	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_viewmesssage', compact($vars)));
+	/**
+	* Modify pm and sender data before it is assigned to the template
+	*
+	* @event core.ucp_pm_view_messsage
+	* @var	mixed	id			Active module category (can be int or string)
+	* @var	string	mode		Active module
+	* @var	int		folder_id	ID of the folder the message is in
+	* @var	int		msg_id		ID of the private message
+	* var	array	folder		Array with data of user's message folders
+	* @var	array	message_row		Array with message data
+	* @var	array	cp_row		Array with senders custom profile field data
+	* @var	array	msg_data	Template array with message data
+	* @since 3.1-A1
+	*/
+	$vars = array('id', 'mode', 'folder_id', 'msg_id', 'folder', 'message_row', 'cp_row', 'msg_data');
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_messsage', compact($vars)));
+
+	$template->assign_vars($msg_data);
 
 	// Display the custom profile fields
 	if (!empty($cp_row['row']))
