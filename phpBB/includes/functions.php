@@ -5033,6 +5033,13 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
 	));
 
+	// Determine the number of items requiring moderator attention
+	if (!function_exists('phpbb_mcp_quick_info'))
+	{
+		include("{$phpbb_root_path}includes/functions_display.$phpEx");
+	}
+	phpbb_mcp_quick_info();
+
 	$vars = array('page_title', 'display_online_list', 'item_id', 'item');
 	extract($phpbb_dispatcher->trigger_event('core.page_header', compact($vars)));
 

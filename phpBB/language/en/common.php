@@ -360,6 +360,22 @@ $lang = array_merge($lang, array(
 	'MINUTES'				=> 'Minutes',
 	'MODERATE'				=> 'Moderate',
 	'MODERATOR'				=> 'Moderator',
+	'MODERATOR_REPORTED_POSTS'	=> array(
+		1 => '<strong>%d</strong> reported post',
+		2 => '<strong>%d</strong> reported posts',
+	),
+	'MODERATOR_APPROVE_POSTS'	=> array(
+		1 => '<strong>%d</strong> post awaiting approval',
+		2 => '<strong>%d</strong> posts awaiting approval',
+	),
+	'MODERATOR_APPROVE_TOPICS'	=> array(
+		1 => '<strong>%d</strong> topic awaiting approval',
+		2 => '<strong>%d</strong> topics awaiting approval',
+	),
+	'MODERATOR_REPORTED_PMS'		=> array(
+		1 => '<strong>%d</strong> reported PM',
+		2 => '<strong>%d</strong> reported PMs',
+	),
 	'MODERATORS'			=> 'Moderators',
 	'MONTH'					=> 'Month',
 	'MOVE'					=> 'Move',

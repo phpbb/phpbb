@@ -61,6 +61,7 @@ class mcp_pm_reports
 				}
 
 				close_report($report_id_list, $mode, $action, true);
+				$cache->purge('_reported_pms');
 
 			break;
 		}

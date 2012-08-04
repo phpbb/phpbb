@@ -2,7 +2,7 @@
 
 <!-- IF U_MCP -->
 	<div id="pageheader">
-		<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
+		<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a><!-- IF TOTAL_MODERATOR_REPORTS --> | <a href="{U_MODERATOR_REPORTS}">{TOTAL_MODERATOR_REPORTS}</a><!-- ENDIF --><!-- IF TOTAL_MODERATOR_POSTS --> | <a href="{U_MODERATOR_APPROVE_POSTS}">{TOTAL_MODERATOR_POSTS}</a><!-- ENDIF --><!-- IF TOTAL_MODERATOR_TOPICS --> | <a href="{U_MODERATOR_APPROVE_TOPICS}">{TOTAL_MODERATOR_TOPICS}</a><!-- ENDIF --><!-- IF TOTAL_MODERATOR_PMS --> | <a href="{U_MODERATOR_PMS}">{TOTAL_MODERATOR_PMS}</a><!-- ENDIF --> ]</p>
 	</div>
 
 	<br clear="all" /><br />

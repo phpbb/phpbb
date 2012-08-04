@@ -1285,3 +1285,116 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 	$avatar_img .= $avatar;
 	return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $avatar_width . '" height="' . $avatar_height . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
 }
+
+/**
+* Fetches the number of items which need a moderators attention
+*
+* @return null
+*/
+function phpbb_mcp_quick_info()
+{
+	global $auth, $cache, $db, $template, $user, $phpEx, $phpbb_root_path;
+
+	$m_approve = $auth->acl_getf_global('m_approve');
+	$m_report = $auth->acl_getf_global('m_report');
+
+	// We have one or both of m_report and m_approve
+	if ($m_approve || $m_report)
+	{
+		$reported_posts_count = $unapproved_posts_count = $unapproved_topics_count = 0;
+
+		$sql_where = '';
+
+		// Check for m_report
+		if ($m_report)
+		{
+			// We add a ternary conditional to allow for having both permissions
+			$sql_where .= '(' . $db->sql_in_set('forum_id', get_forum_list('m_report')) . '
+				AND post_reported = 1)' . ($m_approve ? ' OR ' : '');
+		}
+
+		// Check for m_approve
+		if ($m_approve)
+		{
+			$sql_where .= '(' . $db->sql_in_set('forum_id', get_forum_list('m_approve')) . '
+				AND post_approved = 0)';
+		
+			$sql = 'SELECT topic_first_post_id
+						FROM ' . TOPICS_TABLE . '
+					WHERE ' . $db->sql_in_set('forum_id', get_forum_list('m_approve')) . '
+						AND topic_approved = 0';
+			$result = $db->sql_query($sql);
+
+			$unapproved_topics_array = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$unapproved_topics_array[] = $row['topic_first_post_id'];
+			}
+			$db->sql_freeresult($result);
+
+			$unapproved_topics_count = count($unapproved_topics_array);
+
+			$sql_where .= $unapproved_topics_count ? ' AND ' . $db->sql_in_set('post_id', $unapproved_topics_array, true) : '';
+		}
+
+		// Reported Posts and Approved Posts
+		$sql = 'SELECT post_reported, post_approved
+			FROM ' . POSTS_TABLE . "
+			WHERE $sql_where";
+		$result = $db->sql_query($sql);
+
+		// Count number of unapproved and reported posts
+		while ($row = $db->sql_fetchrow($result))
+		{
+			// Count the reported posts
+			if ($row['post_reported'])
+			{
+				$reported_posts_count++;
+			}
+			// Count the unapproved posts
+			if (!$row['post_approved'])
+			{
+				$unapproved_posts_count++;
+			}
+		}
+		$db->sql_freeresult($result);
+	
+		$template->assign_vars(array(
+			'TOTAL_MODERATOR_REPORTS'		=> $user->lang('MODERATOR_REPORTED_POSTS', $reported_posts_count),
+			'TOTAL_MODERATOR_POSTS'			=> $user->lang('MODERATOR_APPROVE_POSTS', $unapproved_posts_count),
+			'TOTAL_MODERATOR_TOPICS'    	=> $user->lang('MODERATOR_APPROVE_TOPICS', $unapproved_topics_count),
+
+			'U_MODERATOR_REPORTS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", array('i' => 'reports', 'mode' => 'reports'), true, $user->session_id),
+			'U_MODERATOR_APPROVE_POSTS'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", array('i' => 'queue', 'mode' => 'unapproved_posts'), true, $user->session_id),
+			'U_MODERATOR_APPROVE_TOPICS'    => append_sid("{$phpbb_root_path}mcp.$phpEx", array('i' => 'queue', 'mode' => 'unapproved_topics'), true, $user->session_id),
+		));
+	}
+
+    // Don't forget reported PMs
+	if ($auth->acl_getf_global('m_'))
+	{
+		$reported_pms = 0;
+
+		if (($reported_pms = $cache->get('_reported_pms')) === false)
+		{
+			$sql = 'SELECT COUNT(msg_id) AS pms_count
+				FROM ' . PRIVMSGS_TABLE . '
+				WHERE message_reported = 1';
+			$result = $db->sql_query($sql);
+			$reported_pms = (int) $db->sql_fetchfield('pms_count');
+			$db->sql_freeresult($result);
+
+			// Cache for a few minutes to optimize. Might add to topics/posts later
+			$cache->put('_reported_pms', $reported_pms, 300);
+		}
+
+		// Dump to the template
+		if ($reported_pms)
+		{
+			$template->assign_vars(array(
+				'TOTAL_MODERATOR_PMS'			=> $user->lang('MODERATOR_REPORTED_PMS', $reported_pms),
+				'U_MODERATOR_PMS'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", array('i' => 'pm_reports', 'mode' => 'pm_reports'), true, $user->session_id),
+			));
+		}
+	}
+}
