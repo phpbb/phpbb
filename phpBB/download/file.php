@@ -141,6 +141,18 @@ $archive = $request->variable('archive', '.tar');
 $mode = request_var('mode', '');
 $thumbnail = request_var('t', false);
 
+// Ensure we're only performing one operation
+if ($download_id)
+{
+	$topic_id = false;
+	$post_id = false;
+}
+
+if ($post_id)
+{
+	$topic_id = false;
+}
+
 // Start session management, do not update session page.
 $user->session_begin(false);
 $auth->acl($user->data);
