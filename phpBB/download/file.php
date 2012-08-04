@@ -132,7 +132,6 @@ if (isset($_GET['avatar']))
 // implicit else: we are not in avatar mode
 include($phpbb_root_path . 'common.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
 
 $download_id = request_var('id', 0);
 $topic_id = $request->variable('topic_id', 0);
@@ -433,6 +432,7 @@ if ($attachment)
 
 if ($attachments)
 {
+	require_once $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
 	phpbb_increment_downloads($db, $attach_ids);
 
 	if (!in_array($archive, compress::methods()))
