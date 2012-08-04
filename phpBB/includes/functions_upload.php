@@ -45,7 +45,7 @@ class filespec
 
 	/**
 	 * The plupload object
-	 * @var object phpbb_plupload
+	 * @var phpbb_plupload
 	 */
 	private $plupload;
 

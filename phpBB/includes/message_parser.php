@@ -1062,7 +1062,7 @@ class parse_message extends bbcode_firstpass
 
 	/**
 	* The plupload object used for dealing with attachments
-	* @var object phpbb_plupload
+	* @var phpbb_plupload
 	*/
 	protected $plupload;
 

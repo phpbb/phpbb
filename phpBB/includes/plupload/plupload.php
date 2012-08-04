@@ -28,22 +28,22 @@ class phpbb_plupload
 	protected $config;
 
 	/**
-	 * @var object phpbb_request
+	 * @var phpbb_request
 	 */
 	protected $request;
 
 	/**
-	 * @var object phpbb_user
+	 * @var phpbb_user
 	 */
 	protected $user;
 
 	/**
-	 * @var object phpbb_php_ini
+	 * @var phpbb_php_ini
 	 */
 	protected $ini;
 
 	/**
-	 * @var object phpbb_mimetype_extension_map
+	 * @var phpbb_mimetype_extension_map
 	 */
 	protected $extension_map;
 
