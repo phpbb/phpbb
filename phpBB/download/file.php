@@ -132,8 +132,12 @@ if (isset($_GET['avatar']))
 // implicit else: we are not in avatar mode
 include($phpbb_root_path . 'common.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
 
 $download_id = request_var('id', 0);
+$topic_id = $request->variable('topic_id', 0);
+$post_id = $request->variable('post_id', 0);
+$archive = $request->variable('archive', '.tar');
 $mode = request_var('mode', '');
 $thumbnail = request_var('t', false);
 
@@ -142,7 +146,7 @@ $user->session_begin(false);
 $auth->acl($user->data);
 $user->setup('viewtopic');
 
-if (!$download_id)
+if (!$download_id && !$post_id && !$topic_id)
 {
 	send_status_line(404, 'Not Found');
 	trigger_error('NO_ATTACHMENT_SELECTED');
@@ -154,20 +158,62 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
-$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
-	FROM ' . ATTACHMENTS_TABLE . "
-	WHERE attach_id = $download_id";
-$result = $db->sql_query_limit($sql, 1);
-$attachment = $db->sql_fetchrow($result);
-$db->sql_freeresult($result);
+$attachment = false;
+$attachments = false;
 
-if (!$attachment)
+if ($download_id)
+{
+	$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
+		FROM ' . ATTACHMENTS_TABLE . "
+		WHERE attach_id = $download_id";
+	$result = $db->sql_query_limit($sql, 1);
+	$attachment = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+}
+
+if ($topic_id)
+{
+	$sql = "
+		SELECT attach_id, in_message, post_msg_id, extension, is_orphan, a.poster_id, filetime
+		FROM " . POSTS_TABLE . " p, " . ATTACHMENTS_TABLE . " a
+		WHERE p.topic_id = $topic_id
+		AND p.post_attachment = 1
+		AND a.post_msg_id = p.post_id
+	";
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$attachments[] = $row;
+	}
+
+	$db->sql_freeresult($result);
+}
+
+if ($post_id)
+{
+	$sql = "
+		SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
+		FROM " . ATTACHMENTS_TABLE . "
+		WHERE post_msg_id = $post_id
+	";
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$attachments[] = $row;
+	}
+
+	$db->sql_freeresult($result);
+}
+
+if (!$attachment && !$attachments)
 {
 	send_status_line(404, 'Not Found');
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
 
-if ((!$attachment['in_message'] && !$config['allow_attachments']) || ($attachment['in_message'] && !$config['allow_pm_attach']))
+if ($attachment && ((!$attachment['in_message'] && !$config['allow_attachments']) || ($attachment['in_message'] && !$config['allow_pm_attach'])))
 {
 	send_status_line(404, 'Not Found');
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
@@ -175,7 +221,7 @@ if ((!$attachment['in_message'] && !$config['allow_attachments']) || ($attachmen
 
 $row = array();
 
-if ($attachment['is_orphan'])
+if ($attachment && $attachment['is_orphan'])
 {
 	// We allow admins having attachment permissions to see orphan attachments...
 	$own_attachment = ($auth->acl_get('a_attach') || $attachment['poster_id'] == $user->data['user_id']) ? true : false;
@@ -191,13 +237,26 @@ if ($attachment['is_orphan'])
 }
 else
 {
-	if (!$attachment['in_message'])
+	if ($attachments || ($attachment && !$attachment['in_message']))
 	{
-		//
-		$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
-			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
-			WHERE p.post_id = ' . $attachment['post_msg_id'] . '
-				AND p.forum_id = f.forum_id';
+		if ($download_id || $post_id)
+		{
+			$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
+				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
+				WHERE p.post_id = ' . (($attachment) ? $attachment['post_msg_id'] : $post_id) . '
+					AND p.forum_id = f.forum_id';
+		}
+
+		if ($topic_id)
+		{
+			$sql = "
+				SELECT t.forum_id, f.forum_password, f.parent_id
+				FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
+				WHERE t.topic_id = $topic_id
+				AND t.forum_id = f.forum_id
+			";
+		}
+		
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -252,8 +311,24 @@ else
 	}
 
 	// disallowed?
-	$extensions = array();
-	if (!extension_allowed($row['forum_id'], $attachment['extension'], $extensions))
+	$extensions = $cache->obtain_attach_extensions($row['forum_id']);
+
+	if ($attachments)
+	{
+		// Remove attachments with disallowed extensions
+		$new_ary = array();
+		foreach ($attachments as $attach)
+		{
+			if (isset($extensions['_allowed_'][$attach['extension']]))
+			{
+				$new_ary[] = $attach;
+			}
+		}
+
+		$attachments = $new_ary;
+	}
+
+	if (($attachments && empty($attachments)) || ($attachment && !isset($extensions['_allowed_'][$attachment['extension']])))
 	{
 		send_status_line(404, 'Forbidden');
 		trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
@@ -266,71 +341,147 @@ if (!download_allowed())
 	trigger_error($user->lang['LINKAGE_FORBIDDEN']);
 }
 
-$download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
+if ($attachments && sizeof($attachments) < 2)
+{
+	$attachments = false;
+	$attachment = $attachments[0];
+}
+
+if ($attachment)
+{
+	$download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
+}
 
 // Fetching filename here to prevent sniffing of filename
-$sql = 'SELECT attach_id, is_orphan, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype, filesize, filetime
-	FROM ' . ATTACHMENTS_TABLE . "
-	WHERE attach_id = $download_id";
-$result = $db->sql_query_limit($sql, 1);
-$attachment = $db->sql_fetchrow($result);
-$db->sql_freeresult($result);
+if ($attachment)
+{
+	$sql = 'SELECT attach_id, is_orphan, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype, filesize, filetime
+		FROM ' . ATTACHMENTS_TABLE . "
+		WHERE attach_id = $download_id";
+	$result = $db->sql_query_limit($sql, 1);
+	$attachment = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+}
 
-if (!$attachment)
+if ($attachments)
+{
+	$attach_ids = array();
+	foreach ($attachments as $attach)
+	{
+		$attach_ids[] = $attach['attach_id'];
+	}
+	$attach_ids = implode(',', $attach_ids);
+
+	$sql = "
+		SELECT attach_id, is_orphan, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype, filesize, filetime
+		FROM " . ATTACHMENTS_TABLE . "
+		WHERE attach_id IN ($attach_ids)
+	";
+	$result = $db->sql_query($sql);
+	$attachments = array();
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$attachments[] = $row;
+	}
+
+	$db->sql_freeresult($result);
+}
+
+if (!$attachment && empty($attachments))
 {
 	send_status_line(404, 'Not Found');
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
 
-$attachment['physical_filename'] = utf8_basename($attachment['physical_filename']);
-$display_cat = $extensions[$attachment['extension']]['display_cat'];
+if ($attachment)
+{
+	$attachment['physical_filename'] = utf8_basename($attachment['physical_filename']);
+	$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
-if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$user->optionget('viewimg'))
-{
-	$display_cat = ATTACHMENT_CATEGORY_NONE;
-}
-
-if ($display_cat == ATTACHMENT_CATEGORY_FLASH && !$user->optionget('viewflash'))
-{
-	$display_cat = ATTACHMENT_CATEGORY_NONE;
-}
-
-if ($thumbnail)
-{
-	$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
-}
-else if (($display_cat == ATTACHMENT_CATEGORY_NONE/* || $display_cat == ATTACHMENT_CATEGORY_IMAGE*/) && !$attachment['is_orphan'] && !phpbb_http_byte_range($attachment['filesize']))
-{
-	// Update download count
-	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
-		SET download_count = download_count + 1
-		WHERE attach_id = ' . $attachment['attach_id'];
-	$db->sql_query($sql);
-}
-
-if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && ((strpos(strtolower($user->browser), 'msie') !== false) && (strpos(strtolower($user->browser), 'msie 8.0') === false)))
-{
-	wrap_img_in_html(append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
-	file_gc();
-}
-else
-{
-	// Determine the 'presenting'-method
-	if ($download_mode == PHYSICAL_LINK)
+	if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$user->optionget('viewimg'))
 	{
-		// This presenting method should no longer be used
-		if (!@is_dir($phpbb_root_path . $config['upload_path']))
-		{
-			send_status_line(500, 'Internal Server Error');
-			trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
-		}
+		$display_cat = ATTACHMENT_CATEGORY_NONE;
+	}
 
-		redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
+	if ($display_cat == ATTACHMENT_CATEGORY_FLASH && !$user->optionget('viewflash'))
+	{
+		$display_cat = ATTACHMENT_CATEGORY_NONE;
+	}
+
+	if ($thumbnail)
+	{
+		$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
+	}
+	else if (($display_cat == ATTACHMENT_CATEGORY_NONE/* || $display_cat == ATTACHMENT_CATEGORY_IMAGE*/) && !$attachment['is_orphan'] && !phpbb_http_byte_range($attachment['filesize']))
+	{
+		// Update download count
+		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+			SET download_count = download_count + 1
+			WHERE attach_id = ' . $attachment['attach_id'];
+		$db->sql_query($sql);
+	}
+
+	if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && ((strpos(strtolower($user->browser), 'msie') !== false) && (strpos(strtolower($user->browser), 'msie 8.0') === false)))
+	{
+		wrap_img_in_html(append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
 		file_gc();
 	}
 	else
 	{
-		send_file_to_browser($attachment, $config['upload_path'], $display_cat);
-		file_gc();
+		// Determine the 'presenting'-method
+		if ($download_mode == PHYSICAL_LINK)
+		{
+			// This presenting method should no longer be used
+			if (!@is_dir($phpbb_root_path . $config['upload_path']))
+			{
+				send_status_line(500, 'Internal Server Error');
+				trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
+			}
+
+			redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
+			file_gc();
+		}
+		else
+		{
+			send_file_to_browser($attachment, $config['upload_path'], $display_cat);
+			file_gc();
+		}
 	}
+}
+
+if ($attachments)
+{
+	$sql = "
+		UPDATE " . ATTACHMENTS_TABLE . "
+		SET download_count = download_count + 1
+		WHERE attach_id IN ($attach_ids)
+	";
+	$db->sql_query($sql);
+
+	if (!in_array($archive, compress::methods()))
+	{
+		$archive = '.tar';
+	}
+
+	$store_name = 'att_' . time() . '_' . unique_id();
+	$archive_name = 'attachments';
+
+	if ($archive === '.zip')
+	{
+		$compress = new compress_zip('w', "{$phpbb_root_path}store/{$store_name}{$archive}");
+	}
+	else
+	{
+		$compress = new compress_tar('w', "{$phpbb_root_path}store/{$store_name}{$archive}", $archive);
+	}
+
+	foreach ($attachments as $attach)
+	{
+		$compress->add_custom_file("{$phpbb_root_path}files/{$attach['physical_filename']}", $attach['real_filename']);
+	}
+
+	$compress->close();
+	$compress->download($store_name, $archive_name);
+	file_gc();
 }

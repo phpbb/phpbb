@@ -15,6 +15,7 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
 include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 
 // Start session management
@@ -1316,8 +1317,13 @@ if (sizeof($attach_list))
 
 $template->assign_vars(array(
 	'S_HAS_ATTACHMENTS' => !empty($attachments),
-	'U_DL_ALL_LINK' => append_sid("{$phpbb_root_path}download/file.$phpEx", "topic_id=$topic_id"),
 ));
+
+$methods = gen_download_links('topic_id', $topic_id, $phpbb_root_path, $phpEx);
+foreach ($methods as $method)
+{
+	$template->assign_block_vars('dl_method', $method);
+}
 
 // Instantiate BBCode if need be
 if ($bbcode_bitfield !== '')
@@ -1573,8 +1579,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		'S_IGNORE_POST'		=> ($row['hide_post']) ? true : false,
 		'L_IGNORE_POST'		=> ($row['hide_post']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
-
-		'U_DL_ALL_LINK'		=> append_sid("{$phpbb_root_path}download/file.$phpEx", 'post_id=' . $row['post_id']),
 	);
 
 	if (isset($cp_row['row']) && sizeof($cp_row['row']))
@@ -1601,6 +1605,12 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			$template->assign_block_vars('postrow.attachment', array(
 				'DISPLAY_ATTACHMENT'	=> $attachment)
 			);
+		}
+
+		$methods = gen_download_links('post_id', $row['post_id'], $phpbb_root_path, $phpEx);
+		foreach ($methods as $method)
+		{
+			$template->assign_block_vars('postrow.dl_method', $method);
 		}
 	}
 
