@@ -54,12 +54,22 @@ class ucp_zebra
 					// Remove users
 					if (!empty($data['usernames']))
 					{
-						$vars = array('data');
-						extract($phpbb_dispatcher->trigger_event('core.ucp_zebra_remove', compact($vars)));
+						$user_ids = $data['usernames'];
+
+						/**
+						* Remove users from friends/foes
+						*
+						* @event core.ucp_remove_zebra
+						* @var	string	mode		Zebra type: friends|foes
+						* @var	array	user_ids	User ids we remove
+						* @since 3.1-A1
+						*/
+						$vars = array('user_ids');
+						extract($phpbb_dispatcher->trigger_event('core.ucp_remove_zebra', compact($vars)));
 
 						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
 							WHERE user_id = ' . $user->data['user_id'] . '
-								AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
+								AND ' . $db->sql_in_set('zebra_id', $user_ids);
 						$db->sql_query($sql);
 
 						$updated = true;
