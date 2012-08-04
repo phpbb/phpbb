@@ -25,7 +25,8 @@ $user->setup(array('viewtopic', 'revisions'));
 $post_id		= $request->variable('p', 0);
 $revision_id	= $request->variable('r', 0);
 $revert_id		= $request->variable('revert', 0);
-$compare		= $request->variable('compare', '');
+$first_id 		= $request->variable('first', 0);
+$last_id 		= $request->variable('last', 0);
 $action_ids		= $request->variable('action_ids', array(0));
 
 $display_comparison = true;
@@ -33,33 +34,18 @@ $revert_confirm = $request->is_set_post('confirm');
 
 // Variables for first and last revisions for comparison
 $first = $last = null;
-$first_id = $last_id = 0;
 
-// If we are given some potential comparison information, try to grab the IDs from the URL
-if ($compare)
+// Attempt to obtain the post ID using give revision IDs
+if (!$post_id && ($first_id || $last_id))
 {
-	$matches = array();
-	preg_match('/([0-9]+)\.{3}([0-9]+)/', $compare, $matches);
-
-	// Note that $matches[0], in the case of a match, will be X...Y, where X and Y are the given numbers
-	// We don't actually have any use for it, we just want the X and Y, so that's what we look at below
-	// If we don't see the X...Y pattern, set starting revision ID to the integer value of $compare
-	$first_id = (sizeof($matches) == 3) ? $matches[1] : (int) $compare;
-	$last_id = (sizeof($matches) == 3) ? $matches[2] : 0;
-
-	// If we don't have a post_id, use the given IDs to figure it out
-	// Note that if we don't have a first_id, we don't have a last_id
-	if ($first_id && !$post_id)
-	{
-		$post_id = phpbb_get_revision_post_id($first_id, $db);
-	}
+	$post_id = phpbb_get_revision_post_id($first_id ?: $last_id, $db);
+}
+else if (!$post_id && ($revert_id || $revision_id))
+{
+	$post_id = phpbb_get_revision_post_id($revert_id ?: $revision_id, $db);
 }
 
-// Regardless of the provided post ID in the URL, if we are trying to view or revert a revision,
-// we set the post ID to the revision's post ID
-$post_id = ($revert_id || $revision_id) ? phpbb_get_revision_post_id($revert_id ?: $revision_id, $db) : $post_id;
-
-// If we still can't manage to come up with a post ID, we have nothing else to do here
+// If we still don't have a post ID, there is nothing else to do here
 if (!$post_id)
 {
 	trigger_error('NO_POST');
@@ -220,16 +206,16 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 
 $current = $post->get_current_revision();
 
-if ($compare && $first_id && $last_id)
+if ($first_id && $last_id)
 {
 	$first = $revisions[$first_id];
 	$last = $revisions[$last_id];
 }
 // Handle comparison cases with no final number in the comparison, e.g. 2...
-else if ($compare && $first_id)
+else if ($first_id || $last_id)
 {
-	$first = $revisions[$first_id];
-	$last = $current;
+	$first = $first_id ? $revisions[$first_id] : $current;
+	$last = $last_id ? $revisions[$last_id] : $current;
 }
 else if ($revert_id)
 {
@@ -257,24 +243,17 @@ if ($display_comparison)
 	$text_diff_rendered = bbcode_nl2br($text_diff->render());
 	$subject_diff_rendered = $subject_diff->render();
 
-	// We always want the first revision in the comparison at the top, so if
-	// the start revision is newer than the ending revision, reverse the list
-	if ($first_id > $last_id)
-	{
-		$revisions = array_reverse($revisions, true);
-	}
-
 	$range_ids = array();
 	foreach ($revisions as $revision)
 	{
-		if ($revision != $first && !sizeof($range_ids))
+		if ($revision != ($first_id > $last_id ? $last : $first) && !sizeof($range_ids))
 		{
 			continue;
 		}
 
 		$range_ids[] = $revision->get_id();
 
-		if ($revision == $last)
+		if ($revision == ($first_id > $last_id ? $first : $last))
 		{
 			break;
 		}
@@ -296,8 +275,8 @@ if ($display_comparison)
 			'USER_AVATAR'		=> $revision->get_avatar(20, 20),
 			'PROTECTED'			=> $revision->is_protected(), // @todo - Find a good "lock" icon (maybe phpBB already has one?)
 
-			'S_DELETE'			=> $auth->acl_get('m_delete_revisions'),
-			'S_PROTECT'			=> $auth->acl_get('m_protect_revisions'),
+			'FIRST_IN_COMPARE'	=> $revision->get_id() == $first_id,
+			'LAST_IN_COMPARE'	=> $revision->get_id() == $last_id,
 
 			'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $this_revision_id)) : '',
 			'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $this_revision_id)),
@@ -340,6 +319,7 @@ $template->assign_vars(array(
 
 	'POST_DATE'			=> $user->format_date($post_data['post_time']),
 	'POST_SUBJECT'		=> $display_comparison ? $subject_diff_rendered : $current->get_subject(),
+	'CURRENT_SUBJECT' 	=> $current->get_subject(),
 	'MESSAGE'			=> $display_comparison ? $text_diff_rendered : $current->get_text(),
 	'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
 
@@ -351,19 +331,15 @@ $template->assign_vars(array(
 
 	'POST_ID'			=> $post_data['post_id'],
 	'POSTER_ID'			=> $post_data['poster_id'],
+
+	'L_VIEWING_POST_REVISION_EXPLAIN'	=> !$display_comparison ? $user->lang('VIEWING_POST_REVISION_EXPLAIN', $current->get_username() . $current->get_avatar(20, 20), $user->format_date($current->get_time())) : '',
+
+	'U_VIEW_REVISIONS'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)),
+	'U_VIEW_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
+
+	'S_DELETE'			=> $auth->acl_get('m_delete_revisions'),
+	'S_PROTECT'			=> $auth->acl_get('m_protect_revisions'),
 ));
-
-if ($revision_id)
-{
-	$revision_username = $revisions[$revision_id]->get_username();
-	$revision_avatar = $revisions[$revision_id]->get_avatar(20, 20);
-	$username_string = $revision_avatar . $revision_username;
-	$revision_time = $user->format_date($revisions[$revision_id]->get_time());
-
-	$template->assign_vars(array(
-		'L_VIEWING_POST_REVISION_EXPLAIN'	=> $user->lang('VIEWING_POST_REVISION_EXPLAIN', $username_string, $revision_time),
-	));
-}
 
 $navlinks = array(
 	array(
@@ -431,12 +407,7 @@ foreach ($navlinks as $link)
 	));
 }
 
-$template->assign_vars(array(
-	'U_VIEW_REVISIONS'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)),
-	'U_VIEW_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
-));
-
-page_header($page_title, false);
+page_header($user->lang($page_title), false);
 
 $template->set_filenames(array(
 	'body'		=> $tpl_name,
