@@ -123,6 +123,18 @@ function generate_smilies($mode, $forum_id)
 		}
 	}
 
+	/**
+	* This event is called when the smilies got populated
+	*
+	* @event core.generate_smilies_after
+	* @var	string	mode			Mode of the smilies: window|inline
+	* @var	int		forum_id		The forum ID we are currently in
+	* @var	bool	display_link	Shall we display the "more smilies" link?
+	* @since 3.1-A1
+	*/
+	$vars = array('mode', 'forum_id', 'display_link');
+	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_after', compact($vars)));
+
 	if ($mode == 'inline' && $display_link)
 	{
 		$template->assign_vars(array(
@@ -130,9 +142,6 @@ function generate_smilies($mode, $forum_id)
 			'U_MORE_SMILIES' 		=> append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id))
 		);
 	}
-
-	$vars = array('mode', 'forum_id', 'display_link');
-	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_footer', compact($vars)));
 
 	if ($mode == 'window')
 	{
