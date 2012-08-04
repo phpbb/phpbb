@@ -24,6 +24,11 @@ class compress
 	var $fp = 0;
 
 	/**
+	* @var array
+	*/
+	private $filelist = array();
+
+	/**
 	* Add file to archive
 	*/
 	function add_file($src, $src_rm_prefix = '', $src_add_prefix = '', $skip_files = '')
@@ -120,6 +125,24 @@ class compress
 		$stat[9] = time();
 		$this->data($name, $src, false, $stat);
 		return true;
+	}
+
+	/**
+	* Checks if a file by that name as already been added and, if it has,
+	* returns a new, unique name.
+	*
+	* @param string $name The filename
+	* @return string A unique string
+	*/
+	private function check_name($name)
+	{
+		if (isset($this->filelist[$name])) {
+			$this->filelist[$name]++;
+			return $name . '.' . $this->filelist[$name];
+		}
+
+		$this->filelist[$name] = 0;
+		return $name;
 	}
 
 	/**
@@ -361,6 +384,7 @@ class compress_zip extends compress
 	function data($name, $data, $is_dir = false, $stat)
 	{
 		$name = str_replace('\\', '/', $name);
+		$name = $this->check_name($name);
 
 		$hexdtime = pack('V', $this->unix_to_dos_time($stat[9]));
 
@@ -633,6 +657,7 @@ class compress_tar extends compress
 	*/
 	function data($name, $data, $is_dir = false, $stat)
 	{
+		$name = $this->check_name($name);
 		$this->wrote = true;
 		$fzwrite = 	($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && @extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 
