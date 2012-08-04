@@ -1296,7 +1296,7 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 *
 * @return array Array containing the link and the type of compression
 */
-function gen_download_links($param_key, $param_val, $phpbb_root_path, $phpEx)
+function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $phpEx)
 {
 	$methods = compress::methods();
 	$links = array();
