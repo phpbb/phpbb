@@ -190,13 +190,9 @@ if ($topic_id)
 		WHERE p.topic_id = $topic_id
 			AND p.post_attachment = 1
 			AND a.post_msg_id = p.post_id";
+
 	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$attachments[] = $row;
-	}
-
+	$attachments = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
 }
 
@@ -205,13 +201,9 @@ if ($post_id)
 	$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
 		FROM ' . ATTACHMENTS_TABLE . "
 		WHERE post_msg_id = $post_id";
+
 	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$attachments[] = $row;
-	}
-
+	$attachments = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
 }
 
@@ -374,14 +366,9 @@ if ($attachments)
 	$sql = 'SELECT attach_id, is_orphan, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype, filesize, filetime
 		FROM ' . ATTACHMENTS_TABLE . '
 		WHERE ' . $db->sql_in_set('attach_id', $attach_ids);
+
 	$result = $db->sql_query($sql);
-	$attachments = array();
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$attachments[] = $row;
-	}
-
+	$attachments = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
 }
 
