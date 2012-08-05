@@ -34,8 +34,18 @@ function adm_page_header($page_title)
 	// A listener can set this variable to `true` when it overrides this function
 	$adm_page_header_override = false;
 
+	/**
+	* Execute code and/or overwrite adm_page_header()
+	*
+	* @event core.adm_page_header
+	* @var	string	page_title			Page title
+	* @var	bool	adm_page_header_override	Shall we return instead of
+	*									running the rest of adm_page_header()
+	* @since 3.1-A1
+	*/
 	$vars = array('page_title', 'adm_page_header_override');
 	extract($phpbb_dispatcher->trigger_event('core.adm_page_header', compact($vars)));
+
 	if ($adm_page_header_override)
 	{
 		return;
