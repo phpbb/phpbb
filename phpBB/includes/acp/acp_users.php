@@ -946,12 +946,6 @@ class acp_users
 					}
 				}
 
-				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
-				foreach ($quick_tool_ary as $value => $lang)
-				{
-					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
-				}
-
 				if ($config['load_onlinetrack'])
 				{
 					$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
@@ -964,6 +958,23 @@ class acp_users
 					$user_row['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
 					$user_row['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] : 0;
 					unset($row);
+				}
+
+				/**
+				* Add additional quick tool options and overwrite user data
+				*
+				* @event core.acp_users_display_overview
+				* @var	array	user_row			Array with user data
+				* @var	array	quick_tool_ary		Ouick tool options
+				* @since 3.1-A1
+				*/
+				$vars = array('user_row', 'quick_tool_ary');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_display_overview', compact($vars)));
+
+				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
+				foreach ($quick_tool_ary as $value => $lang)
+				{
+					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
 				}
 
 				$last_visit = (!empty($user_row['session_time'])) ? $user_row['session_time'] : $user_row['user_lastvisit'];
@@ -1039,9 +1050,6 @@ class acp_users
 					'USER_HAS_POSTS'	=> $user_row['user_has_posts'],
 					'USER_INACTIVE_REASON'	=> $inactive_reason,
 				));
-
-				$vars = array('data', 'check_ary', 'sql_ary', 'user_row', 'quick_tool_ary');
-				extract($phpbb_dispatcher->trigger_event('core.acp_users_overview', compact($vars)));
 
 			break;
 
