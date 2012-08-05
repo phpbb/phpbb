@@ -5080,12 +5080,20 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 function page_footer($run_cron = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
-	global $request;
-	global $phpbb_dispatcher;
+	global $request, $phpbb_dispatcher;
 
 	// A listener can set this variable to `true` when it overrides this function
 	$page_footer_override = false;
 
+	/**
+	* Execute code and/or overwrite  page_footer()
+	*
+	* @event core.page_footer
+	* @var	bool	run_cron			Shall we run cron tasks
+	* @var	bool	page_footer_override	Shall we return instead of running
+	*										the rest of page_footer()
+	* @since 3.1-A1
+	*/
 	$vars = array('run_cron', 'page_footer_override');
 	extract($phpbb_dispatcher->trigger_event('core.page_footer', compact($vars)));
 
