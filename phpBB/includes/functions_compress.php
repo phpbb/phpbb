@@ -138,8 +138,16 @@ class compress
 	{
 		if (isset($this->filelist[$name]))
 		{
+			$start = $name;
+			$ext = '';
 			$this->filelist[$name]++;
-			return $name . '.' . $this->filelist[$name];
+
+			if (($pos = strrpos($name, '.')) !== false) {
+				$start = substr($name, 0, $pos);
+				$ext = substr($name, $pos);
+			}
+
+			return $start . '_' . $this->filelist[$name] . $ext;
 		}
 
 		$this->filelist[$name] = 0;
