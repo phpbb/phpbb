@@ -30,7 +30,6 @@ class acp_profile
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 		global $request;
-		global $phpbb_dispatcher;
 
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -876,9 +875,6 @@ class acp_profile
 								);
 							}
 						}
-
-						$vars = array('field_row', 'visibility_ary', 'exclude');
-						extract($phpbb_dispatcher->trigger_event('core.acp_profile_field_edit', compact($vars)));
 
 					break;
 				}
