@@ -117,12 +117,20 @@ function adm_page_footer($copyright_html = true)
 {
 	global $db, $config, $template, $user, $auth, $cache;
 	global $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-	global $request;
-	global $phpbb_dispatcher;
+	global $request, $phpbb_dispatcher;
 
 	// A listener can set this variable to `true` when it overrides this function
 	$adm_page_footer_override = false;
 
+	/**
+	* Execute code and/or overwrite adm_page_footer()
+	*
+	* @event core.adm_page_footer
+	* @var	bool	copyright_html			Shall we display the copyright?
+	* @var	bool	adm_page_footer_override	Shall we return instead of
+	*									running the rest of adm_page_footer()
+	* @since 3.1-A1
+	*/
 	$vars = array('copyright_html', 'adm_page_footer_override');
 	extract($phpbb_dispatcher->trigger_event('core.adm_page_footer', compact($vars)));
 
