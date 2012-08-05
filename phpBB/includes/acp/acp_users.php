@@ -750,6 +750,19 @@ class acp_users
 							}
 
 						break;
+
+						default:
+							/**
+							* Run custom quicktool code
+							*
+							* @event core.acp_users_overview_run_quicktool
+							* @var	array	user_row	Current user data
+							* @var	string	action		Quick tool that should be run
+							* @since 3.1-A1
+							*/
+							$vars = array('action', 'user_row');
+							extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_run_quicktool', compact($vars)));
+						break;
 					}
 
 					// Handle registration info updates
