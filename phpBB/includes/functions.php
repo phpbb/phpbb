@@ -4757,7 +4757,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	$page_header_override = false;
 
 	/**
-	* Execute code and/or overwrite  page_header()
+	* Execute code and/or overwrite page_header()
 	*
 	* @event core.page_header
 	* @var	string	page_title			Page title
@@ -5086,7 +5086,7 @@ function page_footer($run_cron = true)
 	$page_footer_override = false;
 
 	/**
-	* Execute code and/or overwrite  page_footer()
+	* Execute code and/or overwrite page_footer()
 	*
 	* @event core.page_footer
 	* @var	bool	run_cron			Shall we run cron tasks
