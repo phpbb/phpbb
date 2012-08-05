@@ -373,8 +373,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 */
 function validate_config_vars($config_vars, &$cfg_array, &$error)
 {
-	global $phpbb_root_path, $user;
-	global $phpbb_dispatcher;
+	global $phpbb_root_path, $user, $phpbb_dispatcher;
 
 	$type	= 0;
 	$min	= 1;
@@ -552,8 +551,21 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 			break;
 
 			default:
+				/**
+				* Validate a config value
+				*
+				* @event core.validate_config_variable
+				* @var	array	cfg_array	Array with config values
+				* @var	string	config_name	Name of the config we validate
+				* @var	array	config_definition	Array with the options for
+				*									this config
+				* @var	array	error		Array of errors, the errors should
+				*							be strings only, language keys are
+				*							not replaced afterwards
+				* @since 3.1-A1
+				*/
 				$vars = array('cfg_array', 'config_name', 'config_definition', 'error');
-				extract($phpbb_dispatcher->trigger_event('core.validate_config_vars', compact($vars)));
+				extract($phpbb_dispatcher->trigger_event('core.validate_config_variable', compact($vars)));
 			break;
 		}
 	}
