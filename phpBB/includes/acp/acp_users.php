@@ -856,6 +856,18 @@ class acp_users
 							}
 						}
 
+						/**
+						* Modify user data before we update it
+						*
+						* @event core.acp_users_overview_modify_data
+						* @var	array	user_row	Current user data
+						* @var	array	data		Submitted user data
+						* @var	array	sql_ary		User data we udpate
+						* @since 3.1-A1
+						*/
+						$vars = array('user_row', 'data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_modify_data', compact($vars)));
+
 						if ($update_username !== false)
 						{
 							$sql_ary['username'] = $update_username;
