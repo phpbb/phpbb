@@ -270,9 +270,9 @@ class phpbb_revisions_revision
 		$this->db->sql_query($sql);
 
 		$sql = 'UPDATE ' . POSTS_TABLE . '
-			SET post_edit_count = post_edit_count - 1
+			SET post_revision_count = post_revision_count - 1
 			WHERE post_id = ' . $this->get_post_id() . '
-				AND post_edit_count > 0';
+				AND post_revision_count > 0';
 		$this->db->sql_query($sql);
 
 		$this->db->sql_transaction('commit');

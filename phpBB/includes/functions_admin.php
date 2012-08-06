@@ -3159,7 +3159,7 @@ function phpbb_purge_post_revisions($db)
 	$db->sql_query($sql);
 
 	$sql = 'UPDATE ' . POSTS_TABLE . "
-		SET post_edit_count = 0, post_edit_time = 0, post_edit_user = 0, post_edit_reason = ''";
+		SET post_revision_count = 0";
 	$db->sql_query($sql);
 
 	$db->sql_transaction('commit');
