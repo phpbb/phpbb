@@ -1108,8 +1108,17 @@ while ($row = $db->sql_fetchrow($result))
 				'allow_pm'			=> 0,
 			);
 
-			$vars = array('user_cache_data', 'row', 'poster_id');
-			extract($phpbb_dispatcher->trigger_event('core.viewtopic_user_cache_guest', compact($vars)));
+			/**
+			* Modify the guests user data displayed with the posts
+			*
+			* @event core.viewtopic_cache_guest_data
+			* @var	array	user_cache_data	Array with the user's data
+			* @var	int		poster_id	Poster's user id
+			* @var	array	row			Array with original user and post data
+			* @since 3.1-A1
+			*/
+			$vars = array('user_cache_data', 'poster_id', 'row');
+			extract($phpbb_dispatcher->trigger_event('core.viewtopic_cache_guest_data', compact($vars)));
 
 			$user_cache[$poster_id] = $user_cache_data;
 
