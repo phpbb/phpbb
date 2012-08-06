@@ -142,7 +142,10 @@ class compress
 			$ext = '';
 			$this->filelist[$name]++;
 
-			if (($pos = strrpos($name, '.')) !== false) {
+			// Separate the extension off the end of the filename to preserve it
+			$pos = strrpos($name, '.');
+			if ($pos !== false)
+			{
 				$start = substr($name, 0, $pos);
 				$ext = substr($name, $pos);
 			}
