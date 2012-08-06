@@ -967,6 +967,7 @@ CREATE TABLE phpbb_posts (
 	post_edit_reason varchar2(765) DEFAULT '' ,
 	post_edit_user number(8) DEFAULT '0' NOT NULL,
 	post_edit_count number(4) DEFAULT '0' NOT NULL,
+	post_revision_count number(4) DEFAULT '0' NOT NULL,
 	post_edit_locked number(1) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_posts PRIMARY KEY (post_id)
 )

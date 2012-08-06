@@ -1388,6 +1388,7 @@ function get_schema_struct()
 			'post_edit_reason'		=> array('STEXT_UNI', ''),
 			'post_edit_user'		=> array('UINT', 0),
 			'post_edit_count'		=> array('USINT', 0),
+			'post_revision_count'	=> array('USINT', 0),
 			'post_edit_locked'		=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> 'post_id',

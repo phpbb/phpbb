@@ -58,8 +58,8 @@ $lang = array_merge($lang, array(
 		2  => 'Last edited by %2$s on %3$s, edited %1$d times in total.',
 	),
 	'EDITED_REVISIONS_TOTAL'	=> array(
-		1	=> 'Current revision by %2$s on %3$s. <a href="%4$s">%1$d total revision.</a>',
-		2	=> 'Current revision by %2$s on %3$s. <a href="%4$s">%1$d total revisions.</a>',
+		1	=> '<a href="%4$s">View %1$d version.</a>',
+		2	=> '<a href="%4$s">View %1$d versions.</a>',
 	),
 	'EMAIL_TOPIC'			=> 'Email friend',
 	'ERROR_NO_ATTACHMENT'	=> 'The selected attachment does not exist anymore.',

@@ -719,6 +719,7 @@ CREATE TABLE phpbb_posts (
 	post_edit_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	post_edit_user INTEGER DEFAULT 0 NOT NULL,
 	post_edit_count INTEGER DEFAULT 0 NOT NULL,
+	post_revision_count INTEGER DEFAULT 0 NOT NULL,
 	post_edit_locked INTEGER DEFAULT 0 NOT NULL
 );;
 

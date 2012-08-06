@@ -699,6 +699,7 @@ CREATE TABLE phpbb_posts (
 	post_edit_reason varchar(255) DEFAULT '' NOT NULL,
 	post_edit_user INT4 DEFAULT '0' NOT NULL CHECK (post_edit_user >= 0),
 	post_edit_count INT2 DEFAULT '0' NOT NULL CHECK (post_edit_count >= 0),
+	post_revision_count INT2 DEFAULT '0' NOT NULL CHECK (post_revision_count >= 0),
 	post_edit_locked INT2 DEFAULT '0' NOT NULL CHECK (post_edit_locked >= 0),
 	PRIMARY KEY (post_id)
 );

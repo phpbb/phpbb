@@ -1533,6 +1533,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				);
 
 				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
+
+				if ($config['track_post_revisions'])
+				{
+					$sql_data[POSTS_TABLE]['stat'][] = 'post_revision_count = post_revision_count + 1';
+				}
 			}
 			else if (!$data['post_edit_reason'] && $mode == 'edit' && $auth->acl_get('m_edit', $data['forum_id']))
 			{

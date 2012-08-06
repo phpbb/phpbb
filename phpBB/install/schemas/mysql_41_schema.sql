@@ -517,6 +517,7 @@ CREATE TABLE phpbb_posts (
 	post_edit_reason varchar(255) DEFAULT '' NOT NULL,
 	post_edit_user mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	post_edit_count smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+	post_revision_count smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	post_edit_locked tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (post_id),
 	KEY forum_id (forum_id),

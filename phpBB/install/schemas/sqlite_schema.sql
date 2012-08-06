@@ -503,6 +503,7 @@ CREATE TABLE phpbb_posts (
 	post_edit_reason text(65535) NOT NULL DEFAULT '',
 	post_edit_user INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_edit_count INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	post_revision_count INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_edit_locked INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
