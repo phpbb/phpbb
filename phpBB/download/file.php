@@ -151,24 +151,31 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
-// If multiple arguments are provided, the precedence is as follows:
-// $download_id, $post_id, $topic_id
-if ($download_id || $post_id)
+if ($download_id || $post_id || $topic_id)
 {
 	$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
 		FROM ' . ATTACHMENTS_TABLE . ' a
-		WHERE ' . ($download_id ? "a.attach_id = $download_id" : "a.post_msg_id = $post_id");
-	$result = $db->sql_query($sql);
-	$attachments = $db->sql_fetchrowset($result);
-	$db->sql_freeresult($result);
-}
-else if ($topic_id)
-{
-	$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
-		FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . " a
-		WHERE p.topic_id = $topic_id
-			AND p.post_attachment = 1
-			AND a.post_msg_id = p.post_id";
+		WHERE ';
+
+	switch (true)
+	{
+		default:
+		case $download_id:
+			// Attachment id (only 1 attachment)
+			$sql .= "a.attach_id = $download_id";
+		break;
+
+		case $post_id:
+			// Post id or private message id (multiple attachments)
+			$sql .= "a.post_msg_id = $post_id";
+		break;
+
+		case $topic_id:
+			// Topic id (multiple attachments)
+			$sql .= "a.topic_id = $topic_id";
+		break;
+	}
+
 	$result = $db->sql_query($sql);
 	$attachments = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
