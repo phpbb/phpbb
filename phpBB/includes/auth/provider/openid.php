@@ -471,7 +471,6 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 					$req_data['USERNAME'] = $error;
 				}
 				$data['username'] = $requested_data['username'];
-				unset($req_data['USERNAME']);
 			}
 
 			if (isset($requested_data['email']))
@@ -482,7 +481,6 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 					$req_data['EMAIL'] = $error;
 				}
 				$data['email'] = $requested_data['email'];
-				unset($req_data['USERNAME']);
 			}
 		}
 
@@ -501,7 +499,14 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 				{
 					$req_data['EMAIL'] = $error;
 				}
-				$data['email'] = $sreg_data['email'];
+				else
+				{
+					$data['email'] = $sreg_data['email'];
+					if (isset($reg_data['EMAIL']))
+					{
+						unset($reg_data['EMAIL']);
+					}
+				}
 			}
 
 			if (isset($sreg_data['dob']))
@@ -526,7 +531,14 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 				{
 					$req_data['USERNAME'] = $error;
 				}
-				$data['username'] = $sreg_data['nickname'];
+				else
+				{
+					$data['username'] = $sreg_data['nickname'];
+					if (isset($req_data['USERNAME']))
+					{
+						unset($req_data['USERNAME']);
+					}
+				}
 			}
 
 			if (isset($sreg_data['gender']))
@@ -546,12 +558,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 
 			if (isset($sreg_data['timezone']))
 			{
-				$registrant_dtz = new DateTimeZone($sreg_data['timezone']);
-
-				$registrant_dt = new DateTime('now', $registrant_dtz);
-
-				// Timezone is in hours, not seconds.
-				$data['tz'] = ($registrant_dt->getOffset()) / (60 * 60);
+				$data['tz'] = $sreg_data['timezone'];
 			}
 		}
 
