@@ -164,18 +164,18 @@ $attachments = ($topic_id || $post_id) ? array() : false;
 // $download_id, $post_id, $topic_id
 if ($download_id)
 {
-	$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
-		FROM ' . ATTACHMENTS_TABLE . "
-		WHERE attach_id = $download_id";
+	$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
+		FROM ' . ATTACHMENTS_TABLE . " a
+		WHERE a.attach_id = $download_id";
 	$result = $db->sql_query($sql);
 	$attachment = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 }
 else if ($post_id)
 {
-	$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
-		FROM ' . ATTACHMENTS_TABLE . "
-		WHERE post_msg_id = $post_id";
+	$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
+		FROM ' . ATTACHMENTS_TABLE . " a
+		WHERE a.post_msg_id = $post_id";
 
 	$result = $db->sql_query($sql);
 	$attachments = $db->sql_fetchrowset($result);
