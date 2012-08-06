@@ -167,7 +167,7 @@ if ($download_id)
 	$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
 		FROM ' . ATTACHMENTS_TABLE . "
 		WHERE attach_id = $download_id";
-	$result = $db->sql_query_limit($sql, 1);
+	$result = $db->sql_query($sql);
 	$attachment = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 }
