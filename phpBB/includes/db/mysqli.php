@@ -196,7 +196,7 @@ class dbal_mysqli extends dbal
 
 				if ($cache_ttl)
 				{
-					$cache->sql_save($query, $this->query_result, $cache_ttl);
+					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
 			}
 			else if (defined('DEBUG_EXTRA'))
