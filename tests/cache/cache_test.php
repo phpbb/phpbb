@@ -85,18 +85,21 @@ class phpbb_cache_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$cache = new phpbb_cache_service($driver);
 
-		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'foo\'';
+		$sql = "SELECT * FROM phpbb_config
+			WHERE config_name = 'foo'";
 		$result = $db->sql_query($sql, 300);
 		$first_result = $db->sql_fetchrow($result);
 
 		$this->assertFileExists($this->cache_dir . 'sql_' . md5($sql) . '.php');
 
-		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'foo\'';
+		$sql = "SELECT * FROM phpbb_config
+			WHERE config_name = 'foo'";
 		$result = $db->sql_query($sql, 300);
 
 		$this->assertEquals($first_result, $db->sql_fetchrow($result));
 
-		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'bar\'';
+		$sql = "SELECT * FROM phpbb_config
+			WHERE config_name = 'bar'";
 		$result = $db->sql_query($sql, 300);
 
 		$this->assertNotEquals($first_result, $db->sql_fetchrow($result));
