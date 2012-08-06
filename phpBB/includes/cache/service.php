@@ -332,7 +332,6 @@ class phpbb_cache_service
 			$parsed_array = array();
 		}
 
-		$reparse = false;
 		$filename = $phpbb_root_path . 'styles/' . $style['style_path'] . '/style.cfg';
 
 		if (!file_exists($filename))
@@ -342,17 +341,13 @@ class phpbb_cache_service
 
 		if (!isset($parsed_array['filetime']) || (($config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
 		{
-			$reparse = true;
-		}
-
-		// Re-parse cfg file
-		if ($reparse)
-		{
+			// Re-parse cfg file
 			$parsed_array = parse_cfg_file($filename);
 			$parsed_array['filetime'] = @filemtime($filename);
 
 			$this->driver->put('_cfg_' . $style['style_path'], $parsed_array);
 		}
+
 		return $parsed_array;
 	}
 
