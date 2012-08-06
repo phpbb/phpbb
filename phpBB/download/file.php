@@ -140,18 +140,6 @@ $archive = $request->variable('archive', '.tar');
 $mode = request_var('mode', '');
 $thumbnail = request_var('t', false);
 
-// Ensure we're only performing one operation
-if ($download_id)
-{
-	$topic_id = false;
-	$post_id = false;
-}
-
-if ($post_id)
-{
-	$topic_id = false;
-}
-
 // Start session management, do not update session page.
 $user->session_begin(false);
 $auth->acl($user->data);
@@ -172,6 +160,8 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 $attachment = ($download_id) ? array() : false;
 $attachments = ($topic_id || $post_id) ? array() : false;
 
+// If multiple arguments are provided, the precedence is as follows:
+// $download_id, $post_id, $topic_id
 if ($download_id)
 {
 	$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
@@ -181,25 +171,23 @@ if ($download_id)
 	$attachment = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 }
+else if ($post_id)
+{
+	$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
+		FROM ' . ATTACHMENTS_TABLE . "
+		WHERE post_msg_id = $post_id";
 
-if ($topic_id)
+	$result = $db->sql_query($sql);
+	$attachments = $db->sql_fetchrowset($result);
+	$db->sql_freeresult($result);
+}
+else if ($topic_id)
 {
 	$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
 		FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . " a
 		WHERE p.topic_id = $topic_id
 			AND p.post_attachment = 1
 			AND a.post_msg_id = p.post_id";
-
-	$result = $db->sql_query($sql);
-	$attachments = $db->sql_fetchrowset($result);
-	$db->sql_freeresult($result);
-}
-
-if ($post_id)
-{
-	$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
-		FROM ' . ATTACHMENTS_TABLE . "
-		WHERE post_msg_id = $post_id";
 
 	$result = $db->sql_query($sql);
 	$attachments = $db->sql_fetchrowset($result);
