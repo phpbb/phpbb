@@ -151,9 +151,6 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
-$attachment = ($download_id) ? array() : false;
-$attachments = ($topic_id || $post_id) ? array() : false;
-
 // If multiple arguments are provided, the precedence is as follows:
 // $download_id, $post_id, $topic_id
 if ($download_id)
@@ -162,7 +159,7 @@ if ($download_id)
 		FROM ' . ATTACHMENTS_TABLE . " a
 		WHERE a.attach_id = $download_id";
 	$result = $db->sql_query($sql);
-	$attachment = $db->sql_fetchrow($result);
+	$attachments = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
 }
 else if ($post_id)
@@ -193,10 +190,14 @@ else
 	trigger_error('NO_ATTACHMENT_SELECTED');
 }
 
-if (!$attachment && !$attachments)
+if (empty($attachments))
 {
 	send_status_line(404, 'Not Found');
 	trigger_error('ERROR_NO_ATTACHMENT');
+}
+else if ($download_id)
+{
+	$attachment = current($attachments);
 }
 
 if ($attachment && ((!$attachment['in_message'] && !$config['allow_attachments']) || ($attachment['in_message'] && !$config['allow_pm_attach'])))
