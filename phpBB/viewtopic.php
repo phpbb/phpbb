@@ -1174,8 +1174,17 @@ while ($row = $db->sql_fetchrow($result))
 				'author_profile'	=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour']),
 			);
 
-			$vars = array('user_cache_data', 'row', 'poster_id');
-			extract($phpbb_dispatcher->trigger_event('core.viewtopic_user_cache', compact($vars)));
+			/**
+			* Modify the users' data displayed with their posts
+			*
+			* @event core.viewtopic_cache_user_data
+			* @var	array	user_cache_data	Array with the user's data
+			* @var	int		poster_id	Poster's user id
+			* @var	array	row			Array with original user and post data
+			* @since 3.1-A1
+			*/
+			$vars = array('user_cache_data', 'poster_id', 'row');
+			extract($phpbb_dispatcher->trigger_event('core.viewtopic_cache_user_data', compact($vars)));
 
 			$user_cache[$poster_id] = $user_cache_data;
 
