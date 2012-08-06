@@ -1025,6 +1025,14 @@ fieldset.submit-buttons legend {
 	display: none;
 }
 
+fieldset.skip-button {
+	text-align: right;
+}
+
+.rtl fieldset.skip-button {
+	text-align: left;
+}
+
 /* Input field styles
 ---------------------------------------- */
 
