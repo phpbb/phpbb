@@ -150,8 +150,16 @@ class acp_forums
 						'forum_password_unset'	=> request_var('forum_password_unset', false),
 					);
 
+					/**
+					* Request forum data and operate on it (parse texts, etc.)
+					*
+					* @event core.acp_manage_forums_request_data
+					* @var	string	action		Type of the action: add|edit
+					* @var	array	forum_data	Array with new forum data
+					* @since 3.1-A1
+					*/
 					$vars = array('action', 'forum_data');
-					extract($phpbb_dispatcher->trigger_event('core.acp_forums_request_forum_data', compact($vars)));
+					extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_request_data', compact($vars)));
 
 					// On add, add empty forum_options... else do not consider it (not updating it)
 					if ($action == 'add')
