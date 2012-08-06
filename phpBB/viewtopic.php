@@ -1042,6 +1042,7 @@ while ($row = $db->sql_fetchrow($result))
 		'post_edit_reason'	=> $row['post_edit_reason'],
 		'post_edit_user'	=> $row['post_edit_user'],
 		'post_edit_locked'	=> $row['post_edit_locked'],
+		'post_revision_count' => $row['post_revision_count'],
 
 		// Make sure the icon actually exists
 		'icon_id'			=> (isset($icons[$row['icon_id']]['img'], $icons[$row['icon_id']]['height'], $icons[$row['icon_id']]['width'])) ? $row['icon_id'] : 0,
