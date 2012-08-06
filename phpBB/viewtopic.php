@@ -1784,8 +1784,18 @@ if (!request_var('t', 0) && !empty($topic_id))
 
 $page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], floor($start / $config['posts_per_page']) + 1) : '');
 
+/**
+* You can use this event to modify the page title of the viewtopic page
+*
+* @event core.viewtopic_modify_page_title
+* @var	string	page_title		Title of the index page
+* @var	array	topic_data		Array with topic data
+* @var	int		forum_id		Forum ID of the topic
+* @var	int		start			Start offset used to calculate the page
+* @since 3.1-A1
+*/
 $vars = array('page_title', 'topic_data', 'forum_id', 'start');
-extract($phpbb_dispatcher->trigger_event('core.viewtopic_page_header', compact($vars)));
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_page_title', compact($vars)));
 
 // Output the page
 page_header($page_title, true, $forum_id);
