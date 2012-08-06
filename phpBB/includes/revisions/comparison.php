@@ -83,7 +83,7 @@ class phpbb_revisions_comparison
 		$first_id = $this->first->get_id();
 		$last_id = $this->last->get_id();
 
-		if ($last_id && $first_id > $last_id)
+		if (!$first_id || ($last_id && $first_id > $last_id))
 		{
 			$revisions = array_reverse($revisions, true);
 		}
@@ -116,7 +116,10 @@ class phpbb_revisions_comparison
 	{
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
+
 		$current = $post->get_current_revision();
+		$revisions[] = $current;
+
 		$range_ids = $this->get_comparison_range_ids($revisions);
 
 		$revision_number = 1;
@@ -138,6 +141,7 @@ class phpbb_revisions_comparison
 				'USERNAME'			=> $revision->get_username(),
 				'USER_AVATAR'		=> $revision->get_avatar(20, 20),
 				'PROTECTED'			=> $revision->is_protected(),
+				'IS_CURRENT_POST'	=> $revision->is_current(),
 
 				'FIRST_IN_COMPARE'	=> $revision->get_id() == $first_id,
 				'LAST_IN_COMPARE'	=> $revision->get_id() == $last_id,
