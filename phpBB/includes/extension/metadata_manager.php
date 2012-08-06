@@ -320,8 +320,13 @@ class phpbb_extension_metadata_manager
 			'MD_VERSION'		=> (isset($this->metadata['version'])) ? htmlspecialchars($this->metadata['version']) : '',
 			'MD_TIME'			=> (isset($this->metadata['time'])) ? htmlspecialchars($this->metadata['time']) : '',
 			'MD_LICENCE'		=> htmlspecialchars($this->metadata['licence']),
-			'MD_REQUIRE_PHP'	=> (isset($this->metadata['require']['php'])) ? htmlspecialchars($this->metadata['require']['php']) : '',
-			'MD_REQUIRE_PHPBB'	=> (isset($this->metadata['require']['phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb']) : '',
+
+			'MD_REQUIRE_PHP'		=> (isset($this->metadata['require']['php'])) ? htmlspecialchars($this->metadata['require']['php']) : '',
+			'MD_REQUIRE_PHP_FAIL'	=> !$this->validate_require_php(),
+
+			'MD_REQUIRE_PHPBB'		=> (isset($this->metadata['require']['phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb']) : '',
+			'MD_REQUIRE_PHPBB_FAIL'	=> !$this->validate_require_phpbb(),
+
 			'MD_DISPLAY_NAME'	=> (isset($this->metadata['extra']['display-name'])) ? htmlspecialchars($this->metadata['extra']['display-name']) : '',
 		));
 

@@ -3,7 +3,7 @@
 <a name="maincontent"></a>
 
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
-	
+
 	<h1>{L_EXTENSIONS_ADMIN}</h1>
 
 	<fieldset>
@@ -50,13 +50,13 @@
 	<fieldset>
 		<legend>{L_REQUIREMENTS}</legend>
 		<!-- IF MD_REQUIRE_PHPBB -->
-		<dl>
+		<dl<!-- IF MD_REQUIRE_PHPBB_FAIL --> class="requirements_not_met"<!-- ENDIF -->>
 			<dt><label for="require_phpbb">{L_PHPBB_VERSION}:</label></dt>
 			<dd><p id="require_phpbb">{MD_REQUIRE_PHPBB}</p></dd>
 		</dl>
 		<!-- ENDIF -->
 		<!-- IF MD_REQUIRE_PHP -->
-		<dl>
+		<dl<!-- IF MD_REQUIRE_PHP_FAIL --> class="requirements_not_met"<!-- ENDIF -->>
 			<dt><label for="require_php">{L_PHP_VERSION}:</label></dt>
 			<dd><p id="require_php">{MD_REQUIRE_PHP}</p></dd>
 		</dl>

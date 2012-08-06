@@ -43,7 +43,7 @@ class acp_extensions
 
 		$action = $request->variable('action', 'list');
 		$ext_name = $request->variable('ext_name', '');
-			
+
 		// Cancel action
 		if ($request->is_set_post('cancel'))
 		{
@@ -79,9 +79,14 @@ class acp_extensions
 			break;
 
 			case 'enable_pre':
-				if (!$md_manager->validate_enable() || $phpbb_extension_manager->enabled($ext_name))
+				if (!$md_manager->validate_enable())
 				{
-					trigger_error('EXTENSION_NOT_AVAILABLE');
+					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action));
+				}
+
+				if ($phpbb_extension_manager->enabled($ext_name))
+				{
+					redirect($this->u_action);
 				}
 
 				$this->tpl_name = 'acp_ext_enable';
@@ -95,7 +100,7 @@ class acp_extensions
 			case 'enable':
 				if (!$md_manager->validate_enable())
 				{
-					trigger_error('EXTENSION_NOT_AVAILABLE');
+					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action));
 				}
 
 				if ($phpbb_extension_manager->enable_step($ext_name))
@@ -115,7 +120,7 @@ class acp_extensions
 			case 'disable_pre':
 				if (!$phpbb_extension_manager->enabled($ext_name))
 				{
-					trigger_error('EXTENSION_NOT_AVAILABLE');
+					redirect($this->u_action);
 				}
 
 				$this->tpl_name = 'acp_ext_disable';
