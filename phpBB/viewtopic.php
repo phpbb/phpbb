@@ -987,8 +987,15 @@ $sql_ary = array(
 		AND u.user_id = p.poster_id',
 );
 
+/**
+* Event to modify the SQL query before the post and poster data is queried
+*
+* @event core.viewtopic_get_post_data
+* @var	array	sql_ary		The SQL array to get the data of posts and posters
+* @since 3.1-A1
+*/
 $vars = array('sql_ary');
-extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_userdata', compact($vars)));
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_post_data', compact($vars)));
 
 $sql = $db->sql_build_query('SELECT', $sql_ary);
 $result = $db->sql_query($sql);
