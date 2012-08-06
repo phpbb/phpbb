@@ -145,12 +145,6 @@ $user->session_begin(false);
 $auth->acl($user->data);
 $user->setup('viewtopic');
 
-if (!$download_id && !$post_id && !$topic_id)
-{
-	send_status_line(404, 'Not Found');
-	trigger_error('NO_ATTACHMENT_SELECTED');
-}
-
 if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 {
 	send_status_line(404, 'Not Found');
@@ -192,6 +186,11 @@ else if ($topic_id)
 	$result = $db->sql_query($sql);
 	$attachments = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
+}
+else
+{
+	send_status_line(404, 'Not Found');
+	trigger_error('NO_ATTACHMENT_SELECTED');
 }
 
 if (!$attachment && !$attachments)
