@@ -29,11 +29,32 @@ class phpbb_auth_manager
 	protected $config;
 	protected $user;
 
-	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config)
+	protected $providers = array();
+
+	public function __construct($provider_names, phpbb_request $request, dbal $db, phpbb_config_db $config)
 	{
 		$this->request = $request;
 		$this->db = $db;
 		$this->config = $config;
+
+		$this->load_providers($provider_names);
+	}
+
+	/**
+	 * Loads tasks given by name, wraps them
+	 * and puts them into $this->tasks.
+	 *
+	 * @param array|Traversable $provider_names		Array of strings
+	 *
+	 * @return void
+	 */
+	public function load_providers($provider_names)
+	{
+		foreach ($provider_names as $provider_name)
+		{
+			$provider = new $provider_name($this->request, $this->db, $this->config);
+			$this->providers[] = $provider;
+		}
 	}
 
 	/**
@@ -45,6 +66,11 @@ class phpbb_auth_manager
 	public function set_user(phpbb_user $user)
 	{
  		$this->user = $user;
+
+		foreach ($this->providers as &$provider)
+		{
+			$provider->set_user($this->user);
+		}
  	}
 
 	/**
@@ -56,20 +82,16 @@ class phpbb_auth_manager
 	 */
 	public function get_provider($auth_type)
 	{
-		$provider = 'phpbb_auth_provider_' . $auth_type;
-		if (class_exists($provider))
+		$provider_name = 'phpbb_auth_provider_' . $auth_type;
+		foreach ($this->providers as $provider)
 		{
-			$provider = new $provider($this->request, $this->db, $this->config);
-			if ($this->user instanceof phpbb_user)
+			if ($provider instanceof $provider_name)
 			{
-				$provider->set_user($this->user);
+				return $provider;
 			}
-			return $provider;
 		}
-		else
-		{
-			throw new phpbb_auth_exception('Authentication provider, ' . $provider . ', not found.');
-		}
+
+		throw new phpbb_auth_exception('Authentication provider, ' . $provider . ', not found.');
 	}
 
 	/**
@@ -79,24 +101,7 @@ class phpbb_auth_manager
 	 */
 	public function get_registered_providers()
 	{
-		$providers = array(
-			'native',
-			'apache',
-			'ldap',
-			'openid',
-			'facebook_connect',
-		);
-
-		foreach($providers as &$provider)
-		{
-			$provider = $this->get_provider($provider);
-			if ($this->user instanceof phpbb_user)
-			{
-				$provider->set_user($this->user);
-			}
-		}
-
-		return $providers;
+		return $this->providers;
 	}
 
 	/**
@@ -106,10 +111,8 @@ class phpbb_auth_manager
 	 */
 	public function get_enabled_providers()
 	{
-		$providers = $this->get_registered_providers();
-
 		$enabled_providers = array();
-		foreach($providers as $provider)
+		foreach($this->providers as $provider)
 		{
 			$provider_config = $provider->get_configuration();
 			if($provider_config['OPTIONS']['enabled']['setting'] == true)
@@ -128,10 +131,8 @@ class phpbb_auth_manager
 	 */
 	public function get_common_login_providers()
 	{
-		$providers = $this->get_registered_providers();
-
 		$common_providers = array();
-		foreach($providers as $provider)
+		foreach($this->providers as $provider)
 		{
 			if (!($provider instanceof phpbb_auth_interface_provider_custom_login))
 			{
@@ -149,10 +150,8 @@ class phpbb_auth_manager
 	 */
 	public function get_enabled_common_login_providers()
 	{
-		$providers = $this->get_registered_providers();
-
 		$enabled_common_providers = array();
-		foreach ($providers as $provider)
+		foreach ($this->providers as $provider)
 		{
 			$provider_config = $provider->get_configuration();
 			if (!($provider instanceof phpbb_auth_interface_provider_custom_login) && $provider_config['OPTIONS']['enabled']['setting'] == 1)

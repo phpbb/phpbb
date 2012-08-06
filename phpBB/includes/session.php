@@ -502,7 +502,7 @@ class phpbb_session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx, $phpbb_auth_manager, $request;
+		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx, $phpbb_auth_manager, $request, $phpbb_extension_manager;
 
 		$this->data = array();
 
@@ -567,7 +567,7 @@ class phpbb_session
 
 		if (!($phpbb_auth_manager instanceof phpbb_auth_manager))
 		{
-			$phpbb_auth_manager = new phpbb_auth_manager($request, $db, $config);
+			$phpbb_auth_manager = new phpbb_auth_manager(new phpbb_auth_extension_provider_locator($phpbb_extension_manager), $request, $db, $config);
 		}
 		$providers = $phpbb_auth_manager->get_enabled_providers();
 		foreach ($providers as $provider)
