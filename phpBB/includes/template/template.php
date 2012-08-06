@@ -139,7 +139,7 @@ class phpbb_template
 	*/
 	public function display($handle)
 	{
-		$result = $this->call_hook($handle);
+		$result = $this->call_hook($handle, __FUNCTION__);
 		if ($result !== false)
 		{
 			return $result[0];
@@ -174,16 +174,17 @@ class phpbb_template
 	* Calls hook if any is defined.
 	*
 	* @param string $handle Template handle being displayed.
+	* @param string $method Method name of the caller.
 	*/
-	private function call_hook($handle)
+	private function call_hook($handle, $method)
 	{
 		global $phpbb_hook;
 
-		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $this))
+		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, $method), $handle, $this))
 		{
-			if ($phpbb_hook->hook_return(array(__CLASS__, __FUNCTION__)))
+			if ($phpbb_hook->hook_return(array(__CLASS__, $method)))
 			{
-				$result = $phpbb_hook->hook_return_result(array(__CLASS__, __FUNCTION__));
+				$result = $phpbb_hook->hook_return_result(array(__CLASS__, $method));
 				return array($result);
 			}
 		}

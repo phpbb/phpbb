@@ -132,7 +132,7 @@ $phpbb_subscriber_loader->load();
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
-$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('phpbb_template', 'display')));
 
 foreach ($cache->obtain_hooks() as $hook)
 {
