@@ -153,21 +153,11 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 
 // If multiple arguments are provided, the precedence is as follows:
 // $download_id, $post_id, $topic_id
-if ($download_id)
+if ($download_id || $post_id)
 {
 	$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
-		FROM ' . ATTACHMENTS_TABLE . " a
-		WHERE a.attach_id = $download_id";
-	$result = $db->sql_query($sql);
-	$attachments = $db->sql_fetchrowset($result);
-	$db->sql_freeresult($result);
-}
-else if ($post_id)
-{
-	$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
-		FROM ' . ATTACHMENTS_TABLE . " a
-		WHERE a.post_msg_id = $post_id";
-
+		FROM ' . ATTACHMENTS_TABLE . ' a
+		WHERE ' . ($download_id ? "a.attach_id = $download_id" : "a.post_msg_id = $post_id");
 	$result = $db->sql_query($sql);
 	$attachments = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
@@ -179,7 +169,6 @@ else if ($topic_id)
 		WHERE p.topic_id = $topic_id
 			AND p.post_attachment = 1
 			AND a.post_msg_id = p.post_id";
-
 	$result = $db->sql_query($sql);
 	$attachments = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
