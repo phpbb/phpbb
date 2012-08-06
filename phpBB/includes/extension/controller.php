@@ -64,14 +64,14 @@ abstract class phpbb_extension_controller implements phpbb_extension_controller_
 	public function __construct()
 	{
 		global $request, $db, $user, $template, $config;
-		global $php_ext, $phpbb_root_path;
+		global $phpEx, $phpbb_root_path;
 
 		$this->request = $request;
 		$this->db = $db;
 		$this->user = $user;
 		$this->template = $template;
 		$this->config = $config;
-		$this->php_ext = $php_ext;
+		$this->php_ext = $phpEx;
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 }
