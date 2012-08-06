@@ -90,7 +90,7 @@ class phpbb_cache_test extends phpbb_database_test_case
 		$result = $db->sql_query($sql, 300);
 		$first_result = $db->sql_fetchrow($result);
 
-		$this->assertFileExists($this->cache_dir . 'sql_' . md5($sql) . '.php');
+		$this->assertFileExists($this->cache_dir . 'sql_' . md5(preg_replace('/[\n\r\s\t]+/', ' ', $sql)) . '.php');
 
 		$sql = "SELECT * FROM phpbb_config
 			WHERE config_name = 'foo'";
