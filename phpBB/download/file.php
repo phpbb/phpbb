@@ -426,6 +426,7 @@ if ($attachment)
 if ($attachments)
 {
 	require_once $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
+	require_once $phpbb_root_path . 'includes/functions_upload.' . $phpEx;
 	phpbb_increment_downloads($db, $attachment_ids);
 
 	if (!in_array($archive, compress::methods()))
@@ -433,8 +434,40 @@ if ($attachments)
 		$archive = '.tar';
 	}
 
+	if ($post_id)
+	{
+		$sql = 'SELECT `post_subject`
+		FROM ' . POSTS_TABLE . "
+		WHERE post_id = $post_id";
+	}
+	else
+	{
+		$sql = 'SELECT `topic_title`
+		FROM ' . TOPICS_TABLE . "
+		WHERE topic_id = $topic_id";
+	}
+
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$filespec = new filespec(array(
+		'tmp_name' => '',
+		'size' => 0,
+		'name' => ($post_id) ? $row['post_subject'] : $row['topic_title'],
+		'type' => '',
+	));
+	$filespec->clean_filename('real');
+	$suffix = '_' . (($post_id) ? $post_id : $topic_id) . '_' . $filespec->realname;
+
+	// Remove trailing full stop
+	if (strrpos($suffix, '.') === strlen($suffix) - 1)
+	{
+		$suffix = substr($suffix, 0, strlen($suffix) - 1);
+	}
+
 	$store_name = 'att_' . time() . '_' . unique_id();
-	$archive_name = 'attachments';
+	$archive_name = 'attachments' . $suffix;
 
 	if ($archive === '.zip')
 	{
@@ -447,7 +480,13 @@ if ($attachments)
 
 	foreach ($attachments as $attach)
 	{
-		$compress->add_custom_file("{$phpbb_root_path}files/{$attach['physical_filename']}", $attach['real_filename']);
+		$prefix = '';
+		if ($topic_id)
+		{
+			$prefix = $attach['post_msg_id'] . '_';
+		}
+
+		$compress->add_custom_file("{$phpbb_root_path}files/{$attach['physical_filename']}", "{$prefix}{$attach['real_filename']}");
 	}
 
 	$compress->close();
