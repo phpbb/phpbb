@@ -290,11 +290,8 @@ else if ($download_id)
 			}
 		}
 
-		// disallowed?
-		$extensions = $cache->obtain_attach_extensions($row['forum_id']);
-
-		$attachments_filtered = phpbb_filter_disallowed_extensions($extensions, array($attachment));
-		if (empty($attachments_filtered))
+		$extensions = array();
+		if (!extension_allowed($row['forum_id'], $attachment['extension'], $extensions))
 		{
 			send_status_line(404, 'Forbidden');
 			trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
