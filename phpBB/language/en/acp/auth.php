@@ -40,8 +40,12 @@ $lang = array_merge($lang, array(
 	'ALLOW_ADMIN_LOGIN_EXPLAIN'	=> 'Allows a user to reauthenticate for access to the administration control panel. Enabling reauthentication for authentication providers not solely under the administrators control is not reccomended.',
 	'AUTH_ENABLE'				=> 'Enable Authentication Provider',
 
+	'APACHE'					=> 'Apache',
 	'APACHE_SETUP_BEFORE_USE'	=> 'You have to setup apache authentication before you switch phpBB to this authentication method. Keep in mind that the username you use for apache authentication has to be the same as your phpBB username. Apache authentication can only be used with mod_php (not with a CGI version) and safe_mode disabled.',
 
+	'FACEBOOK_CONNECT'	=> 'Facebook Connect',
+
+	'LDAP'							=> 'LDAP',
 	'LDAP_DN'						=> 'LDAP base <var>dn</var>',
 	'LDAP_DN_EXPLAIN'				=> 'This is the Distinguished Name, locating the user information, e.g. <samp>o=My Company,c=US</samp>.',
 	'LDAP_EMAIL'					=> 'LDAP email attribute',
@@ -61,4 +65,8 @@ $lang = array_merge($lang, array(
 	'LDAP_USER_EXPLAIN'				=> 'Leave blank to use anonymous binding. If filled in phpBB uses the specified distinguished name on login attempts to find the correct user, e.g. <samp>uid=Username,ou=MyUnit,o=MyCompany,c=US</samp>. Required for Active Directory Servers.',
 	'LDAP_USER_FILTER'				=> 'LDAP user filter',
 	'LDAP_USER_FILTER_EXPLAIN'		=> 'Optionally you can further limit the searched objects with additional filters. For example <samp>objectClass=posixGroup</samp> would result in the use of <samp>(&amp;(uid=$username)(objectClass=posixGroup))</samp>',
+
+	'NATIVE'	=> 'Native',
+
+	'OPENID'	=> 'OpenID',
 ));

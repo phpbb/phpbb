@@ -73,12 +73,7 @@ class acp_auth
 		{
 			$provider_configuration = $provider->get_configuration();
 
-			$provider_name = explode('_', $provider_configuration['NAME']);
-			foreach($provider_name as &$name_part)
-			{
-				$name_part = ucfirst($name_part);
-			}
-			$provider_name = implode(' ', $provider_name);
+			$provider_name = $user->lang[strtoupper($provider->name)];
 
 			$err = false;
 
@@ -104,7 +99,7 @@ class acp_auth
 			$init = false;
 			foreach ($provider_configuration['OPTIONS'] as $config_key_orig => $vars)
 			{
-				$config_key = 'auth_provider_' . $provider_configuration['NAME'] . '_' . $config_key_orig;
+				$config_key = 'auth_provider_' . $provider->name . '_' . $config_key_orig;
 				if ($config_key_orig === 'enabled' && $cfg_array[$config_key] == true && $provider instanceof phpbb_auth_interface_provider_acp_init)
 				{
 					$init = true;

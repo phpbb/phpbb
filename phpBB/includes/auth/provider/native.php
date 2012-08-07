@@ -33,6 +33,8 @@ class phpbb_auth_provider_native extends phpbb_auth_abstract_provider
 	protected $SID;
 	protected $_SID;
 
+	public $name = 'native';
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -55,7 +57,6 @@ class phpbb_auth_provider_native extends phpbb_auth_abstract_provider
 	public function get_configuration()
 	{
 		return array(
-			'NAME'		=> 'native',
 			'OPTIONS'	=> array(
 				'enabled'	=> array('setting' => $this->config['auth_provider_native_enabled'],	'lang' => 'AUTH_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => false),
 				'admin'		=> array('setting' => $this->config['auth_provider_native_admin'],		'lang' => 'ALLOW_ADMIN_LOGIN',	'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
@@ -135,7 +136,7 @@ class phpbb_auth_provider_native extends phpbb_auth_abstract_provider
 			'agreed'		=> 'true',
 			'change_lang'	=> 0,
 
-			'auth_provider'	=> 'native',
+			'auth_provider'	=> $this->name,
 			'auth_action'	=> 'register',
 			'auth_step'		=> 'process',
 		);

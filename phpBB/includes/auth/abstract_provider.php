@@ -33,6 +33,13 @@ abstract class phpbb_auth_abstract_provider implements phpbb_auth_interface_prov
 	protected $SID;
 	protected $_SID;
 
+
+	/**
+	 * Stores the name of the provider.
+	 * @var string
+	 */
+	public $name;
+
 	/**
 	 * Sets $this->user for when the provider needs to modify the user.
 	 *

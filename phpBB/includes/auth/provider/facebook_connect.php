@@ -33,6 +33,8 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_abstract_provider
 	protected $SID;
 	protected $_SID;
 
+	public $name = 'facebook_connect';
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -55,7 +57,6 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_abstract_provider
 	public function get_configuration()
 	{
 		return array(
-			'NAME'		=> 'facebook_connect',
 			'OPTIONS'	=> array(
 				'enabled'	=> array('setting' => $this->config['auth_provider_facebook_connect_enabled'],	'lang' => 'AUTH_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => false),
 				'admin'		=> array('setting' => $this->config['auth_provider_facebook_connect_admin'],	'lang' => 'ALLOW_ADMIN_LOGIN',	'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),

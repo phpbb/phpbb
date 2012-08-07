@@ -53,7 +53,7 @@ class phpbb_auth_manager
 		foreach ($provider_names as $provider_name)
 		{
 			$provider = new $provider_name($this->request, $this->db, $this->config);
-			$this->providers[] = $provider;
+			$this->providers[$provider->name] = $provider;
 		}
 	}
 
@@ -82,16 +82,12 @@ class phpbb_auth_manager
 	 */
 	public function get_provider($auth_type)
 	{
-		$provider_name = 'phpbb_auth_provider_' . $auth_type;
-		foreach ($this->providers as $provider)
+		if (isset($this->providers[$auth_type]))
 		{
-			if ($provider instanceof $provider_name)
-			{
-				return $provider;
-			}
+			return $this->providers[$auth_type];
 		}
 
-		throw new phpbb_auth_exception('Authentication provider, ' . $provider . ', not found.');
+		throw new phpbb_auth_exception('Authentication provider, phpbb_auth_provider_' . $auth_type . ', not found.');
 	}
 
 	/**
