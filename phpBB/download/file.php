@@ -151,7 +151,7 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
-$attachment_ids = array();
+$attachments = $attachment_ids = array();
 if ($download_id || $post_id || $topic_id)
 {
 	$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
