@@ -45,17 +45,6 @@
 		</div>
 	<!-- ENDIF -->
 
-	<!-- IF S_HAS_ATTACHMENTS -->
-		<div class="dl_links">
-			<strong>{L_DOWNLOAD_ALL_ATTACH}:</strong>
-			<ul>
-			<!-- BEGIN dl_method -->
-				<li>[ <a href="{dl_method.LINK}">{dl_method.TYPE}</a> ]</li>
-			<!-- END dl_method -->
-			</ul>
-		</div>
-	<!-- ENDIF -->
-
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
 			<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS} &bull; 
@@ -278,6 +267,17 @@
 		<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->"><a href="{U_POST_REPLY_TOPIC}" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->"><span></span><!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED_SHORT}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF --></a></div>
 	<!-- ENDIF -->
 	</div>
+
+	<!-- IF S_HAS_ATTACHMENTS -->
+		<div class="dl_links">
+			<strong>{L_DOWNLOAD_ALL_ATTACH}:</strong>
+			<ul>
+			<!-- BEGIN dl_method -->
+				<li>[ <a href="{dl_method.LINK}">{dl_method.TYPE}</a> ]</li>
+			<!-- END dl_method -->
+			</ul>
+		</div>
+	<!-- ENDIF -->
 
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
