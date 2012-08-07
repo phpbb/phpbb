@@ -296,7 +296,7 @@ else if ($download_id)
 }
 else
 {
-	// sizeof($attachments) > 1
+	// sizeof($attachments) >= 1
 	if ($post_id)
 	{
 		$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
