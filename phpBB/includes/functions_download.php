@@ -625,11 +625,11 @@ function phpbb_increment_downloads($db, $ids)
 function phpbb_filter_disallowed_extensions($extensions, $attachments)
 {
 	$result = array();
-	foreach ($attachments as $row)
+	foreach ($attachments as $key => $row)
 	{
 		if (isset($extensions['_allowed_'][$row['extension']]))
 		{
-			$result[] = $row;
+			$result[$key] = $row;
 		}
 	}
 
