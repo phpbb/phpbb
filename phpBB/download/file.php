@@ -333,8 +333,8 @@ else
 
 if ($attachments && sizeof($attachments) < 2)
 {
+	$attachment = current($attachments);
 	$attachments = false;
-	$attachment = $attachments[0];
 }
 
 if ($attachment)
