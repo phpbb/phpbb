@@ -191,6 +191,11 @@ if (empty($attachments))
 	send_status_line(404, 'Not Found');
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
+else if (!download_allowed())
+{
+	send_status_line(403, 'Forbidden');
+	trigger_error($user->lang['LINKAGE_FORBIDDEN']);
+}
 else if ($download_id)
 {
 	// sizeof($attachments) == 1
@@ -333,12 +338,6 @@ else
 		send_status_line(403, 'Forbidden');
 		trigger_error('SORRY_AUTH_VIEW_ATTACH');
 	}
-}
-
-if (!download_allowed())
-{
-	send_status_line(403, 'Forbidden');
-	trigger_error($user->lang['LINKAGE_FORBIDDEN']);
 }
 
 if ($attachments && sizeof($attachments) < 2)
