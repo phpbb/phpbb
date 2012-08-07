@@ -193,13 +193,19 @@ if (empty($attachments))
 }
 else if ($download_id)
 {
+	// sizeof($attachments) == 1
 	$attachment = current($attachments);
-}
 
-if ($attachment && ((!$attachment['in_message'] && !$config['allow_attachments']) || ($attachment['in_message'] && !$config['allow_pm_attach'])))
+	// in_message = 1 means it's in a private message
+	if (!$attachment['in_message'] && !$config['allow_attachments'] || $attachment['in_message'] && !$config['allow_pm_attach'])
+	{
+		send_status_line(404, 'Not Found');
+		trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
+	}
+}
+else
 {
-	send_status_line(404, 'Not Found');
-	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
+	// sizeof($attachments) > 1
 }
 
 $row = array();
