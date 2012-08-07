@@ -151,6 +151,7 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
+$attachment_ids = array();
 if ($download_id || $post_id || $topic_id)
 {
 	$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
@@ -177,7 +178,13 @@ if ($download_id || $post_id || $topic_id)
 	}
 
 	$result = $db->sql_query($sql);
-	$attachments = $db->sql_fetchrowset($result);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$attachment_id = (int) $row['attach_id'];
+
+		$attachment_ids[$attachment_id] = $attachment_id;
+		$attachments[$attachment_id] = $row;
+	}
 	$db->sql_freeresult($result);
 }
 else
@@ -357,15 +364,9 @@ if ($attachment)
 
 if ($attachments)
 {
-	$attach_ids = array();
-	foreach ($attachments as $attach)
-	{
-		$attach_ids[] = $attach['attach_id'];
-	}
-
 	$sql = 'SELECT attach_id, is_orphan, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype, filesize, filetime
 		FROM ' . ATTACHMENTS_TABLE . '
-		WHERE ' . $db->sql_in_set('attach_id', $attach_ids);
+		WHERE ' . $db->sql_in_set('attach_id', $attachment_ids);
 
 	$result = $db->sql_query($sql);
 	$attachments = $db->sql_fetchrowset($result);
@@ -434,7 +435,7 @@ if ($attachment)
 if ($attachments)
 {
 	require_once $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
-	phpbb_increment_downloads($db, $attach_ids);
+	phpbb_increment_downloads($db, $attachment_ids);
 
 	if (!in_array($archive, compress::methods()))
 	{
