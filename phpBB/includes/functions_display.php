@@ -1298,6 +1298,11 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 */
 function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $phpEx)
 {
+	if (!class_exists('compress'))
+	{
+		require $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
+	}
+
 	$methods = compress::methods();
 	$links = array();
 

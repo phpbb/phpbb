@@ -1318,7 +1318,6 @@ $template->assign_vars(array(
 	'S_HAS_ATTACHMENTS' => !empty($attachments),
 ));
 
-require_once $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
 $methods = phpbb_gen_download_links('topic_id', $topic_id, $phpbb_root_path, $phpEx);
 foreach ($methods as $method)
 {
