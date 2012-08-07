@@ -426,7 +426,6 @@ if ($attachment)
 if ($attachments)
 {
 	require_once $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
-	require_once $phpbb_root_path . 'includes/functions_upload.' . $phpEx;
 	phpbb_increment_downloads($db, $attachment_ids);
 
 	if (!in_array($archive, compress::methods()))
@@ -451,20 +450,11 @@ if ($attachments)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	$filespec = new filespec(array(
-		'tmp_name' => '',
-		'size' => 0,
-		'name' => ($post_id) ? $row['post_subject'] : $row['topic_title'],
-		'type' => '',
-	));
-	$filespec->clean_filename('real');
-	$suffix = '_' . (($post_id) ? $post_id : $topic_id) . '_' . $filespec->realname;
-
-	// Remove trailing full stop
-	if (strrpos($suffix, '.') === strlen($suffix) - 1)
-	{
-		$suffix = substr($suffix, 0, strlen($suffix) - 1);
-	}
+	$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
+	$clean_name = ($post_id) ? $row['post_subject'] : $row['topic_title'];
+	$clean_name = rawurlencode(str_replace($bad_chars, '_', strtolower($clean_name)));
+	$clean_name = preg_replace("/%(\w{2})/", '_', $clean_name);
+	$suffix = '_' . (($post_id) ? $post_id : $topic_id) . '_' . $clean_name;
 
 	$store_name = 'att_' . time() . '_' . unique_id();
 	$archive_name = 'attachments' . $suffix;
