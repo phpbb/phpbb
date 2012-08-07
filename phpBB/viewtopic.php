@@ -15,7 +15,6 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
 include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 
 // Start session management
@@ -1319,6 +1318,7 @@ $template->assign_vars(array(
 	'S_HAS_ATTACHMENTS' => !empty($attachments),
 ));
 
+require_once $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
 $methods = phpbb_gen_download_links('topic_id', $topic_id, $phpbb_root_path, $phpEx);
 foreach ($methods as $method)
 {
