@@ -298,9 +298,9 @@ else
 	if ($post_id)
 	{
 		$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
-			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
-			WHERE p.post_id = ' . (($attachment) ? $attachment['post_msg_id'] : $post_id) . '
-				AND p.forum_id = f.forum_id';
+			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f
+			WHERE p.post_id = $post_id
+				AND p.forum_id = f.forum_id";
 	}
 	else if ($topic_id)
 	{
