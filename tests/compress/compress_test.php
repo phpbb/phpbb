@@ -17,11 +17,18 @@ class phpbb_compress_test extends phpbb_test_case
 	const ARCHIVE_DIR = '/archive/';
 
 	private $path;
+
 	protected $filelist = array(
 		'1.txt',
 		'dir/2.txt',
 		'dir/3.txt',
 		'dir/subdir/4.txt',
+	);
+
+	protected $conflicts = array(
+		'1_1.txt',
+		'1_2.txt',
+		'dir/2_1.txt',
 	);
 
 	protected function setUp()
@@ -81,17 +88,26 @@ class phpbb_compress_test extends phpbb_test_case
 		);
 		$compress->add_custom_file($this->path . 'dir/3.txt', 'dir/3.txt');
 		$compress->add_data(file_get_contents($this->path . 'dir/subdir/4.txt'), 'dir/subdir/4.txt');
+
+		// Add multiples of the same file to check conflicts are handled
+		$compress->add_file($this->path . '1.txt', $this->path);
+		$compress->add_file($this->path . '1.txt', $this->path);
+		$compress->add_file($this->path . 'dir/2.txt', $this->path);
 	}
 
-	protected function valid_extraction()
+	protected function valid_extraction($extra = array())
 	{
-		foreach ($this->filelist as $filename)
+		$filelist = array_merge($this->filelist, $extra);
+
+		foreach ($filelist as $filename)
 		{
 			$path = __DIR__ . self::EXTRACT_DIR . $filename;
 			$this->assertTrue(file_exists($path));
 
 			// Check the file's contents is correct
-			$this->assertEquals(basename($filename, '.txt') . "\n", file_get_contents($path));
+			$contents = explode('_', basename($filename, '.txt'));
+			$contents = $contents[0];
+			$this->assertEquals($contents . "\n", file_get_contents($path));
 		}
 	}
 
@@ -136,7 +152,7 @@ class phpbb_compress_test extends phpbb_test_case
 		$compress->mode = 'r';
 		$compress->open();
 		$compress->extract('tests/compress/' . self::EXTRACT_DIR);
-		$this->valid_extraction();
+		$this->valid_extraction($this->conflicts);
 	}
 
 	/**
@@ -152,6 +168,6 @@ class phpbb_compress_test extends phpbb_test_case
 
 		$compress = new compress_zip('r', $zip);
 		$compress->extract('tests/compress/' . self::EXTRACT_DIR);
-		$this->valid_extraction();
+		$this->valid_extraction($this->conflicts);
 	}
 }
