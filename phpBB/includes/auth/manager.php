@@ -31,11 +31,12 @@ class phpbb_auth_manager
 
 	protected $providers = array();
 
-	public function __construct($provider_names, phpbb_request $request, dbal $db, phpbb_config_db $config)
+	public function __construct($provider_names, phpbb_cache_service $phpbb_cache, phpbb_request $request, dbal $db, phpbb_config_db $config)
 	{
 		$this->request = $request;
 		$this->db = $db;
 		$this->config = $config;
+		$this->cache = $phpbb_cache;
 
 		$this->load_providers($provider_names);
 	}
@@ -107,15 +108,32 @@ class phpbb_auth_manager
 	 */
 	public function get_enabled_providers()
 	{
+		// This will be the ultimately returned array.
 		$enabled_providers = array();
+
+		// Try to get the list from the cache first.
+		$enabled_providers_list = $this->cache->get('auth_providers_enabled');
+		if ($enabled_providers_list !== false)
+		{
+			foreach ($enabled_providers_list as $enabled_provider)
+			{
+				$enabled_providers[] = $this->providers[$enabled_provider];
+			}
+			return $enabled_providers;
+		}
+
+		$enabled_providers_list = array();
 		foreach($this->providers as $provider)
 		{
 			$provider_config = $provider->get_configuration();
 			if($provider_config['OPTIONS']['enabled']['setting'] == true)
 			{
 				$enabled_providers[] = $provider;
+				$enabled_providers_list[] = $provider->name;
 			}
 		}
+
+		$this->cache->put('auth_providers_enabled', $enabled_providers_list);
 
 		return $enabled_providers;
 	}
@@ -147,10 +165,11 @@ class phpbb_auth_manager
 	public function get_enabled_common_login_providers()
 	{
 		$enabled_common_providers = array();
-		foreach ($this->providers as $provider)
+		$enabled_providers = $this->get_enabled_providers();
+
+		foreach ($enabled_providers as $provider)
 		{
-			$provider_config = $provider->get_configuration();
-			if (!($provider instanceof phpbb_auth_interface_provider_custom_login) && $provider_config['OPTIONS']['enabled']['setting'] == 1)
+			if (!($provider instanceof phpbb_auth_interface_provider_custom_login))
 			{
 				$enabled_common_providers[] = $provider;
 			}

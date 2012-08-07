@@ -207,7 +207,7 @@ class phpbb_session
 	function session_begin($update_session_page = true)
 	{
 		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
-		global $request, $phpbb_auth_manager, $phpbb_extension_manager;
+		global $request, $phpbb_auth_manager, $phpbb_extension_manager, $cache;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -403,7 +403,7 @@ class phpbb_session
 					// Check whether the session is still valid if we have one
 					if (!($phpbb_auth_manager instanceof phpbb_auth_manager))
 					{
-						$phpbb_auth_manager = new phpbb_auth_manager(new phpbb_auth_extension_provider_locator($phpbb_extension_manager), $request, $db, $config);
+						$phpbb_auth_manager = new phpbb_auth_manager(new phpbb_auth_extension_provider_locator($phpbb_extension_manager), $cache, $request, $db, $config);
 					}
 					$providers = $phpbb_auth_manager->get_enabled_providers();
 					foreach ($providers as $provider)
@@ -571,7 +571,7 @@ class phpbb_session
 
 		if (!($phpbb_auth_manager instanceof phpbb_auth_manager))
 		{
-			$phpbb_auth_manager = new phpbb_auth_manager(new phpbb_auth_extension_provider_locator($phpbb_extension_manager), $request, $db, $config);
+			$phpbb_auth_manager = new phpbb_auth_manager(new phpbb_auth_extension_provider_locator($phpbb_extension_manager), $cache, $request, $db, $config);
 		}
 		$providers = $phpbb_auth_manager->get_enabled_providers();
 		foreach ($providers as $provider)

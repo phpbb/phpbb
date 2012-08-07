@@ -25,12 +25,16 @@ class acp_auth
 
 	function main($id, $mode)
 	{
-		global $user, $template, $request, $phpbb_auth_manager, $config;
+		global $user, $template, $request, $phpbb_auth_manager, $config, $cache;
 
 		$user->add_lang('acp/auth');
 
 		$submit = ($request->is_set_post('submit') || $request->is_set_post('allow_quick_reply_enable')) ? true : false;
 
+		if ($submit)
+		{
+			$cache->destroy('auth_providers_enabled');
+		}
 		$form_key = 'acp_auth';
 		add_form_key($form_key);
 
