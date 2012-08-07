@@ -196,123 +196,142 @@ else if ($download_id)
 	// sizeof($attachments) == 1
 	$attachment = current($attachments);
 
-	// in_message = 1 means it's in a private message
 	if (!$attachment['in_message'] && !$config['allow_attachments'] || $attachment['in_message'] && !$config['allow_pm_attach'])
 	{
 		send_status_line(404, 'Not Found');
 		trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 	}
-}
-else
-{
-	// sizeof($attachments) > 1
-}
 
-$row = array();
-
-if ($attachment && $attachment['is_orphan'])
-{
-	// We allow admins having attachment permissions to see orphan attachments...
-	$own_attachment = ($auth->acl_get('a_attach') || $attachment['poster_id'] == $user->data['user_id']) ? true : false;
-
-	if (!$own_attachment || ($attachment['in_message'] && !$auth->acl_get('u_pm_download')) || (!$attachment['in_message'] && !$auth->acl_get('u_download')))
+	if ($attachment['is_orphan'])
 	{
-		send_status_line(404, 'Not Found');
-		trigger_error('ERROR_NO_ATTACHMENT');
+		// We allow admins having attachment permissions to see orphan attachments...
+		$own_attachment = ($auth->acl_get('a_attach') || $attachment['poster_id'] == $user->data['user_id']) ? true : false;
+
+		if (!$own_attachment || ($attachment['in_message'] && !$auth->acl_get('u_pm_download')) || (!$attachment['in_message'] && !$auth->acl_get('u_download')))
+		{
+			send_status_line(404, 'Not Found');
+			trigger_error('ERROR_NO_ATTACHMENT');
+		}
+
+		// Obtain all extensions...
+		$extensions = $cache->obtain_attach_extensions(true);
 	}
-
-	// Obtain all extensions...
-	$extensions = $cache->obtain_attach_extensions(true);
-}
-else
-{
-	if ($attachments || ($attachment && !$attachment['in_message']))
+	else
 	{
-		if ($download_id || $post_id)
+		if (!$attachment['in_message'])
 		{
 			$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
 				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
-				WHERE p.post_id = ' . (($attachment) ? $attachment['post_msg_id'] : $post_id) . '
-					AND p.forum_id = f.forum_id';
-		}
+				WHERE p.post_id = ' . $attachment['post_msg_id'] . '
+				AND p.forum_id = f.forum_id';
+			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-		if ($topic_id)
-		{
-			$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
-				FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
-				WHERE t.topic_id = $topic_id
-					AND t.forum_id = f.forum_id";
-		}
-		
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+			$f_download = $auth->acl_get('f_download', $row['forum_id']);
 
-		$f_download = $auth->acl_get('f_download', $row['forum_id']);
-
-		if ($auth->acl_get('u_download') && $f_download)
-		{
-			if ($row && $row['forum_password'])
+			if ($auth->acl_get('u_download') && $f_download)
 			{
-				// Do something else ... ?
-				login_forum_box($row);
+				if ($row && $row['forum_password'])
+				{
+					// Do something else ... ?
+					login_forum_box($row);
+				}
+			}
+			else
+			{
+				send_status_line(403, 'Forbidden');
+				trigger_error('SORRY_AUTH_VIEW_ATTACH');
 			}
 		}
 		else
 		{
-			send_status_line(403, 'Forbidden');
-			trigger_error('SORRY_AUTH_VIEW_ATTACH');
-		}
-	}
-	else
-	{
-		$row['forum_id'] = false;
-		if (!$auth->acl_get('u_pm_download'))
-		{
-			send_status_line(403, 'Forbidden');
-			trigger_error('SORRY_AUTH_VIEW_ATTACH');
-		}
-
-		// Check if the attachment is within the users scope...
-		$sql = 'SELECT user_id, author_id
-			FROM ' . PRIVMSGS_TO_TABLE . '
-			WHERE msg_id = ' . $attachment['post_msg_id'];
-		$result = $db->sql_query($sql);
-
-		$allowed = false;
-		while ($user_row = $db->sql_fetchrow($result))
-		{
-			if ($user->data['user_id'] == $user_row['user_id'] || $user->data['user_id'] == $user_row['author_id'])
+			// Attachment is in a private message.
+			$row['forum_id'] = false;
+			if (!$auth->acl_get('u_pm_download'))
 			{
-				$allowed = true;
-				break;
+				send_status_line(403, 'Forbidden');
+				trigger_error('SORRY_AUTH_VIEW_ATTACH');
+			}
+
+			// Check if the attachment is within the users scope...
+			$sql = 'SELECT user_id, author_id
+				FROM ' . PRIVMSGS_TO_TABLE . '
+				WHERE msg_id = ' . $attachment['post_msg_id'];
+			$result = $db->sql_query($sql);
+
+			$allowed = false;
+			while ($user_row = $db->sql_fetchrow($result))
+			{
+				if ($user->data['user_id'] == $user_row['user_id'] || $user->data['user_id'] == $user_row['author_id'])
+				{
+					$allowed = true;
+					break;
+				}
+			}
+			$db->sql_freeresult($result);
+
+			if (!$allowed)
+			{
+				send_status_line(403, 'Forbidden');
+				trigger_error('ERROR_NO_ATTACHMENT');
 			}
 		}
-		$db->sql_freeresult($result);
 
-		if (!$allowed)
+		// disallowed?
+		$extensions = $cache->obtain_attach_extensions($row['forum_id']);
+		if ($attachment)
 		{
-			send_status_line(403, 'Forbidden');
-			trigger_error('ERROR_NO_ATTACHMENT');
+			$ary = array($attachment);
+		}
+		else
+		{
+			$ary = &$attachments;
+		}
+
+		if (!phpbb_check_attach_extensions($extensions, $ary))
+		{
+			send_status_line(404, 'Forbidden');
+			trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
 		}
 	}
-
-	// disallowed?
-	$extensions = $cache->obtain_attach_extensions($row['forum_id']);
-	if ($attachment)
+}
+else
+{
+	// sizeof($attachments) > 1
+	if ($post_id)
 	{
-		$ary = array($attachment);
+		$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
+			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
+			WHERE p.post_id = ' . (($attachment) ? $attachment['post_msg_id'] : $post_id) . '
+				AND p.forum_id = f.forum_id';
+	}
+	else if ($topic_id)
+	{
+		$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
+			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
+			WHERE t.topic_id = $topic_id
+				AND t.forum_id = f.forum_id";
+	}
+
+	$result = $db->sql_query_limit($sql, 1);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$f_download = $auth->acl_get('f_download', $row['forum_id']);
+
+	if ($auth->acl_get('u_download') && $f_download)
+	{
+		if ($row && $row['forum_password'])
+		{
+			// Do something else ... ?
+			login_forum_box($row);
+		}
 	}
 	else
 	{
-		$ary = &$attachments;
-	}
-
-	if (!phpbb_check_attach_extensions($extensions, $ary))
-	{
-		send_status_line(404, 'Forbidden');
-		$ext = ($attachment) ? $attachment['extension'] : $attachments[0]['extension'];
-		trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $ext));
+		send_status_line(403, 'Forbidden');
+		trigger_error('SORRY_AUTH_VIEW_ATTACH');
 	}
 }
 
