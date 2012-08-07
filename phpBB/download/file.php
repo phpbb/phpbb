@@ -151,47 +151,41 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
-$attachments = $attachment_ids = array();
-if ($download_id || $post_id || $topic_id)
+if ($download_id)
 {
-	$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
-		FROM ' . ATTACHMENTS_TABLE . ' a
-		WHERE ';
-
-	switch (true)
-	{
-		default:
-		case $download_id:
-			// Attachment id (only 1 attachment)
-			$sql .= "a.attach_id = $download_id";
-		break;
-
-		case $post_id:
-			// Post id or private message id (multiple attachments)
-			$sql .= "a.post_msg_id = $post_id";
-		break;
-
-		case $topic_id:
-			// Topic id (multiple attachments)
-			$sql .= "a.topic_id = $topic_id";
-		break;
-	}
-
-	$result = $db->sql_query($sql);
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$attachment_id = (int) $row['attach_id'];
-
-		$attachment_ids[$attachment_id] = $attachment_id;
-		$attachments[$attachment_id] = $row;
-	}
-	$db->sql_freeresult($result);
+	// Attachment id (only 1 attachment)
+	$sql_where = "a.attach_id = $download_id";
+}
+else if ($post_id)
+{
+	// Post id or private message id (multiple attachments)
+	$sql_where = "a.post_msg_id = $post_id";
+}
+else if ($topic_id)
+{
+	// Topic id (multiple attachments)
+	$sql_where = "a.topic_id = $topic_id";
 }
 else
 {
 	send_status_line(404, 'Not Found');
 	trigger_error('NO_ATTACHMENT_SELECTED');
 }
+
+$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
+	FROM ' . ATTACHMENTS_TABLE . " a
+	WHERE $sql_where";
+$result = $db->sql_query($sql);
+
+$attachments = $attachment_ids = array();
+while ($row = $db->sql_fetchrow($result))
+{
+	$attachment_id = (int) $row['attach_id'];
+
+	$attachment_ids[$attachment_id] = $attachment_id;
+	$attachments[$attachment_id] = $row;
+}
+$db->sql_freeresult($result);
 
 if (empty($attachments))
 {
