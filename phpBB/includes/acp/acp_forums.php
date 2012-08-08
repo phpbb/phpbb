@@ -397,6 +397,9 @@ class acp_forums
 					$forum_data['forum_flags'] += (request_var('enable_quick_reply', false)) ? FORUM_FLAG_QUICK_REPLY : 0;
 				}
 
+				// Initialise $row, so we always have it in the event
+				$row = array();
+
 				// Show form to create/modify a forum
 				if ($action == 'edit')
 				{
@@ -424,9 +427,6 @@ class acp_forums
 					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, false, false, false);
 
 					$forum_data['forum_password_confirm'] = $forum_data['forum_password'];
-
-					$vars = array('forum_id', 'row', 'forum_data');
-					extract($phpbb_dispatcher->trigger_event('core.acp_forums_modify_forum_data', compact($vars)));
 				}
 				else
 				{
@@ -464,11 +464,26 @@ class acp_forums
 							'forum_password'		=> '',
 							'forum_password_confirm'=> '',
 						);
-
-						$vars = array('forum_id', 'forum_data');
-						extract($phpbb_dispatcher->trigger_event('core.acp_forums_init_forum_data', compact($vars)));
 					}
 				}
+
+				/**
+				* Initialise data before we display the add/edit form
+				*
+				* @event core.acp_manage_forums_initialise_data
+				* @var	string	action		Type of the action: add|edit
+				* @var	bool	update		Do we display the form only
+				*							or did the user press submit
+				* @var	int		forum_id	When editing: the forum id,
+				*							when creating: the parent forum id
+				* @var	array	row			Array with current forum data
+				*							empty when creating new forum
+				* @var	array	forum_data	Array with new forum data
+				* @var	string	parents_list	List of parent options
+				* @since 3.1-A1
+				*/
+				$vars = array('action', 'update', 'forum_id', 'row', 'forum_data', 'parents_list');
+				extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_initialise_data', compact($vars)));
 
 				$forum_rules_data = array(
 					'text'			=> $forum_data['forum_rules'],
