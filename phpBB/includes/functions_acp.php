@@ -249,6 +249,8 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 	{
 		case 'text':
 		case 'password':
+		case 'url':
+		case 'email':
 			$size = (int) $tpl_type[1];
 			$maxlength = (int) $tpl_type[2];
 
