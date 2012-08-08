@@ -932,8 +932,17 @@ class acp_forums
 
 		$errors = array();
 
+		/**
+		* Validate the forum data before we create/update the forum
+		*
+		* @event core.acp_manage_forums_validate_data
+		* @var	array	forum_data	Array with new forum data
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key.
+		* @since 3.1-A1
+		*/
 		$vars = array('forum_data', 'errors');
-		extract($phpbb_dispatcher->trigger_event('core.acp_forums_update_forum_data', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_validate_data', compact($vars)));
 
 		if ($forum_data['forum_name'] == '')
 		{
