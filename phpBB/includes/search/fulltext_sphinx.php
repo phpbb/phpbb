@@ -17,13 +17,6 @@ if (!defined('IN_PHPBB'))
 /**
 * @ignore
 */
-/**
-* This statement is necessary as this file is sometimes included from within a
-* function and the variables used are in global space.
-*/
-global $phpbb_root_path, $phpEx, $table_prefix;
-require($phpbb_root_path . 'includes/sphinxapi.' . $phpEx);
-
 define('SPHINX_MAX_MATCHES', 20000);
 define('SPHINX_CONNECT_RETRIES', 3);
 define('SPHINX_CONNECT_WAIT_TIME', 300);
@@ -40,6 +33,8 @@ class phpbb_search_fulltext_sphinx
 	private $id;
 	private $indexes;
 	private $sphinx;
+	private $phpbb_root_path;
+	private $php_ext;
 	private $auth;
 	private $config;
 	private $db;
@@ -56,9 +51,10 @@ class phpbb_search_fulltext_sphinx
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
 	 */
-	public function __construct(&$error)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
 	{
-		global $config, $db, $user, $auth, $phpbb_root_path, $phpEx;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
 		$this->config = $config;
 		$this->user = $user;
 		$this->db = $db;
@@ -66,7 +62,7 @@ class phpbb_search_fulltext_sphinx
 
 		if (!class_exists('phpbb_db_tools'))
 		{
-			require($phpbb_root_path . 'includes/db/db_tools.' . $phpEx);
+			require($this->phpbb_root_path . 'includes/db/db_tools.' . $this->php_ext);
 		}
 		
 		// Initialize phpbb_db_tools object
@@ -79,6 +75,12 @@ class phpbb_search_fulltext_sphinx
 		$this->id = $this->config['fulltext_sphinx_id'];
 		$this->indexes = 'index_phpbb_' . $this->id . '_delta;index_phpbb_' . $this->id . '_main';
 
+		if (!class_exists('SphinxClient'))
+		{
+			require($this->phpbb_root_path . 'includes/sphinxapi.' . $this->php_ext);
+		}
+
+		// Initialize sphinx client
 		$this->sphinx = new SphinxClient();
 
 		$this->sphinx->SetServer(($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost'), ($this->config['fulltext_sphinx_port'] ? (int) $this->config['fulltext_sphinx_port'] : 9312));
@@ -127,8 +129,6 @@ class phpbb_search_fulltext_sphinx
 	 */
 	function config_generate()
 	{
-		global $phpbb_root_path, $phpEx;
-
 		// Check if Database is supported by Sphinx
 		if ($this->db->sql_layer =='mysql' || $this->db->sql_layer == 'mysql4' || $this->db->sql_layer == 'mysqli')
 		{
@@ -151,7 +151,7 @@ class phpbb_search_fulltext_sphinx
 			return false;
 		}
 
-		include($phpbb_root_path . 'config.' . $phpEx);
+		include($this->phpbb_root_path . 'config.' . $this->php_ext);
 
 		/* Now that we're sure everything was entered correctly,
 		generate a config for the index. We use a config value
