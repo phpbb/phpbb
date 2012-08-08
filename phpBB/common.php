@@ -150,9 +150,9 @@ if (!$config['use_system_cron'])
 * You can use this event to load function files and initiate objects
 *
 * NOTE:	At this point the global session ($user) and permissions ($auth)
-*		do NOT exist yet. If you need to use the user objec
-*		(f.e. to use language files) or need to check permissions, please use
-*		the core.user_setup event instead!
+*		do NOT exist yet. If you need to use the user object
+*		(f.e. to include language files) or need to check permissions,
+*		please use the core.user_setup event instead!
 *
 * @event core.common
 * @since 3.1-A1
