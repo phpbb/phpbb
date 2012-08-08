@@ -1353,9 +1353,6 @@ class acp_forums
 
 		$to_data = $moved_ids = $errors = array();
 
-		$vars = array('from_id', 'to_id');
-		extract($phpbb_dispatcher->trigger_event('core.acp_forums_move_forum', compact($vars)));
-
 		// Check if we want to move to a parent with link type
 		if ($to_id > 0)
 		{
@@ -1364,8 +1361,28 @@ class acp_forums
 			if ($to_data['forum_type'] == FORUM_LINK)
 			{
 				$errors[] = $user->lang['PARENT_IS_LINK_FORUM'];
-				return $errors;
 			}
+		}
+
+		/**
+		* Event when we move all children of one forum to another
+		*
+		* This event may be triggered, when a forum is deleted
+		*
+		* @event core.acp_manage_forums_move_children
+		* @var	int		from_id		If of the current parent forum
+		* @var	int		to_id		If of the new parent forum
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key.
+		* @since 3.1-A1
+		*/
+		$vars = array('from_id', 'to_id', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_children', compact($vars)));
+
+		// Return if there were errors
+		if (!empty($errors))
+		{
+			return $errors;
 		}
 
 		$moved_forums = get_forum_branch($from_id, 'children', 'descending');
