@@ -42,7 +42,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	*
 	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure.
 	*/
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $config, $db, $user)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;

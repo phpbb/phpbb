@@ -41,7 +41,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
 	 */
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $config, $db, $user)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
 	{
 		$this->config = $config;
 		$this->db = $db;
