@@ -1464,7 +1464,30 @@ class acp_forums
 	*/
 	function move_forum_content($from_id, $to_id, $sync = true)
 	{
-		global $db;
+		global $db, $phpbb_dispatcher;
+
+		$errors = array();
+
+		/**
+		* Event when we move content from one forum to another
+		*
+		* @event core.acp_manage_forums_move_children
+		* @var	int		from_id		If of the current parent forum
+		* @var	int		to_id		If of the new parent forum
+		* @var	bool	sync		Shall we sync the "to"-forum's data
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key. If this array is not empty,
+		*							The content will not be moved.
+		* @since 3.1-A1
+		*/
+		$vars = array('from_id', 'to_id', 'sync', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_content', compact($vars)));
+
+		// Return if there were errors
+		if (!empty($errors))
+		{
+			return $errors;
+		}
 
 		$table_ary = array(LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
 
