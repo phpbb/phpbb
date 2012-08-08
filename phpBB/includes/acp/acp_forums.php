@@ -1036,7 +1036,25 @@ class acp_forums
 		}
 		unset($forum_data_sql['forum_password_unset']);
 
-		if (!isset($forum_data_sql['forum_id']))
+		$is_new_forum = !isset($forum_data_sql['forum_id']);
+
+		/**
+		* Remove invalid values from forum_data_sql that should not be updated
+		*
+		* @event core.acp_manage_forums_update_data_before
+		* @var	array	forum_data		Array with forum data
+		* @var	array	forum_data_sql	Array with data we are going to update
+		* @var	bool	is_new_forum	Do we create a forum or update one
+		*								If you want to overwrite this value,
+		*								ensure to set forum_data_sql[forum_id]
+		* @since 3.1-A1
+		*/
+		$vars = array('forum_data', 'forum_data_sql');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_before', compact($vars)));
+
+		$is_new_forum = !isset($forum_data_sql['forum_id']);
+
+		if ($is_new_forum)
 		{
 			// no forum_id means we're creating a new forum
 			unset($forum_data_sql['type_action']);
