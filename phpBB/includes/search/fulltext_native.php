@@ -32,7 +32,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	var $must_exclude_one_ids = array();
 
 	private $phpbb_root_path;
-	private $phpEx;
+	private $php_ext;
 	private $config;
 	private $db;
 	private $user;
@@ -45,7 +45,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $phpEx;
 		$this->config = $config;
 		$this->db = $db;
 		$this->user = $user;
@@ -57,7 +57,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 		*/
 		if (!class_exists('utf_normalizer'))
 		{
-			include($this->phpbb_root_path . 'includes/utf/utf_normalizer.' . $this->phpEx);
+			include($this->phpbb_root_path . 'includes/utf/utf_normalizer.' . $this->php_ext);
 		}
 
 		$error = false;
@@ -1669,7 +1669,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 			if (!isset($conv_loaded[$idx]))
 			{
 				$conv_loaded[$idx] = 1;
-				$file = $this->phpbb_root_path . 'includes/utf/data/search_indexer_' . $idx . '.' . $this->phpEx;
+				$file = $this->phpbb_root_path . 'includes/utf/data/search_indexer_' . $idx . '.' . $this->php_ext;
 
 				if (file_exists($file))
 				{

@@ -34,7 +34,7 @@ class phpbb_search_fulltext_sphinx
 	private $indexes;
 	private $sphinx;
 	private $phpbb_root_path;
-	private $phpEx;
+	private $php_ext;
 	private $auth;
 	private $config;
 	private $db;
@@ -54,7 +54,7 @@ class phpbb_search_fulltext_sphinx
 	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $phpEx;
 		$this->config = $config;
 		$this->user = $user;
 		$this->db = $db;
@@ -62,7 +62,7 @@ class phpbb_search_fulltext_sphinx
 
 		if (!class_exists('phpbb_db_tools'))
 		{
-			require($this->phpbb_root_path . 'includes/db/db_tools.' . $this->phpEx);
+			require($this->phpbb_root_path . 'includes/db/db_tools.' . $this->php_ext);
 		}
 		
 		// Initialize phpbb_db_tools object
@@ -77,7 +77,7 @@ class phpbb_search_fulltext_sphinx
 
 		if (!class_exists('SphinxClient'))
 		{
-			require($this->phpbb_root_path . 'includes/sphinxapi.' . $this->phpEx);
+			require($this->phpbb_root_path . 'includes/sphinxapi.' . $this->php_ext);
 		}
 
 		// Initialize sphinx client
@@ -151,7 +151,7 @@ class phpbb_search_fulltext_sphinx
 			return false;
 		}
 
-		include($this->phpbb_root_path . 'config.' . $this->phpEx);
+		include($this->phpbb_root_path . 'config.' . $this->php_ext);
 
 		/* Now that we're sure everything was entered correctly,
 		generate a config for the index. We use a config value
