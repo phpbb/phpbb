@@ -1325,8 +1325,21 @@ class acp_forums
 			add_log('admin', 'LOG_FORUM_EDIT', $forum_data['forum_name']);
 		}
 
-		$vars = array('forum_data', 'errors');
-		extract($phpbb_dispatcher->trigger_event('core.acp_forums_update_forum_data_after', compact($vars)));
+		/**
+		* Event after a forum was updated or created
+		*
+		* @event core.acp_manage_forums_update_data_after
+		* @var	array	forum_data		Array with forum data
+		* @var	array	forum_data_sql	Array with data we updated
+		* @var	bool	is_new_forum	Did we create a forum or update one
+		*								If you want to overwrite this value,
+		*								ensure to set forum_data_sql[forum_id]
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key.
+		* @since 3.1-A1
+		*/
+		$vars = array('forum_data', 'forum_data_sql' 'is_new_forum', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_after', compact($vars)));
 
 		return $errors;
 	}
