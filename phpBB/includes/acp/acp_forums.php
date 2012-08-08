@@ -681,8 +681,27 @@ class acp_forums
 					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))) ? true : false,
 				);
 
-				$vars = array('forum_id', 'action', 'forum_data', 'template_data', 'old_forum_type', 'forum_desc_data', 'forum_rules_data');
-				extract($phpbb_dispatcher->trigger_event('core.acp_forums_assign_template_forum_data', compact($vars)));
+				/**
+				* Modify forum template data before we display the form
+				*
+				* @event core.acp_manage_forums_display_form
+				* @var	string	action		Type of the action: add|edit
+				* @var	bool	update		Do we display the form only
+				*							or did the user press submit
+				* @var	int		forum_id	When editing: the forum id,
+				*							when creating: the parent forum id
+				* @var	array	row			Array with current forum data
+				*							empty when creating new forum
+				* @var	array	forum_data	Array with new forum data
+				* @var	string	parents_list	List of parent options
+				* @var	array	errors		Array of errors, if you add errors
+				*					ensure to update the template variables
+				*					S_ERROR and ERROR_MSG to display it
+				* @var	array	template_data	Array with new forum data
+				* @since 3.1-A1
+				*/
+				$vars = array('action', 'update', 'forum_id', 'row', 'forum_data', 'parents_list', 'errors', 'template_data');
+				extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_display_form', compact($vars)));
 
 				$template->assign_vars($template_data);
 
