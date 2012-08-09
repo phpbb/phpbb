@@ -52,7 +52,6 @@ class acp_captcha
 		{
 			$config_vars = array(
 				'enable_confirm'		=> array('tpl' => 'REG_ENABLE', 'default' => false),
-				'enable_post_confirm'	=> array('tpl' => 'POST_ENABLE', 'default' => false),
 				'confirm_refresh'		=> array('tpl' => 'CONFIRM_REFRESH', 'default' => false),
 				'max_reg_attempts'		=> array('tpl' => 'REG_LIMIT', 'default' => 0),
 				'max_login_attempts'		=> array('tpl' => 'MAX_LOGIN_ATTEMPTS', 'default' => 0),

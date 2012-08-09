@@ -176,7 +176,7 @@ if ($mode == 'popup')
 
 $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
 
-if ($config['enable_post_confirm'] && !$user->data['is_registered'])
+if (!$auth->acl_get('f_nocaptcha', $forum_id))
 {
 	include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
 	$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
@@ -844,7 +844,7 @@ if ($submit || $preview || $refresh)
 		}
 	}
 
-	if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))
+	if (!$auth->acl_get('f_nocaptcha', $forum_id) && in_array($mode, array('quote', 'post', 'reply')))
 	{
 		$captcha_data = array(
 			'message'	=> utf8_normalize_nfc(request_var('message', '', true)),
@@ -1076,7 +1076,7 @@ if ($submit || $preview || $refresh)
 			// The last parameter tells submit_post if search indexer has to be run
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
 
-			if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === true) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
+			if (!$auth->acl_get('f_nocaptcha', $forum_id) && (isset($captcha) && $captcha->is_solved() === true) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 			{
 				$captcha->reset();
 			}
@@ -1322,7 +1322,7 @@ generate_forum_nav($post_data);
 generate_forum_rules($post_data);
 
 // Posting uses is_solved for legacy reasons. Plugins have to use is_solved to force themselves to be displayed.
-if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === false) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
+if (!$auth->acl_get('f_nocaptcha', $forum_id) && (isset($captcha) && $captcha->is_solved() === false) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 {
 
 	$template->assign_vars(array(

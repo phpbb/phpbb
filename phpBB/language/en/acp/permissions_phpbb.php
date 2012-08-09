@@ -168,6 +168,7 @@ $lang = array_merge($lang, array(
 	'acl_f_ignoreflood' => array('lang' => 'Can ignore flood limit', 'cat' => 'misc'),
 	'acl_f_postcount'	=> array('lang' => 'Increment post counter<br /><em>Please note that this setting only affects new posts.</em>', 'cat' => 'misc'),
 	'acl_f_noapprove'	=> array('lang' => 'Can post without approval', 'cat' => 'misc'),
+	'acl_f_nocaptcha'	=> array('lang' => 'Can post without filling out Captcha', 'cat' => 'misc'),
 ));
 
 // Moderator Permissions

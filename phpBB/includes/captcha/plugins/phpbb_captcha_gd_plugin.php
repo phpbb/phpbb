@@ -99,7 +99,6 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 
 		$config_vars = array(
 			'enable_confirm'		=> 'REG_ENABLE',
-			'enable_post_confirm'	=> 'POST_ENABLE',
 			'confirm_refresh'		=> 'CONFIRM_REFRESH',
 			'captcha_gd'			=> 'CAPTCHA_GD',
 		);

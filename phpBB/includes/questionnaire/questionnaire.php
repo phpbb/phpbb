@@ -338,7 +338,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'email_package_size' => true,
 			'enable_confirm' => true,
 			'enable_pm_icons' => true,
-			'enable_post_confirm' => true,
 			'feed_enable' => true,
 			'feed_http_auth' => true,
 			'feed_limit_post' => true,
