@@ -317,6 +317,11 @@ class phpbb_revisions_post
 	*/
 	public function delete_excess_revisions()
 	{
+		if (!$this->config['revisions_per_post_max'])
+		{
+			return;
+		}
+
 		$delete_amount = $this->get_unprotected_revision_count(true) - $this->config['revisions_per_post_max'];
 
 		// When there are less revisions than the max, $delete amount is negative
