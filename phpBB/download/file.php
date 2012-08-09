@@ -154,17 +154,17 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 if ($download_id)
 {
 	// Attachment id (only 1 attachment)
-	$sql_where = "a.attach_id = $download_id";
+	$sql_where = "attach_id = $download_id";
 }
 else if ($post_id)
 {
 	// Post id or private message id (multiple attachments)
-	$sql_where = "a.post_msg_id = $post_id";
+	$sql_where = "post_msg_id = $post_id";
 }
 else if ($topic_id)
 {
 	// Topic id (multiple attachments)
-	$sql_where = "a.topic_id = $topic_id";
+	$sql_where = "topic_id = $topic_id";
 }
 else
 {
@@ -172,8 +172,8 @@ else
 	trigger_error('NO_ATTACHMENT_SELECTED');
 }
 
-$sql = 'SELECT a.attach_id, a.in_message, a.post_msg_id, a.extension, a.is_orphan, a.poster_id, a.filetime
-	FROM ' . ATTACHMENTS_TABLE . " a
+$sql = 'SELECT attach_id, post_msg_id, in_message, is_orphan, physical_filename, real_filename, extension, mimetype, filesize, filetime
+	FROM ' . ATTACHMENTS_TABLE . "
 	WHERE $sql_where";
 $result = $db->sql_query($sql);
 
@@ -291,6 +291,8 @@ else if ($download_id)
 			trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
 		}
 	}
+
+	
 }
 else
 {
@@ -340,34 +342,6 @@ if ($attachments && sizeof($attachments) < 2)
 if ($attachment)
 {
 	$download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
-}
-
-// Fetching filename here to prevent sniffing of filename
-if ($attachment)
-{
-	$sql = 'SELECT attach_id, is_orphan, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype, filesize, filetime
-		FROM ' . ATTACHMENTS_TABLE . "
-		WHERE attach_id = $download_id";
-	$result = $db->sql_query_limit($sql, 1);
-	$attachment = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-}
-
-if ($attachments)
-{
-	$sql = 'SELECT attach_id, is_orphan, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype, filesize, filetime
-		FROM ' . ATTACHMENTS_TABLE . '
-		WHERE ' . $db->sql_in_set('attach_id', $attachment_ids);
-
-	$result = $db->sql_query($sql);
-	$attachments = $db->sql_fetchrowset($result);
-	$db->sql_freeresult($result);
-}
-
-if (!$attachment && empty($attachments))
-{
-	send_status_line(404, 'Not Found');
-	trigger_error('ERROR_NO_ATTACHMENT');
 }
 
 if ($attachment)
