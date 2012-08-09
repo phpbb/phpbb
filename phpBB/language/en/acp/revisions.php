@@ -63,7 +63,7 @@ $lang = array_merge($lang, array(
 	'REVISION_WIKI_LIMIT'						=> 'Maximum revisions to save per wiki post',
 	'REVISION_WIKI_LIMIT_EXPLAIN'				=> 'Set to 0 for unlimited revisions per wiki post. Once revision threshold is reached, the oldest revision will be removed to make room for the new one.',
 	'REVISION_CRON_AGE_FREQUENCY'				=> 'Old revision pruning frequency',
-	'REVISION_CRON_AGE_FREQUENCY_EXPLAIN'		=> 'Time in seconds that cron should wait before running again.',
+	'REVISION_CRON_AGE_FREQUENCY_EXPLAIN'		=> 'Number of days that cron should wait before running again.',
 	'REVISION_CRON_EXCESS_FREQUENCY'			=> 'Excess revision pruning frequency',
-	'REVISION_CRON_EXCESS_FREQUENCY_EXPLAIN'	=> 'Time in seconds that cron should wait before running again.',
+	'REVISION_CRON_EXCESS_FREQUENCY_EXPLAIN'	=> 'Number of days that cron should wait before running again.',
 ));

@@ -58,6 +58,12 @@ class acp_revisions
 
 						if (isset($config[$setting]) && $request->is_set_post($setting) && $new_value != $config[$setting])
 						{
+							// If we are changing one of the time settings, we display amount in days
+							// but store amount in seconds so we have to convert it here
+							if (in_array($setting, array('post_revisions_max_age', 'revision_cron_age_frequency', 'revision_cron_excess_frequency')))
+							{
+								$new_value *= 86400;
+							}
 							$config->set($setting, $new_value);
 						}
 					}
@@ -72,9 +78,9 @@ class acp_revisions
 					'S_REVISION_WIKI_YES_SELECTED'		=> $config['revisions_allow_wiki'] ? ' checked="checked"' : '',
 					'S_REVISION_WIKI_NO_SELECTED'		=> $config['revisions_allow_wiki'] ? '' : ' checked="checked"',
 
-					'REVISIONS_EXCESS_PRUNE_FREQUENCY'	=> $config['revision_cron_excess_frequency'],
-					'REVISIONS_OLD_PRUNE_FREQUENCY'		=> $config['revision_cron_age_frequency'],
-					'REVISIONS_MAX_AGE'					=> $config['post_revisions_max_age'],
+					'REVISIONS_EXCESS_PRUNE_FREQUENCY'	=> $config['revision_cron_excess_frequency'] / 86400,
+					'REVISIONS_OLD_PRUNE_FREQUENCY'		=> $config['revision_cron_age_frequency'] / 86400,
+					'REVISIONS_MAX_AGE'					=> $config['post_revisions_max_age'] / 86400,
 					'REVISIONS_PER_POST'				=> $config['revisions_per_post_max'],
 					'REVISIONS_PER_WIKI_POST'			=> $config['revisions_per_wiki_post_max'],
 				));
