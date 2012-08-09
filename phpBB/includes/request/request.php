@@ -34,6 +34,7 @@ class phpbb_request implements phpbb_request_interface
 		phpbb_request_interface::REQUEST => '_REQUEST',
 		phpbb_request_interface::COOKIE => '_COOKIE',
 		phpbb_request_interface::SERVER => '_SERVER',
+		phpbb_request_interface::FILES => '_FILES',
 	);
 
 	/**
@@ -281,6 +282,18 @@ class phpbb_request implements phpbb_request_interface
 	{
 		$var_name = 'HTTP_' . str_replace('-', '_', strtoupper($header_name));
 		return $this->server($var_name, $default);
+	}
+
+	/**
+	* Shortcut method to retrieve $_FILES variables
+	*
+	* @param string $form_name The name of the file input form element
+	*
+	* @return array The uploaded file's information
+	*/
+	public function file($form_name)
+	{
+		return $this->variable($form_name, array(), false, phpbb_request_interface::FILES);
 	}
 
 	/**
