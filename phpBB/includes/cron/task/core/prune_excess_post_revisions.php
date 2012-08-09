@@ -92,6 +92,8 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 			}
 		}
 
+		add_log('admin', 'LOG_PRUNED_EXCESS_POST_REVISIONS');
+
 		$this->config->set('excess_revisions_last_prune_time', time());
 	}
 

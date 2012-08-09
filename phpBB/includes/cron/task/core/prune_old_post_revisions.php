@@ -77,6 +77,8 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 			}
 		}
 
+		add_log('admin', 'LOG_PRUNED_OLD_POST_REVISIONS');
+
 		$this->config->set('old_revisions_last_prune_time', time());
 	}
 
