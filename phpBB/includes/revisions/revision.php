@@ -259,7 +259,7 @@ class phpbb_revisions_revision
 	* Deletes the current revision. No authentication is checked,
 	* so only call this after checking it yourself.
 	*
-	* @return void
+	* @return null
 	*/
 	public function delete()
 	{
@@ -282,12 +282,38 @@ class phpbb_revisions_revision
 	* Marks this revision as protected. No authentication is checked,
 	* so only call this after checking it yourself.
 	*
-	* @return void
+	* @return null
 	*/
 	public function protect()
 	{
+		// If the revision is already protected, let's save a query
+		if ($this->is_protected())
+		{
+			return;
+		}
+
 		$sql = 'UPDATE ' . POST_REVISIONS_TABLE . '
 			SET revision_protected = 1
+			WHERE revision_id = ' . $this->get_id();
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Marks this revision as protected. No authentication is checked,
+	* so only call this after checking it yourself.
+	*
+	* @return null
+	*/
+	public function unprotect()
+	{
+		// If the revision is already not protected, let's save a query
+		if (!$this->is_protected())
+		{
+			return;
+		}
+
+		$sql = 'UPDATE ' . POST_REVISIONS_TABLE . '
+			SET revision_protected = 0
 			WHERE revision_id = ' . $this->get_id();
 		$this->db->sql_query($sql);
 	}

@@ -27,7 +27,9 @@ $revision_id	= $request->variable('r', 0);
 $revert_id		= $request->variable('revert', 0);
 $first_id 		= $request->variable('first', 0);
 $last_id 		= $request->variable('last', 0);
-$action_ids		= $request->variable('action_ids', array(0));
+$delete			= $request->variable('delete', 0);
+$protect		= $request->variable('protect', 0);
+$unprotect		= $request->variable('unprotect', 0);
 
 $display_comparison = true;
 $revert_confirm = $request->is_set_post('confirm');
@@ -36,14 +38,15 @@ $revert_confirm = $request->is_set_post('confirm');
 $first = $last = null;
 
 // Attempt to obtain the post ID using give revision IDs
-if (!$post_id && ($first_id || $last_id))
-{
-	$post_id = phpbb_get_revision_post_id($first_id ?: $last_id, $db);
-}
-else if (!$post_id && ($revert_id || $revision_id))
-{
-	$post_id = phpbb_get_revision_post_id($revert_id ?: $revision_id, $db);
-}
+$post_id = $post_id ?: phpbb_get_revision_post_id(array(
+	$first_id,
+	$last_id,
+	$revert_id,
+	$revision_id,
+	$delete,
+	$protect,
+	$unprotect,
+), $db);
 
 // If we still don't have a post ID, there is nothing else to do here
 if (!$post_id)
@@ -93,45 +96,53 @@ if (!$can_view_post_revisions)
 $l_return = '<br /><a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id" . '">' . $user->lang('RETURN_POST') . '</a>
 			<br /><a href="' . append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)) . '">' . $user->lang('RETURN_REVISION') . '</a>';
 
-if (sizeof($action_ids) && ($request->is_set_post('delete') || $request->is_set_post('protect')))
+if ($delete || $protect || $unprotect)
 {
-	if ($request->is_set_post('delete') && !$auth->acl_get('m_delete_revisions', $post_data['forum_id']))
+	if ($delete)
 	{
-		trigger_error($user->lang('NO_AUTH_DELETE_REVISIONS') . $l_return);
+		if (!$auth->acl_get('m_delete_revisions', $post_data['forum_id']))
+		{
+			trigger_error($user->lang('NO_AUTH_DELETE_REVISIONS') . $l_return);
+		}
+
+		$action = 'delete';
+		$action_id = $delete;
+		$action_success_lang = 	'REVISION_DELETED_SUCCESS';
 	}
-	else if ($request->is_set_post('protect') && !$auth->acl_get('m_protect_revisions', $post_data['forum_id']))
+	else if ($protect)
 	{
-		trigger_error($user->lang('NO_AUTH_PROTECT_REVISIONS') . $l_return);
+		if (!$auth->acl_get('m_protect_revisions', $post_data['forum_id']))
+		{
+			trigger_error($user->lang('NO_AUTH_PROTECT_REVISIONS') . $l_return);
+		}
+
+		$action = 'protect';
+		$action_id = $protect;
+		$action_success_lang = 	'REVISION_PROTECTED_SUCCESS';
+	}
+	else if ($unprotect)
+	{
+		if (!$auth->acl_get('m_protect_revisions', $post_data['forum_id']))
+		{
+			trigger_error($user->lang('NO_AUTH_UNPROTECT_REVISIONS') . $l_return);
+		}
+
+		$action = 'unprotect';
+		$action_id = $unprotect;
+		$action_success_lang = 	'REVISION_UNPROTECTED_SUCCESS';
 	}
 
 	if (confirm_box(true))
 	{
-		// We have a separate counter instead of relying on sizeof()
-		// because we can potentially skip IDs within the loop
-		$count = 0;
-		foreach ($action_ids as $action_id)
-		{
-			// We only want to delete IDs of revisions on the current post
-			// If somehow someone injected IDs of revisions on another post
-			// we skip them
-			if (empty($revisions[$action_id]))
-			{	
-				continue;
-			}
-
-			$action = $request->is_set_post('delete') ? 'delete' : 'protect';
-
+		if (!empty($revisions[$action_id]))
+		{	
 			$revisions[$action_id]->$action();
-			$count++;
-		}
 
-		// Assuming we actually did something, we ouput a notification at the top of the page
-		if ($count)
-		{
 			$template->assign_vars(array(
-				'S_REVISION_DELETED'			=> $request->is_set_post('delete'),
-				'S_REVISION_PROTECTED'			=> $request->is_set_post('protect'),
-				'L_REVISIONS_ACTION_SUCCESS'	=> $request->is_set_post('delete') ? $user->lang('REVISIONS_DELETED_SUCCESS', $count) : $user->lang('REVISIONS_PROTECTED_SUCCESS', $count),
+				'S_REVISION_DELETED'			=> $delete,
+				'S_REVISION_PROTECTED'			=> $protect,
+				'S_REVISION_UNPROTECTED'		=> $unprotect,
+				'L_REVISIONS_ACTION_SUCCESS'	=> $user->lang($action_success_lang),
 			));
 
 			$post_data = $post->get_post_data(true);
@@ -139,7 +150,7 @@ if (sizeof($action_ids) && ($request->is_set_post('delete') || $request->is_set_
 
 			if (!sizeof($revisions))
 			{
-				trigger_error($user->lang('REVISIONS_DELETED_SUCCESS_NO_MORE') . '
+				trigger_error($user->lang('REVISION_DELETED_SUCCESS_NO_MORE') . '
 					<br /><a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id" . '">' . $user->lang('RETURN_POST') . '</a>');
 			}
 		}
@@ -148,11 +159,10 @@ if (sizeof($action_ids) && ($request->is_set_post('delete') || $request->is_set_
 	{
 		$s_hidden_fields = build_hidden_fields(array(
 			'p'				=> $post_id,
-			'action_ids'	=> $action_ids,
-			'delete'		=> $request->is_set_post('delete'),
-			'protect'		=> $request->is_set_post('protect'),
+			'delete'		=> $delete,
+			'protect'		=> $protect,
 		));
-		confirm_box(false, ($request->is_set_post('delete') ? 'REVISION_DELETE' : 'REVISION_PROTECT'), $s_hidden_fields);
+		confirm_box(false, ($delete ? 'REVISION_DELETE' : 'REVISION_PROTECT'), $s_hidden_fields);
 	}
 }
 
@@ -231,7 +241,7 @@ $comparison = null;
 if ($display_comparison)
 {
 	$comparison = new phpbb_revisions_comparison($first, $last);
-	$comparison->output_template_block($post, $template, $user, $can_revert, $phpbb_root_path, $phpEx);
+	$comparison->output_template_block($post, $template, $user, $auth, $can_revert, $phpbb_root_path, $phpEx);
 }
 
 $template->assign_vars(array(
@@ -262,9 +272,6 @@ $template->assign_vars(array(
 
 	'U_VIEW_REVISIONS'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)),
 	'U_VIEW_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
-
-	'S_DELETE'			=> $auth->acl_get('m_delete_revisions'),
-	'S_PROTECT'			=> $auth->acl_get('m_protect_revisions'),
 ));
 
 $navlinks = array(
