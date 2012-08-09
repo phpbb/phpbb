@@ -166,9 +166,11 @@ class phpbb_revisions_comparison
 		$l_compare_summary = $user->lang('REVISION_COUNT', count($revisions)) . '
 			' . $user->lang('BY') . '
 			' . $user->lang('REVISION_USER_COUNT', sizeof($revision_users));
-		$l_lines_added_removed = $user->lang('REVISION_ADDITIONS', $this->text_diff->additions_count() + $this->subject_diff->additions_count()) . '
-			' . $user->lang('AND') . '
-			' . $user->lang('REVISION_DELETIONS', $this->text_diff->deletions_count() + $this->subject_diff->deletions_count());
+		$additions_count = $this->text_diff->additions_count() + $this->subject_diff->additions_count();
+		$deletions_count = $this->text_diff->deletions_count() + $this->subject_diff->deletions_count();
+		$l_lines_added_removed = $additions_count ? $user->lang('REVISION_ADDITIONS', $additions_count) . ' ' : '';
+		$l_lines_added_removed .= ($l_lines_added_removed && $additions_count && $deletions_count) ? strtolower($user->lang('AND')) . ' ' : '';
+		$l_lines_added_removed .= $deletions_count ? $user->lang('REVISION_DELETIONS', $deletions_count) : '';
 
 		$template->assign_vars(array(
 			'S_DISPLAY_COMPARISON'	=> true,
