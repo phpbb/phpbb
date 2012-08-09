@@ -112,7 +112,7 @@ class phpbb_revisions_comparison
 		return $range_ids;
 	}
 
-	public function output_template_block(phpbb_revisions_post $post, phpbb_template $template, phpbb_user $user, $can_revert, $phpbb_root_path, $phpEx)
+	public function output_template_block(phpbb_revisions_post $post, phpbb_template $template, phpbb_user $user, phpbb_auth $auth, $can_revert, $phpbb_root_path, $phpEx)
 	{
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
@@ -146,9 +146,17 @@ class phpbb_revisions_comparison
 				'FIRST_IN_COMPARE'	=> $revision->get_id() == $first_id,
 				'LAST_IN_COMPARE'	=> $revision->get_id() == $last_id,
 
-				'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $this_revision_id)) : '',
+				'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('revert' => $this_revision_id)) : '',
 				'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $this_revision_id)),
-				'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
+				'U_DELETE'			=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('delete' => $this_revision_id)),
+				'U_PROTECT'			=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('protect' => $this_revision_id)),
+				'U_UNPROTECT'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('unprotect' => $this_revision_id)),
+
+				'S_DELETE'			=> $auth->acl_get('m_delete_revisions'),
+				'S_PROTECT'			=> !$revision->is_protected() && $auth->acl_get('m_protect_revisions'),
+				'S_UNPROTECT'		=> $revision->is_protected() && $auth->acl_get('m_protect_revisions'),
+
+				'DELETE_IMG' 		=> $user->img('icon_post_delete', 'DELETE_REVISION'),
 			));
 
 			$revision_users[$revision->get_user_id()] = true;
