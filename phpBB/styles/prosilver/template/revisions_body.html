@@ -13,12 +13,11 @@
 <h2>{L_VIEWING_POST_REVISION_HISTORY}</h2>
 <!-- IF S_DISPLAY_COMPARISON -->
 <p><div class="left-box"><strong>{L_LAST_REVISION_TIME}</strong></div>
-<div class="right-box"></div></p>
+<div class="right-box">{L_COMPARING} <a href="{U_FIRST_REVISION}">{FIRST_REVISION}</a> {L_WITH} <a href="{U_LAST_REVISION}">{LAST_REVISION}</a></div></p>
 <hr />
 <p><div class="left-box">{L_COMPARE_SUMMARY} {L_WITH} {L_LINES_ADDED_REMOVED}</div></p>
 <br class="clear" />
 <div class="revisions_block">
-	<p>{L_COMPARING} <a href="{U_FIRST_REVISION}">{FIRST_REVISION}</a> {L_WITH} <a href="{U_LAST_REVISION}">{LAST_REVISION}</a></p>
 	<form name="revision_list" action="{U_VIEW_REVISIONS}" method="post" />
 		<!-- BEGIN revision -->
 		<ul class="revisions<!-- IF revision.S_ROW_COUNT is odd --> odd<!-- ELSE --> even<!-- ENDIF --><!-- IF not revision.IN_RANGE --> out_of_range<!-- ENDIF --><!-- IF revision.CURRENT_REVISION --> current<!-- ENDIF -->">
