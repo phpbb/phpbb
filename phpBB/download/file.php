@@ -182,6 +182,8 @@ while ($row = $db->sql_fetchrow($result))
 {
 	$attachment_id = (int) $row['attach_id'];
 
+	$row['physical_filename'] = utf8_basename($row['physical_filename']);
+
 	$attachment_ids[$attachment_id] = $attachment_id;
 	$attachments[$attachment_id] = $row;
 }
@@ -293,8 +295,6 @@ else if ($download_id)
 	}
 
 	$download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
-
-	$attachment['physical_filename'] = utf8_basename($attachment['physical_filename']);
 	$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
 	if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$user->optionget('viewimg'))
