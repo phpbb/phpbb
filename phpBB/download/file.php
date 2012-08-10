@@ -376,7 +376,11 @@ else
 
 	$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
 	$clean_name = current($row);
-	$clean_name = rawurlencode(str_replace($bad_chars, '_', strtolower($clean_name)));
+
+	// rawurlencode to convert any potentially 'bad' characters that we missed
+	$clean_name = rawurlencode(str_replace($bad_chars, '_', $clean_name));
+
+	// Turn the %xx entities created by rawurlencode to _
 	$clean_name = preg_replace("/%(\w{2})/", '_', $clean_name);
 	$suffix = '_' . (($post_id) ? $post_id : $topic_id) . '_' . $clean_name;
 
