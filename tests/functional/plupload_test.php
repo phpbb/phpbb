@@ -79,7 +79,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 			$file = array(
 				'tmp_name' => $this->path . 'chunk',
 				'name' => 'blob',
-				'type' => 'application/octetstream',
+				'type' => 'application/octet-stream',
 				'size' => strlen($chunk),
 				'error' => UPLOAD_ERR_OK,
 			);
