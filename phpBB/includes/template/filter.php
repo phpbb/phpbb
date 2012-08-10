@@ -375,7 +375,6 @@ class phpbb_template_filter extends php_user_filter
 	{
 		$matches = array();
 		$replace = array();
-		$vars = array();
 		$is_expr = true;
 
 		preg_match_all('#\{((?:' . self::REGEX_NS . '\.)*)(\$)?(' . self::REGEX_VAR . ')\}#', $path, $matches);
@@ -384,7 +383,6 @@ class phpbb_template_filter extends php_user_filter
 			$tmp_is_expr = false;
 			$var = $this->get_varref($var_str, $tmp_is_expr);
 			$is_expr = $is_expr && $tmp_is_expr;
-			$vars[] = "isset($var)";
 			$replace[] = "' . $var . '";
 		}
 
