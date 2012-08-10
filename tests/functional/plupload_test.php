@@ -15,7 +15,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 	const CHUNKS = 4;
 	private $path;
 
-	protected function set_extension_group_perm($val)
+	protected function set_extension_group_permission($val)
 	{
 		$db = $this->get_db();
 		$query = "
@@ -29,7 +29,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 	public function setUp()
 	{
 		parent::setUp();
-		$this->set_extension_group_perm(1);
+		$this->set_extension_group_permission(1);
 		$this->path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
 		$this->login();
@@ -37,7 +37,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 	public function tearDown()
 	{
-		$this->set_extension_group_perm(0);
+		$this->set_extension_group_permission(0);
 		$iterator = new DirectoryIterator(__DIR__ . '/../../phpBB/files/');
 		foreach ($iterator as $fileinfo)
 		{
