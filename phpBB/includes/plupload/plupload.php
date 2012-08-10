@@ -195,8 +195,8 @@ class phpbb_plupload
 		{
 			$filters[] = sprintf(
 				"{title: '%s', extensions: '%s'}",
-				ucfirst(strtolower($group)),
-				implode(',', $extensions)
+				addslashes(ucfirst(strtolower($group))),
+				addslashes(implode(',', $extensions))
 			);
 		}
 
