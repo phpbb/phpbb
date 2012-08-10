@@ -343,9 +343,18 @@ else
 
 	if ($post_id)
 	{
-		$sql = 'SELECT post_subject
-			FROM ' . POSTS_TABLE . "
-			WHERE post_id = $post_id";
+		if ($attachment['in_message'])
+		{
+			$sql = 'SELECT message_subject
+				FROM ' . PRIVMSGS_TABLE . "
+				WHERE msg_id = $post_id";
+		}
+		else
+		{
+			$sql = 'SELECT post_subject
+				FROM ' . POSTS_TABLE . "
+				WHERE post_id = $post_id";
+		}
 	}
 	else
 	{
@@ -359,7 +368,7 @@ else
 	$db->sql_freeresult($result);
 
 	$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
-	$clean_name = ($post_id) ? $row['post_subject'] : $row['topic_title'];
+	$clean_name = current($row);
 	$clean_name = rawurlencode(str_replace($bad_chars, '_', strtolower($clean_name)));
 	$clean_name = preg_replace("/%(\w{2})/", '_', $clean_name);
 	$suffix = '_' . (($post_id) ? $post_id : $topic_id) . '_' . $clean_name;
