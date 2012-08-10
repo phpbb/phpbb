@@ -222,8 +222,11 @@ jQuery(function($) {
 				continue;
 			}
 
-			var input = '<input type="hidden" name="' + key + '" value="' + data[key] + '"/>';
-			$(form).append($(input));
+			var input = $('<input />')
+				.attr('type', 'hidden')
+				.attr('name', key)
+				.attr('value', data[key]);
+			$(form).append(input);
 		}
 
 		files.forEach(function(file) {
