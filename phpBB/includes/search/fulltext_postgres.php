@@ -22,18 +22,76 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_fulltext_postgres extends phpbb_search_base
 {
+	/**
+	 * Associative array holding index stats
+	 * @var array
+	 */
 	protected $stats = array();
+
+	/**
+	 * Holds the words entered by user splitted in array
+	 * @var array
+	 */
 	protected $split_words = array();
+
+	/**
+	 * True if postgresql version supports tsearch
+	 * @var boolean
+	 */
 	protected $tsearch_usable = false;
+
+	/**
+	 * Stores the PostgreSQL version
+	 * @var string
+	 */
 	protected $version;
+
+	/**
+	 * Stores the tsearch query
+	 * @var string
+	 */
 	protected $tsearch_query;
+
+	/**
+	 * True if phrase search is supported.
+	 * postgreSQL fulltext currently doesn't support it
+	 * @var boolean
+	 */
 	protected $phrase_search = false;
+
+	/**
+	 * @var phpbb_config Config class object
+	 */
 	protected $config;
+
+	/**
+	 * @var dbal DBAL class object
+	 */
 	protected $db;
+
+	/**
+	 * @var user User class object
+	 */
 	protected $user;
-	protected $search_query;
-	protected $common_words = array();
-	protected $word_length = array();
+
+	/**
+	 * Contains tidied search query
+	 * @var string
+	 */
+	public $search_query;
+
+	/**
+	 * Contains common words
+	 * common words are words with length less/more than min/max length
+	 * @var array
+	 */
+	public $common_words = array();
+
+	/**
+	 * Associative array stores the min and max length
+	 * @var array
+	 */
+	public $word_length = array();
 
 	/**
 	 * Constructor
