@@ -125,16 +125,24 @@ jQuery(function($) {
 		try {
 			json = $.parseJSON(response.response);
 		} catch (e) {
-			if (console && console.log) {
-				console.log('Error parsing server response.');
-				console.log(response);
-			}
+			file.status = plupload.FAILED;
+			up.trigger('FileUploaded', file, {
+				response: JSON.stringify({
+					error: {
+						message: 'Error parsing server response.'
+					}
+				})
+			});
 		}
 
 		if (json.error) {
 			file.status = plupload.FAILED;
 			up.trigger('FileUploaded', file, {
-				response: '{"error": {"message": "' + json.error.message + '"}}'
+				response: JSON.stringify({
+					error: {
+						message: json.error.message
+					}
+				})
 			});
 		}
 	});
@@ -157,10 +165,8 @@ jQuery(function($) {
 		try {
 			json = $.parseJSON(response.response);
 		} catch (e) {
-			if (console && console.log) {
-				console.log('Error parsing server response.');
-				console.log(response);
-			}
+			file.status = plupload.FAILED;
+			file.error = 'Error parsing server response.'
 		}
 
 		if (json.error) {
