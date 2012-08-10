@@ -613,3 +613,28 @@ function phpbb_increment_downloads($db, $ids)
 		WHERE ' . $db->sql_in_set('attach_id', $ids);
 	$db->sql_query($sql);
 }
+
+function phpbb_download_handle_passworded_forum($db, $auth, $topic_id)
+{
+	$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
+		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
+		WHERE t.topic_id = " . (int) $topic_id . "
+			AND t.forum_id = f.forum_id";
+	$result = $db->sql_query_limit($sql, 1);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
+	{
+		if ($row && $row['forum_password'])
+		{
+			// Do something else ... ?
+			login_forum_box($row);
+		}
+	}
+	else
+	{
+		send_status_line(403, 'Forbidden');
+		trigger_error('SORRY_AUTH_VIEW_ATTACH');
+	}
+}

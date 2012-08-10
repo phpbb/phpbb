@@ -230,29 +230,7 @@ else if ($download_id)
 	{
 		if (!$attachment['in_message'])
 		{
-			$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
-				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
-				WHERE p.post_id = ' . $attachment['post_msg_id'] . '
-				AND p.forum_id = f.forum_id';
-			$result = $db->sql_query_limit($sql, 1);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			$f_download = $auth->acl_get('f_download', $row['forum_id']);
-
-			if ($auth->acl_get('u_download') && $f_download)
-			{
-				if ($row && $row['forum_password'])
-				{
-					// Do something else ... ?
-					login_forum_box($row);
-				}
-			}
-			else
-			{
-				send_status_line(403, 'Forbidden');
-				trigger_error('SORRY_AUTH_VIEW_ATTACH');
-			}
+			phpbb_download_handle_passworded_forum($db, $auth, $attachment['topic_id']);
 		}
 		else
 		{
@@ -350,30 +328,7 @@ else
 {
 	// sizeof($attachments) >= 1
 
-	$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
-		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
-		WHERE t.topic_id = " . (int) $attachment['topic_id'] . "
-			AND t.forum_id = f.forum_id";
-	$result = $db->sql_query_limit($sql, 1);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	$f_download = $auth->acl_get('f_download', $row['forum_id']);
-
-	if ($auth->acl_get('u_download') && $f_download)
-	{
-		if ($row && $row['forum_password'])
-		{
-			// Do something else ... ?
-			login_forum_box($row);
-		}
-	}
-	else
-	{
-		send_status_line(403, 'Forbidden');
-		trigger_error('SORRY_AUTH_VIEW_ATTACH');
-	}
-
+	phpbb_download_handle_passworded_forum($db, $auth, $attachment['topic_id']);
 	phpbb_increment_downloads($db, $attachment_ids);
 
 	if (!class_exists('compress'))
