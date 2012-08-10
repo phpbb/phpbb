@@ -241,25 +241,15 @@ jQuery(function($) {
 				return;
 			}
 
-			var mouseenter = function(evt) {
-				$(evt.target).attr('class', 'plupload_delete');
-				$(evt.target).css('cursor', 'pointer');
-			};
-
-			var mouseleave = function(evt) {
-				$(evt.target).attr('class', 'plupload_done');
-			};
-
 			var click = function(evt) {
-				var throbber = "url('" + plupload.phpbb.config.img_path + "/throbber.gif')";
-				$(evt.target).find('a').css('background', throbber);
+				$(evt.target).find('a').addClass('working');
 				
 				var idx = phpbb_plupload_find_attachment_idx(file.attachment_data.attach_id);
 				var fields = {};
 				fields['delete_file[' + idx + ']'] = 1;
 
 				var always = function() {
-					$(evt.target).find('a').css('background', '');
+					$(evt.target).find('a').removeClass('working');
 				};
 
 				var done = function(response) {
@@ -282,8 +272,7 @@ jQuery(function($) {
 			};
 			
 			$('#' + file.id)
-			.mouseenter(mouseenter)
-			.mouseleave(mouseleave)
+			.addClass('can_delete')
 			.click(click);
 		});
 	});
