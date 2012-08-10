@@ -292,60 +292,8 @@ else if ($download_id)
 		}
 	}
 
-	
-}
-else
-{
-	// sizeof($attachments) >= 1
-	if ($post_id)
-	{
-		$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
-			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f
-			WHERE p.post_id = $post_id
-				AND p.forum_id = f.forum_id";
-	}
-	else if ($topic_id)
-	{
-		$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
-			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
-			WHERE t.topic_id = $topic_id
-				AND t.forum_id = f.forum_id";
-	}
-
-	$result = $db->sql_query_limit($sql, 1);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	$f_download = $auth->acl_get('f_download', $row['forum_id']);
-
-	if ($auth->acl_get('u_download') && $f_download)
-	{
-		if ($row && $row['forum_password'])
-		{
-			// Do something else ... ?
-			login_forum_box($row);
-		}
-	}
-	else
-	{
-		send_status_line(403, 'Forbidden');
-		trigger_error('SORRY_AUTH_VIEW_ATTACH');
-	}
-}
-
-if ($attachments && sizeof($attachments) < 2)
-{
-	$attachment = current($attachments);
-	$attachments = false;
-}
-
-if ($attachment)
-{
 	$download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
-}
 
-if ($attachment)
-{
 	$attachment['physical_filename'] = utf8_basename($attachment['physical_filename']);
 	$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
@@ -396,9 +344,44 @@ if ($attachment)
 		}
 	}
 }
-
-if ($attachments)
+else
 {
+	// sizeof($attachments) >= 1
+	if ($post_id)
+	{
+		$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
+			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f
+			WHERE p.post_id = $post_id
+				AND p.forum_id = f.forum_id";
+	}
+	else if ($topic_id)
+	{
+		$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
+			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
+			WHERE t.topic_id = $topic_id
+				AND t.forum_id = f.forum_id";
+	}
+
+	$result = $db->sql_query_limit($sql, 1);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$f_download = $auth->acl_get('f_download', $row['forum_id']);
+
+	if ($auth->acl_get('u_download') && $f_download)
+	{
+		if ($row && $row['forum_password'])
+		{
+			// Do something else ... ?
+			login_forum_box($row);
+		}
+	}
+	else
+	{
+		send_status_line(403, 'Forbidden');
+		trigger_error('SORRY_AUTH_VIEW_ATTACH');
+	}
+
 	require_once $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
 	phpbb_increment_downloads($db, $attachment_ids);
 
