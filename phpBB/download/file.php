@@ -172,7 +172,7 @@ else
 	trigger_error('NO_ATTACHMENT_SELECTED');
 }
 
-$sql = 'SELECT attach_id, post_msg_id, in_message, is_orphan, physical_filename, real_filename, extension, mimetype, filesize, filetime
+$sql = 'SELECT attach_id, post_msg_id, topic_id, in_message, is_orphan, physical_filename, real_filename, extension, mimetype, filesize, filetime
 	FROM ' . ATTACHMENTS_TABLE . "
 	WHERE $sql_where";
 $result = $db->sql_query($sql);
@@ -189,6 +189,9 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
+// Make $attachment the first of the attachments we fetched.
+$attachment = current($attachments);
+
 if (empty($attachments))
 {
 	send_status_line(404, 'Not Found');
@@ -202,7 +205,6 @@ else if (!download_allowed())
 else if ($download_id)
 {
 	// sizeof($attachments) == 1
-	$attachment = current($attachments);
 
 	if (!$attachment['in_message'] && !$config['allow_attachments'] || $attachment['in_message'] && !$config['allow_pm_attach'])
 	{
@@ -347,21 +349,11 @@ else if ($download_id)
 else
 {
 	// sizeof($attachments) >= 1
-	if ($post_id)
-	{
-		$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
-			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f
-			WHERE p.post_id = $post_id
-				AND p.forum_id = f.forum_id";
-	}
-	else if ($topic_id)
-	{
-		$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
-			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
-			WHERE t.topic_id = $topic_id
-				AND t.forum_id = f.forum_id";
-	}
 
+	$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
+		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
+		WHERE t.topic_id = " . (int) $attachment['topic_id'] . "
+			AND t.forum_id = f.forum_id";
 	$result = $db->sql_query_limit($sql, 1);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
