@@ -22,14 +22,14 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_fulltext_native extends phpbb_search_base
 {
-	var $stats = array();
-	var $word_length = array();
-	var $search_query;
-	var $common_words = array();
+	private $stats = array();
+	public $word_length = array();
+	public $search_query;
+	public $common_words = array();
 
-	var $must_contain_ids = array();
-	var $must_not_contain_ids = array();
-	var $must_exclude_one_ids = array();
+	private $must_contain_ids = array();
+	private $must_not_contain_ids = array();
+	private $must_exclude_one_ids = array();
 
 	private $phpbb_root_path;
 	private $php_ext;
