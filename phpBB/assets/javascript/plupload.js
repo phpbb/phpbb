@@ -243,7 +243,9 @@ jQuery(function($) {
 
 			var click = function(evt) {
 				$(evt.target).find('a').addClass('working');
-				
+
+				// The index is always found because file.attachment_data is
+				// just an element of plupload.attachment_data
 				var idx = phpbb_plupload_find_attachment_idx(file.attachment_data.attach_id);
 				var fields = {};
 				fields['delete_file[' + idx + ']'] = 1;
