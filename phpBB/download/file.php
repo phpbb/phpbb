@@ -327,8 +327,10 @@ else if ($download_id)
 else
 {
 	// sizeof($attachments) >= 1
-
-	phpbb_download_handle_passworded_forum($db, $auth, $attachment['topic_id']);
+	if (!$attachment['in_message'])
+	{
+		phpbb_download_handle_passworded_forum($db, $auth, $attachment['topic_id']);
+	}
 
 	if (!class_exists('compress'))
 	{
