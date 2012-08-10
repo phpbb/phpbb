@@ -570,10 +570,12 @@ class fileupload
 	* Upload file from users harddisk
 	*
 	* @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
+	* @param object $plupload The plupload object
+	*
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
 	* @access public
 	*/
-	function form_upload($form_name, $plupload = false)
+	function form_upload($form_name, phpbb_plupload $plupload = null)
 	{
 		global $user, $request;
 
