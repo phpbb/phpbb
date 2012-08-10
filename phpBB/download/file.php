@@ -382,8 +382,12 @@ else
 		trigger_error('SORRY_AUTH_VIEW_ATTACH');
 	}
 
-	require_once $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
 	phpbb_increment_downloads($db, $attachment_ids);
+
+	if (!class_exists('compress'))
+	{
+		require $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
+	}
 
 	if (!in_array($archive, compress::methods()))
 	{
