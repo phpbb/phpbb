@@ -253,6 +253,7 @@ class phpbb_revisions_revision
 		$this->forum_id = $row['forum_id'];
 
 		$this->is_current = !empty($row['is_current']);
+		$this->is_protected = !empty($row['revision_protected']);
 	}
 
 	/**

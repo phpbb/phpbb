@@ -148,13 +148,9 @@ class phpbb_revisions_comparison
 
 				'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('revert' => $this_revision_id)) : '',
 				'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $this_revision_id)),
-				'U_DELETE'			=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('delete' => $this_revision_id)),
-				'U_PROTECT'			=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('protect' => $this_revision_id)),
-				'U_UNPROTECT'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('unprotect' => $this_revision_id)),
-
-				'S_DELETE'			=> $auth->acl_get('m_delete_revisions'),
-				'S_PROTECT'			=> !$revision->is_protected() && $auth->acl_get('m_protect_revisions'),
-				'S_UNPROTECT'		=> $revision->is_protected() && $auth->acl_get('m_protect_revisions'),
+				'U_DELETE'			=> $auth->acl_get('m_delete_revisions') ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('delete' => $this_revision_id)) : '',
+				'U_PROTECT'			=> (!$revision->is_protected() && $auth->acl_get('m_protect_revisions')) ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('protect' => $this_revision_id)) : '',
+				'U_UNPROTECT'		=> ($revision->is_protected() && $auth->acl_get('m_protect_revisions')) ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('unprotect' => $this_revision_id)) : '',
 
 				'DELETE_IMG' 		=> $user->img('icon_post_delete', 'DELETE_REVISION'),
 			));
