@@ -112,13 +112,6 @@ class phpbb_search_fulltext_sphinx
 	public $search_query;
 
 	/**
-	 * Contains common words
-	 * common words are words with length less/more than min/max length
-	 * @var array
-	 */
-	public $common_words = array();
-
-	/**
 	 * Constructor
 	 * Creates a new phpbb_search_fulltext_postgres, which is used as a search backend.
 	 *
