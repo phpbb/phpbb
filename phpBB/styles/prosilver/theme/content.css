@@ -61,7 +61,7 @@ div.revisions_block {
 	display: block;
 	width: 75%;
 	margin: 0 auto;
-	margin-bottom: 40px;
+	margin-bottom: 30px;
 }
 
 fieldset.actions-left {
@@ -96,7 +96,7 @@ ul.revisions.odd {
 }
 
 ul.revisions.out_of_range {
-	opacity: 0.6;
+	opacity: 0.7;
 }
 
 ul.revisions.current {
@@ -109,21 +109,9 @@ ul.revisions li {
 	padding:10px;
 }
 
-ul.revisions li.revision_compare {
-	width: 5%;
-}
-
-ul.revisions li.revision_id {
-	width: 5%;
-}
-
-ul.revisions li.revision_revert {
-	width: 5%;
-}
-
 ul.revisions li.revision_user {
 	vertical-align: middle;
-	width:15%;
+	width: 5%;
 }
 
 ul.revisions li.revision_user span {
@@ -131,17 +119,11 @@ ul.revisions li.revision_user span {
 }
 
 ul.revisions li.revision_reason {
-	width:35%;
-}
-
-ul.revisions li.revision_date {
-	text-align: right;
-	width: 15%;
+	width: 30%;
 }
 
 ul.revisions li.revision_options {
 	text-align: right;
-	width: 10%;
 }
 
 dl.revision {
