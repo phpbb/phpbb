@@ -112,7 +112,7 @@ jQuery(function($) {
 	 * @param object up			The plupload.Uploader object
 	 * @param object file		The plupload.File object whose chunk has just
 	 * 	been uploaded
-	 * @param string response	The response string from the server
+	 * @param object response	The response object from the server
 	 *
 	 * @return undefined
 	 */
