@@ -235,7 +235,7 @@ class phpbb_plupload
 		return min(
 			$this->ini->get_bytes('upload_max_filesize'),
 			$this->ini->get_bytes('post_max_size'),
-			$this->ini->get_bytes('memory_limit'),
+			max(1, $this->ini->get_bytes('memory_limit')),
 			$this->config['max_filesize']
 		);
 	}
