@@ -452,9 +452,10 @@ class phpbb_search_fulltext_sphinx
 	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
 	* @param	int			$start				indicates the first index of the page
 	* @param	int			$per_page			number of ids each page is supposed to contain
+	* @param	bool		$search_wiki		limit results to wiki posts
 	* @return	boolean|int						total number of results
 	*/
-	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
+	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page, $search_wiki)
 	{
 		// No keywords? No posts.
 		if (!strlen($this->search_query) && !sizeof($author_ary))
@@ -569,6 +570,11 @@ class phpbb_search_fulltext_sphinx
 			$this->sphinx->SetFilter('poster_id', $author_ary);
 		}
 
+		if ($search_wiki)
+		{
+			$this->sphinx->SetFilter('post_wiki', 1);
+		}
+
 		if (sizeof($ex_fid_ary))
 		{
 			// All forums that a user is allowed to access
@@ -670,16 +676,17 @@ class phpbb_search_fulltext_sphinx
 	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
 	* @param	int			$start				indicates the first index of the page
 	* @param	int			$per_page			number of ids each page is supposed to contain
+	* @param	bool		$search_wiki		limit results to wiki posts
 	* @return	boolean|int						total number of results
 	*/
-	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
+	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page, $search_wiki)
 	{
 		$this->search_query = '';
 
 		$this->sphinx->SetMatchMode(SPH_MATCH_FULLSCAN);
 		$fields = ($firstpost_only) ? 'firstpost' : 'all';
 		$terms = 'all';
-		return $this->keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, $id_ary, $start, $per_page);
+		return $this->keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, $id_ary, $start, $per_page, $search_wiki);
 	}
 
 	/**
