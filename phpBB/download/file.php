@@ -393,14 +393,14 @@ else
 	if ($post_id)
 	{
 		$sql = 'SELECT post_subject
-		FROM ' . POSTS_TABLE . "
-		WHERE post_id = $post_id";
+			FROM ' . POSTS_TABLE . "
+			WHERE post_id = $post_id";
 	}
 	else
 	{
 		$sql = 'SELECT topic_title
-		FROM ' . TOPICS_TABLE . "
-		WHERE topic_id = $topic_id";
+			FROM ' . TOPICS_TABLE . "
+			WHERE topic_id = $topic_id";
 	}
 
 	$result = $db->sql_query($sql);
