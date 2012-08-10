@@ -311,7 +311,7 @@ else if ($download_id)
 	{
 		$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
 	}
-	else if (($display_cat == ATTACHMENT_CATEGORY_NONE/* || $display_cat == ATTACHMENT_CATEGORY_IMAGE*/) && !$attachment['is_orphan'] && !phpbb_http_byte_range($attachment['filesize']))
+	else if ($display_cat == ATTACHMENT_CATEGORY_NONE && !$attachment['is_orphan'] && !phpbb_http_byte_range($attachment['filesize']))
 	{
 		// Update download count
 		phpbb_increment_downloads($db, $attachment['attach_id']);
