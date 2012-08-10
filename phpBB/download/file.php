@@ -159,12 +159,12 @@ if ($download_id)
 else if ($post_id)
 {
 	// Post id or private message id (multiple attachments)
-	$sql_where = "post_msg_id = $post_id";
+	$sql_where = "post_msg_id = $post_id AND is_orphan = 0";
 }
 else if ($topic_id)
 {
 	// Topic id (multiple attachments)
-	$sql_where = "topic_id = $topic_id";
+	$sql_where = "topic_id = $topic_id AND is_orphan = 0";
 }
 else
 {
