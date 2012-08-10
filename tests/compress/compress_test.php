@@ -38,9 +38,8 @@ class phpbb_compress_test extends phpbb_test_case
 		$phpbb_root_path = '';
 
 		$this->path = __DIR__ . '/fixtures/';
-		$compress = new compress();
 
-		if (sizeof($compress->methods()) < 4)
+		if (!@extension_loaded('zlib') || !@extension_loaded('bz2'))
 		{
 			$this->markTestSkipped('PHP needs to be compiled with --with-zlib and --with-bz2 in order to run these tests');
 		}
