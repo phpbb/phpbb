@@ -495,6 +495,14 @@ class phpbb_search_fulltext_sphinx
 		if ($this->sphinx->GetLastError())
 		{
 			add_log('critical', 'LOG_SPHINX_ERROR', $this->sphinx->GetLastError());
+			if ($this->auth->acl_get('a_'))
+			{
+				trigger_error($this->user->lang('SPHINX_SEARCH_FAILED', $this->sphinx->GetLastError()));
+			}
+			else
+			{
+				trigger_error($this->user->lang('SPHINX_SEARCH_FAILED', $this->user->lang('SPHINX_SEARCH_ERROR_LOG')));
+			}
 		}
 
 		// Could be connection to localhost:9312 failed (errno=111,
