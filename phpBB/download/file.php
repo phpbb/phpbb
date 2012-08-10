@@ -329,7 +329,6 @@ else
 	// sizeof($attachments) >= 1
 
 	phpbb_download_handle_passworded_forum($db, $auth, $attachment['topic_id']);
-	phpbb_increment_downloads($db, $attachment_ids);
 
 	if (!class_exists('compress'))
 	{
@@ -397,6 +396,7 @@ else
 	}
 
 	$compress->close();
+	phpbb_increment_downloads($db, $attachment_ids);
 	$compress->download($store_name, $archive_name);
 	file_gc();
 }
