@@ -410,5 +410,6 @@ else
 	$compress->close();
 	phpbb_increment_downloads($db, $attachment_ids);
 	$compress->download($store_name, $archive_name);
+	unlink("{$phpbb_root_path}store/{$store_name}{$archive}");
 	file_gc();
 }
