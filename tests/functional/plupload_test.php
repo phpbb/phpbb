@@ -57,8 +57,6 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 	public function get_urls()
 	{
-		// Cannot test PMs yet due to the ucp module not being able to be
-		// loaded in the test site.
 		return array(
 			array('posting.php?mode=reply&f=2&t=1'),
 			array('ucp.php?i=pm&mode=compose'),
