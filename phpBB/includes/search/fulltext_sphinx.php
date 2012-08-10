@@ -28,22 +28,95 @@ define('SPHINX_CONNECT_WAIT_TIME', 300);
 */
 class phpbb_search_fulltext_sphinx
 {
+	/**
+	 * Associative array holding index stats
+	 * @var array
+	 */
 	protected $stats = array();
+
+	/**
+	 * Holds the words entered by user splitted in array
+	 * @var array
+	 */
 	protected $split_words = array();
+
+	/**
+	 * Holds unique sphinx id
+	 * @var string
+	 */
 	protected $id;
+
+	/**
+	 * Stores the names of both main and delta sphinx indexes
+	 * seperated by a semicolon
+	 * @var string
+	 */
 	protected $indexes;
+
+	/**
+	 * Sphinx searchd client class object
+	 * @var SphinxClient
+	 */
 	protected $sphinx;
+
+	/**
+	 * @var string Relative path to board root
+	 */
 	protected $phpbb_root_path;
+
+	/**
+	 * @var string PHP Extension
+	 */
 	protected $php_ext;
+
+	/**
+	 * @var phpbb_auth Auth class object
+	 */
 	protected $auth;
+
+	/**
+	 * @var phpbb_config Config class object
+	 */
 	protected $config;
+
+	/**
+	 * @var dbal DBAL class object
+	 */
 	protected $db;
+
+	/**
+	 * @var phpbb_db_tools Database Tools class object
+	 */
 	protected $db_tools;
+
+	/**
+	 * Stores the database type if supported by sphinx
+	 * @var string
+	 */
 	protected $dbtype;
+
+	/**
+	 * @var user User class object
+	 */
 	protected $user;
+
+	/**
+	 * Stores the generated content of the sphinx config file
+	 */
 	protected $config_file_data = '';
-	protected $search_query;
-	protected $common_words = array();
+
+	/**
+	 * Contains tidied search query
+	 * @var string
+	 */
+	public $search_query;
+
+	/**
+	 * Contains common words
+	 * common words are words with length less/more than min/max length
+	 * @var array
+	 */
+	public $common_words = array();
 
 	/**
 	 * Constructor
