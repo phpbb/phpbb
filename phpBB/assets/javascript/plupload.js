@@ -11,7 +11,7 @@ plupload.attachment_data = [];
  * @return int	Returns the index in the main array where the attachment id
  * 	was found
  */
-function plupload_find_attachment_idx(id) {
+function phpbb_plupload_find_attachment_idx(id) {
 	var data = plupload.attachment_data;
 	for (var i = 0; i < data.length; i++) {
 		if (data[i].attach_id == id) {
@@ -29,7 +29,7 @@ function plupload_find_attachment_idx(id) {
  * @return object An object in the form 'attachment_data[i][key]': value as
  * 	expected by the server
  */
-function plupload_attachment_data_serialize() {
+function phpbb_plupload_attachment_data_serialize() {
 	var obj = {};
 	for (var i = 0; i < plupload.attachment_data.length; i++) {
 		var datum = plupload.attachment_data[i];
@@ -52,7 +52,7 @@ function plupload_attachment_data_serialize() {
  *
  * @return undefined
  */
-function plupload_clear_params(obj) {
+function phpbb_plupload_clear_params(obj) {
 	for (var key in obj) {
 		if (!obj.hasOwnProperty(key) || key.indexOf('attachment_data[') !== 0) {
 			continue;
@@ -171,7 +171,7 @@ jQuery(function($) {
 			file.attachment_data = json[0];
 			up.settings.multipart_params = $.extend(
 				up.settings.multipart_params,
-				plupload_attachment_data_serialize()
+				phpbb_plupload_attachment_data_serialize()
 			);
 		}
 	});
@@ -200,7 +200,7 @@ jQuery(function($) {
 		// Insert a bunch of hidden input elements containing the attachment
 		// data so that the save/preview/submit buttons work as expected.
 		var form = $(plupload.phpbb.config.form_hook)[0];
-		var data = plupload_attachment_data_serialize();
+		var data = phpbb_plupload_attachment_data_serialize();
 
 		// Update already existing hidden inputs
 		for (var i = 0; i < form.length; i++) {
@@ -245,7 +245,7 @@ jQuery(function($) {
 				var throbber = "url('" + plupload.phpbb.config.img_path + "/throbber.gif')";
 				$(evt.target).find('a').css('background', throbber);
 				
-				var idx = plupload_find_attachment_idx(file.attachment_data.attach_id);
+				var idx = phpbb_plupload_find_attachment_idx(file.attachment_data.attach_id);
 				var fields = {};
 				fields['delete_file[' + idx + ']'] = 1;
 
@@ -256,16 +256,16 @@ jQuery(function($) {
 				var done = function(response) {
 					up.removeFile(file);
 					plupload.attachment_data = response;
-					plupload_clear_params(up.settings.multipart_params);
+					phpbb_plupload_clear_params(up.settings.multipart_params);
 					up.settings.multipart_params = $.extend(
 						up.settings.multipart_params,
-						plupload_attachment_data_serialize()
+						phpbb_plupload_attachment_data_serialize()
 					);
 				};
 				
 				$.ajax(plupload.phpbb.config.url, {
 					type: 'POST',
-					data: $.extend(fields, plupload_attachment_data_serialize()),
+					data: $.extend(fields, phpbb_plupload_attachment_data_serialize()),
 					headers: {'X-PHPBB-USING-PLUPLOAD': '1'}
 				})
 				.always(always)
