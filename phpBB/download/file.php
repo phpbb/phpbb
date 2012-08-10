@@ -366,6 +366,12 @@ else
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
+	if (empty($row))
+	{
+		send_status_line(404, 'Not Found');
+		trigger_error('ERROR_NO_ATTACHMENT');
+	}
+
 	$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
 	$clean_name = current($row);
 	$clean_name = rawurlencode(str_replace($bad_chars, '_', strtolower($clean_name)));
