@@ -31,6 +31,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	protected $lang = array();
 
+	/**
+	* @var array
+	*/
+	protected $created_users = array();
+
 	static protected $config = array();
 	static protected $already_installed = false;
 
@@ -241,14 +246,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* Creates a new user with limited permissions
 	*
-	* Note that creating two users with the same name results in undefined
-	* login behaviour. Always call delete_user after running a test that
+	* Always call delete_user after running a test that
 	* requires create_user.
 	*
 	* @param string $username Also doubles up as the user's password
 	*/
 	protected function create_user($username)
 	{
+		if (isset($this->created_users[$username]))
+		{
+			return;
+		}
+		
 		// Required by unique_id
 		global $config;
 
@@ -269,6 +278,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		";
 
 		$db->sql_query($query);
+		$this->created_users[$username] = 1;
 	}
 
 	/**
@@ -278,6 +288,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	protected function delete_user($username)
 	{
+		if (isset($this->created_users[$username]))
+		{
+			unset($this->created_users[$username]);
+		}
+
 		$db = $this->get_db();
 		$query = "DELETE FROM " . self::$config['table_prefix'] . "users WHERE username = '" . $db->sql_escape($username) . "'";
 		$db->sql_query($query);
