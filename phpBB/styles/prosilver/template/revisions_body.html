@@ -2,10 +2,10 @@
 
 <a href="{U_VIEW_POST}">&laquo; {L_RETURN_TO} {CURRENT_SUBJECT}</a>
 
-<!-- IF S_POST_REVERTED  or S_REVISION_DELETED or S_REVISION_PROTECTED -->
+<!-- IF L_REVISIONS_ACTION_SUCCESS -->
 		<div class="revision_action_success">
 			<div class="inner">
-				<strong><!-- IF S_POST_REVERTED -->{L_POST_REVERTED_SUCCESS}<!-- ELSEIF S_REVISION_DELETED or S_REVISION_PROTECTED -->{L_REVISIONS_ACTION_SUCCESS}<!-- ENDIF --></strong>
+				<strong>{L_REVISIONS_ACTION_SUCCESS}</strong>
 			</div>
 		</div>
 <!-- ENDIF -->
@@ -28,8 +28,8 @@
 			<li class="revision_reason"><!-- IF revision.REASON --><strong>{revision.REASON}</strong><!-- ELSE --><em>{L_NO_REASON}</em><!-- ENDIF --></li>
 			<li class="revision_options">
 				<!-- IF (revision.U_DELETE or revision.U_PROTECT or revision.U_UNPROTECT or revision.U_DELETE) and not revision.IS_CURRENT_POST -->
-					<!-- IF revision.U_PROTECT --><a href="{U_PROTECT}">({L_PROTECT})</a><!-- ENDIF -->
-					<!-- IF revision.U_UNPROTECT --><a href="{U_UNPROTECT}">({L_UNPROTECT})</a><!-- ENDIF -->
+					<!-- IF revision.U_PROTECT --><a href="{revision.U_PROTECT}">({L_PROTECT})</a><!-- ENDIF -->
+					<!-- IF revision.U_UNPROTECT --><a href="{revision.U_UNPROTECT}">({L_UNPROTECT})</a><!-- ENDIF -->
 					<!-- IF revision.U_REVERT_TO --> <a href="{revision.U_REVERT_TO}">({L_REVERT})</a><!-- ENDIF -->
 					<!-- IF revision.U_DELETE --><a href="{revision.U_DELETE}">{revision.DELETE_IMG}</a><!-- ENDIF -->
 				<!-- ELSEIF revision.IS_CURRENT_POST -->

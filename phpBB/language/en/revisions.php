@@ -59,7 +59,7 @@ $lang = array_merge($lang, array(
 	'NO_REVISIONS_POST'			=> 'There are no revisions associated with the specified post ID.',
 
 	'POST_REVERTED_SUCCESS'		=> 'The post has been restored to the selected revision.',
-	'PROTECT_MARKED'			=> 'Protect marked',
+	'PROTECT'					=> 'Protect',
 
 	'RETURN_POST'				=> 'Return to the post',
 	'RETURN_REVISION'			=> 'Return to the post revisions page',
@@ -77,11 +77,17 @@ $lang = array_merge($lang, array(
 		1		=> '1 revision',
 		2		=> '%1$s revisions',
 	),
-	'REVISION_DELETE'			=> 'Delete revision(s)',
-	'REVISION_DELETE_CONFIRM'	=> 'Are you sure you wish to delete the selected revision? This cannot be undone.',
-	'REVISION_PROTECT'			=> 'Protect revision(s)',
-	'REVISION_PROTECT_CONFIRM'	=> 'Are you sure you wish to mark the selected revision as protected? These revisions will not be deleted in the pruning tasks.',
-	'REVISION_DELETIONS'		=> array(
+	'REVISION_DELETE'					=> 'Delete revision',
+	'REVISION_DELETE_CONFIRM'			=> 'Are you sure you wish to delete the selected revision? This cannot be undone.',
+	'REVISION_DELETED_SUCCESS'			=> 'The selected revision has been deleted.',
+	'REVISION_DELETED_SUCCESS_NO_MORE'	=> 'The selected revision has been deleted. There are no more revisions to display.',	
+	'REVISION_PROTECT'					=> 'Protect revision',
+	'REVISION_PROTECT_CONFIRM'			=> 'Are you sure you wish to mark the selected revision as protected? This revision will not be deleted in automatic pruning tasks.',
+	'REVISION_PROTECTED_SUCCESS'		=> 'The selected revision has been marked as protected.',
+	'REVISION_UNPROTECT'				=> 'Unprotect revision',
+	'REVISION_UNPROTECT_CONFIRM'		=> 'Are you sure you wish to mark the selected revision as unprotected? This revision will may be deleted in automatic pruning tasks.',
+	'REVISION_UNPROTECTED_SUCCESS'		=> 'The selected revision has been marked as unprotected.',
+	'REVISION_DELETIONS'				=> array(
 		1 =>'1 deletion',
 		2 => '%1$s deletions',
 	),
@@ -94,23 +100,13 @@ $lang = array_merge($lang, array(
 
 	'REVISIONS'							=> 'Revisions',
 	'REVISIONS_COMPARE_TITLE'			=> 'Comparing Post Revisions',
-	'REVISIONS_DELETED_SUCCESS'			=> array(
-		1 => 'The selected revision has been deleted.',
-		2 => 'The selected revisions have been deleted.',
-	),
-	'REVISIONS_DELETED_SUCCESS_NO_MORE'	=> array(
-		1 => 'The selected revision has been deleted. There are no more revisions to display.',
-		2 => 'The selected revisions have been deleted. There are no more revisions to display.',
-	),
 	'REVISIONS_FROM_DIFFERENT_POSTS'	=> 'You cannot compare revisions from separate posts.',
-	'REVISIONS_PROTECTED_SUCCESS'		=> array(
-		1 => 'The selected revision has been marked as protected.',
-		2 => 'The selected revisions have been marked as protected.',
-	),
 	'REVISIONS_REVERT_TITLE'			=> 'Restore Post to Selected Revision',
 	'REVISIONS_REVERT_EXPLAIN'			=> 'The changes between the current revision and the selected revision are displayed below. If you are satisfied with those changes, click Submit.',
 
 	'SUBMIT_FORM_AGAIN'			=> 'This form has timed out. Please try again by resubmitting the form.',
+
+	'UNPROTECT'					=> 'Unprotect',
 
 	'WITH'						=> 'with',
 

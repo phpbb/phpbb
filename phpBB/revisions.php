@@ -107,7 +107,8 @@ if ($delete || $protect || $unprotect)
 
 		$action = 'delete';
 		$action_id = $delete;
-		$action_success_lang = 	'REVISION_DELETED_SUCCESS';
+		$action_confirm_lang = 'REVISION_DELETE';
+		$action_success_lang = 'REVISION_DELETED_SUCCESS';
 	}
 	else if ($protect)
 	{
@@ -118,7 +119,8 @@ if ($delete || $protect || $unprotect)
 
 		$action = 'protect';
 		$action_id = $protect;
-		$action_success_lang = 	'REVISION_PROTECTED_SUCCESS';
+		$action_confirm_lang = 'REVISION_PROTECT';
+		$action_success_lang = 'REVISION_PROTECTED_SUCCESS';
 	}
 	else if ($unprotect)
 	{
@@ -129,7 +131,8 @@ if ($delete || $protect || $unprotect)
 
 		$action = 'unprotect';
 		$action_id = $unprotect;
-		$action_success_lang = 	'REVISION_UNPROTECTED_SUCCESS';
+		$action_confirm_lang = 'REVISION_UNPROTECT';
+		$action_success_lang = 'REVISION_UNPROTECTED_SUCCESS';
 	}
 
 	if (confirm_box(true))
@@ -139,9 +142,6 @@ if ($delete || $protect || $unprotect)
 			$revisions[$action_id]->$action();
 
 			$template->assign_vars(array(
-				'S_REVISION_DELETED'			=> $delete,
-				'S_REVISION_PROTECTED'			=> $protect,
-				'S_REVISION_UNPROTECTED'		=> $unprotect,
 				'L_REVISIONS_ACTION_SUCCESS'	=> $user->lang($action_success_lang),
 			));
 
@@ -189,7 +189,7 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 		$revisions = $post->get_revisions(true);
 
 		$template->assign_vars(array(
-			'S_POST_REVERTED'	=> true,
+			'L_REVISIONS_ACTION_SUCCESS'	=> $user->lang('POST_REVERTED_SUCCESS'),
 		));
 	}
 	else

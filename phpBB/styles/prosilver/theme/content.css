@@ -126,6 +126,11 @@ ul.revisions li.revision_options {
 	text-align: right;
 }
 
+div.revision_action_success {
+	padding: 5px;
+	border-radius: 5px;
+}
+
 dl.revision {
 	display: block;
 	width: 100%;
