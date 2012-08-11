@@ -1412,7 +1412,6 @@ function get_schema_struct()
 			'revision_subject'		=> array('STEXT_UNI', '', 'true_sort'),
 			'revision_text'			=> array('MTEXT_UNI', ''),
 			'revision_checksum'		=> array('VCHAR:32', ''),
-			'revision_attachment'	=> array('BOOL', 0),
 			'bbcode_bitfield'		=> array('VCHAR:255', ''),
 			'bbcode_uid'			=> array('VCHAR:8', ''),
 			'revision_reason'		=> array('STEXT_UNI', ''),
@@ -1614,17 +1613,6 @@ function get_schema_struct()
 			'reason_order'			=> array('USINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'reason_id',
-	);
-
-	$schema_data['phpbb_revision_attachments'] = array(
-		'COLUMNS'		=> array(
-			'revision_id'			=> array('UINT', 0),
-			'attachment_id'			=> array('UINT', 0),
-		),
-		'KEYS'			=> array(
-			'r_id'					=> array('INDEX', 'revision_id'),
-			'a_id'					=> array('INDEX', 'attachment_id'),
-		),
 	);
 
 	$schema_data['phpbb_search_results'] = array(

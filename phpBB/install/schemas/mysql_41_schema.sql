@@ -539,7 +539,6 @@ CREATE TABLE phpbb_post_revisions (
 	revision_subject varchar(255) DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
 	revision_text mediumtext NOT NULL,
 	revision_checksum varchar(32) DEFAULT '' NOT NULL,
-	revision_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
 	bbcode_uid varchar(8) DEFAULT '' NOT NULL,
 	revision_reason varchar(255) DEFAULT '' NOT NULL,
@@ -726,15 +725,6 @@ CREATE TABLE phpbb_reports_reasons (
 	reason_description mediumtext NOT NULL,
 	reason_order smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (reason_id)
-) CHARACTER SET `utf8` COLLATE `utf8_bin`;
-
-
-# Table: 'phpbb_revision_attachments'
-CREATE TABLE phpbb_revision_attachments (
-	revision_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	attachment_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	KEY r_id (revision_id),
-	KEY a_id (attachment_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

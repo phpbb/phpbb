@@ -725,7 +725,6 @@ CREATE TABLE phpbb_post_revisions (
 	revision_subject varchar(255) DEFAULT '' NOT NULL,
 	revision_text TEXT DEFAULT '' NOT NULL,
 	revision_checksum varchar(32) DEFAULT '' NOT NULL,
-	revision_attachment INT2 DEFAULT '0' NOT NULL CHECK (revision_attachment >= 0),
 	bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
 	bbcode_uid varchar(8) DEFAULT '' NOT NULL,
 	revision_reason varchar(255) DEFAULT '' NOT NULL,
@@ -950,17 +949,6 @@ CREATE TABLE phpbb_reports_reasons (
 	PRIMARY KEY (reason_id)
 );
 
-
-/*
-	Table: 'phpbb_revision_attachments'
-*/
-CREATE TABLE phpbb_revision_attachments (
-	revision_id INT4 DEFAULT '0' NOT NULL CHECK (revision_id >= 0),
-	attachment_id INT4 DEFAULT '0' NOT NULL CHECK (attachment_id >= 0)
-);
-
-CREATE INDEX phpbb_revision_attachments_r_id ON phpbb_revision_attachments (revision_id);
-CREATE INDEX phpbb_revision_attachments_a_id ON phpbb_revision_attachments (attachment_id);
 
 /*
 	Table: 'phpbb_search_results'

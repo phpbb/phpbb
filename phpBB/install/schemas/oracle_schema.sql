@@ -1015,7 +1015,6 @@ CREATE TABLE phpbb_post_revisions (
 	revision_subject varchar2(765) DEFAULT '' ,
 	revision_text clob DEFAULT '' ,
 	revision_checksum varchar2(32) DEFAULT '' ,
-	revision_attachment number(1) DEFAULT '0' NOT NULL,
 	bbcode_bitfield varchar2(255) DEFAULT '' ,
 	bbcode_uid varchar2(8) DEFAULT '' ,
 	revision_reason varchar2(765) DEFAULT '' ,
@@ -1382,20 +1381,6 @@ BEGIN
 END;
 /
 
-
-/*
-	Table: 'phpbb_revision_attachments'
-*/
-CREATE TABLE phpbb_revision_attachments (
-	revision_id number(8) DEFAULT '0' NOT NULL,
-	attachment_id number(8) DEFAULT '0' NOT NULL
-)
-/
-
-CREATE INDEX phpbb_revision_attachments_r_id ON phpbb_revision_attachments (revision_id)
-/
-CREATE INDEX phpbb_revision_attachments_a_id ON phpbb_revision_attachments (attachment_id)
-/
 
 /*
 	Table: 'phpbb_search_results'

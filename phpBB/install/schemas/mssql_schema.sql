@@ -933,7 +933,6 @@ CREATE TABLE [phpbb_post_revisions] (
 	[revision_subject] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[revision_text] [text] DEFAULT ('') NOT NULL ,
 	[revision_checksum] [varchar] (32) DEFAULT ('') NOT NULL ,
-	[revision_attachment] [int] DEFAULT (0) NOT NULL ,
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[revision_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
@@ -1255,22 +1254,6 @@ ALTER TABLE [phpbb_reports_reasons] WITH NOCHECK ADD
 	(
 		[reason_id]
 	)  ON [PRIMARY] 
-GO
-
-
-/*
-	Table: 'phpbb_revision_attachments'
-*/
-CREATE TABLE [phpbb_revision_attachments] (
-	[revision_id] [int] DEFAULT (0) NOT NULL ,
-	[attachment_id] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE  INDEX [r_id] ON [phpbb_revision_attachments]([revision_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [a_id] ON [phpbb_revision_attachments]([attachment_id]) ON [PRIMARY]
 GO
 
 

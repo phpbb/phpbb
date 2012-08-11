@@ -753,7 +753,6 @@ CREATE TABLE phpbb_post_revisions (
 	revision_subject VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	revision_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
 	revision_checksum VARCHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	revision_attachment INTEGER DEFAULT 0 NOT NULL,
 	bbcode_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	bbcode_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	revision_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
@@ -1041,15 +1040,6 @@ BEGIN
 	NEW.reason_id = GEN_ID(phpbb_reports_reasons_gen, 1);
 END;;
 
-
-# Table: 'phpbb_revision_attachments'
-CREATE TABLE phpbb_revision_attachments (
-	revision_id INTEGER DEFAULT 0 NOT NULL,
-	attachment_id INTEGER DEFAULT 0 NOT NULL
-);;
-
-CREATE INDEX phpbb_revision_attachments_r_id ON phpbb_revision_attachments(revision_id);;
-CREATE INDEX phpbb_revision_attachments_a_id ON phpbb_revision_attachments(attachment_id);;
 
 # Table: 'phpbb_search_results'
 CREATE TABLE phpbb_search_results (
