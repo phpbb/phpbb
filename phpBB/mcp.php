@@ -887,5 +887,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 		return false;
 	}
 
+	// If forum id is false and ids populated we may have only global announcements selected (returning 0 because of (int) $forum_id)
+
 	return ($single_forum === false) ? true : (int) $forum_id;
 }
