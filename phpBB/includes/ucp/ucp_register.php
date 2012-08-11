@@ -185,6 +185,7 @@ class ucp_register
 
 			if ($return instanceof phpbb_auth_data_request)
 			{
+				$requested_data = array();
 				if (isset($return->USERNAME))
 				{
 					$error[] = $return->USERNAME_ERROR;
@@ -192,6 +193,7 @@ class ucp_register
 						'USERNAME'				=> true,
 						'L_USERNAME_EXPLAIN'	=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
 					));
+					$requested_data[] = 'username';
 				}
 
 				if (isset($return->EMAIL))
@@ -200,13 +202,20 @@ class ucp_register
 					$template->assign_vars(array(
 						'EMAIL'	=> true,
 					));
+					$requested_data[] = 'email';
 				}
 
 				$post_vars = $request->variable_names(phpbb_request_interface::POST);
+				$get_vars = $request->variable_names(phpbb_request_interface::GET);
+				$vars = array_merge($post_vars, $get_vars);
 				$s_hidden_fields = array();
-				foreach ($post_vars as $var)
+				foreach ($vars as $var)
 				{
-					if ($var == 'auth_step')
+					if (in_array($var, $requested_data))
+					{
+						continue;
+					}
+					else if ($var == 'auth_step')
 					{
 						$s_hidden_fields[$var] = $request->variable('auth_action', '') . '_req_data';
 					}
@@ -215,27 +224,8 @@ class ucp_register
 						$s_hidden_fields[$var] = $request->variable($var, '');
 					}
 				}
+				$s_ucp_action = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;auth_step=' . $s_hidden_fields['auth_step']);
 				$s_hidden_fields = build_hidden_fields($s_hidden_fields);
-
-				$s_ucp_action = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register');
-				$get_vars = $request->variable_names(phpbb_request_interface::GET);
-				$query_vars = array();
-				foreach ($get_vars as $var)
-				{
-					if ($var == 'mode')
-					{
-						continue;
-					}
-					else if ($var == 'auth_step')
-					{
-						$query_vars[$var] = $request->variable('auth_action', '') . '_req_data';
-					}
-					else
-					{
-						$query_vars[$var] = $request->variable($var, '');
-					}
-				}
-				$s_ucp_action .= '&' . http_build_query($query_vars);
 
 				$template->assign_vars(array(
 					'ERROR'				=> implode('<br />', $error),

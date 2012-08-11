@@ -401,24 +401,22 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 			throw new phpbb_auth_exception('AUTH_DISABLED');
 		}
 
-		//Get the SREG data
-		$storage = new phpbb_auth_zend_openid_storage($this->db);
-		$storage->purgeNonces(time());
-		$consumer = new ZendOpenId\Consumer\GenericConsumer($storage);
-
+		// Get data from extensions
 		$extensions = array(
 			'sreg'	=> new ZendOpenId\Extension\Sreg($this->sreg_props, null, 1.1),
 		);
 
-		$this->request->enable_super_globals();
-		$id = '';
-		if (!$consumer->verify($_GET, $id, $extensions))
+		// All important data should be returned via POST
+		$param_names = $this->request->variable_names(phpbb_request_interface::POST);
+		$params = array();
+		foreach ($param_names as $param_name)
 		{
-			$this->request->disable_super_globals();
-			throw new phpbb_auth_exception('OpenID authentication failed: ' . $consumer->getError());
+			$params[$param_name] = $this->request->variable($param_name, '', false, phpbb_request_interface::POST);
+		}
+		if (!ZendOpenId\Extension\AbstractExtension::forAll($extensions, 'parseResponse', $params)) {
+			throw new phpbb_auth_exception('Extension::parseResponse failure');
 		}
 		$sreg_data = $extensions['sreg']->getProperties();
-		$this->request->disable_super_globals();
 
 		// Build the requested data array.
 		$requested_data = array();
@@ -438,7 +436,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 			return $user_id;
 		}
 
-		$identity = $this->request->variable('openid_identity', '');
+		$identity = $this->request->variable('openid_identity', '', false, phpbb_request_interface::POST);
 		$this->link($user_id, 'openid', $identity);
 		return true;
 	}
@@ -471,17 +469,23 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 				{
 					$req_data['USERNAME'] = $error;
 				}
-				$data['username'] = $requested_data['username'];
+				else
+				{
+					$data['username'] = $requested_data['username'];
+				}
 			}
 
 			if (isset($requested_data['email']))
 			{
-				$error = validate_username($requested_data['email']);
+				$error = validate_email($requested_data['email']);
 				if ($error)
 				{
 					$req_data['EMAIL'] = $error;
 				}
-				$data['email'] = $requested_data['email'];
+				else
+				{
+					$data['email'] = $requested_data['email'];
+				}
 			}
 		}
 
@@ -503,9 +507,9 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 				else
 				{
 					$data['email'] = $sreg_data['email'];
-					if (isset($reg_data['EMAIL']))
+					if (isset($req_data['EMAIL']))
 					{
-						unset($reg_data['EMAIL']);
+						unset($req_data['EMAIL']);
 					}
 				}
 			}
