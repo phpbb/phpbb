@@ -197,8 +197,8 @@ class phpbb_revisions_comparison
 			$json_response = new phpbb_json_response();
 			$json_response->send(array(
 				'revisions_block'		=> $revisions_block,
-				'text_diff_rendered'	=> $text_diff_rendered,
-				'subject_diff_rendered'	=> '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_data['post_id'])) . '">' . $subject_diff_rendered . '</a>',
+				'text_diff_rendered'	=> $this->get_text_diff_rendered(),
+				'subject_diff_rendered'	=> '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_data['post_id'])) . '">' . $this->get_subject_diff_rendered() . '</a>',
 				'compare_summary'		=> $l_compare_summary,
 				'comparing_to'			=> $user->lang('COMPARING') . ' <a href="' . $u_first_revision . '">' . $l_first_revision . '<a/> ' . $user->lang('WITH') . ' <a href="' . $u_last_revision . '">' . $l_last_revision . '</a>',
 			));
