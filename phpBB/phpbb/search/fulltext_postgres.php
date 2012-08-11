@@ -457,15 +457,13 @@ class fulltext_postgres extends \phpbb\search\base
 		$sql_where_options .= $sql_match_where;
 
 		$tmp_sql_match = array();
-		foreach (explode(',', $sql_match) as $sql_match_column)
-		{
-			$tmp_sql_match[] = "to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', " . $sql_match_column . ") @@ to_tsquery ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', '" . $this->db->sql_escape($this->tsearch_query) . "')";
-		}
+		$sql_match = str_replace(',', " || ' ' ||", $sql_match);
+		$tmp_sql_match = "to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', " . $sql_match . ") @@ to_tsquery ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', '" . $this->db->sql_escape($this->tsearch_query) . "')";
 
 		$this->db->sql_transaction('begin');
 
 		$sql_from = "FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p";
-		$sql_where = "WHERE (" . implode(' OR ', $tmp_sql_match) . ")
+		$sql_where = "WHERE (" . $tmp_sql_match . ")
 			$sql_where_options";
 		$sql = "SELECT $sql_select
 			$sql_from
