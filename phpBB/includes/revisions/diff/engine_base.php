@@ -77,8 +77,8 @@ abstract class phpbb_revisions_diff_engine_base
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 		
-		$this->to = $to_text;
-		$this->from = $from_text;
+		$this->to = html_entity_decode($to_text);
+		$this->from = html_entity_decode($from_text);
 
 		$this->set_granularity($granularity);
 		$this->get_diff_obj();
