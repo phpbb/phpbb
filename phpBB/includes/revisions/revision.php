@@ -251,6 +251,7 @@ class phpbb_revisions_revision
 
 		$this->poster_id = $row['poster_id'];
 		$this->forum_id = $row['forum_id'];
+		$this->post_id = $row['post_id'];
 
 		$this->is_current = !empty($row['is_current']);
 		$this->is_protected = !empty($row['revision_protected']);

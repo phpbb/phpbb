@@ -3,37 +3,35 @@
 <a href="{U_VIEW_POST}" class="left-box {S_CONTENT_FLOW_BEGIN}" accesskey="r">{L_RETURN_TO} {CURRENT_SUBJECT}</a>
 <br clear="both" />
 
-<!-- IF L_REVISIONS_ACTION_SUCCESS -->
-		<div class="revision_action_success">
-			<div class="inner">
-				<strong>{L_REVISIONS_ACTION_SUCCESS}</strong>
-			</div>
-		</div>
-<!-- ENDIF -->
+<div class="revision_action_success"<!-- IF not L_REVISIONS_ACTION_SUCCESS --> style="display: none;"<!-- ENDIF -->>
+	<div class="inner">
+		<strong>{L_REVISIONS_ACTION_SUCCESS}</strong>
+	</div>
+</div>
 
 <h2>{L_VIEWING_POST_REVISION_HISTORY}</h2>
 <!-- IF S_DISPLAY_COMPARISON -->
 <p><div class="left-box"><strong>{L_LAST_REVISION_TIME}</strong></div>
 <div class="right-box">{L_COMPARING} <a href="{U_FIRST_REVISION}">{FIRST_REVISION}</a> {L_WITH} <a href="{U_LAST_REVISION}">{LAST_REVISION}</a></div></p>
 <hr />
-<p><div class="left-box">{L_COMPARE_SUMMARY} {L_WITH} {L_LINES_ADDED_REMOVED}</div></p>
+<p><div class="left-box"><span id="compare_summary">{L_COMPARE_SUMMARY}</span><!-- IF L_LINES_ADDED_REMOVED --> {L_WITH} {L_LINES_ADDED_REMOVED}<!-- ENDIF --></div></p>
 <br class="clear" />
 <div class="revisions_block">
-	<form name="revision_list" action="{U_VIEW_REVISIONS}" method="post" />
+	<form name="revision_list" action="{U_VIEW_REVISIONS}" method="post" data-ajax="revisions.compare" />
 		<!-- BEGIN revision -->
-		<ul class="revisions<!-- IF revision.S_ROW_COUNT is odd --> odd<!-- ELSE --> even<!-- ENDIF --><!-- IF not revision.IN_RANGE --> out_of_range<!-- ENDIF --><!-- IF revision.CURRENT_REVISION --> current<!-- ENDIF -->">
+		<ul class="revisions<!-- IF revision.S_ROW_COUNT is odd --> odd<!-- ELSE --> even<!-- ENDIF --><!-- IF not revision.IN_RANGE --> out_of_range<!-- ENDIF --><!-- IF revision.CURRENT_REVISION --> current<!-- ENDIF -->" id="r{revision.ID}">
 			<li class="revision_compare"><input type="radio" name="first" value="{revision.ID}"<!-- IF revision.FIRST_IN_COMPARE --> checked="checked"<!-- ENDIF --> /> <input type="radio" name="last" value="{revision.ID}"<!-- IF revision.LAST_IN_COMPARE --> checked="checked"<!-- ENDIF --> /></li>
 			<li class="revision_id"><a href="{revision.U_REVISION_VIEW}">#{revision.NUMBER} ({L_VIEW})</a></li>
 			<li class="revsion_user">{revision.USER_AVATAR} <span>{revision.USERNAME}</span></li>
 			<li class="revision_date">{revision.DATE}</li>
 			<li class="revision_reason"><!-- IF revision.REASON --><strong>{revision.REASON}</strong><!-- ELSE --><em>{L_NO_REASON}</em><!-- ENDIF --></li>
 			<li class="revision_options">
-				<!-- IF (revision.U_DELETE or revision.U_PROTECT or revision.U_UNPROTECT or revision.U_DELETE) and not revision.IS_CURRENT_POST -->
-					<!-- IF revision.U_PROTECT --><a href="{revision.U_PROTECT}">({L_PROTECT})</a><!-- ENDIF -->
-					<!-- IF revision.U_UNPROTECT --><a href="{revision.U_UNPROTECT}">({L_UNPROTECT})</a><!-- ENDIF -->
-					<!-- IF revision.U_REVERT_TO --> <a href="{revision.U_REVERT_TO}">({L_REVERT})</a><!-- ENDIF -->
-					<!-- IF revision.U_DELETE --><a href="{revision.U_DELETE}">{revision.DELETE_IMG}</a><!-- ENDIF -->
-				<!-- ELSEIF revision.IS_CURRENT_POST -->
+				<!-- IF not revision.IS_CURRENT_POST -->
+					<a href="{revision.U_PROTECT}" id="link_protect"<!-- IF not revision.S_PROTECT --> style="display:none"<!-- ENDIF --> data-ajax="revisions.protect">({L_PROTECT})</a>
+					<a href="{revision.U_UNPROTECT}" id="link_unprotect"<!-- IF not revision.S_UNPROTECT --> style="display:none"<!-- ENDIF --> data-ajax="revisions.unprotect">({L_UNPROTECT})</a>
+					<a href="{revision.U_REVERT_TO}" id="link_revert"<!-- IF not revision.U_REVERT_TO --> style="display:none"<!-- ENDIF --> data-ajax="revisions.revert">({L_REVERT})</a>
+					<a href="{revision.U_DELETE}" id="link_delete"<!-- IF not revision.U_DELETE --> style="display:none"<!-- ENDIF --> data-ajax="revisions.delete" data-refresh="true">{revision.DELETE_IMG}</a>
+				<!-- ELSE -->
 					<strong>{L_CURRENT_REVISION}</strong>
 				<!-- ENDIF -->
 			</li>

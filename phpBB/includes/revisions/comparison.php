@@ -112,7 +112,7 @@ class phpbb_revisions_comparison
 		return $range_ids;
 	}
 
-	public function output_template_block(phpbb_revisions_post $post, phpbb_template $template, phpbb_user $user, phpbb_auth $auth, $can_revert, $phpbb_root_path, $phpEx)
+	public function output_template_block(phpbb_revisions_post $post, phpbb_template $template, phpbb_user $user, phpbb_auth $auth, phpbb_request $request, $can_revert, $phpbb_root_path, $phpEx)
 	{
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
@@ -123,7 +123,7 @@ class phpbb_revisions_comparison
 		$range_ids = $this->get_comparison_range_ids($revisions);
 
 		$revision_number = 1;
-		$revision_users = array();
+		$revision_users = $revisions_block = array();
 		$first_id = $this->first->get_id();
 		$last_id = $this->last->get_id();
 
@@ -131,11 +131,11 @@ class phpbb_revisions_comparison
 		{
 			$this_revision_id = $revision->get_id();
 			$post_id = $revision->get_post_id();
-
-			$template->assign_block_vars('revision', array(
+			$in_range = in_array($this_revision_id, $range_ids);
+			$revision_block = array(
 				'DATE'				=> $user->format_date($revision->get_time()),
 				'ID'				=> $this_revision_id,
-				'IN_RANGE'			=> in_array($this_revision_id, $range_ids),
+				'IN_RANGE'			=> $in_range,
 				'NUMBER'			=> $revision_number,
 				'REASON'			=> $revision->get_reason(),
 				'USERNAME'			=> $revision->get_username(),
@@ -147,13 +147,19 @@ class phpbb_revisions_comparison
 				'LAST_IN_COMPARE'	=> $revision->get_id() == $last_id,
 
 				'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('revert' => $this_revision_id)) : '',
-				'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $this_revision_id)),
+				'U_REVISION_VIEW'	=> $revision->is_current() ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) : append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $this_revision_id)),
 				'U_DELETE'			=> $auth->acl_get('m_delete_revisions') ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('delete' => $this_revision_id)) : '',
-				'U_PROTECT'			=> (!$revision->is_protected() && $auth->acl_get('m_protect_revisions')) ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('protect' => $this_revision_id)) : '',
-				'U_UNPROTECT'		=> ($revision->is_protected() && $auth->acl_get('m_protect_revisions')) ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('unprotect' => $this_revision_id)) : '',
+				'U_PROTECT'			=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('protect' => $this_revision_id)),
+				'U_UNPROTECT'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('unprotect' => $this_revision_id)),
+
+				'S_PROTECT'			=> !$revision->is_protected() && $auth->acl_get('m_protect_revisions'),
+				'S_UNPROTECT'		=> $revision->is_protected() && $auth->acl_get('m_protect_revisions'),
 
 				'DELETE_IMG' 		=> $user->img('icon_post_delete', 'DELETE_REVISION'),
-			));
+			);
+
+			$template->assign_block_vars('revision', $revision_block);
+			$revisions_block[] = $revision_block;
 
 			$revision_users[$revision->get_user_id()] = true;
 			$revision_number++;
@@ -165,7 +171,7 @@ class phpbb_revisions_comparison
 		$additions_count = $this->text_diff->additions_count() + $this->subject_diff->additions_count();
 		$deletions_count = $this->text_diff->deletions_count() + $this->subject_diff->deletions_count();
 		$l_lines_added_removed = $additions_count ? $user->lang('REVISION_ADDITIONS', $additions_count) . ' ' : '';
-		$l_lines_added_removed .= ($l_lines_added_removed && $additions_count && $deletions_count) ? strtolower($user->lang('AND')) . ' ' : '';
+		$l_lines_added_removed .= $additions_count && $deletions_count ? strtolower($user->lang('AND')) . ' ' : '';
 		$l_lines_added_removed .= $deletions_count ? $user->lang('REVISION_DELETIONS', $deletions_count) : '';
 
 		$template->assign_vars(array(
@@ -180,6 +186,17 @@ class phpbb_revisions_comparison
 			'LAST_REVISION'			=> $last_id ? strtolower($user->lang('REVISION')) . ' ' . $last_id : $user->lang('CURRENT_REVISION'),
 			'U_LAST_REVISION'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", ($last_id ? array('r' => $last_id) : array('p' => $post_data['post_id']))),
 		));
+
+		if ($request->is_ajax())
+		{
+			$json_response = new phpbb_json_response();
+			$json_response->send(array(
+				'revisions_block'		=> $revisions_block,
+				'text_diff_rendered'	=> $text_diff_rendered,
+				'subject_diff_rendered'	=> '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_data['post_id'])) . '">' . $subject_diff_rendered . '</a>',
+				'compare_summary'		=> $l_compare_summary,
+			));
+		}
 	}
 
 	/**

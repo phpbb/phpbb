@@ -102,6 +102,15 @@ if ($delete || $protect || $unprotect)
 	{
 		if (!$auth->acl_get('m_delete_revisions', $post_data['forum_id']))
 		{
+			if ($request->is_ajax())
+			{
+				$json_response = new phpbb_json_response();
+				$json_response->send(array(
+					'success' => false,
+					'message' => $user->lang('NO_AUTH_DELETE_REVISIONS'),
+				));
+			}
+
 			trigger_error($user->lang('NO_AUTH_DELETE_REVISIONS') . $l_return);
 		}
 
@@ -114,6 +123,15 @@ if ($delete || $protect || $unprotect)
 	{
 		if (!$auth->acl_get('m_protect_revisions', $post_data['forum_id']))
 		{
+			if ($request->is_ajax())
+			{
+				$json_response = new phpbb_json_response();
+				$json_response->send(array(
+					'success' => false,
+					'message' => $user->lang('NO_AUTH_PROTECT_REVISIONS'),
+				));
+			}
+
 			trigger_error($user->lang('NO_AUTH_PROTECT_REVISIONS') . $l_return);
 		}
 
@@ -126,6 +144,15 @@ if ($delete || $protect || $unprotect)
 	{
 		if (!$auth->acl_get('m_protect_revisions', $post_data['forum_id']))
 		{
+			if ($request->is_ajax())
+			{
+				$json_response = new phpbb_json_response();
+				$json_response->send(array(
+					'success' => false,
+					'message' => $user->lang('NO_AUTH_UNPROTECT_REVISIONS'),
+				));
+			}
+
 			trigger_error($user->lang('NO_AUTH_UNPROTECT_REVISIONS') . $l_return);
 		}
 
@@ -150,8 +177,29 @@ if ($delete || $protect || $unprotect)
 
 			if (!sizeof($revisions))
 			{
+				if ($request->is_ajax())
+				{
+					$json_response = new phpbb_json_response();
+					$json_response->send(array(
+						'success' => true,
+						'message' => $user->lang('REVISION_DELETED_SUCCESS_NO_MORE'),
+					));
+				}
+
 				trigger_error($user->lang('REVISION_DELETED_SUCCESS_NO_MORE') . '
 					<br /><a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id" . '">' . $user->lang('RETURN_POST') . '</a>');
+			}
+
+			if ($request->is_ajax())
+			{
+				$data = array(
+					'success'			=> true,
+					'message'			=> $user->lang($action_success_lang),
+					'link_protect'		=> '(<a href="' . append_sid("{$phpbb_root_path}revisions.$phpEx", array('protect' => $unprotect)) . '" data-ajax="revisions.protect">' . $user->lang('PROTECT') . '</a>)',
+					'link_unprotect'	=> '(<a href="' . append_sid("{$phpbb_root_path}revisions.$phpEx", array('unprotect' => $protect)) . '" data-ajax="revisions.unprotect">' . $user->lang('UNPROTECT') . '</a>)',
+				);
+				$json_response = new phpbb_json_response();
+				$json_response->send($data);
 			}
 		}
 	}
@@ -161,24 +209,41 @@ if ($delete || $protect || $unprotect)
 			'p'				=> $post_id,
 			'delete'		=> $delete,
 			'protect'		=> $protect,
+			'unprotect'		=> $unprotect,
 		));
-		confirm_box(false, ($delete ? 'REVISION_DELETE' : 'REVISION_PROTECT'), $s_hidden_fields);
+		confirm_box(false, $action_confirm_lang, $s_hidden_fields);
 	}
 }
 
 if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 {
+	$error = '';
+
 	if (!$can_revert)
 	{
-		trigger_error($user->lang('NO_AUTH_REVERT') . $l_return);
+		$error = 'NO_AUTH_REVERT';
 	}
 	else if (empty($revisions[$revert_id]))
 	{
-		trigger_error($user->lang('ERROR_REVISION_NOT_FOUND') . $l_return);
+		$error = 'ERROR_REVISION_NOT_FOUND';
 	}
 	else if ($this->post_data['post_edit_locked'] && !$this->auth->acl_get('m_revisions'))
 	{
-		trigger_error($user->lang('ERROR_POST_EDIT_LOCKED') . $l_return);
+		$error = 'ERROR_POST_EDIT_LOCKED';
+	}
+
+	if ($error)
+	{
+		if ($request->is_ajax())
+		{
+			$json_response = new phpbb_json_response();
+			$json_response->send(array(
+				'success' => false,
+				'message' => $user->lang($error),
+			));
+		}
+
+		trigger_error($user->lang($error) . $l_return);
 	}
 
 	$revert_result = $post->revert($revert_id);
@@ -191,6 +256,16 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 		$template->assign_vars(array(
 			'L_REVISIONS_ACTION_SUCCESS'	=> $user->lang('POST_REVERTED_SUCCESS'),
 		));
+
+		if ($request->is_ajax())
+		{
+			$json_response = new phpbb_json_response();
+			$json_response->send(array(
+				'success' => true,
+				'message' => $user->lang('POST_REVERTED_SUCCESS'),
+			));
+		}
+
 	}
 	else
 	{
@@ -208,6 +283,15 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 			case phpbb_revisions_post::REVISION_POST_UPDATE_FAIL:
 				$lang = 'ERROR_REVISION_POST_UPDATE_FAIL';
 			break;
+		}
+
+		if ($request->is_ajax())
+		{
+			$json_response = new phpbb_json_response();
+			$json_response->send(array(
+				'success' => false,
+				'message' => $user->lang($lang),
+			));
 		}
 
 		trigger_error($user->lang($lang) . $l_return);
@@ -241,7 +325,7 @@ $comparison = null;
 if ($display_comparison)
 {
 	$comparison = new phpbb_revisions_comparison($first, $last);
-	$comparison->output_template_block($post, $template, $user, $auth, $can_revert, $phpbb_root_path, $phpEx);
+	$comparison->output_template_block($post, $template, $user, $auth, $request, $can_revert, $phpbb_root_path, $phpEx);
 }
 
 $template->assign_vars(array(
