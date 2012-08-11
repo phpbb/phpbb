@@ -124,6 +124,7 @@ ul.revisions li.revision_reason {
 
 ul.revisions li.revision_options {
 	text-align: right;
+	width:30%;
 }
 
 div.revision_action_success {
