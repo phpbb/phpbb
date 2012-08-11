@@ -186,7 +186,11 @@ phpbb.add_ajax_callback('revisions.revert', function() {
 phpbb.add_ajax_callback('revisions.delete', function(res) {
     if (res.success)
     {
+    	var revision_count;
+
     	$(this).parents('ul').remove();
+    	revision_count = parseInt($('#compare_summary').html());
+    	$('#compare_summary').html(revision_count - 1);
     }
 });
 
