@@ -74,8 +74,8 @@ $lang = array_merge($lang, array(
 		2		=> '%1$s additions',
 	),
 	'REVISION_COUNT'			=> array(
-		1		=> '1 revision',
-		2		=> '%1$s revisions',
+		1		=> '<span id="compare_summary">1</span> revision',
+		2		=> '<span id="compare_summary">%1$s</span> revisions',
 	),
 	'REVISION_DELETE'					=> 'Delete revision',
 	'REVISION_DELETE_CONFIRM'			=> 'Are you sure you wish to delete the selected revision? This cannot be undone.',
