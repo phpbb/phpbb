@@ -149,6 +149,46 @@ phpbb.addAjaxCallback('zebra', function(res) {
 	}
 });
 
+phpbb.add_ajax_callback('revisions.compare', function(res) {
+	var i;
+
+	for (i in res.revisions_block)
+	{
+		$('#r' + res.revisions_block[i].ID).css('opacity', res.revisions_block[i].IN_RANGE ? 1.0 : 0.7);
+	}
+
+	$('.first').html(res.subject_diff_rendered);
+	$('.content').html(res.text_diff_rendered);
+});
+
+phpbb.add_ajax_callback('revisions.protect', function(res) {
+    if (res.success)
+    {
+    	$('#link_protect').hide();
+    	$('#link_unprotect').show();
+    	$('.revision_action_success').html(res.message).fadeIn(500).delay(5000).fadeOut(500);
+    }
+});
+
+phpbb.add_ajax_callback('revisions.unprotect', function(res) {
+	if (res.success)
+	{
+    	$('#link_unprotect').hide();
+    	$('#link_protect').show();
+    	$('.revision_action_success').html(res.message).fadeIn(500).delay(5000).fadeOut(500);
+    }
+});
+
+phpbb.add_ajax_callback('revisions.revert', function() {
+});
+
+phpbb.add_ajax_callback('revisions.delete', function(res) {
+    if (res.success)
+    {
+    	$(this).parents('ul').remove();
+    }
+});
+
 
 
 $('[data-ajax]').each(function() {
