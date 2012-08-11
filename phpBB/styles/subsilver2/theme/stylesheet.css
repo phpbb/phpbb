@@ -243,6 +243,16 @@ p.topicdetails {
 	margin: 0 1.5em 0 0;
 }
 
+.postbody ins {
+	text-decoration: none;
+	background-color: #99FF99;
+}
+
+.postbody del {
+	text-decoration: none;
+	background-color: #FFAAAA;
+}
+
 .posthilit {
 	background-color: yellow;
 }
@@ -370,6 +380,23 @@ hr {
 .legend {
 	text-align:center;
 	margin: 0 auto;
+}
+
+td.revision_compare {
+	width:5%;
+}
+td.revision_id {
+	width:5%;
+}
+td.revision_user {
+	width:10%;
+}
+td.revision_reason {
+	width:50%;
+}
+td.revision_options {
+	width:30%;
+	text-align: right;
 }
 
 /* Links

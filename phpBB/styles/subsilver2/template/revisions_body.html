@@ -1,0 +1,177 @@
+<!-- INCLUDE overall_header.html -->
+<div class="revision_action_success"<!-- IF not L_REVISIONS_ACTION_SUCCESS --> style="display: none;"<!-- ENDIF -->>
+	<div class="inner">
+		<strong>{L_REVISIONS_ACTION_SUCCESS}</strong>
+	</div>
+</div>
+
+<div id="pageheader">
+
+<h2>{L_VIEWING_POST_REVISION_HISTORY}</h2>
+
+</div>
+
+<br clear="all" /><br />
+
+<div id="pagecontent">
+
+	<table width="100%" cellspacing="1">
+	<tr>
+		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap">
+			<strong>{L_LAST_REVISION_TIME}</strong>
+		</td>
+
+		<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_COMPARING} <a href="{U_FIRST_REVISION}">{FIRST_REVISION}</a> {L_WITH} <a href="{U_LAST_REVISION}">{LAST_REVISION}</a></td>
+	</tr>
+	</table>
+
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<td class="cat">
+			<table width="100%" cellspacing="0">
+			<tr>
+				<td class="nav" nowrap="nowrap">&nbsp;
+					{L_COMPARE_SUMMARY}<!-- IF L_LINES_ADDED_REMOVED --> {L_WITH} {L_LINES_ADDED_REMOVED}<!-- ENDIF -->
+				</td>
+				
+				<td class="nav" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"></td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	</table>
+
+<form name="revision_list" action="{U_VIEW_REVISIONS}" method="post" />
+<!-- BEGIN revision -->
+	<table class="tablebg" width="100%" cellspacing="1">
+	<!-- IF revision.S_FIRST_ROW -->
+		<tr>
+			<th>{L_REVISIONS}</th>
+		</tr>
+	<!-- ENDIF -->
+
+	<!-- IF revision.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+
+			<td valign="top">
+				<table width="100%" cellspacing="5">
+				<tr>
+					<td class="revision_compare">
+						<input type="radio" name="first" value="{revision.ID}"<!-- IF revision.FIRST_IN_COMPARE --> checked="checked"<!-- ENDIF --> /> <input type="radio" name="last" value="{revision.ID}"<!-- IF revision.LAST_IN_COMPARE --> checked="checked"<!-- ENDIF --> />
+					</td>
+					<td class="revision_id">
+						<a href="{revision.U_REVISION_VIEW}">#{revision.NUMBER} ({L_VIEW})</a>
+					</td>
+					<td class="revision_user">
+						{revision.USER_AVATAR} <span>{revision.USERNAME}</span>
+					</td>
+					<td class="revision_reason">
+						<!-- IF revision.REASON --><strong>{revision.REASON}</strong><!-- ELSE --><em>{L_NO_REASON}</em><!-- ENDIF -->
+					</td>
+					<td class="revision_options">
+						<!-- IF not revision.IS_CURRENT_POST -->
+							<a href="{revision.U_PROTECT}" id="link_protect"<!-- IF not revision.S_PROTECT --> style="display:none"<!-- ENDIF --> data-ajax="revision.protect">({L_PROTECT})</a>
+							<a href="{revision.U_UNPROTECT}" id="link_unprotect"<!-- IF not revision.S_UNPROTECT --> style="display:none"<!-- ENDIF --> data-ajax="revision.unprotect">({L_UNPROTECT})</a>
+							<a href="{revision.U_REVERT_TO}" id="link_revert"<!-- IF not revision.U_REVERT_TO --> style="display:none"<!-- ENDIF --> data-ajax="revision.revert">({L_REVERT})</a>
+							<a href="{revision.U_DELETE}" id="link_delete"<!-- IF not revision.U_DELETE --> style="display:none"<!-- ENDIF --> data-ajax="revision.delete" data-refresh="true">{revision.DELETE_IMG}</a>
+						<!-- ELSE -->
+							<strong>{L_CURRENT_REVISION}</strong>
+						<!-- ENDIF -->
+					</td>
+
+				</tr>
+				</table>
+			</td>
+	</tr>
+	<!-- IF revision.S_LAST_ROW -->
+	<tr>
+		<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" />
+			<input class="btnmain" type="submit" name="compare" value="{L_COMPARE_SELECTED}" />
+		</td>
+	</tr>
+	<!-- ENDIF -->
+	</table>
+<!-- END revision -->
+</form>
+
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th>{L_AUTHOR}</th>
+		<th>{L_MESSAGE}</th>
+	</tr>
+	<tr class="row1">
+
+		<td align="center" valign="middle">
+			{POST_USERNAME}
+		</td>
+		<td width="100%" height="25">
+			<table width="100%" cellspacing="0">
+			<tr>
+				<td class="gensmall" width="100%"><div style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<b>{L_POST_SUBJECT}:</b> <a href="{U_VIEW_POST}">{POST_SUBJECT}</a></div><div style="float: {S_CONTENT_FLOW_END};"><a href="{U_VIEW_POST}" class="imageset">{POST_IMG}</a><b>{L_POSTED}:</b> {POST_DATE}&nbsp;</div></td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+
+	<tr class="row1">
+
+		<td valign="top" class="profile">
+			<table cellspacing="4" align="center" width="150">
+		<!-- IF RANK_TITLE -->
+			<tr>
+				<td class="postdetails">{RANK_TITLE}</td>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF RANK_IMG -->
+			<tr>
+				<td>{RANK_IMG}</td>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF postrow.POSTER_AVATAR -->
+			<tr>
+				<td>{postrow.POSTER_AVATAR}</td>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF not (RANK_TITLE or RANK_IMG or POSTER_AVATAR) -->
+			<tr>
+				<td></td>
+			</tr>
+		<!-- ENDIF -->
+			</table>
+
+			<span class="postdetails">
+				<!-- IF POSTER_JOINED --><br /><b>{L_JOINED}:</b> {POSTER_JOINED}<!-- ENDIF -->
+				<!-- IF POSTER_POSTS != '' --><br /><b>{L_POSTS}:</b> {POSTER_POSTS}<!-- ENDIF -->
+				<!-- IF POSTER_FROM --><br /><b>{L_LOCATION}:</b> {POSTER_FROM}<!-- ENDIF -->
+			</span>
+
+		</td>
+		<td valign="top">
+			<table width="100%" cellspacing="5">
+			<tr>
+				<td>
+					<div class="postbody">{MESSAGE}</div>
+					<br clear="all" /><br />
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+	</tr>
+	</table>
+
+</div>
+
+<div id="pagefooter"></div>
+
+<br clear="all" />
+
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<br clear="all" />
+
+<!-- INCLUDE overall_footer.html -->
