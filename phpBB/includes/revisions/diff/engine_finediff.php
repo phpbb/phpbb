@@ -73,7 +73,7 @@ class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_b
 	*/
 	public function render()
 	{
-		return $this->diff->renderDiffToHTML();
+		return html_entity_decode(mb_convert_encoding($this->diff->renderDiffToHTML(), 'UTF-8'));
 	}
 
 	/**
