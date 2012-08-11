@@ -796,6 +796,11 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_text ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_text))");
 		}
 
+		if (!isset($this->stats['post_content']))
+		{
+			$this->db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_content ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_subject || ' ' || post_text))");
+		}
+
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
 		return false;
@@ -829,6 +834,11 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->db->sql_query('DROP INDEX ' . $this->stats['post_text']['relname']);
 		}
 
+		if (isset($this->stats['post_content']))
+		{
+			$this->db->sql_query('DROP INDEX ' . $this->stats['post_content']['relname']);
+		}
+
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
 		return false;
@@ -844,7 +854,7 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->get_stats();
 		}
 
-		return (isset($this->stats['post_text']) && isset($this->stats['post_subject'])) ? true : false;
+		return (isset($this->stats['post_text']) && isset($this->stats['post_subject']) && isset($this->stats['post_content'])) ? true : false;
 	}
 
 	/**
@@ -893,6 +903,10 @@ class fulltext_postgres extends \phpbb\search\base
 				else if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_subject' || $row['relname'] == POSTS_TABLE . '_post_subject')
 				{
 					$this->stats['post_subject'] = $row;
+				}
+				else if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_content' || $row['relname'] == POSTS_TABLE . '_post_content')
+				{
+					$this->stats['post_content'] = $row;
 				}
 			}
 		}
