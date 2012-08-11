@@ -174,6 +174,11 @@ class phpbb_revisions_comparison
 		$l_lines_added_removed .= $additions_count && $deletions_count ? strtolower($user->lang('AND')) . ' ' : '';
 		$l_lines_added_removed .= $deletions_count ? $user->lang('REVISION_DELETIONS', $deletions_count) : '';
 
+		$l_first_revision = $this->first->get_id() ? $user->lang('REVISION') . ' ' . $this->first->get_id() : $user->lang('CURRENT_REVISION');
+		$l_last_revision = $last_id ? $user->lang('REVISION') . ' ' . $last_id : $user->lang('CURRENT_REVISION');
+		$u_first_revision = append_sid("{$phpbb_root_path}revisions.$phpEx", ($first_id ? array('r' => $this->first->get_id()) : array('p' => $post_data['post_id'])));
+		$u_last_revision = append_sid("{$phpbb_root_path}revisions.$phpEx", ($last_id ? array('r' => $last_id) : array('p' => $post_data['post_id'])));
+
 		$template->assign_vars(array(
 			'S_DISPLAY_COMPARISON'	=> true,
 			'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($current->get_time())),
@@ -181,10 +186,10 @@ class phpbb_revisions_comparison
 			'L_COMPARE_SUMMARY'		=> $l_compare_summary,
 			'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
 
-			'FIRST_REVISION'		=> $this->first->get_id() ? strtolower($user->lang('REVISION')) . ' ' . $this->first->get_id() : $user->lang('CURRENT_REVISION'),
-			'U_FIRST_REVISION'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", ($first_id ? array('r' => $this->first->get_id()) : array('p' => $post_data['post_id']))),
-			'LAST_REVISION'			=> $last_id ? strtolower($user->lang('REVISION')) . ' ' . $last_id : $user->lang('CURRENT_REVISION'),
-			'U_LAST_REVISION'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", ($last_id ? array('r' => $last_id) : array('p' => $post_data['post_id']))),
+			'FIRST_REVISION'		=> $l_first_revision,
+			'U_FIRST_REVISION'		=> $u_first_revision,
+			'LAST_REVISION'			=> $l_last_revision,
+			'U_LAST_REVISION'		=> $u_last_revision,
 		));
 
 		if ($request->is_ajax())
@@ -195,6 +200,7 @@ class phpbb_revisions_comparison
 				'text_diff_rendered'	=> $text_diff_rendered,
 				'subject_diff_rendered'	=> '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_data['post_id'])) . '">' . $subject_diff_rendered . '</a>',
 				'compare_summary'		=> $l_compare_summary,
+				'comparing_to'			=> $user->lang('COMPARING') . ' <a href="' . $u_first_revision . '">' . $l_first_revision . '<a/> ' . $user->lang('WITH') . ' <a href="' . $u_last_revision . '">' . $l_last_revision . '</a>',
 			));
 		}
 	}
