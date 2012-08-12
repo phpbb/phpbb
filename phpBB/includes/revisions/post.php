@@ -388,7 +388,7 @@ class phpbb_revisions_post
 			'enable_magic_url'		=> $this->post_data['enable_magic_url'],
 			'bbcode_uid'			=> $this->post_data['bbcode_uid'],
 			'bbcode_bitfield'		=> $this->post_data['bbcode_bitfield'],
-			'revision_time'			=> $this->post_data['post_time'],
+			'revision_time'			=> $this->post_data['post_edit_time'],
 			'revision_attachment'	=> $this->post_data['post_attachment'],
 			'user_avatar'			=> $this->post_data['user_avatar'],
 			'user_avatar_type'		=> $this->post_data['user_avatar_type'],
