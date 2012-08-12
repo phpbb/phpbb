@@ -104,6 +104,14 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 				$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
 					WHERE ' . $this->db->sql_in_set('revision_id', $prune_revision_ids);
 				$this->db->sql_query($sql);
+
+				foreach ($posts_excess as $post)
+				{
+					$sql = 'UPDATE ' . POSTS_TABLE . '
+						SET post_revision_count = post_revision_count - ' . $post['excess'] . '
+						WHERE post_id = ' . $post['id'];
+					$this->db->sql_query($sql);
+				}
 			}
 		}
 		while (sizeof($prune_revision_ids) == self::BATCH_SIZE);

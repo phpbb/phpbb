@@ -59,9 +59,9 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 	*/
 	public function run()
 	{
-		$prune_revision_ids = array();
+		$affected_posts = $prune_revision_ids = array();
 
-		$sql = 'SELECT revision_id
+		$sql = 'SELECT revision_id, post_id
 			FROM ' . POST_REVISIONS_TABLE . '
 			WHERE revision_time < ' . (time() - $this->config['post_revisions_max_age']) . '
 				AND revision_protected = 0';
@@ -70,6 +70,7 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 			$result = $this->db->sql_query_limit($sql, self::BATCH_SIZE);
 			while ($row = $this->db->sql_fetchrow($result))
 			{
+				$affected_posts[$row['post_id']] = isset($affected_posts[$row['post_id']]) ? $affected_posts[$row['post_id']]++ : 1;
 				$prune_revision_ids[] = $row['revision_id'];
 			}
 			$this->db->sql_freeresult($result);
@@ -79,6 +80,14 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 				$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
 					WHERE ' . $this->db->sql_in_set('revision_id', $prune_revision_ids);
 				$this->db->sql_query($sql);
+
+				foreach ($affected_posts as $post_id => $deleted_revisions_count)
+				{
+					$sql = 'UPDATE ' . POSTS_TABLE . '
+						SET post_revision_count =  post_revision_count - ' . $deleted_revisions_count  . '
+						WHERE post_id = ' . $post_id;
+					$this->db->sql_query($sql);
+				}
 			}
 		}
 		while (sizeof($prune_revision_ids) == self::BATCH_SIZE);
