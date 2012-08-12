@@ -1,0 +1,14 @@
+<form name="register" method="post" action="{S_UCP_ACTION}" id="openid_registration">
+	<table width="100%" cellspacing="1">
+		<!-- IF L_REG_COND --><tr>
+			<td class="row2" colspan="2"><strong>{L_REG_COND}</strong></td>
+		</tr><!-- ENDIF -->
+		<tr>
+			<td class="row1"><label for="{OPENID_IDENTIFIER}"><img src="{THEME_PATH}/images/logo_openid_small.gif" alt="{AUTH_PROVIDER_OPENID}"/></label></td>
+			<td class="row2"><input type="text" name="{OPENID_IDENTIFIER}" id="{OPENID_IDENTIFIER}" size="25" value="" class="inputbox autowidth" /></td>
+		</tr>
+		<tr>
+			<td class="cat" colspan="2">{S_HIDDEN_FIELDS}{S_FORM_TOKEN}<input class="btnmain" type="submit" name="submit" id="submit" value="{L_SUBMIT}" /></td>
+		</tr>
+	</table>
+</form>

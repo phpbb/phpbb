@@ -1,0 +1,28 @@
+<!-- INCLUDE overall_header.html -->
+
+<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th colspan="2" valign="middle">{L_REGISTRATION}</th>
+	</tr>
+
+	<!-- IF ERROR -->
+		<tr>
+			<td colspan="2" class="row3" align="center"><span class="gensmall error">{ERROR}</span></td>
+		</tr>
+	<!-- ENDIF -->
+
+	<!-- IF USERNAME --><tr>
+			<td class="row1" width="38%"><b class="genmed">{L_USERNAME}: </b><br /><span class="gensmall">{L_USERNAME_EXPLAIN}</span></td>
+			<td class="row2"><input class="post" type="text" name="username" size="25"/></td>
+		</tr><!-- ENDIF -->
+
+	<!-- IF EMAIL --><tr>
+			<td class="row1" width="38%"><b class="genmed">{L_EMAIL_ADDRESS}: </b></td>
+			<td class="row2"><input class="post" type="text" name="email" size="25" maxlength="100"/></td>
+		</tr><!-- ENDIF -->
+
+		<tr>
+			<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" id="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
+		</tr>
+</table>
+<!-- INCLUDE overall_footer.html -->
