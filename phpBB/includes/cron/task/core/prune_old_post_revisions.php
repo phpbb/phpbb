@@ -38,6 +38,11 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 	protected $db;
 
 	/**
+	* Maximum number of items to delete at a time
+	*/
+	const BATCH_SIZE = 500;
+
+	/**
 	* Constructor that makes available the config and dbal objects
 	*/
 	public function __construct()
@@ -60,22 +65,23 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 			FROM ' . POST_REVISIONS_TABLE . '
 			WHERE revision_time < ' . (time() - $this->config['post_revisions_max_age']) . '
 				AND revision_protected = 0';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
+		do
 		{
-			$prune_revision_ids[] = $row['revision_id'];
-		}
-		$this->db->sql_freeresult($result);
+			$result = $this->db->sql_query_limit($sql, self::BATCH_SIZE);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$prune_revision_ids[] = $row['revision_id'];
+			}
+			$this->db->sql_freeresult($result);
 
-		if (!empty($prune_revision_ids))
-		{
-			foreach ($prune_revision_ids as $revision_id)
+			if (!empty($prune_revision_ids))
 			{
 				$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-					WHERE revision_id = ' . (int) $revision_id;
+					WHERE ' . $this->db->sql_in_set('revision_id', $prune_revision_ids);
 				$this->db->sql_query($sql);
 			}
 		}
+		while (sizeof($prune_revision_ids) == self::BATCH_SIZE);
 
 		add_log('admin', 'LOG_PRUNED_OLD_POST_REVISIONS');
 

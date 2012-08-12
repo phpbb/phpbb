@@ -38,6 +38,11 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 	protected $db;
 
 	/**
+	* Maximum number of items to delete at a time
+	*/
+	const BATCH_SIZE = 500;
+
+	/**
 	* Constructor method
 	*/
 	public function __construct()
@@ -54,47 +59,81 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 	*/
 	public function run()
 	{
-		$prune_revision_ids = array();
-
-		// Now we get post IDs of posts with > the max number of revisions 
-		$sql = 'SELECT post_id, post_revision_count
-			FROM ' . POSTS_TABLE . '
-			WHERE post_revision_count > ' . (int) $this->config['revisions_per_post_max'] . '
-				AND revision_protected = 0';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
+		$posts_excess = $prune_revision_ids = array();
+		do
 		{
-			// Query in a loop? Uh oh! But I can't find a better way...
-			// At least this will really only occur when the config value is decreased in the ACP
-			// because this is also looked at on an individual post basis when a revision is made
-			// as well as during the revision reverting process
-			$inner_sql = 'SELECT revision_id
-				FROM ' . POST_REVISIONS_TABLE . '
-				WHERE post_id = ' . (int) $row['post_id'] . '
-				ORDER BY revision_id ASC';
-			$inner_result = $this->db->sql_query_limit($inner_sql, $row['post_revision_count'] - $config['revisions_per_post_max']);
-			while ($inner_row = $this->db->sql_fetchrow($inner_result))
+			$sql = 'SELECT post_id, post_revision_count
+				FROM ' . POSTS_TABLE . '
+				WHERE post_revision_count > ' . (int) $this->config['revisions_per_post_max'] . '
+					AND revision_protected = 0';
+			$result = $this->db->sql_query($sql);
+			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$prune_revision_ids[] = $inner_row['revision_id'];
+				$posts_excess[] = array(
+					'id' => $row['post_id'],
+					'excess' => $row['post_revision_count'] - $this->config['revisions_per_post_max'],
+				);
 			}
-			$this->db->sql_freeresult($inner_result);
-		}
-		$this->db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
-		// Finally, if we have any revisions that meet the criteria, we delete them
-		if (!empty($prune_revision_ids))
-		{
-			foreach ($prune_revision_ids as $revision_id)
+			$post = current($posts_excess);
+			do
+			{
+				$sql = 'SELECT revision_id
+					FROM ' . POST_REVISIONS_TABLE . '
+					WHERE post_id = ' . $post['id'] . '
+						AND revision_protected = 0
+					ORDER BY revision_id ASC';
+				$result = $this->$db->sql_query_limit($sql, $post['excess']);
+				while ($row = $this->db->sql_fetchrow($result))
+				{
+					if (sizeof($prune_revision_ids) == self::BATCH_SIZE)
+					{
+						break;
+					}
+
+					$prune_revision_ids[] = (int) $row['revision_id'];
+				}
+				$this->db->sql_freeresult($result);
+			}
+			while(($post = next($posts_excess)) !== false && sizeof($prune_revision_ids) < self::BATCH_SIZE);
+
+			// Finally, if we have any revisions that meet the criteria, we delete them
+			if (!empty($prune_revision_ids))
 			{
 				$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-					WHERE revision_id = ' . (int) $revision_id;
+					WHERE ' . $this->db->sql_in_set('revision_id', $prune_revision_ids);
 				$this->db->sql_query($sql);
 			}
 		}
+		while (sizeof($prune_revision_ids) == self::BATCH_SIZE);
 
 		add_log('admin', 'LOG_PRUNED_EXCESS_POST_REVISIONS');
 
 		$this->config->set('excess_revisions_last_prune_time', time());
+	}
+
+	/**
+	*
+	*
+	* @return array Revision IDs to be deleted
+	*/
+	protected function get_excess_revision_ids($post_id)
+	{
+		$prune_revision_ids = array();
+
+		$sql = 'SELECT revision_id
+			FROM ' . POST_REVISIONS_TABLE . '
+			WHERE post_id = ' . (int) $row['post_id'] . '
+			ORDER BY revision_id ASC';
+		$result = $this->db->sql_query_limit($sql, $row['post_revision_count'] - $config['revisions_per_post_max']);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$prune_revision_ids[] = $row['revision_id'];
+		}
+		$this->db->sql_freeresult($result);
+
+		return $prune_revision_ids;
 	}
 
 	/**
