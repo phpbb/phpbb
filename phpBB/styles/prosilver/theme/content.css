@@ -72,6 +72,10 @@ fieldset.actions-right {
 	float: right;
 }
 
+.no-display {
+	display: none;
+}
+
 ul.revisions {
 	display: block;
 	list-style-type: none;
