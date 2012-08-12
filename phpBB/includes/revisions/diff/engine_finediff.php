@@ -86,7 +86,7 @@ class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_b
 		$edits = 0;
 		foreach ($this->operations AS $edit)
 		{
-			if ($edit instanceof FineDiffInsertOp)
+			if ($edit instanceof FineDiffInsertOp || $edit instanceof FineDiffReplaceOp)
 			{
 				$edits++;
 			}
@@ -104,7 +104,7 @@ class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_b
 		$edits = 0;
 		foreach ($this->operations AS $edit)
 		{
-			if ($edit instanceof FineDiffDeleteOp)
+			if ($edit instanceof FineDiffDeleteOp || $edit instanceof FineDiffReplaceOp)
 			{
 				$edits++;
 			}
