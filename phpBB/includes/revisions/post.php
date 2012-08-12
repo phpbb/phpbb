@@ -377,6 +377,7 @@ class phpbb_revisions_post
 			'revision_subject'		=> $this->post_data['post_subject'],
 			'revision_text'			=> $this->post_data['post_text'],
 			'revision_checksum'		=> $this->post_data['post_checksum'],
+			'post_id'				=> $this->post_data['post_id'],
 			'poster_id'				=> $this->post_data['poster_id'],
 			'user_id'				=> $this->post_data['poster_id'],
 			'username'				=> $this->post_data['username'],
