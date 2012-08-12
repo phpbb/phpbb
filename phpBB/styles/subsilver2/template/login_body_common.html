@@ -1,0 +1,63 @@
+<form action="{S_LOGIN_ACTION}" method="post">
+	<table align="center" cellspacing="1" cellpadding="4" style="width: 100%;">
+	<tr>
+		<td valign="top" <!-- IF S_ADMIN_AUTH -->style="width: 50%; text-align: {S_CONTENT_FLOW_END};"<!-- ENDIF -->><b class="gensmall">{L_USERNAME}:</b></td>
+		<td><input class="post" type="text" name="{USERNAME_CREDENTIAL}" size="25" value="{USERNAME}" tabindex="1" />
+			<!-- IF not S_ADMIN_AUTH and S_REGISTER_ENABLED -->
+				<br /><a class="gensmall" href="{U_REGISTER}">{L_REGISTER}</a>
+			<!-- ENDIF -->
+		</td>
+	</tr>
+	<tr>
+		<td valign="top" <!-- IF S_ADMIN_AUTH -->style="width: 50%; text-align: {S_CONTENT_FLOW_END};"<!-- ENDIF -->><b class="gensmall">{L_PASSWORD}:</b></td>
+		<td>
+			<input class="post" type="password" name="{PASSWORD_CREDENTIAL}" size="25" tabindex="2" />
+			<!-- IF U_SEND_PASSWORD --><br /><a class="gensmall" href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a><!-- ENDIF -->
+			<!-- IF U_RESEND_ACTIVATION and not S_ADMIN_AUTH --><br /><a class="gensmall" href="{U_RESEND_ACTIVATION}">{L_RESEND_ACTIVATION}</a><!-- ENDIF -->
+		</td>
+	</tr>
+	<!-- IF S_DISPLAY_FULL_LOGIN -->
+		<!-- IF S_AUTOLOGIN_ENABLED -->
+		<tr>
+			<td>&nbsp;</td>
+			<td><input type="checkbox" class="radio" name="autologin" tabindex="3" /> <span class="gensmall">{L_LOG_ME_IN}</span></td>
+		</tr>
+		<!-- ENDIF -->
+		<tr>
+			<td>&nbsp;</td>
+			<td><input type="checkbox" class="radio" name="viewonline" tabindex="4" /> <span class="gensmall">{L_HIDE_ME}</span></td>
+		</tr>
+	<!-- ENDIF -->
+	</table>
+
+	<table class="tablebg" width="100%" cellspacing="1">
+		<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
+			<!-- DEFINE $CAPTCHA_TAB_INDEX = 4 -->
+			<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
+		<!-- ENDIF -->
+
+		{S_LOGIN_REDIRECT}
+		<tr>
+			<td class="cat" <!-- IF not S_ADMIN_AUTH or S_CONFIRM_CODE -->colspan="2"<!-- ENDIF --> align="center">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="btnmain" value="{L_LOGIN}" tabindex="5" /></td>
+		</tr>
+	</table>
+	{S_FORM_TOKEN}
+
+	<script type="text/javascript">
+	// <![CDATA[
+		(function()
+		{
+			var elements = document.getElementsByName("<!-- IF S_ADMIN_AUTH -->{PASSWORD_CREDENTIAL}<!-- ELSE -->{USERNAME_CREDENTIAL}<!-- ENDIF -->");
+			for (var i = 0; i < elements.length; ++i)
+			{
+				if (elements[i].tagName.toLowerCase() == 'input')
+				{
+					elements[i].focus();
+					break;
+				}
+			}
+		})();
+	// ]]>
+	</script>
+
+</form>
