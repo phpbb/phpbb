@@ -3,14 +3,13 @@
 <a href="{U_VIEW_POST}" class="left-box {S_CONTENT_FLOW_BEGIN}" accesskey="r">{L_RETURN_TO} {CURRENT_SUBJECT}</a>
 <br clear="both" />
 
-<div class="revision_action_success"<!-- IF not L_REVISIONS_ACTION_SUCCESS --> style="display: none;"<!-- ENDIF -->>
+<div class="revision_action_success<!-- IF not L_REVISIONS_ACTION_SUCCESS --> no-display<!-- ENDIF -->">
 	<div class="inner">
 		<strong>{L_REVISIONS_ACTION_SUCCESS}</strong>
 	</div>
 </div>
 
 <h2>{L_VIEWING_POST_REVISION_HISTORY}</h2>
-<!-- IF S_DISPLAY_COMPARISON -->
 <p><div class="left-box"><strong>{L_LAST_REVISION_TIME}</strong></div>
 <div class="right-box">{L_COMPARING} <a href="{U_FIRST_REVISION}">{FIRST_REVISION}</a> {L_WITH} <a href="{U_LAST_REVISION}">{LAST_REVISION}</a></div></p>
 <hr />
@@ -27,10 +26,10 @@
 			<li class="revision_reason"><!-- IF revision.REASON --><strong>{revision.REASON}</strong><!-- ELSE --><em>{L_NO_REASON}</em><!-- ENDIF --></li>
 			<li class="revision_options">
 				<!-- IF not revision.IS_CURRENT_POST -->
-					<a href="{revision.U_PROTECT}" id="link_protect"<!-- IF not revision.S_PROTECT --> style="display:none"<!-- ENDIF --> data-ajax="revisions.protect">({L_PROTECT})</a>
-					<a href="{revision.U_UNPROTECT}" id="link_unprotect"<!-- IF not revision.S_UNPROTECT --> style="display:none"<!-- ENDIF --> data-ajax="revisions.unprotect">({L_UNPROTECT})</a>
-					<a href="{revision.U_REVERT_TO}" id="link_revert"<!-- IF not revision.U_REVERT_TO --> style="display:none"<!-- ENDIF --> data-ajax="revisions.revert">({L_REVERT})</a>
-					<a href="{revision.U_DELETE}" id="link_delete"<!-- IF not revision.U_DELETE --> style="display:none"<!-- ENDIF --> data-ajax="revisions.delete" data-refresh="true">{revision.DELETE_IMG}</a>
+					<a href="{revision.U_PROTECT}" id="link_protect"<!-- IF not revision.S_PROTECT --> class="no-display"<!-- ENDIF --> data-ajax="revisions.protect">({L_PROTECT})</a>
+					<a href="{revision.U_UNPROTECT}" id="link_unprotect"<!-- IF not revision.S_UNPROTECT --> class="no-display"<!-- ENDIF --> data-ajax="revisions.unprotect">({L_UNPROTECT})</a>
+					<a href="{revision.U_REVERT_TO}" id="link_revert"<!-- IF not revision.U_REVERT_TO --> class="no-display"<!-- ENDIF --> data-ajax="revisions.revert">({L_REVERT})</a>
+					<a href="{revision.U_DELETE}" id="link_delete"<!-- IF not revision.U_DELETE --> class="no-display"<!-- ENDIF --> data-ajax="revisions.delete" data-refresh="true">{revision.DELETE_IMG}</a>
 				<!-- ELSE -->
 					<strong>{L_CURRENT_REVISION}</strong>
 				<!-- ENDIF -->
@@ -66,5 +65,4 @@
 		</dl>
 	</div>
 </div>
-<!-- ENDIF -->
 <!-- INCLUDE overall_footer.html -->
