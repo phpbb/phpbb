@@ -114,29 +114,6 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 	}
 
 	/**
-	*
-	*
-	* @return array Revision IDs to be deleted
-	*/
-	protected function get_excess_revision_ids($post_id)
-	{
-		$prune_revision_ids = array();
-
-		$sql = 'SELECT revision_id
-			FROM ' . POST_REVISIONS_TABLE . '
-			WHERE post_id = ' . (int) $row['post_id'] . '
-			ORDER BY revision_id ASC';
-		$result = $this->db->sql_query_limit($sql, $row['post_revision_count'] - $config['revisions_per_post_max']);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$prune_revision_ids[] = $row['revision_id'];
-		}
-		$this->db->sql_freeresult($result);
-
-		return $prune_revision_ids;
-	}
-
-	/**
 	* Returns whether this cron task can run, given current board configuration.
 	*
 	* @return bool
