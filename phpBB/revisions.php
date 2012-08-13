@@ -227,7 +227,7 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 	{
 		$error = 'ERROR_REVISION_NOT_FOUND';
 	}
-	else if ($this->post_data['post_edit_locked'] && !$this->auth->acl_get('m_revisions'))
+	else if ($post_data['post_edit_locked'] && !$auth->acl_get('m_revisions', $post_data['forum_id']))
 	{
 		$error = 'ERROR_POST_EDIT_LOCKED';
 	}
@@ -265,7 +265,6 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 				'message' => $user->lang('POST_REVERTED_SUCCESS'),
 			));
 		}
-
 	}
 	else
 	{
