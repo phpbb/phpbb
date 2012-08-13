@@ -47,6 +47,7 @@ $lang = array_merge($lang, array(
 	'ERROR_POST_EDIT_LOCKED'			=> 'This post is locked from editing; only an authorized user can restore it to another revision.',
 
 	'LAST_REVISION_TIME'		=> 'Last revision %1$s',
+	'LAST_FIVE_REVISIONS'		=> 'Last 5 Revisions',
 	'LOGIN_REVISION'			=> 'You must login in order to view the revisions for this post.',
 
 	'NO_AUTH_DELETE_REVISIONS'	=> 'You do not have permission to delete revisions for this post.',

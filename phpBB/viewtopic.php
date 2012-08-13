@@ -1043,6 +1043,7 @@ while ($row = $db->sql_fetchrow($result))
 		'post_edit_user'	=> $row['post_edit_user'],
 		'post_edit_locked'	=> $row['post_edit_locked'],
 		'post_revision_count' => $row['post_revision_count'],
+		'post_wiki'			=> $row['post_wiki'],
 
 		// Make sure the icon actually exists
 		'icon_id'			=> (isset($icons[$row['icon_id']]['img'], $icons[$row['icon_id']]['height'], $icons[$row['icon_id']]['width'])) ? $row['icon_id'] : 0,
@@ -1470,7 +1471,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			}
 			
 			$l_edited_by = $user->lang('EDITED_TIMES_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true));
-			$l_edited_by .= $row['post_revision_count'] && ($auth->acl_get('m_revisions', $forum_id) || ($auth->acl_get('f_revisions', $forum_id) && $user->data['user_id'] == $row['poster_id'])) ? ' ' . $user->lang('EDITED_REVISIONS_TOTAL', append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $row['post_id']))) : '';
 		}
 		else
 		{
@@ -1490,7 +1490,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			}
 
 			$l_edited_by = $user->lang('EDITED_TIMES_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true));
-			$l_edited_by .= $row['post_revision_count'] && ($auth->acl_get('m_revisions', $forum_id) || ($auth->acl_get('f_revisions', $forum_id) && $user->data['user_id'] == $row['poster_id'])) ? ' ' . $user->lang('EDITED_REVISIONS_TOTAL', append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $row['post_id']))) : '';
 		}
 	}
 	else
@@ -1550,6 +1549,23 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		!$row['post_edit_locked']
 	)));
 
+	$can_view_revisions = $row['post_revision_count'] &&
+		($auth->acl_get('m_revisions', $forum_id) ||
+			($auth->acl_get('f_revisions', $forum_id) && $user->data['user_id'] == $poster_id
+	));
+
+	// We do a miniature version of revisions.php so we can view revisions
+	// right on viewtopic without having to go to another page
+	if ($can_view_revisions)
+	{
+		$user->add_lang('revisions');
+	
+		$revisions_post = new phpbb_revisions_post($row['post_id'], $db, $config, $auth);
+		$revisions = $revisions_post->get_revisions();
+		$comparison = new phpbb_revisions_comparison(current($revisions), $revisions_post->get_current_revision());
+		$comparison->output_template_block($revisions_post, $template, $user, $auth, $request, true, $phpbb_root_path, $phpEx, false);
+	}
+
 	//
 	$post_row = array(
 		'POST_AUTHOR_FULL'		=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_full'] : get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
@@ -1600,6 +1616,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
 		'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p={$row['post_id']}&amp;f=$forum_id"),
+		'U_VIEW_POST_REVISIONS'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $row['post_id'])),
 		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? append_sid("{$phpbb_root_path}report.$phpEx", 'f=' . $forum_id . '&amp;p=' . $row['post_id']) : '',
 		'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
@@ -1623,6 +1640,8 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'S_FIRST_UNREAD'	=> $s_first_unread,
 		'S_CUSTOM_FIELDS'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
 		'S_TOPIC_POSTER'	=> ($topic_data['topic_poster'] == $poster_id) ? true : false,
+
+		'S_VIEW_POST_REVISIONS'	=> $can_view_revisions,
 
 		'S_IGNORE_POST'		=> ($row['hide_post']) ? true : false,
 		'L_IGNORE_POST'		=> ($row['hide_post']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
