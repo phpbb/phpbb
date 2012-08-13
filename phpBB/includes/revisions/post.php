@@ -449,7 +449,7 @@ class phpbb_revisions_post
 		// Next, we update the post table with the information from the new revision
 		$sql_update_ary = array(
 			'post_edit_user'		=> $new_revision->get_user_id(),
-			'post_edit_time'		=> $new_revision->get_time(),
+			'post_edit_time'		=> time(),
 			'post_subject'			=> $new_revision->get_subject(),
 			'post_text'				=> $new_revision->get_text(),
 			'post_checksum'			=> $new_revision->get_checksum(),

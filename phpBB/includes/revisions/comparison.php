@@ -70,9 +70,9 @@ class phpbb_revisions_comparison
 		$this->last = $last;
 
 		$this->text_diff = new phpbb_revisions_diff_engine_finediff($first->get_text_decoded(),
-			$last->get_text_decoded());
+			$last->get_text_decoded(), 'character');
 		$this->subject_diff = new phpbb_revisions_diff_engine_finediff($first->get_subject(),
-			$last->get_subject());
+			$last->get_subject(), 'character');
 
 		$this->text_diff_rendered = bbcode_nl2br($this->text_diff->render());
 		$this->subject_diff_rendered = $this->subject_diff->render();
