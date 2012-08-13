@@ -78,6 +78,12 @@ class phpbb_revisions_comparison
 		$this->subject_diff_rendered = $this->subject_diff->render();
 	}
 
+	/**
+	* Get the revision IDs that fall between two give revisions
+	*
+	* @var array $revisions Array of revisions
+	* @return array Array of IDs within the range
+	*/
 	public function get_comparison_range_ids(array $revisions)
 	{
 		$first_id = $this->first->get_id();
@@ -112,10 +118,32 @@ class phpbb_revisions_comparison
 		return $range_ids;
 	}
 
-	public function output_template_block(phpbb_revisions_post $post, phpbb_template $template, phpbb_user $user, phpbb_auth $auth, phpbb_request $request, $can_revert, $phpbb_root_path, $phpEx)
+	/**
+	* Assign template vars for the comparison
+	*
+	* @var phpbb_revisions_post $post The post containing the compared revisions
+	* @var phpbb_template $template Template object
+	* @var phpbb_user $user User object
+	* @var phpbb_auth $auth Auth object
+	* @var phpbb_request $request Request object
+	* @var bool $can_revert Whether or not the user has permission to revert
+	*						this post to another revision
+	* @var string $phpbb_root_path Relative path to phpBB root
+	* @var string $phpEx PHP Extension
+	* @var array $ajax_data Array of data to be sent with the JSON request
+	* @var bool $full_mode When false, revisions are listed without comparison
+	*						or management options
+	* @return null
+	*
+	*/
+	public function output_template_block(phpbb_revisions_post $post, phpbb_template $template, phpbb_user $user, phpbb_auth $auth, phpbb_request $request, $can_revert, $phpbb_root_path, $phpEx, $full_mode = true)
 	{
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
+		if (!$full_mode)
+		{
+			$revisions = array_reverse($post->get_revisions());
+		}
 
 		$current = $post->get_current_revision();
 		$revisions[] = $current;
@@ -162,6 +190,11 @@ class phpbb_revisions_comparison
 			$revisions_block[] = $revision_block;
 
 			$revision_users[$revision->get_user_id()] = true;
+
+			if (!$full_mode && $revision_number == 5)
+			{
+				break;
+			}
 			$revision_number++;
 		}
 
@@ -180,7 +213,7 @@ class phpbb_revisions_comparison
 		$u_last_revision = append_sid("{$phpbb_root_path}revisions.$phpEx", ($last_id ? array('r' => $last_id) : array('p' => $post_data['post_id'])));
 
 		$template->assign_vars(array(
-			'S_DISPLAY_COMPARISON'	=> true,
+			'S_DISPLAY_COMPARISON'	=> $full_mode,
 			'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($current->get_time())),
 
 			'L_COMPARE_SUMMARY'		=> $l_compare_summary,

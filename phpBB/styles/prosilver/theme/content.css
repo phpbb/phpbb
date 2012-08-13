@@ -92,11 +92,11 @@ ul.revisions:last-child {
 }
 
 ul.revisions.even {
-	background-color:#E1EBF2;
+	background-color: #E1EBF2;
 }
 
 ul.revisions.odd {
-	background-color:#ECF3F7;
+	background-color: #ECF3F7;
 }
 
 ul.revisions.out_of_range {
@@ -110,7 +110,7 @@ ul.revisions.current {
 
 ul.revisions li {
 	display: inline-block;
-	padding:10px;
+	padding: 10px;
 }
 
 ul.revisions li.revision_user {
@@ -122,13 +122,17 @@ ul.revisions li.revision_user span {
 	vertical-align: text-top;
 }
 
+ul.revisions li.revision_date {
+	width: 15%;
+}
+
 ul.revisions li.revision_reason {
-	width: 30%;
+	width: 40%;
 }
 
 ul.revisions li.revision_options {
 	text-align: right;
-	width:30%;
+	width: 15%;
 }
 
 div.revision_action_success {
@@ -144,14 +148,14 @@ dl.revision {
 }
 
 dl.revision dt {
-	display:inline-block;
-	width:20%;
+	display: inline-block;
+	width: 20%;
 	vertical-align: top;
 }
 
 dl.revision dd {
-	display:inline-block;
-	width:75%;
+	display: inline-block;
+	width: 75%;
 }
 
 .forum-image {
