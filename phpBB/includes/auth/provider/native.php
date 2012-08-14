@@ -108,6 +108,7 @@ class phpbb_auth_provider_native extends phpbb_auth_abstract_provider
 		$this->request->overwrite('viewonline', true, phpbb_request_interface::POST);
 		return $this->internal_login(true, true);
 	}
+
 	/**
 	 * Generates the registration template.
 	 *
