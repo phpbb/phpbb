@@ -374,14 +374,7 @@ else
 		trigger_error('ERROR_NO_ATTACHMENT');
 	}
 
-	$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
-	$clean_name = current($row);
-
-	// rawurlencode to convert any potentially 'bad' characters that we missed
-	$clean_name = rawurlencode(str_replace($bad_chars, '_', $clean_name));
-
-	// Turn the %xx entities created by rawurlencode to _
-	$clean_name = preg_replace("/%(\w{2})/", '_', $clean_name);
+	$clean_name = phpbb_download_clean_filename(current($row));
 	$suffix = '_' . (($post_id) ? $post_id : $topic_id) . '_' . $clean_name;
 
 	$store_name = 'att_' . time() . '_' . unique_id();

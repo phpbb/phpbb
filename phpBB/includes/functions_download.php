@@ -647,3 +647,24 @@ function phpbb_download_check_forum_auth($db, $auth, $topic_id)
 		trigger_error('SORRY_AUTH_VIEW_ATTACH');
 	}
 }
+
+/**
+* Cleans a filename of any characters that could potentially cause a problem on
+* a user's filesystem.
+*
+* @param string $filename The filename to clean
+*
+* @return string The cleaned filename
+*/
+function phpbb_download_clean_filename($filename)
+{
+	$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
+
+	// rawurlencode to convert any potentially 'bad' characters that we missed
+	$filename = rawurlencode(str_replace($bad_chars, '_', $filename));
+
+	// Turn the %xx entities created by rawurlencode to _
+	$filename = preg_replace("/%(\w{2})/", '_', $filename);
+
+	return $filename;
+}
