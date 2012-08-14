@@ -60,17 +60,20 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	protected $phrase_search = false;
 
 	/**
-	 * @var phpbb_config Config class object
+	 * Config class object
+	 * @var phpbb_config
 	 */
 	protected $config;
 
 	/**
-	 * @var dbal DBAL class object
+	 * DBAL class object
+	 * @var dbal
 	 */
 	protected $db;
 
 	/**
-	 * @var user User class object
+	 * User class object
+	 * @var user
 	 */
 	protected $user;
 

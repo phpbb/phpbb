@@ -60,32 +60,38 @@ class phpbb_search_fulltext_sphinx
 	protected $sphinx;
 
 	/**
-	 * @var string Relative path to board root
+	 * Relative path to board root
+	 * @var string
 	 */
 	protected $phpbb_root_path;
 
 	/**
-	 * @var string PHP Extension
+	 * PHP Extension
+	 * @var string
 	 */
 	protected $php_ext;
 
 	/**
-	 * @var phpbb_auth Auth class object
+	 * Auth class object
+	 * @var phpbb_auth
 	 */
 	protected $auth;
 
 	/**
-	 * @var phpbb_config Config class object
+	 * Config class object
+	 * @var phpbb_config
 	 */
 	protected $config;
 
 	/**
-	 * @var dbal DBAL class object
+	 * DBAL class object
+	 * @var dbal
 	 */
 	protected $db;
 
 	/**
-	 * @var phpbb_db_tools Database Tools class object
+	 * Database Tools class object
+	 * @var phpbb_db_tools
 	 */
 	protected $db_tools;
 
@@ -96,7 +102,8 @@ class phpbb_search_fulltext_sphinx
 	protected $dbtype;
 
 	/**
-	 * @var user User class object
+	 * User class object
+	 * @var user
 	 */
 	protected $user;
 

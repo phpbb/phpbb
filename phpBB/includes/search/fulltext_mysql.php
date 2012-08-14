@@ -35,17 +35,20 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	protected $split_words = array();
 
 	/**
-	 * @var phpbb_config Config class object
+	 * Config class object
+	 * @var phpbb_config
 	 */
 	protected $config;
 	
 	/**
-	 * @var dbal DBAL class object
+	 * DBAL class object
+	 * @var dbal
 	 */
 	protected $db;
 	
 	/**
-	 * @var user User class object
+	 * User class object
+	 * @var user
 	 */
 	protected $user;
 
