@@ -47,7 +47,8 @@ class phpbb_compress_test extends phpbb_test_case
 
 	protected function tearDown()
 	{
-		foreach (array(__DIR__ . self::EXTRACT_DIR, __DIR__ . self::ARCHIVE_DIR) as $dir) {
+		foreach (array(__DIR__ . self::EXTRACT_DIR, __DIR__ . self::ARCHIVE_DIR) as $dir)
+		{
 			$this->clear_dir($dir);
 		}
 	}
