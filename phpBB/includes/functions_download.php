@@ -690,8 +690,10 @@ function phpbb_download_check_pm_auth($db, $user_id, $msg_id)
 	$sql = 'SELECT user_id, author_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE msg_id = ' . (int) $msg_id . '
-			AND user_id = ' . (int) $user_id . '
-			OR author_id = ' . (int) $user_id;
+			AND (
+				user_id = ' . (int) $user_id . '
+				OR author_id = ' . (int) $user_id . '
+			)';
 	$result = $db->sql_query_limit($sql, 1);
 	$allowed = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
