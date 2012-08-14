@@ -352,14 +352,14 @@ else
 		}
 		else
 		{
-			$sql = 'SELECT post_subject
+			$sql = 'SELECT post_subject, forum_id
 				FROM ' . POSTS_TABLE . "
 				WHERE post_id = $post_id";
 		}
 	}
 	else
 	{
-		$sql = 'SELECT topic_title
+		$sql = 'SELECT topic_title, forum_id
 			FROM ' . TOPICS_TABLE . "
 			WHERE topic_id = $topic_id";
 	}
@@ -389,8 +389,19 @@ else
 		$compress = new compress_tar('w', "{$phpbb_root_path}store/{$store_name}{$archive}", $archive);
 	}
 
+	$extensions = array();
+	$count = 0;
+	$forum_id = ($attachment['in_message']) ? false : $row['forum_id'];
+	$disallowed = array();
+
 	foreach ($attachments as $attach)
 	{
+		if (!extension_allowed($forum_id, $attach['extension'], $extensions))
+		{
+			$disallowed[$attach['extension']] = 1;
+			continue;
+		}
+		
 		$prefix = '';
 		if ($topic_id)
 		{
@@ -398,11 +409,26 @@ else
 		}
 
 		$compress->add_custom_file("{$phpbb_root_path}files/{$attach['physical_filename']}", "{$prefix}{$attach['real_filename']}");
+		$count++;
 	}
 
 	$compress->close();
-	phpbb_increment_downloads($db, $attachment_ids);
-	$compress->download($store_name, $archive_name);
+
+	if ($count > 0)
+	{
+		phpbb_increment_downloads($db, $attachment_ids);
+		$compress->download($store_name, $archive_name);
+	}
+
 	unlink("{$phpbb_root_path}store/{$store_name}{$archive}");
+
+	if ($count < 1)
+	{
+		// None of the attachments had a valid a extension
+		$disallowed = implode(', ', array_keys($disallowed));
+		send_status_line(404, 'Forbidden');
+		trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $disallowed));
+	}
+
 	file_gc();
 }
