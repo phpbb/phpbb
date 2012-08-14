@@ -22,15 +22,15 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_fulltext_postgres extends phpbb_search_base
 {
-	private $stats = array();
-	private $split_words = array();
-	private $tsearch_usable = false;
-	private $version;
-	private $tsearch_query;
-	private $phrase_search = false;
-	private $config;
-	private $db;
-	private $user;
+	protected $stats = array();
+	protected $split_words = array();
+	protected $tsearch_usable = false;
+	protected $version;
+	protected $tsearch_query;
+	protected $phrase_search = false;
+	protected $config;
+	protected $db;
+	protected $user;
 	public $search_query;
 	public $common_words = array();
 	public $word_length = array();
@@ -714,7 +714,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	/**
 	 * Computes the stats and store them in the $this->stats associative array
 	 */
-	private function get_stats()
+	protected function get_stats()
 	{
 		if ($this->db->sql_layer != 'postgres')
 		{
