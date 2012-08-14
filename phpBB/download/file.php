@@ -404,7 +404,7 @@ else
 		// None of the attachments had a valid a extension
 		$disallowed = implode(', ', $disallowed);
 		send_status_line(404, 'Forbidden');
-		trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $disallowed));
+		trigger_error($user->lang('EXTENSION_DISABLED_AFTER_POSTING', $disallowed));
 	}
 
 	file_gc();
