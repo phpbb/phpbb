@@ -367,7 +367,7 @@ else
 	}
 
 	$extensions = array();
-	$count = 0;
+	$files_added = 0;
 	$forum_id = ($attachment['in_message']) ? false : $row['forum_id'];
 	$disallowed = array();
 
@@ -386,12 +386,12 @@ else
 		}
 
 		$compress->add_custom_file("{$phpbb_root_path}files/{$attach['physical_filename']}", "{$prefix}{$attach['real_filename']}");
-		$count++;
+		$file_added++;
 	}
 
 	$compress->close();
 
-	if ($count > 0)
+	if ($files_added > 0)
 	{
 		phpbb_increment_downloads($db, $attachment_ids);
 		$compress->download($store_name, $archive_name);
@@ -399,7 +399,7 @@ else
 
 	unlink("{$phpbb_root_path}store/{$store_name}{$archive}");
 
-	if ($count < 1)
+	if ($files_added < 1)
 	{
 		// None of the attachments had a valid a extension
 		$disallowed = implode(', ', $disallowed);
