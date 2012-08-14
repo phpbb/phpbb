@@ -22,11 +22,11 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_fulltext_mysql extends phpbb_search_base
 {
-	private $stats = array();
-	private $split_words = array();
-	private $config;
-	private $db;
-	private $user;
+	protected $stats = array();
+	protected $split_words = array();
+	protected $config;
+	protected $db;
+	protected $user;
 	public $word_length = array();
 	public $search_query;
 	public $common_words = array();
@@ -787,7 +787,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	/**
 	 * Computes the stats and store them in the $this->stats associative array
 	 */
-	private function get_stats()
+	protected function get_stats()
 	{
 		if (strpos($this->db->sql_layer, 'mysql') === false)
 		{
