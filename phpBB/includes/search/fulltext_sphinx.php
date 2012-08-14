@@ -102,6 +102,7 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	 * Stores the generated content of the sphinx config file
+	 * @var string
 	 */
 	protected $config_file_data = '';
 
