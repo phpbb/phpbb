@@ -387,7 +387,7 @@ else
 		}
 
 		$compress->add_custom_file("{$phpbb_root_path}files/{$attach['physical_filename']}", "{$prefix}{$attach['real_filename']}");
-		$file_added++;
+		$files_added++;
 	}
 
 	$compress->close();
