@@ -75,7 +75,7 @@ interface phpbb_cache_driver_interface
 	/**
 	* Save sql query
 	*/
-	public function sql_save($query, &$query_result, $ttl);
+	public function sql_save($query, $query_result, $ttl);
 
 	/**
 	* Ceck if a given sql query exist in cache
