@@ -28,10 +28,11 @@ class phpbb_auth_manager
 	protected $db;
 	protected $config;
 	protected $user;
+	protected $cache;
 
 	protected $providers = array();
 
-	public function __construct($provider_names, phpbb_cache_service $phpbb_cache, phpbb_request $request, dbal $db, phpbb_config_db $config)
+	public function __construct($provider_names, phpbb_cache_driver_interface $phpbb_cache, phpbb_request_interface $request, dbal $db, phpbb_config $config)
 	{
 		$this->request = $request;
 		$this->db = $db;

@@ -38,7 +38,7 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_abstract_provider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config)
+	public function __construct(phpbb_request_interface $request, dbal $db, phpbb_config $config)
 	{
 		$this->request = $request;
 		$this->db = $db;

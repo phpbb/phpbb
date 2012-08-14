@@ -30,7 +30,7 @@ interface phpbb_auth_interface_provider
 	 * @param dbal $db
 	 * @param phpbb_config_db $config
 	 */
-	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config);
+	public function __construct(phpbb_request_interface $request, dbal $db, phpbb_config $config);
 
 	/**
 	 * Gets the current configuration of the provider.

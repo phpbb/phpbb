@@ -14,8 +14,12 @@ class phpbb_auth_provider_native_test extends phpbb_database_test_case
 
 	protected function setUp()
 	{
-		$this->db = $this->new_dbal();
-		$this->config = new phpbb_config(array('auth_provider_native_enabled' => true));
+		global $db;
+		$this->db = $db = $this->new_dbal();
+		$this->config = new phpbb_config(array(
+			'auth_provider_native_enabled'	=> true,
+			'auth_provider_native_admin'	=> true,
+		));
 		$this->user = new phpbb_user();
 	}
 
@@ -26,7 +30,7 @@ class phpbb_auth_provider_native_test extends phpbb_database_test_case
 
 	public function test_registration()
 	{
-		$_POST = array(
+		$post = array(
 			'auth_action'		=> 'register',
 			'username'			=> 'phpbb_test_registration_user',
 			'new_password'		=> 'password',
@@ -34,9 +38,10 @@ class phpbb_auth_provider_native_test extends phpbb_database_test_case
 			'email'				=> 'example@example.com',
 			'tz'				=> 'UTC',
 		);
-		$request = new phpbb_request();
+		$request = new phpbb_mock_request(array(), $post);
 		$native_provider = new phpbb_auth_provider_native($request, $this->db, $this->config);
 		$native_provider->set_user($this->user);
+		$native_provider->process();
 
 		$sql = 'SELECT username, user_password, user_email, user_timezone
 				FROM ' . USERS_TABLE . '
@@ -50,5 +55,13 @@ class phpbb_auth_provider_native_test extends phpbb_database_test_case
 		$this->assertEquals(phpbb_hash('password'), $row['user_password']);
 		$this->assertEquals('example@example.com', $row['user_email']);
 		$this->assertEquals('UTC', $row['user_timezone']);
+	}
+
+	public function test_login()
+	{
+		$request = new phpbb_mock_request();
+		$native_provider = new phpbb_auth_provider_native($request, $this->db, $this->config);
+		$native_provider->set_user($this->user);
+		$native_provider->process_install_login('phpbb_test_user', 'password');
 	}
 }
