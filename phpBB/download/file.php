@@ -402,7 +402,7 @@ else
 
 	if ($files_added < 1)
 	{
-		// None of the attachments had a valid a extension
+		// None of the attachments had a valid extension
 		$disallowed = implode($user->lang['COMMA_SEPARATOR'], $disallowed);
 		send_status_line(404, 'Forbidden');
 		trigger_error($user->lang('EXTENSION_DISABLED_AFTER_POSTING', $disallowed));
