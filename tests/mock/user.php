@@ -33,4 +33,9 @@ class phpbb_mock_user
 	{
 		$this->options[$item] = $value;
 	}
+
+	public function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
+	{
+		return false;
+	}
 }

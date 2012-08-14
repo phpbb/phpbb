@@ -34,9 +34,10 @@ class phpbb_auth_provider_native_test extends phpbb_database_test_case
 			'auth_action'		=> 'register',
 			'username'			=> 'phpbb_test_registration_user',
 			'new_password'		=> 'password',
-			'password_confrim'	=> 'password',
+			'password_confirm'	=> 'password',
 			'email'				=> 'example@example.com',
 			'tz'				=> 'UTC',
+			'lang'				=> 'en',
 		);
 		$request = new phpbb_mock_request(array(), $post);
 		$native_provider = new phpbb_auth_provider_native($request, $this->db, $this->config);
@@ -59,9 +60,14 @@ class phpbb_auth_provider_native_test extends phpbb_database_test_case
 
 	public function test_login()
 	{
-		$request = new phpbb_mock_request();
+		$post = array(
+			'auth_action'		=> 'login',
+			'username'			=> 'phpbb_test__user',
+			'password'			=> 'password',
+		);
+		$request = new phpbb_mock_request(array(), $post);
 		$native_provider = new phpbb_auth_provider_native($request, $this->db, $this->config);
 		$native_provider->set_user($this->user);
-		$native_provider->process_install_login('phpbb_test_user', 'password');
+		$native_provider->process(false);
 	}
 }

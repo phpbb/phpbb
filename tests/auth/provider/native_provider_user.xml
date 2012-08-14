@@ -12,4 +12,20 @@
 			<value>example@example.com</value>
 		</row>
 	</table>
+	<table name="phpbb_lang">
+		<column>lang_id</column>
+		<column>lang_iso</column>
+		<column>lang_dir</column>
+		<column>lang_english_name</column>
+		<column>lang_local_name</column>
+		<column>lang_author</column>
+		<row>
+			<value>1</value>
+			<value>en</value>
+			<value>en</value>
+			<value>British English</value>
+			<value>British English</value>
+			<value>phpBB Group</value>
+		</row>
+	</table>
 </dataset>
