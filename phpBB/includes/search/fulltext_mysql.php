@@ -22,11 +22,11 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_fulltext_mysql extends phpbb_search_base
 {
-	private $stats = array();
-	private $split_words = array();
-	private $config;
-	private $db;
-	private $user;
+	protected $stats = array();
+	protected $split_words = array();
+	protected $config;
+	protected $db;
+	protected $user;
 	public $word_length = array();
 	public $search_query;
 	public $common_words = array();
@@ -52,8 +52,6 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* Returns the name of this search backend to be displayed to administrators
 	*
 	* @return string Name
-	*
-	* @access public
 	*/
 	public function get_name()
 	{
@@ -64,10 +62,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* Checks for correct MySQL version and stores min/max word length in the config
 	*
 	* @return string|bool Language key of the error/incompatiblity occured
-	*
-	* @access public
 	*/
-	function init()
+	public function init()
 	{
 		if ($this->db->sql_layer != 'mysql4' && $this->db->sql_layer != 'mysqli')
 		{
@@ -117,10 +113,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* @param string &$keywords Contains the keyword as entered by the user
 	* @param string $terms is either 'all' or 'any'
 	* @return bool false if no valid keywords were found and otherwise true
-	*
-	* @access public
 	*/
-	function split_keywords(&$keywords, $terms)
+	public function split_keywords(&$keywords, $terms)
 	{
 		if ($terms == 'all')
 		{
@@ -237,10 +231,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	/**
 	* Turns text into an array of words
 	* @param string $text contains post text/subject
-	*
-	* @access public
 	*/
-	function split_message($text)
+	public function split_message($text)
 	{
 		// Split words
 		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
@@ -281,10 +273,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* @param	int			$start				indicates the first index of the page
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
-	*
-	* @access	public
 	*/
-	function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
+	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
 		// No keywords? No posts.
 		if (!$this->search_query)
@@ -463,10 +453,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* @param	int			$start				indicates the first index of the page
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
-	*
-	* @access	public
 	*/
-	function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
+	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
 		// No author? No posts.
 		if (!sizeof($author_ary))
@@ -625,10 +613,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* @param	string		$subject	contains the subject of the post to index
 	* @param	int			$poster_id	contains the user id of the poster
 	* @param	int			$forum_id	contains the forum id of parent forum of the post
-	*
-	* @access public
 	*/
-	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
+	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
 		// Split old and new post/subject to obtain array of words
 		$split_text = $this->split_message($message);
@@ -647,20 +633,16 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 	/**
 	* Destroy cached results, that might be outdated after deleting a post
-	*
-	* @access public
 	*/
-	function index_remove($post_ids, $author_ids, $forum_ids)
+	public function index_remove($post_ids, $author_ids, $forum_ids)
 	{
 		$this->destroy_cache(array(), array_unique($author_ids));
 	}
 
 	/**
 	* Destroy old cache entries
-	*
-	* @access public
 	*/
-	function tidy()
+	public function tidy()
 	{
 		// destroy too old cached search results
 		$this->destroy_cache(array());
@@ -672,10 +654,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* Create fulltext index
 	*
 	* @return string|bool error string is returned incase of errors otherwise false
-	*
-	* @access public
 	*/
-	function create_index($acp_module, $u_action)
+	public function create_index($acp_module, $u_action)
 	{
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
@@ -735,10 +715,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* Drop fulltext index
 	*
 	* @return string|bool error string is returned incase of errors otherwise false
-	*
-	* @access public
 	*/
-	function delete_index($acp_module, $u_action)
+	public function delete_index($acp_module, $u_action)
 	{
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
@@ -780,10 +758,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 	/**
 	* Returns true if both FULLTEXT indexes exist
-	*
-	* @access public
 	*/
-	function index_created()
+	public function index_created()
 	{
 		if (empty($this->stats))
 		{
@@ -795,10 +771,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 	/**
 	* Returns an associative array containing information about the indexes
-	*
-	* @access public
 	*/
-	function index_stats()
+	public function index_stats()
 	{
 		if (empty($this->stats))
 		{
@@ -812,10 +786,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 	/**
 	 * Computes the stats and store them in the $this->stats associative array
-	 *
-	 * @access private
 	 */
-	function get_stats()
+	protected function get_stats()
 	{
 		if (strpos($this->db->sql_layer, 'mysql') === false)
 		{
@@ -857,10 +829,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* Display a note, that UTF-8 support is not available with certain versions of PHP
 	*
 	* @return associative array containing template and config variables
-	*
-	* @access public
 	*/
-	function acp()
+	public function acp()
 	{
 		$tpl = '
 		<dl>
