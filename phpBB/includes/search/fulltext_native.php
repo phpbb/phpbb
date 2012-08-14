@@ -87,8 +87,6 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* @param	string	$terms		is either 'all' (use search query as entered, default words to 'must be contained in post')
 	* 	or 'any' (find all posts containing at least one of the given words)
 	* @return	boolean				false if no valid keywords were found and otherwise true
-	*
-	* @access	public
 	*/
 	public function split_keywords($keywords, $terms)
 	{
@@ -424,8 +422,6 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* @param	int			$start				indicates the first index of the page
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
-	*
-	* @access	public
 	*/
 	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
@@ -820,8 +816,6 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* @param	int			$start				indicates the first index of the page
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
-	*
-	* @access	public
 	*/
 	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
@@ -1045,8 +1039,6 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	*
 	* @param	string	$text	Text to split, encoded in UTF-8
 	* @return	array			Array of UTF-8 words
-	*
-	* @access	private
 	*/
 	public function split_message($text)
 	{
@@ -1122,8 +1114,6 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* @param	string	&$subject	New or updated post subject
 	* @param	int		$poster_id	Post author's user id
 	* @param	int		$forum_id	The id of the forum in which the post is located
-	*
-	* @access	public
 	*/
 	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
