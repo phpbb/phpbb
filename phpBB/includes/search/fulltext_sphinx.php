@@ -28,20 +28,20 @@ define('SPHINX_CONNECT_WAIT_TIME', 300);
 */
 class phpbb_search_fulltext_sphinx
 {
-	private $stats = array();
-	private $split_words = array();
-	private $id;
-	private $indexes;
-	private $sphinx;
-	private $phpbb_root_path;
-	private $php_ext;
-	private $auth;
-	private $config;
-	private $db;
-	private $db_tools;
-	private $dbtype;
-	private $user;
-	private $config_file_data = '';
+	protected $stats = array();
+	protected $split_words = array();
+	protected $id;
+	protected $indexes;
+	protected $sphinx;
+	protected $phpbb_root_path;
+	protected $php_ext;
+	protected $auth;
+	protected $config;
+	protected $db;
+	protected $db_tools;
+	protected $dbtype;
+	protected $user;
+	protected $config_file_data = '';
 	public $search_query;
 	public $common_words = array();
 
@@ -121,7 +121,7 @@ class phpbb_search_fulltext_sphinx
 	 *
 	 * @return bool True if sphinx.conf content is correctly generated, false otherwise
 	 */
-	private function config_generate()
+	protected function config_generate()
 	{
 		// Check if Database is supported by Sphinx
 		if ($this->db->sql_layer =='mysql' || $this->db->sql_layer == 'mysql4' || $this->db->sql_layer == 'mysqli')
@@ -712,7 +712,7 @@ class phpbb_search_fulltext_sphinx
 	/**
 	* Collects stats that can be displayed on the index maintenance page
 	*/
-	private function get_stats()
+	protected function get_stats()
 	{
 		if ($this->index_created())
 		{
