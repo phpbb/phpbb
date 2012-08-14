@@ -84,7 +84,7 @@ class phpbb_session_testable_factory
 		$cache = $this->cache = new phpbb_mock_cache($this->get_cache_data());
 		$SID = $_SID = null;
 
-		$phpbb_auth_manager = new phpbb_auth_manager(array('phpbb_auth_provider_native'), $cache, $request, $db, $config);
+		$phpbb_auth_manager = new phpbb_auth_manager(new phpbb_auth_extension_provider_locator(new phpbb_mock_extension_manager($phpbb_root_path)), $cache, $request, $db, $config);
 
 		$session = new phpbb_mock_session_testable;
 		return $session;
