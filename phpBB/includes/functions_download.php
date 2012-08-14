@@ -649,6 +649,57 @@ function phpbb_download_check_forum_auth($db, $auth, $topic_id)
 }
 
 /**
+* Handles authentication when downloading attachments from PMs
+*
+* @param dbal $db The database object
+* @param phpbb_auth $auth The authentication object
+* @param int $user_id The user id
+* @param int $msg_id The id of the PM that we are downloading from
+*
+* @return null
+*/
+function phpbb_download_handle_pm_auth($db, $auth, $user_id, $msg_id)
+{
+	if (!$auth->acl_get('u_pm_download'))
+	{
+		send_status_line(403, 'Forbidden');
+		trigger_error('SORRY_AUTH_VIEW_ATTACH');
+	}
+
+	$allowed = phpbb_download_check_pm_auth($db, $user_id, $msg_id);
+
+	if (!$allowed)
+	{
+		send_status_line(403, 'Forbidden');
+		trigger_error('ERROR_NO_ATTACHMENT');
+	}
+}
+
+/**
+* Checks whether a user can download from a particular PM
+*
+* @param dbal $db The database object
+* @param int $user_id The user id
+* @param int $msg_id The id of the PM that we are downloading from
+*
+* @return bool Whether the user is allowed to download from that PM or not
+*/
+function phpbb_download_check_pm_auth($db, $user_id, $msg_id)
+{
+	// Check if the attachment is within the users scope...
+	$sql = 'SELECT user_id, author_id
+		FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE msg_id = ' . $msg_id . "
+			AND user_id = $user_id
+			OR author_id = $user_id";
+	$result = $db->sql_query_limit($sql, 1);
+	$allowed = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	return $allowed;
+}
+
+/**
 * Cleans a filename of any characters that could potentially cause a problem on
 * a user's filesystem.
 *

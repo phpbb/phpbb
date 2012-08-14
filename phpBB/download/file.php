@@ -236,34 +236,7 @@ else if ($download_id)
 		{
 			// Attachment is in a private message.
 			$row['forum_id'] = false;
-			if (!$auth->acl_get('u_pm_download'))
-			{
-				send_status_line(403, 'Forbidden');
-				trigger_error('SORRY_AUTH_VIEW_ATTACH');
-			}
-
-			// Check if the attachment is within the users scope...
-			$sql = 'SELECT user_id, author_id
-				FROM ' . PRIVMSGS_TO_TABLE . '
-				WHERE msg_id = ' . $attachment['post_msg_id'];
-			$result = $db->sql_query($sql);
-
-			$allowed = false;
-			while ($user_row = $db->sql_fetchrow($result))
-			{
-				if ($user->data['user_id'] == $user_row['user_id'] || $user->data['user_id'] == $user_row['author_id'])
-				{
-					$allowed = true;
-					break;
-				}
-			}
-			$db->sql_freeresult($result);
-
-			if (!$allowed)
-			{
-				send_status_line(403, 'Forbidden');
-				trigger_error('ERROR_NO_ATTACHMENT');
-			}
+			phpbb_download_handle_pm_auth($db, $auth, $user->data['user_id'], $attachment['post_msg_id']);
 		}
 
 		$extensions = array();
@@ -330,6 +303,10 @@ else
 	if (!$attachment['in_message'])
 	{
 		phpbb_download_check_forum_auth($db, $auth, $attachment['topic_id']);
+	}
+	else
+	{
+		phpbb_download_handle_pm_auth($db, $auth, $user->data['user_id'], $attachment['post_msg_id']);
 	}
 
 	if (!class_exists('compress'))
