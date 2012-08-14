@@ -22,20 +22,20 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_fulltext_native extends phpbb_search_base
 {
-	var $stats = array();
-	var $word_length = array();
-	var $search_query;
-	var $common_words = array();
+	protected $stats = array();
+	public $word_length = array();
+	public $search_query;
+	public $common_words = array();
 
-	var $must_contain_ids = array();
-	var $must_not_contain_ids = array();
-	var $must_exclude_one_ids = array();
+	protected $must_contain_ids = array();
+	protected $must_not_contain_ids = array();
+	protected $must_exclude_one_ids = array();
 
-	private $phpbb_root_path;
-	private $php_ext;
-	private $config;
-	private $db;
-	private $user;
+	protected $phpbb_root_path;
+	protected $php_ext;
+	protected $config;
+	protected $db;
+	protected $user;
 
 	/**
 	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded.
@@ -87,10 +87,8 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* @param	string	$terms		is either 'all' (use search query as entered, default words to 'must be contained in post')
 	* 	or 'any' (find all posts containing at least one of the given words)
 	* @return	boolean				false if no valid keywords were found and otherwise true
-	*
-	* @access	public
 	*/
-	function split_keywords($keywords, $terms)
+	public function split_keywords($keywords, $terms)
 	{
 		$tokens = '+-|()*';
 
@@ -424,10 +422,8 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* @param	int			$start				indicates the first index of the page
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
-	*
-	* @access	public
 	*/
-	function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
+	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
 		// No keywords? No posts.
 		if (empty($this->search_query))
@@ -820,10 +816,8 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* @param	int			$start				indicates the first index of the page
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
-	*
-	* @access	public
 	*/
-	function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
+	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
 		// No author? No posts.
 		if (!sizeof($author_ary))
@@ -1045,10 +1039,8 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	*
 	* @param	string	$text	Text to split, encoded in UTF-8
 	* @return	array			Array of UTF-8 words
-	*
-	* @access	private
 	*/
-	function split_message($text)
+	public function split_message($text)
 	{
 		$match = $words = array();
 
@@ -1122,10 +1114,8 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* @param	string	&$subject	New or updated post subject
 	* @param	int		$poster_id	Post author's user id
 	* @param	int		$forum_id	The id of the forum in which the post is located
-	*
-	* @access	public
 	*/
-	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
+	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
 		if (!$this->config['fulltext_native_load_upd'])
 		{
@@ -1282,7 +1272,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	/**
 	* Removes entries from the wordmatch table for the specified post_ids
 	*/
-	function index_remove($post_ids, $author_ids, $forum_ids)
+	public function index_remove($post_ids, $author_ids, $forum_ids)
 	{
 		if (sizeof($post_ids))
 		{
@@ -1340,7 +1330,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* Tidy up indexes: Tag 'common words' and remove
 	* words no longer referenced in the match table
 	*/
-	function tidy()
+	public function tidy()
 	{
 		// Is the fulltext indexer disabled? If yes then we need not
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
@@ -1403,7 +1393,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	/**
 	* Deletes all words from the index
 	*/
-	function delete_index($acp_module, $u_action)
+	public function delete_index($acp_module, $u_action)
 	{
 		switch ($this->db->sql_layer)
 		{
@@ -1425,7 +1415,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	/**
 	* Returns true if both FULLTEXT indexes exist
 	*/
-	function index_created()
+	public function index_created()
 	{
 		if (!sizeof($this->stats))
 		{
@@ -1438,7 +1428,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	/**
 	* Returns an associative array containing information about the indexes
 	*/
-	function index_stats()
+	public function index_stats()
 	{
 		if (!sizeof($this->stats))
 		{
@@ -1450,7 +1440,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 			$this->user->lang['TOTAL_MATCHES']	=> $this->stats['total_matches']);
 	}
 
-	function get_stats()
+	protected function get_stats()
 	{
 		$this->stats['total_words']		= $this->db->get_estimated_row_count(SEARCH_WORDLIST_TABLE);
 		$this->stats['total_matches']	= $this->db->get_estimated_row_count(SEARCH_WORDMATCH_TABLE);
@@ -1471,7 +1461,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	*
 	* @todo normalizer::cleanup being able to be used?
 	*/
-	function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
+	protected function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
 	{
 		static $conv = array(), $conv_loaded = array();
 		$words = $allow = array();
@@ -1700,7 +1690,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	/**
 	* Returns a list of options for the ACP to display
 	*/
-	function acp()
+	public function acp()
 	{
 		/**
 		* if we need any options, copied from fulltext_native for now, will have to be adjusted or removed
