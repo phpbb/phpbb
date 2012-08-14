@@ -369,7 +369,7 @@ else
 
 	$extensions = array();
 	$files_added = 0;
-	$forum_id = ($attachment['in_message']) ? false : $row['forum_id'];
+	$forum_id = ($attachment['in_message']) ? false : (int) $row['forum_id'];
 	$disallowed = array();
 
 	foreach ($attachments as $attach)
