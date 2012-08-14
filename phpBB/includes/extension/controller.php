@@ -36,7 +36,7 @@ abstract class phpbb_extension_controller implements phpbb_extension_controller_
 
 	/**
 	* User class object
-	* @var user
+	* @var phpbb_user
 	*/
 	protected $user;
 
