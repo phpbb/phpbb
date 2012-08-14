@@ -203,7 +203,8 @@ class phpbb_revisions_comparison
 			' . $user->lang('REVISION_USER_COUNT', sizeof($revision_users));
 		$additions_count = $this->text_diff->additions_count() + $this->subject_diff->additions_count();
 		$deletions_count = $this->text_diff->deletions_count() + $this->subject_diff->deletions_count();
-		$l_lines_added_removed = $additions_count ? $user->lang('REVISION_ADDITIONS', $additions_count) . ' ' : '';
+		$l_lines_added_removed = ($additions_count || $deletions_count) ? ' ' . $user->lang('WITH') . ' ' : '';
+		$l_lines_added_removed .= $additions_count ? $user->lang('REVISION_ADDITIONS', $additions_count) . ' ' : '';
 		$l_lines_added_removed .= $additions_count && $deletions_count ? strtolower($user->lang('AND')) . ' ' : '';
 		$l_lines_added_removed .= $deletions_count ? $user->lang('REVISION_DELETIONS', $deletions_count) : '';
 
@@ -233,6 +234,7 @@ class phpbb_revisions_comparison
 				'text_diff_rendered'	=> $this->get_text_diff_rendered(),
 				'subject_diff_rendered'	=> '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_data['post_id'])) . '">' . $this->get_subject_diff_rendered() . '</a>',
 				'comparing_to'			=> $user->lang('COMPARING') . ' <a href="' . $u_first_revision . '">' . $l_first_revision . '<a/> ' . $user->lang('WITH') . ' <a href="' . $u_last_revision . '">' . $l_last_revision . '</a>',
+				'lines_changed'			=> $l_lines_added_removed,
 			));
 		}
 	}
