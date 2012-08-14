@@ -49,6 +49,7 @@ class phpbb_session_testable_factory
 
 		$this->cache_data = array(
 			'_bots' => array(),
+			'auth_providers_enabled' => array ()
 		);
 
 		$this->cookies = array();
