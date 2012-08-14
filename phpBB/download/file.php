@@ -300,13 +300,13 @@ else if ($download_id)
 else
 {
 	// sizeof($attachments) >= 1
-	if (!$attachment['in_message'])
+	if ($attachment['in_message'])
 	{
-		phpbb_download_handle_forum_auth($db, $auth, $attachment['topic_id']);
+		phpbb_download_handle_pm_auth($db, $auth, $user->data['user_id'], $attachment['post_msg_id']);
 	}
 	else
 	{
-		phpbb_download_handle_pm_auth($db, $auth, $user->data['user_id'], $attachment['post_msg_id']);
+		phpbb_download_handle_forum_auth($db, $auth, $attachment['topic_id']);
 	}
 
 	if (!class_exists('compress'))
