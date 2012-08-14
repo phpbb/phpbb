@@ -356,14 +356,15 @@ else
 
 	$store_name = 'att_' . time() . '_' . unique_id();
 	$archive_name = 'attachments' . $suffix;
+	$archive_path = "{$phpbb_root_path}store/{$store_name}{$archive}";
 
 	if ($archive === '.zip')
 	{
-		$compress = new compress_zip('w', "{$phpbb_root_path}store/{$store_name}{$archive}");
+		$compress = new compress_zip('w', $archive_path);
 	}
 	else
 	{
-		$compress = new compress_tar('w', "{$phpbb_root_path}store/{$store_name}{$archive}", $archive);
+		$compress = new compress_tar('w', $archive_path, $archive);
 	}
 
 	$extensions = array();
@@ -397,7 +398,7 @@ else
 		$compress->download($store_name, $archive_name);
 	}
 
-	unlink("{$phpbb_root_path}store/{$store_name}{$archive}");
+	unlink($archive_path);
 
 	if ($files_added < 1)
 	{
