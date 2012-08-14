@@ -22,20 +22,20 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_fulltext_native extends phpbb_search_base
 {
-	private $stats = array();
+	protected $stats = array();
 	public $word_length = array();
 	public $search_query;
 	public $common_words = array();
 
-	private $must_contain_ids = array();
-	private $must_not_contain_ids = array();
-	private $must_exclude_one_ids = array();
+	protected $must_contain_ids = array();
+	protected $must_not_contain_ids = array();
+	protected $must_exclude_one_ids = array();
 
-	private $phpbb_root_path;
-	private $php_ext;
-	private $config;
-	private $db;
-	private $user;
+	protected $phpbb_root_path;
+	protected $php_ext;
+	protected $config;
+	protected $db;
+	protected $user;
 
 	/**
 	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded.
@@ -1440,7 +1440,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 			$this->user->lang['TOTAL_MATCHES']	=> $this->stats['total_matches']);
 	}
 
-	private function get_stats()
+	protected function get_stats()
 	{
 		$this->stats['total_words']		= $this->db->get_estimated_row_count(SEARCH_WORDLIST_TABLE);
 		$this->stats['total_matches']	= $this->db->get_estimated_row_count(SEARCH_WORDMATCH_TABLE);
@@ -1461,7 +1461,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	*
 	* @todo normalizer::cleanup being able to be used?
 	*/
-	private function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
+	protected function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
 	{
 		static $conv = array(), $conv_loaded = array();
 		$words = $allow = array();
