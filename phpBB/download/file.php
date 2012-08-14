@@ -353,9 +353,9 @@ else
 
 	$clean_name = phpbb_download_clean_filename($row['attach_subject']);
 	$suffix = '_' . (($post_id) ? $post_id : $topic_id) . '_' . $clean_name;
+	$archive_name = 'attachments' . $suffix;
 
 	$store_name = 'att_' . time() . '_' . unique_id();
-	$archive_name = 'attachments' . $suffix;
 	$archive_path = "{$phpbb_root_path}store/{$store_name}{$archive}";
 
 	if ($archive === '.zip')
