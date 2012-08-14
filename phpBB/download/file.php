@@ -375,7 +375,7 @@ else
 	{
 		if (!extension_allowed($forum_id, $attach['extension'], $extensions))
 		{
-			$disallowed[$attach['extension']] = 1;
+			$disallowed[$attach['extension']] = $attach['extension'];
 			continue;
 		}
 		
@@ -402,7 +402,7 @@ else
 	if ($count < 1)
 	{
 		// None of the attachments had a valid a extension
-		$disallowed = implode(', ', array_keys($disallowed));
+		$disallowed = implode(', ', $disallowed);
 		send_status_line(404, 'Forbidden');
 		trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $disallowed));
 	}
