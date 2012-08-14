@@ -160,6 +160,7 @@ phpbb.add_ajax_callback('revisions.compare', function(res) {
 	$('.first').html(res.subject_diff_rendered);
 	$('.content').html(res.text_diff_rendered);
 	$('.right-box').html(res.comparing_to);
+	$('#revision_lines_changed').html(res.lines_changed);
 });
 
 phpbb.add_ajax_callback('revisions.protect', function(res) {
