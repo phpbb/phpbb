@@ -689,9 +689,9 @@ function phpbb_download_check_pm_auth($db, $user_id, $msg_id)
 	// Check if the attachment is within the users scope...
 	$sql = 'SELECT user_id, author_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE msg_id = ' . $msg_id . "
-			AND user_id = $user_id
-			OR author_id = $user_id";
+		WHERE msg_id = ' . (int) $msg_id . '
+			AND user_id = ' . (int) $user_id . '
+			OR author_id = ' . (int) $user_id;
 	$result = $db->sql_query_limit($sql, 1);
 	$allowed = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
