@@ -615,7 +615,7 @@ function phpbb_increment_downloads($db, $ids)
 }
 
 /**
-* Checks that the user has permission to download attachments from the forum
+* Handles authentication when downloading attachments from a post or topic
 *
 * @param dbal $db The database object
 * @param phpbb_auth $auth The authentication object
@@ -623,7 +623,7 @@ function phpbb_increment_downloads($db, $ids)
 *
 * @return null
 */
-function phpbb_download_check_forum_auth($db, $auth, $topic_id)
+function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 {
 	$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
 		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f

@@ -230,7 +230,7 @@ else if ($download_id)
 	{
 		if (!$attachment['in_message'])
 		{
-			phpbb_download_check_forum_auth($db, $auth, $attachment['topic_id']);
+			phpbb_download_handle_forum_auth($db, $auth, $attachment['topic_id']);
 		}
 		else
 		{
@@ -302,7 +302,7 @@ else
 	// sizeof($attachments) >= 1
 	if (!$attachment['in_message'])
 	{
-		phpbb_download_check_forum_auth($db, $auth, $attachment['topic_id']);
+		phpbb_download_handle_forum_auth($db, $auth, $attachment['topic_id']);
 	}
 	else
 	{
