@@ -323,20 +323,20 @@ else
 	{
 		if ($attachment['in_message'])
 		{
-			$sql = 'SELECT message_subject
+			$sql = 'SELECT message_subject AS attach_subject
 				FROM ' . PRIVMSGS_TABLE . "
 				WHERE msg_id = $post_id";
 		}
 		else
 		{
-			$sql = 'SELECT post_subject, forum_id
+			$sql = 'SELECT post_subject AS attach_subject, forum_id
 				FROM ' . POSTS_TABLE . "
 				WHERE post_id = $post_id";
 		}
 	}
 	else
 	{
-		$sql = 'SELECT topic_title, forum_id
+		$sql = 'SELECT topic_title AS attach_subject, forum_id
 			FROM ' . TOPICS_TABLE . "
 			WHERE topic_id = $topic_id";
 	}
@@ -351,7 +351,7 @@ else
 		trigger_error('ERROR_NO_ATTACHMENT');
 	}
 
-	$clean_name = phpbb_download_clean_filename(current($row));
+	$clean_name = phpbb_download_clean_filename($row['attach_subject']);
 	$suffix = '_' . (($post_id) ? $post_id : $topic_id) . '_' . $clean_name;
 
 	$store_name = 'att_' . time() . '_' . unique_id();
