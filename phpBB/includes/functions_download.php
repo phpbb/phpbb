@@ -629,7 +629,7 @@ function phpbb_download_check_forum_auth($db, $auth, $topic_id)
 		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 		WHERE t.topic_id = " . (int) $topic_id . "
 			AND t.forum_id = f.forum_id";
-	$result = $db->sql_query_limit($sql, 1);
+	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
