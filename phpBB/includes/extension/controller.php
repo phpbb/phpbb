@@ -47,8 +47,8 @@ abstract class phpbb_extension_controller implements phpbb_extension_controller_
 	protected $template;
 
 	/**
-	* Config array
-	* @var array
+	* Config object
+	* @var phpbb_config
 	*/
 	protected $config;
 
