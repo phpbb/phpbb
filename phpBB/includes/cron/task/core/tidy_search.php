@@ -31,7 +31,7 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 	*/
 	public function run()
 	{
-		global $phpbb_root_path, $phpEx, $config, $error;
+		global $phpbb_root_path, $phpEx, $config, $error, $auth, $db, $user;
 
 		// Select the search method
 		$search_type = basename($config['search_type']);
@@ -43,7 +43,7 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;
-		$search = new $search_type($error);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		if (!$error)
 		{
