@@ -257,11 +257,25 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
 		break;
 
-		case 'dimension':
-			$size = (int) $tpl_type[1];
-			$maxlength = (int) $tpl_type[2];
+		case 'number':
+			$min = (int) $tpl_type[1];
+			$max = $maxlength = (int) $tpl_type[2];
 
-			$tpl = '<input id="' . $key . '" type="text"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="config[' . $config_key . '_width]" value="' . $new[$config_key . '_width'] . '" /> x <input type="text"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="config[' . $config_key . '_height]" value="' . $new[$config_key . '_height'] . '" />';
+			if ($tpl_type[3] != 'true')
+			{
+				$max = str_repeat('9', $max);
+			}
+
+			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (($maxlength) ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="' . $name . '" value="' . $new[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
+		break;
+
+		case 'dimension':
+			$min = (int) $tpl_type[1];
+			$max = $maxlength = (int) $tpl_type[2];
+
+			$max = str_repeat('9', $max);
+
+			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (($maxlength) ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="config[' . $config_key . '_width]" value="' . $new[$config_key . '_width'] . '" /> x <input type="number" maxlength="' . (($maxlength) ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="config[' . $config_key . '_height]" value="' . $new[$config_key . '_height'] . '" />';
 		break;
 
 		case 'textarea':
