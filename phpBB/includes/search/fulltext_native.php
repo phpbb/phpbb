@@ -22,19 +22,74 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_fulltext_native extends phpbb_search_base
 {
+	/**
+	 * Associative array holding index stats
+	 * @var array
+	 */
 	protected $stats = array();
-	protected $word_length = array();
-	protected $search_query;
-	protected $common_words = array();
 
+	/**
+	 * Associative array stores the min and max length
+	 * @var array
+	 */
+	public $word_length = array();
+
+	/**
+	 * Contains tidied search query
+	 * @var string
+	 */
+	public $search_query;
+
+	/**
+	 * Contains common words
+	 * common words are words with length less/more than min/max length
+	 * @var array
+	 */
+	public $common_words = array();
+
+	/**
+	 * Post ids of posts containing words that are to be included
+	 */
 	protected $must_contain_ids = array();
+
+	/**
+	 * Post ids of posts containing words that should not be included
+	 */
 	protected $must_not_contain_ids = array();
+
+	/**
+	 * Post ids of posts containing atleast one word that needs to be excluded
+	 */
 	protected $must_exclude_one_ids = array();
 
+	/**
+	 * Relative path to board root
+	 * @var string
+	 */
 	protected $phpbb_root_path;
+
+	/**
+	 * PHP Extension
+	 * @var string
+	 */
 	protected $php_ext;
+
+	/**
+	 * Config class object
+	 * @var phpbb_config
+	 */
 	protected $config;
+
+	/**
+	 * DBAL class object
+	 * @var dbal
+	 */
 	protected $db;
+
+	/**
+	 * User class object
+	 * @var user
+	 */
 	protected $user;
 
 	/**
