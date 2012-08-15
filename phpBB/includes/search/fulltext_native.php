@@ -93,9 +93,9 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	protected $user;
 
 	/**
-	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded.
+	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded
 	*
-	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure.
+	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure
 	*/
 	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
 	{
@@ -163,14 +163,14 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	}
 
 	/**
-	* This function fills $this->search_query with the cleaned user search query.
+	* This function fills $this->search_query with the cleaned user search query
 	*
 	* If $terms is 'any' then the words will be extracted from the search query
 	* and combined with | inside brackets. They will afterwards be treated like
 	* an standard search query.
 	*
 	* Then it analyses the query and fills the internal arrays $must_not_contain_ids,
-	* $must_contain_ids and $must_exclude_one_ids which are later used by keyword_search().
+	* $must_contain_ids and $must_exclude_one_ids which are later used by keyword_search()
 	*
 	* @param	string	$keywords	contains the search query string as entered by the user
 	* @param	string	$terms		is either 'all' (use search query as entered, default words to 'must be contained in post')
@@ -493,7 +493,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	}
 
 	/**
-	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first.
+	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first
 	*
 	* @param	string		$type				contains either posts or topics depending on what should be searched for
 	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
@@ -859,7 +859,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 		// if we use mysql and the total result count is not cached yet, retrieve it from the db
 		if (!$total_results && $is_mysql)
 		{
-			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
+			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it
 			$sql_array_copy = $sql_array;
 			$sql_array_copy['SELECT'] = 'SQL_CALC_FOUND_ROWS p.post_id ';
 
@@ -908,7 +908,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	*/
 	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
-		// No author? No posts.
+		// No author? No posts
 		if (!sizeof($author_ary))
 		{
 			return 0;

@@ -35,7 +35,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	protected $split_words = array();
 
 	/**
-	 * True if postgresql version supports tsearch
+	 * True if PostgreSQL version supports tsearch
 	 * @var boolean
 	 */
 	protected $tsearch_usable = false;
@@ -53,8 +53,8 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	protected $tsearch_query;
 
 	/**
-	 * True if phrase search is supported.
-	 * postgreSQL fulltext currently doesn't support it
+	 * True if phrase search is supported
+	 * PostgreSQL fulltext currently doesn't support it
 	 * @var boolean
 	 */
 	protected $phrase_search = false;
@@ -98,7 +98,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 	/**
 	 * Constructor
-	 * Creates a new phpbb_search_fulltext_postgres, which is used as a search backend.
+	 * Creates a new phpbb_search_fulltext_postgres, which is used as a search backend
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
 	 */
@@ -315,7 +315,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	}
 
 	/**
-	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first.
+	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first
 	*
 	* @param	string		$type				contains either posts or topics depending on what should be searched for
 	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
@@ -336,7 +336,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
-		// No keywords? No posts.
+		// No keywords? No posts
 		if (!$this->search_query)
 		{
 			return false;
@@ -520,7 +520,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
-		// No author? No posts.
+		// No author? No posts
 		if (!sizeof($author_ary))
 		{
 			return 0;
@@ -663,7 +663,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	}
 
 	/**
-	* Destroys cached search results, that contained one of the new words in a post so the results won't be outdated.
+	* Destroys cached search results, that contained one of the new words in a post so the results won't be outdated
 	*
 	* @param	string		$mode		contains the post mode: edit, post, reply, quote ...
 	* @param	int			$post_id	contains the post id of the post to index

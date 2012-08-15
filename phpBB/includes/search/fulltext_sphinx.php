@@ -121,7 +121,7 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	 * Constructor
-	 * Creates a new phpbb_search_fulltext_postgres, which is used as a search backend.
+	 * Creates a new phpbb_search_fulltext_postgres, which is used as a search backend
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
 	 */
@@ -434,7 +434,7 @@ class phpbb_search_fulltext_sphinx
 	}
 
 	/**
-	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first.
+	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first
 	*
 	* @param	string		$type				contains either posts or topics depending on what should be searched for
 	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
