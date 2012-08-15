@@ -1601,7 +1601,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					'revision_subject'		=> $data['original_post_data']['post_subject'],
 					'revision_text'			=> $data['original_post_data']['message'],
 					'revision_checksum'		=> $data['original_post_data']['post_checksum'],
-					'revision_attachment'	=> $data['original_post_data']['post_attachment'],
 					'bbcode_bitfield'		=> $data['original_post_data']['bbcode_bitfield'],
 					'bbcode_uid'			=> $data['original_post_data']['bbcode_uid'],
 					'revision_reason'		=> $data['original_post_data']['post_edit_reason'],
