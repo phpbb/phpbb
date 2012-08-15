@@ -2370,7 +2370,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 
 		$error = false;
-		$search = new $search_type($error);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		if ($error)
 		{
