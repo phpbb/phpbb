@@ -103,7 +103,7 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	 * User class object
-	 * @var user
+	 * @var phpbb_user
 	 */
 	protected $user;
 

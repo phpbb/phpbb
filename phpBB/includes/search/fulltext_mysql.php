@@ -48,7 +48,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	
 	/**
 	 * User class object
-	 * @var user
+	 * @var phpbb_user
 	 */
 	protected $user;
 

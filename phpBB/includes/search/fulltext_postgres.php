@@ -73,7 +73,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 	/**
 	 * User class object
-	 * @var user
+	 * @var phpbb_user
 	 */
 	protected $user;
 
