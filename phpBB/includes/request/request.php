@@ -293,7 +293,7 @@ class phpbb_request implements phpbb_request_interface
 	*/
 	public function file($form_name)
 	{
-		return $this->variable($form_name, array(), false, phpbb_request_interface::FILES);
+		return $this->variable($form_name, array('name' => 'none'), false, phpbb_request_interface::FILES);
 	}
 
 	/**
