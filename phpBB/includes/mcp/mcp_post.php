@@ -393,7 +393,7 @@ function mcp_post_details($id, $mode, $action)
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db, $config, $phpbb_root_path, $phpEx;
+	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
@@ -470,7 +470,7 @@ function change_poster(&$post_info, $userdata)
 	{
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;
-		$search = new $search_type($error);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		if (!$error && method_exists($search, 'destroy_cache'))
 		{
