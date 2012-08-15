@@ -3134,7 +3134,7 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
 }
 
 /**
- * Purge all post revisions. This is called from the ACP Main page, just like Purge Cache
+ * Purge all post revisions
  *
  * @param dbal $db Database object
  *

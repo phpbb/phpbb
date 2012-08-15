@@ -1515,7 +1515,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		case 'edit_last_post':
 		case 'edit_topic':
 
-			// If edit reason is given or if we are tracking post revisions always display edit info
+			// If edit reason is given always display edit info
 
 			// If editing last post then display no edit info
 			// If m_edit permission then display no edit info
