@@ -26,6 +26,7 @@ class acp_groups
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $request;
 
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
@@ -323,7 +324,8 @@ class acp_groups
 						$submit_ary['founder_manage'] = isset($_REQUEST['group_founder_manage']) ? 1 : 0;
 					}
 
-					if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
+					$uploadfile = $request->file('uploadfile');
+					if (!empty($uploadfile['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
 					{
 						// Avatar stuff
 						$var_ary = array(
@@ -337,7 +339,7 @@ class acp_groups
 						{
 							$data['user_id'] = "g$group_id";
 
-							if ((!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl']) && $can_upload)
+							if ((!empty($uploadfile['tmp_name']) || $data['uploadurl']) && $can_upload)
 							{
 								list($submit_ary['avatar_type'], $submit_ary['avatar'], $submit_ary['avatar_width'], $submit_ary['avatar_height']) = avatar_upload($data, $error);
 							}
