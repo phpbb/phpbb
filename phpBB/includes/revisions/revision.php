@@ -107,12 +107,6 @@ class phpbb_revisions_revision
 	private $checksum;
 
 	/**
-	* Revision has attachment?
-	* @var int
-	*/
-	private $attachment;
-
-	/**
 	* ID of the poster (not necessarily who made the revision)
 	* @var int
 	*/
