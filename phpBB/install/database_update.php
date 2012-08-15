@@ -2223,7 +2223,7 @@ function change_database_data(&$no_updates, $version)
 		break;
 
 		// Changes from 3.0.11-RC2 to 3.0.11
-		case '3.0.12-RC2':
+		case '3.0.11-RC2':
 			$bots_to_update = array(
 				'Baidu [Spider]'	=> array('Baiduspider', ''),
 				'Exabot [Bot]'		=> array('Exabot', ''),
