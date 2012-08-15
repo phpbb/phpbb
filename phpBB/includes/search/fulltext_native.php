@@ -49,16 +49,19 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 
 	/**
 	 * Post ids of posts containing words that are to be included
+	 * @var array
 	 */
 	protected $must_contain_ids = array();
 
 	/**
 	 * Post ids of posts containing words that should not be included
+	 * @var array
 	 */
 	protected $must_not_contain_ids = array();
 
 	/**
 	 * Post ids of posts containing atleast one word that needs to be excluded
+	 * @var array
 	 */
 	protected $must_exclude_one_ids = array();
 
