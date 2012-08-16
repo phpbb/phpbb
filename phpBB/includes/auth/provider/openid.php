@@ -76,7 +76,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 	 *
 	 * @param phpbb_mock_openid_response $response_helper
 	 */
-	public function set_response_helper(phpbb_mock_openid_response $response_helper)
+	public function set_response_helper(Zend\Http\Response $response_helper)
 	{
 		$this->response_helper = $response_helper;
 	}

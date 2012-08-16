@@ -6,8 +6,6 @@
 *
 */
 
-use Zend\OpenId as ZendOpenId;
-
 class phpbb_auth_provider_openid_test extends phpbb_database_test_case
 {
 	private $config;
@@ -49,7 +47,7 @@ class phpbb_auth_provider_openid_test extends phpbb_database_test_case
 		$provider = new phpbb_auth_provider_openid($request, $this->db, $this->config);
 		$provider->set_user($this->user);
 		$response = new phpbb_mock_openid_response(true);
-		$provider->set_response_helper(&$response);
+		$provider->set_response_helper($response);
 
 		$provider->process(false);
 	}
