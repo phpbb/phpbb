@@ -22,6 +22,7 @@ class phpbb_auth_provider_openid_test extends phpbb_database_test_case
 
 	protected function setUp()
 	{
+		$this->markTestSkipped('zendramework/zendopenid is currently broken as as such the test is skipped.');
 		global $db;
 		$this->db = $db = $this->new_dbal();
 		$this->config = new phpbb_config(array(
