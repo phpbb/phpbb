@@ -10,6 +10,15 @@
 class phpbb_mock_request implements phpbb_request_interface
 {
 	protected $data;
+	protected $super_globals_disabled = true;
+
+	protected $super_globals = array(
+		phpbb_request_interface::POST => '_POST',
+		phpbb_request_interface::GET => '_GET',
+		phpbb_request_interface::REQUEST => '_REQUEST',
+		phpbb_request_interface::COOKIE => '_COOKIE',
+		phpbb_request_interface::SERVER => '_SERVER',
+	);
 
 	public function __construct($get = array(), $post = array(), $cookie = array(), $server = array(), $request = false)
 	{
@@ -78,5 +87,32 @@ class phpbb_mock_request implements phpbb_request_interface
 	public function merge($super_global = phpbb_request_interface::REQUEST, $values)
 	{
 		$this->data[$super_global] = array_merge($this->data[$super_global], $values);
+	}
+
+	public function disable_super_globals()
+	{
+		if (!$this->super_globals_disabled)
+		{
+			foreach ($this->super_globals as $const => $super_global)
+			{
+				unset($GLOBALS[$super_global]);
+				$GLOBALS[$super_global] = new phpbb_request_deactivated_super_global($this, $super_global, $const);
+			}
+
+			$this->super_globals_disabled = true;
+		}
+	}
+
+	public function enable_super_globals()
+	{
+		if ($this->super_globals_disabled)
+		{
+			foreach ($this->super_globals as $const => $super_global)
+			{
+				$GLOBALS[$super_global] = $this->data[$const];
+			}
+
+			$this->super_globals_disabled = false;
+		}
 	}
 }
