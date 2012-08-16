@@ -190,7 +190,7 @@ abstract class phpbb_auth_abstract_provider implements phpbb_auth_interface_prov
 	 */
 	protected function login_auth_fail($user_id, $username = 0, $username_clean = 0)
 	{
-		if (!is_int($user_id))
+		if (!is_int($user_id) && $user_id !== null)
 		{
 			throw new phpbb_auth_exception('Invalid user_id');
 		}

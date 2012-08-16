@@ -33,6 +33,8 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 	protected $SID;
 	protected $_SID;
 
+	protected $response_helper = null;
+
 	public $name = 'openid';
 
 	/**
@@ -67,6 +69,16 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 		$this->phpEx = $phpEx;
 		$this->SID = $SID;
 		$this->_SID = $_SID;
+	}
+
+	/**
+	 * Sets a mock response handler for use in unit tests.
+	 *
+	 * @param phpbb_mock_openid_response $response_helper
+	 */
+	public function set_response_helper(phpbb_mock_openid_response $response_helper)
+	{
+		$this->response_helper = $response_helper;
 	}
 
 	/**
@@ -275,7 +287,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_abstract_provider
 		// Enable super globals so Zend Framework does not throw errors.
 		$this->request->enable_super_globals();
 
-		if (!$consumer->login($identifier, $return_to, $root, $extensions))
+		if (!$consumer->login($identifier, $return_to, $root, $extensions, $this->response_helper))
 		{
 			$this->request->disable_super_globals();
 			throw new phpbb_auth_exception($consumer->getError());
