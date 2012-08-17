@@ -281,6 +281,12 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			return false;
 		}
 
+		// When search query contains queries like -foo
+		if (strpos($this->search_query, '+') === false)
+		{
+			return false;
+		}
+
 		// generate a search_key from all the options to identify the results
 		$search_key = md5(implode('#', array(
 			implode(', ', $this->split_words),
