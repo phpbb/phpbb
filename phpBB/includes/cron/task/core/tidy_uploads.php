@@ -97,8 +97,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	/**
 	* Returns whether this cron task can run, given current board configuration.
 	*
-	* Tidy cache cron task runs if the cache implementation in use
-	* supports tidying.
+	* This cron runs only if the plupload subdirectory exists
 	*
 	* @return bool
 	*/
