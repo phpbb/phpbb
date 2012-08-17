@@ -4,7 +4,7 @@
 	"description": "An example/sample extension to be used for testing purposes in phpBB Development.",
 	"version": "1.0.0",
 	"time": "2012-02-15 01:01:01",
-	"licence": "GNU GPL v2",
+	"licence": "GPL-2.0",
 	"authors": [{
 			"name": "Nathan Guse",
 			"username": "EXreaction",

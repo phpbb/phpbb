@@ -60,7 +60,6 @@ class phpbb_extension_metadata_manager
 	 */
 	public function get_metadata($element = 'all')
 	{
-		// TODO: Check ext_name exists and is an extension that exists
 		$this->set_metadata_file();
 
 		// Fetch the metadata
@@ -339,7 +338,5 @@ class phpbb_extension_metadata_manager
 				'AUTHOR_ROLE'		=> (isset($author['role'])) ? htmlspecialchars($author['role']) : '',
 			));
 		}
-
-		return;
 	}
 }
