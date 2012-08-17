@@ -196,7 +196,7 @@ class acp_extensions
 			try
 			{
 				$this->template->assign_block_vars('enabled', array(
-					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
+					'META_DISPLAY_NAME'		=> $md_manager->get_metadata('display-name'),
 
 					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
 				));
@@ -209,7 +209,7 @@ class acp_extensions
 			catch(phpbb_extension_exception $e)
 			{
 				$this->template->assign_block_vars('disabled', array(
-					'EXT_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
+					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
 				));
 			}
 		}
@@ -230,7 +230,7 @@ class acp_extensions
 			try
 			{
 				$this->template->assign_block_vars('disabled', array(
-					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
+					'META_DISPLAY_NAME'		=> $md_manager->get_metadata('display-name'),
 
 					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
 				));
@@ -243,7 +243,7 @@ class acp_extensions
 			catch(phpbb_extension_exception $e)
 			{
 				$this->template->assign_block_vars('disabled', array(
-					'EXT_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
+					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
 				));
 			}
 		}
@@ -266,7 +266,7 @@ class acp_extensions
 			try
 			{
 				$this->template->assign_block_vars('disabled', array(
-					'EXT_NAME'		=> $md_manager->get_metadata('display-name'),
+					'META_DISPLAY_NAME'		=> $md_manager->get_metadata('display-name'),
 
 					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
 				));
@@ -278,7 +278,7 @@ class acp_extensions
 			catch(phpbb_extension_exception $e)
 			{
 				$this->template->assign_block_vars('disabled', array(
-					'EXT_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
+					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
 				));
 			}
 		}

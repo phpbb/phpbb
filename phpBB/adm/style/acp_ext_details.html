@@ -8,57 +8,57 @@
 
 	<fieldset>
 		<legend>{L_EXT_DETAILS}</legend>
-		<!-- IF MD_DISPLAY_NAME -->
+		<!-- IF META_DISPLAY_NAME -->
 		<dl>
-			<dt><label for="md_display_name">{L_DISPLAY_NAME}:</label></dt>
-			<dd><strong id="md_display_name">{MD_DISPLAY_NAME}</strong></dd>
+			<dt><label for="meta_display_name">{L_DISPLAY_NAME}:</label></dt>
+			<dd><strong id="meta_display_name">{META_DISPLAY_NAME}</strong></dd>
 		</dl>
 		<!-- ENDIF -->
 		<dl>
-			<dt><label for="md_name">{L_CLEAN_NAME}:</label></dt>
-			<dd><strong id="md_name">{MD_NAME}</strong></dd>
+			<dt><label for="meta_name">{L_CLEAN_NAME}:</label></dt>
+			<dd><strong id="meta_name">{META_NAME}</strong></dd>
 		</dl>
-		<!-- IF MD_DESCRIPTION -->
+		<!-- IF META_DESCRIPTION -->
 		<dl>
-			<dt><label for="md_description">{L_DESCRIPTION}:</label></dt>
-			<dd><p id="md_description">{MD_DESCRIPTION}</p></dd>
-		</dl>
-		<!-- ENDIF -->
-		<dl>
-			<dt><label for="md_version">{L_VERSION}:</label></dt>
-			<dd><p id="md_version">{MD_VERSION}</p></dd>
-		</dl>
-		<!-- IF MD_HOMEPAGE -->
-		<dl>
-			<dt><label for="md_homepage">{L_HOMEPAGE}:</label></dt>
-			<dd><p id="md_homepage">{MD_HOMEPAGE}</p></dd>
-		</dl>
-		<!-- ENDIF -->
-		<!-- IF MD_TIME -->
-		<dl>
-			<dt><label for="md_time">{L_TIME}:</label></dt>
-			<dd><p id="md_time">{MD_TIME}</p></dd>
+			<dt><label for="meta_description">{L_DESCRIPTION}:</label></dt>
+			<dd><p id="meta_description">{META_DESCRIPTION}</p></dd>
 		</dl>
 		<!-- ENDIF -->
 		<dl>
-			<dt><label for="md_license">{L_LICENCE}:</label></dt>
-			<dd><p id="md_license">{MD_LICENCE}</p></dd>
+			<dt><label for="meta_version">{L_VERSION}:</label></dt>
+			<dd><p id="meta_version">{META_VERSION}</p></dd>
+		</dl>
+		<!-- IF META_HOMEPAGE -->
+		<dl>
+			<dt><label for="meta_homepage">{L_HOMEPAGE}:</label></dt>
+			<dd><p id="meta_homepage">{META_HOMEPAGE}</p></dd>
+		</dl>
+		<!-- ENDIF -->
+		<!-- IF META_TIME -->
+		<dl>
+			<dt><label for="meta_time">{L_TIME}:</label></dt>
+			<dd><p id="meta_time">{META_TIME}</p></dd>
+		</dl>
+		<!-- ENDIF -->
+		<dl>
+			<dt><label for="meta_license">{L_LICENCE}:</label></dt>
+			<dd><p id="meta_license">{META_LICENCE}</p></dd>
 		</dl>
 	</fieldset>
 
-	<!-- IF MD_REQUIRE_PHPBB || MD_REQUIRE_PHP -->
+	<!-- IF META_REQUIRE_PHPBB || META_REQUIRE_PHP -->
 	<fieldset>
 		<legend>{L_REQUIREMENTS}</legend>
-		<!-- IF MD_REQUIRE_PHPBB -->
-		<dl<!-- IF MD_REQUIRE_PHPBB_FAIL --> class="requirements_not_met"<!-- ENDIF -->>
+		<!-- IF META_REQUIRE_PHPBB -->
+		<dl<!-- IF META_REQUIRE_PHPBB_FAIL --> class="requirements_not_met"<!-- ENDIF -->>
 			<dt><label for="require_phpbb">{L_PHPBB_VERSION}:</label></dt>
-			<dd><p id="require_phpbb">{MD_REQUIRE_PHPBB}</p></dd>
+			<dd><p id="require_phpbb">{META_REQUIRE_PHPBB}</p></dd>
 		</dl>
 		<!-- ENDIF -->
-		<!-- IF MD_REQUIRE_PHP -->
-		<dl<!-- IF MD_REQUIRE_PHP_FAIL --> class="requirements_not_met"<!-- ENDIF -->>
+		<!-- IF META_REQUIRE_PHP -->
+		<dl<!-- IF META_REQUIRE_PHP_FAIL --> class="requirements_not_met"<!-- ENDIF -->>
 			<dt><label for="require_php">{L_PHP_VERSION}:</label></dt>
-			<dd><p id="require_php">{MD_REQUIRE_PHP}</p></dd>
+			<dd><p id="require_php">{META_REQUIRE_PHP}</p></dd>
 		</dl>
 		<!-- ENDIF -->
 	</fieldset>
@@ -66,32 +66,32 @@
 
 	<fieldset>
 		<legend>{L_AUTHOR_INFORMATION}</legend>
-		<!-- BEGIN md_authors -->
+		<!-- BEGIN meta_authors -->
 		<fieldset>
 			<dl>
-				<dt><label for="md_author_name">{L_AUTHOR_NAME}:</label></dt>
-				<dd><strong id="md_author_name">{md_authors.AUTHOR_NAME}</strong></dd>
+				<dt><label for="meta_author_name">{L_AUTHOR_NAME}:</label></dt>
+				<dd><strong id="meta_author_name">{meta_authors.AUTHOR_NAME}</strong></dd>
 			</dl>
-			<!-- IF md_authors.AUTHOR_EMAIL -->
+			<!-- IF meta_authors.AUTHOR_EMAIL -->
 			<dl>
-				<dt><label for="md_author_email">{L_AUTHOR_EMAIL}:</label></dt>
-				<dd><strong id="md_author_email"><a href="mailto:{md_authors.AUTHOR_EMAIL}">{md_authors.AUTHOR_EMAIL}</a></strong></dd>
+				<dt><label for="meta_author_email">{L_AUTHOR_EMAIL}:</label></dt>
+				<dd><strong id="meta_author_email"><a href="mailto:{meta_authors.AUTHOR_EMAIL}">{meta_authors.AUTHOR_EMAIL}</a></strong></dd>
 			</dl>
 			<!-- ENDIF -->
-			<!-- IF md_authors.AUTHOR_HOMEPAGE -->
+			<!-- IF meta_authors.AUTHOR_HOMEPAGE -->
 			<dl>
-				<dt><label for="md_author_url">{L_AUTHOR_HOMEPAGE}:</label></dt>
-				<dd><strong id="md_author_url"><a href="{md_authors.AUTHOR_HOMEPAGE}">{md_authors.AUTHOR_HOMEPAGE}</a></strong></dd>
+				<dt><label for="meta_author_url">{L_AUTHOR_HOMEPAGE}:</label></dt>
+				<dd><strong id="meta_author_url"><a href="{meta_authors.AUTHOR_HOMEPAGE}">{meta_authors.AUTHOR_HOMEPAGE}</a></strong></dd>
 			</dl>
 			<!-- ENDIF -->
-			<!-- IF md_authors.AUTHOR_ROLE -->
+			<!-- IF meta_authors.AUTHOR_ROLE -->
 			<dl>
 				<dt><label for="author_role">{L_AUTHOR_ROLE}:</label></dt>
-				<dd><strong id="md_author_role">{md_authors.AUTHOR_ROLE}</strong></dd>
+				<dd><strong id="meta_author_role">{meta_authors.AUTHOR_ROLE}</strong></dd>
 			</dl>
 			<!-- ENDIF -->
 		</fieldset>
-		<!-- END md_authors -->
+		<!-- END meta_authors -->
 	</fieldset>
 
 <!-- INCLUDE overall_footer.html -->

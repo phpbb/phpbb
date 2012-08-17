@@ -313,26 +313,26 @@ class phpbb_extension_metadata_manager
 	public function output_template_data()
 	{
 		$this->template->assign_vars(array(
-			'MD_NAME'			=> htmlspecialchars($this->metadata['name']),
-			'MD_TYPE'			=> htmlspecialchars($this->metadata['type']),
-			'MD_DESCRIPTION'	=> (isset($this->metadata['description'])) ? htmlspecialchars($this->metadata['description']) : '',
-			'MD_HOMEPAGE'		=> (isset($this->metadata['homepage'])) ? $this->metadata['homepage'] : '',
-			'MD_VERSION'		=> (isset($this->metadata['version'])) ? htmlspecialchars($this->metadata['version']) : '',
-			'MD_TIME'			=> (isset($this->metadata['time'])) ? htmlspecialchars($this->metadata['time']) : '',
-			'MD_LICENCE'		=> htmlspecialchars($this->metadata['licence']),
+			'META_NAME'			=> htmlspecialchars($this->metadata['name']),
+			'META_TYPE'			=> htmlspecialchars($this->metadata['type']),
+			'META_DESCRIPTION'	=> (isset($this->metadata['description'])) ? htmlspecialchars($this->metadata['description']) : '',
+			'META_HOMEPAGE'		=> (isset($this->metadata['homepage'])) ? $this->metadata['homepage'] : '',
+			'META_VERSION'		=> (isset($this->metadata['version'])) ? htmlspecialchars($this->metadata['version']) : '',
+			'META_TIME'			=> (isset($this->metadata['time'])) ? htmlspecialchars($this->metadata['time']) : '',
+			'META_LICENCE'		=> htmlspecialchars($this->metadata['licence']),
 
-			'MD_REQUIRE_PHP'		=> (isset($this->metadata['require']['php'])) ? htmlspecialchars($this->metadata['require']['php']) : '',
-			'MD_REQUIRE_PHP_FAIL'	=> !$this->validate_require_php(),
+			'META_REQUIRE_PHP'		=> (isset($this->metadata['require']['php'])) ? htmlspecialchars($this->metadata['require']['php']) : '',
+			'META_REQUIRE_PHP_FAIL'	=> !$this->validate_require_php(),
 
-			'MD_REQUIRE_PHPBB'		=> (isset($this->metadata['require']['phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb']) : '',
-			'MD_REQUIRE_PHPBB_FAIL'	=> !$this->validate_require_phpbb(),
+			'META_REQUIRE_PHPBB'		=> (isset($this->metadata['require']['phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb']) : '',
+			'META_REQUIRE_PHPBB_FAIL'	=> !$this->validate_require_phpbb(),
 
-			'MD_DISPLAY_NAME'	=> (isset($this->metadata['extra']['display-name'])) ? htmlspecialchars($this->metadata['extra']['display-name']) : '',
+			'META_DISPLAY_NAME'	=> (isset($this->metadata['extra']['display-name'])) ? htmlspecialchars($this->metadata['extra']['display-name']) : '',
 		));
 
 		foreach ($this->metadata['authors'] as $author)
 		{
-			$this->template->assign_block_vars('md_authors', array(
+			$this->template->assign_block_vars('meta_authors', array(
 				'AUTHOR_NAME'		=> htmlspecialchars($author['name']),
 				'AUTHOR_EMAIL'		=> (isset($author['email'])) ? $author['email'] : '',
 				'AUTHOR_HOMEPAGE'	=> (isset($author['homepage'])) ? $author['homepage'] : '',
