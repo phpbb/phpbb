@@ -1606,7 +1606,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			);
 		}
 
-		$methods = phpbb_gen_download_links('post_id', $row['post_id'], $phpbb_root_path, $phpEx);
+		$methods = phpbb_gen_download_links('post_msg_id', $row['post_id'], $phpbb_root_path, $phpEx);
 		foreach ($methods as $method)
 		{
 			$template->assign_block_vars('postrow.dl_method', $method);

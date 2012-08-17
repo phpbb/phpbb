@@ -135,7 +135,7 @@ require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 
 $download_id = request_var('id', 0);
 $topic_id = $request->variable('topic_id', 0);
-$post_id = $request->variable('post_id', 0);
+$post_msg_id = $request->variable('post_msg_id', 0);
 $archive = $request->variable('archive', '.tar');
 $mode = request_var('mode', '');
 $thumbnail = request_var('t', false);
@@ -156,10 +156,10 @@ if ($download_id)
 	// Attachment id (only 1 attachment)
 	$sql_where = "attach_id = $download_id";
 }
-else if ($post_id)
+else if ($post_msg_id)
 {
 	// Post id or private message id (multiple attachments)
-	$sql_where = "post_msg_id = $post_id AND is_orphan = 0";
+	$sql_where = "post_msg_id = $post_msg_id AND is_orphan = 0";
 }
 else if ($topic_id)
 {
@@ -319,19 +319,19 @@ else
 		$archive = '.tar';
 	}
 
-	if ($post_id)
+	if ($post_msg_id)
 	{
 		if ($attachment['in_message'])
 		{
 			$sql = 'SELECT message_subject AS attach_subject
 				FROM ' . PRIVMSGS_TABLE . "
-				WHERE msg_id = $post_id";
+				WHERE msg_id = $post_msg_id";
 		}
 		else
 		{
 			$sql = 'SELECT post_subject AS attach_subject, forum_id
 				FROM ' . POSTS_TABLE . "
-				WHERE post_id = $post_id";
+				WHERE post_id = $post_msg_id";
 		}
 	}
 	else
@@ -352,7 +352,7 @@ else
 	}
 
 	$clean_name = phpbb_download_clean_filename($row['attach_subject']);
-	$suffix = '_' . (($post_id) ? $post_id : $topic_id) . '_' . $clean_name;
+	$suffix = '_' . (($post_msg_id) ? $post_msg_id : $topic_id) . '_' . $clean_name;
 	$archive_name = 'attachments' . $suffix;
 
 	$store_name = 'att_' . time() . '_' . unique_id();
