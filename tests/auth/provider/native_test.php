@@ -14,19 +14,26 @@ class phpbb_auth_provider_native_test extends phpbb_database_test_case
 
 	protected function setUp()
 	{
-		global $db;
+		parent::setUp();
+
+		global $db, $user;
 		$this->db = $db = $this->new_dbal();
 		$this->config = new phpbb_config(array(
 			'auth_provider_native_enabled'	=> true,
 			'auth_provider_native_admin'	=> true,
+
+			'min_pass_chars'	=> 1,
+			'max_pass_chars'	=> 64,
+
+			'pass_complex'	=> 'PASS_TYPE_ANY',
 		));
-		$this->user = new phpbb_user();
+		$this->user = $user = new phpbb_user();
 	}
 
 	public function getDataSet()
-    {
-        return $this->createXMLDataSet(dirname(__FILE__).'/native_provider_user.xml');
-    }
+	{
+		return $this->createXMLDataSet(dirname(__FILE__).'/native_provider_user.xml');
+	}
 
 	public function test_registration()
 	{
@@ -45,8 +52,8 @@ class phpbb_auth_provider_native_test extends phpbb_database_test_case
 		$native_provider->process();
 
 		$sql = 'SELECT username, user_password, user_email, user_timezone
-				FROM ' . USERS_TABLE . '
-				WHERE username = `phpbb_test_user`';
+				FROM ' . USERS_TABLE . "
+				WHERE username = 'phpbb_test_registration_user'";
 		$result = $this->db->query($sql);
 		$row = $this->db->fetchrow($result);
 		$this->db->sql_freeresult($result);

@@ -34,10 +34,10 @@ class phpbb_auth_captcha
 	 * @global string $phpbb_root_path
 	 * @global string $phpEx
 	 * @param dbal $db
-	 * @param phpbb_config_db $config
+	 * @param phpbb_config $config
 	 * @param phpbb_user $user
 	 */
-	public function __construct(dbal $db, phpbb_config_db $config, phpbb_user $user)
+	public function __construct(dbal $db, phpbb_config $config, phpbb_user $user)
 	{
 		$this->db = $db;
 		$this->config = $config;
