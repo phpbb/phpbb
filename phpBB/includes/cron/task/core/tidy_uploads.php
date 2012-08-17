@@ -33,8 +33,8 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	const CRON_FREQUENCY = 86400;
 
 	/**
-	* Config array
-	* @var array
+	* Config object
+	* @var phpbb_config
 	*/
 	protected $config;
 
