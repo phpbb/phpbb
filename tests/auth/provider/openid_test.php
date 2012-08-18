@@ -35,7 +35,7 @@ class phpbb_auth_provider_openid_test extends phpbb_database_test_case
 
 	public function getDataSet()
     {
-        return $this->createXMLDataSet(dirname(__FILE__).'/openid_provider_user.xml');
+        return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/openid_test.xml');
     }
 
 	public function test_login()
