@@ -1338,7 +1338,7 @@ class acp_forums
 		*							language key.
 		* @since 3.1-A1
 		*/
-		$vars = array('forum_data', 'forum_data_sql' 'is_new_forum', 'errors');
+		$vars = array('forum_data', 'forum_data_sql', 'is_new_forum', 'errors');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_after', compact($vars)));
 
 		return $errors;
