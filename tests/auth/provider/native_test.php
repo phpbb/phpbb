@@ -16,18 +16,30 @@ class phpbb_auth_provider_native_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $db, $user;
+		global $db, $user, $config;
 		$this->db = $db = $this->new_dbal();
-		$this->config = new phpbb_config(array(
+
+		$config = new phpbb_config(array(
+			'allow_emailreuse'				=> true,
 			'auth_provider_native_enabled'	=> true,
 			'auth_provider_native_admin'	=> true,
+
+			'email_check_mx'	=> false,
 
 			'min_pass_chars'	=> 1,
 			'max_pass_chars'	=> 64,
 
 			'pass_complex'	=> 'PASS_TYPE_ANY',
+
+			'rand_seed'				=> '',
+			'rand_seed_last_update' => time() + 600,
 		));
-		$this->user = $user = new phpbb_user();
+		$this->config = $config;
+
+		$user = new phpbb_user();
+		$user->lang = new phpbb_mock_lang();
+		$this->user = $user;
+		$this->user->data['user_email'] = '';
 	}
 
 	public function getDataSet()
@@ -67,6 +79,8 @@ class phpbb_auth_provider_native_test extends phpbb_database_test_case
 
 	public function test_login()
 	{
+		global $phpbb_extension_manager, $phpbb_root_path, $request;
+		$phpbb_extension_manager = new phpbb_mock_extension_manager($phpbb_root_path);
 		$post = array(
 			'auth_action'		=> 'login',
 			'username'			=> 'phpbb_test_user',
