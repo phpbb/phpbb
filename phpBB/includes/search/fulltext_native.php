@@ -41,8 +41,8 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	public $search_query;
 
 	/**
-	 * Contains common words
-	 * common words are words with length less/more than min/max length
+	 * Contains common words.
+	 * Common words are words with length less/more than min/max length
 	 * @var array
 	 */
 	public $common_words = array();

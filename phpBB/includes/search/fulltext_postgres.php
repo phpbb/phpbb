@@ -53,7 +53,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	protected $tsearch_query;
 
 	/**
-	 * True if phrase search is supported
+	 * True if phrase search is supported.
 	 * PostgreSQL fulltext currently doesn't support it
 	 * @var boolean
 	 */
@@ -84,8 +84,8 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	public $search_query;
 
 	/**
-	 * Contains common words
-	 * common words are words with length less/more than min/max length
+	 * Contains common words.
+	 * Common words are words with length less/more than min/max length
 	 * @var array
 	 */
 	public $common_words = array();
