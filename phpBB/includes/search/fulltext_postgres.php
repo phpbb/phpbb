@@ -29,7 +29,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	protected $stats = array();
 
 	/**
-	 * Holds the words entered by user splitted in array
+	 * Holds the words entered by user, obtained by splitting the entered query on whitespace
 	 * @var array
 	 */
 	protected $split_words = array();
