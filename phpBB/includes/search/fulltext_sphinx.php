@@ -54,7 +54,7 @@ class phpbb_search_fulltext_sphinx
 	protected $indexes;
 
 	/**
-	 * Sphinx searchd client class object
+	 * Sphinx searchd client object
 	 * @var SphinxClient
 	 */
 	protected $sphinx;
@@ -72,25 +72,25 @@ class phpbb_search_fulltext_sphinx
 	protected $php_ext;
 
 	/**
-	 * Auth class object
+	 * Auth object
 	 * @var phpbb_auth
 	 */
 	protected $auth;
 
 	/**
-	 * Config class object
+	 * Config object
 	 * @var phpbb_config
 	 */
 	protected $config;
 
 	/**
-	 * DBAL class object
+	 * DBAL object
 	 * @var dbal
 	 */
 	protected $db;
 
 	/**
-	 * Database Tools class object
+	 * Database Tools object
 	 * @var phpbb_db_tools
 	 */
 	protected $db_tools;
@@ -102,7 +102,7 @@ class phpbb_search_fulltext_sphinx
 	protected $dbtype;
 
 	/**
-	 * User class object
+	 * User object
 	 * @var phpbb_user
 	 */
 	protected $user;

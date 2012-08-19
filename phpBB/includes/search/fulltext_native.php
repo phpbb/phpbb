@@ -78,19 +78,19 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	protected $php_ext;
 
 	/**
-	 * Config class object
+	 * Config object
 	 * @var phpbb_config
 	 */
 	protected $config;
 
 	/**
-	 * DBAL class object
+	 * DBAL object
 	 * @var dbal
 	 */
 	protected $db;
 
 	/**
-	 * User class object
+	 * User object
 	 * @var phpbb_user
 	 */
 	protected $user;
