@@ -1,4 +1,4 @@
-[![phpBB](http://www.phpbb.com/theme/images/logos/blue/160x52.png)](http://www.phpbb.com)
+[![phpBB](https://www.phpbb.com/theme/images/logos/blue/160x52.png)](http://www.phpbb.com)
 
 ## ABOUT
 
