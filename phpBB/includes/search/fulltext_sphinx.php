@@ -48,7 +48,7 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	 * Stores the names of both main and delta sphinx indexes
-	 * seperated by a semicolon
+	 * separated by a semicolon
 	 * @var string
 	 */
 	protected $indexes;
