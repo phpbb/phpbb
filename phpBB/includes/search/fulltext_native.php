@@ -35,7 +35,8 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	public $word_length = array();
 
 	/**
-	 * Contains tidied search query
+	 * Contains tidied search query.
+	 * Operators are prefixed in search query and common words excluded
 	 * @var string
 	 */
 	public $search_query;

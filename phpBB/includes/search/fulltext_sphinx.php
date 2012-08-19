@@ -114,7 +114,8 @@ class phpbb_search_fulltext_sphinx
 	protected $config_file_data = '';
 
 	/**
-	 * Contains tidied search query
+	 * Contains tidied search query.
+	 * Operators are prefixed in search query and common words excluded
 	 * @var string
 	 */
 	public $search_query;

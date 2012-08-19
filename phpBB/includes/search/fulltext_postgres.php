@@ -78,7 +78,8 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	protected $user;
 
 	/**
-	 * Contains tidied search query
+	 * Contains tidied search query.
+	 * Operators are prefixed in search query and common words excluded
 	 * @var string
 	 */
 	public $search_query;
