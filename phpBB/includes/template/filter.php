@@ -363,6 +363,7 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Parse paths of the form {FOO}/a/{BAR}/b
+	*
 	* Note: this method assumes at least one variable in the path, this should
 	* be checked before this method is called.
 	*
