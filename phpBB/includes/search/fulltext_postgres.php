@@ -91,7 +91,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	public $common_words = array();
 
 	/**
-	 * Associative array stores the min and max length
+	 * Associative array stores the min and max word length to be searched
 	 * @var array
 	 */
 	public $word_length = array();

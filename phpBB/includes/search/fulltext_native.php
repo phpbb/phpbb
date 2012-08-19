@@ -29,7 +29,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	protected $stats = array();
 
 	/**
-	 * Associative array stores the min and max length
+	 * Associative array stores the min and max word length to be searched
 	 * @var array
 	 */
 	public $word_length = array();

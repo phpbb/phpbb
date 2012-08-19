@@ -53,7 +53,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	protected $user;
 
 	/**
-	 * Associative array stores the min and max length
+	 * Associative array stores the min and max word length to be searched
 	 * @var array
 	 */
 	public $word_length = array();
