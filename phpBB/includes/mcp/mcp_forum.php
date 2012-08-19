@@ -22,7 +22,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 {
 	global $template, $db, $user, $auth, $cache, $module;
 	global $phpEx, $phpbb_root_path, $config;
-	global $request;
+	global $request, $phpbb_dispatcher;
 
 	$user->add_lang(array('viewtopic', 'viewforum'));
 
@@ -287,6 +287,17 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 				'S_TOPIC_CHECKED'	=> ($topic_id_list && in_array($row['topic_id'], $topic_id_list)) ? true : false,
 			));
 		}
+
+		/**
+		* Modify the topic data before it is assigned to the template in MCP
+		*
+		* @event core.mcp_view_forum_modify_topicrow
+		* @var	array	row			Array with topic data
+		* @var	array	topic_row	Template array with topic data
+		* @since 3.1-A1
+		*/
+		$vars = array('row', 'topic_row');
+		extract($phpbb_dispatcher->trigger_event('core.mcp_view_forum_modify_topicrow', compact($vars)));
 
 		$template->assign_block_vars('topicrow', $topic_row);
 	}

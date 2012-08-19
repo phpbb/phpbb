@@ -25,7 +25,7 @@ class acp_forums
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $request;
+		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		$user->add_lang('acp/forums');
@@ -149,6 +149,9 @@ class acp_forums
 						'forum_password_confirm'=> request_var('forum_password_confirm', '', true),
 						'forum_password_unset'	=> request_var('forum_password_unset', false),
 					);
+
+					$vars = array('action', 'forum_data');
+					extract($phpbb_dispatcher->trigger_event('core.acp_forums_request_forum_data', compact($vars)));
 
 					// On add, add empty forum_options... else do not consider it (not updating it)
 					if ($action == 'add')
@@ -413,6 +416,9 @@ class acp_forums
 					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, false, false, false);
 
 					$forum_data['forum_password_confirm'] = $forum_data['forum_password'];
+
+					$vars = array('forum_id', 'row', 'forum_data');
+					extract($phpbb_dispatcher->trigger_event('core.acp_forums_modify_forum_data', compact($vars)));
 				}
 				else
 				{
@@ -450,6 +456,9 @@ class acp_forums
 							'forum_password'		=> '',
 							'forum_password_confirm'=> '',
 						);
+
+						$vars = array('forum_id', 'forum_data');
+						extract($phpbb_dispatcher->trigger_event('core.acp_forums_init_forum_data', compact($vars)));
 					}
 				}
 
@@ -582,7 +591,7 @@ class acp_forums
 					$errors[] = $user->lang['FORUM_PASSWORD_OLD'];
 				}
 
-				$template->assign_vars(array(
+				$template_data = array(
 					'S_EDIT_FORUM'		=> true,
 					'S_ERROR'			=> (sizeof($errors)) ? true : false,
 					'S_PARENT_ID'		=> $this->parent_id,
@@ -647,7 +656,12 @@ class acp_forums
 					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
 					'S_ENABLE_QUICK_REPLY'		=> ($forum_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) ? true : false,
 					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))) ? true : false,
-				));
+				);
+
+				$vars = array('forum_id', 'action', 'forum_data', 'template_data', 'old_forum_type', 'forum_desc_data', 'forum_rules_data');
+				extract($phpbb_dispatcher->trigger_event('core.acp_forums_assign_template_forum_data', compact($vars)));
+
+				$template->assign_vars($template_data);
 
 				return;
 
@@ -872,9 +886,12 @@ class acp_forums
 	*/
 	function update_forum_data(&$forum_data)
 	{
-		global $db, $user, $cache, $phpbb_root_path;
+		global $db, $user, $cache, $phpbb_root_path, $phpbb_dispatcher;
 
 		$errors = array();
+
+		$vars = array('forum_data', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_forums_update_forum_data', compact($vars)));
 
 		if ($forum_data['forum_name'] == '')
 		{
@@ -1239,6 +1256,9 @@ class acp_forums
 			add_log('admin', 'LOG_FORUM_EDIT', $forum_data['forum_name']);
 		}
 
+		$vars = array('forum_data', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_forums_update_forum_data_after', compact($vars)));
+
 		return $errors;
 	}
 
@@ -1247,9 +1267,12 @@ class acp_forums
 	*/
 	function move_forum($from_id, $to_id)
 	{
-		global $db, $user;
+		global $db, $user, $phpbb_dispatcher;
 
 		$to_data = $moved_ids = $errors = array();
+
+		$vars = array('from_id', 'to_id');
+		extract($phpbb_dispatcher->trigger_event('core.acp_forums_move_forum', compact($vars)));
 
 		// Check if we want to move to a parent with link type
 		if ($to_id > 0)
