@@ -500,7 +500,7 @@ class phpbb_search_fulltext_sphinx
 			}
 			else
 			{
-				trigger_error($this->user->lang('SPHINX_SEARCH_FAILED', $this->user->lang('SPHINX_SEARCH_ERROR_LOG')));
+				trigger_error($this->user->lang('SPHINX_SEARCH_FAILED_LOG'));
 			}
 		}
 
