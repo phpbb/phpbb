@@ -338,7 +338,7 @@ while ($row = $db->sql_fetchrow($result))
 	}
 
 	/**
-	* Overwrite the location name and URL, which are displayed in the list
+	* Overwrite the location's name and URL, which are displayed in the list
 	*
 	* @event core.viewonline_overwrite_location
 	* @var	array	on_page			File name and query string
