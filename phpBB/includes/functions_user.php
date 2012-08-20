@@ -3512,7 +3512,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	}
 
 	/**
-	* Event when the default group is set for an array of user
+	* Event when the default group is set for an array of users
 	*
 	* @event core.user_set_default_group
 	* @var	int		group_id			ID of the group
