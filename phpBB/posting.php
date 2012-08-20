@@ -39,6 +39,19 @@ $delete		= (isset($_POST['delete'])) ? true : false;
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
 $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load || $preview) ? true : false;
+
+/**
+* This event allows you to alter the $refresh boolean variable.
+* 
+* If $refresh is true the posting form retains previously submitted form data
+*
+* @event core.posting_refresh
+* @var	bool	refresh		Whether or not to retain previously submitted data
+* @since 3.1-A1
+*/
+$vars = array('refresh');
+extract($phpbb_dispatcher->trigger_event('core.posting_refresh', compact($vars)));
+
 $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var('mode', '');
 
 $error = $post_data = array();
