@@ -392,7 +392,7 @@ else
 
 	$compress->close();
 
-	if ($files_added > 0)
+	if ($files_added)
 	{
 		phpbb_increment_downloads($db, $attachment_ids);
 		$compress->download($store_name, $archive_name);
@@ -400,7 +400,7 @@ else
 
 	unlink($archive_path);
 
-	if ($files_added < 1)
+	if (!$files_added)
 	{
 		// None of the attachments had a valid extension
 		$disallowed = implode($user->lang['COMMA_SEPARATOR'], $disallowed);
