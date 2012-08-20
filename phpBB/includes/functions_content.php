@@ -1175,6 +1175,7 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false, $custom_profile_url = false)
 {
 	static $_profile_cache;
+	global $phpbb_dispatcher;
 
 	// We cache some common variables we need within this function
 	if (empty($_profile_cache))
@@ -1252,10 +1253,34 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 
 	if (($mode == 'full' && !$profile_url) || $mode == 'no_profile')
 	{
-		return str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_noprofile'] : $_profile_cache['tpl_noprofile_colour']);
+		$username_string = str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_noprofile'] : $_profile_cache['tpl_noprofile_colour']);
 	}
+	else
+	{
+		$username_string = str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_profile'] : $_profile_cache['tpl_profile_colour']);
+	}
+	
+	/**
+	* Use this event to change the output of get_username_string()
+	*
+	* @event core.alter_username_string
+	* @var string mode				profile|username|colour|full|no_profile
+	* @var int user_id				String or array of additional url
+	*								parameters
+	* @var string username			The user's username
+	* @var string username_colour	Is url using &amp; (true) or
+	*								& (false)
+	* @var string guest_username	optional parameter to specify the
+	*								guest username.
+	* @var string custom_profile_url Optional parameter to specify a
+	*								profile url.
+	* @var string username_string	The string that has been generated
+	* @since 3.1-A1
+	*/
+	$vars = array('mode', 'user_id', 'username', 'username_colour', 'guest_username', 'custom_profile_url', 'username_string');
+	extract($phpbb_dispatcher->trigger_event('core.alter_username_string', compact($vars)));
 
-	return str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_profile'] : $_profile_cache['tpl_profile_colour']);
+	return $username_string;
 }
 
 /**
