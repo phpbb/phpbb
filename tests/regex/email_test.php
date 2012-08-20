@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -28,6 +28,8 @@ class phpbb_regex_email_test extends phpbb_test_case
 			array('alice_foo@bar.phpbb.com'),
 			array('alice+tag@foo.phpbb.com'),
 			array('alice&amp;tag@foo.phpbb.com'),
+			array('alice@phpbb.australia'),
+			array('alice@phpbb.topZlevelZdomainZnamesZcanZbeZupZtoZsixtyZthreeZcharactersZlong'),
 
 			//array('"John Doe"@example.com'),
 			//array('Alice@[192.168.2.1]'),		// IPv4
@@ -96,6 +98,7 @@ class phpbb_regex_email_test extends phpbb_test_case
 			array('! "#$%(),/;<>[]`|@invalidCharsInLocal.org'),
 			array('invalidCharsInDomain@! "#$%(),/;<>_[]`|.org'),
 			array('local@SecondLevelDomainNamesAreInvalidIfTheyAreLongerThan64Charactersss.org'),
+			array('alice@phpbb.topZlevelZdomainZnamesZcanZbeZupZtoZsixtyZthreeZcharactersZlongZ'),
 		);
 	}
 

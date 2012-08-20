@@ -54,7 +54,7 @@
 				<li><a href="#install">Installing phpBB3</a></li>
 				<li><a href="#run">Running phpBB3</a>
 				<ol style="list-style-type: lower-roman;">
-					<li><a href="#i18n">Internationalisation (i18n)</a></li>
+					<li><a href="#i18n">Languages (Internationalisation - i18n)</a></li>
 					<li><a href="#styles">Styles</a></li>
 					<li><a href="#mods">Modifications</a></li>
 				</ol>
@@ -62,8 +62,9 @@
 				<li><a href="#help">Getting help with phpBB3</a>
 				<ol style="list-style-type: lower-roman;">
 					<li><a href="#docs">Documentation</a></li>
+					<li><a href="#kb">Knowledge Base</a></li>
 					<li><a href="#website">Community Forums</a></li>
-					<li><a href="#irc">Internet Relay Chat</a></li>
+					<li><a href="#irc">Internet Relay Chat (IRC)</a></li>
 				</ol>
 				</li>
 				<li><a href="#status">Status of this version</a></li>
@@ -106,6 +107,7 @@
 
 	<ul>
 		<li>Updates from phpBB3 RC1 to the latest version</li>
+		<li>Note: if using the <em>Automatic Update Package</em>, updates are supported from phpBB 3.0.2 onward. To update a pre-3.0.2 installation, first update to 3.0.2 and then update to the current version.</li>
 		<li>Conversions from phpBB 2.0.x to the latest version</li>
 		<li>New installations of phpBB3 - always only the latest released version</li>
 	</ul>
@@ -126,41 +128,41 @@
 
 		<div class="content">
 
-	<p>Once installed phpBB is easily managed by both admin and moderator control panels. If you need help or advice with phpBB please see <a href="#help">Section 3</a> below.</p>
+	<p>Once installed, phpBB is easily managed via the Administration and Moderator Control Panels. If you need help or advice with phpBB, please see <a href="#help">Section 3</a> below.</p>
 
-	<a name="i18n"></a><h3>2.i. Internationalisation (i18n)</h3>
+	<a name="i18n"></a><h3>2.i. Languages (Internationalisation - i18n)</h3>
 
-	<p>A number of language packs and style localisations are available. You can find them on our official download page:</p>
+	<p>A number of language packs with included style localisations are available. You can find them listed in the <a href="http://www.phpbb.com/languages/">Language Packs</a> pages of our downloads section or from the <a href="http://www.phpbb.com/customise/db/language_packs-25/">Language Packs</a> section of the <a href="http://www.phpbb.com/customise/db/">Customisation Database</a>.</p>
 
-	<p><a href="http://www.phpbb.com/downloads/">http://www.phpbb.com/downloads/</a></p>
+	<p>For more information about language packs, please see: <a href="http://www.phpbb.com/languages/">http://www.phpbb.com/languages/</a></p>
 
 	<p>This is the <em>official</em> location for all supported language sets. If you download a package from a 3rd party site you do so with the understanding that we cannot offer support. So please, do not ask for help in these cases!</p>
 
-	<p>Installation of these packages is straightforward, simply download the required language pack and unarchive it into the <samp>languages/</samp> folder. Please ensure you retain the directory structure when doing this! Once uploaded go to the <code>Admin-&gt;System-&gt;Language Packs</code> and install the now appeared new language pack. To install the style imageset you should download the imageset for your language and unarchive the file/s into the relevant imageset directory (styles/prosilver/imageset or styles/subsilver2/imageset), again you must retain the directory structure. Once installed the imageset will become immediately available.</p>
+	<p>Installation of these packages is straightforward: simply download the required language pack, uncompress (unzip) it and via FTP transfer the included <code>language</code> and <code>styles</code> folders to the root of your board installation. The language can then be installed via the Administration Control Panel of your board: <code>System tab -&gt; General Tasks -&gt; Language packs</code>. A more detailed description of the process is in the Knowledge Base article, <a href="http://www.phpbb.com/kb/article/how-to-install-a-language-pack/">How to Install a Language Pack</a>.</p>
 
-	<p>If your language is not available please visit our forums where you will find a topic listing translations currently available or in preparation. This topic also gives you information should you wish to volunteer to translate a language not currently listed.</p>
+	<p>If your language is not available, please visit our <a href="http://www.phpbb.com/community/viewforum.php?f=66">[3.0.x] Translations</a> forum where you will find topics on translations in progress. Should you wish to volunteer to translate a language not currently available or assist in maintaining an existing language pack, you can <a href="http://www.phpbb.com/languages/apply.php">Apply to become a translator</a>.</p>
 
 	<a name="styles"></a><h3>2.ii. Styles</h3>
 
-	<p>Although phpBB Group are rather proud of the included styles we realise that it may not be to everyones tastes. Therefore phpBB3 allows styles to be switched with relative ease. Firstly you need to locate and download a style you like. We maintain such a site at</p>
+	<p>Although the phpBB Group is rather proud of the included styles, we realise that they may not be to everyone's taste. Therefore, phpBB3 allows styles to be switched with relative ease. First, you need to locate and download a style you like. You can find them listed in the <a href="http://www.phpbb.com/customise/db/styles-2/">Styles</a> section of our <a href="http://www.phpbb.com/customise/db/">Customisation Database</a>.</p>
 
-	<p><a href="http://www.phpbb.com/styles/">http://www.phpbb.com/styles/</a></p>
+	<p>For more information about styles, please see: <a href="http://www.phpbb.com/styles/">http://www.phpbb.com/styles/</a></p>
 
-	<p><strong>Please note</strong> that 3rd party styles downloaded for versions of phpBB2 will <strong>not</strong> work in phpBB3.</p>
+	<p><strong>Please note</strong> that 3rd party styles downloaded for versions of phpBB2 will <strong>not</strong> work in phpBB3. It is also important to ensure that the style is updated to match the current version of the phpBB software you are using.</p>
 
-	<p>Once you have downloaded a style the usual next step is to unarchive (or upload the unarchived contents of) the package into your <samp>styles/</samp> directory. You then need to visit <code>Administration -&gt; Styles</code>, you should see the new style available, click install and it will become available for all your users.</p>
+	<p>Once you have downloaded a style, the usual next step is to unarchive (or upload the unarchived contents of) the package into your <code>styles/</code> directory. You then need to visit <code>Administration Control Panel -&gt; Styles tab</code> where you should see the new style available. Click &quot;Install&quot; to install the style.</p>
 
-	<p><strong>Please note</strong> that if you create your own style or modify existing ones, please remember to enable the &quot;Recompile stale style components&quot; setting within the <code>Admin-&gt;General-&gt;Load Settings</code> screen. This setting allows the cache to detect changes made to the style and automatically refresh it. If this setting is disabled, you will not see your changes taking effect.</p>
+	<p><strong>Please note</strong> that to improve efficiency, the software caches certain data. For this reason, if you create your own style or modify existing ones, please remember to &quot;Refresh&quot; the appropriate style components <code>Administration Control Panel -&gt; Styles tab -&gt; Style Components</code> screen. You may also need to reload the page you have changed in your web browser to overcome browser caching. If the changed components are not refreshed you will not see your changes taking effect.</p>
 
 	<a name="mods"></a><h3>2.iii. Modifications</h3>
 
-	<p>Although not officially supported by phpBB Group, phpBB has a thriving modification scene. These third party modifications to the standard phpBB extend its capabilities still further and can be found at:</p>
+	<p>Although not officially supported by the phpBB Group, phpBB has a thriving modification scene. These third party modifications to the standard phpBB software, known as <strong>MODs</strong>, extend its capabilities still further. You can browse through many of the MODs in the <a href="http://www.phpbb.com/customise/db/modifications-1/">Modifications</a> section of our <a href="http://www.phpbb.com/customise/db/">Customisation Database</a>.</p>
 
-	<p><a href="http://www.phpbb.com/mods/">http://www.phpbb.com/mods/</a></p>
+	<p>For more information about MODs, please see: <a href="http://www.phpbb.com/mods/">http://www.phpbb.com/mods/</a></p>
 
-	<p><strong>Please remember</strong> that any bugs or other issues that occur after you have added any modification should <strong>NOT</strong> be reported to the bug tracker (see below). First remove the modification and see if the problem is resolved.</p>
+	<p><strong>Please remember</strong> that any bugs or other issues that occur after you have added any modification should <strong>NOT</strong> be reported to the bug tracker (see below). First remove the MOD and see if the problem is resolved. Any support for a MOD should only be sought in the &quot;Discussion/Support&quot; forum for that MOD.</p>
 
-	<p>Also remember that any modifications which modify the database in any way may render upgrading your forum to future versions more difficult unless we state otherwise. With all this said many users have and continue to utilise many of the mods already available with great success.</p>
+	<p>Also remember that any modifications, particularly those which modify the database in any way, may render upgrading your forum to future versions more difficult. With all this said, many users have and continue to utilise many of the MODs already available with great success.</p>
 
 		</div>
 
@@ -188,17 +190,25 @@
 
 	<p>This covers everything from installation through setting permissions and managing users.</p>
 
-	<a name="website"></a><h3>3.ii. Community Forums</h3>
+	<a name="kb"></a><h3>3.ii. Knowledge Base</h3>
 
-	<p>phpBB Group maintains a thriving community where a number of people have generously decided to donate their time to help support users. This site can be found at:</p>
+	<p>The Knowledge Base consists of a number of detailed articles on some common issues phpBB users may encounter while using the product. The Knowledge Base can be found at:</p>
 
-	<p><a href="http://www.phpbb.com/">http://www.phpbb.com/</a></p>
+	<p><a href="http://www.phpbb.com/kb/">http://www.phpbb.com/kb/</a></p>
+
+	<a name="website"></a><h3>3.iii. Community Forums</h3>
+
+	<p>The phpBB Group maintains a thriving community where a number of people have generously decided to donate their time to help support users. This site can be found at:</p>
+
+	<p><a href="http://www.phpbb.com/community/">http://www.phpbb.com/community/</a></p>
 
 	<p>If you do seek help via our forums please be sure to do a Search before posting. This may well save both you and us time and allow the developer, moderator and support groups to spend more time responding to people with unknown issues and problems. Please also remember that phpBB is an entirely volunteer effort, no one receives any compensation for the time they give, this includes moderators as well as developers. So please be respectful and mindful when awaiting responses.</p>
 
-	<a name="irc"></a><h3>3.iii Internet Relay Chat</h3>
+	<a name="irc"></a><h3>3.iv Internet Relay Chat</h3>
 
-	<p>Another place you may find help is our IRC channel. This operates on the Freenode IRC network, <em>irc.freenode.net</em> and the channel is <em>#phpbb</em> and can be accessed by any good IRC client such as mIRC, XChat, etc. Again, please do not abuse this service and be respectful of other users.</p>
+	<p>Another place you may find help is our IRC channel. This operates on the Freenode IRC network, <a href="irc://irc.freenode.net">irc.freenode.net</a> and the channel is <em>#phpbb</em> and can be accessed by any decent IRC client such as mIRC, XChat, etc. Again, please do not abuse this service and be respectful of other users.</p>
+
+	<p>There are other IRC channels available, please see <a href="http://www.phpbb.com/support/irc/">http://www.phpbb.com/support/irc/</a> for the complete list.</p>
 
 		</div>
 
@@ -216,13 +226,13 @@
 
 		<div class="content">
 
-	<p>This is the third stable release of phpBB. The 3.0.x line is essentially feature frozen, with only point releases seeing fixes for bugs and security issues, though feature alterations and minor feature additions may be done if deemed absolutely required. Our next major release will be phpBB 3.2 and the planning phase has begun (the unstable development version is 3.1). Please do not post questions asking when 3.2 will be available, no release date has been set.</p>
+	<p>This is the third stable release of phpBB. The 3.0.x line is essentially feature frozen, with only point releases seeing fixes for bugs and security issues, though feature alterations and minor feature additions may be done if deemed absolutely required. Our next major release will be phpBB 3.1. Please do not post questions asking when 3.1 will be available, no release date has been set.</p>
 
-	<p>For those interested in the development of phpBB should keep an eye on the community forums to see how things are progressing:</p>
+	<p>Those interested in the development of phpBB should keep an eye on the development forums to see how things are progressing:</p>
 
 	<p><a href="http://area51.phpbb.com/phpBB/">http://area51.phpbb.com/phpBB/</a></p>
 
-	<p>Please note that this forum should <strong>NOT</strong> be used to obtain support for or ask questions about phpBB 2.0.x or phpBB 3.0.x, the main community forums are the place for this. Any such posts will be locked and go unanswered.</p>
+	<p>Please note that the development forums should <strong>NOT</strong> be used to seek support for or ask questions about phpBB 2.0.x or phpBB 3.0.x, the main community forums are the place for this. Any such posts will be locked and go unanswered.</p>
 
 		</div>
 
@@ -240,20 +250,20 @@
 
 		<div class="content">
 
-	<p>The phpBB Group uses a bug tracking system to store, list and manage all reported bugs, it can be found at the location listed below. Please <strong>DO NOT</strong> post bug reports to our forums, they will be locked. In addition please <strong>DO NOT</strong> use the bug tracker for support requests. Posting such a request will only see you directed to the support forums (while taking time away from working on real bugs).</p>
+	<p>The phpBB Group uses a bug tracking system to store, list and manage all reported bugs, it can be found at the location listed below. Please <strong>DO NOT</strong> post bug reports to our forums. In addition please <strong>DO NOT</strong> use the bug tracker for support requests. Posting such a request will only see you directed to the support forums (while taking time away from working on real bugs).</p>
 
-	<p><a href="http://tracker.phpbb.com/">http://tracker.phpbb.com/</a></p>
+	<p><a href="http://tracker.phpbb.com/browse/PHPBB3">http://tracker.phpbb.com/browse/PHPBB3</a></p>
 
 	<p>While we very much appreciate receiving bug reports (the more reports the more stable phpBB will be) we ask you carry out a few steps before adding new entries:</p>
 
 	<ul>
-		<li>Firstly determine if your bug is reproduceable, how to determine this depends on the bug in question. Only if the bug is reproduceable it is likely to be a problem with phpBB3 (or in some way connected). If something cannot be reproduced it may turn out to have been your hosting provider working on something, a user doing something silly, etc. Bug reports for non-reproduceable events can slow down our attempts to fix real, reproduceable issues<br /><br /></li>
-		<li>Next please read or search through the existing bug reports to see if <em>your</em> bug (or one very similar to it) is already listed. If it is please add to that existing bug rather than creating a new duplicate entry (all this does is slow us down).<br /><br /></li>
-		<li>Check the forums (use search!) to see if people have discussed anything that sounds similar to what you are seeing. However, as noted above please <strong>DO NOT</strong> post your particular bug to the forum unless it's non-reproduceable or you are sure it's related to something you have done rather phpBB3<br /><br /></li>
+		<li>First, determine if your bug is reproduceable; how to determine this depends on the bug in question. Only if the bug is reproduceable is it likely to be a problem with phpBB3 (or in some way connected). If something cannot be reproduced it may turn out to have been your hosting provider working on something, a user doing something silly, etc. Bug reports for non-reproduceable events can slow down our attempts to fix real, reproduceable issues<br /><br /></li>
+		<li>Next, please read or search through the existing bug reports to see if <em>your</em> bug (or one very similar to it) is already listed. If it is please add to that existing bug rather than creating a new duplicate entry (all this does is slow us down).<br /><br /></li>
+		<li>Check the forums (use search!) to see if people have discussed anything that sounds similar to what you are seeing. However, as noted above please <strong>DO NOT</strong> post your particular bug to the forum unless it's non-reproduceable or you are sure it&rsquo;s related to something you have done rather than phpBB3<br /><br /></li>
 		<li>If no existing bug exists then please feel free to add it</li>
 	</ul>
 
-	<p>If you do post a new bug (i.e. one that isn't already listed in the bug tracker) firstly make sure you have logged in (your username and password are the same as for the community forums) then please include the following details:</p>
+	<p>If you do post a new bug (i.e. one that isn't already listed in the bug tracker) first make sure that you have logged in (your username and password are the same as for the community forums) then please include the following details:</p>
 
 	<ul>
 		<li>Your server type/version, e.g. Apache 1.3.28, IIS 4, Sambar, etc.</li>
@@ -261,9 +271,11 @@
 		<li>DB type/version, e.g. MySQL 4.0.1, PostgreSQL 7.3.2, MSSQL Server 2000 SP1, etc.</li>
 	</ul>
 
-	<p>The relevant database type/version is listed within the administration control panel</p>
+	<p>The relevant database type/version is listed within the administration control panel.</p>
 
 	<p>Please also be as detailed as you can in your report, if possible list the steps required to duplicate the problem. If you have a patch that fixes the issue, please attach it to the ticket or submit a pull request <a href="https://github.com/phpbb/phpbb3">on GitHub</a>.</p>
+
+	<p>If you create a patch, it is very much appreciated (but not required) if you follow the phpBB coding guidelines. Please note that the coding guidelines are somewhat different between different versions of phpBB. For phpBB 3.0.x the coding guidelines may be found here: <a href="http://area51.phpbb.com/docs/30x/coding-guidelines.html">http://area51.phpbb.com/docs/30x/coding-guidelines.html</a></p>
 
 	<p>Once a bug has been submitted you will be emailed any follow up comments added to it. <strong>Please</strong> if you are requested to supply additional information, do so! It is frustrating for us to receive bug reports, ask for additional information but get nothing. In these cases we have a policy of closing the bug, which may leave a very real problem in place. Obviously we would rather not have this situation arise.</p>
 
@@ -289,7 +301,7 @@
 
 		<div class="content">
 
-	<p>This list is not complete but does represent those bugs which may effect users on a wider scale. Other bugs listed in the tracker have typically been shown to be limited to certain setups or methods of installation, updating and/or conversions.</p>
+	<p>This list is not complete but does represent those bugs which may affect users on a wider scale. Other bugs listed in the tracker have typically been shown to be limited to certain setups or methods of installation, updating and/or conversions.</p>
 
 	<ul>
 		<li>Conversions may fail to complete on large boards under some hosts</li>
@@ -317,7 +329,7 @@
 
 	<p>Please remember that running any application on a developmental version of PHP can lead to strange/unexpected results which may appear to be bugs in the application (which may not be true). Therefore we recommend you upgrade to the newest stable version of PHP before running phpBB3. If you are running a developmental version of PHP please check any bugs you find on a system running a stable release before submitting.</p>
 
-	<p>This board has been developed and tested under Linux and Windows (amongst others) running Apache using MySQL 3.23, 4.x, 5.x, MSSQL Server 2000, PostgreSQL 7.x, Oracle 8, SQLite and Firebird. Versions of PHP used range from 4.3.3 to 6.0.0-dev without problem. </p>
+	<p>This board has been developed and tested under Linux and Windows (amongst others) running Apache using MySQL 3.23, 4.x, 5.x, MSSQL Server 2000, PostgreSQL 7.x, Oracle 8, SQLite 2 and Firebird. Versions of PHP used range from 4.3.3 to 5.4.x without problem. </p>
 
 <a name="phpsec"></a><h3>7.i. Notice on PHP security issues</h3>
 
@@ -339,7 +351,7 @@
 
 		<div class="content">
 
-	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
+	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-2.0.php">GNU General Public License v2</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright &copy; <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
 
 		</div>
 

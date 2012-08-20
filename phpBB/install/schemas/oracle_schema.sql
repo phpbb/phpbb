@@ -1085,6 +1085,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value varchar2(765) DEFAULT '' ,
 	field_validation varchar2(60) DEFAULT '' ,
 	field_required number(1) DEFAULT '0' NOT NULL,
+	field_show_novalue number(1) DEFAULT '0' NOT NULL,
 	field_show_on_reg number(1) DEFAULT '0' NOT NULL,
 	field_show_on_vt number(1) DEFAULT '0' NOT NULL,
 	field_show_profile number(1) DEFAULT '0' NOT NULL,

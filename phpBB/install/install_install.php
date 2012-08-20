@@ -53,11 +53,13 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $language, $phpbb_root_path;
+		global $lang, $template, $language, $phpbb_root_path, $cache;
 
 		switch ($sub)
 		{
 			case 'intro':
+				$cache->purge();
+
 				$this->page_title = $lang['SUB_INTRO'];
 
 				$template->assign_vars(array(
@@ -105,6 +107,7 @@ class install_install extends module
 				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
+				$this->disable_avatars_if_unwritable();
 
 				// Remove the lock file
 				@unlink($phpbb_root_path . 'cache/install_lock');
@@ -166,25 +169,28 @@ class install_install extends module
 			'S_LEGEND'		=> false,
 		));
 
-		// Check for register_globals being enabled
-		if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+		// Don't check for register_globals on 5.4+
+		if (version_compare($php_version, '5.4.0-dev') < 0)
 		{
-			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
+			// Check for register_globals being enabled
+			if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+			{
+				$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
+			}
+			else
+			{
+				$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
+			}
+
+			$template->assign_block_vars('checks', array(
+				'TITLE'			=> $lang['PHP_REGISTER_GLOBALS'],
+				'TITLE_EXPLAIN'	=> $lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
+				'RESULT'		=> $result,
+
+				'S_EXPLAIN'		=> true,
+				'S_LEGEND'		=> false,
+			));
 		}
-		else
-		{
-			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
-		}
-
-		$template->assign_block_vars('checks', array(
-			'TITLE'			=> $lang['PHP_REGISTER_GLOBALS'],
-			'TITLE_EXPLAIN'	=> $lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
-			'RESULT'		=> $result,
-
-			'S_EXPLAIN'		=> true,
-			'S_LEGEND'		=> false,
-		));
-
 
 		// Check for url_fopen
 		if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on')
@@ -881,34 +887,8 @@ class install_install extends module
 
 		@chmod($phpbb_root_path . 'cache/install_lock', 0777);
 
-		$load_extensions = implode(',', $load_extensions);
-
 		// Time to convert the data provided into a config file
-		$config_data = "<?php\n";
-		$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
-
-		$config_data_array = array(
-			'dbms'			=> $available_dbms[$data['dbms']]['DRIVER'],
-			'dbhost'		=> $data['dbhost'],
-			'dbport'		=> $data['dbport'],
-			'dbname'		=> $data['dbname'],
-			'dbuser'		=> $data['dbuser'],
-			'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
-			'table_prefix'	=> $data['table_prefix'],
-			'acm_type'		=> 'file',
-			'load_extensions'	=> $load_extensions,
-		);
-
-		foreach ($config_data_array as $key => $value)
-		{
-			$config_data .= "\${$key} = '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $value)) . "';\n";
-		}
-		unset($config_data_array);
-
-		$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
-		$config_data .= "// @define('DEBUG', true);\n";
-		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
-		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
+		$config_data = phpbb_create_config_file_data($data, $available_dbms[$data['dbms']]['DRIVER'], $load_extensions);
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
 		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx)) || phpbb_is_writable($phpbb_root_path))
@@ -1178,14 +1158,13 @@ class install_install extends module
 		$dbms_schema = 'schemas/' . $available_dbms[$data['dbms']]['SCHEMA'] . '_schema.sql';
 
 		// How should we treat this schema?
-		$remove_remarks = $available_dbms[$data['dbms']]['COMMENTS'];
 		$delimiter = $available_dbms[$data['dbms']]['DELIM'];
 
 		$sql_query = @file_get_contents($dbms_schema);
 
 		$sql_query = preg_replace('#phpbb_#i', $data['table_prefix'], $sql_query);
 
-		$remove_remarks($sql_query);
+		$sql_query = phpbb_remove_comments($sql_query);
 
 		$sql_query = split_sql_file($sql_query, $delimiter);
 
@@ -1223,8 +1202,7 @@ class install_install extends module
 		// Change language strings...
 		$sql_query = preg_replace_callback('#\{L_([A-Z0-9\-_]*)\}#s', 'adjust_language_keys_callback', $sql_query);
 
-		// Since there is only one schema file we know the comment style and are able to remove it directly with remove_remarks
-		remove_remarks($sql_query);
+		$sql_query = phpbb_remove_comments($sql_query);
 		$sql_query = split_sql_file($sql_query, ';');
 
 		foreach ($sql_query as $sql)
@@ -1964,6 +1942,21 @@ class install_install extends module
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
 			'U_ACTION'	=> append_sid($phpbb_root_path . 'adm/index.' . $phpEx, 'i=send_statistics&amp;mode=send_statistics'),
 		));
+	}
+
+	/**
+	* Check if the avatar directory is writable and disable avatars
+	* if it isn't writable.
+	*/
+	function disable_avatars_if_unwritable()
+	{
+		global $phpbb_root_path;
+
+		if (!phpbb_is_writable($phpbb_root_path . 'images/avatars/upload/'))
+		{
+			set_config('allow_avatar', 0);
+			set_config('allow_avatar_upload', 0);
+		}
 	}
 
 	/**

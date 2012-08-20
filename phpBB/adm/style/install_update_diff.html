@@ -15,12 +15,12 @@
 // <![CDATA[
 function resize_panel()
 {
-	var block = document.getElementById('codepanel');
+	var block = document.getElementById('diff_content');
 	var height;
 
 	if (window.innerHeight)
 	{
-		height = window.innerHeight - 150;
+		height = window.innerHeight - 200;
 		block.style.height = height + 'px';
 	}
 	else
@@ -119,6 +119,7 @@ table.hrdiff {
 	overflow: hidden;
 	border-bottom: 1px solid #999;
 	table-layout: fixed;
+	background: transparent;
 }
 
 table.hrdiff th {
@@ -128,7 +129,8 @@ table.hrdiff th {
 	font-family: Verdana,Helvetica,sans-serif;
 	font-size: 11px;
 	border-bottom: 1px solid #999;
-	background: transparent;
+	border-right: 1px solid #999;
+	background: #D9D9D9;
 }
 
 table.hrdiff thead th {
@@ -142,29 +144,23 @@ table.hrdiff tr:first-child th {
 }
 
 table.hrdiff tbody th {
-	padding: 2em 1px 1px 1px;
 	font-size: 80%;
 	border-top: 1px solid #999;
 }
 
-table.hrdiff tbody td.old {
-	border-left: 1px solid #999;
-	border-right: 1px solid #999;
-}
-table.hrdiff tbody td.new {
+table.hrdiff tbody td {
 	border-right: 1px solid #999;
 }
 
 table.hrdiff td pre {
-	overflow: auto;
-	display: block;
-	width: 100%;
-	overflow: auto;
-	display: block;
+	font-family: "Consolas", monospace;
+	font-size: 1.1em;
+	white-space: pre-wrap;		/* css-3 */
+	word-wrap: break-word;		/* Internet Explorer 5.5+ */
 }
 
 table.hrdiff .unmodified {
-	background: #fff;
+	background: transparent;
 }
 
 table.hrdiff .added {

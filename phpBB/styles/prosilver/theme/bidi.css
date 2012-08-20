@@ -591,6 +591,19 @@
 /* PM Styles
 ----------------------------------------*/
 
+/* PM panel adjustments */
+.rtl .reply-all a.right {
+	background-position: 5% 60%;
+}
+
+.rtl .reply-all a.right:hover {
+	background-position: 3% 60%;
+}
+
+.rtl .reply-all {
+	padding-left: 5px;
+}
+
 /* Defined rules list for PM options */
 .rtl ol.def-rules {
 	padding-right: 0;

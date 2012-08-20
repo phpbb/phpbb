@@ -13,7 +13,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>.
+* along with this program. If not, see <http://opensource.org/licenses/gpl-2.0.php>
 *
 */
 
@@ -23,10 +23,10 @@ involved in phpBB.
 phpBB Lead Developer:  naderman (Nils Adermann)
 
 phpBB Developers:      Acyd Burn (Meik Sievertsen) [Lead 09/2005 - 01/2010]
+                       Arty (Vjacheslav Trushkin)
                        bantu (Andreas Fischer)
-                       ckwalsh (Cullen Walsh)
+                       imkingdavid (David King)
                        igorw (Igor Wiedler)
-                       kellanved (Henry Sudhof)
                        nickvergessen (Joas Schilling)
                        Oleg (Oleg Pudeyev)
                        rxu (Ruslan Uzdenov)
@@ -48,9 +48,11 @@ phpBB Developers:      A_Jelly_Doughnut (Josh Woody) [01/2010 - 11/2010]
                        APTX (Marek A. Ruszczyński)   [12/2007 - 04/2011]
                        Ashe (Ludovic Arnaud)         [10/2002 - 11/2003, 06/2006 - 10/2006]
                        BartVB (Bart van Bragt)       [11/2000 - 03/2006]
+                       ckwalsh (Cullen Walsh)        [01/2010 - 07/2011]
                        DavidMJ (David M.)            [12/2005 - 08/2009]
                        dhn (Dominik Dröscher)        [05/2007 - 01/2011]
                        GrahamJE (Graham Eames)       [09/2005 - 11/2006]
+                       kellanved (Henry Sudhof)      [04/2007 - 03/2011]
                        TerraFrost (Jim Wigginton)    [04/2009 - 01/2011]
                        Vic D'Elfant (Vic D'Elfant)   [04/2007 - 04/2009]
 

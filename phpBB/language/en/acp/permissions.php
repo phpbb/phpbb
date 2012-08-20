@@ -40,10 +40,10 @@ $lang = array_merge($lang, array(
 		<p>Permissions are highly granular and grouped into four major sections, which are:</p>
 
 		<h2>Global Permissions</h2>
-		<p>These are used to control access on a global level and apply to the entire bulletin board. They are further divided into Users’ Permissions, Groups’ Permissions, Administrators and Global Moderators.</p>
+		<p>These are used to control access on a global level and apply to the entire bulletin board. They are further divided into User Permissions, Group Permissions, Administrators and Global Moderators.</p>
 
 		<h2>Forum Based Permissions</h2>
-		<p>These are used to control access on a per forum basis. They are further divided into Forum Permissions, Forum Moderators, Users’ Forum Permissions and Groups’ Forum Permissions.</p>
+		<p>These are used to control access on a per forum basis. They are further divided into Forum Permissions, Forum Moderators, User Forum Permissions and Group Forum Permissions.</p>
 
 		<h2>Permission Roles</h2>
 		<p>These are used to create different sets of permissions for the different permission types later being able to be assigned on a role-based basis. The default roles should cover the administration of bulletin boards large and small, though within each of the four divisions, you can add/edit/delete roles as you see fit.</p>
@@ -83,13 +83,13 @@ $lang = array_merge($lang, array(
 	'ACP_FORUM_PERMISSIONS_COPY_EXPLAIN'		=> 'Here you can copy forum permissions from one forum to one or more other forums.',
 	'ACP_GLOBAL_MODERATORS_EXPLAIN'				=> 'Here you can assign global moderator permissions to users or groups. These moderators are like ordinary moderators except they have access to every forum on your board.',
 	'ACP_GROUPS_FORUM_PERMISSIONS_EXPLAIN'		=> 'Here you can assign forum permissions to groups.',
-	'ACP_GROUPS_PERMISSIONS_EXPLAIN'			=> 'Here you can assign global permissions to groups - user permissions, global moderator permissions and administrator permissions. User permissions include capabilities such as the use of avatars, sending private messages, et cetera; global moderator permissions such as approving posts, manage topics, manage bans, et cetera and lastly administrator permissions such as altering permissions, define custom BBCodes, manage forums, et cetera. Individual users permissions should only be changed in rare occasions, the preferred method is putting users in groups and assigning the group’s permissions.',
+	'ACP_GROUPS_PERMISSIONS_EXPLAIN'			=> 'Here you can assign global permissions to groups - user permissions, global moderator permissions and administrator permissions. User permissions include capabilities such as the use of avatars, sending private messages, et cetera; global moderator permissions such as approving posts, manage topics, manage bans, et cetera and lastly administrator permissions such as altering permissions, define custom BBCodes, manage forums, et cetera. Individual user permissions should only be changed in rare occasions, the preferred method is putting users in groups and assigning the group permissions.',
 	'ACP_ADMIN_ROLES_EXPLAIN'					=> 'Here you are able to manage the roles for administrative permissions. Roles are effective permissions, if you change a role the items having this role assigned will change its permissions too.',
 	'ACP_FORUM_ROLES_EXPLAIN'					=> 'Here you are able to manage the roles for forum permissions. Roles are effective permissions, if you change a role the items having this role assigned will change its permissions too.',
 	'ACP_MOD_ROLES_EXPLAIN'						=> 'Here you are able to manage the roles for moderative permissions. Roles are effective permissions, if you change a role the items having this role assigned will change its permissions too.',
 	'ACP_USER_ROLES_EXPLAIN'					=> 'Here you are able to manage the roles for user permissions. Roles are effective permissions, if you change a role the items having this role assigned will change its permissions too.',
 	'ACP_USERS_FORUM_PERMISSIONS_EXPLAIN'		=> 'Here you can assign forum permissions to users.',
-	'ACP_USERS_PERMISSIONS_EXPLAIN'				=> 'Here you can assign global permissions to users - user permissions, global moderator permissions and administrator permissions. User permissions include capabilities such as the use of avatars, sending private messages, et cetera; global moderator permissions such as approving posts, manage topics, manage bans, et cetera and lastly administrator permissions such as altering permissions, define custom BBCodes, manage forums, et cetera. To alter these settings for large numbers of users the Group permissions system is the preferred method. User’s permissions should only be changed in rare occasions, the preferred method is putting users in groups and assigning the group’s permissions.',
+	'ACP_USERS_PERMISSIONS_EXPLAIN'				=> 'Here you can assign global permissions to users - user permissions, global moderator permissions and administrator permissions. User permissions include capabilities such as the use of avatars, sending private messages, et cetera; global moderator permissions such as approving posts, manage topics, manage bans, et cetera and lastly administrator permissions such as altering permissions, define custom BBCodes, manage forums, et cetera. To alter these settings for large numbers of users the Group permissions system is the preferred method. User permissions should only be changed in rare occasions, the preferred method is putting users in groups and assigning the group permissions.',
 	'ACP_VIEW_ADMIN_PERMISSIONS_EXPLAIN'		=> 'Here you can view the effective administrative permissions assigned to the selected users/groups.',
 	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS_EXPLAIN'	=> 'Here you can view the global moderative permissions assigned to the selected users/groups.',
 	'ACP_VIEW_FORUM_PERMISSIONS_EXPLAIN'		=> 'Here you can view the forum permissions assigned to the selected users/groups and forums.',
@@ -171,7 +171,7 @@ $lang = array_merge($lang, array(
 	'ROLE_FORUM_POLLS'			=> 'Standard Access + Polls',
 	'ROLE_FORUM_READONLY'		=> 'Read Only Access',
 	'ROLE_FORUM_STANDARD'		=> 'Standard Access',
-	'ROLE_FORUM_NEW_MEMBER'		=> 'Newly registered User',
+	'ROLE_FORUM_NEW_MEMBER'		=> 'Newly Registered User Access',
 	'ROLE_MOD_FULL'				=> 'Full Moderator',
 	'ROLE_MOD_QUEUE'			=> 'Queue Moderator',
 	'ROLE_MOD_SIMPLE'			=> 'Simple Moderator',
@@ -181,7 +181,7 @@ $lang = array_merge($lang, array(
 	'ROLE_USER_NOAVATAR'		=> 'No Avatar',
 	'ROLE_USER_NOPM'			=> 'No Private Messages',
 	'ROLE_USER_STANDARD'		=> 'Standard Features',
-	'ROLE_USER_NEW_MEMBER'		=> 'Newly registered User',
+	'ROLE_USER_NEW_MEMBER'		=> 'Newly Registered User Features',
 
 
 	'ROLE_DESCRIPTION_ADMIN_FORUM'			=> 'Can access the forum management and forum permission settings.',
@@ -225,8 +225,8 @@ $lang = array_merge($lang, array(
 	'SELECT_TYPE'					=> 'Select type',
 	'SET_PERMISSIONS'				=> 'Set permissions',
 	'SET_ROLE_PERMISSIONS'			=> 'Set role permissions',
-	'SET_USERS_PERMISSIONS'			=> 'Set users permissions',
-	'SET_USERS_FORUM_PERMISSIONS'	=> 'Set users forum permissions',
+	'SET_USERS_PERMISSIONS'			=> 'Set user permissions',
+	'SET_USERS_FORUM_PERMISSIONS'	=> 'Set user forum permissions',
 
 	'TRACE_DEFAULT'					=> 'By default every permission is <samp>NO</samp> (unset). So the permission can be overwritten by other settings.',
 	'TRACE_FOR'						=> 'Trace for',
@@ -273,7 +273,7 @@ $lang = array_merge($lang, array(
 	'TRACE_WHO'								=> 'Who',
 	'TRACE_TOTAL'							=> 'Total',
 
-	'USERS_NOT_ASSIGNED'			=> 'No user assigned to this role',
+	'USERS_NOT_ASSIGNED'			=> 'No users are assigned to this role',
 	'USER_IS_MEMBER_OF_DEFAULT'		=> 'is a member of the following pre-defined groups',
 	'USER_IS_MEMBER_OF_CUSTOM'		=> 'is a member of the following user defined groups',
 

@@ -142,15 +142,15 @@ li {
 #page-header {
 	clear: both;
 	text-align: right;
-	background: url("../images/phpbb_logo.gif") top left no-repeat;
-	height: 49px;
+	background: url("../images/phpbb_logo.png") top left no-repeat;
+	height: 54px;
 	font-size: 0.85em;
 	margin-bottom: 10px;
 }
 
 .rtl #page-header {
 	text-align: left;
-	background: url("../images/phpbb_logo.gif") top right no-repeat;
+	background: url("../images/phpbb_logo.png") top right no-repeat;
 }
 
 #page-header h1 {

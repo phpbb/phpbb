@@ -195,6 +195,49 @@ class dbal
 	}
 
 	/**
+	* Seek to given row number
+	* rownum is zero-based
+	*/
+	function sql_rowseek($rownum, &$query_id)
+	{
+		global $cache;
+
+		if ($query_id === false)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_rowseek($rownum, $query_id);
+		}
+
+		if ($query_id === false)
+		{
+			return false;
+		}
+
+		$this->sql_freeresult($query_id);
+		$query_id = $this->sql_query($this->last_query_text);
+
+		if ($query_id === false)
+		{
+			return false;
+		}
+
+		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
+		for ($i = 0; $i < $rownum; $i++)
+		{
+			if (!$this->sql_fetchrow($query_id))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	* Fetch field
 	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
 	*/
@@ -458,6 +501,18 @@ class dbal
 	}
 
 	/**
+	* Run LOWER() on DB column of type text (i.e. neither varchar nor char).
+	*
+	* @param string $column_name	The column name to use
+	*
+	* @return string				A SQL statement like "LOWER($column_name)"
+	*/
+	function sql_lower_text($column_name)
+	{
+		return "LOWER($column_name)";
+	}
+
+	/**
 	* Run more than one insert statement.
 	*
 	* @param string $table table name to run the statements on
@@ -662,12 +717,7 @@ class dbal
 			// The DEBUG_EXTRA constant is for development only!
 			if ((isset($auth) && $auth->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG_EXTRA'))
 			{
-				// Print out a nice backtrace...
-				$backtrace = get_backtrace();
-
 				$message .= ($sql) ? '<br /><br />SQL<br /><br />' . htmlspecialchars($sql) : '';
-				$message .= ($backtrace) ? '<br /><br />BACKTRACE<br />' . $backtrace : '';
-				$message .= '<br />';
 			}
 			else
 			{
@@ -904,6 +954,41 @@ class dbal
 		}
 
 		return true;
+	}
+
+	/**
+	* Gets the estimated number of rows in a specified table.
+	*
+	* @param string $table_name		Table name
+	*
+	* @return string				Number of rows in $table_name.
+	*								Prefixed with ~ if estimated (otherwise exact).
+	*
+	* @access public
+	*/
+	function get_estimated_row_count($table_name)
+	{
+		return $this->get_row_count($table_name);
+	}
+
+	/**
+	* Gets the exact number of rows in a specified table.
+	*
+	* @param string $table_name		Table name
+	*
+	* @return string				Exact number of rows in $table_name.
+	*
+	* @access public
+	*/
+	function get_row_count($table_name)
+	{
+		$sql = 'SELECT COUNT(*) AS rows_total
+			FROM ' . $this->sql_escape($table_name);
+		$result = $this->sql_query($sql);
+		$rows_total = $this->sql_fetchfield('rows_total');
+		$this->sql_freeresult($result);
+
+		return $rows_total;
 	}
 }
 

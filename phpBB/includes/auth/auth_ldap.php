@@ -156,7 +156,11 @@ function login_ldap(&$username, &$password)
 	{
 		if (!@ldap_bind($ldap, htmlspecialchars_decode($config['ldap_user']), htmlspecialchars_decode($config['ldap_password'])))
 		{
-			return $user->lang['LDAP_NO_SERVER_CONNECTION'];
+			return array(
+				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+				'error_msg'		=> 'LDAP_NO_SERVER_CONNECTION',
+				'user_row'		=> array('user_id' => ANONYMOUS),
+			);
 		}
 	}
 

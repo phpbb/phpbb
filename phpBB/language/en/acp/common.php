@@ -96,10 +96,10 @@ $lang = array_merge($lang, array(
 	'ACP_GLOBAL_MODERATORS'			=> 'Global moderators',
 	'ACP_GLOBAL_PERMISSIONS'		=> 'Global permissions',
 	'ACP_GROUPS'					=> 'Groups',
-	'ACP_GROUPS_FORUM_PERMISSIONS'	=> 'Groups’ forum permissions',
+	'ACP_GROUPS_FORUM_PERMISSIONS'	=> 'Group forum permissions',
 	'ACP_GROUPS_MANAGE'				=> 'Manage groups',
 	'ACP_GROUPS_MANAGEMENT'			=> 'Group management',
-	'ACP_GROUPS_PERMISSIONS'		=> 'Groups’ permissions',
+	'ACP_GROUPS_PERMISSIONS'		=> 'Group permissions',
 
 	'ACP_ICONS'					=> 'Topic icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic icons/smilies',
@@ -172,9 +172,9 @@ $lang = array_merge($lang, array(
 	'ACP_THEMES'				=> 'Themes',
 
 	'ACP_UPDATE'					=> 'Updating',
-	'ACP_USERS_FORUM_PERMISSIONS'	=> 'Users’ forum permissions',
+	'ACP_USERS_FORUM_PERMISSIONS'	=> 'User forum permissions',
 	'ACP_USERS_LOGS'				=> 'User logs',
-	'ACP_USERS_PERMISSIONS'			=> 'Users’ permissions',
+	'ACP_USERS_PERMISSIONS'			=> 'User permissions',
 	'ACP_USER_ATTACH'				=> 'Attachments',
 	'ACP_USER_AVATAR'				=> 'Avatar',
 	'ACP_USER_FEEDBACK'				=> 'Feedback',
@@ -405,7 +405,7 @@ $lang = array_merge($lang, array(
 	'INACTIVE_REASON_UNKNOWN'		=> 'Unknown',
 	'INACTIVE_USERS'				=> 'Inactive users',
 	'INACTIVE_USERS_EXPLAIN'		=> 'This is a list of users who have registered but whose accounts are inactive. You can activate, delete or remind (by sending an e-mail) these users if you wish.',
-	'INACTIVE_USERS_EXPLAIN_INDEX'	=> 'This is a list of the last 10 registered users who have inactive accounts. A full list is available from the appropriate menu item or by following the link below from where you can activate, delete or remind (by sending an e-mail) these users if you wish.',
+	'INACTIVE_USERS_EXPLAIN_INDEX'	=> 'This is a list of the last 10 registered users who have inactive accounts. Accounts are inactive either because account activation was enabled in user registration settings and these users’ accounts have not yet been activated, or because these accounts have been deactivated. A full list is available by following the link below from where you can activate, delete or remind (by sending an e-mail) these users if you wish.',
 
 	'NO_INACTIVE_USERS'	=> 'No inactive users',
 

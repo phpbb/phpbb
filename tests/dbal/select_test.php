@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -123,6 +123,32 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 
 		$this->assertEquals($expected, $ary);
+	}
+
+	public static function fetchfield_seek_data()
+	{
+		return array(
+			array(1, 'foobar'),
+			array(0, 'barfoo'),
+			array(2, 'bertie'),
+		);
+	}
+
+	/**
+	* @dataProvider fetchfield_seek_data
+	*/
+	public function test_fetchfield_seek($rownum, $expected)
+	{
+		$db = $this->new_dbal();
+
+		$result = $db->sql_query('SELECT username_clean
+			FROM phpbb_users
+			ORDER BY user_id ASC');
+
+		$field = $db->sql_fetchfield('username_clean', $rownum, $result);
+		$db->sql_freeresult($result);
+
+		$this->assertEquals($expected, $field);
 	}
 
 	public static function query_limit_data()
@@ -349,12 +375,39 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$sql = 'SELECT * FROM (SELECT 1) AS TBL WHERE 1 = 0';
+		$sql = 'SELECT user_id
+			FROM phpbb_users
+			WHERE 1 = 0';
 		$result = $db->sql_query($sql);
 
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		$this->assertSame(false, $row);
+	}
+
+	public function test_get_row_count()
+	{
+		$this->assertSame(
+			3,
+			(int) $this->new_dbal()->get_row_count('phpbb_users'),
+			"Failed asserting that user table has exactly 3 rows."
+		);
+	}
+
+	public function test_get_estimated_row_count()
+	{
+		$actual = $this->new_dbal()->get_estimated_row_count('phpbb_users');
+
+		if (is_string($actual) && isset($actual[0]) && $actual[0] === '~')
+		{
+			$actual = substr($actual, 1);
+		}
+
+		$this->assertGreaterThan(
+			1,
+			$actual,
+			"Failed asserting that estimated row count of user table is greater than 1."
+		);
 	}
 }

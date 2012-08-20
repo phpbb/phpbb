@@ -99,11 +99,11 @@ parse_css_file = {PARSE_CSS_FILE}
 		$this->template_cfg .= '
 # Some configuration options
 
-#
-# You can use this function to inherit templates from another template.
-# The template of the given name has to be installed.
-# Templates cannot inherit from inheriting templates.
-#';
+# Template inheritance
+# See http://blog.phpbb.com/2008/07/31/templating-just-got-easier/
+# Set value to empty or this template name to ignore template inheritance.
+inherit_from = {INHERIT_FROM}
+';
 
 		$this->imageset_keys = array(
 			'logos' => array(
@@ -540,12 +540,14 @@ parse_css_file = {PARSE_CSS_FILE}
 		global $user, $template, $db, $config, $phpbb_root_path, $phpEx;
 
 		$sql_from = '';
+		$sql_sort = 'LOWER(' . $mode . '_name)';
 		$style_count = array();
 
 		switch ($mode)
 		{
 			case 'style':
 				$sql_from = STYLES_TABLE;
+				$sql_sort = 'style_active DESC, ' . $sql_sort;
 
 				$sql = 'SELECT user_style, COUNT(user_style) AS style_count
 					FROM ' . USERS_TABLE . '
@@ -571,6 +573,9 @@ parse_css_file = {PARSE_CSS_FILE}
 			case 'imageset':
 				$sql_from = STYLES_IMAGESET_TABLE;
 			break;
+			
+			default:
+				trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$l_prefix = strtoupper($mode);
@@ -594,7 +599,8 @@ parse_css_file = {PARSE_CSS_FILE}
 		);
 
 		$sql = "SELECT *
-			FROM $sql_from";
+			FROM $sql_from
+			ORDER BY $sql_sort ASC";
 		$result = $db->sql_query($sql);
 
 		$installed = array();
@@ -630,6 +636,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 				'NAME'					=> $row[$mode . '_name'],
 				'STYLE_COUNT'			=> ($mode == 'style' && isset($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : 0,
+
+				'S_INACTIVE'			=> ($mode == 'style' && !$row['style_active']) ? true : false,
 				)
 			);
 		}
@@ -659,7 +667,9 @@ parse_css_file = {PARSE_CSS_FILE}
 
 						if ($name && !in_array($name, $installed))
 						{
-							$new_ary[] = array(
+							// The array key is used for sorting later on.
+							// $file is appended because $name doesn't have to be unique.
+							$new_ary[$name . $file] = array(
 								'path'		=> $file,
 								'name'		=> $name,
 								'copyright'	=> $items['copyright'],
@@ -675,6 +685,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (sizeof($new_ary))
 		{
+			ksort($new_ary);
+
 			foreach ($new_ary as $cfg)
 			{
 				$template->assign_block_vars('uninstalled', array(
@@ -2039,9 +2051,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			// Export template core code
 			if ($mode == 'template' || $inc_template)
 			{
-				$template_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['template_name'], $style_row['template_copyright'], $config['version']), $this->template_cfg);
-
-				$use_template_name = '';
+				$use_template_name = $style_row['template_name'];
 
 				// Add the inherit from variable, depending on it's use...
 				if ($style_row['template_inherits_id'])
@@ -2055,7 +2065,8 @@ parse_css_file = {PARSE_CSS_FILE}
 					$db->sql_freeresult($result);
 				}
 
-				$template_cfg .= ($use_template_name) ? "\ninherit_from = $use_template_name" : "\n#inherit_from = ";
+				$template_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}', '{INHERIT_FROM}'), array($mode, $style_row['template_name'], $style_row['template_copyright'], $config['version'], $use_template_name), $this->template_cfg);
+
 				$template_cfg .= "\n\nbbcode_bitfield = {$style_row['bbcode_bitfield']}";
 
 				$data[] = array(

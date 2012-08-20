@@ -761,6 +761,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value varchar(255) DEFAULT '' NOT NULL,
 	field_validation varchar(20) DEFAULT '' NOT NULL,
 	field_required INT2 DEFAULT '0' NOT NULL CHECK (field_required >= 0),
+	field_show_novalue INT2 DEFAULT '0' NOT NULL CHECK (field_show_novalue >= 0),
 	field_show_on_reg INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_reg >= 0),
 	field_show_on_vt INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_vt >= 0),
 	field_show_profile INT2 DEFAULT '0' NOT NULL CHECK (field_show_profile >= 0),

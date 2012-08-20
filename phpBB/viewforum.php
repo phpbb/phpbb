@@ -278,7 +278,7 @@ if (!empty($_EXTRA_URL))
 	foreach ($_EXTRA_URL as $url_param)
 	{
 		$url_param = explode('=', $url_param, 2);
-		$s_hidden_fields[$url_param[0]] = $url_param[1];
+		$s_search_hidden_fields[$url_param[0]] = $url_param[1];
 	}
 }
 
