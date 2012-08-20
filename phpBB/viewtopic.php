@@ -1566,7 +1566,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POSTER_ID'			=> $poster_id,
 
 		'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
-		'S_MULTIPLE_ATTACH'	=> !empty($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]) > 1,
+		'S_MULTIPLE_ATTACHMENTS'	=> !empty($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]) > 1,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $forum_id)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'],
