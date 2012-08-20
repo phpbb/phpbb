@@ -261,7 +261,8 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			$min = (int) $tpl_type[1];
 			$max = $maxlength = (int) $tpl_type[2];
 
-			if ($tpl_type[3] != 'true')
+			// $tpl_type[3] is not always present
+			if (!isset($tpl_type[3]) || (isset($tpl_type[3]) && $tpl_type[3] != 'true'))
 			{
 				$max = str_repeat('9', $max);
 			}
