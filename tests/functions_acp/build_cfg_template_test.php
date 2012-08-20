@@ -46,8 +46,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_text($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user;
+		global $user, $phpbb_dispatcher;
 
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -80,8 +81,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_dimension($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user;
+		global $user, $phpbb_dispatcher;
 
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -106,8 +108,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_textarea($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user;
+		global $user, $phpbb_dispatcher;
 
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -156,8 +159,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_radio($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user;
+		global $user, $phpbb_dispatcher;
 
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -182,8 +186,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_append($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user;
+		global $user, $phpbb_dispatcher;
 
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
