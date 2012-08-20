@@ -138,7 +138,7 @@ function user_update_name($old_name, $new_name)
 	}
 
 	/**
-	* Update username when it is changed
+	* Update a username when it is changed
 	*
 	* @event core.update_username
 	* @var	string	old_name	The old username that is replaced
