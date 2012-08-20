@@ -124,7 +124,7 @@ function generate_smilies($mode, $forum_id)
 	}
 
 	/**
-	* This event is called when the smilies got populated
+	* This event is called after the smilies are populated
 	*
 	* @event core.generate_smilies_after
 	* @var	string	mode			Mode of the smilies: window|inline
