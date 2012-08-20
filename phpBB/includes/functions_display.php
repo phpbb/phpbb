@@ -22,7 +22,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 {
 	global $db, $auth, $user, $template;
 	global $phpbb_root_path, $phpEx, $config;
-	global $request;
+	global $request, $phpbb_dispatcher;
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
@@ -119,6 +119,16 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'ORDER_BY'	=> 'f.left_id',
 	);
 
+	/**
+	* Event to modify the SQL query before the forum data is queried
+	*
+	* @event core.display_forums_modify_sql
+	* @var	array	sql_ary		The SQL array to get the data of the forums
+	* @since 3.1-A1
+	*/
+	$vars = array('sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_sql', compact($vars)));
+
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
@@ -127,6 +137,19 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		/**
+		* Event to modify the data set of a forum
+		*
+		* This event is triggered once per forum
+		*
+		* @event core.display_forums_modify_row
+		* @var	int		branch_root_id	Last top-level forum
+		* @var	array	row				The data of the forum
+		* @since 3.1-A1
+		*/
+		$vars = array('branch_root_id', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_row', compact($vars)));
+
 		$forum_id = $row['forum_id'];
 
 		// Mark forums read?
@@ -260,6 +283,22 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
 			}
 		}
+
+		/**
+		* Event to modify the forum rows data set
+		*
+		* This event is triggered once per forum
+		*
+		* @event core.display_forums_modify_forum_rows
+		* @var	array	forum_rows		Data array of all forums we display
+		* @var	array	subforums		Data array of all subforums we display
+		* @var	int		branch_root_id	Current top-level forum
+		* @var	int		parent_id		Current parent forum
+		* @var	array	row				The data of the forum
+		* @since 3.1-A1
+		*/
+		$vars = array('forum_rows', 'subforums', 'branch_root_id', 'parent_id', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_forum_rows', compact($vars)));
 	}
 	$db->sql_freeresult($result);
 
@@ -443,7 +482,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 		}
 
-		$template->assign_block_vars('forumrow', array(
+		$forum_row = array(
 			'S_IS_CAT'			=> false,
 			'S_NO_CAT'			=> $catless && !$last_catless,
 			'S_IS_LINK'			=> ($row['forum_type'] == FORUM_LINK) ? true : false,
@@ -480,8 +519,23 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'U_UNAPPROVED_TOPICS'	=> ($row['forum_id_unapproved_topics']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_topics&amp;f=' . $row['forum_id_unapproved_topics']) : '',
 			'U_VIEWFORUM'		=> $u_viewforum,
 			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
-			'U_LAST_POST'		=> $last_post_url)
+			'U_LAST_POST'		=> $last_post_url,
 		);
+
+		/**
+		* Modify the template data block of the forum
+		*
+		* This event is triggered once per forum
+		*
+		* @event core.display_forums_modify_template_vars
+		* @var	array	forum_row		Template data of the forum
+		* @var	array	row				The data of the forum
+		* @since 3.1-A1
+		*/
+		$vars = array('forum_row', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_template_vars', compact($vars)));
+
+		$template->assign_block_vars('forumrow', $forum_row);
 
 		// Assign subforums loop for style authors
 		foreach ($subforums_list as $subforum)
@@ -830,7 +884,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 */
 function display_custom_bbcodes()
 {
-	global $db, $template, $user;
+	global $db, $template, $user, $phpbb_dispatcher;
 
 	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
 	$num_predefined_bbcodes = 22;
@@ -850,17 +904,40 @@ function display_custom_bbcodes()
 			$row['bbcode_helpline'] = $user->lang[strtoupper($row['bbcode_helpline'])];
 		}
 
-		$template->assign_block_vars('custom_tags', array(
+		$custom_tags = array(
 			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
 			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
 			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'],
 			'A_BBCODE_HELPLINE'	=> str_replace(array('&amp;', '&quot;', "'", '&lt;', '&gt;'), array('&', '"', "\'", '<', '>'), $row['bbcode_helpline']),
-		));
+		);
+
+		/**
+		* Modify the template data block of a bbcode
+		*
+		* This event is triggered once per bbcode
+		*
+		* @event core.display_custom_bbcodes_modify_row
+		* @var	array	custom_tags		Template data of the bbcode
+		* @var	array	row				The data of the bbcode
+		* @since 3.1-A1
+		*/
+		$vars = array('custom_tags', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_custom_bbcodes_modify_row', compact($vars)));
+
+		$template->assign_block_vars('custom_tags', $custom_tags);
 
 		$i++;
 	}
 	$db->sql_freeresult($result);
+
+	/**
+	* Display custom bbcodes
+	*
+	* @event core.display_custom_bbcodes
+	* @since 3.1-A1
+	*/
+	$phpbb_dispatcher->dispatch('core.display_custom_bbcodes');
 }
 
 /**
@@ -1248,6 +1325,31 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR', $ignore_config = false)
 {
 	global $user, $config, $phpbb_root_path, $phpEx;
+	global $phpbb_dispatcher;
+
+	$overwrite_avatar = '';
+
+	/**
+	* Overwrite users avatar
+	*
+	* @event core.display_custom_bbcodes_modify_row
+	* @var	string	avatar			Users assigned avatar name
+	* @var	int		avatar_type		Type of avatar
+	* @var	string	avatar_width	Width of users avatar
+	* @var	string	avatar_height	Height of users avatar
+	* @var	string	alt				Language string for alt tag within image
+	*								Can be a language key or text
+	* @var	bool	ignore_config	Ignores config and force displaying avatar
+	* @var	string	overwrite_avatar	If set, this string will be the avatar
+	* @since 3.1-A1
+	*/
+	$vars = array('avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'alt', 'ignore_config', 'overwrite_avatar');
+	extract($phpbb_dispatcher->trigger_event('core.user_get_avatar', compact($vars)));
+
+	if ($overwrite_avatar)
+	{
+		return $overwrite_avatar;
+	}
 
 	if (empty($avatar) || !$avatar_type || (!$config['allow_avatar'] && !$ignore_config))
 	{
