@@ -334,21 +334,21 @@ while ($row = $db->sql_fetchrow($result))
 		default:
 			$location = $user->lang['INDEX'];
 			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
-
-			/**
-			* Modify the location name and url which are displayed in the list
-			*
-			* @event core.viewonline_override_location
-			* @var	array	on_page			File name and query string
-			* @var	array	row				Array with the users sql row
-			* @var	string	location		Page name to displayed in the list
-			* @var	string	location_url	Page url to displayed in the list
-			* @since 3.1-A1
-			*/
-			$vars = array('on_page', 'row', 'location', 'location_url');
-			extract($phpbb_dispatcher->trigger_event('core.viewonline_override_location', compact($vars)));
 		break;
 	}
+
+	/**
+	* Overwrite the location name and URL, which are displayed in the list
+	*
+	* @event core.viewonline_overwrite_location
+	* @var	array	on_page			File name and query string
+	* @var	array	row				Array with the users sql row
+	* @var	string	location		Page name to displayed in the list
+	* @var	string	location_url	Page url to displayed in the list
+	* @since 3.1-A1
+	*/
+	$vars = array('on_page', 'row', 'location', 'location_url');
+	extract($phpbb_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));
 
 	$template->assign_block_vars('user_row', array(
 		'USERNAME' 			=> $row['username'],
