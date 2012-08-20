@@ -1,9 +1,45 @@
 {
-    "hash": "b2daff7465c71d924e915e72454ac266",
+    "hash": "1a2955690bfa6def817b10257037fc18",
     "packages": [
         {
             "package": "symfony/event-dispatcher",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
+        },
+        {
+            "package": "zendframework/zend-eventmanager",
+            "version": "2.0.0rc3"
+        },
+        {
+            "package": "zendframework/zend-http",
+            "version": "2.0.0rc3"
+        },
+        {
+            "package": "zendframework/zend-loader",
+            "version": "2.0.0rc3"
+        },
+        {
+            "package": "zendframework/zend-registry",
+            "version": "2.0.0-beta5"
+        },
+        {
+            "package": "zendframework/zend-session",
+            "version": "2.0.0rc3"
+        },
+        {
+            "package": "zendframework/zend-stdlib",
+            "version": "2.0.0rc3"
+        },
+        {
+            "package": "zendframework/zend-uri",
+            "version": "2.0.0rc3"
+        },
+        {
+            "package": "zendframework/zend-validator",
+            "version": "2.0.0rc3"
+        },
+        {
+            "package": "zendframework/zendopenid",
+            "version": "2.0.0rc3"
         }
     ],
     "packages-dev": [
@@ -16,32 +52,40 @@
         {
             "package": "fabpot/goutte",
             "version": "dev-master",
-            "source-reference": "c2ea8d9a6682d14482e57ede2371001b8a5238d2",
-            "commit-date": "1340264258"
+            "source-reference": "5f7fd00c7f1c47a66e552f636450ff883e02cf33",
+            "commit-date": "1343461948"
         },
         {
-            "package": "guzzle/guzzle",
-            "version": "v2.6.6"
+            "package": "guzzle/common",
+            "version": "v2.8.4"
+        },
+        {
+            "package": "guzzle/http",
+            "version": "v2.8.4"
+        },
+        {
+            "package": "guzzle/parser",
+            "version": "v2.8.4"
         },
         {
             "package": "symfony/browser-kit",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/css-selector",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/dom-crawler",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/finder",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/process",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
         }
     ],
     "aliases": [

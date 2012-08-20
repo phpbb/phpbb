@@ -1,0 +1,36 @@
+<!-- INCLUDE overall_header.html -->
+
+<form method="post" action="{S_UCP_ACTION}" id="register">
+	<div class="panel">
+		<div class="inner" >
+			<h2>{SITENAME} - {L_REGISTRATION}</h2>
+
+			<!-- IF ERROR --><dl><dd class="error">{ERROR}</dd></dl><!-- ENDIF -->
+
+			<fieldset class="fields2">
+				<!-- IF USERNAME --><dl>
+					<dt><label for="username">{L_USERNAME}:</label><br /><span>{L_USERNAME_EXPLAIN}</span></dt>
+					<dd><input type="text" tabindex="1" name="username" id="username" size="25" value="" class="inputbox autowidth" title="{L_USERNAME}" /></dd>
+				</dl><!-- ENDIF -->
+				<!-- IF EMAIL --><dl>
+					<dt><label for="email">{L_EMAIL_ADDRESS}:</label></dt>
+					<dd><input type="text" tabindex="2" name="email" id="email" size="25" maxlength="100" value="" class="inputbox autowidth" title="{L_EMAIL_ADDRESS}" /></dd>
+				</dl><!-- ENDIF -->
+			</fieldset>
+		</div>
+	</div>
+
+	<div class="panel">
+		<div class="inner">
+
+		<fieldset class="submit-buttons">
+			<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
+			<input type="submit" tabindex="9" name="submit" id="submit" value="{L_SUBMIT}" class="button1 default-submit-action" />
+			{S_FORM_TOKEN}{S_HIDDEN_FIELDS}
+		</fieldset>
+
+		</div>
+	</div>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

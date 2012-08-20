@@ -167,6 +167,77 @@ GO
 
 
 /*
+	Table: 'phpbb_auth_links'
+*/
+CREATE TABLE [phpbb_auth_links] (
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[link_provider] [varchar] (255) DEFAULT (0) NOT NULL ,
+	[link_index] [varchar] (255) DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+
+/*
+	Table: 'phpbb_auth_openid_assoc'
+*/
+CREATE TABLE [phpbb_auth_openid_assoc] (
+	[assoc_url] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[assoc_handle] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[assoc_mac_func] [char] (16) DEFAULT ('') NOT NULL ,
+	[assoc_secret] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[assoc_expires] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_auth_openid_assoc] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_auth_openid_assoc] PRIMARY KEY  CLUSTERED 
+	(
+		[assoc_url]
+	)  ON [PRIMARY] 
+GO
+
+CREATE  INDEX [hdl] ON [phpbb_auth_openid_assoc]([assoc_handle]) ON [PRIMARY]
+GO
+
+
+/*
+	Table: 'phpbb_auth_openid_discovery'
+*/
+CREATE TABLE [phpbb_auth_openid_discovery] (
+	[discovery_id] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[discovery_real_id] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[discovery_server] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[discovery_version] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[discovery_expires] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_auth_openid_discovery] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_auth_openid_discovery] PRIMARY KEY  CLUSTERED 
+	(
+		[discovery_id]
+	)  ON [PRIMARY] 
+GO
+
+
+/*
+	Table: 'phpbb_auth_openid_nonce'
+*/
+CREATE TABLE [phpbb_auth_openid_nonce] (
+	[nonce] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[nonce_created] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_auth_openid_nonce] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_auth_openid_nonce] PRIMARY KEY  CLUSTERED 
+	(
+		[nonce]
+	)  ON [PRIMARY] 
+GO
+
+
+/*
 	Table: 'phpbb_banlist'
 */
 CREATE TABLE [phpbb_banlist] (
@@ -1110,7 +1181,7 @@ CREATE TABLE [phpbb_reports] (
 	[report_closed] [int] DEFAULT (0) NOT NULL ,
 	[report_time] [int] DEFAULT (0) NOT NULL ,
 	[report_text] [text] DEFAULT ('') NOT NULL ,
-	[reported_post_text] [text] DEFAULT ('') NOT NULL
+	[reported_post_text] [text] DEFAULT ('') NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

@@ -207,7 +207,7 @@ class phpbb_session
 	function session_begin($update_session_page = true)
 	{
 		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
-		global $request;
+		global $request, $phpbb_auth_manager, $phpbb_extension_manager, $cache;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -401,17 +401,19 @@ class phpbb_session
 					$session_expired = false;
 
 					// Check whether the session is still valid if we have one
-					$method = basename(trim($config['auth_method']));
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-					$method = 'validate_session_' . $method;
-					if (function_exists($method))
+					if (!($phpbb_auth_manager instanceof phpbb_auth_manager))
 					{
-						if (!$method($this->data))
-						{
-							$session_expired = true;
-						}
+						$phpbb_auth_manager = new phpbb_auth_manager(new phpbb_auth_extension_provider_locator($phpbb_extension_manager), $cache, $request, $db, $config);
 					}
+					$providers = $phpbb_auth_manager->get_enabled_providers();
+					foreach ($providers as $provider)
+ 					{
+						if ($provider instanceof phpbb_auth_interface_provider_sso && !$provider->validate_session($this->data))
+ 						{
+ 							$session_expired = true;
+							break;
+ 						}
+ 					}
 
 					if (!$session_expired)
 					{
@@ -504,7 +506,7 @@ class phpbb_session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx;
+		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx, $phpbb_auth_manager, $request, $phpbb_extension_manager;
 
 		$this->data = array();
 
@@ -567,18 +569,22 @@ class phpbb_session
 			}
 		}
 
-		$method = basename(trim($config['auth_method']));
-		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-		$method = 'autologin_' . $method;
-		if (function_exists($method))
+		if (!($phpbb_auth_manager instanceof phpbb_auth_manager))
 		{
-			$this->data = $method();
-
-			if (sizeof($this->data))
+			$phpbb_auth_manager = new phpbb_auth_manager(new phpbb_auth_extension_provider_locator($phpbb_extension_manager), $cache, $request, $db, $config);
+		}
+		$providers = $phpbb_auth_manager->get_enabled_providers();
+		foreach ($providers as $provider)
+		{
+			if ($provider instanceof phpbb_auth_interface_provider_sso)
 			{
-				$this->cookie_data['k'] = '';
-				$this->cookie_data['u'] = $this->data['user_id'];
+				$this->data = $provider->autologin();
+
+				if (sizeof($this->data))
+				{
+					$this->cookie_data['k'] = '';
+					$this->cookie_data['u'] = $this->data['user_id'];
+				}
 			}
 		}
 
@@ -884,7 +890,7 @@ class phpbb_session
 	*/
 	function session_kill($new_session = true)
 	{
-		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx;
+		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx, $phpbb_auth_manager;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
@@ -892,13 +898,13 @@ class phpbb_session
 		$db->sql_query($sql);
 
 		// Allow connecting logout with external auth method logout
-		$method = basename(trim($config['auth_method']));
-		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-		$method = 'logout_' . $method;
-		if (function_exists($method))
+		$providers = $phpbb_auth_manager->get_enabled_providers();
+		foreach ($providers as $provider)
 		{
-			$method($this->data, $new_session);
+			if ($provider instanceof phpbb_auth_interface_custom_logout)
+			{
+				$provider->logout($this->data, $new_session);
+			}
 		}
 
 		if ($this->data['user_id'] != ANONYMOUS)

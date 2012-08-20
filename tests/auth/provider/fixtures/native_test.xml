@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_users">
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_password</column>
+		<column>user_email</column>
+		<row>
+			<value>phpbb_test_user</value>
+			<value>phpbb_test_user</value>
+			<value>$H$9Fm/9WybnLHyZj8zpSWf3GgJQupc9P.</value>
+			<value>example@example.com</value>
+		</row>
+	</table>
+	<table name="phpbb_groups">
+		<column>group_id</column>
+		<column>group_name</column>
+		<column>group_type</column>
+		<row>
+			<value>1</value>
+			<value>REGISTERED</value>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_lang">
+		<column>lang_id</column>
+		<column>lang_iso</column>
+		<column>lang_dir</column>
+		<column>lang_english_name</column>
+		<column>lang_local_name</column>
+		<column>lang_author</column>
+		<row>
+			<value>1</value>
+			<value>en</value>
+			<value>en</value>
+			<value>British English</value>
+			<value>British English</value>
+			<value>phpBB Group</value>
+		</row>
+	</table>
+</dataset>

@@ -1,0 +1,38 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<h1>{L_TITLE}</h1>
+
+<p>{L_TITLE_EXPLAIN}</p>
+
+<!-- IF S_ERROR -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+<!-- ENDIF -->
+
+<form id="acp_auth" method="post" action="{U_ACTION}">
+	<!-- BEGIN providers_loop -->
+		<fieldset>
+			<legend>{providers_loop.PROVIDER}</legend>
+			<!-- IF providers_loop.CUSTOM_TPL -->
+				{providers_loop.CUSTOM_TPL}
+			<!-- ELSE --><!-- BEGIN options -->
+				<dl>
+					<dt><label for="{providers_loop.options.KEY}">{providers_loop.options.TITLE}:</label><!-- IF providers_loop.options.S_EXPLAIN --><br /><span>{providers_loop.options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+					<dd>{providers_loop.options.CONTENT}</dd>
+				</dl>
+			<!-- END options --><!-- ENDIF -->
+		</fieldset>
+	<!-- END providers_loop -->
+
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</p>
+	{S_FORM_TOKEN}
+</form>
+
+<!-- INCLUDE overall_footer.html -->

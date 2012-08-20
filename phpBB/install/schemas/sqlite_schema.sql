@@ -89,6 +89,45 @@ CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users (user_id);
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id);
 CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id);
 
+# Table: 'phpbb_auth_links'
+CREATE TABLE phpbb_auth_links (
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	link_provider varchar(255) NOT NULL DEFAULT '0',
+	link_index varchar(255) NOT NULL DEFAULT '0'
+);
+
+
+# Table: 'phpbb_auth_openid_assoc'
+CREATE TABLE phpbb_auth_openid_assoc (
+	assoc_url varchar(255) NOT NULL DEFAULT '',
+	assoc_handle varchar(255) NOT NULL DEFAULT '',
+	assoc_mac_func char(16) NOT NULL DEFAULT '',
+	assoc_secret varchar(255) NOT NULL DEFAULT '',
+	assoc_expires INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	PRIMARY KEY (assoc_url)
+);
+
+CREATE INDEX phpbb_auth_openid_assoc_hdl ON phpbb_auth_openid_assoc (assoc_handle);
+
+# Table: 'phpbb_auth_openid_discovery'
+CREATE TABLE phpbb_auth_openid_discovery (
+	discovery_id varchar(255) NOT NULL DEFAULT '',
+	discovery_real_id varchar(255) NOT NULL DEFAULT '',
+	discovery_server varchar(255) NOT NULL DEFAULT '',
+	discovery_version varchar(255) NOT NULL DEFAULT '',
+	discovery_expires INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	PRIMARY KEY (discovery_id)
+);
+
+
+# Table: 'phpbb_auth_openid_nonce'
+CREATE TABLE phpbb_auth_openid_nonce (
+	nonce varchar(255) NOT NULL DEFAULT '',
+	nonce_created INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	PRIMARY KEY (nonce)
+);
+
+
 # Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
 	ban_id INTEGER PRIMARY KEY NOT NULL ,

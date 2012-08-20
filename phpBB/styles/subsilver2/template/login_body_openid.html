@@ -1,0 +1,25 @@
+<table align="center" cellspacing="1" cellpadding="4" style="width: 100%;">
+	<tr>
+		<td>{L_AUTH_PROVIDER_OPENID}</td>
+	</tr>
+	<tr>
+		<td>
+			<form action="{S_LOGIN_ACTION}" method="post" id="openid_login">
+				<table>
+					<tr>
+						<td><label for="{OPENID_IDENTIFIER}"><img src="{THEME_PATH}/images/logo_openid_small.gif" alt="{AUTH_PROVIDER_OPENID}"/></label><input type="text" name="{OPENID_IDENTIFIER}" id="{OPENID_IDENTIFIER}" size="25" value="" class="inputbox autowidth" /></td>
+					</tr>
+					<!-- IF not ADMIN --><tr>
+						<!-- IF S_AUTOLOGIN_ENABLED --><td><label for="autologin"><input type="checkbox" name="autologin" id="autologin" /> {L_LOG_ME_IN}</label></td>
+					</tr>
+					<tr><!-- ENDIF -->
+						<td><label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" /> {L_HIDE_ME}</label></td>
+					</tr><!-- ENDIF-->
+					<tr>
+						<td>{S_HIDDEN_FIELDS}<input type="submit" name="login" value="{L_LOGIN}" class="button1" /></td>
+					</tr>
+				</table>
+			</form>
+		</td>
+	</tr>
+</table>

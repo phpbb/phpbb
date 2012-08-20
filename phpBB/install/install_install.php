@@ -1826,7 +1826,7 @@ class install_install extends module
 	*/
 	function email_admin($mode, $sub)
 	{
-		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpEx;
+		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpEx, $phpbb_auth_manager, $request;
 
 		$this->page_title = $lang['STAGE_FINAL'];
 
@@ -1839,7 +1839,9 @@ class install_install extends module
 		set_config_count(null, null, null, $config);
 
 		$user->session_begin();
-		$auth->login($data['admin_name'], $data['admin_pass1'], false, true, true);
+		$phpbb_auth_manager->set_user($user);
+		$provider = $phpbb_auth_manager->get_provider('native');
+		$provider->process_install_login($data['admin_name'], $data['admin_pass1']);
 
 		// OK, Now that we've reached this point we can be confident that everything
 		// is installed and working......I hope :)

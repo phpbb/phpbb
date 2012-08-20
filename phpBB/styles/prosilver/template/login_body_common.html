@@ -1,0 +1,36 @@
+<script type="text/javascript">
+// <![CDATA[
+	onload_functions.push(function () {
+		document.getElementById("<!-- IF S_ADMIN_AUTH -->{PASSWORD_CREDENTIAL}<!-- ELSE -->{USERNAME_CREDENTIAL}<!-- ENDIF -->").focus();
+	});
+// ]]>
+</script>
+
+<form action="{S_LOGIN_ACTION}" method="post" id="olympus_login">
+	<div>
+		<fieldset <!-- IF not S_CONFIRM_CODE -->class="fields1"<!-- ELSE -->class="fields2"<!-- ENDIF -->>
+			<dl>
+				<dt><label for="{USERNAME_CREDENTIAL}">{L_USERNAME}:</label></dt>
+				<dd><input type="text" name="{USERNAME_CREDENTIAL}" id="{USERNAME_CREDENTIAL}" size="25" value="{USERNAME}" class="inputbox autowidth" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="{PASSWORD_CREDENTIAL}">{L_PASSWORD}:</label></dt>
+				<dd><input type="password" id="{PASSWORD_CREDENTIAL}" name="{PASSWORD_CREDENTIAL}" size="25" class="inputbox autowidth" /></dd>
+				<!-- IF S_DISPLAY_FULL_LOGIN and (U_SEND_PASSWORD or U_RESEND_ACTIVATION) -->
+				<!-- IF U_SEND_PASSWORD --><dd><a href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a></dd><!-- ENDIF -->
+				<!-- IF U_RESEND_ACTIVATION --><dd><a href="{U_RESEND_ACTIVATION}">{L_RESEND_ACTIVATION}</a></dd><!-- ENDIF -->
+				<!-- ENDIF -->
+			</dl>
+			<!-- IF S_DISPLAY_FULL_LOGIN -->
+			<dl>
+				<!-- IF S_AUTOLOGIN_ENABLED --><dd><label for="autologin"><input type="checkbox" name="autologin" id="autologin" /> {L_LOG_ME_IN}</label></dd><!-- ENDIF -->
+				<dd><label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" /> {L_HIDE_ME}</label></dd>
+			</dl>
+			<!-- ENDIF -->
+			<dl>
+				<dt>&nbsp;</dt>
+				<dd>{S_HIDDEN_FIELDS}<input type="submit" name="login" value="{L_LOGIN}" class="button1" /></dd>
+			</dl>
+		</fieldset>
+	</div>
+</form>

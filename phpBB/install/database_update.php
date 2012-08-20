@@ -106,6 +106,22 @@ if (!defined('EXT_TABLE'))
 {
 	define('EXT_TABLE', $table_prefix . 'ext');
 }
+if (!defined('AUTH_OPENID_ASSOC_TABLE'))
+{
+	define('AUTH_OPENID_ASSOC_TABLE', $table_prefix . 'auth_openid_assoc');
+}
+if (!defined('AUTH_OPENID_DISCOVERY_TABLE'))
+{
+	define('AUTH_OPENID_DISCOVERY_TABLE', $table_prefix . 'auth_openid_discovery');
+}
+if (!defined('AUTH_OPENID_NONCE_TABLE'))
+{
+	define('AUTH_OPENID_NONCE_TABLE',	$table_prefix . 'auth_openid_nonce');
+}
+if (!defined('AUTH_LINK_TABLE'))
+{
+	define('AUTH_LINK_TABLE',	$table_prefix . 'auth_links');
+}
 
 $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
 $phpbb_class_loader_ext->register();
@@ -1085,6 +1101,46 @@ function database_update_info()
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		'3.1.0-dev'		=> array(
 			'add_tables'		=> array(
+				AUTH_LINK_TABLE => array(
+					'COLUMNS'		=> array(
+						'user_id'		=> array('UINT', 0),
+						'link_provider'	=> array('VCHAR', 0),
+						'link_index'	=> array('VCHAR', 0),
+					),
+					'KEY'			=> array(
+						'user_id'		=> array('INDEX', 'user_id'),
+					),
+				),
+				AUTH_OPENID_ASSOC_TABLE => array(
+					'COLUMNS'		=> array(
+						'assoc_url'			=> array('VCHAR', ''),
+						'assoc_handle'		=> array('VCHAR', ''),
+						'assoc_mac_func'	=> array('CHAR:16', ''),
+						'assoc_secret'		=> array('VCHAR', ''),
+						'assoc_expires'		=> array('TIMESTAMP', 0),
+					),
+					'PRIMARY_KEY'	=> 'assoc_url',
+					'KEYS'			=> array(
+						'hdl'		=> array('INDEX', 'assoc_handle'),
+					),
+				),
+				AUTH_OPENID_DISCOVERY_TABLE => array(
+					'COLUMNS'		=> array(
+						'discovery_id'			=> array('VCHAR', ''),
+						'discovery_real_id'		=> array('VCHAR', ''),
+						'discovery_server'		=> array('VCHAR', ''),
+						'discovery_version'		=> array('VCHAR', ''),
+						'discovery_expires'		=> array('TIMESTAMP', 0),
+					),
+					'PRIMARY_KEY'	=> 'discovery_id',
+				),
+				AUTH_OPENID_NONCE_TABLE => array(
+					'COLUMNS'		=> array(
+						'nonce'			=> array('VCHAR', ''),
+						'nonce_created'	=> array('TIMESTAMP', 0),
+					),
+					'PRIMARY_KEY'	=> 'nonce',
+				),
 				EXT_TABLE				=> array(
 					'COLUMNS'			=> array(
 						'ext_name'		=> array('VCHAR', ''),
@@ -2391,6 +2447,13 @@ function change_database_data(&$no_updates, $version)
 					'title'		=> 'UCP_PROFILE_AUTOLOGIN_KEYS',
 					'auth'		=> '',
 					'cat'		=> 'UCP_PROFILE',
+				),
+				'auth' => array(
+					'base'		=> 'acp_auth',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_AUTH',
+					'auth'		=> 'acl_a_server',
+					'cat'		=> 'ACP_CLIENT_COMMUNICATION',
 				),
 			);
 

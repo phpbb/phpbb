@@ -90,6 +90,45 @@ CREATE TABLE phpbb_acl_users (
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
+# Table: 'phpbb_auth_links'
+CREATE TABLE phpbb_auth_links (
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	link_provider varchar(255) DEFAULT '0' NOT NULL,
+	link_index varchar(255) DEFAULT '0' NOT NULL
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
+# Table: 'phpbb_auth_openid_assoc'
+CREATE TABLE phpbb_auth_openid_assoc (
+	assoc_url varchar(255) DEFAULT '' NOT NULL,
+	assoc_handle varchar(255) DEFAULT '' NOT NULL,
+	assoc_mac_func char(16) DEFAULT '' NOT NULL,
+	assoc_secret varchar(255) DEFAULT '' NOT NULL,
+	assoc_expires int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (assoc_url),
+	KEY hdl (assoc_handle)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
+# Table: 'phpbb_auth_openid_discovery'
+CREATE TABLE phpbb_auth_openid_discovery (
+	discovery_id varchar(255) DEFAULT '' NOT NULL,
+	discovery_real_id varchar(255) DEFAULT '' NOT NULL,
+	discovery_server varchar(255) DEFAULT '' NOT NULL,
+	discovery_version varchar(255) DEFAULT '' NOT NULL,
+	discovery_expires int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (discovery_id)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
+# Table: 'phpbb_auth_openid_nonce'
+CREATE TABLE phpbb_auth_openid_nonce (
+	nonce varchar(255) DEFAULT '' NOT NULL,
+	nonce_created int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (nonce)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
 # Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
 	ban_id mediumint(8) UNSIGNED NOT NULL auto_increment,

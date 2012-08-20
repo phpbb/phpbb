@@ -144,4 +144,9 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 	{
 		return isset($this->data['_bots']) ? $this->data['_bots'] : array();
 	}
+
+	public function obtain_disallowed_usernames()
+	{
+		return isset($this->data['_disallowed_usernames']) ? $this->data['_disallowed_usernames'] : array();
+	}
 }

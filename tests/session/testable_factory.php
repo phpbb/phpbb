@@ -49,6 +49,7 @@ class phpbb_session_testable_factory
 
 		$this->cache_data = array(
 			'_bots' => array(),
+			'auth_providers_enabled' => array ()
 		);
 
 		$this->cookies = array();
@@ -65,7 +66,7 @@ class phpbb_session_testable_factory
 	public function get_session(dbal $dbal)
 	{
 		// set up all the global variables used by session
-		global $SID, $_SID, $db, $config, $cache, $request;
+		global $SID, $_SID, $db, $config, $cache, $request, $phpbb_auth_manager;
 
 		$request = $this->request = new phpbb_mock_request(
 			array(),
@@ -82,6 +83,8 @@ class phpbb_session_testable_factory
 
 		$cache = $this->cache = new phpbb_mock_cache($this->get_cache_data());
 		$SID = $_SID = null;
+
+		$phpbb_auth_manager = new phpbb_auth_manager(new phpbb_auth_extension_provider_locator(new phpbb_mock_extension_manager($phpbb_root_path)), $cache, $request, $db, $config);
 
 		$session = new phpbb_mock_session_testable;
 		return $session;

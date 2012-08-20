@@ -1,52 +1,22 @@
 <!-- INCLUDE overall_header.html -->
 
-<script type="text/javascript">
-// <![CDATA[
-	onload_functions.push(function () {
-		document.getElementById("<!-- IF S_ADMIN_AUTH -->{PASSWORD_CREDENTIAL}<!-- ELSE -->{USERNAME_CREDENTIAL}<!-- ENDIF -->").focus();
-	});
-// ]]>
-</script>
-
-<form action="{S_LOGIN_ACTION}" method="post" id="login">
 <div class="panel">
 	<div class="inner">
 
-	<div class="content">
-		<h2><!-- IF LOGIN_EXPLAIN -->{LOGIN_EXPLAIN}<!-- ELSE -->{L_LOGIN}<!-- ENDIF --></h2>
-
-		<fieldset <!-- IF not S_CONFIRM_CODE -->class="fields1"<!-- ELSE -->class="fields2"<!-- ENDIF -->>
-		<!-- IF LOGIN_ERROR --><div class="error">{LOGIN_ERROR}</div><!-- ENDIF -->
-		<dl>
-			<dt><label for="{USERNAME_CREDENTIAL}">{L_USERNAME}:</label></dt>
-			<dd><input type="text" tabindex="1" name="{USERNAME_CREDENTIAL}" id="{USERNAME_CREDENTIAL}" size="25" value="{USERNAME}" class="inputbox autowidth" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="{PASSWORD_CREDENTIAL}">{L_PASSWORD}:</label></dt>
-			<dd><input type="password" tabindex="2" id="{PASSWORD_CREDENTIAL}" name="{PASSWORD_CREDENTIAL}" size="25" class="inputbox autowidth" /></dd>
-			<!-- IF S_DISPLAY_FULL_LOGIN and (U_SEND_PASSWORD or U_RESEND_ACTIVATION) -->
-				<!-- IF U_SEND_PASSWORD --><dd><a href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a></dd><!-- ENDIF -->
-				<!-- IF U_RESEND_ACTIVATION --><dd><a href="{U_RESEND_ACTIVATION}">{L_RESEND_ACTIVATION}</a></dd><!-- ENDIF -->
-			<!-- ENDIF -->
-		</dl>
-		<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
-			<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
-			<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
-		<!-- ENDIF -->
-		<!-- IF S_DISPLAY_FULL_LOGIN -->
-		<dl>
-			<!-- IF S_AUTOLOGIN_ENABLED --><dd><label for="autologin"><input type="checkbox" name="autologin" id="autologin" tabindex="4" /> {L_LOG_ME_IN}</label></dd><!-- ENDIF -->
-			<dd><label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" tabindex="5" /> {L_HIDE_ME}</label></dd>
-		</dl>
-		<!-- ENDIF -->
-
-		{S_LOGIN_REDIRECT}
-		<dl>
-			<dt>&nbsp;</dt>
-			<dd>{S_HIDDEN_FIELDS}<input type="submit" name="login" tabindex="6" value="{L_LOGIN}" class="button1" /></dd>
-		</dl>
-		</fieldset>
-	</div>
+		<div class="content">
+			<div>
+				<h2><!-- IF LOGIN_EXPLAIN -->{LOGIN_EXPLAIN}<!-- ELSE -->{L_LOGIN}<!-- ENDIF --></h2>
+			</div>
+			<!-- IF LOGIN_ERROR --><div class="error">{LOGIN_ERROR}</div><!-- ENDIF -->
+			<!-- IF COMMON_TPL -->{COMMON_TPL}<!-- ENDIF -->
+			<!-- BEGIN providers_loop -->
+				{providers_loop.TPL}
+			<!-- END providers_loop -->
+			<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE --><div>
+				<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
+				<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
+			</div><!-- ENDIF -->
+		</div>
 	</div>
 </div>
 
@@ -66,7 +36,5 @@
 		</div>
 	</div>
 <!-- ENDIF -->
-
-</form>
 
 <!-- INCLUDE overall_footer.html -->
