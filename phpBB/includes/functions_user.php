@@ -358,7 +358,7 @@ function user_delete($mode, $user_id, $post_username = false)
 	}
 
 	/**
-	* Event before an user is deleted
+	* Event before a user is deleted
 	*
 	* @event core.delete_user_before
 	* @var	string	mode			Mode of deletion (retain/delete posts)
