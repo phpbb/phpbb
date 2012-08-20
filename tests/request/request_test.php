@@ -93,6 +93,23 @@ class phpbb_request_test extends phpbb_test_case
 		$this->request->header('SOMEVAR');
 	}
 
+	public function test_file()
+	{
+		$file = $this->request->file('test');
+		$this->assertEquals('file', $file['name']);
+		$this->assertEquals('tmp', $file['tmp_name']);
+		$this->assertEquals(256, $file['size']);
+		$this->assertEquals('application/octet-stream', $file['type']);
+		$this->assertEquals(UPLOAD_ERR_OK, $file['error']);
+	}
+
+	public function test_file_not_exists()
+	{
+		$file = $this->request->file('404');
+		$this->assertTrue(is_array($file));
+		$this->assertTrue(empty($file));
+	}
+
 	/**
 	* Checks that directly accessing $_POST will trigger
 	* an error.
