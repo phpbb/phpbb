@@ -559,7 +559,7 @@ function user_delete($mode, $user_id, $post_username = false)
 	$db->sql_transaction('commit');
 
 	/**
-	* Event after an user is deleted
+	* Event after a user is deleted
 	*
 	* @event core.delete_user_after
 	* @var	string	mode			Mode of deletion (retain/delete posts)
