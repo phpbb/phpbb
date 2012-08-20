@@ -2265,7 +2265,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 
 	if ($append_sid_override)
 	{
-		return $append_sid;
+		return $append_sid_override;
 	}
 
 	$params_is_array = is_array($params);
