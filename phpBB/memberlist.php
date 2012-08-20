@@ -1763,7 +1763,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 	);
 
 	/**
-	* Preparing user's data before displaying it in profile and memberlist
+	* Preparing a user's data before displaying it in profile and memberlist
 	*
 	* @event core.memberlist_prepare_profile_data
 	* @var	array	data				Array with user's data
