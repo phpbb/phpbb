@@ -988,7 +988,7 @@ $sql_ary = array(
 );
 
 /**
-* Event to modify the SQL query before the post and poster data is queried
+* Event to modify the SQL query before the post and poster data is retrieved
 *
 * @event core.viewtopic_get_post_data
 * @var	array	sql_ary		The SQL array to get the data of posts and posters
