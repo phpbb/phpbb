@@ -1109,7 +1109,7 @@ while ($row = $db->sql_fetchrow($result))
 			);
 
 			/**
-			* Modify the guests user data displayed with the posts
+			* Modify the guest user's data displayed with the posts
 			*
 			* @event core.viewtopic_cache_guest_data
 			* @var	array	user_cache_data	Array with the user's data
