@@ -7,13 +7,12 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/auth.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_admin.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
-require_once dirname(__FILE__) . '/../mock_user.php';
+require_once dirname(__FILE__) . '/../mock/user.php';
 require_once dirname(__FILE__) . '/../mock/cache.php';
 
 class phpbb_log_function_view_log_test extends phpbb_database_test_case
@@ -300,13 +299,14 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 	*/
 	public function test_view_log_function($expected, $expected_returned, $mode, $log_count, $limit = 5, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_id ASC', $keywords = '')
 	{
-		global $cache, $db, $user, $auth;
+		global $cache, $db, $user, $auth, $phpbb_dispatcher;
 
 		$db = $this->new_dbal();
 		$cache = new phpbb_mock_cache;
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		// Create auth mock
-		$auth = $this->getMock('auth');
+		$auth = $this->getMock('phpbb_auth');
 		$acl_get_map = array(
 			array('f_read', 23, true),
 			array('m_', 23, true),

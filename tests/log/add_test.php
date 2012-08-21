@@ -38,9 +38,10 @@ class phpbb_log_add_test extends phpbb_database_test_case
 
 	public function test_log_add()
 	{
-		global $db;
+		global $db, $phpbb_dispatcher;
 
 		$db = $this->new_dbal();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$mode = 'critical';
 		$user_id = ANONYMOUS;
