@@ -1263,7 +1263,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	/**
 	* Use this event to change the output of get_username_string()
 	*
-	* @event core.alter_username_string
+	* @event core.modify_username_string
 	* @var string mode				profile|username|colour|full|no_profile
 	* @var int user_id				String or array of additional url
 	*								parameters
@@ -1278,7 +1278,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	* @since 3.1-A1
 	*/
 	$vars = array('mode', 'user_id', 'username', 'username_colour', 'guest_username', 'custom_profile_url', 'username_string');
-	extract($phpbb_dispatcher->trigger_event('core.alter_username_string', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.modify_username_string', compact($vars)));
 
 	return $username_string;
 }
