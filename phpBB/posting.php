@@ -39,23 +39,36 @@ $delete		= (isset($_POST['delete'])) ? true : false;
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
 $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load || $preview) ? true : false;
-
-/**
-* This event allows you to alter the $refresh boolean variable.
-* 
-* If $refresh is true the posting form retains previously submitted form data
-*
-* @event core.posting_refresh
-* @var	bool	refresh		Whether or not to retain previously submitted data
-* @since 3.1-A1
-*/
-$vars = array('refresh');
-extract($phpbb_dispatcher->trigger_event('core.posting_refresh', compact($vars)));
-
 $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var('mode', '');
 
 $error = $post_data = array();
 $current_time = time();
+
+/**
+* This event allows you to alter the above parameters, such as submit and mode
+* 
+* Note: $refresh must be true to retain previously submitted form data.
+*
+* @event core.modify_posting_parameters
+* @var	bool	submit		Whether or not the form has been submitted
+* @var	bool	preview		Whether or not the post is being previewed
+* @var	bool	save		Whether or not a draft is being saved
+* @var	bool	load		Whether or not a draft is being loaded
+* @var	bool	delete		Whether or not the post is being deleted
+* @var	bool	cancel		Whether or not to cancel the form (returns to
+*							viewtopic or viewforum depending on if the user
+*							is posting a new topic or editing a post)
+* @var	bool	refresh		Whether or not to retain previously submitted data
+* @var	string	mode		What action to take if the form has been sumitted
+*							post|reply|quote|edit|delete|bump|smilies|popup
+* @var	array	error		Any error strings; a non-empty array aborts
+*							form submission.
+*							NOTE: Should be actual language strings, NOT
+*							language keys.
+* @since 3.1-A1
+*/
+$vars = array('submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error');
+extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compact($vars)));
 
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
