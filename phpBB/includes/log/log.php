@@ -231,12 +231,7 @@ class phpbb_log implements phpbb_log_interface
 	*/
 	public function get_logs($mode, $count_logs = true, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $log_time = 0, $sort_by = 'l.log_time DESC', $keywords = '')
 	{
-		global $db, $user, $auth, $phpEx, $phpbb_root_path, $phpbb_admin_path;
-		/**
-		* @todo: enable when events are merged
-		*
 		global $db, $user, $auth, $phpEx, $phpbb_root_path, $phpbb_admin_path, $phpbb_dispatcher;
-		*/
 
 		$this->logs_total = 0;
 		$this->logs_offset = $offset;
@@ -288,32 +283,44 @@ class phpbb_log implements phpbb_log_interface
 			default:
 				$log_type = null;
 				$sql_additional = '';
-				/**
-				* @todo: enable when events are merged
-				*
-				if ($phpbb_dispatcher != null)
-				{
-					$vars = array('mode', 'count_logs', 'limit', 'offset', 'forum_id', 'topic_id', 'user_id', 'log_time', 'sort_by', 'keywords', 'profile_url', 'log_type', 'sql_additional');
-					extract($phpbb_dispatcher->trigger_event('core.get_logs_switch_mode', $vars, $vars));
-				}
-				*/
-
-				if (!isset($log_type))
-				{
-					$this->logs_offset = 0;
-					return array();
-				}
 		}
 
 		/**
-		* @todo: enable when events are merged
+		* Overwrite log type and limitations before we count and get the logs
 		*
+		* NOTE: if log_type is not set, no entries will be returned.
+		*
+		* @event core.get_logs_modify_type
+		* @var	string	mode		Mode of the entries we display
+		* @var	bool	count_logs	Do we count all matching entries?
+		* @var	int		limit		Limit the number of entries
+		* @var	int		offset		Offset when fetching the entries
+		* @var	mixed	forum_id	Limit entries to the forum_id,
+		*							can also be an array of forum_ids
+		* @var	int		topic_id	Limit entries to the topic_id
+		* @var	int		user_id		Limit entries to the user_id
+		* @var	int		log_time	Limit maximum age of log entries
+		* @var	string	sort_by		SQL order option
+		* @var	string	keywords	Will only return entries that have the
+		*							keywords in log_operation or log_data
+		* @var	string	profile_url	URL to the users profile
+		* @var	int		log_type	Limit logs to a certain type. If log_type
+		*							is not set, no entries will be returned.
+		* @var	string	sql_additional	Additional conditions for the entries,
+		*								e.g.: 'AND l.forum_id = 1'
+		* @since 3.1-A1
+		*/
 		if ($phpbb_dispatcher != null)
 		{
 			$vars = array('mode', 'count_logs', 'limit', 'offset', 'forum_id', 'topic_id', 'user_id', 'log_time', 'sort_by', 'keywords', 'profile_url', 'log_type', 'sql_additional');
-			extract($phpbb_dispatcher->trigger_event('core.get_logs_after_get_type', $vars, $vars));
+			extract($phpbb_dispatcher->trigger_event('core.get_logs_modify_type', $vars));
 		}
-		*/
+
+		if (!isset($log_type))
+		{
+			$this->logs_offset = 0;
+			return array();
+		}
 
 		$sql_keywords = '';
 		if (!empty($keywords))
