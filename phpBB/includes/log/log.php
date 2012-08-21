@@ -402,14 +402,18 @@ class phpbb_log implements phpbb_log_interface
 			);
 
 			/**
-			* @todo: enable when events are merged
+			* Modify the entry's data before it is returned
 			*
+			* @event core.get_logs_modify_entry_data
+			* @var	array	row			Entry data from the database
+			* @var	array	log_entry_data	Entry's data which is returned
+			* @since 3.1-A1
+			*/
 			if ($phpbb_dispatcher != null)
 			{
-				$vars = array('log_entry_data', 'row');
-				extract($phpbb_dispatcher->trigger_event('core.get_logs_entry_data', $vars, $vars));
+				$vars = array('row', 'log_entry_data');
+				extract($phpbb_dispatcher->trigger_event('core.get_logs_modify_entry_data', $vars));
 			}
-			*/
 
 			$log[$i] = $log_entry_data;
 
