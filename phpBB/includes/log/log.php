@@ -207,11 +207,8 @@ class phpbb_log implements phpbb_log_interface
 		*							we won't add the entry to the database.
 		* @since 3.1-A1
 		*/
-		if ($phpbb_dispatcher != null)
-		{
-			$vars = array('mode', 'user_id', 'log_ip', 'log_operation', 'log_time', 'additional_data', 'sql_ary');
-			extract($phpbb_dispatcher->trigger_event('core.add_log', $vars));
-		}
+		$vars = array('mode', 'user_id', 'log_ip', 'log_operation', 'log_time', 'additional_data', 'sql_ary');
+		extract($phpbb_dispatcher->trigger_event('core.add_log', $vars));
 
 		// We didn't find a log_type, so we don't save it in the database.
 		if (!isset($sql_ary['log_type']))
@@ -310,11 +307,8 @@ class phpbb_log implements phpbb_log_interface
 		*								e.g.: 'AND l.forum_id = 1'
 		* @since 3.1-A1
 		*/
-		if ($phpbb_dispatcher != null)
-		{
-			$vars = array('mode', 'count_logs', 'limit', 'offset', 'forum_id', 'topic_id', 'user_id', 'log_time', 'sort_by', 'keywords', 'profile_url', 'log_type', 'sql_additional');
-			extract($phpbb_dispatcher->trigger_event('core.get_logs_modify_type', $vars));
-		}
+		$vars = array('mode', 'count_logs', 'limit', 'offset', 'forum_id', 'topic_id', 'user_id', 'log_time', 'sort_by', 'keywords', 'profile_url', 'log_type', 'sql_additional');
+		extract($phpbb_dispatcher->trigger_event('core.get_logs_modify_type', $vars));
 
 		if (!isset($log_type))
 		{
@@ -409,11 +403,8 @@ class phpbb_log implements phpbb_log_interface
 			* @var	array	log_entry_data	Entry's data which is returned
 			* @since 3.1-A1
 			*/
-			if ($phpbb_dispatcher != null)
-			{
-				$vars = array('row', 'log_entry_data');
-				extract($phpbb_dispatcher->trigger_event('core.get_logs_modify_entry_data', $vars));
-			}
+			$vars = array('row', 'log_entry_data');
+			extract($phpbb_dispatcher->trigger_event('core.get_logs_modify_entry_data', $vars));
 
 			$log[$i] = $log_entry_data;
 
@@ -469,11 +460,8 @@ class phpbb_log implements phpbb_log_interface
 		*									get the username strings for
 		* @since 3.1-A1
 		*/
-		if ($phpbb_dispatcher != null)
-		{
-			$vars = array('log', 'topic_id_list', 'reportee_id_list');
-			extract($phpbb_dispatcher->trigger_event('core.get_logs_get_additional_data', $vars));
-		}
+		$vars = array('log', 'topic_id_list', 'reportee_id_list');
+		extract($phpbb_dispatcher->trigger_event('core.get_logs_get_additional_data', $vars));
 
 		if (sizeof($topic_id_list))
 		{
