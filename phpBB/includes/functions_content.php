@@ -411,11 +411,25 @@ function strip_bbcode(&$text, $uid = '')
 function generate_text_for_display($text, $uid, $bitfield, $flags)
 {
 	static $bbcode;
+	global $phpbb_dispatcher;
 
 	if (!$text)
 	{
 		return '';
 	}
+
+	/**
+	* Use this event to modify the text before it is parsed
+	*
+	* @event core.modify_text_for_display_before
+	* @var string	text		The text to parse
+	* @var string	uid			The BBCode UID
+	* @var string	bitfield	The BBCode Bitfield
+	* @var int		flags		The BBCode Flags
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'uid', 'bitfield', 'flags');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_before', compact($vars)));
 
 	$text = censor_text($text);
 
@@ -442,6 +456,19 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 
 	$text = bbcode_nl2br($text);
 	$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
+
+	/**
+	* Use this event to modify the text after it is parsed
+	*
+	* @event core.modify_text_for_display_after
+	* @var string	text		The text to parse
+	* @var string	uid			The BBCode UID
+	* @var string	bitfield	The BBCode Bitfield
+	* @var int		flags		The BBCode Flags
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'uid', 'bitfield', 'flags');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_after', compact($vars)));
 
 	return $text;
 }
