@@ -45,6 +45,9 @@ class phpbb_session_append_sid_test extends phpbb_test_case
 	*/
 	public function test_append_sid($url, $params, $is_amp, $session_id, $expected, $description)
 	{
+		global $phpbb_dispatcher;
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$this->assertEquals($expected, append_sid($url, $params, $is_amp, $session_id));
 	}
 }
