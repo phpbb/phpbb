@@ -418,23 +418,31 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 		return '';
 	}
 
+	$censor_text = $allow_bbcode = $allow_smilies = true;
+
 	/**
 	* Use this event to modify the text before it is parsed
 	*
 	* @event core.modify_text_for_display_before
-	* @var string	text		The text to parse
-	* @var string	uid			The BBCode UID
-	* @var string	bitfield	The BBCode Bitfield
-	* @var int		flags		The BBCode Flags
+	* @var string	text			The text to parse
+	* @var string	uid				The BBCode UID
+	* @var string	bitfield		The BBCode Bitfield
+	* @var int		flags			The BBCode Flags
+	* @var bool		censor_text		Whether or not to apply word censors
+	* @var bool		allow_bbcode	Whether or not to parse BBCode
+	* @var bool		allow_smilies	Whether or not to parse Smilies
 	* @since 3.1-A1
 	*/
-	$vars = array('text', 'uid', 'bitfield', 'flags');
+	$vars = array('text', 'uid', 'bitfield', 'flags', 'censor_text', 'allow_bbcode', 'allow_smilies');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_before', compact($vars)));
 
-	$text = censor_text($text);
+	if ($censor_text)
+	{		
+		$text = censor_text($text);
+	}
 
 	// Parse bbcode if bbcode uid stored and bbcode enabled
-	if ($uid && ($flags & OPTION_FLAG_BBCODE))
+	if ($uid && ($flags & OPTION_FLAG_BBCODE) && $allow_bbcode)
 	{
 		if (!class_exists('bbcode'))
 		{
@@ -455,7 +463,11 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 	}
 
 	$text = bbcode_nl2br($text);
-	$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
+
+	if ($allow_smilies)
+	{
+		$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
+	}
 
 	/**
 	* Use this event to modify the text after it is parsed
@@ -481,6 +493,22 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
 {
 	global $phpbb_root_path, $phpEx;
+
+	/**
+	* Use this event to modify the text before it is prepared for storage
+	*
+	* @event core.modify_text_for_storage_before
+	* @var string	text			The text to parse
+	* @var string	uid				The BBCode UID
+	* @var string	bitfield		The BBCode Bitfield
+	* @var int		flags			The BBCode Flags
+	* @var bool		allow_bbcode	Whether or not to parse BBCode
+	* @var bool		allow_urls		Whether or not to parse URLs
+	* @var bool		allow_smilies	Whether or not to parse Smilies
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'uid', 'bitfield', 'flags', 'allow_bbcode', 'allow_urls', 'allow_smilies');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_before', compact($vars)));
 
 	$uid = $bitfield = '';
 	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
@@ -509,6 +537,19 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 
 	$bitfield = $message_parser->bbcode_bitfield;
 
+	/**
+	* Use this event to modify the text after it is prepared for storage
+	*
+	* @event core.modify_text_for_storage_after
+	* @var string	text			The text to parse
+	* @var string	uid				The BBCode UID
+	* @var string	bitfield		The BBCode Bitfield
+	* @var int		flags			The BBCode Flags
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'uid', 'bitfield', 'flags');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_after', compact($vars)));
+
 	return;
 }
 
@@ -520,7 +561,30 @@ function generate_text_for_edit($text, $uid, $flags)
 {
 	global $phpbb_root_path, $phpEx;
 
+	/**
+	* Use this event to modify the text before it is decoded for editing
+	*
+	* @event core.modify_text_for_edit_before
+	* @var string	text			The text to parse
+	* @var string	uid				The BBCode UID
+	* @var int		flags			The BBCode Flags
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'uid', 'flags');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_edit_before', compact($vars)));
+
 	decode_message($text, $uid);
+
+	/**
+	* Use this event to modify the text after it is decoded for editing
+	*
+	* @event core.modify_text_for_edit_after
+	* @var string	text			The text to parse
+	* @var int		flags			The BBCode Flags
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'flags');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_edit_after', compact($vars)));
 
 	return array(
 		'allow_bbcode'	=> ($flags & OPTION_FLAG_BBCODE) ? 1 : 0,
