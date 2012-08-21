@@ -2488,34 +2488,20 @@ function cache_moderators()
 */
 function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC', $keywords = '')
 {
-	// This is all just an ugly hack to add "Dependency Injection" to a function
-	// the only real code is the function call which maps this function to a method.
-	static $static_log = null;
-
-	if ($mode instanceof phpbb_log_interface)
-	{
-		$static_log = $mode;
-		return true;
-	}
-	else if ($mode === false)
-	{
-		return false;
-	}
-
-	$tmp_log = $static_log;
+	global $phpbb_log;
 
 	// no log class set, create a temporary one ourselves to keep backwards compatability
-	if ($tmp_log === null)
+	if ($phpbb_log === null)
 	{
-		$tmp_log = new phpbb_log(LOG_TABLE);
+		$phpbb_log = new phpbb_log(LOG_TABLE);
 	}
 
 	$count_logs = ($log_count !== false);
 
-	$log = $tmp_log->get_logs($mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $limit_days, $sort_by, $keywords);
-	$log_count = $tmp_log->get_log_count();
+	$log = $phpbb_log->get_logs($mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $limit_days, $sort_by, $keywords);
+	$log_count = $phpbb_log->get_log_count();
 
-	return $tmp_log->get_valid_offset();
+	return $phpbb_log->get_valid_offset();
 }
 
 /**

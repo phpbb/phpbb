@@ -3357,29 +3357,20 @@ function parse_cfg_file($filename, $lines = false)
 */
 function add_log()
 {
-	// This is all just an ugly hack to add "Dependency Injection" to a function
-	// the only real code is the function call which maps this function to a method.
-	static $static_log = null;
+	global $phpbb_log;
 
 	$args = func_get_args();
 	$log = (isset($args[0])) ? $args[0] : false;
 
-	if ($log instanceof phpbb_log_interface)
-	{
-		$static_log = $log;
-		return true;
-	}
-	else if ($log === false)
+	if ($log === false)
 	{
 		return false;
 	}
 
-	$tmp_log = $static_log;
-
 	// no log class set, create a temporary one ourselves to keep backwards compatability
-	if ($tmp_log === null)
+	if ($phpbb_log === null)
 	{
-		$tmp_log = new phpbb_log(LOG_TABLE);
+		$phpbb_log = new phpbb_log(LOG_TABLE);
 	}
 
 	$mode = array_shift($args);
@@ -3407,7 +3398,7 @@ function add_log()
 	$user_id = (empty($user->data)) ? ANONYMOUS : $user->data['user_id'];
 	$user_ip = (empty($user->ip)) ? '' : $user->ip;
 
-	return $tmp_log->add($mode, $user_id, $user_ip, $log_operation, time(), $additional_data);
+	return $phpbb_log->add($mode, $user_id, $user_ip, $log_operation, time(), $additional_data);
 }
 
 /**
