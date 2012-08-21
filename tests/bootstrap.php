@@ -22,6 +22,7 @@ $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path 
 $phpbb_class_loader_ext->register();
 $phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".php");
 $phpbb_class_loader->register();
+$phpbb_dispatcher = new phpbb_event_dispatcher();
 
 require_once 'test_framework/phpbb_test_case_helpers.php';
 require_once 'test_framework/phpbb_test_case.php';
