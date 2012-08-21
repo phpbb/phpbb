@@ -255,6 +255,16 @@ function user_add($user_row, $cp_data = false)
 		}
 	}
 
+	/**
+	* Use this event to modify the values to be inserted when a user is added
+	*
+	* @event core.user_add_modify_data
+	* @var array	sql_ary		Array of data to be inserted when a user is added
+	* @since 3.1-A1
+	*/
+	$vars = array('sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.user_add_modify_data', compact($vars)));
+
 	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 	$db->sql_query($sql);
 
