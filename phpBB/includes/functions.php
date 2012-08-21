@@ -2247,7 +2247,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	* To override this function, the event must set $append_sid_override to
 	* the new URL value, which will be returned following the event
 	*
-	* @event core.append_sid_override
+	* @event core.append_sid
 	* @var	string		url					The url the session id needs to be
 	*										appended to (can have params)
 	* @var	mixed		params				String or array of additional url
@@ -2262,11 +2262,23 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	* @since 3.1-A1
 	*/
 	$vars = array('url', 'params', 'is_amp', 'session_id', 'append_sid_override');
-	extract($phpbb_dispatcher->trigger_event('core.append_sid_override', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.append_sid', compact($vars)));
 
 	if ($append_sid_override)
 	{
 		return $append_sid_override;
+	}
+
+	// The following hook remains for backwards compatibility, though use of
+	// the  event above is preferred.
+	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropriately.
+	// They could mimic most of what is within this function
+	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
+	{
+		if ($phpbb_hook->hook_return(__FUNCTION__))
+		{
+			return $phpbb_hook->hook_return_result(__FUNCTION__);
+		}
 	}
 
 	$params_is_array = is_array($params);
