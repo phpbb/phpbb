@@ -459,14 +459,21 @@ class phpbb_log implements phpbb_log_interface
 		$db->sql_freeresult($result);
 
 		/**
-		* @todo: enable when events are merged
+		* Get some additional data after we got all log entries
 		*
+		* @event core.get_logs_get_additional_data
+		* @var	array	log			Array with all our log entries
+		* @var	array	topic_id_list		Array of topic ids, for which we
+		*									get the permission data
+		* @var	array	reportee_id_list	Array of additional user IDs we
+		*									get the username strings for
+		* @since 3.1-A1
+		*/
 		if ($phpbb_dispatcher != null)
 		{
 			$vars = array('log', 'topic_id_list', 'reportee_id_list');
-			extract($phpbb_dispatcher->trigger_event('core.get_logs_additional_data', $vars, $vars));
+			extract($phpbb_dispatcher->trigger_event('core.get_logs_get_additional_data', $vars));
 		}
-		*/
 
 		if (sizeof($topic_id_list))
 		{
