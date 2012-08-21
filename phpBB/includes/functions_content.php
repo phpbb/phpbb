@@ -1268,16 +1268,16 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	* @var int user_id				String or array of additional url
 	*								parameters
 	* @var string username			The user's username
-	* @var string username_colour	Is url using &amp; (true) or
-	*								& (false)
-	* @var string guest_username	optional parameter to specify the
+	* @var string username_colour	The user's colour
+	* @var string guest_username	Optional parameter to specify the
 	*								guest username.
 	* @var string custom_profile_url Optional parameter to specify a
 	*								profile url.
 	* @var string username_string	The string that has been generated
+	* @var array _profile_cache		Array of original return templates
 	* @since 3.1-A1
 	*/
-	$vars = array('mode', 'user_id', 'username', 'username_colour', 'guest_username', 'custom_profile_url', 'username_string');
+	$vars = array('mode', 'user_id', 'username', 'username_colour', 'guest_username', 'custom_profile_url', 'username_string', '_profile_cache');
 	extract($phpbb_dispatcher->trigger_event('core.modify_username_string', compact($vars)));
 
 	return $username_string;
