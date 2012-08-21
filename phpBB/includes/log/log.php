@@ -210,7 +210,7 @@ class phpbb_log implements phpbb_log_interface
 		if ($phpbb_dispatcher != null)
 		{
 			$vars = array('mode', 'user_id', 'log_ip', 'log_operation', 'log_time', 'additional_data', 'sql_ary');
-			extract($phpbb_dispatcher->trigger_event('core.add_log', $vars, $vars));
+			extract($phpbb_dispatcher->trigger_event('core.add_log', $vars));
 		}
 
 		// We didn't find a log_type, so we don't save it in the database.
