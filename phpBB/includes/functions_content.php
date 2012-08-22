@@ -486,8 +486,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 */
 function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
 {
-	global $phpbb_root_path, $phpEx;
-	global $phpbb_dispatcher;
+	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	/**
 	* Use this event to modify the text before it is prepared for storage
@@ -554,8 +553,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 */
 function generate_text_for_edit($text, $uid, $flags)
 {
-	global $phpbb_root_path, $phpEx;
-	global $phpbb_dispatcher;
+	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	/**
 	* Use this event to modify the text before it is decoded for editing
