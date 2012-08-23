@@ -50,6 +50,11 @@ $current_time = time();
 * Note: $refresh must be true to retain previously submitted form data.
 *
 * @event core.modify_posting_parameters
+* @var	int		post_id		ID of the post
+* @var	int		topic_id	ID of the topic
+* @var	int		forum_id	ID of the forum
+* @var	int		draft_id	ID of the draft
+* @var	int		lastclick	Timestamp of when the form was last loaded
 * @var	bool	submit		Whether or not the form has been submitted
 * @var	bool	preview		Whether or not the post is being previewed
 * @var	bool	save		Whether or not a draft is being saved
@@ -67,7 +72,7 @@ $current_time = time();
 *							language keys.
 * @since 3.1-A1
 */
-$vars = array('submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error');
+$vars = array('post_id', 'topic_id', 'forum_id', 'draft_id', 'lastclick', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error');
 extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compact($vars)));
 
 // Was cancel pressed? If so then redirect to the appropriate page
