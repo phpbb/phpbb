@@ -125,6 +125,12 @@ class phpbb_cron_manager
 		return null;
 	}
 
+	/**
+	* Wraps a task inside an instance of phpbb_cron_task_wrapper.
+	*
+	* @param  phpbb_cron_task 			$task The task.
+	* @return phpbb_cron_task_wrapper	The wrapped task.
+	*/
 	public function wrap_task(phpbb_cron_task $task)
 	{
 		return new phpbb_cron_task_wrapper($task, $this->phpbb_root_path, $this->php_ext);
