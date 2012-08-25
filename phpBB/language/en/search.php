@@ -105,6 +105,8 @@ $lang = array_merge($lang, array(
 	'SORT_FORUM'				=> 'Forum',
 	'SORT_POST_SUBJECT'			=> 'Post subject',
 	'SORT_TIME'					=> 'Post time',
+	'SPHINX_SEARCH_FAILED'		=> 'Search failed: %s',
+	'SPHINX_SEARCH_FAILED_LOG'	=> 'Sorry, search could not be performed. More information about this failure has been logged in the error log.',
 
 	'TOO_FEW_AUTHOR_CHARS'	=> array(
 		1	=> 'You must specify at least %d character of the authors name.',

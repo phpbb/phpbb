@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 */
 function generate_smilies($mode, $forum_id)
 {
-	global $db, $user, $config, $template;
+	global $db, $user, $config, $template, $phpbb_dispatcher;
 	global $phpEx, $phpbb_root_path;
 
 	$start = request_var('start', 0);
@@ -122,6 +122,18 @@ function generate_smilies($mode, $forum_id)
 			);
 		}
 	}
+
+	/**
+	* This event is called after the smilies are populated
+	*
+	* @event core.generate_smilies_after
+	* @var	string	mode			Mode of the smilies: window|inline
+	* @var	int		forum_id		The forum ID we are currently in
+	* @var	bool	display_link	Shall we display the "more smilies" link?
+	* @since 3.1-A1
+	*/
+	$vars = array('mode', 'forum_id', 'display_link');
+	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_after', compact($vars)));
 
 	if ($mode == 'inline' && $display_link)
 	{
@@ -2370,7 +2382,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 
 		$error = false;
-		$search = new $search_type($error);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		if ($error)
 		{

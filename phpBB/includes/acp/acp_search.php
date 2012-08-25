@@ -596,16 +596,16 @@ class acp_search
 	*/
 	function init_search($type, &$search, &$error)
 	{
-		global $phpbb_root_path, $phpEx, $user;
+		global $phpbb_root_path, $phpEx, $user, $auth, $config, $db;
 
-		if (!class_exists($type) || !method_exists($type, 'get_name'))
+		if (!class_exists($type) || !method_exists($type, 'keyword_search'))
 		{
 			$error = $user->lang['NO_SUCH_SEARCH_MODULE'];
 			return $error;
 		}
 
 		$error = false;
-		$search = new $type($error);
+		$search = new $type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		return $error;
 	}

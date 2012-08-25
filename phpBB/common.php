@@ -135,7 +135,7 @@ $phpbb_style = $phpbb_container->get('style');
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
-$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('phpbb_template', 'display')));
 
 foreach ($cache->obtain_hooks() as $hook)
 {
@@ -146,3 +146,18 @@ if (!$config['use_system_cron'])
 {
 	$cron = $phpbb_container->get('cron.manager');
 }
+
+/**
+* Main event which is triggered on every page
+*
+* You can use this event to load function files and initiate objects
+*
+* NOTE:	At this point the global session ($user) and permissions ($auth)
+*		do NOT exist yet. If you need to use the user object
+*		(f.e. to include language files) or need to check permissions,
+*		please use the core.user_setup event instead!
+*
+* @event core.common
+* @since 3.1-A1
+*/
+$phpbb_dispatcher->dispatch('core.common');

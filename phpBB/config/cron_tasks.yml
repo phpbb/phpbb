@@ -50,7 +50,10 @@ services:
         arguments:
             - %core.root_path%
             - %core.php_ext%
+            - @auth
             - @config
+            - @dbal.conn
+            - @user
         tags:
             - { name: cron.task }
 

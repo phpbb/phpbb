@@ -280,7 +280,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	// We do some additional checks in the module to ensure it can actually be utilised
 	$error = false;
-	$search = new $search_type($error);
+	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 	if ($error)
 	{

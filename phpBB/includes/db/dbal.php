@@ -206,7 +206,7 @@ class dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
@@ -256,7 +256,7 @@ class dbal
 				$this->sql_rowseek($rownum, $query_id);
 			}
 
-			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
+			if (!is_object($query_id) && $cache->sql_exists($query_id))
 			{
 				return $cache->sql_fetchfield($query_id, $field);
 			}

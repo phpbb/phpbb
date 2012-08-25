@@ -26,13 +26,19 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 {
 	protected $phpbb_root_path;
 	protected $php_ext;
+	protected $auth;
 	protected $config;
+	protected $db;
+	protected $user;
 
-	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config)
+	public function __construct($phpbb_root_path, $php_ext, phpbb_auth $auth, phpbb_config $config, dbal $db, phpbb_user $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->auth = $auth;
 		$this->config = $config;
+		$this->db = $db;
+		$this->user = $user;
 	}
 
 	/**
@@ -52,7 +58,7 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;
-		$search = new $search_type($error);
+		$search = new $search_type($error, $this->phpbb_root_path, $this->php_ext, $this->auth, $this->config, $this->db, $this->user);
 
 		if (!$error)
 		{
