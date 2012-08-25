@@ -31,6 +31,14 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	protected $config;
 	protected $db;
 
+	/**
+	* If $forum_data is given, it is assumed to contain necessary information
+	* about a single forum that is to be pruned.
+	*
+	* If $forum_data is not given, forum id will be retrieved via request_var
+	* and a database query will be performed to load the necessary information
+	* about the forum.
+	*/
 	protected $forum_data;
 
 	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config, dbal $db)
