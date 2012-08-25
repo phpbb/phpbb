@@ -31,8 +31,10 @@ class phpbb_di_processor_ext implements phpbb_di_processor_interface
     public function process(ContainerBuilder $container)
     {
         $enabled_exts = $this->extension_manager->all_enabled();
-        foreach ($enabled_exts as $name => $path) {
-            if (file_exists($path . '/config/services.yml')) {
+        foreach ($enabled_exts as $name => $path)
+        {
+            if (file_exists($path . '/config/services.yml'))
+            {
                 $loader = new YamlFileLoader($container, new FileLocator($path . '/config'));
                 $loader->load('services.yml');
             }

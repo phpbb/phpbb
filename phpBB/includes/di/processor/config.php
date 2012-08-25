@@ -52,7 +52,8 @@ class phpbb_di_processor_config implements phpbb_di_processor_interface
 
     protected function fix_acm_type($acm_type)
     {
-        if (preg_match('#^[a-z]+$#', $acm_type)) {
+        if (preg_match('#^[a-z]+$#', $acm_type))
+        {
             return 'phpbb_cache_driver_'.$acm_type;
         }
 
