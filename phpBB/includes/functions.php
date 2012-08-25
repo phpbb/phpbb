@@ -2240,7 +2240,6 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 	$template->assign_vars(array(
 		'PER_PAGE'		=> $per_page,
 		'ON_PAGE'		=> $on_page,
-
 		'A_BASE_URL'	=> addslashes($base_url),
 	));
 
