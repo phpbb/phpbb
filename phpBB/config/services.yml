@@ -98,6 +98,17 @@ services:
     request:
         class: phpbb_request
 
+    style:
+        class: phpbb_style
+        arguments:
+            - %core.root_path%
+            - %core.php_ext%
+            - @config
+            - @user
+            - @style.resource_locator
+            - @style.path_provider_ext
+            - @template
+
     style.resource_locator:
         class: phpbb_style_resource_locator
 
@@ -119,17 +130,6 @@ services:
             - @user
             - @style.resource_locator
             - @style.path_provider_ext
-
-    style:
-        class: phpbb_style
-        arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @config
-            - @user
-            - @style.resource_locator
-            - @style.path_provider_ext
-            - @template
 
     user:
         class: phpbb_user
