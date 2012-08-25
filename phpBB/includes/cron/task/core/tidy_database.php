@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_cron_task_core_tidy_database extends phpbb_cron_task_base
 {
 	protected $phpbb_root_path;
-	protected $php_ext
+	protected $php_ext;
 	protected $config;
 
 	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config)
