@@ -3,6 +3,20 @@ imports:
     - { resource: cron_tasks.yml }
 
 services:
+    auth:
+        class: phpbb_auth
+
+    cache:
+        class: phpbb_cache_service
+        arguments:
+             - @cache.driver
+
+    cache.driver:
+        class: %cache.driver.class%
+
+    cache.driver.install:
+        class: phpbb_cache_driver_file
+
     class_loader:
         class: phpbb_class_loader
         arguments:
@@ -23,40 +37,47 @@ services:
             - [register, []]
             - [set_cache, [@cache.driver]]
 
-    cache:
-        class: phpbb_cache_service
-        arguments:
-             - @cache.driver
-
-    cache.driver:
-        class: %cache.driver.class%
-
-    cache.driver.install:
-        class: phpbb_cache_driver_file
-
-    dispatcher:
-        class: phpbb_event_dispatcher
-
-    request:
-        class: phpbb_request
-
-    user:
-        class: phpbb_user
-
-    auth:
-        class: phpbb_auth
-
-    dbal.conn:
-        class: %dbal.driver.class%
-        calls:
-            - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
-
     config:
         class: phpbb_config_db
         arguments:
             - @dbal.conn
             - @cache.driver
             - %tables.config%
+
+    cron.task_provider:
+        class: phpbb_cron_task_provider
+        arguments:
+            - @container
+
+    cron.manager:
+        class: phpbb_cron_manager
+        arguments:
+            - @cron.task_provider
+            - %core.root_path%
+            - %core.php_ext%
+
+    cron.lock_db:
+        class: phpbb_lock_db
+        arguments:
+            - cron_lock
+            - @config
+            - @dbal.conn
+
+    dispatcher:
+        class: phpbb_event_dispatcher
+
+    dbal.conn:
+        class: %dbal.driver.class%
+        calls:
+            - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
+
+    event.subscriber_loader:
+        class: phpbb_event_extension_subscriber_loader
+        arguments:
+            - @dispatcher
+            - @ext.manager
+        calls:
+            - [load, []]
 
     ext.manager:
         class: phpbb_extension_manager
@@ -66,6 +87,16 @@ services:
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
+
+    processor.config:
+        class: phpbb_di_processor_ext
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: container.processor }
+
+    request:
+        class: phpbb_request
 
     style.resource_locator:
         class: phpbb_style_resource_locator
@@ -100,36 +131,5 @@ services:
             - @style.path_provider_ext
             - @template
 
-    event.subscriber_loader:
-        class: phpbb_event_extension_subscriber_loader
-        arguments:
-            - @dispatcher
-            - @ext.manager
-        calls:
-            - [load, []]
-
-    cron.task_provider:
-        class: phpbb_cron_task_provider
-        arguments:
-            - @container
-
-    cron.manager:
-        class: phpbb_cron_manager
-        arguments:
-            - @cron.task_provider
-            - %core.root_path%
-            - %core.php_ext%
-
-    cron.lock_db:
-        class: phpbb_lock_db
-        arguments:
-            - cron_lock
-            - @config
-            - @dbal.conn
-
-    processor.config:
-        class: phpbb_di_processor_ext
-        arguments:
-            - @ext.manager
-        tags:
-            - { name: container.processor }
+    user:
+        class: phpbb_user
