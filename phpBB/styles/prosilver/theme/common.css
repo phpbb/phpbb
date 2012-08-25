@@ -515,11 +515,11 @@ li.pagination ul {
 	vertical-align: middle;
 }
 
-.pagination ul li, dl .pagination ul li, dl.icon .pagination ul li  {
+.pagination ul li, dl .pagination ul li, dl.icon .pagination ul li {
 	display: inline;
 	padding: 0;
 	font-size: 100%;
-	line-height: normal;	
+	line-height: normal;
 }
 
 .pagination li a, .pagnation li span, li .pagination li a, li .pagnation li span, .pagination li.active span, .pagination li.ellipsis span {
