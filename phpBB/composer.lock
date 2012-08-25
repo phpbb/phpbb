@@ -1,21 +1,21 @@
 {
-    "hash": "7024226b03c2abdfa95c76b11c1ec74d",
+    "hash": "1632798bc1d5298a4f5bd3087c972a9f",
     "packages": [
         {
             "package": "symfony/config",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/dependency-injection",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/event-dispatcher",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/yaml",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         }
     ],
     "packages-dev": [
@@ -28,40 +28,40 @@
         {
             "package": "fabpot/goutte",
             "version": "dev-master",
-            "source-reference": "df14259688c7d6f1d366aa073a589695d2b9f451",
-            "commit-date": "1343194442"
+            "source-reference": "6d26279344736f6983a969e46afef082ebf30a67",
+            "commit-date": "1345141401"
         },
         {
             "package": "guzzle/common",
-            "version": "v2.8.1"
+            "version": "v2.8.4"
         },
         {
             "package": "guzzle/http",
-            "version": "v2.8.1"
+            "version": "v2.8.4"
         },
         {
             "package": "guzzle/parser",
-            "version": "v2.8.1"
+            "version": "v2.8.4"
         },
         {
             "package": "symfony/browser-kit",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/css-selector",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/dom-crawler",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/finder",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/process",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         }
     ],
     "aliases": [
