@@ -32,7 +32,8 @@ class phpbb_cron_manager
 	*/
 	protected $tasks = array();
 
-	protected $phpbb_root_path, $php_ext;
+	protected $phpbb_root_path;
+	protected $php_ext;
 
 	/**
 	* Constructor. Loads all available tasks.

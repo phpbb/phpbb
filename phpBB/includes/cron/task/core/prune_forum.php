@@ -26,8 +26,12 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements phpbb_cron_task_parametrized
 {
-	private $phpbb_root_path, $php_ext, $config, $db;
-	private $forum_data;
+	protected $phpbb_root_path;
+	protected $php_ext;
+	protected $config;
+	protected $db;
+
+	protected $forum_data;
 
 	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config, dbal $db)
 	{

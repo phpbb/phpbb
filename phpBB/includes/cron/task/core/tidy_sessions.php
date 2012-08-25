@@ -22,7 +22,8 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_tidy_sessions extends phpbb_cron_task_base
 {
-	private $config, $user;
+	protected $config;
+	protected $user;
 
 	public function __construct(phpbb_config $config, phpbb_user $user)
 	{

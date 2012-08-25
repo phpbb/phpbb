@@ -22,7 +22,8 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_tidy_cache extends phpbb_cron_task_base
 {
-	private $config, $cache;
+	protected $config;
+	protected $cache;
 
 	public function __construct(phpbb_config $config, phpbb_cache_driver_interface $cache)
 	{

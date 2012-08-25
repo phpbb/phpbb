@@ -23,7 +23,9 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_wrapper
 {
-	private $task, $phpbb_root_path, $php_ext;
+	protected $task;
+	protected $phpbb_root_path;
+	protected $php_ext;
 
 	/**
 	* Constructor.
