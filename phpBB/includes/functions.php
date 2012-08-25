@@ -2112,14 +2112,14 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 		$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
 	}
 
-	if ($on_page != $total_pages)
+	if ($on_page != 1)
 	{
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page),
+			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page),
 			'S_IS_CURRENT'	=> false,
-			'S_IS_PREV'		=> false,
-			'S_IS_NEXT'		=> true,
+			'S_IS_PREV'		=> true,
+			'S_IS_NEXT'		=> false,
 			'S_IS_ELLIPSIS'	=> false,
 		));
 	}
@@ -2166,14 +2166,14 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	}
 	while ($at_page <= $total_pages);
 
-	if ($on_page != 1)
+	if ($on_page != $total_pages)
 	{
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page),
+			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page),
 			'S_IS_CURRENT'	=> false,
-			'S_IS_PREV'		=> true,
-			'S_IS_NEXT'		=> false,
+			'S_IS_PREV'		=> false,
+			'S_IS_NEXT'		=> true,
 			'S_IS_ELLIPSIS'	=> false,
 		));
 	}
