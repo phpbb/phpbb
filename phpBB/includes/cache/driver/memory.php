@@ -334,8 +334,6 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 
 		$this->_write('sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
 
-		$query_result = $query_id;
-
 		return $query_id;
 	}
 
