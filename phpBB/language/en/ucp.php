@@ -313,7 +313,6 @@ $lang = array_merge($lang, array(
 	'NO_AUTHOR'						=> 'No author defined for this message',
 	'NO_AVATAR_CATEGORY'			=> 'None',
 
-	'NO_AUTH_DELETE_MESSAGE'		=> 'You are not authorised to delete private messages.',
 	'NO_AUTH_EDIT_MESSAGE'			=> 'You are not authorised to edit private messages.',
 	'NO_AUTH_FORWARD_MESSAGE'		=> 'You are not authorised to forward private messages.',
 	'NO_AUTH_GROUP_MESSAGE'			=> 'You are not authorised to send private messages to groups.',
