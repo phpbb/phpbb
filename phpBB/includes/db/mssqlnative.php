@@ -219,7 +219,6 @@ class dbal_mssqlnative extends dbal
 		$this->server = $sqlserver . (($port) ? $port_delimiter . $port : '');
 
 		//connect to database
-		error_reporting(E_ALL);
 		$this->db_connect_id = sqlsrv_connect($this->server, array(
 			'Database' => $this->dbname,
 			'UID' => $this->user,
