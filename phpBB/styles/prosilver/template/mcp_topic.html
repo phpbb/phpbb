@@ -22,15 +22,13 @@ onload_functions.push('subPanels()');
 
 <div id="minitabs">
 	<ul>
-		<li id="display-panel-tab"<!-- IF not S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->	
+		<li id="display-panel-tab"<!-- IF not S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
 			<a href="#minitabs" onclick="subPanels('display-panel'); return false;"><span>{L_DISPLAY_OPTIONS}</span></a>
 		</li>
 		<li id="split-panel-tab">
-			
 			<a href="#minitabs" onclick="subPanels('split-panel'); return false;"><span>{L_SPLIT_TOPIC}</span></a>
 		</li>
 		<li id="merge-panel-tab"<!-- IF S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			
 			<a href="#minitabs" onclick="subPanels('merge-panel'); return false;"><span>{L_MERGE_POSTS}</span></a>
 		</li>
 	</ul>
