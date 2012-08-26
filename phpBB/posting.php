@@ -49,6 +49,10 @@ $current_time = time();
 * 
 * Note: $refresh must be true to retain previously submitted form data.
 *
+* Note: The template class will not work properly until $user->setup() is
+* called, and it has not been called yet. Extensions requiring template
+* assignments should use an event that comes later in this file.
+*
 * @event core.modify_posting_parameters
 * @var	int		post_id		ID of the post
 * @var	int		topic_id	ID of the topic
