@@ -1452,6 +1452,14 @@ $template->assign_vars(array(
 	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 );
 
+/**
+* This event allows you to modify template variables for the posting screen
+*
+* @event core.posting_modify_template_vars
+* @since 3.1-A1
+*/
+$phpbb_dispatcher->trigger_event('core.posting_modify_template_vars');
+
 // Build custom bbcodes array
 display_custom_bbcodes();
 
