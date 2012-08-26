@@ -1387,3 +1387,38 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 	$avatar_img .= $avatar;
 	return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $avatar_width . '" height="' . $avatar_height . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
 }
+
+/**
+* Generate a list of archive types available for compressing attachments
+*
+* @param string $param_key Either topic_id or post_id
+* @param string $param_val The value of the topic or post id
+* @param string $phpbb_root_path The root path of the phpBB installation
+* @param string $phpEx The PHP extension
+*
+* @return array Array containing the link and the type of compression
+*/
+function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $phpEx)
+{
+	if (!class_exists('compress'))
+	{
+		require $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
+	}
+
+	$methods = compress::methods();
+	$links = array();
+
+	foreach ($methods as $method)
+	{
+		$type = array_pop(explode('.', $method));
+		$params = array('archive' => $method);
+		$params[$param_key] = $param_val;
+
+		$links[] = array(
+			'LINK' => append_sid("{$phpbb_root_path}download/file.$phpEx", $params),
+			'TYPE' => $type,
+		);
+	}
+
+	return $links;
+}
