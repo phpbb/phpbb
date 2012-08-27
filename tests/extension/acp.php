@@ -119,59 +119,40 @@ class acp_test extends phpbb_functional_test_case
 	{
         $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=foo&sid=' . $this->sid);
 
+        $validation = array(
+        	'DISPLAY_NAME'		=> 'phpBB Foo Extension',
+        	'CLEAN_NAME'		=> 'foo/example',
+        	'DESCRIPTION'		=> 'An example/sample extension to be used for testing purposes in phpBB Development.',
+        	'VERSION'	  		=> '1.0.0',
+        	'TIME'				=> '2012-02-15 01:01:01',
+        	'LICENCE'			=> 'GPL-2.0',
+        	'PHPBB_VERSION'		=> '3.1.0-dev',
+        	'PHP_VERSION'		=> '>=5.3',
+        	'AUTHOR_NAME'		=> 'Nathan Guse',
+        	'AUTHOR_EMAIL'		=> 'email@phpbb.com',
+        	'AUTHOR_HOMEPAGE'	=> 'http://lithiumstudios.org',
+        	'AUTHOR_ROLE'		=> 'N/A',
+        );
+
         for ($i = 0; $i < $crawler->filter('dl')->count(); $i++)
         {
         	$text = $crawler->filter('dl')->eq($i)->text();
 
-        	switch (true)
+        	$match = false;
+
+        	foreach ($validation as $language_key => $expected)
         	{
-        		case (strpos($text, $this->lang('DISPLAY_NAME')) === 0):
-        			$this->assertContains('phpBB Foo Extension', $text);
-        		break;
+        		if (strpos($text, $this->lang($language_key)) === 0)
+        		{
+        			$match = true;
 
-        		case (strpos($text, $this->lang('CLEAN_NAME')) === 0):
-        			$this->assertContains('foo/example', $text);
-        		break;
+        			$this->assertContains($expected, $text);
+				}
+			}
 
-        		case (strpos($text, $this->lang('DESCRIPTION')) === 0):
-        			$this->assertContains('An example/sample extension to be used for testing purposes in phpBB Development.', $text);
-        		break;
-
-        		case (strpos($text, $this->lang('VERSION')) === 0):
-        			$this->assertContains('1.0.0', $text);
-        		break;
-
-        		case (strpos($text, $this->lang('TIME')) === 0):
-        			$this->assertContains('2012-02-15 01:01:01', $text);
-        		break;
-
-        		case (strpos($text, $this->lang('LICENCE')) === 0):
-        			$this->assertContains('GNU GPL v2', $text);
-        		break;
-
-        		case (strpos($text, $this->lang('PHPBB_VERSION')) === 0):
-        			$this->assertContains('3.1.0-dev', $text);
-        		break;
-
-        		case (strpos($text, $this->lang('PHP_VERSION')) === 0):
-        			$this->assertContains('>=5.3', $text);
-        		break;
-
-        		case (strpos($text, $this->lang('AUTHOR_NAME')) === 0):
-        			$this->assertContains('Nathan Guse', $text);
-        		break;
-
-        		case (strpos($text, $this->lang('AUTHOR_EMAIL')) === 0):
-        			$this->assertContains('email@phpbb.com', $text);
-        		break;
-
-        		case (strpos($text, $this->lang('AUTHOR_HOMEPAGE')) === 0):
-        			$this->assertContains('http://lithiumstudios.org', $text);
-        		break;
-
-        		case (strpos($text, $this->lang('AUTHOR_ROLE')) === 0):
-        			$this->assertContains('N/A', $text);
-        		break;
+			if (!$match)
+			{
+				$this->fail('Unexpected field: "' . $text . '"');
 			}
 		}
 	}

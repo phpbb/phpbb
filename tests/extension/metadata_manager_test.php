@@ -93,7 +93,7 @@ class metadata_manager_test extends phpbb_database_test_case
 		$this->assertEquals($metadata, $json);
 	}
 
-	public function test_validator()
+	public function test_validator_non_existant()
 	{
 		$ext_name = 'validator';
 
@@ -103,37 +103,57 @@ class metadata_manager_test extends phpbb_database_test_case
 		try
 		{
 			$manager->validate('name');
+
+			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e) {}
-		$this->assertEquals((string) $e, 'Required meta field \'name\' has not been set.');
+		catch(phpbb_extension_exception $e)
+		{
+			$this->assertEquals((string) $e, 'Required meta field \'name\' has not been set.');
+		}
 
 		try
 		{
 			$manager->validate('type');
+
+			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e) {}
-		$this->assertEquals((string) $e, 'Required meta field \'type\' has not been set.');
+		catch(phpbb_extension_exception $e)
+		{
+			$this->assertEquals((string) $e, 'Required meta field \'type\' has not been set.');
+		}
 
 		try
 		{
 			$manager->validate('licence');
+
+			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e) {}
-		$this->assertEquals((string) $e, 'Required meta field \'licence\' has not been set.');
+		catch(phpbb_extension_exception $e)
+		{
+			$this->assertEquals((string) $e, 'Required meta field \'licence\' has not been set.');
+		}
 
 		try
 		{
 			$manager->validate('version');
+
+			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e) {}
-		$this->assertEquals((string) $e, 'Required meta field \'version\' has not been set.');
+		catch(phpbb_extension_exception $e)
+		{
+			$this->assertEquals((string) $e, 'Required meta field \'version\' has not been set.');
+		}
 
 		try
 		{
 			$manager->validate_authors();
+
+			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e) {}
-		$this->assertEquals((string) $e, 'Required meta field \'authors\' has not been set.');
+		catch(phpbb_extension_exception $e)
+		{
+			$this->assertEquals((string) $e, 'Required meta field \'authors\' has not been set.');
+		}
 
 		$manager->merge_metadata(array(
 			'authors'	=> array(
@@ -144,10 +164,21 @@ class metadata_manager_test extends phpbb_database_test_case
 		try
 		{
 			$manager->validate_authors();
-		}
-		catch(phpbb_extension_exception $e) {}
-		$this->assertEquals((string) $e, 'Required meta field \'author name\' has not been set.');
 
+			$this->fail('Exception not triggered');
+		}
+		catch(phpbb_extension_exception $e)
+		{
+			$this->assertEquals((string) $e, 'Required meta field \'author name\' has not been set.');
+		}
+	}
+
+
+	public function test_validator_invalid()
+	{
+		$ext_name = 'validator';
+
+		$manager = $this->get_metadata_manager($ext_name);
 
 		// Invalid data
 		$manager->set_metadata(array(
@@ -160,31 +191,53 @@ class metadata_manager_test extends phpbb_database_test_case
 		try
 		{
 			$manager->validate('name');
+
+			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e) {}
-		$this->assertEquals((string) $e, 'Meta field \'name\' is invalid.');
+		catch(phpbb_extension_exception $e)
+		{
+			$this->assertEquals((string) $e, 'Meta field \'name\' is invalid.');
+		}
 
 		try
 		{
 			$manager->validate('type');
+
+			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e) {}
-		$this->assertEquals((string) $e, 'Meta field \'type\' is invalid.');
+		catch(phpbb_extension_exception $e)
+		{
+			$this->assertEquals((string) $e, 'Meta field \'type\' is invalid.');
+		}
 
 		try
 		{
 			$manager->validate('licence');
+
+			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e) {}
-		$this->assertEquals((string) $e, 'Meta field \'licence\' is invalid.');
+		catch(phpbb_extension_exception $e)
+		{
+			$this->assertEquals((string) $e, 'Meta field \'licence\' is invalid.');
+		}
 
 		try
 		{
 			$manager->validate('version');
-		}
-		catch(phpbb_extension_exception $e) {}
-		$this->assertEquals((string) $e, 'Meta field \'version\' is invalid.');
 
+			$this->fail('Exception not triggered');
+		}
+		catch(phpbb_extension_exception $e)
+		{
+			$this->assertEquals((string) $e, 'Meta field \'version\' is invalid.');
+		}
+	}
+
+	public function test_validator_valid()
+	{
+		$ext_name = 'validator';
+
+		$manager = $this->get_metadata_manager($ext_name);
 
 		// Valid data
 		$manager->set_metadata(array(
@@ -202,8 +255,14 @@ class metadata_manager_test extends phpbb_database_test_case
 		{
 			$this->fail($e);
 		}
+	}
 
 
+	public function test_validator_requirements()
+	{
+		$ext_name = 'validator';
+
+		$manager = $this->get_metadata_manager($ext_name);
 		// Too high of requirements
 		$manager->merge_metadata(array(
 			'require'		=> array(
