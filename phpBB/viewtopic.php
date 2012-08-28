@@ -277,7 +277,7 @@ if ($post_id)
 		$sql = 'SELECT COUNT(p.post_id) AS prev_posts
 			FROM ' . POSTS_TABLE . " p
 			WHERE p.topic_id = {$topic_data['topic_id']}
-				" . phpbb_content_visibility::get_visibility_sql('post', $forum_id, 'p.');
+				AND " . phpbb_content_visibility::get_visibility_sql('post', $forum_id, 'p.');
 
 		if ($sort_dir == 'd')
 		{
@@ -615,7 +615,7 @@ $template->assign_vars(array(
 	'REPLY_IMG'			=> ($topic_data['forum_status'] == ITEM_LOCKED || $topic_data['topic_status'] == ITEM_LOCKED) ? $user->img('button_topic_locked', 'TOPIC_LOCKED') : $user->img('button_topic_reply', 'REPLY_TO_TOPIC'),
 	'EDIT_IMG' 			=> $user->img('icon_post_edit', 'EDIT_POST'),
 	'DELETE_IMG' 		=> $user->img('icon_post_delete', 'DELETE_POST'),
-	'DELETED_IMG'       => $user->img('icon_topic_deleted', 'POST_DELETED_RESTORE'),
+	'DELETED_IMG'		=> $user->img('icon_topic_deleted', 'POST_DELETED_RESTORE'),
 	'INFO_IMG' 			=> $user->img('icon_post_info', 'VIEW_INFO'),
 	'PROFILE_IMG'		=> $user->img('icon_user_profile', 'READ_PROFILE'),
 	'SEARCH_IMG' 		=> $user->img('icon_user_search', 'SEARCH_USER_POSTS'),
