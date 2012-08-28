@@ -2119,6 +2119,76 @@ function change_database_data(&$no_updates, $version)
 					AND module_basename = \'profile\'
 					AND module_mode = \'signature\'';
 			_sql($sql, $errored, $error_ary);
+
+			$bots_to_update = array(
+				'Baidu [Spider]'	=> array('Baiduspider', ''),
+				'Exabot [Bot]'		=> array('Exabot', ''),
+				'Voyager [Bot]'		=> array('voyager/', ''),
+				'W3C [Validator]'	=> array('W3C_Validator', ''),
+			);
+
+			$bots_to_delete = array(
+				'NG-Search [Bot]',
+				'Nutch/CVS [Bot]',
+				'OmniExplorer [Bot]',
+				'Seekport [Bot]',
+				'Synoo [Bot]',
+				'WiseNut [Bot]',
+			);
+
+			foreach($bots_to_update as $bot_name => $bot_array)
+			{
+				list($bot_agent, $bot_ip) = $bot_array;
+
+				$bot_name_clean = utf8_clean_string($bot_name);
+
+				$sql = 'SELECT user_id
+					FROM ' . USERS_TABLE . "
+					WHERE username_clean = '" . $db->sql_escape($bot_name_clean) . "'";
+				$result = $db->sql_query($sql);
+				$is_user = (bool) $db->sql_fetchfield('user_id');
+				$db->sql_freeresult($result);
+
+				if ($is_user)
+				{
+					$sql = 'UPDATE ' . BOTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
+						'bot_agent'		=> (string) $bot_agent,
+						'bot_ip'		=> (string) $bot_ip,
+					)) . " WHERE bot_name = '" . $db->sql_escape($bot_name) . "'";
+
+					_sql($sql, $errored, $error_ary);
+				}
+			}
+
+			if (!function_exists('user_delete'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
+
+			foreach($bots_to_delete as $bot_name)
+			{
+				$bot_name_clean = utf8_clean_string($bot_name);
+
+				$sql = 'SELECT user_id
+					FROM ' . USERS_TABLE . "
+					WHERE username_clean = '" . $db->sql_escape($bot_name_clean) . "'";
+				$result = $db->sql_query($sql);
+				$bot_user_id = $db->sql_fetchfield('user_id');
+				$is_user = (bool) $bot_user_id;
+				$db->sql_freeresult($result);
+
+				if ($is_user)
+				{
+					$sql = 'DELETE FROM ' . BOTS_TABLE . "
+						WHERE bot_name = '" . $db->sql_escape($bot_name) . "'";
+
+					_sql($sql, $errored, $error_ary);
+
+					user_delete('remove', $bot_user_id);
+				}
+			}
+
+			$no_updates = false;
 		break;
 	}
 }
