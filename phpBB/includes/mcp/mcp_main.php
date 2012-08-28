@@ -534,7 +534,7 @@ function mcp_move_topic($topic_ids)
 					'forum_id'				=>	(int) $row['forum_id'],
 					'icon_id'				=>	(int) $row['icon_id'],
 					'topic_attachment'		=>	(int) $row['topic_attachment'],
-					'topic_visibliity'		=>	ITEM_APPROVED, // a shadow topic is always approved
+					'topic_visibility'		=>	ITEM_APPROVED, // a shadow topic is always approved
 					'topic_reported'		=>	0, // a shadow topic is never reported
 					'topic_title'			=>	(string) $row['topic_title'],
 					'topic_poster'			=>	(int) $row['topic_poster'],
