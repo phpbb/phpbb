@@ -650,7 +650,7 @@ CREATE TABLE phpbb_posts (
 	icon_id INTEGER DEFAULT 0 NOT NULL,
 	poster_ip VARCHAR(40) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	post_time INTEGER DEFAULT 0 NOT NULL,
-	post_approved INTEGER DEFAULT 1 NOT NULL,
+	post_visibility INTEGER DEFAULT 0 NOT NULL,
 	post_reported INTEGER DEFAULT 0 NOT NULL,
 	enable_bbcode INTEGER DEFAULT 1 NOT NULL,
 	enable_smilies INTEGER DEFAULT 1 NOT NULL,
@@ -677,7 +677,7 @@ CREATE INDEX phpbb_posts_forum_id ON phpbb_posts(forum_id);;
 CREATE INDEX phpbb_posts_topic_id ON phpbb_posts(topic_id);;
 CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts(poster_ip);;
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts(poster_id);;
-CREATE INDEX phpbb_posts_post_approved ON phpbb_posts(post_approved);;
+CREATE INDEX phpbb_posts_post_visibility ON phpbb_posts(post_visibility);;
 CREATE INDEX phpbb_posts_post_username ON phpbb_posts(post_username);;
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts(topic_id, post_time);;
 
@@ -1115,7 +1115,7 @@ CREATE TABLE phpbb_topics (
 	forum_id INTEGER DEFAULT 0 NOT NULL,
 	icon_id INTEGER DEFAULT 0 NOT NULL,
 	topic_attachment INTEGER DEFAULT 0 NOT NULL,
-	topic_approved INTEGER DEFAULT 1 NOT NULL,
+	topic_visibility INTEGER DEFAULT 0 NOT NULL,
 	topic_reported INTEGER DEFAULT 0 NOT NULL,
 	topic_title VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	topic_poster INTEGER DEFAULT 0 NOT NULL,
@@ -1152,8 +1152,8 @@ ALTER TABLE phpbb_topics ADD PRIMARY KEY (topic_id);;
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics(forum_id);;
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics(forum_id, topic_type);;
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics(topic_last_post_time);;
-CREATE INDEX phpbb_topics_topic_approved ON phpbb_topics(topic_approved);;
-CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics(forum_id, topic_approved, topic_last_post_id);;
+CREATE INDEX phpbb_topics_topic_visibility ON phpbb_topics(topic_visibility);;
+CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics(forum_id, topic_visibility, topic_last_post_id);;
 CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics(forum_id, topic_last_post_time, topic_moved_id);;
 
 CREATE GENERATOR phpbb_topics_gen;;
@@ -1363,3 +1363,5 @@ CREATE TABLE phpbb_zebra (
 );;
 
 ALTER TABLE phpbb_zebra ADD PRIMARY KEY (user_id, zebra_id);;
+
+

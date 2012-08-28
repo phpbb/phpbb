@@ -462,7 +462,7 @@ CREATE TABLE phpbb_posts (
 	icon_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	poster_ip varbinary(40) DEFAULT '' NOT NULL,
 	post_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	post_approved tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	post_visibility tinyint(3) DEFAULT '0' NOT NULL,
 	post_reported tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	enable_bbcode tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_smilies tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
@@ -486,7 +486,7 @@ CREATE TABLE phpbb_posts (
 	KEY topic_id (topic_id),
 	KEY poster_ip (poster_ip),
 	KEY poster_id (poster_id),
-	KEY post_approved (post_approved),
+	KEY post_visibility (post_visibility),
 	KEY post_username (post_username(255)),
 	KEY tid_post_time (topic_id, post_time)
 );
@@ -777,7 +777,7 @@ CREATE TABLE phpbb_topics (
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	icon_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_approved tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	topic_visibility tinyint(3) DEFAULT '0' NOT NULL,
 	topic_reported tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_title blob NOT NULL,
 	topic_poster mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -811,8 +811,8 @@ CREATE TABLE phpbb_topics (
 	KEY forum_id (forum_id),
 	KEY forum_id_type (forum_id, topic_type),
 	KEY last_post_time (topic_last_post_time),
-	KEY topic_approved (topic_approved),
-	KEY forum_appr_last (forum_id, topic_approved, topic_last_post_id),
+	KEY topic_visibility (topic_visibility),
+	KEY forum_appr_last (forum_id, topic_visibility, topic_last_post_id),
 	KEY fid_time_moved (forum_id, topic_last_post_time, topic_moved_id)
 );
 
@@ -974,3 +974,5 @@ CREATE TABLE phpbb_zebra (
 	foe tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id, zebra_id)
 );
+
+
