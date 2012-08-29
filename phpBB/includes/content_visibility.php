@@ -43,9 +43,15 @@ class phpbb_content_visibility
 		{
 			$status_ary[] = ITEM_DELETED;
 
+			if (sizeof($status_ary) == 3)
+			{
+				// The user can see all types, so we simplify this to an empty string,
+				// as we don't need to restrict anything on the query.
+				return '';
+			}
+
 			// If the user has m_restore, the rest of the function will not
 			// make more content visible, so we can return the query here.
-			// This avoids one OR in all queries
 			return $db->sql_in_set($table_alias . $mode . '_visibility', $status_ary);
 		}
 

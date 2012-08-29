@@ -1855,7 +1855,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 
 	// Handle update of unapproved topics info.
 	// Only update for moderators having m_approve permission for the forum.
-	$sql_update_unapproved = ($auth->acl_get('m_approve', $forum_id)) ? '': 'AND t.topic_approved = 1';
+	$sql_update_unapproved = phpbb_content_visibility::get_visibility_sql('topic', $forum_id, 't.');
+	$sql_update_unapproved = ($sql_update_unapproved) ? ' AND ' . $sql_update_unapproved : '';
 
 	// Check the forum for any left unread topics.
 	// If there are none, we mark the forum as read.

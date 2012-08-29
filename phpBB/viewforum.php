@@ -234,6 +234,7 @@ gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $
 if ($sort_days)
 {
 	$min_post_time = time() - ($sort_days * 86400);
+	$sql_visibility = phpbb_content_visibility::get_visibility_sql('topic', $forum_id);
 
 	$sql = 'SELECT COUNT(topic_id) AS num_topics
 		FROM ' . TOPICS_TABLE . "
@@ -241,7 +242,7 @@ if ($sort_days)
 			AND (topic_last_post_time >= $min_post_time
 				OR topic_type = " . POST_ANNOUNCE . '
 				OR topic_type = ' . POST_GLOBAL . ')
-			AND ' . phpbb_content_visibility::get_visibility_sql('topic', $forum_id);
+			' . (($sql_visibility) ? ' AND ' . $sql_visibility : '');
 	$result = $db->sql_query($sql);
 	$topics_count = (int) $db->sql_fetchfield('num_topics');
 	$db->sql_freeresult($result);
@@ -353,7 +354,8 @@ $sql_array = array(
 	'LEFT_JOIN'	=> array(),
 );
 
-$sql_approved = 'AND ' . phpbb_content_visibility::get_visibility_sql('topic', $forum_id, 't.');
+$sql_approved = phpbb_content_visibility::get_visibility_sql('topic', $forum_id, 't.');
+$sql_approved = ($sql_approved) ? ' AND ' . $sql_approved : '';
 
 if ($user->data['is_registered'])
 {

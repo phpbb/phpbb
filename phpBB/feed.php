@@ -779,6 +779,8 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 			return false;
 		}
 
+		$sql_visibility = phpbb_content_visibility::get_visibility_sql('post', array(), 'p.');
+
 		// Get the actual data
 		$this->sql = array(
 			'SELECT'	=>	'f.forum_id, f.forum_name, ' .
@@ -795,7 +797,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 				),
 			),
 			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
-							AND ' . phpbb_content_visibility::get_visibility_sql('post', array(), 'p.') . '
+							' . (($sql_visibility) ? ' AND ' . $sql_visibility : '') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND u.user_id = p.poster_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
@@ -885,14 +887,14 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 	{
 		global $auth, $db;
 
-		$m_approve = ($auth->acl_get('m_approve', $this->forum_id)) ? true : false;
+		$sql_visibility = phpbb_content_visibility::get_visibility_sql('topic', $this->forum_id);
 
 		// Determine topics with recent activity
 		$sql = 'SELECT topic_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
 			WHERE forum_id = ' . $this->forum_id . '
 				AND topic_moved_id = 0
-				AND ' . phpbb_content_visibility::get_visibility_sql('topic', $this->forum_id) . '
+				' . (($sql_visibility) ? ' AND ' . $sql_visibility : '') . '
 			ORDER BY topic_last_post_time DESC';
 		$result = $db->sql_query_limit($sql, $this->num_items);
 
@@ -911,6 +913,8 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 			return false;
 		}
 
+		$sql_visibility = phpbb_content_visibility::get_visibility_sql('post', $this->forum_id, 'p.');
+
 		$this->sql = array(
 			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
@@ -919,7 +923,7 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 				USERS_TABLE		=> 'u',
 			),
 			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
-							AND ' . phpbb_content_visibility::get_visibility_sql('post', $this->forum_id, 'p.') . '
+							' . (($sql_visibility) ? ' AND ' . $sql_visibility : '') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND p.poster_id = u.user_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
@@ -1017,6 +1021,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 	{
 		global $auth, $db;
 
+		$sql_visibility = phpbb_content_visibility::get_visibility_sql('post', $this->forum_id, 'p.');
 		$this->sql = array(
 			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
@@ -1025,7 +1030,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 				USERS_TABLE		=> 'u',
 			),
 			'WHERE'		=> 'p.topic_id = ' . $this->topic_id . '
-								AND ' . phpbb_content_visibility::get_visibility_sql('post', $this->forum_id, 'p.') . '
+								' . (($sql_visibility) ? ' AND ' . $sql_visibility : '') . '
 								AND p.poster_id = u.user_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
 		);
