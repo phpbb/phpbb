@@ -475,6 +475,7 @@ $lang = array_merge($lang, array(
 	'POST_BY_AUTHOR'		=> 'by',
 	'POST_BY_FOE'			=> 'This post was made by <strong>%1$s</strong> who is currently on your ignore list. %2$sDisplay this post%3$s.',
 	'POST_DAY'				=> '%.2f posts per day',
+	'POST_DELETED'			=> 'Soft deleted post:',
 	'POST_DETAILS'			=> 'Post details',
 	'POST_NEW_TOPIC'		=> 'Post new topic',
 	'POST_PCT'				=> '%.2f%% of all posts',

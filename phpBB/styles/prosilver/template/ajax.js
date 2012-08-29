@@ -24,8 +24,8 @@ phpbb.add_ajax_callback('post_delete', function() {
 });
 
 // This callback removes the approve / disapprove div or link.
-phpbb.add_ajax_callback('post_approve', function(res) {
-	var remove = (res.approved) ? $(this) : $(this).parents('.post');
+phpbb.add_ajax_callback('post_visibility', function(res) {
+	var remove = (res.visible) ? $(this) : $(this).parents('.post');
 	$(remove).css('pointer-events', 'none').fadeOut(function() {
 		$(this).remove();
 	});
