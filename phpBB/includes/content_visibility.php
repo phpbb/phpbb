@@ -42,6 +42,11 @@ class phpbb_content_visibility
 		if ($auth->acl_get('m_restore', $forum_id))
 		{
 			$status_ary[] = ITEM_DELETED;
+
+			// If the user has m_restore, the rest of the function will not
+			// make more content visible, so we can return the query here.
+			// This avoids one OR in all queries
+			return $db->sql_in_set($table_alias . $mode . '_visibility', $status_ary);
 		}
 
 		$clause = $db->sql_in_set($table_alias . $mode . '_visibility', $status_ary);
@@ -52,8 +57,7 @@ class phpbb_content_visibility
 			$poster_column = ($mode == 'topic') ? 'topic_poster' : 'poster_id';
 			$clause = '(' . $clause . "
 				OR ($table_alias{$mode}_visibility = " . ITEM_DELETED . "
-					AND $table_alias$poster_column = " . $user->data['user_id'] . '))';
-
+					AND $table_alias$poster_column = " . (int) $user->data['user_id'] . '))';
 		}
 
 		return $clause;
