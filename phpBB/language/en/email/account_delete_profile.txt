@@ -2,8 +2,7 @@ Subject: Your account has been deleted
 
 {USERNAME},
 
-Your user account on "{SITENAME}" has been deleted. All profile information has been cleared but your posts and topics have been retained.
-This operation cannot be undone, but if you wish to return to {SITENAME}, you may register a new account.
+Your user account on "{SITENAME}" has been deleted. All profile information has been cleared but your posts and topics have been retained. This operation is not reversible, but if you wish to return to "{SITENAME}", you may register a new account.
 
 If you feel that this was done in error, please respond to this email to inform the forum administration.
 

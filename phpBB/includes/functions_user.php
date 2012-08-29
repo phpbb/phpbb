@@ -3817,8 +3817,8 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = ACCOUNT_DELE
 		return false;
 	}
 
-	// Let's make sure the user specified actually exsits
-	// After all, we do use the username later on for 'retain' type (aka SELF_ACCOUNT_DELETE_PROFILE)
+	// Let's make sure the specified user actually exsits
+	// We can also use this opportunity to fetch the username for use later
 	$sql = 'SELECT username
 		FROM ' . USERS_TABLE . '
 		WHERE user_id = ' . (int) $user_id;
@@ -3835,23 +3835,27 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = ACCOUNT_DELE
 
 	// If we aren't forcing deletion, we need a type. Otherwise, we fail.
 	// If we are forcing and don't have a type specified, it will default to Soft Delete
-	if (!$type && !$force)
+	if (!$force && !$type)
 	{
 		return 'DELETE_ACCOUNT_FAIL';
 	}
 
 	if (!$force && $config['account_delete_approval'])
 	{
-		// User is already asking to be deleted,
-		// No need to set it to what it already is
 		if (!$user->data['user_pending_delete'])
 		{
-			$reason = $db->sql_escape(utf8_normalize_nfc($reason));
-			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_delete_pending = 1, user_delete_type = $type, user_delete_pending_time = " . time();
-			// Only update the reason column if one is given
-			$sql .= (!empty($reason)) ? ", user_delete_pending_reason = '$reason'" : '';
-			$sql .= ' WHERE user_id = ' . (int) $user_id;
+			$sql_ary = array(
+				'user_delete_pending'			=> 1,
+				'user_delete_type'				=> $type,
+				'user_delete_pending_time'		=> time(),
+			);
+
+			if (!empty($reason))
+			{
+				$sql_ary['user_delete_pending_reason'] = $db->sql_escape($reason);
+			}
+
+			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary);
 			$db->sql_query($sql);
 		}
 

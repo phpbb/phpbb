@@ -32,7 +32,7 @@ class acp_users
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
-		global $phpbb_dispatcher;
+		global $phpbb_dispatcher, $request;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -79,26 +79,23 @@ class acp_users
 
 				'S_SELECT_USER'		=> true,
 				'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_user&amp;field=username&amp;select_single=true'),
+
+				'S_USER_DELETE_QUEUE'	=> $config['account_delete_approval'],
 			));
 
-			if(!$config['account_delete_approval'])
+			if (!$config['account_delete_approval'])
 			{
-				$template->assign_var('S_USER_DELETE_QUEUE', false);
-				// do nothing further
 				return;
 			}
-			else
-			{
-				$template->assign_var('S_USER_DELETE_QUEUE', true);
-			}
-			if (!empty($_POST['approve']))
+
+			$delete_user_ids = $request->variable('delete_user_ids', array(0));
+
+			if ($request->is_set_post('approve'))
 			{
 				if (!function_exists('phpbb_delete_accounts'))
 				{
 					include("{$phpbb_root_path}includes/functions_user.$phpEx");
 				}
-
-				$del_user_ids = $request->variable('delete_user_ids', array(0));
 
 				// Let's get the information we're going to need for the users
 				$sql = 'SELECT username,
@@ -110,13 +107,14 @@ class acp_users
 					FROM ' . USERS_TABLE . '
 					WHERE user_delete_pending = 1
 						AND user_delete_type NOT ' . ACCOUNT_DELETE_NONE . '
-						AND ' . $db->sql_in_set('user_id', explode(',', $del_user_ids));
+						AND ' . $db->sql_in_set('user_id', explode(',', $delete_user_ids));
 				$result = $db->sql_query($sql);
 
 				$del_user_data = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$del_user_data[$row['user_id']] = array(
+						'id'		=> $row['user_id'],
 						'type'		=> $row['user_delete_type'],
 						'lang'		=> $row['user_lang'],
 						'email'		=> $row['user_email'],
@@ -155,19 +153,16 @@ class acp_users
 					$messenger->from($config['board_contact']);
 					$messenger->replyto($config['board_contact']);
 
-					$messenger->subject($user->lang("{$message}_EMAIL_SUBJECT"));
-
 					$messenger->assign_vars(array(
 						'USERNAME'	=> $user_data['username'],
 					));
 				}
 				$messenger->save_queue();
 
-				trigger_error('ACCOUNT_DELETE_REQUEST_APPROVED');
+				trigger_error($user->lang('ACCOUNT_DELETE_REQUEST_APPROVED', sizeof($delete_user_ids)));
 			}
-			else if (!empty($_POST['deny']))
+			else if ($request->is_set_post('deny'))
 			{
-				// @todo make this work
 				$sql_ary = array(
 					'user_delete_pending'			=> 0,
 					'user_delete_pending_time'		=> 0,
@@ -177,12 +172,12 @@ class acp_users
 
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-					WHERE ' . $db->sql_in_set('user_id', implode(',', $request->variable('user_delete_ids', array(0))));
+					WHERE ' . $db->sql_in_set('user_id', implode(',', $delete_user_ids));
 
-				$subject = $user->lang("{$message}_PM_SUBJECT");
-				$text    = $user->lang("{$message}_PM_TEXT");
+				$subject = $user->lang("ACCOUNT_DELETE_REQUEST_DENIED_PM_SUBJECT");
+				$text    = $user->lang("ACCOUNT_DELETE_REQUEST_DENIED_PM_MESSAGE");
 
-				$poll = $uid = $bitfield = $options = '';
+				$uid = $bitfield = $options = '';
 				generate_text_for_storage($text, $uid, $bitfield, $options, true, true, true);
 
 				$data = array(
@@ -208,7 +203,7 @@ class acp_users
 				}
 				submit_pm('post', $subject, $data, false);
 
-				trigger_error('ACCOUNT_DELETE_REQUEST_DENIED');
+				trigger_error($user->lang('ACCOUNT_DELETE_REQUEST_DENIED', sizeof($delete_user_ids)));
 			}
 
 			$sql = 'SELECT user_id,
@@ -221,16 +216,16 @@ class acp_users
 				WHERE user_delete_pending = 1
 				ORDER BY user_delete_pending_time ASC';
 			$result = $db->sql_query($sql);
-			while($row = $db->sql_fetchrow($resut))
+			while ($row = $db->sql_fetchrow($resut))
 			{
 				$types = array(
-					ACCOUNT_DELETE_SOFT	=> $user->lang('ACP_ACCOUNT_DELETE_SOFT'),
-					ACCOUNT_DELETE_PROFILE => $user->lang('ACP_ACCOUNT_DELETE_PROFILE'),
-					ACCOUNT_DELETE_HARD	=> $user->lang('ACP_ACCOUNT_DELETE_HARD'),
+					ACCOUNT_DELETE_SOFT		=> $user->lang('ACP_ACCOUNT_DELETE_SOFT'),
+					ACCOUNT_DELETE_PROFILE	=> $user->lang('ACP_ACCOUNT_DELETE_PROFILE'),
+					ACCOUNT_DELETE_HARD		=> $user->lang('ACP_ACCOUNT_DELETE_HARD'),
 				);
 
 				$type = '';
-				foreach($types as $type_key => $type_value)
+				foreach ($types as $type_key => $type_value)
 				{
 					if ($row['user_delete_pending_type'] == $type_key)
 					{
