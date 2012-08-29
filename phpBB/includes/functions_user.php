@@ -3859,6 +3859,8 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = ACCOUNT_DELE
 			$db->sql_query($sql);
 		}
 
+		add_log('user', $user->data['user_id'], 'LOG_USER_REQUEST_DELETION', $user->data['username']);
+
 		return 'DELETE_ACCOUNT_APPROVAL';
 	}
 
@@ -3871,6 +3873,8 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = ACCOUNT_DELE
 			// Log out the user
 			$user->reset_login_keys($user_id);
 			$user->session_kill();
+
+			add_log('user', $user->data['user_id'], 'LOG_USER_SELF_SOFT_DELETE', $user->data['username']);
 			return 'DELETE_ACCOUNT_SOFT_DONE';
 		break;
 
@@ -3879,12 +3883,16 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = ACCOUNT_DELE
 			// Keep posts and topics
 			// Should work just like the normal user delete function in the ACP
 			user_delete('retain', $user_id, $username);
+
+			add_log('user', $user->data['user_id'], 'LOG_USER_SELF_PROFILE_DELETE', $user->data['username']);
 			return 'DELETE_ACCOUNT_PROFILE_DONE';
 		break;
 
 		case ACCOUNT_DELETE_HARD:
 			// Purge user from forum; all topics, posts, PMs, and profile data will be removed. Cannot undo.
 			user_delete('remove', $user_id);
+
+			add_log('user', $user->data['user_id'], 'LOG_USER_SELF_HARD_DELETE', $user->data['username']);
 			return 'DELETE_ACCOUNT_HARD_DONE';
 		break;
 	}

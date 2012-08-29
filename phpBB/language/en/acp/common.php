@@ -487,6 +487,9 @@ $lang = array_merge($lang, array(
 	'LOG_ADMIN_AUTH_FAIL'		=> '<strong>Failed administration login attempt</strong>',
 	'LOG_ADMIN_AUTH_SUCCESS'	=> '<strong>Successful administration login</strong>',
 
+	'LOG_USER_DELETE_REQUEST_APPROVED'	=> '<strong>Approved one or more deletion request.</strong>» %s',
+	'LOG_USER_DELETE_REQUEST_DENIED'		=> '<strong>Denied one or more deletion request.</strong>» %s',
+
 	'LOG_ATTACHMENTS_DELETED'	=> '<strong>Removed user attachments</strong><br />» %s',
 
 	'LOG_ATTACH_EXT_ADD'		=> '<strong>Added or edited attachment extension</strong><br />» %s',
@@ -740,6 +743,11 @@ $lang = array_merge($lang, array(
 	'LOG_USER_NEW_PASSWORD'	=> '<strong>Changed user password</strong><br />» %s',
 	'LOG_USER_REACTIVATE'	=> '<strong>Forced user account reactivation</strong><br />» %s',
 	'LOG_USER_REMOVED_NR'	=> '<strong>Removed newly registered flag from user</strong><br />» %s',
+
+	'LOG_USER_REQUESTED_DELETE'		=> '<strong>Account deletion request submitted</strong><br />» %s',
+	'LOG_USER_SELF_SOFT_DELETE'		=> '<strong>User account soft-deleted</strong><br />» %s',
+	'LOG_USER_SELF_PROFILE_DELETE'	=> '<strong>User account deleted, retaining posts and topics</strong><br />» %s',
+	'LOG_USER_SELF_HARD_DELETE'		=> '<strong>User account hard-deleted</strong><br />» %s',
 
 	'LOG_USER_UPDATE_EMAIL'	=> '<strong>User “%1$s” changed email</strong><br />» from “%2$s” to “%3$s”',
 	'LOG_USER_UPDATE_NAME'	=> '<strong>Changed username</strong><br />» from “%1$s” to “%2$s”',

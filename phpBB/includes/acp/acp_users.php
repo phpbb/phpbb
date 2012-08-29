@@ -159,6 +159,8 @@ class acp_users
 				}
 				$messenger->save_queue();
 
+				add_log('admin', 'LOG_USER_DELETE_REQUEST_APPROVED', $user->data['username']);
+
 				trigger_error($user->lang('ACCOUNT_DELETE_REQUEST_APPROVED', sizeof($delete_user_ids)));
 			}
 			else if ($request->is_set_post('deny'))
@@ -202,6 +204,8 @@ class acp_users
 					include("{$phpbb_root_path}includes/functions_privmsgs.$phpEx");
 				}
 				submit_pm('post', $subject, $data, false);
+
+				add_log('admin', 'LOG_USER_DELETE_REQUEST_DENIED', $user->data['username']);
 
 				trigger_error($user->lang('ACCOUNT_DELETE_REQUEST_DENIED', sizeof($delete_user_ids)));
 			}
