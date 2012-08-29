@@ -1102,8 +1102,14 @@ function database_update_info()
 				GROUPS_TABLE		=> array(
 					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
 				),
+				POSTS_TABLE			=> array(
+					'post_visibility'		=> array('TINT:3', 0),
+				),
 				PROFILE_FIELDS_TABLE	=> array(
 					'field_show_on_pm'		=> array('BOOL', 0),
+				),
+				REPORTS_TABLE		=> array(
+					'reported_post_text'	=> array('MTEXT_UNI', ''),
 				),
 				STYLES_TABLE		=> array(
 					'style_path'			=> array('VCHAR:100', ''),
@@ -1111,8 +1117,8 @@ function database_update_info()
 					'style_parent_id'		=> array('UINT:4', 0),
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
-				REPORTS_TABLE		=> array(
-					'reported_post_text'	=> array('MTEXT_UNI', ''),
+				TOPICS_TABLE		=> array(
+					'topic_visibility'	=> array('TINT:3', 0),
 				),
 			),
 			'change_columns'	=> array(
@@ -1121,6 +1127,18 @@ function database_update_info()
 				),
 				USERS_TABLE			=> array(
 					'user_timezone'		=> array('VCHAR:100', ''),
+				),
+			),
+			'drop_keys'		=> array(
+				TOPICS_TABLE			=> array('forum_appr_last'),
+			),
+			'add_index'		=> array(
+				POSTS_TABLE		=> array(
+					'post_visibility'		=> array('post_visibility'),
+				),
+				TOPICS_TABLE		=> array(
+					'topic_visibility'		=> array('topic_visibility'),
+					'forum_appr_last'		=> array('INDEX', array('forum_id', 'topic_visibility', 'topic_last_post_id')),
 				),
 			),
 		),
@@ -2664,6 +2682,26 @@ function change_database_data(&$no_updates, $version)
 
 				// After we have calculated the timezones we can delete user_dst column from user table.
 				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
+			}
+
+			// If the column exists, we did not yet update the post visibility status
+			if ($db_tools->sql_column_exists(POSTS_TABLE, 'post_approved'))
+			{
+				$sql = 'UPDATE ' . POSTS_TABLE . '
+					SET post_visibility = post_approved';
+				_sql($sql, $errored, $error_ary);
+
+				$db_tools->sql_column_remove(POSTS_TABLE, 'post_approved');
+			}
+
+			// If the column exists, we did not yet update the topic visibility status
+			if ($db_tools->sql_column_exists(TOPICS_TABLE, 'topic_approved'))
+			{
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_visibility = topic_approved';
+				_sql($sql, $errored, $error_ary);
+
+				$db_tools->sql_column_remove(TOPICS_TABLE, 'topic_approved');
 			}
 
 		break;
