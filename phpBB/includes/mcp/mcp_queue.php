@@ -548,7 +548,7 @@ function approve_post($post_id_list, $id, $mode)
 	{
 		$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
 
-		phpbb_content_visibility::unhide_posts_topics('approve', $post_info, $post_id_list);
+		$success_msg = phpbb_content_visibility::unhide_posts_topics('approve', $post_info, $post_id_list);
 
 		$messenger = new messenger();
 
@@ -607,15 +607,6 @@ function approve_post($post_id_list, $id, $mode)
 			$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
 		}
 		unset($post_info);
-
-		if ($total_topics)
-		{
-			$success_msg = ($total_topics == 1) ? 'TOPIC_APPROVED_SUCCESS' : 'TOPICS_APPROVED_SUCCESS';
-		}
-		else
-		{
-			$success_msg = (sizeof($post_id_list) + sizeof($post_approved_list) == 1) ? 'POST_APPROVED_SUCCESS' : 'POSTS_APPROVED_SUCCESS';
-		}
 	}
 	else
 	{

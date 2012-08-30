@@ -1882,7 +1882,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$db->sql_freeresult($result);
 
 			// Use "t" as table alias because of the $where_sql clause
-			// NOTE: 't.post_approved' in the GROUP BY is causing a major slowdown.
+			// NOTE: 't.post_visibility' in the GROUP BY is causing a major slowdown.
 			$sql = 'SELECT t.topic_id, t.post_visibility, COUNT(t.post_id) AS total_posts, MIN(t.post_id) AS first_post_id, MAX(t.post_id) AS last_post_id
 				FROM ' . POSTS_TABLE . " t
 				$where_sql

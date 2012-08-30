@@ -987,33 +987,25 @@ function display_user_activity(&$userdata)
 
 	$forum_ary = array();
 
-	// Do not include those forums the user is not having read access to...
-	$forum_read_ary = $auth->acl_getf('!f_read');
-
-	foreach ($forum_read_ary as $forum_id => $not_allowed)
+	$forum_read_ary = $auth->acl_getf('f_read');
+	foreach ($forum_read_ary as $forum_id => $allowed)
 	{
-		if ($not_allowed['f_read'])
+		if ($allowed['f_read'])
 		{
 			$forum_ary[] = (int) $forum_id;
 		}
 	}
 
-	$forum_ary = array_unique($forum_ary);
-	$forum_sql = (sizeof($forum_ary)) ? 'AND ' . $db->sql_in_set('forum_id', $forum_ary, true) : '';
-
-	$fid_m_approve = $auth->acl_getf('m_approve', true);
-	$sql_m_approve = (!empty($fid_m_approve)) ? 'OR ' . $db->sql_in_set('forum_id', array_keys($fid_m_approve)) : '';
+	$forum_ary = array_diff($forum_ary, $user->get_passworded_forums());;
 
 	// Obtain active forum
 	$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
 		FROM ' . POSTS_TABLE . '
-		WHERE poster_id = ' . $userdata['user_id'] . "
+		WHERE poster_id = ' . $userdata['user_id'] . '
 			AND post_postcount = 1
-			AND (post_approved = 1
-				$sql_m_approve)
-			$forum_sql
+			AND ' . phpbb_content_visibility::get_visibility_sql_forums('post', $forum_ary) . '
 		GROUP BY forum_id
-		ORDER BY num_posts DESC";
+		ORDER BY num_posts DESC';
 	$result = $db->sql_query_limit($sql, 1);
 	$active_f_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -1035,13 +1027,11 @@ function display_user_activity(&$userdata)
 
 	$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
 		FROM ' . POSTS_TABLE . '
-		WHERE poster_id = ' . $userdata['user_id'] . "
+		WHERE poster_id = ' . $userdata['user_id'] . '
 			AND post_postcount = 1
-			AND (post_approved = 1
-				$sql_m_approve)
-			$forum_sql_topic
+			AND ' . phpbb_content_visibility::get_visibility_sql_forums('post', $forum_ary) . '
 		GROUP BY topic_id
-		ORDER BY num_posts DESC";
+		ORDER BY num_posts DESC';
 	$result = $db->sql_query_limit($sql, 1);
 	$active_t_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
