@@ -1272,11 +1272,28 @@ function change_database_data(&$no_updates, $version)
 
 			do
 			{
-				$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
-					FROM ' . POSTS_TABLE . '
-					WHERE post_id BETWEEN ' . ($start + 1) . ' AND ' . ($start + $step) . '
-						AND post_postcount = 1 AND post_approved = 1
-					GROUP BY poster_id';
+				if ($db_tools->sql_column_exists(POSTS_TABLE, 'post_approved'))
+				{
+					$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
+						FROM ' . POSTS_TABLE . '
+						WHERE post_id BETWEEN ' . ($start + 1) . ' AND ' . ($start + $step) . '
+							AND post_postcount = 1 AND post_approved = 1
+						GROUP BY poster_id';
+				}
+				else
+				{
+					if (!defined('ITEM_APPROVED'))
+					{
+						// Define the constant if it isn't
+						define('ITEM_APPROVED', 1);
+					}
+
+					$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
+						FROM ' . POSTS_TABLE . '
+						WHERE post_id BETWEEN ' . ($start + 1) . ' AND ' . ($start + $step) . '
+							AND post_postcount = 1 AND post_visibility = ' . ITEM_APPROVED . '
+						GROUP BY poster_id';
+				}
 				$result = _sql($sql, $errored, $error_ary);
 
 				if ($row = $db->sql_fetchrow($result))
@@ -2425,10 +2442,20 @@ function change_database_data(&$no_updates, $version)
 			_sql($sql, $errored, $error_ary);
 
 			// Localise Global Announcements
-			$sql = 'SELECT topic_id, topic_approved, (topic_replies + 1) AS topic_posts, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
-				FROM ' . TOPICS_TABLE . '
-				WHERE forum_id = 0
-					AND topic_type = ' . POST_GLOBAL;
+			if ($db_tools->sql_column_exists(TOPICS_TABLE, 'topic_approved'))
+			{
+				$sql = 'SELECT topic_id, topic_approved, (topic_replies + 1) AS topic_posts, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
+					FROM ' . TOPICS_TABLE . '
+					WHERE forum_id = 0
+						AND topic_type = ' . POST_GLOBAL;
+			}
+			else
+			{
+				$sql = 'SELECT topic_id, topic_visibility, (topic_replies + 1) AS topic_posts, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
+					FROM ' . TOPICS_TABLE . '
+					WHERE forum_id = 0
+						AND topic_type = ' . POST_GLOBAL;
+			}
 			$result = $db->sql_query($sql);
 
 			$global_announcements = $update_lastpost_data = array();
@@ -2439,13 +2466,21 @@ function change_database_data(&$no_updates, $version)
 				'forum_topics_real'	=> 0,
 			);
 
+			if (!defined('ITEM_APPROVED'))
+			{
+				// Define the constant if it isn't
+				define('ITEM_APPROVED', 1);
+			}
+
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$global_announcements[] = (int) $row['topic_id'];
 
 				$update_forum_data['forum_posts'] += (int) $row['topic_posts'];
 				$update_forum_data['forum_topics_real']++;
-				if ($row['topic_approved'])
+
+				// topic_approved is from 3.0, topic_visibility is from 3.1
+				if (!empty($row['topic_approved']) || (isset($row['topic_visibility']) && $row['topic_visibility'] == ITEM_APPROVED))
 				{
 					$update_forum_data['forum_topics']++;
 				}
@@ -2704,6 +2739,18 @@ function change_database_data(&$no_updates, $version)
 				$db_tools->sql_column_remove(TOPICS_TABLE, 'topic_approved');
 			}
 
+			// Add new permissions f_restore, f_softdelete, m_restore and m_softdelete
+			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+			$auth_admin = new auth_admin();
+
+			// Only add the new permission if it does not already exist
+			if (empty($auth_admin->acl_options['id']['f_restore']))
+			{
+				$auth_admin->acl_add_option(array('local' => array('f_restore', 'f_softdelete', 'm_restore', 'm_softdelete')));
+
+				// Remove any old permission entries
+				$auth_admin->acl_clear_prefetch();
+			}
 		break;
 	}
 }
