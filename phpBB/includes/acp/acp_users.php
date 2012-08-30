@@ -361,22 +361,10 @@ class acp_users
 						{
 							if (confirm_box(true))
 							{
-								$log_delete_lang = 'LOG_USER_DELETED';
-								$delete_lang = 'USER_DELETED';
-								if ($delete_type == 'retain' || $delete_type == 'remove')
-								{
-									user_delete($delete_type, $user_id, $user_row['username']);
-									$log_delete_lang .= ($delete_type == 'retain') ? '_PROFILE' : '_HARD';
-								}
-								else
-								{
-									user_active_flip('deactivate', array($user_row['user_id']), INACTIVE_SOFT_DELETE);
-									$log_delete_lang .= '_SOFT';
-									$delete_lang .= '_SOFT';
-								}
+								user_delete($delete_type, $user_id, $user_row['username']);
 
-								add_log('admin', $log_delete_lang, $user_row['username']);
-								trigger_error($user->lang($delete_lang) . adm_back_link($this->u_action));
+								add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
+								trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));
 							}
 							else
 							{
