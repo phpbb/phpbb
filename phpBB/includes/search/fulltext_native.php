@@ -819,7 +819,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
 	*/
-	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
+	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
 		// No author? No posts.
 		if (!sizeof($author_ary))
@@ -838,7 +838,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 			$sort_key,
 			$topic_id,
 			implode(',', $ex_fid_ary),
-// @TODO			implode(',', $m_approve_fid_ary),
+			$post_visibility,
 			implode(',', $author_ary),
 			$author_name,
 		)));
@@ -888,20 +888,6 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 			break;
 		}
 
-/*		if (!sizeof($m_approve_fid_ary))
-		{
-			$m_approve_fid_sql = ' AND p.post_approved = 1';
-		}
-		else if ($m_approve_fid_ary == array(-1))
-		{
-			$m_approve_fid_sql = '';
-		}
-		else
-		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $this->db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
-		}
-*/
-
 		$select = ($type == 'posts') ? 'p.post_id' : 't.topic_id';
 		$is_mysql = false;
 
@@ -924,7 +910,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 							WHERE $sql_author
 								$sql_topic_id
 								$sql_firstpost
-								$m_approve_fid_sql
+								$post_visibility
 								$sql_fora
 								$sql_time";
 					}
@@ -944,7 +930,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 							WHERE $sql_author
 								$sql_topic_id
 								$sql_firstpost
-								$m_approve_fid_sql
+								$post_visibility
 								$sql_fora
 								AND t.topic_id = p.topic_id
 								$sql_time" . (($this->db->sql_layer == 'sqlite') ? ')' : '');
@@ -970,7 +956,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 				WHERE $sql_author
 					$sql_topic_id
 					$sql_firstpost
-					$m_approve_fid_sql
+					$post_visibility
 					$sql_fora
 					$sql_sort_join
 					$sql_time
@@ -984,7 +970,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 				WHERE $sql_author
 					$sql_topic_id
 					$sql_firstpost
-					$m_approve_fid_sql
+					$post_visibility
 					$sql_fora
 					AND t.topic_id = p.topic_id
 					$sql_sort_join
