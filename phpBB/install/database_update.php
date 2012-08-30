@@ -1138,7 +1138,7 @@ function database_update_info()
 				),
 				TOPICS_TABLE		=> array(
 					'topic_visibility'		=> array('topic_visibility'),
-					'forum_appr_last'		=> array('INDEX', array('forum_id', 'topic_visibility', 'topic_last_post_id')),
+					'forum_appr_last'		=> array('forum_id', 'topic_visibility', 'topic_last_post_id'),
 				),
 			),
 		),
