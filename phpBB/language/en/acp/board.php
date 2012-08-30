@@ -62,15 +62,15 @@ $lang = array_merge($lang, array(
 
 	// Account deletion methods
 	'ACP_ACCOUNT_DELETE_NONE'				=> 'None',
-	'ACP_ACCOUNT_DELETE_NONE_EXPLAIN'		=> 'User cannot delete his or her user account.',
+	'ACP_ACCOUNT_DELETE_NONE_EXPLAIN'		=> 'Users cannot delete own user account.',
 	'ACP_ACCOUNT_DELETE_SOFT'				=> 'Soft Delete',
-	'ACP_ACCOUNT_DELETE_SOFT_EXPLAIN'		=> 'User may soft delete (deactivate) their account.',
+	'ACP_ACCOUNT_DELETE_SOFT_EXPLAIN'		=> 'Users may soft delete (deactivate) own account.',
 	'ACP_ACCOUNT_DELETE_PROFILE'			=> 'Profile Delete',
-	'ACP_ACCOUNT_DELETE_PROFILE_EXPLAIN'	=> 'User may delete all profile data (retains posts, topics, etc.).',
+	'ACP_ACCOUNT_DELETE_PROFILE_EXPLAIN'	=> 'Users may delete all profile data (retains posts, topics, etc.).',
 	'ACP_ACCOUNT_DELETE_HARD'				=> 'Hard Delete',
-	'ACP_ACCOUNT_DELETE_HARD_EXPLAIN'		=> 'User may completely delete all account information (profile, posts, PMs).',
-	'ACP_ACCOUNT_DELETE_METHOD'				=> 'Account delete method',
-	'ACP_ACCOUNT_DELETE_METHOD_EXPLAIN'		=> 'This setting specifies the type of account deletion a user may perform on his or her account.',
+	'ACP_ACCOUNT_DELETE_HARD_EXPLAIN'		=> 'Users may completely delete all account information (profile, posts, PMs).',
+	'ACP_ACCOUNT_DELETE_METHOD'				=> 'User account delete method',
+	'ACP_ACCOUNT_DELETE_METHOD_EXPLAIN'		=> 'This setting specifies the type of user account deletion users may perform on their own user accounts.',
 	'ACP_ACCOUNT_DELETE_APPROVAL'			=> 'Deletion approval',
 	'ACP_ACCOUNT_DELETE_APPROVAL_EXPLAIN'	=> 'When set to yes, users may request for their account to be deleted. Requests may then be approved or denied on the Users tab.',
 
