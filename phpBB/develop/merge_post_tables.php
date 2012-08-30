@@ -50,7 +50,7 @@ switch ($db->sql_layer)
 			ADD PRIMARY KEY (post_id), 
 			ADD INDEX topic_id (topic_id), 
 			ADD INDEX poster_ip (poster_ip), 
-			ADD INDEX post_approved (post_approved), 
+			ADD INDEX post_visibility (post_visibility), 
 			MODIFY COLUMN post_id mediumint(8) UNSIGNED NOT NULL auto_increment, 
 			ADD COLUMN post_encoding varchar(11) DEFAULT \'iso-8859-15\' NOT NULL'; 
 		break;

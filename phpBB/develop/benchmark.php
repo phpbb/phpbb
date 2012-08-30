@@ -263,7 +263,7 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 	
 	$post_message = prepare_message($text, $html_on, $bbcode_on, $smilies_on, $bbcode_uid);	
 	
-	$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, attach_id, icon_id, post_username, post_time, poster_ip, post_approved, bbcode_uid, enable_bbcode, enable_html, enable_smilies, enable_sig, post_subject, post_text)
+	$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, attach_id, icon_id, post_username, post_time, poster_ip, post_visibility, bbcode_uid, enable_bbcode, enable_html, enable_smilies, enable_sig, post_subject, post_text)
 		VALUES ($new_topic_id, $forum_id, $user_id, 0, 0, '$post_username', $current_time, '$user_ip', 1, '$bbcode_uid', $bbcode_on, $html_on, $smilies_on, $attach_sig, '$post_subject', '$post_message')";
 	$result = $db->sql_query($sql);
 	
