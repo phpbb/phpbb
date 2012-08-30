@@ -266,8 +266,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$m_approve_fid_sql = ' AND p.post_approved = 1';
 	}
 */
-	$m_approve_posts_fid_sql = ' AND ' . phpbb_content_visibility::get_visibility_sql_global('post', $ex_fid_ary, 'p.');
-	$m_approve_topics_fid_sql = ' AND ' . phpbb_content_visibility::get_visibility_sql_global('topic', $ex_fid_ary, 't.');
+	$m_approve_posts_fid_sql = phpbb_content_visibility::get_visibility_sql_global('post', $ex_fid_ary, 'p.');
+	$m_approve_topics_fid_sql = phpbb_content_visibility::get_visibility_sql_global('topic', $ex_fid_ary, 't.');
 
 	if ($reset_search_forum)
 	{
@@ -335,7 +335,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					FROM ' . TOPICS_TABLE . " t
 					WHERE t.topic_moved_id = 0
 						$last_post_time_sql
-						" . $m_approve_topics_fid_sql . '
+						AND " . $m_approve_topics_fid_sql . '
 						' . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . '
 					ORDER BY t.topic_last_post_time DESC';
 				$field = 'topic_id';
@@ -373,7 +373,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						WHERE t.topic_replies = 0
 							AND p.topic_id = t.topic_id
 							$last_post_time
-							$m_approve_posts_fid_sql
+							AND $m_approve_posts_fid_sql
 							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 							$sql_sort";
 					$field = 'post_id';
@@ -386,7 +386,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 							AND t.topic_moved_id = 0
 							AND p.topic_id = t.topic_id
 							$last_post_time
-							$m_approve_topics_fid_sql
+							AND $m_approve_topics_fid_sql
 							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'topic_id';
@@ -402,7 +402,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
 				$sql_where = 'AND t.topic_moved_id = 0
-					' . $m_approve_topics_fid_sql . '
+					AND ' . $m_approve_topics_fid_sql . '
 					' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '');
 
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -426,7 +426,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$sql = 'SELECT p.post_id
 						FROM ' . POSTS_TABLE . ' p
 						WHERE p.post_time > ' . $user->data['user_lastvisit'] . '
-							' . $m_approve_posts_fid_sql . '
+							AND ' . $m_approve_posts_fid_sql . '
 							' . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'post_id';
@@ -437,7 +437,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE t.topic_last_post_time > ' . $user->data['user_lastvisit'] . '
 							AND t.topic_moved_id = 0
-							' . $m_approve_topics_fid_sql . '
+							AND ' . $m_approve_topics_fid_sql . '
 							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 /*
@@ -449,7 +449,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						WHERE p.post_time > ' . $user->data['user_lastvisit'] . '
 							AND t.topic_id = p.topic_id
 							AND t.topic_moved_id = 0
-							' . $m_approve_topics_fid_sql . "
+							AND ' . $m_approve_topics_fid_sql . "
 						GROUP BY t.topic_id
 						$sql_sort";
 */
@@ -550,7 +550,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	{
 		$sql_where .= $db->sql_in_set(($show_results == 'posts') ? 'p.post_id' : 't.topic_id', $id_ary);
 		$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . ' OR f.forum_id IS NULL)' : '';
-		$sql_where .= ($show_results == 'posts') ? $m_approve_posts_fid_sql : $m_approve_topics_fid_sql;
+		$sql_where .= ' AND ' . (($show_results == 'posts') ? $m_approve_posts_fid_sql : $m_approve_topics_fid_sql);
 	}
 
 	if ($show_results == 'posts')
