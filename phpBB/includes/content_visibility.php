@@ -70,6 +70,54 @@ class phpbb_content_visibility
 	}
 
 	/**
+	* Fetch visibility SQL for a set of forums
+	* @param $mode string - either "topic" or "post"
+	* @param $forum_ids - int array - 
+	* @param $table_alias string - Table alias to prefix in SQL queries
+	* @return string with the appropriate combination SQL logic for topic/post_visibility
+	*/
+	static public function get_visibility_sql_forums($mode, $forum_ids = array(), $table_alias = '')
+	{
+		global $auth, $db, $user;
+
+		// users can always see approved posts
+		$where_sql = "($table_alias{$mode}_visibility = " . ITEM_APPROVED;
+
+		// in set notation: {approve_forums} = {m_approve} - {exclude_forums}
+		$approve_forums = array_intersect($forum_ids, array_keys($auth->acl_getf('m_approve', true)));
+		if (sizeof($approve_forums))
+		{
+			// users can view unapproved topics in certain forums. specify them.
+			$where_sql .= " OR ($table_alias{$mode}_visibility = " . ITEM_UNAPPROVED . '
+				AND ' . $db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ')';
+		}
+
+		// this is exactly the same logic as for approve forums, above
+		$restore_forums = array_intersect($forum_ids, array_keys($auth->acl_getf('m_restore', true)));
+		if (sizeof($restore_forums))
+		{
+			$where_sql .= " OR ($table_alias{$mode}_visibility = " . ITEM_DELETED . '
+				AND ' . $db->sql_in_set($table_alias . 'forum_id', $restore_forums) . ')';
+		}
+
+		// we also allow the user to view deleted posts he himself made
+		$user_restore_forums = array_diff(array_intersect($forum_ids, array_keys($auth->acl_getf('f_restore', true))), $restore_forums);
+		if (sizeof($user_restore_forums) && !sizeof($restore_forums))
+		{
+			$poster_column = ($mode == 'topic') ? 'topic_poster' : 'poster_id';
+
+			// specify the poster ID, the visibility type, and the forums we're interested in
+			$where_sql .= " OR ($table_alias$poster_column = " . $user->data['user_id'] . "
+				AND $table_alias{$mode}_visibility = " . ITEM_DELETED . "
+				AND " . $db->sql_in_set($table_alias . 'forum_id', $user_restore_forums) . ')';
+		}
+
+		$where_sql .= ')';
+
+		return $where_sql;
+	}
+
+	/**
 	* Fetch visibility SQL for all forums on the board.
 	* @param $mode string - either "topic" or "post"
 	* @param $exclude_forum_ids - int array - 
