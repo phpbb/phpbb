@@ -23,36 +23,29 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup();
 
-// Handle the display of extension front pages
-if ($ext = $request->variable('ext', ''))
+// Handle controllers
+if ($controller = $request->variable('controller', ''))
 {
-	$class = 'phpbb_ext_' . str_replace('/', '_', $ext) . '_controller';
+	$phpbb_controller = new phpbb_controller($phpbb_extension_manager, $cache);
+	$controllers = $phpbb_controller->get_controllers();
 
-	if (!$phpbb_extension_manager->available($ext))
+	$controller_class = !empty($controllers[$controller]) ? $controllers[$controller] : false;
+
+	if ($controller_class === false)
 	{
 		send_status_line(404, 'Not Found');
-		trigger_error($user->lang('EXTENSION_DOES_NOT_EXIST', $ext));	
-	}
-	else if (!$phpbb_extension_manager->enabled($ext))
-	{
-		send_status_line(404, 'Not Found');
-		trigger_error($user->lang('EXTENSION_DISABLED', $ext));
-	}
-	else if (!class_exists($class))
-	{
-		send_status_line(404, 'Not Found');
-		trigger_error($user->lang('EXTENSION_CONTROLLER_MISSING', $ext));
+		trigger_error($user->lang('CONTROLLER_NOT_FOUND', $controller));
 	}
 
-	$controller = new $class;
+	$controller_object = new $controller_class;
 
-	if (!($controller instanceof phpbb_extension_controller_interface))
+	if (!($controller_object instanceof phpbb_controller_interface))
 	{
 		send_status_line(500, 'Internal Server Error');
-		trigger_error($user->lang('EXTENSION_CLASS_WRONG_TYPE', $class));
+		trigger_error($user->lang('CONTROLLER_BAD_TYPE', $controller_class));
 	}
 
-	$controller->handle();
+	$controller_object->handle();
 	exit_handler();
 }
 
