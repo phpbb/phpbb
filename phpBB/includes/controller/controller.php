@@ -21,6 +21,16 @@ if (!defined('IN_PHPBB'))
 class phpbb_controller
 {
 	/**
+	* Code for exception thrown when the controller does not exist
+	*/
+	const CONTROLLER_NOT_FOUND = 1;
+
+	/**
+	* Code for exception thrown when the controller is not the correct type
+	*/
+	const CONTROLLER_BAD_TYPE = 2;
+
+	/**
 	* Extension Manager object
 	* @var phpbb_extension_manager
 	*/
@@ -102,26 +112,58 @@ class phpbb_controller
 	* Get a single controller class from an access name
 	*
 	* @param string $access_name The access name associated with the controller class
+	* @return null
+	* @throws RuntimeException
 	*/
-	public function load_controller($access_name)
+	public function get_controller($access_name)
 	{
 		$controller_class = isset($this->controllers[$access_name]) ? $this->controllers[$access_name] : false;
-
 		if ($controller_class === false)
 		{
-			send_status_line(404, 'Not Found');
-			trigger_error($this->user->lang('CONTROLLER_NOT_FOUND', $controller));
+			throw new RuntimeException($this->user->lang('CONTROLLER_NOT_FOUND', $access_name), self::CONTROLLER_NOT_FOUND);
 		}
 
 		$controller_object = new $controller_class;
 		if (!($controller_object instanceof phpbb_controller_interface))
 		{
-			send_status_line(500, 'Internal Server Error');
-			trigger_error($this->user->lang('CONTROLLER_BAD_TYPE', $controller_class));
+			throw new RuntimeException($this->user->lang('CONTROLLER_BAD_TYPE', $controller_class), self::CONTROLLER_BAD_TYPE);
 		}
 
 		$controller_object->handle();
 		exit_handler();
+	}
+
+	/**
+	* Get a single controller class from an access name, with error handling
+	*
+	* @param string $access_name The access name associated with the controller class
+	* @return null
+	*/
+	public function load_controller($access_name)
+	{
+		try
+		{
+			$this->get_controller($access_name);
+		}
+		catch (RuntimeException $e)
+		{
+			switch ($e->getCode())
+			{
+				case self::CONTROLLER_NOT_FOUND:
+				default:
+					$status_code = 404;
+					$status_message = 'Not Found';
+				break;
+
+				case self::CONTROLLER_BAD_TYPE:
+					$status_code = 500;
+					$status_message = 'Internal Server Error';
+				break;
+			}
+			
+			send_status_line($status_code, $status_message);
+			trigger_error($e->getMessage());
+		}
 	}
 
 	/**
