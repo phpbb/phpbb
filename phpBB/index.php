@@ -26,25 +26,7 @@ $user->setup();
 // Handle controllers
 if ($controller = $request->variable('controller', ''))
 {
-	$phpbb_controller = new phpbb_controller($phpbb_extension_manager, $cache);
-	$controller_class = $phpbb_controller->get_controller($controller);
-
-	if ($controller_class === false)
-	{
-		send_status_line(404, 'Not Found');
-		trigger_error($user->lang('CONTROLLER_NOT_FOUND', $controller));
-	}
-
-	$controller_object = new $controller_class;
-
-	if (!($controller_object instanceof phpbb_controller_interface))
-	{
-		send_status_line(500, 'Internal Server Error');
-		trigger_error($user->lang('CONTROLLER_BAD_TYPE', $controller_class));
-	}
-
-	$controller_object->handle();
-	exit_handler();
+	$phpbb_controller = new phpbb_controller($controller, $phpbb_extension_manager, $cache, $user);
 }
 
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);

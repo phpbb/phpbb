@@ -39,6 +39,12 @@ class phpbb_controller
 	protected $cache;
 
 	/**
+	* User object
+	* @var phpbb_user
+	*/
+	protected $user;
+
+	/**
 	* Controllers mapped to an array
 	* @var array
 	*/
@@ -47,16 +53,20 @@ class phpbb_controller
 	/**
 	* Constructor class
 	*
+	* @param string $controller Access name for the controller to load
 	* @param phpbb_extension_manager $extension_manager Extension Manager object
 	* @param phpbb_cache_driver_base $cache Cache object
+	* @param phpbb_user $user User object
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, phpbb_cache_service $cache)
+	public function __construct($controller, phpbb_extension_manager $extension_manager, phpbb_cache_service $cache, phpbb_user $user)
 	{
 		$this->extension_manager = $extension_manager;
 		$this->finder = $extension_manager->get_finder();
 		$this->cache = $cache;
+		$this->user = $user;
 
 		$this->controllers = $this->get_controllers();
+		$this->load_controller($controller);
 	}
 
 	/**
@@ -93,9 +103,25 @@ class phpbb_controller
 	*
 	* @param string $access_name The access name associated with the controller class
 	*/
-	public function get_controller($access_name)
+	public function load_controller($access_name)
 	{
-		return !empty($this->controllers[$access_name]) ? $this->controllers[$access_name] : false;
+		$controller_class = isset($this->controllers[$access_name]) ? $this->controllers[$access_name] : false;
+
+		if ($controller_class === false)
+		{
+			send_status_line(404, 'Not Found');
+			trigger_error($this->user->lang('CONTROLLER_NOT_FOUND', $controller));
+		}
+
+		$controller_object = new $controller_class;
+		if (!($controller_object instanceof phpbb_controller_interface))
+		{
+			send_status_line(500, 'Internal Server Error');
+			trigger_error($this->user->lang('CONTROLLER_BAD_TYPE', $controller_class));
+		}
+
+		$controller_object->handle();
+		exit_handler();
 	}
 
 	/**
