@@ -56,7 +56,7 @@ class phpbb_controller
 		$this->finder = $extension_manager->get_finder();
 		$this->cache = $cache;
 
-		$this->controllers = $this->get_controllers_map();
+		$this->controllers = $this->get_controllers();
 	}
 
 	/**
@@ -79,10 +79,7 @@ class phpbb_controller
 			foreach ($found_controllers as $controller)
 			{
 				$controller_object = new $controller;
-				if ($controller_object instanceof phpbb_controller_base)
-				{
-					$controllers[$controller_object->get_access_name()] = $controller;
-				}
+				$controllers[$controller_object->get_access_name()] = $controller;
 			}
 
 			$this->cache->put('_controllers', $controllers);
@@ -92,12 +89,27 @@ class phpbb_controller
 	}
 
 	/**
+	* Get a single controller class from an access name
+	*
+	* @param string $access_name The access name associated with the controller class
+	*/
+	public function get_controller($access_name)
+	{
+		return !empty($this->controllers[$access_name]) ? $this->controllers[$access_name] : false;
+	}
+
+	/**
 	* Get controller array
 	*
 	* @return array Associative array of controller_access_name => controller_class
 	*/
 	public function get_controllers()
 	{
-		return $this->controllers ?: array();
+		if (empty($this->controllers))
+		{
+			$this->controllers = $this->get_controllers_map();
+		}
+
+		return $this->controllers;
 	}
 }

@@ -27,9 +27,7 @@ $user->setup();
 if ($controller = $request->variable('controller', ''))
 {
 	$phpbb_controller = new phpbb_controller($phpbb_extension_manager, $cache);
-	$controllers = $phpbb_controller->get_controllers();
-
-	$controller_class = !empty($controllers[$controller]) ? $controllers[$controller] : false;
+	$controller_class = $phpbb_controller->get_controller($controller);
 
 	if ($controller_class === false)
 	{
