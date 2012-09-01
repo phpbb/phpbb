@@ -11,31 +11,40 @@ class phpbb_cron_task_provider_test extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
-		$this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
-			array(
-				'testext' => array(
-					'ext_name'      => 'testext',
-					'ext_active'    => true,
-					'ext_path'      => 'ext/testext/'
-				),
-			));
-		$this->provider = new phpbb_cron_task_provider($this->extension_manager);
+		$this->tasks = array(
+			'phpbb_cron_task_core_dummy_task',
+			'phpbb_cron_task_core_second_dummy_task',
+			'phpbb_ext_testext_cron_dummy_task',
+		);
+
+		$container = $this->getMock('Symfony\Component\DependencyInjection\TaggedContainerInterface');
+		$container
+			->expects($this->once())
+			->method('findTaggedServiceIds')
+			->will($this->returnValue(array_flip($this->tasks)));
+		$container
+			->expects($this->any())
+			->method('get')
+			->will($this->returnCallback(function ($name) {
+				return new $name;
+			}));
+
+		$this->provider = new phpbb_cron_task_provider($container);
 	}
 
 	public function test_manager_finds_shipped_tasks()
 	{
-		$tasks = array();
+		$task_names = array();
 		foreach ($this->provider as $task)
 		{
-			$tasks[] = $task;
+			$task_names[] = $task->get_name();
 		}
-		sort($tasks);
+		sort($task_names);
 
 		$this->assertEquals(array(
 			'phpbb_cron_task_core_dummy_task',
 			'phpbb_cron_task_core_second_dummy_task',
 			'phpbb_ext_testext_cron_dummy_task',
-		), $tasks);
+		), $task_names);
 	}
 }

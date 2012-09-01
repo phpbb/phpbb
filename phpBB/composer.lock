@@ -1,9 +1,21 @@
 {
-    "hash": "b2daff7465c71d924e915e72454ac266",
+    "hash": "1632798bc1d5298a4f5bd3087c972a9f",
     "packages": [
         {
+            "package": "symfony/config",
+            "version": "v2.1.0-RC1"
+        },
+        {
+            "package": "symfony/dependency-injection",
+            "version": "v2.1.0-RC1"
+        },
+        {
             "package": "symfony/event-dispatcher",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
+        },
+        {
+            "package": "symfony/yaml",
+            "version": "v2.1.0-RC1"
         }
     ],
     "packages-dev": [
@@ -16,32 +28,40 @@
         {
             "package": "fabpot/goutte",
             "version": "dev-master",
-            "source-reference": "c2ea8d9a6682d14482e57ede2371001b8a5238d2",
-            "commit-date": "1340264258"
+            "source-reference": "6d26279344736f6983a969e46afef082ebf30a67",
+            "commit-date": "1345141401"
         },
         {
-            "package": "guzzle/guzzle",
-            "version": "v2.6.6"
+            "package": "guzzle/common",
+            "version": "v2.8.4"
+        },
+        {
+            "package": "guzzle/http",
+            "version": "v2.8.4"
+        },
+        {
+            "package": "guzzle/parser",
+            "version": "v2.8.4"
         },
         {
             "package": "symfony/browser-kit",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/css-selector",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/dom-crawler",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/finder",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/process",
-            "version": "v2.1.0-BETA3"
+            "version": "v2.1.0-RC1"
         }
     ],
     "aliases": [
