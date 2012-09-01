@@ -7,9 +7,9 @@
  *
  */
 
-require_once __DIR__ . '/../../phpBB/includes/functions.php';
-require_once __DIR__ . '/../../phpBB/includes/functions_admin.php';
-require_once __DIR__ . '/../../phpBB/includes/functions_compress.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_admin.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_compress.php';
 
 class phpbb_compress_test extends phpbb_test_case
 {
@@ -37,7 +37,7 @@ class phpbb_compress_test extends phpbb_test_case
 		global $phpbb_root_path;
 		$phpbb_root_path = '';
 
-		$this->path = __DIR__ . '/fixtures/';
+		$this->path = dirname(__FILE__) . '/fixtures/';
 
 		if (!@extension_loaded('zlib') || !@extension_loaded('bz2'))
 		{
@@ -47,7 +47,7 @@ class phpbb_compress_test extends phpbb_test_case
 
 	protected function tearDown()
 	{
-		foreach (array(__DIR__ . self::EXTRACT_DIR, __DIR__ . self::ARCHIVE_DIR) as $dir)
+		foreach (array(dirname(__FILE__) . self::EXTRACT_DIR, dirname(__FILE__) . self::ARCHIVE_DIR) as $dir)
 		{
 			$this->clear_dir($dir);
 		}
@@ -101,7 +101,7 @@ class phpbb_compress_test extends phpbb_test_case
 
 		foreach ($filelist as $filename)
 		{
-			$path = __DIR__ . self::EXTRACT_DIR . $filename;
+			$path = dirname(__FILE__) . self::EXTRACT_DIR . $filename;
 			$this->assertTrue(file_exists($path));
 
 			// Check the file's contents is correct
@@ -143,7 +143,7 @@ class phpbb_compress_test extends phpbb_test_case
 	 */
 	public function test_compress_tar($filename, $type)
 	{
-		$tar = __DIR__ . self::ARCHIVE_DIR . $filename;
+		$tar = dirname(__FILE__) . self::ARCHIVE_DIR . $filename;
 		$compress = new compress_tar('w', $tar);
 		$this->archive_files($compress);
 		$compress->close();
@@ -160,7 +160,7 @@ class phpbb_compress_test extends phpbb_test_case
 	 */
 	public function test_compress_zip()
 	{
-		$zip =  __DIR__ . self::ARCHIVE_DIR . 'archive.zip';
+		$zip =  dirname(__FILE__) . self::ARCHIVE_DIR . 'archive.zip';
 		$compress = new compress_zip('w', $zip);
 		$this->archive_files($compress);
 		$compress->close();
