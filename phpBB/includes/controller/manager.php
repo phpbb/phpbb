@@ -37,12 +37,6 @@ class phpbb_controller_manager
 	protected $extension_manager;
 
 	/**
-	* Extension Finder object
-	* @var phpbb_extension_finder
-	*/
-	protected $finder;
-
-	/**
 	* Cache object
 	* @var phpbb_cache_driver_base
 	*/
@@ -67,10 +61,11 @@ class phpbb_controller_manager
 	* @param phpbb_cache_driver_interface $cache Cache object
 	* @param phpbb_user $user User object
 	*/
-	public function __construct(phpbb_cache_driver_interface $cache, phpbb_user $user)
+	public function __construct($controller_classes = array(), phpbb_cache_driver_interface $cache, phpbb_user $user)
 	{
 		$this->cache = $cache;
 		$this->user = $user;
+		$this->get_controllers_map($controller_classes);
 	}
 
 	/**

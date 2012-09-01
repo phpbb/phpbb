@@ -23,8 +23,7 @@ class phpbb_controller_test extends PHPUnit_Framework_TestCase
 		$this->cache = new phpbb_mock_cache;
 		$this->user = $this->getMock('phpbb_user');
 
-		$this->controller_manager = new phpbb_mock_controller_manager($this->cache, $this->user);
-		$this->controller_manager->get_controllers_map(array('phpbb_mock_test_controller'));
+		$this->controller_manager = new phpbb_mock_controller_manager(array('phpbb_mock_test_controller'), $this->cache, $this->user);
 	}
 
 	public function test_handle_controller()

@@ -27,8 +27,6 @@ $user->setup();
 if ($controller = $request->variable('controller', ''))
 {
 	$phpbb_controller = $phpbb_container->get('controller.manager');
-	$phpbb_controller_provider = $phpbb_container->get('controller.provider');
-	$phpbb_controller->get_controllers_map($phpbb_controller_provider->getIterator());
 	$phpbb_controller->load_controller($controller);
 }
 
