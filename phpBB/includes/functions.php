@@ -2231,6 +2231,7 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
+	global $phpbb_dispatcher;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -2238,6 +2239,39 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
+	$append_sid_overwrite = false;
+
+	/**
+	* This event can either supplement or override the append_sid() function
+	*
+	* To override this function, the event must set $append_sid_overwrite to
+	* the new URL value, which will be returned following the event
+	*
+	* @event core.append_sid
+	* @var	string		url						The url the session id needs
+	*											to be appended to (can have
+	*											params)
+	* @var	mixed		params					String or array of additional
+	*											url parameters
+	* @var	bool		is_amp					Is url using &amp; (true) or
+	*											& (false)
+	* @var	bool|string	session_id				Possibility to use a custom
+	*											session id (string) instead of
+	*											the global one (false)
+	* @var	bool|string	append_sid_overwrite	Overwrite function (string
+	*											URL) or not (false)
+	* @since 3.1-A1
+	*/
+	$vars = array('url', 'params', 'is_amp', 'session_id', 'append_sid_overwrite');
+	extract($phpbb_dispatcher->trigger_event('core.append_sid', compact($vars)));
+
+	if ($append_sid_overwrite)
+	{
+		return $append_sid_overwrite;
+	}
+
+	// The following hook remains for backwards compatibility, though use of
+	// the event above is preferred.
 	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropriately.
 	// They could mimic most of what is within this function
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
