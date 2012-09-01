@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 /**
 * @package controller
 */
-class phpbb_controller
+class phpbb_controller_manager
 {
 	/**
 	* Code for exception thrown when the controller does not exist
@@ -89,9 +89,9 @@ class phpbb_controller
 		if (($controllers = $this->cache->get('_controllers')) === false)
 		{
 			$found_controllers = $this->finder
-				->core_suffix('_controller')
-				->core_path('includes/')
-				->extension_directory('/controllers')
+				->suffix('_controller')
+				->core_path('includes/controller')
+				->extension_directory('/controller')
 				->get_classes();
 
 			$controllers = array();
