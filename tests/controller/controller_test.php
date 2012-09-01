@@ -1,0 +1,38 @@
+<?php
+/**
+*
+* @package testing
+* @copyright (c) 2010 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
+
+class phpbb_controller_test extends PHPUnit_Framework_TestCase
+{
+	public function setUp()
+	{
+		$this->extension_manager = new phpbb_mock_extension_manager(
+			dirname(__FILE__) . '/',
+			array(
+				'bar' => array(
+					'ext_name'      => 'bar',
+					'ext_active'    => true,
+					'ext_path'      => 'ext/bar/'
+				),
+			));
+		$this->cache = new phpbb_mock_cache;
+		$this->user = $this->getMock('phpbb_user');
+		$this->request = $this->getMock('phpbb_request');
+	}
+
+	public function test_find_controllers()
+	{
+		$phpbb_controller = new phpbb_controller_manager(array(), $this->cache, $this->user);
+
+		var_dump($phpbb_controller->get_controllers());
+
+		$this->assertEquals(array(
+			'test'	=> 'phpbb_controller_ext_bar_controller_foobar_controller',
+		), $phpbb_controller->get_controllers());
+	}
+}

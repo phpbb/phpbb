@@ -63,20 +63,17 @@ class phpbb_controller_manager
 	/**
 	* Constructor class
 	*
-	* @param string $controller Access name for the controller to load
-	* @param phpbb_extension_manager $extension_manager Extension Manager object
-	* @param phpbb_cache_driver_base $cache Cache object
+	* @param array $controller_classes Array of controller classes
+	* @param phpbb_cache_driver_interface $cache Cache object
 	* @param phpbb_user $user User object
 	*/
-	public function __construct($controller, phpbb_extension_manager $extension_manager, phpbb_cache_service $cache, phpbb_user $user)
+	public function __construct($controller_classes = array(), phpbb_cache_driver_interface $cache, phpbb_user $user)
 	{
-		$this->extension_manager = $extension_manager;
-		$this->finder = $extension_manager->get_finder();
 		$this->cache = $cache;
 		$this->user = $user;
 
+		$this->get_controllers_map($controller_classes);
 		$this->controllers = $this->get_controllers();
-		$this->load_controller($controller);
 	}
 
 	/**
@@ -84,22 +81,19 @@ class phpbb_controller_manager
 	*
 	* @return array Associative array of controller_access_name => controller_class
 	*/
-	public function get_controllers_map()
+	public function get_controllers_map($controller_classes = array())
 	{
 		if (($controllers = $this->cache->get('_controllers')) === false)
 		{
-			$found_controllers = $this->finder
-				->suffix('_controller')
-				->core_path('includes')
-				->directory('controller')
-				->get_classes();
-
 			$controllers = array();
 
-			foreach ($found_controllers as $controller)
+			foreach ($controller_classes as $controller)
 			{
-				$controller_object = new $controller;
-				$controllers[$controller_object->get_access_name()] = $controller;
+				if (class_exists($controller))
+				{
+					$controller_object = new $controller;
+					$controllers[$controller_object->get_access_name()] = $controller;
+				}
 			}
 
 			$this->cache->put('_controllers', $controllers);
@@ -160,7 +154,7 @@ class phpbb_controller_manager
 					$status_message = 'Internal Server Error';
 				break;
 			}
-			
+
 			send_status_line($status_code, $status_message);
 			trigger_error($e->getMessage());
 		}
