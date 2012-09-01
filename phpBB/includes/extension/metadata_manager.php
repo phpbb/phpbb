@@ -95,7 +95,6 @@ class phpbb_extension_metadata_manager
 					return ($this->validate('name')) ? $this->metadata['name'] : false;
 				}
 			break;
-			// TODO: Add remaining cases as needed
 		}
 	}
 
@@ -153,9 +152,6 @@ class phpbb_extension_metadata_manager
 	 */
 	private function clean_metadata_array()
 	{
-//		TODO: Remove all parts of the array we don't want or shouldn't be there due to nub mod authors
-//		$this->metadata = $metadata_finished;
-
 		return $this->metadata;
 	}
 
