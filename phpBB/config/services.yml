@@ -95,6 +95,7 @@ services:
         class: phpbb_extension_manager
         arguments:
             - @dbal.conn
+            - @config
             - %tables.ext%
             - %core.root_path%
             - .%core.php_ext%

@@ -345,6 +345,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_board', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_bots', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_clearlogs', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_email', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_extensions', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_fauth', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_forum', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_forumadd', 1);

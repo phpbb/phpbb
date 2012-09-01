@@ -226,6 +226,7 @@ $lang = array_merge($lang, array(
 	'acl_a_switchperm'	=> array('lang' => 'Can use others permissions', 'cat' => 'permissions'),
 
 	'acl_a_styles'		=> array('lang' => 'Can manage styles', 'cat' => 'misc'),
+	'acl_a_extensions'	=> array('lang' => 'Can manage extensions', 'cat' => 'misc'),
 	'acl_a_viewlogs'	=> array('lang' => 'Can view logs', 'cat' => 'misc'),
 	'acl_a_clearlogs'	=> array('lang' => 'Can clear logs', 'cat' => 'misc'),
 	'acl_a_modules'		=> array('lang' => 'Can manage modules', 'cat' => 'misc'),

@@ -250,7 +250,7 @@ class install_install extends module
 			'S_EXPLAIN'		=> true,
 			'S_LEGEND'		=> false,
 		));
-		
+
 		// Check for php json support
 		if (@extension_loaded('json'))
 		{
@@ -1481,12 +1481,12 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager;
+		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config;
 
 		// modules require an extension manager
 		if (empty($phpbb_extension_manager))
 		{
-			$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+			$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx");
 		}
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
