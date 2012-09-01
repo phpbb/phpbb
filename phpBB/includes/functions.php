@@ -2231,6 +2231,7 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
+	global $phpbb_dispatcher;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -2238,6 +2239,39 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
+	$append_sid_overwrite = false;
+
+	/**
+	* This event can either supplement or override the append_sid() function
+	*
+	* To override this function, the event must set $append_sid_overwrite to
+	* the new URL value, which will be returned following the event
+	*
+	* @event core.append_sid
+	* @var	string		url						The url the session id needs
+	*											to be appended to (can have
+	*											params)
+	* @var	mixed		params					String or array of additional
+	*											url parameters
+	* @var	bool		is_amp					Is url using &amp; (true) or
+	*											& (false)
+	* @var	bool|string	session_id				Possibility to use a custom
+	*											session id (string) instead of
+	*											the global one (false)
+	* @var	bool|string	append_sid_overwrite	Overwrite function (string
+	*											URL) or not (false)
+	* @since 3.1-A1
+	*/
+	$vars = array('url', 'params', 'is_amp', 'session_id', 'append_sid_overwrite');
+	extract($phpbb_dispatcher->trigger_event('core.append_sid', compact($vars)));
+
+	if ($append_sid_overwrite)
+	{
+		return $append_sid_overwrite;
+	}
+
+	// The following hook remains for backwards compatibility, though use of
+	// the event above is preferred.
 	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropriately.
 	// They could mimic most of what is within this function
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
@@ -2821,7 +2855,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 		$diff = time() - $creation_time;
 
 		// If creation_time and the time() now is zero we can assume it was not a human doing this (the check for if ($diff)...
-		if ($diff && ($diff <= $timespan || $timespan === -1))
+		if (defined('DEBUG_TEST') || $diff && ($diff <= $timespan || $timespan === -1))
 		{
 			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
 			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
