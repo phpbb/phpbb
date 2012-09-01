@@ -26,6 +26,13 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 	protected $php_ext;
 	protected $config;
 
+	/**
+	* Constructor.
+	*
+	* @param string $phpbb_root_path The root path
+	* @param string $php_ext The PHP extension
+	* @param phpbb_config $config The config
+	*/
 	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;

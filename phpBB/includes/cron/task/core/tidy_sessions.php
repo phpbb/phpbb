@@ -25,6 +25,12 @@ class phpbb_cron_task_core_tidy_sessions extends phpbb_cron_task_base
 	protected $config;
 	protected $user;
 
+	/**
+	* Constructor.
+	*
+	* @param phpbb_config $config The config
+	* @param phpbb_user $user The user
+	*/
 	public function __construct(phpbb_config $config, phpbb_user $user)
 	{
 		$this->config = $config;

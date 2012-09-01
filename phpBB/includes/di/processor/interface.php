@@ -12,12 +12,17 @@
 */
 if (!defined('IN_PHPBB'))
 {
-    exit;
+	exit;
 }
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 interface phpbb_di_processor_interface
 {
-    public function process(ContainerBuilder $container);
+	/**
+	* Mutate the container.
+	*
+	* @param ContainerBuilder $container The container
+	*/
+	public function process(ContainerBuilder $container);
 }

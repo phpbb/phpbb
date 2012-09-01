@@ -31,6 +31,14 @@ class phpbb_cron_task_core_prune_all_forums extends phpbb_cron_task_base
 	protected $config;
 	protected $db;
 
+	/**
+	* Constructor.
+	*
+	* @param string $phpbb_root_path The root path
+	* @param string $php_ext The PHP extension
+	* @param phpbb_config $config The config
+	* @param dbal $db The db connection
+	*/
 	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config, dbal $db)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
