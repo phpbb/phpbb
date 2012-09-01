@@ -94,14 +94,14 @@ class phpbb_controller_manager
 			}
 
 			$this->cache->put('_controllers', $this->controllers);
-		}
-		var_dump($this->controllers);
+		}		
 
 		return $this->controllers;
 	}
 
 	/**
 	* Get a single controller class from an access name
+	* Does not handle errors or exit
 	*
 	* @param string $access_name The access name associated with the controller class
 	* @return null
@@ -123,11 +123,10 @@ class phpbb_controller_manager
 		}
 
 		$controller_object->handle();
-		exit_handler();
 	}
 
 	/**
-	* Get a single controller class from an access name, with error handling
+	* Load a controller, with error and exit handling
 	*
 	* @param string $access_name The access name associated with the controller class
 	* @return null
@@ -157,5 +156,7 @@ class phpbb_controller_manager
 			send_status_line($status_code, $status_message);
 			trigger_error($e->getMessage());
 		}
+
+		exit_handler();
 	}
 }

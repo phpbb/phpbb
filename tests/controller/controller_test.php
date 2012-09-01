@@ -22,17 +22,14 @@ class phpbb_controller_test extends PHPUnit_Framework_TestCase
 			));
 		$this->cache = new phpbb_mock_cache;
 		$this->user = $this->getMock('phpbb_user');
-		$this->request = $this->getMock('phpbb_request');
+
+		$this->controller_manager = new phpbb_mock_controller_manager($this->cache, $this->user);
+		$this->controller_manager->get_controllers_map(array('phpbb_mock_test_controller'));
 	}
 
-	public function test_find_controllers()
+	public function test_handle_controller()
 	{
-		$phpbb_controller = new phpbb_controller_manager(array(), $this->cache, $this->user);
-
-		var_dump($phpbb_controller->get_controllers());
-
-		$this->assertEquals(array(
-			'test'	=> 'phpbb_controller_ext_bar_controller_foobar_controller',
-		), $phpbb_controller->get_controllers());
+		$this->controller_manager->get_controller('foo');
+		$this->assertEquals(true, phpbb_mock_controller_manager::$handled);
 	}
 }
