@@ -67,13 +67,10 @@ class phpbb_controller_manager
 	* @param phpbb_cache_driver_interface $cache Cache object
 	* @param phpbb_user $user User object
 	*/
-	public function __construct($controller_classes = array(), phpbb_cache_driver_interface $cache, phpbb_user $user)
+	public function __construct(phpbb_cache_driver_interface $cache, phpbb_user $user)
 	{
 		$this->cache = $cache;
 		$this->user = $user;
-
-		$this->get_controllers_map($controller_classes);
-		$this->controllers = $this->get_controllers();
 	}
 
 	/**
@@ -83,23 +80,24 @@ class phpbb_controller_manager
 	*/
 	public function get_controllers_map($controller_classes = array())
 	{
-		if (($controllers = $this->cache->get('_controllers')) === false)
+		if (($this->controllers = $this->cache->get('_controllers')) === false)
 		{
-			$controllers = array();
+			$this->controllers = array();
 
 			foreach ($controller_classes as $controller)
 			{
 				if (class_exists($controller))
 				{
 					$controller_object = new $controller;
-					$controllers[$controller_object->get_access_name()] = $controller;
+					$this->controllers[$controller_object->get_access_name()] = $controller;				
 				}
 			}
 
-			$this->cache->put('_controllers', $controllers);
+			$this->cache->put('_controllers', $this->controllers);
 		}
+		var_dump($this->controllers);
 
-		return $controllers;
+		return $this->controllers;
 	}
 
 	/**
@@ -112,6 +110,7 @@ class phpbb_controller_manager
 	public function get_controller($access_name)
 	{
 		$controller_class = isset($this->controllers[$access_name]) ? $this->controllers[$access_name] : false;
+
 		if ($controller_class === false)
 		{
 			throw new RuntimeException($this->user->lang('CONTROLLER_NOT_FOUND', $access_name), self::CONTROLLER_NOT_FOUND);
@@ -158,20 +157,5 @@ class phpbb_controller_manager
 			send_status_line($status_code, $status_message);
 			trigger_error($e->getMessage());
 		}
-	}
-
-	/**
-	* Get controller array
-	*
-	* @return array Associative array of controller_access_name => controller_class
-	*/
-	public function get_controllers()
-	{
-		if (empty($this->controllers))
-		{
-			$this->controllers = $this->get_controllers_map();
-		}
-
-		return $this->controllers;
 	}
 }

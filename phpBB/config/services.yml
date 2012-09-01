@@ -47,7 +47,6 @@ services:
     controller.manager:
         class: phpbb_controller_manager
         arguments:
-            - @controller.provider
             - @cache.driver
             - @user
 
