@@ -26,7 +26,7 @@ $user->setup();
 // Handle controllers
 if ($controller = $request->variable('controller', ''))
 {
-	$phpbb_controller = new phpbb_controller($controller, $phpbb_extension_manager, $cache, $user);
+	$phpbb_controller = new phpbb_controller_manager($controller, $phpbb_extension_manager, $cache, $user);
 }
 
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
