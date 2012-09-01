@@ -90,8 +90,8 @@ class phpbb_controller_manager
 		{
 			$found_controllers = $this->finder
 				->suffix('_controller')
-				->core_path('includes/controller')
-				->extension_directory('/controller')
+				->core_path('includes')
+				->directory('controller')
 				->get_classes();
 
 			$controllers = array();
