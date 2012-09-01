@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * ACM Abstract Memory Class
 * @package acm
 */
-class phpbb_cache_driver_memory extends phpbb_cache_driver_base
+abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 {
 	var $key_prefix;
 
