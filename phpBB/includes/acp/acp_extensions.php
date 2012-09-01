@@ -51,7 +51,7 @@ class acp_extensions
 			$ext_name = '';
 		}
 
-		// If they've specificed an extension, let's load the metadata manager and validate it.
+		// If they've specified an extension, let's load the metadata manager and validate it.
 		if ($ext_name)
 		{
 			$md_manager = new phpbb_extension_metadata_manager($ext_name, $db, $phpbb_extension_manager, $phpbb_root_path, ".$phpEx", $template, $config);
