@@ -47,13 +47,6 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		// is not at least 2 seconds before submission, cancel the form
 		$form_data['lastclick'] = 0;
 
-		// The add_form_key()/check_form_key() safeguards present a challenge because they require
-		// the timestamp created in add_form_key() to be sent as-is to check_form_key() but in check_form_key()
-		// it won't allow the current time to be the same as the timestamp it requires.
-		// As such, automated scripts like this one have to somehow bypass this without being able to change
-		// the timestamp. The only way I can think to do so is using sleep()
-		sleep(1);
-
 		// I use a request because the form submission method does not allow you to send data that is not
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
 		// Instead, I send it as a request with the submit button "post" set to true.
@@ -96,9 +89,8 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 			}
 		}
 
-		// For reasoning behind the following two commands, see the test_post_new_topic() test
+		// For reasoning behind the following command, see the test_post_new_topic() test
 		$form_data['lastclick'] = 0;
-		sleep(1);
 
 		// Submit the post
 		$crawler = $this->client->request('POST', 'posting.php', $form_data);
