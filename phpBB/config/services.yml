@@ -44,6 +44,18 @@ services:
             - @cache.driver
             - %tables.config%
 
+    controller.manager:
+        class: phpbb_controller_manager
+        arguments:
+            - @controller.provider
+            - @cache.driver
+            - @user
+
+    controller.provider:
+        class: phpbb_controller_provider
+        arguments:
+            - @ext.manager
+
     cron.task_provider:
         class: phpbb_cron_task_provider
         arguments:

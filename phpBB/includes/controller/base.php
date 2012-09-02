@@ -1,8 +1,8 @@
 <?php
 /**
 *
-* @package extension
-* @copyright (c) 2011 phpBB Group
+* @package controller
+* @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -12,15 +12,13 @@
 */
 if (!defined('IN_PHPBB'))
 {
-	exit;
+    exit;
 }
 
 /**
-* Abstract class extended by extension front controller classes
-*
-* @package extension
+* @package controller
 */
-abstract class phpbb_extension_controller implements phpbb_extension_controller_interface
+abstract class phpbb_controller_base implements phpbb_controller_interface
 {
 	/**
 	* Request class object
@@ -65,8 +63,8 @@ abstract class phpbb_extension_controller implements phpbb_extension_controller_
 	protected $phpbb_root_path;
 
 	/**
-	* Constructor method that provides the common phpBB objects as inherited class
-	* properties for automatic availability in extension controllers
+	* Until Dependency Injection is finished, we have to somehow provide
+	* these variables for use in controllers
 	*/
 	public function __construct()
 	{
