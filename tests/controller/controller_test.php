@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/dummy/test_controller.php';
+
 class phpbb_controller_test extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
@@ -14,12 +16,13 @@ class phpbb_controller_test extends PHPUnit_Framework_TestCase
 		$this->cache = new phpbb_mock_cache;
 		$this->user = $this->getMock('phpbb_user');
 
-		$this->controller_manager = new phpbb_controller_manager(array('phpbb_mock_test_controller'), $this->cache, $this->user);
+		$this->controller_manager = new phpbb_controller_manager(array('phpbb_controller_dummy_test_controller'), $this->cache, $this->user);
 	}
 
 	public function test_handle_controller()
 	{
+		$test = new phpbb_controller_dummy_test_controller;
 		$this->controller_manager->get_controller('foo');
-		$this->assertEquals(true, phpbb_mock_test_controller::$handled);
+		$this->assertEquals(true, phpbb_controller_dummy_test_controller::$handled);
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-class phpbb_mock_test_controller extends phpbb_controller_base
+class phpbb_controller_dummy_test_controller extends phpbb_controller_base
 {
 
 	public static $handled = false;
