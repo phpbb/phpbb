@@ -31,12 +31,6 @@ class phpbb_controller_manager
 	const CONTROLLER_BAD_TYPE = 2;
 
 	/**
-	* Extension Manager object
-	* @var phpbb_extension_manager
-	*/
-	protected $extension_manager;
-
-	/**
 	* Cache object
 	* @var phpbb_cache_driver_base
 	*/
@@ -57,7 +51,9 @@ class phpbb_controller_manager
 	/**
 	* Constructor class
 	*
-	* @param array $controller_classes Array of controller classes
+	* @param Traversable $controller_classes Any traversable object including
+	* 										 an array providing controller
+	*										 classes as strings
 	* @param phpbb_cache_driver_interface $cache Cache object
 	* @param phpbb_user $user User object
 	*/
@@ -65,7 +61,7 @@ class phpbb_controller_manager
 	{
 		$this->cache = $cache;
 		$this->user = $user;
-		$this->get_controllers_map($controller_classes);
+		$this->get_controller_map($controller_classes);
 	}
 
 	/**
@@ -73,7 +69,7 @@ class phpbb_controller_manager
 	*
 	* @return array Associative array of controller_access_name => controller_class
 	*/
-	public function get_controllers_map($controller_classes)
+	public function get_controller_map($controller_classes)
 	{
 		if (($this->controllers = $this->cache->get('_controllers')) === false)
 		{

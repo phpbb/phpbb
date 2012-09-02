@@ -24,5 +24,6 @@ class phpbb_controller_test extends PHPUnit_Framework_TestCase
 		$test = new phpbb_controller_dummy_test_controller;
 		$this->controller_manager->get_controller('foo');
 		$this->assertEquals(true, phpbb_controller_dummy_test_controller::$handled);
+		phpbb_controller_dummy_test_controller::$handled = false;
 	}
 }
