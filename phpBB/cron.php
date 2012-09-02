@@ -21,6 +21,8 @@ $auth->acl($user->data);
 
 function output_image()
 {
+	define('IMAGE_OUTPUT', true);
+
 	// Output transparent gif
 	header('Cache-Control: no-cache');
 	header('Content-type: image/gif');
