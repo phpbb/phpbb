@@ -422,6 +422,14 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 		$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
 
+		// If the topic no longer exist, we will update the bookmarks table.
+		// To not let it error out on users who bookmarked both topics, we just return on an error...
+		$db->sql_return_on_error(true);
+		$db->sql_query('UPDATE ' . BOOKMARKS_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
+		$db->sql_return_on_error(false);
+
+		$db->sql_query('DELETE FROM ' . BOOKMARKS_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
+
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 	}
