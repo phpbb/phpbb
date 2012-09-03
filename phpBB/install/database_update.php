@@ -2489,6 +2489,20 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> 'acl_a_styles',
 					'cat'		=> 'ACP_STYLE_MANAGEMENT',
 				),
+				'extensions'	=> array(
+					'base'		=> 'acp_extensions',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_EXTENSIONS',
+					'auth'		=> 'acl_a_extensions',
+					'cat'		=> 'ACP_EXTENSION_MANAGEMENT',
+				),
+				'lang_management'	=> array(
+					'base'		=> 'acp_language',
+					'class'		=> 'acp',
+					'title'		=> 'ACL_LANGUAGE_PACKS',
+					'auth'		=> 'acl_a_language',
+					'cat'		=> 'ACL_LANGUAGE',
+				),
 				'autologin_keys'	=> array(
 					'base'		=> 'ucp_profile',
 					'class'		=> 'ucp',

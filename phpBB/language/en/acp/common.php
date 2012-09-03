@@ -59,6 +59,7 @@ $lang = array_merge($lang, array(
 
 	'ACP_CAPTCHA'				=> 'CAPTCHA',
 
+	'ACP_CAT_CUSTOMISE'			=> 'Customise',
 	'ACP_CAT_DATABASE'			=> 'Database',
 	'ACP_CAT_DOT_MODS'			=> '.MODs',
 	'ACP_CAT_FORUMS'			=> 'Forums',
@@ -80,8 +81,10 @@ $lang = array_merge($lang, array(
 	'ACP_DISALLOW_USERNAMES'	=> 'Disallow usernames',
 
 	'ACP_EMAIL_SETTINGS'		=> 'Email settings',
-	'ACP_EXTENSION_GROUPS'		=> 'Manage extension groups',
-	'ACP_EXTENSIONS'			=> 'Manage board extensions',
+	'ACP_EXTENSION_GROUPS'		=> 'Manage file extension groups',
+	'ACP_EXTENSIONS'			=> 'Extensions',
+	'ACP_EXTENSIONS_MANAGEMENT'	=> 'Extension management',
+
 
 	'ACP_FORUM_BASED_PERMISSIONS'	=> 'Forum based permissions',
 	'ACP_FORUM_LOGS'				=> 'Forum logs',
@@ -119,7 +122,7 @@ $lang = array_merge($lang, array(
 	'ACP_MANAGE_ATTACHMENTS'			=> 'Manage attachments',
 	'ACP_MANAGE_ATTACHMENTS_EXPLAIN'	=> 'Here you can list and delete files attached to posts and private messages.',
 
-	'ACP_MANAGE_EXTENSIONS'		=> 'Manage extensions',
+	'ACP_MANAGE_EXTENSIONS'		=> 'Manage file extensions',
 	'ACP_MANAGE_FORUMS'			=> 'Manage forums',
 	'ACP_MANAGE_RANKS'			=> 'Manage ranks',
 	'ACP_MANAGE_REASONS'		=> 'Manage report/denial reasons',
@@ -165,8 +168,7 @@ $lang = array_merge($lang, array(
 	'ACP_SERVER_CONFIGURATION'	=> 'Server configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server settings',
 	'ACP_SIGNATURE_SETTINGS'	=> 'Signature settings',
-	'ACP_SMILIES'				=> 'Smilies',
-	'ACP_STYLE_COMPONENTS'		=> 'Style components',
+	'ACP_SMILIES'				=> 'Smilies',	
 	'ACP_STYLE_MANAGEMENT'		=> 'Style management',
 	'ACP_STYLES'				=> 'Styles',
 	'ACP_STYLES_CACHE'			=> 'Purge Cache',

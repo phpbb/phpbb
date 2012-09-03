@@ -2095,9 +2095,10 @@ class install_install extends module
 				'ACP_PERMISSION_ROLES',
 				'ACP_PERMISSION_MASKS',
 			),
-			'ACP_CAT_STYLES'		=> array(
+			'ACP_CAT_CUSTOMISE'		=> array(
 				'ACP_STYLE_MANAGEMENT',
-				'ACP_STYLE_COMPONENTS',
+				'ACP_EXTENSIONS_MANAGEMENT',
+				'ACP_LANGUAGE'
 			),
 			'ACP_CAT_MAINTENANCE'	=> array(
 				'ACP_FORUM_LOGS',
