@@ -98,6 +98,9 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
 	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
+	$base_url = $url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;sd=$sort_dir&amp;sk=$sort_key&amp;st=$sort_days" . (($merge_select) ? $selected_ids : '');
+	phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $forum_topics, $topics_per_page, $start);
+	
 	$template->assign_vars(array(
 		'ACTION'				=> $action,
 		'FORUM_NAME'			=> $forum_info['forum_name'],
@@ -425,10 +428,15 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		// If the topic no longer exist, we will update the bookmarks table.
 		// To not let it error out on users who bookmarked both topics, we just return on an error...
 		$db->sql_return_on_error(true);
-		$db->sql_query('UPDATE ' . BOOKMARKS_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
+		$sql = 'UPDATE ' . BOOKMARKS_TABLE . '
+			SET topic_id = ' . (int) $to_topic_id . '
+			WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
+		$db->sql_query($sql);
 		$db->sql_return_on_error(false);
 
-		$db->sql_query('DELETE FROM ' . BOOKMARKS_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
+		$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . '
+			WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
+		$db->sql_query($sql);
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');

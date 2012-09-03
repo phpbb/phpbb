@@ -307,6 +307,12 @@ function mcp_topic_view($id, $mode, $action)
 		'post_ids'	=> $post_id_list,
 	));
 
+	$base_url = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;t={$topic_info['topic_id']}&amp;mode=$mode&amp;action=$action&amp;to_topic_id=$to_topic_id&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir");
+	if ($posts_per_page)
+	{
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $posts_per_page, $start);
+	}
+	
 	$template->assign_vars(array(
 		'TOPIC_TITLE'		=> $topic_info['topic_title'],
 		'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
@@ -517,6 +523,47 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			WHERE post_id = {$post_id_list[0]}";
 		$db->sql_query($sql);
 
+		$sql = 'SELECT user_id, notify_status
+			FROM ' . TOPICS_WATCH_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query($sql);
+
+		$sql_ary = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$sql_ary[] = array(
+				'topic_id'		=> (int) $to_topic_id,
+				'user_id'		=> (int) $row['user_id'],
+				'notify_status'	=> (int) $row['notify_status'],
+			);
+		}
+		$db->sql_freeresult($result);
+
+		if (sizeof($sql_ary))
+		{
+			$db->sql_multi_insert(TOPICS_WATCH_TABLE, $sql_ary);
+		}
+
+		$sql = 'SELECT user_id
+			FROM ' . BOOKMARKS_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query($sql);
+
+		$sql_ary = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$sql_ary[] = array(
+				'topic_id'		=> (int) $to_topic_id,
+				'user_id'		=> (int) $row['user_id'],
+			);
+		}
+		$db->sql_freeresult($result);
+
+		if (sizeof($sql_ary))
+		{
+			$db->sql_multi_insert(BOOKMARKS_TABLE, $sql_ary);
+		}
+
 		$success_msg = 'TOPIC_SPLIT_SUCCESS';
 
 		// Update forum statistics
@@ -630,10 +677,15 @@ function merge_posts($topic_id, $to_topic_id)
 			// If the topic no longer exist, we will update the bookmarks table.
 			// To not let it error out on users who bookmarked both topics, we just return on an error...
 			$db->sql_return_on_error(true);
-			$db->sql_query('UPDATE ' . BOOKMARKS_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE topic_id = ' . (int) $topic_id);
+			$sql = 'UPDATE ' . BOOKMARKS_TABLE . '
+				SET topic_id = ' . (int) $to_topic_id . '
+				WHERE topic_id = ' . (int) $topic_id;
+			$db->sql_query($sql);
 			$db->sql_return_on_error(false);
 
-			$db->sql_query('DELETE FROM ' . BOOKMARKS_TABLE . ' WHERE topic_id = ' . (int) $topic_id);
+			$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . '
+				WHERE topic_id = ' . (int) $topic_id;
+			$db->sql_query($sql);
 		}
 
 		// Link to the new topic
