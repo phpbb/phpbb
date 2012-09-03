@@ -862,7 +862,7 @@ class install_update extends module
 					$test_connection = false;
 					if ($test_ftp_connection || $submit)
 					{
-						$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+						$transfer = new $method(request_var('host', ''), request_var('username', ''), $request->untrimed_variable('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
 						$test_connection = $transfer->open_session();
 
 						// Make sure that the directory is correct by checking for the existence of common.php
@@ -948,7 +948,7 @@ class install_update extends module
 				}
 				else
 				{
-					$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new $method(request_var('host', ''), request_var('username', ''), $request->untrimed_variable('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
 					$transfer->open_session();
 				}
 

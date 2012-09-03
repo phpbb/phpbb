@@ -243,6 +243,69 @@ class phpbb_request implements phpbb_request_interface
 	}
 
 	/**
+	* Get a variable, but without trimming strings
+	* Same functionality as variable(), except does not run trim() on strings
+	* All variables in GET or POST requests should be retrieved through this function to maximise security.
+	*
+	* @param	string|array	$var_name	The form variable's name from which data shall be retrieved.
+	* 										If the value is an array this may be an array of indizes which will give
+	* 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
+	* 										then specifying array("var", 1) as the name will return "a".
+	* @param	mixed			$default	A default value that is returned if the variable was not set.
+	* 										This function will always return a value of the same type as the default.
+	* @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
+	*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
+	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
+	* 										Specifies which super global should be used
+	*
+	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
+	*					the same as that of $default. If the variable is not set $default is returned.
+	*/
+	public function untrimed_variable($var_name, $default, $multibyte, $super_global = phpbb_request_interface::REQUEST)
+	{
+		$path = false;
+
+		// deep direct access to multi dimensional arrays
+		if (is_array($var_name))
+		{
+			$path = $var_name;
+			// make sure at least the variable name is specified
+			if (empty($path))
+			{
+				return (is_array($default)) ? array() : $default;
+			}
+			// the variable name is the first element on the path
+			$var_name = array_shift($path);
+		}
+
+		if (!isset($this->input[$super_global][$var_name]))
+		{
+			return (is_array($default)) ? array() : $default;
+		}
+		$var = $this->input[$super_global][$var_name];
+
+		if ($path)
+		{
+			// walk through the array structure and find the element we are looking for
+			foreach ($path as $key)
+			{
+				if (is_array($var) && isset($var[$key]))
+				{
+					$var = $var[$key];
+				}
+				else
+				{
+					return (is_array($default)) ? array() : $default;
+				}
+			}
+		}
+
+		$this->type_cast_helper->recursive_set_var($var, $default, $multibyte, false);
+
+		return $var;
+	}
+
+	/**
 	* Shortcut method to retrieve SERVER variables.
 	*
 	* Also fall back to getenv(), some CGI setups may need it (probably not, but
