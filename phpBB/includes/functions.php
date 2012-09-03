@@ -1305,14 +1305,14 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				{
 					$sql = 'DELETE FROM ' . $table . "
 						WHERE user_id = {$user->data['user_id']}
-							AND mark_time <  . $post_time";
+							AND mark_time < $post_time";
 					$db->sql_query($sql);
 				}
 
 				$sql = 'UPDATE ' . USERS_TABLE . "
 					SET user_lastmark = $post_time
 					WHERE user_id = {$user->data['user_id']}
-						AND mark_time < $post_time";
+						AND user_lastmark < $post_time";
 				$db->sql_query($sql);
 			}
 			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
@@ -1335,7 +1335,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 					$sql = 'UPDATE ' . USERS_TABLE . "
 						SET user_lastmark = $post_time
 						WHERE user_id = {$user->data['user_id']}
-							AND mark_time < $post_time";
+							AND user_lastmark < $post_time";
 					$db->sql_query($sql);
 				}
 			}

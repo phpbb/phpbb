@@ -54,7 +54,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	// Handle marking everything read
 	if ($mark_read == 'all')
 	{
-		$redirect = build_url(array('mark', 'hash'));
+		$redirect = build_url(array('mark', 'hash', 'mark_time'));
 		meta_refresh(3, $redirect);
 
 		if (check_link_hash(request_var('hash', ''), 'global'))
@@ -305,7 +305,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	// Handle marking posts
 	if ($mark_read == 'forums')
 	{
-		$redirect = build_url(array('mark', 'hash'));
+		$redirect = build_url(array('mark', 'hash', 'mark_time'));
 		$token = request_var('hash', '');
 		if (check_link_hash($token, 'global'))
 		{
