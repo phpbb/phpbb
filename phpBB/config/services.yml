@@ -13,6 +13,9 @@ services:
 
     cache.driver:
         class: %cache.driver.class%
+        arguments:
+            - %core.root_path%
+            - %core.php_ext%
 
     cache.driver.install:
         class: phpbb_cache_driver_file
