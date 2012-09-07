@@ -1410,7 +1410,8 @@ function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $php
 
 	foreach ($methods as $method)
 	{
-		$type = array_pop(explode('.', $method));
+		$exploded = explode('.', $method);
+		$type = array_pop($exploded);
 		$params = array('archive' => $method);
 		$params[$param_key] = $param_val;
 
