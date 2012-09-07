@@ -543,6 +543,7 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
 		'table_prefix'	=> $data['table_prefix'],
 		'acm_type'		=> 'phpbb_cache_driver_file',
+		'acm_sql_type'	=> 'phpbb_cache_driver_file',
 		'load_extensions'	=> $load_extensions,
 	);
 

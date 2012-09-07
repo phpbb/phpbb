@@ -53,6 +53,7 @@ class phpbb_di_processor_config implements phpbb_di_processor_interface
 
 		$container->setParameter('core.table_prefix', $table_prefix);
 		$container->setParameter('cache.driver.class', $this->fix_acm_type($acm_type));
+		$container->setParameter('cache.driver.sql_class', (isset($acm_sql_type) ? $this->fix_acm_type($acm_sql_type) : 'phpbb_cache_driver_file'));
 		$container->setParameter('dbal.driver.class', 'dbal_'.$dbms);
 		$container->setParameter('dbal.dbhost', $dbhost);
 		$container->setParameter('dbal.dbuser', $dbuser);

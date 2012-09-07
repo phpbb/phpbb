@@ -22,6 +22,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_cache_service
 {
 	private $driver;
+	private $sql_driver;
 
 	// SQL Cache data
 	private $sql_rowset;
@@ -32,9 +33,10 @@ class phpbb_cache_service
 	*
 	* @param phpbb_cache_driver_interface $driver The cache driver
 	*/
-	public function __construct(phpbb_cache_driver_interface $driver = null)
+	public function __construct(phpbb_cache_driver_interface $driver = null, phpbb_cache_driver_interface $sql_driver = null)
 	{
 		$this->set_driver($driver);
+		$this->set_sql_driver($sql_driver);
 	}
 
 	/**
@@ -55,6 +57,26 @@ class phpbb_cache_service
 	public function set_driver(phpbb_cache_driver_interface $driver)
 	{
 		$this->driver = $driver;
+	}
+
+	/**
+	* Returns the sql cache driver used by this cache service.
+	*
+	* @return phpbb_cache_driver_interface The cache driver
+	*/
+	public function get_sql_driver()
+	{
+		return $this->sql_driver;
+	}
+
+	/**
+	* Replaces the sql cache driver used by this cache service.
+	*
+	* @param phpbb_cache_driver_interface $driver The cache driver
+	*/
+	public function set_sql_driver(phpbb_cache_driver_interface $sql_driver)
+	{
+		$this->sql_driver = $sql_driver;
 	}
 
 	public function __call($method, $arguments)
@@ -424,7 +446,7 @@ class phpbb_cache_service
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 
-		if (($rowset = $this->driver->get('_sql_' . md5($query))) === false)
+		if (($rowset = $this->sql_driver->get('_sql_' . md5($query))) === false)
 		{
 			return false;
 		}
@@ -458,7 +480,7 @@ class phpbb_cache_service
 		$this->sql_rowset[$query_id] = $db->sql_fetchrowset($query_result);
 		$db->sql_freeresult($query_result);
 
-		$this->put('_sql_' . md5($query), $this->sql_rowset[$query_id], $ttl, $query);
+		$this->sql_driver->put('_sql_' . md5($query), $this->sql_rowset[$query_id], $ttl, $query);
 
 		return $query_id;
 	}
