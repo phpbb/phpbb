@@ -1185,7 +1185,7 @@ function database_update_info()
 				),
 				NOTIFICATIONS_TABLE		=> array(
 					'COLUMNS'			=> array(
-						'item_type'			=> array('UINT', 0),
+						'item_type'			=> array('VCHAR:25', ''),
 						'item_id'			=> array('UINT', 0),
 						'user_id'			=> array('UINT', 0),
 						'unread'			=> array('BOOL', 1),
@@ -1206,7 +1206,7 @@ function database_update_info()
 				),
 				USER_NOTIFICATIONS_TABLE	=> array(
 					'COLUMNS'			=> array(
-						'item_type'			=> array('UINT', 0),
+						'item_type'			=> array('VCHAR:25', ''),
 						'item_id'			=> array('UINT', 0),
 						'user_id'			=> array('UINT', 0),
 						'method'			=> array('VCHAR:25', ''),
