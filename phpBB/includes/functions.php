@@ -4994,7 +4994,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request;
+	global $phpbb_dispatcher, $request, $phpbb_container;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5312,6 +5312,13 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
 	));
+
+	// Output the notifications
+	$phpbb_notifications = $phpbb_container->get('notifications');
+	foreach ($phpbb_notifications->load_notifications() as $notification)
+	{
+		$notification->display();
+	}
 
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
