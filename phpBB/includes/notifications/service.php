@@ -87,14 +87,14 @@ class phpbb_notifications_service
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$type_class_name = $this->get_type_class_name($row['type'], true);
+			$type_class_name = $this->get_type_class_name($row['item_type'], true);
 
 			$notification = new $type_class_name($this->phpbb_container, $row);
 			$notification->users($this->users);
 
 			$user_ids = array_merge($user_ids, $notification->users_to_query());
 
-			$notifications[] = $notification();
+			$notifications[] = $notification;
 		}
 		$this->db->sql_freeresult($result);
 

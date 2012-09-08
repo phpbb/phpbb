@@ -37,7 +37,18 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public function get_title()
 	{
-		return $this->data['post_username'] . ' posted in the topic ' . censor_text($this->data['topic_title']);
+		if ($this->get_data('post_username'))
+		{
+			$username = $this->get_data('post_username');
+		}
+		else
+		{
+			$user_data = $this->get_user($this->get_data('poster_id'));
+
+			$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+		}
+
+		return $username . ' posted in the topic ' . censor_text($this->get_data('topic_title'));
 	}
 
 	/**
