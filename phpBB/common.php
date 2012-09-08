@@ -138,6 +138,9 @@ if (!$config['use_system_cron'])
 	$cron = $phpbb_container->get('cron.manager');
 }
 
+// Load notifications
+$phpbb_notifications = $phpbb_container->get('notifications');
+
 /**
 * Main event which is triggered on every page
 *

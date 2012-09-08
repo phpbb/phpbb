@@ -85,7 +85,7 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	*/
 	protected function get_data($name)
 	{
-		return $this->data['data'][$name];
+		return (isset($this->data['data'][$name])) ? $this->data['data'][$name] : null;
 	}
 
 	/**
@@ -105,7 +105,18 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	*/
 	public function users(&$users)
 	{
-		$this->users = $users;
+		$this->users = &$users;
+	}
+
+	/**
+	* Get a user row from our users cache
+	*
+	* @param int $user_id
+	* @return array
+	*/
+	protected function get_user($user_id)
+	{
+		return $this->users[$user_id];
 	}
 
 	/**
