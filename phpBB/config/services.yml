@@ -117,6 +117,11 @@ services:
             - .%core.php_ext%
             - _ext_finder
 
+    notifications:
+        class: phpbb_notifications_service
+        arguments:
+            - @container
+
     http_kernel:
         class: Symfony\Component\HttpKernel\HttpKernel
         arguments:
