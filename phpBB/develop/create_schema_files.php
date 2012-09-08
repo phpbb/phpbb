@@ -1295,6 +1295,28 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_notifications'] = array(
+		'COLUMNS'			=> array(
+			'item_type'			=> array('UINT', 0),
+			'item_id'			=> array('UINT', 0),
+			'user_id'			=> array('UINT', 0),
+			'unread'			=> array('BOOL', 1),
+			'time'				=> array('TIMESTAMP', 1),
+			'data'				=> array('TEXT_UNI', ''),
+		),
+		'PRIMARY_KEY'		=> array(
+			'item_type',
+			'item_id',
+			'user_id',
+		),
+		'KEYS'				=> array(
+			'item_type'			=> array('INDEX', 'item_type'),
+			'item_id'			=> array('INDEX', 'item_id'),
+			'user_id'			=> array('INDEX', 'user_id'),
+			'time'				=> array('INDEX', 'time'),
+		),
+	);
+
 	$schema_data['phpbb_poll_options'] = array(
 		'COLUMNS'		=> array(
 			'poll_option_id'		=> array('TINT:4', 0),
@@ -1750,6 +1772,25 @@ function get_schema_struct()
 			'topic_id'			=> array('INDEX', 'topic_id'),
 			'user_id'			=> array('INDEX', 'user_id'),
 			'notify_stat'		=> array('INDEX', 'notify_status'),
+		),
+	);
+
+	$schema_data['phpbb_user_notifications'] = array(
+		'COLUMNS'			=> array(
+			'item_type'			=> array('UINT', 0),
+			'item_id'			=> array('UINT', 0),
+			'user_id'			=> array('UINT', 0),
+			'method'			=> array('VCHAR:25', ''),
+		),
+		'PRIMARY_KEY'		=> array(
+			'item_type',
+			'item_id',
+			'user_id',
+			'method',
+		),
+		'KEYS'				=> array(
+			'it'				=> array('INDEX', 'item_type'),
+			'uid'				=> array('INDEX', 'user_id'),
 		),
 	);
 
