@@ -29,7 +29,7 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 		return true;
 	}
 
-	public function notify()
+	public function notify($notification)
 	{
 		// email the user
 	}
@@ -70,7 +70,7 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 		{
 			$notification->users($users);
 
-			$user = $notification->get_user();
+			$user = $notification->get_user($notification->user_id);
 
 			$messenger->template('privmsg_notify', $user['user_lang']);
 
@@ -82,10 +82,10 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 				'USERNAME'		=> htmlspecialchars_decode($user['username']),
 
 				'U_INBOX'			=> $board_url . "/ucp.{$this->php_ext}?i=pm&folder=inbox",
-				'U_VIEW_MESSAGE'	=> $board_url . "/ucp.{$this->php_ext}?i=pm&mode=view&p={$notification->get_item_id()}",
+				'U_VIEW_MESSAGE'	=> $board_url . "/ucp.{$this->php_ext}?i=pm&mode=view&p={$notification->item_id}",
 			));
 
-			$messenger->send($addr['method']);
+			$messenger->send('email');
 		}
 
 		// Save the queue in the messenger class (has to be called or these emails could be lost?)
