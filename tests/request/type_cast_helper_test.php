@@ -54,7 +54,7 @@ class phpbb_type_cast_helper_test extends phpbb_test_case
 		$data = array(' eviL<3		 ');
 		$expected = array(' eviL&lt;3		 ');
 
-		$this->type_cast_helper->recursive_set_var($data, '', true, false);
+		$this->type_cast_helper->recursive_set_var($data, array(0 => ''), true, false);
 
 		$this->assertEquals($expected, $data);
 	}
