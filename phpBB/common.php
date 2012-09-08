@@ -100,13 +100,6 @@ $processor->process($phpbb_container);
 $phpbb_class_loader = $phpbb_container->get('class_loader');
 $phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
 
-$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
-foreach ($ids as $id)
-{
-	$processor = $phpbb_container->get($id);
-	$processor->process($phpbb_container);
-}
-
 // set up caching
 $cache = $phpbb_container->get('cache');
 
@@ -131,6 +124,13 @@ $phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 
 $template = $phpbb_container->get('template');
 $phpbb_style = $phpbb_container->get('style');
+
+$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
+foreach ($ids as $id)
+{
+	$processor = $phpbb_container->get($id);
+	$processor->process($phpbb_container);
+}
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
