@@ -49,7 +49,7 @@ class phpbb_type_cast_helper_test extends phpbb_test_case
 		$this->assertEquals($expected, $data);
 	}
 
-	public function test_untrimmed_strings()
+	public function test_nested_untrimmed_recursive_set_var()
 	{
 		$data = array(' eviL<3		 ');
 		$expected = array(' eviL&lt;3		 ');
