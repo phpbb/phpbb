@@ -157,7 +157,7 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	{
 		// Defaults
 		$data = array_merge(array(
-			'item_type'		=> $this->get_type(),
+			'item_type'		=> $this->get_item_type(),
 			'time'			=> time(),
 			'unread'		=> true,
 
