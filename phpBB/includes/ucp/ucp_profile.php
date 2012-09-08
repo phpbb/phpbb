@@ -46,9 +46,9 @@ class ucp_profile
 				$data = array(
 					'username'			=> utf8_normalize_nfc(request_var('username', $user->data['username'], true)),
 					'email'				=> strtolower(request_var('email', $user->data['user_email'])),
-					'new_password'		=> $request->untrimmed_variable('new_password', '', true),
-					'cur_password'		=> $request->untrimmed_variable('cur_password', '', true),
-					'password_confirm'	=> $request->untrimmed_variable('password_confirm', '', true),
+					'new_password'		=> $request->variable('new_password', '', true),
+					'cur_password'		=> $request->variable('cur_password', '', true),
+					'password_confirm'	=> $request->variable('password_confirm', '', true),
 				);
 
 				add_form_key('ucp_reg_details');
