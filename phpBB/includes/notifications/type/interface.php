@@ -23,11 +23,13 @@ interface phpbb_notifications_type_interface
 {
 	public static function get_item_type();
 
-	public static function get_item_id($post);
+	public static function get_item_id($type_data);
 
 	public function get_title();
 
 	public function get_url();
 
-	public function create_insert_array($special_data);
+	public function create_insert_array($type_data);
+
+	public function find_users_for_notification($type_data);
 }
