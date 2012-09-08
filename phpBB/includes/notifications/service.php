@@ -87,9 +87,9 @@ class phpbb_notifications_service
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$type_class_name = $this->get_type_class_name($row['item_type'], true);
+			$item_type_class_name = $this->get_item_type_class_name($row['item_type'], true);
 
-			$notification = new $type_class_name($this->phpbb_container, $row);
+			$notification = new $item_type_class_name($this->phpbb_container, $row);
 			$notification->users($this->users);
 
 			$user_ids = array_merge($user_ids, $notification->users_to_query());
@@ -123,13 +123,18 @@ class phpbb_notifications_service
 	/**
 	* Add a notification
 	*
-	* @param string $type Type identifier
-	* @param int $type_id Identifier within the type
+	* @param string $item_type Type identifier
+	* @param int $item_id Identifier within the type
 	* @param array $data Data specific for this type that will be inserted
 	*/
-	public function add_notifications($type, $data)
+	public function add_notifications($item_type, $data)
 	{
-		$type_class_name = $this->get_type_class_name($type);
+		$item_type_class_name = $this->get_item_type_class_name($item_type);
+
+		$item_id = $item_type_class_name::get_item_id($data);
+
+		// Update any existing notifications for this item
+		$this->update_notifications($item_type, $item_id, $data);
 
 		$notify_users = array();
 		$notification_objects = $notification_methods = array();
@@ -150,10 +155,22 @@ class phpbb_notifications_service
 		}
 		$this->db->sql_freeresult($result);
 
+		// Make sure not to send new notifications to users who've already been notified about this item
+		// This may happen when an item was added, but now new users are able to see the item
+		$sql = 'SELECT user_id FROM ' . NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+				AND item_id = " . (int) $item_id;
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			unset($notify_users[$row['user_id']]);
+		}
+		$this->db->sql_freeresult($result);
+
 		// Go through each user so we can insert a row in the DB and then notify them by their desired means
 		foreach ($notify_users as $user => $methods)
 		{
-			$notification = new $type_class_name($this->phpbb_container);
+			$notification = new $item_type_class_name($this->phpbb_container);
 
 			$notification->user_id = (int) $user;
 
@@ -188,34 +205,49 @@ class phpbb_notifications_service
 	/**
 	* Update a notification
 	*
-	* @param string $type Type identifier
-	* @param int $type_id Identifier within the type
+	* @param string $item_type Type identifier
+	* @param int $item_id Identifier within the type
 	* @param array $data Data specific for this type that will be updated
 	*/
-	public function update_notifications($type, $type_id, $data)
+	public function update_notifications($item_type, $item_id, $data)
 	{
-		$type_class_name = $this->get_type_class_name($type);
+		$item_type_class_name = $this->get_item_type_class_name($item_type);
 
-		$notification = new $type_class_name($this->phpbb_container);
+		$notification = new $item_type_class_name($this->phpbb_container);
 		$update_array = $notification->create_update_array($data);
 
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
 			SET ' . $this->db->sql_build_array('UPDATE', $update_array) . "
-			WHERE item_type = '" . $this->db->sql_escape($type) . "'
-				AND item_id = " . (int) $type_id;
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+				AND item_id = " . (int) $item_id;
 		$this->db->sql_query($sql);
 	}
 
 	/**
-	* Helper to get the notifications type class name and clean it if unsafe
+	* Delete a notification
+	*
+	* @param string $item_type Type identifier
+	* @param int $item_id Identifier within the type
+	* @param array $data Data specific for this type that will be updated
 	*/
-	private function get_type_class_name(&$type, $safe = false)
+	public function delete_notifications($item_type, $item_id)
+	{
+		$sql = 'DELETE FROM ' . NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+				AND item_id = " . (int) $item_id;
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Helper to get the notifications item type class name and clean it if unsafe
+	*/
+	private function get_item_type_class_name(&$item_type, $safe = false)
 	{
 		if (!$safe)
 		{
-			$type = preg_replace('#[^a-z]#', '', $type);
+			$item_type = preg_replace('#[^a-z]#', '', $item_type);
 		}
 
-		return 'phpbb_notifications_type_' . $type;
+		return 'phpbb_notifications_type_' . $item_type;
 	}
 }
