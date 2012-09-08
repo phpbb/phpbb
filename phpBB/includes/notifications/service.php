@@ -141,7 +141,7 @@ class phpbb_notifications_service
 		*/
 
 		// find out which users want to receive this type of notification
-		$notify_users = $item_type_class_name::find_users_for_notification($data);
+		$notify_users = $item_type_class_name::find_users_for_notification($this->phpbb_container, $data);
 
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
@@ -154,6 +154,11 @@ class phpbb_notifications_service
 			unset($notify_users[$row['user_id']]);
 		}
 		$this->db->sql_freeresult($result);
+
+		if (!sizeof($notify_users))
+		{
+			return;
+		}
 
 		// Go through each user so we can insert a row in the DB and then notify them by their desired means
 		foreach ($notify_users as $user => $methods)

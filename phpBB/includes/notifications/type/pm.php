@@ -7,6 +7,8 @@
 *
 */
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
 /**
 * @ignore
 */
@@ -101,12 +103,13 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	* @param array $pm Data from
 	* @return array
 	*/
-	public function find_users_for_notification($pm)
+	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $pm)
 	{
-		$user = $this->phpbb_container->get('user');
+		$db = $phpbb_container->get('dbal.conn');
+		$user = $phpbb_container->get('user');
 
 		// Exclude guests, current user and banned users from notifications
-		unset($pm['recipients'][ANONYMOUS], $pm['recipients'][$user->data['user_id']]);
+		unset($pm['recipients'][ANONYMOUS]);//, $pm['recipients'][$user->data['user_id']]);
 
 		if (!sizeof($pm['recipients']))
 		{
@@ -115,7 +118,7 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 
 		if (!function_exists('phpbb_get_banned_user_ids'))
 		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($phpbb_container->getParameter('core.root_path') . 'includes/functions_user.' . $phpbb_container->getParameter('core.php_ext'));
 		}
 		$banned_users = phpbb_get_banned_user_ids(array_keys($pm['recipients']));
 		$pm['recipients'] = array_diff(array_keys($pm['recipients']), $banned_users);
