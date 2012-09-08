@@ -222,7 +222,7 @@ class phpbb_request implements phpbb_request_interface
 	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 	*					the same as that of $default. If the variable is not set $default is returned.
 	*/
-	public function untrimed_variable($var_name, $default, $multibyte, $super_global = phpbb_request_interface::REQUEST)
+	public function untrimmed_variable($var_name, $default, $multibyte, $super_global = phpbb_request_interface::REQUEST)
 	{
 		return $this->_variable($var_name, $default, $multibyte, $super_global, false);
 	}
@@ -338,7 +338,7 @@ class phpbb_request implements phpbb_request_interface
 	}
 
 	/**
-	* Helper function used by variable() and untrimed_variable().
+	* Helper function used by variable() and untrimmed_variable().
 	*
 	* @param	string|array	$var_name	The form variable's name from which data shall be retrieved.
 	* 										If the value is an array this may be an array of indizes which will give
