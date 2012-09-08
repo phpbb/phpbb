@@ -33,25 +33,6 @@ class phpbb_notifications_service
 	*/
 	protected $users;
 
-	/**
-	* Desired notifications
-	* unique by (type, type_id, user_id, method)
-	* if multiple methods are desired, multiple rows will exist.
-	*
-	* method of "none" will over-ride any other options
-	*
-	* type
-	* type_id
-	* user_id
-	* method
-	* 	none (will never receive notifications)
-	* 	standard (listed in notifications window
-	* 	popup?
-	* 	email
-	* 	jabber
-	*	sms?
-	*/
-
 	public function __construct(ContainerBuilder $phpbb_container)
 	{
 		$this->phpbb_container = $phpbb_container;
@@ -139,6 +120,25 @@ class phpbb_notifications_service
 		$notify_users = array();
 		$notification_objects = $notification_methods = array();
 		$new_rows = array();
+
+		/**
+		* Desired notifications
+		* unique by (type, type_id, user_id, method)
+		* if multiple methods are desired, multiple rows will exist.
+		*
+		* method of "none" will over-ride any other options
+		*
+		* item_type
+		* item_id
+		* user_id
+		* method
+		* 	none (will never receive notifications)
+		* 	standard (listed in notifications window
+		* 	popup?
+		* 	email
+		* 	jabber
+		*	sms?
+		*/
 
 		// find out which users want to receive this type of notification
 		$sql = 'SELECT user_id FROM ' . USERS_TABLE . '

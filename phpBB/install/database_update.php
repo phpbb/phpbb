@@ -106,6 +106,14 @@ if (!defined('EXT_TABLE'))
 {
 	define('EXT_TABLE', $table_prefix . 'ext');
 }
+if (!defined('NOTIFICATIONS_TABLE'))
+{
+	define('NOTIFICATIONS_TABLE', $table_prefix . 'notifications');
+}
+if (!defined('USER_NOTIFICATIONS_TABLE'))
+{
+	define('USER_NOTIFICATIONS_TABLE', $table_prefix . 'user_notifications');
+}
 
 $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
 $phpbb_class_loader_ext->register();
@@ -1095,6 +1103,45 @@ function database_update_info()
 					),
 					'KEYS'				=> array(
 						'ext_name'		=> array('UNIQUE', 'ext_name'),
+					),
+				),
+				NOTIFICATIONS_TABLE		=> array(
+					'COLUMNS'			=> array(
+						'item_type'			=> array('UINT', 0),
+						'item_id'			=> array('UINT', 0),
+						'user_id'			=> array('UINT', 0),
+						'unread'			=> array('BOOL', 1),
+						'time'				=> array('TIMESTAMP', 1),
+						'data'				=> array('TEXT_UNI', ''),
+					),
+					'PRIMARY_KEY'		=> array(
+						'item_type',
+						'item_id',
+						'user_id',
+					),
+					'KEYS'				=> array(
+						'item_type'			=> array('INDEX', 'item_type'),
+						'item_id'			=> array('INDEX', 'item_id'),
+						'user_id'			=> array('INDEX', 'user_id'),
+						'time'				=> array('INDEX', 'time'),
+					),
+				),
+				USER_NOTIFICATIONS_TABLE	=> array(
+					'COLUMNS'			=> array(
+						'item_type'			=> array('UINT', 0),
+						'item_id'			=> array('UINT', 0),
+						'user_id'			=> array('UINT', 0),
+						'method'			=> array('VCHAR:25', ''),
+					),
+					'PRIMARY_KEY'		=> array(
+						'item_type',
+						'item_id',
+						'user_id',
+						'method',
+					),
+					'KEYS'				=> array(
+						'it'				=> array('INDEX', 'item_type'),
+						'uid'				=> array('INDEX', 'user_id'),
 					),
 				),
 			),
