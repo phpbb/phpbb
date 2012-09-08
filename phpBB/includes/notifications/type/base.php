@@ -58,6 +58,7 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 
 		// Some common things we're going to use
 		$this->db = $phpbb_container->get('dbal.conn');
+
 		$this->phpbb_root_path = $phpbb_container->getParameter('core.root_path');
 		$this->php_ext = $phpbb_container->getParameter('core.php_ext');
 
@@ -114,7 +115,7 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	* @param int $user_id
 	* @return array
 	*/
-	protected function get_user($user_id)
+	public function get_user($user_id)
 	{
 		return $this->users[$user_id];
 	}
@@ -149,11 +150,11 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	* Function for preparing the data for insertion in an SQL query
 	* (The service handles insertion)
 	*
-	* @param array $special_data Data unique to this notification type
+	* @param array $type_data Data unique to this notification type
 	*
 	* @return array Array of data ready to be inserted into the database
 	*/
-	public function create_insert_array($special_data)
+	public function create_insert_array($type_data)
 	{
 		// Defaults
 		$data = array_merge(array(
@@ -173,13 +174,13 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	* Function for preparing the data for update in an SQL query
 	* (The service handles insertion)
 	*
-	* @param array $special_data Data unique to this notification type
+	* @param array $type_data Data unique to this notification type
 	*
 	* @return array Array of data ready to be updated in the database
 	*/
-	public function create_update_array($special_data)
+	public function create_update_array($type_data)
 	{
-		$data = $this->create_insert_array($special_data);
+		$data = $this->create_insert_array($type_data);
 
 		// Unset data unique to each row
 		unset(

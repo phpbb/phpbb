@@ -26,6 +26,8 @@ abstract class phpbb_notifications_method_base implements phpbb_notifications_me
 	protected $phpbb_container;
 	protected $db;
 	protected $user;
+	protected $phpbb_root_path;
+	protected $php_ext;
 
 	/**
 	* Queue of messages to be sent
@@ -42,6 +44,9 @@ abstract class phpbb_notifications_method_base implements phpbb_notifications_me
 		// Some common things we're going to use
 		$this->db = $phpbb_container->get('dbal.conn');
 		$this->user = $phpbb_container->get('user');
+
+		$this->phpbb_root_path = $phpbb_container->getParameter('core.root_path');
+		$this->php_ext = $phpbb_container->getParameter('core.php_ext');
 	}
 
 	/**
@@ -65,7 +70,11 @@ abstract class phpbb_notifications_method_base implements phpbb_notifications_me
 			$this->notify($notification);
 		}
 
-		// Empty queue
+		$this->empty_queue();
+	}
+
+	protected function empty_queue()
+	{
 		$this->queue = array();
 	}
 }

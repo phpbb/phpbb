@@ -141,19 +141,7 @@ class phpbb_notifications_service
 		*/
 
 		// find out which users want to receive this type of notification
-		$sql = 'SELECT user_id FROM ' . USERS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('user_id', array(2));
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			if (!isset($notify_users[$row['user_id']]))
-			{
-				$notify_users[$row['user_id']] = array();
-			}
-
-			$notify_users[$row['user_id']][] = '';
-		}
-		$this->db->sql_freeresult($result);
+		$notify_users = $item_type_class_name::find_users_for_notification($data);
 
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
