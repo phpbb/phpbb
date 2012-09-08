@@ -7,6 +7,8 @@
 *
 */
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
 /**
 * @ignore
 */
@@ -50,7 +52,7 @@ class phpbb_notifications_service
 	*	sms?
 	*/
 
-	public function __construct(Symfony\Component\DependencyInjection\ContainerBuilder $phpbb_container)
+	public function __construct(ContainerBuilder $phpbb_container)
 	{
 		$this->phpbb_container = $phpbb_container;
 
@@ -58,23 +60,13 @@ class phpbb_notifications_service
 		$this->db = $phpbb_container->get('dbal.conn');
 	}
 
-	private function get_type_class_name(&$type, $safe = false)
-	{
-		if (!$safe)
-		{
-			$type = preg_replace('#[^a-z]#', '', $type);
-		}
-
-		return 'phpbb_notifications_type_' . $type;
-	}
-
 	/**
 	* Load the user's notifications
 	*
 	* @param array $options Optional options to control what notifications are loaded
-	*					user_id		User id to load notifications for (Default: $user->data['user_id'])
-	* 					limit		Number of notifications to load (Default: 5)
-	* 					start		Notifications offset (Default: 0)
+	*				user_id		User id to load notifications for (Default: $user->data['user_id'])
+	* 				limit		Number of notifications to load (Default: 5)
+	* 				start		Notifications offset (Default: 0)
 	*/
 	public function load_notifications($options = array())
 	{
@@ -128,38 +120,58 @@ class phpbb_notifications_service
 		return $notifications;
 	}
 
+	/**
+	* Add a notification
+	*
+	* @param string $type Type identifier
+	* @param int $type_id Identifier within the type
+	* @param array $data Data specific for this type that will be inserted
+	*/
 	public function add_notifications($type, $data)
 	{
 		$type_class_name = $this->get_type_class_name($type);
 
-		$notification_objects = array(); // 'user_id'	=> object
-		$methods = $new_rows = array();
+		$notify_users = array();
+		$notification_objects = $notification_methods = array();
+		$new_rows = array();
 
 		// find out which users want to receive this type of notification
 		$sql = 'SELECT user_id FROM ' . USERS_TABLE . '
 			WHERE ' . $this->db->sql_in_set('user_id', array(2));
 		$result = $this->db->sql_query($sql);
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$row['method'] = '';
+			if (!isset($notify_users[$row['user_id']]))
+			{
+				$notify_users[$row['user_id']] = array();
+			}
 
+			$notify_users[$row['user_id']][] = '';
+		}
+		$this->db->sql_freeresult($result);
+
+		// Go through each user so we can insert a row in the DB and then notify them by their desired means
+		foreach ($notify_users as $user => $methods)
+		{
 			$notification = new $type_class_name($this->phpbb_container);
 
-			$notification->user_id = $row['user_id'];
+			$notification->user_id = (int) $user;
 
 			$new_rows[] = $notification->create_insert_array($data);
 
-			// setup the notification methods and add the notification to the queue
-			if ($row['method'])
+			foreach ($methods as $method)
 			{
-				if (!isset($methods[$row['method']]))
+				// setup the notification methods and add the notification to the queue
+				if ($row['method'])
 				{
-					$method_class_name = 'phpbb_notifications_method_' . $row['method'];
-					$methods[$row['method']] = new $$method_class_name();
-				}
+					if (!isset($notification_methods[$row['method']]))
+					{
+						$method_class_name = 'phpbb_notifications_method_' . $row['method'];
+						$notification_methods[$row['method']] = new $method_class_name();
+					}
 
-				$methods[$row['method']]->add_to_queue($notification);
+					$notification_methods[$row['method']]->add_to_queue($notification);
+				}
 			}
 		}
 
@@ -167,31 +179,43 @@ class phpbb_notifications_service
 		$this->db->sql_multi_insert(NOTIFICATIONS_TABLE, $new_rows);
 
 		// run the queue for each method to send notifications
-		foreach ($methods as $method)
+		foreach ($notification_methods as $method)
 		{
 			$method->run_queue();
 		}
 	}
 
+	/**
+	* Update a notification
+	*
+	* @param string $type Type identifier
+	* @param int $type_id Identifier within the type
+	* @param array $data Data specific for this type that will be updated
+	*/
 	public function update_notifications($type, $type_id, $data)
 	{
 		$type_class_name = $this->get_type_class_name($type);
 
-		$object = new $$type_class($this->phpbb_container);
-		$update = $object->update($data);
+		$notification = new $type_class_name($this->phpbb_container);
+		$update_array = $notification->create_update_array($data);
 
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
-			SET ' . $this->db->sql_build_array('UPDATE', $update) . "
-			WHERE type = '" . $this->db->sql_escape($type) . "'
-				AND type_id = " . (int) $type_id;
-		$result = $this->db->sql_query($sql);
+			SET ' . $this->db->sql_build_array('UPDATE', $update_array) . "
+			WHERE item_type = '" . $this->db->sql_escape($type) . "'
+				AND item_id = " . (int) $type_id;
+		$this->db->sql_query($sql);
+	}
 
-		while ($row = $this->db->sql_fetchrow($result))
+	/**
+	* Helper to get the notifications type class name and clean it if unsafe
+	*/
+	private function get_type_class_name(&$type, $safe = false)
+	{
+		if (!$safe)
 		{
-			$object = new $type_class_name($this->phpbb_container, $row);
-			$object->update($data);
-
-			$update_rows[] = $object->getForUpdate();
+			$type = preg_replace('#[^a-z]#', '', $type);
 		}
+
+		return 'phpbb_notifications_type_' . $type;
 	}
 }
