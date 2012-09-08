@@ -17,6 +17,8 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Post notifications class
+* This class handles notifications for replies to a topic
+*
 * @package notifications
 */
 class phpbb_notifications_type_post extends phpbb_notifications_type_base

@@ -17,6 +17,8 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Private message notifications class
+* This class handles notifications for private messages
+*
 * @package notifications
 */
 class phpbb_notifications_type_pm extends phpbb_notifications_type_base

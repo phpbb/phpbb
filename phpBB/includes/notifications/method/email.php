@@ -17,11 +17,19 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Email notification method class
+* This class handles sending emails for notifications
+*
 * @package notifications
 */
 class phpbb_notifications_method_email extends phpbb_notifications_method_base
 {
-	function notify()
+	public static function is_available()
+	{
+		// Email is always available
+		return true;
+	}
+
+	public function notify()
 	{
 		// email the user
 	}
