@@ -65,7 +65,17 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'ucp.' . $this->php_ext, "i=pm&amp;mode=view&p={$this->item_id}");
+		return append_sid($this->phpbb_root_path . 'ucp.' . $this->php_ext, "i=pm&amp;mode=view&amp;p={$this->item_id}");
+	}
+
+	/**
+	* Get the full url to this item
+	*
+	* @return string URL
+	*/
+	public function get_full_url()
+	{
+		return generate_board_url() . "/ucp.{$this->php_ext}?i=pm&mode=view&p={$this->item_id}";
 	}
 
 	/**
