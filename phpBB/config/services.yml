@@ -89,6 +89,11 @@ services:
             - .%core.php_ext%
             - @cache.driver
 
+    notifications:
+        class: phpbb_notifications_service
+        arguments:
+            - @container
+
     processor.config:
         class: phpbb_di_processor_ext
         arguments:
