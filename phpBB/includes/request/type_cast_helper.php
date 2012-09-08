@@ -93,8 +93,8 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	* @param mixed	$type			The variable type. Will be used with {@link settype()}
 	* @param bool	$multibyte		Indicates whether string values may contain UTF-8 characters.
 	* 								Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks.
-	* @param bool	$trim			Indicates whether string values will be be parsed with trim()
-	* 								Default is true
+	* @param bool	$trim			Indicates whether trim() should be applied to string values.
+	* 								Default is true.
 	*/
 	public function set_var(&$result, $var, $type, $multibyte = false, $trim = true)
 	{
@@ -149,8 +149,8 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	* @param	bool	$multibyte	Indicates whether string keys and values may contain UTF-8 characters.
 	* 								Default is false, causing all bytes outside the ASCII range (0-127) to
 	* 								be replaced with question marks.
-	* @param bool	$trim			Indicates whether string values will be be parsed with trim()
-	* 								Default is true
+	* @param	bool	$trim		Indicates whether trim() should be applied to string values.
+	* 								Default is true.
 	*/
 	public function recursive_set_var(&$var, $default, $multibyte, $trim = true)
 	{
