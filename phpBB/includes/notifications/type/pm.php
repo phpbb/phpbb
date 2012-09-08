@@ -84,16 +84,73 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	*
 	* @return array Array of data ready to be inserted into the database
 	*/
-	public function create_insert_array($post)
+	public function create_insert_array($pm)
 	{
-		$this->item_id = $post['msg_id'];
+		$this->item_id = $pm['msg_id'];
 
-		$this->set_data('author_id', $post['author_id']);
+		$this->set_data('author_id', $pm['author_id']);
 
-		$this->set_data('message_subject', $post['message_subject']);
+		$this->set_data('message_subject', $pm['message_subject']);
 
-		$this->time = $post['message_time'];
+		return parent::create_insert_array($pm);
+	}
 
-		return parent::create_insert_array($post);
+	/**
+	* Find the users who want to receive notifications
+	*
+	* @param array $pm Data from
+	* @return array
+	*/
+	public function find_users_for_notification($pm)
+	{
+		$user = $this->phpbb_container->get('user');
+
+		// Exclude guests, current user and banned users from notifications
+		unset($pm['recipients'][ANONYMOUS], $pm['recipients'][$user->data['user_id']]);
+
+		if (!sizeof($pm['recipients']))
+		{
+			return;
+		}
+
+		if (!function_exists('phpbb_get_banned_user_ids'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+		$banned_users = phpbb_get_banned_user_ids(array_keys($pm['recipients']));
+		$pm['recipients'] = array_diff(array_keys($pm['recipients']), $banned_users);
+
+		if (!sizeof($pm['recipients']))
+		{
+			return;
+		}
+
+		$sql = 'SELECT user_id, user_notify_pm, user_notify_type
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_id', $pm['recipients']);
+		$result = $db->sql_query($sql);
+
+		$pm['recipients'] = array();
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['user_notify_pm'])
+			{
+				$pm['recipients'][$row['user_id']] = array();
+
+				if ($row['user_notify_type'] == NOTIFY_EMAIL || $row['user_notify_type'] == NOTIFY_BOTH)
+				{
+					$pm['recipients'][$row['user_id']][] = 'email';
+				}
+
+				if ($row['user_notify_type'] == NOTIFY_IM || $row['user_notify_type'] == NOTIFY_BOTH)
+				{
+					$pm['recipients'][$row['user_id']][] = 'jabber';
+				}
+			}
+		}
+		$db->sql_freeresult($result);
+
+		return $pm['recipients'];
 	}
 }

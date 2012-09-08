@@ -1872,6 +1872,19 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 */
 function pm_notification($mode, $author, $recipients, $subject, $message, $msg_id)
 {
+	global $phpbb_container;
+
+	$phpbb_notifications = $phpbb_container->get('notifications');
+
+	$phpbb_notifications->add_notifications('pm', array(
+		'author_id'				=> $author,
+		'recipients'			=> $recipients,
+		'message_subject'		=> $subject,
+		'msg_id'				=> $msg_id,
+	));
+
+	return;
+
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
 
 	$subject = censor_text($subject);
