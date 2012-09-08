@@ -27,5 +27,5 @@ interface phpbb_notifications_type_interface
 
 	public function get_url();
 
-	public function create_insert_array($data);
+	public function create_insert_array($special_data);
 }

@@ -30,11 +30,21 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		return 'post';
 	}
 
+	/**
+	* Get the title of this notification
+	*
+	* @return string
+	*/
 	public function get_title()
 	{
 		return $this->data['post_username'] . ' posted in the topic ' . censor_text($this->data['topic_title']);
 	}
 
+	/**
+	* Get the url to this item
+	*
+	* @return string URL
+	*/
 	public function get_url()
 	{
 		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "p={$this->item_id}#p{$this->item_id}");
@@ -50,6 +60,14 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		return array($this->data['poster_id']);
 	}
 
+	/**
+	* Function for preparing the data for insertion in an SQL query
+	* (The service handles insertion)
+	*
+	* @param array $post Data from submit_post
+	*
+	* @return array Array of data ready to be inserted into the database
+	*/
 	public function create_insert_array($post)
 	{
 		$this->item_id = $post['post_id'];
@@ -59,6 +77,8 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		$this->set_data('topic_title', $post['topic_title']);
 
 		$this->set_data('post_username', $post['post_username']);
+
+		$this->time = $post['post_time'];
 
 		return parent::create_insert_array($post);
 	}
