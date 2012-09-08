@@ -184,7 +184,7 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 
 			foreach ($_var as $k => $v)
 			{
-				$this->set_var($k, $k, $key_type, $multibyte, $trim);
+				$this->set_var($k, $k, $key_type, $multibyte);
 
 				$this->recursive_set_var($v, $default_value, $multibyte, $trim);
 				$var[$k] = $v;
