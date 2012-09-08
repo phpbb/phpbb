@@ -16,10 +16,10 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Post notifications class
+* Private message notifications class
 * @package notifications
 */
-class phpbb_notifications_type_post extends phpbb_notifications_type_base
+class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 {
 	/**
 	* Get the type of notification this is
@@ -27,17 +27,17 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public static function get_item_type()
 	{
-		return 'post';
+		return 'pm';
 	}
 
 	/**
 	* Get the id of the
 	*
-	* @param array $post The data from the post
+	* @param array $pm The data from the private message
 	*/
-	public static function get_item_id($post)
+	public static function get_item_id($pm)
 	{
-		return $post['post_id'];
+		return $pm['msg_id'];
 	}
 
 	/**
@@ -47,18 +47,11 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public function get_title()
 	{
-		if ($this->get_data('post_username'))
-		{
-			$username = $this->get_data('post_username');
-		}
-		else
-		{
-			$user_data = $this->get_user($this->get_data('poster_id'));
+		$user_data = $this->get_user($this->get_data('author_id'));
 
-			$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
-		}
+		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 
-		return $username . ' posted in the topic ' . censor_text($this->get_data('topic_title'));
+		return $username . ' sent you a private message titled: ' . $this->get_data('message_subject');
 	}
 
 	/**
@@ -68,7 +61,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "p={$this->item_id}#p{$this->item_id}");
+		return append_sid($this->phpbb_root_path . 'ucp.' . $this->php_ext, "i=pm&amp;mode=view&p={$this->item_id}");
 	}
 
 	/**
@@ -78,7 +71,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public function users_to_query()
 	{
-		return array($this->data['poster_id']);
+		return array($this->data['author_id']);
 	}
 
 	/**
@@ -91,15 +84,13 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public function create_insert_array($post)
 	{
-		$this->item_id = $post['post_id'];
+		$this->item_id = $post['msg_id'];
 
-		$this->set_data('poster_id', $post['poster_id']);
+		$this->set_data('author_id', $post['author_id']);
 
-		$this->set_data('topic_title', $post['topic_title']);
+		$this->set_data('message_subject', $post['message_subject']);
 
-		$this->set_data('post_username', $post['post_username']);
-
-		$this->time = $post['post_time'];
+		$this->time = $post['message_time'];
 
 		return parent::create_insert_array($post);
 	}
