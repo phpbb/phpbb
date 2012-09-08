@@ -7,6 +7,8 @@
 *
 */
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
 /**
 * @ignore
 */
@@ -25,21 +27,7 @@ abstract class phpbb_notifications_method_base implements phpbb_notifications_me
 	protected $db;
 	protected $user;
 
-	/**
-	* notification_id
-	* item_type
-	* item_id
-	*
-	* by_user_id (one who caused the notification)
-	* user_id
-	* time
-	* unread
-	*
-	* data (special serialized field that each notification type can use to store stuff)
-	*/
-	protected $data = array();
-
-	public function __construct(Symfony\Component\DependencyInjection\ContainerBuilder $phpbb_container, $data = array())
+	public function __construct(ContainerBuilder $phpbb_container, $data = array())
 	{
 		// phpBB Container
 		$this->phpbb_container = $phpbb_container;
