@@ -7,6 +7,8 @@
 *
 */
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
 /**
 * @ignore
 */
