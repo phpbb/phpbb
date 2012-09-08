@@ -27,6 +27,13 @@ abstract class phpbb_notifications_method_base implements phpbb_notifications_me
 	protected $db;
 	protected $user;
 
+	/**
+	* Queue of messages to be sent
+	*
+	* @var array
+	*/
+	protected $queue = array();
+
 	public function __construct(ContainerBuilder $phpbb_container, $data = array())
 	{
 		// phpBB Container
@@ -35,5 +42,30 @@ abstract class phpbb_notifications_method_base implements phpbb_notifications_me
 		// Some common things we're going to use
 		$this->db = $phpbb_container->get('dbal.conn');
 		$this->user = $phpbb_container->get('user');
+	}
+
+	/**
+	* Add a notification to the queue
+	*
+	* @param phpbb_notifications_type_interface $notification
+	*/
+	public function add_to_queue(phpbb_notifications_type_interface $notification)
+	{
+		$this->queue[] = $notification;
+	}
+
+	/**
+	* Basic run queue function.
+	* Child methods should override this function if there are more efficient methods to mass-notification
+	*/
+	public function run_queue()
+	{
+		foreach ($this->queue as $notification)
+		{
+			$this->notify($notification);
+		}
+
+		// Empty queue
+		$this->queue = array();
 	}
 }
