@@ -1560,6 +1560,7 @@ function get_folder_status($folder_id, $folder)
 function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 {
 	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path;
+	global $phpbb_container;
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
@@ -1861,7 +1862,16 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	// Send Notifications
 	if ($mode != 'edit')
 	{
-		pm_notification($mode, $data['from_username'], $recipients, $subject, $data['message'], $data['msg_id']);
+		$phpbb_notifications = $phpbb_container->get('notifications');
+
+		$phpbb_notifications->add_notifications('pm', array(
+			'author_id'				=> $data['from_user_id'],
+			'recipients'			=> $recipients,
+			'message_subject'		=> $subject,
+			'msg_id'				=> $data['msg_id'],
+		));
+
+		//pm_notification($mode, $data['from_username'], $recipients, $subject, $data['message'], $data['msg_id']);
 	}
 
 	return $data['msg_id'];
@@ -1872,19 +1882,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 */
 function pm_notification($mode, $author, $recipients, $subject, $message, $msg_id)
 {
-	global $phpbb_container;
-
-	$phpbb_notifications = $phpbb_container->get('notifications');
-
-	$phpbb_notifications->add_notifications('pm', array(
-		'author_id'				=> $author,
-		'recipients'			=> $recipients,
-		'message_subject'		=> $subject,
-		'msg_id'				=> $msg_id,
-	));
-
-	return;
-
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
 
 	$subject = censor_text($subject);

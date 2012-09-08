@@ -37,7 +37,6 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 
 	/**
 	* Indentification data
-	* notification_id
 	* item_type
 	* item_id
 	* user_id
@@ -141,7 +140,6 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 			'URL'		=> $this->get_url(),
 			'TIME'		=> $user->format_date($this->time),
 
-			'ID'		=> $this->notification_id,
 			'UNREAD'	=> $this->unread,
 		));
 	}

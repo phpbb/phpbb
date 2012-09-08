@@ -172,15 +172,14 @@ class phpbb_notifications_service
 			foreach ($methods as $method)
 			{
 				// setup the notification methods and add the notification to the queue
-				if ($row['method'])
+				if ($method)
 				{
-					if (!isset($notification_methods[$row['method']]))
+					if (!isset($notification_methods[$method]))
 					{
-						$method_class_name = 'phpbb_notifications_method_' . $row['method'];
-						$notification_methods[$row['method']] = new $method_class_name();
+						$method_class_name = 'phpbb_notifications_method_' . $method;
+						$notification_methods[$method] = new $method_class_name($this->phpbb_container);
 					}
-
-					$notification_methods[$row['method']]->add_to_queue($notification);
+					$notification_methods[$method]->add_to_queue($notification);
 				}
 			}
 		}
