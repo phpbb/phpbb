@@ -21,7 +21,9 @@ if (!defined('IN_PHPBB'))
 */
 interface phpbb_notifications_type_interface
 {
-	public function get_type();
+	public static function get_item_type();
+
+	public static function get_item_id($post);
 
 	public function get_title();
 
