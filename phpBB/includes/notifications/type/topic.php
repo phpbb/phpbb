@@ -18,12 +18,12 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Post notifications class
-* This class handles notifications for replies to a topic
+* Topic notifications class
+* This class handles notifications for new topics
 *
 * @package notifications
 */
-class phpbb_notifications_type_post extends phpbb_notifications_type_base
+class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 {
 	/**
 	* Get the type of notification this is
@@ -31,7 +31,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public static function get_item_type()
 	{
-		return 'post';
+		return 'topic';
 	}
 
 	/**
@@ -41,7 +41,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public static function get_item_id($post)
 	{
-		return $post['post_id'];
+		return $post['topic_id'];
 	}
 
 	/**
@@ -52,16 +52,16 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*
 	* @return array
 	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post)
+	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $topic)
 	{
-		$users = parent::_find_users_for_notification($phpbb_container, $post['topic_id']);
+		$users = parent::_find_users_for_notification($phpbb_container, $topic['forum_id']);
 
 		if (!sizeof($users))
 		{
 			return array();
 		}
 
-		$auth_read = $phpbb_container->get('auth')->acl_get_list(array_keys($users), 'f_read', $post['forum_id']);
+		$auth_read = $phpbb_container->get('auth')->acl_get_list(array_keys($users), 'f_read', $topic['forum_id']);
 
 		if (empty($auth_read))
 		{
@@ -70,7 +70,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 
 		$notify_users = array();
 
-		foreach ($auth_read[$post['forum_id']]['f_read'] as $user_id)
+		foreach ($auth_read[$topic['forum_id']]['f_read'] as $user_id)
 		{
 			$notify_users[$user_id] = $users[$user_id];
 		}
@@ -96,7 +96,12 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 			$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 		}
 
-		return $this->phpbb_container->get('user')->lang('NOTIFICATION_POST', $username, censor_text($this->get_data('topic_title')));
+		return $this->phpbb_container->get('user')->lang(
+			'NOTIFICATION_TOPIC',
+			$username,
+			censor_text($this->get_data('topic_title')),
+			$this->get_data('forum_name')
+		);
 	}
 
 	/**
@@ -117,7 +122,12 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 			$username = $user_data['username'];
 		}
 
-		return $this->phpbb_container->get('user')->lang('NOTIFICATION_POST', $username, censor_text($this->get_data('topic_title')));
+		return $this->phpbb_container->get('user')->lang(
+			'NOTIFICATION_TOPIC',
+			$username,
+			censor_text($this->get_data('topic_title')),
+			$this->get_data('forum_name')
+		);
 	}
 
 	/**
@@ -127,7 +137,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "p={$this->item_id}#p{$this->item_id}");
+		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "t{$this->item_id}");
 	}
 
 	/**
@@ -137,7 +147,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public function get_full_url()
 	{
-		return generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}";
+		return generate_board_url() . "/viewtopic.{$this->php_ext}?t{$this->item_id}";
 	}
 
 	/**
