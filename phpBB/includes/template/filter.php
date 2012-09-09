@@ -209,7 +209,7 @@ class phpbb_template_filter extends php_user_filter
 
 		*/
 
-		$data = preg_replace('~(?<!^)(<\?php(?:(?<!\?>).)+(?<!/\*\*/)\?>)$~m', "$1\n", $data);
+		$data = preg_replace('~(?<!^)(<\?php.+(?<!/\*\*/)\?>)$~m', "$1\n", $data);
 		$data = str_replace('/**/?>', "?>\n", $data);
 		$data = str_replace('?><?php', '', $data);
 		return $data;
