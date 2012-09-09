@@ -45,13 +45,57 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	}
 
 	/**
+	* Find the users who want to receive notifications
+	*
+	* @param array $pm Data from
+	* @return array
+	*/
+	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $pm)
+	{
+		$service = $phpbb_container->get('notifications');
+		$db = $phpbb_container->get('dbal.conn');
+		$user = $phpbb_container->get('user');
+
+		if (!sizeof($pm['recipients']))
+		{
+			return array();
+		}
+
+		$service->load_users(array_keys($pm['recipients']));
+
+		$notify_users = array();
+
+		foreach (array_keys($pm['recipients']) as $user_id)
+		{
+			$recipient = $service->get_user($user_id);
+
+			if ($recipient['user_notify_pm'])
+			{
+				$notify_users[$recipient['user_id']] = array();
+
+				if ($recipient['user_notify_type'] == NOTIFY_EMAIL || $recipient['user_notify_type'] == NOTIFY_BOTH)
+				{
+					$notify_users[$recipient['user_id']][] = 'email';
+				}
+
+				if ($recipient['user_notify_type'] == NOTIFY_IM || $recipient['user_notify_type'] == NOTIFY_BOTH)
+				{
+					$notify_users[$recipient['user_id']][] = 'jabber';
+				}
+			}
+		}
+
+		return $notify_users;
+	}
+
+	/**
 	* Get the title of this notification
 	*
 	* @return string
 	*/
 	public function get_title()
 	{
-		$user_data = $this->get_user($this->get_data('author_id'));
+		$user_data = $this->service->get_user($this->get_data('from_user_id'));
 
 		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 
@@ -85,7 +129,7 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	*/
 	public function users_to_query()
 	{
-		return array($this->data['author_id']);
+		return array($this->data['from_user_id']);
 	}
 
 	/**
@@ -100,58 +144,10 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	{
 		$this->item_id = $pm['msg_id'];
 
-		$this->set_data('author_id', $pm['author_id']);
+		$this->set_data('from_user_id', $pm['from_user_id']);
 
 		$this->set_data('message_subject', $pm['message_subject']);
 
 		return parent::create_insert_array($pm);
-	}
-
-	/**
-	* Find the users who want to receive notifications
-	*
-	* @param array $pm Data from
-	* @return array
-	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $pm)
-	{
-		$db = $phpbb_container->get('dbal.conn');
-		$user = $phpbb_container->get('user');
-
-		// Exclude guests and current user from notifications
-		unset($pm['recipients'][ANONYMOUS], $pm['recipients'][$user->data['user_id']]);
-
-		if (!sizeof($pm['recipients']))
-		{
-			return;
-		}
-
-		$sql = 'SELECT user_id, user_notify_pm, user_notify_type
-			FROM ' . USERS_TABLE . '
-			WHERE ' . $db->sql_in_set('user_id', $pm['recipients']);
-		$result = $db->sql_query($sql);
-
-		$pm['recipients'] = array();
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if ($row['user_notify_pm'])
-			{
-				$pm['recipients'][$row['user_id']] = array();
-
-				if ($row['user_notify_type'] == NOTIFY_EMAIL || $row['user_notify_type'] == NOTIFY_BOTH)
-				{
-					$pm['recipients'][$row['user_id']][] = 'email';
-				}
-
-				if ($row['user_notify_type'] == NOTIFY_IM || $row['user_notify_type'] == NOTIFY_BOTH)
-				{
-					$pm['recipients'][$row['user_id']][] = 'jabber';
-				}
-			}
-		}
-		$db->sql_freeresult($result);
-
-		return $pm['recipients'];
 	}
 }
