@@ -100,11 +100,25 @@ class acp_language
 			switch ($method)
 			{
 				case 'ftp':
-					$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new ftp(
+						request_var('host', ''),
+						request_var('username', ''),
+						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+						request_var('root_path', ''),
+						request_var('port', ''),
+						request_var('timeout', '')
+					);
 				break;
 
 				case 'ftp_fsock':
-					$transfer = new ftp_fsock(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new ftp_fsock(
+						request_var('host', ''),
+						request_var('username', ''),
+						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+						request_var('root_path', ''),
+						request_var('port', ''),
+						request_var('timeout', '')
+					);
 				break;
 
 				default:
@@ -404,7 +418,14 @@ class acp_language
 						trigger_error($user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
 					}
 
-					$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new $method(
+						request_var('host', ''),
+						request_var('username', ''),
+						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+						request_var('root_path', ''),
+						request_var('port', ''),
+						request_var('timeout', '')
+					);
 
 					if (($result = $transfer->open_session()) !== true)
 					{
