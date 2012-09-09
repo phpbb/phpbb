@@ -46,6 +46,8 @@ class phpbb_notifications_service
 	*
 	* @param array $options Optional options to control what notifications are loaded
 	*				user_id		User id to load notifications for (Default: $user->data['user_id'])
+	*				order_by	Order by (Default: time)
+	*				order_dir	Order direction (Default: DESC)
 	* 				limit		Number of notifications to load (Default: 5)
 	* 				start		Notifications offset (Default: 0)
 	*/
@@ -58,12 +60,15 @@ class phpbb_notifications_service
 			'user_id'		=> $user->data['user_id'],
 			'limit'			=> 5,
 			'start'			=> 0,
+			'order_by'		=> 'time',
+			'order_dir'		=> 'DESC',
 		), $options);
 
 		$notifications = $user_ids = array();
 
 		$sql = 'SELECT * FROM ' . NOTIFICATIONS_TABLE . '
-			WHERE user_id = ' . (int) $options['user_id'];
+			WHERE user_id = ' . (int) $options['user_id'] . '
+				ORDER BY ' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
 		$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
 
 		while ($row = $this->db->sql_fetchrow($result))
