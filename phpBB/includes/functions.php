@@ -5317,7 +5317,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	$phpbb_notifications = $phpbb_container->get('notifications');
 	foreach ($phpbb_notifications->load_notifications() as $notification)
 	{
-		$notification->display();
+		$template->assign_block_vars('notifications', $notification->prepare_for_display());
 	}
 
 	// application/xhtml+xml not used because of IE
