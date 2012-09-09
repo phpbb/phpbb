@@ -421,7 +421,7 @@ class mcp_queue
 
 				$base_url = $this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
 				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
-				
+
 				// Now display the page
 				$template->assign_vars(array(
 					'L_DISPLAY_ITEMS'		=> ($mode == 'unapproved_posts') ? $user->lang['DISPLAY_POSTS'] : $user->lang['DISPLAY_TOPICS'],
@@ -639,12 +639,12 @@ function approve_post($post_id_list, $id, $mode)
 			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
 			{
 				// Forum Notifications
-				user_notification('post', $post_data['topic_title'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
+				$notifications->add_notifications('topic', $post_data);
 			}
 			else
 			{
 				// Topic Notifications
-				user_notification('reply', $post_data['post_subject'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
+				$notifications->add_notifications('post', $post_data);
 			}
 		}
 

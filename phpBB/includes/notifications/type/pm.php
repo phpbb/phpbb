@@ -47,7 +47,9 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	/**
 	* Find the users who want to receive notifications
 	*
+	* @param ContainerBuilder $phpbb_container
 	* @param array $pm Data from
+	*
 	* @return array
 	*/
 	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $pm)

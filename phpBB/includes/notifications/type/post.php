@@ -45,6 +45,61 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	}
 
 	/**
+	* Find the users who want to receive notifications
+	*
+	* @param ContainerBuilder $phpbb_container
+	* @param array $post Data from
+	*
+	* @return array
+	*/
+	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post)
+	{
+		$users = parent::_find_users_for_notification($phpbb_container, $post['topic_id']);
+
+		if (!sizeof($users))
+		{
+			return array();
+		}
+
+		$auth_read = $phpbb_container->get('auth')->acl_get_list(array_keys($users), 'f_read', $post['forum_id']);
+
+		if (empty($auth_read))
+		{
+			return array();
+		}
+
+		$notify_users = array();
+
+		foreach ($auth_read[$post['forum_id']]['f_read'] as $user_id)
+		{
+			$notify_users[$user_id] = $users[$user_id];
+		}
+
+		return $notify_users;
+	}
+
+	/**
+	* Get the HTML formatted title of this notification
+	*
+	* @return string
+	*/
+	public function get_formatted_title()
+	{
+		if ($this->get_data('post_username'))
+		{
+			$username = $this->get_data('post_username');
+		}
+		else
+		{
+			$user_data = $this->service->get_user($this->get_data('poster_id'));
+
+			$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+		}
+
+		return $username . ' posted in the topic ' . censor_text($this->get_data('topic_title'));
+	}
+
+	/**
 	* Get the title of this notification
 	*
 	* @return string
@@ -57,9 +112,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		}
 		else
 		{
-			$user_data = $this->get_user($this->get_data('poster_id'));
-
-			$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+			$username = $user_data['username'];
 		}
 
 		return $username . ' posted in the topic ' . censor_text($this->get_data('topic_title'));
@@ -73,6 +126,16 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	public function get_url()
 	{
 		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "p={$this->item_id}#p{$this->item_id}");
+	}
+
+	/**
+	* Get the full url to this item
+	*
+	* @return string URL
+	*/
+	public function get_full_url()
+	{
+		return generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}";
 	}
 
 	/**
@@ -102,8 +165,6 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		$this->set_data('topic_title', $post['topic_title']);
 
 		$this->set_data('post_username', $post['post_username']);
-
-		$this->time = $post['post_time'];
 
 		return parent::create_insert_array($post);
 	}
