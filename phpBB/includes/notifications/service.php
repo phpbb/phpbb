@@ -66,7 +66,8 @@ class phpbb_notifications_service
 
 		$notifications = $user_ids = array();
 
-		$sql = 'SELECT * FROM ' . NOTIFICATIONS_TABLE . '
+		$sql = 'SELECT *
+			FROM ' . NOTIFICATIONS_TABLE . '
 			WHERE user_id = ' . (int) $options['user_id'] . '
 				ORDER BY ' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
 		$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
@@ -116,7 +117,8 @@ class phpbb_notifications_service
 
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
-		$sql = 'SELECT user_id FROM ' . NOTIFICATIONS_TABLE . "
+		$sql = 'SELECT user_id
+			FROM ' . NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
 				AND item_id = " . (int) $item_id;
 		$result = $this->db->sql_query($sql);
@@ -239,7 +241,8 @@ class phpbb_notifications_service
 
 		if (sizeof($user_ids))
 		{
-			$sql = 'SELECT * FROM ' . USERS_TABLE . '
+			$sql = 'SELECT *
+				FROM ' . USERS_TABLE . '
 				WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
 			$result = $this->db->sql_query($sql);
 
