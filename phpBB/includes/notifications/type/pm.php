@@ -118,20 +118,8 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 		$db = $phpbb_container->get('dbal.conn');
 		$user = $phpbb_container->get('user');
 
-		// Exclude guests, current user and banned users from notifications
-		unset($pm['recipients'][ANONYMOUS]);//, $pm['recipients'][$user->data['user_id']]);
-
-		if (!sizeof($pm['recipients']))
-		{
-			return;
-		}
-
-		if (!function_exists('phpbb_get_banned_user_ids'))
-		{
-			include($phpbb_container->getParameter('core.root_path') . 'includes/functions_user.' . $phpbb_container->getParameter('core.php_ext'));
-		}
-		$banned_users = phpbb_get_banned_user_ids(array_keys($pm['recipients']));
-		$pm['recipients'] = array_diff(array_keys($pm['recipients']), $banned_users);
+		// Exclude guests and current user from notifications
+		unset($pm['recipients'][ANONYMOUS], $pm['recipients'][$user->data['user_id']]);
 
 		if (!sizeof($pm['recipients']))
 		{

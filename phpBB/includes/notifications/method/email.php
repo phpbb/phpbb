@@ -52,6 +52,13 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 			$user_ids[] = $notification->user_id;
 		}
 
+		// We do not send emails to banned users
+		if (!function_exists('phpbb_get_banned_user_ids'))
+		{
+			include($phpbb_container->getParameter('core.root_path') . 'includes/functions_user.' . $phpbb_container->getParameter('core.php_ext'));
+		}
+		$banned_users = phpbb_get_banned_user_ids($user_ids);
+
 		$sql = 'SELECT * FROM ' . USERS_TABLE . '
 			WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
 		$result = $this->db->sql_query($sql);
@@ -72,6 +79,11 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 		// Time to go through the queue and send emails
 		foreach ($this->queue as $notification)
 		{
+			if (in_array($notification->user_id, $banned_users))
+			{
+				continue;
+			}
+
 			$notification->users($users);
 
 			$user = $notification->get_user($notification->user_id);
