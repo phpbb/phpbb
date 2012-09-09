@@ -104,28 +104,23 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	}
 
 	/**
-	* Output the notification to the template
-	*
-	* @param array $options Array of options
-	* 				template_block		Template block name to output to (Default: notifications)
+	* Prepare to output the notification to the template
 	*/
-	public function display($options = array())
+	public function prepare_for_display()
 	{
-		$template = $this->phpbb_container->get('template');
 		$user = $this->phpbb_container->get('user');
 
-		// Merge default options
-		$options = array_merge(array(
-			'template_block'		=> 'notifications',
-		), $options);
+		return array(
+			'AVATAR'			=> $this->get_avatar(),
 
-		$template->assign_block_vars($options['template_block'], array(
-			'TITLE'		=> $this->get_formatted_title(),
-			'URL'		=> $this->get_url(),
-			'TIME'		=> $user->format_date($this->time),
+			'FORMATTED_TITLE'	=> $this->get_formatted_title(),
+			'TITLE'				=> $this->get_title(),
 
-			'UNREAD'	=> $this->unread,
-		));
+			'URL'				=> $this->get_url(),
+			'TIME'	   			=> $user->format_date($this->time),
+
+			'UNREAD'			=> $this->unread,
+		);
 	}
 
 	/**
@@ -206,6 +201,13 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 		return $rowset;
 	}
 
+	protected function _get_avatar($user_id)
+	{
+		$user = $this->service->get_user($user_id);
+
+		return get_user_avatar($user['user_avatar'], $user['user_avatar_type'], $user['user_avatar_width'], $user['user_avatar_height'], $user['username'], false, 'notifications-avatar');
+	}
+
 	/**
 	* Get the formatted title of this notification (fall-back)
 	*
@@ -217,12 +219,20 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	}
 
 	/**
-	* URL to unsubscribe to this notification
+	* URL to unsubscribe to this notification (fall-back)
 	*
 	* @param string|bool $method Method name to unsubscribe from (email|jabber|etc), False to unsubscribe from all notifications for this item
 	*/
 	public function get_unsubscribe_url($method = false)
 	{
 		return false;
+	}
+
+	/**
+	* Get the user's avatar (fall-back)
+	*/
+	public function get_avatar()
+	{
+		return '';
 	}
 }

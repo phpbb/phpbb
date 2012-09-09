@@ -210,6 +210,20 @@ class phpbb_notifications_service
 		$this->db->sql_query($sql);
 	}
 
+	public function add_subscription($item_type, $item_id, $method = '')
+	{
+		$this->get_item_type_class_name($item_type);
+
+		$sql = 'INSERT INTO ' . USER_NOTIFICATIONS_TABLE . ' ' .
+			$this->db->sql_build_array('INSERT', array(
+				'item_type'		=> $item_type,
+				'item_id'		=> (int) $item_id,
+				'user_id'		=> $this->phpbb_container->get('user')->data['user_id'],
+				'method'		=> $method,
+			));
+		$this->db->sql_query($sql);
+	}
+
 	/**
 	* Load user helper
 	*

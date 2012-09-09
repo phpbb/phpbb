@@ -451,7 +451,7 @@ function approve_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
-	global $request;
+	global $request, $phpbb_container;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
@@ -633,6 +633,8 @@ function approve_post($post_id_list, $id, $mode)
 
 		// Send out normal user notifications
 		$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
+
+		$notifications = $phpbb_container->get('notifications');
 
 		foreach ($post_info as $post_id => $post_data)
 		{
