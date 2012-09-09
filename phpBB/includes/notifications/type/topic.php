@@ -79,6 +79,14 @@ class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 	}
 
 	/**
+	* Get the user's avatar
+	*/
+	public function get_avatar()
+	{
+		return $this->_get_avatar($this->get_data('poster_id'));
+	}
+
+	/**
 	* Get the HTML formatted title of this notification
 	*
 	* @return string
