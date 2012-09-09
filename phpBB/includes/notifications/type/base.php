@@ -183,7 +183,8 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 
 		$rowset = array();
 
-		$sql = 'SELECT * FROM ' . USER_NOTIFICATIONS_TABLE . "
+		$sql = 'SELECT *
+			FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . static::get_item_type() . "'
 				AND item_id = " . (int) $item_id;
 		$result = $db->sql_query($sql);
