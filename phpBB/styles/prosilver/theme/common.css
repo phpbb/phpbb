@@ -672,3 +672,11 @@ p.rules a {
 .smilies {
 	vertical-align: text-bottom;
 }
+
+.notifications-avatar {
+	float: left;
+	padding: 0 10px 10px 0;
+
+	max-width: 50px;
+	max-height: 50px;
+}

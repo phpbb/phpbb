@@ -138,6 +138,22 @@
 			<ul class="linklist leftside">
 				<li class="icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
+					<a href="#" title="{L_NOTIFICATIONS}" onClick="$('#notification_list').toggle();">{L_NOTIFICATIONS}</a>
+					<div id="notification_list" style="display: block; position: absolute; width: 330px; background-color: #FFFFFF; z-index: 1;">
+						<ul style="list-style-type: none;">
+						<!-- BEGIN notifications -->
+							<li style="margin: 10px;">
+								<a href="{notifications.URL}" style="text-decoration: none;">
+									{notifications.AVATAR}
+									<div>
+										{notifications.FORMATTED_TITLE}<br />
+										{notifications.TIME}
+									</div>
+								</a>
+							</li>
+				   			<!-- END notifications -->
+						</ul>
+					</div>
 						<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a>)<!-- ENDIF -->
 					<!-- IF S_DISPLAY_SEARCH --> &bull;
 					<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
@@ -174,10 +190,3 @@
 			</div>
 		</div>
 		<!-- ENDIF -->
-
-<!-- BEGIN notifications -->
-	<p>
-		<a href="{notifications.URL}">{notifications.TITLE}</a><br />
-		{notifications.TIME}
-	</p>
-<!-- END notifications -->
