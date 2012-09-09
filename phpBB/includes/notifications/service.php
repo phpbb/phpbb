@@ -58,10 +58,10 @@ class phpbb_notifications_service
 		// Merge default options
 		$options = array_merge(array(
 			'user_id'		=> $user->data['user_id'],
-			'limit'			=> 5,
-			'start'			=> 0,
 			'order_by'		=> 'time',
 			'order_dir'		=> 'DESC',
+			'limit'			=> 5,
+			'start'			=> 0,
 		), $options);
 
 		$notifications = $user_ids = array();
@@ -147,7 +147,7 @@ class phpbb_notifications_service
 			foreach ($methods as $method)
 			{
 				// setup the notification methods and add the notification to the queue
-				if ($method)
+				if ($method) // blank means we just insert it as a notification, but do not notify them by any other means
 				{
 					if (!isset($notification_methods[$method]))
 					{

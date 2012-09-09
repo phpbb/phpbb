@@ -2220,12 +2220,18 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Send Notifications
-	if (($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_approval)
+	if ($post_approval)
 	{
 		$notifications = $phpbb_container->get('notifications');
 
 		switch ($mode)
 		{
+			case 'post' :
+				$notifications->add_notifications('topic', array_merge($data, array(
+					'post_username'		=> $username,
+				)));
+			break;
+
 			case 'reply' :
 			case 'quote' :
 				$notifications->add_notifications('post', array_merge($data, array(
@@ -2233,8 +2239,15 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				)));
 			break;
 
-			case 'post' :
-				$notifications->add_notifications('topic', array_merge($data, array(
+			case 'edit_topic' :
+			case 'edit_first_post' :
+			case 'edit' :
+			case 'edit_last_post' :
+				$notifications->update_notifications('topic', array_merge($data, array(
+					'post_username'		=> $username,
+					'topic_title'		=> $subject,
+				)));
+				$notifications->update_notifications('post', array_merge($data, array(
 					'post_username'		=> $username,
 				)));
 			break;
