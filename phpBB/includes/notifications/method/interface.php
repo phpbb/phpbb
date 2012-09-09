@@ -21,5 +21,5 @@ if (!defined('IN_PHPBB'))
 */
 interface phpbb_notifications_method_interface
 {
-	public function notify($notification);
+	public function notify();
 }
