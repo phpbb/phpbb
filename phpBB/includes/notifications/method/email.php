@@ -33,12 +33,7 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 		return true;
 	}
 
-	public function notify($notification)
-	{
-		// email the user
-	}
-
-	public function run_queue()
+	public function notify()
 	{
 		if (!sizeof($this->queue))
 		{
@@ -80,14 +75,18 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 
 			$user = $this->service->get_user($notification->user_id);
 
-			$messenger->template('privmsg_notify', $user['user_lang']);
+			$messenger->template('notification', $user['user_lang']);
 
 			$messenger->to($user['user_email'], $user['username']);
 
 			$messenger->assign_vars(array(
-				'SUBJECT'			=> htmlspecialchars_decode($notification->get_title()),
+				'USERNAME'			=> $user['username'],
+
+				'MESSAGE'			=> htmlspecialchars_decode($notification->get_title()),
 
 				'U_VIEW_MESSAGE'	=> $notification->get_full_url(),
+
+				'U_UNSUBSCRIBE'		=> $notification->get_unsubscribe_url(),
 			));
 
 			$messenger->send('email');

@@ -83,19 +83,8 @@ abstract class phpbb_notifications_method_base implements phpbb_notifications_me
 	}
 
 	/**
-	* Basic run queue function.
-	* Child methods should override this function if there are more efficient methods to mass-notification
+	* Empty the queue
 	*/
-	public function run_queue()
-	{
-		foreach ($this->queue as $notification)
-		{
-			$this->notify($notification);
-		}
-
-		$this->empty_queue();
-	}
-
 	protected function empty_queue()
 	{
 		$this->queue = array();
