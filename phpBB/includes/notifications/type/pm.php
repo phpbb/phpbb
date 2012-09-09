@@ -89,7 +89,21 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	}
 
 	/**
-	* Get the title of this notification
+	* Get the HTML formatted title of this notification
+	*
+	* @return string
+	*/
+	public function get_formatted_title()
+	{
+		$user_data = $this->service->get_user($this->get_data('from_user_id'));
+
+		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+
+		return $username . ' sent you a private message titled: ' . $this->get_data('message_subject');
+	}
+
+	/**
+	* Get the plain text title of this notification
 	*
 	* @return string
 	*/
@@ -97,9 +111,7 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	{
 		$user_data = $this->service->get_user($this->get_data('from_user_id'));
 
-		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
-
-		return $username . ' sent you a private message titled: ' . $this->get_data('message_subject');
+		return $user_data['username'] . ' sent you a private message titled: ' . $this->get_data('message_subject');
 	}
 
 	/**
