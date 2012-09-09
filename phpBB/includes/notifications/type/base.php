@@ -24,6 +24,7 @@ if (!defined('IN_PHPBB'))
 abstract class phpbb_notifications_type_base implements phpbb_notifications_type_interface
 {
 	protected $phpbb_container;
+	protected $service;
 	protected $db;
 	protected $phpbb_root_path;
 	protected $php_ext;
@@ -54,6 +55,9 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	{
 		// phpBB Container
 		$this->phpbb_container = $phpbb_container;
+
+		// Service
+		$this->service = $phpbb_container->get('notifications');
 
 		// Some common things we're going to use
 		$this->db = $phpbb_container->get('dbal.conn');
@@ -97,26 +101,6 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	protected function set_data($name, $value)
 	{
 		$this->data['data'][$name] = $value;
-	}
-
-	/**
-	* Function to store the users loaded from the database (for output to the template)
-	* (The service handles this)
-	*/
-	public function users(&$users)
-	{
-		$this->users = &$users;
-	}
-
-	/**
-	* Get a user row from our users cache
-	*
-	* @param int $user_id
-	* @return array
-	*/
-	public function get_user($user_id)
-	{
-		return $this->users[$user_id];
 	}
 
 	/**

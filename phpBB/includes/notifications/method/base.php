@@ -24,10 +24,30 @@ if (!defined('IN_PHPBB'))
 abstract class phpbb_notifications_method_base implements phpbb_notifications_method_interface
 {
 	protected $phpbb_container;
+	protected $service;
 	protected $db;
 	protected $user;
 	protected $phpbb_root_path;
 	protected $php_ext;
+
+	/**
+	* Desired notifications
+	* unique by (type, type_id, user_id, method)
+	* if multiple methods are desired, multiple rows will exist.
+	*
+	* method of "none" will over-ride any other options
+	*
+	* item_type
+	* item_id
+	* user_id
+	* method
+	* 	none (will never receive notifications)
+	* 	standard (listed in notifications window
+	* 	popup?
+	* 	email
+	* 	jabber
+	*	sms?
+	*/
 
 	/**
 	* Queue of messages to be sent
@@ -36,10 +56,13 @@ abstract class phpbb_notifications_method_base implements phpbb_notifications_me
 	*/
 	protected $queue = array();
 
-	public function __construct(ContainerBuilder $phpbb_container, $data = array())
+	public function __construct(ContainerBuilder $phpbb_container)
 	{
 		// phpBB Container
 		$this->phpbb_container = $phpbb_container;
+
+		// Service
+		$this->service = $phpbb_container->get('notifications');
 
 		// Some common things we're going to use
 		$this->db = $phpbb_container->get('dbal.conn');
