@@ -204,9 +204,9 @@ class phpbb_request implements phpbb_request_interface
 	}
 
 	/**
-	* Get a variable, but without trimming strings
-	* Same functionality as variable(), except does not run trim() on strings
-	* All variables in GET or POST requests should be retrieved through this function to maximise security.
+	* Get a variable, but without trimming strings.
+	* Same functionality as variable(), except does not run trim() on strings.
+	* This method should be used when handling passwords.
 	*
 	* @param	string|array	$var_name	The form variable's name from which data shall be retrieved.
 	* 										If the value is an array this may be an array of indizes which will give
