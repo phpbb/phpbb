@@ -120,7 +120,7 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 		), $options);
 
 		$template->assign_block_vars($options['template_block'], array(
-			'TITLE'		=> $this->get_title(),
+			'TITLE'		=> $this->get_formatted_title(),
 			'URL'		=> $this->get_url(),
 			'TIME'		=> $user->format_date($this->time),
 
@@ -172,5 +172,25 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 		);
 
 		return $data;
+	}
+
+	/**
+	* Get the formatted title of this notification (fall-back)
+	*
+	* @return string
+	*/
+	public function get_formatted_title()
+	{
+		return $this->get_title();
+	}
+
+	/**
+	* URL to unsubscribe to this notification
+	*
+	* @param string|bool $method Method name to unsubscribe from (email|jabber|etc), False to unsubscribe from all notifications for this item
+	*/
+	public function get_unsubscribe_url($method = false)
+	{
+		return false;
 	}
 }

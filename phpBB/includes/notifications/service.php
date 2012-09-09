@@ -169,7 +169,7 @@ class phpbb_notifications_service
 		// run the queue for each method to send notifications
 		foreach ($notification_methods as $method)
 		{
-			$method->run_queue();
+			$method->notify();
 		}
 	}
 

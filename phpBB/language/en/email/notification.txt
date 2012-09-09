@@ -1,0 +1,16 @@
+Subject: Notification from {SITENAME}
+
+Hello {USERNAME},
+
+{MESSAGE}
+
+You can view this by clicking on the following link:
+
+{U_VIEW_MESSAGE}
+
+<!-- IF U_UNSUBSCRIBE -->
+You may unsubscribe by clicking on the following link:
+{U_UNSUBSCRIBE}
+<!-- ENDIF -->
+
+{EMAIL_SIG}
