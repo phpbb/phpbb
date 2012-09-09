@@ -96,7 +96,11 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 			$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 		}
 
-		return $this->phpbb_container->get('user')->lang('NOTIFICATION_POST', $username, censor_text($this->get_data('topic_title')));
+		return $this->phpbb_container->get('user')->lang(
+			'NOTIFICATION_POST',
+			$username,
+			censor_text($this->get_data('topic_title'))
+		);
 	}
 
 	/**
@@ -117,7 +121,11 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 			$username = $user_data['username'];
 		}
 
-		return $this->phpbb_container->get('user')->lang('NOTIFICATION_POST', $username, censor_text($this->get_data('topic_title')));
+		return $this->phpbb_container->get('user')->lang(
+			'NOTIFICATION_POST',
+			$username,
+			censor_text($this->get_data('topic_title'))
+		);
 	}
 
 	/**
@@ -166,7 +174,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 
 		$this->set_data('topic_title', $post['topic_title']);
 
-		$this->set_data('post_username', $post['post_username']);
+		$this->set_data('post_username', (($post['post_username'] != $this->phpbb_container->get('user')->data['username']) ? $post['post_username'] : ''));
 
 		$this->set_data('forum_name', $post['forum_name']);
 

@@ -137,7 +137,7 @@ class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "t{$this->item_id}");
+		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "t={$this->item_id}");
 	}
 
 	/**
@@ -147,7 +147,7 @@ class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 	*/
 	public function get_full_url()
 	{
-		return generate_board_url() . "/viewtopic.{$this->php_ext}?t{$this->item_id}";
+		return generate_board_url() . "/viewtopic.{$this->php_ext}?t={$this->item_id}";
 	}
 
 	/**
@@ -170,13 +170,13 @@ class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 	*/
 	public function create_insert_array($post)
 	{
-		$this->item_id = $post['post_id'];
+		$this->item_id = $post['topic_id'];
 
 		$this->set_data('poster_id', $post['poster_id']);
 
 		$this->set_data('topic_title', $post['topic_title']);
 
-		$this->set_data('post_username', $post['post_username']);
+		$this->set_data('post_username', (($post['post_username'] != $this->phpbb_container->get('user')->data['username']) ? $post['post_username'] : ''));
 
 		$this->set_data('forum_name', $post['forum_name']);
 
