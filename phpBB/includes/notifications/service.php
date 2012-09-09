@@ -31,7 +31,7 @@ class phpbb_notifications_service
 	*
 	* @var array Array of user data that we've loaded from the DB
 	*/
-	protected $users;
+	protected $users = array();
 
 	public function __construct(ContainerBuilder $phpbb_container)
 	{
@@ -76,7 +76,6 @@ class phpbb_notifications_service
 			$item_type_class_name = $this->get_item_type_class_name($row['item_type'], true);
 
 			$notification = new $item_type_class_name($this->phpbb_container, $row);
-			$notification->users($this->users);
 
 			$user_ids = array_merge($user_ids, $notification->users_to_query());
 
@@ -84,24 +83,7 @@ class phpbb_notifications_service
 		}
 		$this->db->sql_freeresult($result);
 
-		// Load the users
-		$user_ids = array_unique($user_ids);
-
-		// @todo do not load users we already have in $this->users
-
-		if (sizeof($user_ids))
-		{
-			// @todo do not select everything
-			$sql = 'SELECT * FROM ' . USERS_TABLE . '
-				WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
-			$result = $this->db->sql_query($sql);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$this->users[$row['user_id']] = $row;
-			}
-			$this->db->sql_freeresult($result);
-		}
+		$this->load_users($user_ids);
 
 		return $notifications;
 	}
@@ -122,31 +104,15 @@ class phpbb_notifications_service
 		// Update any existing notifications for this item
 		$this->update_notifications($item_type, $item_id, $data);
 
-		$notify_users = array();
+		$notify_users = $user_ids = array();
 		$notification_objects = $notification_methods = array();
 		$new_rows = array();
 
-		/**
-		* Desired notifications
-		* unique by (type, type_id, user_id, method)
-		* if multiple methods are desired, multiple rows will exist.
-		*
-		* method of "none" will over-ride any other options
-		*
-		* item_type
-		* item_id
-		* user_id
-		* method
-		* 	none (will never receive notifications)
-		* 	standard (listed in notifications window
-		* 	popup?
-		* 	email
-		* 	jabber
-		*	sms?
-		*/
-
 		// find out which users want to receive this type of notification
 		$notify_users = $item_type_class_name::find_users_for_notification($this->phpbb_container, $data);
+
+		// Never send notifications to the anonymous user or the current user!
+		$notify_users = array_diff($notify_users, array(ANONYMOUS, $this->phpbb_container->get('user')->data['user_id']));
 
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
@@ -172,7 +138,11 @@ class phpbb_notifications_service
 
 			$notification->user_id = (int) $user;
 
+			// Store the creation array in our new rows that will be inserted later
 			$new_rows[] = $notification->create_insert_array($data);
+
+			// Users are needed to send notifications
+			$user_ids = array_merge($user_ids, $notification->users_to_query());
 
 			foreach ($methods as $method)
 			{
@@ -184,6 +154,7 @@ class phpbb_notifications_service
 						$method_class_name = 'phpbb_notifications_method_' . $method;
 						$notification_methods[$method] = new $method_class_name($this->phpbb_container);
 					}
+
 					$notification_methods[$method]->add_to_queue($notification);
 				}
 			}
@@ -191,6 +162,9 @@ class phpbb_notifications_service
 
 		// insert into the db
 		$this->db->sql_multi_insert(NOTIFICATIONS_TABLE, $new_rows);
+
+		// We need to load all of the users to send notifications
+		$this->load_users($user_ids);
 
 		// run the queue for each method to send notifications
 		foreach ($notification_methods as $method)
@@ -203,12 +177,13 @@ class phpbb_notifications_service
 	* Update a notification
 	*
 	* @param string $item_type Type identifier
-	* @param int $item_id Identifier within the type
 	* @param array $data Data specific for this type that will be updated
 	*/
-	public function update_notifications($item_type, $item_id, $data)
+	public function update_notifications($item_type, $data)
 	{
 		$item_type_class_name = $this->get_item_type_class_name($item_type);
+
+		$item_id = $item_type_class_name::get_item_id($data);
 
 		$notification = new $item_type_class_name($this->phpbb_container);
 		$update_array = $notification->create_update_array($data);
@@ -224,15 +199,53 @@ class phpbb_notifications_service
 	* Delete a notification
 	*
 	* @param string $item_type Type identifier
-	* @param int $item_id Identifier within the type
+	* @param int|array $item_id Identifier within the type (or array of ids)
 	* @param array $data Data specific for this type that will be updated
 	*/
 	public function delete_notifications($item_type, $item_id)
 	{
 		$sql = 'DELETE FROM ' . NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
-				AND item_id = " . (int) $item_id;
+				AND " . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id);
 		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Load user helper
+	*
+	* @param array $user_ids
+	*/
+	public function load_users($user_ids)
+	{
+		// Load the users
+		$user_ids = array_unique($user_ids);
+
+		// Do not load users we already have in $this->users
+		$user_ids = array_diff($user_ids, array_keys($this->users));
+
+		if (sizeof($user_ids))
+		{
+			$sql = 'SELECT * FROM ' . USERS_TABLE . '
+				WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
+			$result = $this->db->sql_query($sql);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$this->users[$row['user_id']] = $row;
+			}
+			$this->db->sql_freeresult($result);
+		}
+	}
+
+	/**
+	* Get a user row from our users cache
+	*
+	* @param int $user_id
+	* @return array
+	*/
+	public function get_user($user_id)
+	{
+		return $this->users[$user_id];
 	}
 
 	/**

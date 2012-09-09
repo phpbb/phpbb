@@ -59,14 +59,8 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 		}
 		$banned_users = phpbb_get_banned_user_ids($user_ids);
 
-		$sql = 'SELECT * FROM ' . USERS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$users[$row['user_id']] = $row;
-		}
-		$this->db->sql_freeresult($result);
+		// Load all the users we need
+		$this->service->load_users($user_ids);
 
 		// Load the messenger
 		if (!class_exists('messenger'))
@@ -84,9 +78,7 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 				continue;
 			}
 
-			$notification->users($users);
-
-			$user = $notification->get_user($notification->user_id);
+			$user = $this->service->get_user($notification->user_id);
 
 			$messenger->template('privmsg_notify', $user['user_lang']);
 
