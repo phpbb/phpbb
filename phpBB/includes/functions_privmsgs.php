@@ -982,6 +982,7 @@ function handle_mark_actions($user_id, $mark_action)
 function delete_pm($user_id, $msg_ids, $folder_id)
 {
 	global $db, $user, $phpbb_root_path, $phpEx;
+	global $phpbb_container;
 
 	$user_id	= (int) $user_id;
 	$folder_id	= (int) $folder_id;
@@ -1092,6 +1093,10 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		$user->data['user_new_privmsg'] -= $num_new;
 		$user->data['user_unread_privmsg'] -= $num_unread;
 	}
+
+	// Delete Notifications
+	$phpbb_notifications = $phpbb_container->get('notifications');
+	$phpbb_notifications->delete_notifications('pm', array_keys($delete_rows));
 
 	// Now we have to check which messages we can delete completely
 	$sql = 'SELECT msg_id
@@ -1860,104 +1865,23 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	$db->sql_transaction('commit');
 
 	// Send Notifications
-	if ($mode != 'edit')
+	$phpbb_notifications = $phpbb_container->get('notifications');
+
+	$pm_data = array_merge($data, array(
+		'message_subject'		=> $subject,
+		'recipients'			=> $recipients,
+	));
+
+	if ($mode == 'edit')
 	{
-		$phpbb_notifications = $phpbb_container->get('notifications');
-
-		$phpbb_notifications->add_notifications('pm', array(
-			'author_id'				=> $data['from_user_id'],
-			'recipients'			=> $recipients,
-			'message_subject'		=> $subject,
-			'msg_id'				=> $data['msg_id'],
-		));
-
-		//pm_notification($mode, $data['from_username'], $recipients, $subject, $data['message'], $data['msg_id']);
+		$phpbb_notifications->update_notifications('pm', $pm_data);
+	}
+	else
+	{
+		$phpbb_notifications->add_notifications('pm', $pm_data);
 	}
 
 	return $data['msg_id'];
-}
-
-/**
-* PM Notification
-*/
-function pm_notification($mode, $author, $recipients, $subject, $message, $msg_id)
-{
-	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
-
-	$subject = censor_text($subject);
-
-	// Exclude guests, current user and banned users from notifications
-	unset($recipients[ANONYMOUS], $recipients[$user->data['user_id']]);
-
-	if (!sizeof($recipients))
-	{
-		return;
-	}
-
-	if (!function_exists('phpbb_get_banned_user_ids'))
-	{
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-	}
-	$banned_users = phpbb_get_banned_user_ids(array_keys($recipients));
-	$recipients = array_diff(array_keys($recipients), $banned_users);
-
-	if (!sizeof($recipients))
-	{
-		return;
-	}
-
-	$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_pm, user_notify_type, user_jabber
-		FROM ' . USERS_TABLE . '
-		WHERE ' . $db->sql_in_set('user_id', $recipients);
-	$result = $db->sql_query($sql);
-
-	$msg_list_ary = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if ($row['user_notify_pm'] == 1 && trim($row['user_email']))
-		{
-			$msg_list_ary[] = array(
-				'method'	=> $row['user_notify_type'],
-				'email'		=> $row['user_email'],
-				'jabber'	=> $row['user_jabber'],
-				'name'		=> $row['username'],
-				'lang'		=> $row['user_lang']
-			);
-		}
-	}
-	$db->sql_freeresult($result);
-
-	if (!sizeof($msg_list_ary))
-	{
-		return;
-	}
-
-	include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-	$messenger = new messenger();
-
-	foreach ($msg_list_ary as $pos => $addr)
-	{
-		$messenger->template('privmsg_notify', $addr['lang']);
-
-		$messenger->to($addr['email'], $addr['name']);
-		$messenger->im($addr['jabber'], $addr['name']);
-
-		$messenger->assign_vars(array(
-			'SUBJECT'		=> htmlspecialchars_decode($subject),
-			'AUTHOR_NAME'	=> htmlspecialchars_decode($author),
-			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
-
-			'U_INBOX'			=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox",
-			'U_VIEW_MESSAGE'	=> generate_board_url() . "/ucp.$phpEx?i=pm&mode=view&p=$msg_id",
-		));
-
-		$messenger->send($addr['method']);
-	}
-	unset($msg_list_ary);
-
-	$messenger->save_queue();
-
-	unset($messenger);
 }
 
 /**
