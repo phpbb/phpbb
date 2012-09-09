@@ -101,7 +101,7 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 
 		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 
-		return $username . ' sent you a private message titled: ' . $this->get_data('message_subject');
+		return $this->phpbb_container->get('user')->lang('NOTIFICATION_PM', $username, $this->get_data('message_subject'));
 	}
 
 	/**
@@ -113,7 +113,7 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	{
 		$user_data = $this->service->get_user($this->get_data('from_user_id'));
 
-		return $user_data['username'] . ' sent you a private message titled: ' . $this->get_data('message_subject');
+		return $this->phpbb_container->get('user')->lang('NOTIFICATION_PM', $user_data['username'], $this->get_data('message_subject'));
 	}
 
 	/**
