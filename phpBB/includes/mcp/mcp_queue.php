@@ -639,12 +639,12 @@ function approve_post($post_id_list, $id, $mode)
 			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
 			{
 				// Forum Notifications
-				user_notification('post', $post_data['topic_title'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
+				$notifications->add_notifications('topic', $post_data);
 			}
 			else
 			{
 				// Topic Notifications
-				user_notification('reply', $post_data['post_subject'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
+				$notifications->add_notifications('post', $post_data);
 			}
 		}
 

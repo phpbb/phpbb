@@ -175,6 +175,38 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	}
 
 	/**
+	* Find the users who want to receive notifications (helper)
+	*
+	* @param ContainerBuilder $phpbb_container
+	* @param array $item_id The item_id to search for
+	*
+	* @return array
+	*/
+	protected static function _find_users_for_notification(ContainerBuilder $phpbb_container, $item_id)
+	{
+		$db = $phpbb_container->get('dbal.conn');
+
+		$rowset = array();
+
+		$sql = 'SELECT * FROM ' . USER_NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . static::get_item_type() . "'
+				AND item_id = " . (int) $item_id;
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!isset($rowset[$row['user_id']]))
+			{
+				$rowset[$row['user_id']] = array();
+			}
+
+			$rowset[$row['user_id']][] = $row['method'];
+		}
+		$db->sql_freeresult($result);
+
+		return $rowset;
+	}
+
+	/**
 	* Get the formatted title of this notification (fall-back)
 	*
 	* @return string
