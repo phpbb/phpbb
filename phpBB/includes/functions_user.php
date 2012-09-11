@@ -3812,7 +3812,7 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = ACCOUNT_DELE
 {
 	global $db, $user, $config;
 
-	if (!$user_id)
+	if (!$user_id || $type === ACCOUNT_DELETE_NONE)
 	{
 		return false;
 	}
@@ -3870,9 +3870,12 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = ACCOUNT_DELE
 		default:
 			// deactivate the user's account
 			user_active_flip('deactivate', array($user_id), INACTIVE_SOFT_DELETE);
-			// Log out the user
+			// Log out the deleted user
 			$user->reset_login_keys($user_id);
-			$user->session_kill();
+			if ($user_id == $user->data['user_id'])
+			{
+				$user->session_kill();
+			}
 
 			add_log('user', $user->data['user_id'], 'LOG_USER_SELF_SOFT_DELETE', $user->data['username']);
 			return 'DELETE_ACCOUNT_SOFT_DONE';
@@ -3908,6 +3911,8 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = ACCOUNT_DELE
 *						'reason'	=> 'Reason for deletion', // Optional, especially when being run via ACP
 *					),
 *				)
+* @param bool $force Whether to simply delete the account (true) or
+*					potentially add a new account deletion request (false)
 * @return null
 */
 function phpbb_delete_accounts($user_data = array(), $force = false)
