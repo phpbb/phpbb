@@ -1,21 +1,29 @@
 {
-    "hash": "1632798bc1d5298a4f5bd3087c972a9f",
+    "hash": "f83c386aaaf04acc7fd1724dd46c0127",
     "packages": [
         {
             "package": "symfony/config",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.1"
         },
         {
             "package": "symfony/dependency-injection",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.1"
         },
         {
             "package": "symfony/event-dispatcher",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.1"
+        },
+        {
+            "package": "symfony/http-foundation",
+            "version": "v2.1.1"
+        },
+        {
+            "package": "symfony/http-kernel",
+            "version": "v2.1.1"
         },
         {
             "package": "symfony/yaml",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.1"
         }
     ],
     "packages-dev": [
@@ -28,40 +36,40 @@
         {
             "package": "fabpot/goutte",
             "version": "dev-master",
-            "source-reference": "6d26279344736f6983a969e46afef082ebf30a67",
-            "commit-date": "1345141401"
+            "source-reference": "1d72f22b21b37a8d38ea48e17b34c3afc73dfc46",
+            "commit-date": "1346234818"
         },
         {
             "package": "guzzle/common",
-            "version": "v2.8.4"
+            "version": "v2.8.6"
         },
         {
             "package": "guzzle/http",
-            "version": "v2.8.4"
+            "version": "v2.8.6"
         },
         {
             "package": "guzzle/parser",
-            "version": "v2.8.4"
+            "version": "v2.8.6"
         },
         {
             "package": "symfony/browser-kit",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.1"
         },
         {
             "package": "symfony/css-selector",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.1"
         },
         {
             "package": "symfony/dom-crawler",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.1"
         },
         {
             "package": "symfony/finder",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.1"
         },
         {
             "package": "symfony/process",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.1"
         }
     ],
     "aliases": [
