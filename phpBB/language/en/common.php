@@ -391,6 +391,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATIONS'				=> '[ Notifications ]',
 	'NOTIFICATION_PM'			=> '%1$s sent you a Private Message "%2$s".',
 	'NOTIFICATION_POST'			=> '%1$s replied to the topic "%2$s".',
+	'NOTIFICATION_QUOTE'		=> '%1$s quoted you in the post "%2$s".',
 	'NOTIFICATION_TOPIC'		=> '%1$s posted a new topic "%2$s" in the forum "%3$s".',
 	'NOTIFY_ADMIN'				=> 'Please notify the board administrator or webmaster.',
 	'NOTIFY_ADMIN_EMAIL'		=> 'Please notify the board administrator or webmaster: <a href="mailto:%1$s">%1$s</a>',
