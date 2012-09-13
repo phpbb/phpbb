@@ -60,12 +60,19 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 
 		$db = $phpbb_container->get('dbal.conn');
 
+		/* todo
+		* find what type of notification they'd like to receive
+		* make sure not to send duplicate notifications
+		*/
 		$sql = 'SELECT user_id
 			FROM ' . TOPICS_WATCH_TABLE . '
 			WHERE topic_id = ' . (int) $post['topic_id'] . '
 				AND notify_status = ' . NOTIFY_YES;
 		$result = $db->sql_query($sql);
-		$users = $db->sql_fetchrowset($result);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$users[$row['user_id']] = array('');
+		}
 		$db->sql_freeresult($result);
 
 		if (empty($users))
@@ -155,7 +162,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "t={$this->get_data('topic_id')}&amp;p={$this->item_id}#p{$this->item_id}");
+		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "p={$this->item_id}#p{$this->item_id}");
 	}
 
 	/**
@@ -165,7 +172,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public function get_full_url()
 	{
-		return generate_board_url() . "/viewtopic.{$this->php_ext}?t={$this->get_data('topic_id')}&p={$this->item_id}#p{$this->item_id}";
+		return generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}";
 	}
 
 	/**
