@@ -60,6 +60,8 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 
 		$db = $phpbb_container->get('dbal.conn');
 
+		$users = array();
+
 		/* todo
 		* find what type of notification they'd like to receive
 		* make sure not to send duplicate notifications
