@@ -130,7 +130,7 @@ class phpbb_notifications_service
 		$notify_users = $item_type_class_name::find_users_for_notification($this->phpbb_container, $data);
 
 		// Never send notifications to the anonymous user or the current user!
-		$notify_users = array_diff($notify_users, array(ANONYMOUS, $this->phpbb_container->get('user')->data['user_id']));
+		unset($notify_users[ANONYMOUS], $notify_users[$this->phpbb_container->get('user')->data['user_id']]);
 
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
