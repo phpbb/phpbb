@@ -37,5 +37,13 @@ interface phpbb_notifications_type_interface
 
 	public function get_unsubscribe_url($method);
 
+	public function mark_read($return);
+
+	public function mark_unread($return);
+
 	public function create_insert_array($type_data);
+
+	public function get_load_special();
+
+	public static function load_special(ContainerBuilder $phpbb_container, $data, $notifications);
 }
