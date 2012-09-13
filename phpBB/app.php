@@ -25,8 +25,9 @@ $auth->acl($user->data);
 $user->setup();
 
 $request->enable_super_globals();
-
 $symfony_request = Request::createFromGlobals();
+$request->disable_super_globals();
+
 $controller_resolver = $phpbb_container->get('controller.resolver');
 $response = $controller_resolver->load($symfony_request);
 
