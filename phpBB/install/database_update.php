@@ -119,20 +119,12 @@ $loader->load('services.yml');
 // is not yet set up
 require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
 require($phpbb_root_path . 'includes/di/processor/config.' . $phpEx);
-
 $processor = new phpbb_di_processor_config($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx);
 $processor->process($phpbb_container);
 
 // Setup class loader first
 $phpbb_class_loader = $phpbb_container->get('class_loader');
 $phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
-
-$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
-foreach ($ids as $id)
-{
-	$processor = $phpbb_container->get($id);
-	$processor->process($phpbb_container);
-}
 
 // set up caching
 $cache = $phpbb_container->get('cache');
@@ -143,6 +135,13 @@ $request	= $phpbb_container->get('request');
 $user		= $phpbb_container->get('user');
 $auth		= $phpbb_container->get('auth');
 $db			= $phpbb_container->get('dbal.conn');
+
+$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
+foreach ($ids as $id)
+{
+	$processor = $phpbb_container->get($id);
+	$processor->process($phpbb_container);
+}
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
