@@ -9,7 +9,6 @@
 
 /**
 */
-use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -30,11 +29,11 @@ $symfony_request = Request::createFromGlobals();
 $request->disable_super_globals();
 
 $controller_resolver = $phpbb_container->get('controller.resolver');
-$kernel = new HttpKernel($phpbb_dispatcher, $controller_resolver, $user);
-$kernel->handle($symfony_request);
+$kernel = new phpbb_kernel($phpbb_dispatcher, $controller_resolver, $phpbb_container, $user);
+$response = $kernel->handle($symfony_request);
 
 // We use output buffering because the send() method uses echo()
 // We store this into a variable for future reference if ever needed
 ob_start();
 $response->send();
-$return = ob_get_flush();
+$return = ob_get_clean();

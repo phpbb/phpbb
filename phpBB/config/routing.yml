@@ -1,4 +1,11 @@
 # Structure:
 #
-# controller_access_name: phpbb_class_name
+# foo_controller:
+#     service: service.name
 #
+# -- OR --
+#
+# foo_controller:
+#     class: phpbb_ext_example_foo_controller
+#
+# The above will be accessed via app.php?controller=foo_controller

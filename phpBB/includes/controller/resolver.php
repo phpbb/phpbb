@@ -94,7 +94,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 			throw new RuntimeException('no controller specified');
 		}
 
-		if (!isset($this->controllers[$controller]) && !in_array($controller, $this->controllers))
+		if (!isset($this->controllers[$controller]))
 		{
 			throw new RuntimeException('controller <strong>' . $controller . '</strong> not found');
 		}

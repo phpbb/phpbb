@@ -16,6 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -38,6 +41,12 @@ class phpbb_kernel implements HttpKernelInterface
 	protected $resolver;
 
 	/**
+	* Container object
+	* @var ContainerBuilder
+	*/
+	protected $container;
+
+	/**
 	* User object
 	* @var phpbb_user
 	*/
@@ -46,13 +55,14 @@ class phpbb_kernel implements HttpKernelInterface
 	/**
      * Constructor
      *
-     * @param EventDispatcherInterface    $dispatcher An EventDispatcherInterface instance
+     * @param EventDispatcher    $dispatcher An EventDispatcherInterface instance
      * @param ControllerResolverInterface $resolver   A ControllerResolverInterface instance
      */
-    public function __construct(EventDispatcherInterface $dispatcher, ControllerResolverInterface $resolver, phpbb_user $user)
+    public function __construct(EventDispatcher $dispatcher, ControllerResolverInterface $resolver, ContainerBuilder $container, phpbb_user $user)
     {
         $this->dispatcher = $dispatcher;
         $this->resolver = $resolver;
+        $this->container = $container;
         $this->user = $user;
     }
 
@@ -75,13 +85,23 @@ class phpbb_kernel implements HttpKernelInterface
 	{
 		try
 		{
-			$controller_class = $this->resolver->getController($request);
-			$controller = new $controller_class;
-			$response = call_user_func(array($controller, 'handle'));
+			$controller_data = $this->resolver->getController($request);
+			if (isset($controller_data['service']))
+			{
+				$controller = $this->container->get($controller_data['service']);
+				$response = $controller->handle();
+			}
+			else if (isset($controller_data['class']))
+			{
+				$arguments = $this->resolver->getArguments();
+				$controller = new ReflectionClass($controller_data['class']);
+				$controller->newInstanceArgs($arguments);
+				$response = call_user_func(array($controller, 'handle'));
+			}
 
 			if (!$response instanceof Response)
 			{
-				trigger_error($this->user->lang());
+				trigger_error($this->user->lang('not a response'));
 			}
 		}
 		catch (RuntimeException $e)
@@ -93,5 +113,7 @@ class phpbb_kernel implements HttpKernelInterface
 
 			throw new RuntimeException($e);
 		}
+
+		return $response;
 	}
 }
