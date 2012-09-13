@@ -79,30 +79,6 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 
 
 	/**
-	* Load and execute a controller, with error handling
-	*
-	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
-	*/
-	public function load(Request $request)
-	{
-		try
-		{
-			$controller_class = $this->getController($request);
-			$controller = new $controller_class;
-			$response = call_user_func(array($controller, 'handle'));
-
-			if (!$response instanceof Response)
-			{
-				trigger_error($this->user->lang());
-			}
-		}
-		catch (RuntimeException $e)
-		{
-			trigger_error($e->getMessage());
-		}
-	}
-
-	/**
 	* Load a controller class name, without error handling
 	*
 	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
@@ -127,8 +103,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	}
 
 	/**
-	* We do not use this method (expected by the ControllerResolverInterface)
-	* because we will use phpBB's request class to grab request information
+	* Get an array of values to pass to the controller arguments
 	*
 	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
 	* @param string $controller Controller class name
@@ -136,6 +111,29 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	*/
 	public function getArguments(Request $request, $controller)
 	{
-		return false;
+		$mirror = new ReflectionObject($controller);
+		$query = $request->query->all();
+		$arguments = array();
+		foreach ($mirror->getParameters() as $param)
+		{
+			if (array_key_exists($param->name, $query))
+			{
+				$arguments[] = $query[$param->name];
+			}
+			else if ($param->getClass() && $param->getClass()->isInstance($request))
+			{
+				$arguments[] = $request;
+			}
+			else if ($param->isDefaultValueAvailable())
+			{
+				$arguments = $param->getDefaultValue();
+			}
+			else
+			{
+				throw new RuntimeException('controller <strong>' . $controller . '</strong> cannot find value for required argument <strong>' . $param->name . '</strong>.');
+			}
+		}
+
+		return $arguments;
 	}
 }
