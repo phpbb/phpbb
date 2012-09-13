@@ -29,7 +29,7 @@ $symfony_request = Request::createFromGlobals();
 $request->disable_super_globals();
 
 $controller_resolver = $phpbb_container->get('controller.resolver');
-$kernel = new phpbb_kernel($phpbb_dispatcher, $controller_resolver, $phpbb_container, $user);
+$kernel = $phpbb_container->get('kernel');
 $response = $kernel->handle($symfony_request);
 
 // We use output buffering because the send() method uses echo()

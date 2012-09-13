@@ -96,6 +96,14 @@ services:
             - .%core.php_ext%
             - @cache.driver
 
+    kernel:
+        class: phpbb_kernel
+        arguments:
+            - @dispatcher
+            - @controller.resolver
+            - @container
+            - @user
+
     processor.ext:
         class: phpbb_di_processor_ext
         arguments:
