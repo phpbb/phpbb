@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -55,10 +55,10 @@ class phpbb_kernel implements HttpKernelInterface
 	/**
      * Constructor
      *
-     * @param EventDispatcher    $dispatcher An EventDispatcherInterface instance
+     * @param EventDispatcherInterface $dispatcher An EventDispatcherInterface instance
      * @param ControllerResolverInterface $resolver   A ControllerResolverInterface instance
      */
-    public function __construct(EventDispatcher $dispatcher, ControllerResolverInterface $resolver, ContainerBuilder $container, phpbb_user $user)
+    public function __construct(EventDispatcherInterface $dispatcher, ControllerResolverInterface $resolver, ContainerBuilder $container, phpbb_user $user)
     {
         $this->dispatcher = $dispatcher;
         $this->resolver = $resolver;
