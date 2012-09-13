@@ -24,10 +24,17 @@ if (!defined('IN_PHPBB'))
 class phpbb_notifications_method_email extends phpbb_notifications_method_base
 {
 	/**
+	* Notify method (since jabber gets sent through the same messenger, we let the jabber class inherit from this to reduce code duplication)
+	*
+	* @var mixed
+	*/
+	protected $notify_method = NOTIFY_EMAIL;
+
+	/**
 	* Is this method available for the user?
 	* This is checked on the notifications options
 	*/
-	public static function is_available()
+	public function is_available()
 	{
 		// Email is always available
 		return true;
@@ -89,7 +96,7 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 				'U_UNSUBSCRIBE'		=> $notification->get_unsubscribe_url(),
 			));
 
-			$messenger->send('email');
+			$messenger->send($this->notify_method);
 		}
 
 		// Save the queue in the messenger class (has to be called or these emails could be lost?)
