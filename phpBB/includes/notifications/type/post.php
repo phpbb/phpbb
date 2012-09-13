@@ -54,9 +54,21 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post)
 	{
-		$users = parent::_find_users_for_notification($phpbb_container, $post['topic_id']);
+		// Let's continue to use the phpBB subscriptions system, at least for now.
+		// It may not be the nicest thing, but it is already working and it would be significant work to replace it
+		//$users = parent::_find_users_for_notification($phpbb_container, $post['topic_id']);
 
-		if (!sizeof($users))
+		$db = $phpbb_container->get('dbal.conn');
+
+		$sql = 'SELECT user_id
+			FROM ' . TOPICS_WATCH_TABLE . '
+			WHERE topic_id = ' . (int) $post['topic_id'] . '
+				AND notify_status = ' . NOTIFY_YES;
+		$result = $db->sql_query($sql);
+		$users = $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
+		if (empty($users))
 		{
 			return array();
 		}
