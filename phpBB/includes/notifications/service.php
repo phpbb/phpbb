@@ -65,6 +65,7 @@ class phpbb_notifications_service
 		), $options);
 
 		$notifications = $user_ids = array();
+		$load_special = array();
 
 		$sql = 'SELECT *
 			FROM ' . NOTIFICATIONS_TABLE . '
@@ -78,13 +79,29 @@ class phpbb_notifications_service
 
 			$notification = new $item_type_class_name($this->phpbb_container, $row);
 
+			// Array of user_ids to query all at once
 			$user_ids = array_merge($user_ids, $notification->users_to_query());
+
+			// Some notification types also require querying additional tables themselves
+			if (!isset($load_special[$row['item_type']]))
+			{
+				$load_special[$row['item_type']] = array();
+			}
+			$load_special[$row['item_type']] = array_merge($load_special[$row['item_type']], $notification->get_load_special());
 
 			$notifications[] = $notification;
 		}
 		$this->db->sql_freeresult($result);
 
 		$this->load_users($user_ids);
+
+		// Allow each type to load it's own special items
+		foreach ($load_special as $item_type => $data)
+		{
+			$item_type_class_name = $this->get_item_type_class_name($item_type, true);
+
+			$item_type_class_name::load_special($this->phpbb_container, $data, $notifications);
+		}
 
 		return $notifications;
 	}
