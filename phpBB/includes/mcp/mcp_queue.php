@@ -634,19 +634,19 @@ function approve_post($post_id_list, $id, $mode)
 		// Send out normal user notifications
 		$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
 
-		$notifications = $phpbb_container->get('notifications');
+		$phpbb_notifications = $phpbb_container->get('notifications');
 
 		foreach ($post_info as $post_id => $post_data)
 		{
 			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
 			{
 				// Forum Notifications
-				$notifications->add_notifications('topic', $post_data);
+				$phpbb_notifications->add_notifications('topic', $post_data);
 			}
 			else
 			{
 				// Topic Notifications
-				$notifications->add_notifications(array('quote', 'bookmark', 'post'), $post_data);
+				$phpbb_notifications->add_notifications(array('quote', 'bookmark', 'post'), $post_data);
 			}
 		}
 
