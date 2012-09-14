@@ -89,7 +89,7 @@ services:
             - .%core.php_ext%
             - @cache.driver
 
-    processor.config:
+    processor.ext:
         class: phpbb_di_processor_ext
         arguments:
             - @ext.manager
