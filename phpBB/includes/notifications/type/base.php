@@ -157,7 +157,7 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	public function create_insert_array($type_data)
 	{
 		// Defaults
-		$data = array_merge(array(
+		$this->data = array_merge(array(
 			'item_id'				=> static::get_item_id($type_data),
 			'item_type'	   			=> $this->get_item_type(),
 			'item_parent_id'		=> static::get_item_parent_id($type_data),
@@ -167,6 +167,8 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 
 			'data'					=> array(),
 		), $this->data);
+
+		$data = $this->data;
 
 		$data['data'] = serialize($data['data']);
 

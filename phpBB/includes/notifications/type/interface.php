@@ -31,9 +31,9 @@ interface phpbb_notifications_type_interface
 
 	public function get_formatted_title();
 
-	public function get_url();
+	public function get_email_template_variables();
 
-	public function get_full_url();
+	public function get_url();
 
 	public function get_unsubscribe_url($method);
 

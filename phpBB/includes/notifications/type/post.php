@@ -26,6 +26,13 @@ if (!defined('IN_PHPBB'))
 class phpbb_notifications_type_post extends phpbb_notifications_type_base
 {
 	/**
+	* Email template to use to send notifications
+	*
+	* @var string
+	*/
+	public $email_template = 'topic_notify';
+
+	/**
 	* Language key used to output the text
 	*
 	* @var string
@@ -175,6 +182,23 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	}
 
 	/**
+	* Get email template variables
+	*
+	* @return array
+	*/
+	public function get_email_template_variables()
+	{
+		return array(
+			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
+
+			'U_NEWEST_POST'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}&view=unread#unread",
+			'U_TOPIC'					=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
+			'U_FORUM'					=> generate_board_url() . "/viewforum.{$this->php_ext}?f={$this->get_data('forum_id')}",
+			'U_STOP_WATCHING_TOPIC'		=> generate_board_url() . "/viewtopic.{$this->php_ext}?uid={$this->user_id}&f={$this->get_data('forum_id')}&t={$this->item_parent_id}&unwatch=topic",
+		);
+	}
+
+	/**
 	* Get the url to this item
 	*
 	* @return string URL
@@ -182,16 +206,6 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	public function get_url()
 	{
 		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "p={$this->item_id}#p{$this->item_id}");
-	}
-
-	/**
-	* Get the full url to this item
-	*
-	* @return string URL
-	*/
-	public function get_full_url()
-	{
-		return generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}";
 	}
 
 	/**
@@ -219,6 +233,8 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		$this->set_data('topic_title', $post['topic_title']);
 
 		$this->set_data('post_username', (($post['post_username'] != $this->phpbb_container->get('user')->data['username']) ? $post['post_username'] : ''));
+
+		$this->set_data('forum_id', $post['forum_id']);
 
 		$this->set_data('forum_name', $post['forum_name']);
 
