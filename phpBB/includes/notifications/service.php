@@ -107,6 +107,52 @@ class phpbb_notifications_service
 	}
 
 	/**
+	* Mark notifications read
+	*
+	* @param string $item_type item type
+	* @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
+	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
+	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	*/
+	public function mark_notifications_read($item_type, $item_id, $user_id, $time = false)
+	{
+		$time = ($time) ?: time();
+
+		$this->get_item_type_class_name($item_type);
+
+		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . "
+			SET unread = 0
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+				AND time <= " . $time .
+				(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '') .
+				(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '');
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Mark notifications read from a parent identifier
+	*
+	* @param string $item_type item type
+	* @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
+	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
+	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	*/
+	public function mark_notifications_read_by_parent($item_type, $item_parent_id, $user_id, $time = false)
+	{
+		$time = ($time) ?: time();
+
+		$item_type_class_name = $this->get_item_type_class_name($item_type);
+
+		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . "
+			SET unread = 0
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+				AND time <= " . $time .
+				(($item_parent_id !== false) ? ' AND ' . (is_array($item_parent_id) ? $this->db->sql_in_set('item_parent_id', $item_parent_id) : 'item_parent_id = ' . (int) $item_parent_id) : '') .
+				(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '');
+		$this->db->sql_query($sql);
+	}
+
+	/**
 	* Add a notification
 	*
 	* @param string $item_type Type identifier
@@ -117,9 +163,6 @@ class phpbb_notifications_service
 		$item_type_class_name = $this->get_item_type_class_name($item_type);
 
 		$item_id = $item_type_class_name::get_item_id($data);
-
-		// Update any existing notifications for this item
-		$this->update_notifications($item_type, $data);
 
 		// find out which users want to receive this type of notification
 		$notify_users = $item_type_class_name::find_users_for_notification($this->phpbb_container, $data);
@@ -250,6 +293,8 @@ class phpbb_notifications_service
 	*/
 	public function delete_notifications($item_type, $item_id)
 	{
+		$this->get_item_type_class_name($item_type);
+
 		$sql = 'DELETE FROM ' . NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
 				AND " . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id);

@@ -1285,15 +1285,20 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
 	global $db, $user, $config;
-	global $request;
+	global $request, $phpbb_container;
 
 	if ($mode == 'all')
 	{
 		if ($forum_id === false || !sizeof($forum_id))
 		{
+			// Mark all forums read (index page)
+
+			// Mark all topic notifications read for this user
+			$notifications = $phpbb_container->get('notifications');
+			$notifications->mark_notifications_read('topic', false, $user->data['user_id'], $post_time);
+
 			if ($config['load_db_lastread'] && $user->data['is_registered'])
 			{
-				// Mark all forums read (index page)
 				$db->sql_query('DELETE FROM ' . TOPICS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
 				$db->sql_query('DELETE FROM ' . FORUMS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
 				$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . " WHERE user_id = {$user->data['user_id']}");
@@ -1329,6 +1334,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			$forum_id = array($forum_id);
 		}
+
+		// Mark topic notifications read for this user in this forum
+		$notifications = $phpbb_container->get('notifications');
+		$notifications->mark_notifications_read_by_parent('topic', $forum_id, $user->data['user_id'], $post_time);
 
 		// Add 0 to forums array to mark global announcements correctly
 		// $forum_id[] = 0;
@@ -1423,6 +1432,11 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			return;
 		}
+
+		// Mark post notifications read for this user in this topic
+		$notifications = $phpbb_container->get('notifications');
+		$notifications->mark_notifications_read_by_parent('post', $topic_id, $user->data['user_id'], $post_time);
+		$notifications->mark_notifications_read_by_parent('quote', $topic_id, $user->data['user_id'], $post_time);
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{
