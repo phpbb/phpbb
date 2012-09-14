@@ -50,6 +50,7 @@ class phpbb_notifications_service
 	*				order_dir	Order direction (Default: DESC)
 	* 				limit		Number of notifications to load (Default: 5)
 	* 				start		Notifications offset (Default: 0)
+	* 				all_unread	Load all unread messages? (Default: true)
 	*/
 	public function load_notifications($options = array())
 	{
@@ -62,11 +63,24 @@ class phpbb_notifications_service
 			'order_dir'		=> 'DESC',
 			'limit'			=> 5,
 			'start'			=> 0,
+			'all_unread'	=> true,
 		), $options);
 
 		$notifications = $user_ids = array();
 		$load_special = array();
 
+		// Get the total number of unread notifications
+		$sql = 'SELECT COUNT(*) AS count
+			FROM ' . NOTIFICATIONS_TABLE . '
+			WHERE user_id = ' . (int) $options['user_id'] . '
+				AND unread = 1';
+		$result = $this->db->sql_query($sql);
+		$count = $this->db->sql_fetchfield('count', $result);
+		$this->db->sql_freeresult($result);
+
+		$rowset = array();
+
+		// Get the main notifications
 		$sql = 'SELECT *
 			FROM ' . NOTIFICATIONS_TABLE . '
 			WHERE user_id = ' . (int) $options['user_id'] . '
@@ -74,6 +88,30 @@ class phpbb_notifications_service
 		$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
 
 		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$rowset[$row['notification_id']] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		// Get all unread notifications
+		if ($options['all_unread'])
+		{
+			$sql = 'SELECT *
+				FROM ' . NOTIFICATIONS_TABLE . '
+				WHERE user_id = ' . (int) $options['user_id'] . '
+					AND unread = 1
+					AND ' . $this->db->sql_in_set('notification_id', array_keys($rowset), true) . '
+					ORDER BY ' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
+			$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$rowset[$row['notification_id']] = $row;
+			}
+			$this->db->sql_freeresult($result);
+		}
+
+		foreach ($rowset as $row)
 		{
 			$item_type_class_name = $this->get_item_type_class_name($row['item_type'], true);
 
@@ -91,7 +129,6 @@ class phpbb_notifications_service
 
 			$notifications[] = $notification;
 		}
-		$this->db->sql_freeresult($result);
 
 		$this->load_users($user_ids);
 
@@ -103,7 +140,10 @@ class phpbb_notifications_service
 			$item_type_class_name::load_special($this->phpbb_container, $data, $notifications);
 		}
 
-		return $notifications;
+		return array(
+			'notifications'		=> $notifications,
+			'unread_count'		=> $count,
+		);
 	}
 
 	/**
