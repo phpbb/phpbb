@@ -94,7 +94,7 @@ services:
         arguments:
             - @container
 
-    processor.config:
+    processor.ext:
         class: phpbb_di_processor_ext
         arguments:
             - @ext.manager
