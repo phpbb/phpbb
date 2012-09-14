@@ -1297,6 +1297,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_notifications'] = array(
 		'COLUMNS'			=> array(
+			'notification_id'	=> array('UINT', NULL, 'auto_increment'),
 			'item_type'			=> array('VCHAR:25', ''),
 			'item_id'			=> array('UINT', 0),
 			'item_parent_id'	=> array('UINT', 0),
@@ -1305,11 +1306,7 @@ function get_schema_struct()
 			'time'				=> array('TIMESTAMP', 1),
 			'data'				=> array('TEXT_UNI', ''),
 		),
-		'PRIMARY_KEY'		=> array(
-			'item_type',
-			'item_id',
-			'user_id',
-		),
+		'PRIMARY_KEY'		=> 'notification_id',
 		'KEYS'				=> array(
 			'item_type'			=> array('INDEX', 'item_type'),
 			'item_id'			=> array('INDEX', 'item_id'),

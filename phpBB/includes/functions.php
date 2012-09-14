@@ -5212,6 +5212,14 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 	$hidden_fields_for_jumpbox = phpbb_build_hidden_fields_for_query_params($request, array('f'));
 
+	// Output the notifications
+	$phpbb_notifications = $phpbb_container->get('notifications');
+	$notifications = $phpbb_notifications->load_notifications();
+	foreach ($notifications['notifications'] as $notification)
+	{
+		$template->assign_block_vars('notifications', $notification->prepare_for_display());
+	}
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -5227,6 +5235,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
 		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
+		'NUM_UNREAD_NOTIFICATIONS'		=> $notifications['unread_count'],
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
@@ -5339,13 +5348,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
 	));
-
-	// Output the notifications
-	$phpbb_notifications = $phpbb_container->get('notifications');
-	foreach ($phpbb_notifications->load_notifications() as $notification)
-	{
-		$template->assign_block_vars('notifications', $notification->prepare_for_display());
-	}
 
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
