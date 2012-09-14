@@ -47,9 +47,14 @@ services:
     controller.resolver:
         class: phpbb_controller_resolver
         arguments:
-            - @ext.manager
+            - @controller.route_provider
             - @cache.driver
             - @user
+    
+    controller.route_provider:
+        class: phpbb_controller_route_provider
+        arguments:
+            - @ext.finder
 
     cron.task_provider:
         class: phpbb_cron_task_provider
@@ -95,6 +100,15 @@ services:
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
+    
+    ext.finder:
+        class: phpbb_extension_finder
+        arguments:
+            - @ext.manager
+            - %core.root_path%
+            - @cache.driver
+            - .%core.php_ext%
+            - _ext_finder
 
     kernel:
         class: phpbb_kernel
