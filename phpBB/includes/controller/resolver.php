@@ -56,9 +56,8 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	* @param phpbb_cache_driver_interface $cache Cache object
 	* @param phpbb_user $user User Object
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, phpbb_cache_driver_interface $cache, phpbb_user $user)
+	public function __construct(phpbb_controller_route_provider $route_provider, phpbb_cache_driver_interface $cache, phpbb_user $user)
 	{
-		$route_provider = new phpbb_controller_route_provider($extension_manager->get_finder());
 		$this->provider = new phpbb_controller_provider($route_provider->find());
 		$this->cache = $cache;
 		$this->user = $user;
