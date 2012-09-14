@@ -82,19 +82,15 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 				continue;
 			}
 
-			$messenger->template('notification', $user['user_lang']);
+			$messenger->template($notification->email_template, $user['user_lang']);
 
 			$messenger->to($user['user_email'], $user['username']);
 
-			$messenger->assign_vars(array(
-				'USERNAME'			=> $user['username'],
+			$messenger->assign_vars(array_merge(array(
+				'USERNAME'						=> $user['username'],
 
-				'MESSAGE'			=> htmlspecialchars_decode($notification->get_title()),
-
-				'U_VIEW_MESSAGE'	=> $notification->get_full_url(),
-
-				'U_UNSUBSCRIBE'		=> $notification->get_unsubscribe_url(),
-			));
+				'U_NOTIFICATION_SETTINGS'		=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=notifications', // todo Update URL
+			), $notification->get_email_template_variables()));
 
 			$messenger->send($this->notify_method);
 		}

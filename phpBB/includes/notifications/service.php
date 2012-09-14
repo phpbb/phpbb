@@ -153,7 +153,7 @@ class phpbb_notifications_service
 		{
 			foreach ($item_type as $type)
 			{
-				$this->mark_notifications_read($type, $item_id, $user_id, $time);
+				$this->mark_notifications_read_by_parent($type, $item_parent_id, $user_id, $time);
 			}
 
 			return;
