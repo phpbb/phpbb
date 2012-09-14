@@ -41,7 +41,7 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	*/
 	public static function get_item_id($pm)
 	{
-		return $pm['msg_id'];
+		return (int) $pm['msg_id'];
 	}
 
 	/**

@@ -146,4 +146,59 @@ class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 			censor_text($this->get_data('topic_title'))
 		);
 	}
+
+	/**
+	* Update a notification
+	*
+	* @param ContainerBuilder $phpbb_container
+	* @param array $data Data specific for this type that will be updated
+	*/
+	public static function update_notifications(ContainerBuilder $phpbb_container, $post)
+	{
+		$service = $phpbb_container->get('notifications');
+		$db = $phpbb_container->get('dbal.conn');
+
+		$old_notifications = array();
+		$sql = 'SELECT user_id
+			FROM ' . NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . self::get_item_type() . "'
+				AND item_id = " . self::get_item_id($post);
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$old_notifications[] = $row['user_id'];
+		}
+		$db->sql_freeresult($result);
+
+		// Find the new users to notify
+		$notifications = self::find_users_for_notification($phpbb_container, $post);
+
+		// Find the notifications we must delete
+		$remove_notifications = array_diff($old_notifications, array_keys($notifications));
+
+		// Find the notifications we must add
+		$add_notifications = array();
+		foreach (array_diff(array_keys($notifications), $old_notifications) as $user_id)
+		{
+			$add_notifications[$user_id] = $notifications[$user_id];
+		}
+
+		var_dump($old_notifications, $notifications, $remove_notifications, $add_notifications);
+
+		// Add the necessary notifications
+		$service->add_notifications_for_users(self::get_item_type(), $post, $add_notifications);
+
+		// Remove the necessary notifications
+		if (!empty($remove_notifications))
+		{
+			$sql = 'DELETE FROM ' . NOTIFICATIONS_TABLE . "
+				WHERE item_type = '" . self::get_item_type() . "'
+					AND item_id = " . self::get_item_id($post) . '
+					AND ' . $db->sql_in_set('user_id', $remove_notifications);
+			$db->sql_query($sql);
+		}
+
+		// return true to continue with the update code in the notifications service (this will update the rest of the notifications)
+		return true;
+	}
 }
