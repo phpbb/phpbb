@@ -1146,6 +1146,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 function phpbb_delete_user_pms($user_id)
 {
 	global $db, $user, $phpbb_root_path, $phpEx;
+	global $phpbb_container;
 
 	$user_id = (int) $user_id;
 
@@ -1279,6 +1280,10 @@ function phpbb_delete_users_pms($user_ids)
 				WHERE folder_id = ' . PRIVMSGS_NO_BOX . '
 					AND ' . $db->sql_in_set('msg_id', $delivered_msg);
 			$db->sql_query($sql);
+
+			// Delete Notifications
+			$phpbb_notifications = $phpbb_container->get('notifications');
+			$phpbb_notifications->delete_notifications('pm', $delivered_msg);
 		}
 
 		if (!empty($undelivered_msg))
@@ -1290,6 +1295,10 @@ function phpbb_delete_users_pms($user_ids)
 			$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
 				WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
 			$db->sql_query($sql);
+
+			// Delete Notifications
+			$phpbb_notifications = $phpbb_container->get('notifications');
+			$phpbb_notifications->delete_notifications('pm', $undelivered_msg);
 		}
 	}
 
@@ -1332,6 +1341,10 @@ function phpbb_delete_users_pms($user_ids)
 			$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
 				WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
 			$db->sql_query($sql);
+
+			// Delete Notifications
+			$phpbb_notifications = $phpbb_container->get('notifications');
+			$phpbb_notifications->delete_notifications('pm', $delete_ids);
 		}
 	}
 
