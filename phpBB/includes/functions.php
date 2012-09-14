@@ -1399,6 +1399,21 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		$notifications = $phpbb_container->get('notifications');
 		$notifications->mark_notifications_read_by_parent('topic', $forum_id, $user->data['user_id'], $post_time);
 
+		// Mark all post/quote notifications read for this user in this forum
+		$topic_ids = array();
+		$sql = 'SELECT topic_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $forum_id);
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$topic_ids[] = $row['topic_id'];
+		}
+		$db->sql_freeresult($result);
+
+		$notifications->mark_notifications_read_by_parent('post', $topic_ids, $user->data['user_id'], $post_time);
+		$notifications->mark_notifications_read_by_parent('quote', $topic_ids, $user->data['user_id'], $post_time);
+
 		// Add 0 to forums array to mark global announcements correctly
 		// $forum_id[] = 0;
 
