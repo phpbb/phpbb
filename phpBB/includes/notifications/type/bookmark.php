@@ -26,6 +26,13 @@ if (!defined('IN_PHPBB'))
 class phpbb_notifications_type_bookmark extends phpbb_notifications_type_post
 {
 	/**
+	* Email template to use to send notifications
+	*
+	* @var string
+	*/
+	public $email_template = 'notifications/bookmark';
+
+	/**
 	* Language key used to output the text
 	*
 	* @var string

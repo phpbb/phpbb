@@ -26,6 +26,13 @@ if (!defined('IN_PHPBB'))
 class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 {
 	/**
+	* Email template to use to send notifications
+	*
+	* @var string
+	*/
+	public $email_template = 'privmsg_notify';
+
+	/**
 	* Get the type of notification this is
 	* phpbb_notifications_type_
 	*/
@@ -136,6 +143,23 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	}
 
 	/**
+	* Get email template variables
+	*
+	* @return array
+	*/
+	public function get_email_template_variables()
+	{
+		$user_data = $this->service->get_user($this->get_data('from_user_id'));
+
+		return array(
+			'AUTHOR_NAME'				=> htmlspecialchars_decode($user_data['username']),
+			'SUBJECT'					=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
+
+			'U_VIEW_MESSAGE'			=> generate_board_url() . '/ucp.' . $this->php_ext . "?i=pm&mode=view&p={$this->item_id}",
+		);
+	}
+
+	/**
 	* Get the url to this item
 	*
 	* @return string URL
@@ -143,16 +167,6 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	public function get_url()
 	{
 		return append_sid($this->phpbb_root_path . 'ucp.' . $this->php_ext, "i=pm&amp;mode=view&amp;p={$this->item_id}");
-	}
-
-	/**
-	* Get the full url to this item
-	*
-	* @return string URL
-	*/
-	public function get_full_url()
-	{
-		return generate_board_url() . "/ucp.{$this->php_ext}?i=pm&mode=view&p={$this->item_id}";
 	}
 
 	/**
