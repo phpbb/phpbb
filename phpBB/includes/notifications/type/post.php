@@ -26,6 +26,13 @@ if (!defined('IN_PHPBB'))
 class phpbb_notifications_type_post extends phpbb_notifications_type_base
 {
 	/**
+	* Language key used to output the text
+	*
+	* @var string
+	*/
+	protected $language_key = 'NOTIFICATION_POST';
+
+	/**
 	* Get the type of notification this is
 	* phpbb_notifications_type_
 	*/
@@ -136,7 +143,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		}
 
 		return $this->phpbb_container->get('user')->lang(
-			'NOTIFICATION_POST',
+			$this->language_key,
 			$username,
 			censor_text($this->get_data('topic_title'))
 		);
@@ -161,7 +168,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		}
 
 		return $this->phpbb_container->get('user')->lang(
-			'NOTIFICATION_POST',
+			$this->language_key,
 			$username,
 			censor_text($this->get_data('topic_title'))
 		);

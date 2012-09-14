@@ -646,7 +646,7 @@ function approve_post($post_id_list, $id, $mode)
 			else
 			{
 				// Topic Notifications
-				$notifications->add_notifications('post', $post_data);
+				$notifications->add_notifications(array('quote', 'bookmark', 'post'), $post_data);
 			}
 		}
 

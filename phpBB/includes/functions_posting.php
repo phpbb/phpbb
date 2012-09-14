@@ -2230,20 +2230,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		switch ($mode)
 		{
 			case 'post' :
-				$notifications->add_notifications('topic', array_merge($data, array(
-					'post_username'		=> $username,
-				)));
-				$notifications->add_notifications('quote', array_merge($data, array(
+				$notifications->add_notifications(array('topic', 'quote'), array_merge($data, array(
 					'post_username'		=> $username,
 				)));
 			break;
 
 			case 'reply' :
 			case 'quote' :
-				$notifications->add_notifications('post', array_merge($data, array(
-					'post_username'		=> $username,
-				)));
-				$notifications->add_notifications('quote', array_merge($data, array(
+				$notifications->add_notifications(array('quote', 'bookmark', 'post'), array_merge($data, array(
 					'post_username'		=> $username,
 				)));
 			break;
@@ -2256,10 +2250,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					'post_username'		=> $username,
 					'topic_title'		=> $subject,
 				)));
-				$notifications->update_notifications('post', array_merge($data, array(
-					'post_username'		=> $username,
-				)));
-				$notifications->update_notifications('quote', array_merge($data, array(
+
+				$notifications->update_notifications(array('quote', 'bookmark', 'post'), array_merge($data, array(
 					'post_username'		=> $username,
 				)));
 			break;
