@@ -1229,7 +1229,7 @@ class acp_attachments
 					'TOTAL_FILES'		=> $num_files,
 					'TOTAL_SIZE'		=> get_formatted_filesize($total_size),
 
-					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $num_files, $attachments_per_page, $start),
+					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, 'start', $num_files, $attachments_per_page, $start),
 					'S_LIMIT_DAYS'		=> $s_limit_days,
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir)

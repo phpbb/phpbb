@@ -228,7 +228,7 @@ class mcp_notes
 
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
-			'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, 'start', $log_count, $config['topics_per_page'], $start),
 			'TOTAL_REPORTS'		=> $user->lang('LIST_REPORTS', (int) $log_count),
 
 			'RANK_TITLE'		=> $rank_title,

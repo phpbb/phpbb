@@ -298,7 +298,7 @@ class acp_inactive
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
-			'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $inactive_count, $per_page, $start),
+			'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, 'start', $inactive_count, $per_page, $start),
 			
 			'USERS_PER_PAGE'	=> $per_page,
 

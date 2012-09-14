@@ -174,7 +174,7 @@ class ucp_attachments
 		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);		
 		
 		$template->assign_vars(array(
-			'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $num_attachments, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, 'start', $num_attachments, $config['topics_per_page'], $start),
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 
 			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],

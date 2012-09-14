@@ -132,7 +132,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;forum_action=$action&amp;mode=$mode&amp;start=$start" . (($merge_select) ? $selected_ids : ''),
 
-		'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $forum_topics, $topics_per_page, $start),
+		'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, 'start', $forum_topics, $topics_per_page, $start),
 		'TOTAL_TOPICS'			=> $user->lang('VIEW_FORUM_TOPICS', (int) $forum_topics),
 	));
 
