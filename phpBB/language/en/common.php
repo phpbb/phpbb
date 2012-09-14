@@ -389,6 +389,7 @@ $lang = array_merge($lang, array(
 	'NOT_WATCHING_FORUM'		=> 'You are no longer subscribed to updates on this forum.',
 	'NOT_WATCHING_TOPIC'		=> 'You are no longer subscribed to this topic.',
 	'NOTIFICATIONS'				=> '[ Notifications ]',
+	'NOTIFICATION_BOOKMARK'		=> '%1$s replied to the topic "%2$s" you have bookmarked.',
 	'NOTIFICATION_PM'			=> '%1$s sent you a Private Message "%2$s".',
 	'NOTIFICATION_POST'			=> '%1$s replied to the topic "%2$s".',
 	'NOTIFICATION_QUOTE'		=> '%1$s quoted you in the post "%2$s".',

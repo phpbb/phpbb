@@ -18,14 +18,26 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Post tagging notifications class
-* This class handles notifications for tagging users in a post (ex: @EXreaction)
+* Post quoting notifications class
+* This class handles notifications for quoting users in a post
 *
 * @package notifications
 */
 class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 {
+	/**
+	* regular expression to match to find usernames
+	*
+	* @var string
+	*/
 	protected static $regular_expression_match = '#\[quote=&quot;(.+?)&quot;:#';
+
+	/**
+	* Language key used to output the text
+	*
+	* @var string
+	*/
+	protected $language_key = 'NOTIFICATION_QUOTE';
 
 	/**
 	* Get the type of notification this is
@@ -95,56 +107,6 @@ class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 		}
 
 		return $notify_users;
-	}
-
-	/**
-	* Get the HTML formatted title of this notification
-	*
-	* @return string
-	*/
-	public function get_formatted_title()
-	{
-		if ($this->get_data('post_username'))
-		{
-			$username = $this->get_data('post_username');
-		}
-		else
-		{
-			$user_data = $this->service->get_user($this->get_data('poster_id'));
-
-			$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
-		}
-
-		return $this->phpbb_container->get('user')->lang(
-			'NOTIFICATION_QUOTE',
-			$username,
-			censor_text($this->get_data('topic_title'))
-		);
-	}
-
-	/**
-	* Get the title of this notification
-	*
-	* @return string
-	*/
-	public function get_title()
-	{
-		if ($this->get_data('post_username'))
-		{
-			$username = $this->get_data('post_username');
-		}
-		else
-		{
-			$user_data = $this->service->get_user($this->get_data('poster_id'));
-
-			$username = $user_data['username'];
-		}
-
-		return $this->phpbb_container->get('user')->lang(
-			'NOTIFICATION_QUOTE',
-			$username,
-			censor_text($this->get_data('topic_title'))
-		);
 	}
 
 	/**

@@ -109,13 +109,23 @@ class phpbb_notifications_service
 	/**
 	* Mark notifications read
 	*
-	* @param string $item_type item type
+	* @param string|array $item_type Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
 	*/
 	public function mark_notifications_read($item_type, $item_id, $user_id, $time = false)
 	{
+		if (is_array($item_type))
+		{
+			foreach ($item_type as $type)
+			{
+				$this->mark_notifications_read($type, $item_id, $user_id, $time);
+			}
+
+			return;
+		}
+
 		$time = ($time) ?: time();
 
 		$this->get_item_type_class_name($item_type);
@@ -132,13 +142,23 @@ class phpbb_notifications_service
 	/**
 	* Mark notifications read from a parent identifier
 	*
-	* @param string $item_type item type
+	* @param string|array $item_type Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
 	*/
 	public function mark_notifications_read_by_parent($item_type, $item_parent_id, $user_id, $time = false)
 	{
+		if (is_array($item_type))
+		{
+			foreach ($item_type as $type)
+			{
+				$this->mark_notifications_read($type, $item_id, $user_id, $time);
+			}
+
+			return;
+		}
+
 		$time = ($time) ?: time();
 
 		$item_type_class_name = $this->get_item_type_class_name($item_type);
@@ -155,11 +175,21 @@ class phpbb_notifications_service
 	/**
 	* Add a notification
 	*
-	* @param string $item_type Type identifier
+	* @param string|array $item_type Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param array $data Data specific for this type that will be inserted
 	*/
 	public function add_notifications($item_type, $data)
 	{
+		if (is_array($item_type))
+		{
+			foreach ($item_type as $type)
+			{
+				$this->add_notifications($type, $data);
+			}
+
+			return;
+		}
+
 		$item_type_class_name = $this->get_item_type_class_name($item_type);
 
 		$item_id = $item_type_class_name::get_item_id($data);
@@ -173,12 +203,22 @@ class phpbb_notifications_service
 	/**
 	* Add a notification for specific users
 	*
-	* @param string $item_type Type identifier
+	* @param string|array $item_type Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param array $data Data specific for this type that will be inserted
 	* @param array $notify_users User list to notify
 	*/
 	public function add_notifications_for_users($item_type, $data, $notify_users)
 	{
+		if (is_array($item_type))
+		{
+			foreach ($item_type as $type)
+			{
+				$this->add_notifications($type, $data);
+			}
+
+			return;
+		}
+
 		$item_type_class_name = $this->get_item_type_class_name($item_type);
 
 		$item_id = $item_type_class_name::get_item_id($data);
@@ -255,11 +295,21 @@ class phpbb_notifications_service
 	/**
 	* Update a notification
 	*
-	* @param string $item_type Type identifier
+	* @param string|array $item_type Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param array $data Data specific for this type that will be updated
 	*/
 	public function update_notifications($item_type, $data)
 	{
+		if (is_array($item_type))
+		{
+			foreach ($item_type as $type)
+			{
+				$this->add_notifications($type, $data);
+			}
+
+			return;
+		}
+
 		$item_type_class_name = $this->get_item_type_class_name($item_type);
 
 		// Allow the notifications class to over-ride the update_notifications functionality
