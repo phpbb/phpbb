@@ -45,6 +45,17 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	}
 
 	/**
+	* Get the id of the parent
+	*
+	* @param array $pm The data from the pm
+	*/
+	public static function get_item_parent_id($pm)
+	{
+		// No parent
+		return 0;
+	}
+
+	/**
 	* Find the users who want to receive notifications
 	*
 	* @param ContainerBuilder $phpbb_container
@@ -164,8 +175,6 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	*/
 	public function create_insert_array($pm)
 	{
-		$this->item_id = $pm['msg_id'];
-
 		$this->set_data('from_user_id', $pm['from_user_id']);
 
 		$this->set_data('message_subject', $pm['message_subject']);

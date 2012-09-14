@@ -40,6 +40,7 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	* Indentification data
 	* item_type
 	* item_id
+	* item_parent_id // Parent item id (ex: for topic => forum_id, for post => topic_id, etc)
 	* user_id
 	* unread
 	*
@@ -146,33 +147,6 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	}
 
 	/**
-	* Mark this item read/unread
-	*
-	* @param bool $unread Unread (True/False) (Default: False)
-	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
-	* @return string
-	*/
-	protected function mark($unread = true, $return = false)
-	{
-		$where = array(
-			'item_type = ' . $this->db->sql_escape($this->item_type),
-			'item_id = ' . (int) $this->item_id,
-			'user_id = ' . (int) $this->user_id,
-		);
-		$where = implode(' AND ' . $where);
-
-		if ($return)
-		{
-			return $where;
-		}
-
-		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
-			SET unread = ' . (bool) $unread . '
-			WHERE ' . $where;
-		$this->db->sql_query($sql);
-	}
-
-	/**
 	* Function for preparing the data for insertion in an SQL query
 	* (The service handles insertion)
 	*
@@ -184,11 +158,14 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	{
 		// Defaults
 		$data = array_merge(array(
-			'item_type'		=> $this->get_item_type(),
-			'time'			=> time(),
-			'unread'		=> true,
+			'item_id'				=> static::get_item_id($type_data),
+			'item_type'	   			=> $this->get_item_type(),
+			'item_parent_id'		=> static::get_item_parent_id($type_data),
 
-			'data'			=> array(),
+			'time'					=> time(),
+			'unread'				=> true,
+
+			'data'					=> array(),
 		), $this->data);
 
 		$data['data'] = serialize($data['data']);
@@ -219,49 +196,8 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	}
 
 	/**
-	* Find the users who want to receive notifications (helper)
-	*
-	* @param ContainerBuilder $phpbb_container
-	* @param array $item_id The item_id to search for
-	*
-	* @return array
+	* -------------- Fall back functions -------------------
 	*/
-	protected static function _find_users_for_notification(ContainerBuilder $phpbb_container, $item_id)
-	{
-		$db = $phpbb_container->get('dbal.conn');
-
-		$rowset = array();
-
-		$sql = 'SELECT *
-			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . static::get_item_type() . "'
-				AND item_id = " . (int) $item_id;
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if (!isset($rowset[$row['user_id']]))
-			{
-				$rowset[$row['user_id']] = array();
-			}
-
-			$rowset[$row['user_id']][] = $row['method'];
-		}
-		$db->sql_freeresult($result);
-
-		return $rowset;
-	}
-
-	protected function _get_avatar($user_id)
-	{
-		$user = $this->service->get_user($user_id);
-
-		if (!function_exists('get_user_avatar'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
-		}
-
-		return get_user_avatar($user['user_avatar'], $user['user_avatar_type'], $user['user_avatar_width'], $user['user_avatar_height'], $user['username'], false, 'notifications-avatar');
-	}
 
 	/**
 	* Get the formatted title of this notification (fall-back)
@@ -305,5 +241,87 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	public static function load_special(ContainerBuilder $phpbb_container, $data, $notifications)
 	{
 		return;
+	}
+
+	/**
+	* -------------- Helper functions -------------------
+	*/
+
+	/**
+	* Find the users who want to receive notifications (helper)
+	*
+	* @param ContainerBuilder $phpbb_container
+	* @param array $item_id The item_id to search for
+	*
+	* @return array
+	*/
+	protected static function _find_users_for_notification(ContainerBuilder $phpbb_container, $item_id)
+	{
+		$db = $phpbb_container->get('dbal.conn');
+
+		$rowset = array();
+
+		$sql = 'SELECT *
+			FROM ' . USER_NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . static::get_item_type() . "'
+				AND item_id = " . (int) $item_id;
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!isset($rowset[$row['user_id']]))
+			{
+				$rowset[$row['user_id']] = array();
+			}
+
+			$rowset[$row['user_id']][] = $row['method'];
+		}
+		$db->sql_freeresult($result);
+
+		return $rowset;
+	}
+
+	/**
+	* Get avatar helper
+	*
+	* @param int $user_id
+	* @return string
+	*/
+	protected function _get_avatar($user_id)
+	{
+		$user = $this->service->get_user($user_id);
+
+		if (!function_exists('get_user_avatar'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
+		}
+
+		return get_user_avatar($user['user_avatar'], $user['user_avatar_type'], $user['user_avatar_width'], $user['user_avatar_height'], $user['username'], false, 'notifications-avatar');
+	}
+
+	/**
+	* Mark this item read/unread helper
+	*
+	* @param bool $unread Unread (True/False) (Default: False)
+	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
+	* @return string
+	*/
+	protected function mark($unread = true, $return = false)
+	{
+		$where = array(
+			'item_type = ' . $this->db->sql_escape($this->item_type),
+			'item_id = ' . (int) $this->item_id,
+			'user_id = ' . (int) $this->user_id,
+		);
+		$where = implode(' AND ' . $where);
+
+		if ($return)
+		{
+			return $where;
+		}
+
+		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
+			SET unread = ' . (bool) $unread . '
+			WHERE ' . $where;
+		$this->db->sql_query($sql);
 	}
 }
