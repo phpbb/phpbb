@@ -110,7 +110,6 @@ class phpbb_notifications_service
 	* Add a notification
 	*
 	* @param string $item_type Type identifier
-	* @param int $item_id Identifier within the type
 	* @param array $data Data specific for this type that will be inserted
 	*/
 	public function add_notifications($item_type, $data)
@@ -120,20 +119,38 @@ class phpbb_notifications_service
 		$item_id = $item_type_class_name::get_item_id($data);
 
 		// Update any existing notifications for this item
-		$this->update_notifications($item_type, $item_id, $data);
-
-		$notify_users = $user_ids = array();
-		$notification_objects = $notification_methods = array();
-		$new_rows = array();
+		$this->update_notifications($item_type, $data);
 
 		// find out which users want to receive this type of notification
 		$notify_users = $item_type_class_name::find_users_for_notification($this->phpbb_container, $data);
+
+		$this->add_notifications_for_users($item_type, $data, $notify_users);
+	}
+
+	/**
+	* Add a notification for specific users
+	*
+	* @param string $item_type Type identifier
+	* @param array $data Data specific for this type that will be inserted
+	* @param array $notify_users User list to notify
+	*/
+	public function add_notifications_for_users($item_type, $data, $notify_users)
+	{
+		$item_type_class_name = $this->get_item_type_class_name($item_type);
+
+		$item_id = $item_type_class_name::get_item_id($data);
+
+		$user_ids = array();
+		$notification_objects = $notification_methods = array();
+		$new_rows = array();
 
 		// Never send notifications to the anonymous user or the current user!
 		unset($notify_users[ANONYMOUS], $notify_users[$this->phpbb_container->get('user')->data['user_id']]);
 
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
+		// todo Users should not receive notifications from multiple events from the same item (ex: for a topic reply with a quote including your username)
+		//		Probably should be handled within each type?
 		$sql = 'SELECT user_id
 			FROM ' . NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
@@ -201,6 +218,16 @@ class phpbb_notifications_service
 	public function update_notifications($item_type, $data)
 	{
 		$item_type_class_name = $this->get_item_type_class_name($item_type);
+
+		// Allow the notifications class to over-ride the update_notifications functionality
+		if (method_exists($item_type_class_name, 'update_notifications'))
+		{
+			// Return False to over-ride the rest of the update
+			if ($item_type_class_name::update_notifications($this->phpbb_container, $data) === false)
+			{
+				return;
+			}
+		}
 
 		$item_id = $item_type_class_name::get_item_id($data);
 

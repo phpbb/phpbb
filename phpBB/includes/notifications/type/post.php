@@ -41,7 +41,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public static function get_item_id($post)
 	{
-		return $post['post_id'];
+		return (int) $post['post_id'];
 	}
 
 	/**
