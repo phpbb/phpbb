@@ -2225,19 +2225,19 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// Send Notifications
 	if ($post_approval)
 	{
-		$notifications = $phpbb_container->get('notifications');
+		$phpbb_notifications = $phpbb_container->get('notifications');
 
 		switch ($mode)
 		{
 			case 'post' :
-				$notifications->add_notifications(array('topic', 'quote'), array_merge($data, array(
+				$phpbb_notifications->add_notifications(array('topic', 'quote'), array_merge($data, array(
 					'post_username'		=> $username,
 				)));
 			break;
 
 			case 'reply' :
 			case 'quote' :
-				$notifications->add_notifications(array('quote', 'bookmark', 'post'), array_merge($data, array(
+				$phpbb_notifications->add_notifications(array('quote', 'bookmark', 'post'), array_merge($data, array(
 					'post_username'		=> $username,
 				)));
 			break;
@@ -2246,12 +2246,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			case 'edit_first_post' :
 			case 'edit' :
 			case 'edit_last_post' :
-				$notifications->update_notifications('topic', array_merge($data, array(
+				$phpbb_notifications->update_notifications('topic', array_merge($data, array(
 					'post_username'		=> $username,
 					'topic_title'		=> $subject,
 				)));
 
-				$notifications->update_notifications(array('quote', 'bookmark', 'post'), array_merge($data, array(
+				$phpbb_notifications->update_notifications(array('quote', 'bookmark', 'post'), array_merge($data, array(
 					'post_username'		=> $username,
 				)));
 			break;
