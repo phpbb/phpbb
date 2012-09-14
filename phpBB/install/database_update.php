@@ -1187,6 +1187,7 @@ function database_update_info()
 					'COLUMNS'			=> array(
 						'item_type'			=> array('VCHAR:25', ''),
 						'item_id'			=> array('UINT', 0),
+						'item_parent_id'	=> array('UINT', 0),
 						'user_id'			=> array('UINT', 0),
 						'unread'			=> array('BOOL', 1),
 						'time'				=> array('TIMESTAMP', 1),
@@ -1200,8 +1201,10 @@ function database_update_info()
 					'KEYS'				=> array(
 						'item_type'			=> array('INDEX', 'item_type'),
 						'item_id'			=> array('INDEX', 'item_id'),
+						'item_pid'			=> array('INDEX', 'item_parent_id'),
 						'user_id'			=> array('INDEX', 'user_id'),
 						'time'				=> array('INDEX', 'time'),
+						'unread'			=> array('INDEX', 'unread'),
 					),
 				),
 				USER_NOTIFICATIONS_TABLE	=> array(
