@@ -26,6 +26,13 @@ if (!defined('IN_PHPBB'))
 class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 {
 	/**
+	* Email template to use to send notifications
+	*
+	* @var string
+	*/
+	public $email_template = 'notifications/quote';
+
+	/**
 	* regular expression to match to find usernames
 	*
 	* @var string
@@ -160,5 +167,21 @@ class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 
 		// return true to continue with the update code in the notifications service (this will update the rest of the notifications)
 		return true;
+	}
+
+	/**
+	* Get email template variables
+	*
+	* @return array
+	*/
+	public function get_email_template_variables()
+	{
+		$user_data = $this->service->get_user($this->get_data('poster_id'));
+
+		return array_merge(parent::get_email_template_variables(), array(
+			'AUTHOR_NAME'		=> htmlspecialchars_decode($user_data['username']),
+
+			'U_QUOTED_POST'		=> generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
+		));
 	}
 }

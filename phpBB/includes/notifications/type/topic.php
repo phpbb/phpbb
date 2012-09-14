@@ -26,6 +26,13 @@ if (!defined('IN_PHPBB'))
 class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 {
 	/**
+	* Email template to use to send notifications
+	*
+	* @var string
+	*/
+	public $email_template = 'newtopic_notify';
+
+	/**
 	* Get the type of notification this is
 	* phpbb_notifications_type_
 	*/
@@ -170,6 +177,22 @@ class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 	}
 
 	/**
+	* Get email template variables
+	*
+	* @return array
+	*/
+	public function get_email_template_variables()
+	{
+		return array(
+			'FORUM_NAME'				=> htmlspecialchars_decode($this->get_data('forum_name')),
+			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
+
+			'U_FORUM'					=> generate_board_url() . "/viewforum.{$this->php_ext}?f={$this->item_parent_id}",
+			'U_STOP_WATCHING_FORUM'		=> generate_board_url() . "/viewforum.{$this->php_ext}?uid={$this->user_id}&f={$this->item_parent_id}&unwatch=forum",
+		);
+	}
+
+	/**
 	* Get the url to this item
 	*
 	* @return string URL
@@ -177,16 +200,6 @@ class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 	public function get_url()
 	{
 		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "f={$this->item_parent_id}&amp;t={$this->item_id}");
-	}
-
-	/**
-	* Get the full url to this item
-	*
-	* @return string URL
-	*/
-	public function get_full_url()
-	{
-		return generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->item_parent_id}&t={$this->item_id}";
 	}
 
 	/**
