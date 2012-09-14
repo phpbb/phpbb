@@ -35,13 +35,23 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	}
 
 	/**
-	* Get the id of the
+	* Get the id of the item
 	*
 	* @param array $post The data from the post
 	*/
 	public static function get_item_id($post)
 	{
 		return (int) $post['post_id'];
+	}
+
+	/**
+	* Get the id of the parent
+	*
+	* @param array $post The data from the post
+	*/
+	public static function get_item_parent_id($post)
+	{
+		return (int) $post['topic_id'];
 	}
 
 	/**
@@ -197,10 +207,6 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*/
 	public function create_insert_array($post)
 	{
-		$this->item_id = $post['post_id'];
-
-		$this->set_data('topic_id', $post['topic_id']);
-
 		$this->set_data('poster_id', $post['poster_id']);
 
 		$this->set_data('topic_title', $post['topic_title']);

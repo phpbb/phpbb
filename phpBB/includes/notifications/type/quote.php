@@ -183,8 +183,6 @@ class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 			$add_notifications[$user_id] = $notifications[$user_id];
 		}
 
-		var_dump($old_notifications, $notifications, $remove_notifications, $add_notifications);
-
 		// Add the necessary notifications
 		$service->add_notifications_for_users(self::get_item_type(), $post, $add_notifications);
 
