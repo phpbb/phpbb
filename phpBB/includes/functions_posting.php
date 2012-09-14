@@ -2259,7 +2259,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$notifications->update_notifications('post', array_merge($data, array(
 					'post_username'		=> $username,
 				)));
-				$notifications->add_notifications('quote', array_merge($data, array(
+				$notifications->update_notifications('quote', array_merge($data, array(
 					'post_username'		=> $username,
 				)));
 			break;
