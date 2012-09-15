@@ -27,8 +27,17 @@ $controller_resolver = $phpbb_container->get('controller.resolver');
 $kernel = $phpbb_container->get('kernel');
 $response = $kernel->handle($symfony_request);
 
-// We use output buffering because the send() method uses echo()
-// We store this into a variable for future reference if ever needed
+// Response objects recieve a message as the first argument to the constructor
+// The send() method echoes that message. We capture it using Output Buffering
+// and can use it for error handling. A controller should send a blank message
+// by default. Any non-empty string will result in a trigger error containing
+// the message. This allows controllers to send errors as a response instead
+// of using trigger_error() directly.
 ob_start();
 $response->send();
-$return = ob_get_clean();
+$error = ob_get_clean();
+
+if (!empty($error))
+{
+	trigger_error($error);
+}
