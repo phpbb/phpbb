@@ -1340,7 +1340,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			// Mark all topic notifications read for this user
 			$phpbb_notifications = $phpbb_container->get('notifications');
-			$phpbb_notifications->mark_notifications_read('topic', false, $user->data['user_id'], $post_time);
+			$phpbb_notifications->mark_notifications_read(array('topic', 'quote', 'bookmark', 'post', 'approve_topic', 'approve_post'), false, $user->data['user_id'], $post_time);
 
 			if ($config['load_db_lastread'] && $user->data['is_registered'])
 			{
@@ -1397,7 +1397,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 		// Mark topic notifications read for this user in this forum
 		$phpbb_notifications = $phpbb_container->get('notifications');
-		$phpbb_notifications->mark_notifications_read_by_parent('topic', $forum_id, $user->data['user_id'], $post_time);
+		$phpbb_notifications->mark_notifications_read_by_parent(array('topic', 'approve_topic'), $forum_id, $user->data['user_id'], $post_time);
 
 		// Mark all post/quote notifications read for this user in this forum
 		$topic_ids = array();
@@ -1411,7 +1411,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		$db->sql_freeresult($result);
 
-		$phpbb_notifications->mark_notifications_read_by_parent(array('quote', 'bookmark', 'post'), $topic_ids, $user->data['user_id'], $post_time);
+		$phpbb_notifications->mark_notifications_read_by_parent(array('quote', 'bookmark', 'post', 'approve_post'), $topic_ids, $user->data['user_id'], $post_time);
 
 		// Add 0 to forums array to mark global announcements correctly
 		// $forum_id[] = 0;
@@ -1512,7 +1512,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 		// Mark post notifications read for this user in this topic
 		$phpbb_notifications = $phpbb_container->get('notifications');
-		$phpbb_notifications->mark_notifications_read_by_parent(array('quote', 'bookmark', 'post'), $topic_id, $user->data['user_id'], $post_time);
+		$phpbb_notifications->mark_notifications_read(array('topic', 'approve_topic'), $topic_id, $user->data['user_id'], $post_time);
+		$phpbb_notifications->mark_notifications_read_by_parent(array('quote', 'bookmark', 'post', 'approve_post'), $topic_id, $user->data['user_id'], $post_time);
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{

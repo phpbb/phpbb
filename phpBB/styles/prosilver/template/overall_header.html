@@ -143,13 +143,13 @@
 						<ul style="list-style-type: none;">
 						<!-- BEGIN notifications -->
 							<li style="padding: 10px; width: 290px;<!-- IF notifications.UNREAD --> background-color: grey;<!-- ENDIF -->">
-								<a href="{notifications.URL}" style="text-decoration: none;">
+								<!-- IF notifications.URL --><a href="{notifications.URL}" style="text-decoration: none;"><!-- ENDIF -->
 									{notifications.AVATAR}
 									<div>
 										{notifications.FORMATTED_TITLE}<br />
 										{notifications.TIME}
 									</div>
-								</a>
+								<!-- IF notifications.URL --></a><!-- ENDIF -->
 							</li>
 				   			<!-- END notifications -->
 						</ul>

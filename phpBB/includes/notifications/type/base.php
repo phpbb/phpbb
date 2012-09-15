@@ -114,8 +114,7 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 		return array(
 			'AVATAR'			=> $this->get_avatar(),
 
-			'FORMATTED_TITLE'	=> $this->get_formatted_title(),
-			'TITLE'				=> $this->get_title(),
+			'FORMATTED_TITLE'	=> $this->get_title(),
 
 			'URL'				=> $this->get_url(),
 			'TIME'	   			=> $user->format_date($this->time),
@@ -200,16 +199,6 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	/**
 	* -------------- Fall back functions -------------------
 	*/
-
-	/**
-	* Get the formatted title of this notification (fall-back)
-	*
-	* @return string
-	*/
-	public function get_formatted_title()
-	{
-		return $this->get_title();
-	}
 
 	/**
 	* URL to unsubscribe to this notification (fall-back)

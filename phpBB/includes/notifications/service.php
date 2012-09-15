@@ -69,7 +69,10 @@ class phpbb_notifications_service
 		// Anonymous users and bots never receive notifications
 		if ($options['user_id'] == $user->data['user_id'] && ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_IGNORE))
 		{
-			return;
+			return array(
+				'notifications'		=> array(),
+				'unread_count'		=> 0,
+			);
 		}
 
 		$notifications = $user_ids = array();
@@ -273,8 +276,8 @@ class phpbb_notifications_service
 		$notification_objects = $notification_methods = array();
 		$new_rows = array();
 
-		// Never send notifications to the anonymous user or the current user!
-		unset($notify_users[ANONYMOUS], $notify_users[$this->phpbb_container->get('user')->data['user_id']]);
+		// Never send notifications to the anonymous user!
+		unset($notify_users[ANONYMOUS]);
 
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
@@ -457,7 +460,7 @@ class phpbb_notifications_service
 	{
 		if (!$safe)
 		{
-			$item_type = preg_replace('#[^a-z]#', '', $item_type);
+			$item_type = preg_replace('#[^a-z_]#', '', $item_type);
 		}
 
 		return 'phpbb_notifications_type_' . $item_type;
