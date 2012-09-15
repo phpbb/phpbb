@@ -597,44 +597,27 @@ function approve_post($post_id_list, $id, $mode)
 		sync('forum', 'forum_id', array_keys($forum_id_list), true, true);
 		unset($topic_id_list, $forum_id_list);
 
-		$messenger = new messenger();
+		$phpbb_notifications = $phpbb_container->get('notifications');
 
 		// Notify Poster?
 		if ($notify_poster)
 		{
+			// Forum Notifications
 			foreach ($post_info as $post_id => $post_data)
 			{
-				if ($post_data['poster_id'] == ANONYMOUS)
+				if ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id'])
 				{
-					continue;
+					$phpbb_notifications->add_notifications('approve_topic', $post_data);
 				}
-
-				$email_template = ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id']) ? 'topic_approved' : 'post_approved';
-
-				$messenger->template($email_template, $post_data['user_lang']);
-
-				$messenger->to($post_data['user_email'], $post_data['username']);
-				$messenger->im($post_data['user_jabber'], $post_data['username']);
-
-				$messenger->assign_vars(array(
-					'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
-					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
-					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])),
-
-					'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&e=0",
-					'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
-				);
-
-				$messenger->send($post_data['user_notify_type']);
+				else
+				{
+					$phpbb_notifications->add_notifications('approve_post', $post_data);
+				}
 			}
 		}
 
-		$messenger->save_queue();
-
 		// Send out normal user notifications
 		$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
-		$phpbb_notifications = $phpbb_container->get('notifications');
 
 		foreach ($post_info as $post_id => $post_data)
 		{
