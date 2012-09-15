@@ -183,8 +183,6 @@ class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 
 		return array_merge(parent::get_email_template_variables(), array(
 			'AUTHOR_NAME'		=> htmlspecialchars_decode($user_data['username']),
-
-			'U_QUOTED_POST'		=> generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
 		));
 	}
 }

@@ -79,11 +79,9 @@ class phpbb_notifications_type_disapprove_topic extends phpbb_notifications_type
 	*/
 	public function get_email_template_variables()
 	{
-		return array(
-			'TOPIC_TITLE'		=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
-
+		return array_merge(parent::get_email_template_variables(), array(
 			'REASON'			=> htmlspecialchars_decode($this->get_data('disapprove_reason')),
-		);
+		));
 	}
 
 	/**
@@ -97,8 +95,11 @@ class phpbb_notifications_type_disapprove_topic extends phpbb_notifications_type
 	public function create_insert_array($post)
 	{
 		$this->set_data('disapprove_reason', $post['disapprove_reason']);
-		$this->time = time();
 
-		return parent::create_insert_array($post);
+		$data = parent::create_insert_array($post);
+
+		$this->time = $data['time'] = time();
+
+		return $data;
 	}
 }

@@ -606,6 +606,9 @@ function approve_post($post_id_list, $id, $mode)
 		{
 			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
 			{
+				// Delete topic in queue notifications
+				$phpbb_notifications->delete_notifications(array('topic_in_queue'), $post_data['topic_id']);
+
 				// Forum Notifications
 				$phpbb_notifications->add_notifications('topic', $post_data);
 
@@ -617,6 +620,9 @@ function approve_post($post_id_list, $id, $mode)
 			}
 			else
 			{
+				// Delete post in queue notification
+				$phpbb_notifications->delete_notifications(array('post_in_queue'), $post_id);
+
 				// Topic Notifications
 				$phpbb_notifications->add_notifications(array('quote', 'bookmark', 'post'), $post_data);
 
@@ -847,13 +853,26 @@ function disapprove_post($post_id_list, $id, $mode)
 			}
 		}
 
+		// Handle notifications (topic/post in queue)
+		$phpbb_notifications = $phpbb_container->get('notifications');
+		foreach ($post_info as $post_id => $post_data)
+		{
+			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
+			{
+				$phpbb_notifications->delete_notifications(array('topic_in_queue'), $post_data['topic_id']);
+			}
+			else
+			{
+				$phpbb_notifications->delete_notifications(array('post_in_queue'), $post_id);
+			}
+		}
+
 		// Notify Poster?
 		if ($notify_poster)
 		{
 			$lang_reasons = array();
 
 			// Handle notifications
-			$phpbb_notifications = $phpbb_container->get('notifications');
 			foreach ($post_info as $post_id => $post_data)
 			{
 				$post_data['disapprove_reason'] = '';
