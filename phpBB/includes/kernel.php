@@ -85,31 +85,25 @@ class phpbb_kernel implements HttpKernelInterface
 	{
 		try
 		{
-			$response = false;
 			$controller_data = $this->resolver->getController($request);
-			if (isset($controller_data['service']) && $this->container->has($controller_data['service']))
+			if (!isset($controller_data['service']) || !$this->container->has($controller_data['service']))
 			{
-				$controller = $this->container->get($controller_data['service']);
-				$response = $controller->handle();
-			}
-			else if (isset($controller_data['class']) && class_exists($controller_data['class']))
-			{
-				$arguments = $this->resolver->getArguments();
-				$controller = new ReflectionClass($controller_data['class']);
-				$controller->newInstanceArgs($arguments);
-				$response = call_user_func(array($controller, 'handle'));
+				throw new RuntimeException('controller object not found');
 			}
 
-			if ($response === false)
+			$controller = $this->container->get($controller_data['service']);
+			if (!$controller instanceof phpbb_controller_interface)
 			{
-				trigger_error('controller object not found');
-			}
-			else if (!$response instanceof Response)
-			{
-				trigger_error('not a response');
+				throw new RuntimeException('controller type invalid');
 			}
 
-			return $reponse;
+			$response = $controller->handle();
+			if (!$response instanceof Response)
+			{
+				throw new RuntimeException('not a response');
+			}
+
+			return $response;
 		}
 		catch (RuntimeException $e)
 		{
