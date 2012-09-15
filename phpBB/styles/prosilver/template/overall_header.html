@@ -139,10 +139,10 @@
 				<li class="icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
 					<a href="#" title="{L_NOTIFICATIONS}" onClick="$('#notification_list').toggle();">{L_NOTIFICATIONS}</a>
-					<div id="notification_list" style="display: block; position: absolute; width: 330px; background-color: #FFFFFF; z-index: 1;">
+					<div id="notification_list" style="display: none; position: absolute; width: 330px; max-height: 450px; background-color: #FFFFFF; z-index: 1; overflow-y: scroll;">
 						<ul style="list-style-type: none;">
 						<!-- BEGIN notifications -->
-							<li style="padding: 10px; width: 310px;<!-- IF notifications.UNREAD --> background-color: grey;<!-- ENDIF -->">
+							<li style="padding: 10px; width: 290px;<!-- IF notifications.UNREAD --> background-color: grey;<!-- ENDIF -->">
 								<a href="{notifications.URL}" style="text-decoration: none;">
 									{notifications.AVATAR}
 									<div>
