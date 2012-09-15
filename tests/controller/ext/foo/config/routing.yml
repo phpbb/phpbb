@@ -1,0 +1,2 @@
+controller1:
+    service: foo.controller

@@ -49,15 +49,17 @@ class phpbb_controller_provider
 	/**
 	* Get a list of controllers and return it
 	*
+	* @param string $base_path Base path to prepend to file paths
 	* @return array|bool Array of controllers and handles or false if the 
 	* 					routing file does not exist
 	*/
-	public function find()
+	public function find($base_path = '')
 	{
 		$routes = array();
 
 		foreach ($this->routing_files as $routing_file)
 		{
+			$routing_file = "{$base_path}{$routing_file}";
 			if (!file_exists($routing_file))
 			{
 				continue;

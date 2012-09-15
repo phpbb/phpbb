@@ -55,25 +55,27 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	* @param phpbb_extension_manager $extension_manager Extension Manager object
 	* @param phpbb_cache_driver_interface $cache Cache object
 	* @param phpbb_user $user User Object
+	* @param string $base_path Base path to prepend to all paths
 	*/
-	public function __construct(phpbb_controller_route_provider $route_provider, phpbb_cache_driver_interface $cache, phpbb_user $user)
+	public function __construct(phpbb_controller_route_provider $route_provider, phpbb_cache_driver_interface $cache, phpbb_user $user, $base_path = '')
 	{
 		$this->provider = new phpbb_controller_provider($route_provider->find());
 		$this->cache = $cache;
 		$this->user = $user;
 
 		// The following method internally sets the "controllers" property
-		$this->load_controller_map();
+		$this->load_controller_map($base_path);
 	}
 
 	/**
 	* Load the map of controllers and access names into an array
 	*
+	* @param string $base_path Base path to prepend to all paths
 	* @return array
 	*/
-	public function load_controller_map()
+	public function load_controller_map($base_path = '')
 	{
-		$this->controllers = $this->provider->find();
+		$this->controllers = $this->provider->find($base_path);
 	}
 
 

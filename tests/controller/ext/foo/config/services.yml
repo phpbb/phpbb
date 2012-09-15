@@ -1,0 +1,6 @@
+services:
+    foo.controller:
+        class: phpbb_ext_foo_controller
+        arguments:
+            - @user
+            - @template
