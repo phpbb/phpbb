@@ -262,7 +262,7 @@ class phpbb_notifications_service
 		{
 			foreach ($item_type as $type)
 			{
-				$this->add_notifications($type, $data);
+				$this->add_notifications_for_users($type, $data, $notify_users);
 			}
 
 			return;
@@ -353,7 +353,7 @@ class phpbb_notifications_service
 		{
 			foreach ($item_type as $type)
 			{
-				$this->add_notifications($type, $data);
+				$this->update_notifications($type, $data);
 			}
 
 			return;
@@ -386,12 +386,22 @@ class phpbb_notifications_service
 	/**
 	* Delete a notification
 	*
-	* @param string $item_type Type identifier
+	* @param string|array $item_type Type identifier or array of item types (only acceptable if the $item_id is identical for the specified types)
 	* @param int|array $item_id Identifier within the type (or array of ids)
 	* @param array $data Data specific for this type that will be updated
 	*/
 	public function delete_notifications($item_type, $item_id)
 	{
+		if (is_array($item_type))
+		{
+			foreach ($item_type as $type)
+			{
+				$this->delete_notifications($type, $item_id);
+			}
+
+			return;
+		}
+
 		$this->get_item_type_class_name($item_type);
 
 		$sql = 'DELETE FROM ' . NOTIFICATIONS_TABLE . "
@@ -400,6 +410,7 @@ class phpbb_notifications_service
 		$this->db->sql_query($sql);
 	}
 
+/*
 	public function add_subscription($item_type, $item_id, $method = '')
 	{
 		$this->get_item_type_class_name($item_type);
@@ -413,6 +424,7 @@ class phpbb_notifications_service
 			));
 		$this->db->sql_query($sql);
 	}
+*/
 
 	/**
 	* Load user helper
