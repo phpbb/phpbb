@@ -83,21 +83,6 @@ class phpbb_notifications_type_approve_post extends phpbb_notifications_type_pos
 	}
 
 	/**
-	* Get email template variables
-	*
-	* @return array
-	*/
-	public function get_email_template_variables()
-	{
-		return array(
-			'POST_SUBJECT'				=> htmlspecialchars_decode(censor_text($this->get_data('post_subject'))),
-
-			'U_VIEW_POST'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
-			'U_VIEW_TOPIC'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
-		);
-	}
-
-	/**
 	* Function for preparing the data for insertion in an SQL query
 	* (The service handles insertion)
 	*
@@ -109,8 +94,10 @@ class phpbb_notifications_type_approve_post extends phpbb_notifications_type_pos
 	{
 		$this->set_data('post_subject', $post['post_subject']);
 
-		$this->time = time();
+		$data = parent::create_insert_array($post);
 
-		return parent::create_insert_array($post);
+		$this->time = $data['time'] = time();
+
+		return $data;
 	}
 }

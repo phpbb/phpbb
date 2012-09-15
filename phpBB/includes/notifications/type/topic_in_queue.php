@@ -18,26 +18,26 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Post notifications class
-* This class handles notifications for replies to a topic
+* Topic notifications class
+* This class handles notifications for new topics
 *
 * @package notifications
 */
-class phpbb_notifications_type_approve_topic extends phpbb_notifications_type_topic
+class phpbb_notifications_type_topic_in_queue extends phpbb_notifications_type_topic
 {
 	/**
 	* Email template to use to send notifications
 	*
 	* @var string
 	*/
-	public $email_template = 'topic_approved';
+	public $email_template = 'notifications/topic_in_queue';
 
 	/**
 	* Language key used to output the text
 	*
 	* @var string
 	*/
-	protected $language_key = 'NOTIFICATION_TOPIC_APPROVED';
+	protected $language_key = 'NOTIFICATION_TOPIC_IN_QUEUE';
 
 	/**
 	* Get the type of notification this is
@@ -45,38 +45,34 @@ class phpbb_notifications_type_approve_topic extends phpbb_notifications_type_to
 	*/
 	public static function get_item_type()
 	{
-		return 'approve_topic';
+		return 'topic_in_queue';
 	}
 
 	/**
 	* Find the users who want to receive notifications
 	*
 	* @param ContainerBuilder $phpbb_container
-	* @param array $post Data from
+	* @param array $topic Data from the topic
 	*
 	* @return array
 	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post)
+	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $topic)
 	{
-		$users = array();
-
 		/* todo
 		* find what type of notification they'd like to receive
 		*/
-		$users[$post['poster_id']] = array('');
+		$auth_approve = $phpbb_container->get('auth')->acl_get_list(false, 'm_approve', $topic['forum_id']);
 
-		$auth_read = $phpbb_container->get('auth')->acl_get_list(array_keys($users), 'f_read', $post['forum_id']);
-
-		if (empty($auth_read))
+		if (empty($auth_approve))
 		{
 			return array();
 		}
 
 		$notify_users = array();
 
-		foreach ($auth_read[$post['forum_id']]['f_read'] as $user_id)
+		foreach ($auth_approve[$topic['forum_id']]['m_approve'] as $user_id)
 		{
-			$notify_users[$user_id] = $users[$user_id];
+			$notify_users[$user_id] = array('');
 		}
 
 		return $notify_users;
@@ -86,11 +82,11 @@ class phpbb_notifications_type_approve_topic extends phpbb_notifications_type_to
 	* Function for preparing the data for insertion in an SQL query
 	* (The service handles insertion)
 	*
-	* @param array $post Data from submit_post
+	* @param array $topic Data from submit_post
 	*
 	* @return array Array of data ready to be inserted into the database
 	*/
-	public function create_insert_array($post)
+	public function create_insert_array($topic)
 	{
 		$data = parent::create_insert_array($post);
 

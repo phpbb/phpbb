@@ -2223,10 +2223,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Send Notifications
+	$phpbb_notifications = $phpbb_container->get('notifications');
 	if ($post_approval)
 	{
-		$phpbb_notifications = $phpbb_container->get('notifications');
-
 		switch ($mode)
 		{
 			case 'post' :
@@ -2258,6 +2257,34 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					'post_username'		=> $username,
 					'post_text'			=> $data['message'],
 				)));
+			break;
+		}
+	}
+	else
+	{
+		switch ($mode)
+		{
+			case 'post' :
+				$phpbb_notifications->add_notifications(array('topic_in_queue'), array_merge($data, array(
+					'post_username'		=> $username,
+					'poster_id'			=> (int) $user->data['user_id'],
+				)));
+			break;
+
+			case 'reply' :
+			case 'quote' :
+				$phpbb_notifications->add_notifications(array('post_in_queue'), array_merge($data, array(
+					'post_username'		=> $username,
+					'poster_id'			=> (int) $user->data['user_id'],
+				)));
+			break;
+
+			case 'edit_topic' :
+			case 'edit_first_post' :
+			case 'edit' :
+			case 'edit_last_post' :
+				$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
+				$phpbb_notifications->delete_notifications(array('quote', 'bookmark', 'post'), $data['post_id']);
 			break;
 		}
 	}

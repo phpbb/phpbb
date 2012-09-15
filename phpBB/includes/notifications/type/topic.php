@@ -72,7 +72,7 @@ class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 	* Find the users who want to receive notifications
 	*
 	* @param ContainerBuilder $phpbb_container
-	* @param array $post Data from
+	* @param array $topic Data from the topic
 	*
 	* @return array
 	*/
@@ -171,6 +171,8 @@ class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 			'FORUM_NAME'				=> htmlspecialchars_decode($this->get_data('forum_name')),
 			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
 
+			'U_TOPIC'					=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->item_parent_id}&t={$this->item_id}",
+			'U_VIEW_TOPIC'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->item_parent_id}&t={$this->item_id}",
 			'U_FORUM'					=> generate_board_url() . "/viewforum.{$this->php_ext}?f={$this->item_parent_id}",
 			'U_STOP_WATCHING_FORUM'		=> generate_board_url() . "/viewforum.{$this->php_ext}?uid={$this->user_id}&f={$this->item_parent_id}&unwatch=forum",
 		);
