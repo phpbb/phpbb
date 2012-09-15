@@ -121,25 +121,13 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	*
 	* @return string
 	*/
-	public function get_formatted_title()
+	public function get_title()
 	{
 		$user_data = $this->service->get_user($this->get_data('from_user_id'));
 
 		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 
 		return $this->phpbb_container->get('user')->lang('NOTIFICATION_PM', $username, $this->get_data('message_subject'));
-	}
-
-	/**
-	* Get the plain text title of this notification
-	*
-	* @return string
-	*/
-	public function get_title()
-	{
-		$user_data = $this->service->get_user($this->get_data('from_user_id'));
-
-		return $this->phpbb_container->get('user')->lang('NOTIFICATION_PM', $user_data['username'], $this->get_data('message_subject'));
 	}
 
 	/**
