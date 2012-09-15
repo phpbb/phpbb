@@ -2085,7 +2085,7 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 
 	$on_page = floor($start_item / $per_page) + 1;
 	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
-	
+
 	if ($reverse_count)
 	{
 		$start_page = ($total_pages > 5) ? $total_pages - 4 : 1;
@@ -2094,9 +2094,9 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	else
 	{
 		// What we're doing here is calculating what the "start" and "end" pages should be. We
-		// do this by assuming pagination is "centered" around the currently active page with 
-		// the three previous and three next page links displayed. Anything more than that and 
-		// we display the ellipsis, likewise anything less. 
+		// do this by assuming pagination is "centered" around the currently active page with
+		// the three previous and three next page links displayed. Anything more than that and
+		// we display the ellipsis, likewise anything less.
 		//
 		// $start_page is the page at which we start creating the list. When we have five or less
 		// pages we start at page 1 since there will be no ellipsis displayed. Anymore than that
@@ -2115,18 +2115,18 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	if ($on_page != $total_pages)
 	{
 		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> '', 
+			'PAGE_NUMBER'	=> '',
 			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page),
-			'S_IS_CURRENT'	=> false, 
-			'S_IS_PREV'		=> false,  
-			'S_IS_NEXT'		=> true, 
-			'S_IS_ELLIPSIS'	=> false, 
+			'S_IS_CURRENT'	=> false,
+			'S_IS_PREV'		=> false,
+			'S_IS_NEXT'		=> true,
+			'S_IS_ELLIPSIS'	=> false,
 		));
-	}	
+	}
 
 	// This do...while exists purely to negate the need for start and end assign_block_vars, i.e.
-	// to display the first and last page in the list plus any ellipsis. We use this loop to jump 
-	// around a little within the list depending on where we're starting (and ending). 
+	// to display the first and last page in the list plus any ellipsis. We use this loop to jump
+	// around a little within the list depending on where we're starting (and ending).
 	$at_page = 1;
 	do
 	{
@@ -2137,17 +2137,17 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 		// of those points and of course do we even need to display it, i.e. is the list starting
 		// on at least page 3 and ending three pages before the final item.
 		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> $at_page,  
+			'PAGE_NUMBER'	=> $at_page,
 			'PAGE_URL'		=> $page_url,
-			'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page), 
-			'S_IS_NEXT'		=> false, 
-			'S_IS_PREV'		=> false, 
-			'S_IS_ELLIPSIS'	=> ($at_page == 2 && $start_page > 2) || ($at_page == $total_pages - 1 && $end_page < $total_pages - 1), 
+			'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page),
+			'S_IS_NEXT'		=> false,
+			'S_IS_PREV'		=> false,
+			'S_IS_ELLIPSIS'	=> ($at_page == 2 && $start_page > 2) || ($at_page == $total_pages - 1 && $end_page < $total_pages - 1),
 		));
 
-		// We may need to jump around in the list depending on whether we have or need to display 
+		// We may need to jump around in the list depending on whether we have or need to display
 		// the ellipsis. Are we on page 2 and are we more than one page away from the start
-		// of the list? Yes? Then we jump to the start of the list. Likewise are we at the end of 
+		// of the list? Yes? Then we jump to the start of the list. Likewise are we at the end of
 		// the list and are there more than two pages left in total? Yes? Then jump to the penultimate
 		// page (so we can display the ellipsis next pass). Else, increment the counter and keep
 		// going
@@ -2169,18 +2169,18 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	if ($on_page != 1)
 	{
 		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> '', 
+			'PAGE_NUMBER'	=> '',
 			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page),
-			'S_IS_CURRENT'	=> false, 
-			'S_IS_PREV'		=> true, 
-			'S_IS_NEXT'		=> false, 
-			'S_IS_ELLIPSIS'	=> false, 
+			'S_IS_CURRENT'	=> false,
+			'S_IS_PREV'		=> true,
+			'S_IS_NEXT'		=> false,
+			'S_IS_ELLIPSIS'	=> false,
 		));
 	}
 }
 
 /**
-* Return current page 
+* Return current page
 * This function also sets certain specific template variables
 *
 * @param object $template the template object
@@ -2200,9 +2200,9 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 
 	$template->assign_vars(array(
 		'PER_PAGE'		=> $per_page,
-		'ON_PAGE'		=> $on_page, 
-		
-		'A_BASE_URL'	=> addslashes($base_url), 
+		'ON_PAGE'		=> $on_page,
+
+		'A_BASE_URL'	=> addslashes($base_url),
 	));
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
@@ -3377,7 +3377,7 @@ function parse_cfg_file($filename, $lines = false)
 
 		$parsed_items[$key] = $value;
 	}
-	
+
 	if (isset($parsed_items['parent']) && isset($parsed_items['name']) && $parsed_items['parent'] == $parsed_items['name'])
 	{
 		unset($parsed_items['parent']);
@@ -4994,6 +4994,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> $user->lang['FORUM_INDEX'],
+		'L_SITE_HOME'		=> ($config['site_home_text'] !== '') ? $config['site_home_text'] : $user->lang['HOME'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
@@ -5004,6 +5005,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
+		'U_HOME'				=> $config['site_home_url'],
 		'U_SEARCH'				=> append_sid("{$phpbb_root_path}search.$phpEx"),
 		'U_REGISTER'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
 		'U_PROFILE'				=> append_sid("{$phpbb_root_path}ucp.$phpEx"),
