@@ -4935,7 +4935,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> $user->lang['FORUM_INDEX'],
-		'L_HOME'			=> (!empty($config['site_home_text'])) ? $config['site_home_text'] : $user->lang['HOME'],
+		'L_SITE_HOME'		=> ($config['site_home_text'] !== '') ? $config['site_home_text'] : $user->lang['HOME'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
