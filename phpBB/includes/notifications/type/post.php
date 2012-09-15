@@ -167,10 +167,13 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	public function get_email_template_variables()
 	{
 		return array(
+			'POST_SUBJECT'				=> htmlspecialchars_decode(censor_text($this->get_data('post_subject'))),
 			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
 
+			'U_VIEW_POST'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
 			'U_NEWEST_POST'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}&view=unread#unread",
 			'U_TOPIC'					=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
+			'U_VIEW_TOPIC'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
 			'U_FORUM'					=> generate_board_url() . "/viewforum.{$this->php_ext}?f={$this->get_data('forum_id')}",
 			'U_STOP_WATCHING_TOPIC'		=> generate_board_url() . "/viewtopic.{$this->php_ext}?uid={$this->user_id}&f={$this->get_data('forum_id')}&t={$this->item_parent_id}&unwatch=topic",
 		);
@@ -209,6 +212,8 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		$this->set_data('poster_id', $post['poster_id']);
 
 		$this->set_data('topic_title', $post['topic_title']);
+
+		$this->set_data('post_subject', $post['post_subject']);
 
 		$this->set_data('post_username', (($post['post_username'] != $this->phpbb_container->get('user')->data['username']) ? $post['post_username'] : ''));
 
