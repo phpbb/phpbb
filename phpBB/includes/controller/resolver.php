@@ -78,7 +78,6 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 		$this->controllers = $this->provider->find($base_path);
 	}
 
-
 	/**
 	* Load a controller class name, without error handling
 	*
