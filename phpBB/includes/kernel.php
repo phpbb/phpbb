@@ -85,13 +85,14 @@ class phpbb_kernel implements HttpKernelInterface
 	{
 		try
 		{
+			$response = false;
 			$controller_data = $this->resolver->getController($request);
-			if (isset($controller_data['service']))
+			if (isset($controller_data['service']) && $this->container->has($controller_data['service']))
 			{
 				$controller = $this->container->get($controller_data['service']);
 				$response = $controller->handle();
 			}
-			else if (isset($controller_data['class']))
+			else if (isset($controller_data['class']) && class_exists($controller_data['class']))
 			{
 				$arguments = $this->resolver->getArguments();
 				$controller = new ReflectionClass($controller_data['class']);
@@ -99,10 +100,16 @@ class phpbb_kernel implements HttpKernelInterface
 				$response = call_user_func(array($controller, 'handle'));
 			}
 
-			if (!$response instanceof Response)
+			if ($response === false)
 			{
-				trigger_error($this->user->lang('not a response'));
+				trigger_error('controller object not found');
 			}
+			else if (!$response instanceof Response)
+			{
+				trigger_error('not a response');
+			}
+
+			return $reponse;
 		}
 		catch (RuntimeException $e)
 		{
@@ -113,7 +120,5 @@ class phpbb_kernel implements HttpKernelInterface
 
 			throw new RuntimeException($e);
 		}
-
-		return $response;
 	}
 }
