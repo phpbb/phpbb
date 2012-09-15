@@ -66,6 +66,12 @@ class phpbb_notifications_service
 			'all_unread'	=> true,
 		), $options);
 
+		// Anonymous users and bots never receive notifications
+		if ($options['user_id'] == $user->data['user_id'] && ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_IGNORE))
+		{
+			return;
+		}
+
 		$notifications = $user_ids = array();
 		$load_special = array();
 
@@ -94,7 +100,7 @@ class phpbb_notifications_service
 		$this->db->sql_freeresult($result);
 
 		// Get all unread notifications
-		if ($options['all_unread'])
+		if ($options['all_unread'] && !empty($rowset))
 		{
 			$sql = 'SELECT *
 				FROM ' . NOTIFICATIONS_TABLE . '
