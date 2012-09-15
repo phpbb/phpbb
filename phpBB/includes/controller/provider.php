@@ -17,6 +17,9 @@ if (!defined('IN_PHPBB'))
 
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Loader\YamlFileLoader;
+use Symfony\Component\Config\FileLocator;
 
 /**
 * Controller interface
@@ -28,22 +31,22 @@ class phpbb_controller_provider
 	* YAML file(s) containing route information
 	* @var array
 	*/
-	protected $routing_files;
+	protected $routing_paths;
 
 	/**
 	* Construct method
 	*
-	* @param mixed $routing_file String or array of strings containing paths
+	* @param mixed $routing_paths String or array of strings containing paths
 	*							to YAML files holding route information
 	*/
-	public function __construct($routing_file)
+	public function __construct($routing_paths)
 	{
-		if (!is_array($routing_file))
+		if (!is_array($routing_paths))
 		{
-			$routing_file = array($routing_file);
+			$routing_paths = array($routing_paths);
 		}
 
-		$this->routing_files = $routing_file;		
+		$this->routing_paths = $routing_paths;		
 	}
 
 	/**
@@ -53,21 +56,9 @@ class phpbb_controller_provider
 	* @return array|bool Array of controllers and handles or false if the 
 	* 					routing file does not exist
 	*/
-	public function find($base_path = '')
+	public function find()
 	{
-		$routes = array();
-
-		foreach ($this->routing_files as $routing_file)
-		{
-			$routing_file = "{$base_path}{$routing_file}";
-			if (!file_exists($routing_file))
-			{
-				continue;
-			}
-
-			$routes = array_merge($routes, Yaml::parse($routing_file));
-		}
-
-		return $routes;
+		$loader = new YamlFileLoader(new FileLocator($this->routing_paths));
+		return $loader->load('routing.yml');
 	}
 }

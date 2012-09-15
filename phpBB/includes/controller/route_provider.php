@@ -38,10 +38,10 @@ class phpbb_controller_route_provider
 
 	public function find()
 	{
-		return array_keys($this->finder
+		return array_map('dirname', array_keys($this->finder
 			->directory('config')
 			->prefix('routing')
 			->suffix('yml')
-			->find());
+			->find()));
 	}
 }

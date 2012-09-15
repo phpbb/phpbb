@@ -85,23 +85,34 @@ class phpbb_kernel implements HttpKernelInterface
 	{
 		try
 		{
-			$controller_data = $this->resolver->getController($request);
-			if (!isset($controller_data['service']))
+			$service = $method = false;
+			$controller = $this->resolver->getController($request);
+
+			if (is_array($controller))
 			{
-				throw new RuntimeException($this->user->lang('CONTROLLER_SERVICE_NOT_GIVEN', $request->query->get('controller')));
+				list($service, $method) = $controller;
 			}
-			else if (!$this->container->has($controller_data['service']))
+			else
 			{
-				throw new RuntimeException($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $controller_data['service']));
+				$service = $controller;
 			}
 
-			$controller = $this->container->get($controller_data['service']);
+			if (!$this->container->has($service))
+			{
+				throw new RuntimeException($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $service));
+			}
+
+			$controller = $this->container->get($service);
+
 			if (!$controller instanceof phpbb_controller_interface)
 			{
 				throw new RuntimeException($this->user->lang('CONTROLLER_OBJECT_TYPE_INVALID', gettype($controller)));
 			}
 
-			$response = $controller->handle();
+			$controller = array($controller, $method ?: 'handle');
+			$arguments = $this->resolver->getArguments($request, $controller);
+			$response = call_user_func_array($controller, $arguments);
+
 			if (!$response instanceof Response)
 			{
 				throw new RuntimeException($this->user->lang('CONTROLLER_RETURN_TYPE_INVALID', gettype($controller)));

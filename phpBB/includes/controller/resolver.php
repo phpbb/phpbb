@@ -18,7 +18,8 @@ if (!defined('IN_PHPBB'))
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
 /**
 * Controller manager class
 * @package phpBB3
@@ -87,26 +88,36 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	*/
 	public function getController(Request $request)
 	{
-		$controller = $request->query->get('controller');
+		$context = new RequestContext();
+		$context->fromRequest($request);
 
-		if (!$controller)
+		$matcher = new UrlMatcher($this->controllers, $context);
+		$request->attributes->add($matcher->match($request->getPathInfo()));
+
+		$controller_service = $request->attributes->get('_controller');
+		$controller_name = $request->attributes->get('_route');
+
+		if (!$controller_service)
 		{
 			throw new RuntimeException($this->user->lang['CONTROLLER_NOT_SPECIFIED']);
 		}
 
-		if (!isset($this->controllers[$controller]))
+		// Allow individual controller methods to be used as controllers
+		// Otherwise, return the service name
+		if (stripos($controller_service, ':') !== false)
 		{
-			throw new RuntimeException($this->user->lang('CONTROLLER_NOT_FOUND', $controller));
+			list($service, $method) = explode(':', $controller_service);
+			return array($service, $method);
 		}
 
-		return isset($this->controllers[$controller]) ? $this->controllers[$controller] : $controller;
+		return $controller_service;
 	}
 
 	/**
-	* Arguments/Dependencies are defined in the controller's service
-	* definition in the extension's config/services.yml file. As such, we do
-	* not use this method. It is included because it is required by the
-	* interface.
+	* Dependencies should be specified in the service definition and can be
+	* then accessed in __construct(). Arguments are sent through the URL path
+	* and should match the parameters of the method you are using as your
+	* controller.
 	*
 	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
 	* @param string $controller Controller class name
@@ -114,6 +125,30 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	*/
 	public function getArguments(Request $request, $controller)
 	{
-		return false;
+		// At this point, $controller contains the object and method name
+		// If no method name was specified, it defaults to handle()
+		list($object, $method) = $controller;
+		$mirror = new ReflectionMethod($object, $method);
+
+		$arguments = array();
+		$parameters = $mirror->getParameters();
+		$attributes = $request->attributes->all();
+		foreach ($parameters as $param)
+		{
+			if (array_key_exists($param->name, $attributes))
+			{
+				$arguments[] = $attributes[$param->name];
+			}
+			else if ($param->isDefaultValueAvailable())
+			{
+				$arguments[] = $param->getDefaultValue();
+			}
+			else
+			{
+				throw new RuntimeException(/** @todo Language string complaining that there isn't a value for a required argument. */);
+			}
+		}
+
+		return $arguments;
 	}
 }

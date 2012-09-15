@@ -1,6 +1,7 @@
 # Structure:
 #
 # foo_controller:
-#     service: service.name
+#     pattern: /foo
+#     defaults: { controller: foo_sevice:method }
 #
 # The above will be accessed via app.php?controller=foo_controller
