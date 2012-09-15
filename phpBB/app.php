@@ -9,7 +9,6 @@
 
 /**
 */
-use Symfony\Component\HttpFoundation\Request;
 
 /**
 * @ignore
@@ -23,10 +22,6 @@ include($phpbb_root_path . 'common.' . $phpEx);
 $user->session_begin();
 $auth->acl($user->data);
 $user->setup('app');
-
-$request->enable_super_globals();
-$symfony_request = Request::createFromGlobals();
-$request->disable_super_globals();
 
 $controller_resolver = $phpbb_container->get('controller.resolver');
 $kernel = $phpbb_container->get('kernel');
