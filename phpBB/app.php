@@ -22,7 +22,7 @@ include($phpbb_root_path . 'common.' . $phpEx);
 // Start session management
 $user->session_begin();
 $auth->acl($user->data);
-$user->setup();
+$user->setup('app');
 
 $request->enable_super_globals();
 $symfony_request = Request::createFromGlobals();

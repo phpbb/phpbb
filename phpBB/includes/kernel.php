@@ -86,21 +86,25 @@ class phpbb_kernel implements HttpKernelInterface
 		try
 		{
 			$controller_data = $this->resolver->getController($request);
-			if (!isset($controller_data['service']) || !$this->container->has($controller_data['service']))
+			if (!isset($controller_data['service']))
 			{
-				throw new RuntimeException('controller object not found');
+				throw new RuntimeException($this->user->lang('CONTROLLER_SERVICE_NOT_GIVEN', $request->query->get('controller')));
+			}
+			else if (!$this->container->has($controller_data['service']))
+			{
+				throw new RuntimeException($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $controller_data['service']));
 			}
 
 			$controller = $this->container->get($controller_data['service']);
 			if (!$controller instanceof phpbb_controller_interface)
 			{
-				throw new RuntimeException('controller type invalid');
+				throw new RuntimeException($this->user->lang('CONTROLLER_OBJECT_TYPE_INVALID', gettype($controller)));
 			}
 
 			$response = $controller->handle();
 			if (!$response instanceof Response)
 			{
-				throw new RuntimeException('not a response');
+				throw new RuntimeException($this->user->lang('CONTROLLER_RETURN_TYPE_INVALID', gettype($controller)));
 			}
 
 			return $response;

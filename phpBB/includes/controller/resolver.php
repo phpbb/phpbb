@@ -92,19 +92,22 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 
 		if (!$controller)
 		{
-			throw new RuntimeException('no controller specified');
+			throw new RuntimeException($this->user->lang['CONTROLLER_NOT_SPECIFIED']);
 		}
 
 		if (!isset($this->controllers[$controller]))
 		{
-			throw new RuntimeException('controller <strong>' . $controller . '</strong> not found');
+			throw new RuntimeException($this->user->lang('CONTROLLER_NOT_FOUND', $controller));
 		}
 
 		return isset($this->controllers[$controller]) ? $this->controllers[$controller] : $controller;
 	}
 
 	/**
-	* Get an array of values to pass to the controller arguments
+	* Arguments/Dependencies are defined in the controller's service
+	* definition in the extension's config/services.yml file. As such, we do
+	* not use this method. It is included because it is required by the
+	* interface.
 	*
 	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
 	* @param string $controller Controller class name
@@ -112,29 +115,6 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	*/
 	public function getArguments(Request $request, $controller)
 	{
-		$mirror = new ReflectionObject($controller);
-		$query = $request->query->all();
-		$arguments = array();
-		foreach ($mirror->getParameters() as $param)
-		{
-			if (array_key_exists($param->name, $query))
-			{
-				$arguments[] = $query[$param->name];
-			}
-			else if ($param->getClass() && $param->getClass()->isInstance($request))
-			{
-				$arguments[] = $request;
-			}
-			else if ($param->isDefaultValueAvailable())
-			{
-				$arguments = $param->getDefaultValue();
-			}
-			else
-			{
-				throw new RuntimeException('controller <strong>' . $controller . '</strong> cannot find value for required argument <strong>' . $param->name . '</strong>.');
-			}
-		}
-
-		return $arguments;
+		return false;
 	}
 }
