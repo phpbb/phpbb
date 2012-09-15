@@ -53,11 +53,11 @@ class phpbb_kernel implements HttpKernelInterface
 	protected $user;
 
 	/**
-     * Constructor
-     *
-     * @param EventDispatcherInterface $dispatcher An EventDispatcherInterface instance
-     * @param ControllerResolverInterface $resolver   A ControllerResolverInterface instance
-     */
+	* Constructor
+	*
+	* @param EventDispatcherInterface $dispatcher An EventDispatcherInterface instance
+	* @param ControllerResolverInterface $resolver   A ControllerResolverInterface instance
+	*/
     public function __construct(EventDispatcherInterface $dispatcher, ControllerResolverInterface $resolver, ContainerBuilder $container, phpbb_user $user)
     {
         $this->dispatcher = $dispatcher;
@@ -67,20 +67,20 @@ class phpbb_kernel implements HttpKernelInterface
     }
 
 	/**
-     * Handles a Request to convert it to a Response.
-     *
-     * When $catch is true, the implementation must catch all exceptions
-     * and do its best to convert them to a Response instance.
-     *
-     * @param Request $request A Request instance
-     * @param integer $type    The type of the request
-     *                          (one of HttpKernelInterface::MASTER_REQUEST or HttpKernelInterface::SUB_REQUEST)
-     * @param Boolean $catch Whether to catch exceptions or not
-     *
-     * @return Response A Response instance
-     *
-     * @throws RuntimeException When an Exception occurs during processing
-     */
+	* Handles a Request to convert it to a Response.
+	*
+	* When $catch is true, the implementation must catch all exceptions
+	* and do its best to convert them to a Response instance.
+	*
+	* @param Request $request A Request instance
+	* @param integer $type    The type of the request
+	*                          (one of HttpKernelInterface::MASTER_REQUEST or HttpKernelInterface::SUB_REQUEST)
+	* @param Boolean $catch Whether to catch exceptions or not
+	*
+	* @return Response A Response instance
+	*
+	* @throws RuntimeException When an Exception occurs during processing
+	*/
 	public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = true)
 	{
 		try
