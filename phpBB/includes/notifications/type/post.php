@@ -101,6 +101,9 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		}
 		$db->sql_freeresult($result);
 
+		// Never notify the poster
+		unset($users[$post['poster_id']]);
+
 		if (empty($users))
 		{
 			return array();
@@ -136,31 +139,6 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 	*
 	* @return string
 	*/
-	public function get_formatted_title()
-	{
-		if ($this->get_data('post_username'))
-		{
-			$username = $this->get_data('post_username');
-		}
-		else
-		{
-			$user_data = $this->service->get_user($this->get_data('poster_id'));
-
-			$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
-		}
-
-		return $this->phpbb_container->get('user')->lang(
-			$this->language_key,
-			$username,
-			censor_text($this->get_data('topic_title'))
-		);
-	}
-
-	/**
-	* Get the title of this notification
-	*
-	* @return string
-	*/
 	public function get_title()
 	{
 		if ($this->get_data('post_username'))
@@ -171,7 +149,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		{
 			$user_data = $this->service->get_user($this->get_data('poster_id'));
 
-			$username = $user_data['username'];
+			$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 		}
 
 		return $this->phpbb_container->get('user')->lang(
@@ -237,6 +215,8 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 		$this->set_data('forum_id', $post['forum_id']);
 
 		$this->set_data('forum_name', $post['forum_name']);
+
+		$this->time = $post['post_time'];
 
 		return parent::create_insert_array($post);
 	}

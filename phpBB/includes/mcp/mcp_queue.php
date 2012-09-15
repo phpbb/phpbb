@@ -597,39 +597,34 @@ function approve_post($post_id_list, $id, $mode)
 		sync('forum', 'forum_id', array_keys($forum_id_list), true, true);
 		unset($topic_id_list, $forum_id_list);
 
-		$phpbb_notifications = $phpbb_container->get('notifications');
-
-		// Notify Poster?
-		if ($notify_poster)
-		{
-			// Forum Notifications
-			foreach ($post_info as $post_id => $post_data)
-			{
-				if ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id'])
-				{
-					$phpbb_notifications->add_notifications('approve_topic', $post_data);
-				}
-				else
-				{
-					$phpbb_notifications->add_notifications('approve_post', $post_data);
-				}
-			}
-		}
-
 		// Send out normal user notifications
 		$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
 
+		// Handle notifications
+		$phpbb_notifications = $phpbb_container->get('notifications');
 		foreach ($post_info as $post_id => $post_data)
 		{
 			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
 			{
 				// Forum Notifications
 				$phpbb_notifications->add_notifications('topic', $post_data);
+
+				// Notify poster?
+				if ($notify_poster)
+				{
+					$phpbb_notifications->add_notifications('approve_topic', $post_data);
+				}
 			}
 			else
 			{
 				// Topic Notifications
 				$phpbb_notifications->add_notifications(array('quote', 'bookmark', 'post'), $post_data);
+
+				// Notify poster?
+				if ($notify_poster)
+				{
+					$phpbb_notifications->add_notifications('approve_post', $post_data);
+				}
 			}
 		}
 
@@ -719,7 +714,7 @@ function disapprove_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
-	global $request;
+	global $request, $phpbb_container;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
@@ -852,20 +847,16 @@ function disapprove_post($post_id_list, $id, $mode)
 			}
 		}
 
-		$messenger = new messenger();
-
 		// Notify Poster?
 		if ($notify_poster)
 		{
 			$lang_reasons = array();
 
+			// Handle notifications
+			$phpbb_notifications = $phpbb_container->get('notifications');
 			foreach ($post_info as $post_id => $post_data)
 			{
-				if ($post_data['poster_id'] == ANONYMOUS)
-				{
-					continue;
-				}
-
+				$post_data['disapprove_reason'] = '';
 				if (isset($disapprove_reason_lang))
 				{
 					// Okay we need to get the reason from the posters language
@@ -891,32 +882,31 @@ function disapprove_post($post_id_list, $id, $mode)
 						}
 					}
 
-					$email_disapprove_reason = $lang_reasons[$post_data['user_lang']];
-					$email_disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
+					$post_data['disapprove_reason'] = $lang_reasons[$post_data['user_lang']];
+					$post_data['disapprove_reason'] .= ($reason) ? "\n\n" . $reason : '';
 				}
 
-				$email_template = ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id']) ? 'topic_disapproved' : 'post_disapproved';
-
-				$messenger->template($email_template, $post_data['user_lang']);
-
-				$messenger->to($post_data['user_email'], $post_data['username']);
-				$messenger->im($post_data['user_jabber'], $post_data['username']);
-
-				$messenger->assign_vars(array(
-					'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
-					'REASON'		=> htmlspecialchars_decode($email_disapprove_reason),
-					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
-					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])))
-				);
-
-				$messenger->send($post_data['user_notify_type']);
+				if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
+				{
+					// Notify poster?
+					if ($notify_poster)
+					{
+						$phpbb_notifications->add_notifications('disapprove_topic', $post_data);
+					}
+				}
+				else
+				{
+					// Notify poster?
+					if ($notify_poster)
+					{
+						$phpbb_notifications->add_notifications('disapprove_post', $post_data);
+					}
+				}
 			}
 
 			unset($lang_reasons);
 		}
 		unset($post_info, $disapprove_reason, $email_disapprove_reason, $disapprove_reason_lang);
-
-		$messenger->save_queue();
 
 		if ($num_disapproved_topics)
 		{

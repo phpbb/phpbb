@@ -68,7 +68,7 @@ class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 		$db = $phpbb_container->get('dbal.conn');
 
 		$usernames = false;
-		preg_match_all(self::$regular_expression_match, $post['message'], $usernames);
+		preg_match_all(self::$regular_expression_match, $post['post_text'], $usernames);
 
 		if (empty($usernames[1]))
 		{
@@ -93,6 +93,9 @@ class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 			$users[$row['user_id']] = array('');
 		}
 		$db->sql_freeresult($result);
+
+		// Never notify the poster
+		unset($users[$post['poster_id']]);
 
 		if (empty($users))
 		{

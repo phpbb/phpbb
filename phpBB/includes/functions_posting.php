@@ -2238,6 +2238,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$phpbb_notifications->add_notifications(array('quote', 'bookmark', 'post'), array_merge($data, array(
 					'post_username'		=> $username,
 					'poster_id'			=> (int) $user->data['user_id'],
+					'post_text'			=> $data['message'],
 				)));
 			break;
 
@@ -2252,6 +2253,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 				$phpbb_notifications->update_notifications(array('quote', 'bookmark', 'post'), array_merge($data, array(
 					'post_username'		=> $username,
+					'post_text'			=> $data['message'],
 				)));
 			break;
 		}
