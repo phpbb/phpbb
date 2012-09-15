@@ -75,6 +75,9 @@ class phpbb_notifications_type_bookmark extends phpbb_notifications_type_post
 		}
 		$db->sql_freeresult($result);
 
+		// Never notify the poster
+		unset($users[$post['poster_id']]);
+
 		if (empty($users))
 		{
 			return array();

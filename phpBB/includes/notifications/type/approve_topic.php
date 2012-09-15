@@ -23,21 +23,21 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notifications_type_approve_post extends phpbb_notifications_type_post
+class phpbb_notifications_type_approve_topic extends phpbb_notifications_type_topic
 {
 	/**
 	* Email template to use to send notifications
 	*
 	* @var string
 	*/
-	public $email_template = 'post_approved';
+	public $email_template = 'topic_approved';
 
 	/**
 	* Language key used to output the text
 	*
 	* @var string
 	*/
-	protected $language_key = 'NOTIFICATION_POST_APPROVED';
+	protected $language_key = 'NOTIFICATION_TOPIC_APPROVED';
 
 	/**
 	* Get the type of notification this is
@@ -45,7 +45,7 @@ class phpbb_notifications_type_approve_post extends phpbb_notifications_type_pos
 	*/
 	public static function get_item_type()
 	{
-		return 'approve_post';
+		return 'approve_topic';
 	}
 
 	/**
@@ -90,10 +90,9 @@ class phpbb_notifications_type_approve_post extends phpbb_notifications_type_pos
 	public function get_email_template_variables()
 	{
 		return array(
-			'POST_SUBJECT'				=> htmlspecialchars_decode(censor_text($this->get_data('post_subject'))),
+			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
 
-			'U_VIEW_POST'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
-			'U_VIEW_TOPIC'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
+			'U_VIEW_TOPIC'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->item_parent_id}&t={$this->item_id}",
 		);
 	}
 
@@ -107,8 +106,6 @@ class phpbb_notifications_type_approve_post extends phpbb_notifications_type_pos
 	*/
 	public function create_insert_array($post)
 	{
-		$this->set_data('post_subject', $post['post_subject']);
-
 		$this->time = time();
 
 		return parent::create_insert_array($post);
