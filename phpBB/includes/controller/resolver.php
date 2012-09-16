@@ -90,9 +90,18 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	{
 		$context = new RequestContext();
 		$context->fromRequest($request);
-
-		$matcher = new UrlMatcher($this->controllers, $context);
-		$request->attributes->add($matcher->match($request->getPathInfo()));
+		try
+		{
+			$matcher = new UrlMatcher($this->controllers, $context);
+			$request->attributes->add($matcher->match($request->getPathInfo()));
+		}
+		catch (RuntimeException $e)
+		{
+			// This is done because the exception thrown when a path is not
+			// matched does not have a message. Basically, this says that if
+			// no message was given, use the language string supplied instead
+			throw new RuntimeException($e->getMessage() ?: $this->user->lang('CONTROLLER_NOT_FOUND'));
+		}
 
 		$controller_service = $request->attributes->get('_controller');
 		$controller_name = $request->attributes->get('_route');
