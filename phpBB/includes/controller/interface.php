@@ -24,7 +24,7 @@ interface phpbb_controller_interface
 	/**
 	* Handle the loading of the controller page.
 	*
-	* @return null
+	* @return Symfony\Component\HttpFoundation\Response Symfony Response
 	*/
 	public function handle();
 }
