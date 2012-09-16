@@ -8,6 +8,8 @@
 */
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
 class phpbb_controller_test extends phpbb_test_case
 {
@@ -30,18 +32,19 @@ class phpbb_controller_test extends phpbb_test_case
 		$route_files = $this->route_provider->find();
 
 		$this->assertEquals(array(
-			'ext/foo/config/routing.yml'
+			'ext/foo/config'
 		), $route_files);
 	}
 
 	public function test_controller_provider()
 	{
 		$provider = new phpbb_controller_provider($this->route_provider->find());
-		$this->assertEquals($provider->find('./tests/controller/'), array(
-			'controller1'	 => array(
-				'service'	=> 'foo.controller',
-			),
-		));
+		$actual_routes = $provider->find('./tests/controller/');
+		
+		$expected_routes = new RouteCollection();
+		$expected_routes->add('controller1', new Route('/foo', array('controller', 'foo.controller')));
+		
+		$this->assertEquals($expected_routes->getIterator(), $actual_routes->getIterator());
 	}
 
 	public function test_controller_resolver()
@@ -50,7 +53,7 @@ class phpbb_controller_test extends phpbb_test_case
 		$symfony_request = new Request(array('controller' => 'controller1'));
 		
 		$this->assertEquals($resolver->getController($symfony_request), array(
-			'service'	=> 'foo.controller',
+			'foo.controller',
 		));
 	}
 }

@@ -1,2 +1,3 @@
 controller1:
-    service: foo.controller
+    pattern: /foo
+    defaults: { controller: foo.controller }

@@ -56,8 +56,15 @@ class phpbb_controller_provider
 	* @return array|bool Array of controllers and handles or false if the 
 	* 					routing file does not exist
 	*/
-	public function find()
+	public function find($base_path = '')
 	{
+		if ($base_path)
+		{
+			foreach ($this->routing_paths as $key => $path)
+			{
+				$this->routing_paths[$key] = './' . $base_path . $path;
+			}
+		}
 		$loader = new YamlFileLoader(new FileLocator($this->routing_paths));
 		return $loader->load('routing.yml');
 	}
