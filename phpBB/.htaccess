@@ -1,12 +1,17 @@
+<IfModule mod_rewrite.c>
+RewriteEngine on
+
 #
 # Uncomment the statement below if you want to make use of
 # HTTP authentication and it does not already work.
 # This could be required if you are for example using PHP via Apache CGI.
 #
-#<IfModule mod_rewrite.c>
-#RewriteEngine on
 #RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
-#</IfModule>
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ app.php [QSA,L]
+</IfModule>
 
 <Files "config.php">
 Order Allow,Deny
