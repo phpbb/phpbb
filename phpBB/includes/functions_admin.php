@@ -718,7 +718,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	// Delete notifications
 	$phpbb_notifications = $phpbb_container->get('notifications');
-	$phpbb_notifications->delete_notifications(array('topic', 'approve_topic', 'topic_in_queue')), $topic_ids);
+	$phpbb_notifications->delete_notifications(array('topic', 'approve_topic', 'topic_in_queue'), $topic_ids);
 
 	return $return;
 }
