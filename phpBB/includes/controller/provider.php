@@ -15,6 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Config\FileLocator;
 
@@ -43,7 +44,7 @@ class phpbb_controller_provider
 			$routing_paths = array($routing_paths);
 		}
 
-		$this->routing_paths = $routing_paths;		
+		$this->routing_paths = $routing_paths;
 	}
 
 	/**
@@ -55,14 +56,18 @@ class phpbb_controller_provider
 	*/
 	public function find($base_path = '')
 	{
-		if ($base_path)
+		$routes = new RouteCollection;
+		foreach ($this->routing_paths as $path)
 		{
-			foreach ($this->routing_paths as $key => $path)
+			if ($base_path)
 			{
-				$this->routing_paths[$key] = './' . $base_path . $path;
+				$path = $base_path . $path;
 			}
+
+			$loader = new YamlFileLoader(new FileLocator($path));
+			$routes->addCollection($loader->load('routing.yml'));
 		}
-		$loader = new YamlFileLoader(new FileLocator($this->routing_paths));
-		return $loader->load('routing.yml');
+
+		return $routes;
 	}
 }

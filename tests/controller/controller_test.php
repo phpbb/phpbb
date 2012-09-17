@@ -32,27 +32,16 @@ class phpbb_controller_test extends phpbb_test_case
 		$route_files = $this->route_provider->find();
 
 		$this->assertEquals(array(
-			'ext/foo/config'
+			'config',
+			'ext/foo/config',
 		), $route_files);
 	}
-
-	public function test_controller_provider()
-	{
-		$provider = new phpbb_controller_provider($this->route_provider->find());
-		$actual_routes = $provider->find('./tests/controller/');
-
-		$expected_routes = new RouteCollection();
-		$expected_routes->add('controller1', new Route('/foo', array('_controller' => 'foo.controller')));
-
-		$this->assertEquals($expected_routes->getIterator(), $actual_routes->getIterator());
-	}
-
 
 	public function test_controller_resolver()
 	{
 		$resolver = new phpbb_controller_resolver($this->route_provider, new phpbb_mock_cache, new phpbb_user, './tests/controller/');
 		$symfony_request = new Request(array(), array(), array(), array(), array(), array('REQUEST_URI' => '/foo'));
-		
+
 		$this->assertEquals($resolver->getController($symfony_request), 'foo.controller');
 	}
 }
