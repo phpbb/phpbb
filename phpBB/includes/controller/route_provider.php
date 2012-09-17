@@ -38,10 +38,12 @@ class phpbb_controller_route_provider
 
 	public function find()
 	{
-		return array_map('dirname', array_keys($this->finder
+		// We hardcode the path to the core config  directory
+		// because the finder cannot find it
+		return array_merge(array('./config', array_map('dirname', array_keys($this->finder
 			->directory('config')
 			->prefix('routing')
 			->suffix('yml')
-			->find()));
+			->find()))));
 	}
 }
