@@ -116,10 +116,14 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 		if (stripos($controller_service, ':') !== false)
 		{
 			list($service, $method) = explode(':', $controller_service);
-			return array($service, $method);
+		}
+		else
+		{
+			$service = $controller_service;
+			$method = 'handle';
 		}
 
-		return $controller_service;
+		return array($service, $method);
 	}
 
 	/**

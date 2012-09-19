@@ -92,13 +92,9 @@ class phpbb_kernel implements HttpKernelInterface
 			{
 				return $controller;
 			}
-			else if (is_array($controller))
-			{
-				list($service, $method) = $controller;
-			}
 			else
 			{
-				$service = $controller;
+				list($service, $method) = $controller;
 			}
 
 			if (!$this->container->has($service))
@@ -106,20 +102,20 @@ class phpbb_kernel implements HttpKernelInterface
 				throw new RuntimeException($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $service), 404);
 			}
 
-			$controller = $this->container->get($service);
+			$controller_object = $this->container->get($service);
 
-			if (!$controller instanceof phpbb_controller_interface)
+			if (!$controller_object instanceof phpbb_controller_interface)
 			{
-				throw new RuntimeException($this->user->lang('CONTROLLER_OBJECT_TYPE_INVALID', gettype($controller)), 404);
+				throw new RuntimeException($this->user->lang('CONTROLLER_OBJECT_TYPE_INVALID', gettype($controller_object)), 404);
 			}
 
-			$controller = array($controller, $method ?: 'handle');
-			$arguments = $this->resolver->getArguments($request, $controller);
-			$response = call_user_func_array($controller, $arguments);
+			$controller_callable = array($controller_object, $method);
+			$arguments = $this->resolver->getArguments($request, $controller_callable);
+			$response = call_user_func_array($controller_callable, $arguments);
 
 			if (!$response instanceof Response)
 			{
-				throw new RuntimeException($this->user->lang('CONTROLLER_RETURN_TYPE_INVALID', gettype($controller)), 404);
+				throw new RuntimeException($this->user->lang('CONTROLLER_RETURN_TYPE_INVALID', gettype($controller_object)), 404);
 			}
 
 			return $response;
