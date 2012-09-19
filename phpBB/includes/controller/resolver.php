@@ -100,7 +100,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 			// This is done because the exception thrown when a path is not
 			// matched does not have a message. Basically, this says that if
 			// no message was given, use the language string supplied instead
-			throw new RuntimeException($e->getMessage() ?: $this->user->lang('CONTROLLER_NOT_FOUND'));
+			throw new RuntimeException($e->getMessage() ?: $this->user->lang('CONTROLLER_NOT_FOUND'), 404, $e);
 		}
 
 		$controller_service = $request->attributes->get('_controller');
@@ -108,7 +108,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 
 		if (!$controller_service)
 		{
-			throw new RuntimeException($this->user->lang['CONTROLLER_NOT_SPECIFIED']);
+			throw new RuntimeException($this->user->lang['CONTROLLER_NOT_SPECIFIED'], 404);
 		}
 
 		// Allow individual controller methods to be used as controllers

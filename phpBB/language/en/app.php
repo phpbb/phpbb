@@ -40,7 +40,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'CONTROLLER_NOT_SPECIFIED'			=> 'No controller has been specified.',
-	'CONTROLLER_NOT_FOUND'				=> 'The controller could not be located. It must be defined in ./config/routing.yml.',
+	'CONTROLLER_NOT_FOUND'				=> 'The requested page could not be found.',
 	'CONTROLLER_SERVICE_NOT_GIVEN'		=> 'The controller "<strong>%s</strong>" must have a service specified in ./config/routing.yml.',
 	'CONTROLLER_SERVICE_UNDEFINED'		=> 'The service for controller "<strong>%s</strong>" is not defined in ./config/services.yml.',
 	'CONTROLLER_OBJECT_TYPE_INVALID'	=> 'Your controller object <strong>%s</strong> must implement the <strong>phpbb_controller_interface</strong>.',

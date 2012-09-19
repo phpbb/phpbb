@@ -88,7 +88,11 @@ class phpbb_kernel implements HttpKernelInterface
 			$service = $method = false;
 			$controller = $this->resolver->getController($request);
 
-			if (is_array($controller))
+			if ($controller instanceof Response)
+			{
+				return $controller;
+			}
+			else if (is_array($controller))
 			{
 				list($service, $method) = $controller;
 			}
@@ -99,14 +103,14 @@ class phpbb_kernel implements HttpKernelInterface
 
 			if (!$this->container->has($service))
 			{
-				throw new RuntimeException($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $service));
+				throw new RuntimeException($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $service), 404);
 			}
 
 			$controller = $this->container->get($service);
 
 			if (!$controller instanceof phpbb_controller_interface)
 			{
-				throw new RuntimeException($this->user->lang('CONTROLLER_OBJECT_TYPE_INVALID', gettype($controller)));
+				throw new RuntimeException($this->user->lang('CONTROLLER_OBJECT_TYPE_INVALID', gettype($controller)), 404);
 			}
 
 			$controller = array($controller, $method ?: 'handle');
@@ -115,7 +119,7 @@ class phpbb_kernel implements HttpKernelInterface
 
 			if (!$response instanceof Response)
 			{
-				throw new RuntimeException($this->user->lang('CONTROLLER_RETURN_TYPE_INVALID', gettype($controller)));
+				throw new RuntimeException($this->user->lang('CONTROLLER_RETURN_TYPE_INVALID', gettype($controller)), 404);
 			}
 
 			return $response;
@@ -124,10 +128,10 @@ class phpbb_kernel implements HttpKernelInterface
 		{
 			if ($catch)
 			{
-				trigger_error($e->getMessage());
+				return new Response($e->getMessage(), $e->getCode());
 			}
 
-			throw new RuntimeException($e);
+			throw new RuntimeException($e->getMessage(), 404, $e);
 		}
 	}
 }
