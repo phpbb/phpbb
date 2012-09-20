@@ -4,7 +4,7 @@
 #     pattern: /foo
 #     defaults: { _controller: foo_sevice:method }
 #
-# If no method is specified, it will require a method named "handle"
-#
 # The above will be accessed via app.php/foo and it will instantiate the
-# "foo_service" service and call the "method" method.
+# "foo_service" service and call the "method" method. If no method is
+# specified, it will require a method named "handle".
+#
