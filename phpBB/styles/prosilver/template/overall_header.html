@@ -136,25 +136,27 @@
 
 			<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
 			<ul class="linklist leftside">
-				<li class="icon-ucp">
-					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
-					<a href="#" title="{L_NOTIFICATIONS}" onClick="$('#notification_list').toggle();">{L_NOTIFICATIONS}</a>
-					<div id="notification_list" style="display: none; position: absolute; width: 330px; max-height: 450px; background-color: #FFFFFF; z-index: 1; overflow-y: scroll;">
-						<ul style="list-style-type: none;">
+				<li>
+					[ <a href="#" id="notification_list_button" title="{L_NOTIFICATIONS}">{L_NOTIFICATIONS}</a> ] &bull;
+					<div id="notification_list">
+						<ul class="topiclist forums">
 						<!-- BEGIN notifications -->
-							<li style="padding: 10px; width: 290px;<!-- IF notifications.UNREAD --> background-color: grey;<!-- ENDIF -->">
-								<!-- IF notifications.URL --><a href="{notifications.URL}" style="text-decoration: none;"><!-- ENDIF -->
+							<li class="row<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
+								<!-- IF notifications.URL --><a href="{notifications.URL}"><!-- ENDIF -->
 									{notifications.AVATAR}
 									<div>
 										{notifications.FORMATTED_TITLE}<br />
 										{notifications.TIME}
 									</div>
 								<!-- IF notifications.URL --></a><!-- ENDIF -->
+								<!-- IF notifications.UNREAD --><a href="{notifications.U_MARK_READ}" title="{L_MARK_READ}">{L_MARK_READ}</a><!-- ENDIF -->
 							</li>
 				   			<!-- END notifications -->
 						</ul>
 					</div>
-						<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a>)<!-- ENDIF -->
+				</li>
+				<li class="icon-ucp">
+					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
 					<!-- IF S_DISPLAY_SEARCH --> &bull;
 					<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
 					<!-- ENDIF -->

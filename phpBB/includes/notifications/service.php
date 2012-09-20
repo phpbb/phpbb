@@ -45,12 +45,14 @@ class phpbb_notifications_service
 	* Load the user's notifications
 	*
 	* @param array $options Optional options to control what notifications are loaded
-	*				user_id		User id to load notifications for (Default: $user->data['user_id'])
-	*				order_by	Order by (Default: time)
-	*				order_dir	Order direction (Default: DESC)
-	* 				limit		Number of notifications to load (Default: 5)
-	* 				start		Notifications offset (Default: 0)
-	* 				all_unread	Load all unread messages? (Default: true)
+	*				notification_id		Notification id to load (or array of notification ids)
+	*				user_id				User id to load notifications for (Default: $user->data['user_id'])
+	*				order_by			Order by (Default: time)
+	*				order_dir			Order direction (Default: DESC)
+	* 				limit				Number of notifications to load (Default: 5)
+	* 				start				Notifications offset (Default: 0)
+	* 				all_unread			Load all unread messages? If set to true, count_unread is set to true (Default: false)
+	* 				count_unread		Count all unread messages? (Default: false)
 	*/
 	public function load_notifications($options = array())
 	{
@@ -58,13 +60,18 @@ class phpbb_notifications_service
 
 		// Merge default options
 		$options = array_merge(array(
-			'user_id'		=> $user->data['user_id'],
-			'order_by'		=> 'time',
-			'order_dir'		=> 'DESC',
-			'limit'			=> 5,
-			'start'			=> 0,
-			'all_unread'	=> true,
+			'notification_id'	=> false,
+			'user_id'			=> $user->data['user_id'],
+			'order_by'			=> 'time',
+			'order_dir'			=> 'DESC',
+			'limit'				=> 0,
+			'start'				=> 0,
+			'all_unread'		=> false,
+			'count_unread'		=> false,
 		), $options);
+
+		// If all_unread, count_unread mus be true
+		$options['count_unread'] = ($options['all_unread']) ? true : $options['count_unread'];
 
 		// Anonymous users and bots never receive notifications
 		if ($options['user_id'] == $user->data['user_id'] && ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_IGNORE))
@@ -77,22 +84,27 @@ class phpbb_notifications_service
 
 		$notifications = $user_ids = array();
 		$load_special = array();
+		$count = 0;
 
-		// Get the total number of unread notifications
-		$sql = 'SELECT COUNT(*) AS count
-			FROM ' . NOTIFICATIONS_TABLE . '
-			WHERE user_id = ' . (int) $options['user_id'] . '
-				AND unread = 1';
-		$result = $this->db->sql_query($sql);
-		$count = $this->db->sql_fetchfield('count', $result);
-		$this->db->sql_freeresult($result);
+		if ($options['count_unread'])
+		{
+			// Get the total number of unread notifications
+			$sql = 'SELECT COUNT(*) AS count
+				FROM ' . NOTIFICATIONS_TABLE . '
+				WHERE user_id = ' . (int) $options['user_id'] . '
+					AND unread = 1';
+			$result = $this->db->sql_query($sql);
+			$count = (int) $this->db->sql_fetchfield('count', $result);
+			$this->db->sql_freeresult($result);
+		}
 
 		$rowset = array();
 
 		// Get the main notifications
 		$sql = 'SELECT *
 			FROM ' . NOTIFICATIONS_TABLE . '
-			WHERE user_id = ' . (int) $options['user_id'] . '
+			WHERE user_id = ' . (int) $options['user_id'] .
+				(($options['notification_id']) ? ((is_array($options['notification_id'])) ? ' AND ' . $this->db->sql_in_set('notification_id', $options['notification_id']) : ' AND notification_id = ' . (int) $options['notification_id']) : '') . '
 				ORDER BY ' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
 		$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
 
@@ -103,7 +115,7 @@ class phpbb_notifications_service
 		$this->db->sql_freeresult($result);
 
 		// Get all unread notifications
-		if ($options['all_unread'] && !empty($rowset))
+		if ($count && $options['all_unread'] && !empty($rowset))
 		{
 			$sql = 'SELECT *
 				FROM ' . NOTIFICATIONS_TABLE . '
@@ -218,6 +230,23 @@ class phpbb_notifications_service
 				AND time <= " . $time .
 				(($item_parent_id !== false) ? ' AND ' . (is_array($item_parent_id) ? $this->db->sql_in_set('item_parent_id', $item_parent_id) : 'item_parent_id = ' . (int) $item_parent_id) : '') .
 				(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '');
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Mark notifications read
+	*
+	* @param int|array $notification_id Notification id or array of notification ids.
+	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	*/
+	public function mark_notifications_read_by_id($notification_id, $time = false)
+	{
+		$time = ($time) ?: time();
+
+		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . "
+			SET unread = 0
+			WHERE time <= " . $time . '
+				AND ' . ((is_array($notification_id)) ? $this->db->sql_in_set('notification_id', $notification_id) : 'notification_id = ' . (int) $notification_id);
 		$this->db->sql_query($sql);
 	}
 

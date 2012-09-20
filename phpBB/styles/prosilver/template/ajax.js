@@ -165,6 +165,13 @@ $('#qr_full_editor').click(function() {
 });
 
 
+/**
+ * Toggle notification list
+ */
+$('#notification_list_button').click(function() {
+	$('#notification_list').toggle();
+});
+
 
 /**
  * This AJAXifies the quick-mod tools. The reason it cannot be a standard
