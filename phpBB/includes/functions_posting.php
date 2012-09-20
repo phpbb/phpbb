@@ -2232,6 +2232,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$phpbb_notifications->add_notifications(array('topic', 'quote'), array_merge($data, array(
 					'post_username'		=> $username,
 					'poster_id'			=> (int) $user->data['user_id'],
+					'post_time'			=> $current_time,
 				)));
 			break;
 
@@ -2241,6 +2242,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					'post_username'		=> $username,
 					'poster_id'			=> (int) $user->data['user_id'],
 					'post_text'			=> $data['message'],
+					'post_time'			=> $current_time,
 				)));
 			break;
 
@@ -2268,6 +2270,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$phpbb_notifications->add_notifications(array('topic_in_queue'), array_merge($data, array(
 					'post_username'		=> $username,
 					'poster_id'			=> (int) $user->data['user_id'],
+					'post_time'			=> $current_time,
 				)));
 			break;
 
@@ -2276,6 +2279,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$phpbb_notifications->add_notifications(array('post_in_queue'), array_merge($data, array(
 					'post_username'		=> $username,
 					'poster_id'			=> (int) $user->data['user_id'],
+					'post_time'			=> $current_time,
 				)));
 			break;
 
