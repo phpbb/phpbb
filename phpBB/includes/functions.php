@@ -5215,7 +5215,10 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 	// Output the notifications
 	$phpbb_notifications = $phpbb_container->get('notifications');
-	$notifications = $phpbb_notifications->load_notifications();
+	$notifications = $phpbb_notifications->load_notifications(array(
+		'all_unread'	=> true,
+		'limit'			=> 5,
+	));
 	foreach ($notifications['notifications'] as $notification)
 	{
 		$template->assign_block_vars('notifications', $notification->prepare_for_display());

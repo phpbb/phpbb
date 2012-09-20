@@ -673,6 +673,26 @@ p.rules a {
 	vertical-align: text-bottom;
 }
 
+#notification_list {
+	display: none;
+	position: absolute;
+	width: 330px;
+	max-height: 350px;
+	z-index: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	background-color: #FFFFFF;
+}
+
+#notification_list ul li {
+	padding: 10px;
+	width: 310px;
+}
+
+#notification_list ul li a {
+	text-decoration: none;
+}
+
 #notification_list ul li img {
 	float: left;
 	padding: 0 10px 10px 0;

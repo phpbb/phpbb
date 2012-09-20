@@ -24,6 +24,14 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('viewforum');
 
+// Mark notifications read
+$mark_notifications = request_var('mark_notification', array(0));
+if (!empty($mark_notifications))
+{
+	$phpbb_notifications = $phpbb_container->get('notifications');
+	$phpbb_notifications->mark_notifications_read_by_id($mark_notifications);
+}
+
 display_forums('', $config['load_moderators']);
 
 $order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
