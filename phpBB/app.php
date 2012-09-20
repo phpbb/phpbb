@@ -26,6 +26,4 @@ $user->setup('app');
 $kernel = $phpbb_container->get('kernel');
 $response = $kernel->handle($symfony_request)->send();
 
-page_footer(true, false, false);
-
 exit_handler();
