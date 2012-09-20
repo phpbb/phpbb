@@ -120,6 +120,8 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 			'TIME'	   			=> $user->format_date($this->time),
 
 			'UNREAD'			=> $this->unread,
+
+			'U_MARK_READ'		=> append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification[]=' . $this->notification_id),
 		);
 	}
 
