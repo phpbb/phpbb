@@ -215,7 +215,7 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 
 		$this->set_data('post_subject', $post['post_subject']);
 
-		$this->set_data('post_username', (($post['post_username'] != $this->phpbb_container->get('user')->data['username']) ? $post['post_username'] : ''));
+		$this->set_data('post_username', (($post['poster_id'] == ANONYMOUS) ? $post['post_username'] : ''));
 
 		$this->set_data('forum_id', $post['forum_id']);
 
