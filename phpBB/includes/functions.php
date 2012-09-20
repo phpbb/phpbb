@@ -4837,7 +4837,7 @@ function phpbb_http_login($param)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request;
+	global $phpbb_dispatcher, $symfony_request;
 
 	if (defined('HEADER_INC'))
 	{
@@ -4994,15 +4994,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 	// Determine board url - we may need it later
 	$board_url = generate_board_url() . '/';
-	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
-
-	// Fix the URL-relative paths (i.e. for stylesheets, javascript, etc.)
-	// when controllers are in use
-	$path = $request->server('PATH_INFO');
-	for ($i = 0; $i < substr_count($path, '/'); $i++)
-	{
-		$web_path .= '../';
-	}
+	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $symfony_request->getBasePath() . '/';
 
 	// Send a proper content-language to the output
 	$user_lang = $user->lang['USER_LANG'];
