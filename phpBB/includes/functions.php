@@ -5180,10 +5180,11 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 /**
 * Generate page footer
 *
-* @param bool $run_cron Whether or not to run the cron tasks
-* @param bool $call_exit_handler Whether or not to call the exit handler
+* @param bool $run_cron Whether or not to run the cron
+* @param bool $display_template Whether or not to display the template
+* @param bool $exit_handler Whether or not to run the exit_handler()
 */
-function page_footer($run_cron = true, $call_exit_handler = true)
+function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
 	global $request, $phpbb_dispatcher;
@@ -5278,11 +5279,14 @@ function page_footer($run_cron = true, $call_exit_handler = true)
 		}
 	}
 
-	$template->display('body');
+	if ($display_template)
+	{
+		$template->display('body');
+	}
 
 	garbage_collection();
 
-	if ($call_exit_handler)
+	if ($exit_handler)
 	{
 		exit_handler();
 	}

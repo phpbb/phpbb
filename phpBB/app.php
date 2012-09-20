@@ -24,19 +24,8 @@ $auth->acl($user->data);
 $user->setup('app');
 
 $kernel = $phpbb_container->get('kernel');
-$response = $kernel->handle($symfony_request);
+$response = $kernel->handle($symfony_request)->send();
 
-// Response objects recieve a message as the first argument to the constructor
-// The send() method echoes that message. We capture it using Output Buffering
-// and can use it for error handling. A controller should send a blank message
-// by default. Any non-empty string will result in a trigger error containing
-// the message. This allows controllers to send errors as a response instead
-// of using trigger_error() directly.
-ob_start();
-$response->send();
-$error = ob_get_clean();
+page_footer(true, false, false);
 
-if (!empty($error))
-{
-	trigger_error($error);
-}
+exit_handler();

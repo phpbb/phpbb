@@ -124,10 +124,11 @@ class phpbb_kernel implements HttpKernelInterface
 		{
 			if ($catch)
 			{
-				return new Response($e->getMessage(), $e->getCode());
+				send_status_line(404, 'Not Found');
+				trigger_error($e->getMessage());
 			}
 
-			throw new RuntimeException($e->getMessage(), 404, $e);
+			throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
 		}
 	}
 }
