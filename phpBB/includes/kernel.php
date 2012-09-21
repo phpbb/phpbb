@@ -106,7 +106,7 @@ class phpbb_kernel implements HttpKernelInterface
 
 			if (!$controller_object instanceof phpbb_controller_interface)
 			{
-				throw new RuntimeException($this->user->lang('CONTROLLER_OBJECT_TYPE_INVALID', gettype($controller_object)), 404);
+				throw new RuntimeException($this->user->lang('CONTROLLER_OBJECT_TYPE_INVALID', get_class($controller_object)), 404);
 			}
 
 			$controller_callable = array($controller_object, $method);
@@ -115,7 +115,7 @@ class phpbb_kernel implements HttpKernelInterface
 
 			if (!$response instanceof Response)
 			{
-				throw new RuntimeException($this->user->lang('CONTROLLER_RETURN_TYPE_INVALID', gettype($controller_object)), 404);
+				throw new RuntimeException($this->user->lang('CONTROLLER_RETURN_TYPE_INVALID', get_class($controller_object)), 404);
 			}
 
 			return $response;
