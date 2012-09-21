@@ -42,6 +42,6 @@ class phpbb_controller_test extends phpbb_test_case
 		$resolver = new phpbb_controller_resolver($this->route_provider, new phpbb_mock_cache, new phpbb_user, './tests/controller/');
 		$symfony_request = new Request(array(), array(), array(), array(), array(), array('REQUEST_URI' => '/foo'));
 
-		$this->assertEquals($resolver->getController($symfony_request), 'foo.controller');
+		$this->assertEquals($resolver->getController($symfony_request), array('foo.controller', 'handle'));
 	}
 }
