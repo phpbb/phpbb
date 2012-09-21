@@ -16,32 +16,30 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Controller base class
+* Controller helper class, contains methods that do things for controllers
 * @package phpBB3
 */
-abstract class phpbb_controller_base implements phpbb_controller_interface
+class phpbb_controller_helper
 {
 	/**
-	* Handle the loading of the controller page.
+	* Constructor
 	*
-	* @return Symfony\Component\HttpFoundation\Response Symfony Response
+	* @param phpbb_template
 	*/
-	abstract public function handle();
+	public function __construct(phpbb_template $template)
+	{
+		$this->template = $template;
+	}
 
 	/**
 	* Return the contents of the rendered file as a string. This will go
 	* directly into the Response object.
 	*
 	* @param string $handle The template handle to render
-	* @return string Rendered contents of the template file.
+	* @return string Rendered contents of the template file
 	*/
 	public function render_template($handle)
 	{
-		if (!isset($this->template))
-		{
-			throw new RuntimeException();
-		}
 		return $this->template->return_display($handle);
 	}
-
 }
