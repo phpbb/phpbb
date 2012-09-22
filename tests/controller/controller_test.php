@@ -39,8 +39,8 @@ class phpbb_controller_test extends phpbb_test_case
 
 	public function test_controller_resolver()
 	{
-		$resolver = new phpbb_controller_resolver($this->route_provider, new phpbb_mock_cache, new phpbb_user, './tests/controller/');
-		$symfony_request = new Request(array(), array(), array(), array(), array(), array('REQUEST_URI' => '/foo'));
+		$resolver = new phpbb_controller_resolver(new phpbb_user, './tests/controller/');
+		$symfony_request = new Request(array(), array(), array('_controller' => 'foo.controller'));
 
 		$this->assertEquals($resolver->getController($symfony_request), array('foo.controller', 'handle'));
 	}
