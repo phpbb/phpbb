@@ -47,8 +47,6 @@ services:
     controller.resolver:
         class: phpbb_controller_resolver
         arguments:
-            - @controller.route_provider
-            - @cache.driver
             - @user
     
     controller.route_provider:
@@ -117,6 +115,7 @@ services:
             - @controller.resolver
             - @container
             - @user
+            - @controller.route_provider
 
     processor.ext:
         class: phpbb_di_processor_ext

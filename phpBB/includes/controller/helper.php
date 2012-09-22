@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\HttpFoundation\Request;
+
 /**
 * Controller helper class, contains methods that do things for controllers
 * @package phpBB3
