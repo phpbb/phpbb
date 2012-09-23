@@ -126,6 +126,15 @@ class phpbb_kernel implements HttpKernelInterface
 	{
 		try
 		{
+			$context = new RequestContext();
+			$context->fromRequest($request);
+
+			// Register the RouterListener
+			$this->dispatcher->addListener(KernelEvents::REQUEST, array(
+				new RouterListener(new UrlMatcher($this->controllers, $context), $context),
+				'onKernelRequest',
+			));
+
 			$event = new GetResponseEvent($this, $request, $type);
 			$this->dispatcher->dispatch(KernelEvents::REQUEST, $event);
 
@@ -133,14 +142,6 @@ class phpbb_kernel implements HttpKernelInterface
 			{
 				return $this->filter_response($event->getResponse(), $request, $type);
 			}
-
-			$context = new RequestContext();
-			$context->fromRequest($request);
-		
-			$matcher = new UrlMatcher($this->controllers, $context);
-		
-			$router = new RouterListener($matcher, $context);
-			$router->onKernelRequest($event);
 
 			$service = $method = false;
 			$controller = $this->resolver->getController($request);
