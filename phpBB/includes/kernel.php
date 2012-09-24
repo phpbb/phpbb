@@ -102,7 +102,7 @@ class phpbb_kernel implements HttpKernelInterface
 	* @param string $base_path Base path to prepend to all paths
 	* @return array
 	*/
-	public function load_controller_map($base_path = '')
+	protected function load_controller_map($base_path = '')
 	{
 		$this->controllers = $this->provider->find($base_path);
 	}
@@ -130,13 +130,28 @@ class phpbb_kernel implements HttpKernelInterface
 			$context->fromRequest($request);
 
 			// Register the RouterListener
-			$this->dispatcher->addListener(KernelEvents::REQUEST, array(
+			$this->dispatcher->addListener('core.kernel_request', array(
 				new RouterListener(new UrlMatcher($this->controllers, $context), $context),
 				'onKernelRequest',
 			));
 
 			$event = new GetResponseEvent($this, $request, $type);
-			$this->dispatcher->dispatch(KernelEvents::REQUEST, $event);
+
+			/**
+			* The core.kernel_request event occurs at the very beginning of
+			* request dispatching
+			*
+			* This event allows you to create a response for a request before
+			* any other code in the framework is executed. The event listener
+			* method receives a
+			* Symfony\Component\HttpKernel\Event\GetResponseEvent instance.
+			*
+			* @event core.kernel_controller
+			* @var	GetResponseEvent	event	GetResponseEvent object
+			* @since 3.1-A1
+			*/
+			$vars = array('event');
+			extract($this->dispatcher->trigger_event('core.kernel_request', compact($vars)));
 
 			if ($event->hasResponse())
 			{
@@ -148,7 +163,7 @@ class phpbb_kernel implements HttpKernelInterface
 
 			list($service, $method) = $controller;
 
-			if (!$this->container->has($service))
+			if ($service === false || !$this->container->has($service))
 			{
 				throw new RuntimeException($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $service), 404);
 			}
@@ -163,7 +178,24 @@ class phpbb_kernel implements HttpKernelInterface
 			$controller_callable = array($controller_object, $method);
 
 			$event = new FilterControllerEvent($this, $controller_callable, $request, $type);
-			$this->dispatcher->dispatch(KernelEvents::CONTROLLER, $event);
+
+			/**
+			* The core.kernel_controller event occurs once a controller has
+			* been found to a request.
+			*
+			* This event allows you to change the controller callable
+			* that will handle the request.
+			* The event listener method receives a
+			* Symfony\Component\HttpKernel\Event\FilterControllerEvent
+			* instance.
+			*
+			* @event core.kernel_controller
+			* @var	FilterControllerEvent	event	FilterControllerEvent object
+			* @since 3.1-A1
+			*/
+			$vars = array('event');
+			extract($this->dispatcher->trigger_event('core.kernel_controller', compact($vars)));
+
 			$controller = $event->getController();
 
 			$arguments = $this->resolver->getArguments($request, $controller_callable);
@@ -172,41 +204,122 @@ class phpbb_kernel implements HttpKernelInterface
 			if (!$response instanceof Response)
 			{
 				$event = new GetResponseForControllerResultEvent($this, $request, $type, $response);
-            	$this->dispatcher->dispatch(KernelEvents::VIEW, $event);
 
-            	if ($event->hasResponse())
-            	{
-            		$response = $event->getResponse();
-            	}
+				/**
+				* This event occurs when the return value of a controller
+				* is not a Response instance
+				*
+				* This event allows you to create a response for the return value of the
+				* controller. The event listener method receives a
+				* Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent
+				* instance.
+				*
+				* @event core.kernel_view
+				* @var	GetResponseForControllerResultEvent	event GetResponseForControllerResultEvent object
+				* @since 3.1-A1
+				*/
+				$vars = array('event');
+				extract($this->dispatcher->trigger_event('core.kernel_view', compact($vars)));
 
-            	if (!$response instanceof Response)
-            	{
+				if ($event->hasResponse())
+				{
+					$response = $event->getResponse();
+				}
+
+				if (!$response instanceof Response)
+				{
 					throw new RuntimeException($this->user->lang('CONTROLLER_RETURN_TYPE_INVALID', get_class($controller_object)), 404);
 				}
 			}
 
 			return $this->filter_response($response, $request, $type);
-		}
+		}		
 		catch (RuntimeException $e)
 		{
-			// This is done because the exception thrown when a path is not
-			// matched does not have a message. Basically, this says that if
-			// no message was given, use the language string supplied instead
-			$message = $e->getMessage() ?: $this->user->lang('CONTROLLER_NOT_FOUND');
-			if ($catch)
+			if ($catch === false)
 			{
-				send_status_line(404, 'Not Found');
-				trigger_error($message);
+				throw $e;
 			}
 
-			throw new RuntimeException($mesage, $e->getCode(), $e);
+			return $this->handle_exception($e, $request, $type);
 		}
 	}
 
-	public function filter_response(Response $response, Request $request, $type)
+	/**
+	* Filter the response and dispatch response event
+	*
+	* @param Response $response Response object
+	* @param Request $request Request object
+	* @param int $type Type of request
+	* @return Response
+	*/
+	protected function filter_response(Response $response, Request $request, $type)
 	{
 		$filter = new FilterResponseEvent($this, $request, $type, $response);
-		$this->dispatcher->dispatch(KernelEvents::RESPONSE, $filter);
+
+		/**
+		* Use this event manipulate the response before it is returned.
+		*
+		* You can call getResponse() to retrieve the current response. With
+		* setResponse() you can set a new response that will be returned to
+		* the browser.
+		*
+		* @event core.kernel_response
+		* @var	FilterResponseEvent	filter	FilterResponseEvent object
+		* @since 3.1-A1
+		*/
+		$vars = array('filter');
+		extract($this->dispatcher->trigger_event('core.kernel_response', compact($vars)));
+
 		return $filter->getResponse();
+	}
+
+	/**
+	* Attempt to convert an exception into a response
+	*
+	* @param Exception $e The exception thrown
+	* @param Request $request The Request object
+	* @param int $type The type of request
+	* @return Response
+	*/
+	protected function handle_exception(Exception $e, Request $request, $type)
+	{
+		$event = new GetResponseForExceptionEvent($this, $request, $type, $e);
+
+		/**
+		* The core.kernel_exception event occurs when an uncaught exception appears
+		*
+		* This event allows you to create a response for a thrown exception or
+		* to modify the thrown exception. The event listener method receives
+		* a Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent
+		* instance.
+		*
+		* @event core.kernel_exception
+		* @var	GetResponseForExceptionEvent event GetResponseForExceptionEvent object
+		* @since 3.1-A1
+		*/
+		$vars = array('event');
+		extract($this->dispatcher->trigger_event('core.kernel_exception', compact($vars)));
+
+		// If a listener has changed the exception, use it
+		$e = $event->getException();
+
+		// If the event still does not manage to return a response,
+		// throw the exception again.
+		if (!$event->hasResponse())
+		{
+			throw $e;
+		}
+
+		$response = $event->getResponse();
+
+		try
+		{
+			return $this->filter_response($response, $request, $type);
+		}
+		catch (Exception $e)
+		{
+			return $response;
+		}
 	}
 }

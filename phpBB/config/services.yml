@@ -44,6 +44,11 @@ services:
             - @cache.driver
             - %tables.config%
 
+    controller.helper:
+        class: phpbb_controller_helper
+        arguments:
+            - @template
+
     controller.resolver:
         class: phpbb_controller_resolver
         arguments:
