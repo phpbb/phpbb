@@ -146,12 +146,11 @@ class phpbb_kernel implements HttpKernelInterface
 			* method receives a
 			* Symfony\Component\HttpKernel\Event\GetResponseEvent instance.
 			*
-			* @event core.kernel_controller
-			* @var	GetResponseEvent	event	GetResponseEvent object
+			* @event core.kernel_request
+			* @var	GetResponseEvent	$event	GetResponseEvent object
 			* @since 3.1-A1
 			*/
-			$vars = array('event');
-			extract($this->dispatcher->trigger_event('core.kernel_request', compact($vars)));
+			$this->dispatcher->dispatch('core.kernel_request', $event);
 
 			if ($event->hasResponse())
 			{
@@ -193,8 +192,7 @@ class phpbb_kernel implements HttpKernelInterface
 			* @var	FilterControllerEvent	event	FilterControllerEvent object
 			* @since 3.1-A1
 			*/
-			$vars = array('event');
-			extract($this->dispatcher->trigger_event('core.kernel_controller', compact($vars)));
+			$this->dispatcher->dispatch('core.kernel_controller', $event);
 
 			$controller = $event->getController();
 
@@ -218,8 +216,7 @@ class phpbb_kernel implements HttpKernelInterface
 				* @var	GetResponseForControllerResultEvent	event GetResponseForControllerResultEvent object
 				* @since 3.1-A1
 				*/
-				$vars = array('event');
-				extract($this->dispatcher->trigger_event('core.kernel_view', compact($vars)));
+				$this->dispatcher->dispatch('core.kernel_view', $event);
 
 				if ($event->hasResponse())
 				{
@@ -269,7 +266,7 @@ class phpbb_kernel implements HttpKernelInterface
 		* @since 3.1-A1
 		*/
 		$vars = array('filter');
-		extract($this->dispatcher->trigger_event('core.kernel_response', compact($vars)));
+		$this->dispatcher->dispatch('core.kernel_response', $filter);
 
 		return $filter->getResponse();
 	}
@@ -298,8 +295,7 @@ class phpbb_kernel implements HttpKernelInterface
 		* @var	GetResponseForExceptionEvent event GetResponseForExceptionEvent object
 		* @since 3.1-A1
 		*/
-		$vars = array('event');
-		extract($this->dispatcher->trigger_event('core.kernel_exception', compact($vars)));
+		$this->dispatcher->trigger_event('core.kernel_exception', $event);
 
 		// If a listener has changed the exception, use it
 		$e = $event->getException();
