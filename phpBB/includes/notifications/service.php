@@ -439,21 +439,51 @@ class phpbb_notifications_service
 		$this->db->sql_query($sql);
 	}
 
-/*
-	public function add_subscription($item_type, $item_id, $method = '')
+	/**
+	* Add a subscription
+	*
+	* @param string $item_type Type identifier of the subscription
+	* @param int $item_id The id of the item
+	* @param string $method The method of the notification e.g. '', 'email', or 'jabber'
+	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
+	*/
+	public function add_subscription($item_type, $item_id, $method = '', $user_id = false)
 	{
 		$this->get_item_type_class_name($item_type);
+
+		$user_id = ($user_id === false) ? $this->phpbb_container->get('user')->data['user_id'] : $user_id;
 
 		$sql = 'INSERT INTO ' . USER_NOTIFICATIONS_TABLE . ' ' .
 			$this->db->sql_build_array('INSERT', array(
 				'item_type'		=> $item_type,
 				'item_id'		=> (int) $item_id,
-				'user_id'		=> $this->phpbb_container->get('user')->data['user_id'],
+				'user_id'		=> (int) $user_id,
 				'method'		=> $method,
 			));
 		$this->db->sql_query($sql);
 	}
-*/
+
+	/**
+	* Delete a subscription
+	*
+	* @param string $item_type Type identifier of the subscription
+	* @param int $item_id The id of the item
+	* @param string $method The method of the notification e.g. '', 'email', or 'jabber'
+	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
+	*/
+	public function delete_subscription($item_type, $item_id, $method = '', $user_id = false)
+	{
+		$this->get_item_type_class_name($item_type);
+
+		$user_id = ($user_id === false) ? $this->phpbb_container->get('user')->data['user_id'] : $user_id;
+
+		$sql = 'DELETE FROM ' . USER_NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+				AND item_id = " . (int) $item_id . '
+				AND user_id = ' .(int) $user_id . "
+				AND method = '" . $this->db->sql_escape($method) . "'";
+		$this->db->sql_query($sql);
+	}
 
 	/**
 	* Load user helper
