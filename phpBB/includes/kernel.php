@@ -265,7 +265,6 @@ class phpbb_kernel implements HttpKernelInterface
 		* @var	FilterResponseEvent	$filter	FilterResponseEvent object
 		* @since 3.1-A1
 		*/
-		$vars = array('filter');
 		$this->dispatcher->dispatch('core.kernel_response', $filter);
 
 		return $filter->getResponse();
