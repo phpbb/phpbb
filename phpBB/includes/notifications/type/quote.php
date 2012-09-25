@@ -37,7 +37,7 @@ class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 	*
 	* @var string
 	*/
-	protected static $regular_expression_match = '#\[quote=&quot;(.+?)&quot;:#';
+	protected static $regular_expression_match = '#\[quote=&quot;(.+?)&quot;#';
 
 	/**
 	* Language key used to output the text
@@ -154,6 +154,12 @@ class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 		{
 			$add_notifications[$user_id] = $notifications[$user_id];
 		}
+
+		// todo Adding notifications while editing a post can be funky.
+		// If the user has read the topic/post already, and the user is newly quoted it an edit,
+		// The notification will be stuck as unread until another post is made and the user visits
+		// the topic again because the posts will not be marked as read since the topic is already
+		// marked as read
 
 		// Add the necessary notifications
 		$service->add_notifications_for_users(self::get_item_type(), $post, $add_notifications);
