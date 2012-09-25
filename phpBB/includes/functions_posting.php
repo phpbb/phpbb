@@ -2224,41 +2224,32 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	// Send Notifications
 	$phpbb_notifications = $phpbb_container->get('notifications');
+	$notification_data = array_merge($data, array(
+		'topic_title'		=> (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
+		'post_username'		=> $username,
+		'poster_id'			=> $poster_id,
+		'post_text'			=> $data['message'],
+		'post_time'			=> $current_time,
+		'post_subject'		=> $subject,
+	));
 	if ($post_approval)
 	{
 		switch ($mode)
 		{
 			case 'post' :
-				$phpbb_notifications->add_notifications(array('topic', 'quote'), array_merge($data, array(
-					'post_username'		=> $username,
-					'poster_id'			=> (int) $user->data['user_id'],
-					'post_time'			=> $current_time,
-				)));
+				$phpbb_notifications->add_notifications(array('topic', 'quote'), $notification_data);
 			break;
 
 			case 'reply' :
 			case 'quote' :
-				$phpbb_notifications->add_notifications(array('quote', 'bookmark', 'post'), array_merge($data, array(
-					'post_username'		=> $username,
-					'poster_id'			=> (int) $user->data['user_id'],
-					'post_text'			=> $data['message'],
-					'post_time'			=> $current_time,
-				)));
+				$phpbb_notifications->add_notifications(array('quote', 'bookmark', 'post'), $notification_data);
 			break;
 
 			case 'edit_topic' :
 			case 'edit_first_post' :
 			case 'edit' :
 			case 'edit_last_post' :
-				$phpbb_notifications->update_notifications('topic', array_merge($data, array(
-					'post_username'		=> $username,
-					'topic_title'		=> $subject,
-				)));
-
-				$phpbb_notifications->update_notifications(array('quote', 'bookmark', 'post'), array_merge($data, array(
-					'post_username'		=> $username,
-					'post_text'			=> $data['message'],
-				)));
+				$phpbb_notifications->update_notifications(array('quote', 'bookmark', 'topic', 'post'), $notification_data);
 			break;
 		}
 	}
@@ -2267,20 +2258,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		switch ($mode)
 		{
 			case 'post' :
-				$phpbb_notifications->add_notifications(array('topic_in_queue'), array_merge($data, array(
-					'post_username'		=> $username,
-					'poster_id'			=> (int) $user->data['user_id'],
-					'post_time'			=> $current_time,
-				)));
+				$phpbb_notifications->add_notifications(array('topic_in_queue'), $notification_data);
 			break;
 
 			case 'reply' :
 			case 'quote' :
-				$phpbb_notifications->add_notifications(array('post_in_queue'), array_merge($data, array(
-					'post_username'		=> $username,
-					'poster_id'			=> (int) $user->data['user_id'],
-					'post_time'			=> $current_time,
-				)));
+				$phpbb_notifications->add_notifications(array('post_in_queue'), $notification_data);
 			break;
 
 			case 'edit_topic' :
