@@ -189,7 +189,7 @@ class phpbb_kernel implements HttpKernelInterface
 			* instance.
 			*
 			* @event core.kernel_controller
-			* @var	FilterControllerEvent	event	FilterControllerEvent object
+			* @var	FilterControllerEvent	$event	FilterControllerEvent object
 			* @since 3.1-A1
 			*/
 			$this->dispatcher->dispatch('core.kernel_controller', $event);
@@ -213,7 +213,7 @@ class phpbb_kernel implements HttpKernelInterface
 				* instance.
 				*
 				* @event core.kernel_view
-				* @var	GetResponseForControllerResultEvent	event GetResponseForControllerResultEvent object
+				* @var	GetResponseForControllerResultEvent	$event GetResponseForControllerResultEvent object
 				* @since 3.1-A1
 				*/
 				$this->dispatcher->dispatch('core.kernel_view', $event);
@@ -262,7 +262,7 @@ class phpbb_kernel implements HttpKernelInterface
 		* the browser.
 		*
 		* @event core.kernel_response
-		* @var	FilterResponseEvent	filter	FilterResponseEvent object
+		* @var	FilterResponseEvent	$filter	FilterResponseEvent object
 		* @since 3.1-A1
 		*/
 		$vars = array('filter');
@@ -292,7 +292,7 @@ class phpbb_kernel implements HttpKernelInterface
 		* instance.
 		*
 		* @event core.kernel_exception
-		* @var	GetResponseForExceptionEvent event GetResponseForExceptionEvent object
+		* @var	GetResponseForExceptionEvent $event GetResponseForExceptionEvent object
 		* @since 3.1-A1
 		*/
 		$this->dispatcher->trigger_event('core.kernel_exception', $event);
