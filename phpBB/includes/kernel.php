@@ -230,7 +230,7 @@ class phpbb_kernel implements HttpKernelInterface
 			}
 
 			return $this->filter_response($response, $request, $type);
-		}		
+		}
 		catch (RuntimeException $e)
 		{
 			if ($catch === false)
@@ -294,16 +294,34 @@ class phpbb_kernel implements HttpKernelInterface
 		* @var	GetResponseForExceptionEvent $event GetResponseForExceptionEvent object
 		* @since 3.1-A1
 		*/
-		$this->dispatcher->trigger_event('core.kernel_exception', $event);
+		$this->dispatcher->dispatch('core.kernel_exception', $event);
 
 		// If a listener has changed the exception, use it
 		$e = $event->getException();
 
 		// If the event still does not manage to return a response,
-		// throw the exception again.
+		// output an error
+		// We can't rethrow the exception because that results in an
+		// uncaught exception
 		if (!$event->hasResponse())
 		{
-			throw $e;
+			// Instead of using trigger_error(), which does not return a
+			// response, we do it manually here
+			$template = $this->container->get('template');
+
+			$template->assign_vars(array(
+				'MESSAGE_TITLE'		=> $this->user->lang('INFORMATION'),
+				'MESSAGE_TEXT'		=> $e->getMessage(),
+			));
+
+			$template->set_filenames(array(
+				'body' => 'message_body.html',
+			));
+
+			page_header($this->user->lang('INFORMATION'));
+			page_footer(true, false, false);
+
+			return new Response($template->return_display('body'), 404);
 		}
 
 		$response = $event->getResponse();
