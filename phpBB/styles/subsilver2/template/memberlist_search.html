@@ -35,7 +35,7 @@
 		{
 			opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value = user;
 			self.close();
-		}		
+		}
 
 		/**
 		* Mark/unmark checklist
@@ -51,7 +51,7 @@
 			}
 
 			var rb = parent.getElementsByTagName('input');
-			
+
 			for (var r = 0; r < rb.length; r++)
 			{
 				if (rb[r].name.substr(0, name.length) == name)
@@ -107,7 +107,7 @@
 </tr>
 <tr>
 	<td class="row1"><b class="genmed">{L_POSTS}{L_COLON}</b></td>
-	<td class="row2"><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="post" type="text" name="count" value="{COUNT}" /></td>
+	<td class="row2"><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="post" type="number" min="0" name="count" value="{COUNT}" /></td>
 	<td class="row1"><b class="genmed">{L_JABBER}{L_COLON}</b></td>
 	<td class="row2"><input class="post" type="text" name="jabber" value="{JABBER}" /></td>
 </tr>
