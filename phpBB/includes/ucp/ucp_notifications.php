@@ -76,12 +76,12 @@ class ucp_notifications
 	*/
 	public function output_notification_types($block = 'notification_types', phpbb_notifications_service $phpbb_notifications, phpbb_template $template, phpbb_user $user)
 	{
-		foreach($phpbb_notifications->get_subscription_types() as $type)
+		foreach($phpbb_notifications->get_subscription_types() as $type => $data)
 		{
 			$template->assign_block_vars($block, array(
 				'TYPE'				=> $type,
 
-				'NAME'				=> $user->lang('NOTIFICATION_TYPE_' . strtoupper($type)),
+				'NAME'				=> (isset($data['lang'])) ? $user->lang($data['lang']) : $user->lang('NOTIFICATION_TYPE_' . strtoupper($type)),
 			));
 
 			$this->output_notification_methods($block . '.notification_methods', $phpbb_notifications, $template, $user);

@@ -40,6 +40,17 @@ class phpbb_notifications_type_disapprove_post extends phpbb_notifications_type_
 	protected $language_key = 'NOTIFICATION_POST_DISAPPROVED';
 
 	/**
+	* Notification option data (for outputting to the user)
+	*
+	* @var bool|array False if the service should use it's default data
+	* 					Array of data (including keys 'id' and 'lang')
+	*/
+	public static $notification_option = array(
+		'id'	=> 'moderation_queue',
+		'lang'	=> 'NOTIFICATION_TYPE_MODERATION_QUEUE',
+	);
+
+	/**
 	* Get the type of notification this is
 	* phpbb_notifications_type_
 	*/

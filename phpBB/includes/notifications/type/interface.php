@@ -25,6 +25,8 @@ interface phpbb_notifications_type_interface
 
 	public static function get_item_id($type_data);
 
+	public static function is_available(ContainerBuilder $phpbb_container);
+
 	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $type_data);
 
 	public function get_title();

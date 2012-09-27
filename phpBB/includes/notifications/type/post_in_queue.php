@@ -40,12 +40,33 @@ class phpbb_notifications_type_post_in_queue extends phpbb_notifications_type_po
 	protected $language_key = 'NOTIFICATION_POST_IN_QUEUE';
 
 	/**
+	* Notification option data (for outputting to the user)
+	*
+	* @var bool|array False if the service should use it's default data
+	* 					Array of data (including keys 'id' and 'lang')
+	*/
+	public static $notification_option = array(
+		'id'	=> 'needs_approval',
+		'lang'	=> 'NOTIFICATION_TYPE_IN_MODERATION_QUEUE',
+	);
+
+	/**
 	* Get the type of notification this is
 	* phpbb_notifications_type_
 	*/
 	public static function get_item_type()
 	{
 		return 'post_in_queue';
+	}
+
+	/**
+	* Is available
+	*/
+	public static function is_available(ContainerBuilder $phpbb_container)
+	{
+		$m_approve = $phpbb_container->get('auth')->acl_getf('m_approve', true);
+
+		return (!empty($m_approve));
 	}
 
 	/**
@@ -58,9 +79,8 @@ class phpbb_notifications_type_post_in_queue extends phpbb_notifications_type_po
 	*/
 	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post)
 	{
-		/* todo
-		* find what type of notification they'd like to receive
-		*/
+		$db = $phpbb_container->get('dbal.conn');
+
 		$auth_approve = $phpbb_container->get('auth')->acl_get_list(false, 'm_approve', $post['forum_id']);
 
 		if (empty($auth_approve))
@@ -70,10 +90,21 @@ class phpbb_notifications_type_post_in_queue extends phpbb_notifications_type_po
 
 		$notify_users = array();
 
-		foreach ($auth_approve[$post['forum_id']]['m_approve'] as $user_id)
+		$sql = 'SELECT *
+			FROM ' . USER_NOTIFICATIONS_TABLE . "
+			WHERE item_type = 'needs_approval'
+				AND " . $db->sql_in_set('user_id', $auth_approve[$topic['forum_id']]['m_approve']);
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$notify_users[$user_id] = array('');
+			if (!isset($rowset[$row['user_id']]))
+			{
+				$notify_users[$row['user_id']] = array();
+			}
+
+			$notify_users[$row['user_id']][] = $row['method'];
 		}
+		$db->sql_freeresult($result);
 
 		return $notify_users;
 	}

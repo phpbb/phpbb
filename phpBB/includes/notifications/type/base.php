@@ -37,6 +37,14 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	protected $users = array();
 
 	/**
+	* Notification option data (for outputting to the user)
+	*
+	* @var bool|array False if the service should use it's default data
+	* 					Array of data (including keys 'id' and 'lang')
+	*/
+	public static $notification_option = false;
+
+	/**
 	* Indentification data
 	* item_type
 	* item_id
@@ -234,6 +242,14 @@ abstract class phpbb_notifications_type_base implements phpbb_notifications_type
 	public static function load_special(ContainerBuilder $phpbb_container, $data, $notifications)
 	{
 		return;
+	}
+
+	/**
+	* Is available (fall-back)
+	*/
+	public static function is_available(ContainerBuilder $phpbb_container)
+	{
+		return true;
 	}
 
 	/**
