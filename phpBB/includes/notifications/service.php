@@ -440,6 +440,43 @@ class phpbb_notifications_service
 	}
 
 	/**
+	* Get all of the subscription types
+	*
+	* @return array Array of item types
+	*/
+	public function get_subscription_types()
+	{
+		$subscription_types = array();
+
+		foreach ($this->get_subscription_files('notifications/type/') as $class => $file)
+		{
+			$class = $this->get_item_type_class_name($class);
+
+			if (!class_exists($class))
+			{
+				include($file);
+			}
+
+			if (method_exists($class, 'get_item_type'))
+			{
+				$subscription_types[] = $class::get_item_type();
+			}
+		}
+
+		return $subscription_types;
+	}
+
+	/**
+	* Get all of the subscription methods
+	*
+	* @return array Array of methods
+	*/
+	public function get_subscription_methods()
+	{
+		return array_keys($this->get_subscription_files('notifications/method/'));
+	}
+
+	/**
 	* Add a subscription
 	*
 	* @param string $item_type Type identifier of the subscription
@@ -535,5 +572,37 @@ class phpbb_notifications_service
 		}
 
 		return 'phpbb_notifications_type_' . $item_type;
+	}
+
+	/**
+	* Helper to get subscription related files with the finder
+	*/
+	private function get_subscription_files($path)
+	{
+		$ext_manager = $this->phpbb_container->get('ext.manager');
+		$php_ext = $this->phpbb_container->getParameter('core.php_ext');
+
+		$finder = $ext_manager->get_finder();
+
+		$subscription_files = array();
+
+		$files = $finder
+			->core_path('includes/' . $path)
+			->extension_directory($path)
+			->get_files();
+		foreach ($files as $file)
+		{
+			$class = substr($file, strrpos($file, '/'));
+			$class = substr($class, 1, (strpos($class, '.' . $php_ext) - 1));
+
+			if ($class == 'interface' || $class == 'base')
+			{
+				continue;
+			}
+
+			$subscription_files[$class] = $file;
+		}
+
+		return $subscription_files;
 	}
 }
