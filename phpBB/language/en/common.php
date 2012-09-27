@@ -389,7 +389,10 @@ $lang = array_merge($lang, array(
 	'NOT_AUTHORISED'			=> 'You are not authorised to access this area.',
 	'NOT_WATCHING_FORUM'		=> 'You are no longer subscribed to updates on this forum.',
 	'NOT_WATCHING_TOPIC'		=> 'You are no longer subscribed to this topic.',
-	'NOTIFICATIONS'						=> 'Notifications',
+	'NOTIFICATIONS_CNT'			=> array(
+		1	=> '%d Notification',
+		2	=> '%d Notifications',
+	),
 	'NOTIFICATION_BOOKMARK'				=> '%1$s replied to the topic "%2$s" you have bookmarked.',
 	'NOTIFICATION_PM'					=> '%1$s sent you a Private Message "%2$s".',
 	'NOTIFICATION_POST'					=> '%1$s replied to the topic "%2$s".',

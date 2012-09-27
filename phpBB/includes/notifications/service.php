@@ -503,6 +503,46 @@ class phpbb_notifications_service
 	}
 
 	/**
+	* Get subscriptions
+	*
+	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
+	* @param bool $only_global True to select only global subscription options (item_id = 0)
+	*
+	* @return array Subscriptions
+	*/
+	public function get_subscriptions($user_id = false, $only_global = false)
+	{
+		$user_id = ($user_id === false) ? $this->phpbb_container->get('user')->data['user_id'] : $user_id;
+
+		$subscriptions = array();
+
+		$sql = 'SELECT *
+			FROM ' . USER_NOTIFICATIONS_TABLE . '
+			WHERE user_id = ' . (int) $user_id .
+				(($only_global) ? ' AND item_id = 0' : '');
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			if ($only_global)
+			{
+				if (!isset($subscriptions[$row['item_type']]))
+				{
+					$subscriptions[$row['item_type']] = array();
+				}
+
+				$subscriptions[$row['item_type']][] = $row['method'];
+			}
+			else
+			{
+				$subscriptions[] = $row;
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		return $subscriptions;
+	}
+
+	/**
 	* Add a subscription
 	*
 	* @param string $item_type Type identifier of the subscription
@@ -510,7 +550,7 @@ class phpbb_notifications_service
 	* @param string $method The method of the notification e.g. '', 'email', or 'jabber'
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
 	*/
-	public function add_subscription($item_type, $item_id, $method = '', $user_id = false)
+	public function add_subscription($item_type, $item_id = 0, $method = '', $user_id = false)
 	{
 		$this->get_item_type_class_name($item_type);
 
@@ -534,7 +574,7 @@ class phpbb_notifications_service
 	* @param string $method The method of the notification e.g. '', 'email', or 'jabber'
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
 	*/
-	public function delete_subscription($item_type, $item_id, $method = '', $user_id = false)
+	public function delete_subscription($item_type, $item_id = 0, $method = '', $user_id = false)
 	{
 		$this->get_item_type_class_name($item_type);
 
