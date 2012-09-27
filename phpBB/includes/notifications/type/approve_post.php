@@ -40,6 +40,17 @@ class phpbb_notifications_type_approve_post extends phpbb_notifications_type_pos
 	protected $language_key = 'NOTIFICATION_POST_APPROVED';
 
 	/**
+	* Notification option data (for outputting to the user)
+	*
+	* @var bool|array False if the service should use it's default data
+	* 					Array of data (including keys 'id' and 'lang')
+	*/
+	public static $notification_option = array(
+		'id'	=> 'moderation_queue',
+		'lang'	=> 'NOTIFICATION_TYPE_MODERATION_QUEUE',
+	);
+
+	/**
 	* Get the type of notification this is
 	* phpbb_notifications_type_
 	*/
