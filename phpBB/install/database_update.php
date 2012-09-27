@@ -2465,6 +2465,13 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> '',
 					'cat'		=> 'UCP_PROFILE',
 				),
+				'notification_options'	=> array(
+					'base'		=> 'ucp_notification_options',
+					'class'		=> 'ucp',
+					'title'		=> 'UCP_NOTIFICATION_OPTIONS',
+					'auth'		=> '',
+					'cat'		=> 'UCP_MAIN',
+				),
 			);
 
 			_add_modules($modules_to_install);
@@ -2732,7 +2739,7 @@ function change_database_data(&$no_updates, $version)
 				// After we have calculated the timezones we can delete user_dst column from user table.
 				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
 			}
-			
+
 			if (!isset($config['site_home_url']))
 			{
 				$config->set('site_home_url', '');
