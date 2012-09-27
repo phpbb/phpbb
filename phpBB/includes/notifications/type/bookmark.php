@@ -62,28 +62,23 @@ class phpbb_notifications_type_bookmark extends phpbb_notifications_type_post
 
 		$users = array();
 
-		/* todo
-		* find what type of notification they'd like to receive
-		*/
 		$sql = 'SELECT user_id
 			FROM ' . BOOKMARKS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', $post['topic_id']);
+			WHERE ' . $db->sql_in_set('topic_id', $post['topic_id']) . '
+				AND user_id <> ' . (int) $post['poster_id'];
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$users[$row['user_id']] = array('');
+			$users[] = $row['user_id'];
 		}
 		$db->sql_freeresult($result);
-
-		// Never notify the poster
-		unset($users[$post['poster_id']]);
 
 		if (empty($users))
 		{
 			return array();
 		}
 
-		$auth_read = $phpbb_container->get('auth')->acl_get_list(array_keys($users), 'f_read', $post['forum_id']);
+		$auth_read = $phpbb_container->get('auth')->acl_get_list($users, 'f_read', $post['forum_id']);
 
 		if (empty($auth_read))
 		{
@@ -92,10 +87,21 @@ class phpbb_notifications_type_bookmark extends phpbb_notifications_type_post
 
 		$notify_users = array();
 
-		foreach ($auth_read[$post['forum_id']]['f_read'] as $user_id)
+		$sql = 'SELECT *
+			FROM ' . USER_NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . self::get_item_type() . "'
+				AND " . $db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$notify_users[$user_id] = $users[$user_id];
+			if (!isset($rowset[$row['user_id']]))
+			{
+				$notify_users[$row['user_id']] = array();
+			}
+
+			$notify_users[$row['user_id']][] = $row['method'];
 		}
+		$db->sql_freeresult($result);
 
 		return $notify_users;
 	}

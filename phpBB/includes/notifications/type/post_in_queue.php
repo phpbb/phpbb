@@ -92,7 +92,7 @@ class phpbb_notifications_type_post_in_queue extends phpbb_notifications_type_po
 
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = 'needs_approval'
+			WHERE item_type = '" . self::$notification_option['id'] . "'
 				AND " . $db->sql_in_set('user_id', $auth_approve[$topic['forum_id']]['m_approve']);
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))

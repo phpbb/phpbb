@@ -85,7 +85,7 @@ class phpbb_notifications_type_approve_topic extends phpbb_notifications_type_to
 
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = 'moderation_queue'
+			WHERE item_type = '" . self::$notification_option['id'] . "'
 				AND " . $db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
