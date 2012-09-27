@@ -322,7 +322,7 @@
 <!-- IF S_TOPIC_TYPE_ANNOUNCE or S_TOPIC_TYPE_STICKY -->
 	<tr>
 		<td class="row1"><b class="genmed">{L_STICK_TOPIC_FOR}{L_COLON}</b><br /><span class="gensmall">{L_STICKY_ANNOUNCE_TIME_LIMIT}</span></td>
-		<td class="row2"><input class="post" type="text" name="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" />&nbsp;<b class="gen">{L_DAYS}</b> <span class="gensmall">{L_STICK_TOPIC_FOR_EXPLAIN}</span></td>
+		<td class="row2"><input class="post" type="number" min="0" max="999" name="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" />&nbsp;<b class="gen">{L_DAYS}</b> <span class="gensmall">{L_STICK_TOPIC_FOR_EXPLAIN}</span></td>
 	</tr>
 <!-- ENDIF -->
 
