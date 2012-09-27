@@ -2645,6 +2645,13 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> 'acl_a_extensions',
 					'cat'		=> 'ACP_EXTENSION_MANAGEMENT',
 				),
+				'notification_options'	=> array(
+					'base'		=> 'ucp_notification_options',
+					'class'		=> 'ucp',
+					'title'		=> 'UCP_NOTIFICATION_OPTIONS',
+					'auth'		=> '',
+					'cat'		=> 'UCP_MAIN',
+				),
 			);
 
 			_add_modules($modules_to_install);
