@@ -69,11 +69,9 @@ class phpbb_notifications_type_approve_topic extends phpbb_notifications_type_to
 	*/
 	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post)
 	{
-		$users = array();
+		$db = $phpbb_container->get('dbal.conn');
 
-		/* todo
-		* find what type of notification they'd like to receive
-		*/
+		$users = array();
 		$users[$post['poster_id']] = array('');
 
 		$auth_read = $phpbb_container->get('auth')->acl_get_list(array_keys($users), 'f_read', $post['forum_id']);
@@ -85,10 +83,21 @@ class phpbb_notifications_type_approve_topic extends phpbb_notifications_type_to
 
 		$notify_users = array();
 
-		foreach ($auth_read[$post['forum_id']]['f_read'] as $user_id)
+		$sql = 'SELECT *
+			FROM ' . USER_NOTIFICATIONS_TABLE . "
+			WHERE item_type = 'moderation_queue'
+				AND " . $db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$notify_users[$user_id] = $users[$user_id];
+			if (!isset($rowset[$row['user_id']]))
+			{
+				$notify_users[$row['user_id']] = array();
+			}
+
+			$notify_users[$row['user_id']][] = $row['method'];
 		}
+		$db->sql_freeresult($result);
 
 		return $notify_users;
 	}
