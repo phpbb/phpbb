@@ -457,9 +457,16 @@ class phpbb_notifications_service
 				include($file);
 			}
 
-			if (method_exists($class, 'get_item_type'))
+			if ($class::is_available($this->phpbb_container) && method_exists($class, 'get_item_type'))
 			{
-				$subscription_types[] = $class::get_item_type();
+				if ($class::$notification_option === false)
+				{
+					$subscription_types[$class::get_item_type()] = $class::get_item_type();
+				}
+				else
+				{
+					$subscription_types[$class::$notification_option['id']] = $class::$notification_option;
+				}
 			}
 		}
 
@@ -548,6 +555,8 @@ class phpbb_notifications_service
 	*/
 	public function load_users($user_ids)
 	{
+		$user_ids[] = ANONYMOUS;
+
 		// Load the users
 		$user_ids = array_unique($user_ids);
 
@@ -577,7 +586,7 @@ class phpbb_notifications_service
 	*/
 	public function get_user($user_id)
 	{
-		return $this->users[$user_id];
+		return (isset($this->users[$user_id])) ? $this->users[$user_id] : $this->users[ANONYMOUS];
 	}
 
 	/**
