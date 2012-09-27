@@ -8,10 +8,10 @@
 			<li class="header">
 				<dl class="icon">
 					<dt>{L_NOTIFICATION_TYPE}</dt>
-						<dd class="topics">{L_NOTIFICATIONS}</dd>
 					<!-- BEGIN notification_methods -->
-						<dd class="topics">{notification_methods.NAME}</dd>
+						<dd class="mark">{notification_methods.NAME}</dd>
 					<!-- END notification_methods -->
+					<dd class="mark">{L_NOTIFICATIONS}</dd>
 				</dl>
 			</li>
 		</ul>
@@ -21,13 +21,12 @@
 			<li class="row<!-- IF notification_types.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl class="icon">
 					<dt>
-						{notification_types.NAME}<br />
-						{notification_types.DESC}
+						{notification_types.NAME}
 					</dt>
-						<dd class="topics"><input type="checkbox" name="{notification_types.TYPE}_notification" /> <dfn>{notification_methods.NAME}</dfn></dd>
 					<!-- BEGIN notification_methods -->
-						<dd class="topics"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}" /> <dfn>{notification_methods.NAME}</dfn></dd>
+						<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}" /> <dfn>{notification_methods.NAME}</dfn></dd>
 					<!-- END notification_methods -->
+					<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification" /> <dfn>{notification_methods.NAME}</dfn></dd>
 				</dl>
 			</li>
 		<!-- END notification_types -->
