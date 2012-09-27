@@ -473,7 +473,26 @@ class phpbb_notifications_service
 	*/
 	public function get_subscription_methods()
 	{
-		return array_keys($this->get_subscription_files('notifications/method/'));
+		$subscription_methods = array();
+
+		foreach ($this->get_subscription_files('notifications/method/') as $method_name => $file)
+		{
+			$class_name = 'phpbb_notifications_method_' . $method_name;
+
+			if (!class_exists($class_name))
+			{
+				include($file);
+			}
+
+			$method = new $class_name($this->phpbb_container);
+
+			if ($method->is_available())
+			{
+				$subscription_methods[] = $method_name;
+			}
+		}
+
+		return $subscription_methods;
 	}
 
 	/**
