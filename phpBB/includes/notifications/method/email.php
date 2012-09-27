@@ -89,7 +89,7 @@ class phpbb_notifications_method_email extends phpbb_notifications_method_base
 			$messenger->assign_vars(array_merge(array(
 				'USERNAME'						=> $user['username'],
 
-				'U_NOTIFICATION_SETTINGS'		=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=notifications', // todo Update URL
+				'U_NOTIFICATION_SETTINGS'		=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=ucp_notifications',
 			), $notification->get_email_template_variables()));
 
 			$messenger->send($this->notify_method);
