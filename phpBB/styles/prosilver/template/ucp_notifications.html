@@ -1,0 +1,48 @@
+<!-- INCLUDE ucp_header.html -->
+
+<form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
+
+<div class="panel">
+	<div class="inner">
+		<ul class="topiclist">
+			<li class="header">
+				<dl class="icon">
+					<dt>{L_NOTIFICATION_TYPE}</dt>
+						<dd class="topics">{L_NOTIFICATIONS}</dd>
+					<!-- BEGIN notification_methods -->
+						<dd class="topics">{notification_methods.NAME}</dd>
+					<!-- END notification_methods -->
+				</dl>
+			</li>
+		</ul>
+	<ul class="topiclist cplist">
+
+		<!-- BEGIN notification_types -->
+			<li class="row<!-- IF notification_types.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+				<dl class="icon">
+					<dt>
+						{notification_types.NAME}<br />
+						{notification_types.DESC}
+					</dt>
+						<dd class="topics"><input type="checkbox" name="{notification_types.TYPE}_notification" /> <dfn>{notification_methods.NAME}</dfn></dd>
+					<!-- BEGIN notification_methods -->
+						<dd class="topics"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}" /> <dfn>{notification_methods.NAME}</dfn></dd>
+					<!-- END notification_methods -->
+				</dl>
+			</li>
+		<!-- END notification_types -->
+
+		</ul>
+	</div>
+</div>
+
+
+<fieldset class="submit-buttons">
+	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
+	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+	{S_FORM_TOKEN}
+</fieldset>
+
+</form>
+
+<!-- INCLUDE ucp_footer.html -->
