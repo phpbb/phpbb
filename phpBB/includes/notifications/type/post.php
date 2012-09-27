@@ -86,10 +86,6 @@ class phpbb_notifications_type_post extends phpbb_notifications_type_base
 
 		$users = array();
 
-		/* todo
-		* find what type of notification they'd like to receive
-		* make sure not to send duplicate notifications
-		*/
 		$sql = 'SELECT user_id
 			FROM ' . TOPICS_WATCH_TABLE . '
 			WHERE topic_id = ' . (int) $post['topic_id'] . '
