@@ -70,8 +70,12 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 	*
 	* @return array
 	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $pm)
+	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $pm, $options = array())
 	{
+		$options = array_merge(array(
+			'ignore_users'		=> array(),
+		), $options);
+
 		$service = $phpbb_container->get('notifications');
 		$db = $phpbb_container->get('dbal.conn');
 		$user = $phpbb_container->get('user');
@@ -92,6 +96,11 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
+			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
+			{
+				continue;
+			}
+
 			if (!isset($rowset[$row['user_id']]))
 			{
 				$notify_users[$row['user_id']] = array();
