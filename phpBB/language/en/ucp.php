@@ -470,7 +470,8 @@ $lang = array_merge($lang, array(
 	'UCP_MSNM'					=> 'Windows Live Messenger',
 	'UCP_NO_ATTACHMENTS'		=> 'You have posted no files.',
 
-	'UCP_NOTIFICATION_OPTIONS'	=> 'Notification options',
+	'UCP_NOTIFICATION_OPTIONS'			=> 'Notification options',
+	'UCP_NOTIFICATION_OPTIONS_EXPLAIN'	=> 'Here you can set your preferred notification methods for the board.',
 
 	'UCP_PREFS'					=> 'Board preferences',
 	'UCP_PREFS_PERSONAL'		=> 'Edit global settings',
