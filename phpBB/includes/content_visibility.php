@@ -47,9 +47,15 @@ class phpbb_content_visibility
 			{
 				// The user can see all types, so we simplify this to an empty string,
 				// as we don't need to restrict anything on the query.
-				return '';
+				return '1 = 1';
 			}
+		}
 
+		return $db->sql_in_set($table_alias . $mode . '_visibility', $status_ary);
+
+		/**
+		* @todo: Commented out, because the performance is not the best
+		*
 			// If the user has m_restore, the rest of the function will not
 			// make more content visible, so we can return the query here.
 			return $db->sql_in_set($table_alias . $mode . '_visibility', $status_ary);
@@ -64,7 +70,7 @@ class phpbb_content_visibility
 			$clause = '(' . $clause . "
 				OR ($table_alias{$mode}_visibility = " . ITEM_DELETED . "
 					AND $table_alias$poster_column = " . (int) $user->data['user_id'] . '))';
-		}
+		}*/
 
 		return $clause;
 	}
@@ -100,6 +106,9 @@ class phpbb_content_visibility
 				AND ' . $db->sql_in_set($table_alias . 'forum_id', $restore_forums) . ')';
 		}
 
+		/*
+		* @todo: Commented out, because the performance is not the best
+		*
 		// we also allow the user to view deleted posts he himself made
 		$user_restore_forums = array_diff(array_intersect($forum_ids, array_keys($auth->acl_getf('f_restore', true))), $restore_forums);
 		if (sizeof($user_restore_forums) && !sizeof($restore_forums))
@@ -111,6 +120,7 @@ class phpbb_content_visibility
 				AND $table_alias{$mode}_visibility = " . ITEM_DELETED . "
 				AND " . $db->sql_in_set($table_alias . 'forum_id', $user_restore_forums) . ')';
 		}
+		*/
 
 		$where_sql .= ')';
 
@@ -148,6 +158,9 @@ class phpbb_content_visibility
 				AND ' . $db->sql_in_set($table_alias . 'forum_id', $restore_forums) . ')';
 		}
 
+		/*
+		* @todo: Commented out, because the performance is not the best
+		*
 		// we also allow the user to view deleted posts he himself made
 		$user_restore_forums = array_diff(array_keys($auth->acl_getf('f_restore', true)), $exclude_forum_ids);
 		if (sizeof($user_restore_forums) && !sizeof($restore_forums))
@@ -159,6 +172,7 @@ class phpbb_content_visibility
 				AND $table_alias{$mode}_visibility = " . ITEM_DELETED . "
 				AND " . $db->sql_in_set($table_alias . 'forum_id', $user_restore_forums) . ')';
 		}
+		*/
 
 		$where_sql .= ')';
 
