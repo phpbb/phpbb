@@ -63,8 +63,12 @@ class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 	*
 	* @return array
 	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post)
+	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post, $options = array())
 	{
+		$options = array_merge(array(
+			'ignore_users'		=> array(),
+		), $options);
+
 		$db = $phpbb_container->get('dbal.conn');
 
 		$usernames = false;
@@ -113,6 +117,11 @@ class phpbb_notifications_type_quote extends phpbb_notifications_type_post
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
+			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
+			{
+				continue;
+			}
+
 			if (!isset($rowset[$row['user_id']]))
 			{
 				$notify_users[$row['user_id']] = array();

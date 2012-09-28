@@ -76,8 +76,12 @@ class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 	*
 	* @return array
 	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $topic)
+	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $topic, $options = array())
 	{
+		$options = array_merge(array(
+			'ignore_users'		=> array(),
+		), $options);
+
 		// Let's continue to use the phpBB subscriptions system, at least for now.
 		// It may not be the nicest thing, but it is already working and it would be significant work to replace it
 		//$users = parent::_find_users_for_notification($phpbb_container, $topic['forum_id']);
@@ -119,6 +123,11 @@ class phpbb_notifications_type_topic extends phpbb_notifications_type_base
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
+			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
+			{
+				continue;
+			}
+
 			if (!isset($rowset[$row['user_id']]))
 			{
 				$notify_users[$row['user_id']] = array();

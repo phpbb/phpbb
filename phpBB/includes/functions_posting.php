@@ -2237,7 +2237,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		switch ($mode)
 		{
 			case 'post' :
-				$phpbb_notifications->add_notifications(array('topic', 'quote'), $notification_data);
+				$phpbb_notifications->add_notifications(array('quote', 'topic'), $notification_data);
 			break;
 
 			case 'reply' :
