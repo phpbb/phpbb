@@ -2465,8 +2465,8 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> '',
 					'cat'		=> 'UCP_PROFILE',
 				),
-				'notification_options'	=> array(
-					'base'		=> 'ucp_notification_options',
+				'notifications'	=> array(
+					'base'		=> 'ucp_notifications',
 					'class'		=> 'ucp',
 					'title'		=> 'UCP_NOTIFICATION_OPTIONS',
 					'auth'		=> '',
