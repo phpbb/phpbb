@@ -38,31 +38,7 @@
 				<label for="hideonline0"><input type="radio" name="hideonline" id="hideonline0" value="0"<!-- IF not S_HIDE_ONLINE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
 			</dd>
 		</dl>
-	<!-- ENDIF -->		
-	<!-- IF S_SELECT_NOTIFY -->
-		<dl>
-			<dt><label for="notifymethod0">{L_NOTIFY_METHOD}{L_COLON}</label></dt>
-			<dd>
-				<label for="notifymethod0"><input type="radio" name="notifymethod" id="notifymethod0" value="0"<!-- IF S_NOTIFY_EMAIL --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_EMAIL}</label> 
-				<label for="notifymethod1"><input type="radio" name="notifymethod" id="notifymethod1" value="1"<!-- IF S_NOTIFY_IM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_IM}</label> 
-				<label for="notifymethod2"><input type="radio" name="notifymethod" id="notifymethod2" value="2"<!-- IF S_NOTIFY_BOTH --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_BOTH}</label>
-			</dd>
-		</dl>
 	<!-- ENDIF -->
-	<dl>
-		<dt><label for="notifypm1">{L_NOTIFY_ON_PM}{L_COLON}</label></dt>
-		<dd>
-			<label for="notifypm1"><input type="radio" name="notifypm" id="notifypm1" value="1"<!-- IF S_NOTIFY_PM --> checked="checked"<!-- ENDIF --> /> {L_YES}</label> 
-			<label for="notifypm0"><input type="radio" name="notifypm" id="notifypm0" value="0"<!-- IF not S_NOTIFY_PM --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
-		</dd>
-	</dl>
-	<dl>
-		<dt><label for="popuppm0">{L_POPUP_ON_PM}{L_COLON}</label></dt>
-		<dd>
-			<label for="popuppm1"><input type="radio" name="popuppm" id="popuppm1" value="1"<!-- IF S_POPUP_PM --> checked="checked"<!-- ENDIF --> /> {L_YES}</label> 
-			<label for="popuppm0"><input type="radio" name="popuppm" id="popuppm0" value="0"<!-- IF not S_POPUP_PM --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
-		</dd>
-	</dl>
 	<!-- IF S_MORE_LANGUAGES -->
 		<dl>
 			<dt><label for="lang">{L_BOARD_LANGUAGE}{L_COLON}</label></dt>
