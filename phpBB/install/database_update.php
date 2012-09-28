@@ -2459,6 +2459,19 @@ function change_database_data(&$no_updates, $version)
 				unset($next_legend);
 			}
 
+			// Create new Customise ACP tab
+			$module_manager = new acp_modules();
+			$module_manager->update_module_data(array(
+				'parent_id'         => 0,
+				'module_enabled'    => 1,
+				'module_display'    => 1,
+				'module_basename'   => ''.
+				'module_class'      => 'acp',
+				'module_mode'       => '',
+				'module_auth'       => '',
+				'module_langname'	=> 'ACP_CAT_CUSTOMISE',
+			));
+
 			// Install modules
 			$modules_to_install = array(
 				'position'	=> array(
@@ -2489,26 +2502,19 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> 'acl_a_styles',
 					'cat'		=> 'ACP_STYLE_MANAGEMENT',
 				),
-				'extensions'	=> array(
-					'base'		=> 'acp_extensions',
-					'class'		=> 'acp',
-					'title'		=> 'ACP_EXTENSIONS',
-					'auth'		=> 'acl_a_extensions',
-					'cat'		=> 'ACP_EXTENSION_MANAGEMENT',
-				),
-				'lang_management'	=> array(
-					'base'		=> 'acp_language',
-					'class'		=> 'acp',
-					'title'		=> 'ACL_LANGUAGE_PACKS',
-					'auth'		=> 'acl_a_language',
-					'cat'		=> 'ACL_LANGUAGE',
-				),
 				'autologin_keys'	=> array(
 					'base'		=> 'ucp_profile',
 					'class'		=> 'ucp',
 					'title'		=> 'UCP_PROFILE_AUTOLOGIN_KEYS',
 					'auth'		=> '',
 					'cat'		=> 'UCP_PROFILE',
+				),
+				'extensions'    => array(
+					'base'		=> 'acp_extensions',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_EXTENSIONS',
+					'auth'		=> 'acl_a_extensions',
+					'cat'		=> 'ACP_EXTENSION_MANAGEMENT',
 				),
 			);
 
@@ -2517,6 +2523,27 @@ function change_database_data(&$no_updates, $version)
 			$sql = 'DELETE FROM ' . MODULES_TABLE . "
 				WHERE (module_basename = 'styles' OR module_basename = 'acp_styles') AND (module_mode = 'imageset' OR module_mode = 'theme' OR module_mode = 'template')";
 			_sql($sql, $errored, $error_ary);
+
+			// Move language management to Customise
+			// First select the current language managment module ID
+			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'language' OR module_langname = 'styles'";
+			$result = $db->sql_query($sql);
+			$modules_to_move = $db->sql_fetchrowset($result);
+			$db->sql_freeresult($result);
+
+			// Next, selec the ID of the new parent module
+			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+				WHERE module_langname = 'ACP_CAT_CUSTOMISE'";
+			$result = $db->sql_query($sql);
+			$customise_category_id = $db->sql_fetchfield('module_id');
+			$db->sql_freeresult($result);
+
+			// Now perform the move
+			foreach ($modules_to_move as $module_id)
+			{
+				$module_manager->move_module($module_id, $customise_category_id);
+			}
 
 			// Localise Global Announcements
 			$sql = 'SELECT topic_id, topic_approved, (topic_replies + 1) AS topic_posts, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
