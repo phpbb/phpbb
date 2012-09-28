@@ -185,21 +185,28 @@ class phpbb_content_visibility
 	* @param $visibility - int - element of {ITEM_UNAPPROVED, ITEM_APPROVED, ITEM_DELETED}
 	* @param $topic_id - int - topic ID to act on
 	* @param $forum_id - int - forum ID where $topic_id resides
-	* @return bool true = success, false = fail
+	* @return void
 	*/
-	static public function set_topic_visibility($visibility, $topic_id, $forum_id)
+	static public function set_topic_visibility($visibility, $topic_id, $forum_id, $user_id, $time, $reason)
 	{
 		global $db;
 
-		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET topic_visibility = ' . (int) $visibility . '
+		$data = array(
+			'topic_visibility'		=> (int) $visibility,
+			'topic_delete_user'		=> (int) $user_id,
+			'topic_delete_time'		=> ((int) $time) ?: time(),
+			'topic_delete_reason'	=> truncate_string($reason, 255, 255, false),
+		);
+
+		$sql = 'UPDATE ' . TOPICS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $data) . '
 			WHERE topic_id = ' . (int) $topic_id;
 		$db->sql_query($sql);
 
-		// if we're approving, disapproving, or deleteing a topic, assume that
-		// we are adjusting _all_ posts in that topic.
-		$status = self::set_post_visibility($visibility, false, $topic_id, $forum_id, true, true);
-
-		return $status;
+		// If we're approving, disapproving, or deleteing a topic
+		// we also update all posts in that topic that need to be changed.
+		// However, we do not set the same reason for every post.
+		self::set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true);
 	}
 
 	/**
@@ -209,8 +216,9 @@ class phpbb_content_visibility
 	* @param $forum_id - int - forum ID where $topic_id resides
 	* @param $is_starter - bool - is this the first post of the topic
 	* @param $is_latest - bool - is this the last post of the topic
+	* @return void
 	*/
-	static public function set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $is_starter, $is_latest)
+	static public function set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest)
 	{
 		global $db;
 
@@ -230,19 +238,32 @@ class phpbb_content_visibility
 		}
 		else
 		{
-			// throw new MissingArgumentsException(); <-- a nice idea
-			return false;
+			return;
 		}
 
-		$sql = 'UPDATE ' . POSTS_TABLE . ' SET post_visibility = ' . (int) $visibility . '
+		$data = array(
+			'post_visibility'		=> (int) $visibility,
+			'post_delete_user'		=> (int) $user_id,
+			'post_delete_time'		=> ((int) $time) ?: time(),
+			'post_delete_reason'	=> truncate_string($reason, 255, 255, false),
+		);
+
+		$sql = 'UPDATE ' . POSTS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $data) . '
 			WHERE ' . $where_sql;
 		$db->sql_query($sql);
 
 		// Sync the first/last topic information if needed
 		if ($is_starter || $is_latest)
 		{
-			update_post_information('topic', $topic_id, false);
-			update_post_information('forum', $forum_id, false);
+			if ($topic_id)
+			{
+				update_post_information('topic', $topic_id, false);
+			}
+			if ($forum_id)
+			{
+				update_post_information('forum', $forum_id, false);
+			}
 		}
 	}
 
