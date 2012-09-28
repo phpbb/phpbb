@@ -1104,6 +1104,9 @@ function database_update_info()
 				),
 				POSTS_TABLE			=> array(
 					'post_visibility'		=> array('TINT:3', 0),
+					'post_delete_time'		=> array('TIMESTAMP', 0),
+					'post_delete_reason'	=> array('STEXT_UNI', ''),
+					'post_delete_user'		=> array('UINT', 0),
 				),
 				PROFILE_FIELDS_TABLE	=> array(
 					'field_show_on_pm'		=> array('BOOL', 0),
@@ -1118,7 +1121,10 @@ function database_update_info()
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
 				TOPICS_TABLE		=> array(
-					'topic_visibility'	=> array('TINT:3', 0),
+					'topic_visibility'		=> array('TINT:3', 0),
+					'topic_delete_time'		=> array('TIMESTAMP', 0),
+					'topic_delete_reason'	=> array('STEXT_UNI', ''),
+					'topic_delete_user'		=> array('UINT', 0),
 				),
 			),
 			'change_columns'	=> array(

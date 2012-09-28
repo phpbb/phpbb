@@ -655,6 +655,9 @@ CREATE TABLE phpbb_posts (
 	post_edit_user INT4 DEFAULT '0' NOT NULL CHECK (post_edit_user >= 0),
 	post_edit_count INT2 DEFAULT '0' NOT NULL CHECK (post_edit_count >= 0),
 	post_edit_locked INT2 DEFAULT '0' NOT NULL CHECK (post_edit_locked >= 0),
+	post_delete_time INT4 DEFAULT '0' NOT NULL CHECK (post_delete_time >= 0),
+	post_delete_reason varchar(255) DEFAULT '' NOT NULL,
+	post_delete_user INT4 DEFAULT '0' NOT NULL CHECK (post_delete_user >= 0),
 	PRIMARY KEY (post_id)
 );
 
@@ -1045,6 +1048,9 @@ CREATE TABLE phpbb_topics (
 	poll_max_options INT2 DEFAULT '1' NOT NULL,
 	poll_last_vote INT4 DEFAULT '0' NOT NULL CHECK (poll_last_vote >= 0),
 	poll_vote_change INT2 DEFAULT '0' NOT NULL CHECK (poll_vote_change >= 0),
+	topic_delete_time INT4 DEFAULT '0' NOT NULL CHECK (topic_delete_time >= 0),
+	topic_delete_reason varchar(255) DEFAULT '' NOT NULL,
+	topic_delete_user INT4 DEFAULT '0' NOT NULL CHECK (topic_delete_user >= 0),
 	PRIMARY KEY (topic_id)
 );
 

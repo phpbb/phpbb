@@ -1350,6 +1350,9 @@ function get_schema_struct()
 			'post_edit_user'		=> array('UINT', 0),
 			'post_edit_count'		=> array('USINT', 0),
 			'post_edit_locked'		=> array('BOOL', 0),
+			'post_delete_time'		=> array('TIMESTAMP', 0),
+			'post_delete_reason'	=> array('STEXT_UNI', ''),
+			'post_delete_user'		=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'post_id',
 		'KEYS'			=> array(
@@ -1703,6 +1706,9 @@ function get_schema_struct()
 			'poll_max_options'			=> array('TINT:4', 1),
 			'poll_last_vote'			=> array('TIMESTAMP', 0),
 			'poll_vote_change'			=> array('BOOL', 0),
+			'topic_delete_time'			=> array('TIMESTAMP', 0),
+			'topic_delete_reason'		=> array('STEXT_UNI', ''),
+			'topic_delete_user'			=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'topic_id',
 		'KEYS'			=> array(

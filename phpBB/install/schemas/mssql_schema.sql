@@ -819,7 +819,10 @@ CREATE TABLE [phpbb_posts] (
 	[post_edit_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[post_edit_user] [int] DEFAULT (0) NOT NULL ,
 	[post_edit_count] [int] DEFAULT (0) NOT NULL ,
-	[post_edit_locked] [int] DEFAULT (0) NOT NULL 
+	[post_edit_locked] [int] DEFAULT (0) NOT NULL ,
+	[post_delete_time] [int] DEFAULT (0) NOT NULL ,
+	[post_delete_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[post_delete_user] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -1379,7 +1382,10 @@ CREATE TABLE [phpbb_topics] (
 	[poll_length] [int] DEFAULT (0) NOT NULL ,
 	[poll_max_options] [int] DEFAULT (1) NOT NULL ,
 	[poll_last_vote] [int] DEFAULT (0) NOT NULL ,
-	[poll_vote_change] [int] DEFAULT (0) NOT NULL 
+	[poll_vote_change] [int] DEFAULT (0) NOT NULL ,
+	[topic_delete_time] [int] DEFAULT (0) NOT NULL ,
+	[topic_delete_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[topic_delete_user] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 

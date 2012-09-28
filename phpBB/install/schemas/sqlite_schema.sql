@@ -467,7 +467,10 @@ CREATE TABLE phpbb_posts (
 	post_edit_reason text(65535) NOT NULL DEFAULT '',
 	post_edit_user INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_edit_count INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	post_edit_locked INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	post_edit_locked INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	post_delete_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	post_delete_reason text(65535) NOT NULL DEFAULT '',
+	post_delete_user INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_posts_forum_id ON phpbb_posts (forum_id);
@@ -781,7 +784,10 @@ CREATE TABLE phpbb_topics (
 	poll_length INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	poll_max_options tinyint(4) NOT NULL DEFAULT '1',
 	poll_last_vote INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	poll_vote_change INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	poll_vote_change INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	topic_delete_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	topic_delete_reason text(65535) NOT NULL DEFAULT '',
+	topic_delete_user INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics (forum_id);

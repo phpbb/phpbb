@@ -904,6 +904,9 @@ CREATE TABLE phpbb_posts (
 	post_edit_user number(8) DEFAULT '0' NOT NULL,
 	post_edit_count number(4) DEFAULT '0' NOT NULL,
 	post_edit_locked number(1) DEFAULT '0' NOT NULL,
+	post_delete_time number(11) DEFAULT '0' NOT NULL,
+	post_delete_reason varchar2(765) DEFAULT '' ,
+	post_delete_user number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_posts PRIMARY KEY (post_id)
 )
 /
@@ -1510,6 +1513,9 @@ CREATE TABLE phpbb_topics (
 	poll_max_options number(4) DEFAULT '1' NOT NULL,
 	poll_last_vote number(11) DEFAULT '0' NOT NULL,
 	poll_vote_change number(1) DEFAULT '0' NOT NULL,
+	topic_delete_time number(11) DEFAULT '0' NOT NULL,
+	topic_delete_reason varchar2(765) DEFAULT '' ,
+	topic_delete_user number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_topics PRIMARY KEY (topic_id)
 )
 /

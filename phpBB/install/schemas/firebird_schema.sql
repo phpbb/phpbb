@@ -668,7 +668,10 @@ CREATE TABLE phpbb_posts (
 	post_edit_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	post_edit_user INTEGER DEFAULT 0 NOT NULL,
 	post_edit_count INTEGER DEFAULT 0 NOT NULL,
-	post_edit_locked INTEGER DEFAULT 0 NOT NULL
+	post_edit_locked INTEGER DEFAULT 0 NOT NULL,
+	post_delete_time INTEGER DEFAULT 0 NOT NULL,
+	post_delete_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	post_delete_user INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_posts ADD PRIMARY KEY (post_id);;
@@ -1144,7 +1147,10 @@ CREATE TABLE phpbb_topics (
 	poll_length INTEGER DEFAULT 0 NOT NULL,
 	poll_max_options INTEGER DEFAULT 1 NOT NULL,
 	poll_last_vote INTEGER DEFAULT 0 NOT NULL,
-	poll_vote_change INTEGER DEFAULT 0 NOT NULL
+	poll_vote_change INTEGER DEFAULT 0 NOT NULL,
+	topic_delete_time INTEGER DEFAULT 0 NOT NULL,
+	topic_delete_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	topic_delete_user INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_topics ADD PRIMARY KEY (topic_id);;
