@@ -256,16 +256,24 @@ class phpbb_notifications_service
 	* @param string|array $item_type Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param array $data Data specific for this type that will be inserted
 	*/
-	public function add_notifications($item_type, $data)
+	public function add_notifications($item_type, $data, $options = array())
 	{
+		$options = array_merge(array(
+			'ignore_users'		=> array(),
+		), $options);
+
 		if (is_array($item_type))
 		{
+			$notified_users = array();
+			$temp_options = $options;
+
 			foreach ($item_type as $type)
 			{
-				$this->add_notifications($type, $data);
+				$temp_options['ignore_users'] = $options['ignore_users'] + $notified_users;
+				$notified_users += $this->add_notifications($type, $data, $temp_options);
 			}
 
-			return;
+			return $notified_users;
 		}
 
 		$item_type_class_name = $this->get_item_type_class_name($item_type);
@@ -273,9 +281,11 @@ class phpbb_notifications_service
 		$item_id = $item_type_class_name::get_item_id($data);
 
 		// find out which users want to receive this type of notification
-		$notify_users = $item_type_class_name::find_users_for_notification($this->phpbb_container, $data);
+		$notify_users = $item_type_class_name::find_users_for_notification($this->phpbb_container, $data, $options);
 
 		$this->add_notifications_for_users($item_type, $data, $notify_users);
+
+		return $notify_users;
 	}
 
 	/**

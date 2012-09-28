@@ -77,8 +77,12 @@ class phpbb_notifications_type_topic_in_queue extends phpbb_notifications_type_t
 	*
 	* @return array
 	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $topic)
+	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $topic, $options = array())
 	{
+		$options = array_merge(array(
+			'ignore_users'		=> array(),
+		), $options);
+
 		$db = $phpbb_container->get('dbal.conn');
 
 		$auth_approve = $phpbb_container->get('auth')->acl_get_list(false, 'm_approve', $topic['forum_id']);
@@ -97,6 +101,11 @@ class phpbb_notifications_type_topic_in_queue extends phpbb_notifications_type_t
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
+			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
+			{
+				continue;
+			}
+
 			if (!isset($rowset[$row['user_id']]))
 			{
 				$notify_users[$row['user_id']] = array();
