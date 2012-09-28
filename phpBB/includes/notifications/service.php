@@ -254,6 +254,8 @@ class phpbb_notifications_service
 	* Add a notification
 	*
 	* @param string|array $item_type Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
+	*			Note: If you send an array of types, any user who could receive multiple notifications from this single item will only receive
+	* 			a single notification. If they MUST receive multiple notifications, call this function multiple times instead of sending an array
 	* @param array $data Data specific for this type that will be inserted
 	*/
 	public function add_notifications($item_type, $data, $options = array())
