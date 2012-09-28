@@ -37,7 +37,6 @@ class ucp_prefs
 			case 'personal':
 				add_form_key('ucp_prefs_personal');
 				$data = array(
-					'notifymethod'	=> request_var('notifymethod', $user->data['user_notify_type']),
 					'dateformat'	=> request_var('dateformat', $user->data['user_dateformat'], true),
 					'lang'			=> basename(request_var('lang', $user->data['user_lang'])),
 					'style'			=> request_var('style', (int) $user->data['user_style']),
@@ -46,16 +45,8 @@ class ucp_prefs
 					'viewemail'		=> request_var('viewemail', (bool) $user->data['user_allow_viewemail']),
 					'massemail'		=> request_var('massemail', (bool) $user->data['user_allow_massemail']),
 					'hideonline'	=> request_var('hideonline', (bool) !$user->data['user_allow_viewonline']),
-					'notifypm'		=> request_var('notifypm', (bool) $user->data['user_notify_pm']),
-					'popuppm'		=> request_var('popuppm', (bool) $user->optionget('popuppm')),
 					'allowpm'		=> request_var('allowpm', (bool) $user->data['user_allow_pm']),
 				);
-
-				if ($data['notifymethod'] == NOTIFY_IM && (!$config['jab_enable'] || !$user->data['user_jabber'] || !@extension_loaded('xml')))
-				{
-					// Jabber isnt enabled, or no jabber field filled in. Update the users table to be sure its correct.
-					$data['notifymethod'] = NOTIFY_BOTH;
-				}
 
 				if ($submit)
 				{
@@ -81,15 +72,11 @@ class ucp_prefs
 
 					if (!sizeof($error))
 					{
-						$user->optionset('popuppm', $data['popuppm']);
-
 						$sql_ary = array(
 							'user_allow_pm'			=> $data['allowpm'],
 							'user_allow_viewemail'	=> $data['viewemail'],
 							'user_allow_massemail'	=> $data['massemail'],
 							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$data['hideonline'] : $user->data['user_allow_viewonline'],
-							'user_notify_type'		=> $data['notifymethod'],
-							'user_notify_pm'		=> $data['notifypm'],
 							'user_options'			=> $user->data['user_options'],
 
 							'user_dateformat'		=> $data['dateformat'],
@@ -165,15 +152,10 @@ class ucp_prefs
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
-					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
-					'S_NOTIFY_IM'		=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
-					'S_NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
 					'S_VIEW_EMAIL'		=> $data['viewemail'],
 					'S_MASS_EMAIL'		=> $data['massemail'],
 					'S_ALLOW_PM'		=> $data['allowpm'],
 					'S_HIDE_ONLINE'		=> $data['hideonline'],
-					'S_NOTIFY_PM'		=> $data['notifypm'],
-					'S_POPUP_PM'		=> $data['popuppm'],
 
 					'DATE_FORMAT'			=> $data['dateformat'],
 					'A_DATE_FORMAT'			=> addslashes($data['dateformat']),

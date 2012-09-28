@@ -85,25 +85,21 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 
 		$notify_users = array();
 
-		foreach (array_keys($pm['recipients']) as $user_id)
+		$sql = 'SELECT *
+			FROM ' . USER_NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . self::get_item_type() . "'
+				AND " . $db->sql_in_set('user_id', array_keys($pm['recipients']));
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$recipient = $service->get_user($user_id);
-
-			if ($recipient['user_notify_pm'])
+			if (!isset($rowset[$row['user_id']]))
 			{
-				$notify_users[$recipient['user_id']] = array();
-
-				if ($recipient['user_notify_type'] == NOTIFY_EMAIL || $recipient['user_notify_type'] == NOTIFY_BOTH)
-				{
-					$notify_users[$recipient['user_id']][] = 'email';
-				}
-
-				if ($recipient['user_notify_type'] == NOTIFY_IM || $recipient['user_notify_type'] == NOTIFY_BOTH)
-				{
-					$notify_users[$recipient['user_id']][] = 'jabber';
-				}
+				$notify_users[$row['user_id']] = array();
 			}
+
+			$notify_users[$row['user_id']][] = $row['method'];
 		}
+		$db->sql_freeresult($result);
 
 		return $notify_users;
 	}
