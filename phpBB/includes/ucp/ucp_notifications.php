@@ -23,6 +23,8 @@ class ucp_notifications
 	{
 		global $phpbb_container;
 
+		add_form_key('ucp_notification_options');
+
 		$phpbb_notifications = $phpbb_container->get('notifications');
 		$template = $phpbb_container->get('template');
 		$user = $phpbb_container->get('user');
@@ -33,6 +35,11 @@ class ucp_notifications
 		// Add/remove subscriptions
 		if ($request->is_set_post('submit'))
 		{
+			if (!check_form_key('ucp_notification_options'))
+			{
+				trigger_error('FORM_INVALID');
+			}
+
 			$notification_methods = $phpbb_notifications->get_subscription_methods();
 
 			foreach($phpbb_notifications->get_subscription_types() as $type => $data)
