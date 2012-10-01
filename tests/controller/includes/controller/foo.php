@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\Response;
 
-class phpbb_ext_foo_controller implements phpbb_controller_interface
+class phpbb_controller_foo implements phpbb_controller_interface
 {
 	/**
 	* User object
@@ -30,11 +30,22 @@ class phpbb_ext_foo_controller implements phpbb_controller_interface
 
 	/**
 	* Handle method
+	* Because we specify a method in the route, we don't need to give this a
+	* body. But we need to define it because we are implementing the interface
 	*
 	* @return null
 	*/
 	public function handle()
 	{
-		return new Response('Test', 200);
+	}
+
+	/**
+	* Bar method
+	*
+	* @return null
+	*/
+	public function bar()
+	{
+		return new Response('bar()', 200);
 	}
 }

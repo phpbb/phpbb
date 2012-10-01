@@ -29,12 +29,12 @@ class phpbb_controller_test extends phpbb_test_case
 	public function test_provider()
 	{
 		$provider = new phpbb_controller_provider;
-		$route_data = $provider
+		$routes = $provider
 			->get_paths($this->extension_manager->get_finder())
 			->find('./tests/controller/');
 
-		// There is only one route defined
-		$this->assertEquals(1, count($route_data));
+		// This will need to be updated if any new routes are defined
+		$this->assertEquals(2, count($routes));
 	}
 
 	public function test_controller_resolver()
@@ -43,5 +43,9 @@ class phpbb_controller_test extends phpbb_test_case
 		$symfony_request = new Request(array(), array(), array('_controller' => 'foo.controller'));
 
 		$this->assertEquals($resolver->getController($symfony_request), array('foo.controller', 'handle'));
+
+		$symfony_request = new Request(array(), array(), array('_controller' => 'core_foo.controller:bar'));
+
+		$this->assertEquals($resolver->getController($symfony_request), array('core_foo.controller', 'bar'));
 	}
 }
