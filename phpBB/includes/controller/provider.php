@@ -63,8 +63,7 @@ class phpbb_controller_provider
 	}
 
 	/**
-	* Locate paths containing routing files
-	* This sets an internal property but does not return anything.
+	* Set the $routing_paths property with a given list of paths
 	*
 	* @return The current instance of this object for method chaining
 	*/
