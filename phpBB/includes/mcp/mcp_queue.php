@@ -465,7 +465,7 @@ class mcp_queue
 
 
 /**
-* Approve Post/Topic
+* Restore Post/Topic
 */
 function restore_post($post_id_list, $id, $mode)
 {

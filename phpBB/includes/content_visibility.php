@@ -346,10 +346,16 @@ class phpbb_content_visibility
 		set_config_count('num_posts', ($topic_row['topic_replies'] + 1) * (-1), true);
 
 		// Only decrement this post, since this is the one non-approved now
+		//
+		/**
+		* @todo: this is wrong, it should rely on post_postcount
+		*		 also a user might have more than one post in the topic
+		*
 		if ($auth->acl_get('f_postcount', $forum_id))
 		{
 			$sql_data[USERS_TABLE] = 'user_posts = user_posts - 1';
 		}
+		*/
 	}
 
 	/**
@@ -383,10 +389,14 @@ class phpbb_content_visibility
 
 		set_config_count('num_posts', -1, true);
 
+		/**
+		* @todo: this is wrong, it should rely on post_postcount
+		*
 		if ($auth->acl_get('f_postcount', $forum_id))
 		{
 			$sql_data[USERS_TABLE] = 'user_posts = user_posts - 1';
 		}
+		*/
 	}
 
 	/**
