@@ -53,7 +53,7 @@ class acp_board
 						'legend1'				=> 'ACP_BOARD_SETTINGS',
 						'sitename'				=> array('lang' => 'SITE_NAME',				'validate' => 'string',	'type' => 'text:40:255', 'explain' => false),
 						'site_desc'				=> array('lang' => 'SITE_DESC',				'validate' => 'string',	'type' => 'text:40:255', 'explain' => false),
-						'site_home_url'			=> array('lang' => 'SITE_HOME_URL',			'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
+						'site_home_url'			=> array('lang' => 'SITE_HOME_URL',			'validate' => 'string',	'type' => 'url:40:255', 'explain' => true),
 						'site_home_text'		=> array('lang' => 'SITE_HOME_TEXT',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
 						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'validate' => 'bool',	'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
 						'board_disable_msg'		=> false,
@@ -787,7 +787,7 @@ class acp_board
 		{
 			$act_ary['ACC_USER'] = USER_ACTIVATION_SELF;
 			$act_ary['ACC_ADMIN'] = USER_ACTIVATION_ADMIN;
-		}		
+		}
 		$act_options = '';
 
 		foreach ($act_ary as $key => $value)
