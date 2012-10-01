@@ -2298,13 +2298,18 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
-	// Correct the path when we are accessing it through a controller
-	// This simply rewrites the value given by $phpbb_root_path to the
-	// script_path in config.
-	$path_info = $symfony_request->getPathInfo();
-	if (!empty($path_info) && $path_info != '/')
+	// Make sure we have a Symfony Request object; tests do not have one
+	// unless they need it.
+	if ($symfony_request)
 	{
-		$url = $config['script_path'] . '/' . substr($url, strlen($phpbb_root_path));
+		// Correct the path when we are accessing it through a controller
+		// This simply rewrites the value given by $phpbb_root_path to the
+		// script_path in config.
+		$path_info = $symfony_request->getPathInfo();
+		if (!empty($path_info) && $path_info != '/')
+		{
+			$url = $config['script_path'] . '/' . substr($url, strlen($phpbb_root_path));
+		}
 	}
 
 	$append_sid_overwrite = false;
