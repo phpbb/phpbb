@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_topics">
+		<column>topic_id</column>
+		<column>forum_id</column>
+		<column>topic_visibility</column>
+		<column>topic_title</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>0</value>
+			<value>Unapproved</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>1</value>
+			<value>Approved</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>2</value>
+			<value>Softdeleted</value>
+		</row>
+	</table>
+	<table name="phpbb_posts">
+		<column>post_id</column>
+		<column>topic_id</column>
+		<column>forum_id</column>
+		<column>post_visibility</column>
+		<column>post_text</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value>0</value>
+			<value>Unapproved</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>2</value>
+			<value>1</value>
+			<value>1</value>
+			<value>Approved</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>3</value>
+			<value>1</value>
+			<value>2</value>
+			<value>Softdeleted</value>
+		</row>
+	</table>
+</dataset>
