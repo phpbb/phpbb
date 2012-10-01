@@ -22,6 +22,12 @@ if (!defined('IN_PHPBB'))
 class phpbb_controller_helper
 {
 	/**
+	* Template object
+	* @var phpbb_template
+	*/
+	protected $template;
+
+	/**
 	* Constructor
 	*
 	* @param phpbb_template
