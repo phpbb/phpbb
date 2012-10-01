@@ -54,11 +54,6 @@ services:
         arguments:
             - @user
     
-    controller.route_provider:
-        class: phpbb_controller_route_provider
-        arguments:
-            - @ext.finder
-
     cron.task_provider:
         class: phpbb_cron_task_provider
         arguments:
@@ -120,7 +115,7 @@ services:
             - @controller.resolver
             - @container
             - @user
-            - @controller.route_provider
+            - @ext.finder
 
     processor.ext:
         class: phpbb_di_processor_ext

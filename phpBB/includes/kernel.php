@@ -63,6 +63,12 @@ class phpbb_kernel implements HttpKernelInterface
 	protected $provider;
 
 	/**
+	* Extension file finder
+	* @var phpbb_extension_finder
+	*/
+	protected $finder;
+
+	/**
 	* User object
 	* @var phpbb_user
 	*/
@@ -81,16 +87,17 @@ class phpbb_kernel implements HttpKernelInterface
 	* @param ControllerResolverInterface $resolver   A ControllerResolverInterface instance
 	* @param ContainerBuilder $container A ContainerBuilder instance
 	* @param phpbb_user $user A phpbb_user instance
-	* @param phpbb_controller_route_provider A phpbb_controller_route_provider instance
+	* @param phpbb_extension_finder A phpbb_extension_finder instance
 	* @param string $base_path Base path to prepend when looking for routing files
 	*/
-	public function __construct(EventDispatcherInterface $dispatcher, ControllerResolverInterface $resolver, ContainerBuilder $container, phpbb_user $user, phpbb_controller_route_provider $route_provider, $base_path = '')
+	public function __construct(EventDispatcherInterface $dispatcher, ControllerResolverInterface $resolver, ContainerBuilder $container, phpbb_user $user, phpbb_extension_finder $finder, $base_path = '')
 	{
 		$this->dispatcher = $dispatcher;
 		$this->resolver = $resolver;
 		$this->container = $container;
-		$this->provider = new phpbb_controller_provider($route_provider->find());
+		$this->provider = new phpbb_controller_provider;
 		$this->user = $user;
+		$this->finder = $finder;
 
 		// The following method internally sets the "controllers" property
 		$this->load_controller_map($base_path);
@@ -100,11 +107,13 @@ class phpbb_kernel implements HttpKernelInterface
 	* Load the map of controllers and access names into an array
 	*
 	* @param string $base_path Base path to prepend to all paths
-	* @return array
+	* @return null
 	*/
 	protected function load_controller_map($base_path = '')
 	{
-		$this->controllers = $this->provider->find($base_path);
+		$this->controllers = $this->provider
+			->get_paths($this->finder)
+			->find($base_path);
 	}
 
 	/**

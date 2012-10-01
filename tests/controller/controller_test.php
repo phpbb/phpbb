@@ -24,22 +24,22 @@ class phpbb_controller_test extends phpbb_test_case
 					'ext_path' => 'ext/foo/',
 				),
 			));
-		$this->route_provider = new phpbb_controller_route_provider($this->extension_manager->get_finder());
 	}
 
-	public function test_route_provider()
+	public function test_provider()
 	{
-		$route_files = $this->route_provider->find();
+		$provider = new phpbb_controller_provider;
+		$route_data = $provider
+			->get_paths($this->extension_manager->get_finder())
+			->find('./tests/controller/');
 
-		$this->assertEquals(array(
-			'config',
-			'ext/foo/config',
-		), $route_files);
+		// There is only one route defined
+		$this->assertEquals(1, count($route_data));
 	}
 
 	public function test_controller_resolver()
 	{
-		$resolver = new phpbb_controller_resolver(new phpbb_user, './tests/controller/');
+		$resolver = new phpbb_controller_resolver(new phpbb_user);
 		$symfony_request = new Request(array(), array(), array('_controller' => 'foo.controller'));
 
 		$this->assertEquals($resolver->getController($symfony_request), array('foo.controller', 'handle'));

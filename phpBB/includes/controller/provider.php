@@ -34,37 +34,59 @@ class phpbb_controller_provider
 	/**
 	* Construct method
 	*
-	* @param mixed $routing_paths String or array of strings containing paths
+	* @param array() $routing_paths Array of strings containing paths
 	*							to YAML files holding route information
 	*/
-	public function __construct($routing_paths)
+	public function __construct($routing_paths = array())
 	{
-		if (!is_array($routing_paths))
-		{
-			$routing_paths = array($routing_paths);
-		}
+		$this->set_paths($routing_paths);
+	}
 
-		$this->routing_paths = $routing_paths;
+	/**
+	* Locate paths containing routing files
+	* This sets an internal property but does not return the paths.
+	*
+	* @return The current instance of this object for method chaining
+	*/
+	public function get_paths(phpbb_extension_finder $finder)
+	{
+		// We hardcode the path to the core config directory
+		// because the finder cannot find it
+		$this->set_paths(array_merge(array('config'), array_map('dirname', array_keys($finder
+			->directory('config')
+			->prefix('routing')
+			->suffix('yml')
+			->find()
+		))));
+
+		return $this;
+	}
+
+	/**
+	* Locate paths containing routing files
+	* This sets an internal property but does not return anything.
+	*
+	* @return The current instance of this object for method chaining
+	*/
+	public function set_paths(array $paths)
+	{
+		$this->routing_paths = $paths;
+
+		return $this;
 	}
 
 	/**
 	* Get a list of controllers and return it
 	*
 	* @param string $base_path Base path to prepend to file paths
-	* @return array|bool Array of controllers and handles or false if the 
-	* 					routing file does not exist
+	* @return array Array of controllers and their route information
 	*/
 	public function find($base_path = '')
 	{
 		$routes = new RouteCollection;
 		foreach ($this->routing_paths as $path)
 		{
-			if ($base_path)
-			{
-				$path = $base_path . $path;
-			}
-
-			$loader = new YamlFileLoader(new FileLocator($path));
+			$loader = new YamlFileLoader(new FileLocator($base_path . $path));
 			$routes->addCollection($loader->load('routing.yml'));
 		}
 
