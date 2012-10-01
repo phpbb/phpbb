@@ -10,19 +10,19 @@
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
-class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_database_test_case
+class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/get_forums_visibility_sql.xml');
 	}
 
-	public function get_forums_visibility_sql_data()
+	public function get_global_visibility_sql_data()
 	{
 		return array(
 			array(
 				'phpbb_topics',
-				'topic', array(1, 2, 3), '',
+				'topic', array(), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
 					array('m_restore', true, array(1 => true, 2 => true, 3 => true)),
@@ -41,7 +41,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 			),
 			array(
 				'phpbb_topics',
-				'topic', array(1, 2), '',
+				'topic', array(3), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
 					array('m_restore', true, array(1 => true, 2 => true, 3 => true)),
@@ -57,7 +57,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 			),
 			array(
 				'phpbb_topics',
-				'topic', array(1, 2, 3), '',
+				'topic', array(), '',
 				array(
 					array('m_approve', true, array(2 => true)),
 					array('m_restore', true, array(1 => true)),
@@ -72,7 +72,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 			),
 			array(
 				'phpbb_posts',
-				'post', array(1, 2, 3), '',
+				'post', array(), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
 					array('m_restore', true, array(1 => true, 2 => true, 3 => true)),
@@ -91,7 +91,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 			),
 			array(
 				'phpbb_posts',
-				'post', array(1, 2), '',
+				'post', array(3), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
 					array('m_restore', true, array(1 => true, 2 => true, 3 => true)),
@@ -107,7 +107,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 			),
 			array(
 				'phpbb_posts',
-				'post', array(1, 2, 3), '',
+				'post', array(), '',
 				array(
 					array('m_approve', true, array(2 => true)),
 					array('m_restore', true, array(1 => true)),
@@ -124,9 +124,9 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 	}
 
 	/**
-	* @dataProvider get_forums_visibility_sql_data
+	* @dataProvider get_global_visibility_sql_data
 	*/
-	public function test_get_forums_visibility_sql($table, $mode, $forum_ids, $table_alias, $permissions, $expected)
+	public function test_get_global_visibility_sql($table, $mode, $forum_ids, $table_alias, $permissions, $expected)
 	{
 		global $db, $auth;
 
@@ -141,7 +141,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 
 		$result = $db->sql_query('SELECT ' . $mode . '_id
 			FROM ' . $table . '
-			WHERE ' . phpbb_content_visibility::get_forums_visibility_sql($mode, $forum_ids, $table_alias) . '
+			WHERE ' . phpbb_content_visibility::get_global_visibility_sql($mode, $forum_ids, $table_alias) . '
 			ORDER BY ' . $mode . '_id ASC');
 
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));

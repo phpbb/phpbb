@@ -250,8 +250,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$db->sql_freeresult($result);
 
 	// find out in which forums the user is allowed to view posts
-	$m_approve_posts_fid_sql = phpbb_content_visibility::get_visibility_sql_global('post', $ex_fid_ary, 'p.');
-	$m_approve_topics_fid_sql = phpbb_content_visibility::get_visibility_sql_global('topic', $ex_fid_ary, 't.');
+	$m_approve_posts_fid_sql = phpbb_content_visibility::get_global_visibility_sql('post', $ex_fid_ary, 'p.');
+	$m_approve_topics_fid_sql = phpbb_content_visibility::get_global_visibility_sql('topic', $ex_fid_ary, 't.');
 
 	if ($reset_search_forum)
 	{
