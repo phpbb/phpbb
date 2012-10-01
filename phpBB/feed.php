@@ -755,7 +755,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		$sql = 'SELECT topic_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_moved_id = 0
-				AND ' . phpbb_content_visibility::get_visibility_sql_forums('topic', $forum_ids) . '
+				AND ' . phpbb_content_visibility::get_forums_visibility_sql('topic', $forum_ids) . '
 			ORDER BY topic_last_post_time DESC';
 		$result = $db->sql_query_limit($sql, $this->num_items);
 

@@ -82,12 +82,13 @@ class phpbb_content_visibility
 	* @param $table_alias string - Table alias to prefix in SQL queries
 	* @return string with the appropriate combination SQL logic for topic/post_visibility
 	*/
-	static public function get_visibility_sql_forums($mode, $forum_ids = array(), $table_alias = '')
+	static public function get_forums_visibility_sql($mode, $forum_ids = array(), $table_alias = '')
 	{
 		global $auth, $db, $user;
 
 		// users can always see approved posts
-		$where_sql = "($table_alias{$mode}_visibility = " . ITEM_APPROVED;
+		$where_sql = "(($table_alias{$mode}_visibility = " . ITEM_APPROVED . '
+				AND ' . $db->sql_in_set($table_alias . 'forum_id', $forum_ids) . ')';
 
 		// in set notation: {approve_forums} = {m_approve} - {exclude_forums}
 		$approve_forums = array_intersect($forum_ids, array_keys($auth->acl_getf('m_approve', true)));

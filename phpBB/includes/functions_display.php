@@ -1003,7 +1003,7 @@ function display_user_activity(&$userdata)
 		FROM ' . POSTS_TABLE . '
 		WHERE poster_id = ' . $userdata['user_id'] . '
 			AND post_postcount = 1
-			AND ' . phpbb_content_visibility::get_visibility_sql_forums('post', $forum_ary) . '
+			AND ' . phpbb_content_visibility::get_forums_visibility_sql('post', $forum_ary) . '
 		GROUP BY forum_id
 		ORDER BY num_posts DESC';
 	$result = $db->sql_query_limit($sql, 1);
@@ -1029,7 +1029,7 @@ function display_user_activity(&$userdata)
 		FROM ' . POSTS_TABLE . '
 		WHERE poster_id = ' . $userdata['user_id'] . '
 			AND post_postcount = 1
-			AND ' . phpbb_content_visibility::get_visibility_sql_forums('post', $forum_ary) . '
+			AND ' . phpbb_content_visibility::get_forums_visibility_sql('post', $forum_ary) . '
 		GROUP BY topic_id
 		ORDER BY num_posts DESC';
 	$result = $db->sql_query_limit($sql, 1);

@@ -121,11 +121,6 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 
 		// Create auth mock
 		$auth = $this->getMock('phpbb_auth');
-		$acl_get_map = array(
-			array('f_read', 23, true),
-			array('m_', 23, true),
-		);
-
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'), $this->anything())
