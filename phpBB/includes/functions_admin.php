@@ -1908,12 +1908,12 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					unset($delete_topics[$topic_id]);
 
 					$topic_data[$topic_id]['replies_real'] += $row['total_posts'];
-					$topic_data[$topic_id]['first_post_id'] = (!$topic_data[$topic_id]['first_post_id']) ? $row['first_post_id'] : min($topic_data[$topic_id]['first_post_id'], $row['first_post_id']);
 
-					if ($row['post_visibility'] || !$topic_data[$topic_id]['last_post_id'])
+					if ($row['post_visibility'] == ITEM_APPROVED)
 					{
-						$topic_data[$topic_id]['replies'] = $row['total_posts'] - 1;
+						$topic_data[$topic_id]['first_post_id'] = $row['first_post_id'];
 						$topic_data[$topic_id]['last_post_id'] = $row['last_post_id'];
+						$topic_data[$topic_id]['replies'] = $row['total_posts'] - 1;
 					}
 				}
 			}

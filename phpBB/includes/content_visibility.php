@@ -242,12 +242,6 @@ class phpbb_content_visibility
 	{
 		global $db;
 
-		// if we're changing the starter, we need to change the rest of the topic
-		if ($is_starter && !$is_latest)
-		{
-			return self::set_topic_visibility($visibility, $topic_id, $forum_id);
-		}
-
 		if ($post_id)
 		{
 			$where_sql = 'post_id = ' . (int) $post_id;
@@ -274,8 +268,9 @@ class phpbb_content_visibility
 		$db->sql_query($sql);
 
 		// Sync the first/last topic information if needed
-		if ($is_starter || $is_latest)
+		if (!$is_starter && $is_latest)
 		{
+			// update_post_information can only update the last post info ...
 			if ($topic_id)
 			{
 				update_post_information('topic', $topic_id, false);
@@ -284,6 +279,12 @@ class phpbb_content_visibility
 			{
 				update_post_information('forum', $forum_id, false);
 			}
+		}
+		else if (($is_starter || $is_latest) && $topic_id)
+		{
+			// ... so we need to use sync, if the first post is changed.
+			// The forum is resynced recursive by sync() itself.
+			sync('topic', 'topic_id', $topic_id, true);
 		}
 	}
 
