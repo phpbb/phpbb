@@ -58,9 +58,10 @@ class phpbb_controller_helper
 	*
 	* @param string $handle The template handle to render
 	* @param string $page_title The title of the page to output
-	* @return string Rendered contents of the template file
+	* @param int $status_code The status code to be sent to the page header
+	* @return Response object containing rendered page
 	*/
-	public function render($template_file, $page_title = '')
+	public function render($template_file, $page_title = '', $status_code = 200)
 	{
 		if (!function_exists('page_header'))
 		{
@@ -75,6 +76,6 @@ class phpbb_controller_helper
 
 		page_footer(true, false, false);
 
-		return new Response($this->template->return_display($handle), 200);
+		return new Response($this->template->return_display($handle), $status_code);
 	}
 }
