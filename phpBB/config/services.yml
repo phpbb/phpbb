@@ -48,6 +48,8 @@ services:
         class: phpbb_controller_helper
         arguments:
             - @template
+            - %core.root_path%
+            - .%core.php_ext%
 
     controller.resolver:
         class: phpbb_controller_resolver

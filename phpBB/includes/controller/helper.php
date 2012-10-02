@@ -30,24 +30,51 @@ class phpbb_controller_helper
 	protected $template;
 
 	/**
+	* phpBB Root Path
+	* @var string
+	*/
+	protected $phpbb_root_path;
+
+	/**
+	* PHP Extension
+	* @var string
+	*/
+	protected $php_ext;
+
+	/**
 	* Constructor
 	*
 	* @param phpbb_template
 	*/
-	public function __construct(phpbb_template $template)
+	public function __construct(phpbb_template $template, $phpbb_root_path = "./", $php_ext = ".php")
 	{
 		$this->template = $template;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 	}
 
 	/**
-	* Return the contents of the rendered file as a string. This will go
-	* directly into the Response object.
+	* Automate setting up the page and creating the response object.
 	*
 	* @param string $handle The template handle to render
+	* @param string $page_title The title of the page to output
 	* @return string Rendered contents of the template file
 	*/
-	public function render_template($handle)
+	public function render($template_file, $page_title = '')
 	{
+		if (!function_exists('page_header'))
+		{
+			include("{$this->phpbb_root_path}includes/functions{$this->php_ext}");
+		}
+
+		page_header($page_title);
+
+		$this->template->set_filenames(array(
+			'body'	=> $template_file,
+		));
+
+		page_footer(true, false, false);
+
 		return new Response($this->template->return_display($handle), 200);
 	}
 }
