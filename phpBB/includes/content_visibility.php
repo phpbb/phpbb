@@ -24,10 +24,13 @@ class phpbb_content_visibility
 {
 	/**
 	* Create topic/post visibility SQL for a given forum ID
-	* @param $mode string - either "topic" or "post"
-	* @param $forum_id int - current forum ID
-	* @param $table_alias string - Table alias to prefix in SQL queries
-	* @return string with the appropriate combination SQL logic for topic/post_visibility
+	*
+	* Note: Read permissions are not checked.
+	*
+	* @param $mode			string	Either "topic" or "post"
+	* @param $forum_id		int		The forum id is used for permission checks
+	* @param $table_alias	string	Table alias to prefix in SQL queries
+	* @return string	The appropriate combination SQL logic for topic/post_visibility
 	*/
 	static public function get_visibility_sql($mode, $forum_id, $table_alias = '')
 	{
@@ -76,11 +79,15 @@ class phpbb_content_visibility
 	}
 
 	/**
-	* Fetch visibility SQL for a set of forums
-	* @param $mode string - either "topic" or "post"
-	* @param $forum_ids - int array - 
-	* @param $table_alias string - Table alias to prefix in SQL queries
-	* @return string with the appropriate combination SQL logic for topic/post_visibility
+	* Create topic/post visibility SQL for a set of forums
+	*
+	* Note: Read permissions are not checked. Forums without read permissions
+	*		should not be in $forum_ids
+	*
+	* @param $mode			string	Either "topic" or "post"
+	* @param $forum_ids		array	Array of forum ids which the posts/topics are limited to
+	* @param $table_alias	string	Table alias to prefix in SQL queries
+	* @return string	The appropriate combination SQL logic for topic/post_visibility
 	*/
 	static public function get_forums_visibility_sql($mode, $forum_ids = array(), $table_alias = '')
 	{
@@ -129,11 +136,15 @@ class phpbb_content_visibility
 	}
 
 	/**
-	* Fetch visibility SQL for all forums on the board.
-	* @param $mode string - either "topic" or "post"
-	* @param $exclude_forum_ids - int array - 
-	* @param $table_alias string - Table alias to prefix in SQL queries
-	* @return string with the appropriate combination SQL logic for topic/post_visibility
+	* Create topic/post visibility SQL for all forums on the board
+	*
+	* Note: Read permissions are not checked. Forums without read permissions
+	*		should be in $exclude_forum_ids
+	*
+	* @param $mode				string	Either "topic" or "post"
+	* @param $exclude_forum_ids	array	Array of forum ids which are excluded
+	* @param $table_alias		string	Table alias to prefix in SQL queries
+	* @return string	The appropriate combination SQL logic for topic/post_visibility
 	*/
 	static public function get_global_visibility_sql($mode, $exclude_forum_ids = array(), $table_alias = '')
 	{
