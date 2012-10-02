@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\HttpFoundation\Response;
+
 /**
 * Controller helper class, contains methods that do things for controllers
 * @package phpBB3
@@ -46,6 +48,6 @@ class phpbb_controller_helper
 	*/
 	public function render_template($handle)
 	{
-		return $this->template->return_display($handle);
+		return new Response($this->template->return_display($handle), 200);
 	}
 }
