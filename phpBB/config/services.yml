@@ -57,7 +57,7 @@ services:
     controller.error:
         class: phpbb_controller_error
         arguments:
-            - @helper
+            - @controller.helper
             - @user
             - @template
     

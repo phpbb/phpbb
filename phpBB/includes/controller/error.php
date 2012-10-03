@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Core controller for error pages
 * @package phpBB3
 */
-class phpbb_controller_error
+class phpbb_controller_error implements phpbb_controller_interface
 {
 	/**
 	* Controller Helper object

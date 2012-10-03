@@ -358,11 +358,11 @@ class phpbb_kernel implements HttpKernelInterface
 	* Forward a request to another controller
 	*
 	* @param string $controller Destination controller name
-	* @param array $query Request query string parameters
 	* @param array $attributes Request attributes
+	* @param array $query Request query string parameters
 	* @return Response A Reponse instance
 	*/
-	public function forward($controller, array $query, array $attributes)
+	public function forward($controller, array $attributes = array(), array $query = array())
 	{
 		$attributes['_controller'] = $controller;
 		$sub_request = $this->request->duplicate($query, null, $attributes);

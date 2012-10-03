@@ -16,6 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
 * Controller helper class, contains methods that do things for controllers
@@ -57,9 +58,8 @@ class phpbb_controller_helper
 		$this->container = $container;
 
 		$this->template = $this->container->get('template');
-		$this->kernel = $this->container->get('kernel');
-		$this->phpbb_root_path = $this->container->getParam('core.root_path');
-		$this->php_ext = $this->container->getParam('core.php_ext');
+		$this->phpbb_root_path = $this->container->getParameter('core.root_path');
+		$this->php_ext = $this->container->getParameter('core.php_ext');
 	}
 
 	/**
@@ -85,19 +85,35 @@ class phpbb_controller_helper
 
 		page_footer(true, false, false);
 
-		return new Response($this->template->return_display($handle), $status_code);
+		return new Response($this->template->return_display('body'), $status_code);
 	}
 
 	/**
-	* Forward a request to another controller
+	* Output an error
 	*
 	* @param string $controller Destination controller name
 	* @param array $query Request query string parameters
 	* @param array $attributes Request attributes
 	* @return Response A Reponse instance
 	*/
-	public function forward($controller, array $query, array $attributes)
+	public function error($message, $type = 500)
 	{
-		return $this->kernel->forward($controller, $query, $attributes);
+		return $this->forward('controller.error:error_' . $type, array(
+			'message'	=> $message,
+			'title'		=> $this->container->get('user')->lang('INFORMATION'),
+		));
+	}
+
+	/**
+	* Forward a request to another controller
+	*
+	* @param string $controller Destination controller name
+	* @param array $attributes Request attributes
+	* @param array $query Request query string parameters
+	* @return Response A Reponse instance
+	*/
+	public function forward($controller, array $attributes = array(), array $query = array())
+	{
+		return $this->container->get('kernel')->forward($controller, $attributes, $query);
 	}
 }
