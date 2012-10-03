@@ -47,14 +47,19 @@ services:
     controller.helper:
         class: phpbb_controller_helper
         arguments:
-            - @template
-            - %core.root_path%
-            - .%core.php_ext%
+            - @container
 
     controller.resolver:
         class: phpbb_controller_resolver
         arguments:
             - @user
+
+    controller.error:
+        class: phpbb_controller_error
+        arguments:
+            - @helper
+            - @user
+            - @template
     
     cron.task_provider:
         class: phpbb_cron_task_provider

@@ -81,6 +81,12 @@ class phpbb_kernel implements HttpKernelInterface
 	protected $controllers;
 
 	/**
+	* Request object
+	* @var Request
+	*/
+	protected $request;
+
+	/**
 	* Constructor
 	*
 	* @param EventDispatcherInterface $dispatcher An EventDispatcherInterface instance
@@ -135,6 +141,9 @@ class phpbb_kernel implements HttpKernelInterface
 	{
 		try
 		{
+			// Make the Request object available to this class
+			$this->request = $request;
+
 			$context = new RequestContext();
 			$context->fromRequest($request);
 
@@ -343,5 +352,21 @@ class phpbb_kernel implements HttpKernelInterface
 		{
 			return $response;
 		}
+	}
+
+	/**
+	* Forward a request to another controller
+	*
+	* @param string $controller Destination controller name
+	* @param array $query Request query string parameters
+	* @param array $attributes Request attributes
+	* @return Response A Reponse instance
+	*/
+	public function forward($controller, array $query, array $attributes)
+	{
+		$attributes['_controller'] = $controller;
+		$sub_request = $this->request->duplicate($query, null, $attributes);
+
+		return $this->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
 	}
 }

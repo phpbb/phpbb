@@ -46,4 +46,8 @@ $lang = array_merge($lang, array(
 	'CONTROLLER_SERVICE_UNDEFINED'		=> 'The service for controller "<strong>%s</strong>" is not defined in ./config/services.yml.',
 	'CONTROLLER_OBJECT_TYPE_INVALID'	=> 'Your controller object <strong>%s</strong> must implement the <strong>phpbb_controller_interface</strong>.',
 	'CONTROLLER_RETURN_TYPE_INVALID'	=> 'The controller object <strong>%s</strong>',
+
+	// Core error controller messages
+	'PAGE_NOT_FOUND_MESSAGE'			=> 'The page you requested does not exist.',
+	'INTERNAL_SERVER_ERROR_MESSAGE'		=> 'An unknown error occured.',
 ));

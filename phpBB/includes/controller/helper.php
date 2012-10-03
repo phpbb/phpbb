@@ -24,6 +24,12 @@ use Symfony\Component\HttpFoundation\Response;
 class phpbb_controller_helper
 {
 	/**
+	* Container
+	* @var ContainerBuilder
+	*/
+	protected $container;
+
+	/**
 	* Template object
 	* @var phpbb_template
 	*/
@@ -44,13 +50,16 @@ class phpbb_controller_helper
 	/**
 	* Constructor
 	*
-	* @param phpbb_template
+	* @param ContainerBuilder $container DI Container
 	*/
-	public function __construct(phpbb_template $template, $phpbb_root_path = "./", $php_ext = ".php")
+	public function __construct(ContainerBuilder $container)
 	{
-		$this->template = $template;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
+		$this->container = $container;
+
+		$this->template = $this->container->get('template');
+		$this->kernel = $this->container->get('kernel');
+		$this->phpbb_root_path = $this->container->getParam('core.root_path');
+		$this->php_ext = $this->container->getParam('core.php_ext');
 	}
 
 	/**
@@ -65,7 +74,7 @@ class phpbb_controller_helper
 	{
 		if (!function_exists('page_header'))
 		{
-			include("{$this->phpbb_root_path}includes/functions{$this->php_ext}");
+			include("{$this->phpbb_root_path}includes/functions.{$this->php_ext}");
 		}
 
 		page_header($page_title);
@@ -77,5 +86,18 @@ class phpbb_controller_helper
 		page_footer(true, false, false);
 
 		return new Response($this->template->return_display($handle), $status_code);
+	}
+
+	/**
+	* Forward a request to another controller
+	*
+	* @param string $controller Destination controller name
+	* @param array $query Request query string parameters
+	* @param array $attributes Request attributes
+	* @return Response A Reponse instance
+	*/
+	public function forward($controller, array $query, array $attributes)
+	{
+		return $this->kernel->forward($controller, $query, $attributes);
 	}
 }
