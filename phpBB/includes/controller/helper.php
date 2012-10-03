@@ -96,8 +96,10 @@ class phpbb_controller_helper
 	* @param array $attributes Request attributes
 	* @return Response A Reponse instance
 	*/
-	public function error($message, $type = 500)
+	public function error($type = 500, $message = '')
 	{
+		$type = in_array($type, array(401, 403, 404, 500)) ? $type : 500;
+
 		return $this->forward('controller.error:error_' . $type, array(
 			'message'	=> $message,
 			'title'		=> $this->container->get('user')->lang('INFORMATION'),
