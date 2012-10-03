@@ -296,7 +296,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$ignored = (sizeof($search->get_common_words())) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $search->get_common_words())) . '<br />' : '';
 			// Function cannot be directly used as associative array for php < 5.4
 			$word_length = $search->get_word_length();
-			trigger_error($ignored . $user->lang('NO_KEYWORDS', $user->lang('CHARACTERS', (int) $word_length['min']), $user->lang('CHARACTERS', (int) $word_length['max'])));
+			if ($word_length)
+			{
+				trigger_error($ignored . $user->lang('NO_KEYWORDS', $user->lang('CHARACTERS', (int) $word_length['min']), $user->lang('CHARACTERS', (int) $word_length['max'])));
+			}
+			else
+			{
+				trigger_error($ignored);
+			}
 		}
 	}
 

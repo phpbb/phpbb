@@ -109,6 +109,16 @@ class phpbb_search_fulltext_sphinx
 	}
 
 	/**
+	 * Returns false as there is no word_len array
+	 *
+	 * @return false
+	 */
+	public function get_word_length()
+	{
+		return false;
+	}
+
+	/**
 	 * Returns the common_words array
 	 *
 	 * @return array common words that are ignored by search backend
