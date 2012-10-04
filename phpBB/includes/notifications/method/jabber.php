@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notifications_method_jabber extends phpbb_notifications_method_email
+class phpbb_notification_method_jabber extends phpbb_notification_method_email
 {
 	/**
 	* Notify method (since jabber gets sent through the same messenger, we let the jabber class inherit from this to reduce code duplication)
