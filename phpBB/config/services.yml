@@ -89,7 +89,7 @@ services:
             - .%core.php_ext%
             - @cache.driver
 
-    notifications:
+    notification_manager:
         class: phpbb_notification_manager
         arguments:
             - @dbal.conn

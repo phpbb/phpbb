@@ -269,46 +269,46 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 		case RULE_IS_LIKE:
 			$result = preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
 		break;
-		
+
 		case RULE_IS_NOT_LIKE:
 			$result = !preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
 		break;
-		
+
 		case RULE_IS:
 			$result = ($check0 == $rule_row['rule_string']);
 		break;
-		
+
 		case RULE_IS_NOT:
 			$result = ($check0 != $rule_row['rule_string']);
 		break;
-		
+
 		case RULE_BEGINS_WITH:
 			$result = preg_match("/^" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
 		break;
-		
+
 		case RULE_ENDS_WITH:
 			$result = preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '$/i', $check0);
 		break;
-		
+
 		case RULE_IS_FRIEND:
 		case RULE_IS_FOE:
 		case RULE_ANSWERED:
 		case RULE_FORWARDED:
 			$result = ($check0 == 1);
 		break;
-		
+
 		case RULE_IS_USER:
 			$result = ($check0 == $rule_row['rule_user_id']);
 		break;
-		
+
 		case RULE_IS_GROUP:
 			$result = in_array($rule_row['rule_group_id'], $check0);
 		break;
-		
+
 		case RULE_TO_GROUP:
 			$result = (in_array('g_' . $message_row[$check_ary['check2']], $check0) || in_array('g_' . $message_row[$check_ary['check2']], $message_row[$check_ary['check1']]));
 		break;
-		
+
 		case RULE_TO_ME:
 			$result = (in_array('u_' . $user_id, $check0) || in_array('u_' . $user_id, $message_row[$check_ary['check1']]));
 		break;
@@ -876,10 +876,9 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 		return;
 	}
 
-	global $db, $user, $phpbb_container;
+	global $db, $user, $phpbb_notifications;
 
 	// Mark the PM as read
-	$phpbb_notifications = $phpbb_container->get('notifications');
 	$phpbb_notifications->mark_notifications_read('pm', $msg_id, $user_id);
 
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . "
@@ -986,7 +985,7 @@ function handle_mark_actions($user_id, $mark_action)
 function delete_pm($user_id, $msg_ids, $folder_id)
 {
 	global $db, $user, $phpbb_root_path, $phpEx;
-	global $phpbb_container;
+	global $phpbb_notifications;
 
 	$user_id	= (int) $user_id;
 	$folder_id	= (int) $folder_id;
@@ -1099,7 +1098,6 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	}
 
 	// Delete Notifications
-	$phpbb_notifications = $phpbb_container->get('notifications');
 	$phpbb_notifications->delete_notifications('pm', array_keys($delete_rows));
 
 	// Now we have to check which messages we can delete completely
@@ -1146,7 +1144,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 function phpbb_delete_user_pms($user_id)
 {
 	global $db, $user, $phpbb_root_path, $phpEx;
-	global $phpbb_container;
+	global $phpbb_notifications;
 
 	$user_id = (int) $user_id;
 
@@ -1265,7 +1263,6 @@ function phpbb_delete_user_pms($user_id)
 			$db->sql_query($sql);
 
 			// Delete Notifications
-			$phpbb_notifications = $phpbb_container->get('notifications');
 			$phpbb_notifications->delete_notifications('pm', $delivered_msg);
 		}
 
@@ -1280,7 +1277,6 @@ function phpbb_delete_user_pms($user_id)
 			$db->sql_query($sql);
 
 			// Delete Notifications
-			$phpbb_notifications = $phpbb_container->get('notifications');
 			$phpbb_notifications->delete_notifications('pm', $undelivered_msg);
 		}
 	}
@@ -1326,7 +1322,6 @@ function phpbb_delete_user_pms($user_id)
 			$db->sql_query($sql);
 
 			// Delete Notifications
-			$phpbb_notifications = $phpbb_container->get('notifications');
 			$phpbb_notifications->delete_notifications('pm', $delete_ids);
 		}
 	}
@@ -1565,7 +1560,7 @@ function get_folder_status($folder_id, $folder)
 function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 {
 	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path;
-	global $phpbb_container;
+	global $phpbb_notifications;
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
@@ -1865,8 +1860,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	$db->sql_transaction('commit');
 
 	// Send Notifications
-	$phpbb_notifications = $phpbb_container->get('notifications');
-
 	$pm_data = array_merge($data, array(
 		'message_subject'		=> $subject,
 		'recipients'			=> $recipients,

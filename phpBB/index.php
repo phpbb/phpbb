@@ -31,7 +31,7 @@ if ($ext = $request->variable('ext', ''))
 	if (!$phpbb_extension_manager->available($ext))
 	{
 		send_status_line(404, 'Not Found');
-		trigger_error($user->lang('EXTENSION_DOES_NOT_EXIST', $ext));	
+		trigger_error($user->lang('EXTENSION_DOES_NOT_EXIST', $ext));
 	}
 	else if (!$phpbb_extension_manager->enabled($ext))
 	{
@@ -60,7 +60,6 @@ if ($ext = $request->variable('ext', ''))
 $mark_notifications = request_var('mark_notification', array(0));
 if (!empty($mark_notifications))
 {
-	$phpbb_notifications = $phpbb_container->get('notifications');
 	$phpbb_notifications->mark_notifications_read_by_id($mark_notifications);
 }
 

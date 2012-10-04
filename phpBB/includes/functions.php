@@ -1285,7 +1285,7 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
 	global $db, $user, $config;
-	global $request, $phpbb_container;
+	global $request, $phpbb_notifications;
 
 	if ($mode == 'all')
 	{
@@ -1294,7 +1294,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			// Mark all forums read (index page)
 
 			// Mark all topic notifications read for this user
-			$phpbb_notifications = $phpbb_container->get('notifications');
 			$phpbb_notifications->mark_notifications_read(array('topic', 'quote', 'bookmark', 'post', 'approve_topic', 'approve_post'), false, $user->data['user_id'], $post_time);
 
 			if ($config['load_db_lastread'] && $user->data['is_registered'])
@@ -1336,7 +1335,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 
 		// Mark topic notifications read for this user in this forum
-		$phpbb_notifications = $phpbb_container->get('notifications');
 		$phpbb_notifications->mark_notifications_read_by_parent(array('topic', 'approve_topic'), $forum_id, $user->data['user_id'], $post_time);
 
 		// Mark all post/quote notifications read for this user in this forum
@@ -1448,7 +1446,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 
 		// Mark post notifications read for this user in this topic
-		$phpbb_notifications = $phpbb_container->get('notifications');
 		$phpbb_notifications->mark_notifications_read(array('topic', 'approve_topic'), $topic_id, $user->data['user_id'], $post_time);
 		$phpbb_notifications->mark_notifications_read_by_parent(array('quote', 'bookmark', 'post', 'approve_post'), $topic_id, $user->data['user_id'], $post_time);
 
@@ -4806,7 +4803,7 @@ function phpbb_http_login($param)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $phpbb_container;
+	global $phpbb_dispatcher, $phpbb_notifications;
 
 	if (defined('HEADER_INC'))
 	{
@@ -4996,7 +4993,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	}
 
 	// Output the notifications
-	$phpbb_notifications = $phpbb_container->get('notifications');
 	$notifications = $phpbb_notifications->load_notifications(array(
 		'all_unread'	=> true,
 		'limit'			=> 5,
