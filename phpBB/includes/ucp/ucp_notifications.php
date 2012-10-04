@@ -21,14 +21,9 @@ class ucp_notifications
 
 	public function main($id, $mode)
 	{
-		global $phpbb_container;
+		global $template, $user, $request, $phpbb_notifications;
 
 		add_form_key('ucp_notification_options');
-
-		$phpbb_notifications = $phpbb_container->get('notifications');
-		$template = $phpbb_container->get('template');
-		$user = $phpbb_container->get('user');
-		$request = $phpbb_container->get('request');
 
 		$subscriptions = $phpbb_notifications->get_subscriptions(false, true);
 

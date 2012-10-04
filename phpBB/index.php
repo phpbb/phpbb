@@ -28,7 +28,6 @@ $user->setup('viewforum');
 $mark_notifications = request_var('mark_notification', array(0));
 if (!empty($mark_notifications))
 {
-	$phpbb_notifications = $phpbb_container->get('notifications');
 	$phpbb_notifications->mark_notifications_read_by_id($mark_notifications);
 }
 

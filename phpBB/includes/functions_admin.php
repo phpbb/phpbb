@@ -619,7 +619,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true, $call_delete_posts = true)
 {
 	global $db, $config;
-	global $phpbb_container;
+	global $phpbb_notifications;
 
 	$approved_topics = 0;
 	$forum_ids = $topic_ids = array();
@@ -717,7 +717,6 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 	}
 
 	// Delete notifications
-	$phpbb_notifications = $phpbb_container->get('notifications');
 	$phpbb_notifications->delete_notifications(array('topic', 'approve_topic', 'topic_in_queue'), $topic_ids);
 
 	return $return;
@@ -729,7 +728,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true, $call_delete_topics = true)
 {
 	global $db, $config, $phpbb_root_path, $phpEx, $auth, $user;
-	global $phpbb_container;
+	global $phpbb_notifications;
 
 	if ($where_type === 'range')
 	{
@@ -899,7 +898,6 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	// Delete notifications
-	$phpbb_notifications = $phpbb_container->get('notifications');
 	$phpbb_notifications->delete_notifications(array('quote', 'bookmark', 'post', 'approve_post', 'post_in_queue'), $post_ids);
 
 	return sizeof($post_ids);
