@@ -66,7 +66,7 @@ class phpbb_notification_type_disapprove_post extends phpbb_notification_type_ap
 	*/
 	public function get_title()
 	{
-		return $this->phpbb_container->get('user')->lang(
+		return $this->user->lang(
 			$this->language_key,
 			censor_text($this->get_data('topic_title')),
 			$this->get_data('disapprove_reason')

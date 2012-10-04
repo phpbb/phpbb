@@ -62,9 +62,9 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 	/**
 	* Is available
 	*/
-	public static function is_available(ContainerBuilder $phpbb_container)
+	public function is_available()
 	{
-		$m_approve = $phpbb_container->get('auth')->acl_getf('m_approve', true);
+		$m_approve = $this->auth->acl_getf('m_approve', true);
 
 		return (!empty($m_approve));
 	}
@@ -72,20 +72,17 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param ContainerBuilder $phpbb_container
 	* @param array $post Data from the post
 	*
 	* @return array
 	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post, $options = array())
+	public function find_users_for_notification($post, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
 		), $options);
 
-		$db = $phpbb_container->get('dbal.conn');
-
-		$auth_approve = $phpbb_container->get('auth')->acl_get_list(false, 'm_approve', $post['forum_id']);
+		$auth_approve = $this->auth->acl_get_list(false, 'm_approve', $post['forum_id']);
 
 		if (empty($auth_approve))
 		{
@@ -97,9 +94,9 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . self::$notification_option['id'] . "'
-				AND " . $db->sql_in_set('user_id', $auth_approve[$post['forum_id']]['m_approve']);
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+				AND " . $this->db->sql_in_set('user_id', $auth_approve[$post['forum_id']]['m_approve']);
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
 			{
@@ -113,7 +110,7 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 
 			$notify_users[$row['user_id']][] = $row['method'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		return $notify_users;
 	}

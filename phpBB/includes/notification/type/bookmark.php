@@ -51,38 +51,35 @@ class phpbb_notification_type_bookmark extends phpbb_notification_type_post
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param ContainerBuilder $phpbb_container
 	* @param array $post Data from
 	*
 	* @return array
 	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post, $options = array())
+	public function find_users_for_notification($post, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
 		), $options);
 
-		$db = $phpbb_container->get('dbal.conn');
-
 		$users = array();
 
 		$sql = 'SELECT user_id
 			FROM ' . BOOKMARKS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', $post['topic_id']) . '
+			WHERE ' . $this->db->sql_in_set('topic_id', $post['topic_id']) . '
 				AND user_id <> ' . (int) $post['poster_id'];
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$users[] = $row['user_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if (empty($users))
 		{
 			return array();
 		}
 
-		$auth_read = $phpbb_container->get('auth')->acl_get_list($users, 'f_read', $post['forum_id']);
+		$auth_read = $this->auth->acl_get_list($users, 'f_read', $post['forum_id']);
 
 		if (empty($auth_read))
 		{
@@ -94,9 +91,9 @@ class phpbb_notification_type_bookmark extends phpbb_notification_type_post
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . self::get_item_type() . "'
-				AND " . $db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+				AND " . $this->db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
 			{
@@ -110,7 +107,7 @@ class phpbb_notification_type_bookmark extends phpbb_notification_type_post
 
 			$notify_users[$row['user_id']][] = $row['method'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		return $notify_users;
 	}
