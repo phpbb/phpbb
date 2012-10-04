@@ -294,7 +294,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		if (!$correct_query || (!$search->get_search_query() && !sizeof($author_id_ary) && !$search_id))
 		{
 			$ignored = (sizeof($search->get_common_words())) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $search->get_common_words())) . '<br />' : '';
-			// Function cannot be directly used as associative array for php < 5.4
 			$word_length = $search->get_word_length();
 			if ($word_length)
 			{
