@@ -120,7 +120,15 @@ services:
     notifications:
         class: phpbb_notification_manager
         arguments:
-            - @container
+            - @dbal.conn
+            - @cache.driver
+            - @template
+            - @ext.manager
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
 
     http_kernel:
         class: Symfony\Component\HttpKernel\HttpKernel

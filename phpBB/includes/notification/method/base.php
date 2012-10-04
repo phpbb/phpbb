@@ -23,12 +23,7 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_notification_method_base implements phpbb_notification_method_interface
 {
-	protected $phpbb_container;
-	protected $service;
-	protected $db;
-	protected $user;
-	protected $phpbb_root_path;
-	protected $php_ext;
+	protected $notification_manager, $db, $cache, $template, $extension_manager, $user, $auth, $config, $phpbb_root_path, $php_ext = null;
 
 	/**
 	* Desired notifications
@@ -56,20 +51,17 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	*/
 	protected $queue = array();
 
-	public function __construct(ContainerBuilder $phpbb_container)
+	public function __construct(dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, phpbb_user $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
-		// phpBB Container
-		$this->phpbb_container = $phpbb_container;
-
-		// Service
-		$this->service = $phpbb_container->get('notifications');
-
-		// Some common things we're going to use
-		$this->db = $phpbb_container->get('dbal.conn');
-		$this->user = $phpbb_container->get('user');
-
-		$this->phpbb_root_path = $phpbb_container->getParameter('core.root_path');
-		$this->php_ext = $phpbb_container->getParameter('core.php_ext');
+		$this->db = $db;
+		$this->cache = $cache;
+		$this->template = $template;
+		$this->extension_manager = $extension_manager;
+		$this->user = $user;
+		$this->auth = $auth;
+		$this->config = $config;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 	}
 
 	/**

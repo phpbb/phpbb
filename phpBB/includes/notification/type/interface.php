@@ -25,9 +25,9 @@ interface phpbb_notification_type_interface
 
 	public static function get_item_id($type_data);
 
-	public static function is_available(ContainerBuilder $phpbb_container);
+	public function is_available();
 
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $type_data, $options);
+	public function find_users_for_notification($type_data, $options);
 
 	public function get_title();
 
@@ -45,5 +45,5 @@ interface phpbb_notification_type_interface
 
 	public function get_load_special();
 
-	public static function load_special(ContainerBuilder $phpbb_container, $data, $notifications);
+	public function load_special($data, $notifications);
 }

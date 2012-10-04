@@ -23,11 +23,7 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_notification_type_base implements phpbb_notification_type_interface
 {
-	protected $phpbb_container;
-	protected $service;
-	protected $db;
-	protected $phpbb_root_path;
-	protected $php_ext;
+	protected $notification_manager, $db, $cache, $template, $extension_manager, $user, $auth, $config, $phpbb_root_path, $php_ext = null;
 
 	/**
 	* Array of user data containing information needed to output the notifications to the template
@@ -39,7 +35,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	/**
 	* Notification option data (for outputting to the user)
 	*
-	* @var bool|array False if the service should use it's default data
+	* @var bool|array False if the service should use its default data
 	* 					Array of data (including keys 'id' and 'lang')
 	*/
 	public static $notification_option = false;
@@ -60,20 +56,27 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	private $data = array();
 
-	public function __construct(ContainerBuilder $phpbb_container, $data = array())
+	public function __construct(phpbb_notification_manager $notification_manager, dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, phpbb_user $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
-		// phpBB Container
-		$this->phpbb_container = $phpbb_container;
+		$this->notification_manager = $notification_manager;
+		$this->db = $db;
+		$this->cache = $cache;
+		$this->template = $template;
+		$this->extension_manager = $extension_manager;
+		$this->user = $user;
+		$this->auth = $auth;
+		$this->config = $config;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+	}
 
-		// Service
-		$this->service = $phpbb_container->get('notifications');
-
-		// Some common things we're going to use
-		$this->db = $phpbb_container->get('dbal.conn');
-
-		$this->phpbb_root_path = $phpbb_container->getParameter('core.root_path');
-		$this->php_ext = $phpbb_container->getParameter('core.php_ext');
-
+	/**
+	* Set initial data from the database
+	*
+	* @param array $data Row directly from the database
+	*/
+	public function set_initial_data($data = array())
+	{
 		// The row from the database (unless this is a new notification we're going to add)
 		$this->data = $data;
 		$this->data['data'] = (isset($this->data['data'])) ? unserialize($this->data['data']) : array();
@@ -117,15 +120,13 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	public function prepare_for_display()
 	{
-		$user = $this->phpbb_container->get('user');
-
 		return array(
 			'AVATAR'			=> $this->get_avatar(),
 
 			'FORMATTED_TITLE'	=> $this->get_title(),
 
 			'URL'				=> $this->get_url(),
-			'TIME'	   			=> $user->format_date($this->time),
+			'TIME'	   			=> $this->user->format_date($this->time),
 
 			'UNREAD'			=> $this->unread,
 
@@ -239,7 +240,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	/**
 	* Load the special items (fall-back)
 	*/
-	public static function load_special(ContainerBuilder $phpbb_container, $data, $notifications)
+	public function load_special($data, $notifications)
 	{
 		return;
 	}
@@ -247,7 +248,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	/**
 	* Is available (fall-back)
 	*/
-	public static function is_available(ContainerBuilder $phpbb_container)
+	public function is_available()
 	{
 		return true;
 	}
@@ -259,18 +260,15 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	/**
 	* Find the users who want to receive notifications (helper)
 	*
-	* @param ContainerBuilder $phpbb_container
 	* @param array $item_id The item_id to search for
 	*
 	* @return array
 	*/
-	protected static function _find_users_for_notification(ContainerBuilder $phpbb_container, $item_id, $options)
+	protected function _find_users_for_notification($item_id, $options)
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
 		), $options);
-
-		$db = $phpbb_container->get('dbal.conn');
 
 		$rowset = array();
 
@@ -278,8 +276,8 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . static::get_item_type() . "'
 				AND item_id = " . (int) $item_id;
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
 			{
@@ -293,7 +291,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 			$rowset[$row['user_id']][] = $row['method'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		return $rowset;
 	}
@@ -306,7 +304,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	protected function _get_avatar($user_id)
 	{
-		$user = $this->service->get_user($user_id);
+		$user = $this->notification_manager->get_user($user_id);
 
 		if (!function_exists('get_user_avatar'))
 		{
