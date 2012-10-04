@@ -5239,8 +5239,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
 		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
-		'NUM_UNREAD_NOTIFICATIONS'		=> $notifications['unread_count'],
-		'NOTIFICATIONS_CNT'				=> $user->lang('NOTIFICATIONS_CNT', $notifications['unread_count']),
+		'UNREAD_NOTIFICATIONS_COUNT'	=> $notifications['unread_count'],
+		'NOTIFICATIONS_COUNT'			=> $user->lang('NOTIFICATIONS_COUNT', $notifications['unread_count']),
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
