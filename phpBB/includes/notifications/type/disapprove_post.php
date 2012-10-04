@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notifications_type_disapprove_post extends phpbb_notifications_type_approve_post
+class phpbb_notification_type_disapprove_post extends phpbb_notification_type_approve_post
 {
 	/**
 	* Email template to use to send notifications
@@ -52,7 +52,7 @@ class phpbb_notifications_type_disapprove_post extends phpbb_notifications_type_
 
 	/**
 	* Get the type of notification this is
-	* phpbb_notifications_type_
+	* phpbb_notification_type_
 	*/
 	public static function get_item_type()
 	{

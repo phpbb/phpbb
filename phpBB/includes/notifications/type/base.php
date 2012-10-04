@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Base notifications class
 * @package notifications
 */
-abstract class phpbb_notifications_type_base implements phpbb_notifications_type_interface
+abstract class phpbb_notification_type_base implements phpbb_notification_type_interface
 {
 	protected $phpbb_container;
 	protected $service;

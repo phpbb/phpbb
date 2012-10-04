@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notifications_type_pm extends phpbb_notifications_type_base
+class phpbb_notification_type_pm extends phpbb_notification_type_base
 {
 	/**
 	* Email template to use to send notifications
@@ -34,7 +34,7 @@ class phpbb_notifications_type_pm extends phpbb_notifications_type_base
 
 	/**
 	* Get the type of notification this is
-	* phpbb_notifications_type_
+	* phpbb_notification_type_
 	*/
 	public static function get_item_type()
 	{

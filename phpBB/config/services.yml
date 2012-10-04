@@ -90,7 +90,7 @@ services:
             - @cache.driver
 
     notifications:
-        class: phpbb_notifications_service
+        class: phpbb_notification_manager
         arguments:
             - @container
 

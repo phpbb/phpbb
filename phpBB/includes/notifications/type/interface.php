@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Base notifications interface
 * @package notifications
 */
-interface phpbb_notifications_type_interface
+interface phpbb_notification_type_interface
 {
 	public static function get_item_type();
 
