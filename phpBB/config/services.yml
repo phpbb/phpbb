@@ -117,7 +117,7 @@ services:
             - .%core.php_ext%
             - _ext_finder
 
-    notifications:
+    notification_manager:
         class: phpbb_notification_manager
         arguments:
             - @dbal.conn
