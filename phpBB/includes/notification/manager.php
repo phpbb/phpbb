@@ -360,7 +360,7 @@ class phpbb_notification_manager
 				{
 					if (!isset($notification_methods[$method]))
 					{
-						$method_class_name = 'phpbb_notifications_method_' . $method;
+						$method_class_name = 'phpbb_notification_method_' . $method;
 						$notification_methods[$method] = new $method_class_name($this->phpbb_container);
 					}
 
@@ -496,7 +496,7 @@ class phpbb_notification_manager
 
 		foreach ($this->get_subscription_files('notifications/method/') as $method_name => $file)
 		{
-			$class_name = 'phpbb_notifications_method_' . $method_name;
+			$class_name = 'phpbb_notification_method_' . $method_name;
 
 			if (!class_exists($class_name))
 			{
@@ -651,7 +651,7 @@ class phpbb_notification_manager
 			$item_type = preg_replace('#[^a-z_]#', '', $item_type);
 		}
 
-		return 'phpbb_notifications_type_' . $item_type;
+		return 'phpbb_notification_type_' . $item_type;
 	}
 
 	/**
