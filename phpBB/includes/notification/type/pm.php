@@ -65,36 +65,31 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param ContainerBuilder $phpbb_container
 	* @param array $pm Data from
 	*
 	* @return array
 	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $pm, $options = array())
+	public function find_users_for_notification($pm, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
 		), $options);
-
-		$service = $phpbb_container->get('notifications');
-		$db = $phpbb_container->get('dbal.conn');
-		$user = $phpbb_container->get('user');
 
 		if (!sizeof($pm['recipients']))
 		{
 			return array();
 		}
 
-		$service->load_users(array_keys($pm['recipients']));
+		$this->notification_manager->load_users(array_keys($pm['recipients']));
 
 		$notify_users = array();
 
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . self::get_item_type() . "'
-				AND " . $db->sql_in_set('user_id', array_keys($pm['recipients']));
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+				AND " . $this->db->sql_in_set('user_id', array_keys($pm['recipients']));
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
 			{
@@ -108,7 +103,7 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 
 			$notify_users[$row['user_id']][] = $row['method'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		return $notify_users;
 	}
@@ -128,11 +123,11 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 	*/
 	public function get_title()
 	{
-		$user_data = $this->service->get_user($this->get_data('from_user_id'));
+		$user_data = $this->notification_manager->get_user($this->get_data('from_user_id'));
 
 		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 
-		return $this->phpbb_container->get('user')->lang('NOTIFICATION_PM', $username, $this->get_data('message_subject'));
+		return $this->user->lang('NOTIFICATION_PM', $username, $this->get_data('message_subject'));
 	}
 
 	/**
@@ -142,7 +137,7 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 	*/
 	public function get_email_template_variables()
 	{
-		$user_data = $this->service->get_user($this->get_data('from_user_id'));
+		$user_data = $this->notification_manager->get_user($this->get_data('from_user_id'));
 
 		return array(
 			'AUTHOR_NAME'				=> htmlspecialchars_decode($user_data['username']),

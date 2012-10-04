@@ -71,12 +71,11 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param ContainerBuilder $phpbb_container
 	* @param array $post Data from
 	*
 	* @return array
 	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post, $options = array())
+	public function find_users_for_notification($post, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
@@ -86,8 +85,6 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		// It may not be the nicest thing, but it is already working and it would be significant work to replace it
 		//$users = parent::_find_users_for_notification($phpbb_container, $post['topic_id']);
 
-		$db = $phpbb_container->get('dbal.conn');
-
 		$users = array();
 
 		$sql = 'SELECT user_id
@@ -95,19 +92,19 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 			WHERE topic_id = ' . (int) $post['topic_id'] . '
 				AND notify_status = ' . NOTIFY_YES . '
 				AND user_id <> ' . (int) $post['poster_id'];
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$users[] = $row['user_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if (empty($users))
 		{
 			return array();
 		}
 
-		$auth_read = $phpbb_container->get('auth')->acl_get_list($users, 'f_read', $post['forum_id']);
+		$auth_read = $this->auth->acl_get_list($users, 'f_read', $post['forum_id']);
 
 		if (empty($auth_read))
 		{
@@ -119,9 +116,9 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . self::get_item_type() . "'
-				AND " . $db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+				AND " . $this->db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
 			{
@@ -135,7 +132,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 
 			$notify_users[$row['user_id']][] = $row['method'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		return $notify_users;
 	}
@@ -161,12 +158,12 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		}
 		else
 		{
-			$user_data = $this->service->get_user($this->get_data('poster_id'));
+			$user_data = $this->notification_manager->get_user($this->get_data('poster_id'));
 
 			$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 		}
 
-		return $this->phpbb_container->get('user')->lang(
+		return $this->user->lang(
 			$this->language_key,
 			$username,
 			censor_text($this->get_data('topic_title'))

@@ -36,7 +36,7 @@ class phpbb_notification_method_jabber extends phpbb_notification_method_email
 	*/
 	public function is_available()
 	{
-		return ($this->global_available() && $this->phpbb_container->get('user')->data['jabber']);
+		return ($this->global_available() && $this->user->data['jabber']);
 	}
 
 	/**
@@ -45,9 +45,7 @@ class phpbb_notification_method_jabber extends phpbb_notification_method_email
 	*/
 	public function global_available()
 	{
-		$config = $this->phpbb_container->get('config');
-
-		return ($config['jab_enable'] && @extension_loaded('xml'));
+		return ($this->config['jab_enable'] && @extension_loaded('xml'));
 	}
 
 	public function notify()

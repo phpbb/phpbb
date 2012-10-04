@@ -57,12 +57,12 @@ class phpbb_notification_method_email extends phpbb_notification_method_base
 		// We do not send emails to banned users
 		if (!function_exists('phpbb_get_banned_user_ids'))
 		{
-			include($this->phpbb_container->getParameter('core.root_path') . 'includes/functions_user.' . $this->phpbb_container->getParameter('core.php_ext'));
+			include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 		$banned_users = phpbb_get_banned_user_ids($user_ids);
 
 		// Load all the users we need
-		$this->service->load_users($user_ids);
+		$this->notification_manager->load_users($user_ids);
 
 		// Load the messenger
 		if (!class_exists('messenger'))
@@ -75,7 +75,7 @@ class phpbb_notification_method_email extends phpbb_notification_method_base
 		// Time to go through the queue and send emails
 		foreach ($this->queue as $notification)
 		{
-			$user = $this->service->get_user($notification->user_id);
+			$user = $this->notification_manager->get_user($notification->user_id);
 
 			if ($user['user_type'] == USER_IGNORE || in_array($notification->user_id, $banned_users))
 			{
