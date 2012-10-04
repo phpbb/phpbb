@@ -389,7 +389,7 @@ $lang = array_merge($lang, array(
 	'NOT_AUTHORISED'			=> 'You are not authorised to access this area.',
 	'NOT_WATCHING_FORUM'		=> 'You are no longer subscribed to updates on this forum.',
 	'NOT_WATCHING_TOPIC'		=> 'You are no longer subscribed to this topic.',
-	'NOTIFICATIONS_CNT'			=> array(
+	'NOTIFICATIONS_COUNT'		=> array(
 		1	=> '%d Notification',
 		2	=> '%d Notifications',
 	),
