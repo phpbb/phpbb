@@ -85,11 +85,11 @@ class ucp_notifications
 	* Output all the notification types to the template
 	*
 	* @param string $block
-	* @param phpbb_notifications_service $phpbb_notifications
+	* @param phpbb_notification_manager $phpbb_notifications
 	* @param phpbb_template $template
 	* @param phpbb_user $user
 	*/
-	public function output_notification_types($block = 'notification_types', phpbb_notifications_service $phpbb_notifications, phpbb_template $template, phpbb_user $user)
+	public function output_notification_types($block = 'notification_types', phpbb_notification_manager $phpbb_notifications, phpbb_template $template, phpbb_user $user)
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 		$subscriptions = $phpbb_notifications->get_subscriptions(false, true);
@@ -121,11 +121,11 @@ class ucp_notifications
 	* Output all the notification methods to the template
 	*
 	* @param string $block
-	* @param phpbb_notifications_service $phpbb_notifications
+	* @param phpbb_notification_manager $phpbb_notifications
 	* @param phpbb_template $template
 	* @param phpbb_user $user
 	*/
-	public function output_notification_methods($block = 'notification_methods', phpbb_notifications_service $phpbb_notifications, phpbb_template $template, phpbb_user $user)
+	public function output_notification_methods($block = 'notification_methods', phpbb_notification_manager $phpbb_notifications, phpbb_template $template, phpbb_user $user)
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 

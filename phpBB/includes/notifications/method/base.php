@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Base notifications method class
 * @package notifications
 */
-abstract class phpbb_notifications_method_base implements phpbb_notifications_method_interface
+abstract class phpbb_notification_method_base implements phpbb_notification_method_interface
 {
 	protected $phpbb_container;
 	protected $service;
@@ -75,9 +75,9 @@ abstract class phpbb_notifications_method_base implements phpbb_notifications_me
 	/**
 	* Add a notification to the queue
 	*
-	* @param phpbb_notifications_type_interface $notification
+	* @param phpbb_notification_type_interface $notification
 	*/
-	public function add_to_queue(phpbb_notifications_type_interface $notification)
+	public function add_to_queue(phpbb_notification_type_interface $notification)
 	{
 		$this->queue[] = $notification;
 	}

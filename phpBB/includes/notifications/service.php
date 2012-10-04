@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Notifications service class
 * @package notifications
 */
-class phpbb_notifications_service
+class phpbb_notification_manager
 {
 	protected $phpbb_container;
 	protected $db;
