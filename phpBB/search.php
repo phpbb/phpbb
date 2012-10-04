@@ -287,13 +287,15 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		trigger_error($error);
 	}
 
+	$common_words = $search->get_common_words();
+
 	// let the search module split up the keywords
 	if ($keywords)
 	{
 		$correct_query = $search->split_keywords($keywords, $search_terms);
 		if (!$correct_query || (!$search->get_search_query() && !sizeof($author_id_ary) && !$search_id))
 		{
-			$ignored = (sizeof($search->get_common_words())) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $search->get_common_words())) . '<br />' : '';
+			$ignored = (sizeof($common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $common_words)) . '<br />' : '';
 			$word_length = $search->get_word_length();
 			if ($word_length)
 			{
@@ -618,7 +620,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'SEARCH_MATCHES'	=> $l_search_matches,
 		'SEARCH_WORDS'		=> $keywords,
 		'SEARCHED_QUERY'	=> $search->get_search_query(),
-		'IGNORED_WORDS'		=> (sizeof($search->get_common_words())) ? implode(' ', $search->get_common_words()) : '',
+		'IGNORED_WORDS'		=> (sizeof($common_words)) ? implode(' ', $common_words) : '',
 		'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $u_search, $total_match_count, $per_page, $start),
 
 		'PHRASE_SEARCH_DISABLED'		=> $phrase_search_disabled,
