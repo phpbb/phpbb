@@ -58,18 +58,15 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param ContainerBuilder $phpbb_container
 	* @param array $post Data from
 	*
 	* @return array
 	*/
-	public static function find_users_for_notification(ContainerBuilder $phpbb_container, $post, $options = array())
+	public function find_users_for_notification($post, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
 		), $options);
-
-		$db = $phpbb_container->get('dbal.conn');
 
 		$usernames = false;
 		preg_match_all(self::$regular_expression_match, $post['post_text'], $usernames);
@@ -87,21 +84,21 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . '
-			WHERE ' . $db->sql_in_set('username_clean', $usernames) . '
+			WHERE ' . $this->db->sql_in_set('username_clean', $usernames) . '
 				AND user_id <> ' . (int) $post['poster_id'];
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$users[] = $row['user_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if (empty($users))
 		{
 			return array();
 		}
 
-		$auth_read = $phpbb_container->get('auth')->acl_get_list($users, 'f_read', $post['forum_id']);
+		$auth_read = $this->auth->acl_get_list($users, 'f_read', $post['forum_id']);
 
 		if (empty($auth_read))
 		{
@@ -113,9 +110,9 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . self::get_item_type() . "'
-				AND " . $db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+				AND " . $this->db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
 			{
@@ -129,7 +126,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 
 			$notify_users[$row['user_id']][] = $row['method'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		return $notify_users;
 	}
@@ -137,28 +134,24 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 	/**
 	* Update a notification
 	*
-	* @param ContainerBuilder $phpbb_container
 	* @param array $data Data specific for this type that will be updated
 	*/
-	public static function update_notifications(ContainerBuilder $phpbb_container, $post)
+	public function update_notifications($post)
 	{
-		$service = $phpbb_container->get('notifications');
-		$db = $phpbb_container->get('dbal.conn');
-
 		$old_notifications = array();
 		$sql = 'SELECT user_id
 			FROM ' . NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . self::get_item_type() . "'
 				AND item_id = " . self::get_item_id($post);
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$old_notifications[] = $row['user_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		// Find the new users to notify
-		$notifications = self::find_users_for_notification($phpbb_container, $post);
+		$notifications = $this->find_users_for_notification($post);
 
 		// Find the notifications we must delete
 		$remove_notifications = array_diff($old_notifications, array_keys($notifications));
@@ -185,8 +178,8 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 			$sql = 'DELETE FROM ' . NOTIFICATIONS_TABLE . "
 				WHERE item_type = '" . self::get_item_type() . "'
 					AND item_id = " . self::get_item_id($post) . '
-					AND ' . $db->sql_in_set('user_id', $remove_notifications);
-			$db->sql_query($sql);
+					AND ' . $this->db->sql_in_set('user_id', $remove_notifications);
+			$this->db->sql_query($sql);
 		}
 
 		// return true to continue with the update code in the notifications service (this will update the rest of the notifications)
@@ -200,7 +193,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 	*/
 	public function get_email_template_variables()
 	{
-		$user_data = $this->service->get_user($this->get_data('poster_id'));
+		$user_data = $this->notification_manager->get_user($this->get_data('poster_id'));
 
 		return array_merge(parent::get_email_template_variables(), array(
 			'AUTHOR_NAME'		=> htmlspecialchars_decode($user_data['username']),

@@ -23,8 +23,7 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_notification_manager
 {
-	protected $phpbb_container;
-	protected $db;
+	protected $db, $cache, $template, $extension_manager, $user, $auth, $config, $phpbb_root_path, $php_ext = null;
 
 	/**
 	* Users loaded from the DB
@@ -33,12 +32,17 @@ class phpbb_notification_manager
 	*/
 	protected $users = array();
 
-	public function __construct(ContainerBuilder $phpbb_container)
+	public function __construct(dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, phpbb_user $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
-		$this->phpbb_container = $phpbb_container;
-
-		// Some common things we're going to use
-		$this->db = $phpbb_container->get('dbal.conn');
+		$this->db = $db;
+		$this->cache = $cache;
+		$this->template = $template;
+		$this->extension_manager = $extension_manager;
+		$this->user = $user;
+		$this->auth = $auth;
+		$this->config = $config;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -56,12 +60,10 @@ class phpbb_notification_manager
 	*/
 	public function load_notifications($options = array())
 	{
-		$user = $this->phpbb_container->get('user');
-
 		// Merge default options
 		$options = array_merge(array(
 			'notification_id'	=> false,
-			'user_id'			=> $user->data['user_id'],
+			'user_id'			=> $this->user->data['user_id'],
 			'order_by'			=> 'time',
 			'order_dir'			=> 'DESC',
 			'limit'				=> 0,
@@ -74,7 +76,7 @@ class phpbb_notification_manager
 		$options['count_unread'] = ($options['all_unread']) ? true : $options['count_unread'];
 
 		// Anonymous users and bots never receive notifications
-		if ($options['user_id'] == $user->data['user_id'] && ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_IGNORE))
+		if ($options['user_id'] == $this->user->data['user_id'] && ($this->user->data['user_id'] == ANONYMOUS || $this->user->data['user_type'] == USER_IGNORE))
 		{
 			return array(
 				'notifications'		=> array(),
@@ -136,7 +138,7 @@ class phpbb_notification_manager
 		{
 			$item_type_class_name = $this->get_item_type_class_name($row['item_type'], true);
 
-			$notification = new $item_type_class_name($this->phpbb_container, $row);
+			$notification = $this->get_item_type_class($item_type_class_name, $row);
 
 			// Array of user_ids to query all at once
 			$user_ids = array_merge($user_ids, $notification->users_to_query());
@@ -153,12 +155,14 @@ class phpbb_notification_manager
 
 		$this->load_users($user_ids);
 
-		// Allow each type to load it's own special items
+		// Allow each type to load its own special items
 		foreach ($load_special as $item_type => $data)
 		{
 			$item_type_class_name = $this->get_item_type_class_name($item_type, true);
 
-			$item_type_class_name::load_special($this->phpbb_container, $data, $notifications);
+			$item_class = $this->get_item_type_class($item_type_class_name);
+
+			$item_class->load_special($data, $notifications);
 		}
 
 		return array(
@@ -283,7 +287,7 @@ class phpbb_notification_manager
 		$item_id = $item_type_class_name::get_item_id($data);
 
 		// find out which users want to receive this type of notification
-		$notify_users = $item_type_class_name::find_users_for_notification($this->phpbb_container, $data, $options);
+		$notify_users = $this->get_item_type_class($item_type_class_name)->find_users_for_notification($data, $options);
 
 		$this->add_notifications_for_users($item_type, $data, $notify_users);
 
@@ -343,7 +347,7 @@ class phpbb_notification_manager
 		// Go through each user so we can insert a row in the DB and then notify them by their desired means
 		foreach ($notify_users as $user => $methods)
 		{
-			$notification = new $item_type_class_name($this->phpbb_container);
+			$notification = $this->get_item_type_class($item_type_class_name);
 
 			$notification->user_id = (int) $user;
 
@@ -361,7 +365,7 @@ class phpbb_notification_manager
 					if (!isset($notification_methods[$method]))
 					{
 						$method_class_name = 'phpbb_notification_method_' . $method;
-						$notification_methods[$method] = new $method_class_name($this->phpbb_container);
+						$notification_methods[$method] = $this->get_method_class($method_class_name);
 					}
 
 					$notification_methods[$method]->add_to_queue($notification);
@@ -406,7 +410,7 @@ class phpbb_notification_manager
 		if (method_exists($item_type_class_name, 'update_notifications'))
 		{
 			// Return False to over-ride the rest of the update
-			if ($item_type_class_name::update_notifications($this->phpbb_container, $data) === false)
+			if ($this->get_item_type_class($item_type_class_name)->update_notifications($data) === false)
 			{
 				return;
 			}
@@ -414,7 +418,7 @@ class phpbb_notification_manager
 
 		$item_id = $item_type_class_name::get_item_id($data);
 
-		$notification = new $item_type_class_name($this->phpbb_container);
+		$notification = $this->get_item_type_class($item_type_class_name);
 		$update_array = $notification->create_update_array($data);
 
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
@@ -460,24 +464,26 @@ class phpbb_notification_manager
 	{
 		$subscription_types = array();
 
-		foreach ($this->get_subscription_files('notifications/type/') as $class => $file)
+		foreach ($this->get_subscription_files('notifications/type/') as $class_name => $file)
 		{
-			$class = $this->get_item_type_class_name($class);
+			$class_name = $this->get_item_type_class_name($class_name);
 
-			if (!class_exists($class))
+			if (!class_exists($class_name))
 			{
 				include($file);
 			}
 
-			if ($class::is_available($this->phpbb_container) && method_exists($class, 'get_item_type'))
+			$class = $this->get_item_type_class($class_name);
+
+			if ($class->is_available() && method_exists($class_name, 'get_item_type'))
 			{
-				if ($class::$notification_option === false)
+				if ($class_name::$notification_option === false)
 				{
-					$subscription_types[$class::get_item_type()] = $class::get_item_type();
+					$subscription_types[$class_name::get_item_type()] = $class_name::get_item_type();
 				}
 				else
 				{
-					$subscription_types[$class::$notification_option['id']] = $class::$notification_option;
+					$subscription_types[$class_name::$notification_option['id']] = $class_name::$notification_option;
 				}
 			}
 		}
@@ -503,7 +509,7 @@ class phpbb_notification_manager
 				include($file);
 			}
 
-			$method = new $class_name($this->phpbb_container);
+			$method = $this->get_method_class($class_name);
 
 			if ($method->is_available())
 			{
@@ -524,7 +530,7 @@ class phpbb_notification_manager
 	*/
 	public function get_subscriptions($user_id = false, $only_global = false)
 	{
-		$user_id = ($user_id === false) ? $this->phpbb_container->get('user')->data['user_id'] : $user_id;
+		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
 		$subscriptions = array();
 
@@ -566,7 +572,7 @@ class phpbb_notification_manager
 	{
 		$this->get_item_type_class_name($item_type);
 
-		$user_id = ($user_id === false) ? $this->phpbb_container->get('user')->data['user_id'] : $user_id;
+		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
 		$sql = 'INSERT INTO ' . USER_NOTIFICATIONS_TABLE . ' ' .
 			$this->db->sql_build_array('INSERT', array(
@@ -590,7 +596,7 @@ class phpbb_notification_manager
 	{
 		$this->get_item_type_class_name($item_type);
 
-		$user_id = ($user_id === false) ? $this->phpbb_container->get('user')->data['user_id'] : $user_id;
+		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
 		$sql = 'DELETE FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
@@ -655,14 +661,31 @@ class phpbb_notification_manager
 	}
 
 	/**
+	* Helper to get the notifications item type class and set it up
+	*/
+	private function get_item_type_class($item_type, $data = array())
+	{
+		$item = new $item_type($this, $this->db, $this->cache, $this->template, $this->extension_manager, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext);
+
+		$item->set_initial_data($data);
+
+		return $item;
+	}
+
+	/**
+	* Helper to get the notifications method class and set it up
+	*/
+	private function get_method_class($method_name)
+	{
+		return new $method_name($this, $this->db, $this->cache, $this->template, $this->extension_manager, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext);
+	}
+
+	/**
 	* Helper to get subscription related files with the finder
 	*/
 	private function get_subscription_files($path)
 	{
-		$ext_manager = $this->phpbb_container->get('ext.manager');
-		$php_ext = $this->phpbb_container->getParameter('core.php_ext');
-
-		$finder = $ext_manager->get_finder();
+		$finder = $this->extension_manager->get_finder();
 
 		$subscription_files = array();
 
@@ -673,7 +696,7 @@ class phpbb_notification_manager
 		foreach ($files as $file)
 		{
 			$class = substr($file, strrpos($file, '/'));
-			$class = substr($class, 1, (strpos($class, '.' . $php_ext) - 1));
+			$class = substr($class, 1, (strpos($class, '.' . $this->php_ext) - 1));
 
 			if ($class == 'interface' || $class == 'base')
 			{
