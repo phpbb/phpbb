@@ -841,6 +841,51 @@ END;
 
 
 /*
+	Table: 'phpbb_notifications'
+*/
+CREATE TABLE phpbb_notifications (
+	notification_id number(8) NOT NULL,
+	item_type varchar2(25) DEFAULT '' ,
+	item_id number(8) DEFAULT '0' NOT NULL,
+	item_parent_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(8) DEFAULT '0' NOT NULL,
+	unread number(1) DEFAULT '1' NOT NULL,
+	time number(11) DEFAULT '1' NOT NULL,
+	data clob DEFAULT '' ,
+	CONSTRAINT pk_phpbb_notifications PRIMARY KEY (notification_id)
+)
+/
+
+CREATE INDEX phpbb_notifications_item_type ON phpbb_notifications (item_type)
+/
+CREATE INDEX phpbb_notifications_item_id ON phpbb_notifications (item_id)
+/
+CREATE INDEX phpbb_notifications_item_pid ON phpbb_notifications (item_parent_id)
+/
+CREATE INDEX phpbb_notifications_user_id ON phpbb_notifications (user_id)
+/
+CREATE INDEX phpbb_notifications_time ON phpbb_notifications (time)
+/
+CREATE INDEX phpbb_notifications_unread ON phpbb_notifications (unread)
+/
+
+CREATE SEQUENCE phpbb_notifications_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_notifications
+BEFORE INSERT ON phpbb_notifications
+FOR EACH ROW WHEN (
+	new.notification_id IS NULL OR new.notification_id = 0
+)
+BEGIN
+	SELECT phpbb_notifications_seq.nextval
+	INTO :new.notification_id
+	FROM dual;
+END;
+/
+
+
+/*
 	Table: 'phpbb_poll_options'
 */
 CREATE TABLE phpbb_poll_options (
@@ -1589,6 +1634,23 @@ CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch (topic_id)
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch (user_id)
 /
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status)
+/
+
+/*
+	Table: 'phpbb_user_notifications'
+*/
+CREATE TABLE phpbb_user_notifications (
+	item_type varchar2(25) DEFAULT '' ,
+	item_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(8) DEFAULT '0' NOT NULL,
+	method varchar2(25) DEFAULT '' ,
+	CONSTRAINT pk_phpbb_user_notifications PRIMARY KEY (item_type, item_id, user_id, method)
+)
+/
+
+CREATE INDEX phpbb_user_notifications_it ON phpbb_user_notifications (item_type)
+/
+CREATE INDEX phpbb_user_notifications_uid ON phpbb_user_notifications (user_id)
 /
 
 /*

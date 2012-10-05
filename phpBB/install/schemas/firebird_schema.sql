@@ -618,6 +618,38 @@ BEGIN
 END;;
 
 
+# Table: 'phpbb_notifications'
+CREATE TABLE phpbb_notifications (
+	notification_id INTEGER NOT NULL,
+	item_type VARCHAR(25) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	item_id INTEGER DEFAULT 0 NOT NULL,
+	item_parent_id INTEGER DEFAULT 0 NOT NULL,
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	unread INTEGER DEFAULT 1 NOT NULL,
+	time INTEGER DEFAULT 1 NOT NULL,
+	data BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
+);;
+
+ALTER TABLE phpbb_notifications ADD PRIMARY KEY (notification_id);;
+
+CREATE INDEX phpbb_notifications_item_type ON phpbb_notifications(item_type);;
+CREATE INDEX phpbb_notifications_item_id ON phpbb_notifications(item_id);;
+CREATE INDEX phpbb_notifications_item_pid ON phpbb_notifications(item_parent_id);;
+CREATE INDEX phpbb_notifications_user_id ON phpbb_notifications(user_id);;
+CREATE INDEX phpbb_notifications_time ON phpbb_notifications(time);;
+CREATE INDEX phpbb_notifications_unread ON phpbb_notifications(unread);;
+
+CREATE GENERATOR phpbb_notifications_gen;;
+SET GENERATOR phpbb_notifications_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_notifications FOR phpbb_notifications
+BEFORE INSERT
+AS
+BEGIN
+	NEW.notification_id = GEN_ID(phpbb_notifications_gen, 1);
+END;;
+
+
 # Table: 'phpbb_poll_options'
 CREATE TABLE phpbb_poll_options (
 	poll_option_id INTEGER DEFAULT 0 NOT NULL,
@@ -1202,6 +1234,19 @@ CREATE TABLE phpbb_topics_watch (
 CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch(topic_id);;
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch(user_id);;
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch(notify_status);;
+
+# Table: 'phpbb_user_notifications'
+CREATE TABLE phpbb_user_notifications (
+	item_type VARCHAR(25) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	item_id INTEGER DEFAULT 0 NOT NULL,
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	method VARCHAR(25) CHARACTER SET NONE DEFAULT '' NOT NULL
+);;
+
+ALTER TABLE phpbb_user_notifications ADD PRIMARY KEY (item_type, item_id, user_id, method);;
+
+CREATE INDEX phpbb_user_notifications_it ON phpbb_user_notifications(item_type);;
+CREATE INDEX phpbb_user_notifications_uid ON phpbb_user_notifications(user_id);;
 
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
