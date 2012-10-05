@@ -64,6 +64,10 @@ class ucp_notifications
 					}
 				}
 			}
+
+			meta_refresh(3, $this->u_action);
+			$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+			trigger_error($message);
 		}
 
 		// todo include language files for extensions?
