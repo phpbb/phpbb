@@ -30,7 +30,7 @@ class phpbb_notification_manager
 	*/
 	protected $users = array();
 
-	public function __construct(dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, phpbb_user $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
+	public function __construct(dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
@@ -462,7 +462,7 @@ class phpbb_notification_manager
 	{
 		$subscription_types = array();
 
-		foreach ($this->get_subscription_files('notifications/type/') as $class_name => $file)
+		foreach ($this->get_subscription_files('notification/type/') as $class_name => $file)
 		{
 			$class_name = $this->get_item_type_class_name($class_name);
 
@@ -498,7 +498,7 @@ class phpbb_notification_manager
 	{
 		$subscription_methods = array();
 
-		foreach ($this->get_subscription_files('notifications/method/') as $method_name => $file)
+		foreach ($this->get_subscription_files('notification/method/') as $method_name => $file)
 		{
 			$class_name = 'phpbb_notification_method_' . $method_name;
 
