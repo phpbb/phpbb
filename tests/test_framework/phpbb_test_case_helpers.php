@@ -209,11 +209,11 @@ class phpbb_test_case_helpers
 		{
 			if (is_dir($file))
 			{
-				rmdir($file);
+				@rmdir($file);
 			}
 			else
 			{
-				unlink($file);
+				@unlink($file);
 			}
 		}
 	}
@@ -239,11 +239,11 @@ class phpbb_test_case_helpers
 			{
 				$this->empty_dir($path . $file);
 
-				rmdir($path . $file);
+				@rmdir($path . $file);
 			}
 			else
 			{
-				unlink($path . $file);
+				@unlink($path . $file);
 			}
 		}
 	}
