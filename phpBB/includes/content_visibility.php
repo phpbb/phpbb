@@ -293,9 +293,10 @@ class phpbb_content_visibility
 
 	/**
 	* Can the current logged-in user soft-delete posts?
-	* @param $forum_id - int - the forum ID whose permissions to check
-	* @param $poster_id - int - the poster ID of the post in question
-	* @param $post_locked - bool - is the post locked?
+	*
+	* @param $forum_id		int		Forum ID whose permissions to check
+	* @param $poster_id		int		Poster ID of the post in question
+	* @param $post_locked	bool	Is the post locked?
 	* @return bool
 	*/
 	static function can_soft_delete($forum_id, $poster_id, $post_locked)
@@ -310,28 +311,7 @@ class phpbb_content_visibility
 		{
 			return true;
 		}
-		return false;
-	}
 
-	/**
-	* Can the current logged-in user restore soft-deleted posts?
-	* @param $forum_id - int - the forum ID whose permissions to check
-	* @param $poster_id - int - the poster ID of the post in question
-	* @param $post_locked - bool - is the post locked?
-	* @return bool
-	*/
-	public function can_restore($forum_id, $poster_id, $post_locked)
-	{
-		global $auth, $user;
-
-		if ($auth->acl_get('m_restore', $forum_id))
-		{
-			return true;
-		}
-		else if ($auth->acl_get('f_restore', $forum_id) && $poster_id == $user->data['user_id'] && !$post_locked)
-		{
-			return true;
-		}
 		return false;
 	}
 

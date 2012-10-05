@@ -884,8 +884,9 @@ if ($submit || $preview || $refresh)
 		$error[] = $user->lang['FORM_INVALID'];
 	}
 
-	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !isset($_POST['soft_delete']) && phpbb_content_visibility::can_restore($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
+	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !isset($_POST['soft_delete']) && $auth->acl_get('m_approve', $forum_id))
 	{
+		//@todo: REMOVE the magic!
 		// if this is the first post of the topic, restore the whole topic
 		if ($post_id == $post_data['topic_first_post_id'])
 		{
@@ -1471,10 +1472,10 @@ $template->assign_vars(array(
 	'S_LOCK_TOPIC_CHECKED'		=> ($lock_topic_checked) ? ' checked="checked"' : '',
 	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
-	'S_SOFT_DELETE_CHECKED'     => ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? ' checked="checked"' : '',
-	'S_SOFT_DELETE_ALLOWED'     => ($mode == 'edit' && phpbb_content_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
-	'S_RESTORE_ALLOWED'         => (phpbb_content_visibility::can_restore($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
-	'S_IS_DELETED'              => ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? true : false,
+	'S_SOFT_DELETE_CHECKED'		=> ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? ' checked="checked"' : '',
+	'S_SOFT_DELETE_ALLOWED'		=> ($mode == 'edit' && phpbb_content_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
+	'S_RESTORE_ALLOWED'			=> $auth->acl_get('m_approve', $forum_id),
+	'S_IS_DELETED'				=> ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? true : false,
 	'S_LINKS_ALLOWED'			=> $url_status,
 	'S_MAGIC_URL_CHECKED'		=> ($urls_checked) ? ' checked="checked"' : '',
 	'S_TYPE_TOGGLE'				=> $topic_type_toggle,
