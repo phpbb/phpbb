@@ -139,7 +139,7 @@ class phpbb_content_visibility
 	* @param $forum_id - int - forum ID where $topic_id resides
 	* @return void
 	*/
-	static public function set_topic_visibility($visibility, $topic_id, $forum_id, $user_id, $time, $reason)
+	static public function set_topic_visibility($visibility, $topic_id, $forum_id, $user_id, $time, $reason, $force_update_all = false)
 	{
 		global $db;
 
@@ -148,17 +148,20 @@ class phpbb_content_visibility
 			return;
 		}
 
-		$sql = 'SELECT topic_visibility, topic_delete_time
-			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id = ' . (int) $topic_id;
-		$result = $db->sql_query($sql);
-		$original_topic_data = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (!$original_topic_data)
+		if (!$force_update_all && $visibility == ITEM_APPROVED)
 		{
-			// The topic does not exist...
-			return;
+			$sql = 'SELECT topic_visibility, topic_delete_time
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id = ' . (int) $topic_id;
+			$result = $db->sql_query($sql);
+			$original_topic_data = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$original_topic_data)
+			{
+				// The topic does not exist...
+				return;
+			}
 		}
 
 		$data = array(
@@ -174,7 +177,7 @@ class phpbb_content_visibility
 		$db->sql_query($sql);
 
 		// If we're restoring a topic we only restore posts, that were soft deleted through the topic soft deletion.
-		if ($original_topic_data['topic_delete_time'] && $original_topic_data['topic_visibility'] == ITEM_DELETED && $visibility == ITEM_APPROVED)
+		if (!$force_update_all && $original_topic_data['topic_delete_time'] && $original_topic_data['topic_visibility'] == ITEM_DELETED && $visibility == ITEM_APPROVED)
 		{
 			// Note, we do not set the same reason for every post.
 			self::set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility'], $original_topic_data['topic_delete_time']);
