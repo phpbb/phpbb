@@ -214,6 +214,9 @@ class phpbb_content_visibility
 	*								all posts of topic_id will be modified
 	* @param $topic_id		int		Topic where $post_id is found
 	* @param $forum_id		int		Forum where $topic_id is found
+	* @param $user_id		int		User performing the action
+	* @param $time			int		Timestamp when the action is performed
+	* @param $reason		string	Reason why the visibilty was changed.
 	* @param $is_starter	bool	Is this the first post of the topic changed?
 	* @param $is_latest		bool	Is this the last post of the topic changed?
 	* @param $limit_visibility	mixed	Limit updating per topic_id to a certain visibility
