@@ -466,11 +466,6 @@ class phpbb_notification_manager
 		{
 			$class_name = $this->get_item_type_class_name($class_name);
 
-			if (!class_exists($class_name))
-			{
-				include($file);
-			}
-
 			$class = $this->get_item_type_class($class_name);
 
 			if ($class->is_available() && method_exists($class_name, 'get_item_type'))
@@ -501,11 +496,6 @@ class phpbb_notification_manager
 		foreach ($this->get_subscription_files('notification/method/') as $method_name => $file)
 		{
 			$class_name = 'phpbb_notification_method_' . $method_name;
-
-			if (!class_exists($class_name))
-			{
-				include($file);
-			}
 
 			$method = $this->get_method_class($class_name);
 
@@ -652,7 +642,14 @@ class phpbb_notification_manager
 	{
 		if (!$safe)
 		{
-			$item_type = preg_replace('#[^a-z_]#', '', $item_type);
+			$item_type = preg_replace('#[^a-z_-]#', '', $item_type);
+		}
+
+		if (strpos($item_type, 'ext_') === 0)
+		{
+			$item_type_ary = explode('-', substr($item_type, 4), 2);
+
+			return 'phpbb_ext_' . $item_type_ary[0] . '_notification_type_' . $item_type_ary[1];
 		}
 
 		return 'phpbb_notification_type_' . $item_type;
@@ -661,7 +658,7 @@ class phpbb_notification_manager
 	/**
 	* Helper to get the notifications item type class and set it up
 	*/
-	private function get_item_type_class($item_type, $data = array())
+	public function get_item_type_class($item_type, $data = array())
 	{
 		$item = new $item_type($this, $this->db, $this->cache, $this->template, $this->extension_manager, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext);
 
@@ -673,7 +670,7 @@ class phpbb_notification_manager
 	/**
 	* Helper to get the notifications method class and set it up
 	*/
-	private function get_method_class($method_name)
+	public function get_method_class($method_name)
 	{
 		return new $method_name($this, $this->db, $this->cache, $this->template, $this->extension_manager, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext);
 	}
@@ -693,15 +690,23 @@ class phpbb_notification_manager
 			->get_files();
 		foreach ($files as $file)
 		{
-			$class = substr($file, strrpos($file, '/'));
-			$class = substr($class, 1, (strpos($class, '.' . $this->php_ext) - 1));
+			$name = substr($file, strrpos($file, '/'));
+			$name = substr($name, 1, (strpos($name, '.' . $this->php_ext) - 1));
 
-			if ($class == 'interface' || $class == 'base')
+			if ($name == 'interface' || $name == 'base')
 			{
 				continue;
 			}
 
-			$subscription_files[$class] = $file;
+			if (!strpos($file, 'includes/')) // is an extension
+			{
+				$ext_name = substr($file, (strpos($file, 'ext/') + 4));
+				$ext_name = substr($ext_name, 0, strpos($ext_name, '/'));
+
+				$name = 'ext_' . $ext_name . '-' . $name;
+			}
+
+			$subscription_files[$name] = $file;
 		}
 
 		return $subscription_files;

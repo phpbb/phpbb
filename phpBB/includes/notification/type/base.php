@@ -55,7 +55,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	private $data = array();
 
-	public function __construct(phpbb_notification_manager $notification_manager, dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, phpbb_user $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
+	public function __construct(phpbb_notification_manager $notification_manager, dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->notification_manager = $notification_manager;
 		$this->db = $db;
@@ -89,6 +89,11 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	public function __set($name, $value)
 	{
 		$this->data[$name] = $value;
+	}
+
+	public function __toString()
+	{
+		return (!empty($this->data)) ? var_export($this->data, true) : static::get_item_type();
 	}
 
 	/**
