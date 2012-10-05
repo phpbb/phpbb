@@ -143,6 +143,24 @@ class phpbb_content_visibility
 	{
 		global $db;
 
+		if (in_array($visibility, array(ITEM_APPROVED, ITEM_DELETED)))
+		{
+			return;
+		}
+
+		$sql = 'SELECT topic_visibility, topic_delete_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id = ' . (int) $topic_id;
+		$result = $db->sql_query($sql);
+		$original_topic_data = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if (!$original_topic_data)
+		{
+			// The topic does not exist...
+			return;
+		}
+
 		$data = array(
 			'topic_visibility'		=> (int) $visibility,
 			'topic_delete_user'		=> (int) $user_id,
@@ -155,10 +173,16 @@ class phpbb_content_visibility
 			WHERE topic_id = ' . (int) $topic_id;
 		$db->sql_query($sql);
 
-		// If we're approving, disapproving, or deleteing a topic
-		// we also update all posts in that topic that need to be changed.
-		// However, we do not set the same reason for every post.
-		self::set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true);
+		// If we're restoring a topic we only restore posts, that were soft deleted through the topic soft deletion.
+		if ($original_topic_data['topic_delete_time'] && $original_topic_data['topic_visibility'] == ITEM_DELETED && $visibility == ITEM_APPROVED)
+		{
+			// Note, we do not set the same reason for every post.
+			self::set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility'], $original_topic_data['topic_delete_time']);
+		}
+		else
+		{
+			self::set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true);
+		}
 	}
 
 	/**
