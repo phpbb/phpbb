@@ -22,7 +22,6 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 				'post', 1, '',
 				array(
 					array('m_approve', 1, true),
-					array('m_restore', 1, true),
 				),
 				array(
 					array('post_id' => 1),
@@ -34,44 +33,9 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 				'phpbb_posts',
 				'post', 1, '',
 				array(
-					array('m_approve', 1, true),
-				),
-				array(
-					array('post_id' => 1),
-					array('post_id' => 2),
-				),
-			),
-			array(
-				'phpbb_posts',
-				'post', 1, '',
-				array(
-					array('m_restore', 1, true),
 				),
 				array(
 					array('post_id' => 2),
-					array('post_id' => 3),
-				),
-			),
-			array(
-				'phpbb_posts',
-				'post', 1, '',
-				array(
-				),
-				array(
-					array('post_id' => 2),
-				),
-			),
-			array(
-				'phpbb_topics',
-				'topic', 1, '',
-				array(
-					array('m_approve', 1, true),
-					array('m_restore', 1, true),
-				),
-				array(
-					array('topic_id' => 1),
-					array('topic_id' => 2),
-					array('topic_id' => 3),
 				),
 			),
 			array(
@@ -82,16 +46,6 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 				),
 				array(
 					array('topic_id' => 1),
-					array('topic_id' => 2),
-				),
-			),
-			array(
-				'phpbb_topics',
-				'topic', 1, '',
-				array(
-					array('m_restore', 1, true),
-				),
-				array(
 					array('topic_id' => 2),
 					array('topic_id' => 3),
 				),

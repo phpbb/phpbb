@@ -22,7 +22,6 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 				'topic', array(1, 2, 3), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
-					array('m_restore', true, array(1 => true, 2 => true, 3 => true)),
 				),
 				array(
 					array('topic_id' => 1),
@@ -41,7 +40,6 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 				'topic', array(1, 2), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
-					array('m_restore', true, array(1 => true, 2 => true, 3 => true)),
 				),
 				array(
 					array('topic_id' => 1),
@@ -57,13 +55,12 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 				'topic', array(1, 2, 3), '',
 				array(
 					array('m_approve', true, array(2 => true)),
-					array('m_restore', true, array(1 => true)),
 				),
 				array(
 					array('topic_id' => 2),
-					array('topic_id' => 3),
 					array('topic_id' => 4),
 					array('topic_id' => 5),
+					array('topic_id' => 6),
 					array('topic_id' => 8),
 				),
 			),
@@ -72,7 +69,6 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 				'post', array(1, 2, 3), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
-					array('m_restore', true, array(1 => true, 2 => true, 3 => true)),
 				),
 				array(
 					array('post_id' => 1),
@@ -91,7 +87,6 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 				'post', array(1, 2), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
-					array('m_restore', true, array(1 => true, 2 => true, 3 => true)),
 				),
 				array(
 					array('post_id' => 1),
@@ -107,13 +102,12 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 				'post', array(1, 2, 3), '',
 				array(
 					array('m_approve', true, array(2 => true)),
-					array('m_restore', true, array(1 => true)),
 				),
 				array(
 					array('post_id' => 2),
-					array('post_id' => 3),
 					array('post_id' => 4),
 					array('post_id' => 5),
+					array('post_id' => 6),
 					array('post_id' => 8),
 				),
 			),
