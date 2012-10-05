@@ -156,12 +156,12 @@ class phpbb_content_visibility
 	{
 		global $db;
 
-		if (in_array($visibility, array(ITEM_APPROVED, ITEM_DELETED)))
+		if (!in_array($visibility, array(ITEM_APPROVED, ITEM_DELETED)))
 		{
 			return;
 		}
 
-		if (!$force_update_all && $visibility == ITEM_APPROVED)
+		if (!$force_update_all)
 		{
 			$sql = 'SELECT topic_visibility, topic_delete_time
 				FROM ' . TOPICS_TABLE . '
