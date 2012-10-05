@@ -660,6 +660,12 @@ class phpbb_notification_manager
 	*/
 	public function get_item_type_class($item_type, $data = array())
 	{
+		if (!strpos($item_type, 'notification_type_'))
+		{
+			$item_class = $this->get_item_type_class_name($item_type);
+			$item_type = $item_class;
+		}
+
 		$item = new $item_type($this, $this->db, $this->cache, $this->template, $this->extension_manager, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext);
 
 		$item->set_initial_data($data);

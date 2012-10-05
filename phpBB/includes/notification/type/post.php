@@ -132,6 +132,28 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		}
 		$this->db->sql_freeresult($result);
 
+		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
+		$update_notifications = array();
+		$sql = 'SELECT *
+			FROM ' . NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . self::get_item_type() . "'
+				AND item_parent_id = " . (int) self::get_item_parent_id($post) . '
+				AND unread = 1';
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			// Do not create a new notification
+			unset($notify_users[$row['user_id']]);
+
+			$notification = $this->notification_manager->get_item_type_class(self::get_item_type(), $row);
+			$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
+				SET ' . $this->db->sql_build_array('UPDATE', $notification->add_responders($post)) . '
+				WHERE notification_id = ' . $row['notification_id'];
+				echo $sql;
+			$this->db->sql_query($sql);
+		}
+		$this->db->sql_freeresult($result);
+
 		return $notify_users;
 	}
 
@@ -233,5 +255,41 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		$this->time = $post['post_time'];
 
 		return parent::create_insert_array($post);
+	}
+
+	/**
+	* Add responders to the notification
+	*
+	* @param mixed $post
+	*/
+	public function add_responders($post)
+	{
+		// Do not add them as a responder if they were the original poster that created the notification
+		if ($this->get_data('poster_id') == $post['poster_id'])
+		{
+			return array('data' => serialize($this->get_data(false)));
+		}
+
+		$responders = $this->get_data('responders');
+
+		$responders = ($responders === null) ? array() : $responders;
+
+		foreach ($responders as $responder)
+		{
+			// Do not add them as a responder multiple times
+			if ($responder['poster_id'] == $post['poster_id'])
+			{
+				return array('data' => serialize($this->get_data(false)));
+			}
+		}
+
+		$responders[] = array(
+			'poster_id'		=> $post['poster_id'],
+			'username'		=> (($post['poster_id'] == ANONYMOUS) ? $post['post_username'] : ''),
+		);
+
+		$this->set_data('responders', $responders);
+
+		return array('data' => serialize($this->get_data(false)));
 	}
 }
