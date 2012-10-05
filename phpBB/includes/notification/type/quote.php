@@ -168,7 +168,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 		// marked as read
 
 		// Add the necessary notifications
-		$service->add_notifications_for_users(self::get_item_type(), $post, $add_notifications);
+		$this->notification_manager->add_notifications_for_users(self::get_item_type(), $post, $add_notifications);
 
 		// Remove the necessary notifications
 		if (!empty($remove_notifications))
