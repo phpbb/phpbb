@@ -4993,13 +4993,17 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	}
 
 	// Output the notifications
-	$notifications = $phpbb_notifications->load_notifications(array(
-		'all_unread'	=> true,
-		'limit'			=> 5,
-	));
-	foreach ($notifications['notifications'] as $notification)
+	if ($config['load_notifications'])
 	{
-		$template->assign_block_vars('notifications', $notification->prepare_for_display());
+		$notifications = $phpbb_notifications->load_notifications(array(
+			'all_unread'	=> true,
+			'limit'			=> 5,
+		));
+
+		foreach ($notifications['notifications'] as $notification)
+		{
+			$template->assign_block_vars('notifications', $notification->prepare_for_display());
+		}
 	}
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
@@ -5016,8 +5020,9 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'RECORD_USERS'					=> $l_online_record,
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
-		'UNREAD_NOTIFICATIONS_COUNT'	=> $notifications['unread_count'],
-		'NOTIFICATIONS_COUNT'			=> $user->lang('NOTIFICATIONS_COUNT', $notifications['unread_count']),
+		'UNREAD_NOTIFICATIONS_COUNT'	=> ($config['load_notifications']) ? $notifications['unread_count'] : '',
+		'NOTIFICATIONS_COUNT'			=> ($config['load_notifications']) ? $user->lang('NOTIFICATIONS_COUNT', $notifications['unread_count']) : '',
+		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'],
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],

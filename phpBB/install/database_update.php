@@ -2746,6 +2746,11 @@ function change_database_data(&$no_updates, $version)
 				$config->set('site_home_text', '');
 			}
 
+			if (!isset($config['load_notifications']))
+			{
+				$config->set('load_notifications', 1);
+			}
+
 		break;
 	}
 }

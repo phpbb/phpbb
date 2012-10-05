@@ -175,6 +175,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_cdn', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jumpbox', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_notifications', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_guests', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_time', '5');
