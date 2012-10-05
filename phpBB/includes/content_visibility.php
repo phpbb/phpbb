@@ -132,11 +132,24 @@ class phpbb_content_visibility
 	}
 
 	/**
-	* Description: Allows approving (which is akin to undeleting), unapproving (!) or soft deleting an entire topic.
+	* Set topic visibility
+	*
+	* Allows approving (which is akin to undeleting/restore) or soft deleting an entire topic.
 	* Calls set_post_visibility as needed.
-	* @param $visibility - int - element of {ITEM_UNAPPROVED, ITEM_APPROVED, ITEM_DELETED}
-	* @param $topic_id - int - topic ID to act on
-	* @param $forum_id - int - forum ID where $topic_id resides
+	*
+	* Note: By default, when a soft deleted topic is restored. Only posts that
+	*		were approved at the time of soft deleting, are being restored.
+	*		Same applies to soft deleting. Only approved posts will be marked
+	*		as soft deleted.
+	*		If you want to update all posts, use the force option.
+	*
+	* @param $visibility	int		Element of {ITEM_APPROVED, ITEM_DELETED}
+	* @param $topic_id		mixed	Topic ID to act on
+	* @param $forum_id		int		Forum where $topic_id is found
+	* @param $user_id		int		User performing the action
+	* @param $time			int		Timestamp when the action is performed
+	* @param $reason		string	Reason why the visibilty was changed.
+	* @param $force_update_all	bool	Force to update all posts within the topic
 	* @return void
 	*/
 	static public function set_topic_visibility($visibility, $topic_id, $forum_id, $user_id, $time, $reason, $force_update_all = false)
@@ -164,6 +177,7 @@ class phpbb_content_visibility
 			}
 		}
 
+		// Note, we do not set a reason for the posts, just for the topic
 		$data = array(
 			'topic_visibility'		=> (int) $visibility,
 			'topic_delete_user'		=> (int) $user_id,
@@ -176,11 +190,15 @@ class phpbb_content_visibility
 			WHERE topic_id = ' . (int) $topic_id;
 		$db->sql_query($sql);
 
-		// If we're restoring a topic we only restore posts, that were soft deleted through the topic soft deletion.
 		if (!$force_update_all && $original_topic_data['topic_delete_time'] && $original_topic_data['topic_visibility'] == ITEM_DELETED && $visibility == ITEM_APPROVED)
 		{
-			// Note, we do not set the same reason for every post.
+			// If we're restoring a topic we only restore posts, that were soft deleted through the topic soft deletion.
 			self::set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility'], $original_topic_data['topic_delete_time']);
+		}
+		else if (!$force_update_all && $original_topic_data['topic_visibility'] == ITEM_APPROVED && $visibility == ITEM_DELETED)
+		{
+			// If we're soft deleting a topic we only approved posts are soft deleted.
+			self::set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility']);
 		}
 		else
 		{
