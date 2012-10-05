@@ -136,6 +136,7 @@
 
 			<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
 			<ul class="linklist leftside">
+				<!-- IF S_NOTIFICATIONS_DISPLAY -->
 				<li>
 					[ <a href="#" id="notification_list_button" title="{NOTIFICATIONS_COUNT}">{NOTIFICATIONS_COUNT}</a> ] &bull;
 					<div id="notification_list">
@@ -155,6 +156,7 @@
 						</ul>
 					</div>
 				</li>
+				<!-- ENDIF -->
 				<li class="icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
 					<!-- IF S_DISPLAY_SEARCH --> &bull;

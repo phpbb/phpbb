@@ -3006,6 +3006,11 @@ function change_database_data(&$no_updates, $version)
 					AND module_mode = 'profile_info'";
 			_sql($sql, $errored, $error_ary);
 
+			if (!isset($config['load_notifications']))
+			{
+				$config->set('load_notifications', 1);
+			}
+
 			$no_updates = false;
 
 		break;
