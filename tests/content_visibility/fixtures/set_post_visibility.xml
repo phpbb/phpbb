@@ -24,6 +24,15 @@
 			<value>5</value>
 			<value>6</value>
 		</row>
+
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>1</value>
+			<value>Only 1 Approved posts</value>
+			<value>8</value>
+			<value>8</value>
+		</row>
 	</table>
 	<table name="phpbb_posts">
 		<column>post_id</column>
@@ -88,6 +97,14 @@
 			<value>1</value>
 			<value>2</value>
 			<value>Softdeleted</value>
+		</row>
+		<row>
+			<value>8</value>
+			<value>1</value>
+			<value>3</value>
+			<value>1</value>
+			<value>1</value>
+			<value>Approved</value>
 		</row>
 	</table>
 	<table name="phpbb_users">

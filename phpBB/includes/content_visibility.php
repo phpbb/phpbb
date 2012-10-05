@@ -212,7 +212,7 @@ class phpbb_content_visibility
 				update_post_information('forum', $forum_id, false);
 			}
 		}
-		else if (($is_starter || $is_latest) && $topic_id)
+		else if ($is_starter && $topic_id)
 		{
 			// ... so we need to use sync, if the first post is changed.
 			// The forum is resynced recursive by sync() itself.

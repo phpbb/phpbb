@@ -1889,6 +1889,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				GROUP BY t.topic_id, t.post_visibility";
 			$result = $db->sql_query($sql);
 
+			$topic_firstlast_data = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$topic_id = (int) $row['topic_id'];
@@ -1911,9 +1912,18 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 					if ($row['post_visibility'] == ITEM_APPROVED)
 					{
+						$topic_firstlast_data[$topic_id]['visibility'] = ITEM_APPROVED;
 						$topic_data[$topic_id]['first_post_id'] = $row['first_post_id'];
 						$topic_data[$topic_id]['last_post_id'] = $row['last_post_id'];
 						$topic_data[$topic_id]['replies'] = $row['total_posts'] - 1;
+					}
+					else if (!isset($topic_firstlast_data[$topic_id]['visibility']) || $topic_firstlast_data[$topic_id]['visibility'] != ITEM_APPROVED)
+					{
+						// If there is no approved post, we take the min/max of the other visibilities
+						// for the last and first post info, because it is only visible to moderators anyway
+						$topic_data[$topic_id]['first_post_id'] = (!empty($topic_data[$topic_id]['first_post_id'])) ? min($topic_data[$topic_id]['first_post_id'], $row['first_post_id']) : $row['first_post_id'];
+						$topic_data[$topic_id]['last_post_id'] = max($topic_data[$topic_id]['last_post_id'], $row['last_post_id']);
+						$topic_firstlast_data[$topic_id]['visibility'] = $row['post_visibility'];
 					}
 				}
 			}
