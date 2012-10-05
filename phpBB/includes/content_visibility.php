@@ -316,8 +316,7 @@ class phpbb_content_visibility
 	}
 
 	/**
-	* Do the required math to hide a complete topic (going from approved to
-	* unapproved or from approved to deleted)
+	* Do the required math to hide a complete topic (going from approved to deleted)
 	* @param $topic_id - int - the topic to act on
 	* @param $forum_id - int - the forum where the topic resides
 	* @param $topic_row - array - data about the topic, may be empty at call time
@@ -326,7 +325,7 @@ class phpbb_content_visibility
 	*/
 	static public function hide_topic($topic_id, $forum_id, &$topic_row, &$sql_data)
 	{
-		global $auth, $config, $db;
+		global $db;
 
 		// Do we need to grab some topic informations?
 		if (!sizeof($topic_row))
@@ -338,9 +337,6 @@ class phpbb_content_visibility
 			$topic_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		}
-
-		// If this is the only post remaining we do not need to decrement topic_replies.
-		// Also do not decrement if first post - then the topic_replies will not be adjusted if approving the topic again.
 
 		// If this is an edited topic or the first post the topic gets completely disapproved later on...
 		$sql_data[FORUMS_TABLE] = 'forum_topics = forum_topics - 1';
@@ -363,44 +359,31 @@ class phpbb_content_visibility
 	}
 
 	/**
-	* Do the required math to hide a single post (going from approved to
-	* unapproved or from approved to deleted)
+	* Do the required math to hide a single post (going from approved to deleted)
 	* Notably, we do _not_ need the post ID to do this operation. We're only changing statistic caches
 	* @param $forum_id - int - the forum where the topic resides
 	* @param $current_time - int - passed for consistency instead of calling time() internally
-	* @param $topic_row - array - contains information from the topics table about given topic
+	* @param $data - array - contains information from the topics table about given topic
 	* @param $sql_data - array - populated with the SQL changes, may be empty at call time
 	* @return void
 	*/
-	static public function hide_post($forum_id, $current_time, $topic_row, &$sql_data)
+	//static public function remove_post_from_postcount($forum_id, $current_time, $data, &$sql_data)
+	static public function hide_post($forum_id, $current_time, $data, &$sql_data)
 	{
-		global $auth, $config, $db;
-
-		// initialize the array if needed (php throws E_NOTICE when .= is used
-		// on a non-existing array element)
-		if (empty($sql_data[TOPICS_TABLE]))
+		$sql_data[TOPICS_TABLE] = 'topic_last_view_time = ' . $current_time;
+		if ($data['topic_replies'] > 0)
 		{
-			$sql_data[TOPICS_TABLE] = '';
+			$sql_data[TOPICS_TABLE] .= ', topic_replies = topic_replies - 1,';
 		}
-
-		if ($topic_row['topic_replies'] > 0)
-		{
-			$sql_data[TOPICS_TABLE] = 'topic_replies = topic_replies - 1,';
-		}
-		$sql_data[TOPICS_TABLE] .= ' topic_last_view_time = ' . $current_time;
 
 		$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
 
-		set_config_count('num_posts', -1, true);
-
-		/**
-		* @todo: this is wrong, it should rely on post_postcount
-		*
-		if ($auth->acl_get('f_postcount', $forum_id))
+		if ($data['post_postcount'])
 		{
 			$sql_data[USERS_TABLE] = 'user_posts = user_posts - 1';
 		}
-		*/
+
+		set_config_count('num_posts', -1, true);
 	}
 
 	/**
