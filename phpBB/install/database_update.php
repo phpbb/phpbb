@@ -2633,7 +2633,7 @@ function change_database_data(&$no_updates, $version)
 					'class'		=> 'ucp',
 					'title'		=> 'UCP_NOTIFICATION_OPTIONS',
 					'auth'		=> '',
-					'cat'		=> 'UCP_MAIN',
+					'cat'		=> 'UCP_PREFS',
 				),
 			);
 
