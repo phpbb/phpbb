@@ -34,48 +34,14 @@ class phpbb_content_visibility
 	*/
 	static public function get_visibility_sql($mode, $forum_id, $table_alias = '')
 	{
-		global $auth, $db, $user;
+		global $auth;
 
-		$status_ary = array(ITEM_APPROVED);
 		if ($auth->acl_get('m_approve', $forum_id))
 		{
-			$status_ary[] = ITEM_UNAPPROVED;
+			return '1 = 1';
 		}
 
-		if ($auth->acl_get('m_restore', $forum_id))
-		{
-			$status_ary[] = ITEM_DELETED;
-
-			if (sizeof($status_ary) == 3)
-			{
-				// The user can see all types, so we simplify this to an empty string,
-				// as we don't need to restrict anything on the query.
-				return '1 = 1';
-			}
-		}
-
-		return $db->sql_in_set($table_alias . $mode . '_visibility', $status_ary);
-
-		/**
-		* @todo: Commented out, because the performance is not the best
-		*
-			// If the user has m_restore, the rest of the function will not
-			// make more content visible, so we can return the query here.
-			return $db->sql_in_set($table_alias . $mode . '_visibility', $status_ary);
-		}
-
-		$clause = $db->sql_in_set($table_alias . $mode . '_visibility', $status_ary);
-
-		// only allow the user to view deleted posts he himself made
-		if ($auth->acl_get('f_restore', $forum_id) && !$auth->acl_get('m_restore', $forum_id))
-		{
-			$poster_column = ($mode == 'topic') ? 'topic_poster' : 'poster_id';
-			$clause = '(' . $clause . "
-				OR ($table_alias{$mode}_visibility = " . ITEM_DELETED . "
-					AND $table_alias$poster_column = " . (int) $user->data['user_id'] . '))';
-		}*/
-
-		return $clause;
+		return $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
 	}
 
 	/**
@@ -91,46 +57,37 @@ class phpbb_content_visibility
 	*/
 	static public function get_forums_visibility_sql($mode, $forum_ids = array(), $table_alias = '')
 	{
-		global $auth, $db, $user;
+		global $auth, $db;
 
-		// users can always see approved posts
-		$where_sql = "(($table_alias{$mode}_visibility = " . ITEM_APPROVED . '
-				AND ' . $db->sql_in_set($table_alias . 'forum_id', $forum_ids) . ')';
+		$where_sql = '(';
 
-		// in set notation: {approve_forums} = {m_approve} - {exclude_forums}
 		$approve_forums = array_intersect($forum_ids, array_keys($auth->acl_getf('m_approve', true)));
+
 		if (sizeof($approve_forums))
 		{
-			// users can view unapproved topics in certain forums. specify them.
-			$where_sql .= " OR ($table_alias{$mode}_visibility = " . ITEM_UNAPPROVED . '
-				AND ' . $db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ')';
-		}
+			// Remove moderator forums from the rest
+			$forum_ids = array_diff($forum_ids, $approve_forums);
 
-		// this is exactly the same logic as for approve forums, above
-		$restore_forums = array_intersect($forum_ids, array_keys($auth->acl_getf('m_restore', true)));
-		if (sizeof($restore_forums))
+			if (!sizeof($forum_ids))
+			{
+				// The user can see all posts/topics in all specified forums
+				return $db->sql_in_set($table_alias . 'forum_id', $approve_forums);
+			}
+			else
+			{
+				// Moderator can view all posts/topics in some forums
+				$where_sql .= $db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ' OR ';
+			}
+		}
+		else
 		{
-			$where_sql .= " OR ($table_alias{$mode}_visibility = " . ITEM_DELETED . '
-				AND ' . $db->sql_in_set($table_alias . 'forum_id', $restore_forums) . ')';
+			// The user is just a normal user
+			return "$table_alias{$mode}_visibility = " . ITEM_APPROVED . '
+				AND ' . $db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true);
 		}
 
-		/*
-		* @todo: Commented out, because the performance is not the best
-		*
-		// we also allow the user to view deleted posts he himself made
-		$user_restore_forums = array_diff(array_intersect($forum_ids, array_keys($auth->acl_getf('f_restore', true))), $restore_forums);
-		if (sizeof($user_restore_forums) && !sizeof($restore_forums))
-		{
-			$poster_column = ($mode == 'topic') ? 'topic_poster' : 'poster_id';
-
-			// specify the poster ID, the visibility type, and the forums we're interested in
-			$where_sql .= " OR ($table_alias$poster_column = " . $user->data['user_id'] . "
-				AND $table_alias{$mode}_visibility = " . ITEM_DELETED . "
-				AND " . $db->sql_in_set($table_alias . 'forum_id', $user_restore_forums) . ')';
-		}
-		*/
-
-		$where_sql .= ')';
+		$where_sql .= "($table_alias{$mode}_visibility = " . ITEM_APPROVED . '
+			AND ' . $db->sql_in_set($table_alias . 'forum_id', $forum_ids) . '))';
 
 		return $where_sql;
 	}
@@ -148,55 +105,30 @@ class phpbb_content_visibility
 	*/
 	static public function get_global_visibility_sql($mode, $exclude_forum_ids = array(), $table_alias = '')
 	{
-		global $auth, $db, $user;
+		global $auth, $db;
 
-		// users can always see approved posts
+		$where_sqls = array();
+
+		$approve_forums = array_diff(array_keys($auth->acl_getf('m_approve', true)), $exclude_forum_ids);
+
 		if (sizeof($exclude_forum_ids))
 		{
-			$where_sql = '((' . $db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true, true) . "
+			$where_sqls[] = '(' . $db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true) . "
 				AND $table_alias{$mode}_visibility = " . ITEM_APPROVED . ')';
 		}
 		else
 		{
-			$where_sql = "($table_alias{$mode}_visibility = " . ITEM_APPROVED;
+			$where_sqls[] = "$table_alias{$mode}_visibility = " . ITEM_APPROVED;
 		}
 
-		// in set notation: {approve_forums} = {m_approve} - {exclude_forums}
-		$approve_forums = array_diff(array_keys($auth->acl_getf('m_approve', true)), $exclude_forum_ids);
 		if (sizeof($approve_forums))
 		{
-			// users can view unapproved topics in certain forums. specify them.
-			$where_sql .= " OR ($table_alias{$mode}_visibility = " . ITEM_UNAPPROVED . '
-				AND ' . $db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ')';
+			$where_sqls[] = $db->sql_in_set($table_alias . 'forum_id', $approve_forums);
+			return '(' . implode(' OR ', $where_sqls) . ')';
 		}
 
-		// this is exactly the same logic as for approve forums, above
-		$restore_forums = array_diff(array_keys($auth->acl_getf('m_restore', true)), $exclude_forum_ids);
-		if (sizeof($restore_forums))
-		{
-			$where_sql .= " OR ($table_alias{$mode}_visibility = " . ITEM_DELETED . '
-				AND ' . $db->sql_in_set($table_alias . 'forum_id', $restore_forums) . ')';
-		}
-
-		/*
-		* @todo: Commented out, because the performance is not the best
-		*
-		// we also allow the user to view deleted posts he himself made
-		$user_restore_forums = array_diff(array_keys($auth->acl_getf('f_restore', true)), $exclude_forum_ids);
-		if (sizeof($user_restore_forums) && !sizeof($restore_forums))
-		{
-			$poster_column = ($mode == 'topic') ? 'topic_poster' : 'poster_id';
-
-			// specify the poster ID, the visibility type, and the forums we're interested in
-			$where_sql .= " OR ($table_alias$poster_column = " . $user->data['user_id'] . "
-				AND $table_alias{$mode}_visibility = " . ITEM_DELETED . "
-				AND " . $db->sql_in_set($table_alias . 'forum_id', $user_restore_forums) . ')';
-		}
-		*/
-
-		$where_sql .= ')';
-
-		return $where_sql;
+		// There is only one element, so we just return that one
+		return $where_sqls[0];
 	}
 
 	/**
