@@ -34,7 +34,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 					array('post_id' => 3, 'post_visibility' => 2, 'post_delete_reason' => ''),
 				),
 				array(
-					array('topic_first_post_id' => '1', 'topic_last_post_id' => '2'),
+					array('topic_visibility' => 1, 'topic_first_post_id' => '1', 'topic_last_post_id' => '2'),
 				),
 			),
 			array(
@@ -48,7 +48,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 					array('post_id' => 3, 'post_visibility' => 1, 'post_delete_reason' => 'approve'),
 				),
 				array(
-					array('topic_first_post_id' => '2', 'topic_last_post_id' => '3'),
+					array('topic_visibility' => 1, 'topic_first_post_id' => '2', 'topic_last_post_id' => '3'),
 				),
 			),
 			array(
@@ -63,7 +63,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 					array('post_id' => 7, 'post_visibility' => 2, 'post_delete_reason' => ''),
 				),
 				array(
-					array('topic_first_post_id' => '6', 'topic_last_post_id' => '6'),
+					array('topic_visibility' => 1, 'topic_first_post_id' => '6', 'topic_last_post_id' => '6'),
 				),
 			),
 			array(
@@ -73,12 +73,12 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 				false, true,
 				array(
 					array('post_id' => 4, 'post_visibility' => 0, 'post_delete_reason' => ''),
-					array('post_id' => 5, 'post_visibility' => 1, 'post_delete_reason' => ''),
+					array('post_id' => 5, 'post_visibility' => 1, 'post_delete_reason' => 'deleted'),
 					array('post_id' => 6, 'post_visibility' => 2, 'post_delete_reason' => 'deleted'),
 					array('post_id' => 7, 'post_visibility' => 2, 'post_delete_reason' => ''),
 				),
 				array(
-					array('topic_first_post_id' => '5', 'topic_last_post_id' => '5'),
+					array('topic_visibility' => 1, 'topic_first_post_id' => '5', 'topic_last_post_id' => '5'),
 				),
 			),
 		);
@@ -103,7 +103,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
 
-		$result = $db->sql_query('SELECT topic_first_post_id, topic_last_post_id
+		$result = $db->sql_query('SELECT topic_visibility, topic_first_post_id, topic_last_post_id
 			FROM phpbb_topics
 			WHERE topic_id = ' . $topic_id);
 
