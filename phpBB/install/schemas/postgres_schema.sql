@@ -597,6 +597,30 @@ CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules (module_enabled);
 CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id);
 
 /*
+	Table: 'phpbb_notifications'
+*/
+CREATE SEQUENCE phpbb_notifications_seq;
+
+CREATE TABLE phpbb_notifications (
+	notification_id INT4 DEFAULT nextval('phpbb_notifications_seq'),
+	item_type varchar(25) DEFAULT '' NOT NULL,
+	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
+	item_parent_id INT4 DEFAULT '0' NOT NULL CHECK (item_parent_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	unread INT2 DEFAULT '1' NOT NULL CHECK (unread >= 0),
+	time INT4 DEFAULT '1' NOT NULL CHECK (time >= 0),
+	data varchar(4000) DEFAULT '' NOT NULL,
+	PRIMARY KEY (notification_id)
+);
+
+CREATE INDEX phpbb_notifications_item_type ON phpbb_notifications (item_type);
+CREATE INDEX phpbb_notifications_item_id ON phpbb_notifications (item_id);
+CREATE INDEX phpbb_notifications_item_pid ON phpbb_notifications (item_parent_id);
+CREATE INDEX phpbb_notifications_user_id ON phpbb_notifications (user_id);
+CREATE INDEX phpbb_notifications_time ON phpbb_notifications (time);
+CREATE INDEX phpbb_notifications_unread ON phpbb_notifications (unread);
+
+/*
 	Table: 'phpbb_poll_options'
 */
 CREATE TABLE phpbb_poll_options (
@@ -1094,6 +1118,20 @@ CREATE TABLE phpbb_topics_watch (
 CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch (topic_id);
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch (user_id);
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status);
+
+/*
+	Table: 'phpbb_user_notifications'
+*/
+CREATE TABLE phpbb_user_notifications (
+	item_type varchar(25) DEFAULT '' NOT NULL,
+	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	method varchar(25) DEFAULT '' NOT NULL,
+	PRIMARY KEY (item_type, item_id, user_id, method)
+);
+
+CREATE INDEX phpbb_user_notifications_it ON phpbb_user_notifications (item_type);
+CREATE INDEX phpbb_user_notifications_uid ON phpbb_user_notifications (user_id);
 
 /*
 	Table: 'phpbb_user_group'
