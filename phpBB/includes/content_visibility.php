@@ -162,17 +162,27 @@ class phpbb_content_visibility
 	}
 
 	/**
-	* @param $visibility - int - element of {ITEM_UNAPPROVED, ITEM_APPROVED, ITEM_DELETED}
-	* @param $post_id - int - the post ID to act on
-	* @param $topic_id - int - forum where $post_id is found
-	* @param $forum_id - int - forum ID where $topic_id resides
-	* @param $is_starter - bool - is this the first post of the topic
-	* @param $is_latest - bool - is this the last post of the topic
+	* Change visibility status of one post or a hole topic
+	*
+	* @param $visibility	int		Element of {ITEM_APPROVED, ITEM_DELETED}
+	* @param $post_id		mixed	Post ID to act on, if it is empty,
+	*								all posts of topic_id will be modified
+	* @param $topic_id		int		Topic where $post_id is found
+	* @param $forum_id		int		Forum where $topic_id is found
+	* @param $is_starter	bool	Is this the first post of the topic changed?
+	* @param $is_latest		bool	Is this the last post of the topic changed?
+	* @param $limit_visibility	mixed	Limit updating per topic_id to a certain visibility
+	* @param $limit_delete_time	mixed	Limit updating per topic_id to a certain deletion time
 	* @return void
 	*/
-	static public function set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest)
+	static public function set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest, $limit_visibility = false, $limit_delete_time = false)
 	{
 		global $db;
+
+		if (!in_array($visibility, array(ITEM_APPROVED, ITEM_DELETED)))
+		{
+			return;
+		}
 
 		if ($post_id)
 		{
@@ -181,6 +191,19 @@ class phpbb_content_visibility
 		else if ($topic_id)
 		{
 			$where_sql = 'topic_id = ' . (int) $topic_id;
+
+			// Limit the posts to a certain visibility and deletion time
+			// This allows us to only restore posts, that were approved
+			// when the topic got soft deleted. So previous soft deleted
+			// and unapproved posts are still soft deleted/unapproved
+			if ($limit_visibility !== false)
+			{
+				$where_sql .= ' AND post_visibility = ' . (int) $limit_visibility;
+			}
+			if ($limit_delete_time !== false)
+			{
+				$where_sql .= ' AND post_delete_time = ' . (int) $limit_delete_time;
+			}
 		}
 		else
 		{

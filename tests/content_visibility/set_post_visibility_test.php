@@ -107,18 +107,6 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 					array('topic_visibility' => 2, 'topic_first_post_id' => 8, 'topic_last_post_id' => 8),
 				),
 			),
-			array(
-				ITEM_UNAPPROVED,
-				8, 3, 1,
-				2, time(), 'unapproved',
-				true, true,
-				array(
-					array('post_id' => 8, 'post_visibility' => 0, 'post_delete_reason' => 'unapproved'),
-				),
-				array(
-					array('topic_visibility' => 0, 'topic_first_post_id' => 8, 'topic_last_post_id' => 8),
-				),
-			),
 		);
 	}
 
