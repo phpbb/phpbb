@@ -43,6 +43,8 @@ interface phpbb_notification_type_interface
 
 	public function create_insert_array($type_data);
 
+	public function users_to_query();
+
 	public function get_load_special();
 
 	public function load_special($data, $notifications);

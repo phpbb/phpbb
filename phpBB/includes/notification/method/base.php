@@ -50,7 +50,7 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	*/
 	protected $queue = array();
 
-	public function __construct(phpbb_notification_manager $notification_manager, dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, phpbb_user $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
+	public function __construct(phpbb_notification_manager $notification_manager, dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->notification_manager = $notification_manager;
 		$this->db = $db;
