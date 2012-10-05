@@ -104,7 +104,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	protected function get_data($name)
 	{
-		return (isset($this->data['data'][$name])) ? $this->data['data'][$name] : null;
+		return ($name === false) ? $this->data['data'] : ((isset($this->data['data'][$name])) ? $this->data['data'][$name] : null);
 	}
 
 	/**
