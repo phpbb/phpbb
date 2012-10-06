@@ -186,6 +186,61 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 					array('forum_posts' => 2, 'forum_topics' => 1, 'forum_topics_real' => 1, 'forum_last_post_id' => 2),
 				),
 			),
+
+			array(
+				2, 2, 4,
+				array(
+					'topic_first_post_id'	=> 4,
+					'topic_last_post_id'	=> 4,
+					'topic_replies_real'	=> 0,
+					'topic_visibility'		=> ITEM_APPROVED,
+					'post_time'				=> 4,
+					'post_visibility'		=> ITEM_APPROVED,
+					'post_postcount'		=> true,
+					'poster_id'				=> 1,
+					'post_reported'			=> false,
+				),
+				false, 'harddelete',
+				array(
+				),
+				array(
+				),
+				array(
+					array('forum_posts' => 0, 'forum_topics' => 0, 'forum_topics_real' => 0, 'forum_last_post_id' => 0),
+				),
+			),
+
+			array(
+				2, 2, 4,
+				array(
+					'topic_first_post_id'	=> 4,
+					'topic_last_post_id'	=> 4,
+					'topic_replies_real'	=> 0,
+					'topic_visibility'		=> ITEM_APPROVED,
+					'post_time'				=> 4,
+					'post_visibility'		=> ITEM_APPROVED,
+					'post_postcount'		=> true,
+					'poster_id'				=> 1,
+					'post_reported'			=> false,
+				),
+				true, 'soft delete',
+				array(
+					array('post_id' => 4, 'post_visibility' => ITEM_DELETED, 'post_delete_reason' => ''),
+				),
+				array(
+					array(
+						'topic_visibility'		=> ITEM_DELETED,
+						'topic_first_post_id'	=> 4,
+						'topic_last_post_id'	=> 4,
+						'topic_replies'			=> 0,
+						'topic_replies_real'	=> 0,
+						'topic_delete_reason'	=> 'soft delete',
+					),
+				),
+				array(
+					array('forum_posts' => 0, 'forum_topics' => 0, 'forum_topics_real' => 1, 'forum_last_post_id' => 0),
+				),
+			),
 		);
 	}
 

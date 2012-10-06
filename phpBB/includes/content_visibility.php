@@ -416,7 +416,7 @@ class phpbb_content_visibility
 				$forum_id_list[$post_data['forum_id']] = 1;
 			}
 
-			// User post update (we do not care about topic or post, since user posts are strictly connected to posts)
+			// User post update (we do not care about topic or post, since user topics are strictly connected to posts)
 			// But we care about forums where post counts get not increased. ;)
 			if ($post_data['post_postcount'])
 			{
