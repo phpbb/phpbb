@@ -359,28 +359,22 @@ class phpbb_content_visibility
 	}
 
 	/**
-	* Do the required math to hide a single post (going from approved to deleted)
-	* Notably, we do _not_ need the post ID to do this operation. We're only changing statistic caches
-	* @param $forum_id - int - the forum where the topic resides
-	* @param $current_time - int - passed for consistency instead of calling time() internally
-	* @param $data - array - contains information from the topics table about given topic
-	* @param $sql_data - array - populated with the SQL changes, may be empty at call time
+	* Remove post from topic and forum statistics
+	*
+	* @param $forum_id		int		Forum where the topic is found
+	* @param $data			array	Contains information from the topics table about given topic
+	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
 	* @return void
 	*/
-	//static public function remove_post_from_postcount($forum_id, $current_time, $data, &$sql_data)
-	static public function hide_post($forum_id, $current_time, $data, &$sql_data)
+	static public function remove_post_from_postcount($forum_id, $data, &$sql_data)
 	{
-		$sql_data[TOPICS_TABLE] = 'topic_last_view_time = ' . $current_time;
-		if ($data['topic_replies'] > 0)
-		{
-			$sql_data[TOPICS_TABLE] .= ', topic_replies = topic_replies - 1,';
-		}
+		$sql_data[TOPICS_TABLE] = ($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_replies = topic_replies - 1';
 
-		$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
+		$sql_data[FORUMS_TABLE] = ($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts = forum_posts - 1';
 
 		if ($data['post_postcount'])
 		{
-			$sql_data[USERS_TABLE] = 'user_posts = user_posts - 1';
+			$sql_data[USERS_TABLE] = ($sql_data[USERS_TABLE]) ? $sql_data[USERS_TABLE] . ', ' : '') . 'user_posts = user_posts - 1';
 		}
 
 		set_config_count('num_posts', -1, true);
@@ -539,6 +533,7 @@ class phpbb_content_visibility
 
 		if ($total_topics)
 		{
+			//@todo: plurals!
 			$success_msg = ($total_topics == 1) ? 'TOPIC_APPROVED_SUCCESS' : 'TOPICS_APPROVED_SUCCESS';
 		}
 		else

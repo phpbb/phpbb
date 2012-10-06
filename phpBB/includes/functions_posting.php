@@ -1422,13 +1422,9 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 	{
 		$post_mode = 'delete_topic';
 	}
-	else if ($data['topic_first_post_id'] == $post_id && !$is_soft)
+	else if ($data['topic_first_post_id'] == $post_id)
 	{
 		$post_mode = 'delete_first_post';
-	}
-	else if ($data['topic_first_post_id'] == $post_id && $is_soft)
-	{
-		$post_mode = 'delete_topic';
 	}
 	else if ($data['topic_last_post_id'] == $post_id)
 	{
@@ -1464,10 +1460,10 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 		$db->sql_freeresult($result);
 	}
 
+	// (Soft) delete the post
 	if ($is_soft)
 	{
 		phpbb_content_visibility::set_post_visibility(ITEM_DELETED, $post_id, $topic_id, $forum_id, $user->data['user_id'], time(), $softdelete_reason, ($data['topic_first_post_id'] == $post_id), ($data['topic_last_post_id'] == $post_id));
-		phpbb_content_visibility::hide_post($forum_id, time(), $data, $sql_data);
 	}
 	else
 	{
@@ -1535,53 +1531,45 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			$sql_data[FORUMS_TABLE] = ($data['post_visibility'] == ITEM_APPROVED) ? 'forum_posts = forum_posts - 1' : '';
-
-			$sql_data[TOPICS_TABLE] = 'topic_poster = ' . intval($row['poster_id']) . ', topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . $db->sql_escape($row['user_colour']) . "', topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "', topic_time = " . (int) $row['post_time'];
-
-			// Decrementing topic_replies here is fine because this case only happens if there is more than one post within the topic - basically removing one "reply"
-			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_visibility'] == ITEM_APPROVED) ? ', topic_replies = topic_replies - 1' : '');
-
 			$next_post_id = (int) $row['post_id'];
+
+			$sql_data[TOPICS_TABLE] = $db->sql_build_array('UPDATE', array(
+				'topic_poster'				=> (int) $row['poster_id'],
+				'topic_first_post_id'		=> (int) $row['post_id']
+				'topic_first_poster_colour'	=> $row['user_colour'],
+				'topic_first_poster_name'	=> ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'],
+				'topic_time'				=> (int) $row['post_time'],
+			));
 		break;
 
 		case 'delete_last_post':
-			if ($is_soft)
+			if (!$is_soft)
 			{
-				phpbb_content_visibility::set_post_visibility(ITEM_DELETED, $post_id, $topic_id, $forum_id, $user->data['user_id'], time(), $softdelete_reason, false, true);
-				phpbb_content_visibility::hide_post($forum_id, time(), $data, $sql_data);
-			}
-			else
-			{
-				$sql_data[FORUMS_TABLE] = ($data['post_visibility'] == ITEM_APPROVED) ? 'forum_posts = forum_posts - 1' : '';
-
 				$update_sql = update_post_information('forum', $forum_id, true);
 				if (sizeof($update_sql))
 				{
-					$sql_data[FORUMS_TABLE] .= ($sql_data[FORUMS_TABLE]) ? ', ' : '';
-					$sql_data[FORUMS_TABLE] .= implode(', ', $update_sql[$forum_id]);
+					$sql_data[FORUMS_TABLE] = ($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . implode(', ', $update_sql[$forum_id]);
 				}
 
-				$sql_data[TOPICS_TABLE] = 'topic_bumped = 0, topic_bumper = 0, topic_replies_real = topic_replies_real - 1' . (($data['post_visibility'] == ITEM_APPROVED) ? ', topic_replies = topic_replies - 1' : '');
+				$sql_data[TOPICS_TABLE] = ($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_bumped = 0, topic_bumper = 0';
+
+				$update_sql = update_post_information('topic', $topic_id, true);
+				if (!empty($update_sql))
+				{
+					$sql_data[TOPICS_TABLE] .= ', ' . implode(', ', $update_sql[$topic_id]);
+					$next_post_id = (int) str_replace('topic_last_post_id = ', '', $update_sql[$topic_id][0]);
+				}
 			}
 
-			$update_sql = update_post_information('topic', $topic_id, true);
-			if (sizeof($update_sql) && !$is_soft)
-			{
-				$sql_data[TOPICS_TABLE] .= ', ' . implode(', ', $update_sql[$topic_id]);
-				$next_post_id = (int) str_replace('topic_last_post_id = ', '', $update_sql[$topic_id][0]);
-			}
-			else
+			if (!$next_post_id)
 			{
 				$sql = 'SELECT MAX(post_id) as last_post_id
 					FROM ' . POSTS_TABLE . "
 					WHERE topic_id = $topic_id
 						AND " . phpbb_content_visibility::get_visibility_sql('post', $forum_id);
 				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
+				$next_post_id = (int) $db->sql_fetchfield('last_post_id');
 				$db->sql_freeresult($result);
-
-				$next_post_id = (int) $row['last_post_id'];
 			}
 		break;
 
@@ -1593,14 +1581,22 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 					AND post_time > ' . $data['post_time'] . '
 				ORDER BY post_time ASC';
 			$result = $db->sql_query_limit($sql, 1);
-			$row = $db->sql_fetchrow($result);
+			$next_post_id = (int) $db->sql_fetchfield('post_id');
 			$db->sql_freeresult($result);
-
-			$sql_data[FORUMS_TABLE] = ($data['post_visibility'] == ITEM_APPROVED) ? 'forum_posts = forum_posts - 1' : '';
-
-			$sql_data[TOPICS_TABLE] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_visibility'] == ITEM_APPROVED) ? ', topic_replies = topic_replies - 1' : '');
-			$next_post_id = (int) $row['post_id'];
 		break;
+	}
+
+	if (($post_mode == 'delete') || ($post_mode == 'delete_last_post') || ($post_mode == 'delete_first_post'))
+	{
+		if ($data['post_visibility'] == ITEM_APPROVED)
+		{
+			phpbb_content_visibility::remove_post_from_postcount($forum_id, $data, $sql_data);
+		}
+
+		if (!$is_soft)
+		{
+			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1';
+		}
 	}
 
 	if (($post_mode == 'delete') || ($post_mode == 'delete_last_post') || ($post_mode == 'delete_first_post'))
@@ -1625,7 +1621,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 	$where_sql = array(
 		FORUMS_TABLE	=> "forum_id = $forum_id",
 		TOPICS_TABLE	=> "topic_id = $topic_id",
-		USERS_TABLE		=> 'user_id = ' . $data['poster_id']
+		USERS_TABLE		=> 'user_id = ' . $data['poster_id'],
 	);
 
 	foreach ($sql_data as $table => $update_sql)
@@ -1960,7 +1956,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// Correctly set back the topic replies and forum posts... but only if the post was approved before.
 			if (!$post_approval && $data['post_visibility'] == ITEM_APPROVED)
 			{
-				//phpbb_content_visibility::hide_post($forum_id, $current_time, $sql_data);
+				//phpbb_content_visibility::remove_post_from_postcount($forum_id, $current_time, $sql_data);
 				// ^^ hide_post SQL is identical, except that it does not include the ['stat'] sub-array
 				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1, topic_last_view_time = ' . $current_time;
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
@@ -2302,7 +2298,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			}
 		}
 	}
-	else if (!$data['post_visibility'] == ITEM_APPROVED && ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies'])))
+	else if ($data['post_visibility'] != ITEM_APPROVED && ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies'])))
 	{
 		// like having the rug pulled from under us
 		$sql = 'SELECT MAX(post_id) as last_post_id
