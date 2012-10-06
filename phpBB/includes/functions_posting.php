@@ -1490,7 +1490,11 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			{
 				// counting is fun! we only have to do sizeof($forum_ids) number of queries,
 				// even if the topic is moved back to where its shadow lives (we count how many times it is in a forum)
-				$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET forum_topics_real = forum_topics_real - ' . $topic_count . ', forum_topics = forum_topics - ' . $topic_count . ' WHERE forum_id = ' . $updated_forum);
+				$sql = 'UPDATE ' . FORUMS_TABLE . '
+					SET forum_topics_real = forum_topics_real - ' . $topic_count . ',
+						forum_topics = forum_topics - ' . $topic_count . '
+					WHERE forum_id = ' . $updated_forum;
+				$db->sql_query($sql);
 				update_post_information('forum', $updated_forum);
 			}
 
@@ -1498,18 +1502,15 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			{
 				$topic_row = array();
 				phpbb_content_visibility::set_topic_visibility(ITEM_DELETED, $topic_id, $forum_id, $user->data['user_id'], time(), $softdelete_reason);
-				phpbb_content_visibility::hide_topic($topic_id, $forum_id, $topic_row, $sql_data);
+				phpbb_content_visibility::remove_topic_from_statistic($topic_id, $forum_id, $topic_row, $sql_data);
 			}
 			else
 			{
 				delete_topics('topic_id', array($topic_id), false);
 
 
-				if ($data['topic_type'] != POST_GLOBAL)
-				{
-					$sql_data[FORUMS_TABLE] .= 'forum_topics_real = forum_topics_real - 1';
-					$sql_data[FORUMS_TABLE] .= ($data['topic_visibility'] == ITEM_APPROVED) ? ', forum_posts = forum_posts - 1, forum_topics = forum_topics - 1' : '';
-				}
+				$sql_data[FORUMS_TABLE] .= 'forum_topics_real = forum_topics_real - 1';
+				$sql_data[FORUMS_TABLE] .= ($data['topic_visibility'] == ITEM_APPROVED) ? ', forum_posts = forum_posts - 1, forum_topics = forum_topics - 1' : '';
 
 				$update_sql = update_post_information('forum', $forum_id, true);
 				if (sizeof($update_sql))
@@ -1526,16 +1527,30 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 				WHERE p.topic_id = $topic_id
 					AND p.poster_id = u.user_id
-				ORDER BY p.post_time ASC";
+					AND p.post_visibility = " . ITEM_APPROVED . '
+				ORDER BY p.post_time ASC';
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
+
+			if (!$row)
+			{
+				// No approved post, so the first is a not-approved post (unapproved or soft deleted)
+				$sql = 'SELECT p.post_id, p.poster_id, p.post_time, p.post_username, u.username, u.user_colour
+					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
+					WHERE p.topic_id = $topic_id
+						AND p.poster_id = u.user_id
+					ORDER BY p.post_time ASC";
+				$result = $db->sql_query_limit($sql, 1);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+			}
 
 			$next_post_id = (int) $row['post_id'];
 
 			$sql_data[TOPICS_TABLE] = $db->sql_build_array('UPDATE', array(
 				'topic_poster'				=> (int) $row['poster_id'],
-				'topic_first_post_id'		=> (int) $row['post_id']
+				'topic_first_post_id'		=> (int) $row['post_id'],
 				'topic_first_poster_colour'	=> $row['user_colour'],
 				'topic_first_poster_name'	=> ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'],
 				'topic_time'				=> (int) $row['post_time'],
@@ -1545,13 +1560,14 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 		case 'delete_last_post':
 			if (!$is_soft)
 			{
+				// Update last post information when hard deleting. Soft delete already did that by itself.
 				$update_sql = update_post_information('forum', $forum_id, true);
 				if (sizeof($update_sql))
 				{
-					$sql_data[FORUMS_TABLE] = ($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . implode(', ', $update_sql[$forum_id]);
+					$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . implode(', ', $update_sql[$forum_id]);
 				}
 
-				$sql_data[TOPICS_TABLE] = ($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_bumped = 0, topic_bumper = 0';
+				$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_bumped = 0, topic_bumper = 0';
 
 				$update_sql = update_post_information('topic', $topic_id, true);
 				if (!empty($update_sql))
@@ -1586,11 +1602,11 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 		break;
 	}
 
-	if (($post_mode == 'delete') || ($post_mode == 'delete_last_post') || ($post_mode == 'delete_first_post'))
+	if (($post_mode == 'delete') || ($post_mode == 'delete_last_post') || ($post_mode == 'delete_first_post' && !$is_soft))
 	{
 		if ($data['post_visibility'] == ITEM_APPROVED)
 		{
-			phpbb_content_visibility::remove_post_from_postcount($forum_id, $data, $sql_data);
+			phpbb_content_visibility::remove_post_from_statistic($forum_id, $data, $sql_data);
 		}
 
 		if (!$is_soft)
@@ -1945,7 +1961,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// Correctly set back the topic replies and forum posts... only if the topic was approved before and now gets disapproved
 			if (!$post_approval && $data['topic_visibility'] == ITEM_APPROVED)
 			{
-				phpbb_content_visibility::hide_topic($data['topic_id'], $data['forum_id'], $topic_row, $sql_data);
+				phpbb_content_visibility::remove_topic_from_statistic($data['topic_id'], $data['forum_id'], $topic_row, $sql_data);
 			}
 
 		break;
@@ -1956,8 +1972,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// Correctly set back the topic replies and forum posts... but only if the post was approved before.
 			if (!$post_approval && $data['post_visibility'] == ITEM_APPROVED)
 			{
-				//phpbb_content_visibility::remove_post_from_postcount($forum_id, $current_time, $sql_data);
-				// ^^ hide_post SQL is identical, except that it does not include the ['stat'] sub-array
+				//phpbb_content_visibility::remove_post_from_statistic($forum_id, $current_time, $sql_data);
+				// ^^ remove_post_from_statistic SQL is identical, except that it does not include the ['stat'] sub-array
 				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1, topic_last_view_time = ' . $current_time;
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
 

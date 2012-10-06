@@ -316,14 +316,15 @@ class phpbb_content_visibility
 	}
 
 	/**
-	* Do the required math to hide a complete topic (going from approved to deleted)
-	* @param $topic_id - int - the topic to act on
-	* @param $forum_id - int - the forum where the topic resides
-	* @param $topic_row - array - data about the topic, may be empty at call time
-	* @param $sql_data - array - populated with the SQL changes, may be empty at call time
+	* Remove topic from forum statistics
+	*
+	* @param $topic_id		int		The topic to act on
+	* @param $forum_id		int		Forum where the topic is found
+	* @param $topic_row		array	Contains information from the topic, may be empty at call time
+	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
 	* @return void
 	*/
-	static public function hide_topic($topic_id, $forum_id, &$topic_row, &$sql_data)
+	static public function remove_topic_from_statistic($topic_id, $forum_id, &$topic_row, &$sql_data)
 	{
 		global $db;
 
@@ -339,7 +340,7 @@ class phpbb_content_visibility
 		}
 
 		// If this is an edited topic or the first post the topic gets completely disapproved later on...
-		$sql_data[FORUMS_TABLE] = 'forum_topics = forum_topics - 1';
+		$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_topics = forum_topics - 1';
 		$sql_data[FORUMS_TABLE] .= ', forum_posts = forum_posts - ' . ($topic_row['topic_replies'] + 1);
 
 		set_config_count('num_topics', -1, true);
@@ -366,15 +367,15 @@ class phpbb_content_visibility
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
 	* @return void
 	*/
-	static public function remove_post_from_postcount($forum_id, $data, &$sql_data)
+	static public function remove_post_from_statistic($forum_id, $data, &$sql_data)
 	{
-		$sql_data[TOPICS_TABLE] = ($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_replies = topic_replies - 1';
+		$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_replies = topic_replies - 1';
 
-		$sql_data[FORUMS_TABLE] = ($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts = forum_posts - 1';
+		$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts = forum_posts - 1';
 
 		if ($data['post_postcount'])
 		{
-			$sql_data[USERS_TABLE] = ($sql_data[USERS_TABLE]) ? $sql_data[USERS_TABLE] . ', ' : '') . 'user_posts = user_posts - 1';
+			$sql_data[USERS_TABLE] = (($sql_data[USERS_TABLE]) ? $sql_data[USERS_TABLE] . ', ' : '') . 'user_posts = user_posts - 1';
 		}
 
 		set_config_count('num_posts', -1, true);
