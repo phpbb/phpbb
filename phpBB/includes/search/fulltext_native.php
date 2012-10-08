@@ -23,9 +23,9 @@ if (!defined('IN_PHPBB'))
 class phpbb_search_fulltext_native extends phpbb_search_base
 {
 	protected $stats = array();
-	protected  $word_length = array();
-	protected  $search_query;
-	protected  $common_words = array();
+	protected $word_length = array();
+	protected $search_query;
+	protected $common_words = array();
 
 	protected $must_contain_ids = array();
 	protected $must_not_contain_ids = array();
