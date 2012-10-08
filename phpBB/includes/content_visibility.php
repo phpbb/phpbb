@@ -23,6 +23,30 @@ if (!defined('IN_PHPBB'))
 class phpbb_content_visibility
 {
 	/**
+	* Can the current logged-in user soft-delete posts?
+	*
+	* @param $forum_id		int		Forum ID whose permissions to check
+	* @param $poster_id		int		Poster ID of the post in question
+	* @param $post_locked	bool	Is the post locked?
+	* @return bool
+	*/
+	static function can_soft_delete($forum_id, $poster_id, $post_locked)
+	{
+		global $auth, $user;
+
+		if ($auth->acl_get('m_softdelete', $forum_id))
+		{
+			return true;
+		}
+		else if ($auth->acl_get('f_softdelete', $forum_id) && $poster_id == $user->data['user_id'] && !$post_locked)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	* Create topic/post visibility SQL for a given forum ID
 	*
 	* Note: Read permissions are not checked.
@@ -207,7 +231,7 @@ class phpbb_content_visibility
 	}
 
 	/**
-	* Change visibility status of one post or a hole topic
+	* Change visibility status of one post or all posts of a topic
 	*
 	* @param $visibility	int		Element of {ITEM_APPROVED, ITEM_DELETED}
 	* @param $post_id		mixed	Post ID or array of post IDs to act on,
@@ -296,30 +320,6 @@ class phpbb_content_visibility
 			// The forum is resynced recursive by sync() itself.
 			sync('topic', 'topic_id', $topic_id, true);
 		}
-	}
-
-	/**
-	* Can the current logged-in user soft-delete posts?
-	*
-	* @param $forum_id		int		Forum ID whose permissions to check
-	* @param $poster_id		int		Poster ID of the post in question
-	* @param $post_locked	bool	Is the post locked?
-	* @return bool
-	*/
-	static function can_soft_delete($forum_id, $poster_id, $post_locked)
-	{
-		global $auth, $user;
-
-		if ($auth->acl_get('m_softdelete', $forum_id))
-		{
-			return true;
-		}
-		else if ($auth->acl_get('f_softdelete', $forum_id) && $poster_id == $user->data['user_id'] && !$post_locked)
-		{
-			return true;
-		}
-
-		return false;
 	}
 
 	/**
