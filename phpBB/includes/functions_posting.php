@@ -1601,21 +1601,19 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 		break;
 	}
 
-	if (($post_mode == 'delete') || ($post_mode == 'delete_last_post') || ($post_mode == 'delete_first_post' && !$is_soft))
-	{
-		if ($data['post_visibility'] == ITEM_APPROVED)
-		{
-			phpbb_content_visibility::remove_post_from_statistic($forum_id, $data, $sql_data);
-		}
-
-		if (!$is_soft)
-		{
-			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1';
-		}
-	}
 
 	if (($post_mode == 'delete') || ($post_mode == 'delete_last_post') || ($post_mode == 'delete_first_post'))
 	{
+		if (!$is_soft)
+		{
+			if ($data['post_visibility'] == ITEM_APPROVED)
+			{
+				phpbb_content_visibility::remove_post_from_statistic($data, $sql_data);
+			}
+
+			$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_replies_real = topic_replies_real - 1';
+		}
+
 		$sql = 'SELECT 1 AS has_attachments
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE topic_id = ' . $topic_id;
@@ -1625,7 +1623,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 
 		if (!$has_attachments)
 		{
-			$sql_data[TOPICS_TABLE] .= ', topic_attachment = 0';
+			$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_attachment = 0';
 		}
 	}
 
@@ -1969,7 +1967,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// Correctly set back the topic replies and forum posts... but only if the post was approved before.
 			if (!$post_approval && $data['post_visibility'] == ITEM_APPROVED)
 			{
-				//phpbb_content_visibility::remove_post_from_statistic($forum_id, $current_time, $sql_data);
+				//phpbb_content_visibility::remove_post_from_statistic($current_time, $sql_data);
 				// ^^ remove_post_from_statistic SQL is identical, except that it does not include the ['stat'] sub-array
 				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1, topic_last_view_time = ' . $current_time;
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
