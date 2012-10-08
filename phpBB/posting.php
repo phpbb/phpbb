@@ -274,7 +274,7 @@ switch ($mode)
 	break;
 
 	case 'soft_delete':
-		if ($user->data['is_registered'] && $auth->acl_gets('f_softdelete', 'm_softdelete', $forum_id))
+		if ($user->data['is_registered'] && phpbb_content_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
 		{
 			$is_authed = true;
 		}
@@ -886,53 +886,15 @@ if ($submit || $preview || $refresh)
 
 	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !isset($_POST['soft_delete']) && $auth->acl_get('m_approve', $forum_id))
 	{
-		//@todo: REMOVE the magic!
-		// if this is the first post of the topic, restore the whole topic
-		if ($post_id == $post_data['topic_first_post_id'])
+		$is_first_post = ($post_id == $post_data['topic_first_post_id'] || !$post_data['topic_replies']);
+		$is_last_post = ($post_id == $post_data['topic_last_post_id'] || !$post_data['topic_replies']);
+		$updated_post_data = phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $post_id, $post_data['topic_id'], $post_data['forum_id'], $user->data['user_id'], time(), '', $is_first_post, $is_last_post);
+
+		if (!empty($updated_post_data))
 		{
-			// that means we need to gather data for all posts in the topic, not
-			// just the one being edited
-			$sql = 'SELECT post_id, poster_id, post_subject, post_postcount
-				FROM ' . POSTS_TABLE . '
-				WHERE topic_id = ' . $post_data['topic_id'] . '
-				AND post_visibility = ' . ITEM_DELETED;
-			$result = $db->sql_query($sql);
-
-			$post_ids = array();
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$post_ids[] = $row['post_id'];
-
-				$posts_data[$row['post_id']] = array(
-					// all posts are from the same topic and forum
-					// and are deleted because of the constraints to the query above
-					'topic_id'  => $post_data['topic_id'],
-					'forum_id'  => $post_data['forum_id'],
-					'topic_replies' => $post_data['topic_replies'],
-					'topic_first_post_id' => $post_data['topic_first_post_id'],
-					'post_visibility'   => ITEM_DELETED,
-
-					'poster_id' 	=> $row['poster_id'],
-					'post_subject'  => $row['post_subject'],
-					'post_postcount'=> $row['post_postcount'],
-				);
-			}
-
-			// No direct query is needed, just update the array
-			$post_data['post_visibility'] = $post_data['topic_visibility'] = ITEM_APPROVED;
+			// Update the post_data, so we don't need to refetch it.
+			$post_data = array_merge($post_data, $updated_post_data);
 		}
-		else
-		{
-			$post_ids = array($post_id);
-			$posts_data = array($post_id => $post_data);
-
-			$post_data['post_visibility'] = ITEM_APPROVED;
-		}
-
-		// don't feel that a confirm_box is needed for this
-		// do not return / trigger_error after this because the post content can also be changed
-		phpbb_content_visibility::unhide_posts_topics('restore', $posts_data, $post_ids);
 	}
 
 	// Parse subject
@@ -1591,17 +1553,17 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 				'topic_first_post_id'	=> $post_data['topic_first_post_id'],
 				'topic_last_post_id'	=> $post_data['topic_last_post_id'],
 				'topic_replies_real'	=> $post_data['topic_replies_real'],
-				'topic_replies'         => $post_data['topic_replies'],
+				'topic_replies'			=> $post_data['topic_replies'],
 				'topic_visibility'		=> $post_data['topic_visibility'],
 				'topic_type'			=> $post_data['topic_type'],
 				'post_visibility'		=> $post_data['post_visibility'],
 				'post_reported'			=> $post_data['post_reported'],
 				'post_time'				=> $post_data['post_time'],
 				'poster_id'				=> $post_data['poster_id'],
-				'post_postcount'		=> $post_data['post_postcount']
+				'post_postcount'		=> $post_data['post_postcount'],
 			);
 
-			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data, $is_soft);
+			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data, $is_soft);//@todo: $reason);
 			$post_username = ($post_data['poster_id'] == ANONYMOUS && !empty($post_data['post_username'])) ? $post_data['post_username'] : $post_data['username'];
 
 			if ($next_post_id === false)

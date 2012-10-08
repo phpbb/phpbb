@@ -311,6 +311,12 @@ class phpbb_content_visibility
 		}
 		else if ($is_starter && $topic_id)
 		{
+			if (!function_exists('sync'))
+			{
+				global $phpEx, $phpbb_root_path;
+				include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+			}
+
 			// ... so we need to use sync, if the first post is changed.
 			// The forum is resynced recursive by sync() itself.
 			sync('topic', 'topic_id', $topic_id, true);

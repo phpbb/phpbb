@@ -1481,7 +1481,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 	$db->sql_transaction('commit');
 
 	// Collect the necessary information for updating the tables
-	$sql_data[FORUMS_TABLE] = '';
+	$sql_data[FORUMS_TABLE] = $sql_data[TOPICS_TABLE] = '';
 	switch ($post_mode)
 	{
 		case 'delete_topic':
