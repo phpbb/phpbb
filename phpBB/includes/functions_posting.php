@@ -1629,8 +1629,6 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 		}
 	}
 
-//	$sql_data[USERS_TABLE] = ($data['post_postcount']) ? 'user_posts = user_posts - 1' : '';
-
 	$db->sql_transaction('begin');
 
 	$where_sql = array(

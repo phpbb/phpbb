@@ -210,8 +210,8 @@ class phpbb_content_visibility
 	* Change visibility status of one post or a hole topic
 	*
 	* @param $visibility	int		Element of {ITEM_APPROVED, ITEM_DELETED}
-	* @param $post_id		mixed	Post ID to act on, if it is empty,
-	*								all posts of topic_id will be modified
+	* @param $post_id		mixed	Post ID or array of post IDs to act on,
+	*								if it is empty, all posts of topic_id will be modified
 	* @param $topic_id		int		Topic where $post_id is found
 	* @param $forum_id		int		Forum where $topic_id is found
 	* @param $user_id		int		User performing the action
@@ -234,7 +234,14 @@ class phpbb_content_visibility
 
 		if ($post_id)
 		{
-			$where_sql = 'post_id = ' . (int) $post_id;
+			if (is_array($post_id))
+			{
+				$where_sql = $db->sql_in_set('post_id', array_map('intval', $post_id));
+			}
+			else
+			{
+				$where_sql = 'post_id = ' . (int) $post_id;
+			}
 		}
 		else if ($topic_id)
 		{
@@ -382,7 +389,7 @@ class phpbb_content_visibility
 	}
 
 	/**
-	* One function to rule them all ... and unhide posts and topics.  This could
+	* One function to rule them all... and unhide posts and topics. This could
 	* reasonably be broken up, I straight copied this code from the mcp_queue.php
 	* file here for global access.
 	* @param $mode - string - member of the set {'approve', 'restore'}
