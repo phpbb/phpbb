@@ -49,6 +49,13 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 	);
 
 	/**
+	* Permission to check for (in find_users_for_notification)
+	*
+	* @var string Permission name
+	*/
+	protected $permission = 'm_approve';
+
+	/**
 	* Get the type of notification this is
 	* phpbb_notification_type_
 	*/
@@ -62,7 +69,7 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 	*/
 	public function is_available()
 	{
-		$m_approve = $this->auth->acl_getf('m_approve', true);
+		$m_approve = $this->auth->acl_getf($this->permission, true);
 
 		return (!empty($m_approve));
 	}
@@ -80,7 +87,7 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 			'ignore_users'		=> array(),
 		), $options);
 
-		$auth_approve = $this->auth->acl_get_list(false, 'm_approve', $post['forum_id']);
+		$auth_approve = $this->auth->acl_get_list(false, $this->permission, $post['forum_id']);
 
 		if (empty($auth_approve))
 		{
