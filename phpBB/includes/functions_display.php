@@ -996,54 +996,54 @@ function display_user_activity(&$userdata)
 		}
 	}
 
-	$forum_ary = array_diff($forum_ary, $user->get_passworded_forums());;
+	$forum_ary = array_diff($forum_ary, $user->get_passworded_forums());
 
-	// Obtain active forum
-	$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
-		FROM ' . POSTS_TABLE . '
-		WHERE poster_id = ' . $userdata['user_id'] . '
-			AND post_postcount = 1
-			AND ' . phpbb_content_visibility::get_forums_visibility_sql('post', $forum_ary) . '
-		GROUP BY forum_id
-		ORDER BY num_posts DESC';
-	$result = $db->sql_query_limit($sql, 1);
-	$active_f_row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	if (!empty($active_f_row))
+	$active_f_row = $active_t_row = array();
+	if (!empty($forum_ary))
 	{
-		$sql = 'SELECT forum_name
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id = ' . $active_f_row['forum_id'];
-		$result = $db->sql_query($sql, 3600);
-		$active_f_row['forum_name'] = (string) $db->sql_fetchfield('forum_name');
+		// Obtain active forum
+		$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
+			FROM ' . POSTS_TABLE . '
+			WHERE poster_id = ' . $userdata['user_id'] . '
+				AND post_postcount = 1
+				AND ' . phpbb_content_visibility::get_forums_visibility_sql('post', $forum_ary) . '
+			GROUP BY forum_id
+			ORDER BY num_posts DESC';
+		$result = $db->sql_query_limit($sql, 1);
+		$active_f_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
-	}
 
-	// Obtain active topic
-	// We need to exclude passworded forums here so we do not leak the topic title
-	$forum_ary_topic = array_unique(array_merge($forum_ary, $user->get_passworded_forums()));
-	$forum_sql_topic = (!empty($forum_ary_topic)) ? 'AND ' . $db->sql_in_set('forum_id', $forum_ary_topic, true) : '';
+		if (!empty($active_f_row))
+		{
+			$sql = 'SELECT forum_name
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_id = ' . $active_f_row['forum_id'];
+			$result = $db->sql_query($sql, 3600);
+			$active_f_row['forum_name'] = (string) $db->sql_fetchfield('forum_name');
+			$db->sql_freeresult($result);
+		}
 
-	$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
-		FROM ' . POSTS_TABLE . '
-		WHERE poster_id = ' . $userdata['user_id'] . '
-			AND post_postcount = 1
-			AND ' . phpbb_content_visibility::get_forums_visibility_sql('post', $forum_ary) . '
-		GROUP BY topic_id
-		ORDER BY num_posts DESC';
-	$result = $db->sql_query_limit($sql, 1);
-	$active_t_row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	if (!empty($active_t_row))
-	{
-		$sql = 'SELECT topic_title
-			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id = ' . $active_t_row['topic_id'];
-		$result = $db->sql_query($sql);
-		$active_t_row['topic_title'] = (string) $db->sql_fetchfield('topic_title');
+		// Obtain active topic
+		$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
+			FROM ' . POSTS_TABLE . '
+			WHERE poster_id = ' . $userdata['user_id'] . '
+				AND post_postcount = 1
+				AND ' . phpbb_content_visibility::get_forums_visibility_sql('post', $forum_ary) . '
+			GROUP BY topic_id
+			ORDER BY num_posts DESC';
+		$result = $db->sql_query_limit($sql, 1);
+		$active_t_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
+
+		if (!empty($active_t_row))
+		{
+			$sql = 'SELECT topic_title
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id = ' . $active_t_row['topic_id'];
+			$result = $db->sql_query($sql);
+			$active_t_row['topic_title'] = (string) $db->sql_fetchfield('topic_title');
+			$db->sql_freeresult($result);
+		}
 	}
 
 	$userdata['active_t_row'] = $active_t_row;
