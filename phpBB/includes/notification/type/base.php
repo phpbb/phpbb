@@ -82,7 +82,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	public function __get($name)
 	{
-		return $this->data[$name];
+		return (!isset($this->data[$name])) ? null : $this->data[$name];
 	}
 
 	public function __set($name, $value)
@@ -202,6 +202,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 		// Unset data unique to each row
 		unset(
+			$data['time'], // Also unsetting time, since it always tries to change the time to current (if you actually need to change the time, over-ride this function)
 			$data['notification_id'],
 			$data['unread'],
 			$data['user_id']
