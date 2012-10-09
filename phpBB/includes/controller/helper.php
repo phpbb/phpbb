@@ -89,6 +89,20 @@ class phpbb_controller_helper
 	}
 
 	/**
+	* Easily generate a URL
+	*
+	* @param array $url_parts Each array element is a 'folder'
+	* 		i.e. array('my', 'ext') maps to ./app.php/my/ext
+	* @param mixed $query The Query string, passed directly into the second
+	*		argument of append_sid()
+	* @return string A URL that has already been run through append_sid()
+	*/
+	public function url(array $url_parts, $query = '')
+	{
+		return append_sid($this->phpbb_root_path . implode('/', $url_parts), $query);
+	}
+
+	/**
 	* Output an error
 	*
 	* @param string $controller Destination controller name
