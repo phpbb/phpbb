@@ -128,7 +128,7 @@ switch ($mode)
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
 				AND f.forum_id = t.forum_id
-				AND " . phpbb_content_visibility::get_visibility_sql('topic', $forum_id, 't.');
+				AND " . phpbb_content_visibility::get_visibility_sql('post', $forum_id, 'p.');
 	break;
 
 	case 'smilies':
@@ -176,7 +176,7 @@ if (!$post_data)
 
 // Not able to reply to unapproved posts/topics
 // TODO: add more descriptive language key
-if ($auth->acl_get('m_approve', $forum_id) && ((($mode == 'reply' || $mode == 'bump') && $post_data['topic_visibility'] == ITEM_UNAPPROVED) || ($mode == 'quote' && $post_data['post_visibility'] == ITEM_UNAPPROVED)))
+if ($auth->acl_get('m_approve', $forum_id) && ((($mode == 'reply' || $mode == 'bump') && $post_data['topic_visibility'] != ITEM_APPROVED) || ($mode == 'quote' && $post_data['post_visibility'] != ITEM_APPROVED)))
 {
 	trigger_error(($mode == 'reply' || $mode == 'bump') ? 'TOPIC_UNAPPROVED' : 'POST_UNAPPROVED');
 }
