@@ -16,6 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\TerminableInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
@@ -36,7 +37,7 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 * Controller manager class
 * @package phpBB3
 */
-class phpbb_kernel implements HttpKernelInterface
+class phpbb_kernel implements HttpKernelInterface, TerminableInterface
 {
 	/**
 	* Event Dispatcher object
@@ -368,5 +369,20 @@ class phpbb_kernel implements HttpKernelInterface
 		$sub_request = $this->request->duplicate($query, null, $attributes);
 
 		return $this->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+	}
+
+	/**
+	* Terminates a request/response cycle.
+	*
+	* Should be called after sending the response and before shutting down the kernel.
+	*
+	* @param Request  $request  A Request instance
+	* @param Response $response A Response instance
+	*
+	* @api
+	*/
+	public function terminate(Request $request, Response $response)
+	{
+		$this->dispatcher->dispatch('core.kernel_terminate', new PostResponseEvent($this, $request, $response));
 	}
 }
