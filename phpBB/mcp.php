@@ -619,7 +619,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			if (!$auth->acl_get('m_approve', $forum_id))
 			{
-				$sql .= 'AND post_visibility = ' . ITEM_APPROVED;
+				$sql .= 'AND topic_visibility = ' . ITEM_APPROVED;
 			}
 		break;
 
