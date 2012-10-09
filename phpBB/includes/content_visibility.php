@@ -518,17 +518,37 @@ class phpbb_content_visibility
 		set_config_count('num_topics', -1, true);
 		set_config_count('num_posts', ($topic_row['topic_replies'] + 1) * (-1), true);
 
-		// Only decrement this post, since this is the one non-approved now
-		//
-		/**
-		* @todo: this is wrong, it should rely on post_postcount
-		*		 also a user might have more than one post in the topic
-		*
-		if ($auth->acl_get('f_postcount', $forum_id))
+		// Get user post count information
+		$sql = 'SELECT poster_id, COUNT(post_id) AS num_posts
+			FROM ' . POSTS_TABLE . '
+			WHERE topic_id = ' . $topic_id . '
+				AND post_postcount = 1
+				AND post_visibility = ' . ITEM_APPROVED . '
+			GROUP BY poster_id';
+		$result = $db->sql_query($sql);
+
+		$postcounts = array();
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$sql_data[USERS_TABLE] = 'user_posts = user_posts - 1';
+			$postcounts[(int) $row['num_posts']][] = (int) $row['poster_id'];
 		}
-		*/
+		$db->sql_freeresult($result);
+
+		// Decrement users post count
+		foreach ($postcounts as $num_posts => $poster_ids)
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_posts = 0
+				WHERE user_posts < ' . $num_posts . '
+					AND ' . $db->sql_in_set('user_id', $poster_ids);
+			$db->sql_query($sql);
+
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_posts = user_posts - ' . $num_posts . '
+				WHERE user_posts >= ' . $num_posts . '
+					AND ' . $db->sql_in_set('user_id', $poster_ids);
+			$db->sql_query($sql);
+		}
 	}
 
 	/**
