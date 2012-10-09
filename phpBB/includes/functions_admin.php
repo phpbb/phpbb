@@ -1854,7 +1854,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			break;
 
 		case 'topic':
-			$topic_data = $post_ids = $approved_unapproved_ids = $resync_forums = $delete_topics = $delete_posts = $moved_topics = array();
+			$topic_data = $post_ids = $resync_forums = $delete_topics = $delete_posts = $moved_topics = array();
 
 			$db->sql_transaction('begin');
 
@@ -1873,6 +1873,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 				$topic_id = (int) $row['topic_id'];
 				$topic_data[$topic_id] = $row;
+				$topic_data[$topic_id]['visibility'] = ITEM_UNAPPROVED;
 				$topic_data[$topic_id]['replies_real'] = -1;
 				$topic_data[$topic_id]['replies'] = 0;
 				$topic_data[$topic_id]['first_post_id'] = 0;
@@ -1898,7 +1899,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				GROUP BY t.topic_id, t.post_visibility";
 			$result = $db->sql_query($sql);
 
-			$topic_firstlast_data = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$topic_id = (int) $row['topic_id'];
@@ -1921,18 +1921,23 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 					if ($row['post_visibility'] == ITEM_APPROVED)
 					{
-						$topic_firstlast_data[$topic_id]['visibility'] = ITEM_APPROVED;
+						$topic_data[$topic_id]['visibility'] = ITEM_APPROVED;
 						$topic_data[$topic_id]['first_post_id'] = $row['first_post_id'];
 						$topic_data[$topic_id]['last_post_id'] = $row['last_post_id'];
 						$topic_data[$topic_id]['replies'] = $row['total_posts'] - 1;
 					}
-					else if (!isset($topic_firstlast_data[$topic_id]['visibility']) || $topic_firstlast_data[$topic_id]['visibility'] != ITEM_APPROVED)
+					else if ($topic_data[$topic_id]['visibility'] != ITEM_APPROVED)
 					{
 						// If there is no approved post, we take the min/max of the other visibilities
 						// for the last and first post info, because it is only visible to moderators anyway
 						$topic_data[$topic_id]['first_post_id'] = (!empty($topic_data[$topic_id]['first_post_id'])) ? min($topic_data[$topic_id]['first_post_id'], $row['first_post_id']) : $row['first_post_id'];
 						$topic_data[$topic_id]['last_post_id'] = max($topic_data[$topic_id]['last_post_id'], $row['last_post_id']);
-						$topic_firstlast_data[$topic_id]['visibility'] = $row['post_visibility'];
+
+						if ($topic_data[$topic_id]['visibility'] == ITEM_UNAPPROVED)
+						{
+							// Soft delete status is stronger than unapproved.
+							$topic_data[$topic_id]['visibility'] = $row['post_visibility'];
+						}
 					}
 				}
 			}
@@ -1987,10 +1992,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 				if ($row['post_id'] == $topic_data[$topic_id]['first_post_id'])
 				{
-					if ($topic_data[$topic_id]['topic_visibility'] != $row['post_visibility'])
-					{
-						$approved_unapproved_ids[$topic_id] = $row['post_visibility'];
-					}
 					$topic_data[$topic_id]['time'] = $row['post_time'];
 					$topic_data[$topic_id]['poster'] = $row['poster_id'];
 					$topic_data[$topic_id]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
@@ -2118,22 +2119,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($sync_shadow_topics, $shadow_topic_data);
 			}
 
-			// approved becomes unapproved, and vice-versa
-			if (sizeof($approved_unapproved_ids))
-			{
-				foreach ($approved_unapproved_ids as $update_topic_id => $status)
-				{
-					// @TODO: Consider grouping by $status and only running 3 queries
-    				$sql = 'UPDATE ' . TOPICS_TABLE . '
-						SET topic_visibility = ' . $status . '
-						WHERE topic_id = ' . $update_topic_id;
-					$db->sql_query($sql);
-				}
-			}
-			unset($approved_unapproved_ids);
-
 			// These are fields that will be synchronised
-			$fieldnames = array('time', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+			$fieldnames = array('time', 'visibility', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
 
 			if ($sync_extra)
 			{

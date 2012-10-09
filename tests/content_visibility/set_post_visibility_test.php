@@ -62,7 +62,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 					array('post_id' => 3, 'post_visibility' => 2, 'post_delete_reason' => ''),
 				),
 				array(
-					array('topic_visibility' => 0, 'topic_first_post_id' => 1, 'topic_last_post_id' => 3),
+					array('topic_visibility' => 2, 'topic_first_post_id' => 1, 'topic_last_post_id' => 3),
 				),
 			),
 			array(
