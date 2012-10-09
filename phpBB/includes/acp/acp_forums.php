@@ -314,7 +314,6 @@ class acp_forums
 					$end = $start + $batch_size;
 
 					// Sync all topics in batch mode...
-					sync('topic_visibility', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, false);
 					sync('topic', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, true);
 
 					if ($end < $row2['max_topic_id'])
