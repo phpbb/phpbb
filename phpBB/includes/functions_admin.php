@@ -1383,43 +1383,52 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		case 'topic_visibility':
 
 			$db->sql_transaction('begin');
-			switch ($db->sql_layer)
+
+			$sql = 'SELECT t.topic_id, p.post_visibility
+				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+				$where_sql_and p.topic_id = t.topic_id
+					AND p.post_visibility = " . ITEM_APPROVED;
+			$result = $db->sql_query($sql);
+
+			$topics_approved = array();
+			while ($row = $db->sql_fetchrow($result))
 			{
-				case 'mysql4':
-				case 'mysqli':
-					$sql = 'UPDATE ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-						SET t.topic_visibility = p.post_visibility
-						$where_sql_and t.topic_first_post_id = p.post_id";
+				$topics_approved[] = (int) $row['topic_id'];
+			}
+			$db->sql_freeresult($result);
+
+			$sql = 'SELECT t.topic_id, p.post_visibility
+				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+				$where_sql_and " . $db->sql_in_set('t.topic_id', $topics_approved, true, true) . '
+					AND p.topic_id = t.topic_id
+					AND p.post_visibility = ' . ITEM_DELETED;
+			$result = $db->sql_query($sql);
+
+			$topics_softdeleted = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$topics_softdeleted[] = (int) $row['topic_id'];
+			}
+			$db->sql_freeresult($result);
+
+			$topics_softdeleted = array_diff($topics_softdeleted, $topics_approved);
+			$topics_not_unapproved = array_merge($topics_softdeleted, $topics_approved);
+
+			$update_ary = array(
+				ITEM_UNAPPROVED	=> (!empty($topics_not_unapproved)) ? $where_sql_and . ' ' . $db->sql_in_set('topic_id', $topics_not_unapproved, true) : '',
+				ITEM_APPROVED	=> (!empty($topics_approved)) ? ' WHERE ' . $db->sql_in_set('topic_id', $topics_approved) : '',
+				ITEM_DELETED	=> (!empty($topics_softdeleted)) ? ' WHERE ' . $db->sql_in_set('topic_id', $topics_softdeleted) : '',
+			);
+
+			foreach ($topic_visiblities as $visibility => $sql_where)
+			{
+				if ($sql_where)
+				{
+					$sql = 'UPDATE ' . TOPICS_TABLE . '
+						SET topic_visibility = ' . $visibility . '
+						' . $sql_where;
 					$db->sql_query($sql);
-				break;
-
-				default:
-					$sql = 'SELECT t.topic_id, p.post_visibility
-						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-						$where_sql_and p.post_id = t.topic_first_post_id
-							AND p.post_visibility <> t.topic_visibility";
-					$result = $db->sql_query($sql);
-
-					$topic_ids = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$topic_ids[$row['topic_id']] = $row['post_visibility'];
-					}
-					$db->sql_freeresult($result);
-
-					if (!sizeof($topic_ids))
-					{
-						return;
-					}
-
-					foreach ($topic_ids as $topic_id => $visibility)
-					{
-						$sql = 'UPDATE ' . TOPICS_TABLE . '
-							SET topic_visibility = ' . $visibility . '
-							WHERE topic_id' . $topic_id;
-						$db->sql_query($sql);
-					}
-				break;
+				}
 			}
 
 			$db->sql_transaction('commit');
