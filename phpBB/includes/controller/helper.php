@@ -110,7 +110,7 @@ class phpbb_controller_helper
 	* @param string $message The error message
 	* @return Response A Reponse instance
 	*/
-	public function error($code = 500, $message)
+	public function error($code = 500, $message = '')
 	{
 		$this->template->assign_vars(array(
 			'MESSAGE_TEXT'	=> $message,
