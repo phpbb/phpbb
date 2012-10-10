@@ -58,29 +58,29 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	*/
 	public function getController(Request $request)
 	{
-		$controller_service = $request->attributes->get('_controller');
+		$controller = $request->attributes->get('_controller');
 
-		if (!$controller_service)
+		if (!$controller)
 		{
 			throw new RuntimeException($this->user->lang['CONTROLLER_NOT_SPECIFIED']);
 		}
 
 		// Require a method name along with the service name
-		if (stripos($controller_service, ':') === false)
+		if (stripos($controller, ':') === false)
 		{
 			throw new RuntimeException($this->user->lang['CONTROLLER_METHOD_NOT_SPECIFIED']);
 		}
 
-		list($service, $method) = explode(':', $controller_service);
+		list($service, $method) = explode(':', $controller);
 
 		if (!$this->container->has($service))
 		{
 			throw new RuntimeException($this->user->lang['CONTROLLER_SERVICE_UNDEFINED']);
 		}
 
-		$controller = $this->container->get($service);
+		$controller_object = $this->container->get($service);
 
-		return array($controller, $method);
+		return array($controller_object, $method);
 	}
 
 	/**

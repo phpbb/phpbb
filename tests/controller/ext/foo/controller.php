@@ -2,30 +2,13 @@
 
 use Symfony\Component\HttpFoundation\Response;
 
-class phpbb_ext_foo_controller implements phpbb_controller_interface
+class phpbb_ext_foo_controller
 {
 	/**
-	* User object
-	* @var phpbb_user
-	*/
-	protected $user;
-
-	/**
-	* Template object
-	* @var phpbb_template
-	*/
-	protected $template;
-
-	/**
 	* Constructor
-	*
-	* @param phpbb_user $user User object
-	* @param phpbb_template $template Template object
 	*/
-	public function __construct(phpbb_user $user, phpbb_template $template)
+	public function __construct()
 	{
-		$this->user = $user;
-		$this->template = $template;
 	}
 
 	/**
