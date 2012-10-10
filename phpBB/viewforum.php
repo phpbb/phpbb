@@ -693,6 +693,7 @@ if (sizeof($topic_list))
 		// @TODO: Make this work for cases where some posts within a topic are deleted.
 		$topic_deleted = ($row['topic_visibility'] == ITEM_DELETED);
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id", true, $user->session_id) : '';
+		$u_mcp_queue = (!$u_mcp_queue && $topic_deleted) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=deleted_posts&amp;t=' . $topic_id, true, $user->session_id) : $u_mcp_queue;
 
 		// Send vars to template
 		$topic_row = array(
@@ -724,7 +725,7 @@ if (sizeof($topic_list))
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
 			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
-			'DELETED_IMG'           => ($topic_deleted) ? $user->img('icon_topic_deleted', 'POSTS_DELETED') : '',
+			'DELETED_IMG'			=> ($topic_deleted) ? $user->img('icon_topic_deleted', 'POSTS_DELETED') : '',
 
 			'S_TOPIC_TYPE'			=> $row['topic_type'],
 			'S_USER_POSTED'			=> (isset($row['topic_posted']) && $row['topic_posted']) ? true : false,
@@ -732,7 +733,7 @@ if (sizeof($topic_list))
 			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $row['forum_id'])) ? true : false,
 			'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 			'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
-			'S_TOPIC_DELETED'       => $topic_deleted,
+			'S_TOPIC_DELETED'		=> $topic_deleted,
 			'S_HAS_POLL'			=> ($row['poll_start']) ? true : false,
 			'S_POST_ANNOUNCE'		=> ($row['topic_type'] == POST_ANNOUNCE) ? true : false,
 			'S_POST_GLOBAL'			=> ($row['topic_type'] == POST_GLOBAL) ? true : false,
