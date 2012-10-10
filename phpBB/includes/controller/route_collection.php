@@ -28,10 +28,9 @@ class phpbb_controller_route_collection extends RouteCollection
 	*
 	* @param phpbb_extension_finder $finder Finder object
 	*/
-	public function __construct(phpbb_extension_finder $finder)
+	public function __construct(phpbb_extension_finder $finder, phpbb_controller_provider $provider)
 	{
 		parent::__construct();
-		$provider = new phpbb_controller_provider();
 		$this->addCollection($provider->get_paths($finder)->find());
 	}
 }

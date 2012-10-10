@@ -67,6 +67,10 @@ services:
         class: phpbb_controller_route_collection
         arguments:
             - @ext.finder
+            - @controller.provider
+
+    controller.provider:
+        class: phpbb_controller_provider
     
     cron.task_provider:
         class: phpbb_cron_task_provider
@@ -138,7 +142,7 @@ services:
     request:
         class: phpbb_request
 
-    request.context:
+    symfony_request.context:
         class: Symfony\Component\Routing\RequestContext
 
     router_listener:
