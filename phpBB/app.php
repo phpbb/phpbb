@@ -30,7 +30,7 @@ $user->setup('app');
 $context = new RequestContext();
 $context->fromRequest($symfony_request);
 
-$provider = new phpbb_controller_provider;
+$provider = new phpbb_controller_provider();
 $routes = $provider
 	->get_paths($phpbb_extension_manager->get_finder())
 	->find();
