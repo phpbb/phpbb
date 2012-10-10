@@ -190,6 +190,9 @@ if ($submit && $reason_id)
 
 		$lang_return = $user->lang['RETURN_TOPIC'];
 		$lang_success = $user->lang['POST_REPORTED_SUCCESS'];
+
+		// Notify relevant users
+		$phpbb_notifications->add_notifications('report_post', array_merge($report_data, $row, $forum_data));
 	}
 	else
 	{
@@ -216,6 +219,9 @@ if ($submit && $reason_id)
 
 		$lang_return = $user->lang['RETURN_PM'];
 		$lang_success = $user->lang['PM_REPORTED_SUCCESS'];
+
+		// Notify relevant users
+		//$phpbb_notifications->add_notifications('report_pm', $report_data);
 	}
 
 	meta_refresh(3, $redirect_url);
