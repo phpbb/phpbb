@@ -48,4 +48,24 @@ class phpbb_type_cast_helper_test extends phpbb_test_case
 
 		$this->assertEquals($expected, $data);
 	}
+
+	public function test_simple_untrimmed_recursive_set_var()
+	{
+		$data = " eviL<3\t\t";
+		$expected = " eviL&lt;3\t\t";
+
+		$this->type_cast_helper->recursive_set_var($data, '', true, false);
+
+		$this->assertEquals($expected, $data);
+	}
+
+	public function test_nested_untrimmed_recursive_set_var()
+	{
+		$data = array(" eviL<3\t\t");
+		$expected = array(" eviL&lt;3\t\t");
+
+		$this->type_cast_helper->recursive_set_var($data, array(0 => ''), true, false);
+
+		$this->assertEquals($expected, $data);
+	}
 }
