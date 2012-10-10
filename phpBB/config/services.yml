@@ -56,13 +56,6 @@ services:
             - @container
             - @ext.finder
 
-    controller.error:
-        class: phpbb_controller_error
-        arguments:
-            - @controller.helper
-            - @user
-            - @template
-
     controller.route_collection:
         class: phpbb_controller_route_collection
         arguments:

@@ -15,6 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -103,33 +104,19 @@ class phpbb_controller_helper
 	}
 
 	/**
-	* Output an error
+	* Output an error, effectively the same thing as trigger_error
 	*
-	* @param string $controller Destination controller name
-	* @param array $query Request query string parameters
-	* @param array $attributes Request attributes
+	* @param string $code The error code (e.g. 404, 500, 503, etc.)
+	* @param string $message The error message
 	* @return Response A Reponse instance
 	*/
-	public function error($type = 500, $message = '')
+	public function error($code = 500, $message)
 	{
-		$type = in_array($type, array(401, 403, 404, 500)) ? $type : 500;
-
-		return $this->forward('controller.error:error_' . $type, array(
-			'message'	=> $message,
-			'title'		=> $this->container->get('user')->lang('INFORMATION'),
+		$this->template->assign_vars(array(
+			'MESSAGE_TEXT'	=> $message,
+			'MESSAGE_TITLE'	=> $this->container->get('user')->lang('INFORMATION'),
 		));
-	}
 
-	/**
-	* Forward a request to another controller
-	*
-	* @param string $controller Destination controller name
-	* @param array $attributes Request attributes
-	* @param array $query Request query string parameters
-	* @return Response A Reponse instance
-	*/
-	public function forward($controller, array $attributes = array(), array $query = array())
-	{
-		return $this->container->get('kernel')->forward($controller, $attributes, $query);
+		return $this->render('message_body.html', $this->container->get('user')->lang('INFORMATION'), $code);
 	}
 }
