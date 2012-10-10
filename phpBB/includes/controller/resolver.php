@@ -16,6 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -31,45 +32,55 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	protected $user;
 
 	/**
+	* ContainerBuilder object
+	* @var ContainerBuilder
+	*/
+	protected $container;
+
+	/**
 	* Construct method
 	*
 	* @param phpbb_user $user User Object
+	* @param ContainerBuilder $container ContainerBuilder object
 	*/
-	public function __construct(phpbb_user $user)
+	public function __construct(phpbb_user $user, ContainerBuilder $container)
 	{
 		$this->user = $user;
+		$this->container = $container;
 	}
 
 	/**
-	* Load a controller class name, without error handling
+	* Load a controller callable
 	*
 	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
-	* @return string Controller class name
+	* @return bool|Callable Callable or false
 	* @throws RuntimeException
 	*/
 	public function getController(Request $request)
 	{
 		$controller_service = $request->attributes->get('_controller');
-		$controller_name = $request->attributes->get('_route');
 
 		if (!$controller_service)
 		{
-			throw new RuntimeException($this->user->lang['CONTROLLER_NOT_SPECIFIED'], 404);
+			throw new RuntimeException($this->user->lang['CONTROLLER_NOT_SPECIFIED']);
 		}
 
-		// Allow individual controller methods to be used as controllers
-		// Otherwise, return the service name
-		if (stripos($controller_service, ':') !== false)
+		// Require a method name along with the service name
+		if (stripos($controller_service, ':') === false)
 		{
-			list($service, $method) = explode(':', $controller_service);
-		}
-		else
-		{
-			$service = $controller_service;
-			$method = 'handle';
+			throw new RuntimeException($this->user->lang['CONTROLLER_METHOD_NOT_SPECIFIED']);
 		}
 
-		return array($service, $method);
+		list($service, $method) = explode(':', $controller_service);
+
+		if (!$this->container->has($service))
+		{
+			throw new RuntimeException($this->user->lang['CONTROLLER_SERVICE_UNDEFINED']);
+		}
+
+		$controller = $this->container->get($service);
+
+		return array($controller, $method);
 	}
 
 	/**

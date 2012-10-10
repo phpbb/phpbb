@@ -53,6 +53,8 @@ services:
         class: phpbb_controller_resolver
         arguments:
             - @user
+            - @container
+            - @ext.finder
 
     controller.error:
         class: phpbb_controller_error
@@ -114,15 +116,6 @@ services:
             - @cache.driver
             - .%core.php_ext%
             - _ext_finder
-
-    kernel:
-        class: phpbb_kernel
-        arguments:
-            - @dispatcher
-            - @controller.resolver
-            - @container
-            - @user
-            - @ext.finder
 
     processor.ext:
         class: phpbb_di_processor_ext
