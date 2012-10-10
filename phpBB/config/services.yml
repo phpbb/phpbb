@@ -142,7 +142,7 @@ services:
     request:
         class: phpbb_request
 
-    symfony_request.context:
+    request.context:
         class: Symfony\Component\Routing\RequestContext
 
     router_listener:
