@@ -62,6 +62,11 @@ services:
             - @controller.helper
             - @user
             - @template
+
+    controller.route_collection:
+        class: phpbb_controller_route_collection
+        arguments:
+            - @ext.finder
     
     cron.task_provider:
         class: phpbb_cron_task_provider
@@ -117,6 +122,12 @@ services:
             - .%core.php_ext%
             - _ext_finder
 
+    kernel:
+        class: Symfony\Component\HttpKernel\HttpKernel
+        arguments:
+            - @dispatcher
+            - @controller.resolver
+
     processor.ext:
         class: phpbb_di_processor_ext
         arguments:
@@ -126,6 +137,14 @@ services:
 
     request:
         class: phpbb_request
+
+    request.context:
+        class: Symfony\Component\Routing\RequestContext
+
+    router_listener:
+        class: Symfony\Component\HttpKernel\EventListener\RouterListener
+        arguments:
+            - @url_matcher
 
     style:
         class: phpbb_style
@@ -159,6 +178,12 @@ services:
             - @user
             - @style.resource_locator
             - @style.path_provider_ext
+
+    url_matcher:
+        class: Symfony\Component\Routing\Matcher\UrlMatcher
+        arguments:
+            - @controller.route_collection
+            - @request.context
 
     user:
         class: phpbb_user

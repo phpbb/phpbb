@@ -9,10 +9,6 @@
 
 /**
 */
-use Symfony\Component\HttpKernel\HttpKernel;
-use Symfony\Component\HttpKernel\EventListener\RouterListener;
-use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
 
 /**
 * @ignore
@@ -27,19 +23,9 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('app');
 
-$context = new RequestContext();
-$context->fromRequest($symfony_request);
+$phpbb_dispatcher->addSubscriber($phpbb_container->get('router_listener'));
 
-$provider = new phpbb_controller_provider();
-$routes = $provider
-	->get_paths($phpbb_extension_manager->get_finder())
-	->find();
-
-$matcher = new UrlMatcher($routes, $context);
-
-$phpbb_dispatcher->addSubscriber(new RouterListener($matcher));
-
-$kernel = new HttpKernel($phpbb_dispatcher, $phpbb_container->get('controller.resolver'));
+$kernel = $phpbb_container->get('kernel');
 $response = $kernel->handle($symfony_request);
 $response->send();
 $kernel->terminate($symfony_request, $response);
