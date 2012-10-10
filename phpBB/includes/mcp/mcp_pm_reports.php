@@ -34,6 +34,7 @@ class mcp_pm_reports
 	{
 		global $auth, $db, $user, $template, $cache;
 		global $config, $phpbb_root_path, $phpEx, $action;
+		global $phpbb_notifications;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
@@ -88,6 +89,9 @@ class mcp_pm_reports
 				{
 					trigger_error('NO_REPORT');
 				}
+
+				// Mark the notification as read
+				$phpbb_notifications->mark_notifications_read_by_parent('report_pm', $report_id, $user->data['user_id']);
 
 				$pm_id = $report['pm_id'];
 				$report_id = $report['report_id'];
