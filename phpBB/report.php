@@ -221,7 +221,10 @@ if ($submit && $reason_id)
 		$lang_success = $user->lang['PM_REPORTED_SUCCESS'];
 
 		// Notify relevant users
-		//$phpbb_notifications->add_notifications('report_pm', $report_data);
+		$phpbb_notifications->add_notifications('report_pm', array_merge($report_data, $row, array(
+			'from_user_id'	=> $report_data['author_id'],
+			'report_id'		=> $report_id,
+		)));
 	}
 
 	meta_refresh(3, $redirect_url);

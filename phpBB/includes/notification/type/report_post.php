@@ -35,7 +35,7 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 	*
 	* @var string
 	*/
-	protected $language_key = 'NOTIFICATION_REPORT';
+	protected $language_key = 'NOTIFICATION_REPORT_POST';
 
 	/**
 	* Permission to check for (in find_users_for_notification)

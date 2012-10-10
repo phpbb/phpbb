@@ -28,7 +28,14 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	*
 	* @var string
 	*/
-	public $email_template = 'notifications/report_post';
+	public $email_template = 'notifications/report_pm';
+
+	/**
+	* Language key used to output the text
+	*
+	* @var string
+	*/
+	protected $language_key = 'NOTIFICATION_REPORT_PM';
 
 	/**
 	* Permission to check for (in find_users_for_notification)
@@ -58,7 +65,18 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	}
 
 	/**
+	* Get the id of the parent
+	*
+	* @param array $pm The data from the pm
+	*/
+	public static function get_item_parent_id($pm)
+	{
+		return (int) $pm['report_id'];
+	}
+
+	/**
 	* Find the users who want to receive notifications
+	*  (copied from post_in_queue)
 	*
 	* @param array $post Data from the post
 	*
@@ -69,6 +87,9 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
 		), $options);
+
+		// Global
+		$post['forum_id'] = 0;
 
 		$auth_approve = $this->auth->acl_get_list(false, $this->permission, $post['forum_id']);
 
@@ -110,18 +131,11 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	*/
 	public function get_email_template_variables()
 	{
-		$board_url = generate_board_url();
-
 		return array(
-			'POST_SUBJECT'				=> htmlspecialchars_decode(censor_text($this->get_data('post_subject'))),
-			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
+			'AUTHOR_NAME'				=> htmlspecialchars_decode($user_data['username']),
+			'SUBJECT'					=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
 
-			'U_VIEW_REPORT'				=> "{$board_url}mcp.{$this->php_ext}?f={$this->get_data('forum_id')}&amp;p={$this->item_id}&amp;i=reports&amp;mode=report_details#reports",
-			'U_VIEW_POST'				=> "{$board_url}/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
-			'U_NEWEST_POST'				=> "{$board_url}/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}&view=unread#unread",
-			'U_TOPIC'					=> "{$board_url}/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
-			'U_VIEW_TOPIC'				=> "{$board_url}/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
-			'U_FORUM'					=> "{$board_url}/viewforum.{$this->php_ext}?f={$this->get_data('forum_id')}",
+			'U_VIEW_REPORT'				=> generate_board_url() . "mcp.{$this->php_ext}?r={$this->item_parent_id}&amp;i=pm_reports&amp;mode=pm_report_details",
 		);
 	}
 
@@ -132,7 +146,7 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'mcp.' . $this->php_ext, "f={$this->get_data('forum_id')}&amp;p={$this->item_id}&amp;i=reports&amp;mode=report_details#reports");
+		return append_sid($this->phpbb_root_path . 'mcp.' . $this->php_ext, "r={$this->item_parent_id}&amp;i=pm_reports&amp;mode=pm_report_details");
 	}
 
 	/**
@@ -148,14 +162,14 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 		{
 			return $this->user->lang(
 				$this->language_key,
-				censor_text($this->get_data('post_subject')),
+				censor_text($this->get_data('message_subject')),
 				$this->user->lang[$this->get_data('reason_title')]
 			);
 		}
 
 		return $this->user->lang(
 			$this->language_key,
-			censor_text($this->get_data('post_subject')),
+			censor_text($this->get_data('message_subject')),
 			$this->get_data('reason_description')
 		);
 	}
