@@ -400,6 +400,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_POST_DISAPPROVED'		=> 'Your post "%1$s" was disapproved because "%2$s".',
 	'NOTIFICATION_POST_IN_QUEUE'		=> 'A new post titled "%2$s" was posted by "%1$s" and needs approval.',
 	'NOTIFICATION_QUOTE'				=> '%1$s quoted you in the post "%2$s".',
+	'NOTIFICATION_REPORT'				=> 'A post "%1$s" was reported because "%2$s".',
 	'NOTIFICATION_TOPIC'				=> '%1$s posted a new topic "%2$s" in the forum "%3$s".',
 	'NOTIFICATION_TOPIC_APPROVED'		=> 'Your topic "%2$s" in the forum "%3$s" was approved.',
 	'NOTIFICATION_TOPIC_DISAPPROVED'	=> 'Your topic "%1$s" was disapproved because "%2$s".',
