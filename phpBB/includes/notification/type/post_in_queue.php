@@ -99,7 +99,7 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . self::$notification_option['id'] . "'
-				AND " . $this->db->sql_in_set('user_id', $auth_approve[$post['forum_id']]['m_approve']);
+				AND " . $this->db->sql_in_set('user_id', $auth_approve[$post['forum_id']][$this->permission]);
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{

@@ -299,6 +299,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TYPE_PM'								=> 'Someone sends you a private message',
 	'NOTIFICATION_TYPE_POST'							=> 'Someone replies to a topic you are subscribed to',
 	'NOTIFICATION_TYPE_QUOTE'							=> 'Someone quotes you in a post',
+	'NOTIFICATION_TYPE_REPORT'							=> 'Someone reports a post',
 	'NOTIFICATION_TYPE_TOPIC'				   			=> 'Someone creates a topic in a forum you are subscribed to',
 
 	'NOTIFY_METHOD'					=> 'Notification method',
