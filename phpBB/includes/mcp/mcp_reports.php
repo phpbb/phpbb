@@ -34,6 +34,7 @@ class mcp_reports
 	{
 		global $auth, $db, $user, $template, $cache;
 		global $config, $phpbb_root_path, $phpEx, $action;
+		global $phpbb_notifications;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
@@ -86,6 +87,9 @@ class mcp_reports
 				{
 					trigger_error('NO_REPORT');
 				}
+
+				// Mark the notification as read
+				$phpbb_notifications->mark_notifications_read('report_post', $post_id, $user->data['user_id']);
 
 				if (!$report_id && $report['report_closed'])
 				{
@@ -413,7 +417,7 @@ class mcp_reports
 
 				$base_url = $this->u_action . "&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
 				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
-				
+
 				// Now display the page
 				$template->assign_vars(array(
 					'L_EXPLAIN'				=> ($mode == 'reports') ? $user->lang['MCP_REPORTS_OPEN_EXPLAIN'] : $user->lang['MCP_REPORTS_CLOSED_EXPLAIN'],

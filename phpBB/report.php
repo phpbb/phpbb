@@ -131,7 +131,7 @@ else
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_PM'], '<a href="' . $redirect_url . '">', '</a>');
 		trigger_error($message);
 	}
-	
+
 	$reported_post_text = $report_data['message_text'];
 }
 
@@ -184,6 +184,9 @@ if ($submit && $reason_id)
 
 		$lang_return = $user->lang['RETURN_TOPIC'];
 		$lang_success = $user->lang['POST_REPORTED_SUCCESS'];
+
+		// Notify relevant users
+		$phpbb_notifications->add_notifications('report_post', array_merge($report_data, $row, $forum_data));
 	}
 	else
 	{
@@ -210,6 +213,9 @@ if ($submit && $reason_id)
 
 		$lang_return = $user->lang['RETURN_PM'];
 		$lang_success = $user->lang['PM_REPORTED_SUCCESS'];
+
+		// Notify relevant users
+		//$phpbb_notifications->add_notifications('report_pm', $report_data);
 	}
 
 	meta_refresh(3, $redirect_url);
