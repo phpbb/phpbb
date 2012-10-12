@@ -105,10 +105,15 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 	{
 		$this->user->add_lang('mcp');
 
+		$user_data = $this->notification_manager->get_user($this->get_data('reporter_id'));
+
+		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+
 		if (isset($this->user->lang[$this->get_data('reason_title')]))
 		{
 			return $this->user->lang(
 				$this->language_key,
+				$username,
 				censor_text($this->get_data('post_subject')),
 				$this->user->lang[$this->get_data('reason_title')]
 			);
@@ -116,9 +121,28 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 
 		return $this->user->lang(
 			$this->language_key,
+			$username,
 			censor_text($this->get_data('post_subject')),
 			$this->get_data('reason_description')
 		);
+	}
+
+	/**
+	* Get the user's avatar
+	*/
+	public function get_avatar()
+	{
+		return $this->_get_avatar($this->get_data('reporter_id'));
+	}
+
+	/**
+	* Users needed to query before this notification can be displayed
+	*
+	* @return array Array of user_ids
+	*/
+	public function users_to_query()
+	{
+		return array($this->data['reporter_id']);
 	}
 
 	/**
@@ -131,6 +155,7 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 	*/
 	public function create_insert_array($post)
 	{
+		$this->set_data('reporter_id', $this->user->data['user_id']);
 		$this->set_data('reason_title', strtoupper($post['reason_title']));
 		$this->set_data('reason_description', $post['reason_description']);
 
