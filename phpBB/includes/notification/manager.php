@@ -324,8 +324,6 @@ class phpbb_notification_manager
 
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
-		// todo Users should not receive notifications from multiple events from the same item (ex: for a topic reply with a quote including your username)
-		//		Probably should be handled within each type?
 		$sql = 'SELECT user_id
 			FROM ' . NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
@@ -342,6 +340,11 @@ class phpbb_notification_manager
 			return;
 		}
 
+		// Allow notifications to perform actions before creating the insert array (such as run a query to cache some data needed for all notifications)
+		$notification = $this->get_item_type_class($item_type_class_name);
+		$pre_create_data = $notification->pre_create_insert_array($data, $notify_users);
+		unset($notification);
+
 		// Go through each user so we can insert a row in the DB and then notify them by their desired means
 		foreach ($notify_users as $user => $methods)
 		{
@@ -350,7 +353,7 @@ class phpbb_notification_manager
 			$notification->user_id = (int) $user;
 
 			// Store the creation array in our new rows that will be inserted later
-			$new_rows[] = $notification->create_insert_array($data);
+			$new_rows[] = $notification->create_insert_array($data, $pre_create_data);
 
 			// Users are needed to send notifications
 			$user_ids = array_merge($user_ids, $notification->users_to_query());

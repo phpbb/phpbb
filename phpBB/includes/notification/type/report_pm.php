@@ -203,15 +203,16 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	* (The service handles insertion)
 	*
 	* @param array $post Data from submit_post
+	* @param array $pre_create_data Data from pre_create_insert_array()
 	*
 	* @return array Array of data ready to be inserted into the database
 	*/
-	public function create_insert_array($post)
+	public function create_insert_array($post, $pre_create_data = array())
 	{
 		$this->set_data('reporter_id', $this->user->data['user_id']);
 		$this->set_data('reason_title', strtoupper($post['reason_title']));
 		$this->set_data('reason_description', $post['reason_description']);
 
-		return parent::create_insert_array($post);
+		return parent::create_insert_array($post, $pre_create_data);
 	}
 }

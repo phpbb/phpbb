@@ -124,14 +124,15 @@ class phpbb_notification_type_report_pm_closed extends phpbb_notification_type_p
 	* (The service handles insertion)
 	*
 	* @param array $post Data from submit_post
+	* @param array $pre_create_data Data from pre_create_insert_array()
 	*
 	* @return array Array of data ready to be inserted into the database
 	*/
-	public function create_insert_array($post)
+	public function create_insert_array($post, $pre_create_data = array())
 	{
 		$this->set_data('closer_id', $post['closer_id']);
 
-		$data = parent::create_insert_array($post);
+		$data = parent::create_insert_array($post, $pre_create_data);
 
 		$this->time = $data['time'] = time();
 

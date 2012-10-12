@@ -41,7 +41,9 @@ interface phpbb_notification_type_interface
 
 	public function mark_unread($return);
 
-	public function create_insert_array($type_data);
+	public function pre_create_insert_array($type_data, $notify_users);
+
+	public function create_insert_array($type_data, $pre_create_data);
 
 	public function users_to_query();
 

@@ -170,15 +170,16 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 	* (The service handles insertion)
 	*
 	* @param array $post Data from submit_post
+	* @param array $pre_create_data Data from pre_create_insert_array()
 	*
 	* @return array Array of data ready to be inserted into the database
 	*/
-	public function create_insert_array($pm)
+	public function create_insert_array($pm, $pre_create_data = array())
 	{
 		$this->set_data('from_user_id', $pm['from_user_id']);
 
 		$this->set_data('message_subject', $pm['message_subject']);
 
-		return parent::create_insert_array($pm);
+		return parent::create_insert_array($pm, $pre_create_data);
 	}
 }

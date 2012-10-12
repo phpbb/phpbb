@@ -164,10 +164,11 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* (The service handles insertion)
 	*
 	* @param array $type_data Data unique to this notification type
+	* @param array $pre_create_data Data from pre_create_insert_array()
 	*
 	* @return array Array of data ready to be inserted into the database
 	*/
-	public function create_insert_array($type_data)
+	public function create_insert_array($type_data, $pre_create_data = array())
 	{
 		// Defaults
 		$this->data = array_merge(array(
@@ -255,6 +256,22 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	public function is_available()
 	{
 		return true;
+	}
+
+	/**
+	* Pre create insert array function
+	* This allows you to perform certain actions, like run a query
+	* and load data, before create_insert_array() is run. The data
+	* returned from this function will be sent to create_insert_array().
+	*
+	* @param array $type_data Data unique to this notification type
+	* @param array $notify_users Notify users list
+	* 		Formated from find_users_for_notification()
+	* @return array Whatever you want to send to create_insert_array().
+	*/
+	public function pre_create_insert_array($type_data, $notify_users)
+	{
+		return array();
 	}
 
 	/**

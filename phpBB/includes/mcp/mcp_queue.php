@@ -34,6 +34,7 @@ class mcp_queue
 	{
 		global $auth, $db, $user, $template, $cache;
 		global $config, $phpbb_root_path, $phpEx, $action;
+		global $phpbb_notifications;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
@@ -84,12 +85,18 @@ class mcp_queue
 					if (isset($topic_info[$topic_id]['topic_first_post_id']))
 					{
 						$post_id = (int) $topic_info[$topic_id]['topic_first_post_id'];
+
+						// Mark the notification as read
+						$phpbb_notifications->mark_notifications_read('topic_in_queue', $topic_id, $user->data['user_id']);
 					}
 					else
 					{
 						$topic_id = 0;
 					}
 				}
+
+				// Mark the notification as read
+				$phpbb_notifications->mark_notifications_read('post_in_queue', $post_id, $user->data['user_id']);
 
 				$post_info = get_post_data(array($post_id), 'm_approve', true);
 
