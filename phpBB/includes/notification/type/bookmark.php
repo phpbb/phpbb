@@ -107,6 +107,27 @@ class phpbb_notification_type_bookmark extends phpbb_notification_type_post
 		}
 		$this->db->sql_freeresult($result);
 
+		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
+		$update_notifications = array();
+		$sql = 'SELECT *
+			FROM ' . NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . self::get_item_type() . "'
+				AND item_parent_id = " . (int) self::get_item_parent_id($post) . '
+				AND unread = 1';
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			// Do not create a new notification
+			unset($notify_users[$row['user_id']]);
+
+			$notification = $this->notification_manager->get_item_type_class(self::get_item_type(), $row);
+			$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
+				SET ' . $this->db->sql_build_array('UPDATE', $notification->add_responders($post)) . '
+				WHERE notification_id = ' . $row['notification_id'];
+			$this->db->sql_query($sql);
+		}
+		$this->db->sql_freeresult($result);
+
 		return $notify_users;
 	}
 }
