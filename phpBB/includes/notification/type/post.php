@@ -149,7 +149,6 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 			$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
 				SET ' . $this->db->sql_build_array('UPDATE', $notification->add_responders($post)) . '
 				WHERE notification_id = ' . $row['notification_id'];
-				echo $sql;
 			$this->db->sql_query($sql);
 		}
 		$this->db->sql_freeresult($result);
