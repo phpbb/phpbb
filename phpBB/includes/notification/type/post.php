@@ -171,20 +171,36 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 	*/
 	public function get_title()
 	{
-		if ($this->get_data('post_username'))
-		{
-			$username = $this->get_data('post_username');
-		}
-		else
-		{
-			$user_data = $this->notification_manager->get_user($this->get_data('poster_id'));
+		$responders = $this->get_data('responders');
+		$usernames = array();
 
-			$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+		if (!is_array($responders))
+		{
+			$responders = array();
+		}
+
+		$responders = array_merge(array(array(
+			'poster_id'		=> $this->get_data('poster_id'),
+			'username'		=> $this->get_data('post_username'),
+		)), $responders);
+
+		foreach ($responders as $responder)
+		{
+			if ($responder['username'])
+			{
+				$usernames[] = $responder['username'];
+			}
+			else
+			{
+				$user_data = $this->notification_manager->get_user($responder['poster_id']);
+
+				$usernames[] = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+			}
 		}
 
 		return $this->user->lang(
 			$this->language_key,
-			$username,
+			implode(', ', $usernames),
 			censor_text($this->get_data('topic_title'))
 		);
 	}
@@ -226,7 +242,25 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 	*/
 	public function users_to_query()
 	{
-		return array($this->data['poster_id']);
+		/*$responders[] = array(
+			'poster_id'		=> $post['poster_id'],
+			'username'		=> (($post['poster_id'] == ANONYMOUS) ? $post['post_username'] : ''),
+		);*/
+
+		$responders = $this->get_data('responders');
+		$users = array(
+			$this->get_data('poster_id'),
+		);
+
+		if (is_array($responders))
+		{
+			foreach ($responders as $responder)
+			{
+				$users[] = $responder['poster_id'];
+			}
+		}
+
+		return $users;
 	}
 
 	/**
