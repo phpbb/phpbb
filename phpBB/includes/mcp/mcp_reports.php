@@ -448,6 +448,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 {
 	global $db, $template, $user, $config, $auth;
 	global $phpEx, $phpbb_root_path;
+	global $phpbb_notifications;
 
 	$pm_where = ($pm) ? ' AND r.post_id = 0 ' : ' AND r.pm_id = 0 ';
 	$id_column = ($pm) ? 'pm_id' : 'post_id';
@@ -633,8 +634,6 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 			}
 		}
 
-		$messenger = new messenger();
-
 		// Notify reporters
 		if (sizeof($notify_reporters))
 		{
@@ -647,30 +646,23 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 
 				$post_id = $reporter[$id_column];
 
-				$messenger->template((($pm) ? 'pm_report_' : 'report_') . $action . 'd', $reporter['user_lang']);
-
-				$messenger->to($reporter['user_email'], $reporter['username']);
-				$messenger->im($reporter['user_jabber'], $reporter['username']);
-
 				if ($pm)
 				{
-					$messenger->assign_vars(array(
-						'USERNAME'		=> htmlspecialchars_decode($reporter['username']),
-						'CLOSER_NAME'	=> htmlspecialchars_decode($user->data['username']),
-						'PM_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['message_subject'])),
-					));
+					$phpbb_notifications->add_notifications('report_pm_closed', array_merge($post_info[$post_id], array(
+						'reporter'			=> $reporter['user_id'],
+						'closer_id'			=> $user->data['user_id'],
+						'from_user_id'		=> $post_info[$post_id]['author_id'],
+					)));
+					$phpbb_notifications->delete_notifications('report_pm', $post_id);
 				}
 				else
 				{
-					$messenger->assign_vars(array(
-						'USERNAME'		=> htmlspecialchars_decode($reporter['username']),
-						'CLOSER_NAME'	=> htmlspecialchars_decode($user->data['username']),
-						'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['post_subject'])),
-						'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['topic_title'])))
-					);
+					$phpbb_notifications->add_notifications('report_post_closed', array_merge($post_info[$post_id], array(
+						'reporter'			=> $reporter['user_id'],
+						'closer_id'			=> $user->data['user_id'],
+					)));
+					$phpbb_notifications->delete_notifications('report_post', $post_id);
 				}
-
-				$messenger->send($reporter['user_notify_type']);
 			}
 		}
 
@@ -684,8 +676,6 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		}
 
 		unset($notify_reporters, $post_info, $reports);
-
-		$messenger->save_queue();
 
 		$success_msg = (sizeof($report_id_list) == 1) ? "{$pm_prefix}REPORT_" . strtoupper($action) . 'D_SUCCESS' : "{$pm_prefix}REPORTS_" . strtoupper($action) . 'D_SUCCESS';
 	}
