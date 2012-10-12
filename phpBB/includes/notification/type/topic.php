@@ -76,7 +76,7 @@ class phpbb_notification_type_topic extends phpbb_notification_type_base
 	public function find_users_for_notification($topic, $options = array())
 	{
 		$options = array_merge(array(
-			'ignore_users'		=> array(),
+			'ignore_users'			=> array(),
 		), $options);
 
 		// Let's continue to use the phpBB subscriptions system, at least for now.
@@ -208,14 +208,46 @@ class phpbb_notification_type_topic extends phpbb_notification_type_base
 	}
 
 	/**
+	* Pre create insert array function
+	* This allows you to perform certain actions, like run a query
+	* and load data, before create_insert_array() is run. The data
+	* returned from this function will be sent to create_insert_array().
+	*
+	* @param array $post Post data from submit_post
+	* @param array $notify_users Notify users list
+	* 		Formated from find_users_for_notification()
+	* @return array Whatever you want to send to create_insert_array().
+	*/
+	public function pre_create_insert_array($post, $notify_users)
+	{
+		if (!sizeof($notify_users))
+		{
+			return array();
+		}
+
+		$tracking_data = array();
+		$sql = 'SELECT user_id, mark_time FROM ' . TOPICS_TRACK_TABLE . '
+			WHERE topic_id = ' . (int) $post['topic_id'] . '
+				AND ' . $this->db->sql_in_set('user_id', array_keys($notify_users));
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$tracking_data[$row['user_id']] = $row['mark_time'];
+		}
+
+		return $tracking_data;
+	}
+
+	/**
 	* Function for preparing the data for insertion in an SQL query
 	* (The service handles insertion)
 	*
 	* @param array $post Data from submit_post
+	* @param array $pre_create_data Data from pre_create_insert_array()
 	*
 	* @return array Array of data ready to be inserted into the database
 	*/
-	public function create_insert_array($post)
+	public function create_insert_array($post, $pre_create_data = array())
 	{
 		$this->set_data('poster_id', $post['poster_id']);
 
@@ -227,6 +259,13 @@ class phpbb_notification_type_topic extends phpbb_notification_type_base
 
 		$this->time = $post['post_time'];
 
-		return parent::create_insert_array($post);
+		// Topics can be "read" before they are public (while awaiting approval).
+		// Make sure that if the user has read the topic, it's marked as read in the notification
+		if (isset($pre_create_data[$this->user_id]) && $pre_create_data[$this->user_id] >= $this->time)
+		{
+			$this->unread = false;
+		}
+
+		return parent::create_insert_array($post, $pre_create_data);
 	}
 }
