@@ -75,6 +75,17 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	}
 
 	/**
+	* Is available
+	*/
+	public function is_available()
+	{
+		$m_approve = $this->auth->acl_getf($this->permission, true);
+
+		return (!empty($m_approve));
+	}
+
+
+	/**
 	* Find the users who want to receive notifications
 	*  (copied from post_in_queue)
 	*

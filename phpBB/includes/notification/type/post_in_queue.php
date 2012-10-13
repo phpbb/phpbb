@@ -87,12 +87,15 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 			'ignore_users'		=> array(),
 		), $options);
 
-		$auth_approve = $this->auth->acl_get_list(false, $this->permission, $post['forum_id']);
+		// 0 is for global
+		$auth_approve = $this->auth->acl_get_list(false, $this->permission, array($post['forum_id'], 0));
 
 		if (empty($auth_approve))
 		{
 			return array();
 		}
+
+		$auth_approve[$post['forum_id']] = array_unique(array_merge($auth_approve[$post['forum_id']], $auth_approve[0]));
 
 		$notify_users = array();
 
