@@ -25,59 +25,66 @@ class ucp_notifications
 
 		add_form_key('ucp_notification_options');
 
-		$subscriptions = $phpbb_notifications->get_subscriptions(false, true);
-
-		// Add/remove subscriptions
-		if ($request->is_set_post('submit'))
+		switch ($mode)
 		{
-			if (!check_form_key('ucp_notification_options'))
-			{
-				trigger_error('FORM_INVALID');
-			}
+			case 'notification_options':
+				$subscriptions = $phpbb_notifications->get_subscriptions(false, true);
 
-			$notification_methods = $phpbb_notifications->get_subscription_methods();
-
-			foreach($phpbb_notifications->get_subscription_types() as $type => $data)
-			{
-				if ($request->is_set_post($type . '_notification') && !isset($subscriptions[$type]))
+				// Add/remove subscriptions
+				if ($request->is_set_post('submit'))
 				{
-					// add
-					$phpbb_notifications->add_subscription($type);
-				}
-				else if (!$request->is_set_post($type . '_notification') && isset($subscriptions[$type]))
-				{
-					// remove
-					$phpbb_notifications->delete_subscription($type);
-				}
-
-				foreach($notification_methods as $method)
-				{
-					if ($request->is_set_post($type . '_' . $method) && (!isset($subscriptions[$type]) || !in_array($method, $subscriptions[$type])))
+					if (!check_form_key('ucp_notification_options'))
 					{
-						// add
-						$phpbb_notifications->add_subscription($type, 0, $method);
+						trigger_error('FORM_INVALID');
 					}
-					else if (!$request->is_set_post($type . '_' . $method) && isset($subscriptions[$type]) && in_array($method, $subscriptions[$type]))
+
+					$notification_methods = $phpbb_notifications->get_subscription_methods();
+
+					foreach($phpbb_notifications->get_subscription_types() as $type => $data)
 					{
-						// remove
-						$phpbb_notifications->delete_subscription($type, 0, $method);
+						if ($request->is_set_post($type . '_notification') && !isset($subscriptions[$type]))
+						{
+							// add
+							$phpbb_notifications->add_subscription($type);
+						}
+						else if (!$request->is_set_post($type . '_notification') && isset($subscriptions[$type]))
+						{
+							// remove
+							$phpbb_notifications->delete_subscription($type);
+						}
+
+						foreach($notification_methods as $method)
+						{
+							if ($request->is_set_post($type . '_' . $method) && (!isset($subscriptions[$type]) || !in_array($method, $subscriptions[$type])))
+							{
+								// add
+								$phpbb_notifications->add_subscription($type, 0, $method);
+							}
+							else if (!$request->is_set_post($type . '_' . $method) && isset($subscriptions[$type]) && in_array($method, $subscriptions[$type]))
+							{
+								// remove
+								$phpbb_notifications->delete_subscription($type, 0, $method);
+							}
+						}
 					}
+
+					meta_refresh(3, $this->u_action);
+					$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+					trigger_error($message);
 				}
-			}
+				// todo include language files for extensions?
 
-			meta_refresh(3, $this->u_action);
-			$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-			trigger_error($message);
-		}
+				$this->output_notification_methods('notification_methods', $phpbb_notifications, $template, $user);
 
-		// todo include language files for extensions?
+				$this->output_notification_types('notification_types', $phpbb_notifications, $template, $user);
 
-		$this->output_notification_methods('notification_methods', $phpbb_notifications, $template, $user);
+				$this->tpl_name = 'ucp_notifications';
+				$this->page_title = 'UCP_NOTIFICATIONS';
+			break;
 
-		$this->output_notification_types('notification_types', $phpbb_notifications, $template, $user);
-
-		$this->tpl_name = 'ucp_notifications';
-		$this->page_title = 'UCP_NOTIFICATIONS';
+			default:
+				//$phpbb_notifications->load_notifications();
+			break;
 	}
 
 	/**
