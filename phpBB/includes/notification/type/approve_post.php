@@ -58,6 +58,14 @@ class phpbb_notification_type_approve_post extends phpbb_notification_type_post
 	}
 
 	/**
+	* Is available
+	*/
+	public function is_available()
+	{
+		return !$this->auth->acl_get('m_approve');
+	}
+
+	/**
 	* Find the users who want to receive notifications
 	*
 	* @param array $post Data from
