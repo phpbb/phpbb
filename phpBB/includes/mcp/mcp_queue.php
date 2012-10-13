@@ -230,14 +230,7 @@ class mcp_queue
 			case 'unapproved_topics':
 			case 'unapproved_posts':
 			case 'deleted_posts':
-				if ($mode == 'deleted_posts')
-				{
-					$m_perm = 'm_restore';
-				}
-				else
-				{
-					$m_perm = 'm_approve';
-				}
+				$m_perm = 'm_approve';
 
 				$user->add_lang(array('viewtopic', 'viewforum'));
 
@@ -472,7 +465,7 @@ function restore_post($post_id_list, $id, $mode)
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path, $request;
 
-	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_restore')))
+	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
 		trigger_error('NOT_AUTHORISED');
 	}
@@ -481,9 +474,51 @@ function restore_post($post_id_list, $id, $mode)
 	$redirect = reapply_sid($redirect);
 	$success_msg = '';
 
-	$post_info = get_post_data($post_id_list, 'm_restore');
+	$post_info = get_post_data($post_id_list, 'm_approve');
 
-	$success_msg = phpbb_content_visibility::unhide_posts_topics('restore', $post_info, $post_id_list);
+	$topic_info = array();
+
+	// Group the posts by topic_id
+	foreach ($post_info as $post_id => $post_data)
+	{
+		if ($post_data['post_visibility'] == ITEM_APPROVED)
+		{
+			continue;
+		}
+		$topic_id = (int) $post_data['topic_id'];
+
+		$topic_info[$topic_id]['posts'][] = (int) $post_id;
+		$topic_info[$topic_id]['forum_id'] = (int) $post_data['forum_id'];
+
+		if ($post_id == $post_data['topic_first_post_id'])
+		{
+			$topic_info[$topic_id]['first_post'] = true;
+		}
+
+		if ($post_id == $post_data['topic_last_post_id'])
+		{
+			$topic_info[$topic_id]['last_post'] = true;
+		}
+	}
+
+	foreach ($topic_info as $topic_id => $topic_data)
+	{
+		phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '', isset($topic_data['first_post']), isset($topic_data['last_post']));
+	}
+
+	$success_msg = '';
+	/**
+	* Currently only works for approving posts
+	if (sizeof($topic_info) > 1)
+	{
+		$success_msg = ((sizeof($post_info) == 1) ? 'TOPIC_APPROVED_SUCCESS' : 'TOPICS_APPROVED_SUCCESS';
+	}
+	else
+	*/
+	if (sizeof($post_info) >= 1)
+	{
+		$success_msg = (sizeof($post_info) == 1) ? 'POST_APPROVED_SUCCESS' : 'POSTS_APPROVED_SUCCESS';
+	}
 
 	if (!$success_msg)
 	{
@@ -491,8 +526,6 @@ function restore_post($post_id_list, $id, $mode)
 	}
 	else
 	{
-		meta_refresh(3, $redirect);
-
 		// If approving one post, also give links back to post...
 		$add_message = '';
 		if (sizeof($post_id_list) == 1 && !empty($post_url))
@@ -513,6 +546,7 @@ function restore_post($post_id_list, $id, $mode)
 			));
 		}
 
+		meta_refresh(3, $redirect);
 		trigger_error($message);
 	}
 }

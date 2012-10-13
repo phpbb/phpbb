@@ -483,7 +483,7 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 			continue;
 		}
 
-		if ($row['post_visibility'] == ITEM_UNAPPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
+		if ($row['post_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
 		{
 			// Moderators without the permission to approve post should at least not see them. ;)
 			continue;
