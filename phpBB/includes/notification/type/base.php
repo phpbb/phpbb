@@ -34,7 +34,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* Notification option data (for outputting to the user)
 	*
 	* @var bool|array False if the service should use its default data
-	* 					Array of data (including keys 'id' and 'lang')
+	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
 	public static $notification_option = false;
 

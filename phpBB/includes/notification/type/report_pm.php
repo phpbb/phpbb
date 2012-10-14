@@ -48,11 +48,12 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	* Notification option data (for outputting to the user)
 	*
 	* @var bool|array False if the service should use it's default data
-	* 					Array of data (including keys 'id' and 'lang')
+	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
 	public static $notification_option = array(
 		'id'	=> 'report',
 		'lang'	=> 'NOTIFICATION_TYPE_REPORT',
+		'group'	=> 'NOTIFICATION_GROUP_MODERATION',
 	);
 
 	/**

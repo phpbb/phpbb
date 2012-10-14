@@ -44,30 +44,33 @@ class ucp_notifications
 
 					$notification_methods = $phpbb_notifications->get_subscription_methods();
 
-					foreach($phpbb_notifications->get_subscription_types() as $type => $data)
+					foreach($phpbb_notifications->get_subscription_types() as $group => $subscription_types)
 					{
-						if ($request->is_set_post($type . '_notification') && !isset($subscriptions[$type]))
+						foreach($subscription_types as $type => $data)
 						{
-							// add
-							$phpbb_notifications->add_subscription($type);
-						}
-						else if (!$request->is_set_post($type . '_notification') && isset($subscriptions[$type]))
-						{
-							// remove
-							$phpbb_notifications->delete_subscription($type);
-						}
-
-						foreach($notification_methods as $method)
-						{
-							if ($request->is_set_post($type . '_' . $method) && (!isset($subscriptions[$type]) || !in_array($method, $subscriptions[$type])))
+							if ($request->is_set_post($type . '_notification') && !isset($subscriptions[$type]))
 							{
 								// add
-								$phpbb_notifications->add_subscription($type, 0, $method);
+								$phpbb_notifications->add_subscription($type);
 							}
-							else if (!$request->is_set_post($type . '_' . $method) && isset($subscriptions[$type]) && in_array($method, $subscriptions[$type]))
+							else if (!$request->is_set_post($type . '_notification') && isset($subscriptions[$type]))
 							{
 								// remove
-								$phpbb_notifications->delete_subscription($type, 0, $method);
+								$phpbb_notifications->delete_subscription($type);
+							}
+
+							foreach($notification_methods as $method)
+							{
+								if ($request->is_set_post($type . '_' . $method) && (!isset($subscriptions[$type]) || !in_array($method, $subscriptions[$type])))
+								{
+									// add
+									$phpbb_notifications->add_subscription($type, 0, $method);
+								}
+								else if (!$request->is_set_post($type . '_' . $method) && isset($subscriptions[$type]) && in_array($method, $subscriptions[$type]))
+								{
+									// remove
+									$phpbb_notifications->delete_subscription($type, 0, $method);
+								}
 							}
 						}
 					}
@@ -172,25 +175,33 @@ class ucp_notifications
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 		$subscriptions = $phpbb_notifications->get_subscriptions(false, true);
 
-		foreach($phpbb_notifications->get_subscription_types() as $type => $data)
+		foreach($phpbb_notifications->get_subscription_types() as $group => $subscription_types)
 		{
 			$template->assign_block_vars($block, array(
-				'TYPE'				=> $type,
-
-				'NAME'				=> (is_array($data) && isset($data['lang'])) ? $user->lang($data['lang']) : $user->lang('NOTIFICATION_TYPE_' . strtoupper($type)),
-
-				'SUBSCRIBED'		=> (isset($subscriptions[$type])) ? true : false,
+				'GROUP_NAME'	=> $user->lang($group),
 			));
 
-			foreach($notification_methods as $method)
+			foreach($subscription_types as $type => $data)
 			{
-				$template->assign_block_vars($block . '.notification_methods', array(
-					'METHOD'			=> $method,
+				$template->assign_block_vars($block, array(
+					'TYPE'				=> $type,
 
-					'NAME'				=> $user->lang('NOTIFICATION_METHOD_' . strtoupper($method)),
+					'NAME'				=> $user->lang($data['lang']),
+					'EXPLAIN'			=> (isset($user->lang[$data['lang'] . '_EXPLAIN'])) ? $user->lang($data['lang'] . '_EXPLAIN') : '',
 
-					'SUBSCRIBED'		=> (isset($subscriptions[$type]) && in_array($method, $subscriptions[$type])) ? true : false,
+					'SUBSCRIBED'		=> (isset($subscriptions[$type])) ? true : false,
 				));
+
+				foreach($notification_methods as $method)
+				{
+					$template->assign_block_vars($block . '.notification_methods', array(
+						'METHOD'			=> $method,
+
+						'NAME'				=> $user->lang('NOTIFICATION_METHOD_' . strtoupper($method)),
+
+						'SUBSCRIBED'		=> (isset($subscriptions[$type]) && in_array($method, $subscriptions[$type])) ? true : false,
+					));
+				}
 			}
 		}
 	}
