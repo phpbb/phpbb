@@ -184,12 +184,6 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 			$add_notifications[$user_id] = $notifications[$user_id];
 		}
 
-		// todo Adding notifications while editing a post can be funky.
-		// If the user has read the topic/post already, and the user is newly quoted it an edit,
-		// The notification will be stuck as unread until another post is made and the user visits
-		// the topic again because the posts will not be marked as read since the topic is already
-		// marked as read
-
 		// Add the necessary notifications
 		$this->notification_manager->add_notifications_for_users(self::get_item_type(), $post, $add_notifications);
 
