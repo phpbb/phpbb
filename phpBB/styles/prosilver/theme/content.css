@@ -702,3 +702,26 @@ dl.pmlist dd {
 	margin-left: 61% !important;
 	margin-bottom: 2px;
 }
+
+.topic-actions div.dl_links {
+	padding: 10px 0 0 10px;
+}
+
+div.dl_links {
+	display: inline-block;
+	text-transform: none;
+}
+
+.dl_links strong {
+	font-weight: bold;
+}
+
+.dl_links ul {
+	list-style-type: none;
+	margin: 0;
+	display: inline-block;
+}
+
+.dl_links li {
+	display: inline-block;
+}

@@ -463,17 +463,21 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 }
 
 /**
-* Removes comments from schema files
+* Removes "/* style" as well as "# style" comments from $input.
+*
+* @param string $input		Input string
+*
+* @return string			Input string with comments removed
 */
-function remove_comments($sql)
+function phpbb_remove_comments($input)
 {
 	// Remove /* */ comments (http://ostermiller.org/findcomment.html)
-	$sql = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $sql);
+	$input = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $input);
 
 	// Remove # style comments
-	$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
+	$input = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $input));
 
-	return $sql;
+	return $input;
 }
 
 /**
@@ -518,10 +522,12 @@ function adjust_language_keys_callback($matches)
 * @param	string	$dbms The name of the DBAL class to use
 * @param	array	$load_extensions Array of additional extensions that should be loaded
 * @param	bool	$debug If the debug constants should be enabled by default or not
+* @param	bool	$debug_test If the DEBUG_TEST constant should be added
+*					NOTE: Only for use within the testing framework
 *
 * @return	string	The output to write to the file
 */
-function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = false)
+function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = false, $debug_test = false)
 {
 	$load_extensions = implode(',', $load_extensions);
 
@@ -536,7 +542,7 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 		'dbuser'		=> $data['dbuser'],
 		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
 		'table_prefix'	=> $data['table_prefix'],
-		'acm_type'		=> 'file',
+		'acm_type'		=> 'phpbb_cache_driver_file',
 		'load_extensions'	=> $load_extensions,
 	);
 
@@ -556,6 +562,11 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 	{
 		$config_data .= "// @define('DEBUG', true);\n";
 		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
+	}
+
+	if ($debug_test)
+	{
+		$config_data .= "@define('DEBUG_TEST', true);\n";
 	}
 
 	return $config_data;

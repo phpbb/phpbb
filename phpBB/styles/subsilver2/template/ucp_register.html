@@ -53,10 +53,9 @@
 	<td class="row1"><b class="genmed">{L_LANGUAGE}: </b></td>
 	<td class="row2"><select name="lang" onchange="change_language(this.value); return false;">{S_LANG_OPTIONS}</select></td>
 </tr>
-<tr>
-	<td class="row1"><b class="genmed">{L_TIMEZONE}: </b></td>
-	<td class="row2"><select name="tz">{S_TZ_OPTIONS}</select></td>
-</tr>
+
+<!-- INCLUDE timezone_option.html -->
+
 <!-- IF .profile_fields -->
 	<tr>
 		<td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>

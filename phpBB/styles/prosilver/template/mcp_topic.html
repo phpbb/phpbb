@@ -22,15 +22,13 @@ onload_functions.push('subPanels()');
 
 <div id="minitabs">
 	<ul>
-		<li id="display-panel-tab"<!-- IF not S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->	
+		<li id="display-panel-tab"<!-- IF not S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
 			<a href="#minitabs" onclick="subPanels('display-panel'); return false;"><span>{L_DISPLAY_OPTIONS}</span></a>
 		</li>
 		<li id="split-panel-tab">
-			
 			<a href="#minitabs" onclick="subPanels('split-panel'); return false;"><span>{L_SPLIT_TOPIC}</span></a>
 		</li>
 		<li id="merge-panel-tab"<!-- IF S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			
 			<a href="#minitabs" onclick="subPanels('merge-panel'); return false;"><span>{L_MERGE_POSTS}</span></a>
 		</li>
 	</ul>
@@ -67,7 +65,7 @@ onload_functions.push('subPanels()');
 
 	<dl>
 		<dt><label for="subject">{L_SPLIT_SUBJECT}:</label></dt>
-		<dd><input type="text" name="subject" id="subject" size="45" maxlength="64" tabindex="2" value="{SPLIT_SUBJECT}" title="{L_SPLIT_SUBJECT}" class="inputbox" /></dd>
+		<dd><input type="text" name="subject" id="subject" size="45" maxlength="124" tabindex="2" value="{SPLIT_SUBJECT}" title="{L_SPLIT_SUBJECT}" class="inputbox" /></dd>
 	</dl>
 	<dl>
 		<dt><label>{L_SPLIT_FORUM}:</label></dt>
@@ -139,11 +137,15 @@ onload_functions.push('subPanels()');
 
 	<hr />
 
-	<!-- IF PAGINATION or TOTAL_POSTS -->
+	<!-- IF .pagination or TOTAL_POSTS -->
 	<ul class="linklist">
 		<li class="rightside pagination">
-			<!-- IF TOTAL_POSTS --> {TOTAL_POSTS}<!-- ENDIF -->
-			<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+			<!-- IF TOTAL_POSTS --> {TOTAL_POSTS} &bull; <!-- ENDIF -->
+			<!-- IF .pagination --> 
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE --> 
+				{PAGE_NUMBER}
+			<!-- ENDIF -->
 		</li>
 	</ul>
 	<!-- ENDIF -->

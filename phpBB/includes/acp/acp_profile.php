@@ -383,6 +383,7 @@ class acp_profile
 					$field_row = array_merge($default_values[$field_type], array(
 						'field_ident'		=> str_replace(' ', '_', utf8_clean_string(request_var('field_ident', '', true))),
 						'field_required'	=> 0,
+						'field_show_novalue'=> 0,
 						'field_hide'		=> 0,
 						'field_show_profile'=> 0,
 						'field_no_view'		=> 0,
@@ -399,7 +400,7 @@ class acp_profile
 
 				// $exclude contains the data we gather in each step
 				$exclude = array(
-					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_required', 'field_hide', 'field_show_profile', 'field_no_view'),
+					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_required', 'field_show_novalue', 'field_hide', 'field_show_profile', 'field_no_view'),
 					2	=> array('field_length', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value'),
 					3	=> array('l_lang_name', 'l_lang_explain', 'l_lang_default_value', 'l_lang_options')
 				);
@@ -424,6 +425,7 @@ class acp_profile
 				// Visibility Options...
 				$visibility_ary = array(
 					'field_required',
+					'field_show_novalue',
 					'field_show_on_reg',
 					'field_show_on_pm',
 					'field_show_on_vt',
@@ -779,6 +781,7 @@ class acp_profile
 						$template->assign_vars(array(
 							'S_STEP_ONE'		=> true,
 							'S_FIELD_REQUIRED'	=> ($cp->vars['field_required']) ? true : false,
+							'S_FIELD_SHOW_NOVALUE'=> ($cp->vars['field_show_novalue']) ? true : false,
 							'S_SHOW_ON_REG'		=> ($cp->vars['field_show_on_reg']) ? true : false,
 							'S_SHOW_ON_PM'		=> ($cp->vars['field_show_on_pm']) ? true : false,
 							'S_SHOW_ON_VT'		=> ($cp->vars['field_show_on_vt']) ? true : false,
@@ -1096,6 +1099,7 @@ class acp_profile
 			'field_default_value'	=> $cp->vars['field_default_value'],
 			'field_validation'		=> $cp->vars['field_validation'],
 			'field_required'		=> $cp->vars['field_required'],
+			'field_show_novalue'	=> $cp->vars['field_show_novalue'],
 			'field_show_on_reg'		=> $cp->vars['field_show_on_reg'],
 			'field_show_on_pm'		=> $cp->vars['field_show_on_pm'],
 			'field_show_on_vt'		=> $cp->vars['field_show_on_vt'],

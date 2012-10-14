@@ -7,9 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/request.php';
-require_once dirname(__FILE__) . '/../mock/session_testable.php';
-
 /**
 * This class exists to setup an instance of phpbb's session class for testing.
 *

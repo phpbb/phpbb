@@ -65,15 +65,6 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		}
 	}
 
-	public static function tearDownAfterClass()
-	{
-		$phpbb_root_path = self::$config['phpbb_functional_path'];
-
-		// @todo delete the fixtures from the $phpbb_root_path board
-		// Note that it might be best to find a public domain function
-		// and port it into here instead of writing it from scratch
-	}
-
 	public function setUp()
 	{
 		parent::setUp();

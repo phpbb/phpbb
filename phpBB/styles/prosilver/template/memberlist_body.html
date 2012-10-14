@@ -41,8 +41,13 @@
 				</strong>
 				</li>
 				<li class="rightside pagination">
-					{TOTAL_USERS} &bull; 
-					<!-- IF PAGINATION --><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE -->{PAGE_NUMBER}<!-- ENDIF -->
+					{TOTAL_USERS} 
+					<!-- IF .pagination --> 
+						&bull; 
+						<!-- INCLUDE pagination.html -->
+					<!-- ELSE --> 
+						{PAGE_NUMBER}
+					<!-- ENDIF -->
 				</li>
 			</ul>
 
@@ -150,7 +155,14 @@
 <hr />
 
 <ul class="linklist">
-	<li class="rightside pagination">{TOTAL_USERS} &bull; <!-- IF PAGINATION --><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE -->{PAGE_NUMBER}<!-- ENDIF --></li>
+	<li class="rightside pagination">{TOTAL_USERS} 
+		<!-- IF .pagination --> 
+			&bull; 
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE --> 
+			{PAGE_NUMBER}
+		<!-- ENDIF -->
+	</li>
 </ul>
 
 <!-- IF S_IN_SEARCH_POPUP -->

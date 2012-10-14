@@ -112,7 +112,7 @@ function update_last_username()
 */
 function user_update_name($old_name, $new_name)
 {
-	global $config, $db, $cache;
+	global $config, $db, $cache, $phpbb_dispatcher;
 
 	$update_ary = array(
 		FORUMS_TABLE			=> array('forum_last_poster_name'),
@@ -137,6 +137,17 @@ function user_update_name($old_name, $new_name)
 		set_config('newest_username', $new_name, true);
 	}
 
+	/**
+	* Update a username when it is changed
+	*
+	* @event core.update_username
+	* @var	string	old_name	The old username that is replaced
+	* @var	string	new_name	The new username
+	* @since 3.1-A1
+	*/
+	$vars = array('old_name', 'new_name');
+	extract($phpbb_dispatcher->trigger_event('core.update_username', compact($vars)));
+
 	// Because some tables/caches use username-specific data we need to purge this here.
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 }
@@ -151,6 +162,7 @@ function user_update_name($old_name, $new_name)
 function user_add($user_row, $cp_data = false)
 {
 	global $db, $user, $auth, $config, $phpbb_root_path, $phpEx;
+	global $phpbb_dispatcher;
 
 	if (empty($user_row['username']) || !isset($user_row['group_id']) || !isset($user_row['user_email']) || !isset($user_row['user_type']))
 	{
@@ -197,7 +209,6 @@ function user_add($user_row, $cp_data = false)
 		'user_lastpost_time'	=> 0,
 		'user_lastpage'			=> '',
 		'user_posts'			=> 0,
-		'user_dst'				=> (int) $config['board_dst'],
 		'user_colour'			=> '',
 		'user_occ'				=> '',
 		'user_interests'		=> '',
@@ -244,6 +255,16 @@ function user_add($user_row, $cp_data = false)
 			$sql_ary[$key] = $user_row[$key];
 		}
 	}
+
+	/**
+	* Use this event to modify the values to be inserted when a user is added
+	*
+	* @event core.user_add_modify_data
+	* @var array	sql_ary		Array of data to be inserted when a user is added
+	* @since 3.1-A1
+	*/
+	$vars = array('sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.user_add_modify_data', compact($vars)));
 
 	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 	$db->sql_query($sql);
@@ -332,7 +353,7 @@ function user_add($user_row, $cp_data = false)
 */
 function user_delete($mode, $user_id, $post_username = false)
 {
-	global $cache, $config, $db, $user, $auth;
+	global $cache, $config, $db, $user, $auth, $phpbb_dispatcher;
 	global $phpbb_root_path, $phpEx;
 
 	$sql = 'SELECT *
@@ -346,6 +367,18 @@ function user_delete($mode, $user_id, $post_username = false)
 	{
 		return false;
 	}
+
+	/**
+	* Event before a user is deleted
+	*
+	* @event core.delete_user_before
+	* @var	string	mode			Mode of deletion (retain/delete posts)
+	* @var	int		user_id			ID of the deleted user
+	* @var	mixed	post_username	Guest username that is being used or false
+	* @since 3.1-A1
+	*/
+	$vars = array('mode', 'user_id', 'post_username');
+	extract($phpbb_dispatcher->trigger_event('core.delete_user_before', compact($vars)));
 
 	// Before we begin, we will remove the reports the user issued.
 	$sql = 'SELECT r.post_id, p.topic_id
@@ -536,6 +569,18 @@ function user_delete($mode, $user_id, $post_username = false)
 
 	$db->sql_transaction('commit');
 
+	/**
+	* Event after a user is deleted
+	*
+	* @event core.delete_user_after
+	* @var	string	mode			Mode of deletion (retain/delete posts)
+	* @var	int		user_id			ID of the deleted user
+	* @var	mixed	post_username	Guest username that is being used or false
+	* @since 3.1-A1
+	*/
+	$vars = array('mode', 'user_id', 'post_username');
+	extract($phpbb_dispatcher->trigger_event('core.delete_user_after', compact($vars)));
+
 	// Reset newest user info if appropriate
 	if ($config['newest_user_id'] == $user_id)
 	{
@@ -677,8 +722,10 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			if (sizeof($ban_other) == 3 && ((int)$ban_other[0] < 9999) &&
 				(strlen($ban_other[0]) == 4) && (strlen($ban_other[1]) == 2) && (strlen($ban_other[2]) == 2))
 			{
-				$time_offset = (isset($user->timezone) && isset($user->dst)) ? (int) $user->timezone + (int) $user->dst : 0;
-				$ban_end = max($current_time, gmmktime(0, 0, 0, (int)$ban_other[1], (int)$ban_other[2], (int)$ban_other[0]) - $time_offset);
+				$ban_end = max($current_time, $user->create_datetime()
+					->setDate((int) $ban_other[0], (int) $ban_other[1], (int) $ban_other[2])
+					->setTime(0, 0, 0)
+					->getTimestamp() + $user->timezone->getOffset(new DateTime('UTC')));
 			}
 			else
 			{
@@ -1247,10 +1294,21 @@ function validate_data($data, $val_ary)
 			$function = array_shift($validate);
 			array_unshift($validate, $data[$var]);
 
-			if ($result = call_user_func_array('validate_' . $function, $validate))
+			if (function_exists('phpbb_validate_' . $function))
 			{
-				// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
-				$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				if ($result = call_user_func_array('phpbb_validate_' . $function, $validate))
+				{
+					// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
+					$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				}
+			}
+			else
+			{
+				if ($result = call_user_func_array('validate_' . $function, $validate))
+				{
+					// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
+					$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				}
 			}
 		}
 	}
@@ -1393,6 +1451,22 @@ function validate_language_iso_name($lang_iso)
 	$db->sql_freeresult($result);
 
 	return ($lang_id) ? false : 'WRONG_DATA';
+}
+
+/**
+* Validate Timezone Name
+*
+* Tests whether a timezone name is valid
+*
+* @param string $timezone	The timezone string to test
+*
+* @return bool|string		Either false if validation succeeded or
+*							a string which will be used as the error message
+*							(with the variable name appended)
+*/
+function phpbb_validate_timezone($timezone)
+{
+	return (in_array($timezone, phpbb_get_timezone_identifiers($timezone))) ? false : 'TIMEZONE_INVALID';
 }
 
 /**
@@ -2731,7 +2805,7 @@ function avatar_remove_db($avatar_name)
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db, $phpbb_root_path, $phpEx;
+	global $db, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	if (!$group_name)
 	{
@@ -2789,6 +2863,17 @@ function group_delete($group_id, $group_name = false)
 	$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
 		WHERE group_id = $group_id";
 	$db->sql_query($sql);
+
+	/**
+	* Event after a group is deleted
+	*
+	* @event core.delete_group_after
+	* @var	int		group_id	ID of the deleted group
+	* @var	string	group_name	Name of the deleted group
+	* @since 3.1-A1
+	*/
+	$vars = array('group_id', 'group_name');
+	extract($phpbb_dispatcher->trigger_event('core.delete_group_after', compact($vars)));
 
 	// Re-cache moderators
 	if (!function_exists('cache_moderators'))
@@ -2912,7 +2997,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 */
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
-	global $db, $auth, $config;
+	global $db, $auth, $config, $phpbb_dispatcher;
 
 	if ($config['coppa_enable'])
 	{
@@ -3010,6 +3095,19 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 		}
 	}
 	unset($special_group_data);
+
+	/**
+	* Event before users are removed from a group
+	*
+	* @event core.group_delete_user_before
+	* @var	int		group_id	ID of the group from which users are deleted
+	* @var	string	group_name	Name of the group
+	* @var	array	user_id_ary		IDs of the users which are removed
+	* @var	array	username_ary	names of the users which are removed
+	* @since 3.1-A1
+	*/
+	$vars = array('group_id', 'group_name', 'user_id_ary', 'username_ary');
+	extract($phpbb_dispatcher->trigger_event('core.group_delete_user_before', compact($vars)));
 
 	$sql = 'DELETE FROM ' . USER_GROUP_TABLE . "
 		WHERE group_id = $group_id
@@ -3328,7 +3426,7 @@ function group_validate_groupname($group_id, $group_name)
 */
 function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {
-	global $cache, $db;
+	global $cache, $db, $phpbb_dispatcher;
 
 	if (empty($user_id_ary))
 	{
@@ -3423,6 +3521,20 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 			set_config('newest_user_colour', $sql_ary['user_colour'], true);
 		}
 	}
+
+	/**
+	* Event when the default group is set for an array of users
+	*
+	* @event core.user_set_default_group
+	* @var	int		group_id			ID of the group
+	* @var	array	user_id_ary			IDs of the users
+	* @var	array	group_attributes	Group attributes which were changed
+	* @var	array	update_listing		Update the list of moderators and foes
+	* @var	array	sql_ary				User attributes which were changed
+	* @since 3.1-A1
+	*/
+	$vars = array('group_id', 'user_id_ary', 'group_attributes', 'update_listing', 'sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.user_set_default_group', compact($vars)));
 
 	if ($update_listing)
 	{

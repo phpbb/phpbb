@@ -159,7 +159,11 @@
 
 	<ul class="linklist">
 		<li class="leftside pagination">
-			<!-- IF PAGINATION --><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span><!-- ELSE -->{S_ON_PAGE}<!-- ENDIF -->
+			<!-- IF .pagination --> 
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE --> 
+				{S_ON_PAGE}
+			<!-- ENDIF -->
 		</li>
 	</ul>
 

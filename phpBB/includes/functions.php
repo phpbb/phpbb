@@ -1069,32 +1069,209 @@ function style_select($default = '', $all = false)
 }
 
 /**
+* Format the timezone offset with hours and minutes
+*
+* @param	int		$tz_offset	Timezone offset in seconds
+* @return	string		Normalized offset string:	-7200 => -02:00
+*													16200 => +04:30
+*/
+function phpbb_format_timezone_offset($tz_offset)
+{
+	$sign = ($tz_offset < 0) ? '-' : '+';
+	$time_offset = abs($tz_offset);
+
+	$offset_seconds	= $time_offset % 3600;
+	$offset_minutes	= $offset_seconds / 60;
+	$offset_hours	= ($time_offset - $offset_seconds) / 3600;
+
+	$offset_string	= sprintf("%s%02d:%02d", $sign, $offset_hours, $offset_minutes);
+	return $offset_string;
+}
+
+/**
+* Compares two time zone labels.
+* Arranges them in increasing order by timezone offset.
+* Places UTC before other timezones in the same offset.
+*/
+function phpbb_tz_select_compare($a, $b)
+{
+	$a_sign = $a[3];
+	$b_sign = $b[3];
+	if ($a_sign != $b_sign)
+	{
+		return $a_sign == '-' ? -1 : 1;
+	}
+
+	$a_offset = substr($a, 4, 5);
+	$b_offset = substr($b, 4, 5);
+	if ($a_offset == $b_offset)
+	{
+		$a_name = substr($a, 12);
+		$b_name = substr($b, 12);
+		if ($a_name == $b_name)
+		{
+			return 0;
+		}
+		else if ($a_name == 'UTC')
+		{
+			return -1;
+		}
+		else if ($b_name == 'UTC')
+		{
+			return 1;
+		}
+		else
+		{
+			return $a_name < $b_name ? -1 : 1;
+		}
+	}
+	else
+	{
+		if ($a_sign == '-')
+		{
+			return $a_offset > $b_offset ? -1 : 1;
+		}
+		else
+		{
+			return $a_offset < $b_offset ? -1 : 1;
+		}
+	}
+}
+
+/**
+* Return list of timezone identifiers
+* We also add the selected timezone if we can create an object with it.
+* DateTimeZone::listIdentifiers seems to not add all identifiers to the list,
+* because some are only kept for backward compatible reasons. If the user has
+* a deprecated value, we add it here, so it can still be kept. Once the user
+* changed his value, there is no way back to deprecated values.
+*
+* @param	string		$selected_timezone		Additional timezone that shall
+*												be added to the list of identiers
+* @return		array		DateTimeZone::listIdentifiers and additional
+*							selected_timezone if it is a valid timezone.
+*/
+function phpbb_get_timezone_identifiers($selected_timezone)
+{
+	$timezones = DateTimeZone::listIdentifiers();
+
+	if (!in_array($selected_timezone, $timezones))
+	{
+		try
+		{
+			// Add valid timezones that are currently selected but not returned
+			// by DateTimeZone::listIdentifiers
+			$validate_timezone = new DateTimeZone($selected_timezone);
+			$timezones[] = $selected_timezone;
+		}
+		catch (Exception $e)
+		{
+		}
+	}
+
+	return $timezones;
+}
+
+/**
 * Pick a timezone
+*
+* @param	string		$default			A timezone to select
+* @param	boolean		$truncate			Shall we truncate the options text
+*
+* @return		string		Returns the options for timezone selector only
+*
+* @deprecated
 */
 function tz_select($default = '', $truncate = false)
 {
 	global $user;
 
-	$tz_select = '';
-	foreach ($user->lang['tz_zones'] as $offset => $zone)
+	$timezone_select = phpbb_timezone_select($user, $default, $truncate);
+	return $timezone_select['tz_select'];
+}
+
+/**
+* Options to pick a timezone and date/time
+*
+* @param	phpbb_user	$user				Object of the current user
+* @param	string		$default			A timezone to select
+* @param	boolean		$truncate			Shall we truncate the options text
+*
+* @return		array		Returns an array, also containing the options for the time selector.
+*/
+function phpbb_timezone_select($user, $default = '', $truncate = false)
+{
+	static $timezones;
+
+	$default_offset = '';
+	if (!isset($timezones))
 	{
-		if ($truncate)
+		$unsorted_timezones = phpbb_get_timezone_identifiers($default);
+
+		$timezones = array();
+		foreach ($unsorted_timezones as $timezone)
 		{
-			$zone_trunc = truncate_string($zone, 50, 255, false, '...');
+			$tz = new DateTimeZone($timezone);
+			$dt = new phpbb_datetime($user, 'now', $tz);
+			$offset = $dt->getOffset();
+			$current_time = $dt->format($user->lang['DATETIME_FORMAT'], true);
+			$offset_string = phpbb_format_timezone_offset($offset);
+			$timezones['GMT' . $offset_string . ' - ' . $timezone] = array(
+				'tz'		=> $timezone,
+				'offest'	=> 'GMT' . $offset_string,
+				'current'	=> $current_time,
+			);
+			if ($timezone === $default)
+			{
+				$default_offset = 'GMT' . $offset_string;
+			}
+		}
+		unset($unsorted_timezones);
+
+		uksort($timezones, 'phpbb_tz_select_compare');
+	}
+
+	$tz_select = $tz_dates = $opt_group = '';
+
+	foreach ($timezones as $timezone)
+	{
+		if ($opt_group != $timezone['offest'])
+		{
+			$tz_select .= ($opt_group) ? '</optgroup>' : '';
+			$tz_select .= '<optgroup label="' . $timezone['offest'] . ' - ' . $timezone['current'] . '">';
+			$opt_group = $timezone['offest'];
+
+			$selected = ($default_offset == $timezone['offest']) ? ' selected="selected"' : '';
+			$tz_dates .= '<option value="' . $timezone['offest'] . ' - ' . $timezone['current'] . '"' . $selected . '>' . $timezone['offest'] . ' - ' . $timezone['current'] . '</option>';
+		}
+
+		if (isset($user->lang['timezones'][$timezone['tz']]))
+		{
+			$title = $label = $user->lang['timezones'][$timezone['tz']];
 		}
 		else
 		{
-			$zone_trunc = $zone;
+			// No label, we'll figure one out
+			$bits = explode('/', str_replace('_', ' ', $timezone['tz']));
+
+			$label = implode(' - ', $bits);
+			$title = $timezone['offest'] . ' - ' . $label;
 		}
 
-		if (is_numeric($offset))
+		if ($truncate)
 		{
-			$selected = ($offset == $default) ? ' selected="selected"' : '';
-			$tz_select .= '<option title="' . $zone . '" value="' . $offset . '"' . $selected . '>' . $zone_trunc . '</option>';
+			$label = truncate_string($label, 50, 255, false, '...');
 		}
-	}
 
-	return $tz_select;
+		$selected = ($timezone['tz'] === $default) ? ' selected="selected"' : '';
+		$tz_select .= '<option title="' . $title . '" value="' . $timezone['tz'] . '"' . $selected . '>' . $label . '</option>';
+	}
+	$tz_select .= '</optgroup>';
+
+	return array(
+		'tz_select'		=> $tz_select,
+		'tz_dates'		=> $tz_dates,
+	);
 }
 
 // Functions handling topic/post tracking/marking
@@ -1881,105 +2058,152 @@ function tracking_unserialize($string, $max_depth = 3)
 // Pagination functions
 
 /**
-* Pagination routine, generates page number sequence
-* tpl_prefix is for using different pagination blocks at one page
+* Generate template rendered pagination
+* Allows full control of rendering of pagination with the template
+*
+* @param object $template the template object
+* @param string $base_url is url prepended to all links generated within the function
+* @param string $block_var_name is the name assigned to the pagination data block within the template (example: <!-- BEGIN pagination -->)
+* @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
+* @param int $num_items the total number of items, posts, etc., used to determine the number of pages to produce
+* @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
+* @param int $start_item the item which should be considered currently active, used to determine the page we're on
+* @param bool $reverse_count determines whether we weight display of the list towards the start (false) or end (true) of the list
+* @param bool $ignore_on_page decides whether we enable an active (unlinked) item, used primarily for embedded lists
+* @return null
 */
-function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = false, $tpl_prefix = '')
+function phpbb_generate_template_pagination($template, $base_url, $block_var_name, $start_name, $num_items, $per_page, $start_item = 1, $reverse_count = false, $ignore_on_page = false)
 {
-	global $template, $user;
-
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
-
-	$separator = '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
 	$total_pages = ceil($num_items / $per_page);
 
 	if ($total_pages == 1 || !$num_items)
 	{
-		return false;
+		return;
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
 	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
 
-	$page_string = ($on_page == 1) ? '<strong>1</strong>' : '<a href="' . $base_url . '">1</a>';
-
-	if ($total_pages > 5)
+	if ($reverse_count)
 	{
-		$start_cnt = min(max(1, $on_page - 4), $total_pages - 5);
-		$end_cnt = max(min($total_pages, $on_page + 4), 6);
-
-		$page_string .= ($start_cnt > 1) ? '<span class="page-dots"> ... </span>' : $separator;
-
-		for ($i = $start_cnt + 1; $i < $end_cnt; $i++)
-		{
-			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
-			if ($i < $end_cnt - 1)
-			{
-				$page_string .= $separator;
-			}
-		}
-
-		$page_string .= ($end_cnt < $total_pages) ? '<span class="page-dots"> ... </span>' : $separator;
+		$start_page = ($total_pages > 5) ? $total_pages - 4 : 1;
+		$end_page = $total_pages;
 	}
 	else
 	{
-		$page_string .= $separator;
-
-		for ($i = 2; $i < $total_pages; $i++)
-		{
-			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
-			if ($i < $total_pages)
-			{
-				$page_string .= $separator;
-			}
-		}
+		// What we're doing here is calculating what the "start" and "end" pages should be. We
+		// do this by assuming pagination is "centered" around the currently active page with
+		// the three previous and three next page links displayed. Anything more than that and
+		// we display the ellipsis, likewise anything less.
+		//
+		// $start_page is the page at which we start creating the list. When we have five or less
+		// pages we start at page 1 since there will be no ellipsis displayed. Anymore than that
+		// and we calculate the start based on the active page. This is the min/max calculation.
+		// First (max) would we end up starting on a page less than 1? Next (min) would we end
+		// up starting so close to the end that we'd not display our minimum number of pages.
+		//
+		// $end_page is the last page in the list to display. Like $start_page we use a min/max to
+		// determine this number. Again at most five pages? Then just display them all. More than
+		// five and we first (min) determine whether we'd end up listing more pages than exist.
+		// We then (max) ensure we're displaying the minimum number of pages.
+		$start_page = ($total_pages > 5) ? min(max(1, $on_page - 3), $total_pages - 4) : 1;
+		$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
 	}
 
-	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>';
-
-	if ($add_prevnext_text)
+	if ($on_page != $total_pages)
 	{
-		if ($on_page != 1)
-		{
-			$page_string = '<a href="' . $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
-		}
-
-		if ($on_page != $total_pages)
-		{
-			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . "{$url_delim}start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
-		}
+		$template->assign_block_vars($block_var_name, array(
+			'PAGE_NUMBER'	=> '',
+			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page),
+			'S_IS_CURRENT'	=> false,
+			'S_IS_PREV'		=> false,
+			'S_IS_NEXT'		=> true,
+			'S_IS_ELLIPSIS'	=> false,
+		));
 	}
 
-	$template->assign_vars(array(
-		$tpl_prefix . 'BASE_URL'		=> $base_url,
-		'A_' . $tpl_prefix . 'BASE_URL'	=> addslashes($base_url),
-		$tpl_prefix . 'PER_PAGE'		=> $per_page,
+	// This do...while exists purely to negate the need for start and end assign_block_vars, i.e.
+	// to display the first and last page in the list plus any ellipsis. We use this loop to jump
+	// around a little within the list depending on where we're starting (and ending).
+	$at_page = 1;
+	do
+	{
+		$page_url = $base_url . (($at_page == 1) ? '' : $url_delim . $start_name . '=' . (($at_page - 1) * $per_page));
 
-		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
-		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . "{$url_delim}start=" . ($on_page * $per_page),
-		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
-		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
-	));
+		// We decide whether to display the ellipsis during the loop. The ellipsis is always
+		// displayed as either the second or penultimate item in the list. So are we at either
+		// of those points and of course do we even need to display it, i.e. is the list starting
+		// on at least page 3 and ending three pages before the final item.
+		$template->assign_block_vars($block_var_name, array(
+			'PAGE_NUMBER'	=> $at_page,
+			'PAGE_URL'		=> $page_url,
+			'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page),
+			'S_IS_NEXT'		=> false,
+			'S_IS_PREV'		=> false,
+			'S_IS_ELLIPSIS'	=> ($at_page == 2 && $start_page > 2) || ($at_page == $total_pages - 1 && $end_page < $total_pages - 1),
+		));
 
-	return $page_string;
+		// We may need to jump around in the list depending on whether we have or need to display
+		// the ellipsis. Are we on page 2 and are we more than one page away from the start
+		// of the list? Yes? Then we jump to the start of the list. Likewise are we at the end of
+		// the list and are there more than two pages left in total? Yes? Then jump to the penultimate
+		// page (so we can display the ellipsis next pass). Else, increment the counter and keep
+		// going
+		if ($at_page == 2 && $at_page < $start_page - 1)
+		{
+			$at_page = $start_page;
+		}
+		else if ($at_page == $end_page && $end_page < $total_pages - 1)
+		{
+			$at_page = $total_pages - 1;
+		}
+		else
+		{
+			$at_page++;
+		}
+	}
+	while ($at_page <= $total_pages);
+
+	if ($on_page != 1)
+	{
+		$template->assign_block_vars($block_var_name, array(
+			'PAGE_NUMBER'	=> '',
+			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page),
+			'S_IS_CURRENT'	=> false,
+			'S_IS_PREV'		=> true,
+			'S_IS_NEXT'		=> false,
+			'S_IS_ELLIPSIS'	=> false,
+		));
+	}
 }
 
 /**
-* Return current page (pagination)
+* Return current page
+* This function also sets certain specific template variables
+*
+* @param object $template the template object
+* @param object $user the user object
+* @param string $base_url the base url used to call this page, used by Javascript for popup jump to page
+* @param int $num_items the total number of items, posts, topics, etc.
+* @param int $per_page the number of items, posts, etc. per page
+* @param int $start the item which should be considered currently active, used to determine the page we're on
+* @return null
 */
-function on_page($num_items, $per_page, $start)
+function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $start)
 {
-	global $template, $user;
-
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
 
 	$on_page = floor($start / $per_page) + 1;
 
 	$template->assign_vars(array(
-		'ON_PAGE'		=> $on_page)
-	);
+		'PER_PAGE'		=> $per_page,
+		'ON_PAGE'		=> $on_page,
+
+		'A_BASE_URL'	=> addslashes($base_url),
+	));
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
 }
@@ -2007,6 +2231,7 @@ function on_page($num_items, $per_page, $start)
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
+	global $phpbb_dispatcher;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -2014,6 +2239,39 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
+	$append_sid_overwrite = false;
+
+	/**
+	* This event can either supplement or override the append_sid() function
+	*
+	* To override this function, the event must set $append_sid_overwrite to
+	* the new URL value, which will be returned following the event
+	*
+	* @event core.append_sid
+	* @var	string		url						The url the session id needs
+	*											to be appended to (can have
+	*											params)
+	* @var	mixed		params					String or array of additional
+	*											url parameters
+	* @var	bool		is_amp					Is url using &amp; (true) or
+	*											& (false)
+	* @var	bool|string	session_id				Possibility to use a custom
+	*											session id (string) instead of
+	*											the global one (false)
+	* @var	bool|string	append_sid_overwrite	Overwrite function (string
+	*											URL) or not (false)
+	* @since 3.1-A1
+	*/
+	$vars = array('url', 'params', 'is_amp', 'session_id', 'append_sid_overwrite');
+	extract($phpbb_dispatcher->trigger_event('core.append_sid', compact($vars)));
+
+	if ($append_sid_overwrite)
+	{
+		return $append_sid_overwrite;
+	}
+
+	// The following hook remains for backwards compatibility, though use of
+	// the event above is preferred.
 	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropriately.
 	// They could mimic most of what is within this function
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
@@ -2597,7 +2855,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 		$diff = time() - $creation_time;
 
 		// If creation_time and the time() now is zero we can assume it was not a human doing this (the check for if ($diff)...
-		if ($diff && ($diff <= $timespan || $timespan === -1))
+		if (defined('DEBUG_TEST') || $diff && ($diff <= $timespan || $timespan === -1))
 		{
 			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
 			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
@@ -2786,11 +3044,11 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				trigger_error('NO_AUTH_ADMIN');
 			}
 
-			$password	= request_var('password_' . $credential, '', true);
+			$password	= $request->untrimmed_variable('password_' . $credential, '', true);
 		}
 		else
 		{
-			$password	= request_var('password', '', true);
+			$password	= $request->untrimmed_variable('password', '', true);
 		}
 
 		$username	= request_var('username', '', true);
@@ -3119,7 +3377,7 @@ function parse_cfg_file($filename, $lines = false)
 
 		$parsed_items[$key] = $value;
 	}
-	
+
 	if (isset($parsed_items['parent']) && isset($parsed_items['name']) && $parsed_items['parent'] == $parsed_items['name'])
 	{
 		unset($parsed_items['parent']);
@@ -3889,7 +4147,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '	</div>';
 			echo '	</div>';
 			echo '	<div id="page-footer">';
-			echo '		Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group';
+			echo '		Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group';
 			echo '	</div>';
 			echo '</div>';
 			echo '</body>';
@@ -4529,6 +4787,31 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 	define('HEADER_INC', true);
 
+	// A listener can set this variable to `true` when it overrides this function
+	$page_header_override = false;
+
+	/**
+	* Execute code and/or overwrite page_header()
+	*
+	* @event core.page_header
+	* @var	string	page_title			Page title
+	* @var	bool	display_online_list		Do we display online users list
+	* @var	string	item				Restrict online users to a certain
+	*									session item, e.g. forum for
+	*									session_forum_id
+	* @var	int		item_id				Restrict online users to item id
+	* @var	bool	page_header_override	Shall we return instead of running
+	*										the rest of page_header()
+	* @since 3.1-A1
+	*/
+	$vars = array('page_title', 'display_online_list', 'item_id', 'item', 'page_header_override');
+	extract($phpbb_dispatcher->trigger_event('core.page_header', compact($vars)));
+
+	if ($page_header_override)
+	{
+		return;
+	}
+
 	// gzip_compression
 	if ($config['gzip_compress'])
 	{
@@ -4654,9 +4937,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	$board_url = generate_board_url() . '/';
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
 
-	// Which timezone?
-	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
-
 	// Send a proper content-language to the output
 	$user_lang = $user->lang['USER_LANG'];
 	if (strpos($user_lang, '-x-') !== false)
@@ -4677,6 +4957,14 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 			$url_param = explode('=', $url_param, 2);
 			$s_search_hidden_fields[$url_param[0]] = $url_param[1];
 		}
+	}
+
+	$dt = new phpbb_datetime($user, 'now', $user->timezone);
+	$timezone_offset = 'GMT' . phpbb_format_timezone_offset($dt->getOffset());
+	$timezone_name = $user->timezone->getName();
+	if (isset($user->lang['timezones'][$timezone_name]))
+	{
+		$timezone_name = $user->lang['timezones'][$timezone_name];
 	}
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
@@ -4706,6 +4994,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> $user->lang['FORUM_INDEX'],
+		'L_SITE_HOME'		=> ($config['site_home_text'] !== '') ? $config['site_home_text'] : $user->lang['HOME'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
@@ -4717,6 +5006,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
 		'U_SEARCH'				=> append_sid("{$phpbb_root_path}search.$phpEx"),
+		'U_SITE_HOME'			=> $config['site_home_url'],
 		'U_REGISTER'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
 		'U_PROFILE'				=> append_sid("{$phpbb_root_path}ucp.$phpEx"),
 		'U_MODCP'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", false, true, $user->session_id),
@@ -4746,7 +5036,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
 		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_TIMEZONE'			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
+		'S_TIMEZONE'			=> sprintf($user->lang['ALL_TIMES'], $timezone_offset, $timezone_name),
 		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
 		'S_DISPLAY_SEARCH'		=> (!$config['load_search']) ? 0 : (isset($auth) ? ($auth->acl_get('u_search') && $auth->acl_getf_global('f_search')) : 1),
 		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && !empty($user->data['is_registered']) && ($auth->acl_get('u_readpm') || $auth->acl_get('u_sendpm'))) ? true : false,
@@ -4772,9 +5062,9 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'T_ASSETS_VERSION'		=> $config['assets_version'],
 		'T_ASSETS_PATH'			=> "{$web_path}assets",
-		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/theme',
-		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
-		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
+		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme',
+		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
+		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
 		'T_SMILIES_PATH'		=> "{$web_path}{$config['smilies_path']}/",
 		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
@@ -4782,16 +5072,15 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_ICONS_PATH'			=> "{$web_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
-		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version'],
-		'T_STYLESHEET_NAME'		=> $user->theme['style_name'],
+		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
+		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version'],
 		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js?assets_version=" . $config['assets_version'],
 		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
 
-		'T_THEME_NAME'			=> rawurlencode($user->theme['style_path']),
+		'T_THEME_NAME'			=> rawurlencode($user->style['style_path']),
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
-		'T_TEMPLATE_NAME'		=> $user->theme['style_path'],
-		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->theme['style_parent_tree']) && $user->theme['style_parent_tree']) ? $user->theme['style_parent_tree'] : $user->theme['style_path']),
+		'T_TEMPLATE_NAME'		=> $user->style['style_path'],
+		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->style['style_parent_tree']) && $user->style['style_parent_tree']) ? $user->style['style_parent_tree'] : $user->style['style_path']),
 		'T_IMAGES'				=> 'images',
 		'T_SMILIES'				=> $config['smilies_path'],
 		'T_AVATAR'				=> $config['avatar_path'],
@@ -4804,9 +5093,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
 	));
-
-	$vars = array('page_title', 'display_online_list', 'item_id', 'item');
-	extract($phpbb_dispatcher->trigger_event('core.page_header', compact($vars)));
 
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
@@ -4830,7 +5116,27 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 function page_footer($run_cron = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
-	global $request;
+	global $request, $phpbb_dispatcher;
+
+	// A listener can set this variable to `true` when it overrides this function
+	$page_footer_override = false;
+
+	/**
+	* Execute code and/or overwrite page_footer()
+	*
+	* @event core.page_footer
+	* @var	bool	run_cron			Shall we run cron tasks
+	* @var	bool	page_footer_override	Shall we return instead of running
+	*										the rest of page_footer()
+	* @since 3.1-A1
+	*/
+	$vars = array('run_cron', 'page_footer_override');
+	extract($phpbb_dispatcher->trigger_event('core.page_footer', compact($vars)));
+
+	if ($page_footer_override)
+	{
+		return;
+	}
 
 	// Output page creation time
 	if (defined('DEBUG'))
@@ -4864,7 +5170,7 @@ function page_footer($run_cron = true)
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
-		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
+		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
 
 		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", false, true, $user->session_id) : '')
 	);
@@ -4915,6 +5221,15 @@ function page_footer($run_cron = true)
 function garbage_collection()
 {
 	global $cache, $db;
+	global $phpbb_dispatcher;
+
+	/**
+	* Unload some objects, to free some memory, before we finish our task
+	*
+	* @event core.garbage_collection
+	* @since 3.1-A1
+	*/
+	$phpbb_dispatcher->dispatch('core.garbage_collection');
 
 	// Unload cache, must be done before the DB connection if closed
 	if (!empty($cache))

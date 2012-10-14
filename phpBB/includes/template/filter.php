@@ -247,7 +247,7 @@ class phpbb_template_filter extends php_user_filter
 
 		*/
 
-		$data = preg_replace('~(?<!^)(<\?php(?:(?<!\?>).)+(?<!/\*\*/)\?>)$~m', "$1\n", $data);
+		$data = preg_replace('~(?<!^)(<\?php.+(?<!/\*\*/)\?>)$~m', "$1\n", $data);
 		$data = str_replace('/**/?>', "?>\n", $data);
 		$data = str_replace('?><?php', '', $data);
 		return $data;
@@ -1022,12 +1022,12 @@ class phpbb_template_filter extends php_user_filter
 		if (substr($filename, 0, strlen($this->phpbb_root_path)) != $this->phpbb_root_path)
 		{
 			// Absolute path, include as is
-			return ' $_template->_js_include(\'' . addslashes($filename) . '\', false); ';
+			return ' $_template->_js_include(\'' . addslashes($filename) . '\', false, false); ';
 		}
 
 		// Relative path, remove root path from it
 		$filename = substr($filename, strlen($this->phpbb_root_path));
-		return ' global $phpbb_root_path; $_template->_js_include($phpbb_root_path . \'' . addslashes($filename) . '\', false); ';
+		return ' $_template->_js_include(\'' . addslashes($filename) . '\', false, true); ';
 	}
 
 	/**

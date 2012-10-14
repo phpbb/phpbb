@@ -7,6 +7,10 @@
 *
 */
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 define('UPDATES_TO_VERSION', '3.1.0-dev');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
@@ -107,21 +111,37 @@ if (!defined('EXT_TABLE'))
 	define('EXT_TABLE', $table_prefix . 'ext');
 }
 
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
-$phpbb_class_loader_ext->register();
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
-$phpbb_class_loader->register();
+$phpbb_container = new ContainerBuilder();
+$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/../config'));
+$loader->load('services.yml');
+
+// We must include the DI processor class files because the class loader
+// is not yet set up
+require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
+require($phpbb_root_path . 'includes/di/processor/config.' . $phpEx);
+$processor = new phpbb_di_processor_config($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx);
+$processor->process($phpbb_container);
+
+// Setup class loader first
+$phpbb_class_loader = $phpbb_container->get('class_loader');
+$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
 
 // set up caching
-$cache_factory = new phpbb_cache_factory($acm_type);
-$cache = $cache_factory->get_service();
-$phpbb_class_loader_ext->set_cache($cache->get_driver());
-$phpbb_class_loader->set_cache($cache->get_driver());
+$cache = $phpbb_container->get('cache');
 
-$phpbb_dispatcher = new phpbb_event_dispatcher();
-$request = new phpbb_request();
-$user = new phpbb_user();
-$db = new $sql_db();
+// Instantiate some basic classes
+$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+$request	= $phpbb_container->get('request');
+$user		= $phpbb_container->get('user');
+$auth		= $phpbb_container->get('auth');
+$db			= $phpbb_container->get('dbal.conn');
+
+$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
+foreach ($ids as $id)
+{
+	$processor = $phpbb_container->get($id);
+	$processor->process($phpbb_container);
+}
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
@@ -597,7 +617,7 @@ function _print_footer()
 	</div>
 
 	<div id="page-footer">
-		Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
+		Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
 	</div>
 </div>
 
@@ -683,12 +703,12 @@ function _write_result($no_updates, $errored, $error_ary)
 
 function _add_modules($modules_to_install)
 {
-	global $phpbb_root_path, $phpEx, $db, $phpbb_extension_manager;
+	global $phpbb_root_path, $phpEx, $db, $phpbb_extension_manager, $config;
 
 	// modules require an extension manager
 	if (empty($phpbb_extension_manager))
 	{
-		$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+		$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx");
 	}
 
 	include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
@@ -1071,6 +1091,16 @@ function database_update_info()
 		'3.0.10-RC3'	=> array(),
 		// No changes from 3.0.10 to 3.0.11-RC1
 		'3.0.10'		=> array(),
+		// Changes from 3.0.11-RC1 to 3.0.11-RC2
+		'3.0.11-RC1'	=> array(
+			'add_columns'		=> array(
+				PROFILE_FIELDS_TABLE			=> array(
+					'field_show_novalue'		=> array('BOOL', 0),
+				),
+			),
+		),
+		// No changes from 3.0.11-RC2 to 3.0.11
+		'3.0.11-RC2'	=> array(),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 */
 
@@ -1109,6 +1139,9 @@ function database_update_info()
 				GROUPS_TABLE		=> array(
 					'group_legend'		=> array('UINT', 0),
 				),
+				USERS_TABLE			=> array(
+					'user_timezone'		=> array('VCHAR:100', ''),
+				),
 			),
 		),
 	);
@@ -1122,6 +1155,8 @@ function database_update_info()
 function change_database_data(&$no_updates, $version)
 {
 	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $db_tools;
+
+	$update_helpers = new phpbb_update_helpers();
 
 	switch ($version)
 	{
@@ -1968,7 +2003,7 @@ function change_database_data(&$no_updates, $version)
 					'user_email'			=> '',
 					'user_lang'				=> $config['default_lang'],
 					'user_style'			=> $config['default_style'],
-					'user_timezone'			=> 0,
+					'user_timezone'			=> 'UTC',
 					'user_dateformat'		=> $config['default_dateformat'],
 					'user_allow_massemail'	=> 0,
 				);
@@ -2205,6 +2240,14 @@ function change_database_data(&$no_updates, $version)
 			$no_updates = false;
 		break;
 
+		// No changes from 3.0.11-RC1 to 3.0.11-RC2
+		case '3.0.11-RC1':
+		break;
+
+		// No changes from 3.0.11-RC2 to 3.0.11
+		case '3.0.11-RC2':
+		break;
+
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
 
@@ -2243,6 +2286,31 @@ function change_database_data(&$no_updates, $version)
 				// try to guess the new auto loaded search class name
 				// works for native and mysql fulltext
 				set_config('search_type', 'phpbb_search_' . $config['search_type']);
+			}
+
+			if (!isset($config['fulltext_postgres_ts_name']))
+			{
+				set_config('fulltext_postgres_ts_name', 'simple');
+			}
+
+			if (!isset($config['fulltext_postgres_min_word_len']))
+			{
+				set_config('fulltext_postgres_min_word_len', 4);
+			}
+
+			if (!isset($config['fulltext_postgres_max_word_len']))
+			{
+				set_config('fulltext_postgres_max_word_len', 254);
+			}
+
+			if (!isset($config['fulltext_sphinx_stopwords']))
+			{
+				set_config('fulltext_sphinx_stopwords', 0);
+			}
+
+			if (!isset($config['fulltext_sphinx_indexer_mem_limit']))
+			{
+				set_config('fulltext_sphinx_indexer_mem_limit', 512);
 			}
 
 			if (!isset($config['load_jquery_cdn']))
@@ -2342,6 +2410,13 @@ function change_database_data(&$no_updates, $version)
 					'title'		=> 'ACP_STYLES_CACHE',
 					'auth'		=> 'acl_a_styles',
 					'cat'		=> 'ACP_STYLE_MANAGEMENT',
+				),
+				'autologin_keys'	=> array(
+					'base'		=> 'ucp_profile',
+					'class'		=> 'ucp',
+					'title'		=> 'UCP_PROFILE_AUTOLOGIN_KEYS',
+					'auth'		=> '',
+					'cat'		=> 'UCP_PROFILE',
 				),
 			);
 
@@ -2583,6 +2658,38 @@ function change_database_data(&$no_updates, $version)
 			if (!isset($config['assets_version']))
 			{
 				$config->set('assets_version', '1');
+			}
+
+			// If the column exists, we did not yet update the users timezone
+			if ($db_tools->sql_column_exists(USERS_TABLE, 'user_dst'))
+			{
+				// Update user timezones
+				$sql = 'SELECT user_dst, user_timezone
+					FROM ' . USERS_TABLE . '
+					GROUP BY user_timezone, user_dst';
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$sql = 'UPDATE ' . USERS_TABLE . "
+						SET user_timezone = '" . $db->sql_escape($update_helpers->convert_phpbb30_timezone($row['user_timezone'], $row['user_dst'])) . "'
+						WHERE user_timezone = '" . $db->sql_escape($row['user_timezone']) . "'
+							AND user_dst = " . (int) $row['user_dst'];
+					_sql($sql, $errored, $error_ary);
+				}
+				$db->sql_freeresult($result);
+
+				// Update board default timezone
+				set_config('board_timezone', $update_helpers->convert_phpbb30_timezone($config['board_timezone'], $config['board_dst']));
+
+				// After we have calculated the timezones we can delete user_dst column from user table.
+				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
+			}
+			
+			if (!isset($config['site_home_url']))
+			{
+				$config->set('site_home_url', '');
+				$config->set('site_home_text', '');
 			}
 
 		break;

@@ -250,7 +250,7 @@ class install_install extends module
 			'S_EXPLAIN'		=> true,
 			'S_LEGEND'		=> false,
 		));
-		
+
 		// Check for php json support
 		if (@extension_loaded('json'))
 		{
@@ -1178,7 +1178,7 @@ class install_install extends module
 
 		$sql_query = preg_replace('#phpbb_#i', $data['table_prefix'], $sql_query);
 
-		$sql_query = remove_comments($sql_query);
+		$sql_query = phpbb_remove_comments($sql_query);
 
 		$sql_query = split_sql_file($sql_query, $delimiter);
 
@@ -1216,7 +1216,7 @@ class install_install extends module
 		// Change language strings...
 		$sql_query = preg_replace_callback('#\{L_([A-Z0-9\-_]*)\}#s', 'adjust_language_keys_callback', $sql_query);
 
-		$sql_query = remove_comments($sql_query);
+		$sql_query = phpbb_remove_comments($sql_query);
 		$sql_query = split_sql_file($sql_query, ';');
 
 		foreach ($sql_query as $sql)
@@ -1427,7 +1427,7 @@ class install_install extends module
 	*/
 	function build_search_index($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $config;
+		global $db, $lang, $phpbb_root_path, $phpEx, $config, $auth, $user;
 
 		// Obtain any submitted data
 		$data = $this->get_submitted_data();
@@ -1463,7 +1463,7 @@ class install_install extends module
 		set_config_count(null, null, null, $config);
 
 		$error = false;
-		$search = new phpbb_search_fulltext_native($error);
+		$search = new phpbb_search_fulltext_native($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 			FROM ' . POSTS_TABLE;
@@ -1481,12 +1481,12 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager;
+		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config;
 
 		// modules require an extension manager
 		if (empty($phpbb_extension_manager))
 		{
-			$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+			$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx");
 		}
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
@@ -1795,7 +1795,7 @@ class install_install extends module
 				'user_email'			=> '',
 				'user_lang'				=> $data['default_lang'],
 				'user_style'			=> 1,
-				'user_timezone'			=> 0,
+				'user_timezone'			=> 'UTC',
 				'user_dateformat'		=> $lang['default_dateformat'],
 				'user_allow_massemail'	=> 0,
 			);

@@ -8,6 +8,7 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_install.php';
+require_once dirname(__FILE__) . '/phpbb_database_connection_odbc_pdo_wrapper.php';
 
 class phpbb_database_test_connection_manager
 {
@@ -62,6 +63,13 @@ class phpbb_database_test_connection_manager
 				// e.g. Driver={SQL Server Native Client 10.0};Server=(local)\SQLExpress;
 				$dsn .= $this->config['dbhost'];
 
+				// Primarily for MSSQL Native/Azure as ODBC needs it in $dbhost, attached to the Server param
+				if ($this->config['dbport'])
+				{
+					$port_delimiter = (defined('PHP_OS') && substr(PHP_OS, 0, 3) === 'WIN') ? ',' : ':';
+					$dsn .= $port_delimiter . $this->config['dbport'];
+				}
+
 				if ($use_db)
 				{
 					$dsn .= ';Database=' . $this->config['dbname'];
@@ -80,12 +88,52 @@ class phpbb_database_test_connection_manager
 				{
 					$dsn .= ';dbname=' . $this->config['dbname'];
 				}
+				else if ($this->dbms['PDO'] == 'pgsql')
+				{
+					// Postgres always connects to a
+					// database. If the database is not
+					// specified here, but the username
+					// is specified, then connection
+					// will be to the database named
+					// as the username.
+					//
+					// For greater compatibility, connect
+					// instead to postgres database which
+					// should always exist:
+					// http://www.postgresql.org/docs/9.0/static/manage-ag-templatedbs.html
+					$dsn .= ';dbname=postgres';
+				}
 			break;
+		}
+
+		// These require different connection strings on the phpBB side than they do in PDO
+		// so you must provide a DSN string for ODBC separately
+		if (!empty($this->config['custom_dsn']) && ($this->config['dbms'] == 'mssql' || $this->config['dbms'] == 'firebird'))
+		{
+			$dsn = 'odbc:' . $this->config['custom_dsn'];
 		}
 
 		try
 		{
-			$this->pdo = new PDO($dsn, $this->config['dbuser'], $this->config['dbpasswd']);
+			switch ($this->config['dbms'])
+			{
+				case 'mssql':
+				case 'mssql_odbc':
+					$this->pdo = new phpbb_database_connection_odbc_pdo_wrapper('mssql', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
+				break;
+
+				case 'firebird':
+					if (!empty($this->config['custom_dsn']))
+					{
+						$this->pdo = new phpbb_database_connection_odbc_pdo_wrapper('firebird', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
+						break;
+					}
+					// Fall through if they're using the firebird PDO driver and not the generic ODBC driver
+
+				default:
+					$this->pdo = new PDO($dsn, $this->config['dbuser'], $this->config['dbpasswd']);
+				break;
+			}
 		}
 		catch (PDOException $e)
 		{
@@ -93,8 +141,7 @@ class phpbb_database_test_connection_manager
 			throw new Exception("Unable do connect to $cleaned_dsn using PDO with error: {$e->getMessage()}");
 		}
 
-		// good for debug
-		// $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
 
 	/**
@@ -125,12 +172,41 @@ class phpbb_database_test_connection_manager
 				}
 			break;
 
+			case 'firebird':
+				$this->connect();
+				// Drop all of the tables
+				foreach ($this->get_tables() as $table)
+				{
+					$this->pdo->exec('DROP TABLE ' . $table);
+				}
+				$this->purge_extras();
+			break;
+
+			case 'oracle':
+				$this->connect();
+				// Drop all of the tables
+				foreach ($this->get_tables() as $table)
+				{
+					$this->pdo->exec('DROP TABLE ' . $table . ' CASCADE CONSTRAINTS');
+				}
+				$this->purge_extras();
+			break;
+
 			default:
 				$this->connect(false);
 
 				try
 				{
 					$this->pdo->exec('DROP DATABASE ' . $this->config['dbname']);
+
+					try
+					{
+						$this->pdo->exec('CREATE DATABASE ' . $this->config['dbname']);
+					}
+					catch (PDOException $e)
+					{
+						throw new Exception("Unable to re-create database: {$e->getMessage()}");
+					}
 				}
 				catch (PDOException $e)
 				{
@@ -139,9 +215,8 @@ class phpbb_database_test_connection_manager
 					{
 						$this->pdo->exec('DROP TABLE ' . $table);
 					}
+					$this->purge_extras();
 				}
-
-				$this->pdo->exec('CREATE DATABASE ' . $this->config['dbname']);
 			 break;
 		}
 	}
@@ -243,7 +318,7 @@ class phpbb_database_test_connection_manager
 		$filename = $directory . $schema . '_schema.sql';
 
 		$queries = file_get_contents($filename);
-		$sql = remove_comments($queries);
+		$sql = phpbb_remove_comments($queries);
 		
 		$sql = split_sql_file($sql, $this->dbms['DELIM']);
 
@@ -315,6 +390,46 @@ class phpbb_database_test_connection_manager
 			$message = "Supplied dbms \"$dbms\" is not a valid phpBB dbms, must be one of: ";
 			$message .= implode(', ', array_keys($available_dbms));
 			throw new Exception($message);
+		}
+	}
+
+	/**
+	* Removes extra objects from a database. This is for cases where dropping the database fails.
+	*/
+	public function purge_extras()
+	{
+		$this->ensure_connected(__METHOD__);
+		$queries = array();
+
+		switch ($this->config['dbms'])
+		{
+			case 'firebird':
+				$sql = 'SELECT RDB$GENERATOR_NAME
+					FROM RDB$GENERATORS
+					WHERE RDB$SYSTEM_FLAG = 0';
+				$result = $this->pdo->query($sql);
+
+				while ($row = $result->fetch(PDO::FETCH_NUM))
+				{
+					$queries[] = 'DROP GENERATOR ' . current($row);
+				}
+			break;
+
+			case 'oracle':
+				$sql = 'SELECT sequence_name
+					FROM USER_SEQUENCES';
+				$result = $this->pdo->query($sql);
+
+				while ($row = $result->fetch(PDO::FETCH_NUM))
+				{
+					$queries[] = 'DROP SEQUENCE ' . current($row);
+				}
+			break;
+		}
+
+		foreach ($queries as $query)
+		{
+			$this->pdo->exec($query);
 		}
 	}
 }

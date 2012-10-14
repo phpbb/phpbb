@@ -1,0 +1,61 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+	<h1>{L_EXTENSIONS_ADMIN}</h1>
+
+	<p>{L_EXTENSIONS_EXPLAIN}</p>
+
+	<table cellspacing="1">
+		<col class="row1" ><col class="row2" ><col class="row2" >
+	<thead>
+		<tr>
+			<th>{L_EXTENSION_NAME}</th>
+			<th>{L_EXTENSION_OPTIONS}</th>
+			<th>{L_EXTENSION_ACTIONS}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<!-- IF .enabled -->
+		<tr>
+			<td class="row3" colspan="3">
+				<strong>{L_ENABLED} {L_EXTENSIONS}</strong>
+			</td>
+		</tr>
+		<!-- BEGIN enabled -->
+		<tr class="ext_enabled">
+			<td><strong>{enabled.META_DISPLAY_NAME}</strong></a></td>
+			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
+			<td style="text-align: center;">
+				<!-- BEGIN actions -->
+					<a href="{enabled.actions.U_ACTION}" alt="{enabled.actions.L_ACTION}">{enabled.actions.L_ACTION}</a>
+					<!-- IF not enabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
+				<!-- END actions -->
+			</td>
+		</tr>
+		<!-- END enabled -->
+		<!-- ENDIF -->
+
+		<!-- IF .disabled -->
+		<tr>
+			<td class="row3" colspan="3"><strong>{L_DISABLED} {L_EXTENSIONS}</strong></td>
+		</tr>
+		<!-- BEGIN disabled -->
+		<tr class="ext_disabled">
+			<td><strong>{disabled.META_DISPLAY_NAME}</strong></a></td>
+			<td style="text-align: center;">
+				<!-- IF disabled.U_DETAILS --><a href="{disabled.U_DETAILS}">{L_DETAILS}</a><!-- ENDIF -->
+			</td>
+			<td style="text-align: center;">
+				<!-- BEGIN actions -->
+					<a href="{disabled.actions.U_ACTION}" alt="{disabled.actions.L_ACTION}">{disabled.actions.L_ACTION}</a>
+					<!-- IF not disabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
+				<!-- END actions -->
+			</td>
+		</tr>
+		<!-- END disabled -->
+		<!-- ENDIF -->
+	</tbody>
+	</table>
+
+<!-- INCLUDE overall_footer.html -->

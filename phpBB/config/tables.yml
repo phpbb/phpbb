@@ -1,0 +1,3 @@
+parameters:
+    tables.config: %core.table_prefix%config
+    tables.ext: %core.table_prefix%ext
