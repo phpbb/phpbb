@@ -23,17 +23,28 @@
 			<ul class="topiclist cplist">
 
 			<!-- BEGIN notification_types -->
-				<li class="row<!-- IF notification_types.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
-					<dl>
-						<dt>
-							{notification_types.NAME}
-						</dt>
-						<!-- BEGIN notification_methods -->
-							<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /> <dfn>{notification_methods.NAME}</dfn></dd>
-						<!-- END notification_methods -->
-						<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /> <dfn>{notification_methods.NAME}</dfn></dd>
-					</dl>
-				</li>
+				<!-- IF notification_types.GROUP_NAME -->
+					<li class="row bg3">
+						<dl>
+							<dt>
+								{notification_types.GROUP_NAME}
+							</dt>
+						</dl>
+					</li>
+				<!-- ELSE -->
+					<li class="row<!-- IF notification_types.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+						<dl>
+							<dt>
+								{notification_types.NAME}
+								<!-- IF notification_types.EXPLAIN --><br />&nbsp; &nbsp;{notification_types.EXPLAIN}<!-- ENDIF -->
+							</dt>
+							<!-- BEGIN notification_methods -->
+								<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /> <dfn>{notification_methods.NAME}</dfn></dd>
+							<!-- END notification_methods -->
+							<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /> <dfn>{notification_methods.NAME}</dfn></dd>
+						</dl>
+					</li>
+				<!-- ENDIF -->
 			<!-- END notification_types -->
 			</ul>
 		<!-- ELSE -->
