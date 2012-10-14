@@ -42,9 +42,12 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* Indentification data
 	* item_type
 	* item_id
-	* item_parent_id // Parent item id (ex: for topic => forum_id, for post => topic_id, etc)
+	* item_parent_id - Parent item id (ex: for topic => forum_id, for post => topic_id, etc)
 	* user_id
 	* unread
+	* is_disabled	- EXTENSION AUTHORS TAKE NOTE! This is to prevent errors with notifications from extensions!
+	* 				- Set is_disabled to 1 for all your notifications when your extension is disabled so they are ignored and do not cause errors.
+	* 				- When your extension is enabled again, set is_disabled to 0 and your notifications will be working again.
 	*
 	* time
 	* data (special serialized field that each notification type can use to store stuff)

@@ -138,7 +138,8 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 			FROM ' . NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . self::get_item_type() . "'
 				AND item_parent_id = " . (int) self::get_item_parent_id($post) . '
-				AND unread = 1';
+				AND unread = 1
+				AND is_disabled = 0';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{

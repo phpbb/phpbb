@@ -608,6 +608,7 @@ CREATE TABLE phpbb_notifications (
 	item_parent_id INT4 DEFAULT '0' NOT NULL CHECK (item_parent_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	unread INT2 DEFAULT '1' NOT NULL CHECK (unread >= 0),
+	is_disabled INT2 DEFAULT '0' NOT NULL CHECK (is_disabled >= 0),
 	time INT4 DEFAULT '1' NOT NULL CHECK (time >= 0),
 	data varchar(4000) DEFAULT '' NOT NULL,
 	PRIMARY KEY (notification_id)
@@ -619,6 +620,7 @@ CREATE INDEX phpbb_notifications_item_pid ON phpbb_notifications (item_parent_id
 CREATE INDEX phpbb_notifications_user_id ON phpbb_notifications (user_id);
 CREATE INDEX phpbb_notifications_time ON phpbb_notifications (time);
 CREATE INDEX phpbb_notifications_unread ON phpbb_notifications (unread);
+CREATE INDEX phpbb_notifications_is_disabled ON phpbb_notifications (is_disabled);
 
 /*
 	Table: 'phpbb_poll_options'

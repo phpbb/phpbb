@@ -1303,6 +1303,7 @@ function get_schema_struct()
 			'item_parent_id'	=> array('UINT', 0),
 			'user_id'			=> array('UINT', 0),
 			'unread'			=> array('BOOL', 1),
+			'is_disabled'		=> array('BOOL', 0),
 			'time'				=> array('TIMESTAMP', 1),
 			'data'				=> array('TEXT_UNI', ''),
 		),
@@ -1314,6 +1315,7 @@ function get_schema_struct()
 			'user_id'			=> array('INDEX', 'user_id'),
 			'time'				=> array('INDEX', 'time'),
 			'unread'			=> array('INDEX', 'unread'),
+			'is_disabled'		=> array('INDEX', 'is_disabled'),
 		),
 	);
 
