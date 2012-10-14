@@ -68,6 +68,7 @@ class phpbb_notification_manager
 			'start'				=> 0,
 			'all_unread'		=> false,
 			'count_unread'		=> false,
+			'count_total'		=> false,
 		), $options);
 
 		// If all_unread, count_unread mus be true
@@ -79,12 +80,13 @@ class phpbb_notification_manager
 			return array(
 				'notifications'		=> array(),
 				'unread_count'		=> 0,
+				'total_count'		=> 0,
 			);
 		}
 
 		$notifications = $user_ids = array();
 		$load_special = array();
-		$count = 0;
+		$total_count = $unread_count = 0;
 
 		if ($options['count_unread'])
 		{
@@ -94,7 +96,18 @@ class phpbb_notification_manager
 				WHERE user_id = ' . (int) $options['user_id'] . '
 					AND unread = 1';
 			$result = $this->db->sql_query($sql);
-			$count = (int) $this->db->sql_fetchfield('count', $result);
+			$unread_count = (int) $this->db->sql_fetchfield('count', $result);
+			$this->db->sql_freeresult($result);
+		}
+
+		if ($options['count_total'])
+		{
+			// Get the total number of notifications
+			$sql = 'SELECT COUNT(*) AS count
+				FROM ' . NOTIFICATIONS_TABLE . '
+				WHERE user_id = ' . (int) $options['user_id'];
+			$result = $this->db->sql_query($sql);
+			$total_count = (int) $this->db->sql_fetchfield('count', $result);
 			$this->db->sql_freeresult($result);
 		}
 
@@ -115,7 +128,7 @@ class phpbb_notification_manager
 		$this->db->sql_freeresult($result);
 
 		// Get all unread notifications
-		if ($count && $options['all_unread'] && !empty($rowset))
+		if ($unread_count && $options['all_unread'] && !empty($rowset))
 		{
 			$sql = 'SELECT *
 				FROM ' . NOTIFICATIONS_TABLE . '
@@ -165,14 +178,15 @@ class phpbb_notification_manager
 
 		return array(
 			'notifications'		=> $notifications,
-			'unread_count'		=> $count,
+			'unread_count'		=> $unread_count,
+			'total_count'		=> $total_count,
 		);
 	}
 
 	/**
 	* Mark notifications read
 	*
-	* @param string|array $item_type Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
+	* @param bool|string|array $item_type Type identifier or array of item types (only acceptable if the $data is identical for the specified types). False to mark read for all item types
 	* @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
@@ -191,12 +205,15 @@ class phpbb_notification_manager
 
 		$time = ($time) ?: time();
 
-		$this->get_item_type_class_name($item_type);
+		if ($item_type !== false)
+		{
+			$this->get_item_type_class_name($item_type);
+		}
 
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . "
 			SET unread = 0
-			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
-				AND time <= " . $time .
+			WHERE time <= " . $time .
+				(($item_type !== false) ? ' AND ' . (is_array($item_type) ? $this->db->sql_in_set('item_type', $item_type) : " item_type = '" . $this->db->sql_escape($item_type) . "'") : '') .
 				(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '') .
 				(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '');
 		$this->db->sql_query($sql);

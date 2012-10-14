@@ -2465,12 +2465,19 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> '',
 					'cat'		=> 'UCP_PROFILE',
 				),
-				'notifications'	=> array(
+				'notification_options'	=> array(
 					'base'		=> 'ucp_notifications',
 					'class'		=> 'ucp',
 					'title'		=> 'UCP_NOTIFICATION_OPTIONS',
 					'auth'		=> '',
 					'cat'		=> 'UCP_PREFS',
+				),
+				'notification_list'	=> array(
+					'base'		=> 'ucp_notifications',
+					'class'		=> 'ucp',
+					'title'		=> 'UCP_NOTIFICATION_LIST',
+					'auth'		=> '',
+					'cat'		=> 'UCP_MAIN',
 				),
 			);
 
