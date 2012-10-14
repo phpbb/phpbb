@@ -1141,3 +1141,19 @@ a.imageset {
 	padding-right: 18px;
 	padding-left: 0;
 }
+
+#notification_list {
+	display: none;
+	position: absolute;
+	width: 330px;
+	max-height: 350px;
+	z-index: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	background-color: #FFFFFF;
+}
+
+.notification_list img {
+	max-width: 50px;
+	max-height: 50px;
+}
