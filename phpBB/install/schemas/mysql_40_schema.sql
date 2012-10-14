@@ -438,6 +438,7 @@ CREATE TABLE phpbb_notifications (
 	item_parent_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	unread tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	is_disabled tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	time int(11) UNSIGNED DEFAULT '1' NOT NULL,
 	data blob NOT NULL,
 	PRIMARY KEY (notification_id),
@@ -446,7 +447,8 @@ CREATE TABLE phpbb_notifications (
 	KEY item_pid (item_parent_id),
 	KEY user_id (user_id),
 	KEY time (time),
-	KEY unread (unread)
+	KEY unread (unread),
+	KEY is_disabled (is_disabled)
 );
 
 
