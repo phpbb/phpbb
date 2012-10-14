@@ -761,6 +761,7 @@ CREATE TABLE [phpbb_notifications] (
 	[item_parent_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[unread] [int] DEFAULT (1) NOT NULL ,
+	[is_disabled] [int] DEFAULT (0) NOT NULL ,
 	[time] [int] DEFAULT (1) NOT NULL ,
 	[data] [varchar] (4000) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
@@ -789,6 +790,9 @@ CREATE  INDEX [time] ON [phpbb_notifications]([time]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [unread] ON [phpbb_notifications]([unread]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [is_disabled] ON [phpbb_notifications]([is_disabled]) ON [PRIMARY]
 GO
 
 
