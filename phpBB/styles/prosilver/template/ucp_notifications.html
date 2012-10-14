@@ -77,14 +77,17 @@
 					<li class="row<!-- IF notification_list.UNREAD --> bg3<!-- ELSE --><!-- IF notification_list.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- ENDIF -->">
 						<dl>
 							<dt>
-								<!-- IF notification_list.URL --><a href="{notification_list.URL}"><!-- ENDIF -->
-									{notification_list.AVATAR}
-									<div>
-										{notification_list.FORMATTED_TITLE}<br />
-										{notification_list.TIME}
-									</div>
+								<!-- IF notification_list.URL or notification_list.U_MARK_READ --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
+								<span>
+										{notification_list.AVATAR}
+										<span class="notification_title">
+											{notification_list.FORMATTED_TITLE}
+											<div class="notification_time">{notification_list.TIME}</div>
+										</span>
+								</span>
 								<!-- IF notification_list.URL --></a><!-- ENDIF -->
 							</dt>
+
 							<dd class="mark"><!-- IF notification_list.UNREAD --><input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}" /> <dfn>{L_MARK_READ}</dfn><!-- ENDIF --></dd>
 						</dl>
 					</li>

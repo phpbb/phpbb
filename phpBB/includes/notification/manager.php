@@ -165,7 +165,7 @@ class phpbb_notification_manager
 			}
 			$load_special[$row['item_type']] = array_merge($load_special[$row['item_type']], $notification->get_load_special());
 
-			$notifications[] = $notification;
+			$notifications[$row['notification_id']] = $notification;
 		}
 
 		$this->load_users($user_ids);

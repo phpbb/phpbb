@@ -23,6 +23,23 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup();
 
+// Mark notifications read
+if (($mark_notification = request_var('mark_notification', 0)))
+{
+	$notification = $phpbb_notifications->load_notifications(array(
+		'notification_id'	=> $mark_notification
+	));
+
+	if (isset($notification['notifications'][$mark_notification]))
+	{
+		$notification = $notification['notifications'][$mark_notification];
+
+		$notification->mark_read();
+
+		redirect($notification->get_url());
+	}
+}
+
 // Handle the display of extension front pages
 if ($ext = $request->variable('ext', ''))
 {
@@ -54,13 +71,6 @@ if ($ext = $request->variable('ext', ''))
 
 	$controller->handle();
 	exit_handler();
-}
-
-// Mark notifications read
-$mark_notifications = request_var('mark_notification', array(0));
-if (!empty($mark_notifications))
-{
-	$phpbb_notifications->mark_notifications_read_by_id($mark_notifications);
 }
 
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
