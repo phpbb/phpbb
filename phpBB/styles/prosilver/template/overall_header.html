@@ -143,14 +143,15 @@
 						<ul class="topiclist forums">
 						<!-- BEGIN notifications -->
 							<li class="row<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
-								<!-- IF notifications.URL --><a href="{notifications.URL}"><!-- ENDIF -->
-									{notifications.AVATAR}
-									<div>
-										{notifications.FORMATTED_TITLE}<br />
-										{notifications.TIME}
-									</div>
+								<!-- IF notifications.URL or notifications.U_MARK_READ --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
+								<span>
+										{notifications.AVATAR}
+										<span class="notification_title">
+											{notifications.FORMATTED_TITLE}
+											<div class="notification_time">{notifications.TIME}</div>
+										</span>
+								</span>
 								<!-- IF notifications.URL --></a><!-- ENDIF -->
-								<!-- IF notifications.UNREAD --><a href="{notifications.U_MARK_READ}" title="{L_MARK_READ}">{L_MARK_READ}</a><!-- ENDIF -->
 							</li>
 				   			<!-- END notifications -->
 						</ul>

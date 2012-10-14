@@ -25,10 +25,20 @@ $auth->acl($user->data);
 $user->setup('viewforum');
 
 // Mark notifications read
-$mark_notifications = request_var('mark_notification', array(0));
-if (!empty($mark_notifications))
+if (($mark_notification = request_var('mark_notification', 0)))
 {
-	$phpbb_notifications->mark_notifications_read_by_id($mark_notifications);
+	$notification = $phpbb_notifications->load_notifications(array(
+		'notification_id'	=> $mark_notification
+	));
+
+	if (isset($notification['notifications'][$mark_notification]))
+	{
+		$notification = $notification['notifications'][$mark_notification];
+
+		$notification->mark_read();
+
+		redirect($notification->get_url());
+	}
 }
 
 display_forums('', $config['load_moderators']);

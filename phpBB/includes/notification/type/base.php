@@ -138,7 +138,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 			'UNREAD'			=> $this->unread,
 
-			'U_MARK_READ'		=> append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification[]=' . $this->notification_id),
+			'U_MARK_READ'		=> append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id),
 		);
 	}
 
@@ -148,7 +148,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
 	* @return string
 	*/
-	public function mark_read($return = true)
+	public function mark_read($return = false)
 	{
 		return $this->mark(false, $return);
 	}
@@ -159,7 +159,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
 	* @return string
 	*/
-	public function mark_unread($return = true)
+	public function mark_unread($return = false)
 	{
 		return $this->mark(true, $return);
 	}
@@ -352,11 +352,11 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		$this->unread = (bool) $unread;
 
 		$where = array(
-			'item_type = ' . $this->db->sql_escape($this->item_type),
+			"item_type = '" . $this->db->sql_escape($this->item_type) . "'",
 			'item_id = ' . (int) $this->item_id,
 			'user_id = ' . (int) $this->user_id,
 		);
-		$where = implode(' AND ' . $where);
+		$where = implode(' AND ', $where);
 
 		if ($return)
 		{
@@ -364,7 +364,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		}
 
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
-			SET unread = ' . $this->unread . '
+			SET unread = ' . (int) $this->unread . '
 			WHERE ' . $where;
 		$this->db->sql_query($sql);
 	}

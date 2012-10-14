@@ -687,15 +687,29 @@ p.rules a {
 #notification_list ul li {
 	padding: 10px;
 	width: 310px;
+	line-height: 1.5em;
 }
 
-.notification_list ul li a {
-	text-decoration: none;
-}
-
-.notification_list ul li img {
+.notification_list ul li a span img {
 	float: left;
-	padding: 0 10px 10px 0;
 	max-width: 50px;
 	max-height: 50px;
+}
+
+.notification_list ul li span .notification_title {
+	float: left;
+	width: 240px;
+	margin: 0 0 0 5px;
+	word-wrap: break-word;
+	position: relative;
+	top: -0.2em;
+}
+
+.notification_list ul li dl dt span .notification_title {
+	width: auto;
+	padding: 10px 0 0 0;
+}
+
+.notification_time {
+	margin-top: 0.5em;
 }
