@@ -689,11 +689,11 @@ p.rules a {
 	width: 310px;
 }
 
-#notification_list ul li a {
+.notification_list ul li a {
 	text-decoration: none;
 }
 
-#notification_list ul li img {
+.notification_list ul li img {
 	float: left;
 	padding: 0 10px 10px 0;
 	max-width: 50px;

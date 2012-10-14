@@ -20,6 +20,7 @@ class ucp_notifications_info
 			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'notification_options'		=> array('title' => 'UCP_NOTIFICATION_OPTIONS', 'auth' => '', 'cat' => array('UCP_PREFS')),
+				'notification_list'			=> array('title' => 'UCP_NOTIFICATION_LIST', 'auth' => '', 'cat' => array('UCP_MAIN')),
 			),
 		);
 	}

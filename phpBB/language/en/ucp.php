@@ -290,6 +290,9 @@ $lang = array_merge($lang, array(
 	'NEW_PASSWORD_ERROR'			=> 'The passwords you entered do not match.',
 
 	'NOTIFICATIONS'										=> 'Notifications',
+	'NOTIFICATIONS_MARK_ALL_READ'						=> 'Mark all notifications read',
+	'NOTIFICATIONS_MARK_ALL_READ_CONFIRM'				=> 'Are you sure you want to mark all notifications read?',
+	'NOTIFICATIONS_MARK_ALL_READ_SUCCESS'				=> 'All notifications have been marked read successfully.',
 	'NOTIFICATION_METHOD_EMAIL'							=> 'Email',
 	'NOTIFICATION_METHOD_JABBER'						=> 'Jabber',
 	'NOTIFICATION_TYPE'									=> 'Notification type',
@@ -472,6 +475,8 @@ $lang = array_merge($lang, array(
 	'UCP_MSNM'					=> 'Windows Live Messenger',
 	'UCP_NO_ATTACHMENTS'		=> 'You have posted no files.',
 
+	'UCP_NOTIFICATION_LIST'				=> 'Manage notifications',
+	'UCP_NOTIFICATION_LIST_EXPLAIN'		=> 'Here you may view all past notifications.',
 	'UCP_NOTIFICATION_OPTIONS'			=> 'Edit notification options',
 	'UCP_NOTIFICATION_OPTIONS_EXPLAIN'	=> 'Here you can set your preferred notification methods for the board.',
 

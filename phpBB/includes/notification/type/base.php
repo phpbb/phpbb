@@ -124,6 +124,8 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	public function prepare_for_display()
 	{
 		return array(
+			'NOTIFICATION_ID'	=> $this->notification_id,
+
 			'AVATAR'			=> $this->get_avatar(),
 
 			'FORMATTED_TITLE'	=> $this->get_title(),
@@ -344,6 +346,8 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	protected function mark($unread = true, $return = false)
 	{
+		$this->unread = (bool) $unread;
+
 		$where = array(
 			'item_type = ' . $this->db->sql_escape($this->item_type),
 			'item_id = ' . (int) $this->item_id,
@@ -357,7 +361,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		}
 
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
-			SET unread = ' . (bool) $unread . '
+			SET unread = ' . $this->unread . '
 			WHERE ' . $where;
 		$this->db->sql_query($sql);
 	}
