@@ -41,11 +41,12 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 	* Notification option data (for outputting to the user)
 	*
 	* @var bool|array False if the service should use it's default data
-	* 					Array of data (including keys 'id' and 'lang')
+	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
 	public static $notification_option = array(
 		'id'	=> 'needs_approval',
 		'lang'	=> 'NOTIFICATION_TYPE_IN_MODERATION_QUEUE',
+		'group'	=> 'NOTIFICATION_GROUP_MODERATION',
 	);
 
 	/**
