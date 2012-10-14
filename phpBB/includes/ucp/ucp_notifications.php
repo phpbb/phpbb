@@ -79,7 +79,6 @@ class ucp_notifications
 					$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 					trigger_error($message);
 				}
-				// todo include language files for extensions?
 
 				$this->output_notification_methods('notification_methods', $phpbb_notifications, $template, $user);
 
