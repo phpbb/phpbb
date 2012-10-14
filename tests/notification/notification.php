@@ -272,6 +272,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 		$this->assertEquals(array(
 				'notifications'		=> array(),
 				'unread_count'		=> 0,
+				'total_count'		=> 0,
 		), $this->notifications->load_notifications(array(
 			'count_unread'	=> true,
 		)));

@@ -21,9 +21,13 @@ class ucp_notifications
 
 	public function main($id, $mode)
 	{
-		global $template, $user, $request, $phpbb_notifications;
+		global $config, $template, $user, $request, $phpbb_notifications;
+		global $phpbb_root_path, $phpEx;
 
-		add_form_key('ucp_notification_options');
+		add_form_key('ucp_notification');
+
+		$start = request_var('start', 0);
+		$form_time = min(request_var('form_time', 0), time());
 
 		switch ($mode)
 		{
@@ -33,7 +37,7 @@ class ucp_notifications
 				// Add/remove subscriptions
 				if ($request->is_set_post('submit'))
 				{
-					if (!check_form_key('ucp_notification_options'))
+					if (!check_form_key('ucp_notification'))
 					{
 						trigger_error('FORM_INVALID');
 					}
@@ -79,12 +83,80 @@ class ucp_notifications
 				$this->output_notification_types('notification_types', $phpbb_notifications, $template, $user);
 
 				$this->tpl_name = 'ucp_notifications';
-				$this->page_title = 'UCP_NOTIFICATIONS';
+				$this->page_title = 'UCP_NOTIFICATION_OPTIONS';
 			break;
 
+			case 'notification_list':
 			default:
-				//$phpbb_notifications->load_notifications();
+				// Mark all items read
+				if (request_var('mark', '') == 'all' && (confirm_box(true) || check_link_hash(request_var('token', ''), 'mark_all_notifications_read')))
+				{
+					if (confirm_box(true))
+					{
+						$phpbb_notifications->mark_notifications_read(false, false, $user->data['user_id'], $form_time);
+
+						meta_refresh(3, $this->u_action);
+						$message = $user->lang['NOTIFICATIONS_MARK_ALL_READ_SUCCESS'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						trigger_error($message);
+					}
+					else
+					{
+						confirm_box(false, 'NOTIFICATIONS_MARK_ALL_READ', build_hidden_fields(array(
+							'mark'		=> 'all',
+							'form_time'	=> $form_time,
+						)));
+					}
+				}
+
+				// Mark specific notifications read
+				if ($request->is_set_post('submit'))
+				{
+					if (!check_form_key('ucp_notification'))
+					{
+						trigger_error('FORM_INVALID');
+					}
+
+					$mark_read = request_var('mark', array(0));
+
+					if (!empty($mark_read))
+					{
+						$phpbb_notifications->mark_notifications_read_by_id($mark_read, $form_time);
+					}
+				}
+
+				$notifications = $phpbb_notifications->load_notifications(array(
+					'start'			=> $start,
+					'limit'			=> $config['topics_per_page'],
+					'count_total'	=> true,
+				));
+
+				foreach ($notifications['notifications'] as $notification)
+				{
+					$template->assign_block_vars('notification_list', $notification->prepare_for_display());
+				}
+
+				$base_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=ucp_notifications&amp;mode=notification_list");
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $notifications['total_count'], $config['topics_per_page'], $start);
+
+				$template->assign_vars(array(
+					'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $base_url, $notifications['total_count'], $config['topics_per_page'], $start),
+					'TOTAL_COUNT'	=> $user->lang('NOTIFICATIONS_COUNT', $notifications['total_count']),
+					'U_MARK_ALL'	=> $base_url . '&amp;mark=all&amp;token=' . generate_link_hash('mark_all_notifications_read'),
+				));
+
+				$this->tpl_name = 'ucp_notifications';
+				$this->page_title = 'UCP_NOTIFICATION_LIST';
 			break;
+		}
+
+		$template->assign_vars(array(
+			'TITLE'				=> $user->lang($this->page_title),
+			'TITLE_EXPLAIN'		=> $user->lang($this->page_title . '_EXPLAIN'),
+
+			'MODE'				=> $mode,
+
+			'FORM_TIME'			=> time(),
+		));
 	}
 
 	/**
