@@ -117,19 +117,21 @@
 
 				<div style="padding: 2px;"></div>
 
-				<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
-				<tr>
-					<td class="row1">
-						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+				<!-- IF .pagination -->
+					<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
 						<tr>
-							<td align="{S_CONTENT_FLOW_BEGIN}">
-								<!-- INCLUDE pagination.html -->
+							<td class="row1">
+								<table border="0" cellspacing="0" cellpadding="0" width="100%">
+								<tr>
+									<td align="{S_CONTENT_FLOW_BEGIN}">
+										<!-- INCLUDE pagination.html -->
+									</td>
+								</tr>
+								</table>
 							</td>
 						</tr>
-						</table>
-					</td>
-				</tr>
-				</table>
+					</table>
+				<!-- ENDIF -->
 			</td>
 		</tr>
 	<!-- ENDIF -->
