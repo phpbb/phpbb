@@ -53,6 +53,7 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 	public static $notification_option = array(
 		'id'	=> 'report',
 		'lang'	=> 'NOTIFICATION_TYPE_REPORT',
+		'group'	=> 'NOTIFICATION_GROUP_MODERATION',
 	);
 
 	/**

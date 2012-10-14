@@ -495,15 +495,22 @@ class phpbb_notification_manager
 
 			if ($class->is_available() && method_exists($class_name, 'get_item_type'))
 			{
-				if ($class_name::$notification_option === false)
-				{
-					$subscription_types[$class_name::get_item_type()] = $class_name::get_item_type();
-				}
-				else
-				{
-					$subscription_types[$class_name::$notification_option['id']] = $class_name::$notification_option;
-				}
+				$options = array_merge(array(
+					'id'		=> $class_name::get_item_type(),
+					'lang'		=> 'NOTIFICATION_TYPE_' . strtoupper($class_name::get_item_type()),
+					'group'		=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
+				), (($class_name::$notification_option !== false) ? $class_name::$notification_option : array()));
+
+				$subscription_types[$options['group']][$options['id']] = $options;
 			}
+		}
+
+		// Move Miscellaneous to the very last section
+		if (isset($subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']))
+		{
+			$miscellaneous = $subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS'];
+			unset($subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']);
+			$subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS'] = $miscellaneous;
 		}
 
 		return $subscription_types;

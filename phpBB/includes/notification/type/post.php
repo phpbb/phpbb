@@ -38,6 +38,16 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 	protected $language_key = 'NOTIFICATION_POST';
 
 	/**
+	* Notification option data (for outputting to the user)
+	*
+	* @var bool|array False if the service should use it's default data
+	* 					Array of data (including keys 'id', 'lang', and 'group')
+	*/
+	public static $notification_option = array(
+		'group'	=> 'NOTIFICATION_GROUP_POSTING',
+	);
+
+	/**
 	* Get the type of notification this is
 	* phpbb_notification_type_
 	*/
