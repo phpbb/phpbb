@@ -89,7 +89,7 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Name of the style that the template being compiled and/or rendered
-        * belongs to.
+	* belongs to.
 	*
 	* This is used by hooks implementation to invoke style-specific
 	* template hooks.
@@ -872,14 +872,14 @@ class phpbb_template_filter extends php_user_filter
 	{
 		if (!preg_match('/^\w+$/', $tag_args))
 		{
-			// The hook location is wrongly formatted,
+			// The hook location is improperly formatted,
 			if ($this->user)
 			{
 				trigger_error($this->user->lang('ERR_TEMPLATE_EVENT_LOCATION', $tag_args), E_USER_ERROR);
 			}
 			else
 			{
-				trigger_error(sprintf('The specified template event location <em>[%s]</em> is wrongly formatted.', $tag_args), E_USER_ERROR);
+				trigger_error(sprintf('The specified template event location <em>[%s]</em> is improperly formatted.', $tag_args), E_USER_ERROR);
 			}
 		}
 		$location = $tag_args;

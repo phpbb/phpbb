@@ -247,8 +247,8 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* @param string $source_file File name to look for (e.g. test.html)
 	* @return array array of strings (file paths)
 	*/
-    public function locate_source_files($source_file)
-    {
+	public function locate_source_files($source_file)
+	{
 		$files = array();
 
 		// Go through root directories
@@ -268,8 +268,8 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 			}
 		}
 
-        return $files;
-    }
+		return $files;
+	}
 
 	/**
 	* Locates source file path, accounting for styles tree and verifying that
