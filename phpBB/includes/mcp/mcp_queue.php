@@ -458,8 +458,6 @@ class mcp_queue
 	/**
 	* Restore Posts
 	*
-	* @todo: Add some XSS protection, or even a confirm_box()
-	*
 	* @param $post_id_list	array	IDs of the posts to restore
 	* @param $id			mixed	Category of the current active module
 	* @param $mode			string	Active module
@@ -476,48 +474,68 @@ class mcp_queue
 		}
 
 		$redirect = request_var('redirect', build_url(array('quickmod')));
-		$redirect = reapply_sid($redirect);
 		$success_msg = '';
+
+		$s_hidden_fields = build_hidden_fields(array(
+			'i'				=> $id,
+			'mode'			=> $mode,
+			'post_id_list'	=> $post_id_list,
+			'action'		=> 'approve',
+			'redirect'		=> $redirect)
+		);
 
 		$post_info = get_post_data($post_id_list, 'm_approve');
 
-		$topic_info = array();
-
-		// Group the posts by topic_id
-		foreach ($post_info as $post_id => $post_data)
+		if (confirm_box(true))
 		{
-			if ($post_data['post_visibility'] == ITEM_APPROVED)
+			$topic_info = array();
+
+			// Group the posts by topic_id
+			foreach ($post_info as $post_id => $post_data)
 			{
-				continue;
+				if ($post_data['post_visibility'] == ITEM_APPROVED)
+				{
+					continue;
+				}
+				$topic_id = (int) $post_data['topic_id'];
+
+				$topic_info[$topic_id]['posts'][] = (int) $post_id;
+				$topic_info[$topic_id]['forum_id'] = (int) $post_data['forum_id'];
+
+				if ($post_id == $post_data['topic_first_post_id'])
+				{
+					$topic_info[$topic_id]['first_post'] = true;
+				}
+
+				if ($post_id == $post_data['topic_last_post_id'])
+				{
+					$topic_info[$topic_id]['last_post'] = true;
+				}
+
+				$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
 			}
-			$topic_id = (int) $post_data['topic_id'];
 
-			$topic_info[$topic_id]['posts'][] = (int) $post_id;
-			$topic_info[$topic_id]['forum_id'] = (int) $post_data['forum_id'];
-
-			if ($post_id == $post_data['topic_first_post_id'])
+			foreach ($topic_info as $topic_id => $topic_data)
 			{
-				$topic_info[$topic_id]['first_post'] = true;
+				phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '', isset($topic_data['first_post']), isset($topic_data['last_post']));
 			}
 
-			if ($post_id == $post_data['topic_last_post_id'])
+			if (sizeof($post_info) >= 1)
 			{
-				$topic_info[$topic_id]['last_post'] = true;
+				$success_msg = (sizeof($post_info) == 1) ? 'POST_RESTORED_SUCCESS' : 'POSTS_RESTORED_SUCCESS';
 			}
+		}
+		else
+		{
+			$template->assign_vars(array(
+				'S_APPROVE'			=> true,
+			));
 
-			$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
+			confirm_box(false, 'RESTORE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 		}
 
-		foreach ($topic_info as $topic_id => $topic_data)
-		{
-			phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '', isset($topic_data['first_post']), isset($topic_data['last_post']));
-		}
-
-		$success_msg = '';
-		if (sizeof($post_info) >= 1)
-		{
-			$success_msg = (sizeof($post_info) == 1) ? 'POST_RESTORED_SUCCESS' : 'POSTS_RESTORED_SUCCESS';
-		}
+		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = reapply_sid($redirect);
 
 		if (!$success_msg)
 		{
