@@ -142,6 +142,8 @@ services:
         class: Symfony\Component\HttpKernel\EventListener\RouterListener
         arguments:
             - @url_matcher
+        tags:
+            - { name: kernel.event_subscriber }
 
     style:
         class: phpbb_style
