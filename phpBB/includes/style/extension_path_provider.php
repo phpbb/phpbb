@@ -24,6 +24,8 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_style_extension_path_provider extends phpbb_extension_provider implements phpbb_style_path_provider_interface
 {
+	protected $phpbb_root_path;
+
 	/**
 	* Optional prefix for style paths searched within extensions.
 	*
@@ -47,10 +49,12 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 	* @param phpbb_style_path_provider $base_path_provider A simple path provider
 	*            to provide paths to be located in extensions
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, phpbb_style_path_provider $base_path_provider)
+	public function __construct(phpbb_extension_manager $extension_manager, phpbb_style_path_provider $base_path_provider, $phpbb_root_path)
 	{
 		parent::__construct($extension_manager);
 		$this->base_path_provider = $base_path_provider;
+
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -91,7 +95,7 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 					$directories['style'][] = $path;
 					if ($path && !phpbb_is_absolute($path))
 					{
-						$result = $finder->directory('/' . $this->ext_dir_prefix . $path)
+						$result = $finder->directory('/' . $this->ext_dir_prefix . str_replace($this->phpbb_root_path, '', $path))
 							->get_directories(true, true);
 						foreach ($result as $ext => $ext_path)
 						{
