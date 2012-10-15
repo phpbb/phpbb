@@ -199,7 +199,7 @@ if (!$post_id)
 	$module->set_display('warn', 'warn_post', false);
 }
 
-if ($mode == '' || $mode == 'unapproved_topics' || $mode == 'unapproved_posts' || $mode == 'deleted_posts')
+if ($mode == '' || $mode == 'unapproved_topics' || $mode == 'unapproved_posts' || $mode == 'deleted_topics' || $mode == 'deleted_posts')
 {
 	$module->set_display('queue', 'approve_details', false);
 }
