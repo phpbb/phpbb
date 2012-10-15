@@ -58,7 +58,7 @@ class mcp_queue
 
 				if ($action == 'approve')
 				{
-					approve_post($post_id_list, 'queue', $mode);
+					$this->approve_posts($post_id_list, 'queue', $mode);
 				}
 				else if ($action == 'restore')
 				{
@@ -66,7 +66,7 @@ class mcp_queue
 				}
 				else
 				{
-					disapprove_post($post_id_list, 'queue', $mode);
+					$this->disapprove_posts($post_id_list, 'queue', $mode);
 				}
 
 			break;
@@ -549,106 +549,384 @@ class mcp_queue
 			trigger_error($message);
 		}
 	}
-}
 
-
-/**
-* Approve Post/Topic
-*/
-function approve_post($post_id_list, $id, $mode)
-{
-	global $db, $template, $user, $config;
-	global $phpEx, $phpbb_root_path;
-	global $request;
-
-	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
+	/**
+	* Approve Post/Topic
+	*/
+	function approve_posts($post_id_list, $id, $mode)
 	{
-		trigger_error('NOT_AUTHORISED');
-	}
+		global $db, $template, $user, $config;
+		global $phpEx, $phpbb_root_path;
+		global $request;
 
-	$redirect = request_var('redirect', build_url(array('quickmod')));
-	$success_msg = '';
-
-	$s_hidden_fields = build_hidden_fields(array(
-		'i'				=> $id,
-		'mode'			=> $mode,
-		'post_id_list'	=> $post_id_list,
-		'action'		=> 'approve',
-		'redirect'		=> $redirect)
-	);
-
-	$post_info = get_post_data($post_id_list, 'm_approve');
-
-	if (confirm_box(true))
-	{
-		$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
-
-		$success_msg = phpbb_content_visibility::unhide_posts_topics('approve', $post_info, $post_id_list);
-
-		$messenger = new messenger();
-
-		// Notify Poster?
-		if ($notify_poster)
+		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
-			foreach ($post_info as $post_id => $post_data)
-			{
-				if ($post_data['poster_id'] == ANONYMOUS)
-				{
-					continue;
-				}
-
-				$email_template = ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id']) ? 'topic_approved' : 'post_approved';
-
-				$messenger->template($email_template, $post_data['user_lang']);
-
-				$messenger->to($post_data['user_email'], $post_data['username']);
-				$messenger->im($post_data['user_jabber'], $post_data['username']);
-
-				$messenger->assign_vars(array(
-					'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
-					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
-					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])),
-
-					'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&e=0",
-					'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
-				);
-
-				$messenger->send($post_data['user_notify_type']);
-			}
+			trigger_error('NOT_AUTHORISED');
 		}
 
-		$messenger->save_queue();
+		$redirect = request_var('redirect', build_url(array('quickmod')));
+		$success_msg = '';
 
-		// Send out normal user notifications
-		$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
+		$s_hidden_fields = build_hidden_fields(array(
+			'i'				=> $id,
+			'mode'			=> $mode,
+			'post_id_list'	=> $post_id_list,
+			'action'		=> 'approve',
+			'redirect'		=> $redirect)
+		);
 
-		foreach ($post_info as $post_id => $post_data)
+		$post_info = get_post_data($post_id_list, 'm_approve');
+
+		if (confirm_box(true))
 		{
-			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
+			$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
+
+			$success_msg = phpbb_content_visibility::unhide_posts_topics('approve', $post_info, $post_id_list);
+
+			$messenger = new messenger();
+
+			// Notify Poster?
+			if ($notify_poster)
 			{
-				// Forum Notifications
-				user_notification('post', $post_data['topic_title'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
+				foreach ($post_info as $post_id => $post_data)
+				{
+					if ($post_data['poster_id'] == ANONYMOUS)
+					{
+						continue;
+					}
+
+					$email_template = ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id']) ? 'topic_approved' : 'post_approved';
+
+					$messenger->template($email_template, $post_data['user_lang']);
+
+					$messenger->to($post_data['user_email'], $post_data['username']);
+					$messenger->im($post_data['user_jabber'], $post_data['username']);
+
+					$messenger->assign_vars(array(
+						'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
+						'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
+						'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])),
+
+						'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&e=0",
+						'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
+					);
+
+					$messenger->send($post_data['user_notify_type']);
+				}
+			}
+
+			$messenger->save_queue();
+
+			// Send out normal user notifications
+			$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
+
+			foreach ($post_info as $post_id => $post_data)
+			{
+				if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
+				{
+					// Forum Notifications
+					user_notification('post', $post_data['topic_title'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
+				}
+				else
+				{
+					// Topic Notifications
+					user_notification('reply', $post_data['post_subject'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
+				}
+			}
+
+			if (sizeof($post_id_list) == 1)
+			{
+				$post_data = $post_info[$post_id_list[0]];
+				$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
+			}
+			unset($post_info);
+		}
+		else
+		{
+			$show_notify = false;
+
+			if ($config['email_enable'] || $config['jab_enable'])
+			{
+				foreach ($post_info as $post_data)
+				{
+					if ($post_data['poster_id'] == ANONYMOUS)
+					{
+						continue;
+					}
+					else
+					{
+						$show_notify = true;
+						break;
+					}
+				}
+			}
+
+			$template->assign_vars(array(
+				'S_NOTIFY_POSTER'	=> $show_notify,
+				'S_APPROVE'			=> true)
+			);
+
+			confirm_box(false, 'APPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
+		}
+
+		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = reapply_sid($redirect);
+
+		if (!$success_msg)
+		{
+			redirect($redirect);
+		}
+		else
+		{
+			meta_refresh(3, $redirect);
+
+			// If approving one post, also give links back to post...
+			$add_message = '';
+			if (sizeof($post_id_list) == 1 && !empty($post_url))
+			{
+				$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
+			}
+
+			$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
+
+			if ($request->is_ajax())
+			{
+				$json_response = new phpbb_json_response;
+				$json_response->send(array(
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $message,
+					'REFRESH_DATA'		=> null,
+					'visible'			=> true,
+				));
+			}
+
+			trigger_error($message);
+		}
+	}
+
+	/**
+	* Disapprove Post/Topic
+	*/
+	function disapprove_posts($post_id_list, $id, $mode)
+	{
+		global $db, $template, $user, $config;
+		global $phpEx, $phpbb_root_path;
+		global $request;
+
+		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
+		{
+			trigger_error('NOT_AUTHORISED');
+		}
+
+		$redirect = request_var('redirect', build_url(array('t', 'mode', 'quickmod')) . "&amp;mode=$mode");
+		$reason = utf8_normalize_nfc(request_var('reason', '', true));
+		$reason_id = request_var('reason_id', 0);
+		$success_msg = $additional_msg = '';
+
+		$s_hidden_fields = build_hidden_fields(array(
+			'i'				=> $id,
+			'mode'			=> $mode,
+			'post_id_list'	=> $post_id_list,
+			'action'		=> 'disapprove',
+			'redirect'		=> $redirect)
+		);
+
+		$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
+		$disapprove_reason = '';
+
+		if ($reason_id)
+		{
+			$sql = 'SELECT reason_title, reason_description
+				FROM ' . REPORTS_REASONS_TABLE . "
+				WHERE reason_id = $reason_id";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$row || (!$reason && strtolower($row['reason_title']) == 'other'))
+			{
+				$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
+
+				$request->overwrite('confirm', null, phpbb_request_interface::POST);
+				$request->overwrite('confirm_key', null, phpbb_request_interface::POST);
+				$request->overwrite('confirm_key', null, phpbb_request_interface::REQUEST);
 			}
 			else
 			{
-				// Topic Notifications
-				user_notification('reply', $post_data['post_subject'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
+				// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
+				$disapprove_reason = (strtolower($row['reason_title']) != 'other') ? ((isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])])) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
+				$disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
+
+				if (isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
+				{
+					$disapprove_reason_lang = strtoupper($row['reason_title']);
+				}
+
+				$email_disapprove_reason = $disapprove_reason;
 			}
 		}
 
-		if (sizeof($post_id_list) == 1)
-		{
-			$post_data = $post_info[$post_id_list[0]];
-			$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
-		}
-		unset($post_info);
-	}
-	else
-	{
-		$show_notify = false;
+		$post_info = get_post_data($post_id_list, 'm_approve');
 
-		if ($config['email_enable'] || $config['jab_enable'])
+		if (confirm_box(true))
 		{
+			$disapprove_log = $disapprove_log_topics = $disapprove_log_posts = array();
+			$topic_replies_real = $post_disapprove_list = array();
+
+			// Build a list of posts to be unapproved and get the related topics real replies count
+			foreach ($post_info as $post_id => $post_data)
+			{
+				$post_disapprove_list[$post_id] = $post_data['topic_id'];
+				if (!isset($topic_replies_real[$post_data['topic_id']]))
+				{
+					$topic_replies_real[$post_data['topic_id']] = $post_data['topic_replies_real'];
+				}
+			}
+
+			// Now we build the log array
+			foreach ($post_disapprove_list as $post_id => $topic_id)
+			{
+				// If the count of disapproved posts for the topic is greater
+				// than topic's real replies count, the whole topic is disapproved/deleted
+				if (sizeof(array_keys($post_disapprove_list, $topic_id)) > $topic_replies_real[$topic_id])
+				{
+					// Don't write the log more than once for every topic
+					if (!isset($disapprove_log_topics[$topic_id]))
+					{
+						// Build disapproved topics log
+						$disapprove_log_topics[$topic_id] = array(
+							'type'			=> 'topic',
+							'post_subject'	=> $post_info[$post_id]['topic_title'],
+							'forum_id'		=> $post_info[$post_id]['forum_id'],
+							'topic_id'		=> 0, // useless to log a topic id, as it will be deleted
+						);
+					}
+				}
+				else
+				{
+					// Build disapproved posts log
+					$disapprove_log_posts[] = array(
+						'type'			=> 'post',
+						'post_subject'	=> $post_info[$post_id]['post_subject'],
+						'forum_id'		=> $post_info[$post_id]['forum_id'],
+						'topic_id'		=> $post_info[$post_id]['topic_id'],
+					);
+
+				}
+			}
+
+			// Get disapproved posts/topics counts separately
+			$num_disapproved_topics = sizeof($disapprove_log_topics);
+			$num_disapproved_posts = sizeof($disapprove_log_posts);
+
+			// Build the whole log
+			$disapprove_log = array_merge($disapprove_log_topics, $disapprove_log_posts);
+
+			// Unset unneeded arrays
+			unset($post_data, $disapprove_log_topics, $disapprove_log_posts);
+
+			// Let's do the job - delete disapproved posts
+			if (sizeof($post_disapprove_list))
+			{
+				if (!function_exists('delete_posts'))
+				{
+					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+				}
+
+				// We do not check for permissions here, because the moderator allowed approval/disapproval should be allowed to delete the disapproved posts
+				// Note: function delete_posts triggers related forums/topics sync,
+				// so we don't need to call update_post_information later and to adjust real topic replies or forum topics count manually
+				delete_posts('post_id', array_keys($post_disapprove_list));
+
+				foreach ($disapprove_log as $log_data)
+				{
+					add_log('mod', $log_data['forum_id'], $log_data['topic_id'], ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED', $log_data['post_subject'], $disapprove_reason);
+				}
+			}
+
+			$messenger = new messenger();
+
+			// Notify Poster?
+			if ($notify_poster)
+			{
+				$lang_reasons = array();
+
+				foreach ($post_info as $post_id => $post_data)
+				{
+					if ($post_data['poster_id'] == ANONYMOUS)
+					{
+						continue;
+					}
+
+					if (isset($disapprove_reason_lang))
+					{
+						// Okay we need to get the reason from the posters language
+						if (!isset($lang_reasons[$post_data['user_lang']]))
+						{
+							// Assign the current users translation as the default, this is not ideal but getting the board default adds another layer of complexity.
+							$lang_reasons[$post_data['user_lang']] = $user->lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang];
+
+							// Only load up the language pack if the language is different to the current one
+							if ($post_data['user_lang'] != $user->lang_name && file_exists($phpbb_root_path . '/language/' . $post_data['user_lang'] . '/mcp.' . $phpEx))
+							{
+								// Load up the language pack
+								$lang = array();
+								@include($phpbb_root_path . '/language/' . basename($post_data['user_lang']) . '/mcp.' . $phpEx);
+
+								// If we find the reason in this language pack use it
+								if (isset($lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang]))
+								{
+									$lang_reasons[$post_data['user_lang']] = $lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang];
+								}
+
+								unset($lang); // Free memory
+							}
+						}
+
+						$email_disapprove_reason = $lang_reasons[$post_data['user_lang']];
+						$email_disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
+					}
+
+					$email_template = ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id']) ? 'topic_disapproved' : 'post_disapproved';
+
+					$messenger->template($email_template, $post_data['user_lang']);
+
+					$messenger->to($post_data['user_email'], $post_data['username']);
+					$messenger->im($post_data['user_jabber'], $post_data['username']);
+
+					$messenger->assign_vars(array(
+						'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
+						'REASON'		=> htmlspecialchars_decode($email_disapprove_reason),
+						'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
+						'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])))
+					);
+
+					$messenger->send($post_data['user_notify_type']);
+				}
+
+				unset($lang_reasons);
+			}
+			unset($post_info, $disapprove_reason, $email_disapprove_reason, $disapprove_reason_lang);
+
+			$messenger->save_queue();
+
+			if ($num_disapproved_topics)
+			{
+				$success_msg = ($num_disapproved_topics == 1) ? 'TOPIC_DISAPPROVED_SUCCESS' : 'TOPICS_DISAPPROVED_SUCCESS';
+			}
+			else
+			{
+				$success_msg = ($num_disapproved_posts == 1) ? 'POST_DISAPPROVED_SUCCESS' : 'POSTS_DISAPPROVED_SUCCESS';
+			}
+		}
+		else
+		{
+			include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
+			display_reasons($reason_id);
+
+			$show_notify = false;
+
 			foreach ($post_info as $post_data)
 			{
 				if ($post_data['poster_id'] == ANONYMOUS)
@@ -661,320 +939,41 @@ function approve_post($post_id_list, $id, $mode)
 					break;
 				}
 			}
+
+			$template->assign_vars(array(
+				'S_NOTIFY_POSTER'	=> $show_notify,
+				'S_APPROVE'			=> false,
+				'REASON'			=> $reason,
+				'ADDITIONAL_MSG'	=> $additional_msg)
+			);
+
+			confirm_box(false, 'DISAPPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 		}
 
-		$template->assign_vars(array(
-			'S_NOTIFY_POSTER'	=> $show_notify,
-			'S_APPROVE'			=> true)
-		);
+		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = reapply_sid($redirect);
 
-		confirm_box(false, 'APPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
-	}
-
-	$redirect = request_var('redirect', "index.$phpEx");
-	$redirect = reapply_sid($redirect);
-
-	if (!$success_msg)
-	{
-		redirect($redirect);
-	}
-	else
-	{
-		meta_refresh(3, $redirect);
-
-		// If approving one post, also give links back to post...
-		$add_message = '';
-		if (sizeof($post_id_list) == 1 && !empty($post_url))
+		if (!$success_msg)
 		{
-			$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
-		}
-
-		$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
-
-		if ($request->is_ajax())
-		{
-			$json_response = new phpbb_json_response;
-			$json_response->send(array(
-				'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-				'MESSAGE_TEXT'		=> $message,
-				'REFRESH_DATA'		=> null,
-				'visible'			=> true,
-			));
-		}
-
-		trigger_error($message);
-	}
-}
-
-/**
-* Disapprove Post/Topic
-*/
-function disapprove_post($post_id_list, $id, $mode)
-{
-	global $db, $template, $user, $config;
-	global $phpEx, $phpbb_root_path;
-	global $request;
-
-	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
-	{
-		trigger_error('NOT_AUTHORISED');
-	}
-
-	$redirect = request_var('redirect', build_url(array('t', 'mode', 'quickmod')) . "&amp;mode=$mode");
-	$reason = utf8_normalize_nfc(request_var('reason', '', true));
-	$reason_id = request_var('reason_id', 0);
-	$success_msg = $additional_msg = '';
-
-	$s_hidden_fields = build_hidden_fields(array(
-		'i'				=> $id,
-		'mode'			=> $mode,
-		'post_id_list'	=> $post_id_list,
-		'action'		=> 'disapprove',
-		'redirect'		=> $redirect)
-	);
-
-	$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
-	$disapprove_reason = '';
-
-	if ($reason_id)
-	{
-		$sql = 'SELECT reason_title, reason_description
-			FROM ' . REPORTS_REASONS_TABLE . "
-			WHERE reason_id = $reason_id";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (!$row || (!$reason && strtolower($row['reason_title']) == 'other'))
-		{
-			$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
-
-			$request->overwrite('confirm', null, phpbb_request_interface::POST);
-			$request->overwrite('confirm_key', null, phpbb_request_interface::POST);
-			$request->overwrite('confirm_key', null, phpbb_request_interface::REQUEST);
+			redirect($redirect);
 		}
 		else
 		{
-			// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-			$disapprove_reason = (strtolower($row['reason_title']) != 'other') ? ((isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])])) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
-			$disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
+			$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>');
 
-			if (isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
+			if ($request->is_ajax())
 			{
-				$disapprove_reason_lang = strtoupper($row['reason_title']);
+				$json_response = new phpbb_json_response;
+				$json_response->send(array(
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $message,
+					'REFRESH_DATA'		=> null,
+					'visible'			=> false,
+				));
 			}
 
-			$email_disapprove_reason = $disapprove_reason;
+			meta_refresh(3, $redirect);
+			trigger_error($message);
 		}
-	}
-
-	$post_info = get_post_data($post_id_list, 'm_approve');
-
-	if (confirm_box(true))
-	{
-		$disapprove_log = $disapprove_log_topics = $disapprove_log_posts = array();
-		$topic_replies_real = $post_disapprove_list = array();
-
-		// Build a list of posts to be unapproved and get the related topics real replies count
-		foreach ($post_info as $post_id => $post_data)
-		{
-			$post_disapprove_list[$post_id] = $post_data['topic_id'];
-			if (!isset($topic_replies_real[$post_data['topic_id']]))
-			{
-				$topic_replies_real[$post_data['topic_id']] = $post_data['topic_replies_real'];
-			}
-		}
-
-		// Now we build the log array
-		foreach ($post_disapprove_list as $post_id => $topic_id)
-		{
-			// If the count of disapproved posts for the topic is greater
-			// than topic's real replies count, the whole topic is disapproved/deleted
-			if (sizeof(array_keys($post_disapprove_list, $topic_id)) > $topic_replies_real[$topic_id])
-			{
-				// Don't write the log more than once for every topic
-				if (!isset($disapprove_log_topics[$topic_id]))
-				{
-					// Build disapproved topics log
-					$disapprove_log_topics[$topic_id] = array(
-						'type'			=> 'topic',
-						'post_subject'	=> $post_info[$post_id]['topic_title'],
-						'forum_id'		=> $post_info[$post_id]['forum_id'],
-						'topic_id'		=> 0, // useless to log a topic id, as it will be deleted
-					);
-				}
-			}
-			else
-			{
-				// Build disapproved posts log
-				$disapprove_log_posts[] = array(
-					'type'			=> 'post',
-					'post_subject'	=> $post_info[$post_id]['post_subject'],
-					'forum_id'		=> $post_info[$post_id]['forum_id'],
-					'topic_id'		=> $post_info[$post_id]['topic_id'],
-				);
-
-			}
-		}
-
-		// Get disapproved posts/topics counts separately
-		$num_disapproved_topics = sizeof($disapprove_log_topics);
-		$num_disapproved_posts = sizeof($disapprove_log_posts);
-
-		// Build the whole log
-		$disapprove_log = array_merge($disapprove_log_topics, $disapprove_log_posts);
-
-		// Unset unneeded arrays
-		unset($post_data, $disapprove_log_topics, $disapprove_log_posts);
-
-		// Let's do the job - delete disapproved posts
-		if (sizeof($post_disapprove_list))
-		{
-			if (!function_exists('delete_posts'))
-			{
-				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-			}
-
-			// We do not check for permissions here, because the moderator allowed approval/disapproval should be allowed to delete the disapproved posts
-			// Note: function delete_posts triggers related forums/topics sync,
-			// so we don't need to call update_post_information later and to adjust real topic replies or forum topics count manually
-			delete_posts('post_id', array_keys($post_disapprove_list));
-
-			foreach ($disapprove_log as $log_data)
-			{
-				add_log('mod', $log_data['forum_id'], $log_data['topic_id'], ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED', $log_data['post_subject'], $disapprove_reason);
-			}
-		}
-
-		$messenger = new messenger();
-
-		// Notify Poster?
-		if ($notify_poster)
-		{
-			$lang_reasons = array();
-
-			foreach ($post_info as $post_id => $post_data)
-			{
-				if ($post_data['poster_id'] == ANONYMOUS)
-				{
-					continue;
-				}
-
-				if (isset($disapprove_reason_lang))
-				{
-					// Okay we need to get the reason from the posters language
-					if (!isset($lang_reasons[$post_data['user_lang']]))
-					{
-						// Assign the current users translation as the default, this is not ideal but getting the board default adds another layer of complexity.
-						$lang_reasons[$post_data['user_lang']] = $user->lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang];
-
-						// Only load up the language pack if the language is different to the current one
-						if ($post_data['user_lang'] != $user->lang_name && file_exists($phpbb_root_path . '/language/' . $post_data['user_lang'] . '/mcp.' . $phpEx))
-						{
-							// Load up the language pack
-							$lang = array();
-							@include($phpbb_root_path . '/language/' . basename($post_data['user_lang']) . '/mcp.' . $phpEx);
-
-							// If we find the reason in this language pack use it
-							if (isset($lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang]))
-							{
-								$lang_reasons[$post_data['user_lang']] = $lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang];
-							}
-
-							unset($lang); // Free memory
-						}
-					}
-
-					$email_disapprove_reason = $lang_reasons[$post_data['user_lang']];
-					$email_disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
-				}
-
-				$email_template = ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id']) ? 'topic_disapproved' : 'post_disapproved';
-
-				$messenger->template($email_template, $post_data['user_lang']);
-
-				$messenger->to($post_data['user_email'], $post_data['username']);
-				$messenger->im($post_data['user_jabber'], $post_data['username']);
-
-				$messenger->assign_vars(array(
-					'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
-					'REASON'		=> htmlspecialchars_decode($email_disapprove_reason),
-					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
-					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])))
-				);
-
-				$messenger->send($post_data['user_notify_type']);
-			}
-
-			unset($lang_reasons);
-		}
-		unset($post_info, $disapprove_reason, $email_disapprove_reason, $disapprove_reason_lang);
-
-		$messenger->save_queue();
-
-		if ($num_disapproved_topics)
-		{
-			$success_msg = ($num_disapproved_topics == 1) ? 'TOPIC_DISAPPROVED_SUCCESS' : 'TOPICS_DISAPPROVED_SUCCESS';
-		}
-		else
-		{
-			$success_msg = ($num_disapproved_posts == 1) ? 'POST_DISAPPROVED_SUCCESS' : 'POSTS_DISAPPROVED_SUCCESS';
-		}
-	}
-	else
-	{
-		include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-
-		display_reasons($reason_id);
-
-		$show_notify = false;
-
-		foreach ($post_info as $post_data)
-		{
-			if ($post_data['poster_id'] == ANONYMOUS)
-			{
-				continue;
-			}
-			else
-			{
-				$show_notify = true;
-				break;
-			}
-		}
-
-		$template->assign_vars(array(
-			'S_NOTIFY_POSTER'	=> $show_notify,
-			'S_APPROVE'			=> false,
-			'REASON'			=> $reason,
-			'ADDITIONAL_MSG'	=> $additional_msg)
-		);
-
-		confirm_box(false, 'DISAPPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
-	}
-
-	$redirect = request_var('redirect', "index.$phpEx");
-	$redirect = reapply_sid($redirect);
-
-	if (!$success_msg)
-	{
-		redirect($redirect);
-	}
-	else
-	{
-		$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>');
-
-		if ($request->is_ajax())
-		{
-			$json_response = new phpbb_json_response;
-			$json_response->send(array(
-				'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-				'MESSAGE_TEXT'		=> $message,
-				'REFRESH_DATA'		=> null,
-				'visible'			=> false,
-			));
-		}
-
-		meta_refresh(3, $redirect);
-		trigger_error($message);
 	}
 }
