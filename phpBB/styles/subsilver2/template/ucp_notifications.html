@@ -89,10 +89,14 @@
 						</tr>
 						<!-- BEGIN notification_list -->
 							<!-- IF notification_list.UNREAD --><tr class="row3"><!-- ELSEIF notification_list.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-								<td  width="50px">
-									{notification_list.AVATAR}
-								</td>
-								<td valign="top">
+								<!-- IF notification_list.AVATAR -->
+									<td  width="50px">
+										{notification_list.AVATAR}
+									</td>
+									<td valign="top">
+								<!-- ELSE -->
+									<td colspan="2" valign="top">
+								<!-- ENDIF -->
 									<!-- IF notification_list.URL or notification_list.U_MARK_READ --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
 										{notification_list.FORMATTED_TITLE}
 									<!-- IF notification_list.URL --></a><!-- ENDIF --><br />
