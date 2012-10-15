@@ -236,37 +236,18 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 		}
 
 		return ($find_all) ? $found_all : $source_file;
-        /*
-		// If we don't have a file assigned to this handle, die.
-		if (!isset($this->files['style'][0][$handle]))
-		{
-			trigger_error("style resource locator: No file specified for handle $handle", E_USER_ERROR);
-		}
-
-                $source_file = $this->files['style'][0][$handle];
-                $source_file = $this->locate_source_file($source_file, $find_all);
-
-                if (!$find_all && $source_file === false) {
-                        // search failed
-			trigger_error("style resource locator: File for handle $handle does not exist.", E_USER_ERROR);
-                }
-
-                return $source_file;
-                */
 	}
 
 	/**
 	* Locate files in the template tree
 	* This searches for the first file it finds in any section (primary phpBB styles, any installed extensions)
 	* for the most specific (e.g. styles/prosilver_inheriting_style/template/test > styles/prosilver/template/test > styles/all/template/test)
-	* template file and returns either the first one found if $find_all = false (this should be in the phpBB styles)
-	* or returns an array of files
+	* template file and returns an array of files
 	*
 	* @param string $source_file File name to look for (e.g. test.html)
-	* @param bool $find_all Find all or just the first one?
-	* @return string|array String if $find_all is false, array of strings if $find_all is true
+	* @return array array of strings (file paths)
 	*/
-    public function locate_source_file($source_file, $find_all = false)
+    public function locate_source_files($source_file)
     {
 		$files = array();
 
@@ -279,11 +260,6 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 
 				if (file_exists($file))
 				{
-					if (!$find_all)
-					{
-						return $file;
-					}
-
 					$files[] = $file;
 
 					// Find the first source file in this root path, ignore ones lower in the tree

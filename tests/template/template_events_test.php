@@ -24,20 +24,12 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 			),
 			*/
 			array(
-				'Simple template event',
-				'event_simple.html',
+				'Test template event',
+				'event_test.html',
 				array(),
 				array(),
 				array(),
-				"Simple in trivial extension.",
-			),
-			array(
-				'Universal template event ("all" style)',
-				'event_universal.html',
-				array(),
-				array(),
-				array(),
-				"Universal in trivial extension.",
+				'',
 			),
 		);
 	}
@@ -55,14 +47,22 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
 	}
 
-	protected function setup_engine(array $new_config = array())
+	protected function setup_engine(array $new_config = array(), $style_tree = false)
 	{
 		global $phpbb_root_path, $phpEx, $user;
+
+		if ($style_tree == false)
+		{
+	 		$style_tree = array(
+				'./styles/prosilver_inherit',
+				'./styles/prosilver',
+				'./styles/all',
+			);
+		}
 
 		$defaults = $this->config_defaults();
 		$config = new phpbb_config(array_merge($defaults, $new_config));
 
-		$this->template_path = dirname(__FILE__) . '/templates';
 		$this->style_resource_locator = new phpbb_style_resource_locator();
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',
@@ -72,11 +72,21 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 					'ext_active'    => true,
 					'ext_path'      => 'ext/trivial/',
 				),
+				'trivial1' => array(
+					'ext_name'      => 'trivial1',
+					'ext_active'    => true,
+					'ext_path'      => 'ext/trivial1/',
+				),
+				'trivial2' => array(
+					'ext_name'      => 'trivial2',
+					'ext_active'    => true,
+					'ext_path'      => 'ext/trivial2/',
+				),
 			)
 		);
 		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->extension_manager);
-		$this->style_provider = new phpbb_style_path_provider();
+		$this->style_provider = new phpbb_style_extension_path_provider($this->extension_manager, new phpbb_style_path_provider());
 		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider, $this->template);
-		$this->style->set_custom_style('tests', array($this->template_path), '');
+		$this->style->set_custom_style('tests', $style_tree);
 	}
 }
