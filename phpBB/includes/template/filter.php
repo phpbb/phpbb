@@ -886,28 +886,18 @@ class phpbb_template_filter extends php_user_filter
 
 		if ($this->extension_manager)
 		{
-			$finder = $this->extension_manager->get_finder();
-
-			$files = $finder
-				->extension_prefix($location)
-				->extension_suffix('.html')
-				->extension_directory("/styles/all/template")
-				->get_files();
-                        
-                        $located_files = $this->locator->locate_source_file($location . '.html', true);
-                        dump(1, $location, $located_files);
-
-			$files = array_merge($files, $located_files);
-                        dump(444, $files);
+            $files = $this->locator->locate_source_file($location . '.html', true);
 
 			$all_compiled = '';
 			foreach ($files as $file)
 			{
 				$compiled = $this->template_compile->compile_file($file);
-                                dump($compiled);
-                                if ($compiled === false) {
-                                        trigger_error(sprintf('The file could not be compiled: %s', phpbb_filter_root_path($file)), E_USER_ERROR);
-                                }
+
+                if ($compiled === false)
+                {
+                        trigger_error(sprintf('The file could not be compiled: %s', phpbb_filter_root_path($file)), E_USER_ERROR);
+                }
+
 				$all_compiled .= $compiled;
 			}
 			// Need spaces inside php tags as php cannot grok

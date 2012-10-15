@@ -130,6 +130,7 @@ services:
             - @config
             - @user
             - @style.resource_locator
+            - @ext.manager
             - @style.path_provider_ext
 
     user:

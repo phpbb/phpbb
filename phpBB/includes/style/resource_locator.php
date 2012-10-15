@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 
 
 /**
-* Style resource locator. 
+* Style resource locator.
 * Maintains mapping from template handles to source template file paths.
 * Locates style files: resources (such as .js and .css files) and templates.
 *
@@ -150,7 +150,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* returns actually exists, it is faster than get_source_file_for_handle.
 	*
 	* Use get_source_file_for_handle to obtain the actual path that is
-	* guaranteed to exist (which might come from the parent style 
+	* guaranteed to exist (which might come from the parent style
 	* directory if primary style has parent styles).
 	*
 	* This function will trigger an error if the handle was never
@@ -242,61 +242,58 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 		{
 			trigger_error("style resource locator: No file specified for handle $handle", E_USER_ERROR);
 		}
-                
+
                 $source_file = $this->files['style'][0][$handle];
                 $source_file = $this->locate_source_file($source_file, $find_all);
-                
+
                 if (!$find_all && $source_file === false) {
                         // search failed
 			trigger_error("style resource locator: File for handle $handle does not exist.", E_USER_ERROR);
                 }
-                
+
                 return $source_file;
                 */
 	}
-        
-        public function locate_source_file($source_file, $find_all = false) {
-        dump($source_file);
-		$tried = $source_file;
-		$found = false;
-		$found_all = array();
+
+	/**
+	* Locate files in the template tree
+	* This searches for the first file it finds in any section (primary phpBB styles, any installed extensions)
+	* for the most specific (e.g. styles/prosilver_inheriting_style/template/test > styles/prosilver/template/test > styles/all/template/test)
+	* template file and returns either the first one found if $find_all = false (this should be in the phpBB styles)
+	* or returns an array of files
+	*
+	* @param string $source_file File name to look for (e.g. test.html)
+	* @param bool $find_all Find all or just the first one?
+	* @return string|array String if $find_all is false, array of strings if $find_all is true
+	*/
+    public function locate_source_file($source_file, $find_all = false)
+    {
+		$files = array();
+
+		// Go through root directories
 		foreach ($this->roots as $root_key => $root_paths)
 		{
-			foreach ($root_paths as $root_index => $root)
+			foreach ($root_paths as $root)
 			{
-				$source_file = $root . '/' . $source_file;
-				if (file_exists($source_file))
+				$file = $root . '/template/' . $source_file;
+
+				if (file_exists($file))
 				{
-					$found = true;
-					break;
-				}
-			}
-			if ($found)
-			{
-				if ($find_all)
-				{
-                                dump('x', $root_key, $source_file);
-					$found_all[] = $source_file;
-					$found = false;
-				}
-				else
-				{
+					if (!$find_all)
+					{
+						return $file;
+					}
+
+					$files[] = $file;
+
+					// Find the first source file in this root path, ignore ones lower in the tree
 					break;
 				}
 			}
 		}
-                
-                dump(333, $find_all, $found_all);
-                if ($find_all) {
-                        return $found_all;
-                } else {
-                        if ($found) {
-                                return $source_file;
-                        } else {
-                                return false;
-                        }
-                }
-        }
+
+        return $files;
+    }
 
 	/**
 	* Locates source file path, accounting for styles tree and verifying that

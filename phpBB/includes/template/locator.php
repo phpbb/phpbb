@@ -1,16 +1,4 @@
 <?php
-
-function dump() {
-$args = func_get_args();
-
-ob_start();
-var_dump($args);
-$output = ob_get_clean();
-$stream = fopen('php://stderr', 'w');
-fputs($stream, $output);
-fclose($stream);
-}
-
 /**
 *
 * @package phpBB3
@@ -78,7 +66,7 @@ interface phpbb_template_locator
 	* returns actually exists, it is faster than get_source_file_for_handle.
 	*
 	* Use get_source_file_for_handle to obtain the actual path that is
-	* guaranteed to exist (which might come from the parent style 
+	* guaranteed to exist (which might come from the parent style
 	* directory if primary style has parent styles).
 	*
 	* This function will trigger an error if the handle was never
