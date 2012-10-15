@@ -86,7 +86,13 @@
 			</li>
 		</ul>
 	<!-- ELSE -->
-		<p class="notopics"><strong><!-- IF S_TOPICS -->{L_NO_TOPICS_QUEUE}<!-- ELSE -->{L_NO_POSTS_QUEUE}<!-- ENDIF --></strong></p>
+		<p class="notopics"><strong>
+			<!-- IF S_RESTORE -->
+				<!-- IF S_TOPICS -->{L_NO_TOPICS_DELETED}<!-- ELSE -->{L_NO_POSTS_DELETED}<!-- ENDIF -->
+			<!-- ELSE -->
+				<!-- IF S_TOPICS -->{L_NO_TOPICS_QUEUE}<!-- ELSE -->{L_NO_POSTS_QUEUE}<!-- ENDIF -->
+			<!-- ENDIF -->
+		</strong></p>
 	<!-- ENDIF -->
 
 	</div>

@@ -229,8 +229,12 @@ class mcp_queue
 
 			case 'unapproved_topics':
 			case 'unapproved_posts':
+			case 'deleted_topics':
 			case 'deleted_posts':
 				$m_perm = 'm_approve';
+				$is_topics = ($mode == 'unapproved_topics' || $mode == 'deleted_topics') ? true : false;
+				$is_restore = ($mode == 'deleted_posts' || $mode == 'deleted_topics') ? true : false;
+				$visibility_const = (!$is_restore) ? ITEM_UNAPPROVED : ITEM_DELETED;
 
 				$user->add_lang(array('viewtopic', 'viewforum'));
 
@@ -312,11 +316,8 @@ class mcp_queue
 
 				$forum_names = array();
 
-				if ($mode == 'unapproved_posts' || $mode == 'deleted_posts')
+				if (!$is_topics)
 				{
-					$visibility_const = ($mode == 'unapproved_posts') ? ITEM_UNAPPROVED : ITEM_DELETED;
-					$starter_sql = ($mode == 'unapproved_posts') ? 'AND t.topic_first_post_id <> p.post_id' : '';
-
 					$sql = 'SELECT p.post_id
 						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . '
 						WHERE ' . $db->sql_in_set('p.forum_id', $forum_list) . '
@@ -324,7 +325,7 @@ class mcp_queue
 							' . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
 							' . (($topic_id) ? 'AND p.topic_id = ' . $topic_id : '') . "
 							AND t.topic_id = p.topic_id
-							$starter_sql
+							AND t.topic_visibility <> p.post_visibility
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -370,9 +371,9 @@ class mcp_queue
 				else
 				{
 					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_attachment AS post_attachment, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
-						FROM ' . TOPICS_TABLE . " t
-						WHERE " . $db->sql_in_set('forum_id', $forum_list) . "
-							AND topic_visibility = " . ITEM_UNAPPROVED . "
+						FROM ' . TOPICS_TABLE . ' t
+						WHERE ' . $db->sql_in_set('forum_id', $forum_list) . '
+							AND topic_visibility = ' . $visibility_const . "
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -432,22 +433,22 @@ class mcp_queue
 
 				$base_url = $this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
 				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
-				
+
 				// Now display the page
 				$template->assign_vars(array(
-					'L_DISPLAY_ITEMS'		=> ($mode == 'unapproved_posts') ? $user->lang['DISPLAY_POSTS'] : $user->lang['DISPLAY_TOPICS'],
+					'L_DISPLAY_ITEMS'		=> (!$is_topics) ? $user->lang['DISPLAY_POSTS'] : $user->lang['DISPLAY_TOPICS'],
 					'L_EXPLAIN'				=> $user->lang['MCP_QUEUE_' . strtoupper($mode) . '_EXPLAIN'],
 					'L_TITLE'				=> $user->lang['MCP_QUEUE_' . strtoupper($mode)],
 					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
 
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
-					'S_TOPICS'				=> ($mode == 'unapproved_topics') ? true : false,
-					'S_RESTORE'				=> ($mode == 'deleted_posts') ? true : false,
+					'S_TOPICS'				=> $is_topics,
+					'S_RESTORE'				=> $is_restore,
 
 					'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
-					'TOTAL'					=> $user->lang((($mode == 'unapproved_posts') ? 'VIEW_TOPIC_POSTS' : 'VIEW_FORUM_TOPICS'), (int) $total),
+					'TOTAL'					=> $user->lang(((!$is_topics) ? 'VIEW_TOPIC_POSTS' : 'VIEW_FORUM_TOPICS'), (int) $total),
 				));
 
 				$this->tpl_name = 'mcp_queue';
@@ -480,9 +481,9 @@ class mcp_queue
 			'i'				=> $id,
 			'mode'			=> $mode,
 			'post_id_list'	=> $post_id_list,
-			'action'		=> 'approve',
-			'redirect'		=> $redirect)
-		);
+			'action'		=> 'restore',
+			'redirect'		=> $redirect,
+		));
 
 		$post_info = get_post_data($post_id_list, 'm_approve');
 
@@ -548,6 +549,93 @@ class mcp_queue
 			if (sizeof($post_id_list) == 1 && !empty($post_url))
 			{
 				$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
+			}
+
+			$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
+
+			if ($request->is_ajax())
+			{
+				$json_response = new phpbb_json_response;
+				$json_response->send(array(
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $message,
+					'REFRESH_DATA'		=> null,
+					'visible'			=> true,
+				));
+			}
+
+			meta_refresh(3, $redirect);
+			trigger_error($message);
+		}
+	}
+
+	/**
+	* Restore topics
+	*
+	* @param $topic_id_list	array	IDs of the topics to restore
+	* @param $id			mixed	Category of the current active module
+	* @param $mode			string	Active module
+	* @return void
+	*/
+	function restore_topics($topic_id_list, $id, $mode)
+	{
+		global $db, $template, $user, $config;
+		global $phpEx, $phpbb_root_path, $request;
+
+		if (!check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
+		{
+			trigger_error('NOT_AUTHORISED');
+		}
+
+		$redirect = request_var('redirect', build_url(array('quickmod')));
+		$success_msg = '';
+
+		$s_hidden_fields = build_hidden_fields(array(
+			'i'				=> $id,
+			'mode'			=> $mode,
+			'topic_id_list'	=> $topic_id_list,
+			'action'		=> 'restore',
+			'redirect'		=> $redirect,
+		));
+
+		$topic_info = get_topic_data($topic_id_list, 'm_approve');
+
+		if (confirm_box(true))
+		{
+			foreach ($topic_info as $topic_id => $topic_data)
+			{
+				phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '');
+				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_data['forum_id']}&amp;t={$topic_id}");
+			}
+
+			if (sizeof($topic_info) >= 1)
+			{
+				$success_msg = 'TOPIC' . ((sizeof($topic_info) == 1) ? '' : 'S') . '_RESTORED_SUCCESS';
+			}
+		}
+		else
+		{
+			$template->assign_vars(array(
+				'S_APPROVE'			=> true,
+			));
+
+			confirm_box(false, 'RESTORE_TOPIC' . ((sizeof($topic_info) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
+		}
+
+		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = reapply_sid($redirect);
+
+		if (!$success_msg)
+		{
+			redirect($redirect);
+		}
+		else
+		{
+			// If restoring one topic, also give links back to topic...
+			$add_message = '';
+			if (sizeof($topic_info) == 1 && !empty($topic_url))
+			{
+				$add_message = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $topic_url . '">', '</a>');
 			}
 
 			$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;

@@ -203,6 +203,8 @@ $lang = array_merge($lang, array(
 	'MCP_QUEUE_UNAPPROVED_TOPICS_EXPLAIN'	=> 'This is a list of all topics which require approving before they will be visible to users.',
 	'MCP_QUEUE_DELETED_POSTS'				=> 'Deleted posts',
 	'MCP_QUEUE_DELETED_POSTS_EXPLAIN'		=> 'This is a list of all posts which have been soft deleted. You can restore or permanently delete the posts from this screen.',
+	'MCP_QUEUE_DELETED_TOPICS'				=> 'Deleted topics',
+	'MCP_QUEUE_DELETED_TOPICS_EXPLAIN'		=> 'This is a list of all topics which have been soft deleted. You can restore or permanently delete the topics from this screen.',
 
 	'MCP_VIEW_USER'			=> 'View warnings for a specific user',
 
@@ -240,6 +242,7 @@ $lang = array_merge($lang, array(
 	'NO_POST'						=> 'You have to select a post in order to warn the user for a post.',
 	'NO_POST_REPORT'				=> 'This post was not reported.',
 	'NO_POST_SELECTED'				=> 'You must select at least one post to perform this action.',
+	'NO_POSTS_DELETED'				=> 'There are no soft deleted posts.',
 	'NO_POSTS_QUEUE'				=> 'There are no posts waiting for approval.',
 	'NO_REASON_DISAPPROVAL'			=> 'Please give an appropriate reason for disapproval.',
 	'NO_REPORT'						=> 'No report found',
@@ -247,6 +250,7 @@ $lang = array_merge($lang, array(
 	'NO_REPORT_SELECTED'			=> 'You must select at least one report to perform this action.',
 	'NO_TOPIC_ICON'					=> 'None',
 	'NO_TOPIC_SELECTED'				=> 'You must select at least one topic to perform this action.',
+	'NO_TOPICS_DELETED'				=> 'There are no soft deleted topics.',
 	'NO_TOPICS_QUEUE'				=> 'There are no topics waiting for approval.',
 
 	'ONLY_TOPIC'			=> 'Only topic “%s”',
