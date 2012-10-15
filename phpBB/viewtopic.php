@@ -248,6 +248,13 @@ if (!$topic_data)
 }
 
 $forum_id = (int) $topic_data['forum_id'];
+
+// Now we know the forum_id and can check the permissions
+if ($topic_data['topic_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $forum_id))
+{
+	trigger_error('NO_TOPIC');
+}
+
 // This is for determining where we are (page)
 if ($post_id)
 {
@@ -319,17 +326,6 @@ if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == PO
 
 // Setup look and feel
 $user->setup('viewtopic', $topic_data['forum_style']);
-
-/* the topic "does not exist":
-* if the topic is unapproved and the user cannot approve it
-* if the topic is deleted and the user cannot restore it
-*  NB: restoring a topic has two cases: moderator restore and poster restore.
-*/
-if (($topic_data['topic_visibility'] == ITEM_UNAPPROVED && !$auth->acl_get('m_approve', $forum_id))
-	|| ($topic_data['topic_visibility'] == ITEM_DELETED && (!$auth->acl_get('m_restore', $forum_id) || ($user->data['user_id'] == $topic_data['topic_poster'] && $auth->acl_get('f_restore', $forum_id)))))
-{
-	trigger_error('NO_TOPIC');
-}
 
 // Start auth check
 if (!$auth->acl_get('f_read', $forum_id))
