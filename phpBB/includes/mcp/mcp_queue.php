@@ -62,7 +62,7 @@ class mcp_queue
 				}
 				else if ($action == 'restore')
 				{
-					restore_post($post_id_list, 'queue', $mode);
+					$this->restore_posts($post_id_list, 'queue', $mode);
 				}
 				else
 				{
@@ -443,7 +443,7 @@ class mcp_queue
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
 					'S_TOPICS'				=> ($mode == 'unapproved_topics') ? true : false,
-					'S_RESTORE'             => ($mode == 'deleted_posts') ? true : false,
+					'S_RESTORE'				=> ($mode == 'deleted_posts') ? true : false,
 
 					'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
@@ -454,102 +454,103 @@ class mcp_queue
 			break;
 		}
 	}
-}
 
-
-/**
-* Restore Post/Topic
-*/
-function restore_post($post_id_list, $id, $mode)
-{
-	global $db, $template, $user, $config;
-	global $phpEx, $phpbb_root_path, $request;
-
-	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
-	{
-		trigger_error('NOT_AUTHORISED');
-	}
-
-	$redirect = request_var('redirect', build_url(array('quickmod')));
-	$redirect = reapply_sid($redirect);
-	$success_msg = '';
-
-	$post_info = get_post_data($post_id_list, 'm_approve');
-
-	$topic_info = array();
-
-	// Group the posts by topic_id
-	foreach ($post_info as $post_id => $post_data)
-	{
-		if ($post_data['post_visibility'] == ITEM_APPROVED)
-		{
-			continue;
-		}
-		$topic_id = (int) $post_data['topic_id'];
-
-		$topic_info[$topic_id]['posts'][] = (int) $post_id;
-		$topic_info[$topic_id]['forum_id'] = (int) $post_data['forum_id'];
-
-		if ($post_id == $post_data['topic_first_post_id'])
-		{
-			$topic_info[$topic_id]['first_post'] = true;
-		}
-
-		if ($post_id == $post_data['topic_last_post_id'])
-		{
-			$topic_info[$topic_id]['last_post'] = true;
-		}
-	}
-
-	foreach ($topic_info as $topic_id => $topic_data)
-	{
-		phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '', isset($topic_data['first_post']), isset($topic_data['last_post']));
-	}
-
-	$success_msg = '';
 	/**
-	* Currently only works for approving posts
-	if (sizeof($topic_info) > 1)
-	{
-		$success_msg = ((sizeof($post_info) == 1) ? 'TOPIC_APPROVED_SUCCESS' : 'TOPICS_APPROVED_SUCCESS';
-	}
-	else
+	* Restore Posts
+	*
+	* @todo: Add some XSS protection, or even a confirm_box()
+	*
+	* @param $post_id_list	array	IDs of the posts to restore
+	* @param $id			mixed	Category of the current active module
+	* @param $mode			string	Active module
+	* @return void
 	*/
-	if (sizeof($post_info) >= 1)
+	function restore_posts($post_id_list, $id, $mode)
 	{
-		$success_msg = (sizeof($post_info) == 1) ? 'POST_APPROVED_SUCCESS' : 'POSTS_APPROVED_SUCCESS';
-	}
+		global $db, $template, $user, $config;
+		global $phpEx, $phpbb_root_path, $request;
 
-	if (!$success_msg)
-	{
-		redirect($redirect);
-	}
-	else
-	{
-		// If approving one post, also give links back to post...
-		$add_message = '';
-		if (sizeof($post_id_list) == 1 && !empty($post_url))
+		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
-			$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
+			trigger_error('NOT_AUTHORISED');
 		}
 
-		$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
+		$redirect = request_var('redirect', build_url(array('quickmod')));
+		$redirect = reapply_sid($redirect);
+		$success_msg = '';
 
-		if ($request->is_ajax())
+		$post_info = get_post_data($post_id_list, 'm_approve');
+
+		$topic_info = array();
+
+		// Group the posts by topic_id
+		foreach ($post_info as $post_id => $post_data)
 		{
-			$json_response = new phpbb_json_response;
-			$json_response->send(array(
-				'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-				'MESSAGE_TEXT'		=> $message,
-				'REFRESH_DATA'		=> null,
-				'visible'			=> true,
-			));
+			if ($post_data['post_visibility'] == ITEM_APPROVED)
+			{
+				continue;
+			}
+			$topic_id = (int) $post_data['topic_id'];
+
+			$topic_info[$topic_id]['posts'][] = (int) $post_id;
+			$topic_info[$topic_id]['forum_id'] = (int) $post_data['forum_id'];
+
+			if ($post_id == $post_data['topic_first_post_id'])
+			{
+				$topic_info[$topic_id]['first_post'] = true;
+			}
+
+			if ($post_id == $post_data['topic_last_post_id'])
+			{
+				$topic_info[$topic_id]['last_post'] = true;
+			}
+
+			$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
 		}
 
-		meta_refresh(3, $redirect);
-		trigger_error($message);
+		foreach ($topic_info as $topic_id => $topic_data)
+		{
+			phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '', isset($topic_data['first_post']), isset($topic_data['last_post']));
+		}
+
+		$success_msg = '';
+		if (sizeof($post_info) >= 1)
+		{
+			$success_msg = (sizeof($post_info) == 1) ? 'POST_RESTORED_SUCCESS' : 'POSTS_RESTORED_SUCCESS';
+		}
+
+		if (!$success_msg)
+		{
+			redirect($redirect);
+		}
+		else
+		{
+			// If restoring one post, also give links back to post...
+			$add_message = '';
+			if (sizeof($post_id_list) == 1 && !empty($post_url))
+			{
+				$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
+			}
+
+			$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
+
+			if ($request->is_ajax())
+			{
+				$json_response = new phpbb_json_response;
+				$json_response->send(array(
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $message,
+					'REFRESH_DATA'		=> null,
+					'visible'			=> true,
+				));
+			}
+
+			meta_refresh(3, $redirect);
+			trigger_error($message);
+		}
 	}
 }
+
 
 /**
 * Approve Post/Topic
