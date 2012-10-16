@@ -670,7 +670,7 @@ class mcp_queue
 	* Approve/Restore posts
 	*
 	* @param $action		string	Action we perform on the posts ('approve' or 'restore')
-	* @param $post_id_list	array	IDs of the posts to restore
+	* @param $post_id_list	array	IDs of the posts to approve/restore
 	* @param $id			mixed	Category of the current active module
 	* @param $mode			string	Active module
 	* @return void
@@ -766,9 +766,7 @@ class mcp_queue
 							continue;
 						}
 
-						$email_template = ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id']) ? 'topic_approved' : 'post_approved';
-
-						$messenger->template($email_template, $post_data['user_lang']);
+						$messenger->template('post_approved', $post_data['user_lang']);
 
 						$messenger->to($post_data['user_email'], $post_data['username']);
 						$messenger->im($post_data['user_jabber'], $post_data['username']);
@@ -793,16 +791,8 @@ class mcp_queue
 
 				foreach ($post_info as $post_id => $post_data)
 				{
-					if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
-					{
-						// Forum Notifications
-						user_notification('post', $post_data['topic_title'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
-					}
-					else
-					{
-						// Topic Notifications
-						user_notification('reply', $post_data['post_subject'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
-					}
+					// Topic Notifications
+					user_notification('reply', $post_data['post_subject'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
 				}
 			}
 		}
@@ -850,6 +840,175 @@ class mcp_queue
 			if (sizeof($post_info) == 1 && $post_url)
 			{
 				$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
+			}
+
+			$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
+
+			if ($request->is_ajax())
+			{
+				$json_response = new phpbb_json_response;
+				$json_response->send(array(
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $message,
+					'REFRESH_DATA'		=> null,
+					'visible'			=> true,
+				));
+			}
+
+			trigger_error($message);
+		}
+	}
+
+	/**
+	* Approve/Restore topics
+	*
+	* @param $action		string	Action we perform on the posts ('approve' or 'restore')
+	* @param $topic_id_list	array	IDs of the topics to approve/restore
+	* @param $id			mixed	Category of the current active module
+	* @param $mode			string	Active module
+	* @return void
+	*/
+	function approve_topics($action, $topic_id_list, $id, $mode)
+	{
+		global $db, $template, $user, $config;
+		global $phpEx, $phpbb_root_path, $request;
+
+		if (!check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
+		{
+			trigger_error('NOT_AUTHORISED');
+		}
+
+		$redirect = request_var('redirect', build_url(array('quickmod')));
+		$success_msg = $topic_url = '';
+		$approve_log = array();
+
+		$s_hidden_fields = build_hidden_fields(array(
+			'i'				=> $id,
+			'mode'			=> $mode,
+			'topic_id_list'	=> $topic_id_list,
+			'action'		=> $action,
+			'redirect'		=> $redirect,
+		));
+
+		$topic_info = get_topic_data($topic_id_list, 'm_approve');
+
+		if (confirm_box(true))
+		{
+			$notify_poster = ($action == 'approve' && isset($_REQUEST['notify_poster'])) ? true : false;
+
+			foreach ($topic_info as $topic_id => $topic_data)
+			{
+				phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '');
+
+				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_data['forum_id']}&amp;t={$topic_id}");
+
+				$approve_log[] = array(
+					'forum_id'		=> $topic_data['forum_id'],
+					'topic_id'		=> $topic_data['topic_id'],
+					'topic_title'	=> $topic_data['topic_title'],
+				);
+			}
+
+			foreach ($topic_info as $topic_id => $topic_data)
+			{
+				phpbb_content_visibility::set_topic_visibility(ITEM_APPROVED, $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '');
+			}
+
+			if (sizeof($topic_info) >= 1)
+			{
+				$success_msg = (sizeof($topic_info) == 1) ? 'TOPIC_' . strtoupper($action) . 'D_SUCCESS' : 'TOPICS_' . strtoupper($action) . 'D_SUCCESS';
+			}
+
+			foreach ($approve_log as $log_data)
+			{
+				add_log('mod', $log_data['forum_id'], $log_data['topic_id'], 'LOG_TOPIC_' . strtoupper($action) . 'D', $log_data['topic_title']);
+			}
+
+			// Only send out the mails, when the posts are being approved
+			if ($action == 'approve')
+			{
+				$messenger = new messenger();
+
+				// Notify Poster?
+				if ($notify_poster)
+				{
+					foreach ($topic_info as $topic_id => $topic_data)
+					{
+						if ($topic_data['topic_poster'] == ANONYMOUS)
+						{
+							continue;
+						}
+
+						$messenger->template('topic_approved', $topic_data['user_lang']);
+						$messenger->to($topic_data['user_email'], $topic_data['username']);
+						$messenger->im($topic_data['user_jabber'], $topic_data['username']);
+
+						$messenger->assign_vars(array(
+							'USERNAME'		=> htmlspecialchars_decode($topic_data['username']),
+							'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($topic_data['topic_title'])),
+							'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f={$topic_data['forum_id']}&t={$topic_data['topic_id']}&e=0",
+						);
+
+						$messenger->send($topic_data['user_notify_type']);
+					}
+				}
+
+				$messenger->save_queue();
+
+				// Send out normal user notifications
+				$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
+
+				foreach ($topic_info as $topic_id => $topic_data)
+				{
+					// Forum Notifications
+					user_notification('post', $topic_data['topic_title'], $topic_data['topic_title'], $topic_data['forum_name'], $topic_data['forum_id'], $topic_data['topic_id'], 0);
+				}
+			}
+		}
+		else
+		{
+			$show_notify = false;
+
+			if ($action == 'approve' && ($config['email_enable'] || $config['jab_enable']))
+			{
+				foreach ($topic_info as $topic_data)
+				{
+					if ($topic_data['topic_poster'] == ANONYMOUS)
+					{
+						continue;
+					}
+					else
+					{
+						$show_notify = true;
+						break;
+					}
+				}
+			}
+
+			$template->assign_vars(array(
+				'S_NOTIFY_POSTER'			=> $show_notify,
+				'S_' . strtoupper($action)	=> true,
+			));
+
+			confirm_box(false, strtoupper($action) . '_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
+		}
+
+		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = reapply_sid($redirect);
+
+		if (!$success_msg)
+		{
+			redirect($redirect);
+		}
+		else
+		{
+			meta_refresh(3, $redirect);
+
+			// If approving one topic, also give links back to topic...
+			$add_message = '';
+			if (sizeof($topic_info) == 1 && $topic_url)
+			{
+				$add_message = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $topic_url . '">', '</a>');
 			}
 
 			$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
