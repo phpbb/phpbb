@@ -186,7 +186,9 @@ if ($submit && $reason_id)
 		$lang_success = $user->lang['POST_REPORTED_SUCCESS'];
 
 		// Notify relevant users
-		$phpbb_notifications->add_notifications('report_post', array_merge($report_data, $row, $forum_data));
+		$phpbb_notifications->add_notifications('report_post', array_merge($report_data, $row, $forum_data, array(
+			'report_text'	=> $report_text,
+		)));
 	}
 	else
 	{
@@ -216,6 +218,7 @@ if ($submit && $reason_id)
 
 		// Notify relevant users
 		$phpbb_notifications->add_notifications('report_pm', array_merge($report_data, $row, array(
+			'report_text'	=> $report_text,
 			'from_user_id'	=> $report_data['author_id'],
 			'report_id'		=> $report_id,
 		)));
