@@ -694,7 +694,7 @@ p.rules a {
 	width: 70%;
 }
 
-.notification_list ul li a span img {
+.notification_list ul li span img {
 	float: left;
 	max-width: 50px;
 	max-height: 50px;
