@@ -720,7 +720,7 @@ p.rules a {
 	border-top: 1px solid;
 }
 
-#notification_list ul li a, .notification_list dt > a {
+#notification_list ul li a, .notification_list dt > a, #notification_list > .footer > a {
 	display: block;
 }
 
