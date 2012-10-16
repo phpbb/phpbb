@@ -126,6 +126,17 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	public function prepare_for_display()
 	{
+		if ($this->get_url())
+		{
+			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id);
+		}
+		else
+		{
+			$redirect = (($this->user->page['page_dir']) ? $this->user->page['page_dir'] . '/' : '') . $this->user->page['page_name'] . (($this->user->page['query_string']) ? '?' . $this->user->page['query_string'] : '');
+
+			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;redirect=' . urlencode($redirect));
+		}
+
 		return array(
 			'NOTIFICATION_ID'	=> $this->notification_id,
 
@@ -138,7 +149,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 			'UNREAD'			=> $this->unread,
 
-			'U_MARK_READ'		=> append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id),
+			'U_MARK_READ'		=> ($this->unread) ? $u_mark_read : '',
 		);
 	}
 

@@ -37,6 +37,11 @@ if (($mark_notification = request_var('mark_notification', 0)))
 
 		$notification->mark_read();
 
+		if (($redirect = request_var('redirect', '')))
+		{
+			redirect(append_sid($phpbb_root_path . $redirect));
+		}
+
 		redirect($notification->get_url());
 	}
 }
