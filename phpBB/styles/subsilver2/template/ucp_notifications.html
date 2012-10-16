@@ -88,22 +88,22 @@
 							<th width="15%">{L_MARK_READ}</th>
 						</tr>
 						<!-- BEGIN notification_list -->
-							<!-- IF notification_list.UNREAD --><tr class="row3"><!-- ELSEIF notification_list.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+							<tr class="row<!-- IF notification_list.UNREAD -->3<!-- ELSEIF notification_list.S_ROW_COUNT is even -->1<!-- ELSE -->2<!-- ENDIF -->">
 								<!-- IF notification_list.AVATAR -->
-									<td  width="50px">
+									<td width="50px">
 										{notification_list.AVATAR}
 									</td>
 									<td valign="top">
 								<!-- ELSE -->
-									<td colspan="2" valign="top">
+									<td colspan="2" valign="top" height="50px">
 								<!-- ENDIF -->
-									<!-- IF notification_list.URL or notification_list.U_MARK_READ --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
+									<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
 										{notification_list.FORMATTED_TITLE}
 									<!-- IF notification_list.URL --></a><!-- ENDIF --><br />
 									{notification_list.TIME}
 								</td>
 								<td align="center">
-									<!-- IF not notification_list.UNREAD --><input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}" /><!-- ENDIF -->
+									<!-- IF notification_list.UNREAD --><input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}" /><!-- ENDIF -->
 								</td>
 							</tr>
 						<!-- END notification_list -->
