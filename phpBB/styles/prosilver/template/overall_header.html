@@ -140,26 +140,30 @@
 				<li>
 					[ <a href="#" id="notification_list_button" title="{NOTIFICATIONS_COUNT}">{NOTIFICATIONS_COUNT}</a> ] &bull;
 					<div id="notification_list" class="notification_list">
-						<ul class="topiclist forums">
-						<!-- BEGIN notifications -->
-							<li class="row<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
+						<div class="header">
+							{L_NOTIFICATIONS}
+						</div>
+						<ul>
+							<!-- BEGIN notifications -->
+							<li class="<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
 								<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
-								<span>
-										{notifications.AVATAR}
-										<span class="notification_title">
-											{notifications.FORMATTED_TITLE}
-											<div class="notification_time">{notifications.TIME}</div>
-										</span>
-								</span>
+									{notifications.AVATAR}
+									<div>
+										<p>{notifications.FORMATTED_TITLE}</p>
+										<p>{notifications.TIME}</p>
+
+										<!-- IF not notifications.URL and notifications.U_MARK_READ -->
+											<p><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a></p>
+										<!-- ENDIF -->
+									</div>
 								<!-- IF notifications.URL --></a><!-- ENDIF -->
-								<!-- IF not notifications.URL and notifications.UNREAD -->
-									<span class="mark_notification_read">
-										<a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a>
-									</span>
-								<!-- ENDIF -->
 							</li>
 				   			<!-- END notifications -->
 						</ul>
+
+						<div class="footer">
+							<a style="display: block;" href="{U_VIEW_ALL_NOTIFICATIONS}"><span>{L_SEE_ALL}</span></a>
+						</div>
 					</div>
 				</li>
 				<!-- ENDIF -->

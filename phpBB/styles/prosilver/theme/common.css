@@ -9,8 +9,8 @@ b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
 	margin: 0;
@@ -21,7 +21,7 @@ time, mark, audio, video {
 	vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
+article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
@@ -164,7 +164,7 @@ ul ul, ol ul {
 
 ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	list-style-type: square;
-} 
+}
 
 
 /* Main blocks
@@ -677,49 +677,70 @@ p.rules a {
 	display: none;
 	position: absolute;
 	width: 330px;
-	max-height: 350px;
 	z-index: 1;
+	border: 1px solid;
+	border-radius: 4px;
+	box-shadow: 4px 4px 5px;
+}
+
+#notification_list ul {
+	max-height: 350px;
 	overflow-y: auto;
 	overflow-x: hidden;
-	background-color: #FFFFFF;
 }
 
 #notification_list ul li {
+	width: ;
 	padding: 10px;
+	margin: 0;
+	float: left;
+	border-bottom: 1px solid;
+	list-style-type: none;
+	font-size: 0.95em;
+	clear: both;
+}
+
+#notification_list ul li {
 	width: 310px;
-	line-height: 1.5em;
 }
 
-.notification_list ul.topiclist dt {
-	width: 70%;
+#notification_list ul li:last-child {
+	border-bottom: 0px;
 }
 
-.notification_list ul li span img {
+#notification_list > .header {
+	padding: 0 5px;
+	font-weight: bold;
+	border-bottom: 1px solid;
+}
+
+#notification_list > .footer {
+	text-align: center;
+	font-size: 1.2em;
+	border-top: 1px solid;
+}
+
+#notification_list ul li a, .notification_list dt > a {
+	display: block;
+}
+
+.notification_list ul li img {
 	float: left;
 	max-width: 50px;
 	max-height: 50px;
+	margin-right: 5px;
 }
 
-.notification_list ul li span .notification_title {
-	float: left;
+#notification_list ul li div {
 	width: 240px;
-	margin: 0 0 0 5px;
-	word-wrap: break-word;
-	position: relative;
-	top: -0.2em;
-}
-
-.notification_list ul li dl dt span .notification_title {
-	width: auto;
-	padding: 10px 0 0 0;
-}
-
-.notification_time {
-	margin-top: 0.5em;
-}
-
-.mark_notification_read {
-	clear: both;
 	float: left;
-	margin-top: 0.5em;
+}
+
+.notification_list ul li p {
+	margin: 0;
+	word-wrap: break-word;
+}
+
+.notification_list ul.topiclist dt {
+	width: 88%;
 }
