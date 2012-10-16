@@ -66,6 +66,23 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 	}
 
 	/**
+	* Find the users who want to receive notifications
+	*
+	* @param array $post Data from the post
+	*
+	* @return array
+	*/
+	public function find_users_for_notification($post, $options = array())
+	{
+		$notify_users = parent::find_users_for_notification($post, $options);
+
+		// never notify reporter
+		unset($notify_users[$this->user->data['user_id']]);
+
+		return $notify_users;
+	}
+
+	/**
 	* Get email template variables
 	*
 	* @return array
@@ -109,6 +126,16 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 		$user_data = $this->notification_manager->get_user($this->get_data('reporter_id'));
 
 		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+
+		if ($this->get_data('report_text'))
+		{
+			return $this->user->lang(
+				$this->language_key,
+				$username,
+				censor_text($this->get_data('post_subject')),
+				$this->get_data('report_text')
+			);
+		}
 
 		if (isset($this->user->lang[$this->get_data('reason_title')]))
 		{
@@ -160,6 +187,7 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 		$this->set_data('reporter_id', $this->user->data['user_id']);
 		$this->set_data('reason_title', strtoupper($post['reason_title']));
 		$this->set_data('reason_description', $post['reason_description']);
+		$this->set_data('report_text', $post['report_text']);
 
 		return parent::create_insert_array($post, $pre_create_data);
 	}

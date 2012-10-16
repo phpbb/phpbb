@@ -115,7 +115,8 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . self::$notification_option['id'] . "'
-				AND " . $this->db->sql_in_set('user_id', $auth_approve[$post['forum_id']][$this->permission]);
+				AND " . $this->db->sql_in_set('user_id', $auth_approve[$post['forum_id']][$this->permission]) . '
+				AND user_id <> ' . $this->user->data['user_id'];
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -174,6 +175,16 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 
 		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 
+		if ($this->get_data('report_text'))
+		{
+			return $this->user->lang(
+				$this->language_key,
+				$username,
+				censor_text($this->get_data('message_subject')),
+				$this->get_data('report_text')
+			);
+		}
+
 		if (isset($this->user->lang[$this->get_data('reason_title')]))
 		{
 			return $this->user->lang(
@@ -224,6 +235,7 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 		$this->set_data('reporter_id', $this->user->data['user_id']);
 		$this->set_data('reason_title', strtoupper($post['reason_title']));
 		$this->set_data('reason_description', $post['reason_description']);
+		$this->set_data('report_text', $post['report_text']);
 
 		return parent::create_insert_array($post, $pre_create_data);
 	}
