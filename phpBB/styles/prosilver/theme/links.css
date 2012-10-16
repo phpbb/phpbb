@@ -126,16 +126,16 @@ a.topictitle:active {
 }
 
 
-/* Profile searchresults */	
+/* Profile searchresults */
 .search .postprofile a {
 	color: #898989;
-	text-decoration: none; 
+	text-decoration: none;
 	font-weight: normal;
 }
 
 .search .postprofile a:hover {
 	color: #d3d3d3;
-	text-decoration: underline; 
+	text-decoration: underline;
 }
 
 /* Back to top of page */
@@ -168,6 +168,7 @@ a.up		{ background: none no-repeat left center; }
 a.down		{ background: none no-repeat right center; }
 a.left		{ background: none no-repeat 3px 60%; }
 a.right		{ background: none no-repeat 95% 60%; }
+a.attachfile		{ background: none no-repeat 100% 60%; }
 
 a.up, a.up:link, a.up:active, a.up:visited {
 	padding-left: 10px;
@@ -202,11 +203,18 @@ a.left:hover {
 a.right, a.right:active, a.right:visited {
 	padding-right: 12px;
 }
+a.attachfile, a.attachfile:active, a.attachfile:visited {
+	padding-right: 9px;
+}
 
 a.right:hover {
 	color: #d2d2d2;
 	text-decoration: none;
 	background-position: 100% 60%;
+}
+a.attachfile:hover {
+	padding-right: 12px;
+	text-decoration:none;
 }
 
 /* invisible skip link, used for accessibility  */
