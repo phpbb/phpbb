@@ -143,7 +143,7 @@
 						<ul class="topiclist forums">
 						<!-- BEGIN notifications -->
 							<li class="row<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
-								<!-- IF notifications.URL or notifications.U_MARK_READ --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
+								<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
 								<span>
 										{notifications.AVATAR}
 										<span class="notification_title">
@@ -152,6 +152,11 @@
 										</span>
 								</span>
 								<!-- IF notifications.URL --></a><!-- ENDIF -->
+								<!-- IF not notifications.URL and notifications.UNREAD -->
+									<span class="mark_notification_read">
+										<a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a>
+									</span>
+								<!-- ENDIF -->
 							</li>
 				   			<!-- END notifications -->
 						</ul>

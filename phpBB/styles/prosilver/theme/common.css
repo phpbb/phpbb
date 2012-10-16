@@ -690,6 +690,10 @@ p.rules a {
 	line-height: 1.5em;
 }
 
+.notification_list ul.topiclist dt {
+	width: 70%;
+}
+
 .notification_list ul li a span img {
 	float: left;
 	max-width: 50px;
@@ -711,5 +715,11 @@ p.rules a {
 }
 
 .notification_time {
+	margin-top: 0.5em;
+}
+
+.mark_notification_read {
+	clear: both;
+	float: left;
 	margin-top: 0.5em;
 }

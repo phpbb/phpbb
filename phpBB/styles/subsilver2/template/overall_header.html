@@ -157,19 +157,22 @@ function marklist(id, name, state)
 					<div id="notification_list" class="notification_list">
 						<table class="tablebg" width="310px" cellspacing="1">
 							<!-- BEGIN notifications -->
-								<tr>
+								<tr class="row<!-- IF notifications.UNREAD -->2<!-- ELSE -->1<!-- ENDIF -->">
 									<!-- IF notifications.AVATAR -->
-										<td class="row1" width="50px">
+										<td width="50px">
 											{notifications.AVATAR}
 										</td>
-										<td class="row1" valign="top">
+										<td valign="top">
 									<!-- ELSE -->
-										<td class="row1" colspan="2" valign="top">
+										<td colspan="2" valign="top">
 									<!-- ENDIF -->
-										<!-- IF notifications.URL or notifications.U_MARK_READ --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
+										<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
 											{notifications.FORMATTED_TITLE}
 										<!-- IF notifications.URL --></a><!-- ENDIF --><br />
 										{notifications.TIME}
+										<!-- IF not notifications.URL and notifications.UNREAD -->
+											<br /><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a>
+										<!-- ENDIF -->
 									</td>
 				   				</tr>
 				   			<!-- END notifications -->
