@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Reported post notifications class
+* Reported pm notifications class
 * This class handles notifications for reported pms
 *
 * @package notifications
@@ -54,13 +54,18 @@ class phpbb_notification_type_report_pm_closed extends phpbb_notification_type_p
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $post Data from
+	* @param array $pm Data from
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($pm, $options = array())
 	{
-		return array($post['reporter'] => array(''));
+		if ($pm['reporter'] == $this->user->data['user_id'])
+		{
+			return array();
+		}
+
+		return array($pm['reporter'] => array(''));
 	}
 
 	/**
@@ -123,16 +128,16 @@ class phpbb_notification_type_report_pm_closed extends phpbb_notification_type_p
 	* Function for preparing the data for insertion in an SQL query
 	* (The service handles insertion)
 	*
-	* @param array $post Data from submit_post
+	* @param array $pm PM Data
 	* @param array $pre_create_data Data from pre_create_insert_array()
 	*
 	* @return array Array of data ready to be inserted into the database
 	*/
-	public function create_insert_array($post, $pre_create_data = array())
+	public function create_insert_array($pm, $pre_create_data = array())
 	{
-		$this->set_data('closer_id', $post['closer_id']);
+		$this->set_data('closer_id', $pm['closer_id']);
 
-		$data = parent::create_insert_array($post, $pre_create_data);
+		$data = parent::create_insert_array($pm, $pre_create_data);
 
 		$this->time = $data['time'] = time();
 

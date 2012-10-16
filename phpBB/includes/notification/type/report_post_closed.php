@@ -60,6 +60,11 @@ class phpbb_notification_type_report_post_closed extends phpbb_notification_type
 	*/
 	public function find_users_for_notification($post, $options = array())
 	{
+		if ($post['reporter'] == $this->user->data['user_id'])
+		{
+			return array();
+		}
+
 		return array($post['reporter'] => array(''));
 	}
 
