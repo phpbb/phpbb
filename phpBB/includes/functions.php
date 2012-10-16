@@ -5239,8 +5239,10 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
 		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
+
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($config['load_notifications']) ? $notifications['unread_count'] : '',
 		'NOTIFICATIONS_COUNT'			=> ($config['load_notifications']) ? $user->lang('NOTIFICATIONS_COUNT', $notifications['unread_count']) : '',
+		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
 		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'],
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
