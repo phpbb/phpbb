@@ -167,6 +167,7 @@ $('#qr_full_editor').click(function() {
 // Toggle notification list
 $('#notification_list_button').click(function() {
 	$('#notification_list').toggle();
+	return false;
 });
 $('#phpbb').click(function(e) {
     var target = e.target;
