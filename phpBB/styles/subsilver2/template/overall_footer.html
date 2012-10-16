@@ -16,5 +16,20 @@
 {SCRIPTS}
 
 <!-- EVENT overall_footer_after -->
+
+<script type="text/javascript">
+// <![CDATA[
+<!-- IF S_NOTIFICATIONS_DISPLAY -->
+$(document).click(function(e) {
+    var target = e.target;
+
+    if (!$(target).is('#notification_list') && !$(target).is('#notification_list_button') && !$(target).parents().is('#notification_list')) {
+        $('#notification_list').hide();
+    }
+});
+<!-- ENDIF -->
+// ]]>
+</script>
+
 </body>
 </html>

@@ -168,6 +168,13 @@ $('#qr_full_editor').click(function() {
 $('#notification_list_button').click(function() {
 	$('#notification_list').toggle();
 });
+$('#phpbb').click(function(e) {
+    var target = e.target;
+
+    if (!$(target).is('#notification_list') && !$(target).is('#notification_list_button') && !$(target).parents().is('#notification_list')) {
+        $('#notification_list').hide();
+    }
+});
 
 /**
  * This AJAXifies the quick-mod tools. The reason it cannot be a standard
