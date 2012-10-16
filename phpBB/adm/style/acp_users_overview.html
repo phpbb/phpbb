@@ -142,10 +142,11 @@
 					<dt><label for="delete_type">{L_DELETE_USER}:</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
 					<dd>
 					<!-- IF USER_HAS_POSTS -->
-						<select id="delete_type" name="delete_type"><option class="sep" value="">{L_SELECT_OPTION}</option><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select></dd>
+						<select id="delete_type" name="delete_type"><option class="sep" value="">{L_SELECT_OPTION}</option><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select>
 					<!-- ELSE -->
 						{L_USER_NO_POSTS_TO_DELETE}<input type="hidden" id="delete_type" name="delete_type" value="retain" />
 					<!-- ENDIF -->
+					</dd>
 				</dl>
 				<p class="quick">
 					<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
