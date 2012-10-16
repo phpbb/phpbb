@@ -289,7 +289,6 @@ $lang = array_merge($lang, array(
 	'NEW_PASSWORD_CONFIRM_EMPTY'	=> 'You did not enter a confirm password.',
 	'NEW_PASSWORD_ERROR'			=> 'The passwords you entered do not match.',
 
-	'NOTIFICATIONS'										=> 'Notifications',
 	'NOTIFICATIONS_MARK_ALL_READ'						=> 'Mark all notifications read',
 	'NOTIFICATIONS_MARK_ALL_READ_CONFIRM'				=> 'Are you sure you want to mark all notifications read?',
 	'NOTIFICATIONS_MARK_ALL_READ_SUCCESS'				=> 'All notifications have been marked read successfully.',
