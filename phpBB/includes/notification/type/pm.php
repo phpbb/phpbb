@@ -85,7 +85,8 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . self::get_item_type() . "'
-				AND " . $this->db->sql_in_set('user_id', array_keys($pm['recipients']));
+				AND " . $this->db->sql_in_set('user_id', array_keys($pm['recipients'])) . '
+				AND user_id <> ' . $pm['from_user_id'];
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
