@@ -1169,7 +1169,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 /**
 * User Notification
 */
-function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id)
+function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id, $author_name = '')
 {
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
 
@@ -1340,6 +1340,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 					'USERNAME'		=> htmlspecialchars_decode($addr['name']),
 					'TOPIC_TITLE'	=> htmlspecialchars_decode($topic_title),
 					'FORUM_NAME'	=> htmlspecialchars_decode($forum_name),
+					'AUTHOR_NAME'	=> htmlspecialchars_decode($author_name),
 
 					'U_FORUM'				=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id",
 					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id",
@@ -2602,7 +2603,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// Send Notifications
 	if (($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_approval)
 	{
-		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
+		$username = ($username) ? $username : $user->data['username'];
+		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id'], $username);
 	}
 
 	$params = $add_anchor = '';
