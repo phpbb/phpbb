@@ -335,7 +335,8 @@ class mcp_queue
 							' . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
 							' . (($topic_id) ? 'AND p.topic_id = ' . $topic_id : '') . "
 							AND t.topic_id = p.topic_id
-							AND t.topic_visibility <> p.post_visibility
+							AND (t.topic_visibility <> p.post_visibility
+								OR t.topic_delete_user = 0)
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -384,6 +385,7 @@ class mcp_queue
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list) . '
 							AND topic_visibility = ' . $visibility_const . "
+							AND topic_delete_user <> 0
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
