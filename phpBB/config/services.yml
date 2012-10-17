@@ -44,6 +44,9 @@ services:
             - @cache.driver
             - %tables.config%
 
+    compiler:
+        class: Symfony\Component\DependencyInjection\Compiler\Compiler
+
     controller.helper:
         class: phpbb_controller_helper
         arguments:
@@ -124,6 +127,13 @@ services:
         arguments:
             - @dispatcher
             - @controller.resolver
+
+    kernel_event_subscriber:
+        class: phpbb_event_kernel_subscriber
+        arguments:
+            - @template
+        tags:
+            - { name: kernel.event_subscriber }
 
     processor.ext:
         class: phpbb_di_processor_ext
