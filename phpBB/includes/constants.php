@@ -50,11 +50,18 @@ define('INACTIVE_REGISTER', 1);
 define('INACTIVE_PROFILE', 2);
 define('INACTIVE_MANUAL', 3);
 define('INACTIVE_REMIND', 4);
+define('INACTIVE_SOFT_DELETE', 5);
 
 // ACL
 define('ACL_NEVER', 0);
 define('ACL_YES', 1);
 define('ACL_NO', -1);
+
+// Self Account Deletion
+define('ACCOUNT_DELETE_NONE', 0);
+define('ACCOUNT_DELETE_SOFT', 1);
+define('ACCOUNT_DELETE_PROFILE', 2);
+define('ACCOUNT_DELETE_HARD', 3);
 
 // Login error codes
 define('LOGIN_CONTINUE', 1);

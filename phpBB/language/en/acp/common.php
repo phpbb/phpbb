@@ -427,6 +427,7 @@ $lang = array_merge($lang, array(
 	'INACTIVE_REASON_PROFILE'		=> 'Profile details changed',
 	'INACTIVE_REASON_REGISTER'		=> 'Newly registered account',
 	'INACTIVE_REASON_REMIND'		=> 'Forced user account reactivation',
+	'INACTIVE_REASON_SOFT_DELETE'	=> 'User soft deleted',
 	'INACTIVE_REASON_UNKNOWN'		=> 'Unknown',
 	'INACTIVE_USERS'				=> 'Inactive users',
 	'INACTIVE_USERS_EXPLAIN'		=> 'This is a list of users who have registered but whose accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
@@ -486,6 +487,9 @@ $lang = array_merge($lang, array(
 
 	'LOG_ADMIN_AUTH_FAIL'		=> '<strong>Failed administration login attempt</strong>',
 	'LOG_ADMIN_AUTH_SUCCESS'	=> '<strong>Successful administration login</strong>',
+
+	'LOG_USER_DELETE_REQUEST_APPROVED'	=> '<strong>Approved one or more deletion request.</strong>» %s',
+	'LOG_USER_DELETE_REQUEST_DENIED'		=> '<strong>Denied one or more deletion request.</strong>» %s',
 
 	'LOG_ATTACHMENTS_DELETED'	=> '<strong>Removed user attachments</strong><br />» %s',
 
@@ -729,6 +733,7 @@ $lang = array_merge($lang, array(
 	'LOG_USER_BAN_IP'		=> '<strong>Banned IP via user management</strong> for reason “<em>%1$s</em>”<br />» %2$s',
 	'LOG_USER_BAN_EMAIL'	=> '<strong>Banned email via user management</strong> for reason “<em>%1$s</em>”<br />» %2$s',
 	'LOG_USER_DELETED'		=> '<strong>Deleted user</strong><br />» %s',
+	'LOG_USER_DELETED_SOFT'	=> '<strong>Soft deleted user</strong></br>» %s',
 	'LOG_USER_DEL_ATTACH'	=> '<strong>Removed all attachments made by the user</strong><br />» %s',
 	'LOG_USER_DEL_AVATAR'	=> '<strong>Removed user avatar</strong><br />» %s',
 	'LOG_USER_DEL_OUTBOX'	=> '<strong>Emptied user outbox</strong><br />» %s',
@@ -739,6 +744,11 @@ $lang = array_merge($lang, array(
 	'LOG_USER_NEW_PASSWORD'	=> '<strong>Changed user password</strong><br />» %s',
 	'LOG_USER_REACTIVATE'	=> '<strong>Forced user account reactivation</strong><br />» %s',
 	'LOG_USER_REMOVED_NR'	=> '<strong>Removed newly registered flag from user</strong><br />» %s',
+
+	'LOG_USER_REQUESTED_DELETE'		=> '<strong>Account deletion request submitted</strong><br />» %s',
+	'LOG_USER_SELF_SOFT_DELETE'		=> '<strong>User account soft-deleted</strong><br />» %s',
+	'LOG_USER_SELF_PROFILE_DELETE'	=> '<strong>User account deleted, retaining posts and topics</strong><br />» %s',
+	'LOG_USER_SELF_HARD_DELETE'		=> '<strong>User account hard-deleted</strong><br />» %s',
 
 	'LOG_USER_UPDATE_EMAIL'	=> '<strong>User “%1$s” changed email</strong><br />» from “%2$s” to “%3$s”',
 	'LOG_USER_UPDATE_NAME'	=> '<strong>Changed username</strong><br />» from “%1$s” to “%2$s”',

@@ -64,6 +64,20 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACP_BOARD_FEATURES_EXPLAIN'	=> 'Here you can enable/disable several board features.',
 
+	// Account deletion methods
+	'ACP_ACCOUNT_DELETE_NONE'				=> 'None',
+	'ACP_ACCOUNT_DELETE_NONE_EXPLAIN'		=> 'Users cannot delete own user account.',
+	'ACP_ACCOUNT_DELETE_SOFT'				=> 'Soft Delete',
+	'ACP_ACCOUNT_DELETE_SOFT_EXPLAIN'		=> 'Users may soft delete (deactivate) own account.',
+	'ACP_ACCOUNT_DELETE_PROFILE'			=> 'Profile Delete',
+	'ACP_ACCOUNT_DELETE_PROFILE_EXPLAIN'	=> 'Users may delete all profile data (retains posts, topics, etc.).',
+	'ACP_ACCOUNT_DELETE_HARD'				=> 'Hard Delete',
+	'ACP_ACCOUNT_DELETE_HARD_EXPLAIN'		=> 'Users may completely delete all account information (profile, posts, PMs).',
+	'ACP_ACCOUNT_DELETE_METHOD'				=> 'User account delete method',
+	'ACP_ACCOUNT_DELETE_METHOD_EXPLAIN'		=> 'This setting specifies the type of user account deletion users may perform on their own user accounts.',
+	'ACP_ACCOUNT_DELETE_APPROVAL'			=> 'Deletion approval',
+	'ACP_ACCOUNT_DELETE_APPROVAL_EXPLAIN'	=> 'When set to yes, users may request for their account to be deleted. Requests may then be approved or denied on the Users tab.',
+
 	'ALLOW_ATTACHMENTS'			=> 'Allow attachments',
 	'ALLOW_BIRTHDAYS'			=> 'Allow birthdays',
 	'ALLOW_BIRTHDAYS_EXPLAIN'	=> 'Allow birthdays to be entered and age being displayed in profiles. Please note the birthday list within the board index is controlled by a separate load setting.',

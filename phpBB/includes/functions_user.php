@@ -3807,3 +3807,131 @@ function phpbb_get_banned_user_ids($user_ids = array())
 
 	return $banned_ids_list;
 }
+
+/**
+* Delete a user, based on global config and user's permissions.
+* If self-deleting requires approval, will add to queue.
+* NOTE: Verify permissions prior to running this function.
+*
+* @param int $user_id User to delete
+* @param bool $force Skip configuration and potentially adding to approval queue; just delete the account
+* @param int $type How to delete the account (none, soft, profile, hard)
+* @param string $reason User's rationale for needing their account deleted
+* @return string|bool Language key for message indication result, false if no id is given or found
+*/
+function phpbb_delete_account($user_id = 0, $force = false, $type = ACCOUNT_DELETE_NONE, $reason = '')
+{
+	global $db, $user, $config;
+
+	if (!$user_id || $type === ACCOUNT_DELETE_NONE)
+	{
+		return false;
+	}
+
+	// Let's make sure the specified user actually exsits
+	// We can also use this opportunity to fetch the username for use later
+	$sql = 'SELECT username
+		FROM ' . USERS_TABLE . '
+		WHERE user_id = ' . (int) $user_id;
+	$result = $db->sql_query($sql);
+	$username = $db->sql_fetchfield('username');
+	$db->sql_freeresult($result);
+
+	if (empty($username))
+	{
+		return false;
+	}
+
+	$type = $type ?: $config['account_delete_method'];
+
+	// If we aren't forcing deletion, we need a type. Otherwise, we fail.
+	// If we are forcing and don't have a type specified, it will default to Soft Delete
+	if (!$force && !$type)
+	{
+		return 'DELETE_ACCOUNT_FAIL';
+	}
+
+	if (!$force && $config['account_delete_approval'])
+	{
+		if (!$user->data['user_pending_delete'])
+		{
+			$sql_ary = array(
+				'user_delete_pending'			=> 1,
+				'user_delete_type'				=> $type,
+				'user_delete_pending_time'		=> time(),
+			);
+
+			if (!empty($reason))
+			{
+				$sql_ary['user_delete_pending_reason'] = $db->sql_escape($reason);
+			}
+
+			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary);
+			$db->sql_query($sql);
+		}
+
+		add_log('user', $user->data['user_id'], 'LOG_USER_REQUEST_DELETION', $user->data['username']);
+
+		return 'DELETE_ACCOUNT_APPROVAL';
+	}
+
+	switch ($type)
+	{
+		case ACCOUNT_DELETE_SOFT:
+		default:
+			// deactivate the user's account
+			user_active_flip('deactivate', array($user_id), INACTIVE_SOFT_DELETE);
+			// Log out the deleted user
+			$user->reset_login_keys($user_id);
+			if ($user_id == $user->data['user_id'])
+			{
+				$user->session_kill();
+			}
+
+			add_log('user', $user->data['user_id'], 'LOG_USER_SELF_SOFT_DELETE', $user->data['username']);
+			return 'DELETE_ACCOUNT_SOFT_DONE';
+		break;
+
+		case ACCOUNT_DELETE_PROFILE:
+			// Remove user's account and profile data and private messages
+			// Keep posts and topics
+			// Should work just like the normal user delete function in the ACP
+			user_delete('retain', $user_id, $username);
+
+			add_log('user', $user->data['user_id'], 'LOG_USER_SELF_PROFILE_DELETE', $user->data['username']);
+			return 'DELETE_ACCOUNT_PROFILE_DONE';
+		break;
+
+		case ACCOUNT_DELETE_HARD:
+			// Purge user from forum; all topics, posts, PMs, and profile data will be removed. Cannot undo.
+			user_delete('remove', $user_id);
+
+			add_log('user', $user->data['user_id'], 'LOG_USER_SELF_HARD_DELETE', $user->data['username']);
+			return 'DELETE_ACCOUNT_HARD_DONE';
+		break;
+	}
+}
+
+/**
+* A simple recursion wrapper for phpbb_delete_account()
+*
+* @param array $user_data Array containing the following format
+*				array(
+*					user_id		=> array( // integer user ID for the key
+*						'type'		=> ACCOUNT_DELETE_XXXXX, // see includes/constants.php
+*						'reason'	=> 'Reason for deletion', // Optional, especially when being run via ACP
+*					),
+*				)
+* @param bool $force Whether to simply delete the account (true) or
+*					potentially add a new account deletion request (false)
+* @return null
+*/
+function phpbb_delete_accounts($user_data = array(), $force = false)
+{
+	foreach ($user_data as $user_id => $data)
+	{
+		$type = isset($data['type']) ? $data['type'] : ACCOUNT_DELETE_NONE;
+		$reason = isset($data['reason']) ? $data['reason'] : '';
+		phpbb_delete_account($user_id, $force, $type, $reason);
+	}
+}

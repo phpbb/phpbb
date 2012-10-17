@@ -1,0 +1,8 @@
+Subject: Your account has been soft deleted
+
+{USERNAME},
+
+Your user account on "{SITENAME}" has been soft deleted. All profile information and posts have been saved.
+If at any time you wish to reactivate your account, you may do so by simply logging back in.
+
+{EMAIL_SIG}

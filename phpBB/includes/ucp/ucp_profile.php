@@ -81,6 +81,11 @@ class ucp_profile
 						$error[] = ($data['password_confirm']) ? 'NEW_PASSWORD_ERROR' : 'NEW_PASSWORD_CONFIRM_EMPTY';
 					}
 
+					if ($delete && !($config['account_delete_method'] && $auth->acl_get('u_delete_self')))
+					{
+						$error[] = 'DELETE_ACCOUNT_FAIL';
+					}
+
 					// Only check the new password against the previous password if there have been no errors
 					if (!sizeof($error) && $auth->acl_get('u_chgpasswd') && $data['new_password'] && phpbb_check_hash($data['new_password'], $user->data['user_password']))
 					{
@@ -99,6 +104,14 @@ class ucp_profile
 
 					if (!sizeof($error))
 					{
+						// Handle account deletion
+						if ($delete)
+						{
+							$delete_reason = $request->variable('delete_reason', '', true, phpbb_request_interface::POST);
+							$l_delete_result = phpbb_delete_account($user->data['user_id'], false, $config['account_delete_method'], $delete_reason);
+							trigger_error($l_delete_result);
+						}
+
 						$sql_ary = array(
 							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $data['username'] : $user->data['username'],
 							'username_clean'	=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? utf8_clean_string($data['username']) : $user->data['username_clean'],
@@ -231,6 +244,29 @@ class ucp_profile
 					$error = array_map(array($user, 'lang'), $error);
 				}
 
+				$self_delete_lang = 'DELETE_ACCOUNT_';
+				switch ($config['account_delete_method'])
+				{
+					case SELF_ACCOUNT_DELETE_SOFT:
+						$self_delete_lang .= 'SOFT';
+					break;
+
+					case SELF_ACCOUNT_DELETE_PROFILE:
+						$self_delete_lang .= 'PROFILE';
+					break;
+
+					case SELF_ACCOUNT_DELETE_HARD:
+						$self_delete_lang .= 'HARD';
+					break;
+
+					// This will never show up because the HTML is hidden when there is no permission or it's disabled
+					// But this is here anyway just to be safe.
+					case SELF_ACCOUNT_DELETE_NONE:
+					default:
+						$self_delete_lang .= 'FAIL';
+					break;
+				}
+
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
@@ -242,7 +278,9 @@ class ucp_profile
 
 					'L_USERNAME_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars']), $user->lang('CHARACTERS', (int) $config['max_pass_chars'])),
-
+					'L_DELETE_ACCOUNT_EXPLAIN'	=> $user->lang($self_delete_lang),
+					
+					'S_DELETE_ACCOUNT_ALLOWED'	=> $config['account_delete_method'] && $auth->acl_get('u_delete_acct'),
 					'S_FORCE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd') && $config['chg_passforce'] && $user->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400)) ? true : false,
 					'S_CHANGE_USERNAME' => ($config['allow_namechange'] && $auth->acl_get('u_chgname')) ? true : false,
 					'S_CHANGE_EMAIL'	=> ($auth->acl_get('u_chgemail')) ? true : false,
