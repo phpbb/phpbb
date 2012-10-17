@@ -417,7 +417,7 @@ class mcp_queue
 				{
 					if (empty($row['post_username']))
 					{
-						$row['post_username'] = $user->lang['GUEST'];
+						$row['post_username'] = $row['username'] ?: $user->lang['GUEST'];
 					}
 
 					$template->assign_block_vars('postrow', array(
@@ -747,7 +747,7 @@ class mcp_queue
 							'USERNAME'		=> htmlspecialchars_decode($topic_data['username']),
 							'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($topic_data['topic_title'])),
 							'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f={$topic_data['forum_id']}&t={$topic_data['topic_id']}&e=0",
-						);
+						));
 
 						$messenger->send($topic_data['user_notify_type']);
 					}
