@@ -381,11 +381,10 @@
 	<div class="pagination">
 	<!-- IF .pagination or TOTAL_FILES -->
 		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}
-		<!-- IF .pagination --> 
-			&bull; 
-			<!-- INCLUDE pagination.html -->
-		<!-- ELSE --> 
-			{S_ON_PAGE}
+		<!-- IF .pagination -->
+			&bull; <!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {S_ON_PAGE}
 		<!-- ENDIF -->
 	<!-- ENDIF -->
 	</div>
@@ -427,7 +426,12 @@
 	<hr />
 
 	<div class="pagination">
-		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}<!-- IF S_ON_PAGE --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {S_ON_PAGE}<!-- ENDIF --><!-- ENDIF -->
+		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}
+		<!-- IF .pagination -->
+			&bull; <!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {S_ON_PAGE}
+		<!-- ENDIF -->
 	</div>
 	<!-- ENDIF -->
 

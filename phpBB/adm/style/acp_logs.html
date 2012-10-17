@@ -12,11 +12,11 @@
 	{L_SEARCH_KEYWORDS}: <input type="text" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
 </fieldset>
 
-<div class="pagination" style="float: right; margin: 15px 0 2px 0">
 <!-- IF .pagination -->
+<div class="pagination" style="float: right; margin: 15px 0 2px 0">
 	<!-- INCLUDE pagination.html -->
-<!-- ENDIF -->
 </div>
+<!-- ENDIF -->
 
 <div class="clearfix">&nbsp;</div>
 <div><br style="clear: both;" /></div>
@@ -54,9 +54,9 @@
 	</tbody>
 	</table>
 
-<!-- IF PAGINATION -->
+<!-- IF .pagination -->
 	<div class="pagination">
-		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+		<!-- INCLUDE pagination.html -->
 	</div>
 <!-- ENDIF -->
 
