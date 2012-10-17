@@ -38,9 +38,17 @@ if (!defined('PHPBB_INSTALLED'))
 		$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
 	}
 
+	$script_path = trim(dirname($script_name));
+
+	// if we access this script from ./adm/ we have to remove it from the url to redirect to correct url
+	if( substr($script_path, -3) == 'adm' )
+	{
+		$script_path = substr($script_path, 0, -3);
+	}
+
 	// Replace any number of consecutive backslashes and/or slashes with a single slash
 	// (could happen on some proxy setups and/or Windows servers)
-	$script_path = trim(dirname($script_name)) . '/install/index.' . $phpEx;
+	$script_path = $script_path . '/install/index.' . $phpEx;
 	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
