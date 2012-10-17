@@ -1182,7 +1182,7 @@ else
 * @param string $path Path to clean
 * @return string Cleaned path
 */
-function clean_path($path)
+function phpbb_clean_path($path)
 {
 	$exploded = explode('/', $path);
 	$filtered = array();

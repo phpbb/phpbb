@@ -45,7 +45,7 @@ if (!defined('PHPBB_INSTALLED'))
 	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
 	// Eliminate . and .. from the path
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
-	$script_path = clean_path($script_path);
+	$script_path = phpbb_clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 

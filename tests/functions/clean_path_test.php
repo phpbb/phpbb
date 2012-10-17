@@ -37,7 +37,7 @@ class phpbb_clean_path_test extends phpbb_test_case
 	*/
 	public function test_clean_path($input, $expected)
 	{
-		$output = clean_path($input);
+		$output = phpbb_clean_path($input);
 
 		$this->assertEquals($expected, $output);
 	}
