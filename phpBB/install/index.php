@@ -90,6 +90,7 @@ $phpbb_container = new ContainerBuilder();
 $loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/../config'));
 $loader->load('services.yml');
 
+$phpbb_container->set('container', $phpbb_container);
 $phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 $phpbb_container->setParameter('core.php_ext', $phpEx);
 
