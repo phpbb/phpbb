@@ -23,10 +23,6 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('app');
 
-$compiler = $phpbb_container->get('compiler');
-$compiler->addPass(new phpbb_event_kernel_compiler_pass($phpbb_container));
-$compiler->compile($phpbb_container);
-
 $kernel = $phpbb_container->get('kernel');
 $response = $kernel->handle($symfony_request);
 $response->send();

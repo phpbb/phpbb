@@ -89,6 +89,8 @@ services:
 
     dispatcher:
         class: phpbb_event_dispatcher
+        arguments:
+            - @container
 
     dbal.conn:
         class: %dbal.driver.class%
@@ -132,6 +134,7 @@ services:
         class: phpbb_event_kernel_subscriber
         arguments:
             - @template
+            - @user
         tags:
             - { name: kernel.event_subscriber }
 

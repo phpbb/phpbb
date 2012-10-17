@@ -4,6 +4,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpFoundation\Response;
 
 class phpbb_event_kernel_subscriber implements EventSubscriberInterface
 {
@@ -50,13 +51,13 @@ class phpbb_event_kernel_subscriber implements EventSubscriberInterface
 	* @param GetResponseForExceptionEvent $event
 	* @return null
 	*/
-	public function on_kernel_execption(GetResponseForExceptionEvent $event)
+	public function on_kernel_exception(GetResponseForExceptionEvent $event)
 	{
-		page_header($page_title);
+		page_header($this->user->lang('INFORMATION'));
 
 		$this->template->assign_vars(array(
 			'MESSAGE_TITLE'		=> $this->user->lang('INFORMATION'),
-			'MESSAGE_TEXT'		=> $event->getExecption()->getMessage(),
+			'MESSAGE_TEXT'		=> $event->getException()->getMessage(),
 		));
 
 		$this->template->set_filenames(array(
