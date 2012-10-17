@@ -223,7 +223,19 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 	*/
 	public function get_email_template_variables()
 	{
+		if ($this->get_data('post_username'))
+		{
+			$username = $this->get_data('post_username');
+		}
+		else
+		{
+			$user_data = $this->notification_manager->get_user($this->get_data('poster_id'));
+
+			$username = get_username_string('username', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+		}
+
 		return array(
+			'AUTHOR_NAME'				=> htmlspecialchars_decode($username),
 			'POST_SUBJECT'				=> htmlspecialchars_decode(censor_text($this->get_data('post_subject'))),
 			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
 
