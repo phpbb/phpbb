@@ -98,7 +98,7 @@ Trivial3 test event in all',
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
-		if ($style_tree == false)
+		if ($style_tree === false)
 		{
 	 		$style_tree = array(
 				$phpbb_root_path . 'styles/prosilver_inherit',
