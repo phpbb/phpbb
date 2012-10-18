@@ -878,7 +878,6 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 
 	global $db, $user, $phpbb_notifications;
 
-	// Mark the PM as read
 	$phpbb_notifications->mark_notifications_read('pm', $msg_id, $user_id);
 
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . "
@@ -1097,7 +1096,6 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		$user->data['user_unread_privmsg'] -= $num_unread;
 	}
 
-	// Delete Notifications
 	$phpbb_notifications->delete_notifications('pm', array_keys($delete_rows));
 
 	// Now we have to check which messages we can delete completely
@@ -1262,7 +1260,6 @@ function phpbb_delete_user_pms($user_id)
 					AND ' . $db->sql_in_set('msg_id', $delivered_msg);
 			$db->sql_query($sql);
 
-			// Delete Notifications
 			$phpbb_notifications->delete_notifications('pm', $delivered_msg);
 		}
 
@@ -1276,7 +1273,6 @@ function phpbb_delete_user_pms($user_id)
 				WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
 			$db->sql_query($sql);
 
-			// Delete Notifications
 			$phpbb_notifications->delete_notifications('pm', $undelivered_msg);
 		}
 	}
@@ -1321,7 +1317,6 @@ function phpbb_delete_user_pms($user_id)
 				WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
 			$db->sql_query($sql);
 
-			// Delete Notifications
 			$phpbb_notifications->delete_notifications('pm', $delete_ids);
 		}
 	}

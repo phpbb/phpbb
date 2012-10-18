@@ -88,7 +88,6 @@ class mcp_reports
 					trigger_error('NO_REPORT');
 				}
 
-				// Mark the notification as read
 				$phpbb_notifications->mark_notifications_read('report_post', $post_id, $user->data['user_id']);
 
 				if (!$report_id && $report['report_closed'])

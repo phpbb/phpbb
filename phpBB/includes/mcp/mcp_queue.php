@@ -86,7 +86,6 @@ class mcp_queue
 					{
 						$post_id = (int) $topic_info[$topic_id]['topic_first_post_id'];
 
-						// Mark the notification as read
 						$phpbb_notifications->mark_notifications_read('topic_in_queue', $topic_id, $user->data['user_id']);
 					}
 					else
@@ -95,7 +94,6 @@ class mcp_queue
 					}
 				}
 
-				// Mark the notification as read
 				$phpbb_notifications->mark_notifications_read('post_in_queue', $post_id, $user->data['user_id']);
 
 				$post_info = get_post_data(array($post_id), 'm_approve', true);
@@ -612,13 +610,10 @@ function approve_post($post_id_list, $id, $mode)
 		{
 			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
 			{
-				// Delete topic in queue notifications
 				$phpbb_notifications->delete_notifications(array('topic_in_queue'), $post_data['topic_id']);
 
-				// Forum Notifications
 				$phpbb_notifications->add_notifications('topic', $post_data);
 
-				// Notify poster?
 				if ($notify_poster)
 				{
 					$phpbb_notifications->add_notifications('approve_topic', $post_data);
@@ -626,13 +621,10 @@ function approve_post($post_id_list, $id, $mode)
 			}
 			else
 			{
-				// Delete post in queue notification
 				$phpbb_notifications->delete_notifications(array('post_in_queue'), $post_id);
 
-				// Topic Notifications
 				$phpbb_notifications->add_notifications(array('quote', 'bookmark', 'post'), $post_data);
 
-				// Notify poster?
 				if ($notify_poster)
 				{
 					$phpbb_notifications->add_notifications('approve_post', $post_data);
@@ -859,7 +851,6 @@ function disapprove_post($post_id_list, $id, $mode)
 			}
 		}
 
-		// Handle notifications (topic/post in queue)
 		foreach ($post_info as $post_id => $post_data)
 		{
 			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
@@ -912,7 +903,6 @@ function disapprove_post($post_id_list, $id, $mode)
 
 				if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
 				{
-					// Notify poster?
 					if ($notify_poster)
 					{
 						$phpbb_notifications->add_notifications('disapprove_topic', $post_data);
@@ -920,7 +910,6 @@ function disapprove_post($post_id_list, $id, $mode)
 				}
 				else
 				{
-					// Notify poster?
 					if ($notify_poster)
 					{
 						$phpbb_notifications->add_notifications('disapprove_post', $post_data);

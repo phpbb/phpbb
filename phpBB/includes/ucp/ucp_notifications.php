@@ -50,12 +50,10 @@ class ucp_notifications
 						{
 							if ($request->is_set_post($type . '_notification') && !isset($subscriptions[$type]))
 							{
-								// add
 								$phpbb_notifications->add_subscription($type);
 							}
 							else if (!$request->is_set_post($type . '_notification') && isset($subscriptions[$type]))
 							{
-								// remove
 								$phpbb_notifications->delete_subscription($type);
 							}
 
@@ -63,12 +61,10 @@ class ucp_notifications
 							{
 								if ($request->is_set_post($type . '_' . $method) && (!isset($subscriptions[$type]) || !in_array($method, $subscriptions[$type])))
 								{
-									// add
 									$phpbb_notifications->add_subscription($type, 0, $method);
 								}
 								else if (!$request->is_set_post($type . '_' . $method) && isset($subscriptions[$type]) && in_array($method, $subscriptions[$type]))
 								{
-									// remove
 									$phpbb_notifications->delete_subscription($type, 0, $method);
 								}
 							}
