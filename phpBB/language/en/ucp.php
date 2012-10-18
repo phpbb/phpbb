@@ -257,6 +257,7 @@ $lang = array_merge($lang, array(
 	'MESSAGE_BY_AUTHOR'				=> 'by',
 	'MESSAGE_COLOURS'				=> 'Message colours',
 	'MESSAGE_DELETED'				=> 'Message successfully deleted.',
+	'MESSAGE_EDITED'				=> 'Message successfully edited.',
 	'MESSAGE_HISTORY'				=> 'Message history',
 	'MESSAGE_REMOVED_FROM_OUTBOX'	=> 'This message was deleted by its author.',
 	'MESSAGE_SENT_ON'				=> 'on',
