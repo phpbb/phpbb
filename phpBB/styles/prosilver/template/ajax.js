@@ -165,9 +165,9 @@ $('#qr_full_editor').click(function() {
 });
 
 // Toggle notification list
-$('#notification_list_button').click(function() {
+$('#notification_list_button').click(function(e) {
 	$('#notification_list').toggle();
-	return false;
+	e.preventDefault();
 });
 $('#phpbb').click(function(e) {
     var target = e.target;
