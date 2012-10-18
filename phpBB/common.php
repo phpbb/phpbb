@@ -26,6 +26,8 @@ if (file_exists($phpbb_root_path . 'config.' . $phpEx))
 if (!defined('PHPBB_INSTALLED'))
 {
 	// Redirect the user to the installer
+	require($phpbb_root_path . 'includes/functions.' . $phpEx);
+
 	// We have to generate a full HTTP/1.1 header here since we can't guarantee to have any of the information
 	// available as used by the redirect function
 	$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
@@ -44,7 +46,6 @@ if (!defined('PHPBB_INSTALLED'))
 	// (could happen on some proxy setups and/or Windows servers)
 	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
 	// Eliminate . and .. from the path
-	require($phpbb_root_path . 'includes/functions.' . $phpEx);
 	$script_path = phpbb_clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
