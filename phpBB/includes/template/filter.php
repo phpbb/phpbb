@@ -359,7 +359,7 @@ class phpbb_template_filter extends php_user_filter
 
 			case 'EVENT':
 				return '<?php ' . $this->compile_tag_event($matches[2]) . '?>';
-				break;
+			break;
 
 			default:
 				return $matches[0];
