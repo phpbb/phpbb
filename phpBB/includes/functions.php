@@ -1310,12 +1310,18 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 * Marks a topic/forum as read
 * Marks a topic as posted to
 *
+* @param string $mode (all, topics, topic, post)
+* @param int|bool $forum_id Used in all, topics, and topic mode
+* @param int|bool $topic_id Used in topic and post mode
+* @param int $post_time 0 means current time(), otherwise to set a specific mark time
 * @param int $user_id can only be used with $mode == 'post'
 */
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
 	global $db, $user, $config;
 	global $request;
+
+	$post_time = ($post_time === 0 || $post_time > time()) ? time() : (int) $post_time;
 
 	if ($mode == 'all')
 	{
@@ -1324,9 +1330,20 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			if ($config['load_db_lastread'] && $user->data['is_registered'])
 			{
 				// Mark all forums read (index page)
-				$db->sql_query('DELETE FROM ' . TOPICS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
-				$db->sql_query('DELETE FROM ' . FORUMS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
-				$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . " WHERE user_id = {$user->data['user_id']}");
+				$tables = array(TOPICS_TRACK_TABLE, FORUMS_TRACK_TABLE);
+				foreach ($tables as $table)
+				{
+					$sql = 'DELETE FROM ' . $table . "
+						WHERE user_id = {$user->data['user_id']}
+							AND mark_time < $post_time";
+					$db->sql_query($sql);
+				}
+
+				$sql = 'UPDATE ' . USERS_TABLE . "
+					SET user_lastmark = $post_time
+					WHERE user_id = {$user->data['user_id']}
+						AND user_lastmark < $post_time";
+				$db->sql_query($sql);
 			}
 			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 			{
@@ -1336,16 +1353,20 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				unset($tracking_topics['tf']);
 				unset($tracking_topics['t']);
 				unset($tracking_topics['f']);
-				$tracking_topics['l'] = base_convert(time() - $config['board_startdate'], 10, 36);
+				$tracking_topics['l'] = base_convert($post_time - $config['board_startdate'], 10, 36);
 
-				$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
+				$user->set_cookie('track', tracking_serialize($tracking_topics), $post_time + 31536000);
 				$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking_topics), phpbb_request_interface::COOKIE);
 
 				unset($tracking_topics);
 
 				if ($user->data['is_registered'])
 				{
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . " WHERE user_id = {$user->data['user_id']}");
+					$sql = 'UPDATE ' . USERS_TABLE . "
+						SET user_lastmark = $post_time
+						WHERE user_id = {$user->data['user_id']}
+							AND user_lastmark < $post_time";
+					$db->sql_query($sql);
 				}
 			}
 		}
@@ -1367,12 +1388,14 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
+					AND mark_time < $post_time
 					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$db->sql_query($sql);
 
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
+					AND mark_time < $post_time
 					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);
 
@@ -1385,9 +1408,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			if (sizeof($sql_update))
 			{
-				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . '
-					SET mark_time = ' . time() . "
+				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . "
+					SET mark_time = $post_time
 					WHERE user_id = {$user->data['user_id']}
+						AND mark_time < $post_time
 						AND " . $db->sql_in_set('forum_id', $sql_update);
 				$db->sql_query($sql);
 			}
@@ -1400,7 +1424,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 					$sql_ary[] = array(
 						'user_id'	=> (int) $user->data['user_id'],
 						'forum_id'	=> (int) $f_id,
-						'mark_time'	=> time()
+						'mark_time'	=> $post_time,
 					);
 				}
 
@@ -1431,7 +1455,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 					unset($tracking['f'][$f_id]);
 				}
 
-				$tracking['f'][$f_id] = base_convert(time() - $config['board_startdate'], 10, 36);
+				$tracking['f'][$f_id] = base_convert($post_time - $config['board_startdate'], 10, 36);
 			}
 
 			if (isset($tracking['tf']) && empty($tracking['tf']))
@@ -1439,7 +1463,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				unset($tracking['tf']);
 			}
 
-			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
+			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
 			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
 
 			unset($tracking);
@@ -1456,9 +1480,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{
-			$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . '
-				SET mark_time = ' . (($post_time) ? $post_time : time()) . "
+			$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . "
+				SET mark_time = $post_time
 				WHERE user_id = {$user->data['user_id']}
+					AND mark_time < $post_time
 					AND topic_id = $topic_id";
 			$db->sql_query($sql);
 
@@ -1471,7 +1496,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 					'user_id'		=> (int) $user->data['user_id'],
 					'topic_id'		=> (int) $topic_id,
 					'forum_id'		=> (int) $forum_id,
-					'mark_time'		=> ($post_time) ? (int) $post_time : time(),
+					'mark_time'		=> $post_time,
 				);
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TRACK_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
@@ -1491,7 +1516,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking['tf'][$forum_id][$topic_id36] = true;
 			}
 
-			$post_time = ($post_time) ? $post_time : time();
 			$tracking['t'][$topic_id36] = base_convert($post_time - $config['board_startdate'], 10, 36);
 
 			// If the cookie grows larger than 10000 characters we will remove the smallest value
@@ -1527,7 +1551,12 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				if ($user->data['is_registered'])
 				{
 					$user->data['user_lastmark'] = intval(base_convert(max($time_keys) + $config['board_startdate'], 36, 10));
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . $user->data['user_lastmark'] . " WHERE user_id = {$user->data['user_id']}");
+
+					$sql = 'UPDATE ' . USERS_TABLE . "
+						SET user_lastmark = $post_time
+						WHERE user_id = {$user->data['user_id']}
+							AND mark_time < $post_time";
+					$db->sql_query($sql);
 				}
 				else
 				{
@@ -1535,7 +1564,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				}
 			}
 
-			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
+			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
 			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
 		}
 
@@ -1557,7 +1586,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$sql_ary = array(
 				'user_id'		=> (int) $use_user_id,
 				'topic_id'		=> (int) $topic_id,
-				'topic_posted'	=> 1
+				'topic_posted'	=> 1,
 			);
 
 			$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
