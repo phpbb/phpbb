@@ -25,4 +25,11 @@ interface phpbb_di_processor_interface
 	* @param ContainerBuilder $container The container
 	*/
 	public function process(ContainerBuilder $container);
+
+	/**
+	* Whether or not the processor can/should be run
+	*
+	* @return bool
+	*/
+	public function can_run();
 }

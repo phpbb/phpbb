@@ -51,4 +51,13 @@ class phpbb_di_processor_ext implements phpbb_di_processor_interface
 			}
 		}
 	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function can_run()
+	{
+		$extensions = $this->extension_manager->all_enabled();
+		return !empty($extensions);
+	}
 }

@@ -48,9 +48,6 @@ class phpbb_di_processor_config implements phpbb_di_processor_interface
 	{
 		require $this->config_file;
 
-		$container->setParameter('core.root_path', $this->phpbb_root_path);
-		$container->setParameter('core.php_ext', $this->php_ext);
-
 		$container->setParameter('core.table_prefix', $table_prefix);
 		$container->setParameter('cache.driver.class', $this->fix_acm_type($acm_type));
 		$container->setParameter('dbal.driver.class', 'dbal_'.$dbms);
@@ -60,8 +57,19 @@ class phpbb_di_processor_config implements phpbb_di_processor_interface
 		$container->setParameter('dbal.dbname', $dbname);
 		$container->setParameter('dbal.dbport', $dbport);
 		$container->setParameter('dbal.new_link', defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK);
+	}
 
-		$container->set('container', $container);
+	/**
+	* @inheritdoc
+	*/
+	public function can_run()
+	{
+		if (file_exists($this->config_file))
+		{
+			$config = file_get_contents($this->config_file);
+			return !empty($config);
+		}
+		return false;
 	}
 
 	protected function fix_acm_type($acm_type)

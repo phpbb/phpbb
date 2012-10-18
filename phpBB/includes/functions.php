@@ -7,6 +7,11 @@
 *
 */
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Compiler\Compiler;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 /**
 * @ignore
 */
@@ -5398,4 +5403,55 @@ function phpbb_pcre_utf8_support()
 function phpbb_to_numeric($input)
 {
 	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
+}
+
+/**
+* Create the ContainerBuilder object
+*
+* @param string $phpbb_root_path Root path
+* @return ContainerBuilder object
+*/
+function phpbb_create_container($phpbb_root_path, $phpEx)
+{
+	$phpbb_container = new ContainerBuilder();
+	$loader = new YamlFileLoader($phpbb_container, new FileLocator(realpath("{$phpbb_root_path}config")));
+	$loader->load('services.yml');
+
+	$phpbb_container->set('container', $phpbb_container);
+	$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
+	$phpbb_container->setParameter('core.php_ext', $phpEx);
+
+	return $phpbb_container;
+}
+
+/**
+* Create a compiled ContainerBuilder object
+*
+* @param string $phpbb_root_path Root path
+* @param string $phpEx PHP Extension
+* @return ContainerBuilder object (compiled)
+*/
+function phpbb_create_compiled_container($config_file_path, $phpbb_root_path, $phpEx)
+{
+	$phpbb_container = phpbb_create_container($phpbb_root_path, $phpEx);
+
+	$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
+	foreach ($ids as $id)
+	{
+		$processor = $phpbb_container->get($id);
+		if ($processor->can_run())
+		{
+			$processor->process($phpbb_container);
+		}
+	}
+
+	$compiler = new Compiler();
+	$passes = array_keys($phpbb_container->findTaggedServiceIds('compiler.pass'));
+	foreach ($passes as $pass)
+	{
+		$compiler->addPass($phpbb_container->get($pass));
+	}
+	$compiler->compile($phpbb_container);
+
+	return $phpbb_container;
 }
