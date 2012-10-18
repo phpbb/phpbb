@@ -21,7 +21,35 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_notification_type_base implements phpbb_notification_type_interface
 {
-	protected $notification_manager, $db, $cache, $template, $extension_manager, $user, $auth, $config, $phpbb_root_path, $php_ext = null;
+	/** @var phpbb_notification_manager */
+	protected $notification_manager = null;
+
+	/** @var dbal */
+	protected $db = null;
+
+	/** @var phpbb_cache_service */
+	protected $cache = null;
+
+	/** @var phpbb_template */
+	protected $template = null;
+
+	/** @var phpbb_extension_manager */
+	protected $extension_manager = null;
+
+	/** @var phpbb_user */
+	protected $user = null;
+
+	/** @var phpbb_auth */
+	protected $auth = null;
+
+	/** @var phpbb_config */
+	protected $config = null;
+
+	/** @var string */
+	protected $phpbb_root_path = null;
+
+	/** @var string */
+	protected $php_ext = null;
 
 	/**
 	* Array of user data containing information needed to output the notifications to the template

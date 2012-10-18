@@ -21,26 +21,35 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_notification_method_base implements phpbb_notification_method_interface
 {
-	protected $notification_manager, $db, $cache, $template, $extension_manager, $user, $auth, $config, $phpbb_root_path, $php_ext = null;
+	/** @var phpbb_notification_manager */
+	protected $notification_manager = null;
 
-	/**
-	* Desired notifications
-	* unique by (type, type_id, user_id, method)
-	* if multiple methods are desired, multiple rows will exist.
-	*
-	* method of "none" will over-ride any other options
-	*
-	* item_type
-	* item_id
-	* user_id
-	* method
-	* 	none (will never receive notifications)
-	* 	standard (listed in notifications window
-	* 	popup?
-	* 	email
-	* 	jabber
-	*	sms?
-	*/
+	/** @var dbal */
+	protected $db = null;
+
+	/** @var phpbb_cache_service */
+	protected $cache = null;
+
+	/** @var phpbb_template */
+	protected $template = null;
+
+	/** @var phpbb_extension_manager */
+	protected $extension_manager = null;
+
+	/** @var phpbb_user */
+	protected $user = null;
+
+	/** @var phpbb_auth */
+	protected $auth = null;
+
+	/** @var phpbb_config */
+	protected $config = null;
+
+	/** @var string */
+	protected $phpbb_root_path = null;
+
+	/** @var string */
+	protected $php_ext = null;
 
 	/**
 	* Queue of messages to be sent
