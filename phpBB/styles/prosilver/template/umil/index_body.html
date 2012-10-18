@@ -1,0 +1,100 @@
+<!-- INCLUDE overall_header.html -->
+
+<!-- IF S_CONFIRM -->
+<form id="confirm" method="post" action="{S_CONFIRM_ACTION}">
+
+<fieldset>
+	<h1>{MESSAGE_TITLE}</h1>
+	<p>{MESSAGE_TEXT}</p>
+
+	{S_HIDDEN_FIELDS}
+
+	<div style="text-align: center;">
+		<input type="submit" name="confirm" value="{L_YES}" class="button2" />&nbsp;
+		<input type="submit" name="cancel" value="{L_NO}" class="button2" />
+	</div>
+
+</fieldset>
+
+</form>
+<!-- ENDIF -->
+
+<!-- IF .options -->
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_TITLE_EXPLAIN}</p>
+
+	<!-- IF S_ERROR -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<form id="umil" method="post" action="{U_ACTION}" name="umil">
+
+		<!-- BEGIN options -->
+			<!-- IF options.S_LEGEND -->
+				<!-- IF not options.S_FIRST_ROW -->
+					</fieldset>
+				<!-- ENDIF -->
+				<fieldset>
+					<legend>{options.LEGEND}</legend>
+
+			<!-- ELSE -->
+				<dl>
+					<dt><label for="{options.KEY}">{options.TITLE}:</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+					<dd>{options.CONTENT}</dd>
+					<!-- IF options.S_FIND_USER --><dd>[ <a href="{options.U_FIND_USER}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd><!-- ENDIF -->
+				</dl>
+
+			<!-- ENDIF -->
+		<!-- END options -->
+
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		</p>
+		{S_HIDDEN_FIELDS}
+		{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+<!-- ENDIF -->
+
+<!-- IF S_RESULTS -->
+	<h1>{L_TITLE} - <font style="color: <!-- IF S_SUCCESS -->green<!-- ELSE -->red<!-- ENDIF -->;">{L_RESULTS}</font></h1>
+
+	<br />
+
+	<p>{L_DATABASE_TYPE} :: <strong>{SQL_LAYER}</strong></p>
+
+	<!-- IF not S_SUCCESS -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{L_ERROR_NOTICE}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF S_PERMISSIONS -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{L_PERMISSIONS_WARNING}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF .results -->
+	<fieldset>
+		<legend></legend>
+		<!-- BEGIN results -->
+				<p>{results.COMMAND}</p>
+				<div style="color: <!-- IF results.S_SUCCESS -->green<!-- ELSE -->red<!-- ENDIF -->;">{results.RESULT}</div>
+				<!-- IF not results.S_LAST_ROW --><hr /><!-- ENDIF -->
+		<!-- END results -->
+	</fieldset>
+	<!-- ENDIF -->
+
+
+<!-- ENDIF -->
+
+
+<!-- INCLUDE overall_footer.html -->
