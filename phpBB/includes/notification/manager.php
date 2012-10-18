@@ -21,7 +21,32 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_notification_manager
 {
-	protected $db, $cache, $template, $extension_manager, $user, $auth, $config, $phpbb_root_path, $php_ext = null;
+	/** @var dbal */
+	protected $db = null;
+
+	/** @var phpbb_cache_service */
+	protected $cache = null;
+
+	/** @var phpbb_template */
+	protected $template = null;
+
+	/** @var phpbb_extension_manager */
+	protected $extension_manager = null;
+
+	/** @var phpbb_user */
+	protected $user = null;
+
+	/** @var phpbb_auth */
+	protected $auth = null;
+
+	/** @var phpbb_config */
+	protected $config = null;
+
+	/** @var string */
+	protected $phpbb_root_path = null;
+
+	/** @var string */
+	protected $php_ext = null;
 
 	/**
 	* Users loaded from the DB
@@ -71,7 +96,7 @@ class phpbb_notification_manager
 			'count_total'		=> false,
 		), $options);
 
-		// If all_unread, count_unread mus be true
+		// If all_unread, count_unread must be true
 		$options['count_unread'] = ($options['all_unread']) ? true : $options['count_unread'];
 
 		// Anonymous users and bots never receive notifications
