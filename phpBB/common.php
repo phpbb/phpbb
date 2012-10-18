@@ -128,7 +128,6 @@ $phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 $template = $phpbb_container->get('template');
 $phpbb_style = $phpbb_container->get('style');
 
-// Notifications manager
 $phpbb_notifications = $phpbb_container->get('notification_manager');
 
 // Add own hook handler

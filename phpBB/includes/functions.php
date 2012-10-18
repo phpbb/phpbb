@@ -1394,7 +1394,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$forum_id = array($forum_id);
 		}
 
-		// Mark topic notifications read for this user in this forum
 		$phpbb_notifications->mark_notifications_read_by_parent(array('topic', 'approve_topic'), $forum_id, $user->data['user_id'], $post_time);
 
 		// Mark all post/quote notifications read for this user in this forum
