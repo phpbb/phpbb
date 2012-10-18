@@ -3,17 +3,17 @@
     "packages": [
         {
             "name": "symfony/config",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/Config",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Config",
-                "reference": "v2.1.0-RC2"
+                "reference": "v2.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/Config/zipball/v2.1.0-RC2",
-                "reference": "v2.1.0-RC2",
+                "url": "https://github.com/symfony/Config/zipball/v2.1.2",
+                "reference": "v2.1.2",
                 "shasum": ""
             },
             "require": {
@@ -49,17 +49,17 @@
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/DependencyInjection",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/DependencyInjection",
-                "reference": "v2.1.1"
+                "reference": "v2.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/DependencyInjection/zipball/v2.1.1",
-                "reference": "v2.1.1",
+                "url": "https://github.com/symfony/DependencyInjection/zipball/v2.1.2",
+                "reference": "v2.1.2",
                 "shasum": ""
             },
             "require": {
@@ -103,17 +103,17 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher",
-                "reference": "v2.1.1"
+                "reference": "v2.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/EventDispatcher/zipball/v2.1.1",
-                "reference": "v2.1.1",
+                "url": "https://github.com/symfony/EventDispatcher/zipball/v2.1.2",
+                "reference": "v2.1.2",
                 "shasum": ""
             },
             "require": {
@@ -156,17 +156,17 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/HttpFoundation",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpFoundation",
-                "reference": "v2.1.1"
+                "reference": "v2.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/HttpFoundation/zipball/v2.1.1",
-                "reference": "v2.1.1",
+                "url": "https://github.com/symfony/HttpFoundation/zipball/v2.1.2",
+                "reference": "v2.1.2",
                 "shasum": ""
             },
             "require": {
@@ -203,17 +203,17 @@
         },
         {
             "name": "symfony/http-kernel",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/HttpKernel",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpKernel",
-                "reference": "v2.1.1"
+                "reference": "v2.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/HttpKernel/zipball/v2.1.1",
-                "reference": "v2.1.1",
+                "url": "https://github.com/symfony/HttpKernel/zipball/v2.1.2",
+                "reference": "v2.1.2",
                 "shasum": ""
             },
             "require": {
@@ -269,17 +269,17 @@
         },
         {
             "name": "symfony/routing",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/Routing",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Routing",
-                "reference": "v2.1.1"
+                "reference": "v2.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/Routing/zipball/v2.1.1",
-                "reference": "v2.1.1",
+                "url": "https://github.com/symfony/Routing/zipball/v2.1.2",
+                "reference": "v2.1.2",
                 "shasum": ""
             },
             "require": {
@@ -326,7 +326,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
@@ -378,12 +378,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Goutte",
-                "reference": "1d72f22b21b37a8d38ea48e17b34c3afc73dfc46"
+                "reference": "e1c3306617e350ac17e7631166fd3fd7d689e8ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/fabpot/Goutte/zipball/1d72f22b21b37a8d38ea48e17b34c3afc73dfc46",
-                "reference": "1d72f22b21b37a8d38ea48e17b34c3afc73dfc46",
+                "url": "https://github.com/fabpot/Goutte/zipball/e1c3306617e350ac17e7631166fd3fd7d689e8ea",
+                "reference": "e1c3306617e350ac17e7631166fd3fd7d689e8ea",
                 "shasum": ""
             },
             "require": {
@@ -396,6 +396,7 @@
                 "ext-curl": "*",
                 "guzzle/http": "2.8.*"
             },
+            "time": "1349861753",
             "type": "application",
             "extra": {
                 "branch-alias": {
@@ -421,28 +422,28 @@
             "homepage": "https://github.com/fabpot/Goutte",
             "keywords": [
                 "scraper"
-            ],
-            "time": "1346234818"
+            ]
         },
         {
             "name": "guzzle/common",
-            "version": "v2.8.6",
+            "version": "v2.8.8",
             "target-dir": "Guzzle/Common",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/common.git",
-                "reference": "v2.8.6"
+                "reference": "v2.8.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/common/zipball/v2.8.6",
-                "reference": "v2.8.6",
+                "url": "https://github.com/guzzle/common/zipball/v2.8.8",
+                "reference": "v2.8.8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
                 "symfony/event-dispatcher": "2.1.*"
             },
+            "time": "2012-10-15 17:42:47",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -468,17 +469,17 @@
         },
         {
             "name": "guzzle/http",
-            "version": "v2.8.6",
+            "version": "v2.8.8",
             "target-dir": "Guzzle/Http",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/http.git",
-                "reference": "v2.8.6"
+                "reference": "v2.8.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/http/zipball/v2.8.6",
-                "reference": "v2.8.6",
+                "url": "https://github.com/guzzle/http/zipball/v2.8.8",
+                "reference": "v2.8.8",
                 "shasum": ""
             },
             "require": {
@@ -486,6 +487,7 @@
                 "guzzle/common": "self.version",
                 "guzzle/parser": "self.version"
             },
+            "time": "2012-10-15 17:42:47",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -508,22 +510,23 @@
         },
         {
             "name": "guzzle/parser",
-            "version": "v2.8.6",
+            "version": "v2.8.8",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/parser.git",
-                "reference": "v2.8.6"
+                "reference": "v2.8.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/parser/zipball/v2.8.6",
-                "reference": "v2.8.6",
+                "url": "https://github.com/guzzle/parser/zipball/v2.8.8",
+                "reference": "v2.8.8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2"
             },
+            "time": "2012-09-20 13:28:06",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -546,17 +549,17 @@
         },
         {
             "name": "symfony/browser-kit",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/BrowserKit",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/BrowserKit",
-                "reference": "v2.1.1"
+                "reference": "v2.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/BrowserKit/zipball/v2.1.1",
-                "reference": "v2.1.1",
+                "url": "https://github.com/symfony/BrowserKit/zipball/v2.1.2",
+                "reference": "v2.1.2",
                 "shasum": ""
             },
             "require": {
@@ -570,6 +573,7 @@
             "suggest": {
                 "symfony/process": "2.1.*"
             },
+            "time": "2012-09-10 03:53:42",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -600,7 +604,7 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/CssSelector",
             "source": {
                 "type": "git",
@@ -616,6 +620,7 @@
             "require": {
                 "php": ">=5.3.3"
             },
+            "time": "2012-08-22 06:48:41",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -646,17 +651,17 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/DomCrawler",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/DomCrawler",
-                "reference": "v2.1.1"
+                "reference": "v2.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/DomCrawler/zipball/v2.1.1",
-                "reference": "v2.1.1",
+                "url": "https://github.com/symfony/DomCrawler/zipball/v2.1.2",
+                "reference": "v2.1.2",
                 "shasum": ""
             },
             "require": {
@@ -668,6 +673,7 @@
             "suggest": {
                 "symfony/css-selector": "2.1.*"
             },
+            "time": "2012-09-10 03:53:42",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -698,22 +704,23 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/Finder",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Finder",
-                "reference": "v2.1.0-RC2"
+                "reference": "v2.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/Finder/zipball/v2.1.0-RC2",
-                "reference": "v2.1.0-RC2",
+                "url": "https://github.com/symfony/Finder/zipball/v2.1.2",
+                "reference": "v2.1.2",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
+            "time": "2012-08-22 06:48:41",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -744,22 +751,23 @@
         },
         {
             "name": "symfony/process",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process",
-                "reference": "v2.1.1"
+                "reference": "v2.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/Process/zipball/v2.1.1",
-                "reference": "v2.1.1",
+                "url": "https://github.com/symfony/Process/zipball/v2.1.2",
+                "reference": "v2.1.2",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
+            "time": "2012-09-18 15:37:29",
             "type": "library",
             "extra": {
                 "branch-alias": {
