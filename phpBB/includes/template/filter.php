@@ -348,7 +348,7 @@ class phpbb_template_filter extends php_user_filter
 				// return value here will be compiled code (html with embedded php).
 				// we don't want to wrap it in php tags here.
 				return '<?php ' . $this->compile_tag_event($matches[2]) . '?>';
-				break;
+			break;
 
 			default:
 				return $matches[0];
