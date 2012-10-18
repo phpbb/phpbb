@@ -58,7 +58,20 @@ if (isset($_GET['avatar']))
 	$phpbb_class_loader_ext->register();
 
 	// Set up container
-	$phpbb_container = phpbb_create_compiled_container($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx);
+	$phpbb_container = phpbb_create_compiled_container(
+		array(
+			new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
+			new phpbb_di_extension_core($phpbb_root_path),
+			new phpbb_di_extension_ext($phpbb_root_path . 'config/extensions.json'),
+		),
+		array(
+			new phpbb_event_kernel_compiler_pass(),
+		),
+		$phpbb_root_path . 'config.' . $phpEx,
+		$phpbb_root_path,
+		$phpEx
+	);
+
 	$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 	$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 

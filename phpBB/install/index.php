@@ -91,7 +91,8 @@ $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_pat
 $phpbb_class_loader_ext->register();
 
 // Set up container
-$phpbb_container = phpbb_create_container($phpbb_root_path, $phpEx);
+$phpbb_container = phpbb_create_container(array(), $phpbb_root_path, $phpEx);
+
 $phpbb_container->setAlias('cache.driver', 'cache.driver.install');
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));

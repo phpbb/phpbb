@@ -75,7 +75,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 
 		if (!$this->container->has($service))
 		{
-			throw new RuntimeException($this->user->lang['CONTROLLER_SERVICE_UNDEFINED']);
+			throw new RuntimeException($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $service));
 		}
 
 		$controller_object = $this->container->get($service);

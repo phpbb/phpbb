@@ -135,27 +135,6 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    kernel.compiler_pass:
-        class: phpbb_event_kernel_compiler_pass
-        tags:
-            - { name: compiler.pass }
-
-    processor.config:
-        class: phpbb_di_processor_config
-        arguments:
-            - %core.root_path%config.%core.php_ext%
-            - %core.root_path%
-            - %core.php_ext%
-        tags:
-            - { name: container.processor }
-
-    processor.ext:
-        class: phpbb_di_processor_ext
-        arguments:
-            - @ext.manager
-        tags:
-            - { name: container.processor }
-
     request:
         class: phpbb_request
 
