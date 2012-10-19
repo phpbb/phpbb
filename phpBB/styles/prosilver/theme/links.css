@@ -148,7 +148,7 @@ a.top2 {
 a.up		{ background: none no-repeat left center; }
 a.down		{ background: none no-repeat right center; }
 a.left		{ background: none no-repeat 3px 60%; }
-a.right		{ background: none no-repeat 95% 60%; }
+a.right		{ background: none no-repeat 99% 60%; }
 
 a.up, a.up:link, a.up:active, a.up:visited {
 	padding-left: 10px;
