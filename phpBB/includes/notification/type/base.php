@@ -150,60 +150,6 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	}
 
 	/**
-	* Prepare to output the notification to the template
-	*/
-	public function prepare_for_display()
-	{
-		if ($this->get_url())
-		{
-			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id);
-		}
-		else
-		{
-			$redirect = (($this->user->page['page_dir']) ? $this->user->page['page_dir'] . '/' : '') . $this->user->page['page_name'] . (($this->user->page['query_string']) ? '?' . $this->user->page['query_string'] : '');
-
-			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;redirect=' . urlencode($redirect));
-		}
-
-		return array(
-			'NOTIFICATION_ID'	=> $this->notification_id,
-
-			'AVATAR'			=> $this->get_avatar(),
-
-			'FORMATTED_TITLE'	=> $this->get_title(),
-
-			'URL'				=> $this->get_url(),
-			'TIME'	   			=> $this->user->format_date($this->time),
-
-			'UNREAD'			=> $this->unread,
-
-			'U_MARK_READ'		=> ($this->unread) ? $u_mark_read : '',
-		);
-	}
-
-	/**
-	* Mark this item read
-	*
-	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
-	* @return string
-	*/
-	public function mark_read($return = false)
-	{
-		return $this->mark(false, $return);
-	}
-
-	/**
-	* Mark this item unread
-	*
-	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
-	* @return string
-	*/
-	public function mark_unread($return = false)
-	{
-		return $this->mark(true, $return);
-	}
-
-	/**
 	* Function for preparing the data for insertion in an SQL query
 	* (The service handles insertion)
 	*
@@ -257,11 +203,65 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	}
 
 	/**
+	* Mark this item read
+	*
+	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
+	* @return string
+	*/
+	public function mark_read($return = false)
+	{
+		return $this->mark(false, $return);
+	}
+
+	/**
+	* Mark this item unread
+	*
+	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
+	* @return string
+	*/
+	public function mark_unread($return = false)
+	{
+		return $this->mark(true, $return);
+	}
+
+	/**
+	* Prepare to output the notification to the template
+	*/
+	public function prepare_for_display()
+	{
+		if ($this->get_url())
+		{
+			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id);
+		}
+		else
+		{
+			$redirect = (($this->user->page['page_dir']) ? $this->user->page['page_dir'] . '/' : '') . $this->user->page['page_name'] . (($this->user->page['query_string']) ? '?' . $this->user->page['query_string'] : '');
+
+			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;redirect=' . urlencode($redirect));
+		}
+
+		return array(
+			'NOTIFICATION_ID'	=> $this->notification_id,
+
+			'AVATAR'			=> $this->get_avatar(),
+
+			'FORMATTED_TITLE'	=> $this->get_title(),
+
+			'URL'				=> $this->get_url(),
+			'TIME'	   			=> $this->user->format_date($this->time),
+
+			'UNREAD'			=> $this->unread,
+
+			'U_MARK_READ'		=> ($this->unread) ? $u_mark_read : '',
+		);
+	}
+
+	/**
 	* -------------- Fall back functions -------------------
 	*/
 
 	/**
-	* URL to unsubscribe to this notification (fall-back)
+	* URL to unsubscribe to this notification (fall back)
 	*
 	* @param string|bool $method Method name to unsubscribe from (email|jabber|etc), False to unsubscribe from all notifications for this item
 	*/
@@ -271,7 +271,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	}
 
 	/**
-	* Get the user's avatar (fall-back)
+	* Get the user's avatar (fall back)
 	*/
 	public function get_avatar()
 	{
@@ -279,7 +279,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	}
 
 	/**
-	* Get the special items to load (fall-back)
+	* Get the special items to load (fall back)
 	*/
 	public function get_load_special()
 	{
@@ -287,7 +287,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	}
 
 	/**
-	* Load the special items (fall-back)
+	* Load the special items (fall back)
 	*/
 	public function load_special($data, $notifications)
 	{
@@ -295,7 +295,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	}
 
 	/**
-	* Is available (fall-back)
+	* Is available (fall back)
 	*/
 	public function is_available()
 	{
@@ -303,15 +303,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	}
 
 	/**
-	* Pre create insert array function
-	* This allows you to perform certain actions, like run a query
-	* and load data, before create_insert_array() is run. The data
-	* returned from this function will be sent to create_insert_array().
-	*
-	* @param array $type_data Data unique to this notification type
-	* @param array $notify_users Notify users list
-	* 		Formated from find_users_for_notification()
-	* @return array Whatever you want to send to create_insert_array().
+	* Pre create insert array function (fall back)
 	*/
 	public function pre_create_insert_array($type_data, $notify_users)
 	{

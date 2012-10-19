@@ -76,7 +76,9 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	}
 
 	/**
-	* Is available
+	* Is this type available to the current user (defines whether or not it will be shown in the UCP Edit notification options)
+	*
+	* @return bool True/False whether or not this is available to the user
 	*/
 	public function is_available()
 	{

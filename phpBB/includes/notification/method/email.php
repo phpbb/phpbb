@@ -40,6 +40,9 @@ class phpbb_notification_method_email extends phpbb_notification_method_base
 		return true;
 	}
 
+	/**
+	* Parse the queue and notify the users
+	*/
 	public function notify()
 	{
 		if (!sizeof($this->queue))
