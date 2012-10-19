@@ -120,7 +120,7 @@ class phpbb_notification_manager
 				FROM ' . NOTIFICATIONS_TABLE . '
 				WHERE user_id = ' . (int) $options['user_id'] . '
 					AND unread = 1
-					AND is_disabled = 0';
+					AND is_enabled = 1';
 			$result = $this->db->sql_query($sql);
 			$unread_count = (int) $this->db->sql_fetchfield('count', $result);
 			$this->db->sql_freeresult($result);
@@ -132,7 +132,7 @@ class phpbb_notification_manager
 			$sql = 'SELECT COUNT(*) AS count
 				FROM ' . NOTIFICATIONS_TABLE . '
 				WHERE user_id = ' . (int) $options['user_id'] . '
-					AND is_disabled = 0';
+					AND is_enabled = 1';
 			$result = $this->db->sql_query($sql);
 			$total_count = (int) $this->db->sql_fetchfield('count', $result);
 			$this->db->sql_freeresult($result);
@@ -145,7 +145,7 @@ class phpbb_notification_manager
 			FROM ' . NOTIFICATIONS_TABLE . '
 			WHERE user_id = ' . (int) $options['user_id'] .
 				(($options['notification_id']) ? ((is_array($options['notification_id'])) ? ' AND ' . $this->db->sql_in_set('notification_id', $options['notification_id']) : ' AND notification_id = ' . (int) $options['notification_id']) : '') . '
-			 	AND is_disabled = 0
+			 	AND is_enabled = 1
 			ORDER BY ' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
 		$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
 
@@ -163,7 +163,7 @@ class phpbb_notification_manager
 				WHERE user_id = ' . (int) $options['user_id'] . '
 					AND unread = 1
 					AND ' . $this->db->sql_in_set('notification_id', array_keys($rowset), true) . '
-					AND is_disabled = 0
+					AND is_is_enabled = 1
 				ORDER BY ' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
 			$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
 
@@ -374,7 +374,7 @@ class phpbb_notification_manager
 			FROM ' . NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
 				AND item_id = " . (int) $item_id . '
-				AND is_disabled = 0';
+				AND is_enabled = 1';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
