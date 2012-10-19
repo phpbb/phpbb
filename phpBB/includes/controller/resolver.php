@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -32,8 +32,8 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	protected $user;
 
 	/**
-	* ContainerBuilder object
-	* @var ContainerBuilder
+	* ContainerInterface object
+	* @var ContainerInterface
 	*/
 	protected $container;
 
@@ -41,9 +41,9 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	* Construct method
 	*
 	* @param phpbb_user $user User Object
-	* @param ContainerBuilder $container ContainerBuilder object
+	* @param ContainerInterface $container ContainerInterface object
 	*/
-	public function __construct(phpbb_user $user, ContainerBuilder $container)
+	public function __construct(phpbb_user $user, ContainerInterface $container)
 	{
 		$this->user = $user;
 		$this->container = $container;
