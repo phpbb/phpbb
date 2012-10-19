@@ -2335,12 +2335,26 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
-	global $phpbb_dispatcher;
+	global $phpbb_dispatcher, $phpbb_root_path, $config, $symfony_request;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
 		// Do not append the ? if the param-list is empty anyway.
 		$params = false;
+	}
+
+	// Make sure we have a Symfony Request object; tests do not have one
+	// unless they need it.
+	if ($symfony_request)
+	{
+		// Correct the path when we are accessing it through a controller
+		// This simply rewrites the value given by $phpbb_root_path to the
+		// script_path in config.
+		$path_info = $symfony_request->getPathInfo();
+		if (!empty($path_info) && $path_info != '/')
+		{
+			$url = $config['script_path'] . '/' . substr($url, strlen($phpbb_root_path));
+		}
 	}
 
 	$append_sid_overwrite = false;
@@ -5039,7 +5053,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 	// Determine board url - we may need it later
 	$board_url = generate_board_url() . '/';
-	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
+	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $config['script_path'] . '/';
 
 	// Send a proper content-language to the output
 	$user_lang = $user->lang['USER_LANG'];
@@ -5216,8 +5230,12 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 /**
 * Generate page footer
+*
+* @param bool $run_cron Whether or not to run the cron
+* @param bool $display_template Whether or not to display the template
+* @param bool $exit_handler Whether or not to run the exit_handler()
 */
-function page_footer($run_cron = true)
+function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
 	global $request, $phpbb_dispatcher;
@@ -5312,10 +5330,17 @@ function page_footer($run_cron = true)
 		}
 	}
 
-	$template->display('body');
+	if ($display_template)
+	{
+		$template->display('body');
+	}
 
 	garbage_collection();
-	exit_handler();
+
+	if ($exit_handler)
+	{
+		exit_handler();
+	}
 }
 
 /**

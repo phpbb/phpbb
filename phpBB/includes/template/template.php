@@ -224,15 +224,9 @@ class phpbb_template
 	*/
 	public function assign_display($handle, $template_var = '', $return_content = true)
 	{
-		ob_start();
-		$result = $this->display($handle);
-		$contents = ob_get_clean();
-		if ($result === false)
-		{
-			return false;
-		}
+		$contents = $this->return_display($handle);
 
-		if ($return_content)
+		if ($return_content === true || empty($template_var) || $contents === false)
 		{
 			return $contents;
 		}
@@ -240,6 +234,15 @@ class phpbb_template
 		$this->assign_var($template_var, $contents);
 
 		return true;
+	}
+
+	public function return_display($handle)
+	{
+		ob_start();
+		$result = $this->display($handle);
+		$contents = ob_get_clean();
+
+		return $result === false ? $result : $contents;
 	}
 
 	/**

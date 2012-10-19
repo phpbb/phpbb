@@ -44,6 +44,27 @@ services:
             - @cache.driver
             - %tables.config%
 
+    controller.helper:
+        class: phpbb_controller_helper
+        arguments:
+            - @service_container
+
+    controller.resolver:
+        class: phpbb_controller_resolver
+        arguments:
+            - @user
+            - @service_container
+            - @ext.finder
+
+    controller.route_collection:
+        class: phpbb_controller_route_collection
+        arguments:
+            - @ext.finder
+            - @controller.provider
+
+    controller.provider:
+        class: phpbb_controller_provider
+    
     cron.task_collection:
         class: phpbb_di_service_collection
         arguments:
@@ -92,9 +113,45 @@ services:
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
+<<<<<<< HEAD
+=======
+    
+    ext.finder:
+        class: phpbb_extension_finder
+        arguments:
+            - @ext.manager
+            - %core.root_path%
+            - @cache.driver
+            - .%core.php_ext%
+            - _ext_finder
+
+    http_kernel:
+        class: Symfony\Component\HttpKernel\HttpKernel
+        arguments:
+            - @dispatcher
+            - @controller.resolver
+
+    kernel_event_subscriber:
+        class: phpbb_event_kernel_subscriber
+        arguments:
+            - @template
+            - @user
+        tags:
+            - { name: kernel.event_subscriber }
+>>>>>>> 719171f... [feature/controller] Implement a front controller
 
     request:
         class: phpbb_request
+
+    request.context:
+        class: Symfony\Component\Routing\RequestContext
+
+    router_listener:
+        class: Symfony\Component\HttpKernel\EventListener\RouterListener
+        arguments:
+            - @url_matcher
+        tags:
+            - { name: kernel.event_subscriber }
 
     style:
         class: phpbb_style
@@ -131,6 +188,12 @@ services:
 
     template_context:
         class: phpbb_template_context
+
+    url_matcher:
+        class: Symfony\Component\Routing\Matcher\UrlMatcher
+        arguments:
+            - @controller.route_collection
+            - @request.context
 
     user:
         class: phpbb_user
