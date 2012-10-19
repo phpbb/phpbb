@@ -70,7 +70,7 @@ class phpbb_di_extension_config extends Extension
 	}
 
 	/**
-	* Fix ACM type
+	* Convert old (3.0) values to 3.1 class names
 	*
 	* @param style $acm_type ACM type
 	* @return ACM type class
