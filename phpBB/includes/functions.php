@@ -5433,6 +5433,28 @@ function phpbb_create_container(array $extensions, $phpbb_root_path, $phpEx)
 }
 
 /**
+* Create installer container
+*
+* @param string $phpbb_root_path Root path
+* @param string $phpEx PHP Extension
+* @return ContainerBuilder object
+*/
+function phpbb_create_install_container($phpbb_root_path, $phpEx)
+{
+	// We have to do it like this instead of with extensions
+	$container = new ContainerBuilder();
+	$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../config'));
+	$loader->load('services.yml');
+
+	$container->setParameter('core.root_path', $phpbb_root_path);
+	$container->setParameter('core.php_ext', $phpEx);
+
+	$container->setAlias('cache.driver', 'cache.driver.install');
+
+	return $container;
+}
+
+/**
 * Create a compiled ContainerBuilder object
 *
 * @param array $extensions Array of Container extension objects
@@ -5448,8 +5470,6 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $conf
 	{
 		require("{$phpbb_root_path}cache/container.$phpEx");
 		return new phpbb_cache_container();
-		//unlink("{$phpbb_root_path}cache/container.$phpEx");
-		//return;
 	}
 
 	// If we don't have the cached container class, we make it now
