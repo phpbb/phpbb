@@ -27,16 +27,11 @@ class phpbb_di_extension_ext extends Extension
 {
 	protected $paths = array();
 
-	public function __construct($extensions_config_file)
+	public function __construct($enabled_extensions)
 	{
-		if (file_exists($extensions_config_file))
+		foreach ($enabled_extensions as $ext => $path)
 		{
-			$contents = file_get_contents($extensions_config_file);
-			$enabled_extensions = json_decode($contents);
-			foreach ($enabled_extensions->extensions as $ext)
-			{
-				$this->paths[] = './ext/' . $ext;
-			}
+			$this->paths[] = $path;
 		}
 	}
 

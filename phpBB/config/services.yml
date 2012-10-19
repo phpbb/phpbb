@@ -47,13 +47,13 @@ services:
     controller.helper:
         class: phpbb_controller_helper
         arguments:
-            - @container
+            - @service_container
 
     controller.resolver:
         class: phpbb_controller_resolver
         arguments:
             - @user
-            - @container
+            - @service_container
             - @ext.finder
 
     controller.route_collection:
@@ -68,7 +68,7 @@ services:
     cron.task_provider:
         class: phpbb_cron_task_provider
         arguments:
-            - @container
+            - @service_container
 
     cron.manager:
         class: phpbb_cron_manager
@@ -87,7 +87,7 @@ services:
     dispatcher:
         class: phpbb_event_dispatcher
         arguments:
-            - @container
+            - @service_container
 
     dbal.conn:
         class: %dbal.driver.class%
@@ -134,6 +134,22 @@ services:
             - @user
         tags:
             - { name: kernel.event_subscriber }
+
+    processor.config:
+        class: phpbb_di_processor_config
+        arguments:
+            - %core.root_path%config.%core.php_ext%
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: container.processor }
+
+    processor.ext:
+        class: phpbb_di_processor_ext
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: container.processor }
 
     request:
         class: phpbb_request
