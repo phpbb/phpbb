@@ -47,7 +47,7 @@ services:
     cron.task_provider:
         class: phpbb_cron_task_provider
         arguments:
-            - @container
+            - @service_container
 
     cron.manager:
         class: phpbb_cron_manager
@@ -65,6 +65,8 @@ services:
 
     dispatcher:
         class: phpbb_event_dispatcher
+        arguments:
+            - @service_container
 
     dbal.conn:
         class: %dbal.driver.class%
