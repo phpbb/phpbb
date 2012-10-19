@@ -13,27 +13,10 @@
 
 <script type="text/javascript" src="{T_JQUERY_LINK}"></script>
 <!-- IF S_JQUERY_FALLBACK --><script type="text/javascript">window.jQuery || document.write(unescape('%3Cscript src="{T_ASSETS_PATH}/javascript/jquery.js?assets_version={T_ASSETS_VERSION}" type="text/javascript"%3E%3C/script%3E'));</script><!-- ENDIF -->
+<!-- INCLUDEJS template/common.js -->
 {SCRIPTS}
 
 <!-- EVENT overall_footer_after -->
-
-<script type="text/javascript">
-// <![CDATA[
-<!-- IF S_NOTIFICATIONS_DISPLAY -->
-(function($) {  // Avoid conflicts with other libraries
-
-$(document).click(function(e) {
-    var target = e.target;
-
-    if (!$(target).is('#notification_list') && !$(target).is('#notification_list_button') && !$(target).parents().is('#notification_list')) {
-        $('#notification_list').hide();
-    }
-});
-
-})(jQuery); // Avoid conflicts with other libraries
-<!-- ENDIF -->
-// ]]>
-</script>
 
 </body>
 </html>
