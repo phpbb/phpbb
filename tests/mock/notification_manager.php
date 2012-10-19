@@ -29,11 +29,17 @@ class phpbb_mock_notification_manager
 		);
 	}
 
-	public function mark_notifications_read() {}
+	public function mark_notifications_read()
+	{
+	}
 
-	public function mark_notifications_read_by_parent() {}
+	public function mark_notifications_read_by_parent()
+	{
+	}
 
-	public function mark_notifications_read_by_id() {}
+	public function mark_notifications_read_by_id()
+	{
+	}
 
 
 	public function add_notifications()
@@ -41,11 +47,17 @@ class phpbb_mock_notification_manager
 		return array();
 	}
 
-	public function add_notifications_for_users() {}
+	public function add_notifications_for_users()
+	{
+	}
 
-	public function update_notifications() {}
+	public function update_notifications()
+	{
+	}
 
-	public function delete_notifications() {}
+	public function delete_notifications()
+	{
+	}
 
 	public function get_subscription_types()
 	{
@@ -63,11 +75,17 @@ class phpbb_mock_notification_manager
 		return array();
 	}
 
-	public function add_subscription() {}
+	public function add_subscription()
+	{
+	}
 
-	public function delete_subscription() {}
+	public function delete_subscription()
+	{
+	}
 
-	public function load_users() {}
+	public function load_users()
+	{
+	}
 
 	public function get_user()
 	{
