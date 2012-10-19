@@ -121,7 +121,7 @@ services:
             - .%core.php_ext%
             - _ext_finder
 
-    kernel:
+    http_kernel:
         class: Symfony\Component\HttpKernel\HttpKernel
         arguments:
             - @dispatcher

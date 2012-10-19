@@ -23,7 +23,7 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('app');
 
-$kernel = $phpbb_container->get('kernel');
-$response = $kernel->handle($symfony_request);
+$http_kernel = $phpbb_container->get('http_kernel');
+$response = $http_kernel->handle($symfony_request);
 $response->send();
-$kernel->terminate($symfony_request, $response);
+$http_kernel->terminate($symfony_request, $response);
