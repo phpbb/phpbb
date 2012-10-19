@@ -73,14 +73,4 @@ class phpbb_di_extension_core extends Extension
 	{
 		return 'core';
 	}
-
-	/**
-	* Returns the namespace to be used for this extension (XML namespace).
-	*
-	* @return string The XML namespace
-	*/
-	public function getNamespace()
-	{
-		return false;
-	}
 }

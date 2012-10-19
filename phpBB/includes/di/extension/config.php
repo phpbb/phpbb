@@ -70,16 +70,6 @@ class phpbb_di_extension_config extends Extension
 	}
 
 	/**
-	* Returns the namespace to be used for this extension (XML namespace).
-	*
-	* @return string The XML namespace
-	*/
-	public function getNamespace()
-	{
-		return false;
-	}
-
-	/**
 	* Fix ACM type
 	*
 	* @param style $acm_type ACM type

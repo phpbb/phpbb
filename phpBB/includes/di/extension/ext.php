@@ -75,14 +75,4 @@ class phpbb_di_extension_ext extends Extension
 	{
 		return 'ext';
 	}
-
-	/**
-	* Returns the namespace to be used for this extension (XML namespace).
-	*
-	* @return string The XML namespace
-	*/
-	public function getNamespace()
-	{
-		return false;
-	}
 }
