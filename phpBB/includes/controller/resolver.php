@@ -96,7 +96,6 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	public function getArguments(Request $request, $controller)
 	{
 		// At this point, $controller contains the object and method name
-		// If no method name was specified, it defaults to handle()
 		list($object, $method) = $controller;
 		$mirror = new ReflectionMethod($object, $method);
 
