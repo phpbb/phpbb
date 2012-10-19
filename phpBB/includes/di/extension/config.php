@@ -16,40 +16,33 @@ if (!defined('IN_PHPBB'))
 }
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\Config\FileLocator;
 
 /**
-* Configure the container for phpBB's services though
-* user-defined parameters defined in the config.php file.
+* Container config extension
 */
-class phpbb_di_processor_config implements phpbb_di_processor_interface
+class phpbb_di_extension_config extends Extension
 {
-	private $config_file;
-	private $phpbb_root_path;
-	private $php_ext;
-
-	/**
-	* Constructor.
-	*
-	* @param string $config_file The config file
-	* @param string $phpbb_root_path The root path
-	* @param string $php_ext The PHP extension
-	*/
-	public function __construct($config_file, $phpbb_root_path, $php_ext)
+	public function __construct($config_file)
 	{
 		$this->config_file = $config_file;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
 	}
 
 	/**
-	* @inheritdoc
+	* Loads a specific configuration.
+	*
+	* @param array            $config    An array of configuration values
+	* @param ContainerBuilder $container A ContainerBuilder instance
+	*
+	* @throws InvalidArgumentException When provided tag is not defined in this extension
+	*
+	* @api
 	*/
-	public function process(ContainerBuilder $container)
+	public function load(array $config, ContainerBuilder $container)
 	{
-		require $this->config_file;
-
-		$container->setParameter('core.root_path', $this->phpbb_root_path);
-		$container->setParameter('core.php_ext', $this->php_ext);
+		require($this->config_file);
 
 		$container->setParameter('core.table_prefix', $table_prefix);
 		$container->setParameter('cache.driver.class', $this->fix_acm_type($acm_type));
@@ -60,10 +53,28 @@ class phpbb_di_processor_config implements phpbb_di_processor_interface
 		$container->setParameter('dbal.dbname', $dbname);
 		$container->setParameter('dbal.dbport', $dbport);
 		$container->setParameter('dbal.new_link', defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK);
-
-		$container->set('container', $container);
 	}
 
+	/**
+	* Returns the recommended alias to use in XML.
+	*
+	* This alias is also the mandatory prefix to use when using YAML.
+	*
+	* @return string The alias
+	*
+	* @api
+	*/
+	public function getAlias()
+	{
+		return 'config';
+	}
+
+	/**
+	* Convert old (3.0) values to 3.1 class names
+	*
+	* @param style $acm_type ACM type
+	* @return ACM type class
+	*/
 	protected function fix_acm_type($acm_type)
 	{
 		if (preg_match('#^[a-z]+$#', $acm_type))

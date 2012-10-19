@@ -7,6 +7,13 @@
 *
 */
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 /**
 * @ignore
 */
@@ -5411,4 +5418,99 @@ function phpbb_pcre_utf8_support()
 function phpbb_to_numeric($input)
 {
 	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
+}
+
+/**
+* Create the ContainerBuilder object
+*
+* @param array $extensions Array of Container extension objects
+* @param string $phpbb_root_path Root path
+* @param string $phpEx PHP Extension
+* @return ContainerBuilder object
+*/
+function phpbb_create_container(array $extensions, $phpbb_root_path, $phpEx)
+{
+	$container = new ContainerBuilder();
+
+	foreach ($extensions as $extension)
+	{
+		$container->registerExtension($extension);
+		$container->loadFromExtension($extension->getAlias());
+	}
+
+	$container->set('container', $container);
+	$container->setParameter('core.root_path', $phpbb_root_path);
+	$container->setParameter('core.php_ext', $phpEx);
+
+	return $container;
+}
+
+/**
+* Create installer container
+*
+* @param string $phpbb_root_path Root path
+* @param string $phpEx PHP Extension
+* @return ContainerBuilder object
+*/
+function phpbb_create_install_container($phpbb_root_path, $phpEx)
+{
+	// We have to do it like this instead of with extensions
+	$container = new ContainerBuilder();
+	$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../config'));
+	$loader->load('services.yml');
+
+	$container->setParameter('core.root_path', $phpbb_root_path);
+	$container->setParameter('core.php_ext', $phpEx);
+
+	$container->setAlias('cache.driver', 'cache.driver.install');
+
+	return $container;
+}
+
+/**
+* Create a compiled ContainerBuilder object
+*
+* @param array $extensions Array of Container extension objects
+* @param array $passes Array of Compiler Pass objects
+* @param string $phpbb_root_path Root path
+* @param string $phpEx PHP Extension
+* @return ContainerBuilder object (compiled)
+*/
+function phpbb_create_compiled_container(array $extensions, array $passes, $config_file_path, $phpbb_root_path, $phpEx)
+{
+	// Check for our cached container; if it exists, use it
+	if (file_exists("{$phpbb_root_path}cache/container.$phpEx"))
+	{
+		require("{$phpbb_root_path}cache/container.$phpEx");
+		return new phpbb_cache_container();
+	}
+
+	// If we don't have the cached container class, we make it now
+	// First, we create the temporary container so we can access the
+	// extension_manager
+	$tmp_container = phpbb_create_container($extensions, $phpbb_root_path, $phpEx);
+	$tmp_container->compile();
+
+	// Now we pass the enabled extension paths into the ext compiler extension
+	$extensions[] = new phpbb_di_extension_ext($tmp_container->get('ext.manager')->all_enabled());
+
+	// And create our final container
+	$container = phpbb_create_container($extensions, $phpbb_root_path, $phpEx);
+
+	foreach ($passes as $pass)
+	{
+		$container->addCompilerPass($pass);
+	}
+	$container->compile();
+
+	// Lastly, we create our cached container class
+	$dumper = new PhpDumper($container);
+	$cached_container_dump = $dumper->dump(array(
+		'class'			=> 'phpbb_cache_container',
+		'base_class'	=> 'Symfony\\Component\\DependencyInjection\\ContainerBuilder',
+	));
+
+	$file = file_put_contents("{$phpbb_root_path}cache/container.$phpEx", $cached_container_dump);
+
+	return $container;
 }

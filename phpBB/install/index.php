@@ -75,8 +75,6 @@ else
 
 // Include essential scripts
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
-require($phpbb_root_path . 'includes/di/processor/config.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
@@ -86,14 +84,18 @@ include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
-$phpbb_container = new ContainerBuilder();
-$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/../config'));
-$loader->load('services.yml');
+// Setup class loader first
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
+$phpbb_class_loader->register();
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+$phpbb_class_loader_ext->register();
 
-$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
-$phpbb_container->setParameter('core.php_ext', $phpEx);
+// Set up container
+$phpbb_container = phpbb_create_install_container($phpbb_root_path, $phpEx);
 
 $phpbb_container->setAlias('cache.driver', 'cache.driver.install');
+$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
+$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
 $phpbb_class_loader = $phpbb_container->get('class_loader');
 $phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');

@@ -162,7 +162,7 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 
 		while (($entry = readdir($dir)) !== false)
 		{
-			if (strpos($entry, 'sql_') !== 0 && strpos($entry, 'data_') !== 0 && strpos($entry, 'ctpl_') !== 0 && strpos($entry, 'tpl_') !== 0)
+			if (strpos($entry, 'container') !== 0 && strpos($entry, 'sql_') !== 0 && strpos($entry, 'data_') !== 0 && strpos($entry, 'ctpl_') !== 0 && strpos($entry, 'tpl_') !== 0)
 			{
 				continue;
 			}

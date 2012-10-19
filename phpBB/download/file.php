@@ -51,15 +51,28 @@ if (isset($_GET['avatar']))
 	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
-	$phpbb_container = new ContainerBuilder();
-	$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/../config'));
-	$loader->load('services.yml');
+	// Setup class loader first
+	$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
+	$phpbb_class_loader->register();
+	$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+	$phpbb_class_loader_ext->register();
 
-	$processor = new phpbb_di_processor_config($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx);
-	$processor->process($phpbb_container);
+	// Set up container
+	$phpbb_container = phpbb_create_compiled_container(
+		array(
+			new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
+			new phpbb_di_extension_core($phpbb_root_path),
+		),
+		array(
+			new phpbb_event_kernel_compiler_pass(),
+		),
+		$phpbb_root_path . 'config.' . $phpEx,
+		$phpbb_root_path,
+		$phpEx
+	);
 
-	$phpbb_class_loader = $phpbb_container->get('class_loader');
-	$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
+	$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
+	$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
 	// set up caching
 	$cache = $phpbb_container->get('cache');
