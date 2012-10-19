@@ -89,10 +89,6 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 			'ignore_users'		=> array(),
 		), $options);
 
-		// Let's continue to use the phpBB subscriptions system, at least for now.
-		// It may not be the nicest thing, but it is already working and it would be significant work to replace it
-		//$users = parent::_find_users_for_notification($phpbb_container, $post['topic_id']);
-
 		$users = array();
 
 		$sql = 'SELECT user_id
