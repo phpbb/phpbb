@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * ACM Abstract Memory Class
 * @package acm
 */
-class phpbb_cache_driver_memory extends phpbb_cache_driver_base
+abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 {
 	var $key_prefix;
 
@@ -280,7 +280,7 @@ class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 	/**
 	* Save sql query
 	*/
-	function sql_save($query, &$query_result, $ttl)
+	function sql_save($query, $query_result, $ttl)
 	{
 		global $db;
 
@@ -335,6 +335,8 @@ class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 		$this->_write('sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
 
 		$query_result = $query_id;
+
+		return $query_id;
 	}
 
 	/**

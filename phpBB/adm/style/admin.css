@@ -1718,3 +1718,13 @@ fieldset.permissions .padding {
 .phpinfo td, .phpinfo th, .phpinfo h2, .phpinfo h1 {
 	text-align: left;
 }
+
+.requirements_not_met {
+	padding: 5px;
+	background-color: #BC2A4D;
+}
+
+.requirements_not_met dt label, .requirements_not_met dd p {
+	color: #FFFFFF;
+	font-size: 1.4em;
+}

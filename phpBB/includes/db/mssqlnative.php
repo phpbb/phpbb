@@ -218,7 +218,6 @@ class dbal_mssqlnative extends dbal
 		$this->server = $sqlserver . (($port) ? $port_delimiter . $port : '');
 
 		//connect to database
-		error_reporting(E_ALL);
 		$this->db_connect_id = sqlsrv_connect($this->server, array(
 			'Database' => $this->dbname,
 			'UID' => $this->user,
@@ -338,7 +337,7 @@ class dbal_mssqlnative extends dbal
 				if ($cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$cache->sql_save($query, $this->query_result, $cache_ttl);
+					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{
@@ -418,7 +417,7 @@ class dbal_mssqlnative extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -478,7 +477,7 @@ class dbal_mssqlnative extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_freeresult($query_id);
 		}

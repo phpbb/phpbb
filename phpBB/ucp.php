@@ -328,6 +328,18 @@ if (!$auth->acl_get('u_sig'))
 	$module->set_display('profile', 'signature', false);
 }
 
+/**
+* Use this event to enable and disable additional UCP modules
+*
+* @event core.ucp_display_module_before
+* @var	p_master	module	Object holding all modules and their status
+* @var	mixed		id		Active module category (can be the int or string)
+* @var	string		mode	Active module
+* @since 3.1-A1
+*/
+$vars = array('module', 'id', 'mode');
+extract($phpbb_dispatcher->trigger_event('core.ucp_display_module_before', compact($vars)));
+
 // Select the active module
 $module->set_active($id, $mode);
 

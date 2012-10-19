@@ -157,7 +157,19 @@
 
 			<!-- IF postrow.S_HAS_ATTACHMENTS -->
 				<dl class="attachbox">
-					<dt>{L_ATTACHMENTS}</dt>
+					<dt>
+						{L_ATTACHMENTS}
+						<!-- IF postrow.S_MULTIPLE_ATTACHMENTS -->
+							<div class="dl_links">
+								<strong>{L_DOWNLOAD_ALL}:</strong>
+								<ul>
+								<!-- BEGIN dl_method -->
+									<li>[ <a href="{postrow.dl_method.LINK}">{postrow.dl_method.TYPE}</a> ]</li>
+								<!-- END dl_method -->
+								</ul>
+							</div>
+						<!-- ENDIF -->
+					</dt>
 					<!-- BEGIN attachment -->
 						<dd>{postrow.attachment.DISPLAY_ATTACHMENT}</dd>
 					<!-- END attachment -->
@@ -255,6 +267,17 @@
 		<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->"><a href="{U_POST_REPLY_TOPIC}" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->"><span></span><!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED_SHORT}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF --></a></div>
 	<!-- ENDIF -->
 	</div>
+
+	<!-- IF S_HAS_ATTACHMENTS -->
+		<div class="dl_links">
+			<strong>{L_DOWNLOAD_ALL_ATTACHMENTS}:</strong>
+			<ul>
+			<!-- BEGIN dl_method -->
+				<li>[ <a href="{dl_method.LINK}">{dl_method.TYPE}</a> ]</li>
+			<!-- END dl_method -->
+			</ul>
+		</div>
+	<!-- ENDIF -->
 
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">

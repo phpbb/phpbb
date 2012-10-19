@@ -25,7 +25,7 @@ class ucp_zebra
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $request;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $request, $phpbb_dispatcher;
 
 		$submit	= (isset($_POST['submit']) || isset($_GET['add']) || isset($_GET['remove'])) ? true : false;
 		$s_hidden_fields = '';
@@ -54,9 +54,22 @@ class ucp_zebra
 					// Remove users
 					if (!empty($data['usernames']))
 					{
+						$user_ids = $data['usernames'];
+
+						/**
+						* Remove users from friends/foes
+						*
+						* @event core.ucp_remove_zebra
+						* @var	string	mode		Zebra type: friends|foes
+						* @var	array	user_ids	User ids we remove
+						* @since 3.1-A1
+						*/
+						$vars = array('user_ids');
+						extract($phpbb_dispatcher->trigger_event('core.ucp_remove_zebra', compact($vars)));
+
 						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
 							WHERE user_id = ' . $user->data['user_id'] . '
-								AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
+								AND ' . $db->sql_in_set('zebra_id', $user_ids);
 						$db->sql_query($sql);
 
 						$updated = true;
@@ -185,6 +198,19 @@ class ucp_zebra
 											$sql_mode		=> 1
 										);
 									}
+
+									/**
+									* Add users to friends/foes
+									*
+									* @event core.ucp_add_zebra
+									* @var	string	mode		Zebra type:
+									*							friends|foes
+									* @var	array	sql_ary		Array of
+									*							entries we add
+									* @since 3.1-A1
+									*/
+									$vars = array('mode', 'sql_ary');
+									extract($phpbb_dispatcher->trigger_event('core.ucp_add_zebra', compact($vars)));
 
 									$db->sql_multi_insert(ZEBRA_TABLE, $sql_ary);
 

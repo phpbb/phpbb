@@ -76,18 +76,18 @@ class phpbb_user extends phpbb_session
 	function setup($lang_set = false, $style_id = false)
 	{
 		global $db, $phpbb_style, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
+		global $phpbb_dispatcher;
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
-
-			$this->date_format = $this->data['user_dateformat'];
+			$user_lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
+			$user_date_format = $this->data['user_dateformat'];
 			$user_timezone = $this->data['user_timezone'];
 		}
 		else
 		{
-			$this->lang_name = basename($config['default_lang']);
-			$this->date_format = $config['default_dateformat'];
+			$user_lang_name = basename($config['default_lang']);
+			$user_date_format = $config['default_dateformat'];
 			$user_timezone = $config['board_timezone'];
 
 			/**
@@ -107,7 +107,7 @@ class phpbb_user extends phpbb_session
 
 					if (file_exists($this->lang_path . $accept_lang . "/common.$phpEx"))
 					{
-						$this->lang_name = $config['default_lang'] = $accept_lang;
+						$user_lang_name = $config['default_lang'] = $accept_lang;
 						break;
 					}
 					else
@@ -118,7 +118,7 @@ class phpbb_user extends phpbb_session
 
 						if (file_exists($this->lang_path . $accept_lang . "/common.$phpEx"))
 						{
-							$this->lang_name = $config['default_lang'] = $accept_lang;
+							$user_lang_name = $config['default_lang'] = $accept_lang;
 							break;
 						}
 					}
@@ -126,6 +126,28 @@ class phpbb_user extends phpbb_session
 			}
 			*/
 		}
+
+		$user_data = $this->data;
+
+		/**
+		* Event to load language files and modify user data on every page
+		*
+		* @event core.user_setup
+		* @var	array	user_data			Array with user's data row
+		* @var	string	user_lang_name		Basename of the user's langauge
+		* @var	string	user_date_format	User's date/time format
+		* @var	string	user_timezone		User's timezone, should be one of
+		*							http://www.php.net/manual/en/timezones.php
+		* @var	mixed	lang_set			String or array of language files
+		* @var	mixed	style_id			Style we are going to display
+		* @since 3.1-A1
+		*/
+		$vars = array('user_data', 'user_lang_name', 'user_date_format', 'user_timezone', 'lang_set', 'style_id');
+		extract($phpbb_dispatcher->trigger_event('core.user_setup', compact($vars)));
+
+		$this->data = $user_data;
+		$this->lang_name = $user_lang_name;
+		$this->date_format = $user_date_format;
 
 		try
 		{

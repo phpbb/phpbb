@@ -61,7 +61,7 @@ function do_cron($cron_lock, $run_tasks)
 
 if ($config['use_system_cron'])
 {
-	$cron = new phpbb_cron_manager(new phpbb_cron_task_provider($phpbb_extension_manager), $cache->get_driver());
+	$cron = $phpbb_container->get('cron.manager');
 }
 else
 {
@@ -71,7 +71,7 @@ else
 	output_image();
 }
 
-$cron_lock = new phpbb_lock_db('cron_lock', $config, $db);
+$cron_lock = $phpbb_container->get('cron.lock_db');
 if ($cron_lock->acquire())
 {
 	if ($config['use_system_cron'])
