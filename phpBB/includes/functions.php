@@ -5497,10 +5497,7 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $conf
 		'base_class'	=> 'Symfony\\Component\\DependencyInjection\\ContainerBuilder',
 	));
 
-	$file = fopen("{$phpbb_root_path}cache/container.$phpEx", 'w+');
-	fwrite($file, $cached_container_dump);
-	fclose($file);
+	$file = file_put_contents("{$phpbb_root_path}cache/container.$phpEx", $cached_container_dump);
 
-	require("{$phpbb_root_path}cache/container.$phpEx");
-	return new phpbb_cache_container();
+	return $container;
 }
