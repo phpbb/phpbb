@@ -29,7 +29,7 @@ class phpbb_di_extension_core extends Extension
 	* phpBB Root path
 	* @var string
 	*/
-	protected $phpbb_root_path = array();
+	protected $phpbb_root_path;
 
 	/**
 	* Constructor
