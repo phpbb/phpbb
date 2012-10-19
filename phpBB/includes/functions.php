@@ -5420,10 +5420,6 @@ function phpbb_create_container(array $extensions, $phpbb_root_path, $phpEx)
 
 	foreach ($extensions as $extension)
 	{
-		if (!$extension instanceof ExtensionInterface)
-		{
-			continue;
-		}
 		$phpbb_container->registerExtension($extension);
 		$phpbb_container->loadFromExtension($extension->getAlias());
 	}
@@ -5450,11 +5446,6 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $conf
 
 	foreach ($passes as $pass)
 	{
-		if (!$pass instanceof CompilerPassInterface)
-		{
-			continue;
-		}
-
 		$phpbb_container->addCompilerPass($pass);
 	}
 	$phpbb_container->compile($phpbb_container);
