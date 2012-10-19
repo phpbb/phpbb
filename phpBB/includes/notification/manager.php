@@ -518,7 +518,7 @@ class phpbb_notification_manager
 
 			$class = $this->get_item_type_class($class_name);
 
-			if ($class->is_available() && method_exists($class_name, 'get_item_type'))
+			if ($class instanceof phpbb_notification_type_interface && $class->is_available() && method_exists($class_name, 'get_item_type'))
 			{
 				$options = array_merge(array(
 					'id'		=> $class_name::get_item_type(),
@@ -556,7 +556,7 @@ class phpbb_notification_manager
 
 			$method = $this->get_method_class($class_name);
 
-			if ($method->is_available())
+			if ($method instanceof phpbb_notification_method_interface && $method->is_available())
 			{
 				$subscription_methods[] = $method_name;
 			}

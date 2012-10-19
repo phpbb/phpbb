@@ -20,6 +20,8 @@
 <script type="text/javascript">
 // <![CDATA[
 <!-- IF S_NOTIFICATIONS_DISPLAY -->
+(function($) {  // Avoid conflicts with other libraries
+
 $(document).click(function(e) {
     var target = e.target;
 
@@ -27,6 +29,8 @@ $(document).click(function(e) {
         $('#notification_list').hide();
     }
 });
+
+})(jQuery); // Avoid conflicts with other libraries
 <!-- ENDIF -->
 // ]]>
 </script>
