@@ -27,20 +27,7 @@ class phpbb_di_extension_config extends Extension
 {
 	public function __construct($config_file)
 	{
-		require($config_file);
-
-		$this->data = array(
-			'dbms'				=> $dbms,
-			'table_prefix'		=> $table_prefix,
-			'dbhost'			=> $dbhost,
-			'dbport'			=> $dbport,
-			'dbname'			=> $dbname,
-			'dbuser'			=> $dbuser,
-			'dbpasswd'			=> $dbpasswd,
-			'table_prefix'		=> $table_prefix,
-			'acm_type'			=> $acm_type,
-			'load_extensions'	=> $load_extensions,
-		);
+		$this->config_file = $config_file;
 	}
 
 	/**
@@ -55,14 +42,16 @@ class phpbb_di_extension_config extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
-		$container->setParameter('core.table_prefix', $this->data['table_prefix']);
-		$container->setParameter('cache.driver.class', $this->fix_acm_type($this->data['acm_type']));
-		$container->setParameter('dbal.driver.class', 'dbal_'.$this->data['dbms']);
-		$container->setParameter('dbal.dbhost', $this->data['dbhost']);
-		$container->setParameter('dbal.dbuser', $this->data['dbuser']);
-		$container->setParameter('dbal.dbpasswd', $this->data['dbpasswd']);
-		$container->setParameter('dbal.dbname', $this->data['dbname']);
-		$container->setParameter('dbal.dbport', $this->data['dbport']);
+		require($this->config_file);
+
+		$container->setParameter('core.table_prefix', $table_prefix);
+		$container->setParameter('cache.driver.class', $this->fix_acm_type($acm_type));
+		$container->setParameter('dbal.driver.class', 'dbal_'.$dbms);
+		$container->setParameter('dbal.dbhost', $dbhost);
+		$container->setParameter('dbal.dbuser', $dbuser);
+		$container->setParameter('dbal.dbpasswd', $dbpasswd);
+		$container->setParameter('dbal.dbname', $dbname);
+		$container->setParameter('dbal.dbport', $dbport);
 		$container->setParameter('dbal.new_link', defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK);
 	}
 
