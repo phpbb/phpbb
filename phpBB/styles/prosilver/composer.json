@@ -16,6 +16,9 @@
 		"phpbb": "3.1.0-dev"
 	},
 	"extra": {
-		"display-name": "Prosilver"
+		"display-name": "Prosilver",
+		"copyright": "2005 phpBB Group",
+		"parent": "prosilver"
+		// "template_bitfield": "lNg="
 	}
 }
