@@ -49,6 +49,7 @@ $lang = array_merge($lang, array(
 
 	// Event Listener/Subscriber error messages
 	'NO_EVENT_ATTRIBUTE'				=> 'Service "%1$s" must define the "event" attribute on "kernel.event_listener" tags.',
+	'NO_METHOD_ATTRIBUTE'				=> 'Service "%1$s" must define the "method" attribute on "kernel.event_listener" tags.',
 	'SUBSCRIBER_WRONG_TYPE'				=> 'Service "%1$s" must implement interface "%2$s".',
 
 	// Core error controller messages

@@ -44,10 +44,7 @@ class phpbb_event_kernel_compiler_pass implements CompilerPassInterface
 
 				if (!isset($event['method']))
 				{
-					$event['method'] = 'on'.preg_replace(array(
-						'/(?<=\b)[a-z]/ie',
-						'/[^a-z0-9]/i'
-					), array('strtoupper("\\0")', ''), $event['event']);
+					throw new InvalidArgumentException($user->lang('NO_METHOD_ATTRIBUTE', $id));
 				}
 
 				$definition->addMethodCall('addListenerService', array($event['event'], array($id, $event['method']), $priority));
