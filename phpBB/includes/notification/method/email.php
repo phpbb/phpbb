@@ -78,6 +78,11 @@ class phpbb_notification_method_email extends phpbb_notification_method_base
 		// Time to go through the queue and send emails
 		foreach ($this->queue as $notification)
 		{
+			if ($notification->get_email_template() === false)
+			{
+				continue;
+			}
+
 			$user = $this->notification_manager->get_user($notification->user_id);
 
 			if ($user['user_type'] == USER_IGNORE || in_array($notification->user_id, $banned_users))
@@ -85,7 +90,7 @@ class phpbb_notification_method_email extends phpbb_notification_method_base
 				continue;
 			}
 
-			$messenger->template($notification->email_template, $user['user_lang']);
+			$messenger->template($notification->get_email_template(), $user['user_lang']);
 
 			$messenger->to($user['user_email'], $user['username']);
 
