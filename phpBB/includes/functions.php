@@ -5438,7 +5438,6 @@ function phpbb_create_container(array $extensions, $phpbb_root_path, $phpEx)
 		$container->loadFromExtension($extension->getAlias());
 	}
 
-	$container->set('container', $container);
 	$container->setParameter('core.root_path', $phpbb_root_path);
 	$container->setParameter('core.php_ext', $phpEx);
 
