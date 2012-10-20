@@ -24,13 +24,6 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_pm extends phpbb_notification_type_base
 {
 	/**
-	* Email template to use to send notifications
-	*
-	* @var string
-	*/
-	public $email_template = 'privmsg_notify';
-
-	/**
 	* Get the type of notification this is
 	* phpbb_notification_type_
 	*/
@@ -127,6 +120,16 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 
 		return $this->user->lang('NOTIFICATION_PM', $username, $this->get_data('message_subject'));
+	}
+
+	/**
+	* Get email template
+	*
+	* @return string|bool
+	*/
+	public function get_email_template()
+	{
+		return 'privmsg_notify';
 	}
 
 	/**

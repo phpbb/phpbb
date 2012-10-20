@@ -24,13 +24,6 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_approve_post extends phpbb_notification_type_post
 {
 	/**
-	* Email template to use to send notifications
-	*
-	* @var string
-	*/
-	public $email_template = 'post_approved';
-
-	/**
 	* Language key used to output the text
 	*
 	* @var string
@@ -165,5 +158,15 @@ class phpbb_notification_type_approve_post extends phpbb_notification_type_post
 		$this->time = $data['time'] = time();
 
 		return $data;
+	}
+
+	/**
+	* Get email template
+	*
+	* @return string|bool
+	*/
+	public function get_email_template()
+	{
+		return 'post_approved';
 	}
 }

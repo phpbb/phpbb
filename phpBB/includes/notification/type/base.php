@@ -52,13 +52,6 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	protected $php_ext = null;
 
 	/**
-	* Array of user data containing information needed to output the notifications to the template
-	*
-	* @var array
-	*/
-	protected $users = array();
-
-	/**
 	* Notification option data (for outputting to the user)
 	*
 	* @var bool|array False if the service should use its default data
