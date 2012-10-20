@@ -5475,7 +5475,7 @@ function phpbb_create_install_container($phpbb_root_path, $phpEx)
 * @param string $phpEx PHP Extension
 * @return ContainerBuilder object (compiled)
 */
-function phpbb_create_compiled_container(array $extensions, array $passes, $config_file_path, $phpbb_root_path, $phpEx)
+function phpbb_create_compiled_container(array $extensions, array $passes, $phpbb_root_path, $phpEx)
 {
 	// Check for our cached container; if it exists, use it
 	if (file_exists("{$phpbb_root_path}cache/container.$phpEx"))
