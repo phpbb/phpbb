@@ -24,13 +24,6 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_bookmark extends phpbb_notification_type_post
 {
 	/**
-	* Email template to use to send notifications
-	*
-	* @var string
-	*/
-	public $email_template = 'notifications/bookmark';
-
-	/**
 	* Language key used to output the text
 	*
 	* @var string
@@ -130,5 +123,15 @@ class phpbb_notification_type_bookmark extends phpbb_notification_type_post
 		$this->db->sql_freeresult($result);
 
 		return $notify_users;
+	}
+
+	/**
+	* Get email template
+	*
+	* @return string|bool
+	*/
+	public function get_email_template()
+	{
+		return 'notifications/bookmark';
 	}
 }

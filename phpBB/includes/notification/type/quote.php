@@ -24,13 +24,6 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_quote extends phpbb_notification_type_post
 {
 	/**
-	* Email template to use to send notifications
-	*
-	* @var string
-	*/
-	public $email_template = 'notifications/quote';
-
-	/**
 	* regular expression to match to find usernames
 	*
 	* @var string
@@ -199,6 +192,16 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 
 		// return true to continue with the update code in the notifications service (this will update the rest of the notifications)
 		return true;
+	}
+
+	/**
+	* Get email template
+	*
+	* @return string|bool
+	*/
+	public function get_email_template()
+	{
+		return 'notifications/quote';
 	}
 
 	/**

@@ -123,6 +123,13 @@ interface phpbb_notification_type_interface
 	public function prepare_for_display();
 
 	/**
+	* Get email template
+	*
+	* @return string|bool
+	*/
+	public function get_email_template();
+
+	/**
 	* Get email template variables
 	*
 	* @return array

@@ -24,13 +24,6 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 {
 	/**
-	* Email template to use to send notifications
-	*
-	* @var string
-	*/
-	public $email_template = 'notifications/report_pm';
-
-	/**
 	* Language key used to output the text
 	*
 	* @var string
@@ -137,6 +130,16 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 		$this->db->sql_freeresult($result);
 
 		return $notify_users;
+	}
+
+	/**
+	* Get email template
+	*
+	* @return string|bool
+	*/
+	public function get_email_template()
+	{
+		return 'notifications/report_pm';
 	}
 
 	/**

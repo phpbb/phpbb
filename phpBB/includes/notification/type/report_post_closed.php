@@ -69,6 +69,16 @@ class phpbb_notification_type_report_post_closed extends phpbb_notification_type
 	}
 
 	/**
+	* Get email template
+	*
+	* @return string|bool
+	*/
+	public function get_email_template()
+	{
+		return false;
+	}
+
+	/**
 	* Get email template variables
 	*
 	* @return array
