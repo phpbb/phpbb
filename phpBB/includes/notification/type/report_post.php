@@ -24,13 +24,6 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_report_post extends phpbb_notification_type_post_in_queue
 {
 	/**
-	* Email template to use to send notifications
-	*
-	* @var string
-	*/
-	public $email_template = 'notifications/report_post';
-
-	/**
 	* Language key used to output the text
 	*
 	* @var string
@@ -80,6 +73,16 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 		unset($notify_users[$this->user->data['user_id']]);
 
 		return $notify_users;
+	}
+
+	/**
+	* Get email template
+	*
+	* @return string|bool
+	*/
+	public function get_email_template()
+	{
+		return 'notifications/report_post';
 	}
 
 	/**

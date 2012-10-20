@@ -24,13 +24,6 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_post extends phpbb_notification_type_base
 {
 	/**
-	* Email template to use to send notifications
-	*
-	* @var string
-	*/
-	public $email_template = 'topic_notify';
-
-	/**
 	* Language key used to output the text
 	*
 	* @var string
@@ -210,6 +203,16 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 			implode(', ', $usernames),
 			censor_text($this->get_data('topic_title'))
 		);
+	}
+
+	/**
+	* Get email template
+	*
+	* @return string|bool
+	*/
+	public function get_email_template()
+	{
+		return 'topic_notify';
 	}
 
 	/**
