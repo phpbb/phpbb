@@ -1056,15 +1056,14 @@ class acp_styles
 	*/
 	protected function read_style_meta($dir)
 	{
-		
 		if (!($file_contents = file_get_contents($this->styles_path . $dir . '/composer.json')))
 		{
-			throw new phpbb_acp_exception('file_get_contents failed on ' . $this->metadata_file);
+			throw new phpbb_acp_exception('file_get_contents failed');
 		}
 
 		if (($composer_data = json_decode($file_contents, true)) === NULL)
 		{
-			throw new phpbb_acp_exception('json_decode failed on ' . $this->metadata_file);
+			throw new phpbb_acp_exception('json_decode failed');
 		}
 
 		// Check data
