@@ -1,0 +1,21 @@
+{
+	"name": "phpbb/prosilver",
+	"type": "phpbb3-style",
+	"description": "The default phpBB Style",
+	"homepage": "https://www.phpbb.com",
+	"version": "3.1.0-dev",
+	"licence": "GPL-2.0",
+	"authors": [
+		{
+			"name": "phpBB Group",
+			"homepage": "https://www.phpbb.com"
+		}
+	],
+	"require": {
+		"php": ">=5.3.2",
+		"phpbb": "3.1.0-dev"
+	},
+	"extra": {
+		"display-name": "Prosilver"
+	}
+}
