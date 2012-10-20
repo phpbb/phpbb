@@ -104,9 +104,7 @@ $phpbb_container = phpbb_create_compiled_container(
 		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
 		new phpbb_di_extension_core($phpbb_root_path),
 	),
-	array(
-		new phpbb_event_kernel_compiler_pass(),
-	),
+	array(),
 	$phpbb_root_path . 'config.' . $phpEx,
 	$phpbb_root_path,
 	$phpEx
