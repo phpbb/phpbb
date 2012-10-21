@@ -16,8 +16,8 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Reported post notifications class
-* This class handles notifications for reported posts
+* Post report closed notifications class
+* This class handles notifications for when reports are closed on posts (for the one who reported the post)
 *
 * @package notifications
 */
