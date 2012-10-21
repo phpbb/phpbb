@@ -42,6 +42,14 @@ class phpbb_notification_type_bookmark extends phpbb_notification_type_post
 	);
 
 	/**
+	* Is available
+	*/
+	public function is_available()
+	{
+		return $this->config['allow_bookmarks'];
+	}
+
+	/**
 	* Find the users who want to receive notifications
 	*
 	* @param array $post Data from

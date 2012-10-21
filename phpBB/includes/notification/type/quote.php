@@ -49,6 +49,14 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 	);
 
 	/**
+	* Is available
+	*/
+	public function is_available()
+	{
+		return true;
+	}
+
+	/**
 	* Find the users who want to receive notifications
 	*
 	* @param array $post Data from
