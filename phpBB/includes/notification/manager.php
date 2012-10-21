@@ -138,32 +138,16 @@ class phpbb_notification_manager
 			$this->db->sql_freeresult($result);
 		}
 
-		$rowset = array();
-
-		// Get the main notifications
-		$sql = 'SELECT *
-			FROM ' . NOTIFICATIONS_TABLE . '
-			WHERE user_id = ' . (int) $options['user_id'] .
-				(($options['notification_id']) ? ((is_array($options['notification_id'])) ? ' AND ' . $this->db->sql_in_set('notification_id', $options['notification_id']) : ' AND notification_id = ' . (int) $options['notification_id']) : '') . '
-			 	AND is_enabled = 1
-			ORDER BY ' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
-		$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
-
-		while ($row = $this->db->sql_fetchrow($result))
+		if (!$options['count_total'] || $total_count)
 		{
-			$rowset[$row['notification_id']] = $row;
-		}
-		$this->db->sql_freeresult($result);
+			$rowset = array();
 
-		// Get all unread notifications
-		if ($unread_count && $options['all_unread'] && !empty($rowset))
-		{
+			// Get the main notifications
 			$sql = 'SELECT *
 				FROM ' . NOTIFICATIONS_TABLE . '
-				WHERE user_id = ' . (int) $options['user_id'] . '
-					AND unread = 1
-					AND ' . $this->db->sql_in_set('notification_id', array_keys($rowset), true) . '
-					AND is_is_enabled = 1
+				WHERE user_id = ' . (int) $options['user_id'] .
+					(($options['notification_id']) ? ((is_array($options['notification_id'])) ? ' AND ' . $this->db->sql_in_set('notification_id', $options['notification_id']) : ' AND notification_id = ' . (int) $options['notification_id']) : '') . '
+			 		AND is_enabled = 1
 				ORDER BY ' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
 			$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
 
@@ -172,37 +156,52 @@ class phpbb_notification_manager
 				$rowset[$row['notification_id']] = $row;
 			}
 			$this->db->sql_freeresult($result);
-		}
 
-		foreach ($rowset as $row)
-		{
-			$item_type_class_name = $this->get_item_type_class_name($row['item_type'], true);
-
-			$notification = $this->get_item_type_class($item_type_class_name, $row);
-
-			// Array of user_ids to query all at once
-			$user_ids = array_merge($user_ids, $notification->users_to_query());
-
-			// Some notification types also require querying additional tables themselves
-			if (!isset($load_special[$row['item_type']]))
+			// Get all unread notifications
+			if ($unread_count && $options['all_unread'] && !empty($rowset))
 			{
-				$load_special[$row['item_type']] = array();
+				$sql = 'SELECT *
+					FROM ' . NOTIFICATIONS_TABLE . '
+					WHERE user_id = ' . (int) $options['user_id'] . '
+						AND unread = 1
+						AND ' . $this->db->sql_in_set('notification_id', array_keys($rowset), true) . '
+						AND is_enabled = 1
+					ORDER BY ' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
+				$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
+
+				while ($row = $this->db->sql_fetchrow($result))
+				{
+					$rowset[$row['notification_id']] = $row;
+				}
+				$this->db->sql_freeresult($result);
 			}
-			$load_special[$row['item_type']] = array_merge($load_special[$row['item_type']], $notification->get_load_special());
 
-			$notifications[$row['notification_id']] = $notification;
-		}
+			foreach ($rowset as $row)
+			{
+				$notification = $this->get_item_type_class($row['item_type'], $row);
 
-		$this->load_users($user_ids);
+				// Array of user_ids to query all at once
+				$user_ids = array_merge($user_ids, $notification->users_to_query());
 
-		// Allow each type to load its own special items
-		foreach ($load_special as $item_type => $data)
-		{
-			$item_type_class_name = $this->get_item_type_class_name($item_type, true);
+				// Some notification types also require querying additional tables themselves
+				if (!isset($load_special[$row['item_type']]))
+				{
+					$load_special[$row['item_type']] = array();
+				}
+				$load_special[$row['item_type']] = array_merge($load_special[$row['item_type']], $notification->get_load_special());
 
-			$item_class = $this->get_item_type_class($item_type_class_name);
+				$notifications[$row['notification_id']] = $notification;
+			}
 
-			$item_class->load_special($data, $notifications);
+			$this->load_users($user_ids);
+
+			// Allow each type to load its own special items
+			foreach ($load_special as $item_type => $data)
+			{
+				$item_class = $this->get_item_type_class($item_type);
+
+				$item_class->load_special($data, $notifications);
+			}
 		}
 
 		return array(
@@ -234,11 +233,6 @@ class phpbb_notification_manager
 
 		$time = ($time) ?: time();
 
-		if ($item_type !== false)
-		{
-			$this->get_item_type_class_name($item_type);
-		}
-
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . "
 			SET unread = 0
 			WHERE time <= " . $time .
@@ -269,8 +263,6 @@ class phpbb_notification_manager
 		}
 
 		$time = ($time) ?: time();
-
-		$item_type_class_name = $this->get_item_type_class_name($item_type);
 
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . "
 			SET unread = 0
@@ -326,12 +318,10 @@ class phpbb_notification_manager
 			return $notified_users;
 		}
 
-		$item_type_class_name = $this->get_item_type_class_name($item_type);
-
-		$item_id = $item_type_class_name::get_item_id($data);
+		$item_id = $item_type::get_item_id($data);
 
 		// find out which users want to receive this type of notification
-		$notify_users = $this->get_item_type_class($item_type_class_name)->find_users_for_notification($data, $options);
+		$notify_users = $this->get_item_type_class($item_type)->find_users_for_notification($data, $options);
 
 		$this->add_notifications_for_users($item_type, $data, $notify_users);
 
@@ -357,9 +347,7 @@ class phpbb_notification_manager
 			return;
 		}
 
-		$item_type_class_name = $this->get_item_type_class_name($item_type);
-
-		$item_id = $item_type_class_name::get_item_id($data);
+		$item_id = $item_type::get_item_id($data);
 
 		$user_ids = array();
 		$notification_objects = $notification_methods = array();
@@ -388,14 +376,14 @@ class phpbb_notification_manager
 		}
 
 		// Allow notifications to perform actions before creating the insert array (such as run a query to cache some data needed for all notifications)
-		$notification = $this->get_item_type_class($item_type_class_name);
+		$notification = $this->get_item_type_class($item_type);
 		$pre_create_data = $notification->pre_create_insert_array($data, $notify_users);
 		unset($notification);
 
 		// Go through each user so we can insert a row in the DB and then notify them by their desired means
 		foreach ($notify_users as $user => $methods)
 		{
-			$notification = $this->get_item_type_class($item_type_class_name);
+			$notification = $this->get_item_type_class($item_type);
 
 			$notification->user_id = (int) $user;
 
@@ -412,8 +400,7 @@ class phpbb_notification_manager
 				{
 					if (!isset($notification_methods[$method]))
 					{
-						$method_class_name = 'phpbb_notification_method_' . $method;
-						$notification_methods[$method] = $this->get_method_class($method_class_name);
+						$notification_methods[$method] = $this->get_method_class($method);
 					}
 
 					$notification_methods[$method]->add_to_queue($notification);
@@ -452,21 +439,19 @@ class phpbb_notification_manager
 			return;
 		}
 
-		$item_type_class_name = $this->get_item_type_class_name($item_type);
+		$notification = $this->get_item_type_class($item_type);
 
 		// Allow the notifications class to over-ride the update_notifications functionality
-		if (method_exists($item_type_class_name, 'update_notifications'))
+		if (method_exists($notification, 'update_notifications'))
 		{
 			// Return False to over-ride the rest of the update
-			if ($this->get_item_type_class($item_type_class_name)->update_notifications($data) === false)
+			if ($notification->update_notifications($data) === false)
 			{
 				return;
 			}
 		}
 
-		$item_id = $item_type_class_name::get_item_id($data);
-
-		$notification = $this->get_item_type_class($item_type_class_name);
+		$item_id = $item_type::get_item_id($data);
 		$update_array = $notification->create_update_array($data);
 
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
@@ -495,8 +480,6 @@ class phpbb_notification_manager
 			return;
 		}
 
-		$this->get_item_type_class_name($item_type);
-
 		$sql = 'DELETE FROM ' . NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
 				AND " . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id);
@@ -512,17 +495,15 @@ class phpbb_notification_manager
 	{
 		$subscription_types = array();
 
-		foreach ($this->get_subscription_files('notification/type/') as $class_name => $file)
+		foreach ($this->get_subscription_files('notification/type/') as $class_name)
 		{
-			$class_name = $this->get_item_type_class_name($class_name);
-
 			$class = $this->get_item_type_class($class_name);
 
-			if ($class instanceof phpbb_notification_type_interface && $class->is_available() && method_exists($class_name, 'get_item_type'))
+			if ($class instanceof phpbb_notification_type_interface && $class->is_available())
 			{
 				$options = array_merge(array(
-					'id'		=> $class_name::get_item_type(),
-					'lang'		=> 'NOTIFICATION_TYPE_' . strtoupper($class_name::get_item_type()),
+					'id'		=> $class_name,
+					'lang'		=> 'NOTIFICATION_TYPE_' . strtoupper($class_name),
 					'group'		=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
 				), (($class_name::$notification_option !== false) ? $class_name::$notification_option : array()));
 
@@ -550,15 +531,13 @@ class phpbb_notification_manager
 	{
 		$subscription_methods = array();
 
-		foreach ($this->get_subscription_files('notification/method/') as $method_name => $file)
+		foreach ($this->get_subscription_files('notification/method/') as $class_name)
 		{
-			$class_name = 'phpbb_notification_method_' . $method_name;
-
 			$method = $this->get_method_class($class_name);
 
 			if ($method instanceof phpbb_notification_method_interface && $method->is_available())
 			{
-				$subscription_methods[] = $method_name;
+				$subscription_methods[] = $class_name;
 			}
 		}
 
@@ -615,8 +594,6 @@ class phpbb_notification_manager
 	*/
 	public function add_subscription($item_type, $item_id = 0, $method = '', $user_id = false)
 	{
-		$this->get_item_type_class_name($item_type);
-
 		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
 		$sql = 'INSERT INTO ' . USER_NOTIFICATIONS_TABLE . ' ' .
@@ -639,8 +616,6 @@ class phpbb_notification_manager
 	*/
 	public function delete_subscription($item_type, $item_id = 0, $method = '', $user_id = false)
 	{
-		$this->get_item_type_class_name($item_type);
-
 		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
 		$sql = 'DELETE FROM ' . USER_NOTIFICATIONS_TABLE . "
@@ -693,36 +668,10 @@ class phpbb_notification_manager
 	}
 
 	/**
-	* Helper to get the notifications item type class name and clean it if unsafe
-	*/
-	private function get_item_type_class_name(&$item_type, $safe = false)
-	{
-		if (!$safe)
-		{
-			$item_type = preg_replace('#[^a-z_-]#', '', $item_type);
-		}
-
-		if (strpos($item_type, 'ext_') === 0)
-		{
-			$item_type_ary = explode('-', substr($item_type, 4), 2);
-
-			return 'phpbb_ext_' . $item_type_ary[0] . '_notification_type_' . $item_type_ary[1];
-		}
-
-		return 'phpbb_notification_type_' . $item_type;
-	}
-
-	/**
 	* Helper to get the notifications item type class and set it up
 	*/
 	public function get_item_type_class($item_type, $data = array())
 	{
-		if (!strpos($item_type, 'notification_type_'))
-		{
-			$item_class = $this->get_item_type_class_name($item_type);
-			$item_type = $item_class;
-		}
-
 		$item = new $item_type($this, $this->db, $this->cache, $this->template, $this->extension_manager, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext);
 
 		$item->set_initial_data($data);
@@ -747,31 +696,16 @@ class phpbb_notification_manager
 
 		$subscription_files = array();
 
-		$files = $finder
+		$classes = $finder
 			->core_path('includes/' . $path)
 			->extension_directory($path)
-			->get_files();
-		foreach ($files as $file)
-		{
-			$name = substr($file, strrpos($file, '/'));
-			$name = substr($name, 1, (strpos($name, '.' . $this->php_ext) - 1));
+			->get_classes();
 
-			if ($name == 'interface' || $name == 'base')
-			{
-				continue;
-			}
+		unset($classes[array_search('phpbb_notification_type_interface', $classes)]);
+		unset($classes[array_search('phpbb_notification_type_base', $classes)]);
+		unset($classes[array_search('phpbb_notification_method_interface', $classes)]);
+		unset($classes[array_search('phpbb_notification_method_base', $classes)]);
 
-			if (!strpos($file, 'includes/')) // is an extension
-			{
-				$ext_name = substr($file, (strpos($file, 'ext/') + 4));
-				$ext_name = substr($ext_name, 0, strpos($ext_name, '/'));
-
-				$name = 'ext_' . $ext_name . '-' . $name;
-			}
-
-			$subscription_files[$name] = $file;
-		}
-
-		return $subscription_files;
+		return $classes;
 	}
 }

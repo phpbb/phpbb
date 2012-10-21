@@ -192,7 +192,7 @@ class ucp_notifications
 					$template->assign_block_vars($block . '.notification_methods', array(
 						'METHOD'			=> $method,
 
-						'NAME'				=> $user->lang('NOTIFICATION_METHOD_' . strtoupper($method)),
+						'NAME'				=> $user->lang(strtoupper($method)),
 
 						'SUBSCRIBED'		=> (isset($subscriptions[$type]) && in_array($method, $subscriptions[$type])) ? true : false,
 					));
@@ -218,7 +218,7 @@ class ucp_notifications
 			$template->assign_block_vars($block, array(
 				'METHOD'			=> $method,
 
-				'NAME'				=> $user->lang('NOTIFICATION_METHOD_' . strtoupper($method)),
+				'NAME'				=> $user->lang(strtoupper($method)),
 			));
 		}
 	}

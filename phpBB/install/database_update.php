@@ -1186,12 +1186,12 @@ function database_update_info()
 				NOTIFICATIONS_TABLE		=> array(
 					'COLUMNS'			=> array(
 						'notification_id'	=> array('UINT', NULL, 'auto_increment'),
-						'item_type'			=> array('VCHAR:25', ''),
+						'item_type'			=> array('VCHAR:255', ''),
 						'item_id'			=> array('UINT', 0),
 						'item_parent_id'	=> array('UINT', 0),
 						'user_id'			=> array('UINT', 0),
 						'unread'			=> array('BOOL', 1),
-						'is_enabled'		=> array('BOOL', 0),
+						'is_enabled'		=> array('BOOL', 1),
 						'time'				=> array('TIMESTAMP', 1),
 						'data'				=> array('TEXT_UNI', ''),
 					),
@@ -1208,10 +1208,10 @@ function database_update_info()
 				),
 				USER_NOTIFICATIONS_TABLE	=> array(
 					'COLUMNS'			=> array(
-						'item_type'			=> array('VCHAR:25', ''),
+						'item_type'			=> array('VCHAR:255', ''),
 						'item_id'			=> array('UINT', 0),
 						'user_id'			=> array('UINT', 0),
-						'method'			=> array('VCHAR:25', ''),
+						'method'			=> array('VCHAR:255', ''),
 					),
 					'PRIMARY_KEY'		=> array(
 						'item_type',

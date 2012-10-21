@@ -420,12 +420,12 @@ CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id
 # Table: 'phpbb_notifications'
 CREATE TABLE phpbb_notifications (
 	notification_id INTEGER PRIMARY KEY NOT NULL ,
-	item_type varchar(25) NOT NULL DEFAULT '',
+	item_type varchar(255) NOT NULL DEFAULT '',
 	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	item_parent_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	unread INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	is_disabled INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	is_enabled INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	time INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	data text(65535) NOT NULL DEFAULT ''
 );
@@ -436,7 +436,7 @@ CREATE INDEX phpbb_notifications_item_pid ON phpbb_notifications (item_parent_id
 CREATE INDEX phpbb_notifications_user_id ON phpbb_notifications (user_id);
 CREATE INDEX phpbb_notifications_time ON phpbb_notifications (time);
 CREATE INDEX phpbb_notifications_unread ON phpbb_notifications (unread);
-CREATE INDEX phpbb_notifications_is_disabled ON phpbb_notifications (is_disabled);
+CREATE INDEX phpbb_notifications_is_enabled ON phpbb_notifications (is_enabled);
 
 # Table: 'phpbb_poll_options'
 CREATE TABLE phpbb_poll_options (
@@ -848,10 +848,10 @@ CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status
 
 # Table: 'phpbb_user_notifications'
 CREATE TABLE phpbb_user_notifications (
-	item_type varchar(25) NOT NULL DEFAULT '',
+	item_type varchar(255) NOT NULL DEFAULT '',
 	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	method varchar(25) NOT NULL DEFAULT '',
+	method varchar(255) NOT NULL DEFAULT '',
 	PRIMARY KEY (item_type, item_id, user_id, method)
 );
 

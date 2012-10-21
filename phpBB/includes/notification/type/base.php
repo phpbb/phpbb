@@ -116,7 +116,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	public function __toString()
 	{
-		return (!empty($this->data)) ? var_export($this->data, true) : static::get_item_type();
+		return (!empty($this->data)) ? var_export($this->data, true) : get_class($this);
 	}
 
 	/**
@@ -156,7 +156,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		// Defaults
 		$this->data = array_merge(array(
 			'item_id'				=> static::get_item_id($type_data),
-			'item_type'	   			=> $this->get_item_type(),
+			'item_type'	   			=> get_class($this),
 			'item_parent_id'		=> static::get_item_parent_id($type_data),
 
 			'time'					=> time(),
@@ -324,7 +324,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . static::get_item_type() . "'
+			WHERE item_type = '" . get_class($this) . "'
 				AND item_id = " . (int) $item_id;
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
