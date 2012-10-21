@@ -16,8 +16,8 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Post notifications class
-* This class handles notifications for replies to a topic
+* Post approved notifications class
+* This class handles notifications for posts when they are approved (to their authors)
 *
 * @package notifications
 */
