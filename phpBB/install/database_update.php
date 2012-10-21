@@ -1099,6 +1099,12 @@ function database_update_info()
 				),
 			),
 			'add_columns'		=> array(
+				FORUMS_TABLE		=> array(
+					'forum_posts_unapproved'	=> array('UINT', 0),
+					'forum_posts_softdeleted'	=> array('UINT', 0),
+					'forum_topics_unapproved'	=> array('UINT', 0),
+					'forum_topics_softdeleted'	=> array('UINT', 0),
+				),
 				GROUPS_TABLE		=> array(
 					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
 				),
@@ -1125,6 +1131,9 @@ function database_update_info()
 					'topic_delete_time'		=> array('TIMESTAMP', 0),
 					'topic_delete_reason'	=> array('STEXT_UNI', ''),
 					'topic_delete_user'		=> array('UINT', 0),
+					'topic_posts'			=> array('UINT', 0),
+					'topic_posts_unapproved'	=> array('UINT', 0),
+					'topic_posts_softdeleted'	=> array('UINT', 0),
 				),
 			),
 			'change_columns'	=> array(
@@ -2725,7 +2734,7 @@ function change_database_data(&$no_updates, $version)
 				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
 			}
 
-			// If the column exists, we did not yet update the post visibility status
+			// If the column exists, we did not  update the new columns yet
 			if ($db_tools->sql_column_exists(POSTS_TABLE, 'post_approved'))
 			{
 				$sql = 'UPDATE ' . POSTS_TABLE . '
@@ -2735,7 +2744,6 @@ function change_database_data(&$no_updates, $version)
 				$db_tools->sql_column_remove(POSTS_TABLE, 'post_approved');
 			}
 
-			// If the column exists, we did not yet update the topic visibility status
 			if ($db_tools->sql_column_exists(TOPICS_TABLE, 'topic_approved'))
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . '
@@ -2743,6 +2751,59 @@ function change_database_data(&$no_updates, $version)
 				_sql($sql, $errored, $error_ary);
 
 				$db_tools->sql_column_remove(TOPICS_TABLE, 'topic_approved');
+			}
+
+			if ($db_tools->sql_column_exists(TOPICS_TABLE, 'topic_replies'))
+			{
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_posts = topic_replies + 1,
+						topic_posts_unapproved = topic_replies_real - topic_replies
+					WHERE topic_visibility = ' . ITEM_APPROVED;
+				_sql($sql, $errored, $error_ary);
+
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_posts = 0,
+						topic_posts_unapproved = (topic_replies_real - topic_replies) + 1
+					WHERE topic_visibility = ' . ITEM_UNAPPROVED;
+				_sql($sql, $errored, $error_ary);
+
+				$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS sum_topics, SUM(topic_posts) AS sum_posts, SUM(topic_posts_unapproved) AS sum_posts_unapproved
+					FROM ' . TOPICS_TABLE . '
+					GROUP BY forum_id, topic_visibility';
+				$result = $db->sql_query($sql);
+
+				$update_forums = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$forum_id = (int) $row['forum_id'];
+					if (!isset($update_forums[$forum_id]))
+					{
+						$update_forums[$forum_id] = array(
+							'forum_posts'				=> 0,
+							'forum_posts_unapproved'	=> 0,
+							'forum_topics'				=> 0,
+							'forum_topics_unapproved'	=> 0,
+						);
+					}
+
+					$update_forums[$forum_id]['forum_posts'] += (int) $row['sum_posts'];
+					$update_forums[$forum_id]['forum_posts_unapproved'] += (int) $row['sum_posts_unapproved'];
+
+					$update_forums[$forum_id][(($row['topic_visibility'] == ITEM_APPROVED) ? 'forum_topics' : 'forum_topics_unapproved')] += (int) $row['sum_topics'];
+				}
+				$db->sql_freeresult($result);
+
+				foreach ($update_forums as $forum_id => $forum_data)
+				{
+					$sql = 'UPDATE ' . FORUMS_TABLE . '
+						SET ' . $db->sql_build_array('UPDATE', $forum_data) . '
+						WHERE forum_id = ' . $forum_id;
+					_sql($sql, $errored, $error_ary);
+				}
+
+				$db_tools->sql_column_remove(TOPICS_TABLE, 'topic_replies');
+				$db_tools->sql_column_remove(TOPICS_TABLE, 'topic_replies_real');
+				$db_tools->sql_column_remove(FORUMS_TABLE, 'forum_topics_real');
 			}
 
 			// Add new permissions f_restore, f_softdelete, m_restore and m_softdelete
