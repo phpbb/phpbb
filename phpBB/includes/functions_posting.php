@@ -2237,19 +2237,31 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		switch ($mode)
 		{
 			case 'post':
-				$phpbb_notifications->add_notifications(array('quote', 'topic'), $notification_data);
+				$phpbb_notifications->add_notifications(array(
+					'phpbb_notification_type_quote',
+					'phpbb_notification_type_topic',
+				), $notification_data);
 			break;
 
 			case 'reply':
 			case 'quote':
-				$phpbb_notifications->add_notifications(array('quote', 'bookmark', 'post'), $notification_data);
+				$phpbb_notifications->add_notifications(array(
+					'phpbb_notification_type_quote',
+					'phpbb_notification_type_bookmark',
+					'phpbb_notification_type_post',
+				), $notification_data);
 			break;
 
 			case 'edit_topic':
 			case 'edit_first_post':
 			case 'edit':
 			case 'edit_last_post':
-				$phpbb_notifications->update_notifications(array('quote', 'bookmark', 'topic', 'post'), $notification_data);
+				$phpbb_notifications->update_notifications(array(
+					'phpbb_notification_type_quote',
+					'phpbb_notification_type_bookmark',
+					'phpbb_notification_type_topic',
+					'phpbb_notification_type_post',
+				), $notification_data);
 			break;
 		}
 	}
@@ -2258,20 +2270,24 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		switch ($mode)
 		{
 			case 'post':
-				$phpbb_notifications->add_notifications(array('topic_in_queue'), $notification_data);
+				$phpbb_notifications->add_notifications('phpbb_notification_type_topic_in_queue', $notification_data);
 			break;
 
 			case 'reply':
 			case 'quote':
-				$phpbb_notifications->add_notifications(array('post_in_queue'), $notification_data);
+				$phpbb_notifications->add_notifications('phpbb_notification_type_post_in_queue', $notification_data);
 			break;
 
 			case 'edit_topic':
 			case 'edit_first_post':
 			case 'edit':
 			case 'edit_last_post':
-				$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
-				$phpbb_notifications->delete_notifications(array('quote', 'bookmark', 'post'), $data['post_id']);
+				$phpbb_notifications->delete_notifications('phpbb_notification_type_topic', $data['topic_id']);
+				$phpbb_notifications->delete_notifications(array(
+					'phpbb_notification_type_quote',
+					'phpbb_notification_type_bookmark',
+					'phpbb_notification_type_post',
+				), $data['post_id']);
 			break;
 		}
 	}

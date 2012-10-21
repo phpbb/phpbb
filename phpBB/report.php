@@ -191,7 +191,7 @@ if ($submit && $reason_id)
 		$lang_return = $user->lang['RETURN_TOPIC'];
 		$lang_success = $user->lang['POST_REPORTED_SUCCESS'];
 
-		$phpbb_notifications->add_notifications('report_post', array_merge($report_data, $row, $forum_data, array(
+		$phpbb_notifications->add_notifications('phpbb_notification_type_report_post', array_merge($report_data, $row, $forum_data, array(
 			'report_text'	=> $report_text,
 		)));
 	}
@@ -221,7 +221,7 @@ if ($submit && $reason_id)
 		$lang_return = $user->lang['RETURN_PM'];
 		$lang_success = $user->lang['PM_REPORTED_SUCCESS'];
 
-		$phpbb_notifications->add_notifications('report_pm', array_merge($report_data, $row, array(
+		$phpbb_notifications->add_notifications('phpbb_notification_type_report_pm', array_merge($report_data, $row, array(
 			'report_text'	=> $report_text,
 			'from_user_id'	=> $report_data['author_id'],
 			'report_id'		=> $report_id,

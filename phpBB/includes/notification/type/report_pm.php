@@ -50,15 +50,6 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	);
 
 	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
-	*/
-	public static function get_item_type()
-	{
-		return 'report_pm';
-	}
-
-	/**
 	* Get the id of the parent
 	*
 	* @param array $pm The data from the pm

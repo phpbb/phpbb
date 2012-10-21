@@ -24,13 +24,14 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_pm extends phpbb_notification_type_base
 {
 	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
+	* Notification option data (for outputting to the user)
+	*
+	* @var bool|array False if the service should use it's default data
+	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	public static function get_item_type()
-	{
-		return 'pm';
-	}
+	public static $notification_option = array(
+		'lang'	=> 'NOTIFICATION_TYPE_PM',
+	);
 
 	/**
 	* Get the id of the
@@ -77,7 +78,7 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . self::get_item_type() . "'
+			WHERE item_type = '" . get_class($this) . "'
 				AND " . $this->db->sql_in_set('user_id', array_keys($pm['recipients'])) . '
 				AND user_id <> ' . $pm['from_user_id'];
 		$result = $this->db->sql_query($sql);
