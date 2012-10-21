@@ -385,6 +385,7 @@ $lang = array_merge($lang, array(
 	'NEXT_STEP'					=> 'Next',
 	'NEVER'						=> 'Never',
 	'NO'						=> 'No',
+	'NO_NOTIFICATIONS'			=> 'You have no notifications',
 	'NOT_ALLOWED_MANAGE_GROUP'	=> 'You are not allowed to manage this group.',
 	'NOT_AUTHORISED'			=> 'You are not authorised to access this area.',
 	'NOT_WATCHING_FORUM'		=> 'You are no longer subscribed to updates on this forum.',

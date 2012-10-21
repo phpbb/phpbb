@@ -70,6 +70,13 @@
 							<dd class="mark">{L_MARK_READ}</dd>
 						</dl>
 					</li>
+					<!-- IF not .notifications -->
+						<li>
+							<dl>
+								<dt>{L_NO_NOTIFICATIONS}</dt>
+							</dl>
+						</li>
+					<!-- ENDIF -->
 					<!-- BEGIN notification_list -->
 						<li class="row<!-- IF notification_list.UNREAD --> bg3<!-- ELSE --><!-- IF notification_list.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- ENDIF -->">
 							<dl>
