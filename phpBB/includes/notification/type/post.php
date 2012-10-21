@@ -42,6 +42,14 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 	);
 
 	/**
+	* Is available
+	*/
+	public function is_available()
+	{
+		return $this->config['allow_topic_notify'];
+	}
+
+	/**
 	* Get the id of the item
 	*
 	* @param array $post The data from the post
