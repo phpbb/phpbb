@@ -67,11 +67,11 @@ class mcp_queue
 				{
 					if ($action != 'disapprove')
 					{
-						$this->approve_topics($action, $post_id_list, 'queue', $mode);
+						$this->approve_topics($action, $topic_id_list, 'queue', $mode);
 					}
 					else
 					{
-						$this->disapprove_posts($post_id_list, 'queue', $mode);
+						//@todo: $this->disapprove_posts($post_id_list, 'queue', $mode);
 					}
 				}
 				else
@@ -434,6 +434,7 @@ class mcp_queue
 						'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 
 						'POST_ID'		=> $row['post_id'],
+						'TOPIC_ID'		=> $row['topic_id'],
 						'FORUM_NAME'	=> $forum_names[$row['forum_id']],
 						'POST_SUBJECT'	=> ($row['post_subject'] != '') ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
@@ -700,7 +701,7 @@ class mcp_queue
 
 			foreach ($topic_info as $topic_id => $topic_data)
 			{
-				phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '');
+				phpbb_content_visibility::set_topic_visibility(ITEM_APPROVED, $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '');
 
 				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_data['forum_id']}&amp;t={$topic_id}");
 
@@ -709,11 +710,6 @@ class mcp_queue
 					'topic_id'		=> $topic_data['topic_id'],
 					'topic_title'	=> $topic_data['topic_title'],
 				);
-			}
-
-			foreach ($topic_info as $topic_id => $topic_data)
-			{
-				phpbb_content_visibility::set_topic_visibility(ITEM_APPROVED, $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '');
 			}
 
 			if (sizeof($topic_info) >= 1)
@@ -792,7 +788,7 @@ class mcp_queue
 				'S_' . strtoupper($action)	=> true,
 			));
 
-			confirm_box(false, strtoupper($action) . '_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
+			confirm_box(false, strtoupper($action) . '_TOPIC' . ((sizeof($topic_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 		}
 
 		$redirect = request_var('redirect', "index.$phpEx");

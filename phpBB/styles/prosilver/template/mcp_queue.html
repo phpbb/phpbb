@@ -57,7 +57,13 @@
 				</dd>
 
 
-		 		<dd class="mark"><input type="checkbox" name="post_id_list[]" value="{postrow.POST_ID}" /></dd>
+		 		<dd class="mark">
+					<!-- IF S_TOPICS -->
+						<input type="checkbox" name="topic_id_list[]" value="{postrow.TOPIC_ID}" />
+					<!-- ELSE -->
+						<input type="checkbox" name="post_id_list[]" value="{postrow.POST_ID}" />
+					<!-- ENDIF -->
+				</dd>
 			</dl>
 		</li>
 		<!-- ENDIF -->
