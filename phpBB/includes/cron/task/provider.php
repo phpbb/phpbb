@@ -26,10 +26,11 @@ use Symfony\Component\DependencyInjection\TaggedContainerInterface;
 */
 class phpbb_cron_task_provider implements IteratorAggregate
 {
-	private $container;
+	private $tasks;
 
-	public function __construct(TaggedContainerInterface $container)
+	public function __construct(phpbb_cron_task_collection $tasks, TaggedContainerInterface $container)
 	{
+		$this->tasks = $tasks;
 		$this->container = $container;
 	}
 
@@ -40,18 +41,24 @@ class phpbb_cron_task_provider implements IteratorAggregate
 	*/
 	public function getIterator()
 	{
-		$definitions = $this->container->findTaggedServiceIds('cron.task');
-
 		$tasks = array();
-		foreach ($definitions as $name => $definition)
+		foreach ($this->tasks as $names)
 		{
-			$task = $this->container->get($name);
-			if ($task instanceof phpbb_cron_task_base)
+			foreach ($names as $name)
 			{
-				$task->set_name($name);
-			}
+				if (!$this->container->has($name))
+				{
+					continue;
+				}
 
-			$tasks[] = $task;
+				$task = $this->container->get($name);
+				if ($task instanceof phpbb_cron_task_base)
+				{
+					$task->set_name($name);
+				}
+
+				$tasks[] = $task;
+			}
 		}
 
 		return new ArrayIterator($tasks);

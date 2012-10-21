@@ -47,7 +47,11 @@ services:
     cron.task_provider:
         class: phpbb_cron_task_provider
         arguments:
+            - @cron.task_collection
             - @service_container
+
+    cron.task_collection:
+        class: phpbb_cron_task_collection
 
     cron.manager:
         class: phpbb_cron_manager
