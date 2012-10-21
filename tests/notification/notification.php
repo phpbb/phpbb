@@ -69,7 +69,12 @@ class phpbb_notification_test extends phpbb_database_test_case
 		}
 
 		$db = $this->new_dbal();
-		$config = new phpbb_config(array());
+		$config = new phpbb_config(array(
+			'allow_privmsg'			=> true,
+			'allow_bookmarks'		=> true,
+			'allow_topic_notify'	=> true,
+			'allow_forum_notify'	=> true,
+		));
 		$user = new phpbb_mock_user();
 
 		$this->notifications = new phpbb_notification_manager(
@@ -104,8 +109,6 @@ class phpbb_notification_test extends phpbb_database_test_case
 		$this->assertArrayHasKey('phpbb_notification_type_post', $subscription_types['NOTIFICATION_GROUP_POSTING']);
 		$this->assertArrayHasKey('phpbb_notification_type_quote', $subscription_types['NOTIFICATION_GROUP_POSTING']);
 		$this->assertArrayHasKey('phpbb_notification_type_topic', $subscription_types['NOTIFICATION_GROUP_POSTING']);
-
-		$this->assertArrayHasKey('moderation_queue', $subscription_types['NOTIFICATION_GROUP_POSTING']);
 
 		$this->assertArrayHasKey('phpbb_notification_type_pm', $subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']);
 		$this->assertArrayHasKey('phpbb_ext_test_notification_type_test', $subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']);

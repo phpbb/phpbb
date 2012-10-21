@@ -701,10 +701,25 @@ class phpbb_notification_manager
 			->extension_directory($path)
 			->get_classes();
 
-		unset($classes[array_search('phpbb_notification_type_interface', $classes)]);
-		unset($classes[array_search('phpbb_notification_type_base', $classes)]);
-		unset($classes[array_search('phpbb_notification_method_interface', $classes)]);
-		unset($classes[array_search('phpbb_notification_method_base', $classes)]);
+		if (array_search('phpbb_notification_type_interface', $classes) !== false)
+		{
+			unset($classes[array_search('phpbb_notification_type_interface', $classes)]);
+		}
+
+		if (array_search('phpbb_notification_type_base', $classes) !== false)
+		{
+			unset($classes[array_search('phpbb_notification_type_base', $classes)]);
+		}
+
+		if (array_search('phpbb_notification_method_interface', $classes) !== false)
+		{
+			unset($classes[array_search('phpbb_notification_method_interface', $classes)]);
+		}
+
+		if (array_search('phpbb_notification_method_base', $classes) !== false)
+		{
+			unset($classes[array_search('phpbb_notification_method_base', $classes)]);
+		}
 
 		return $classes;
 	}
