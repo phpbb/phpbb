@@ -34,6 +34,14 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 	);
 
 	/**
+	* Is available
+	*/
+	public function is_available()
+	{
+		return ($this->config['allow_privmsg'] && $this->auth->acl_get('u_readpm'));
+	}
+
+	/**
 	* Get the id of the
 	*
 	* @param array $pm The data from the private message
