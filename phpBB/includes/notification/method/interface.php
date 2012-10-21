@@ -35,11 +35,6 @@ interface phpbb_notification_method_interface
 	public function add_to_queue(phpbb_notification_type_interface $notification);
 
 	/**
-	* Empty the queue
-	*/
-	protected function empty_queue();
-
-	/**
 	* Parse the queue and notify the users
 	*/
 	public function notify();
