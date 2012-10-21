@@ -29,12 +29,6 @@ interface phpbb_notification_type_interface
 	public function set_initial_data($data);
 
 	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
-	*/
-	public static function get_item_type();
-
-	/**
 	* Get the id of the item
 	*
 	* @param array $type_data The type specific data

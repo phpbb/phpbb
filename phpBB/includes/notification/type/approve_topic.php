@@ -43,15 +43,6 @@ class phpbb_notification_type_approve_topic extends phpbb_notification_type_topi
 	);
 
 	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
-	*/
-	public static function get_item_type()
-	{
-		return 'approve_topic';
-	}
-
-	/**
 	* Is available
 	*/
 	public function is_available()

@@ -53,15 +53,6 @@ class phpbb_notification_type_topic_in_queue extends phpbb_notification_type_top
 	}
 
 	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
-	*/
-	public static function get_item_type()
-	{
-		return 'topic_in_queue';
-	}
-
-	/**
 	* Find the users who want to receive notifications
 	*
 	* @param array $topic Data from the topic

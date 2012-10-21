@@ -37,17 +37,9 @@ class phpbb_notification_type_topic extends phpbb_notification_type_base
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
 	public static $notification_option = array(
+		'lang'	=> 'NOTIFICATION_TYPE_TOPIC',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	);
-
-	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
-	*/
-	public static function get_item_type()
-	{
-		return 'topic';
-	}
 
 	/**
 	* Get the id of the item
@@ -116,7 +108,7 @@ class phpbb_notification_type_topic extends phpbb_notification_type_base
 
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . self::get_item_type() . "'
+			WHERE item_type = '" . get_class($this) . "'
 				AND " . $this->db->sql_in_set('user_id', $auth_read[$topic['forum_id']]['f_read']);
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))

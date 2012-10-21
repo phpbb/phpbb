@@ -43,15 +43,6 @@ class phpbb_notification_type_approve_post extends phpbb_notification_type_post
 	);
 
 	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
-	*/
-	public static function get_item_type()
-	{
-		return 'approve_post';
-	}
-
-	/**
 	* Is available
 	*/
 	public function is_available()

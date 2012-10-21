@@ -878,7 +878,7 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 
 	global $db, $user, $phpbb_notifications;
 
-	$phpbb_notifications->mark_notifications_read('pm', $msg_id, $user_id);
+	$phpbb_notifications->mark_notifications_read('phpbb_notification_type_pm', $msg_id, $user_id);
 
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . "
 		SET pm_unread = 0
@@ -1096,7 +1096,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		$user->data['user_unread_privmsg'] -= $num_unread;
 	}
 
-	$phpbb_notifications->delete_notifications('pm', array_keys($delete_rows));
+	$phpbb_notifications->delete_notifications('phpbb_notification_type_pm', array_keys($delete_rows));
 
 	// Now we have to check which messages we can delete completely
 	$sql = 'SELECT msg_id
@@ -1260,7 +1260,7 @@ function phpbb_delete_user_pms($user_id)
 					AND ' . $db->sql_in_set('msg_id', $delivered_msg);
 			$db->sql_query($sql);
 
-			$phpbb_notifications->delete_notifications('pm', $delivered_msg);
+			$phpbb_notifications->delete_notifications('phpbb_notification_type_pm', $delivered_msg);
 		}
 
 		if (!empty($undelivered_msg))
@@ -1273,7 +1273,7 @@ function phpbb_delete_user_pms($user_id)
 				WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
 			$db->sql_query($sql);
 
-			$phpbb_notifications->delete_notifications('pm', $undelivered_msg);
+			$phpbb_notifications->delete_notifications('phpbb_notification_type_pm', $undelivered_msg);
 		}
 	}
 
@@ -1317,7 +1317,7 @@ function phpbb_delete_user_pms($user_id)
 				WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
 			$db->sql_query($sql);
 
-			$phpbb_notifications->delete_notifications('pm', $delete_ids);
+			$phpbb_notifications->delete_notifications('phpbb_notification_type_pm', $delete_ids);
 		}
 	}
 
@@ -1862,11 +1862,11 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 	if ($mode == 'edit')
 	{
-		$phpbb_notifications->update_notifications('pm', $pm_data);
+		$phpbb_notifications->update_notifications('phpbb_notification_type_pm', $pm_data);
 	}
 	else
 	{
-		$phpbb_notifications->add_notifications('pm', $pm_data);
+		$phpbb_notifications->add_notifications('phpbb_notification_type_pm', $pm_data);
 	}
 
 	return $data['msg_id'];
