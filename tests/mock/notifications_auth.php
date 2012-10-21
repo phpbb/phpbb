@@ -32,4 +32,9 @@ class phpbb_mock_notifications_auth extends phpbb_auth
 
 		return $auth_list;
 	}
+
+	function acl_get($opt, $f = 0)
+	{
+		return true;
+	}
 }
