@@ -16,8 +16,8 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Topic notifications class
-* This class handles notifications for new topics
+* Topic in queue notifications class
+* This class handles notifications for topics when they are put in the moderation queue (for moderators)
 *
 * @package notifications
 */

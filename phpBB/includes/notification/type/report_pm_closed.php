@@ -16,8 +16,8 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Reported pm notifications class
-* This class handles notifications for reported pms
+* PM report closed notifications class
+* This class handles notifications for when reports are closed on PMs (for the one who reported the PM)
 *
 * @package notifications
 */
