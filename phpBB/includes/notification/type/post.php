@@ -37,17 +37,9 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
 	public static $notification_option = array(
+		'lang'	=> 'NOTIFICATION_TYPE_POST',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	);
-
-	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
-	*/
-	public static function get_item_type()
-	{
-		return 'post';
-	}
 
 	/**
 	* Get the id of the item
@@ -112,7 +104,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 
 		$sql = 'SELECT *
 			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . self::get_item_type() . "'
+			WHERE item_type = '" . get_class($this) . "'
 				AND " . $this->db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -135,7 +127,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		$update_notifications = array();
 		$sql = 'SELECT *
 			FROM ' . NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . self::get_item_type() . "'
+			WHERE item_type = '" . get_class($this) . "'
 				AND item_parent_id = " . (int) self::get_item_parent_id($post) . '
 				AND unread = 1
 				AND is_enabled = 1';
@@ -145,7 +137,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 			// Do not create a new notification
 			unset($notify_users[$row['user_id']]);
 
-			$notification = $this->notification_manager->get_item_type_class(self::get_item_type(), $row);
+			$notification = $this->notification_manager->get_item_type_class(get_class($this), $row);
 			$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
 				SET ' . $this->db->sql_build_array('UPDATE', $notification->add_responders($post)) . '
 				WHERE notification_id = ' . $row['notification_id'];

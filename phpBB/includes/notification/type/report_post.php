@@ -50,15 +50,6 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 	);
 
 	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
-	*/
-	public static function get_item_type()
-	{
-		return 'report_post';
-	}
-
-	/**
 	* Find the users who want to receive notifications
 	*
 	* @param array $post Data from the post

@@ -43,15 +43,6 @@ class phpbb_notification_type_disapprove_topic extends phpbb_notification_type_a
 	);
 
 	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
-	*/
-	public static function get_item_type()
-	{
-		return 'disapprove_topic';
-	}
-
-	/**
 	* Get the HTML formatted title of this notification
 	*
 	* @return string

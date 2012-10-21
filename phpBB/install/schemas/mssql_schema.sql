@@ -756,12 +756,12 @@ GO
 */
 CREATE TABLE [phpbb_notifications] (
 	[notification_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[item_type] [varchar] (25) DEFAULT ('') NOT NULL ,
+	[item_type] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[item_id] [int] DEFAULT (0) NOT NULL ,
 	[item_parent_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[unread] [int] DEFAULT (1) NOT NULL ,
-	[is_disabled] [int] DEFAULT (0) NOT NULL ,
+	[is_enabled] [int] DEFAULT (1) NOT NULL ,
 	[time] [int] DEFAULT (1) NOT NULL ,
 	[data] [varchar] (4000) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
@@ -792,7 +792,7 @@ GO
 CREATE  INDEX [unread] ON [phpbb_notifications]([unread]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [is_disabled] ON [phpbb_notifications]([is_disabled]) ON [PRIMARY]
+CREATE  INDEX [is_enabled] ON [phpbb_notifications]([is_enabled]) ON [PRIMARY]
 GO
 
 
@@ -1525,10 +1525,10 @@ GO
 	Table: 'phpbb_user_notifications'
 */
 CREATE TABLE [phpbb_user_notifications] (
-	[item_type] [varchar] (25) DEFAULT ('') NOT NULL ,
+	[item_type] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[item_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[method] [varchar] (25) DEFAULT ('') NOT NULL 
+	[method] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 

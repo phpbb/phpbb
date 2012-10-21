@@ -17,13 +17,6 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_ext_test_notification_type_test extends phpbb_notification_type_base
 {
-	public $email_template = 'topic_notify';
-
-	public static function get_item_type()
-	{
-		return 'ext_test-test';
-	}
-
 	public static function get_item_id($post)
 	{
 		return (int) $post['post_id'];
@@ -39,11 +32,25 @@ class phpbb_ext_test_notification_type_test extends phpbb_notification_type_base
 		return $this->_find_users_for_notification(0, $options);
 	}
 
-	public function create_insert_array($post)
+	public function create_insert_array($post, $pre_create_data = array())
 	{
 		$this->time = $post['post_time'];
 
-		return parent::create_insert_array($post);
+		return parent::create_insert_array($post, $pre_create_data);
+	}
+
+	public function create_update_array($type_data)
+	{
+		$data = $this->create_insert_array($type_data);
+
+		// Unset data unique to each row
+		unset(
+			$data['notification_id'],
+			$data['unread'],
+			$data['user_id']
+		);
+
+		return $data;
 	}
 
 	public function get_title()
@@ -59,6 +66,11 @@ class phpbb_ext_test_notification_type_test extends phpbb_notification_type_base
 	public function get_url()
 	{
 		return '';
+	}
+
+	public function get_email_template()
+	{
+		return false;
 	}
 
 	public function get_email_template_variables()

@@ -43,15 +43,6 @@ class phpbb_notification_type_report_pm_closed extends phpbb_notification_type_p
 	}
 
 	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
-	*/
-	public static function get_item_type()
-	{
-		return 'report_pm_closed';
-	}
-
-	/**
 	* Find the users who want to receive notifications
 	*
 	* @param array $pm Data from

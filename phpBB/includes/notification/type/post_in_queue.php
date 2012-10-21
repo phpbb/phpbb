@@ -50,15 +50,6 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 	protected $permission = 'm_approve';
 
 	/**
-	* Get the type of notification this is
-	* phpbb_notification_type_
-	*/
-	public static function get_item_type()
-	{
-		return 'post_in_queue';
-	}
-
-	/**
 	* Is available
 	*/
 	public function is_available()

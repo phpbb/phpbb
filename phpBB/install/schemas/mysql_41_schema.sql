@@ -433,12 +433,12 @@ CREATE TABLE phpbb_modules (
 # Table: 'phpbb_notifications'
 CREATE TABLE phpbb_notifications (
 	notification_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	item_type varchar(25) DEFAULT '' NOT NULL,
+	item_type varchar(255) DEFAULT '' NOT NULL,
 	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	item_parent_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	unread tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	is_disabled tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	is_enabled tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	time int(11) UNSIGNED DEFAULT '1' NOT NULL,
 	data text NOT NULL,
 	PRIMARY KEY (notification_id),
@@ -448,7 +448,7 @@ CREATE TABLE phpbb_notifications (
 	KEY user_id (user_id),
 	KEY time (time),
 	KEY unread (unread),
-	KEY is_disabled (is_disabled)
+	KEY is_enabled (is_enabled)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -875,10 +875,10 @@ CREATE TABLE phpbb_topics_watch (
 
 # Table: 'phpbb_user_notifications'
 CREATE TABLE phpbb_user_notifications (
-	item_type varchar(25) DEFAULT '' NOT NULL,
+	item_type varchar(255) DEFAULT '' NOT NULL,
 	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	method varchar(25) DEFAULT '' NOT NULL,
+	method varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (item_type, item_id, user_id, method),
 	KEY it (item_type),
 	KEY uid (user_id)
