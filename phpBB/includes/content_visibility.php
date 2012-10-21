@@ -47,6 +47,26 @@ class phpbb_content_visibility
 	}
 
 	/**
+	* Get the topics post count or the forums post/topic count based on permissions
+	*
+	* @param $mode			string	One of topic_posts, forum_posts or forum_topics
+	* @param $data			array	Array with the topic/forum data to calculate from
+	* @param $forum_id		int		The forum id is used for permission checks
+	* @return int	Number of posts/topics the user can see in the topic/forum
+	*/
+	static public function get_count($mode, $data, $forum_id)
+	{
+		global $auth;
+
+		if (!$auth->acl_get('m_approve', $forum_id))
+		{
+			return (int) $data[$mode];
+		}
+
+		return (int) $data[$mode] + (int) $data[$mode . '_unapproved'] + (int) $data[$mode . '_softdeleted'];
+	}
+
+	/**
 	* Create topic/post visibility SQL for a given forum ID
 	*
 	* Note: Read permissions are not checked.

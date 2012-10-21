@@ -200,8 +200,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 
 		// Count the difference of real to public topics, so we can display an information to moderators
-		$row['forum_id_unapproved_topics'] = ($auth->acl_get('m_approve', $forum_id) && ($row['forum_topics_real'] != $row['forum_topics'])) ? $forum_id : 0;
-		$row['forum_topics'] = ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
+		$row['forum_id_unapproved_topics'] = ($auth->acl_get('m_approve', $forum_id) && $row['forum_topics_unapproved']) ? $forum_id : 0;
+		$row['forum_posts'] = phpbb_content_visibility::get_count('forum_posts', $row, $forum_id);
+		$row['forum_topics'] = phpbb_content_visibility::get_count('forum_topics', $row, $forum_id);
 
 		// Display active topics from this forum?
 		if ($show_active && $row['forum_type'] == FORUM_POST && $auth->acl_get('f_read', $forum_id) && ($row['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS))
