@@ -121,8 +121,9 @@ $phpbb_container = phpbb_create_compiled_container(
 		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
 		new phpbb_di_extension_core($phpbb_root_path),
 	),
-	array(),
-	$phpbb_root_path . 'config.' . $phpEx,
+	array(
+		new phpbb_di_pass_cron(),
+	),
 	$phpbb_root_path,
 	$phpEx
 );
