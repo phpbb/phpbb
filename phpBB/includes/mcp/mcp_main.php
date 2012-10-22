@@ -541,8 +541,9 @@ function mcp_move_topic($topic_ids)
 					'topic_time'			=>	(int) $row['topic_time'],
 					'topic_time_limit'		=>	(int) $row['topic_time_limit'],
 					'topic_views'			=>	(int) $row['topic_views'],
-					'topic_replies'			=>	(int) $row['topic_replies'],
-					'topic_replies_real'	=>	(int) $row['topic_replies_real'],
+					'topic_posts'			=>	(int) $row['topic_posts'],
+					'topic_posts_unapproved'=>	(int) $row['topic_posts_unapproved'],
+					'topic_posts_softdeleted'=>	(int) $row['topic_posts_softdeleted'],
 					'topic_status'			=>	ITEM_MOVED,
 					'topic_type'			=>	POST_NORMAL,
 					'topic_first_post_id'	=>	(int) $row['topic_first_post_id'],
@@ -574,6 +575,7 @@ function mcp_move_topic($topic_ids)
 		}
 		unset($topic_data);
 
+		//@todo: needs fixing
 		if ($topic_posts_removed)
 		{
 			$sync_sql[$forum_id][] = 'forum_posts = forum_posts - ' . $topic_posts_removed;
@@ -937,8 +939,9 @@ function mcp_fork_topic($topic_ids)
 				'topic_title'				=> (string) $topic_row['topic_title'],
 				'topic_poster'				=> (int) $topic_row['topic_poster'],
 				'topic_time'				=> (int) $topic_row['topic_time'],
-				'topic_replies'				=> (int) $topic_row['topic_replies_real'],
-				'topic_replies_real'		=> (int) $topic_row['topic_replies_real'],
+				'topic_posts'				=> (int) $topic_row['topic_posts'],
+				'topic_posts_unapproved'	=> (int) $topic_row['topic_posts_unapproved'],
+				'topic_posts_softdeleted'	=> (int) $topic_row['topic_posts_softdeleted'],
 				'topic_status'				=> (int) $topic_row['topic_status'],
 				'topic_type'				=> (int) $topic_row['topic_type'],
 				'topic_first_poster_name'	=> (string) $topic_row['topic_first_poster_name'],

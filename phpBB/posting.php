@@ -886,8 +886,8 @@ if ($submit || $preview || $refresh)
 
 	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !isset($_POST['soft_delete']) && $auth->acl_get('m_approve', $forum_id))
 	{
-		$is_first_post = ($post_id == $post_data['topic_first_post_id'] || !$post_data['topic_replies']);
-		$is_last_post = ($post_id == $post_data['topic_last_post_id'] || !$post_data['topic_replies']);
+		$is_first_post = ($post_id == $post_data['topic_first_post_id'] || !$post_data['topic_posts']);
+		$is_last_post = ($post_id == $post_data['topic_last_post_id'] || !$post_data['topic_posts']);
 		$updated_post_data = phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $post_id, $post_data['topic_id'], $post_data['forum_id'], $user->data['user_id'], time(), '', $is_first_post, $is_last_post);
 
 		if (!empty($updated_post_data))
@@ -1102,8 +1102,9 @@ if ($submit || $preview || $refresh)
 
 			if ($mode == 'edit')
 			{
-				$data['topic_replies_real'] = $post_data['topic_replies_real'];
-				$data['topic_replies'] = $post_data['topic_replies'];
+				$data['topic_posts'] = $post_data['topic_posts'];
+				$data['topic_posts_unapproved'] = $post_data['topic_posts_unapproved'];
+				$data['topic_posts_softdeleted'] = $post_data['topic_posts_softdeleted'];
 			}
 
 			// The last parameter tells submit_post if search indexer has to be run
@@ -1552,8 +1553,9 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 			$data = array(
 				'topic_first_post_id'	=> $post_data['topic_first_post_id'],
 				'topic_last_post_id'	=> $post_data['topic_last_post_id'],
-				'topic_replies_real'	=> $post_data['topic_replies_real'],
-				'topic_replies'			=> $post_data['topic_replies'],
+				'topic_posts'			=> $post_data['topic_posts'];
+				'topic_posts_unapproved'	=> $post_data['topic_posts_unapproved'];
+				'topic_posts_softdeleted'	=> $post_data['topic_posts_softdeleted'];
 				'topic_visibility'		=> $post_data['topic_visibility'],
 				'topic_type'			=> $post_data['topic_type'],
 				'post_visibility'		=> $post_data['post_visibility'],
