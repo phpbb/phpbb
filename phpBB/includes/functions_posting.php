@@ -1507,9 +1507,18 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			{
 				delete_topics('topic_id', array($topic_id), false);
 
-
-				$sql_data[FORUMS_TABLE] .= 'forum_topics_real = forum_topics_real - 1';
-				$sql_data[FORUMS_TABLE] .= ($data['topic_visibility'] == ITEM_APPROVED) ? ', forum_posts = forum_posts - 1, forum_topics = forum_topics - 1' : '';
+				if ($data['topic_visibility'] == ITEM_APPROVED)
+				{
+					$sql_data[FORUMS_TABLE] .= 'forum_posts = forum_posts - 1, forum_topics = forum_topics - 1';
+				}
+				else if ($data['topic_visibility'] == ITEM_UNAPPROVED)
+				{
+					$sql_data[FORUMS_TABLE] .= 'forum_posts_unapproved = forum_posts_unapproved - 1, forum_topics_unapproved = forum_topics_unapproved - 1';
+				}
+				else if ($data['topic_visibility'] == ITEM_DELETED)
+				{
+					$sql_data[FORUMS_TABLE] .= 'forum_posts_softdeleted = forum_posts_softdeleted - 1, forum_topics_softdeleted = forum_topics_softdeleted - 1';
+				}
 
 				$update_sql = update_post_information('forum', $forum_id, true);
 				if (sizeof($update_sql))

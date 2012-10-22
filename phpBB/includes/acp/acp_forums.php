@@ -283,7 +283,7 @@ class acp_forums
 
 				@set_time_limit(0);
 
-				$sql = 'SELECT forum_name, forum_topics_real
+				$sql = 'SELECT forum_name, (forum_topics + forum_topics_unapproved + forum_topics_softdeleted) AS total_topics
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
 				$result = $db->sql_query($sql);
@@ -295,7 +295,7 @@ class acp_forums
 					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
-				if ($row['forum_topics_real'])
+				if ($row['total_topics'])
 				{
 					$sql = 'SELECT MIN(topic_id) as min_topic_id, MAX(topic_id) as max_topic_id
 						FROM ' . TOPICS_TABLE . '
@@ -329,15 +329,15 @@ class acp_forums
 
 						$start += $batch_size;
 
-						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync&amp;start=$start&amp;topics_done=$topics_done&amp;total={$row['forum_topics_real']}";
+						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync&amp;start=$start&amp;topics_done=$topics_done&amp;total={$row['total_topics']}";
 
 						meta_refresh(0, $url);
 
 						$template->assign_vars(array(
-							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['forum_topics_real']}",
-							'UA_PROGRESS_BAR'		=> addslashes($this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['forum_topics_real']}"),
+							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}",
+							'UA_PROGRESS_BAR'		=> addslashes($this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}"),
 							'S_CONTINUE_SYNC'		=> true,
-							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $topics_done, $row['forum_topics_real']))
+							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $topics_done, $row['total_topics']))
 						);
 
 						return;
@@ -351,7 +351,7 @@ class acp_forums
 					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
 					'UA_PROGRESS_BAR'		=> addslashes($this->u_action . '&amp;action=progress_bar'),
 					'S_CONTINUE_SYNC'		=> true,
-					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['forum_topics_real']))
+					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['total_topics']))
 				);
 
 				return;
@@ -1143,7 +1143,8 @@ class acp_forums
 					return array($user->lang['NO_FORUM_ACTION']);
 				}
 
-				$forum_data_sql['forum_posts'] = $forum_data_sql['forum_topics'] = $forum_data_sql['forum_topics_real'] = $forum_data_sql['forum_last_post_id'] = $forum_data_sql['forum_last_poster_id'] = $forum_data_sql['forum_last_post_time'] = 0;
+				$forum_data_sql['forum_posts'] = $forum_data_sql['forum_posts_unapproved'] = $forum_data_sql['forum_posts_softdeleted'] = $forum_data_sql['forum_topics'] = $forum_data_sql['forum_topics_unapproved'] = $forum_data_sql['forum_topics_softdeleted'] = 0;
+				$forum_data_sql['forum_last_post_id'] = $forum_data_sql['forum_last_poster_id'] = $forum_data_sql['forum_last_post_time'] = 0;
 				$forum_data_sql['forum_last_poster_name'] = $forum_data_sql['forum_last_poster_colour'] = '';
 			}
 			else if ($row['forum_type'] == FORUM_CAT && $forum_data_sql['forum_type'] == FORUM_LINK)
@@ -1264,8 +1265,11 @@ class acp_forums
 			{
 				// Changing a category to a forum? Reset the data (you can't post directly in a cat, you must use a forum)
 				$forum_data_sql['forum_posts'] = 0;
+				$forum_data_sql['forum_posts_unapproved'] = 0;
+				$forum_data_sql['forum_posts_softdeleted'] = 0;
 				$forum_data_sql['forum_topics'] = 0;
-				$forum_data_sql['forum_topics_real'] = 0;
+				$forum_data_sql['forum_topics_unapproved'] = 0;
+				$forum_data_sql['forum_topics_softdeleted'] = 0;
 				$forum_data_sql['forum_last_post_id'] = 0;
 				$forum_data_sql['forum_last_post_subject'] = '';
 				$forum_data_sql['forum_last_post_time'] = 0;
