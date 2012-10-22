@@ -1418,7 +1418,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 
 	// Specify our post mode
 	$post_mode = 'delete';
-	if (($data['topic_first_post_id'] === $data['topic_last_post_id']) && $data['topic_replies_real'] == 0)
+	if (($data['topic_first_post_id'] === $data['topic_last_post_id']) && ($data['topic_posts'] + $data['topic_posts_unapproved'] + $data['topic_posts_softdeleted'] == 1))
 	{
 		$post_mode = 'delete_topic';
 	}
@@ -1610,8 +1610,16 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			{
 				phpbb_content_visibility::remove_post_from_statistic($data, $sql_data);
 			}
-
-			$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_replies_real = topic_replies_real - 1';
+			else if ($data['post_visibility'] == ITEM_UNAPPROVED)
+			{
+				$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_unapproved = forum_posts_unapproved - 1';
+				$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_unapproved = topic_posts_unapproved - 1';
+			}
+			else if ($data['post_visibility'] == ITEM_DELETED)
+			{
+				$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_deleted = forum_posts_deleted - 1';
+				$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_deleted = topic_posts_deleted - 1';
+			}
 		}
 
 		$sql = 'SELECT 1 AS has_attachments
@@ -1702,7 +1710,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 	else if ($mode == 'edit')
 	{
-		$post_mode = ($data['topic_replies_real'] == 0) ? 'edit_topic' : (($data['topic_first_post_id'] == $data['post_id']) ? 'edit_first_post' : (($data['topic_last_post_id'] == $data['post_id']) ? 'edit_last_post' : 'edit'));
+		$post_mode = ($data['topic_posts'] + $data['topic_posts_unapproved'] + $data['topic_posts_softdeleted'] == 1) ? 'edit_topic' : (($data['topic_first_post_id'] == $data['post_id']) ? 'edit_first_post' : (($data['topic_last_post_id'] == $data['post_id']) ? 'edit_last_post' : 'edit'));
 	}
 
 	// First of all make sure the subject and topic title are having the correct length.
@@ -1717,7 +1725,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// Retrieve some additional information if not present
 	if ($mode == 'edit' && (!isset($data['post_visibility']) || !isset($data['topic_visibility']) || $data['post_visibility'] === false || $data['topic_visibility'] === false))
 	{
-		$sql = 'SELECT p.post_visibility, t.topic_type, t.topic_replies, t.topic_replies_real, t.topic_visibility
+		$sql = 'SELECT p.post_visibility, t.topic_type, t.topic_posts, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_visibility
 			FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
 			WHERE t.topic_id = p.topic_id
 				AND p.post_id = ' . $data['post_id'];
@@ -1900,17 +1908,28 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 			if ($post_visibility == ITEM_APPROVED)
 			{
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics = forum_topics + 1';
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
 			}
-			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . (($post_visibility == ITEM_APPROVED) ? ', forum_topics = forum_topics + 1' : '');
+			else if ($post_visibility == ITEM_UNAPPROVED)
+			{
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_unapproved = forum_topics_unapproved + 1';
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts_unapproved = forum_posts_unapproved + 1';
+			}
+			else if ($post_visibility == ITEM_DELETED)
+			{
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_softdeleted = forum_topics_softdeleted + 1';
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts_softdeleted = forum_posts_softdeleted + 1';
+			}
 		break;
 
 		case 'reply':
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_view_time = ' . $current_time . ',
-				topic_replies_real = topic_replies_real + 1,
 				topic_bumped = 0,
 				topic_bumper = 0' .
-				(($post_visibility == ITEM_APPROVED) ? ', topic_replies = topic_replies + 1' : '') .
+				(($post_visibility == ITEM_APPROVED) ? ', topic_posts = topic_posts + 1' : '') .
+				(($post_visibility == ITEM_UNAPPROVED) ? ', topic_posts_unapproved = topic_posts_unapproved + 1' : '') .
+				(($post_visibility == ITEM_DELETED) ? ', topic_posts_softdeleted = topic_posts_softdeleted + 1' : '') .
 				((!empty($data['attachment_data']) || (isset($data['topic_attachment']) && $data['topic_attachment'])) ? ', topic_attachment = 1' : '');
 
 			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id']) && $post_visibility == ITEM_APPROVED) ? ', user_posts = user_posts + 1' : '');
@@ -1918,6 +1937,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			if ($post_visibility == ITEM_APPROVED)
 			{
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
+			}
+			else if ($post_visibility == ITEM_UNAPPROVED)
+			{
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts_unapproved = forum_posts_unapproved + 1';
+			}
+			else if ($post_visibility == ITEM_DELETED)
+			{
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts_softdeleted = forum_posts_softdeleted + 1';
 			}
 		break;
 
@@ -1979,8 +2006,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		if ($post_mode == 'reply')
 		{
 			$sql_data[POSTS_TABLE]['sql'] = array_merge($sql_data[POSTS_TABLE]['sql'], array(
-				'topic_id' => $data['topic_id'])
-			);
+				'topic_id' => $data['topic_id'],
+			));
 		}
 
 		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
