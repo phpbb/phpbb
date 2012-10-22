@@ -724,7 +724,7 @@ class phpbb_feed_topic_base extends phpbb_feed_base
 		{
 			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
 				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('published')])
-				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . (($this->is_moderator_approve_forum($row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'])
+				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . phpbb_content_visibility::get_count('topic_posts', $row, $row['forum_id']) - 1
 				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views']
 				. (($this->is_moderator_approve_forum($row['forum_id']) && ($row['topic_replies_real'] != $row['topic_replies'])) ? ' ' . $this->separator_stats . ' ' . $user->lang['POSTS_UNAPPROVED'] : '');
 		}

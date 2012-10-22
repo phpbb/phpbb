@@ -778,7 +778,7 @@ class ucp_main
 			$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 
 			// Replies
-			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+			$replies = phpbb_content_visibility::get_count('topic_posts', $row, $forum_id) - 1;
 
 			if ($row['topic_status'] == ITEM_MOVED && !empty($row['topic_moved_id']))
 			{

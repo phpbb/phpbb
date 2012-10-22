@@ -203,7 +203,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$row = &$topic_rows[$topic_id];
 
-		$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+		$replies = phpbb_content_visibility::get_count('topic_posts', $row, $forum_id) - 1;
 
 		if ($row['topic_status'] == ITEM_MOVED)
 		{
@@ -220,6 +220,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$topic_title = censor_text($row['topic_title']);
 
+		// @todo:
 		$topic_unapproved = ($row['topic_visibility'] == ITEM_UNAPPROVED  && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
 		$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
 		$topic_deleted = ($row['topic_visibility'] == ITEM_DELETED) ? true : false;
@@ -248,7 +249,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 			'TOPIC_TYPE'		=> $topic_type,
 			'TOPIC_TITLE'		=> $topic_title,
-			'REPLIES'			=> ($auth->acl_get('m_approve', $row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'],
+			'REPLIES'			=> phpbb_content_visibility::get_count('topic_posts', $row, $row['forum_id']) - 1,
 			'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 			'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
 			'LAST_POST_SUBJECT'	=> $row['topic_last_post_subject'],

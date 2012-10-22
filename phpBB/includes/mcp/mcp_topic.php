@@ -115,14 +115,7 @@ function mcp_topic_view($id, $mode, $action)
 
 	if ($total == -1)
 	{
-		if ($auth->acl_get('m_approve', $topic_info['forum_id']))
-		{
-			$total = $topic_info['topic_replies_real'] + 1;
-		}
-		else
-		{
-			$total = $topic_info['topic_replies'] + 1;
-		}
+		$total = phpbb_content_visibility::get_count('topic_posts', $topic_info, $topic_info['forum_id']);
 	}
 
 	$posts_per_page = max(0, request_var('posts_per_page', intval($config['posts_per_page'])));

@@ -850,11 +850,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$forum_id = $row['forum_id'];
 			$result_topic_id = $row['topic_id'];
 			$topic_title = censor_text($row['topic_title']);
+			$replies = phpbb_content_visibility::get_count('topic_posts', $row, $forum_id) - 1;
 
 			$view_topic_url_params = "f=$forum_id&amp;t=$result_topic_id" . (($u_hilit) ? "&amp;hilit=$u_hilit" : '');
 			$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params);
-
-			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
 			if ($show_results == 'topics')
 			{

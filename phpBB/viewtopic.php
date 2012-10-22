@@ -275,7 +275,7 @@ if ($post_id)
 
 		if ($sort_dir == $check_sort)
 		{
-			$topic_data['prev_posts'] = ($auth->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] : $topic_data['topic_replies'];
+			$topic_data['prev_posts'] = phpbb_content_visibility::get_count('topic_posts', $topic_data, $forum_id) - 1;
 		}
 		else
 		{
@@ -309,8 +309,7 @@ if ($post_id)
 }
 
 $topic_id = (int) $topic_data['topic_id'];
-//
-$topic_replies = ($auth->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] : $topic_data['topic_replies'];
+$topic_replies = phpbb_content_visibility::get_count('topic_posts', $topic_data, $forum_id) - 1;
 
 // Check sticky/announcement time limit
 if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == POST_ANNOUNCE) && $topic_data['topic_time_limit'] && ($topic_data['topic_time'] + $topic_data['topic_time_limit']) < time())
