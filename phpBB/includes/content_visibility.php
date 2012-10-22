@@ -523,7 +523,7 @@ class phpbb_content_visibility
 		// Do we need to grab some topic informations?
 		if (!sizeof($topic_row))
 		{
-			$sql = 'SELECT topic_type, topic_replies, topic_replies_real, topic_visibility
+			$sql = 'SELECT topic_type, topic_posts, topic_posts_unapproved, topic_posts_softdeleted, topic_visibility
 				FROM ' . TOPICS_TABLE . '
 				WHERE topic_id = ' . $topic_id;
 			$result = $db->sql_query($sql);
@@ -533,10 +533,12 @@ class phpbb_content_visibility
 
 		// If this is an edited topic or the first post the topic gets completely disapproved later on...
 		$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_topics = forum_topics - 1';
-		$sql_data[FORUMS_TABLE] .= ', forum_posts = forum_posts - ' . ($topic_row['topic_replies'] + 1);
+		$sql_data[FORUMS_TABLE] .= ', forum_posts = forum_posts - ' . $topic_row['topic_posts'];
+		$sql_data[FORUMS_TABLE] .= ', forum_posts_unapproved = forum_posts_unapproved - ' . $topic_row['topic_posts_unapproved'];
+		$sql_data[FORUMS_TABLE] .= ', forum_posts_softdeleted = forum_posts_softdeleted - ' . $topic_row['topic_posts_softdeleted'];
 
 		set_config_count('num_topics', -1, true);
-		set_config_count('num_posts', ($topic_row['topic_replies'] + 1) * (-1), true);
+		set_config_count('num_posts', $topic_row['topic_posts'] * (-1), true);
 
 		// Get user post count information
 		$sql = 'SELECT poster_id, COUNT(post_id) AS num_posts

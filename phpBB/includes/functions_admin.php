@@ -1670,8 +1670,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				if ($sync_extra)
 				{
 					$forum_data[$forum_id]['posts'] = 0;
+					$forum_data[$forum_id]['posts_unapproved'] = 0;
+					$forum_data[$forum_id]['posts_softdeleted'] = 0;
 					$forum_data[$forum_id]['topics'] = 0;
-					$forum_data[$forum_id]['topics_real'] = 0;
+					$forum_data[$forum_id]['topics_unapproved'] = 0;
+					$forum_data[$forum_id]['topics_softdeleted'] = 0;
 				}
 				$forum_data[$forum_id]['last_post_id'] = 0;
 				$forum_data[$forum_id]['last_post_subject'] = '';
@@ -1692,7 +1695,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// 2: Get topic counts for each forum (optional)
 			if ($sync_extra)
 			{
-				$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS forum_topics
+				$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS total_topics
 					FROM ' . TOPICS_TABLE . '
 					WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
 					GROUP BY forum_id, topic_visibility';
@@ -1701,11 +1704,18 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$forum_id = (int) $row['forum_id'];
-					$forum_data[$forum_id]['topics_real'] += $row['forum_topics'];
 
 					if ($row['topic_visibility'] == ITEM_APPROVED)
 					{
-						$forum_data[$forum_id]['topics'] = $row['forum_topics'];
+						$forum_data[$forum_id]['topics'] = $row['total_topics'];
+					}
+					else if ($row['topic_visibility'] == ITEM_UNAPPROVED)
+					{
+						$forum_data[$forum_id]['topics_unapproved'] = $row['total_topics'];
+					}
+					else if ($row['topic_visibility'] == ITEM_DELETED)
+					{
+						$forum_data[$forum_id]['topics_softdeleted'] = $row['total_topics'];
 					}
 				}
 				$db->sql_freeresult($result);
@@ -1716,7 +1726,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			{
 				if (sizeof($forum_ids) == 1)
 				{
-					$sql = 'SELECT SUM(t.topic_replies + 1) AS forum_posts
+					$sql = 'SELECT SUM(t.topic_posts) AS forum_posts, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
 							AND t.topic_visibility = ' . ITEM_APPROVED . '
@@ -1724,7 +1734,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				}
 				else
 				{
-					$sql = 'SELECT t.forum_id, SUM(t.topic_replies + 1) AS forum_posts
+					$sql = 'SELECT t.forum_id, SUM(t.topic_posts) AS forum_posts, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
 							AND t.topic_visibility = ' . ITEM_APPROVED . '
@@ -1739,6 +1749,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$forum_id = (sizeof($forum_ids) == 1) ? (int) $forum_ids[0] : (int) $row['forum_id'];
 
 					$forum_data[$forum_id]['posts'] = (int) $row['forum_posts'];
+					$forum_data[$forum_id]['posts_unapproved'] = (int) $row['forum_posts_unapproved'];
+					$forum_data[$forum_id]['posts_softdeleted'] = (int) $row['forum_posts_softdeleted'];
 				}
 				$db->sql_freeresult($result);
 			}
@@ -1819,7 +1831,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			if ($sync_extra)
 			{
-				array_push($fieldnames, 'posts', 'topics', 'topics_real');
+				array_push($fieldnames, 'posts', 'posts_unapproved', 'posts_softdeleted', 'topics', 'topics_unapproved', 'topics_softdeleted');
 			}
 
 			foreach ($forum_data as $forum_id => $row)
@@ -1858,7 +1870,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			$db->sql_transaction('begin');
 
-			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_visibility, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_replies, t.topic_replies_real, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
+			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_visibility, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_posts, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
 				FROM ' . TOPICS_TABLE . " t
 				$where_sql";
 			$result = $db->sql_query($sql);
@@ -1874,8 +1886,9 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$topic_id = (int) $row['topic_id'];
 				$topic_data[$topic_id] = $row;
 				$topic_data[$topic_id]['visibility'] = ITEM_UNAPPROVED;
-				$topic_data[$topic_id]['replies_real'] = -1;
-				$topic_data[$topic_id]['replies'] = 0;
+				$topic_data[$topic_id]['posts'] = 0;
+				$topic_data[$topic_id]['posts_unapproved'] = 0;
+				$topic_data[$topic_id]['posts_softdeleted'] = 0;
 				$topic_data[$topic_id]['first_post_id'] = 0;
 				$topic_data[$topic_id]['last_post_id'] = 0;
 				unset($topic_data[$topic_id]['topic_id']);
@@ -1917,14 +1930,24 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					// When we'll be done, only topics with no posts will remain
 					unset($delete_topics[$topic_id]);
 
-					$topic_data[$topic_id]['replies_real'] += $row['total_posts'];
+					if ($row['post_visibility'] == ITEM_APPROVED)
+					{
+						$topic_data[$topic_id]['posts'] = $row['total_posts'];
+					}
+					else if ($row['post_visibility'] == ITEM_UNAPPROVED)
+					{
+						$topic_data[$topic_id]['posts_unapproved'] = $row['total_posts'];
+					}
+					else if ($row['post_visibility'] == ITEM_DELETED)
+					{
+						$topic_data[$topic_id]['posts_softdeleted'] = $row['total_posts'];
+					}
 
 					if ($row['post_visibility'] == ITEM_APPROVED)
 					{
 						$topic_data[$topic_id]['visibility'] = ITEM_APPROVED;
 						$topic_data[$topic_id]['first_post_id'] = $row['first_post_id'];
 						$topic_data[$topic_id]['last_post_id'] = $row['last_post_id'];
-						$topic_data[$topic_id]['replies'] = $row['total_posts'] - 1;
 					}
 					else if ($topic_data[$topic_id]['visibility'] != ITEM_APPROVED)
 					{
@@ -2120,7 +2143,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			}
 
 			// These are fields that will be synchronised
-			$fieldnames = array('time', 'visibility', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+			$fieldnames = array('time', 'visibility', 'posts', 'posts_unapproved', 'posts_softdeleted', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
 
 			if ($sync_extra)
 			{
