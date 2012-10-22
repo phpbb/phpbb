@@ -538,10 +538,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 			continue;
 		}
 
-		if ($auth->acl_get('m_approve', $row['forum_id']))
-		{
-			$row['forum_topics'] = $row['forum_topics_real'];
-		}
+		$row['forum_topics'] = phpbb_content_visibility::get_count('forum_topics', $row, $row['forum_id']);
 
 		$rowset[$row['forum_id']] = $row;
 	}
