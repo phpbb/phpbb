@@ -44,7 +44,7 @@ class phpbb_cron_manager
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-
+	
 		$this->load_tasks($tasks);
 	}
 

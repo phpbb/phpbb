@@ -15,58 +15,35 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\DependencyInjection\TaggedContainerInterface;
+
 /**
 * Collects cron tasks
 *
 * @package phpBB3
 */
-class phpbb_cron_task_collection implements ArrayAccess
+class phpbb_cron_task_collection extends ArrayObject
 {
 	/**
-	* ArrayAccess method
+	* Constructor
 	*
-	* @param mixed $offset Array offset
+	* @param TaggedContainerInterface $container Container object
 	*/
-	public function offsetExists($offset)
+	public function __construct(TaggedContainerInterface $container)
 	{
-		return isset($this->tasks[$offset]);
+		$this->container = $container;
 	}
 
 	/**
-	* ArrayAccess method
+	* Add a cron task to the collection
 	*
-	* @param mixed $offset Array offset
+	* @param string $name The service name of the cron task
+	* @return null
 	*/
-	public function offsetGet($offset)
+	public function add($name)
 	{
-		return $this->offsetExists($offset) ? $this->tasks[$offset] : null;
-	}
-
-	/**
-	* ArrayAccess method
-	*
-	* @param mixed $offset Array offset
-	* @param mixed $value New value
-	*/
-	public function offsetSet($offset, $value)
-	{
-		if ($offset === null)
-		{
-			$this->tasks[] = $value;
-		}
-		else
-		{
-			$this->tasks[$offset] = $value;
-		}
-	}
-
-	/**
-	* ArrayAccess method
-	*
-	* @param mixed $offset Array offset
-	*/
-	public function offsetUnset($offset)
-	{
-		$this->tasks[$offset] = null;
+		$task = $this->container->get($name);
+		$task->set_name($name);
+		$this->offsetSet($name, $task);
 	}
 }
