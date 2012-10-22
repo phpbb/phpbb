@@ -131,7 +131,7 @@ class acp_logs
 
 		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
 		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
-		
+
 		$template->assign_vars(array(
 			'L_TITLE'		=> $l_title,
 			'L_EXPLAIN'		=> $l_title_explain,
