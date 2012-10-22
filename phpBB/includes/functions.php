@@ -5484,6 +5484,23 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 		return new phpbb_cache_container();
 	}
 
+	// When the board is first installed, the container is initiall created on
+	// the send_statistics step in the ACP. In that case, the phpbb_root_path
+	// is "./../". This becomes forever stored in the cached container as the
+	// core.root_path property, until the container is deleted and recached
+	// We need to ensure that this does not happen.
+	//
+	// However, if we change the root path here, it will try to create a
+	// ./adm/cache/container.php later on because the root path is wrong
+	// We need to store the current $phpbb_root_path for use later and then we
+	// can change it for the controller
+	$real_root_path = $phpbb_root_path;
+	if (defined('ADMIN_START'))
+	{
+		// Remove the first instance of ../ in the root path
+		$phpbb_root_path = preg_replace('/..\//', '', $phpbb_root_path, 1);
+	}
+
 	// If we don't have the cached container class, we make it now
 	// First, we create the temporary container so we can access the
 	// extension_manager
@@ -5509,7 +5526,8 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 		'base_class'	=> 'Symfony\\Component\\DependencyInjection\\ContainerBuilder',
 	));
 
-	$file = file_put_contents("{$phpbb_root_path}cache/container.$phpEx", $cached_container_dump);
+	// Use the $real_root_path in case $phpbb_root_path was changed above
+	$file = file_put_contents("{$real_root_path}cache/container.$phpEx", $cached_container_dump);
 
 	return $container;
 }
