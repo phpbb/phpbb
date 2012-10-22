@@ -32,7 +32,7 @@ class phpbb_di_pass_cron implements CompilerPassInterface
 
 		foreach ($container->findTaggedServiceIds('cron.task') as $id => $data)
 		{
-			$definition->addMethodCall('offsetSet', array(null, $id));
+			$definition->addMethodCall('add', array($id));
 		}
 	}
 }
