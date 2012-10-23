@@ -3,8 +3,11 @@
 	<table name="phpbb_forums">
 		<column>forum_id</column>
 		<column>forum_posts</column>
+		<column>forum_posts_unapproved</column>
+		<column>forum_posts_softdeleted</column>
 		<column>forum_topics</column>
-		<column>forum_topics_real</column>
+		<column>forum_topics_unapproved</column>
+		<column>forum_topics_softdeleted</column>
 		<column>forum_last_post_id</column>
 		<column>forum_desc</column>
 		<column>forum_rules</column>
@@ -12,8 +15,11 @@
 		<row>
 			<value>1</value>
 			<value>3</value>
+			<value>0</value>
+			<value>0</value>
 			<value>1</value>
-			<value>1</value>
+			<value>0</value>
+			<value>0</value>
 			<value>3</value>
 			<value></value>
 			<value></value>
@@ -21,8 +27,11 @@
 		<row>
 			<value>2</value>
 			<value>1</value>
+			<value>0</value>
+			<value>0</value>
 			<value>1</value>
-			<value>1</value>
+			<value>0</value>
+			<value>0</value>
 			<value>4</value>
 			<value></value>
 			<value></value>
@@ -38,8 +47,9 @@
 		<column>topic_delete_user</column>
 		<column>topic_delete_time</column>
 		<column>topic_delete_reason</column>
-		<column>topic_replies</column>
-		<column>topic_replies_real</column>
+		<column>topic_posts</column>
+		<column>topic_posts_unapproved</column>
+		<column>topic_posts_softdeleted</column>
 
 		<row>
 			<value>1</value>
@@ -51,8 +61,9 @@
 			<value>0</value>
 			<value>0</value>
 			<value></value>
-			<value>2</value>
-			<value>2</value>
+			<value>3</value>
+			<value>0</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>2</value>
@@ -64,6 +75,7 @@
 			<value>0</value>
 			<value>0</value>
 			<value></value>
+			<value>1</value>
 			<value>0</value>
 			<value>0</value>
 		</row>
