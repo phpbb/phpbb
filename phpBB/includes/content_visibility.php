@@ -348,34 +348,75 @@ class phpbb_content_visibility
 		// Update the topic's reply count and the forum's post count
 		if ($update_topic_postcount)
 		{
-			$num_posts = 0;
+			$cur_posts = $cur_unapproved_posts = $cur_softdeleted_posts = 0;
 			foreach ($postcount_visibility as $post_visibility => $visibility_posts)
 			{
-				// If we soft delete, we need to substract approved posts from the counters ...
-				if ($post_visibility == ITEM_APPROVED && $visibility == ITEM_DELETED)
+				// We need to substract the posts from the counters ...
+				if ($post_visibility == ITEM_APPROVED)
 				{
-					$num_posts += $visibility_posts;
+					$cur_posts += $visibility_posts;
 				}
-				// ... and when we approve/restore, all others.
-				else if ($post_visibility != ITEM_APPROVED && $visibility == ITEM_APPROVED)
+				else if ($post_visibility == ITEM_UNAPPROVED)
 				{
-					$num_posts += $visibility_posts;
+					$cur_unapproved_posts += $visibility_posts;
+				}
+				else if ($post_visibility == ITEM_DELETED)
+				{
+					$cur_softdeleted_posts += $visibility_posts;
 				}
 			}
 
-			if ($num_posts)
+			$sql_ary = array();
+			if ($visibility == ITEM_DELETED)
 			{
-				$sql_num_posts = (($visibility == ITEM_DELETED) ? ' - ' : ' + ') . $num_posts;
+				if ($cur_posts)
+				{
+					$sql_ary['posts'] = ' - ' . $cur_posts;
+				}
+				if ($cur_unapproved_posts)
+				{
+					$sql_ary['posts_unapproved'] = ' - ' . $cur_unapproved_posts;
+				}
+				if ($cur_posts + $cur_unapproved_posts)
+				{
+					$sql_ary['posts_softdeleted'] = ' + ' . ($cur_posts + $cur_unapproved_posts);
+				}
+			}
+			else
+			{
+				if ($cur_unapproved_posts)
+				{
+					$sql_ary['posts_unapproved'] = ' - ' . $cur_unapproved_posts;
+				}
+				if ($cur_softdeleted_posts)
+				{
+					$sql_ary['posts_softdeleted'] = ' - ' . $cur_softdeleted_posts;
+				}
+				if ($cur_posts + $cur_unapproved_posts)
+				{
+					$sql_ary['posts'] = ' + ' . ($cur_softdeleted_posts + $cur_unapproved_posts);
+				}
+			}
+
+			if (sizeof($sql_ary))
+			{
+				$topic_sql = $forum_sql = array();
+
+				foreach ($sql_ary as $field => $value_change)
+				{
+					$topic_sql[] = 'topic_' . $field . ' = topic_' . $field . $value_change;
+					$forum_sql[] = 'forum_' . $field . ' = forum_' . $field . $value_change;
+				}
 
 				// Update the number for replies and posts
-				$sql = 'UPDATE ' . TOPICS_TABLE . "
-					SET topic_replies = topic_replies $sql_num_posts
-					WHERE topic_id = $topic_id";
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET ' . implode(', ', $topic_sql) . '
+					WHERE topic_id = ' . $topic_id;
 				$db->sql_query($sql);
 
-				$sql = 'UPDATE ' . FORUMS_TABLE . "
-					SET forum_posts = forum_posts $sql_num_posts
-					WHERE forum_id = $forum_id";
+				$sql = 'UPDATE ' . FORUMS_TABLE . '
+					SET ' . implode(', ', $forum_sql) . '
+					WHERE forum_id = ' . $forum_id;
 				$db->sql_query($sql);
 			}
 		}

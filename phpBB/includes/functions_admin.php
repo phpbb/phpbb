@@ -1729,7 +1729,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$sql = 'SELECT SUM(t.topic_posts) AS forum_posts, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-							AND t.topic_visibility = ' . ITEM_APPROVED . '
 							AND t.topic_status <> ' . ITEM_MOVED;
 				}
 				else
@@ -1737,7 +1736,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$sql = 'SELECT t.forum_id, SUM(t.topic_posts) AS forum_posts, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-							AND t.topic_visibility = ' . ITEM_APPROVED . '
 							AND t.topic_status <> ' . ITEM_MOVED . '
 						GROUP BY t.forum_id';
 				}
