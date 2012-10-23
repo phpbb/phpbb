@@ -2459,18 +2459,30 @@ function change_database_data(&$no_updates, $version)
 				unset($next_legend);
 			}
 
-			// Create new Customise ACP tab
+			// Rename styles module to Customise
+			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+				WHERE module_langname = 'ACP_STYLE_MANAGEMENT'";
+			$result = _sql($sql, $errored, $error_ary);
+			$row = $db->sql_fetchrow($result);
+			$styles_module_id = (int) $row['module_id'];
+			$db->sql_freeresult($result);
+
 			$module_manager = new acp_modules();
 			$module_manager->update_module_data(array(
-				'parent_id'         => 0,
-				'module_enabled'    => 1,
-				'module_display'    => 1,
-				'module_basename'   => '',
-				'module_class'      => 'acp',
-				'module_mode'       => '',
-				'module_auth'       => '',
+				'module_id'			=> $styles_module_id,
 				'module_langname'	=> 'ACP_CAT_CUSTOMISE',
 			));
+
+			// Move language management to Customise
+			// First select the current language managment module ID
+			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'language'";
+			$result = $db->sql_query($sql);
+			while($row = $db->sql_fetchrow($result))
+			{
+				$module_manager->move_module($row['module_id'], $customise_category_id);
+			}
+			$db->sql_freeresult($result);
 
 			// Install modules
 			$modules_to_install = array(
@@ -2523,27 +2535,6 @@ function change_database_data(&$no_updates, $version)
 			$sql = 'DELETE FROM ' . MODULES_TABLE . "
 				WHERE (module_basename = 'styles' OR module_basename = 'acp_styles') AND (module_mode = 'imageset' OR module_mode = 'theme' OR module_mode = 'template')";
 			_sql($sql, $errored, $error_ary);
-
-			// Move language management to Customise
-			// First select the current language managment module ID
-			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
-				WHERE module_basename = 'language' OR module_langname = 'styles'";
-			$result = $db->sql_query($sql);
-			$modules_to_move = $db->sql_fetchrowset($result);
-			$db->sql_freeresult($result);
-
-			// Next, selec the ID of the new parent module
-			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
-				WHERE module_langname = 'ACP_CAT_CUSTOMISE'";
-			$result = $db->sql_query($sql);
-			$customise_category_id = $db->sql_fetchfield('module_id');
-			$db->sql_freeresult($result);
-
-			// Now perform the move
-			foreach ($modules_to_move as $module_id)
-			{
-				$module_manager->move_module($module_id, $customise_category_id);
-			}
 
 			// Localise Global Announcements
 			$sql = 'SELECT topic_id, topic_approved, (topic_replies + 1) AS topic_posts, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
