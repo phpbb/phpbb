@@ -9,6 +9,7 @@
 		<column>forum_topics_unapproved</column>
 		<column>forum_topics_softdeleted</column>
 		<column>forum_last_post_id</column>
+		<column>forum_parents</column>
 		<column>forum_desc</column>
 		<column>forum_rules</column>
 
@@ -23,6 +24,7 @@
 			<value>3</value>
 			<value></value>
 			<value></value>
+			<value></value>
 		</row>
 		<row>
 			<value>2</value>
@@ -33,6 +35,7 @@
 			<value>0</value>
 			<value>0</value>
 			<value>4</value>
+			<value></value>
 			<value></value>
 			<value></value>
 		</row>
