@@ -1491,8 +1491,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 				// counting is fun! we only have to do sizeof($forum_ids) number of queries,
 				// even if the topic is moved back to where its shadow lives (we count how many times it is in a forum)
 				$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET forum_topics_real = forum_topics_real - ' . $topic_count . ',
-						forum_topics = forum_topics - ' . $topic_count . '
+					SET forum_topics = forum_topics - ' . $topic_count . '
 					WHERE forum_id = ' . $updated_forum;
 				$db->sql_query($sql);
 				update_post_information('forum', $updated_forum);

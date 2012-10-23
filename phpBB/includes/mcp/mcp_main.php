@@ -1097,23 +1097,15 @@ function mcp_fork_topic($topic_ids)
 		}
 
 		// Sync new topics, parent forums and board stats
+		$sql = 'UPDATE ' . FORUMS_TABLE . '
+			SET forum_posts = forum_posts + ' . $total_posts . ',
+				forum_topics = forum_topics + ' . sizeof($new_topic_id_list) . '
+			WHERE forum_id = ' . $to_forum_id;
+		$db->sql_query($sql);
+
 		sync('topic', 'topic_id', $new_topic_id_list);
-
-		$sync_sql = array();
-
-		$sync_sql[$to_forum_id][]	= 'forum_posts = forum_posts + ' . $total_posts;
-		$sync_sql[$to_forum_id][]	= 'forum_topics = forum_topics + ' . sizeof($new_topic_id_list);
-		$sync_sql[$to_forum_id][]	= 'forum_topics_real = forum_topics_real + ' . sizeof($new_topic_id_list);
-
-		foreach ($sync_sql as $forum_id_key => $array)
-		{
-			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET ' . implode(', ', $array) . '
-				WHERE forum_id = ' . $forum_id_key;
-			$db->sql_query($sql);
-		}
-
 		sync('forum', 'forum_id', $to_forum_id);
+
 		set_config_count('num_topics', sizeof($new_topic_id_list), true);
 		set_config_count('num_posts', $total_posts, true);
 

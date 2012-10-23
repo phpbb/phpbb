@@ -895,7 +895,7 @@ class mcp_queue
 			$disapprove_log = $disapprove_log_topics = $disapprove_log_posts = array();
 			$topic_replies_real = $post_disapprove_list = array();
 
-			// Build a list of posts to be unapproved and get the related topics real replies count
+			// Build a list of posts to be disapproved and get the related topics real replies count
 			foreach ($post_info as $post_id => $post_data)
 			{
 				$post_disapprove_list[$post_id] = $post_data['topic_id'];
