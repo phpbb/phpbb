@@ -52,33 +52,48 @@ class mcp_queue
 				$post_id_list = request_var('post_id_list', array(0));
 				$topic_id_list = request_var('topic_id_list', array(0));
 
-				if (!empty($post_id_list))
+				if ($action != 'disapprove')
 				{
-					if ($action != 'disapprove')
+					if (!empty($post_id_list))
 					{
 						$this->approve_posts($action, $post_id_list, 'queue', $mode);
 					}
-					else
-					{
-						$this->disapprove_posts($post_id_list, 'queue', $mode);
-					}
-				}
-				else if (!empty($topic_id_list))
-				{
-					if ($action != 'disapprove')
+					else if (!empty($topic_id_list))
 					{
 						$this->approve_topics($action, $topic_id_list, 'queue', $mode);
 					}
 					else
 					{
-						//@todo: $this->disapprove_posts($post_id_list, 'queue', $mode);
+						trigger_error('NO_POST_SELECTED');
 					}
 				}
 				else
 				{
-					trigger_error('NO_POST_SELECTED');
-				}
+					if (!empty($topic_id_list))
+					{
+						$sql = 'SELECT post_id
+							FROM ' . POSTS_TABLE . '
+							WHERE post_visibility = ' . ITEM_UNAPPROVED . '
+								AND ' . $db->sql_in_set('topic_id', $topic_id_list);
+						$result = $db->sql_query($sql);
 
+						$post_id_list = array();
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$post_id_list[] = (int) $row['post_id'];
+						}
+						$db->sql_freeresult($result);
+					}
+
+					if (!empty($post_id_list))
+					{
+						$this->disapprove_posts($post_id_list, 'queue', $mode);
+					}
+					else
+					{
+						trigger_error('NO_POST_SELECTED');
+					}
+				}
 			break;
 		}
 
@@ -827,7 +842,12 @@ class mcp_queue
 	}
 
 	/**
-	* Disapprove Post/Topic
+	* Disapprove Post
+	*
+	* @param $post_id_list	array	IDs of the posts to approve/restore
+	* @param $id			mixed	Category of the current active module
+	* @param $mode			string	Active module
+	* @return void
 	*/
 	function disapprove_posts($post_id_list, $id, $mode)
 	{
@@ -893,24 +913,29 @@ class mcp_queue
 		if (confirm_box(true))
 		{
 			$disapprove_log = $disapprove_log_topics = $disapprove_log_posts = array();
-			$topic_replies_real = $post_disapprove_list = array();
+			$topic_posts_unapproved = $post_disapprove_list = $topic_information = array();
 
 			// Build a list of posts to be disapproved and get the related topics real replies count
 			foreach ($post_info as $post_id => $post_data)
 			{
 				$post_disapprove_list[$post_id] = $post_data['topic_id'];
-				if (!isset($topic_replies_real[$post_data['topic_id']]))
+				if (!isset($topic_posts_unapproved[$post_data['topic_id']]))
 				{
-					$topic_replies_real[$post_data['topic_id']] = $post_data['topic_replies_real'];
+					$topic_information[$post_data['topic_id']] = $post_data;
+					$topic_posts_unapproved[$post_data['topic_id']] = 0;
 				}
+				$topic_posts_unapproved[$post_data['topic_id']]++;
 			}
 
 			// Now we build the log array
 			foreach ($post_disapprove_list as $post_id => $topic_id)
 			{
-				// If the count of disapproved posts for the topic is greater
-				// than topic's real replies count, the whole topic is disapproved/deleted
-				if (sizeof(array_keys($post_disapprove_list, $topic_id)) > $topic_replies_real[$topic_id])
+				// If the count of disapproved posts for the topic is equal
+				// to the number of unapproved posts in the topic, and there are no different
+				// posts, we disapprove the hole topic
+				if ($topic_information[$topic_id]['topic_posts'] == 0 &&
+					$topic_information[$topic_id]['topic_posts_softdeleted'] == 0 &&
+					$topic_information[$topic_id]['topic_posts_unapproved'] == $topic_posts_unapproved[$topic_id])
 				{
 					// Don't write the log more than once for every topic
 					if (!isset($disapprove_log_topics[$topic_id]))
