@@ -2465,7 +2465,7 @@ function change_database_data(&$no_updates, $version)
 				'parent_id'         => 0,
 				'module_enabled'    => 1,
 				'module_display'    => 1,
-				'module_basename'   => ''.
+				'module_basename'   => '',
 				'module_class'      => 'acp',
 				'module_mode'       => '',
 				'module_auth'       => '',
