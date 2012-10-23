@@ -27,9 +27,9 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	protected $config;
 	protected $db;
 	protected $user;
-	public $word_length = array();
-	public $search_query;
-	public $common_words = array();
+	protected $word_length = array();
+	protected $search_query;
+	protected $common_words = array();
 
 	/**
 	 * Constructor
@@ -56,6 +56,36 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	public function get_name()
 	{
 		return 'MySQL Fulltext';
+	}
+
+	/**
+	 * Returns the search_query
+	 *
+	 * @return string search query
+	 */
+	public function get_search_query()
+	{
+		return $this->search_query;
+	}
+
+	/**
+	 * Returns the common_words array
+	 *
+	 * @return array common words that are ignored by search backend
+	 */
+	public function get_common_words()
+	{
+		return $this->common_words;
+	}
+
+	/**
+	 * Returns the word_length array
+	 *
+	 * @return array min and max word length for searching
+	 */
+	public function get_word_length()
+	{
+		return $this->word_length;
 	}
 
 	/**

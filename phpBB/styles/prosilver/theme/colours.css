@@ -151,9 +151,9 @@ dl.details dd {
 	border-color: #B4BAC0;
 }
 
-.pagination li.ellipsis  span {
+.pagination li.ellipsis span {
 	background-color: transparent;
-	color:	#000
+	color:	#000000;
 }
 
 .pagination li.active span {
@@ -165,7 +165,7 @@ dl.details dd {
 .pagination li a:hover, .pagination .active a:hover {
 	border-color: #368AD2;
 	background-color: #368AD2;
-	color: #FFF;
+	color: #FFFFFF;
 }
 
 .pagination li a:active, .pagination li.active a:active {

@@ -217,7 +217,7 @@ class mcp_notes
 
 		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
 		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
-		
+
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,

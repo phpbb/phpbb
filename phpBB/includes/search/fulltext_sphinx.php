@@ -42,8 +42,8 @@ class phpbb_search_fulltext_sphinx
 	protected $dbtype;
 	protected $user;
 	protected $config_file_data = '';
-	public $search_query;
-	public $common_words = array();
+	protected $search_query;
+	protected $common_words = array();
 
 	/**
 	 * Constructor
@@ -87,7 +87,7 @@ class phpbb_search_fulltext_sphinx
 
 		$error = false;
 	}
-	
+
 	/**
 	* Returns the name of this search backend to be displayed to administrators
 	*
@@ -96,6 +96,36 @@ class phpbb_search_fulltext_sphinx
 	public function get_name()
 	{
 		return 'Sphinx Fulltext';
+	}
+
+	/**
+	 * Returns the search_query
+	 *
+	 * @return string search query
+	 */
+	public function get_search_query()
+	{
+		return $this->search_query;
+	}
+
+	/**
+	 * Returns false as there is no word_len array
+	 *
+	 * @return false
+	 */
+	public function get_word_length()
+	{
+		return false;
+	}
+
+	/**
+	 * Returns the common_words array
+	 *
+	 * @return array common words that are ignored by search backend
+	 */
+	public function get_common_words()
+	{
+		return $this->common_words;
 	}
 
 	/**
