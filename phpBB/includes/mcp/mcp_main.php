@@ -455,59 +455,31 @@ function mcp_move_topic($topic_ids)
 		$forum_sync_data[$forum_id] = current($topic_data);
 		$forum_sync_data[$to_forum_id] = $forum_data;
 
-		// Real topics added to target forum
-		$topics_moved = sizeof($topic_data);
-
-		// Approved topics added to target forum
-		$topics_authed_moved = 0;
-
-		// Posts (topic replies + topic post if approved) added to target forum
-		$topic_posts_added = 0;
-
-		// Posts (topic replies + topic post if approved and not global announcement) removed from source forum
-		$topic_posts_removed = 0;
-
-		// Real topics removed from source forum (all topics without global announcements)
-		$topics_removed = 0;
-
-		// Approved topics removed from source forum (except global announcements)
-		$topics_authed_removed = 0;
+		$topics_moved = $topics_moved_unapproved = $topics_moved_softdeleted = 0;
+		$posts_moved = $posts_moved_unapproved = $posts_moved_softdeleted = 0;
 
 		foreach ($topic_data as $topic_id => $topic_info)
 		{
 			if ($topic_info['topic_visibility'] == ITEM_APPROVED)
 			{
-				$topics_authed_moved++;
-				$topic_posts_added++;
+				$topics_moved++;
 			}
-
-			$topic_posts_added += $topic_info['topic_replies'];
-
-			$topics_removed++;
-			$topic_posts_removed += $topic_info['topic_replies'];
-
-			if ($topic_info['topic_visibility'] == ITEM_APPROVED)
+			elseif ($topic_info['topic_visibility'] == ITEM_UNAPPROVED)
 			{
-				$topics_authed_removed++;
-				$topic_posts_removed++;
+				$topics_moved_unapproved++;
 			}
+			elseif ($topic_info['topic_visibility'] == ITEM_DELETED)
+			{
+				$topics_moved_softdeleted++;
+			}
+
+			$posts_moved += $topic_info['topic_posts'];
+			$posts_moved_unapproved += $topic_info['topic_posts_unapproved'];
+			$posts_moved_softdeleted += $topic_info['topic_posts_softdeleted'];
 		}
+		$topics_moved = sizeof($topic_data);
 
 		$db->sql_transaction('begin');
-
-		$sync_sql = array();
-
-		if ($topic_posts_added)
-		{
-			$sync_sql[$to_forum_id][] = 'forum_posts = forum_posts + ' . $topic_posts_added;
-		}
-
-		if ($topics_authed_moved)
-		{
-			$sync_sql[$to_forum_id][] = 'forum_topics = forum_topics + ' . (int) $topics_authed_moved;
-		}
-
-		$sync_sql[$to_forum_id][] = 'forum_topics_real = forum_topics_real + ' . (int) $topics_moved;
 
 		// Move topics, but do not resync yet
 		move_topics($topic_ids, $to_forum_id, false);
@@ -569,26 +541,45 @@ function mcp_move_topic($topic_ids)
 				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $shadow));
 
 				// Shadow topics only count on new "topics" and not posts... a shadow topic alone has 0 posts
-				$topics_removed--;
-				$topics_authed_removed--;
+				$shadow_topics++;
 			}
 		}
 		unset($topic_data);
 
-		//@todo: needs fixing
-		if ($topic_posts_removed)
+		$sync_sql = array();
+		if ($posts_moved)
 		{
-			$sync_sql[$forum_id][] = 'forum_posts = forum_posts - ' . $topic_posts_removed;
+			$sync_sql[$to_forum_id][] = 'forum_posts = forum_posts + ' . (int) $posts_moved;
+			$sync_sql[$forum_id][] = 'forum_posts = forum_posts - ' . (int) $posts_moved;
+		}
+		if ($posts_moved_unapproved)
+		{
+			$sync_sql[$to_forum_id][] = 'forum_posts_unapproved = forum_posts_unapproved + ' . (int) $posts_moved_unapproved;
+			$sync_sql[$forum_id][] = 'forum_posts_unapproved = forum_posts_unapproved - ' . (int) $posts_moved_unapproved;
+		}
+		if ($posts_moved_softdeleted)
+		{
+			$sync_sql[$to_forum_id][] = 'forum_posts_softdeleted = forum_posts_softdeleted + ' . (int) $posts_moved_softdeleted;
+			$sync_sql[$forum_id][] = 'forum_posts_softdeleted = forum_posts_softdeleted - ' . (int) $posts_moved_softdeleted;
 		}
 
-		if ($topics_removed)
+		if ($topics_moved)
 		{
-			$sync_sql[$forum_id][]	= 'forum_topics_real = forum_topics_real - ' . (int) $topics_removed;
+			$sync_sql[$to_forum_id][] = 'forum_topics = forum_topics + ' . (int) $topics_moved;
+			if ($topics_moved - $shadow_topics > 0)
+			{
+				$sync_sql[$forum_id][] = 'forum_topics = forum_topics - ' . (int) ($topics_moved - $shadow_topics);
+			}
 		}
-
-		if ($topics_authed_removed)
+		if ($topics_moved_unapproved)
 		{
-			$sync_sql[$forum_id][]	= 'forum_topics = forum_topics - ' . (int) $topics_authed_removed;
+			$sync_sql[$to_forum_id][] = 'forum_topics_unapproved = forum_topics_unapproved + ' . (int) $topics_moved_unapproved;
+			$sync_sql[$forum_id][] = 'forum_topics_unapproved = forum_topics_unapproved - ' . (int) $topics_moved_unapproved;
+		}
+		if ($topics_moved_softdeleted)
+		{
+			$sync_sql[$to_forum_id][] = 'forum_topics_softdeleted = forum_topics_softdeleted + ' . (int) $topics_moved_softdeleted;
+			$sync_sql[$forum_id][] = 'forum_topics_softdeleted = forum_topics_softdeleted - ' . (int) $topics_moved_softdeleted;
 		}
 
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_MOVED_SUCCESS' : 'TOPICS_MOVED_SUCCESS';
