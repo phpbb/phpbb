@@ -1163,7 +1163,7 @@ class acp_attachments
 					$template->assign_vars(array(
 						'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
 						'U_ACTION'			=> $this->u_action,)
-					);					
+					);
 				}
 
 				// Make sure $start is set to the last page if it exceeds the amount
@@ -1224,7 +1224,7 @@ class acp_attachments
 
 				$base_url = $this->u_action . "&amp;$u_sort_param";
 				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_files, $attachments_per_page, $start);
-				
+
 				$template->assign_vars(array(
 					'TOTAL_FILES'		=> $num_files,
 					'TOTAL_SIZE'		=> get_formatted_filesize($total_size),
