@@ -50,6 +50,7 @@ $lang = array_merge($lang, array(
 	'CODE'					=> 'Code',
 
 	'DELETE_TOPIC'			=> 'Delete topic',
+	'DELETED_INFORMATION'	=> 'Deleted by %1$s on %2$s',
 	'DISAPPROVE'					=> 'Disapprove',
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
 

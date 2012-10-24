@@ -937,7 +937,7 @@ else
 }
 
 // Container for user details, only process once
-$post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = $post_edit_list = array();
+$post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = $post_edit_list = $post_delete_list = array();
 $has_attachments = $display_notice = false;
 $bbcode_bitfield = '';
 $i = $i_total = 0;
@@ -1052,6 +1052,9 @@ while ($row = $db->sql_fetchrow($result))
 		'post_edit_reason'	=> $row['post_edit_reason'],
 		'post_edit_user'	=> $row['post_edit_user'],
 		'post_edit_locked'	=> $row['post_edit_locked'],
+		'post_delete_time'	=> $row['post_delete_time'],
+		'post_delete_reason'=> $row['post_delete_reason'],
+		'post_delete_user'	=> $row['post_delete_user'],
 
 		// Make sure the icon actually exists
 		'icon_id'			=> (isset($icons[$row['icon_id']]['img'], $icons[$row['icon_id']]['height'], $icons[$row['icon_id']]['width'])) ? $row['icon_id'] : 0,
@@ -1505,6 +1508,52 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$l_edited_by = '';
 	}
 
+	// Deleting information
+	if ($row['post_visibility'] == ITEM_DELETED && $row['post_delete_user'])
+	{
+		// Get usernames for all following posts if not already stored
+		if (!sizeof($post_delete_list) && ($row['post_delete_reason'] || ($row['post_delete_user'] && !isset($user_cache[$row['post_delete_user']]))))
+		{
+			// Remove all post_ids already parsed (we do not have to check them)
+			$post_storage_list = (!$store_reverse) ? array_slice($post_list, $i) : array_slice(array_reverse($post_list), $i);
+
+			$sql = 'SELECT DISTINCT u.user_id, u.username, u.user_colour
+				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+				WHERE ' . $db->sql_in_set('p.post_id', $post_storage_list) . '
+					AND p.post_delete_user <> 0
+					AND p.post_delete_user = u.user_id';
+			$result2 = $db->sql_query($sql);
+			while ($user_delete_row = $db->sql_fetchrow($result2))
+			{
+				$post_delete_list[$user_delete_row['user_id']] = $user_delete_row;
+			}
+			$db->sql_freeresult($result2);
+
+			unset($post_storage_list);
+		}
+
+		if ($row['post_delete_user'] && !isset($user_cache[$row['post_delete_user']]))
+		{
+			$user_cache[$row['post_delete_user']] = $post_delete_list[$row['post_delete_user']];
+		}
+
+		// User having deleted the post also being the post author?
+		if (!$row['post_delete_user'] || $row['post_delete_user'] == $poster_id)
+		{
+			$display_username = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
+		}
+		else
+		{
+			$display_username = get_username_string('full', $row['post_delete_user'], $user_cache[$row['post_delete_user']]['username'], $user_cache[$row['post_delete_user']]['user_colour']);
+		}
+
+		$l_deleted_by = $user->lang('DELETED_INFORMATION', $display_username, $user->format_date($row['post_delete_time'], false, true));
+	}
+	else
+	{
+		$l_deleted_by = '';
+	}
+
 	// Bump information
 	if ($topic_data['topic_bumped'] && $row['post_id'] == $topic_data['topic_last_post_id'] && isset($user_cache[$topic_data['topic_bumper']]) )
 	{
@@ -1573,6 +1622,8 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'SIGNATURE'			=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
 		'EDITED_MESSAGE'	=> $l_edited_by,
 		'EDIT_REASON'		=> $row['post_edit_reason'],
+		'DELETED_MESSAGE'	=> $l_deleted_by,
+		'DELETE_REASON'		=> $row['post_delete_reason'],
 		'BUMPED_MESSAGE'	=> $l_bumped_by,
 
 		'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
