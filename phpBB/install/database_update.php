@@ -2649,10 +2649,10 @@ function change_database_data(&$no_updates, $version)
 
 			// Create config value for displaying last subject on forum list
 			if (!isset($config['display_last_subject']))
-			{			
+			{
 				$config->set('display_last_subject', '1');
 			}
-			
+
 			$no_updates = false;
 
 			if (!isset($config['assets_version']))
@@ -2685,12 +2685,87 @@ function change_database_data(&$no_updates, $version)
 				// After we have calculated the timezones we can delete user_dst column from user table.
 				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
 			}
-			
+
 			if (!isset($config['site_home_url']))
 			{
 				$config->set('site_home_url', '');
 				$config->set('site_home_text', '');
 			}
+
+			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+			$auth_admin = new auth_admin();
+
+			/*
+			* Here we are adding the new no captcha permission setting.
+			* To replace the enable_post_confirm config setting with a new permission,
+			* we need to do some auth checking to see where guests can currently post
+			* and add f_nocaptcha to those forums as a never permission
+			*/
+			if (empty($auth_admin->acl_options['id']['f_nocaptcha']))
+			{
+				$auth_admin->acl_add_option(array('local' => array('f_nocaptcha')));
+				$new_id = $auth_admin->acl_options['id']['f_nocaptcha'];
+
+				$sql = 'SELECT role_id
+					FROM ' . ACL_ROLES_TABLE . "
+					WHERE role_type = 'f_'
+						AND " . $db->sql_in_set('role_name', array(
+							'ROLE_FORUM_NOACCESS',
+							'ROLE_FORUM_READONLY',
+							'ROLE_FORUM_BOT',
+							'ROLE_FORUM_NEW_MEMBER',
+						), true);
+				$result = _sql($sql, $errored, $error_ary);
+
+				$sql_ary = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$sql_ary[] = array(
+						'role_id'			=> $row['role_id'],
+						'auth_option_id'	=> $new_id,
+						'auth_setting'		=> true,
+					);
+				}
+				$db->sql_freeresult($result);
+
+				if (sizeof($sql_ary))
+				{
+					$db->sql_multi_insert(ACL_ROLES_DATA_TABLE, $sql_ary);
+				}
+
+				// Handle the guest posting require confirm code removal
+				if ($config['enable_post_confirm'])
+				{
+					$auth = new phpbb_auth();
+					$can_post = array_keys($auth->acl_get_list(ANONYMOUS, array('f_post', 'f_reply')));
+					unset($auth);
+
+					if (sizeof($can_post))
+					{
+						$sql_ary = array();
+						foreach ($can_post as $forum_id)
+						{
+							$sql_ary[] = array(
+								'group_id'			=> 1,
+								'forum_id'			=> $forum_id,
+								'auth_option_id'	=> $new_id,
+								'auth_role_id'		=> 0,
+								'auth_setting'		=> 0, // Never
+							);
+						}
+
+						if (sizeof($sql_ary))
+						{
+							$db->sql_multi_insert(ACL_GROUPS_TABLE, $sql_ary);
+						}
+					}
+				}
+
+				// Remove any old permission entries
+				$auth_admin->acl_clear_prefetch();
+			}
+
+			unset($auth_admin);
 
 		break;
 	}

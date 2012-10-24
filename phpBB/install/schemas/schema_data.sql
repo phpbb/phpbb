@@ -316,6 +316,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_subscribe', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_user_lock', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_vote', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_votechg', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_nocaptcha', 1);
 
 # -- Moderator related auth options
 INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_', 1, 1);
