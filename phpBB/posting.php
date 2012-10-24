@@ -41,16 +41,10 @@ $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load || $preview);
 $mode		= request_var('mode', '');
 
-if ($submit && !$refresh)
+// If the user is not allowed to delete the post, we try to soft delete it, so we overwrite the mode here.
+if ($mode == 'delete' && (($auth->acl_get('m_softdelete', $forum_id) && $request->is_set_post('soft_delete')) || !$auth->acl_get('m_delete', $forum_id)))
 {
-	if (isset($_POST['soft_delete']))
-	{
-		$mode = 'soft_delete';
-	}
-	else if (isset($_POST['delete']))
-	{
-		$mode = 'delete';
-	}
+	$mode = 'soft_delete';
 }
 
 $error = $post_data = array();
@@ -328,7 +322,8 @@ if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 // Handle delete mode...
 if ($mode == 'delete' || $mode == 'soft_delete')
 {
-	handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete'));
+	$soft_delete_reason = ($mode == 'soft_delete' && $auth->acl_get('m_softdelete', $forum_id)) ? utf8_normalize_nfc(request_var('delete_reason', '', true)) : '';
+	handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete'), $soft_delete_reason);
 	return;
 }
 
@@ -1532,7 +1527,7 @@ function upload_popup($forum_style = 0)
 /**
 * Do the various checks required for removing posts as well as removing it
 */
-function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft)
+function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $soft_delete_reason = '')
 {
 	global $user, $db, $auth, $config;
 	global $phpbb_root_path, $phpEx;
@@ -1553,9 +1548,9 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 			$data = array(
 				'topic_first_post_id'	=> $post_data['topic_first_post_id'],
 				'topic_last_post_id'	=> $post_data['topic_last_post_id'],
-				'topic_posts'			=> $post_data['topic_posts'];
-				'topic_posts_unapproved'	=> $post_data['topic_posts_unapproved'];
-				'topic_posts_softdeleted'	=> $post_data['topic_posts_softdeleted'];
+				'topic_posts'			=> $post_data['topic_posts'],
+				'topic_posts_unapproved'	=> $post_data['topic_posts_unapproved'],
+				'topic_posts_softdeleted'	=> $post_data['topic_posts_softdeleted'],
 				'topic_visibility'		=> $post_data['topic_visibility'],
 				'topic_type'			=> $post_data['topic_type'],
 				'post_visibility'		=> $post_data['post_visibility'],
@@ -1565,7 +1560,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 				'post_postcount'		=> $post_data['post_postcount'],
 			);
 
-			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data, $is_soft);//@todo: $reason);
+			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $soft_delete_reason);
 			$post_username = ($post_data['poster_id'] == ANONYMOUS && !empty($post_data['post_username'])) ? $post_data['post_username'] : $post_data['username'];
 
 			if ($next_post_id === false)
@@ -1589,7 +1584,15 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 		}
 		else
 		{
-			confirm_box(false, 'DELETE_POST', $s_hidden_fields);
+			global $template;
+
+			$template->assign_vars(array(
+				'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id) || $auth->acl_get('f_delete', $forum_id),
+				'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id) || $auth->acl_get('f_softdelete', $forum_id),
+				'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
+			));
+
+			confirm_box(false, 'DELETE_POST', $s_hidden_fields, 'posting_delete_post_body.html');
 		}
 	}
 

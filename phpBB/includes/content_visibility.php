@@ -225,6 +225,7 @@ class phpbb_content_visibility
 			{
 				$where_sql .= ' AND post_visibility = ' . (int) $limit_visibility;
 			}
+
 			if ($limit_delete_time !== false)
 			{
 				$where_sql .= ' AND post_delete_time = ' . (int) $limit_delete_time;
