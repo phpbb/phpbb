@@ -103,7 +103,7 @@
 			<value>1</value>
 			<value>Approved</value>
 			<value>0</value>
-			<value></value>
+			<value>0</value>
 			<value></value>
 		</row>
 		<row>
@@ -115,7 +115,7 @@
 			<value>2</value>
 			<value>Approved</value>
 			<value>0</value>
-			<value></value>
+			<value>0</value>
 			<value></value>
 		</row>
 		<row>
@@ -127,7 +127,7 @@
 			<value>3</value>
 			<value>Approved</value>
 			<value>0</value>
-			<value></value>
+			<value>0</value>
 			<value></value>
 		</row>
 
@@ -140,7 +140,7 @@
 			<value>4</value>
 			<value>Approved</value>
 			<value>0</value>
-			<value></value>
+			<value>0</value>
 			<value></value>
 		</row>
 	</table>

@@ -53,7 +53,7 @@
 			<value>1</value>
 			<value>Approved</value>
 			<value>2</value>
-			<value></value>
+			<value>0</value>
 			<value></value>
 		</row>
 		<row>
@@ -108,8 +108,8 @@
 			<value>1</value>
 			<value>0</value>
 			<value>Unapproved before the topic was soft deleted</value>
-			<value></value>
-			<value></value>
+			<value>0</value>
+			<value>0</value>
 			<value></value>
 		</row>
 	</table>
