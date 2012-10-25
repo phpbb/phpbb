@@ -28,17 +28,32 @@ class phpbb_db_migration
 {
 	var $db;
 	var $db_tools;
+	var $table_prefix;
+
+	var $phpbb_root_path;
+	var $php_ext;
+
+	var $errors;
 
 	/**
 	* Migration constructor
 	*
 	* @param dbal			$db			Connected database abstraction instance
 	* @param phpbb_db_tools	$db_tools	Instance of db schema manipulation tools
+	* @param string			$table_prefix The prefix for all table names
+	* @param string			$phpbb_root_path
+	* @param string			$php_ext
 	*/
-	function phpbb_db_migration(&$db, &$db_tools)
+	function phpbb_db_migration(&$db, &$db_tools, $table_prefix, $phpbb_root_path, $php_ext)
 	{
 		$this->db = &$db;
 		$this->db_tools = &$db_tools;
+		$this->table_prefix = $table_prefix;
+
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+
+		$this->errors = array();
 	}
 
 	/**
@@ -71,10 +86,39 @@ class phpbb_db_migration
 	}
 
 	/**
-	* Adds a column to a database table
+	* Wrapper for running queries to generate user feedback on updates
 	*/
-	function db_column_add($table_name, $column_name, $column_data)
+	function sql_query($sql)
 	{
-		$this->db_tools->sql_column_add($table_name, $column_name, $column_data);
+		if (defined('DEBUG_EXTRA'))
+		{
+			echo "<br />\n{$sql}\n<br />";
+		}
+
+		$db->sql_return_on_error(true);
+
+		if ($sql === 'begin')
+		{
+			$result = $db->sql_transaction('begin');
+		}
+		else if ($sql === 'commit')
+		{
+			$result = $db->sql_transaction('commit');
+		}
+		else
+		{
+			$result = $db->sql_query($sql);
+			if ($db->sql_error_triggered)
+			{
+				$this->errors[] = array(
+					'sql' => $db->sql_error_sql,
+					'code' => $db->sql_error_returned,
+				);
+			}
+		}
+
+		$db->sql_return_on_error(false);
+
+		return $result;
 	}
 }

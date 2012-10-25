@@ -32,7 +32,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->db = $this->new_dbal();
 		$this->db_tools = new phpbb_db_tools($this->db);
-		$this->migrator = new phpbb_db_migrator($this->db, $this->db_tools, MIGRATIONS_TABLE);
+		$this->migrator = new phpbb_db_migrator($this->db, $this->db_tools, 'phpbb_', MIGRATIONS_TABLE, 'phpBB/', '.php');
 	}
 
 	public function tearDown()
