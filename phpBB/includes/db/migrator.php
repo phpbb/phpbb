@@ -151,7 +151,7 @@ class phpbb_db_migrator
 
 		if (!$state['migration_schema_done'])
 		{
-			$migration->update_schema();
+			$this->apply_schema_changes($migration->update_schema());
 			$state['migration_schema_done'] = true;
 		}
 		else
@@ -244,5 +244,10 @@ class phpbb_db_migrator
 		}
 
 		return true;
+	}
+
+	function apply_schema_changes($schema_changes)
+	{
+		$this->db_tools->perform_schema_changes($schema_changes);
 	}
 }
