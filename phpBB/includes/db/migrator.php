@@ -24,6 +24,10 @@ class phpbb_db_migrator
 {
 	var $db;
 	var $db_tools;
+	var $table_prefix;
+
+	var $phpbb_root_path;
+	var $php_ext;
 
 	var $migrations_table;
 	var $migration_state;
@@ -35,15 +39,22 @@ class phpbb_db_migrator
 	*
 	* @param dbal			$db			Connected database abstraction instance
 	* @param phpbb_db_tools	$db_tools	Instance of db schema manipulation tools
+	* @param string			$table_prefix The prefix for all table names
 	* @param string			$migrations_table The name of the db table storing
 	*									information on applied migrations
+	* @param string			$phpbb_root_path
+	* @param string			$php_ext
 	*/
-	function phpbb_db_migrator(&$db, &$db_tools, $migrations_table)
+	function phpbb_db_migrator(&$db, &$db_tools, $table_prefix, $migrations_table, $phpbb_root_path, $php_ext)
 	{
 		$this->db = &$db;
 		$this->db_tools = &$db_tools;
+		$this->table_prefix = $table_prefix;
 		$this->migrations_table = $migrations_table;
 		$this->migrations = array();
+
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 
 		$this->load_migration_state();
 	}
@@ -120,7 +131,7 @@ class phpbb_db_migrator
 			return false;
 		}
 
-		$migration =& new $name($this->db, $this->db_tools);
+		$migration =& new $name($this->db, $this->db_tools, $this->table_prefix, $this->phpbb_root_path, $this->php_ext);
 		$state = (isset($this->migration_state[$name])) ?
 			$this->migration_state[$name] :
 			array(
@@ -201,7 +212,7 @@ class phpbb_db_migrator
 			return true;
 		}
 
-		$migration =& new $name($this->db, $this->db_tools);
+		$migration =& new $name($this->db, $this->db_tools, $this->table_prefix, $this->phpbb_root_path, $this->php_ext);
 		$depends = $migration->depends_on();
 
 		foreach ($depends as $depend)
