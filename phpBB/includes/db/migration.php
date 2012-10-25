@@ -52,12 +52,13 @@ class phpbb_db_migration
 	}
 
 	/**
-	* Updates the database schema
+	* Updates the database schema by providing a set of change instructions
 	*
-	* @return null
+	* @return array
 	*/
 	function update_schema()
 	{
+		return array();
 	}
 
 	/**
