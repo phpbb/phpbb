@@ -132,8 +132,8 @@ class mcp_ban
 				$l_ban_cell = $user->lang['EMAIL_ADDRESS'];
 			break;
 		}
-
-		acp_ban::display_ban_options($mode);
+		$acp_ban = new acp_ban();
+		$acp_ban->display_ban_options($mode);
 
 		$template->assign_vars(array(
 			'L_TITLE'				=> $this->page_title,
