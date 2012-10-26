@@ -1101,7 +1101,7 @@ class auth_admin extends phpbb_auth
 	function assign_cat_array(&$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $show_trace = false, $s_view)
 	{
 		global $template, $user, $phpbb_admin_path, $phpEx;
-
+		ksort($category_array);
 		@reset($category_array);
 		while (list($cat, $cat_array) = each($category_array))
 		{
