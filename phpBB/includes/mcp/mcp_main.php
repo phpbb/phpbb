@@ -33,7 +33,7 @@ class mcp_main
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template, $action;
-		global $config, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx, $request;
 
 		$quickmod = ($mode == 'quickmod') ? true : false;
 
@@ -108,14 +108,18 @@ class mcp_main
 			case 'delete_topic':
 				$user->add_lang('viewtopic');
 
+				// f parameter is not reliable for permission usage, however we just use it to decide
+				// which permission we will check later on. So if it is manipulated, we will still catch it later on.
+				$forum_id = request_var('f', 0);
 				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
+				$soft_delete = (($auth->acl_get('m_softdelete', $forum_id) && $request->is_set_post('soft_delete')) || !$auth->acl_get('m_delete', $forum_id)) ? true : false;
 
 				if (!sizeof($topic_ids))
 				{
 					trigger_error('NO_TOPIC_SELECTED');
 				}
 
-				mcp_delete_topic($topic_ids);
+				mcp_delete_topic($topic_ids, $soft_delete, ($soft_delete) ? request_var('delete_reason', '', true) : '');
 			break;
 
 			case 'delete_post':
@@ -129,6 +133,19 @@ class mcp_main
 				}
 
 				mcp_delete_post($post_ids);
+			break;
+
+			case 'restore_topic':
+				$user->add_lang('posting');
+
+				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
+
+				if (!sizeof($topic_ids))
+				{
+					trigger_error('NO_TOPIC_SELECTED');
+				}
+
+				mcp_restore_topic($topic_ids);
 			break;
 		}
 
@@ -629,9 +646,81 @@ function mcp_move_topic($topic_ids)
 }
 
 /**
+* Restore Topics
+*/
+function mcp_restore_topic($topic_ids)
+{
+	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+
+	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_approve')))
+	{
+		return;
+	}
+
+	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
+	$forum_id = request_var('f', 0);
+
+	$s_hidden_fields = build_hidden_fields(array(
+		'topic_id_list'	=> $topic_ids,
+		'f'				=> $forum_id,
+		'action'		=> 'restore_topic',
+		'redirect'		=> $redirect,
+	));
+	$success_msg = '';
+
+	if (confirm_box(true))
+	{
+		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_RESTORED_SUCCESS' : 'TOPICS_RESTORED_SUCCESS';
+
+		$data = get_topic_data($topic_ids);
+
+		foreach ($data as $topic_id => $row)
+		{
+			$return = phpbb_content_visibility::set_topic_visibility(ITEM_APPROVED, $topic_id, $row['forum_id'], $user->data['user_id'], time(), '');
+			if (!empty($return))
+			{
+				add_log('mod', $row['forum_id'], $topic_id, 'LOG_RESTORE_TOPIC', $row['topic_title'], $row['topic_first_poster_name']);
+			}
+		}
+	}
+	else
+	{
+		confirm_box(false, (sizeof($topic_ids) == 1) ? 'RESTORE_TOPIC' : 'RESTORE_TOPICS', $s_hidden_fields);
+	}
+
+	$topic_id = request_var('t', 0);
+	if (!isset($_REQUEST['quickmod']))
+	{
+		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = reapply_sid($redirect);
+		$redirect_message = 'PAGE';
+	}
+	else if ($topic_id)
+	{
+		$redirect = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id);
+		$redirect_message = 'TOPIC';
+	}
+	else
+	{
+		$redirect = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
+		$redirect_message = 'FORUM';
+	}
+
+	if (!$success_msg)
+	{
+		redirect($redirect);
+	}
+	else
+	{
+		meta_refresh(3, $redirect);
+		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_' . $redirect_message], '<a href="' . $redirect . '">', '</a>'));
+	}
+}
+
+/**
 * Delete Topics
 */
-function mcp_delete_topic($topic_ids)
+function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = '')
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path;
 
@@ -647,8 +736,8 @@ function mcp_delete_topic($topic_ids)
 		'topic_id_list'	=> $topic_ids,
 		'f'				=> $forum_id,
 		'action'		=> 'delete_topic',
-		'redirect'		=> $redirect)
-	);
+		'redirect'		=> $redirect,
+	));
 	$success_msg = '';
 
 	if (confirm_box(true))
@@ -665,22 +754,54 @@ function mcp_delete_topic($topic_ids)
 			}
 			else
 			{
-				add_log('mod', $row['forum_id'], $topic_id, 'LOG_DELETE_TOPIC', $row['topic_title'], $row['topic_first_poster_name']);
+				// Only soft delete non-shadow topics
+				if ($is_soft)
+				{
+					$return = phpbb_content_visibility::set_topic_visibility(ITEM_DELETED, $topic_id, $row['forum_id'], $user->data['user_id'], time(), $soft_delete_reason);
+					if (!empty($return))
+					{
+						add_log('mod', $row['forum_id'], $topic_id, 'LOG_SOFTDELETE_TOPIC', $row['topic_title'], $row['topic_first_poster_name']);
+					}
+				}
+				else
+				{
+					add_log('mod', $row['forum_id'], $topic_id, 'LOG_DELETE_TOPIC', $row['topic_title'], $row['topic_first_poster_name']);
+				}
 			}
 		}
 
-		$return = delete_topics('topic_id', $topic_ids);
+		if (!$is_soft)
+		{
+			$return = delete_topics('topic_id', $topic_ids);
+		}
 	}
 	else
 	{
-		confirm_box(false, (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS', $s_hidden_fields);
+		global $template;
+
+		$user->add_lang('posting');
+
+		$template->assign_vars(array(
+			'S_TOPIC_MODE'			=> true,
+			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
+			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
+			'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
+		));
+
+		confirm_box(false, (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS', $s_hidden_fields, 'posting_delete_post_body.html');
 	}
 
+	$topic_id = request_var('t', 0);
 	if (!isset($_REQUEST['quickmod']))
 	{
 		$redirect = request_var('redirect', "index.$phpEx");
 		$redirect = reapply_sid($redirect);
 		$redirect_message = 'PAGE';
+	}
+	else if ($is_soft && $topic_id)
+	{
+		$redirect = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id);
+		$redirect_message = 'TOPIC';
 	}
 	else
 	{

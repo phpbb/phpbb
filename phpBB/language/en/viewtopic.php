@@ -98,7 +98,8 @@ $lang = array_merge($lang, array(
 	'QUOTE'					=> 'Quote',
 
 	'REPLY_TO_TOPIC'		=> 'Reply to topic',
-	'RESTORE'               => 'Restore',
+	'RESTORE'				=> 'Restore',
+	'RESTORE_TOPIC'			=> 'Restore topic',
 	'RETURN_POST'			=> '%sReturn to the post%s',
 
 	'SUBMIT_VOTE'			=> 'Submit vote',

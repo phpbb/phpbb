@@ -158,6 +158,7 @@ if ($quickmod)
 		case 'move':
 		case 'delete_post':
 		case 'delete_topic':
+		case 'restore_topic':
 			$module->load('mcp', 'main', 'quickmod');
 			return;
 		break;
