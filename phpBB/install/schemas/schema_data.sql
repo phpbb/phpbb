@@ -771,4 +771,15 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'mp3');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogm');
 
+# User Notification Options (for first user)
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('report', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('needs_approval', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_bookmark', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_pm', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_post', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_post', 0, 2, 'phpbb_notification_method_email');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_quote', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_topic', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_topic', 0, 2, 'phpbb_notification_method_email');
+
 # POSTGRES COMMIT #
