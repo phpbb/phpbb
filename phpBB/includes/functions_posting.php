@@ -1879,6 +1879,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_last_view_time'		=> $current_time,
 				'forum_id'					=> $data['forum_id'],
 				'icon_id'					=> $data['icon_id'],
+				'topic_posts'				=> ($post_visibility == ITEM_APPROVED) ? 1 : 0,
+				'topic_posts_softdeleted'	=> ($post_visibility != ITEM_APPROVED) ? 1 : 0,
 				'topic_visibility'			=> $post_visibility,
 				'topic_delete_user'			=> ($post_visibility != ITEM_APPROVED) ? (int) $user->data['user_id'] : 0,
 				'topic_title'				=> $subject,
