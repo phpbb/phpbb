@@ -262,7 +262,7 @@ class phpbb_notification_manager
 			return;
 		}
 
-		$time = ($time) ?: time();
+		$time = ($time !== false) ? $time : time();
 
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . "
 			SET unread = 0
@@ -281,7 +281,7 @@ class phpbb_notification_manager
 	*/
 	public function mark_notifications_read_by_id($notification_id, $time = false)
 	{
-		$time = ($time) ?: time();
+		$time = ($time !== false) ? $time : time();
 
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . "
 			SET unread = 0
