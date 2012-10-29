@@ -96,31 +96,14 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 			return array();
 		}
 
-		$notify_users = array();
-
-		$sql = 'SELECT *
-			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . self::$notification_option['id'] . "'
-				AND " . $this->db->sql_in_set('user_id', $auth_approve[$post['forum_id']][$this->permission]) . '
-				AND user_id <> ' . $this->user->data['user_id'];
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
+		if (($key = array_search($this->user->data['user_id'], $auth_approve[$post['forum_id']][$this->permission])))
 		{
-			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
-			{
-				continue;
-			}
-
-			if (!isset($rowset[$row['user_id']]))
-			{
-				$notify_users[$row['user_id']] = array();
-			}
-
-			$notify_users[$row['user_id']][] = $row['method'];
+			unset($auth_approve[$post['forum_id']][$this->permission][$key]);
 		}
-		$this->db->sql_freeresult($result);
 
-		return $notify_users;
+		return $this->check_user_notification_options($auth_approve[$post['forum_id']][$this->permission], array_merge($options, array(
+			'item_type'		=> self::$notification_option['id'],
+		)));
 	}
 
 	/**
