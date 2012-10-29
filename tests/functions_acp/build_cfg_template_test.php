@@ -58,20 +58,20 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	{
 		return array(
 			array(
-				array('dimension', 20, 255),
-				'key_name',
+				array('dimension', 20, 15),
+				'number_key_name',
 				array('config_key_name_width' => 10, 'config_key_name_height' => 20),
 				'config_key_name',
 				array(),
-				'<input id="key_name" type="text" size="20" maxlength="255" name="config[config_key_name_width]" value="10" /> x <input type="text" size="20" maxlength="255" name="config[config_key_name_height]" value="20" />',
+				'<input id="number_key_name" type="number" size="20" maxlength="15" max="999999999999999" name="config[config_key_name_width]" value="10" /> x <input type="text" size="20" maxlength="255" name="config[config_key_name_height]" value="20" />',
 			),
 			array(
-				array('dimension', 0, 255),
-				'key_name',
+				array('dimension', 0, 15),
+				'number_key_name',
 				array('config_key_name_width' => 10, 'config_key_name_height' => 20),
 				'config_key_name',
 				array(),
-				'<input id="key_name" type="text" maxlength="255" name="config[config_key_name_width]" value="10" /> x <input type="text" maxlength="255" name="config[config_key_name_height]" value="20" />',
+				'<input id="number_key_name" type="number" maxlength="15" max="999999999999999" name="config[config_key_name_width]" value="10" /> x <input type="text" maxlength="255" name="config[config_key_name_height]" value="20" />',
 			),
 		);
 	}
