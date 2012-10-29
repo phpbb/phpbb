@@ -70,7 +70,7 @@ class phpbb_mock_notification_manager
 	}
 
 
-	public function get_subscriptions()
+	public function get_global_subscriptions()
 	{
 		return array();
 	}

@@ -1781,6 +1781,7 @@ function get_schema_struct()
 			'item_id'			=> array('UINT', 0),
 			'user_id'			=> array('UINT', 0),
 			'method'			=> array('VCHAR:255', ''),
+			'notify'			=> array('BOOL', 1),
 		),
 		'PRIMARY_KEY'		=> array(
 			'item_type',
@@ -1791,6 +1792,7 @@ function get_schema_struct()
 		'KEYS'				=> array(
 			'it'				=> array('INDEX', 'item_type'),
 			'uid'				=> array('INDEX', 'user_id'),
+			'no'				=> array('INDEX', 'notify'),
 		),
 	);
 

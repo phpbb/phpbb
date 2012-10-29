@@ -75,30 +75,9 @@ class phpbb_notification_type_topic_in_queue extends phpbb_notification_type_top
 
 		$auth_approve[$topic['forum_id']] = array_unique(array_merge($auth_approve[$topic['forum_id']], $auth_approve[0]));
 
-		$notify_users = array();
-
-		$sql = 'SELECT *
-			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . self::$notification_option['id'] . "'
-				AND " . $this->db->sql_in_set('user_id', $auth_approve[$topic['forum_id']]['m_approve']);
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
-			{
-				continue;
-			}
-
-			if (!isset($rowset[$row['user_id']]))
-			{
-				$notify_users[$row['user_id']] = array();
-			}
-
-			$notify_users[$row['user_id']][] = $row['method'];
-		}
-		$this->db->sql_freeresult($result);
-
-		return $notify_users;
+		return $this->check_user_notification_options($auth_approve[$topic['forum_id']]['m_approve'], array_merge($options, array(
+			'item_type'		=> self::$notification_option['id'],
+		)));
 	}
 
 	/**

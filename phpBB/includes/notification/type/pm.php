@@ -80,33 +80,11 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 			return array();
 		}
 
+		unset($pm['recipients'][$pm['from_user_id']]);
+
 		$this->notification_manager->load_users(array_keys($pm['recipients']));
 
-		$notify_users = array();
-
-		$sql = 'SELECT *
-			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . get_class($this) . "'
-				AND " . $this->db->sql_in_set('user_id', array_keys($pm['recipients'])) . '
-				AND user_id <> ' . $pm['from_user_id'];
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
-			{
-				continue;
-			}
-
-			if (!isset($rowset[$row['user_id']]))
-			{
-				$notify_users[$row['user_id']] = array();
-			}
-
-			$notify_users[$row['user_id']][] = $row['method'];
-		}
-		$this->db->sql_freeresult($result);
-
-		return $notify_users;
+		return $this->check_user_notification_options(array_keys($pm['recipients']), $options);
 	}
 
 	/**

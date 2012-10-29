@@ -310,26 +310,54 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	/**
 	* Find the users who want to receive notifications (helper)
 	*
-	* @param array $item_id The item_id to search for
+	* @param array $user_ids User IDs to check if they want to receive notifications
+	* 		(Bool False to check all users besides anonymous and bots (USER_IGNORE))
 	*
 	* @return array
 	*/
-	protected function _find_users_for_notification($item_id, $options)
+	protected function check_user_notification_options($user_ids = false, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
+			'item_type'			=> get_class($this),
+			'item_id'			=> 0, // Global by default
 		), $options);
 
-		$rowset = array();
+		if ($user_ids === false)
+		{
+			$user_ids = array();
 
-		$sql = 'SELECT *
-			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . get_class($this) . "'
-				AND item_id = " . (int) $item_id;
+			$sql = 'SELECT user_id
+				FROM ' . USERS_TABLE . '
+				WHERE user_id <> ' . ANONYMOUS . '
+					AND user_type <> ' . USER_IGNORE;
+			$result = $this->db->sql_query($sql);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$user_ids[] = $row['user_id'];
+			}
+			$this->db->sql_freeresult($result);
+		}
+
+		if (empty($user_ids))
+		{
+			return array();
+		}
+
+		$rowset = $resulting_user_ids = array();
+
+		$sql = 'SELECT user_id, method, notify
+			FROM ' . USER_NOTIFICATIONS_TABLE . '
+			WHERE ' . $this->db->sql_in_set('user_id', $user_ids) . "
+				AND item_type = '" . $this->db->sql_escape($options['item_type']) . "'
+				AND item_id = " . (int) $options['item_id'];
 		$result = $this->db->sql_query($sql);
+
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
+			$resulting_user_ids[] = $row['user_id'];
+
+			if (!$row['notify'] || (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']])))
 			{
 				continue;
 			}
@@ -341,7 +369,17 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 			$rowset[$row['user_id']][] = $row['method'];
 		}
+
 		$this->db->sql_freeresult($result);
+
+		foreach ($user_ids as $user_id)
+		{
+			if (!in_array($user_id, $resulting_user_ids) && !isset($options['ignore_users'][$user_id]))
+			{
+				// No rows at all for this user, default to ''
+				$rowset[$user_id] = array('');
+			}
+		}
 
 		return $rowset;
 	}
