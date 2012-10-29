@@ -98,7 +98,7 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	public static function get_instance()
+	static public function get_instance()
 	{
 		$instance = new phpbb_captcha_qa();
 
