@@ -112,7 +112,7 @@ class phpbb_notification_type_report_post_closed extends phpbb_notification_type
 	*/
 	public function get_avatar()
 	{
-		return $this->_get_avatar($this->get_data('closer_id'));
+		return $this->get_user_avatar($this->get_data('closer_id'));
 	}
 
 	/**

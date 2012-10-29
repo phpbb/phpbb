@@ -187,7 +187,7 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	*/
 	public function get_avatar()
 	{
-		return $this->_get_avatar($this->get_data('reporter_id'));
+		return $this->get_user_avatar($this->get_data('reporter_id'));
 	}
 
 	/**
