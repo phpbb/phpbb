@@ -1101,6 +1101,8 @@ function database_update_info()
 		),
 		// No changes from 3.0.11-RC2 to 3.0.11
 		'3.0.11-RC2'	=> array(),
+		// No changes from 3.0.11 to 3.0.12-RC1
+		'3.0.11'		=> array(),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 */
 
@@ -2246,6 +2248,16 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.11-RC2 to 3.0.11
 		case '3.0.11-RC2':
+		break;
+
+		// Changes from 3.0.11 to 3.0.12-RC1
+		case '3.0.11':
+			$sql = 'UPDATE ' . MODULES_TABLE . '
+				SET module_auth = \'acl_u_sig\'
+				WHERE module_class = \'ucp\'
+					AND module_basename = \'profile\'
+					AND module_mode = \'signature\'';
+			_sql($sql, $errored, $error_ary);
 		break;
 
 		// Changes from 3.1.0-dev to 3.1.0-A1
