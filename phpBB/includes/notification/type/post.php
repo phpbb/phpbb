@@ -140,7 +140,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 	*/
 	public function get_avatar()
 	{
-		return $this->_get_avatar($this->get_data('poster_id'));
+		return $this->get_user_avatar($this->get_data('poster_id'));
 	}
 
 	/**
