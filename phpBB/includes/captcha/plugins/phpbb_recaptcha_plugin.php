@@ -60,7 +60,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		return $instance;
 	}
 
-	public static function is_available()
+	static public function is_available()
 	{
 		global $config, $user;
 		$user->add_lang('captcha_recaptcha');
@@ -75,7 +75,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		return true;
 	}
 
-	public static function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_RECAPTCHA';
 	}

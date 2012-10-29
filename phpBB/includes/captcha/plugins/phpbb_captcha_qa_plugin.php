@@ -108,7 +108,7 @@ class phpbb_captcha_qa
 	/**
 	* See if the captcha has created its tables.
 	*/
-	public static function is_installed()
+	static public function is_installed()
 	{
 		global $db, $phpbb_root_path, $phpEx;
 
@@ -124,7 +124,7 @@ class phpbb_captcha_qa
 	/**
 	*  API function - for the captcha to be available, it must have installed itself and there has to be at least one question in the board's default lang
 	*/
-	public static function is_available()
+	static public function is_available()
 	{
 		global $config, $db, $phpbb_root_path, $phpEx, $user;
 
@@ -157,7 +157,7 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	public static function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_QA';
 	}

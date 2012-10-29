@@ -45,12 +45,12 @@ class phpbb_captcha_nogd extends phpbb_default_captcha
 		return $instance;
 	}
 
-	public static function is_available()
+	static public function is_available()
 	{
 		return true;
 	}
 
-	public static function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_NO_GD';
 	}
