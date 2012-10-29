@@ -73,30 +73,9 @@ class phpbb_notification_type_approve_post extends phpbb_notification_type_post
 			return array();
 		}
 
-		$notify_users = array();
-
-		$sql = 'SELECT *
-			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . self::$notification_option['id'] . "'
-				AND " . $this->db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
-			{
-				continue;
-			}
-
-			if (!isset($rowset[$row['user_id']]))
-			{
-				$notify_users[$row['user_id']] = array();
-			}
-
-			$notify_users[$row['user_id']][] = $row['method'];
-		}
-		$this->db->sql_freeresult($result);
-
-		return $notify_users;
+		return $this->check_user_notification_options($auth_read[$post['forum_id']]['f_read'], array_merge($options, array(
+			'item_type'		=> self::$notification_option['id'],
+		)));
 	}
 
 	/**

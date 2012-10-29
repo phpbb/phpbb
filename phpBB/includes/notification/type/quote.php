@@ -106,28 +106,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 			return array();
 		}
 
-		$notify_users = array();
-
-		$sql = 'SELECT *
-			FROM ' . USER_NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . get_class($this) . "'
-				AND " . $this->db->sql_in_set('user_id', $auth_read[$post['forum_id']]['f_read']);
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
-			{
-				continue;
-			}
-
-			if (!isset($rowset[$row['user_id']]))
-			{
-				$notify_users[$row['user_id']] = array();
-			}
-
-			$notify_users[$row['user_id']][] = $row['method'];
-		}
-		$this->db->sql_freeresult($result);
+		$notify_users = $this->check_user_notification_options($auth_read[$post['forum_id']]['f_read'], $options);
 
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
 		$update_notifications = array();

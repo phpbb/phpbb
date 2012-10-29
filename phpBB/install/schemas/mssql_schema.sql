@@ -1528,7 +1528,8 @@ CREATE TABLE [phpbb_user_notifications] (
 	[item_type] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[item_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[method] [varchar] (255) DEFAULT ('') NOT NULL 
+	[method] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[notify] [int] DEFAULT (1) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1546,6 +1547,9 @@ CREATE  INDEX [it] ON [phpbb_user_notifications]([item_type]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [uid] ON [phpbb_user_notifications]([user_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [no] ON [phpbb_user_notifications]([notify]) ON [PRIMARY]
 GO
 
 

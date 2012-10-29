@@ -29,7 +29,7 @@ class phpbb_ext_test_notification_type_test extends phpbb_notification_type_base
 
 	public function find_users_for_notification($post, $options = array())
 	{
-		return $this->_find_users_for_notification(0, $options);
+		return $this->check_user_notification_options(array(0), $options);
 	}
 
 	public function create_insert_array($post, $pre_create_data = array())

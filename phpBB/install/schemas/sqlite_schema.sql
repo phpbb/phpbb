@@ -852,11 +852,13 @@ CREATE TABLE phpbb_user_notifications (
 	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	method varchar(255) NOT NULL DEFAULT '',
+	notify INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	PRIMARY KEY (item_type, item_id, user_id, method)
 );
 
 CREATE INDEX phpbb_user_notifications_it ON phpbb_user_notifications (item_type);
 CREATE INDEX phpbb_user_notifications_uid ON phpbb_user_notifications (user_id);
+CREATE INDEX phpbb_user_notifications_no ON phpbb_user_notifications (notify);
 
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (

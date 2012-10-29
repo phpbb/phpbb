@@ -1242,13 +1242,15 @@ CREATE TABLE phpbb_user_notifications (
 	item_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	item_id INTEGER DEFAULT 0 NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
-	method VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL
+	method VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notify INTEGER DEFAULT 1 NOT NULL
 );;
 
 ALTER TABLE phpbb_user_notifications ADD PRIMARY KEY (item_type, item_id, user_id, method);;
 
 CREATE INDEX phpbb_user_notifications_it ON phpbb_user_notifications(item_type);;
 CREATE INDEX phpbb_user_notifications_uid ON phpbb_user_notifications(user_id);;
+CREATE INDEX phpbb_user_notifications_no ON phpbb_user_notifications(notify);;
 
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
