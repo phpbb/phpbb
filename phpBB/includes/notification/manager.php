@@ -231,7 +231,7 @@ class phpbb_notification_manager
 			return;
 		}
 
-		$time = ($time) ?: time();
+		$time = ($time !== false) ? $time : time();
 
 		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . "
 			SET unread = 0
