@@ -60,7 +60,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		return $instance;
 	}
 
-	function is_available()
+	public static function is_available()
 	{
 		global $config, $user;
 		$user->add_lang('captcha_recaptcha');
@@ -75,7 +75,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		return true;
 	}
 
-	function get_name()
+	public static function get_name()
 	{
 		return 'CAPTCHA_RECAPTCHA';
 	}
@@ -163,7 +163,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 				'RECAPTCHA_SERVER'			=> $this->recaptcha_server,
 				'RECAPTCHA_PUBKEY'			=> isset($config['recaptcha_pubkey']) ? $config['recaptcha_pubkey'] : '',
 				'RECAPTCHA_ERRORGET'		=> '',
-				'S_RECAPTCHA_AVAILABLE'		=> $this->is_available(),
+				'S_RECAPTCHA_AVAILABLE'		=> self::is_available(),
 				'S_CONFIRM_CODE'			=> true,
 				'S_TYPE'					=> $this->type,
 				'L_CONFIRM_EXPLAIN'			=> $explain,

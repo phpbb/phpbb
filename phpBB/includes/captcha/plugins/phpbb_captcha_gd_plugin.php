@@ -55,7 +55,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		return $instance;
 	}
 
-	function is_available()
+	public static function is_available()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -80,7 +80,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		return true;
 	}
 
-	function get_name()
+	public static function get_name()
 	{
 		return 'CAPTCHA_GD';
 	}
