@@ -390,7 +390,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* @param int $user_id
 	* @return string
 	*/
-	protected function _get_avatar($user_id)
+	protected function get_user_avatar($user_id)
 	{
 		$user = $this->notification_manager->get_user($user_id);
 
