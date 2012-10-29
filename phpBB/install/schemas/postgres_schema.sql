@@ -1129,11 +1129,13 @@ CREATE TABLE phpbb_user_notifications (
 	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	method varchar(255) DEFAULT '' NOT NULL,
+	notify INT2 DEFAULT '1' NOT NULL CHECK (notify >= 0),
 	PRIMARY KEY (item_type, item_id, user_id, method)
 );
 
 CREATE INDEX phpbb_user_notifications_it ON phpbb_user_notifications (item_type);
 CREATE INDEX phpbb_user_notifications_uid ON phpbb_user_notifications (user_id);
+CREATE INDEX phpbb_user_notifications_no ON phpbb_user_notifications (notify);
 
 /*
 	Table: 'phpbb_user_group'

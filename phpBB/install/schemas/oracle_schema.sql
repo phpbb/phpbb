@@ -1647,6 +1647,7 @@ CREATE TABLE phpbb_user_notifications (
 	item_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
 	method varchar2(255) DEFAULT '' ,
+	notify number(1) DEFAULT '1' NOT NULL,
 	CONSTRAINT pk_phpbb_user_notifications PRIMARY KEY (item_type, item_id, user_id, method)
 )
 /
@@ -1654,6 +1655,8 @@ CREATE TABLE phpbb_user_notifications (
 CREATE INDEX phpbb_user_notifications_it ON phpbb_user_notifications (item_type)
 /
 CREATE INDEX phpbb_user_notifications_uid ON phpbb_user_notifications (user_id)
+/
+CREATE INDEX phpbb_user_notifications_no ON phpbb_user_notifications (notify)
 /
 
 /*

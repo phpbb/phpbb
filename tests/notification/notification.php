@@ -119,158 +119,18 @@ class phpbb_notification_test extends phpbb_database_test_case
 
 	public function test_subscriptions()
 	{
-		$this->notifications->add_subscription('phpbb_notification_type_post', 0, '');
-		$this->notifications->add_subscription('phpbb_notification_type_post', 0, '', 1);
-		$this->notifications->add_subscription('phpbb_notification_type_quote', 0, '', 1);
+		$this->notifications->delete_subscription('phpbb_notification_type_post', 0, '', 2);
+
+		$this->assertArrayNotHasKey('phpbb_notification_type_post', $this->notifications->get_global_subscriptions(2));
 
 		$this->notifications->add_subscription('phpbb_notification_type_post', 0, '', 2);
-		$this->notifications->add_subscription('phpbb_notification_type_post', 0, 'email', 2);
-		$this->notifications->add_subscription('phpbb_notification_type_post', 0, 'jabber', 2);
-		$this->notifications->add_subscription('phpbb_notification_type_post', 1, '', 2);
-		$this->notifications->add_subscription('phpbb_notification_type_post', 1, 'email', 2);
-		$this->notifications->add_subscription('phpbb_notification_type_post', 1, 'jabber', 2);
-		$this->notifications->add_subscription('phpbb_notification_type_post', 2, '', 2);
-		$this->notifications->add_subscription('phpbb_notification_type_post', 2, 'email', 2);
-		$this->notifications->add_subscription('phpbb_notification_type_post', 2, 'jabber', 2);
 
-		$this->assertEquals(array(
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 0,
-				'user_id'		=> 0,
-				'method'		=> '',
-			),
-		), $this->notifications->get_subscriptions());
-
-		$this->assertEquals(array(
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 0,
-				'user_id'		=> 1,
-				'method'		=> '',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_quote',
-				'item_id'		=> 0,
-				'user_id'		=> 1,
-				'method'		=> '',
-			),
-		), $this->notifications->get_subscriptions(1));
-
-		$this->assertEquals(array(
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 0,
-				'user_id'		=> 2,
-				'method'		=> '',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 0,
-				'user_id'		=> 2,
-				'method'		=> 'email',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 0,
-				'user_id'		=> 2,
-				'method'		=> 'jabber',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 1,
-				'user_id'		=> 2,
-				'method'		=> '',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 1,
-				'user_id'		=> 2,
-				'method'		=> 'email',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 1,
-				'user_id'		=> 2,
-				'method'		=> 'jabber',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 2,
-				'user_id'		=> 2,
-				'method'		=> '',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 2,
-				'user_id'		=> 2,
-				'method'		=> 'email',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 2,
-				'user_id'		=> 2,
-				'method'		=> 'jabber',
-			),
-		), $this->notifications->get_subscriptions(2));
-
-		$this->assertEquals(array(
-			'phpbb_notification_type_post' => array(
-				'',
-				'email',
-				'jabber',
-			),
-		), $this->notifications->get_subscriptions(2, true));
-
-		$this->notifications->delete_subscription('phpbb_notification_type_post', 0, '', 2);
-		$this->notifications->delete_subscription('phpbb_notification_type_post', 1, 'email', 2);
-		$this->notifications->delete_subscription('phpbb_notification_type_post', 2, 'jabber', 2);
-
-		$this->assertEquals(array(
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 0,
-				'user_id'		=> 2,
-				'method'		=> 'email',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 0,
-				'user_id'		=> 2,
-				'method'		=> 'jabber',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 1,
-				'user_id'		=> 2,
-				'method'		=> '',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 1,
-				'user_id'		=> 2,
-				'method'		=> 'jabber',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 2,
-				'user_id'		=> 2,
-				'method'		=> '',
-			),
-			array(
-				'item_type'		=> 'phpbb_notification_type_post',
-				'item_id'		=> 2,
-				'user_id'		=> 2,
-				'method'		=> 'email',
-			),
-		), $this->notifications->get_subscriptions(2));
+		$this->assertArrayHasKey('phpbb_notification_type_post', $this->notifications->get_global_subscriptions(2));
 	}
 
 	public function test_notifications()
 	{
 		global $db;
-
-		$this->notifications->add_subscription('phpbb_ext_test_notification_type_test');
 
 		// Used to test post notifications later
 		$db->sql_query('INSERT INTO ' . TOPICS_WATCH_TABLE . ' ' . $db->sql_build_array('INSERT', array(
@@ -320,7 +180,6 @@ class phpbb_notification_test extends phpbb_database_test_case
 			'topic_id'			=> 2,
 			'user_id'			=> 0,
 		)));
-		$this->notifications->add_subscription('phpbb_notification_type_bookmark');
 
 		$this->notifications->add_notifications(array('phpbb_notification_type_quote', 'phpbb_notification_type_bookmark', 'phpbb_notification_type_post', 'phpbb_ext_test_notification_type_test'), array(
 			'post_id'		=> '5',

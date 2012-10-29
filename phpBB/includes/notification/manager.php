@@ -545,41 +545,57 @@ class phpbb_notification_manager
 	}
 
 	/**
-	* Get subscriptions
+	* Get global subscriptions (item_id = 0)
 	*
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
-	* @param bool $only_global True to select only global subscription options (item_id = 0)
 	*
 	* @return array Subscriptions
 	*/
-	public function get_subscriptions($user_id = false, $only_global = false)
+	public function get_global_subscriptions($user_id = false)
 	{
 		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
 		$subscriptions = array();
 
-		$sql = 'SELECT *
-			FROM ' . USER_NOTIFICATIONS_TABLE . '
-			WHERE user_id = ' . (int) $user_id .
-				(($only_global) ? ' AND item_id = 0' : '');
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
+		foreach ($this->get_subscription_types() as $group_name => $types)
 		{
-			if ($only_global)
+			foreach ($types as $id => $type)
 			{
-				if (!isset($subscriptions[$row['item_type']]))
+				$sql = 'SELECT method, notify
+					FROM ' . USER_NOTIFICATIONS_TABLE . '
+					WHERE user_id = ' . (int) $user_id . "
+						AND item_type = '" . $this->db->sql_escape($id) . "'
+						AND item_id = 0";
+				$result = $this->db->sql_query($sql);
+
+				$row = $this->db->sql_fetchrow($result);
+				if (!$row)
 				{
-					$subscriptions[$row['item_type']] = array();
+					// No rows at all, default to ''
+					$subscriptions[$id] = array('');
+				}
+				else
+				{
+					do
+					{
+						if (!$row['notify'])
+						{
+							continue;
+						}
+
+						if (!isset($subscriptions[$id]))
+						{
+							$subscriptions[$id] = array();
+						}
+
+						$subscriptions[$id][] = $row['method'];
+					}
+					while ($row = $this->db->sql_fetchrow($result));
 				}
 
-				$subscriptions[$row['item_type']][] = $row['method'];
-			}
-			else
-			{
-				$subscriptions[] = $row;
+				$this->db->sql_freeresult($result);
 			}
 		}
-		$this->db->sql_freeresult($result);
 
 		return $subscriptions;
 	}
@@ -594,16 +610,45 @@ class phpbb_notification_manager
 	*/
 	public function add_subscription($item_type, $item_id = 0, $method = '', $user_id = false)
 	{
+		if ($method !== '')
+		{
+			$this->add_subscription($item_type, $item_type, '', $user_id);
+		}
+
 		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
-		$sql = 'INSERT INTO ' . USER_NOTIFICATIONS_TABLE . ' ' .
-			$this->db->sql_build_array('INSERT', array(
-				'item_type'		=> $item_type,
-				'item_id'		=> (int) $item_id,
-				'user_id'		=> (int) $user_id,
-				'method'		=> $method,
-			));
+		$sql = 'SELECT notify
+			FROM ' . USER_NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+				AND item_id = " . (int) $item_id . '
+				AND user_id = ' .(int) $user_id . "
+				AND method = '" . $this->db->sql_escape($method) . "'";
 		$this->db->sql_query($sql);
+		$current = $this->db->sql_fetchfield('notify');
+		$this->db->sql_freeresult();
+
+		if ($current === false)
+		{
+			$sql = 'INSERT INTO ' . USER_NOTIFICATIONS_TABLE . ' ' .
+				$this->db->sql_build_array('INSERT', array(
+					'item_type'		=> $item_type,
+					'item_id'		=> (int) $item_id,
+					'user_id'		=> (int) $user_id,
+					'method'		=> $method,
+					'notify'		=> 1,
+				));
+			$this->db->sql_query($sql);
+		}
+		else if (!$current)
+		{
+			$sql = 'UPDATE ' . USER_NOTIFICATIONS_TABLE . "
+				SET notify = 1
+				WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+					AND item_id = " . (int) $item_id . '
+					AND user_id = ' .(int) $user_id . "
+					AND method = '" . $this->db->sql_escape($method) . "'";
+			$this->db->sql_query($sql);
+		}
 	}
 
 	/**
@@ -618,12 +663,46 @@ class phpbb_notification_manager
 	{
 		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
-		$sql = 'DELETE FROM ' . USER_NOTIFICATIONS_TABLE . "
+		// If no method, make sure that no other notification methods for this item are selected before deleting
+		if ($method === '')
+		{
+			$sql = 'SELECT COUNT(*) as count
+				FROM ' . USER_NOTIFICATIONS_TABLE . "
+				WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+					AND item_id = " . (int) $item_id . '
+					AND user_id = ' .(int) $user_id . "
+					AND method <> ''
+					AND notify = 1";
+			$this->db->sql_query($sql);
+			$count = $this->db->sql_fetchfield('count');
+			$this->db->sql_freeresult();
+
+			if ($count)
+			{
+				return;
+			}
+		}
+
+		$sql = 'UPDATE ' . USER_NOTIFICATIONS_TABLE . "
+			SET notify = 0
 			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
 				AND item_id = " . (int) $item_id . '
 				AND user_id = ' .(int) $user_id . "
 				AND method = '" . $this->db->sql_escape($method) . "'";
 		$this->db->sql_query($sql);
+
+		if (!$this->db->sql_affectedrows())
+		{
+			$sql = 'INSERT INTO ' . USER_NOTIFICATIONS_TABLE . ' ' .
+				$this->db->sql_build_array('INSERT', array(
+					'item_type'		=> $item_type,
+					'item_id'		=> (int) $item_id,
+					'user_id'		=> (int) $user_id,
+					'method'		=> $method,
+					'notify'		=> 0,
+				));
+			$this->db->sql_query($sql);
+		}
 	}
 
 	/**

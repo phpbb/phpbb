@@ -32,7 +32,7 @@ class ucp_notifications
 		switch ($mode)
 		{
 			case 'notification_options':
-				$subscriptions = $phpbb_notifications->get_subscriptions(false, true);
+				$subscriptions = $phpbb_notifications->get_global_subscriptions(false);
 
 				// Add/remove subscriptions
 				if ($request->is_set_post('submit'))
@@ -48,15 +48,6 @@ class ucp_notifications
 					{
 						foreach($subscription_types as $type => $data)
 						{
-							if ($request->is_set_post($type . '_notification') && !isset($subscriptions[$type]))
-							{
-								$phpbb_notifications->add_subscription($type);
-							}
-							else if (!$request->is_set_post($type . '_notification') && isset($subscriptions[$type]))
-							{
-								$phpbb_notifications->delete_subscription($type);
-							}
-
 							foreach($notification_methods as $method)
 							{
 								if ($request->is_set_post($type . '_' . $method) && (!isset($subscriptions[$type]) || !in_array($method, $subscriptions[$type])))
@@ -68,6 +59,15 @@ class ucp_notifications
 									$phpbb_notifications->delete_subscription($type, 0, $method);
 								}
 							}
+
+							if ($request->is_set_post($type . '_notification') && !isset($subscriptions[$type]))
+							{
+								$phpbb_notifications->add_subscription($type);
+							}
+							else if (!$request->is_set_post($type . '_notification') && isset($subscriptions[$type]))
+							{
+								$phpbb_notifications->delete_subscription($type);
+							}
 						}
 					}
 
@@ -78,7 +78,7 @@ class ucp_notifications
 
 				$this->output_notification_methods('notification_methods', $phpbb_notifications, $template, $user);
 
-				$this->output_notification_types('notification_types', $phpbb_notifications, $template, $user);
+				$this->output_notification_types($subscriptions, 'notification_types', $phpbb_notifications, $template, $user);
 
 				$this->tpl_name = 'ucp_notifications';
 				$this->page_title = 'UCP_NOTIFICATION_OPTIONS';
@@ -165,10 +165,9 @@ class ucp_notifications
 	* @param phpbb_template $template
 	* @param phpbb_user $user
 	*/
-	public function output_notification_types($block = 'notification_types', phpbb_notification_manager $phpbb_notifications, phpbb_template $template, phpbb_user $user)
+	public function output_notification_types($subscriptions, $block = 'notification_types', phpbb_notification_manager $phpbb_notifications, phpbb_template $template, phpbb_user $user)
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
-		$subscriptions = $phpbb_notifications->get_subscriptions(false, true);
 
 		foreach($phpbb_notifications->get_subscription_types() as $group => $subscription_types)
 		{

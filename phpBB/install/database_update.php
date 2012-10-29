@@ -1212,6 +1212,7 @@ function database_update_info()
 						'item_id'			=> array('UINT', 0),
 						'user_id'			=> array('UINT', 0),
 						'method'			=> array('VCHAR:255', ''),
+						'notify'			=> array('BOOL', 1),
 					),
 					'PRIMARY_KEY'		=> array(
 						'item_type',
@@ -1222,6 +1223,7 @@ function database_update_info()
 					'KEYS'				=> array(
 						'it'				=> array('INDEX', 'item_type'),
 						'uid'				=> array('INDEX', 'user_id'),
+						'no'				=> array('INDEX', 'notify'),
 					),
 				),
 			),
@@ -3079,48 +3081,6 @@ function change_database_data(&$no_updates, $version)
 						$db->sql_freeresult($result);
 					}
 				}
-/*
-				// Add default notifications
-				$default_notifications = array(
-					array(
-						'check'			=> ($config['allow_topic_notify']),
-						'item_type'		=> 'phpbb_notification_type_post',
-					),
-					array(
-						'check'			=> ($config['allow_forum_notify']),
-						'item_type'		=> 'phpbb_notification_type_topic',
-					),
-					array(
-						'check'			=> ($config['allow_bookmarks']),
-						'item_type'		=> 'phpbb_notification_type_bookmark',
-					),
-					array(
-						'check'			=> ($config['allow_privmsg']),
-						'item_type'		=> 'phpbb_notification_type_pm',
-					),
-				);
-
-				foreach ($default_notifications as $convert_data)
-				{
-					if ($convert_data['check'])
-					{
-						$sql = 'SELECT user_id
-							FROM ' . USERS_TABLE . '
-							WHERE user_id <> ' . ANONYMOUS . '
-								AND user_type <> ' . USER_IGNORE;
-						$result = $db->sql_query($sql);
-						while ($row = $db->sql_fetchrow($result))
-						{
-							_sql('INSERT INTO ' . USER_NOTIFICATIONS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-								'item_type'		=> $convert_data['item_type'],
-								'item_id'		=> 0,
-								'user_id'		=> $row['user_id'],
-								'method'		=> '',
-							)), $errored, $error_ary);
-						}
-						$db->sql_freeresult($result);
-					}
-				}*/
 			}
 
 			$no_updates = false;
