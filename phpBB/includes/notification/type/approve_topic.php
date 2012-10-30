@@ -79,6 +79,26 @@ class phpbb_notification_type_approve_topic extends phpbb_notification_type_topi
 	}
 
 	/**
+	* Pre create insert array function
+	* This allows you to perform certain actions, like run a query
+	* and load data, before create_insert_array() is run. The data
+	* returned from this function will be sent to create_insert_array().
+	*
+	* @param array $post Post data from submit_post
+	* @param array $notify_users Notify users list
+	* 		Formated from find_users_for_notification()
+	* @return array Whatever you want to send to create_insert_array().
+	*/
+	public function pre_create_insert_array($post, $notify_users)
+	{
+		// In the parent class, this is used to check if the post is already
+		// read by a user and marks the notification read if it was marked read.
+		// Returning an empty array in effect, forces it to be marked as unread
+		// (and also saves a query)
+		return array();
+	}
+
+	/**
 	* Function for preparing the data for insertion in an SQL query
 	* (The service handles insertion)
 	*
