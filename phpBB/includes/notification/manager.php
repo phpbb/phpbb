@@ -706,6 +706,38 @@ class phpbb_notification_manager
 	}
 
 	/**
+	* Disable all notifications of a certain type
+	* 	This should be called when an extension which has notification types
+	* 	is disabled so that all those notifications are hidden and do not
+	* 	cause errors
+	*
+	* @param string $item_type
+	*/
+	public function disable_notifications($item_type)
+	{
+		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . "
+			SET is_enabled = 0
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'";
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Enable all notifications of a certain type
+	* 	This should be called when an extension which has notification types
+	* 	that was disabled is re-enabled so that all those notifications that
+	*	were hidden are shown again
+	*
+	* @param string $item_type
+	*/
+	public function enable_notifications($item_type)
+	{
+		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . "
+			SET is_enabled = 1
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'";
+		$this->db->sql_query($sql);
+	}
+
+	/**
 	* Load user helper
 	*
 	* @param array $user_ids
