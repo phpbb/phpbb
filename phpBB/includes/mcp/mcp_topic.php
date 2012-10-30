@@ -523,6 +523,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			WHERE post_id = {$post_id_list[0]}";
 		$db->sql_query($sql);
 
+		// Copy topic subscriptions to new topic
 		$sql = 'SELECT user_id, notify_status
 			FROM ' . TOPICS_WATCH_TABLE . '
 			WHERE topic_id = ' . $topic_id;
@@ -544,6 +545,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			$db->sql_multi_insert(TOPICS_WATCH_TABLE, $sql_ary);
 		}
 
+		// Copy bookmarks to new topic
 		$sql = 'SELECT user_id
 			FROM ' . BOOKMARKS_TABLE . '
 			WHERE topic_id = ' . $topic_id;

@@ -1231,6 +1231,7 @@ function mcp_fork_topic($topic_ids)
 				}
 			}
 
+			// Copy topic subscriptions to new topic
 			$sql = 'SELECT user_id, notify_status
 				FROM ' . TOPICS_WATCH_TABLE . '
 				WHERE topic_id = ' . $topic_id;
@@ -1252,6 +1253,7 @@ function mcp_fork_topic($topic_ids)
 				$db->sql_multi_insert(TOPICS_WATCH_TABLE, $sql_ary);
 			}
 
+			// Copy bookmarks to new topic
 			$sql = 'SELECT user_id
 				FROM ' . BOOKMARKS_TABLE . '
 				WHERE topic_id = ' . $topic_id;
