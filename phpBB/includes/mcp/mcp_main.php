@@ -125,14 +125,18 @@ class mcp_main
 			case 'delete_post':
 				$user->add_lang('posting');
 
+				// f parameter is not reliable for permission usage, however we just use it to decide
+				// which permission we will check later on. So if it is manipulated, we will still catch it later on.
+				$forum_id = request_var('f', 0);
 				$post_ids = (!$quickmod) ? request_var('post_id_list', array(0)) : array(request_var('p', 0));
+				$soft_delete = (($auth->acl_get('m_softdelete', $forum_id) && $request->is_set_post('soft_delete')) || !$auth->acl_get('m_delete', $forum_id)) ? true : false;
 
 				if (!sizeof($post_ids))
 				{
 					trigger_error('NO_POST_SELECTED');
 				}
 
-				mcp_delete_post($post_ids);
+				mcp_delete_post($post_ids, $soft_delete, ($soft_delete) ? request_var('delete_reason', '', true) : '');
 			break;
 
 			case 'restore_topic':
@@ -823,11 +827,11 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 /**
 * Delete Posts
 */
-function mcp_delete_post($post_ids)
+function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path;
 
-	if (!check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_delete')))
+	if (!check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_softdelete')))
 	{
 		return;
 	}
@@ -843,7 +847,72 @@ function mcp_delete_post($post_ids)
 	);
 	$success_msg = '';
 
-	if (confirm_box(true))
+	if (confirm_box(true) && $is_soft)
+	{
+		$post_info = get_post_data($post_ids);
+
+		$topic_info = $approve_log = array();
+
+		// Group the posts by topic_id
+		foreach ($post_info as $post_id => $post_data)
+		{
+			if ($post_data['post_visibility'] != ITEM_APPROVED)
+			{
+				continue;
+			}
+			$topic_id = (int) $post_data['topic_id'];
+
+			$topic_info[$topic_id]['posts'][] = (int) $post_id;
+			$topic_info[$topic_id]['forum_id'] = (int) $post_data['forum_id'];
+
+			if ($post_id == $post_data['topic_first_post_id'])
+			{
+				$topic_info[$topic_id]['first_post'] = true;
+			}
+
+			if ($post_id == $post_data['topic_last_post_id'])
+			{
+				$topic_info[$topic_id]['last_post'] = true;
+			}
+
+			$approve_log[] = array(
+				'forum_id'		=> $post_data['forum_id'],
+				'topic_id'		=> $post_data['topic_id'],
+				'post_subject'	=> $post_data['post_subject'],
+				'poster_id'		=> $post_data['poster_id'],
+				'post_username'	=> $post_data['post_username'],
+				'username'		=> $post_data['username'],
+			);
+		}
+
+		foreach ($topic_info as $topic_id => $topic_data)
+		{
+			phpbb_content_visibility::set_post_visibility(ITEM_DELETED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), $soft_delete_reason, isset($topic_data['first_post']), isset($topic_data['last_post']));
+		}
+		$affected_topics = sizeof($topic_info);
+		// None of the topics is really deleted, so a redirect won't hurt much.
+		$deleted_topics = 0;
+
+		$success_msg = (sizeof($post_info) == 1) ? 'POST_DELETED_SUCCESS' : 'POSTS_DELETED_SUCCESS';
+
+		foreach ($approve_log as $row)
+		{
+			$post_username = ($row['poster_id'] == ANONYMOUS && !empty($row['post_username'])) ? $row['post_username'] : $row['username'];
+			add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_SOFTDELETE_POST', $row['post_subject'], $post_username);
+		}
+
+		$topic_id = request_var('t', 0);
+
+		// Return links
+		$return_link = array();
+		if ($affected_topics == 1 && $topic_id)
+		{
+			$return_link[] = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") . '">', '</a>');
+		}
+		$return_link[] = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+
+	}
+	else if (confirm_box(true))
 	{
 		if (!function_exists('delete_posts'))
 		{
@@ -924,7 +993,18 @@ function mcp_delete_post($post_ids)
 	}
 	else
 	{
-		confirm_box(false, (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS', $s_hidden_fields);
+		global $template;
+
+		$user->add_lang('posting');
+
+		$template->assign_vars(array(
+			'S_TOPIC_MODE'			=> true,
+			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
+			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
+			'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
+		));
+
+		confirm_box(false, (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS', $s_hidden_fields, 'posting_delete_post_body.html');
 	}
 
 	$redirect = request_var('redirect', "index.$phpEx");

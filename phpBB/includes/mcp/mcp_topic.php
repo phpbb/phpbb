@@ -242,7 +242,8 @@ function mcp_topic_view($id, $mode, $action)
 			'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 
 			'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $topic_info['forum_id'])),
-			'S_POST_UNAPPROVED'	=> ($row['post_visibility'] != ITEM_APPROVED && $auth->acl_get('m_approve', $topic_info['forum_id'])),
+			'S_POST_UNAPPROVED'	=> ($row['post_visibility'] == ITEM_UNAPPROVED && $auth->acl_get('m_approve', $topic_info['forum_id'])),
+			'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED && $auth->acl_get('m_approve', $topic_info['forum_id'])),
 			'S_CHECKED'			=> (($submitted_id_list && !in_array(intval($row['post_id']), $submitted_id_list)) || in_array(intval($row['post_id']), $checked_ids)) ? true : false,
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 
@@ -318,6 +319,7 @@ function mcp_topic_view($id, $mode, $action)
 
 		'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'POST_REPORTED'),
 		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
+		'DELETED_IMG'	=> $user->img('icon_topic_deleted', 'POST_DELETED'),
 		'INFO_IMG'			=> $user->img('icon_post_info', 'VIEW_INFO'),
 
 		'S_MCP_ACTION'		=> "$url&amp;i=$id&amp;mode=$mode&amp;action=$action&amp;start=$start",
