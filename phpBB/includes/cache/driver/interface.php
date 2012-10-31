@@ -69,6 +69,12 @@ interface phpbb_cache_driver_interface
 
 	/**
 	* Load cached sql query
+	*
+	* @param string $query		SQL query
+	*
+	* @return int|bool			Query ID (integer) if cache contains a rowset
+	*							for the specified query.
+	*							False otherwise.
 	*/
 	public function sql_load($query);
 
