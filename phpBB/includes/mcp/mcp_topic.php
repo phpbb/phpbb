@@ -84,8 +84,8 @@ function mcp_topic_view($id, $mode, $action)
 		$subject = $topic_info['topic_title'];
 	}
 
-	// Approve posts?
-	if ($action == 'approve' && $auth->acl_get('m_approve', $topic_info['forum_id']))
+	// Restore or pprove posts?
+	if (($action == 'restore' || $action == 'approve') && $auth->acl_get('m_approve', $topic_info['forum_id']))
 	{
 		include($phpbb_root_path . 'includes/mcp/mcp_queue.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
@@ -98,7 +98,7 @@ function mcp_topic_view($id, $mode, $action)
 
 		if (!$sort)
 		{
-			approve_post($post_id_list, $id, $mode);
+			mcp_queue::approve_posts($action, $post_id_list, $id, $mode);
 		}
 	}
 
@@ -175,7 +175,7 @@ function mcp_topic_view($id, $mode, $action)
 		$topic_tracking_info = get_complete_topic_tracking($topic_info['forum_id'], $topic_id);
 	}
 
-	$has_unapproved_posts = false;
+	$has_unapproved_posts = $has_deleted_posts = false;
 
 	// Grab extensions
 	$extensions = $attachments = array();
@@ -223,6 +223,11 @@ function mcp_topic_view($id, $mode, $action)
 		if ($row['post_visibility'] == ITEM_UNAPPROVED)
 		{
 			$has_unapproved_posts = true;
+		}
+
+		if ($row['post_visibility'] == ITEM_DELETED)
+		{
+			$has_deleted_posts = true;
 		}
 
 		$post_unread = (isset($topic_tracking_info[$topic_id]) && $row['post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
@@ -305,7 +310,7 @@ function mcp_topic_view($id, $mode, $action)
 	{
 		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $posts_per_page, $start);
 	}
-	
+
 	$template->assign_vars(array(
 		'TOPIC_TITLE'		=> $topic_info['topic_title'],
 		'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
@@ -319,7 +324,7 @@ function mcp_topic_view($id, $mode, $action)
 
 		'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'POST_REPORTED'),
 		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
-		'DELETED_IMG'	=> $user->img('icon_topic_deleted', 'POST_DELETED'),
+		'DELETED_IMG'		=> $user->img('icon_topic_deleted', 'POST_DELETED'),
 		'INFO_IMG'			=> $user->img('icon_post_info', 'VIEW_INFO'),
 
 		'S_MCP_ACTION'		=> "$url&amp;i=$id&amp;mode=$mode&amp;action=$action&amp;start=$start",
@@ -328,6 +333,7 @@ function mcp_topic_view($id, $mode, $action)
 		'S_CAN_MERGE'		=> ($auth->acl_get('m_merge', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_DELETE'		=> ($auth->acl_get('m_delete', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_APPROVE'		=> ($has_unapproved_posts && $auth->acl_get('m_approve', $topic_info['forum_id'])) ? true : false,
+		'S_CAN_RESTORE'		=> ($has_deleted_posts && $auth->acl_get('m_approve', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_LOCK'		=> ($auth->acl_get('m_lock', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_SYNC'		=> $auth->acl_get('m_', $topic_info['forum_id']),

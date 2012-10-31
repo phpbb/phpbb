@@ -25,12 +25,12 @@ class mcp_queue
 	var $p_master;
 	var $u_action;
 
-	function mcp_queue(&$p_master)
+	public function mcp_queue(&$p_master)
 	{
 		$this->p_master = &$p_master;
 	}
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
 		global $auth, $db, $user, $template, $cache;
 		global $config, $phpbb_root_path, $phpEx, $action;
@@ -56,11 +56,11 @@ class mcp_queue
 				{
 					if (!empty($post_id_list))
 					{
-						$this->approve_posts($action, $post_id_list, 'queue', $mode);
+						self::approve_posts($action, $post_id_list, 'queue', $mode);
 					}
 					else if (!empty($topic_id_list))
 					{
-						$this->approve_topics($action, $topic_id_list, 'queue', $mode);
+						self::approve_topics($action, $topic_id_list, 'queue', $mode);
 					}
 					else
 					{
@@ -87,7 +87,7 @@ class mcp_queue
 
 					if (!empty($post_id_list))
 					{
-						$this->disapprove_posts($post_id_list, 'queue', $mode);
+						self::disapprove_posts($post_id_list, 'queue', $mode);
 					}
 					else
 					{
@@ -493,7 +493,7 @@ class mcp_queue
 	* @param $mode			string	Active module
 	* @return void
 	*/
-	function approve_posts($action, $post_id_list, $id, $mode)
+	static public function approve_posts($action, $post_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $config;
 		global $phpEx, $phpbb_root_path, $request;
@@ -686,7 +686,7 @@ class mcp_queue
 	* @param $mode			string	Active module
 	* @return void
 	*/
-	function approve_topics($action, $topic_id_list, $id, $mode)
+	static public function approve_topics($action, $topic_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $config;
 		global $phpEx, $phpbb_root_path, $request;
@@ -849,7 +849,7 @@ class mcp_queue
 	* @param $mode			string	Active module
 	* @return void
 	*/
-	function disapprove_posts($post_id_list, $id, $mode)
+	static public function disapprove_posts($post_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $config;
 		global $phpEx, $phpbb_root_path;
