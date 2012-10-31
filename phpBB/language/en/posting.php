@@ -184,6 +184,7 @@ $lang = array_merge($lang, array(
 	'POLL_VOTE_CHANGE'			=> 'Allow re-voting',
 	'POLL_VOTE_CHANGE_EXPLAIN'	=> 'If enabled users are able to change their vote.',
 	'POSTED_ATTACHMENTS'		=> 'Posted attachments',
+	'POST_ALREADY_SOFTDELETED'	=> 'The post is already soft deleted, you can only hard delete it.',
 	'POST_APPROVAL_NOTIFY'		=> 'You will be notified when your post has been approved.',
 	'POST_CONFIRMATION'			=> 'Confirmation of post',
 	'POST_CONFIRM_EXPLAIN'		=> 'To prevent automated posts the board requires you to enter a confirmation code. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.',
@@ -240,6 +241,7 @@ $lang = array_merge($lang, array(
 	'TOO_MANY_URLS'				=> 'Your message contains too many URLs. The maximum number of URLs allowed is %d.',
 	'TOO_MANY_USER_OPTIONS'		=> 'You cannot specify more options per user than existing poll options.',
 	'TOPIC_BUMPED'				=> 'Topic has been bumped successfully.',
+	'TOPIC_ALREADY_SOFTDELETED'	=> 'The topic is already soft deleted, you can only hard delete it.',
 
 	'UNAUTHORISED_BBCODE'		=> 'You cannot use certain BBCodes: %s.',
 	'UNGLOBALISE_EXPLAIN'		=> 'To switch this topic back from being global to a normal topic, you need to select the forum you wish this topic to be displayed.',

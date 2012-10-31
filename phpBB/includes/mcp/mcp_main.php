@@ -785,7 +785,21 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 
 		$user->add_lang('posting');
 
+		$only_softdeleted = false;
+		// If there are only soft deleted topics, we display a message why the option is not available
+		if ($auth->acl_get('m_delete', $forum_id) && $auth->acl_get('m_softdelete', $forum_id))
+		{
+			$sql = 'SELECT topic_id
+				FROM ' . TOPICS_TABLE . '
+				WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
+					AND topic_visibility <> ' . ITEM_DELETED;
+			$result = $db->sql_query_limit($sql, 1);
+			$only_softdeleted = (bool) $db->sql_fetchfield('topic_id');
+			$db->sql_freeresult($result);
+		}
+
 		$template->assign_vars(array(
+			'S_SOFTDELETED'			=> $only_softdeleted,
 			'S_TOPIC_MODE'			=> true,
 			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
 			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
@@ -997,8 +1011,21 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
 
 		$user->add_lang('posting');
 
+		$only_softdeleted = false;
+		// If there are only soft deleted posts, we display a message why the option is not available
+		if ($auth->acl_get('m_delete', $forum_id) && $auth->acl_get('m_softdelete', $forum_id))
+		{
+			$sql = 'SELECT post_id
+				FROM ' . POSTS_TABLE . '
+				WHERE ' . $db->sql_in_set('post_id', $post_ids) . '
+					AND post_visibility <> ' . ITEM_DELETED;
+			$result = $db->sql_query_limit($sql, 1);
+			$only_softdeleted = (bool) $db->sql_fetchfield('post_id');
+			$db->sql_freeresult($result);
+		}
+
 		$template->assign_vars(array(
-			'S_TOPIC_MODE'			=> true,
+			'S_SOFTDELETED'			=> $only_softdeleted,
 			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
 			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
 			'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),

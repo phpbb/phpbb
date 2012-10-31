@@ -1587,6 +1587,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 			global $template;
 
 			$template->assign_vars(array(
+				'S_SOFTDELETED'			=> $post_data['post_visibility'] == ITEM_DELETED,
 				'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id) || $auth->acl_get('f_delete', $forum_id),
 				'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id) || $auth->acl_get('f_softdelete', $forum_id),
 				'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),

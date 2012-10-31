@@ -7,26 +7,32 @@
 	<h2>{MESSAGE_TITLE}</h2>
 	<p>{MESSAGE_TEXT}</p>
 
-	<!-- IF S_DELETE_REASON or (S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE) -->
+	<!-- IF S_SOFTDELETED and S_TOPIC_MODE and S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
+		<p>{L_TOPIC_ALREADY_SOFTDELETED}</p>
+	<!-- ELSEIF S_SOFTDELETED and S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
+		<p>{L_POST_ALREADY_SOFTDELETED}</p>
+	<!-- ENDIF -->
+
+	<!-- IF not S_SOFTDELETED and (S_DELETE_REASON or (S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE)) -->
 	<fieldset class="fields1">
 		<!-- IF S_TOPIC_MODE and S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
 			<dl>
 				<dt><label for="soft_delete">{L_DELETE_TOPIC_SOFT}:</label></dt>
 				<dd><label for="soft_delete"><input id="soft_delete" name="soft_delete" type="checkbox" checked="checked" value="1" /> {L_DELETE_TOPIC_SOFT_EXP}</label></dd>
 			</dl>
-		<!-- ELSE IF S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
+		<!-- ELSEIF S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
 			<dl>
 				<dt><label for="soft_delete">{L_DELETE_POST_SOFT}:</label></dt>
 				<dd><label for="soft_delete"><input id="soft_delete" name="soft_delete" type="checkbox" checked="checked" value="1" /> {L_DELETE_POST_SOFT_EXP}</label></dd>
 			</dl>
 		<!-- ENDIF -->
 
-			<!-- IF S_DELETE_REASON -->
+		<!-- IF S_DELETE_REASON -->
 			<dl>
 				<dt><label for="delete_reason">{L_DELETE_POST_REASON}:</label></dt>
 				<dd><input type="text" name="delete_reason" id="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" /></dd>
 			</dl>
-			<!-- ENDIF -->
+		<!-- ENDIF -->
 	</fieldset>
 	<!-- ENDIF -->
 
