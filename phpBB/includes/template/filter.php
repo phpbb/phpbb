@@ -89,7 +89,7 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Name of the style that the template being compiled and/or rendered
-        * belongs to.
+	* belongs to.
 	*
 	* This is used by hooks implementation to invoke style-specific
 	* template hooks.
