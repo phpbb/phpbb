@@ -806,7 +806,10 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 			'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
 		));
 
-		confirm_box(false, (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS', $s_hidden_fields, 'posting_delete_post_body.html');
+		$l_confirm = (sizeof($post_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS';
+		$l_confirm .= ($only_softdeleted) ? '_PERMANENTLY' : '';
+
+		confirm_box(false, $l_confirm, $s_hidden_fields, 'confirm_delete_body.html');
 	}
 
 	$topic_id = request_var('t', 0);
@@ -1031,7 +1034,10 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
 			'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
 		));
 
-		confirm_box(false, (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS', $s_hidden_fields, 'posting_delete_post_body.html');
+		$l_confirm = (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS';
+		$l_confirm .= ($only_softdeleted) ? '_PERMANENTLY' : '';
+
+		confirm_box(false, $l_confirm, $s_hidden_fields, 'confirm_delete_body.html');
 	}
 
 	$redirect = request_var('redirect', "index.$phpEx");

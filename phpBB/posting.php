@@ -1593,7 +1593,9 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 				'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
 			));
 
-			confirm_box(false, 'DELETE_POST', $s_hidden_fields, 'posting_delete_post_body.html');
+			$l_confirm = 'DELETE_POST' . (($post_data['post_visibility'] == ITEM_DELETED) ? '_PERMANENTLY' : '');
+
+			confirm_box(false, $l_confirm, $s_hidden_fields, 'confirm_delete_body.html');
 		}
 	}
 
