@@ -35,14 +35,14 @@ $submit		= (isset($_POST['post'])) ? true : false;
 $preview	= (isset($_POST['preview'])) ? true : false;
 $save		= (isset($_POST['save'])) ? true : false;
 $load		= (isset($_POST['load'])) ? true : false;
-$delete		= (isset($_POST['delete'])) ? true : false;
+$confirm	= (isset($_POST['confirm'])) ? true : false;
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
 $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load || $preview);
 $mode		= request_var('mode', '');
 
 // If the user is not allowed to delete the post, we try to soft delete it, so we overwrite the mode here.
-if ($mode == 'delete' && (($auth->acl_get('m_softdelete', $forum_id) && $request->is_set_post('soft_delete')) || !$auth->acl_get('m_delete', $forum_id)))
+if ($mode == 'delete' && (($confirm && !$request->is_set_post('delete_permanent')) || !$auth->acl_get('m_delete', $forum_id)))
 {
 	$mode = 'soft_delete';
 }
@@ -1537,11 +1537,11 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 	// If moderator removing post or user itself removing post, present a confirmation screen
 	if ($auth->acl_get("m_$perm_check", $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])))
 	{
-		$s_hidden_fields = build_hidden_fields(array(
+		$s_hidden_fields = array(
 			'p'		=> $post_id,
 			'f'		=> $forum_id,
 			'mode'	=> ($is_soft) ? 'soft_delete' : 'delete',
-		));
+		);
 
 		if (confirm_box(true))
 		{
@@ -1593,9 +1593,18 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 				'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
 			));
 
-			$l_confirm = 'DELETE_POST' . (($post_data['post_visibility'] == ITEM_DELETED) ? '_PERMANENTLY' : '');
+			$l_confirm = 'DELETE_POST';
+			if ($post_data['post_visibility'] == ITEM_DELETED)
+			{
+				$l_confirm .= '_PERMANENTLY';
+				$s_hidden_fields['delete_permanent'] = '1';
+			}
+			else if (!$auth->acl_get('m_softdelete', $forum_id) && !$auth->acl_get('f_softdelete', $forum_id))
+			{
+				$s_hidden_fields['delete_permanent'] = '1';
+			}
 
-			confirm_box(false, $l_confirm, $s_hidden_fields, 'confirm_delete_body.html');
+			confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 		}
 	}
 

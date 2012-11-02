@@ -1467,7 +1467,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 	}
 	else if (!$is_soft)
 	{
-		if (!delete_posts('post_id', array($post_id), false, false))
+		if (!delete_posts('post_id', array($post_id), false, false, false))
 		{
 			// Try to delete topic, we may had an previous error causing inconsistency
 			if ($post_mode == 'delete_topic')
@@ -1625,8 +1625,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			}
 			else if ($data['post_visibility'] == ITEM_DELETED)
 			{
-				$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_deleted = forum_posts_deleted - 1';
-				$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_deleted = topic_posts_deleted - 1';
+				$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_softdeleted = forum_posts_softdeleted - 1';
+				$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_softdeleted = topic_posts_softdeleted - 1';
 			}
 		}
 
@@ -2030,7 +2030,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_last_post_id'		=> $data['post_id'],
 				'topic_last_post_time'		=> $current_time,
 				'topic_last_poster_id'		=> $sql_data[POSTS_TABLE]['sql']['poster_id'],
-				'topic_last_poster_name'	=> $sql_data[POSTS_TABLE]['sql']['post_username'],
+				'topic_last_poster_name'	=> ($user->data['user_id'] == ANONYMOUS) ? $sql_data[POSTS_TABLE]['sql']['post_username'] : $user->data['username'],
 				'topic_last_poster_colour'	=> $user->data['user_colour'],
 				'topic_last_post_subject'	=> (string) $subject,
 			);

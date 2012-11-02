@@ -537,12 +537,12 @@ class phpbb_content_visibility
 	*/
 	static public function remove_post_from_statistic($data, &$sql_data)
 	{
-		$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts = topic_posts - 1';
-		$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts = forum_posts - 1';
+		$sql_data[TOPICS_TABLE] = ((!empty($sql_data[TOPICS_TABLE])) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts = topic_posts - 1';
+		$sql_data[FORUMS_TABLE] = ((!empty($sql_data[FORUMS_TABLE])) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts = forum_posts - 1';
 
 		if ($data['post_postcount'])
 		{
-			$sql_data[USERS_TABLE] = (($sql_data[USERS_TABLE]) ? $sql_data[USERS_TABLE] . ', ' : '') . 'user_posts = user_posts - 1';
+			$sql_data[USERS_TABLE] = ((!empty($sql_data[USERS_TABLE])) ? $sql_data[USERS_TABLE] . ', ' : '') . 'user_posts = user_posts - 1';
 		}
 
 		set_config_count('num_posts', -1, true);

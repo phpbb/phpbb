@@ -881,7 +881,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		sync('forum', 'forum_id', $forum_ids, true, true);
 	}
 
-	if ($approved_posts)
+	if ($approved_posts && $post_count_sync)
 	{
 		set_config_count('num_posts', $approved_posts * (-1), true);
 	}
