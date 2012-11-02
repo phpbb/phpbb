@@ -83,7 +83,7 @@ class phpbb_template
 
 	/**
 	* Name of the style that the template being compiled and/or rendered
-        * belongs to.
+	* belongs to.
 	*
 	* This is used by hooks implementation to invoke style-specific
 	* template hooks.
@@ -115,7 +115,7 @@ class phpbb_template
 	/**
 	* Sets the template filenames for handles.
 	*
-	* @param array $filname_array Should be a hash of handle => filename pairs.
+	* @param array $filename_array Should be a hash of handle => filename pairs.
 	*/
 	public function set_filenames(array $filename_array)
 	{
