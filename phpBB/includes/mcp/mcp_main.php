@@ -112,7 +112,7 @@ class mcp_main
 				// which permission we will check later on. So if it is manipulated, we will still catch it later on.
 				$forum_id = request_var('f', 0);
 				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
-				$soft_delete = (($auth->acl_get('m_softdelete', $forum_id) && $request->is_set_post('soft_delete')) || !$auth->acl_get('m_delete', $forum_id)) ? true : false;
+				$soft_delete = (($request->is_set_post('confirm') && !$request->is_set_post('delete_permanent')) || !$auth->acl_get('m_delete', $forum_id)) ? true : false;
 
 				if (!sizeof($topic_ids))
 				{
@@ -129,7 +129,7 @@ class mcp_main
 				// which permission we will check later on. So if it is manipulated, we will still catch it later on.
 				$forum_id = request_var('f', 0);
 				$post_ids = (!$quickmod) ? request_var('post_id_list', array(0)) : array(request_var('p', 0));
-				$soft_delete = (($auth->acl_get('m_softdelete', $forum_id) && $request->is_set_post('soft_delete')) || !$auth->acl_get('m_delete', $forum_id)) ? true : false;
+				$soft_delete = (($request->is_set_post('confirm') && !$request->is_set_post('delete_permanent')) || !$auth->acl_get('m_delete', $forum_id)) ? true : false;
 
 				if (!sizeof($post_ids))
 				{
@@ -736,12 +736,12 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
 	$forum_id = request_var('f', 0);
 
-	$s_hidden_fields = build_hidden_fields(array(
+	$s_hidden_fields = array(
 		'topic_id_list'	=> $topic_ids,
 		'f'				=> $forum_id,
 		'action'		=> 'delete_topic',
 		'redirect'		=> $redirect,
-	));
+	);
 	$success_msg = '';
 
 	if (confirm_box(true))
@@ -807,9 +807,17 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 		));
 
 		$l_confirm = (sizeof($post_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS';
-		$l_confirm .= ($only_softdeleted) ? '_PERMANENTLY' : '';
+		if ($only_softdeleted)
+		{
+			$l_confirm .= '_PERMANENTLY';
+			$s_hidden_fields['delete_permanent'] = '1';
+		}
+		else if (!$auth->acl_get('m_softdelete', $forum_id))
+		{
+			$s_hidden_fields['delete_permanent'] = '1';
+		}
 
-		confirm_box(false, $l_confirm, $s_hidden_fields, 'confirm_delete_body.html');
+		confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 	}
 
 	$topic_id = request_var('t', 0);
@@ -856,11 +864,11 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
 	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
 	$forum_id = request_var('f', 0);
 
-	$s_hidden_fields = build_hidden_fields(array(
+	$s_hidden_fields = array(
 		'post_id_list'	=> $post_ids,
 		'f'				=> $forum_id,
 		'action'		=> 'delete_post',
-		'redirect'		=> $redirect)
+		'redirect'		=> $redirect,
 	);
 	$success_msg = '';
 
@@ -1035,9 +1043,17 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
 		));
 
 		$l_confirm = (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS';
-		$l_confirm .= ($only_softdeleted) ? '_PERMANENTLY' : '';
+		if ($only_softdeleted)
+		{
+			$l_confirm .= '_PERMANENTLY';
+			$s_hidden_fields['delete_permanent'] = '1';
+		}
+		else if (!$auth->acl_get('m_softdelete', $forum_id))
+		{
+			$s_hidden_fields['delete_permanent'] = '1';
+		}
 
-		confirm_box(false, $l_confirm, $s_hidden_fields, 'confirm_delete_body.html');
+		confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 	}
 
 	$redirect = request_var('redirect', "index.$phpEx");
