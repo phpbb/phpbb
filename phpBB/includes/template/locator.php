@@ -66,7 +66,7 @@ interface phpbb_template_locator
 	* returns actually exists, it is faster than get_source_file_for_handle.
 	*
 	* Use get_source_file_for_handle to obtain the actual path that is
-	* guaranteed to exist (which might come from the parent style 
+	* guaranteed to exist (which might come from the parent style
 	* directory if primary style has parent styles).
 	*
 	* This function will trigger an error if the handle was never

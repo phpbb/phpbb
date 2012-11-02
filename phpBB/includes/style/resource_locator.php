@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 
 
 /**
-* Style resource locator. 
+* Style resource locator.
 * Maintains mapping from template handles to source template file paths.
 * Locates style files: resources (such as .js and .css files) and templates.
 *
@@ -97,7 +97,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* Sets the template filenames for handles. $filename_array
 	* should be a hash of handle => filename pairs.
 	*
-	* @param array $filname_array Should be a hash of handle => filename pairs.
+	* @param array $filename_array Should be a hash of handle => filename pairs.
 	*/
 	public function set_filenames(array $filename_array)
 	{
@@ -150,7 +150,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* returns actually exists, it is faster than get_source_file_for_handle.
 	*
 	* Use get_source_file_for_handle to obtain the actual path that is
-	* guaranteed to exist (which might come from the parent style 
+	* guaranteed to exist (which might come from the parent style
 	* directory if primary style has parent styles).
 	*
 	* This function will trigger an error if the handle was never
@@ -236,6 +236,39 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 		}
 
 		return ($find_all) ? $found_all : $source_file;
+	}
+
+	/**
+	* Locate files in the template tree
+	* This searches for the first file it finds in any section (primary phpBB styles, any installed extensions)
+	* for the most specific (e.g. styles/prosilver_inheriting_style/template/test > styles/prosilver/template/test > styles/all/template/test)
+	* template file and returns an array of files
+	*
+	* @param string $source_file File name to look for (e.g. test.html)
+	* @return array array of strings (file paths)
+	*/
+	public function locate_source_files($source_file)
+	{
+		$files = array();
+
+		// Go through root directories
+		foreach ($this->roots as $root_key => $root_paths)
+		{
+			foreach ($root_paths as $root)
+			{
+				$file = $root . '/template/' . $source_file;
+
+				if (file_exists($file))
+				{
+					$files[] = $file;
+
+					// Find the first source file in this root path, ignore ones lower in the tree
+					break;
+				}
+			}
+		}
+
+		return $files;
 	}
 
 	/**
