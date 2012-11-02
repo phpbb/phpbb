@@ -5484,35 +5484,34 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 		return new phpbb_cache_container();
 	}
 
-	// When the board is first installed, the container is initiall created on
-	// the send_statistics step in the ACP. In that case, the phpbb_root_path
-	// is "./../". This becomes forever stored in the cached container as the
-	// core.root_path property, until the container is deleted and recached
-	// We need to ensure that this does not happen.
-	//
-	// However, if we change the root path here, it will try to create a
-	// ./adm/cache/container.php later on because the root path is wrong
-	// We need to store the current $phpbb_root_path for use later and then we
-	// can change it for the controller
-	$real_root_path = $phpbb_root_path;
+	// When the board is first installed, the container is initially created
+	// during the send_statistics step in the ACP. At that point, the path
+	// relative to the board root is "./../". This becomes forever stored in
+	// the cached container as the core.root_path property, until the
+	// container is deleted and recached. We need to ensure that this does
+	// not happen.
 	if (defined('ADMIN_START'))
 	{
 		// Remove the first instance of ../ in the root path
-		$phpbb_root_path = preg_replace('/..\//', '', $phpbb_root_path, 1);
+		$phpbb_root_path = preg_replace('/\.\.\//', '', $phpbb_root_path, 1);
 	}
 
-	// If we don't have the cached container class, we make it now
-	// First, we create the temporary container so we can access the
-	// extension_manager
-	$tmp_container = phpbb_create_container($extensions, $phpbb_root_path, $phpEx);
+	// We must use an absolute path in the container because we cannot
+	// change the value at runtime when accessing it in different
+	// directory levels.
+	$phpbb_absolute_path = phpbb_realpath($phpbb_root_path);
+
+	// Create a temporary container for access to the ext.manager service
+	$tmp_container = phpbb_create_container($extensions, $phpbb_absolute_path, $phpEx);
 	$tmp_container->compile();
 
-	// Now we pass the enabled extension paths into the ext compiler extension
+	// Now pass the enabled extension paths into the ext compiler extension
 	$extensions[] = new phpbb_di_extension_ext($tmp_container->get('ext.manager')->all_enabled());
 
-	// And create our final container
-	$container = phpbb_create_container($extensions, $phpbb_root_path, $phpEx);
+	// Create the final container to be compiled and cached
+	$container = phpbb_create_container($extensions, $phpbb_absolute_path, $phpEx);
 
+	// Compile the container
 	foreach ($passes as $pass)
 	{
 		$container->addCompilerPass($pass);
@@ -5526,8 +5525,7 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 		'base_class'	=> 'Symfony\\Component\\DependencyInjection\\ContainerBuilder',
 	));
 
-	// Use the $real_root_path in case $phpbb_root_path was changed above
-	$file = file_put_contents("{$real_root_path}cache/container.$phpEx", $cached_container_dump);
+	$file = file_put_contents("{$phpbb_absolute_path}cache/container.{$phpEx}", $cached_container_dump);
 
 	return $container;
 }
