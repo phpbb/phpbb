@@ -130,7 +130,10 @@ services:
             - @config
             - @user
             - @style.resource_locator
-            - @style.path_provider_ext
+            - @template_context
+
+    template_context:
+        class: phpbb_template_context
 
     user:
         class: phpbb_user
