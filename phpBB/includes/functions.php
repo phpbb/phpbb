@@ -5425,10 +5425,10 @@ function phpbb_to_numeric($input)
 *
 * @param array $extensions Array of Container extension objects
 * @param string $phpbb_root_path Root path
-* @param string $phpEx PHP Extension
+* @param string $php_ext PHP Extension
 * @return ContainerBuilder object
 */
-function phpbb_create_container(array $extensions, $phpbb_root_path, $phpEx)
+function phpbb_create_container(array $extensions, $phpbb_root_path, $php_ext)
 {
 	$container = new ContainerBuilder();
 
@@ -5439,7 +5439,7 @@ function phpbb_create_container(array $extensions, $phpbb_root_path, $phpEx)
 	}
 
 	$container->setParameter('core.root_path', $phpbb_root_path);
-	$container->setParameter('core.php_ext', $phpEx);
+	$container->setParameter('core.php_ext', $php_ext);
 
 	return $container;
 }
@@ -5448,10 +5448,10 @@ function phpbb_create_container(array $extensions, $phpbb_root_path, $phpEx)
 * Create installer container
 *
 * @param string $phpbb_root_path Root path
-* @param string $phpEx PHP Extension
+* @param string $php_ext PHP Extension
 * @return ContainerBuilder object
 */
-function phpbb_create_install_container($phpbb_root_path, $phpEx)
+function phpbb_create_install_container($phpbb_root_path, $php_ext)
 {
 	// We have to do it like this instead of with extensions
 	$container = new ContainerBuilder();
@@ -5459,7 +5459,7 @@ function phpbb_create_install_container($phpbb_root_path, $phpEx)
 	$loader->load('services.yml');
 
 	$container->setParameter('core.root_path', $phpbb_root_path);
-	$container->setParameter('core.php_ext', $phpEx);
+	$container->setParameter('core.php_ext', $php_ext);
 
 	$container->setAlias('cache.driver', 'cache.driver.install');
 
@@ -5472,44 +5472,32 @@ function phpbb_create_install_container($phpbb_root_path, $phpEx)
 * @param array $extensions Array of Container extension objects
 * @param array $passes Array of Compiler Pass objects
 * @param string $phpbb_root_path Root path
-* @param string $phpEx PHP Extension
+* @param string $php_ext PHP Extension
 * @return ContainerBuilder object (compiled)
 */
-function phpbb_create_compiled_container(array $extensions, array $passes, $phpbb_root_path, $phpEx)
+function phpbb_create_compiled_container(array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
 	// Check for our cached container; if it exists, use it
-	if (file_exists("{$phpbb_root_path}cache/container.$phpEx"))
+	if (file_exists("{$phpbb_root_path}cache/container.$php_ext"))
 	{
-		require("{$phpbb_root_path}cache/container.$phpEx");
+		require("{$phpbb_root_path}cache/container.$php_ext");
 		return new phpbb_cache_container();
-	}
-
-	// When the board is first installed, the container is initially created
-	// during the send_statistics step in the ACP. At that point, the path
-	// relative to the board root is "./../". This becomes forever stored in
-	// the cached container as the core.root_path property, until the
-	// container is deleted and recached. We need to ensure that this does
-	// not happen.
-	if (defined('ADMIN_START'))
-	{
-		// Remove the first instance of ../ in the root path
-		$phpbb_root_path = preg_replace('/\.\.\//', '', $phpbb_root_path, 1);
 	}
 
 	// We must use an absolute path in the container because we cannot
 	// change the value at runtime when accessing it in different
 	// directory levels.
-	$phpbb_absolute_path = phpbb_realpath($phpbb_root_path);
+	$phpbb_absolute_path = phpbb_realpath($phpbb_root_path) . '/';
 
 	// Create a temporary container for access to the ext.manager service
-	$tmp_container = phpbb_create_container($extensions, $phpbb_absolute_path, $phpEx);
+	$tmp_container = phpbb_create_container($extensions, $phpbb_absolute_path, $php_ext);
 	$tmp_container->compile();
 
 	// Now pass the enabled extension paths into the ext compiler extension
 	$extensions[] = new phpbb_di_extension_ext($tmp_container->get('ext.manager')->all_enabled());
 
 	// Create the final container to be compiled and cached
-	$container = phpbb_create_container($extensions, $phpbb_absolute_path, $phpEx);
+	$container = phpbb_create_container($extensions, $phpbb_absolute_path, $php_ext);
 
 	// Compile the container
 	foreach ($passes as $pass)
@@ -5525,7 +5513,7 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 		'base_class'	=> 'Symfony\\Component\\DependencyInjection\\ContainerBuilder',
 	));
 
-	$file = file_put_contents("{$phpbb_absolute_path}cache/container.{$phpEx}", $cached_container_dump);
+	$file = file_put_contents("{$phpbb_absolute_path}cache/container.{$php_ext}", $cached_container_dump);
 
 	return $container;
 }
