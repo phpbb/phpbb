@@ -185,7 +185,7 @@ class phpbb_extension_manager
 
 		if ($this->cache)
 		{
-			$this->cache->destroy($this->cache_name);
+			$this->cache->purge();
 		}
 
 		return !$active;
@@ -242,7 +242,7 @@ class phpbb_extension_manager
 
 			if ($this->cache)
 			{
-				$this->cache->destroy($this->cache_name);
+				$this->cache->purge();
 			}
 
 			return true;
@@ -262,7 +262,7 @@ class phpbb_extension_manager
 
 		if ($this->cache)
 		{
-			$this->cache->destroy($this->cache_name);
+			$this->cache->purge();
 		}
 
 		return false;
@@ -325,7 +325,7 @@ class phpbb_extension_manager
 
 			if ($this->cache)
 			{
-				$this->cache->destroy($this->cache_name);
+				$this->cache->purge();
 			}
 
 			return true;
@@ -339,7 +339,7 @@ class phpbb_extension_manager
 
 		if ($this->cache)
 		{
-			$this->cache->destroy($this->cache_name);
+			$this->cache->purge();
 		}
 
 		return false;
