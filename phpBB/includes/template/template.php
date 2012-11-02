@@ -86,8 +86,9 @@ class phpbb_template
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
 	* @param phpbb_template_locator $locator template locator
+	* @param phpbb_template_context $context template context
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_locator $locator)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_locator $locator, phpbb_template_context $context)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -95,7 +96,7 @@ class phpbb_template
 		$this->user = $user;
 		$this->locator = $locator;
 		$this->template_path = $this->locator->template_path;
-		$this->context = new phpbb_template_context();
+		$this->context = $context;
 	}
 
 	/**
