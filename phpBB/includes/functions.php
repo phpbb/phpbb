@@ -1297,6 +1297,28 @@ function tz_select($default = '', $truncate = false)
 	return $tz_select;
 }
 
+/**
+* Updates rows in given table from a set of values to a new value.
+* If this results in rows violating uniqueness constraints, the duplicate
+* rows are eliminated.
+*
+* @param dbal $db Database object
+* @param string $table Table on which to perform the update
+* @param string $column Column whose values to change
+* @param array $from_values An array of values that should be changed
+* @param int $to_value The new value
+* @return null
+*/
+function phpbb_update_rows_avoiding_duplicates($db, $table, $column, $from_values, $to_value)
+{
+	$db->sql_return_on_error(true);
+	$condition = $db->sql_in_set($column, $from_values);
+	$db->sql_query('UPDATE ' . $table . ' SET ' . $column . ' = ' . (int) $to_value. ' WHERE ' . $condition);
+	$db->sql_return_on_error(false);
+
+	$db->sql_query('DELETE FROM ' . $table . ' WHERE ' . $condition);
+}
+
 // Functions handling topic/post tracking/marking
 
 /**
@@ -3355,7 +3377,7 @@ function parse_cfg_file($filename, $lines = false)
 
 		$parsed_items[$key] = $value;
 	}
-	
+
 	if (isset($parsed_items['inherit_from']) && isset($parsed_items['name']) && $parsed_items['inherit_from'] == $parsed_items['name'])
 	{
 		unset($parsed_items['inherit_from']);
