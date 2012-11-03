@@ -322,6 +322,12 @@ if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 // Handle delete mode...
 if ($mode == 'delete' || $mode == 'soft_delete')
 {
+	if ($mode == 'soft_delete' && $post_data['post_visibility'] == ITEM_DELETED)
+	{
+		$user->setup('posting');
+		trigger_error('NO_POST');
+	}
+
 	$soft_delete_reason = ($mode == 'soft_delete' && $auth->acl_get('m_softdelete', $forum_id)) ? utf8_normalize_nfc(request_var('delete_reason', '', true)) : '';
 	handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete'), $soft_delete_reason);
 	return;
@@ -1110,6 +1116,14 @@ if ($submit || $preview || $refresh)
 				$captcha->reset();
 			}
 
+			// Handle delete mode...
+			if ($request->is_set_post('delete') || $request->is_set_post('delete_permanent'))
+			{
+				$soft_delete_reason = (!$request->is_set_post('delete_permanent') && $auth->acl_get('m_softdelete', $forum_id)) ? utf8_normalize_nfc(request_var('delete_reason', '', true)) : '';
+				handle_post_delete($forum_id, $topic_id, $post_id, $post_data, !$request->is_set_post('delete_permanent'), $soft_delete_reason);
+				return;
+			}
+
 			// Check the permissions for post approval. Moderators are not affected.
 			if ((!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
 			{
@@ -1430,8 +1444,9 @@ $template->assign_vars(array(
 	'S_LOCK_TOPIC_CHECKED'		=> ($lock_topic_checked) ? ' checked="checked"' : '',
 	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
-	'S_SOFT_DELETE_CHECKED'		=> ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? ' checked="checked"' : '',
-	'S_SOFT_DELETE_ALLOWED'		=> ($mode == 'edit' && phpbb_content_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
+	'S_SOFTDELETE_CHECKED'		=> ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? ' checked="checked"' : '',
+	'S_DELETE_REASON'			=> ($mode == 'edit' && $auth->acl_get('m_softdelete', $forum_id)) ? true : false,
+	'S_SOFTDELETE_ALLOWED'		=> ($mode == 'edit' && phpbb_content_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
 	'S_RESTORE_ALLOWED'			=> $auth->acl_get('m_approve', $forum_id),
 	'S_IS_DELETED'				=> ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? true : false,
 	'S_LINKS_ALLOWED'			=> $url_status,
@@ -1584,10 +1599,11 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 		}
 		else
 		{
-			global $template;
+			global $template, $request;
 
 			$template->assign_vars(array(
 				'S_SOFTDELETED'			=> $post_data['post_visibility'] == ITEM_DELETED,
+				'S_CHECKED_PERMANENT'	=> $request->is_set_post('delete_permanent') ? ' checked="checked"' : '',
 				'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id) || $auth->acl_get('f_delete', $forum_id),
 				'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id) || $auth->acl_get('f_softdelete', $forum_id),
 				'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),

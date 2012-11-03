@@ -73,21 +73,6 @@
 		<!-- ENDIF -->
 
 		<div class="clear"></div>
-
-	<!-- ENDIF -->
-
-	<!-- IF S_DELETE_ALLOWED -->
-	<dl>
-		<dt><label for="delete">{L_DELETE_POST}:</label></dt>
-		<dd><label for="delete"><input type="checkbox" name="delete" id="delete" /> {L_DELETE_POST_WARN}</label></dd>
-	</dl>
-	<!-- ENDIF -->
-
-	<!-- IF (S_SOFT_DELETE_ALLOWED and not S_IS_DELETED) or (S_RESTORE_ALLOWED and S_IS_DELETED) -->
-	<dl>
-		<dt><label for="soft_delete">{L_SOFT_DELETE_POST}:</label></dt>
-		<dd><label for="soft_delete"><input type="checkbox" name="soft_delete"{S_SOFT_DELETE_CHECKED} id="soft_delete" /> {L_SOFT_DELETE_POST_EXPLAIN}</label></dd>
-	</dl>
 	<!-- ENDIF -->
 
 	<!-- IF S_SHOW_TOPIC_ICONS or S_SHOW_PM_ICONS -->
@@ -259,6 +244,17 @@
 				<dd><label for="topic_time_limit"><input type="text" name="topic_time_limit" id="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" class="inputbox autowidth" /> {L_DAYS}</label></dd>
 				<dd>{L_STICK_TOPIC_FOR_EXPLAIN}</dd>
 			</dl>
+			<!-- ENDIF -->
+
+			<!-- IF S_SOFTDELETE_ALLOWED or S_DELETE_ALLOWED -->
+				<hr class="dashed" />
+				<dl>
+					<dt><label for="delete">{L_DELETE_POST}:</label></dt>
+					<dd><label for="delete"><input type="checkbox" name="delete" id="delete" {S_SOFTDELETE_CHECKED} /> {L_DELETE_POST_WARN}</label></dd>
+					<!-- IF S_DELETE_ALLOWED and S_SOFTDELETE_ALLOWED -->
+						<dd><label for="delete_permanent"><input type="checkbox" name="delete_permanent" id="delete_permanent" /> {L_DELETE_POST_PERMANENTLY}</label></dd>
+					<!-- ENDIF -->
+				</dl>
 			<!-- ENDIF -->
 
 			<!-- IF S_EDIT_REASON -->
