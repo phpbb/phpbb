@@ -531,7 +531,7 @@ $quickmod_array = array(
 
 	'lock'					=> array('LOCK_TOPIC', ($topic_data['topic_status'] == ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'] && $topic_data['topic_status'] == ITEM_UNLOCKED))),
 	'unlock'				=> array('UNLOCK_TOPIC', ($topic_data['topic_status'] != ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'] && $topic_data['topic_status'] == ITEM_UNLOCKED))),
-	'delete_topic'		=> array('DELETE_TOPIC', $auth->acl_get('m_delete', $forum_id)),
+	'delete_topic'		=> array('DELETE_TOPIC', ($auth->acl_get('m_delete', $forum_id) || (($topic_data['topic_visibility'] != ITEM_DELETED) && $auth->acl_get('m_softdelete', $forum_id)))),
 	'restore_topic'		=> array('RESTORE_TOPIC', (($topic_data['topic_visibility'] == ITEM_DELETED) && $auth->acl_get('m_approve', $forum_id))),
 	'move'					=> array('MOVE_TOPIC', $auth->acl_get('m_move', $forum_id) && $topic_data['topic_status'] != ITEM_MOVED),
 	'split'					=> array('SPLIT_TOPIC', $auth->acl_get('m_split', $forum_id)),
@@ -1591,9 +1591,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])
 	)));
 
-	$delete_allowed = ($user->data['is_registered'] && ($auth->acl_get('m_delete', $forum_id) || (
+	$delete_allowed = ($user->data['is_registered'] && (($auth->acl_get('m_delete', $forum_id) || ($auth->acl_get('m_softdelete', $forum_id) && $row['post_visibility'] != ITEM_DELETED)) || (
 		$user->data['user_id'] == $poster_id &&
-		$auth->acl_get('f_delete', $forum_id) &&
+		($auth->acl_get('f_delete', $forum_id) || ($auth->acl_get('f_softdelete', $forum_id) && $row['post_visibility'] != ITEM_DELETED)) &&
 		$topic_data['topic_last_post_id'] == $row['post_id'] &&
 		($row['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time']) &&
 		// we do not want to allow removal of the last post if a moderator locked it!
