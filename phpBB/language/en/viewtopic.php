@@ -90,7 +90,7 @@ $lang = array_merge($lang, array(
 	'POLL_ENDED_AT'			=> 'Poll ended at %s',
 	'POLL_RUN_TILL'			=> 'Poll runs till %s',
 	'POLL_VOTED_OPTION'		=> 'You voted for this option',
-	'POST_DELETED_RESTORE'  => 'This post has been deleted.  It can be restored.',
+	'POST_DELETED_RESTORE'	=> 'This post has been deleted. It can be restored.',
 	'PRINT_TOPIC'			=> 'Print view',
 
 	'QUICK_MOD'				=> 'Quick-mod tools',
