@@ -8,5 +8,8 @@
 	},
 	"require-dev": {
 		"fabpot/goutte": "1.0.x-dev"
+	},
+	"scripts": {
+		"post-install-cmd": "mkdir ext"
 	}
 }
