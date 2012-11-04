@@ -1103,6 +1103,13 @@ class auth_admin extends phpbb_auth
 		global $template, $user, $phpbb_admin_path, $phpEx;
 
 		@reset($category_array);
+		
+		// move the actions tab to the front we will leave the others alone
+		if (isset($category_array['actions']))
+		{
+			$category_array = array('actions' => $category_array['actions']) + $category_array;
+		}
+		
 		while (list($cat, $cat_array) = each($category_array))
 		{
 			$template->assign_block_vars($tpl_cat, array(
