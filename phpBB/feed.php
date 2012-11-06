@@ -1,9 +1,8 @@
 <?php
 /**
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2009 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 * Idea and original RSS Feed 2.0 MOD (Version 1.0.8/9) by leviatan21
 * Original MOD: http://www.phpbb.com/community/viewtopic.php?f=69&t=1214645
@@ -127,7 +126,7 @@ if (!$feed_updated_time)
 // Some default assignments
 // FEED_IMAGE is not used (atom)
 $global_vars = array_merge($global_vars, array(
-	'FEED_IMAGE'			=> ($user->img('site_logo', '', false, '', 'src')) ? $board_url . '/' . substr($user->img('site_logo', '', false, '', 'src'), strlen($phpbb_root_path)) : '',
+	'FEED_IMAGE'			=> '',
 	'SELF_LINK'				=> feed_append_sid('/feed.' . $phpEx, $params),
 	'FEED_LINK'				=> $board_url . '/index.' . $phpEx,
 	'FEED_TITLE'			=> $config['sitename'],
@@ -172,6 +171,12 @@ if (defined('DEBUG_EXTRA') && request_var('explain', 0) && $auth->acl_get('a_'))
 
 header("Content-Type: application/atom+xml; charset=UTF-8");
 header("Last-Modified: " . gmdate('D, d M Y H:i:s', $feed_updated_time) . ' GMT');
+
+if (!empty($user->data['is_bot']))
+{
+	// Let reverse proxies know we detected a bot.
+	header('X-PHPBB-IS-BOT: yes');
+}
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 echo '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="' . $global_vars['FEED_LANG'] . '">' . "\n";
@@ -249,16 +254,8 @@ function feed_format_date($time)
 	{
 		global $user;
 
-		$zone_offset = (int) $user->timezone + (int) $user->dst;
-
-		$sign = ($zone_offset < 0) ? '-' : '+';
-		$time_offset = abs($zone_offset);
-
-		$offset_seconds	= $time_offset % 3600;
-		$offset_minutes	= $offset_seconds / 60;
-		$offset_hours	= ($time_offset - $offset_seconds) / 3600;
-
-		$offset_string	= sprintf("%s%02d:%02d", $sign, $offset_hours, $offset_minutes);
+		$zone_offset = $user->create_datetime()->getOffset();
+		$offset_string = phpbb_format_timezone_offset($zone_offset);
 	}
 
 	return gmdate("Y-m-d\TH:i:s", $time + $zone_offset) . $offset_string;
@@ -604,30 +601,9 @@ class phpbb_feed_base
 
 	function get_passworded_forums()
 	{
-		global $db, $user;
+		global $user;
 
-		// Exclude passworded forums
-		$sql = 'SELECT f.forum_id, fa.user_id
-			FROM ' . FORUMS_TABLE . ' f
-			LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa
-				ON (fa.forum_id = f.forum_id
-					AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
-			WHERE f.forum_password <> ''";
-		$result = $db->sql_query($sql);
-
-		$forum_ids = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$forum_id = (int) $row['forum_id'];
-
-			if ($row['user_id'] != $user->data['user_id'])
-			{
-				$forum_ids[$forum_id] = $forum_id;
-			}
-		}
-		$db->sql_freeresult($result);
-
-		return $forum_ids;
+		return $user->get_passworded_forums();
 	}
 
 	function get_item()
@@ -1121,8 +1097,8 @@ class phpbb_feed_forums extends phpbb_feed_base
 		{
 			global $user;
 
-			$item_row['statistics'] = sprintf($user->lang['TOTAL_TOPICS_OTHER'], $row['forum_topics'])
-				. ' ' . $this->separator_stats . ' ' . sprintf($user->lang['TOTAL_POSTS_OTHER'], $row['forum_posts']);
+			$item_row['statistics'] = $user->lang('TOTAL_TOPICS', (int) $row['forum_topics'])
+				. ' ' . $this->separator_stats . ' ' . $user->lang('TOTAL_POSTS_COUNT', (int) $row['forum_posts']);
 		}
 	}
 }

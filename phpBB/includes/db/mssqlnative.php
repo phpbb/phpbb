@@ -2,9 +2,8 @@
 /**
 *
 * @package dbal
-* @version $Id$
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 * This is the MS SQL Server Native database abstraction layer.
 * PHP mssql native driver required.
@@ -219,7 +218,6 @@ class dbal_mssqlnative extends dbal
 		$this->server = $sqlserver . (($port) ? $port_delimiter . $port : '');
 
 		//connect to database
-		error_reporting(E_ALL);
 		$this->db_connect_id = sqlsrv_connect($this->server, array(
 			'Database' => $this->dbname,
 			'UID' => $this->user,
@@ -261,7 +259,15 @@ class dbal_mssqlnative extends dbal
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_buffer_nested_transaction()
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return $expr1 . ' + ' . $expr2;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_buffer_nested_transactions()
 	{
 		return true;
 	}
@@ -311,7 +317,7 @@ class dbal_mssqlnative extends dbal
 			}
 
 			$this->last_query_text = $query;
-			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
+			$this->query_result = ($cache_ttl) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
 			if ($this->query_result === false)
@@ -328,10 +334,10 @@ class dbal_mssqlnative extends dbal
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl && method_exists($cache, 'sql_save'))
+				if ($cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$cache->sql_save($query, $this->query_result, $cache_ttl);
+					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{
@@ -396,7 +402,7 @@ class dbal_mssqlnative extends dbal
 	*/
 	function sql_affectedrows()
 	{
-		return ($this->db_connect_id) ? @sqlsrv_rows_affected($this->db_connect_id) : false;
+		return (!empty($this->query_result)) ? @sqlsrv_rows_affected($this->query_result) : false;
 	}
 
 	/**
@@ -411,7 +417,7 @@ class dbal_mssqlnative extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -436,25 +442,7 @@ class dbal_mssqlnative extends dbal
 				unset($row['line2'], $row['line3']);
 			}
 		}
-		return $row;
-	}
-
-	/**
-	* Seek to given row number
-	* rownum is zero-based
-	*/
-	function sql_rowseek($rownum, &$query_id)
-	{
-		global $cache;
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_rowseek($rownum, $query_id);
-		}
-
-		$seek = new result_mssqlnative($query_id);
-		$row = $seek->seek($rownum);
-		return ($row = $seek->fetch()) ? $row : false;
+		return (sizeof($row)) ? $row : false;
 	}
 
 	/**
@@ -489,7 +477,7 @@ class dbal_mssqlnative extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_freeresult($query_id);
 		}
@@ -508,6 +496,14 @@ class dbal_mssqlnative extends dbal
 	function sql_escape($msg)
 	{
 		return str_replace(array("'", "\0"), array("''", ''), $msg);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_lower_text($column_name)
+	{
+		return "LOWER(SUBSTRING($column_name, 1, DATALENGTH($column_name)))";
 	}
 
 	/**

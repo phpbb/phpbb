@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -231,7 +230,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 					// Something went wrong, only partially moved?
 					if ($num_moved != $folder_row['pm_count'])
 					{
-						trigger_error(sprintf($user->lang['MOVE_PM_ERROR'], $num_moved, $folder_row['pm_count']));
+						trigger_error($user->lang('MOVE_PM_ERROR', (int) $folder_row['pm_count'], $num_moved));
 					}
 				break;
 
@@ -328,10 +327,23 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				trigger_error('RULE_ALREADY_DEFINED');
 			}
 
+			// Prevent users from flooding the rules table
+			$sql = 'SELECT COUNT(rule_id) AS num_rules
+				FROM ' . PRIVMSGS_RULES_TABLE . '
+				WHERE user_id = ' . (int) $user->data['user_id'];
+			$result = $db->sql_query($sql);
+			$num_rules = (int) $db->sql_fetchfield('num_rules');
+			$db->sql_freeresult($result);
+
+			if ($num_rules >= 5000)
+			{
+				trigger_error('RULE_LIMIT_REACHED');
+			}
+
 			$sql = 'INSERT INTO ' . PRIVMSGS_RULES_TABLE . ' ' . $db->sql_build_array('INSERT', $rule_ary);
 			$db->sql_query($sql);
 
-			// Update users message rules
+			// Set the user_message_rules bit
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_message_rules = 1
 				WHERE user_id = ' . $user->data['user_id'];
@@ -378,7 +390,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			// Update users message rules
+			// Unset the user_message_rules bit
 			if (!$row)
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
@@ -409,7 +421,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	
 	$folder[PRIVMSGS_INBOX] = array(
 		'folder_name'		=> $user->lang['PM_INBOX'],
-		'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $num_messages, $user->data['message_limit'])
+		'message_status'	=> $user->lang('FOLDER_MESSAGE_STATUS', (int) $user->data['message_limit'], $num_messages),
 	);
 
 	$sql = 'SELECT folder_id, folder_name, pm_count
@@ -423,7 +435,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		$num_user_folder++;
 		$folder[$row['folder_id']] = array(
 			'folder_name'		=> $row['folder_name'],
-			'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $row['pm_count'], $user->data['message_limit'])
+			'message_status'	=> $user->lang('FOLDER_MESSAGE_STATUS', (int) $user->data['message_limit'], $row['pm_count']),
 		);
 	}
 	$db->sql_freeresult($result);

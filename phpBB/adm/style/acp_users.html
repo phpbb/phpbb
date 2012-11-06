@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_SELECT_USER -->
 
@@ -13,7 +13,7 @@
 	<fieldset>
 		<legend>{L_SELECT_USER}</legend>
 	<dl>
-		<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
+		<dt><label for="username">{L_ENTER_USERNAME}:</label></dt>
 		<dd><input class="text medium" type="text" id="username" name="username" /></dd>
 		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
 		<dd class="full" style="text-align: left;"><label><input type="checkbox" class="radio" id="anonymous" name="u" value="{ANONYMOUS_USER_ID}" /> {L_SELECT_ANONYMOUS}</label></dd>
@@ -157,11 +157,11 @@
 	<form id="user_attachments" method="post" action="{U_ACTION}">
 
 
-	<!-- IF PAGINATION -->
 	<div class="pagination">
-		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-	</div>
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->
 	<!-- ENDIF -->
+	</div>
 
 	<!-- IF .attach -->
 	<table cellspacing="1">
@@ -196,11 +196,11 @@
 		<input class="button2" type="submit" value="{L_GO}" name="sort" />
 	</fieldset>
 	<hr />
-	<!-- IF PAGINATION -->
 	<div class="pagination">
-		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-	</div>
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->
 	<!-- ENDIF -->
+	</div>
 
 	<fieldset class="quick">
 		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />

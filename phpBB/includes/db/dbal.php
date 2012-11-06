@@ -2,9 +2,8 @@
 /**
 *
 * @package dbal
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -195,6 +194,49 @@ class dbal
 	}
 
 	/**
+	* Seek to given row number
+	* rownum is zero-based
+	*/
+	function sql_rowseek($rownum, &$query_id)
+	{
+		global $cache;
+
+		if ($query_id === false)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if ($cache->sql_exists($query_id))
+		{
+			return $cache->sql_rowseek($rownum, $query_id);
+		}
+
+		if ($query_id === false)
+		{
+			return false;
+		}
+
+		$this->sql_freeresult($query_id);
+		$query_id = $this->sql_query($this->last_query_text);
+
+		if ($query_id === false)
+		{
+			return false;
+		}
+
+		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
+		for ($i = 0; $i < $rownum; $i++)
+		{
+			if (!$this->sql_fetchrow($query_id))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	* Fetch field
 	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
 	*/
@@ -214,7 +256,7 @@ class dbal
 				$this->sql_rowseek($rownum, $query_id);
 			}
 
-			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
+			if (!is_object($query_id) && $cache->sql_exists($query_id))
 			{
 				return $cache->sql_fetchfield($query_id, $field);
 			}
@@ -242,11 +284,42 @@ class dbal
 	}
 
 	/**
+	* Build a case expression
+	*
+	* Note: The two statements action_true and action_false must have the same data type (int, vchar, ...) in the database!
+	*
+	* @param	string	$condition		The condition which must be true, to use action_true rather then action_else
+	* @param	string	$action_true	SQL expression that is used, if the condition is true
+	* @param	string	$action_else	SQL expression that is used, if the condition is false, optional
+	* @return	string			CASE expression including the condition and statements
+	*/
+	public function sql_case($condition, $action_true, $action_false = false)
+	{
+		$sql_case = 'CASE WHEN ' . $condition;
+		$sql_case .= ' THEN ' . $action_true;
+		$sql_case .= ($action_false !== false) ? ' ELSE ' . $action_false : '';
+		$sql_case .= ' END';
+		return $sql_case;
+	}
+
+	/**
+	* Build a concatenated expression
+	*
+	* @param	string	$expr1		Base SQL expression where we append the second one
+	* @param	string	$expr2		SQL expression that is appended to the first expression
+	* @return	string		Concatenated string
+	*/
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return $expr1 . ' || ' . $expr2;
+	}
+
+	/**
 	* Returns whether results of a query need to be buffered to run a transaction while iterating over them.
 	*
 	* @return bool Whether buffering is required.
 	*/
-	function sql_buffer_nested_transaction()
+	function sql_buffer_nested_transactions()
 	{
 		return false;
 	}
@@ -480,6 +553,18 @@ class dbal
 	}
 
 	/**
+	* Run LOWER() on DB column of type text (i.e. neither varchar nor char).
+	*
+	* @param string $column_name	The column name to use
+	*
+	* @return string				A SQL statement like "LOWER($column_name)"
+	*/
+	function sql_lower_text($column_name)
+	{
+		return "LOWER($column_name)";
+	}
+
+	/**
 	* Run more than one insert statement.
 	*
 	* @param string $table table name to run the statements on
@@ -631,7 +716,7 @@ class dbal
 					}
 				}
 
-				$sql .= $this->_sql_custom_build('FROM', implode(', ', $table_array));
+				$sql .= $this->_sql_custom_build('FROM', implode(' CROSS JOIN ', $table_array));
 
 				if (!empty($array['LEFT_JOIN']))
 				{
@@ -684,12 +769,7 @@ class dbal
 			// The DEBUG_EXTRA constant is for development only!
 			if ((isset($auth) && $auth->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG_EXTRA'))
 			{
-				// Print out a nice backtrace...
-				$backtrace = get_backtrace();
-
 				$message .= ($sql) ? '<br /><br />SQL<br /><br />' . htmlspecialchars($sql) : '';
-				$message .= ($backtrace) ? '<br /><br />BACKTRACE<br />' . $backtrace : '';
-				$message .= '<br />';
 			}
 			else
 			{
@@ -767,12 +847,10 @@ class dbal
 				$mtime = explode(' ', microtime());
 				$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-				echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-					<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+				echo '<!DOCTYPE html>
+					<html dir="ltr">
 					<head>
-						<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-						<meta http-equiv="Content-Style-Type" content="text/css" />
-						<meta http-equiv="imagetoolbar" content="no" />
+						<meta charset="utf-8">
 						<title>SQL Report</title>
 						<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 					</head>
@@ -800,7 +878,7 @@ class dbal
 							</div>
 						</div>
 						<div id="page-footer">
-							Powered by <a href="http://www.phpbb.com/">phpBB</a> &copy; phpBB Group
+							Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
 						</div>
 					</div>
 					</body>
@@ -927,6 +1005,41 @@ class dbal
 		}
 
 		return true;
+	}
+
+	/**
+	* Gets the estimated number of rows in a specified table.
+	*
+	* @param string $table_name		Table name
+	*
+	* @return string				Number of rows in $table_name.
+	*								Prefixed with ~ if estimated (otherwise exact).
+	*
+	* @access public
+	*/
+	function get_estimated_row_count($table_name)
+	{
+		return $this->get_row_count($table_name);
+	}
+
+	/**
+	* Gets the exact number of rows in a specified table.
+	*
+	* @param string $table_name		Table name
+	*
+	* @return string				Exact number of rows in $table_name.
+	*
+	* @access public
+	*/
+	function get_row_count($table_name)
+	{
+		$sql = 'SELECT COUNT(*) AS rows_total
+			FROM ' . $this->sql_escape($table_name);
+		$result = $this->sql_query($sql);
+		$rows_total = $this->sql_fetchfield('rows_total');
+		$this->sql_freeresult($result);
+
+		return $rows_total;
 	}
 }
 

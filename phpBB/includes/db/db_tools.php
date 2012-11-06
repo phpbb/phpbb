@@ -2,9 +2,8 @@
 /**
 *
 * @package dbal
-* @version $Id$
 * @copyright (c) 2007 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -21,7 +20,6 @@ if (!defined('IN_PHPBB'))
 * Currently not supported is returning SQL for creating tables.
 *
 * @package dbal
-* @note currently not used within phpBB3, but may be utilized later.
 */
 class phpbb_db_tools
 {
@@ -348,6 +346,66 @@ class phpbb_db_tools
 	}
 
 	/**
+	* Gets a list of tables in the database.
+	*
+	* @return array		Array of table names  (all lower case)
+	*/
+	function sql_list_tables()
+	{
+		switch ($this->db->sql_layer)
+		{
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+				$sql = 'SHOW TABLES';
+			break;
+
+			case 'sqlite':
+				$sql = 'SELECT name
+					FROM sqlite_master
+					WHERE type = "table"';
+			break;
+
+			case 'mssql':
+			case 'mssql_odbc':
+			case 'mssqlnative':
+				$sql = "SELECT name
+					FROM sysobjects
+					WHERE type='U'";
+			break;
+
+			case 'postgres':
+				$sql = 'SELECT relname
+					FROM pg_stat_user_tables';
+			break;
+
+			case 'firebird':
+				$sql = 'SELECT rdb$relation_name
+					FROM rdb$relations
+					WHERE rdb$view_source is null
+						AND rdb$system_flag = 0';
+			break;
+
+			case 'oracle':
+				$sql = 'SELECT table_name
+					FROM USER_TABLES';
+			break;
+		}
+
+		$result = $this->db->sql_query($sql);
+
+		$tables = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$name = current($row);
+			$tables[$name] = $name;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $tables;
+	}
+
+	/**
 	* Check if table exists
 	*
 	*
@@ -416,6 +474,11 @@ class phpbb_db_tools
 		{
 			// here lies an array, filled with information compiled on the column's data
 			$prepared_column = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
+
+			if (isset($prepared_column['auto_increment']) && strlen($column_name) > 26) // "${column_name}_gen"
+			{
+				trigger_error("Index name '${column_name}_gen' on table '$table_name' is too long. The maximum auto increment column length is 26 characters.", E_USER_ERROR);
+			}
 
 			// here we add the definition of the new column to the list of columns
 			switch ($this->sql_layer)
@@ -538,7 +601,7 @@ class phpbb_db_tools
 			break;
 
 			case 'oracle':
-				$table_sql .= "\n);";
+				$table_sql .= "\n)";
 				$statements[] = $table_sql;
 
 				// do we need to add a sequence and a tigger for auto incrementing columns?
@@ -556,7 +619,7 @@ class phpbb_db_tools
 					$trigger .= "BEGIN\n";
 					$trigger .= "\tSELECT {$table_name}_seq.nextval\n";
 					$trigger .= "\tINTO :new.{$create_sequence}\n";
-					$trigger .= "\tFROM dual\n";
+					$trigger .= "\tFROM dual;\n";
 					$trigger .= "END;";
 
 					$statements[] = $trigger;
@@ -566,7 +629,13 @@ class phpbb_db_tools
 			case 'firebird':
 				if ($create_sequence)
 				{
-					$statements[] = "CREATE SEQUENCE {$table_name}_seq;";
+					$statements[] = "CREATE GENERATOR {$table_name}_gen;";
+					$statements[] = "SET GENERATOR {$table_name}_gen TO 0;";
+
+					$trigger = "CREATE TRIGGER t_$table_name FOR $table_name\n";
+					$trigger .= "BEFORE INSERT\nAS\nBEGIN\n";
+					$trigger .= "\tNEW.{$create_sequence} = GEN_ID({$table_name}_gen, 1);\nEND;";
+					$statements[] = $trigger;
 				}
 			break;
 		}
@@ -638,6 +707,36 @@ class phpbb_db_tools
 			$sqlite = true;
 		}
 
+		// Drop tables?
+		if (!empty($schema_changes['drop_tables']))
+		{
+			foreach ($schema_changes['drop_tables'] as $table)
+			{
+				// only drop table if it exists
+				if ($this->sql_table_exists($table))
+				{
+					$result = $this->sql_table_drop($table);
+					if ($this->return_statements)
+					{
+						$statements = array_merge($statements, $result);
+					}
+				}
+			}
+		}
+
+		// Add tables?
+		if (!empty($schema_changes['add_tables']))
+		{
+			foreach ($schema_changes['add_tables'] as $table => $table_data)
+			{
+				$result = $this->sql_create_table($table, $table_data);
+				if ($this->return_statements)
+				{
+					$statements = array_merge($statements, $result);
+				}
+			}
+		}
+
 		// Change columns?
 		if (!empty($schema_changes['change_columns']))
 		{
@@ -681,10 +780,12 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column_name => $column_data)
 				{
-					// Only add the column if it does not exist yet, else change it (to be consistent)
+					// Only add the column if it does not exist yet
 					if ($column_exists = $this->sql_column_exists($table, $column_name))
 					{
-						$result = $this->sql_column_change($table, $column_name, $column_data, true);
+						continue;
+						// This is commented out here because it can take tremendous time on updates
+//						$result = $this->sql_column_change($table, $column_name, $column_data, true);
 					}
 					else
 					{
@@ -695,7 +796,8 @@ class phpbb_db_tools
 					{
 						if ($column_exists)
 						{
-							$sqlite_data[$table]['change_columns'][] = $result;
+							continue;
+//							$sqlite_data[$table]['change_columns'][] = $result;
 						}
 						else
 						{
@@ -717,6 +819,11 @@ class phpbb_db_tools
 			{
 				foreach ($indexes as $index_name)
 				{
+					if (!$this->sql_index_exists($table, $index_name))
+					{
+						continue;
+					}
+
 					$result = $this->sql_index_drop($table, $index_name);
 
 					if ($this->return_statements)
@@ -777,6 +884,11 @@ class phpbb_db_tools
 			{
 				foreach ($index_array as $index_name => $column)
 				{
+					if ($this->sql_unique_index_exists($table, $index_name))
+					{
+						continue;
+					}
+
 					$result = $this->sql_create_unique_index($table, $index_name, $column);
 
 					if ($this->return_statements)
@@ -794,6 +906,11 @@ class phpbb_db_tools
 			{
 				foreach ($index_array as $index_name => $column)
 				{
+					if ($this->sql_index_exists($table, $index_name))
+					{
+						continue;
+					}
+
 					$result = $this->sql_create_index($table, $index_name, $column);
 
 					if ($this->return_statements)
@@ -952,34 +1069,21 @@ class phpbb_db_tools
 	}
 
 	/**
-	* Check if a specified column exist
+	* Gets a list of columns of a table.
 	*
-	* @param string	$table			Table to check the column at
-	* @param string	$column_name	The column to check
+	* @param string $table		Table name
 	*
-	* @return bool True if column exists, else false
+	* @return array				Array of column names (all lower case)
 	*/
-	function sql_column_exists($table, $column_name)
+	function sql_list_columns($table)
 	{
+		$columns = array();
+
 		switch ($this->sql_layer)
 		{
 			case 'mysql_40':
 			case 'mysql_41':
-
 				$sql = "SHOW COLUMNS FROM $table";
-				$result = $this->db->sql_query($sql);
-
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					// lower case just in case
-					if (strtolower($row['Field']) == $column_name)
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-				$this->db->sql_freeresult($result);
-				return false;
 			break;
 
 			// PostgreSQL has a way of doing this in a much simpler way but would
@@ -990,19 +1094,6 @@ class phpbb_db_tools
 					WHERE c.relname = '{$table}'
 						AND a.attnum > 0
 						AND a.attrelid = c.oid";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					// lower case just in case
-					if (strtolower($row['attname']) == $column_name)
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-				$this->db->sql_freeresult($result);
-
-				return false;
 			break;
 
 			// same deal with PostgreSQL, we must perform more complex operations than
@@ -1013,62 +1104,26 @@ class phpbb_db_tools
 					FROM syscolumns c
 					LEFT JOIN sysobjects o ON c.id = o.id
 					WHERE o.name = '{$table}'";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					// lower case just in case
-					if (strtolower($row['name']) == $column_name)
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-				$this->db->sql_freeresult($result);
-				return false;
 			break;
 
 			case 'oracle':
 				$sql = "SELECT column_name
 					FROM user_tab_columns
 					WHERE LOWER(table_name) = '" . strtolower($table) . "'";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					// lower case just in case
-					if (strtolower($row['column_name']) == $column_name)
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-				$this->db->sql_freeresult($result);
-				return false;
 			break;
 
 			case 'firebird':
 				$sql = "SELECT RDB\$FIELD_NAME as FNAME
 					FROM RDB\$RELATION_FIELDS
 					WHERE RDB\$RELATION_NAME = '" . strtoupper($table) . "'";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					// lower case just in case
-					if (strtolower($row['fname']) == $column_name)
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-				$this->db->sql_freeresult($result);
-				return false;
 			break;
 
-			// ugh, SQLite
 			case 'sqlite':
 				$sql = "SELECT sql
 					FROM sqlite_master
 					WHERE type = 'table'
 						AND name = '{$table}'";
+
 				$result = $this->db->sql_query($sql);
 
 				if (!$result)
@@ -1092,14 +1147,269 @@ class phpbb_db_tools
 						continue;
 					}
 
-					if (strtolower($entities[0]) == $column_name)
+					$column = strtolower($entities[0]);
+					$columns[$column] = $column;
+				}
+
+				return $columns;
+			break;
+		}
+
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$column = strtolower(current($row));
+			$columns[$column] = $column;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $columns;
+	}
+
+	/**
+	* Check whether a specified column exist in a table
+	*
+	* @param string	$table			Table to check
+	* @param string	$column_name	Column to check
+	*
+	* @return bool		True if column exists, false otherwise
+	*/
+	function sql_column_exists($table, $column_name)
+	{
+		$columns = $this->sql_list_columns($table);
+
+		return isset($columns[$column_name]);
+	}
+
+	/**
+	* Check if a specified index exists in table. Does not return PRIMARY KEY and UNIQUE indexes.
+	*
+	* @param string	$table_name		Table to check the index at
+	* @param string	$index_name		The index name to check
+	*
+	* @return bool True if index exists, else false
+	*/
+	function sql_index_exists($table_name, $index_name)
+	{
+		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
+		{
+			$sql = "EXEC sp_statistics '$table_name'";
+			$result = $this->db->sql_query($sql);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				if ($row['TYPE'] == 3)
+				{
+					if (strtolower($row['INDEX_NAME']) == strtolower($index_name))
 					{
+						$this->db->sql_freeresult($result);
 						return true;
 					}
 				}
-				return false;
+			}
+			$this->db->sql_freeresult($result);
+
+			return false;
+		}
+
+		switch ($this->sql_layer)
+		{
+			case 'firebird':
+				$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
+					FROM RDB\$INDICES
+					WHERE RDB\$RELATION_NAME = '" . strtoupper($table_name) . "'
+						AND RDB\$UNIQUE_FLAG IS NULL
+						AND RDB\$FOREIGN_KEY IS NULL";
+				$col = 'index_name';
+			break;
+
+			case 'postgres':
+				$sql = "SELECT ic.relname as index_name
+					FROM pg_class bc, pg_class ic, pg_index i
+					WHERE (bc.oid = i.indrelid)
+						AND (ic.oid = i.indexrelid)
+						AND (bc.relname = '" . $table_name . "')
+						AND (i.indisunique != 't')
+						AND (i.indisprimary != 't')";
+				$col = 'index_name';
+			break;
+
+			case 'mysql_40':
+			case 'mysql_41':
+				$sql = 'SHOW KEYS
+					FROM ' . $table_name;
+				$col = 'Key_name';
+			break;
+
+			case 'oracle':
+				$sql = "SELECT index_name
+					FROM user_indexes
+					WHERE table_name = '" . strtoupper($table_name) . "'
+						AND generated = 'N'
+						AND uniqueness = 'NONUNIQUE'";
+				$col = 'index_name';
+			break;
+
+			case 'sqlite':
+				$sql = "PRAGMA index_list('" . $table_name . "');";
+				$col = 'name';
 			break;
 		}
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			if (($this->sql_layer == 'mysql_40' || $this->sql_layer == 'mysql_41') && !$row['Non_unique'])
+			{
+				continue;
+			}
+
+			// These DBMS prefix index name with the table name
+			switch ($this->sql_layer)
+			{
+				case 'firebird':
+				case 'oracle':
+				case 'postgres':
+				case 'sqlite':
+					$row[$col] = substr($row[$col], strlen($table_name) + 1);
+				break;
+			}
+
+			if (strtolower($row[$col]) == strtolower($index_name))
+			{
+				$this->db->sql_freeresult($result);
+				return true;
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		return false;
+	}
+
+	/**
+	* Check if a specified index exists in table. Does not return PRIMARY KEY and UNIQUE indexes.
+	*
+	* @param string	$table_name		Table to check the index at
+	* @param string	$index_name		The index name to check
+	*
+	* @return bool True if index exists, else false
+	*/
+	function sql_unique_index_exists($table_name, $index_name)
+	{
+		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
+		{
+			$sql = "EXEC sp_statistics '$table_name'";
+			$result = $this->db->sql_query($sql);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				// Usually NON_UNIQUE is the column we want to check, but we allow for both
+				if ($row['TYPE'] == 3)
+				{
+					if (strtolower($row['INDEX_NAME']) == strtolower($index_name))
+					{
+						$this->db->sql_freeresult($result);
+						return true;
+					}
+				}
+			}
+			$this->db->sql_freeresult($result);
+			return false;
+		}
+
+		switch ($this->sql_layer)
+		{
+			case 'firebird':
+				$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
+					FROM RDB\$INDICES
+					WHERE RDB\$RELATION_NAME = '" . strtoupper($table_name) . "'
+						AND RDB\$UNIQUE_FLAG IS NOT NULL
+						AND RDB\$FOREIGN_KEY IS NULL";
+				$col = 'index_name';
+			break;
+
+			case 'postgres':
+				$sql = "SELECT ic.relname as index_name, i.indisunique
+					FROM pg_class bc, pg_class ic, pg_index i
+					WHERE (bc.oid = i.indrelid)
+						AND (ic.oid = i.indexrelid)
+						AND (bc.relname = '" . $table_name . "')
+						AND (i.indisprimary != 't')";
+				$col = 'index_name';
+			break;
+
+			case 'mysql_40':
+			case 'mysql_41':
+				$sql = 'SHOW KEYS
+					FROM ' . $table_name;
+				$col = 'Key_name';
+			break;
+
+			case 'oracle':
+				$sql = "SELECT index_name, table_owner
+					FROM user_indexes
+					WHERE table_name = '" . strtoupper($table_name) . "'
+						AND generated = 'N'
+						AND uniqueness = 'UNIQUE'";
+				$col = 'index_name';
+			break;
+
+			case 'sqlite':
+				$sql = "PRAGMA index_list('" . $table_name . "');";
+				$col = 'name';
+			break;
+		}
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			if (($this->sql_layer == 'mysql_40' || $this->sql_layer == 'mysql_41') && ($row['Non_unique'] || $row[$col] == 'PRIMARY'))
+			{
+				continue;
+			}
+
+			if ($this->sql_layer == 'sqlite' && !$row['unique'])
+			{
+				continue;
+			}
+
+			if ($this->sql_layer == 'postgres' && $row['indisunique'] != 't')
+			{
+				continue;
+			}
+
+			// These DBMS prefix index name with the table name
+			switch ($this->sql_layer)
+			{
+				case 'oracle':
+					// Two cases here... prefixed with U_[table_owner] and not prefixed with table_name
+					if (strpos($row[$col], 'U_') === 0)
+					{
+						$row[$col] = substr($row[$col], strlen('U_' . $row['table_owner']) + 1);
+					}
+					else if (strpos($row[$col], strtoupper($table_name)) === 0)
+					{
+						$row[$col] = substr($row[$col], strlen($table_name) + 1);
+					}
+				break;
+
+				case 'firebird':
+				case 'postgres':
+				case 'sqlite':
+					$row[$col] = substr($row[$col], strlen($table_name) + 1);
+				break;
+			}
+
+			if (strtolower($row[$col]) == strtolower($index_name))
+			{
+				$this->db->sql_freeresult($result);
+				return true;
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		return false;
 	}
 
 	/**
@@ -1139,6 +1449,11 @@ class phpbb_db_tools
 	*/
 	function sql_prepare_column_data($table_name, $column_name, $column_data)
 	{
+		if (strlen($column_name) > 30)
+		{
+			trigger_error("Column name '$column_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+		}
+
 		// Get type
 		if (strpos($column_data[0], ':') !== false)
 		{
@@ -1187,7 +1502,7 @@ class phpbb_db_tools
 			$column_type = $this->dbms_type_map[$this->sql_layer][$column_data[0]];
 		}
 
-		// Adjust default value if db-dependant specified
+		// Adjust default value if db-dependent specified
 		if (is_array($column_data[1]))
 		{
 			$column_data[1] = (isset($column_data[1][$this->sql_layer])) ? $column_data[1][$this->sql_layer] : $column_data[1]['default'];
@@ -1371,24 +1686,29 @@ class phpbb_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
+				// Does not support AFTER statement, only POSITION (and there you need the column position)
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD "' . strtoupper($column_name) . '" ' . $column_data['column_type_sql'];
 			break;
 
 			case 'mssql':
 			case 'mssqlnative':
+				// Does not support AFTER, only through temporary table
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_data['column_type_sql_default'];
 			break;
 
 			case 'mysql_40':
 			case 'mysql_41':
-				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'];
+				$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
+				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'] . $after;
 			break;
 
 			case 'oracle':
+				// Does not support AFTER, only through temporary table
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $column_data['column_type_sql'];
 			break;
 
 			case 'postgres':
+				// Does not support AFTER, only through temporary table
 				if (version_compare($this->db->sql_server_info(true), '8.0', '>='))
 				{
 					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type_sql'];
@@ -1506,7 +1826,7 @@ class phpbb_db_tools
 			break;
 
 			case 'oracle':
-				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP ' . $column_name;
+				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name;
 			break;
 
 			case 'postgres':
@@ -1657,6 +1977,7 @@ class phpbb_db_tools
 					$statements[] = "DROP SEQUENCE {$row['referenced_name']}";
 				}
 				$this->db->sql_freeresult($result);
+			break;
 
 			case 'postgres':
 				// PGSQL does not "tightly" bind sequences and tables, we must guess...
@@ -1774,6 +2095,13 @@ class phpbb_db_tools
 	{
 		$statements = array();
 
+		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
+		{
+			$max_length = strlen($table_prefix) + 24;
+			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
+		}
+
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
@@ -1785,7 +2113,7 @@ class phpbb_db_tools
 
 			case 'mysql_40':
 			case 'mysql_41':
-				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD UNIQUE INDEX ' . $index_name . '(' . implode(', ', $column) . ')';
 			break;
 
 			case 'mssql':
@@ -1803,6 +2131,13 @@ class phpbb_db_tools
 	function sql_create_index($table_name, $index_name, $column)
 	{
 		$statements = array();
+
+		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
+		{
+			$max_length = strlen($table_prefix) + 24;
+			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
+		}
 
 		// remove index length unless MySQL4
 		if ('mysql_40' != $this->sql_layer)
@@ -1831,7 +2166,7 @@ class phpbb_db_tools
 				}
 			// no break
 			case 'mysql_41':
-				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD INDEX ' . $index_name . '(' . implode(', ', $column) . ')';
 			break;
 
 			case 'mssql':
@@ -1957,6 +2292,7 @@ class phpbb_db_tools
 				}
 				else
 				{
+					// TODO: try to change pkey without removing trigger, generator or constraints. ATM this query may fail.
 					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql_type'];
 				}
 			break;

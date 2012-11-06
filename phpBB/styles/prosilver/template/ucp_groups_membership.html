@@ -5,7 +5,7 @@
 <form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<p>{L_GROUPS_EXPLAIN}</p>
 	<!-- DEFINE $SHOW_BUTTONS = 0 -->
@@ -66,12 +66,12 @@
 		<!-- END member -->
 		</ul>
 	<!-- ENDIF -->
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>	
 
 <!-- IF .pending -->
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>	
+	<div class="inner">	
 		<ul class="topiclist">
 			<li class="header">
 				<dl>
@@ -93,17 +93,17 @@
 				<!-- IF pending.GROUP_DESC --><br />{pending.GROUP_DESC}<!-- ENDIF -->
 				<!-- IF not pending.GROUP_SPECIAL --><br /><i>{pending.GROUP_STATUS}</i><!-- ENDIF -->
 				</dt>
-				<dd class="mark"><input type="radio" name="selected" value="{pending.GROUP_ID}" <!-- IF pending.GROUP_SPECIAL -->disabled="diabled"<!-- ENDIF --> /></dd>
+				<dd class="mark"><input type="radio" name="selected" value="{pending.GROUP_ID}" <!-- IF pending.GROUP_SPECIAL -->disabled="disabled"<!-- ENDIF --> /></dd>
 			</dl>
 		</li>
 		<!-- END pending -->
 		</ul>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 <!-- ENDIF -->
 <!-- IF .nonmember -->
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 		<ul class="topiclist">
 			<li class="header">
 				<dl>
@@ -130,7 +130,7 @@
 		</li>
 		<!-- END nonmember -->
 		</ul>
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- ENDIF -->
 	

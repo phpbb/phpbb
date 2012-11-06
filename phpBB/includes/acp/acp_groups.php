@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -371,7 +370,7 @@ class acp_groups
 						{
 							if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 							{
-								$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+								$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 							}
 						}
 
@@ -381,7 +380,7 @@ class acp_groups
 							{
 								if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
 								{
-									$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+									$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 								}
 							}
 						}
@@ -415,6 +414,9 @@ class acp_groups
 						// Only set the rank, colour, etc. if it's changed or if we're adding a new
 						// group. This prevents existing group members being updated if no changes
 						// were made.
+						// However there are some attributes that need to be set everytime,
+						// otherwise the group gets removed from the feature.
+						$set_attributes = array('legend', 'teampage');
 
 						$group_attributes = array();
 						$test_variables = array(
@@ -435,7 +437,7 @@ class acp_groups
 
 						foreach ($test_variables as $test => $type)
 						{
-							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test]))
+							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || in_array($test, $set_attributes)))
 							{
 								settype($submit_ary[$test], $type);
 								$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
@@ -624,7 +626,7 @@ class acp_groups
 					'U_BACK'			=> $u_back,
 					'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=settings&amp;name=group_colour'),
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),
+					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 				));
 
 				return;
@@ -680,13 +682,15 @@ class acp_groups
 					$s_action_options .= '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
 				}
 
+				$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total_members, $config['topics_per_page'], $start);
+
 				$template->assign_vars(array(
 					'S_LIST'			=> true,
 					'S_GROUP_SPECIAL'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? true : false,
 					'S_ACTION_OPTIONS'	=> $s_action_options,
 
-					'S_ON_PAGE'		=> on_page($total_members, $config['topics_per_page'], $start),
-					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start, true),
+					'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $total_members, $config['topics_per_page'], $start),
 					'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
 
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
@@ -832,7 +836,7 @@ class acp_groups
 
 			case 'set_config_teampage':
 				set_config('teampage_forums', request_var('teampage_forums', 0));
-				set_config('teampage_multiple', request_var('teampage_multiple', 0));
+				set_config('teampage_memberships', request_var('teampage_memberships', 0));
 			break;
 
 			case 'add':
@@ -913,11 +917,11 @@ class acp_groups
 			'U_ACTION_LEGEND' => $this->u_action . '&amp;field=legend',
 			'U_ACTION_TEAMPAGE' => $this->u_action . '&amp;field=teampage',
 
-			'S_GROUP_SELECT_LEGEND' => $s_group_select_legend,
-			'S_GROUP_SELECT_TEAMPAGE' => $s_group_select_teampage,
-			'DISPLAY_FORUMS' => ($config['teampage_forums']) ? true : false,
-			'DISPLAY_MULTIPLE' => ($config['teampage_multiple']) ? true : false,
-			'LEGEND_SORT_GROUPNAME' => ($config['legend_sort_groupname']) ? true : false,
+			'S_GROUP_SELECT_LEGEND'		=> $s_group_select_legend,
+			'S_GROUP_SELECT_TEAMPAGE'	=> $s_group_select_teampage,
+			'DISPLAY_FORUMS'			=> ($config['teampage_forums']) ? true : false,
+			'DISPLAY_MEMBERSHIPS'		=> $config['teampage_memberships'],
+			'LEGEND_SORT_GROUPNAME'		=> ($config['legend_sort_groupname']) ? true : false,
 		));
 	}
 }

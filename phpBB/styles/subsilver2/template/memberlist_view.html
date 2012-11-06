@@ -89,11 +89,11 @@
 			<!-- IF S_SHOW_ACTIVITY -->
 				<tr>
 					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_ACTIVE_IN_FORUM}: </td>
-					<td><!-- IF ACTIVE_FORUM --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
+					<td><!-- IF ACTIVE_FORUM != '' --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 				</tr>
 				<tr>
 					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_ACTIVE_IN_TOPIC}: </td>
-					<td><!-- IF ACTIVE_TOPIC --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="genmed">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
+					<td><!-- IF ACTIVE_TOPIC != '' --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="genmed">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 				</tr>
 			<!-- ENDIF -->
 			</table>
@@ -108,33 +108,33 @@
 			<table width="100%" cellspacing="1" cellpadding="2" border="0">
 			<tr>
 				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_EMAIL_ADDRESS}: </td>
-				<td width="100%"><!-- IF U_EMAIL --><a href="{U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF --></td>
+				<td width="100%"><!-- IF U_EMAIL --><a href="{U_EMAIL}" class="imageset">{EMAIL_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<!-- IF U_PM -->
 				<tr>
 					<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_PM}: </td>
-					<td><a href="{U_PM}">{PM_IMG}</a></td>
+					<td><a href="{U_PM}" class="imageset">{PM_IMG}</a></td>
 				</tr>
 			<!-- ENDIF -->
 			<tr>
 				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_MSNM}: </td>
-				<td><!-- IF U_MSN --><a href="{U_MSN}" onclick="popup(this.href, 550, 320); return false">{MSN_IMG}</a><!-- ELSEIF USER_MSN -->{USER_MSN}<!-- ENDIF --></td>
+				<td><!-- IF U_MSN --><a href="{U_MSN}" onclick="popup(this.href, 550, 320); return false" class="imageset">{MSN_IMG}</a><!-- ELSEIF USER_MSN -->{USER_MSN}<!-- ENDIF --></td>
 			</tr>
 			<tr>
 				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_YIM}: </td>
-				<td><!-- IF U_YIM --><a href="{U_YIM}" onclick="popup(this.href, 780, 550); return false">{YIM_IMG}</a><!-- ELSEIF USER_YIM -->{USER_YIM}<!-- ENDIF --></td>
+				<td><!-- IF U_YIM --><a href="{U_YIM}" onclick="popup(this.href, 780, 550); return false" class="imageset">{YIM_IMG}</a><!-- ELSEIF USER_YIM -->{USER_YIM}<!-- ENDIF --></td>
 			</tr>
 			<tr>
 				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_AIM}: </td>
-				<td><!-- IF U_AIM --><a href="{U_AIM}" onclick="popup(this.href, 550, 320); return false">{AIM_IMG}</a><!-- ELSEIF USER_AIM -->{USER_AIM}<!-- ENDIF --></td>
+				<td><!-- IF U_AIM --><a href="{U_AIM}" onclick="popup(this.href, 550, 320); return false" class="imageset">{AIM_IMG}</a><!-- ELSEIF USER_AIM -->{USER_AIM}<!-- ENDIF --></td>
 			</tr>
 			<tr>
 				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_ICQ}: </td>
-				<td><!-- IF U_ICQ --><a href="{U_ICQ}" onclick="popup(this.href, 550, 320); return false">{ICQ_IMG}</a><!-- ELSEIF USER_ICQ -->{USER_ICQ}<!-- ENDIF --></td>
+				<td><!-- IF U_ICQ --><a href="{U_ICQ}" onclick="popup(this.href, 550, 320); return false" class="imageset">{ICQ_IMG}</a><!-- ELSEIF USER_ICQ -->{USER_ICQ}<!-- ENDIF --></td>
 			</tr>
 			<tr>
 				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_JABBER}: </td>
-				<td><!-- IF U_JABBER --><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false">{JABBER_IMG}</a><!-- ELSEIF USER_JABBER -->{USER_JABBER_IMG}<!-- ENDIF --></td>
+				<td><!-- IF U_JABBER --><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false" class="imageset">{JABBER_IMG}</a><!-- ELSEIF USER_JABBER -->{USER_JABBER_IMG}<!-- ENDIF --></td>
 			</tr>
 			</table>
 		</td>
@@ -148,10 +148,10 @@
 				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_LOCATION}: </td>
 				<td><!-- IF LOCATION --><b class="genmed">{LOCATION}</b><!-- ENDIF --></td>
 			</tr>
-			<!-- IF AGE -->
+			<!-- IF AGE !== '' -->
 			<tr>
 				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_AGE}: </td>
-				<td><b class="genmed"><!-- IF AGE -->{AGE}<!-- ELSE --> - <!-- ENDIF --></b></td>
+				<td><b class="genmed">{AGE}</b></td>
 			</tr>
 			<!-- ENDIF -->
 			<tr>

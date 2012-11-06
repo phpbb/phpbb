@@ -1,18 +1,21 @@
-	<!-- INCLUDE ucp_header.html -->
+<!-- INCLUDE ucp_header.html -->
 
 <!-- INCLUDE ucp_pm_message_header.html -->
 
+	</div>
+</div>
+
 
 <!-- IF S_DISPLAY_HISTORY and (U_VIEW_PREVIOUS_HISTORY or U_VIEW_NEXT_HISTORY) -->
-	<fieldset class="display-options clearfix bg1 pm-message-nav">
+	<fieldset class="display-options clearfix">
 		<!-- IF U_VIEW_PREVIOUS_HISTORY --><a href="{U_VIEW_PREVIOUS_HISTORY}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_VIEW_PREVIOUS_HISTORY}</a><!-- ENDIF -->
 		<!-- IF U_VIEW_NEXT_HISTORY --><a href="{U_VIEW_NEXT_HISTORY}" class="right-box {S_CONTENT_FLOW_END}">{L_VIEW_NEXT_HISTORY}</a><!-- ENDIF -->
 	</fieldset>
 <!-- ENDIF -->
 
 
-<div id="post-{MESSAGE_ID}" class="panel clearfix post pm-panel-message pm<!-- IF S_POST_UNAPPROVED or S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF S_ONLINE --> online<!-- ENDIF -->">
-<div>
+<div id="post-{MESSAGE_ID}" class="post pm<!-- IF S_POST_UNAPPROVED or S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF S_ONLINE --> online<!-- ENDIF -->">
+<div class="inner">
 
 	<div class="postbody">
 
@@ -38,12 +41,24 @@
 		<div class="content">{MESSAGE}</div>
 
 		<!-- IF S_HAS_ATTACHMENTS -->
-		<dl class="attachbox">
-			<dt>{L_ATTACHMENTS}</dt>
-			<!-- BEGIN attachment -->
-			<dd>{attachment.DISPLAY_ATTACHMENT}</dd>
-			<!-- END attachment -->
-		</dl>
+			<dl class="attachbox">
+				<dt>
+					{L_ATTACHMENTS}
+					<!-- IF S_HAS_MULTIPLE_ATTACHMENTS -->
+						<div class="dl_links">
+							<strong>{L_DOWNLOAD_ALL}:</strong>
+							<ul>
+							<!-- BEGIN dl_method -->
+								<li>[ <a href="{dl_method.LINK}">{dl_method.TYPE}</a> ]</li>
+							<!-- END dl_method -->
+							</ul>
+						</div>
+					<!-- ENDIF -->
+				</dt>
+				<!-- BEGIN attachment -->
+					<dd>{attachment.DISPLAY_ATTACHMENT}</dd>
+				<!-- END attachment -->
+			</dl>
 		<!-- ENDIF -->
 
 		<!-- IF S_DISPLAY_NOTICE -->
@@ -69,7 +84,12 @@
 		<dd><strong>{L_POSTS}:</strong> {AUTHOR_POSTS}</dd>
 		<!-- IF AUTHOR_JOINED --><dd><strong>{L_JOINED}:</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
 		<!-- IF AUTHOR_FROM --><dd><strong>{L_LOCATION}:</strong> {AUTHOR_FROM}</dd><!-- ENDIF -->
-		
+
+		<!-- BEGIN custom_fields -->
+			<dd><strong>{custom_fields.PROFILE_FIELD_NAME}:</strong> {custom_fields.PROFILE_FIELD_VALUE}</dd>
+		<!-- END custom_fields -->
+
+
 		<!-- IF U_PM or U_EMAIL or U_WWW or U_MSN or U_ICQ or U_YIM or U_AIM or U_JABBER -->
 		<dd>
 			<ul class="profile-icons">
@@ -88,7 +108,7 @@
 
 	<div class="back2top"><a href="#top" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a></div>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <!-- IF S_VIEW_MESSAGE -->

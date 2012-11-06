@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -14,17 +14,20 @@ class phpbb_download_http_byte_range_test extends phpbb_test_case
 	public function test_find_range_request()
 	{
 		// Missing 'bytes=' prefix
-		$_SERVER['HTTP_RANGE'] = 'bztes=';
+		$GLOBALS['request'] = new phpbb_mock_request();
+		$GLOBALS['request']->set_header('Range', 'bztes=');
 		$this->assertEquals(false, phpbb_find_range_request());
-		unset($_SERVER['HTTP_RANGE']);
+		unset($GLOBALS['request']);
 
+		$GLOBALS['request'] = new phpbb_mock_request();
 		$_ENV['HTTP_RANGE'] = 'bztes=';
 		$this->assertEquals(false, phpbb_find_range_request());
 		unset($_ENV['HTTP_RANGE']);
 
-		$_SERVER['HTTP_RANGE'] = 'bytes=0-0,123-125';
+		$GLOBALS['request'] = new phpbb_mock_request();
+		$GLOBALS['request']->set_header('Range', 'bytes=0-0,123-125');
 		$this->assertEquals(array('0-0', '123-125'), phpbb_find_range_request());
-		unset($_SERVER['HTTP_RANGE']);
+		unset($GLOBALS['request']);
 	}
 
 	/**

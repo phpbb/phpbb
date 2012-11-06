@@ -1,6 +1,6 @@
 <script type="text/javascript">
 // <![CDATA[
-	onload_functions.push('apply_onkeypress_event()');
+	onload_functions.push(apply_onkeypress_event);
 // ]]>
 </script>
 
@@ -37,10 +37,10 @@
 			<!-- ENDIF -->
 			<!-- IF not S_EDIT_POST -->
 			<dl class="pmlist">
-				<dt><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2"></textarea></dt>
+				<dt><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></dt>
 				<dd><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></span></dd>
-				<dd><input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
-				<dd><input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" /></dd>
+				<dd><input type="submit" name="add_to" value="{L_ADD}" class="button2" tabindex="1" /></dd>
+				<dd><input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" tabindex="1" /></dd>
 			</dl>
 			<!-- ENDIF -->
 		<!-- ELSE -->
@@ -87,8 +87,8 @@
 	<dl>
 		<dt><label for="icon">{L_ICON}:</label></dt>
 		<dd>
-			<label for="icon"><input type="radio" name="icon" id="icon" value="0" checked="checked" /> <!-- IF S_SHOW_TOPIC_ICONS -->{L_NO_TOPIC_ICON}<!-- ELSE -->{L_NO_PM_ICON}<!-- ENDIF --></label>
-			<!-- BEGIN topic_icon --><label for="icon-{topic_icon.ICON_ID}"><input type="radio" name="icon" id="icon-{topic_icon.ICON_ID}" value="{topic_icon.ICON_ID}" {topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" /></label> <!-- END topic_icon -->
+			<label for="icon"><input type="radio" name="icon" id="icon" value="0" checked="checked" tabindex="1" /> <!-- IF S_SHOW_TOPIC_ICONS -->{L_NO_TOPIC_ICON}<!-- ELSE -->{L_NO_PM_ICON}<!-- ENDIF --></label>
+			<!-- BEGIN topic_icon --><label for="icon-{topic_icon.ICON_ID}"><input type="radio" name="icon" id="icon-{topic_icon.ICON_ID}" value="{topic_icon.ICON_ID}" {topic_icon.S_ICON_CHECKED} tabindex="1" /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" /></label> <!-- END topic_icon -->
 		</dd>
 	</dl>
 	<!-- ENDIF -->
@@ -103,7 +103,7 @@
 	<!-- IF S_POST_ACTION or S_PRIVMSGS or S_EDIT_DRAFT -->
 	<dl style="clear: left;">
 		<dt><label for="subject">{L_SUBJECT}:</label></dt>
-		<dd><input type="text" name="subject" id="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->60<!-- ELSE -->64<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="inputbox autowidth" /></dd>
+		<dd><input type="text" name="subject" id="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="inputbox autowidth" /></dd>
 	</dl>
 	<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
 		<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
@@ -149,13 +149,13 @@
 <!-- IF $EXTRA_POSTING_OPTIONS eq 1 -->
 
 	<!-- IF not S_SHOW_DRAFTS -->
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 	<!-- ENDIF -->
 
 	<!-- IF S_HAS_ATTACHMENTS -->
 		<div class="panel bg2">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 			<h3>{L_POSTED_ATTACHMENTS}</h3>
 
 			<fieldset class="fields2">
@@ -177,13 +177,13 @@
 
 			</fieldset>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 	<!-- ENDIF -->
 
 	<!-- IF not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
 	<div class="panel bg2">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		<fieldset class="submit-buttons">
 			{S_HIDDEN_ADDRESS_FIELD}
 			{S_HIDDEN_FIELDS}
@@ -194,7 +194,7 @@
 
 		</fieldset>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 	<!-- ENDIF -->
 
@@ -210,7 +210,7 @@
 
 	<!-- IF not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
 	<div class="panel bg3" id="options-panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<fieldset class="fields1">
 			<!-- IF S_BBCODE_ALLOWED -->

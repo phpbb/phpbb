@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB
-* @version $Id$
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -49,13 +48,15 @@ class phpbb_error_collector
 			{
 				$text .= "<br />\n";
 			}
+
 			list($errno, $msg_text, $errfile, $errline) = $error;
-			$text .= "Errno $errno: $msg_text";
-			if (defined('DEBUG_EXTRA') || defined('IN_INSTALL'))
-			{
-				$text .= " at $errfile line $errline";
-			}
+
+			// Prevent leakage of local path to phpBB install
+			$errfile = phpbb_filter_root_path($errfile);
+
+			$text .= "Errno $errno: $msg_text at $errfile line $errline";
 		}
+
 		return $text;
 	}
 }

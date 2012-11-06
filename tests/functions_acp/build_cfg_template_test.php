@@ -3,11 +3,10 @@
 *
 * @package testing
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/lang.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
@@ -29,7 +28,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name'	=> '2'),
 				'config_key_name',
 				array(),
-				'<input id="key_name" type="password" size="20" maxlength="128" name="config[config_key_name]" value="2" />',
+				'<input id="key_name" type="password" size="20" maxlength="128" name="config[config_key_name]" value="2" autocomplete="off" />',
 			),
 			array(
 				array('text', 0, 255),
@@ -47,8 +46,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_text($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user;
+		global $user, $phpbb_dispatcher;
 
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -81,8 +81,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_dimension($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user;
+		global $user, $phpbb_dispatcher;
 
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -107,8 +108,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_textarea($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user;
+		global $user, $phpbb_dispatcher;
 
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -157,8 +159,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_radio($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user;
+		global $user, $phpbb_dispatcher;
 
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -183,8 +186,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_append($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user;
+		global $user, $phpbb_dispatcher;
 
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));

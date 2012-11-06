@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -39,11 +38,13 @@ if (!$post_id && (!$pm_id || !$config['allow_pm_report']))
 if ($post_id)
 {
 	$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;p=$post_id") . "#p$post_id";
+	$return_forum_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
 	$pm_id = 0;
 }
 else
 {
 	$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&mode=view&p=$pm_id");
+	$return_forum_url = '';
 	$post_id = 0;
 	$forum_id = 0;
 }
@@ -70,8 +71,9 @@ if ($post_id)
 		trigger_error('POST_NOT_EXIST');
 	}
 
-	$forum_id = (int) $report_data['forum_id'];
-	$topic_id = (int) $report_data['topic_id'];
+	$forum_id 			= (int) $report_data['forum_id'];
+	$topic_id 			= (int) $report_data['topic_id'];
+	$reported_post_text	= $report_data['post_text'];
 
 	$sql = 'SELECT *
 		FROM ' . FORUMS_TABLE . '
@@ -101,6 +103,7 @@ if ($post_id)
 	{
 		$message = $user->lang['ALREADY_REPORTED'];
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $return_forum_url . '">', '</a>');
 		trigger_error($message);
 	}
 }
@@ -128,6 +131,8 @@ else
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_PM'], '<a href="' . $redirect_url . '">', '</a>');
 		trigger_error($message);
 	}
+	
+	$reported_post_text = $report_data['message_text'];
 }
 
 // Submit report?
@@ -153,7 +158,8 @@ if ($submit && $reason_id)
 		'user_notify'	=> (int) $user_notify,
 		'report_closed'	=> 0,
 		'report_time'	=> (int) time(),
-		'report_text'	=> (string) $report_text
+		'report_text'	=> (string) $report_text,
+		'reported_post_text'	=> $reported_post_text,
 	);
 
 	$sql = 'INSERT INTO ' . REPORTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
@@ -209,6 +215,10 @@ if ($submit && $reason_id)
 	meta_refresh(3, $redirect_url);
 
 	$message = $lang_success . '<br /><br />' . sprintf($lang_return, '<a href="' . $redirect_url . '">', '</a>');
+	if ($return_forum_url)
+	{
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $return_forum_url . '">', '</a>');
+	}
 	trigger_error($message);
 }
 

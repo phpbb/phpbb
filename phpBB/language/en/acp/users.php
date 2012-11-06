@@ -4,9 +4,8 @@
 * acp_users [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -55,11 +54,11 @@ $lang = array_merge($lang, array(
 	'CANNOT_REMOVE_YOURSELF'		=> 'You are not allowed to remove your own user account.',
 	'CANNOT_SET_FOUNDER_IGNORED'	=> 'You are not able to promote ignored users to be founders.',
 	'CANNOT_SET_FOUNDER_INACTIVE'	=> 'You need to activate users before you promote them to founders, only activated users are able to be promoted.',
-	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing the users e-mail address.',
+	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing the users email address.',
 
 	'DELETE_POSTS'			=> 'Delete posts',
 	'DELETE_USER'			=> 'Delete user',
-	'DELETE_USER_EXPLAIN'	=> 'Please note that deleting a user is final, they cannot be recovered.',
+	'DELETE_USER_EXPLAIN'	=> 'Please note that deleting a user is final, they cannot be recovered. Unread private messages sent by this user will be deleted and will not be available to their recipients.',
 
 	'FORCE_REACTIVATION_SUCCESS'	=> 'Successfully forced reactivation.',
 	'FOUNDER'						=> 'Founder',
@@ -94,8 +93,8 @@ $lang = array_merge($lang, array(
 	'USER_ADMIN_ACTIVATE'			=> 'Activate account',
 	'USER_ADMIN_ACTIVATED'			=> 'User activated successfully.',
 	'USER_ADMIN_AVATAR_REMOVED'		=> 'Successfully removed avatar from user account.',
-	'USER_ADMIN_BAN_EMAIL'			=> 'Ban by e-mail',
-	'USER_ADMIN_BAN_EMAIL_REASON'	=> 'E-mail address banned via user management',
+	'USER_ADMIN_BAN_EMAIL'			=> 'Ban by email',
+	'USER_ADMIN_BAN_EMAIL_REASON'	=> 'Email address banned via user management',
 	'USER_ADMIN_BAN_IP'				=> 'Ban by IP',
 	'USER_ADMIN_BAN_IP_REASON'		=> 'IP banned via user management',
 	'USER_ADMIN_BAN_NAME_REASON'	=> 'Username banned via user management',
@@ -124,6 +123,7 @@ $lang = array_merge($lang, array(
 	'USER_GROUP_SPECIAL'			=> 'Pre-defined groups user is a member of',
 	'USER_LIFTED_NR'				=> 'Successfully removed the user’s newly registered status.',
 	'USER_NO_ATTACHMENTS'			=> 'There are no attached files to display.',
+	'USER_NO_POSTS_TO_DELETE'			=> 'The user has no posts to retain or delete.',
 	'USER_OUTBOX_EMPTIED'			=> 'Successfully emptied user’s private message outbox.',
 	'USER_OUTBOX_EMPTY'				=> 'The user’s private message outbox was already empty.',
 	'USER_OVERVIEW_UPDATED'			=> 'User details updated.',

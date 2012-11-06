@@ -2,14 +2,13 @@
 
 <!-- IF not PROMPT -->
 	<!-- INCLUDE ucp_pm_message_header.html -->
-	<div class="panel pm-panel-message"><div>
 <!-- ENDIF -->
 
 <!-- IF PROMPT -->
 	<h2>{L_EXPORT_AS_CSV}</h2>
 	<form id="viewfolder" method="post" action="{S_PM_ACTION}">
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		<h3>{L_OPTIONS}</h3>
 		<fieldset>
 			<dl>
@@ -21,7 +20,7 @@
 				<dd><input class="inputbox" type="text" id="enclosure" name="enclosure" value="&#034;" /></dd>
 			</dl>
 		</fieldset>
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 	<fieldset class="submit-buttons">
 		<input type="hidden" name="export_option" value="CSV" />
@@ -104,14 +103,18 @@
 	<ul class="linklist">
 		<!-- IF TOTAL_MESSAGES or S_VIEW_MESSAGE -->
 		<li class="rightside pagination">
-			<!-- IF TOTAL_MESSAGES -->{TOTAL_MESSAGES}<!-- ENDIF -->
-			<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+			<!-- IF TOTAL_MESSAGES -->{TOTAL_MESSAGES} &bull; <!-- ENDIF -->
+			<!-- IF .pagination --> 
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE --> 
+				{PAGE_NUMBER}
+			<!-- ENDIF -->
 		</li>
 		<!-- ENDIF -->
 	</ul>
 	<!-- ENDIF -->
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 	<!-- IF FOLDER_CUR_MESSAGES neq 0 -->

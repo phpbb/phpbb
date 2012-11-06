@@ -1,10 +1,14 @@
 	</div>
 
-	<div class="copyright">Powered by <a href="http://www.phpbb.com/">phpBB</a> &copy; phpBB Group
+	<div class="copyright">{CREDIT_LINE}
 		<!-- IF TRANSLATION_INFO --><br />{TRANSLATION_INFO}<!-- ENDIF -->
 		<!-- IF DEBUG_OUTPUT --><br />{DEBUG_OUTPUT}<!-- ENDIF -->
 	</div>
 </div>
+
+<script type="text/javascript" src="{T_JQUERY_LINK}"></script>
+<!-- IF S_JQUERY_FALLBACK --><script type="text/javascript">window.jQuery || document.write(unescape('%3Cscript src="{T_ASSETS_PATH}/javascript/jquery.js?assets_version={T_ASSETS_VERSION}" type="text/javascript"%3E%3C/script%3E'));</script><!-- ENDIF -->
+{SCRIPTS}
 
 </body>
 </html>

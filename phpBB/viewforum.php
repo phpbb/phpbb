@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -177,7 +176,7 @@ if ($mark_read == 'topics')
 	$token = request_var('hash', '');
 	if (check_link_hash($token, 'global'))
 	{
-		markread('topics', array($forum_id));
+		markread('topics', array($forum_id), false, request_var('mark_time', 0));
 	}
 	$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 	meta_refresh(3, $redirect_url);
@@ -194,8 +193,12 @@ if ($forum_data['forum_topics_per_page'])
 // Do the forum Prune thang - cron type job ...
 if (!$config['use_system_cron'])
 {
-	$task = $cron->instantiate_task('cron_task_core_prune_forum', $forum_data);
-	if ($task && $task->is_ready())
+	$cron = $phpbb_container->get('cron.manager');
+
+	$task = $cron->find_task('cron.task.core.prune_forum');
+	$task->set_forum_data($forum_data);
+
+	if ($task->is_ready())
 	{
 		$url = $task->get_url();
 		$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
@@ -205,14 +208,16 @@ if (!$config['use_system_cron'])
 // Forum rules and subscription info
 $s_watching_forum = array(
 	'link'			=> '',
+	'link_toggle'	=> '',
 	'title'			=> '',
+	'title_toggle'	=> '',
 	'is_watching'	=> false,
 );
 
-if (($config['email_enable'] || $config['jab_enable']) && $config['allow_forum_notify'] && $forum_data['forum_type'] == FORUM_POST && $auth->acl_get('f_subscribe', $forum_id))
+if (($config['email_enable'] || $config['jab_enable']) && $config['allow_forum_notify'] && $forum_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_subscribe', $forum_id) || $user->data['user_id'] == ANONYMOUS))
 {
 	$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
-	watch_topic_forum('forum', $s_watching_forum, $user->data['user_id'], $forum_id, 0, $notify_status);
+	watch_topic_forum('forum', $s_watching_forum, $user->data['user_id'], $forum_id, 0, $notify_status, $start, $forum_data['forum_name']);
 }
 
 $s_forum_rules = '';
@@ -272,8 +277,23 @@ $post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LO
 // Display active topics?
 $s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
+$s_search_hidden_fields = array('fid' => array($forum_id));
+if ($_SID)
+{
+	$s_search_hidden_fields['sid'] = $_SID;
+}
+
+if (!empty($_EXTRA_URL))
+{
+	foreach ($_EXTRA_URL as $url_param)
+	{
+		$url_param = explode('=', $url_param, 2);
+		$s_search_hidden_fields[$url_param[0]] = $url_param[1];
+	}
+}
+
 $template->assign_vars(array(
-	'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
+	'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode($user->lang['COMMA_SEPARATOR'], $moderators[$forum_id]) : '',
 
 	'POST_IMG'					=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->img('button_topic_locked', $post_alt) : $user->img('button_topic_new', $post_alt),
 	'NEWEST_POST_IMG'			=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
@@ -304,12 +324,15 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_KEY'		=> $s_sort_key,
 	'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 	'S_TOPIC_ICONS'			=> ($s_display_active && sizeof($active_forum_ary)) ? max($active_forum_ary['enable_icons']) : (($forum_data['enable_icons']) ? true : false),
-	'S_WATCH_FORUM_LINK'	=> $s_watching_forum['link'],
+	'U_WATCH_FORUM_LINK'	=> $s_watching_forum['link'],
+	'U_WATCH_FORUM_TOGGLE'	=> $s_watching_forum['link_toggle'],
 	'S_WATCH_FORUM_TITLE'	=> $s_watching_forum['title'],
+	'S_WATCH_FORUM_TOGGLE'	=> $s_watching_forum['title_toggle'],
 	'S_WATCHING_FORUM'		=> $s_watching_forum['is_watching'],
 	'S_FORUM_ACTION'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . (($start == 0) ? '' : "&amp;start=$start")),
 	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('u_search') && $auth->acl_get('f_search', $forum_id) && $config['load_search']) ? true : false,
-	'S_SEARCHBOX_ACTION'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'fid[]=' . $forum_id),
+	'S_SEARCHBOX_ACTION'	=> append_sid("{$phpbb_root_path}search.$phpEx"),
+	'S_SEARCH_LOCAL_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),
 	'S_SINGLE_MODERATOR'	=> (!empty($moderators[$forum_id]) && sizeof($moderators[$forum_id]) > 1) ? false : true,
 	'S_IS_LOCKED'			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? true : false,
 	'S_VIEWFORUM'			=> true,
@@ -317,7 +340,7 @@ $template->assign_vars(array(
 	'U_MCP'				=> ($auth->acl_get('m_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&amp;i=main&amp;mode=forum_view", true, $user->session_id) : '',
 	'U_POST_NEW_TOPIC'	=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=post&amp;f=' . $forum_id) : '',
 	'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($start == 0) ? '' : "&amp;start=$start")),
-	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . "&amp;f=$forum_id&amp;mark=topics") : '',
+	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . "&amp;f=$forum_id&amp;mark=topics&amp;mark_time=" . time()) : '',
 ));
 
 // Grab icons
@@ -368,7 +391,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$sql_anounce_array['SELECT'] = $sql_array['SELECT'] . ', f.forum_name';
 
 	// Obtain announcements ... removed sort ordering, sort by time in all cases
-	$sql = $db->sql_build_query('SELECT', array(
+	$sql_ary = array(
 		'SELECT'	=> $sql_anounce_array['SELECT'],
 		'FROM'		=> $sql_array['FROM'],
 		'LEFT_JOIN'	=> $sql_anounce_array['LEFT_JOIN'],
@@ -379,11 +402,18 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				AND t.topic_type = ' . POST_GLOBAL . ')',
 
 		'ORDER_BY'	=> 't.topic_time DESC',
-	));
+	);
+	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		if (!$row['topic_approved'] && !$auth->acl_get('m_approve', $row['forum_id']))
+		{
+			// Do not display announcements that are waiting for approval.
+			continue;
+		}
+
 		$rowset[$row['topic_id']] = $row;
 		$announcement_list[] = $row['topic_id'];
 
@@ -560,11 +590,17 @@ if ($s_display_active)
 	$topics_count = 1;
 }
 
+// We need to remove the global announcements from the forums total topic count,
+// otherwise the number is different from the one on the forum list
+$total_topic_count = $topics_count - sizeof($global_announce_forums);
+
+$base_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''));
+phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
+
 $template->assign_vars(array(
-	'PAGINATION'	=> generate_pagination(append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '')), $topics_count, $config['topics_per_page'], $start),
-	'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
-	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count)))
-);
+	'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $base_url, $topics_count, $config['topics_per_page'], $start),
+	'TOTAL_TOPICS'	=> ($s_display_active) ? false : $user->lang('VIEW_FORUM_TOPICS', (int) $total_topic_count),
+));
 
 $topic_list = ($store_reverse) ? array_merge($announcement_list, array_reverse($topic_list)) : array_merge($announcement_list, $topic_list);
 $topic_tracking_info = $tracking_topics = array();
@@ -658,7 +694,7 @@ if (sizeof($topic_list))
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id", true, $user->session_id) : '';
 
 		// Send vars to template
-		$template->assign_block_vars('topicrow', array(
+		$topic_row = array(
 			'FORUM_ID'					=> $row['forum_id'],
 			'TOPIC_ID'					=> $topic_id,
 			'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
@@ -672,7 +708,6 @@ if (sizeof($topic_list))
 			'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 			'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 
-			'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
 			'REPLIES'			=> $replies,
 			'VIEWS'				=> $row['topic_views'],
 			'TOPIC_TITLE'		=> censor_text($row['topic_title']),
@@ -681,10 +716,7 @@ if (sizeof($topic_list))
 
 			'TOPIC_IMG_STYLE'		=> $folder_img,
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-			'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 			'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
-			'TOPIC_FOLDER_IMG_WIDTH'=> $user->img($folder_img, '', false, '', 'width'),
-			'TOPIC_FOLDER_IMG_HEIGHT'	=> $user->img($folder_img, '', false, '', 'height'),
 
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
@@ -714,8 +746,23 @@ if (sizeof($topic_list))
 			'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=reports&amp;f=' . $row['forum_id'] . '&amp;t=' . $topic_id, true, $user->session_id),
 			'U_MCP_QUEUE'			=> $u_mcp_queue,
 
-			'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test)
+			'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test,
 		);
+
+		/**
+		* Modify the topic data before it is assigned to the template
+		*
+		* @event core.viewforum_modify_topicrow
+		* @var	array	row			Array with topic data
+		* @var	array	topic_row	Template array with topic data
+		* @since 3.1-A1
+		*/
+		$vars = array('row', 'topic_row');
+		extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topicrow', compact($vars)));
+
+		$template->assign_block_vars('topicrow', $topic_row);
+
+		phpbb_generate_template_pagination($template, $view_topic_url, 'topicrow.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
 
 		$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 

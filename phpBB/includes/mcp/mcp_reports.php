@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -72,7 +71,7 @@ class mcp_reports
 				// closed reports are accessed by report id
 				$report_id = request_var('r', 0);
 
-				$sql = 'SELECT r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
+				$sql = 'SELECT r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, r.reported_post_text, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
 					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
 					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id") . '
 						AND rr.reason_id = r.reason_id
@@ -117,8 +116,9 @@ class mcp_reports
 					$template->assign_vars(array(
 						'S_TOPIC_REVIEW'	=> true,
 						'S_BBCODE_ALLOWED'	=> $post_info['enable_bbcode'],
-						'TOPIC_TITLE'		=> $post_info['topic_title'])
-					);
+						'TOPIC_TITLE'		=> $post_info['topic_title'],
+						'REPORTED_POST_ID'	=> $post_id,
+					));
 				}
 
 				$topic_tracking_info = $extensions = $attachments = array();
@@ -148,6 +148,7 @@ class mcp_reports
 
 				$message = bbcode_nl2br($message);
 				$message = smiley_text($message);
+				$report['report_text'] = make_clickable(bbcode_nl2br($report['report_text']));
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 				{
@@ -226,7 +227,7 @@ class mcp_reports
 					'REPORTER_NAME'				=> get_username_string('username', $report['user_id'], $report['username'], $report['user_colour']),
 					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
 
-					'POST_PREVIEW'			=> $message,
+					'POST_PREVIEW'			=> bbcode_nl2br($report['reported_post_text']),
 					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
@@ -367,7 +368,7 @@ class mcp_reports
 
 				if (sizeof($report_ids))
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
 						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
 						WHERE ' . $db->sql_in_set('r.report_id', $report_ids) . '
 							AND t.topic_id = p.topic_id
@@ -402,12 +403,16 @@ class mcp_reports
 							'POST_TIME'		=> $user->format_date($row['post_time']),
 							'REPORT_ID'		=> $row['report_id'],
 							'REPORT_TIME'	=> $user->format_date($row['report_time']),
-							'TOPIC_TITLE'	=> $row['topic_title'])
-						);
+							'TOPIC_TITLE'	=> $row['topic_title'],
+							'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+						));
 					}
 					$db->sql_freeresult($result);
 					unset($report_ids, $row);
 				}
+
+				$base_url = $this->u_action . "&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
 
 				// Now display the page
 				$template->assign_vars(array(
@@ -419,11 +424,10 @@ class mcp_reports
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false,
 
-					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
-					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total,
-					'TOTAL_REPORTS'			=> ($total == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $total),
+					'TOTAL_REPORTS'			=> $user->lang('LIST_REPORTS', (int) $total),
 					)
 				);
 

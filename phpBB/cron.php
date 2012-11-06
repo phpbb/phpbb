@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -62,7 +61,7 @@ function do_cron($cron_lock, $run_tasks)
 
 if ($config['use_system_cron'])
 {
-	$cron = new phpbb_cron_manager($phpbb_root_path . 'includes/cron/task', $phpEx, $cache->get_driver());
+	$cron = $phpbb_container->get('cron.manager');
 }
 else
 {
@@ -72,7 +71,7 @@ else
 	output_image();
 }
 
-$cron_lock = new phpbb_lock_db('cron_lock', $config, $db);
+$cron_lock = $phpbb_container->get('cron.lock_db');
 if ($cron_lock->acquire())
 {
 	if ($config['use_system_cron'])

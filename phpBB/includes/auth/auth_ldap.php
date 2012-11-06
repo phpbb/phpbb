@@ -6,9 +6,8 @@
 * Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 *
 * @package login
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -156,7 +155,11 @@ function login_ldap(&$username, &$password)
 	{
 		if (!@ldap_bind($ldap, htmlspecialchars_decode($config['ldap_user']), htmlspecialchars_decode($config['ldap_password'])))
 		{
-			return $user->lang['LDAP_NO_SERVER_CONNECTION'];
+			return array(
+				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+				'error_msg'		=> 'LDAP_NO_SERVER_CONNECTION',
+				'user_row'		=> array('user_id' => ANONYMOUS),
+			);
 		}
 	}
 
@@ -335,7 +338,7 @@ function acp_ldap(&$new)
 	</dl>
 	<dl>
 		<dt><label for="ldap_password">' . $user->lang['LDAP_PASSWORD'] . ':</label><br /><span>' . $user->lang['LDAP_PASSWORD_EXPLAIN'] . '</span></dt>
-		<dd><input type="password" id="ldap_password" size="40" name="config[ldap_password]" value="' . $new['ldap_password'] . '" /></dd>
+		<dd><input type="password" id="ldap_password" size="40" name="config[ldap_password]" value="' . $new['ldap_password'] . '" autocomplete="off" /></dd>
 	</dl>
 	';
 

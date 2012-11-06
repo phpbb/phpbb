@@ -2,11 +2,18 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Header for acp pages
@@ -15,6 +22,7 @@ function adm_page_header($page_title)
 {
 	global $config, $db, $user, $template;
 	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
+	global $phpbb_dispatcher;
 
 	if (defined('HEADER_INC'))
 	{
@@ -22,6 +30,26 @@ function adm_page_header($page_title)
 	}
 
 	define('HEADER_INC', true);
+
+	// A listener can set this variable to `true` when it overrides this function
+	$adm_page_header_override = false;
+
+	/**
+	* Execute code and/or overwrite adm_page_header()
+	*
+	* @event core.adm_page_header
+	* @var	string	page_title			Page title
+	* @var	bool	adm_page_header_override	Shall we return instead of
+	*									running the rest of adm_page_header()
+	* @since 3.1-A1
+	*/
+	$vars = array('page_title', 'adm_page_header_override');
+	extract($phpbb_dispatcher->trigger_event('core.adm_page_header', compact($vars)));
+
+	if ($adm_page_header_override)
+	{
+		return;
+	}
 
 	// gzip_compression
 	if ($config['gzip_compress'])
@@ -89,7 +117,27 @@ function adm_page_footer($copyright_html = true)
 {
 	global $db, $config, $template, $user, $auth, $cache;
 	global $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-	global $request;
+	global $request, $phpbb_dispatcher;
+
+	// A listener can set this variable to `true` when it overrides this function
+	$adm_page_footer_override = false;
+
+	/**
+	* Execute code and/or overwrite adm_page_footer()
+	*
+	* @event core.adm_page_footer
+	* @var	bool	copyright_html			Shall we display the copyright?
+	* @var	bool	adm_page_footer_override	Shall we return instead of
+	*									running the rest of adm_page_footer()
+	* @since 3.1-A1
+	*/
+	$vars = array('copyright_html', 'adm_page_footer_override');
+	extract($phpbb_dispatcher->trigger_event('core.adm_page_footer', compact($vars)));
+
+	if ($adm_page_footer_override)
+	{
+		return;
+	}
 
 	// Output page creation time
 	if (defined('DEBUG'))
@@ -106,15 +154,13 @@ function adm_page_footer($copyright_html = true)
 
 		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{
-			if (function_exists('memory_get_usage'))
+			if (function_exists('memory_get_peak_usage'))
 			{
-				if ($memory_usage = memory_get_usage())
+				if ($memory_usage = memory_get_peak_usage())
 				{
-					global $base_memory_usage;
-					$memory_usage -= $base_memory_usage;
 					$memory_usage = get_formatted_filesize($memory_usage);
 
-					$debug_output .= ' | Memory Usage: ' . $memory_usage;
+					$debug_output .= ' | Peak Memory Usage: ' . $memory_usage;
 				}
 			}
 
@@ -126,6 +172,9 @@ function adm_page_footer($copyright_html = true)
 		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
+		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
+		'T_JQUERY_LINK'		=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$phpbb_root_path}assets/javascript/jquery.js",
+		'S_JQUERY_FALLBACK'	=> ($config['load_jquery_cdn']) ? true : false,
 		'VERSION'			=> $config['version'])
 	);
 
@@ -164,7 +213,7 @@ function build_select($option_ary, $option_default = false)
 /**
 * Build radio fields in acp pages
 */
-function h_radio($name, &$input_ary, $input_default = false, $id = false, $key = false)
+function h_radio($name, $input_ary, $input_default = false, $id = false, $key = false, $separator = '')
 {
 	global $user;
 
@@ -173,7 +222,7 @@ function h_radio($name, &$input_ary, $input_default = false, $id = false, $key =
 	foreach ($input_ary as $value => $title)
 	{
 		$selected = ($input_default !== false && $value == $input_default) ? ' checked="checked"' : '';
-		$html .= '<label><input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . $user->lang[$title] . '</label>';
+		$html .= '<label><input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . $user->lang[$title] . '</label>' . $separator;
 		$id_assigned = true;
 	}
 
@@ -185,7 +234,7 @@ function h_radio($name, &$input_ary, $input_default = false, $id = false, $key =
 */
 function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 {
-	global $user, $module;
+	global $user, $module, $phpbb_dispatcher;
 
 	$tpl = '';
 	$name = 'config[' . $config_key . ']';
@@ -203,7 +252,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			$size = (int) $tpl_type[1];
 			$maxlength = (int) $tpl_type[2];
 
-			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new[$config_key] . '" />';
+			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
 		break;
 
 		case 'dimension':
@@ -297,6 +346,24 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		$tpl .= $vars['append'];
 	}
 
+	/**
+	* Overwrite the html code we display for the config value
+	*
+	* @event core.build_config_template
+	* @var	array	tpl_type	Config type array:
+	*						0 => data type
+	*						1 [optional] => string: size, int: minimum
+	*						2 [optional] => string: max. length, int: maximum
+	* @var	string	key			Should be used for the id attribute in html
+	* @var	array	new			Array with the config values we display
+	* @var	string	name		Should be used for the name attribute
+	* @var	array	vars		Array with the options for the config
+	* @var	string	tpl			The resulting html code we display
+	* @since 3.1-A1
+	*/
+	$vars = array('tpl_type', 'key', 'new', 'name', 'vars', 'tpl');
+	extract($phpbb_dispatcher->trigger_event('core.build_config_template', compact($vars)));
+
 	return $tpl;
 }
 
@@ -306,7 +373,8 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 */
 function validate_config_vars($config_vars, &$cfg_array, &$error)
 {
-	global $phpbb_root_path, $user;
+	global $phpbb_root_path, $user, $phpbb_dispatcher;
+
 	$type	= 0;
 	$min	= 1;
 	$max	= 2;
@@ -329,7 +397,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 		switch ($validator[$type])
 		{
 			case 'string':
-				$length = strlen($cfg_array[$config_name]);
+				$length = utf8_strlen($cfg_array[$config_name]);
 
 				// the column is a VARCHAR
 				$validator[$max] = (isset($validator[$max])) ? min(255, $validator[$max]) : 255;
@@ -481,6 +549,24 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				}
 
 			break;
+
+			default:
+				/**
+				* Validate a config value
+				*
+				* @event core.validate_config_variable
+				* @var	array	cfg_array	Array with config values
+				* @var	string	config_name	Name of the config we validate
+				* @var	array	config_definition	Array with the options for
+				*									this config
+				* @var	array	error		Array of errors, the errors should
+				*							be strings only, language keys are
+				*							not replaced afterwards
+				* @since 3.1-A1
+				*/
+				$vars = array('cfg_array', 'config_name', 'config_definition', 'error');
+				extract($phpbb_dispatcher->trigger_event('core.validate_config_variable', compact($vars)));
+			break;
 		}
 	}
 
@@ -527,7 +613,7 @@ function validate_range($value_ary, &$error)
 		{
 			case 'string' :
 				$max = (isset($column[1])) ? min($column[1],$type['max']) : $type['max'];
-				if (strlen($value['value']) > $max)
+				if (utf8_strlen($value['value']) > $max)
 				{
 					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$value['lang']], $max);
 				}

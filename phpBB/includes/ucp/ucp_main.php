@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -70,17 +69,16 @@ class ucp_main
 				// Get cleaned up list... return only those forums having the f_read permission
 				$forum_ary = $auth->acl_getf('f_read', true);
 				$forum_ary = array_unique(array_keys($forum_ary));
-
-				$sql = "SELECT t.* $sql_select
-					FROM $sql_from
-					WHERE t.topic_type = " . POST_GLOBAL . '
-						AND ' . $db->sql_in_set('t.forum_id', $forum_ary) . '
-					ORDER BY t.topic_last_post_time DESC';
-
 				$topic_list = $rowset = array();
+
 				// If the user can't see any forums, he can't read any posts because fid of 0 is invalid
 				if (!empty($forum_ary))
 				{
+					$sql = "SELECT t.* $sql_select
+						FROM $sql_from
+						WHERE t.topic_type = " . POST_GLOBAL . '
+							AND ' . $db->sql_in_set('t.forum_id', $forum_ary) . '
+						ORDER BY t.topic_last_post_time DESC';
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))
@@ -161,7 +159,6 @@ class ucp_main
 
 						'TOPIC_IMG_STYLE'		=> $folder_img,
 						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-						'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 						'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
 
 						'S_USER_POSTED'		=> (!empty($row['topic_posted']) && $row['topic_posted']) ? true : false,
@@ -195,8 +192,8 @@ class ucp_main
 					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
 					'WARNINGS'			=> ($user->data['user_warnings']) ? $user->data['user_warnings'] : 0,
 					'POSTS'				=> ($user->data['user_posts']) ? $user->data['user_posts'] : 0,
-					'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
-					'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
+					'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
+					'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
 
 					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
@@ -348,7 +345,6 @@ class ucp_main
 							'FORUM_ID'				=> $forum_id,
 							'FORUM_IMG_STYLE'		=> $folder_image,
 							'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
-							'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, false, '', 'src'),
 							'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
 							'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 							'FORUM_NAME'			=> $row['forum_name'],
@@ -673,11 +669,12 @@ class ucp_main
 
 		if ($topics_count)
 		{
+			phpbb_generate_template_pagination($template, $this->u_action, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
+
 			$template->assign_vars(array(
-				'PAGINATION'	=> generate_pagination($this->u_action, $topics_count, $config['topics_per_page'], $start),
-				'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
-				'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count))
-			);
+				'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $this->u_action, $topics_count, $config['topics_per_page'], $start),
+				'TOTAL_TOPICS'	=> $user->lang('VIEW_FORUM_TOPICS', (int) $topics_count),
+			));
 		}
 
 		if ($mode == 'subscribed')
@@ -816,7 +813,6 @@ class ucp_main
 
 				'S_DELETED_TOPIC'	=> (!$row['topic_id']) ? true : false,
 
-				'PAGINATION'		=> topic_generate_pagination($replies, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . "&amp;t=$topic_id")),
 				'REPLIES'			=> $replies,
 				'VIEWS'				=> $row['topic_views'],
 				'TOPIC_TITLE'		=> censor_text($row['topic_title']),
@@ -825,7 +821,6 @@ class ucp_main
 
 				'TOPIC_IMG_STYLE'		=> $folder_img,
 				'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-				'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 				'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
 				'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 				'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
@@ -841,6 +836,8 @@ class ucp_main
 				'U_VIEW_TOPIC'			=> $view_topic_url,
 				'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 			));
+
+			phpbb_generate_template_pagination($template, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . "&amp;t=$topic_id"), 'topicrow.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
 		}
 	}
 }

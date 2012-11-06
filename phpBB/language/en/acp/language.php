@@ -4,9 +4,8 @@
 * acp_language [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -39,7 +38,7 @@ $lang = array_merge($lang, array(
 	'ACP_FILES'						=> 'Admin language files',
 	'ACP_LANGUAGE_PACKS_EXPLAIN'	=> 'Here you are able to install/remove language packs. The default language pack is marked with an asterisk (*).',
 
-	'EMAIL_FILES'			=> 'E-mail templates',
+	'EMAIL_FILES'			=> 'Email templates',
 
 	'FILE_CONTENTS'				=> 'File contents',
 	'FILE_FROM_STORAGE'			=> 'File from storage folder',
@@ -59,6 +58,7 @@ $lang = array_merge($lang, array(
 	'LANGUAGE_PACK_DELETED'				=> 'The language pack <strong>%s</strong> has been removed successfully. All users using this language have been reset to the boards default language.',
 	'LANGUAGE_PACK_DETAILS'				=> 'Language pack details',
 	'LANGUAGE_PACK_INSTALLED'			=> 'The language pack <strong>%s</strong> has been successfully installed.',
+	'LANGUAGE_PACK_CPF_UPDATE'			=> 'The custom profile fields’ language strings were copied from the default language. Please change them if necessary.',
 	'LANGUAGE_PACK_ISO'					=> 'ISO',
 	'LANGUAGE_PACK_LOCALNAME'			=> 'Local name',
 	'LANGUAGE_PACK_NAME'				=> 'Name',

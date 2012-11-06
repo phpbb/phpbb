@@ -3,7 +3,7 @@
 *
 * @package phpbb_request
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -29,6 +29,7 @@ interface phpbb_request_interface
 	const GET = 1;
 	const REQUEST = 2;
 	const COOKIE = 3;
+	const SERVER = 4;
 	/**#@-*/
 
 	/**
@@ -67,6 +68,26 @@ interface phpbb_request_interface
 	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST);
 
 	/**
+	* Shortcut method to retrieve SERVER variables.
+	*
+	* @param	string|array	$var_name		See phpbb_request_interface::variable
+	* @param	mixed			$default		See phpbb_request_interface::variable
+	*
+	* @return	mixed	The server variable value.
+	*/
+	public function server($var_name, $default = '');
+
+	/**
+	* Shortcut method to retrieve the value of client HTTP headers.
+	*
+	* @param	string|array	$header_name	The name of the header to retrieve.
+	* @param	mixed			$default		See phpbb_request_interface::variable
+	*
+	* @return	mixed	The header value.
+	*/
+	public function header($var_name, $default = '');
+
+	/**
 	* Checks whether a certain variable was sent via POST.
 	* To make sure that a request was sent using POST you should call this function
 	* on at least one variable.
@@ -89,6 +110,20 @@ interface phpbb_request_interface
 	* @return	bool			True if the variable was sent as input
 	*/
 	public function is_set($var, $super_global = phpbb_request_interface::REQUEST);
+
+	/**
+	* Checks whether the current request is an AJAX request (XMLHttpRequest)
+	*
+	* @return	bool			True if the current request is an ajax request
+	*/
+	public function is_ajax();
+
+	/**
+	* Checks if the current request is happening over HTTPS.
+	*
+	* @return	bool			True if the request is secure.
+	*/
+	public function is_secure();
 
 	/**
 	* Returns all variable names for a given super global

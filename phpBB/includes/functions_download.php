@@ -3,7 +3,7 @@
 *
 * @package phpBB3
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -100,10 +100,10 @@ function send_avatar_to_browser($file, $browser)
 */
 function wrap_img_in_html($src, $title)
 {
-	echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-Strict.dtd">';
+	echo '<!DOCTYPE html>';
 	echo '<html>';
 	echo '<head>';
-	echo '<meta http-equiv="content-type" content="text/html; charset=UTF-8" />';
+	echo '<meta charset="utf-8">';
 	echo '<title>' . $title . '</title>';
 	echo '</head>';
 	echo '<body>';
@@ -126,7 +126,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	if (!@file_exists($filename))
 	{
 		send_status_line(404, 'Not Found');
-		trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . '<br /><br />' . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
+		trigger_error('ERROR_NO_ATTACHMENT');
 	}
 
 	// Correct the mime type - we force application/octetstream for all files, except images
@@ -274,7 +274,9 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 */
 function header_filename($file)
 {
-	$user_agent = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : '';
+	global $request;
+
+	$user_agent = $request->header('User-Agent');
 
 	// There be dragons here.
 	// Not many follows the RFC...
@@ -292,14 +294,14 @@ function header_filename($file)
 */
 function download_allowed()
 {
-	global $config, $user, $db;
+	global $config, $user, $db, $request;
 
 	if (!$config['secure_downloads'])
 	{
 		return true;
 	}
 
-	$url = (!empty($_SERVER['HTTP_REFERER'])) ? trim($_SERVER['HTTP_REFERER']) : trim(getenv('HTTP_REFERER'));
+	$url = htmlspecialchars_decode($request->header('Referer'));
 
 	if (!$url)
 	{
@@ -404,8 +406,10 @@ function download_allowed()
 */
 function set_modified_headers($stamp, $browser)
 {
+	global $request;
+
 	// let's see if we have to send the file at all
-	$last_load 	=  isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) : false;
+	$last_load 	=  $request->header('Modified-Since') ? strtotime(trim($request->header('Modified-Since'))) : false;
 	if ((strpos(strtolower($browser), 'msie 6.0') === false) && (strpos(strtolower($browser), 'msie 8.0') === false))
 	{
 		if ($last_load !== false && $last_load >= $stamp)
@@ -473,12 +477,12 @@ function phpbb_http_byte_range($filesize)
 	{
 		$request_array = phpbb_find_range_request();
 	}
-	
+
 	return (empty($request_array)) ? false : phpbb_parse_range_request($request_array, $filesize);
 }
 
 /**
-* Searches for HTTP range request in super globals.
+* Searches for HTTP range request in request headers.
 *
 * @return mixed		false if no request found
 *					array of strings containing the requested ranges otherwise
@@ -486,23 +490,16 @@ function phpbb_http_byte_range($filesize)
 */
 function phpbb_find_range_request()
 {
-	$globals = array(
-		array('_SERVER',	'HTTP_RANGE'),
-		array('_ENV',		'HTTP_RANGE'),
-	);
+	global $request;
 
-	foreach ($globals as $array)
+	$value = $request->header('Range');
+
+	// Make sure range request starts with "bytes="
+	if (strpos($value, 'bytes=') === 0)
 	{
-		$global	= $array[0];
-		$key	= $array[1];
-
-		// Make sure range request starts with "bytes="
-		if (isset($GLOBALS[$global][$key]) && strpos($GLOBALS[$global][$key], 'bytes=') === 0)
-		{
-			// Strip leading 'bytes='
-			// Multiple ranges can be separated by a comma
-			return explode(',', substr($GLOBALS[$global][$key], 6));
-		}
+		// Strip leading 'bytes='
+		// Multiple ranges can be separated by a comma
+		return explode(',', substr($value, 6));
 	}
 
 	return false;
@@ -594,4 +591,133 @@ function phpbb_parse_range_request($request_array, $filesize)
 			'bytes_total'		=> $filesize,
 		);
 	}
+}
+
+/**
+* Increments the download count of all provided attachments
+*
+* @param dbal $db The database object
+* @param array|int $ids The attach_id of each attachment
+*
+* @return null
+*/
+function phpbb_increment_downloads($db, $ids)
+{
+	if (!is_array($ids))
+	{
+		$ids = array($ids);
+	}
+
+	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+		SET download_count = download_count + 1
+		WHERE ' . $db->sql_in_set('attach_id', $ids);
+	$db->sql_query($sql);
+}
+
+/**
+* Handles authentication when downloading attachments from a post or topic
+*
+* @param dbal $db The database object
+* @param phpbb_auth $auth The authentication object
+* @param int $topic_id The id of the topic that we are downloading from
+*
+* @return null
+*/
+function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
+{
+	$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
+		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
+		WHERE t.topic_id = " . (int) $topic_id . "
+			AND t.forum_id = f.forum_id";
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
+	{
+		if ($row && $row['forum_password'])
+		{
+			// Do something else ... ?
+			login_forum_box($row);
+		}
+	}
+	else
+	{
+		send_status_line(403, 'Forbidden');
+		trigger_error('SORRY_AUTH_VIEW_ATTACH');
+	}
+}
+
+/**
+* Handles authentication when downloading attachments from PMs
+*
+* @param dbal $db The database object
+* @param phpbb_auth $auth The authentication object
+* @param int $user_id The user id
+* @param int $msg_id The id of the PM that we are downloading from
+*
+* @return null
+*/
+function phpbb_download_handle_pm_auth($db, $auth, $user_id, $msg_id)
+{
+	if (!$auth->acl_get('u_pm_download'))
+	{
+		send_status_line(403, 'Forbidden');
+		trigger_error('SORRY_AUTH_VIEW_ATTACH');
+	}
+
+	$allowed = phpbb_download_check_pm_auth($db, $user_id, $msg_id);
+
+	if (!$allowed)
+	{
+		send_status_line(403, 'Forbidden');
+		trigger_error('ERROR_NO_ATTACHMENT');
+	}
+}
+
+/**
+* Checks whether a user can download from a particular PM
+*
+* @param dbal $db The database object
+* @param int $user_id The user id
+* @param int $msg_id The id of the PM that we are downloading from
+*
+* @return bool Whether the user is allowed to download from that PM or not
+*/
+function phpbb_download_check_pm_auth($db, $user_id, $msg_id)
+{
+	// Check if the attachment is within the users scope...
+	$sql = 'SELECT msg_id
+		FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE msg_id = ' . (int) $msg_id . '
+			AND (
+				user_id = ' . (int) $user_id . '
+				OR author_id = ' . (int) $user_id . '
+			)';
+	$result = $db->sql_query_limit($sql, 1);
+	$allowed = (bool) $db->sql_fetchfield('msg_id');
+	$db->sql_freeresult($result);
+
+	return $allowed;
+}
+
+/**
+* Cleans a filename of any characters that could potentially cause a problem on
+* a user's filesystem.
+*
+* @param string $filename The filename to clean
+*
+* @return string The cleaned filename
+*/
+function phpbb_download_clean_filename($filename)
+{
+	$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
+
+	// rawurlencode to convert any potentially 'bad' characters that we missed
+	$filename = rawurlencode(str_replace($bad_chars, '_', $filename));
+
+	// Turn the %xx entities created by rawurlencode to _
+	$filename = preg_replace("/%(\w{2})/", '_', $filename);
+
+	return $filename;
 }

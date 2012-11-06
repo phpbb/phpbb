@@ -4,9 +4,8 @@
 * acp_profile [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -66,6 +65,8 @@ $lang = array_merge($lang, array(
 	'DISPLAY_AT_PROFILE_EXPLAIN'	=> 'The user is able to change this profile field within the user control panel.',
 	'DISPLAY_AT_REGISTER'			=> 'Display on registration screen',
 	'DISPLAY_AT_REGISTER_EXPLAIN'	=> 'If this option is enabled, the field will be displayed on registration.',
+	'DISPLAY_ON_PM'					=> 'Display on view pm screen',
+	'DISPLAY_ON_PM_EXPLAIN'			=> 'If this option is enabled, the field will be displayed in the mini-profile on the pm screen.',
 	'DISPLAY_ON_VT'					=> 'Display on viewtopic screen',
 	'DISPLAY_ON_VT_EXPLAIN'			=> 'If this option is enabled, the field will be displayed in the mini-profile on the topic screen.',
 	'DISPLAY_PROFILE_FIELD'			=> 'Publicly display profile field',
@@ -131,6 +132,8 @@ $lang = array_merge($lang, array(
 
 	'SAVE'							=> 'Save',
 	'SECOND_OPTION'					=> 'Second option',
+	'SHOW_NOVALUE_FIELD'			=> 'Show field if no value was selected',
+	'SHOW_NOVALUE_FIELD_EXPLAIN'	=> 'Determines if the profile field should be displayed if no value was selected for optional fields or if no value has been selected yet for required fields.',
 	'STEP_1_EXPLAIN_CREATE'			=> 'Here you can enter the first basic parameters of your new profile field. This information is needed for the second step where you’ll be able to set remaining options and tweak your profile field further.',
 	'STEP_1_EXPLAIN_EDIT'			=> 'Here you can change the basic parameters of your profile field. The relevant options are re-calculated within the second step.',
 	'STEP_1_TITLE_CREATE'			=> 'Add profile field',

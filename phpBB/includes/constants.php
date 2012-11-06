@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -226,6 +225,7 @@ define('CONFIG_TABLE',				$table_prefix . 'config');
 define('CONFIRM_TABLE',				$table_prefix . 'confirm');
 define('DISALLOW_TABLE',			$table_prefix . 'disallow');
 define('DRAFTS_TABLE',				$table_prefix . 'drafts');
+define('EXT_TABLE',					$table_prefix . 'ext');
 define('EXTENSIONS_TABLE',			$table_prefix . 'extensions');
 define('EXTENSION_GROUPS_TABLE',	$table_prefix . 'extension_groups');
 define('FORUMS_TABLE',				$table_prefix . 'forums');
@@ -236,6 +236,7 @@ define('GROUPS_TABLE',				$table_prefix . 'groups');
 define('ICONS_TABLE',				$table_prefix . 'icons');
 define('LANG_TABLE',				$table_prefix . 'lang');
 define('LOG_TABLE',					$table_prefix . 'log');
+define('LOGIN_ATTEMPT_TABLE',		$table_prefix . 'login_attempts');
 define('MODERATOR_CACHE_TABLE',		$table_prefix . 'moderator_cache');
 define('MODULES_TABLE',				$table_prefix . 'modules');
 define('POLL_OPTIONS_TABLE',		$table_prefix . 'poll_options');
@@ -259,6 +260,7 @@ define('SESSIONS_TABLE',			$table_prefix . 'sessions');
 define('SESSIONS_KEYS_TABLE',		$table_prefix . 'sessions_keys');
 define('SITELIST_TABLE',			$table_prefix . 'sitelist');
 define('SMILIES_TABLE',				$table_prefix . 'smilies');
+define('SPHINX_TABLE',				$table_prefix . 'sphinx');
 define('STYLES_TABLE',				$table_prefix . 'styles');
 define('STYLES_TEMPLATE_TABLE',		$table_prefix . 'styles_template');
 define('STYLES_TEMPLATE_DATA_TABLE',$table_prefix . 'styles_template_data');

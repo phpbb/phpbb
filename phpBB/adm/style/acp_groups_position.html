@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 	<h1>{L_MANAGE_LEGEND}</h1>
 
@@ -82,10 +82,11 @@
 	<fieldset>
 		<legend>{L_TEAMPAGE_SETTINGS}</legend>
 		<dl>
-			<dt><label for="teampage_multiple">{L_TEAMPAGE_MULTIPLE}:</label><br /><span>{L_TEAMPAGE_MULTIPLE_EXPLAIN}</span></dt>
+			<dt><label for="teampage_multiple">{L_TEAMPAGE_MEMBERSHIPS}:</label></dt>
 			<dd>
-				<label><input type="radio" name="teampage_multiple" class="radio" value="1"<!-- IF DISPLAY_MULTIPLE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-				<label><input type="radio" name="teampage_multiple" class="radio" value="0"<!-- IF not DISPLAY_MULTIPLE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+				<label><input type="radio" name="teampage_memberships" class="radio" value="0"<!-- IF DISPLAY_MEMBERSHIPS == 0 --> checked="checked"<!-- ENDIF --> /> {L_TEAMPAGE_DISP_FIRST}</label><br />
+				<label><input type="radio" name="teampage_memberships" class="radio" value="1"<!-- IF DISPLAY_MEMBERSHIPS == 1 --> checked="checked"<!-- ENDIF --> /> {L_TEAMPAGE_DISP_DEFAULT}</label><br />
+				<label><input type="radio" name="teampage_memberships" class="radio" value="2"<!-- IF DISPLAY_MEMBERSHIPS == 2 --> checked="checked"<!-- ENDIF --> /> {L_TEAMPAGE_DISP_ALL}</label>
 			</dd>
 		</dl>
 		<dl>

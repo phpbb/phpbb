@@ -3,12 +3,11 @@
 *
 * @package testing
 * @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
 
 /**
 * Extends the session class to overwrite the setting of cookies.
@@ -17,7 +16,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
 * test it without warnings about sent headers. This class only stores cookie
 * data for later verification.
 */
-class phpbb_mock_session_testable extends session
+class phpbb_mock_session_testable extends phpbb_session
 {
 	private $_cookies = array();
 

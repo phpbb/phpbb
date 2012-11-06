@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -113,7 +112,7 @@ function update_last_username()
 */
 function user_update_name($old_name, $new_name)
 {
-	global $config, $db, $cache;
+	global $config, $db, $cache, $phpbb_dispatcher;
 
 	$update_ary = array(
 		FORUMS_TABLE			=> array('forum_last_poster_name'),
@@ -138,6 +137,17 @@ function user_update_name($old_name, $new_name)
 		set_config('newest_username', $new_name, true);
 	}
 
+	/**
+	* Update a username when it is changed
+	*
+	* @event core.update_username
+	* @var	string	old_name	The old username that is replaced
+	* @var	string	new_name	The new username
+	* @since 3.1-A1
+	*/
+	$vars = array('old_name', 'new_name');
+	extract($phpbb_dispatcher->trigger_event('core.update_username', compact($vars)));
+
 	// Because some tables/caches use username-specific data we need to purge this here.
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 }
@@ -152,6 +162,7 @@ function user_update_name($old_name, $new_name)
 function user_add($user_row, $cp_data = false)
 {
 	global $db, $user, $auth, $config, $phpbb_root_path, $phpEx;
+	global $phpbb_dispatcher;
 
 	if (empty($user_row['username']) || !isset($user_row['group_id']) || !isset($user_row['user_email']) || !isset($user_row['user_type']))
 	{
@@ -198,7 +209,6 @@ function user_add($user_row, $cp_data = false)
 		'user_lastpost_time'	=> 0,
 		'user_lastpage'			=> '',
 		'user_posts'			=> 0,
-		'user_dst'				=> (int) $config['board_dst'],
 		'user_colour'			=> '',
 		'user_occ'				=> '',
 		'user_interests'		=> '',
@@ -245,6 +255,16 @@ function user_add($user_row, $cp_data = false)
 			$sql_ary[$key] = $user_row[$key];
 		}
 	}
+
+	/**
+	* Use this event to modify the values to be inserted when a user is added
+	*
+	* @event core.user_add_modify_data
+	* @var array	sql_ary		Array of data to be inserted when a user is added
+	* @since 3.1-A1
+	*/
+	$vars = array('sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.user_add_modify_data', compact($vars)));
 
 	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 	$db->sql_query($sql);
@@ -334,7 +354,7 @@ function user_add($user_row, $cp_data = false)
 */
 function user_delete($mode, $user_ids, $retain_username = true)
 {
-	global $cache, $config, $db, $user, $auth;
+	global $cache, $config, $db, $user, $auth, $phpbb_dispatcher;
 	global $phpbb_root_path, $phpEx;
 
 	$db->sql_transaction('begin');
@@ -361,6 +381,18 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	{
 		return false;
 	}
+
+	/**
+	* Event before a user is deleted
+	*
+	* @event core.delete_user_before
+	* @var	string	mode			Mode of deletion (retain/delete posts)
+	* @var	int		user_id			ID of the deleted user
+	* @var	mixed	post_username	Guest username that is being used or false
+	* @since 3.1-A1
+	*/
+	$vars = array('mode', 'user_id', 'post_username');
+	extract($phpbb_dispatcher->trigger_event('core.delete_user_before', compact($vars)));
 
 	// Before we begin, we will remove the reports the user issued.
 	$sql = 'SELECT r.post_id, p.topic_id
@@ -571,69 +603,29 @@ function user_delete($mode, $user_ids, $retain_username = true)
 		WHERE ' . $db->sql_in_set('session_user_id', $user_ids);
 	$db->sql_query($sql);
 
-	// Remove any undelivered mails...
-	$sql = 'SELECT msg_id, user_id
-		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE ' . $author_id_sql . '
-			AND folder_id = ' . PRIVMSGS_NO_BOX;
-	$result = $db->sql_query($sql);
-
-	$undelivered_msg = $undelivered_user = array();
-	while ($row = $db->sql_fetchrow($result))
+	// Clean the private messages tables from the user
+	if (!function_exists('phpbb_delete_user_pms'))
 	{
-		$undelivered_msg[] = $row['msg_id'];
-		$undelivered_user[$row['user_id']][] = true;
+		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 	}
-	$db->sql_freeresult($result);
-
-	if (sizeof($undelivered_msg))
-	{
-		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
-			WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
-		$db->sql_query($sql);
-	}
-
-	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE ' . $author_id_sql . '
-			AND folder_id = ' . PRIVMSGS_NO_BOX;
-	$db->sql_query($sql);
-
-	// Delete all to-information
-	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE ' . $user_id_sql;
-	$db->sql_query($sql);
-
-	// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
-	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-		SET author_id = ' . ANONYMOUS . '
-		WHERE ' . $author_id_sql;
-	$db->sql_query($sql);
-
-	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-		SET author_id = ' . ANONYMOUS . '
-		WHERE ' . $author_id_sql;
-	$db->sql_query($sql);
-
-	$user_ids_map = array_flip($user_ids);
-
-	foreach ($undelivered_user as $_user_id => $ary)
-	{
-		if (isset($user_ids_map[$_user_id]))
-		{
-			continue;
-		}
-
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_new_privmsg = user_new_privmsg - ' . sizeof($ary) . ',
-				user_unread_privmsg = user_unread_privmsg - ' . sizeof($ary) . '
-			WHERE user_id = ' . $_user_id;
-		$db->sql_query($sql);
-	}
+	phpbb_delete_users_pms($user_ids);
 
 	$db->sql_transaction('commit');
 
+	/**
+	* Event after a user is deleted
+	*
+	* @event core.delete_user_after
+	* @var	string	mode			Mode of deletion (retain/delete posts)
+	* @var	int		user_id			ID of the deleted user
+	* @var	mixed	post_username	Guest username that is being used or false
+	* @since 3.1-A1
+	*/
+	$vars = array('mode', 'user_id', 'post_username');
+	extract($phpbb_dispatcher->trigger_event('core.delete_user_after', compact($vars)));
+
 	// Reset newest user info if appropriate
-	if (isset($user_ids_map[$config['newest_user_id']]))
+	if (in_array($config['newest_user_id'], $user_ids))
 	{
 		update_last_username();
 	}
@@ -767,8 +759,10 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			if (sizeof($ban_other) == 3 && ((int)$ban_other[0] < 9999) &&
 				(strlen($ban_other[0]) == 4) && (strlen($ban_other[1]) == 2) && (strlen($ban_other[2]) == 2))
 			{
-				$time_offset = (isset($user->timezone) && isset($user->dst)) ? (int) $user->timezone + (int) $user->dst : 0;
-				$ban_end = max($current_time, gmmktime(0, 0, 0, (int)$ban_other[1], (int)$ban_other[2], (int)$ban_other[0]) - $time_offset);
+				$ban_end = max($current_time, $user->create_datetime()
+					->setDate((int) $ban_other[0], (int) $ban_other[1], (int) $ban_other[2])
+					->setTime(0, 0, 0)
+					->getTimestamp() + $user->timezone->getOffset(new DateTime('UTC')));
 			}
 			else
 			{
@@ -1337,10 +1331,21 @@ function validate_data($data, $val_ary)
 			$function = array_shift($validate);
 			array_unshift($validate, $data[$var]);
 
-			if ($result = call_user_func_array('validate_' . $function, $validate))
+			if (function_exists('phpbb_validate_' . $function))
 			{
-				// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
-				$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				if ($result = call_user_func_array('phpbb_validate_' . $function, $validate))
+				{
+					// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
+					$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				}
+			}
+			else
+			{
+				if ($result = call_user_func_array('validate_' . $function, $validate))
+				{
+					// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
+					$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				}
 			}
 		}
 	}
@@ -1486,6 +1491,22 @@ function validate_language_iso_name($lang_iso)
 }
 
 /**
+* Validate Timezone Name
+*
+* Tests whether a timezone name is valid
+*
+* @param string $timezone	The timezone string to test
+*
+* @return bool|string		Either false if validation succeeded or
+*							a string which will be used as the error message
+*							(with the variable name appended)
+*/
+function phpbb_validate_timezone($timezone)
+{
+	return (in_array($timezone, phpbb_get_timezone_identifiers($timezone))) ? false : 'TIMEZONE_INVALID';
+}
+
+/**
 * Check to see if the username has been taken, or if it is disallowed.
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username
@@ -1516,7 +1537,7 @@ function validate_username($username, $allowed_username = false)
 	$mbstring = $pcre = false;
 
 	// generic UTF-8 character types supported?
-	if (pcre_utf8_support())
+	if (phpbb_pcre_utf8_support())
 	{
 		$pcre = true;
 	}
@@ -1653,7 +1674,7 @@ function validate_password($password)
 	$pcre = $mbstring = false;
 
 	// generic UTF-8 character types supported?
-	if (pcre_utf8_support())
+	if (phpbb_pcre_utf8_support())
 	{
 		$upp = '\p{Lu}';
 		$low = '\p{Ll}';
@@ -1988,6 +2009,27 @@ function validate_jabber($jid)
 }
 
 /**
+* Verifies whether a style ID corresponds to an active style.
+*
+* @param int $style_id The style_id of a style which should be checked if activated or not.
+* @return boolean
+*/
+function phpbb_style_is_active($style_id)
+{
+	global $db;
+
+	$sql = 'SELECT style_active
+		FROM ' . STYLES_TABLE . '
+		WHERE style_id = '. (int) $style_id;
+	$result = $db->sql_query($sql);
+
+	$style_is_active = (bool) $db->sql_fetchfield('style_active');
+	$db->sql_freeresult($result);
+
+	return $style_is_active;
+}
+
+/**
 * Remove avatar
 */
 function avatar_delete($mode, $row, $clean_db = false)
@@ -2078,7 +2120,7 @@ function avatar_remote($data, &$error)
 	{
 		if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
 		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
+			$error[] = phpbb_avatar_error_wrong_size($width, $height);
 			return false;
 		}
 	}
@@ -2087,7 +2129,7 @@ function avatar_remote($data, &$error)
 	{
 		if ($width < $config['avatar_min_width'] || $height < $config['avatar_min_height'])
 		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
+			$error[] = phpbb_avatar_error_wrong_size($width, $height);
 			return false;
 		}
 	}
@@ -2427,7 +2469,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 		{
 			if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 			{
-				$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+				$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 			}
 		}
 
@@ -2437,7 +2479,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 			{
 				if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
 				{
-					$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+					$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 				}
 			}
 		}
@@ -2481,6 +2523,41 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 	}
 
 	return (sizeof($error)) ? false : true;
+}
+
+/**
+* Returns a language string with the avatar size of the new avatar and the allowed maximum and minimum
+*
+* @param $width		int		The width of the new uploaded/selected avatar
+* @param $height	int		The height of the new uploaded/selected avatar
+* @return string
+*/
+function phpbb_avatar_error_wrong_size($width, $height)
+{
+	global $config, $user;
+
+	return $user->lang('AVATAR_WRONG_SIZE',
+		$user->lang('PIXELS', (int) $config['avatar_min_width']),
+		$user->lang('PIXELS', (int) $config['avatar_min_height']),
+		$user->lang('PIXELS', (int) $config['avatar_max_width']),
+		$user->lang('PIXELS', (int) $config['avatar_max_height']),
+		$user->lang('PIXELS', (int) $width),
+		$user->lang('PIXELS', (int) $height));
+}
+
+/**
+* Returns an explanation string with maximum avatar settings
+*
+* @return string
+*/
+function phpbb_avatar_explanation_string()
+{
+	global $config, $user;
+
+	return $user->lang('AVATAR_EXPLAIN',
+		$user->lang('PIXELS', (int) $config['avatar_max_width']),
+		$user->lang('PIXELS', (int) $config['avatar_max_height']),
+		round($config['avatar_filesize'] / 1024));
 }
 
 //
@@ -2765,7 +2842,7 @@ function avatar_remove_db($avatar_name)
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db, $phpbb_root_path, $phpEx;
+	global $db, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	if (!$group_name)
 	{
@@ -2823,6 +2900,17 @@ function group_delete($group_id, $group_name = false)
 	$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
 		WHERE group_id = $group_id";
 	$db->sql_query($sql);
+
+	/**
+	* Event after a group is deleted
+	*
+	* @event core.delete_group_after
+	* @var	int		group_id	ID of the deleted group
+	* @var	string	group_name	Name of the deleted group
+	* @since 3.1-A1
+	*/
+	$vars = array('group_id', 'group_name');
+	extract($phpbb_dispatcher->trigger_event('core.delete_group_after', compact($vars)));
 
 	// Re-cache moderators
 	if (!function_exists('cache_moderators'))
@@ -2946,7 +3034,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 */
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
-	global $db, $auth, $config;
+	global $db, $auth, $config, $phpbb_dispatcher;
 
 	if ($config['coppa_enable'])
 	{
@@ -3044,6 +3132,19 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 		}
 	}
 	unset($special_group_data);
+
+	/**
+	* Event before users are removed from a group
+	*
+	* @event core.group_delete_user_before
+	* @var	int		group_id	ID of the group from which users are deleted
+	* @var	string	group_name	Name of the group
+	* @var	array	user_id_ary		IDs of the users which are removed
+	* @var	array	username_ary	names of the users which are removed
+	* @since 3.1-A1
+	*/
+	$vars = array('group_id', 'group_name', 'user_id_ary', 'username_ary');
+	extract($phpbb_dispatcher->trigger_event('core.group_delete_user_before', compact($vars)));
 
 	$sql = 'DELETE FROM ' . USER_GROUP_TABLE . "
 		WHERE group_id = $group_id
@@ -3362,7 +3463,7 @@ function group_validate_groupname($group_id, $group_name)
 */
 function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {
-	global $cache, $db;
+	global $cache, $db, $phpbb_dispatcher;
 
 	if (empty($user_id_ary))
 	{
@@ -3457,6 +3558,20 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 			set_config('newest_user_colour', $sql_ary['user_colour'], true);
 		}
 	}
+
+	/**
+	* Event when the default group is set for an array of users
+	*
+	* @event core.user_set_default_group
+	* @var	int		group_id			ID of the group
+	* @var	array	user_id_ary			IDs of the users
+	* @var	array	group_attributes	Group attributes which were changed
+	* @var	array	update_listing		Update the list of moderators and foes
+	* @var	array	sql_ary				User attributes which were changed
+	* @since 3.1-A1
+	*/
+	$vars = array('group_id', 'user_id_ary', 'group_attributes', 'update_listing', 'sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.user_set_default_group', compact($vars)));
 
 	if ($update_listing)
 	{
@@ -3695,4 +3810,37 @@ function remove_newly_registered($user_id, $user_data = false)
 	}
 
 	return $user_data['group_id'];
+}
+
+/**
+* Gets user ids of currently banned registered users.
+*
+* @param array $user_ids Array of users' ids to check for banning,
+*						leave empty to get complete list of banned ids
+* @return array	Array of banned users' ids if any, empty array otherwise
+*/
+function phpbb_get_banned_user_ids($user_ids = array())
+{
+	global $db;
+
+	$sql_user_ids = (!empty($user_ids)) ? $db->sql_in_set('ban_userid', $user_ids) : 'ban_userid <> 0';
+
+	// Get banned User ID's
+	// Ignore stale bans which were not wiped yet
+	$banned_ids_list = array();
+	$sql = 'SELECT ban_userid
+		FROM ' . BANLIST_TABLE . "
+		WHERE $sql_user_ids
+			AND ban_exclude <> 1
+			AND (ban_end > " . time() . '
+				OR ban_end = 0)';
+	$result = $db->sql_query($sql);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$user_id = (int) $row['ban_userid'];
+		$banned_ids_list[$user_id] = $user_id;
+	}
+	$db->sql_freeresult($result);
+
+	return $banned_ids_list;
 }

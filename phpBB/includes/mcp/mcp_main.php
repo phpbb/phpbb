@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -286,14 +285,6 @@ function change_topic_type($action, $topic_ids)
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path;
 
-	// For changing topic types, we only allow operations in one forum.
-	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('f_announce', 'f_sticky', 'm_'), true);
-
-	if ($forum_id === false)
-	{
-		return;
-	}
-
 	switch ($action)
 	{
 		case 'make_announce':
@@ -316,9 +307,16 @@ function change_topic_type($action, $topic_ids)
 
 		default:
 			$new_topic_type = POST_NORMAL;
-			$check_acl = '';
+			$check_acl = false;
 			$l_new_type = (sizeof($topic_ids) == 1) ? 'MCP_MAKE_NORMAL' : 'MCP_MAKE_NORMALS';
 		break;
+	}
+
+	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', $check_acl, true);
+
+	if ($forum_id === false)
+	{
+		return;
 	}
 
 	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
@@ -909,20 +907,15 @@ function mcp_fork_topic($topic_ids)
 			if (!isset($search_type) && $topic_row['enable_indexing'])
 			{
 				// Select the search method and do some additional checks to ensure it can actually be utilised
-				$search_type = basename($config['search_type']);
+				$search_type = $config['search_type'];
 
-				if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+				if (!class_exists($search_type))
 				{
 					trigger_error('NO_SUCH_SEARCH_MODULE');
 				}
 
-				if (!class_exists($search_type))
-				{
-					include("{$phpbb_root_path}includes/search/$search_type.$phpEx");
-				}
-
 				$error = false;
-				$search = new $search_type($error);
+				$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 				$search_mode = 'post';
 
 				if ($error)

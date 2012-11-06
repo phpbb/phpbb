@@ -3,7 +3,7 @@
 *
 * @package phpbb_request
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -34,7 +34,7 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	*/
 	public function __construct()
 	{
-		if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
+		if (version_compare(PHP_VERSION, '5.4.0-dev', '>='))
 		{
 			$this->strip = false;
 		}
@@ -88,20 +88,29 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	/**
 	* Set variable $result to a particular type.
 	*
-	* @param mixed	&$result	The variable to fill
-	* @param mixed	$var		The contents to fill with
-	* @param mixed	$type		The variable type. Will be used with {@link settype()}
-	* @param bool	$multibyte	Indicates whether string values may contain UTF-8 characters.
-	* 							Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks.
+	* @param mixed	&$result		The variable to fill
+	* @param mixed	$var			The contents to fill with
+	* @param mixed	$type			The variable type. Will be used with {@link settype()}
+	* @param bool	$multibyte		Indicates whether string values may contain UTF-8 characters.
+	* 								Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks.
+	* @param bool	$trim			Indicates whether trim() should be applied to string values.
+	* 								Default is true.
 	*/
-	public function set_var(&$result, $var, $type, $multibyte = false)
+	public function set_var(&$result, $var, $type, $multibyte = false, $trim = true)
 	{
 		settype($var, $type);
 		$result = $var;
 
 		if ($type == 'string')
 		{
-			$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result), ENT_COMPAT, 'UTF-8'));
+			$result = str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result);
+
+			if ($trim)
+			{
+				$result = trim($result);
+			}
+
+			$result = htmlspecialchars($result, ENT_COMPAT, 'UTF-8');
 
 			if ($multibyte)
 			{
@@ -140,8 +149,10 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	* @param	bool	$multibyte	Indicates whether string keys and values may contain UTF-8 characters.
 	* 								Default is false, causing all bytes outside the ASCII range (0-127) to
 	* 								be replaced with question marks.
+	* @param	bool	$trim		Indicates whether trim() should be applied to string values.
+	* 								Default is true.
 	*/
-	public function recursive_set_var(&$var, $default, $multibyte)
+	public function recursive_set_var(&$var, $default, $multibyte, $trim = true)
 	{
 		if (is_array($var) !== is_array($default))
 		{
@@ -152,7 +163,7 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 		if (!is_array($default))
 		{
 			$type = gettype($default);
-			$this->set_var($var, $var, $type, $multibyte);
+			$this->set_var($var, $var, $type, $multibyte, $trim);
 		}
 		else
 		{
@@ -173,9 +184,9 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 
 			foreach ($_var as $k => $v)
 			{
-				$this->set_var($k, $k, $key_type, $multibyte, $multibyte);
+				$this->set_var($k, $k, $key_type, $multibyte);
 
-				$this->recursive_set_var($v, $default_value, $multibyte);
+				$this->recursive_set_var($v, $default_value, $multibyte, $trim);
 				$var[$k] = $v;
 			}
 		}

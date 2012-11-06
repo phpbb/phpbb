@@ -2,9 +2,8 @@
 /**
 *
 * @package VC
-* @version $Id$
 * @copyright (c) 2006, 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -99,9 +98,9 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	function &get_instance()
+	static public function get_instance()
 	{
-		$instance =& new phpbb_captcha_qa();
+		$instance = new phpbb_captcha_qa();
 
 		return $instance;
 	}
@@ -109,7 +108,7 @@ class phpbb_captcha_qa
 	/**
 	* See if the captcha has created its tables.
 	*/
-	function is_installed()
+	static public function is_installed()
 	{
 		global $db, $phpbb_root_path, $phpEx;
 
@@ -125,14 +124,14 @@ class phpbb_captcha_qa
 	/**
 	*  API function - for the captcha to be available, it must have installed itself and there has to be at least one question in the board's default lang
 	*/
-	function is_available()
+	static public function is_available()
 	{
 		global $config, $db, $phpbb_root_path, $phpEx, $user;
 
 		// load language file for pretty display in the ACP dropdown
 		$user->add_lang('captcha_qa');
 
-		if (!phpbb_captcha_qa::is_installed())
+		if (!self::is_installed())
 		{
 			return false;
 		}
@@ -158,7 +157,7 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_QA';
 	}
@@ -319,7 +318,7 @@ class phpbb_captcha_qa
 					),
 					'PRIMARY_KEY'		=> 'question_id',
 					'KEYS'				=> array(
-						'lang_iso'			=> array('INDEX', 'lang_iso'),
+						'lang'			=> array('INDEX', 'lang_iso'),
 					),
 				),
 				CAPTCHA_ANSWERS_TABLE		=> array (
@@ -328,7 +327,7 @@ class phpbb_captcha_qa
 						'answer_text'	=> array('STEXT_UNI', ''),
 					),
 					'KEYS'				=> array(
-						'question_id'			=> array('INDEX', 'question_id'),
+						'qid'			=> array('INDEX', 'question_id'),
 					),
 				),
 				CAPTCHA_QA_CONFIRM_TABLE		=> array (
@@ -613,7 +612,7 @@ class phpbb_captcha_qa
 		$user->add_lang('acp/board');
 		$user->add_lang('captcha_qa');
 
-		if (!$this->is_installed())
+		if (!self::is_installed())
 		{
 			$this->install();
 		}

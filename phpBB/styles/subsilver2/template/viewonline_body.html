@@ -4,11 +4,11 @@
 <h4>{TOTAL_GUEST_USERS_ONLINE}<!-- IF S_SWITCH_GUEST_DISPLAY --> [ <a href="{U_SWITCH_GUEST_DISPLAY}">{L_SWITCH_GUEST_DISPLAY}</a> ]<!-- ENDIF --></h4>
 <br />
 
-<!-- IF PAGINATION -->
+<!-- IF .pagination -->
 	<table width="100%" cellspacing="1">
 	<tr>
 		<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
-		<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><b><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b></td>
+		<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 	</tr>
 	</table>
 <!-- ENDIF -->
@@ -35,11 +35,11 @@
 <!-- ENDIF -->
 </table>
 
-<!-- IF PAGINATION -->
+<!-- IF .pagination -->
 	<table width="100%" cellspacing="1">
 	<tr>
 		<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
-		<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><b><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b></td>
+		<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 	</tr>
 	</table>
 <!-- ENDIF -->

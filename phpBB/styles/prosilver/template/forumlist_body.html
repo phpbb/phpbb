@@ -3,13 +3,13 @@
 	<!-- IF (forumrow.S_IS_CAT and not forumrow.S_FIRST_ROW) or forumrow.S_NO_CAT  -->
 			</ul>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 	<!-- ENDIF -->
 
 	<!-- IF forumrow.S_IS_CAT or forumrow.S_FIRST_ROW  or forumrow.S_NO_CAT  -->
 		<div class="forabg">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 			<ul class="topiclist">
 				<li class="header">
 					<dl class="icon">
@@ -35,7 +35,12 @@
 					<!-- IF forumrow.MODERATORS -->
 						<br /><strong>{forumrow.L_MODERATOR_STR}:</strong> {forumrow.MODERATORS}
 					<!-- ENDIF -->
-					<!-- IF forumrow.SUBFORUMS and forumrow.S_LIST_SUBFORUMS --><br /><strong>{forumrow.L_SUBFORUM_STR}</strong> {forumrow.SUBFORUMS}<!-- ENDIF -->
+					<!-- IF .forumrow.subforum and forumrow.S_LIST_SUBFORUMS -->
+						<br /><strong>{forumrow.L_SUBFORUM_STR}</strong>
+						<!-- BEGIN subforum -->
+							<a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="<!-- IF forumrow.subforum.UNREAD -->{L_UNREAD_POSTS}<!-- ELSE -->{L_NO_UNREAD_POSTS}<!-- ENDIF -->">{forumrow.subforum.SUBFORUM_NAME}</a><!-- IF not forumrow.subforum.S_LAST_ROW -->,<!-- ENDIF -->
+						<!-- END subforum -->
+					<!-- ENDIF -->
 				</dt>
 				<!-- IF forumrow.CLICKS -->
 					<dd class="redirect"><span>{L_REDIRECTS}: {forumrow.CLICKS}</span></dd>
@@ -44,7 +49,11 @@
 					<dd class="posts">{forumrow.POSTS} <dfn>{L_POSTS}</dfn></dd>
 					<dd class="lastpost"><span>
 						<!-- IF forumrow.U_UNAPPROVED_TOPICS --><a href="{forumrow.U_UNAPPROVED_TOPICS}">{UNAPPROVED_IMG}</a><!-- ENDIF -->
-						<!-- IF forumrow.LAST_POST_TIME --><dfn>{L_LAST_POST}</dfn> {L_POST_BY_AUTHOR} {forumrow.LAST_POSTER_FULL}
+						<!-- IF forumrow.LAST_POST_TIME --><dfn>{L_LAST_POST}</dfn>
+						<!-- IF forumrow.S_DISPLAY_SUBJECT -->
+							<a href="{forumrow.U_LAST_POST}" title="{forumrow.LAST_POST_SUBJECT}" class="lastsubject">{forumrow.LAST_POST_SUBJECT_TRUNCATED}</a> <br />
+						<!-- ENDIF --> 
+						{L_POST_BY_AUTHOR} {forumrow.LAST_POSTER_FULL}
 						<!-- IF not S_IS_BOT --><a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a> <!-- ENDIF --><br />{forumrow.LAST_POST_TIME}<!-- ELSE -->{L_NO_POSTS}<br />&nbsp;<!-- ENDIF --></span>
 					</dd>
 				<!-- ENDIF -->
@@ -55,14 +64,14 @@
 	<!-- IF forumrow.S_LAST_ROW -->
 			</ul>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 	<!-- ENDIF -->
 
 <!-- BEGINELSE -->
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		<strong>{L_NO_FORUMS}</strong>
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- END forumrow -->

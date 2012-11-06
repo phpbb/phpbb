@@ -2,9 +2,8 @@
 /**
 *
 * @package dbal
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -93,6 +92,14 @@ class dbal_mssql extends dbal
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return $expr1 . ' + ' . $expr2;
+	}
+
+	/**
 	* SQL Transaction
 	* @access private
 	*/
@@ -137,7 +144,7 @@ class dbal_mssql extends dbal
 				$this->sql_report('start', $query);
 			}
 
-			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
+			$this->query_result = ($cache_ttl) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
 			if ($this->query_result === false)
@@ -152,10 +159,10 @@ class dbal_mssql extends dbal
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl && method_exists($cache, 'sql_save'))
+				if ($cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$cache->sql_save($query, $this->query_result, $cache_ttl);
+					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{
@@ -227,7 +234,7 @@ class dbal_mssql extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -264,7 +271,7 @@ class dbal_mssql extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
@@ -303,7 +310,7 @@ class dbal_mssql extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_freeresult($query_id);
 		}
@@ -323,6 +330,14 @@ class dbal_mssql extends dbal
 	function sql_escape($msg)
 	{
 		return str_replace(array("'", "\0"), array("''", ''), $msg);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_lower_text($column_name)
+	{
+		return "LOWER(SUBSTRING($column_name, 1, DATALENGTH($column_name)))";
 	}
 
 	/**

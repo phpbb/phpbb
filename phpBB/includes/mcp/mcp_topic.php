@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -49,6 +48,16 @@ function mcp_topic_view($id, $mode, $action)
 	$sort			= isset($_POST['sort']) ? true : false;
 	$submitted_id_list	= request_var('post_ids', array(0));
 	$checked_ids = $post_id_list = request_var('post_id_list', array(0));
+
+	// Resync Topic?
+	if ($action == 'resync')
+	{
+		if (!function_exists('mcp_resync_topics'))
+		{
+			include($phpbb_root_path . 'includes/mcp/mcp_forum.' . $phpEx);
+		}
+		mcp_resync_topics(array($topic_id));
+	}
 
 	// Split Topic?
 	if ($action == 'split_all' || $action == 'split_beyond')
@@ -239,8 +248,8 @@ function mcp_topic_view($id, $mode, $action)
 
 			'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 
-			'S_POST_REPORTED'	=> ($row['post_reported']) ? true : false,
-			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
+			'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $topic_info['forum_id'])),
+			'S_POST_UNAPPROVED'	=> (!$row['post_approved'] && $auth->acl_get('m_approve', $topic_info['forum_id'])),
 			'S_CHECKED'			=> (($submitted_id_list && !in_array(intval($row['post_id']), $submitted_id_list)) || in_array(intval($row['post_id']), $checked_ids)) ? true : false,
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 
@@ -297,6 +306,12 @@ function mcp_topic_view($id, $mode, $action)
 		'post_ids'	=> $post_id_list,
 	));
 
+	$base_url = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;t={$topic_info['topic_id']}&amp;mode=$mode&amp;action=$action&amp;to_topic_id=$to_topic_id&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir");
+	if ($posts_per_page)
+	{
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $posts_per_page, $start);
+	}
+
 	$template->assign_vars(array(
 		'TOPIC_TITLE'		=> $topic_info['topic_title'],
 		'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
@@ -320,6 +335,7 @@ function mcp_topic_view($id, $mode, $action)
 		'S_CAN_APPROVE'		=> ($has_unapproved_posts && $auth->acl_get('m_approve', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_LOCK'		=> ($auth->acl_get('m_lock', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? true : false,
+		'S_CAN_SYNC'		=> $auth->acl_get('m_', $topic_info['forum_id']),
 		'S_REPORT_VIEW'		=> ($action == 'reports') ? true : false,
 		'S_MERGE_VIEW'		=> ($action == 'merge') ? true : false,
 		'S_SPLIT_VIEW'		=> ($action == 'split') ? true : false,
@@ -334,9 +350,8 @@ function mcp_topic_view($id, $mode, $action)
 		'RETURN_TOPIC'		=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
 		'RETURN_FORUM'		=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),
 
-		'PAGE_NUMBER'		=> on_page($total, $posts_per_page, $start),
-		'PAGINATION'		=> (!$posts_per_page) ? '' : generate_pagination(append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;t={$topic_info['topic_id']}&amp;mode=$mode&amp;action=$action&amp;to_topic_id=$to_topic_id&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir"), $total, $posts_per_page, $start),
-		'TOTAL_POSTS'		=> ($total == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total),
+		'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $total, $posts_per_page, $start),
+		'TOTAL_POSTS'		=> $user->lang('VIEW_TOPIC_POSTS', (int) $total),
 	));
 }
 

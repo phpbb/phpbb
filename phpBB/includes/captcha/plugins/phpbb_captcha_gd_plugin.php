@@ -2,9 +2,8 @@
 /**
 *
 * @package VC
-* @version $Id$
 * @copyright (c) 2006, 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -50,13 +49,13 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		}
 	}
 
-	function &get_instance()
+	static public function get_instance()
 	{
-		$instance =& new phpbb_captcha_gd();
+		$instance = new phpbb_captcha_gd();
 		return $instance;
 	}
 
-	function is_available()
+	static public function is_available()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -81,7 +80,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		return true;
 	}
 
-	function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_GD';
 	}

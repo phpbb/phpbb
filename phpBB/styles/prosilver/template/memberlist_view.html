@@ -4,7 +4,7 @@
 
 <form method="post" action="{S_PROFILE_ACTION}" id="viewprofile">
 <div class="panel bg1<!-- IF S_ONLINE --> online<!-- ENDIF -->">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<!-- IF AVATAR_IMG -->
 		<dl class="left-box">
@@ -28,32 +28,32 @@
 		<!-- ENDIF -->
 		<!-- IF S_USER_INACTIVE --><dt>{L_USER_IS_INACTIVE}:</dt> <dd>{USER_INACTIVE_REASON}</dd><!-- ENDIF -->
 		<!-- IF LOCATION --><dt>{L_LOCATION}:</dt> <dd>{LOCATION}</dd><!-- ENDIF -->
-		<!-- IF AGE --><dt>{L_AGE}:</dt> <dd>{AGE}</dd><!-- ENDIF -->
+		<!-- IF AGE !== '' --><dt>{L_AGE}:</dt> <dd>{AGE}</dd><!-- ENDIF -->
 		<!-- IF OCCUPATION --><dt>{L_OCCUPATION}:</dt> <dd>{OCCUPATION}</dd><!-- ENDIF -->
 		<!-- IF INTERESTS --><dt>{L_INTERESTS}:</dt> <dd>{INTERESTS}</dd><!-- ENDIF -->
 		<!-- IF S_GROUP_OPTIONS --><dt>{L_USERGROUPS}:</dt> <dd><select name="g">{S_GROUP_OPTIONS}</select> <input type="submit" name="submit" value="{L_GO}" class="button2" /></dd><!-- ENDIF -->
 		<!-- BEGIN custom_fields --><dt>{custom_fields.PROFILE_FIELD_NAME}:</dt> <dd>{custom_fields.PROFILE_FIELD_VALUE}</dd><!-- END custom_fields -->
 		<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
 			<!-- IF U_REMOVE_FRIEND -->
-				<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FRIEND}"><strong>{L_REMOVE_FRIEND}</strong></a></dd>
+				<dt>&nbsp;</dt> <dd class="zebra"><a href="{U_REMOVE_FRIEND}" data-ajax="zebra"><strong>{L_REMOVE_FRIEND}</strong></a></dd>
 			<!-- ELSEIF U_REMOVE_FOE -->
-				<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FOE}"><strong>{L_REMOVE_FOE}</strong></a></dd>
+				<dt>&nbsp;</dt> <dd class="zebra"><a href="{U_REMOVE_FOE}" data-ajax="zebra"><strong>{L_REMOVE_FOE}</strong></a></dd>
 			<!-- ELSE -->
 				<!-- IF U_ADD_FRIEND -->
-					<dt>&nbsp;</dt> <dd><a href="{U_ADD_FRIEND}"><strong>{L_ADD_FRIEND}</strong></a></dd>
+					<dt>&nbsp;</dt> <dd class="zebra"><a href="{U_ADD_FRIEND}" data-ajax="zebra"><strong>{L_ADD_FRIEND}</strong></a></dd>
 				<!-- ENDIF -->
 				<!-- IF U_ADD_FOE -->
-					<dt>&nbsp;</dt> <dd><a href="{U_ADD_FOE}"><strong>{L_ADD_FOE}</strong></a></dd>
+					<dt>&nbsp;</dt> <dd class="zebra"><a href="{U_ADD_FOE}" data-ajax="zebra"><strong>{L_ADD_FOE}</strong></a></dd>
 				<!-- ENDIF -->
 			<!-- ENDIF -->
 		<!-- ENDIF -->
 	</dl>
 
-	<span class="corners-bottom"><span></span></span></div>
+	<span class="clear"></span></div>
 </div>
 
 <div class="panel bg2">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 	<div class="column1">
 
 		<h3>{L_CONTACT_USER} {USERNAME}</h3>
@@ -69,7 +69,7 @@
 		<!-- IF U_JABBER and S_JABBER_ENABLED --><dt>{L_JABBER}:</dt> <dd><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false;">{L_SEND_JABBER_MESSAGE}</a></dd><!-- ELSEIF USER_JABBER --><dt>{L_JABBER}:</dt> <dd>{USER_JABBER}</dd><!-- ENDIF -->
 		<!-- IF S_PROFILE_FIELD1 -->
 			<!-- NOTE: Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
-			<dt>{postrow.PROFILE_FIELD1_NAME}:</dt> <dd>{postrow.PROFILE_FIELD1_VALUE}</dd>
+			<dt>{PROFILE_FIELD1_NAME}:</dt> <dd>{PROFILE_FIELD1_VALUE}</dd>
 		<!-- ENDIF -->
 		</dl>
 	</div>
@@ -89,23 +89,23 @@
 					<!-- IF POSTS_IN_QUEUE and U_MCP_QUEUE --><br />(<a href="{U_MCP_QUEUE}">{L_POSTS_IN_QUEUE}</a>)<!-- ELSEIF POSTS_IN_QUEUE --><br />({L_POSTS_IN_QUEUE})<!-- ENDIF -->
 				</dd>
 			<!-- IF S_SHOW_ACTIVITY and POSTS -->
-				<dt>{L_ACTIVE_IN_FORUM}:</dt> <dd><!-- IF ACTIVE_FORUM --><strong><a href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></strong><br />({ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT})<!-- ELSE --> - <!-- ENDIF --></dd>
-				<dt>{L_ACTIVE_IN_TOPIC}:</dt> <dd><!-- IF ACTIVE_TOPIC --><strong><a href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></strong><br />({ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT})<!-- ELSE --> - <!-- ENDIF --></dd>
+				<dt>{L_ACTIVE_IN_FORUM}:</dt> <dd><!-- IF ACTIVE_FORUM != '' --><strong><a href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></strong><br />({ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT})<!-- ELSE --> - <!-- ENDIF --></dd>
+				<dt>{L_ACTIVE_IN_TOPIC}:</dt> <dd><!-- IF ACTIVE_TOPIC != '' --><strong><a href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></strong><br />({ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT})<!-- ELSE --> - <!-- ENDIF --></dd>
 			<!-- ENDIF -->
 		</dl>
 	</div>
-	<span class="corners-bottom"><span></span></span></div>
+	<span class="clear"></span></div>
 </div>
 
 <!-- IF SIGNATURE -->
 <div class="panel bg1">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 		<h3>{L_SIGNATURE}</h3>
 
 		<div class="postbody"><div class="signature" style="border-top:none; margin-top: 0;">{SIGNATURE}</div></div>
 
-	<span class="corners-bottom"><span></span></span></div>
+	<span class="clear"></span></div>
 </div>
 <!-- ENDIF -->
 

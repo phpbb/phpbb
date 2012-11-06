@@ -2,9 +2,8 @@
 /**
 *
 * @package acm
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -20,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * ACM Abstract Memory Class
 * @package acm
 */
-class phpbb_cache_driver_memory extends phpbb_cache_driver_base
+abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 {
 	var $key_prefix;
 
@@ -281,7 +280,7 @@ class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 	/**
 	* Save sql query
 	*/
-	function sql_save($query, &$query_result, $ttl)
+	function sql_save($query, $query_result, $ttl)
 	{
 		global $db;
 
@@ -336,6 +335,8 @@ class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 		$this->_write('sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
 
 		$query_result = $query_id;
+
+		return $query_id;
 	}
 
 	/**

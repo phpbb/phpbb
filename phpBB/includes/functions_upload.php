@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -152,7 +151,7 @@ class filespec
 	*/
 	function is_image()
 	{
-		return (strpos($this->mimetype, 'image/') !== false) ? true : false;
+		return (strpos($this->mimetype, 'image/') === 0);
 	}
 
 	/**
@@ -427,7 +426,13 @@ class filespec
 
 		if (!$this->upload->valid_dimensions($this))
 		{
-			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_SIZE'], $this->upload->min_width, $this->upload->min_height, $this->upload->max_width, $this->upload->max_height, $this->width, $this->height);
+			$this->error[] = $user->lang($this->upload->error_prefix . 'WRONG_SIZE',
+				$user->lang('PIXELS', (int) $this->upload->min_width),
+				$user->lang('PIXELS', (int) $this->upload->min_height),
+				$user->lang('PIXELS', (int) $this->upload->max_width),
+				$user->lang('PIXELS', (int) $this->upload->max_height),
+				$user->lang('PIXELS', (int) $this->width),
+				$user->lang('PIXELS', (int) $this->height));
 
 			return false;
 		}
@@ -751,6 +756,31 @@ class fileupload
 		$filename = $url['path'];
 		$filesize = 0;
 
+		$remote_max_filesize = $this->max_filesize;
+		if (!$remote_max_filesize)
+		{
+			$max_filesize = @ini_get('upload_max_filesize');
+
+			if (!empty($max_filesize))
+			{
+				$unit = strtolower(substr($max_filesize, -1, 1));
+				$remote_max_filesize = (int) $max_filesize;
+
+				switch ($unit)
+				{
+					case 'g':
+						$remote_max_filesize *= 1024;
+					// no break
+					case 'm':
+						$remote_max_filesize *= 1024;
+					// no break
+					case 'k':
+						$remote_max_filesize *= 1024;
+					// no break
+				}
+			}
+		}
+
 		$errno = 0;
 		$errstr = '';
 
@@ -779,9 +809,9 @@ class fileupload
 				$block = @fread($fsock, 1024);
 				$filesize += strlen($block);
 
-				if ($this->max_filesize && $filesize > $this->max_filesize)
+				if ($remote_max_filesize && $filesize > $remote_max_filesize)
 				{
-					$max_filesize = get_formatted_filesize($this->max_filesize, false);
+					$max_filesize = get_formatted_filesize($remote_max_filesize, false);
 
 					$file = new fileerror(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
 					return $file;
@@ -807,9 +837,9 @@ class fileupload
 					{
 						$length = (int) str_replace('content-length: ', '', strtolower($line));
 
-						if ($length && $length > $this->max_filesize)
+						if ($remote_max_filesize && $length && $length > $remote_max_filesize)
 						{
-							$max_filesize = get_formatted_filesize($this->max_filesize, false);
+							$max_filesize = get_formatted_filesize($remote_max_filesize, false);
 
 							$file = new fileerror(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
 							return $file;

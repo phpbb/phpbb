@@ -3,12 +3,9 @@
 *
 * @package testing
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
-
-require_once dirname(__FILE__) . '/../mock/request.php';
-require_once dirname(__FILE__) . '/../mock/session_testable.php';
 
 /**
 * This class exists to setup an instance of phpbb's session class for testing.
@@ -73,7 +70,8 @@ class phpbb_session_testable_factory
 		$request = $this->request = new phpbb_mock_request(
 			array(),
 			array(),
-			$this->cookies
+			$this->cookies,
+			$this->server_data
 		);
 		request_var(null, null, null, null, $request);
 
@@ -84,8 +82,6 @@ class phpbb_session_testable_factory
 
 		$cache = $this->cache = new phpbb_mock_cache($this->get_cache_data());
 		$SID = $_SID = null;
-
-		$_SERVER = $this->server_data;
 
 		$session = new phpbb_mock_session_testable;
 		return $session;

@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -724,7 +723,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 */
 function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true, $call_delete_topics = true)
 {
-	global $db, $config, $phpbb_root_path, $phpEx;
+	global $db, $config, $phpbb_root_path, $phpEx, $auth, $user;
 
 	if ($where_type === 'range')
 	{
@@ -848,17 +847,15 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	// Remove the message from the search index
-	$search_type = basename($config['search_type']);
+	$search_type = $config['search_type'];
 
-	if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	if (!class_exists($search_type))
 	{
 		trigger_error('NO_SUCH_SEARCH_MODULE');
 	}
 
-	include_once("{$phpbb_root_path}includes/search/$search_type.$phpEx");
-
 	$error = false;
-	$search = new $search_type($error);
+	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 	if ($error)
 	{
@@ -2295,41 +2292,6 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 }
 
 /**
-* remove_comments will strip the sql comment lines out of an uploaded sql file
-* specifically for mssql and postgres type files in the install....
-*/
-function remove_comments(&$output)
-{
-	$lines = explode("\n", $output);
-	$output = '';
-
-	// try to keep mem. use down
-	$linecount = sizeof($lines);
-
-	$in_comment = false;
-	for ($i = 0; $i < $linecount; $i++)
-	{
-		if (trim($lines[$i]) == '/*')
-		{
-			$in_comment = true;
-		}
-
-		if (!$in_comment)
-		{
-			$output .= $lines[$i] . "\n";
-		}
-
-		if (trim($lines[$i]) == '*/')
-		{
-			$in_comment = false;
-		}
-	}
-
-	unset($lines);
-	return $output;
-}
-
-/**
 * Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
 * and group names must be carried through for the moderators table
 */
@@ -2366,7 +2328,7 @@ function cache_moderators()
 		$ug_id_ary = array_keys($hold_ary);
 
 		// Remove users who have group memberships with DENY moderator permissions
-		$sql = $db->sql_build_query('SELECT', array(
+		$sql_ary_deny = array(
 			'SELECT'	=> 'a.forum_id, ug.user_id, g.group_id',
 
 			'FROM'		=> array(
@@ -2379,8 +2341,8 @@ function cache_moderators()
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-					'ON'	=> 'a.auth_role_id = r.role_id'
-				)
+					'ON'	=> 'a.auth_role_id = r.role_id',
+				),
 			),
 
 			'WHERE'		=> '(o.auth_option_id = a.auth_option_id OR o.auth_option_id = r.auth_option_id)
@@ -2392,7 +2354,8 @@ function cache_moderators()
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
 				AND o.auth_option " . $db->sql_like_expression('m_' . $db->any_char),
-		));
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_ary_deny);
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -2593,7 +2556,37 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		{
 			$sql_keywords .= $db->sql_in_set('l.log_operation', $operations) . ' OR ';
 		}
-		$sql_keywords .= 'LOWER(l.log_data) ' . implode(' OR LOWER(l.log_data) ', $keywords) . ')';
+		$sql_lower = $db->sql_lower_text('l.log_data');
+		$sql_keywords .= "$sql_lower " . implode(" OR $sql_lower ", $keywords) . ')';
+	}
+
+	if ($log_count !== false)
+	{
+		$sql = 'SELECT COUNT(l.log_id) AS total_entries
+			FROM ' . LOG_TABLE . ' l, ' . USERS_TABLE . " u
+			WHERE l.log_type = $log_type
+				AND l.user_id = u.user_id
+				AND l.log_time >= $limit_days
+				$sql_keywords
+				$sql_forum";
+		$result = $db->sql_query($sql);
+		$log_count = (int) $db->sql_fetchfield('total_entries');
+		$db->sql_freeresult($result);
+	}
+
+	// $log_count may be false here if false was passed in for it,
+	// because in this case we did not run the COUNT() query above.
+	// If we ran the COUNT() query and it returned zero rows, return;
+	// otherwise query for logs below.
+	if ($log_count === 0)
+	{
+		// Save the queries, because there are no logs to display
+		return 0;
+	}
+
+	if ($offset >= $log_count)
+	{
+		$offset = ($offset - $limit < 0) ? 0 : $offset - $limit;
 	}
 
 	$sql = "SELECT l.*, u.username, u.username_clean, u.user_colour
@@ -2743,21 +2736,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		}
 	}
 
-	if ($log_count !== false)
-	{
-		$sql = 'SELECT COUNT(l.log_id) AS total_entries
-			FROM ' . LOG_TABLE . ' l, ' . USERS_TABLE . " u
-			WHERE l.log_type = $log_type
-				AND l.user_id = u.user_id
-				AND l.log_time >= $limit_days
-				$sql_keywords
-				$sql_forum";
-		$result = $db->sql_query($sql);
-		$log_count = (int) $db->sql_fetchfield('total_entries');
-		$db->sql_freeresult($result);
-	}
-
-	return;
+	return $offset;
 }
 
 /**
@@ -2781,18 +2760,18 @@ function update_foes($group_id = false, $user_id = false)
 	if (is_array($group_id) && sizeof($group_id))
 	{
 		// Grab group settings...
-		$sql = $db->sql_build_query('SELECT', array(
+		$sql_ary = array(
 			'SELECT'	=> 'a.group_id',
 
 			'FROM'		=> array(
 				ACL_OPTIONS_TABLE	=> 'ao',
-				ACL_GROUPS_TABLE	=> 'a'
+				ACL_GROUPS_TABLE	=> 'a',
 			),
 
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-					'ON'	=> 'a.auth_role_id = r.role_id'
+					'ON'	=> 'a.auth_role_id = r.role_id',
 				),
 			),
 
@@ -2800,8 +2779,9 @@ function update_foes($group_id = false, $user_id = false)
 				AND ' . $db->sql_in_set('a.group_id', $group_id) . "
 				AND ao.auth_option IN ('a_', 'm_')",
 
-			'GROUP_BY'	=> 'a.group_id'
-		));
+			'GROUP_BY'	=> 'a.group_id',
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_ary);
 		$result = $db->sql_query($sql);
 
 		$groups = array();
@@ -2888,6 +2868,12 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 	$result = $db->sql_query($sql);
 	$user_count = (int) $db->sql_fetchfield('user_count');
 	$db->sql_freeresult($result);
+
+	if ($user_count == 0)
+	{
+		// Save the queries, because there are no users to display
+		return 0;
+	}
 
 	if ($offset >= $user_count)
 	{
@@ -3094,7 +3080,7 @@ function get_database_size()
 /**
 * Retrieve contents from remotely stored file
 */
-function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 10)
+function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 6)
 {
 	global $user;
 
@@ -3103,6 +3089,9 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 		@fputs($fsock, "GET $directory/$filename HTTP/1.1\r\n");
 		@fputs($fsock, "HOST: $host\r\n");
 		@fputs($fsock, "Connection: close\r\n\r\n");
+
+		$timer_stop = time() + $timeout;
+		stream_set_timeout($fsock, $timeout);
 
 		$file_info = '';
 		$get_info = false;
@@ -3125,6 +3114,14 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 					$errstr = $user->lang['FILE_NOT_FOUND'] . ': ' . $filename;
 					return false;
 				}
+			}
+
+			$stream_meta_data = stream_get_meta_data($fsock);
+
+			if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
+			{
+				$errstr = $user->lang['FSOCK_TIMEOUT'];
+				return false;
 			}
 		}
 		@fclose($fsock);

@@ -2,9 +2,8 @@
 /**
 *
 * @package utf
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -1934,7 +1933,7 @@ function utf8_wordwrap($string, $width = 75, $break = "\n", $cut = false)
 * UTF8-safe basename() function
 *
 * basename() has some limitations and is dependent on the locale setting
-* according to the PHP manual. Therefore we provide our own locale independant
+* according to the PHP manual. Therefore we provide our own locale independent
 * basename function.
 *
 * @param string $filename The filename basename() should be applied to

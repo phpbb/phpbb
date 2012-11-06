@@ -1,15 +1,12 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : fill.php
-// STARTED   : Mon Sep 15, 2003
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/**
+*
+* @package phpBB3
+* @copyright (c) 2001, 2003 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
+
 //
 // Security message:
 //
@@ -41,8 +38,8 @@ $posts_per_topic = 500;
 
 
 // general vars
-$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'generate';
-$start = (isset($_REQUEST['start'])) ? intval($_REQUEST['start']) : 0;
+$mode = request_var('mode', 'generate');
+$start = request_var('start', 0);
 
 switch ($mode)
 {

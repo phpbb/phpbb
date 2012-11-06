@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -99,7 +98,7 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
-				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
+				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode($user->lang['COMMA_SEPARATOR'], $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
 
 				$display_vars = array(
 					'title'	=> 'ACP_ATTACHMENT_SETTINGS',
@@ -918,7 +917,7 @@ class acp_attachments
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode(', ', $delete_files));
-						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode(', ', $delete_files));
+						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode($user->lang['COMMA_SEPARATOR'], $delete_files));
 					}
 
 					$upload_list = array();
@@ -1075,7 +1074,7 @@ class acp_attachments
 								$error[] = $user->lang['FILES_GONE'];
 							}
 							add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode(', ', $deleted_filenames));
-							$notify[] = sprintf($user->lang['LOG_ATTACHMENTS_DELETED'], implode(', ', $deleted_filenames));
+							$notify[] = sprintf($user->lang['LOG_ATTACHMENTS_DELETED'], implode($user->lang['COMMA_SEPARATOR'], $deleted_filenames));
 						}
 						else
 						{
@@ -1159,12 +1158,12 @@ class acp_attachments
 				// Issue warning message if files stats are inaccurate
 				if (($num_files != $num_files_real) || ($total_size != $total_size_real))
 				{
-					$error[] = sprintf($user->lang['FILES_STATS_WRONG'], $num_files_real, get_formatted_filesize($total_size_real));
+					$error[] = $user->lang('FILES_STATS_WRONG', (int) $num_files_real, get_formatted_filesize($total_size_real));
 
 					$template->assign_vars(array(
 						'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
 						'U_ACTION'			=> $this->u_action,)
-					);					
+					);
 				}
 
 				// Make sure $start is set to the last page if it exceeds the amount
@@ -1223,12 +1222,14 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
+				$base_url = $this->u_action . "&amp;$u_sort_param";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_files, $attachments_per_page, $start);
+
 				$template->assign_vars(array(
 					'TOTAL_FILES'		=> $num_files,
 					'TOTAL_SIZE'		=> get_formatted_filesize($total_size),
-					'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $num_files, $attachments_per_page, $start, true),
 
-					'S_ON_PAGE'			=> on_page($num_files, $attachments_per_page, $start),
+					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $num_files, $attachments_per_page, $start),
 					'S_LIMIT_DAYS'		=> $s_limit_days,
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir)
@@ -1244,8 +1245,7 @@ class acp_attachments
 					$row['extension'] = strtolower(trim((string) $row['extension']));
 					$comment = ($row['attach_comment'] && !$row['in_message']) ? str_replace(array("\n", "\r"), array('<br />', "\n"), $row['attach_comment']) : '';
 					$display_cat = $extensions[$row['extension']]['display_cat'];
-					$l_downloaded_viewed = ($display_cat == ATTACHMENT_CATEGORY_NONE) ? 'DOWNLOAD_COUNT' : 'VIEWED_COUNT';
-					$l_download_count = (!isset($row['download_count']) || (int) $row['download_count'] == 0) ? $user->lang[$l_downloaded_viewed . '_NONE'] : (((int) $row['download_count'] == 1) ? sprintf($user->lang[$l_downloaded_viewed], $row['download_count']) : sprintf($user->lang[$l_downloaded_viewed . 'S'], $row['download_count']));
+					$l_downloaded_viewed = ($display_cat == ATTACHMENT_CATEGORY_NONE) ? 'DOWNLOAD_COUNTS' : 'VIEWED_COUNTS';
 
 					$template->assign_block_vars('attachments', array(
 						'ATTACHMENT_POSTER'	=> get_username_string('full', (int) $row['poster_id'], (string) $row['username'], (string) $row['user_colour'], (string) $row['username']),
@@ -1261,7 +1261,7 @@ class acp_attachments
 						'TOPIC_ID'			=> (int) $row['topic_id'],
 						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? (int) $post_ids[$row['attach_id']] : '',
 
-						'L_DOWNLOAD_COUNT'	=> $l_download_count,
+						'L_DOWNLOAD_COUNT'	=> $user->lang($l_downloaded_viewed, (int) $row['download_count']),
 
 						'S_IN_MESSAGE'		=> (bool) $row['in_message'],
 

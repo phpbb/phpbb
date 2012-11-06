@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_utf_utf8_clean_string_test extends phpbb_test_case
 {
-	public static function cleanable_strings()
+	public function cleanable_strings()
 	{
 		return array(
 			array('MiXed CaSe', 'mixed case', 'Checking case folding'),

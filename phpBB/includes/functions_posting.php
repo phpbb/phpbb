@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -21,7 +20,7 @@ if (!defined('IN_PHPBB'))
 */
 function generate_smilies($mode, $forum_id)
 {
-	global $auth, $db, $user, $config, $template;
+	global $db, $user, $config, $template, $phpbb_dispatcher;
 	global $phpEx, $phpbb_root_path;
 
 	$start = request_var('start', 0);
@@ -62,10 +61,7 @@ function generate_smilies($mode, $forum_id)
 			'body' => 'posting_smilies.html')
 		);
 
-		$template->assign_var('PAGINATION',
-			generate_pagination(append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id),
-				$smiley_count, $config['smilies_per_page'], $start, true)
-		);
+		generate_pagination(append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id), $smiley_count, $config['smilies_per_page'], $start);	
 	}
 
 	$display_link = false;
@@ -126,6 +122,18 @@ function generate_smilies($mode, $forum_id)
 			);
 		}
 	}
+
+	/**
+	* This event is called after the smilies are populated
+	*
+	* @event core.generate_smilies_after
+	* @var	string	mode			Mode of the smilies: window|inline
+	* @var	int		forum_id		The forum ID we are currently in
+	* @var	bool	display_link	Shall we display the "more smilies" link?
+	* @since 3.1-A1
+	*/
+	$vars = array('mode', 'forum_id', 'display_link');
+	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_after', compact($vars)));
 
 	if ($mode == 'inline' && $display_link)
 	{
@@ -288,13 +296,15 @@ function posting_gen_topic_icons($mode, $icon_id)
 
 	if (sizeof($icons))
 	{
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+
 		foreach ($icons as $id => $data)
 		{
 			if ($data['display'])
 			{
 				$template->assign_block_vars('topic_icon', array(
 					'ICON_ID'		=> $id,
-					'ICON_IMG'		=> $phpbb_root_path . $config['icons_path'] . '/' . $data['img'],
+					'ICON_IMG'		=> $root_path . $config['icons_path'] . '/' . $data['img'],
 					'ICON_WIDTH'	=> $data['width'],
 					'ICON_HEIGHT'	=> $data['height'],
 
@@ -497,7 +507,14 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	{
 		if ($free_space <= $file->get('filesize'))
 		{
-			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
+			if ($auth->acl_get('a_'))
+			{
+				$filedata['error'][] = $user->lang['ATTACH_DISK_FULL'];
+			}
+			else
+			{
+				$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
+			}
 			$filedata['post_attach'] = false;
 
 			$file->remove();
@@ -803,7 +820,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 */
 function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true)
 {
-	global $template, $config, $phpbb_root_path, $phpEx, $user, $auth;
+	global $template, $config, $phpbb_root_path, $phpEx, $user;
 
 	// Some default template variables
 	$template->assign_vars(array(
@@ -1005,7 +1022,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$mode = 'post_review';
 	}
 
-	$sql = $db->sql_build_query('SELECT', array(
+	$sql_ary = array(
 		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*, z.friend, z.foe',
 
 		'FROM'		=> array(
@@ -1016,14 +1033,15 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		'LEFT_JOIN'	=> array(
 			array(
 				'FROM'	=> array(ZEBRA_TABLE => 'z'),
-				'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id'
-			)
+				'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id',
+			),
 		),
 
 		'WHERE'		=> $db->sql_in_set('p.post_id', $post_list) . '
-			AND u.user_id = p.poster_id'
-	));
+			AND u.user_id = p.poster_id',
+	);
 
+	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
 	$bbcode_bitfield = '';
@@ -1078,7 +1096,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			continue;
 		}
 
-		$row =& $rowset[$post_list[$i]];
+		$row = $rowset[$post_list[$i]];
 
 		$poster_id		= $row['user_id'];
 		$post_subject	= $row['post_subject'];
@@ -1160,7 +1178,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 /**
 * User Notification
 */
-function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id)
+function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id, $author_name = '')
 {
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
 
@@ -1180,36 +1198,32 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	$topic_title = ($topic_notification) ? $topic_title : $subject;
 	$topic_title = censor_text($topic_title);
 
-	// Get banned User ID's
-	$sql = 'SELECT ban_userid
-		FROM ' . BANLIST_TABLE . '
-		WHERE ban_userid <> 0
-			AND ban_exclude <> 1';
-	$result = $db->sql_query($sql);
-
-	$sql_ignore_users = ANONYMOUS . ', ' . $user->data['user_id'];
-	while ($row = $db->sql_fetchrow($result))
+	// Exclude guests, current user and banned users from notifications
+	if (!function_exists('phpbb_get_banned_user_ids'))
 	{
-		$sql_ignore_users .= ', ' . (int) $row['ban_userid'];
+		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 	}
-	$db->sql_freeresult($result);
+	$sql_ignore_users = phpbb_get_banned_user_ids();
+	$sql_ignore_users[ANONYMOUS] = ANONYMOUS;
+	$sql_ignore_users[$user->data['user_id']] = $user->data['user_id'];
 
 	$notify_rows = array();
 
 	// -- get forum_userids	|| topic_userids
 	$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
 		FROM ' . (($topic_notification) ? TOPICS_WATCH_TABLE : FORUMS_WATCH_TABLE) . ' w, ' . USERS_TABLE . ' u
-		WHERE w.' . (($topic_notification) ? 'topic_id' : 'forum_id') . ' = ' . (($topic_notification) ? $topic_id : $forum_id) . "
-			AND w.user_id NOT IN ($sql_ignore_users)
-			AND w.notify_status = " . NOTIFY_YES . '
+		WHERE w.' . (($topic_notification) ? 'topic_id' : 'forum_id') . ' = ' . (($topic_notification) ? $topic_id : $forum_id) . '
+			AND ' . $db->sql_in_set('w.user_id', $sql_ignore_users, true) . '
+			AND w.notify_status = ' . NOTIFY_YES . '
 			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 			AND u.user_id = w.user_id';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$notify_rows[$row['user_id']] = array(
-			'user_id'		=> $row['user_id'],
+		$notify_user_id = (int) $row['user_id'];
+		$notify_rows[$notify_user_id] = array(
+			'user_id'		=> $notify_user_id,
 			'username'		=> $row['username'],
 			'user_email'	=> $row['user_email'],
 			'user_jabber'	=> $row['user_jabber'],
@@ -1219,30 +1233,29 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			'method'		=> $row['user_notify_type'],
 			'allowed'		=> false
 		);
+
+		// Add users who have been already notified to ignore list
+		$sql_ignore_users[$notify_user_id] = $notify_user_id;
 	}
 	$db->sql_freeresult($result);
 
 	// forum notification is sent to those not already receiving topic notifications
 	if ($topic_notification)
 	{
-		if (sizeof($notify_rows))
-		{
-			$sql_ignore_users .= ', ' . implode(', ', array_keys($notify_rows));
-		}
-
 		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
 			FROM ' . FORUMS_WATCH_TABLE . ' fw, ' . USERS_TABLE . " u
 			WHERE fw.forum_id = $forum_id
-				AND fw.user_id NOT IN ($sql_ignore_users)
-				AND fw.notify_status = " . NOTIFY_YES . '
+				AND " . $db->sql_in_set('fw.user_id', $sql_ignore_users, true) . '
+				AND fw.notify_status = ' . NOTIFY_YES . '
 				AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 				AND u.user_id = fw.user_id';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$notify_rows[$row['user_id']] = array(
-				'user_id'		=> $row['user_id'],
+			$notify_user_id = (int) $row['user_id'];
+			$notify_rows[$notify_user_id] = array(
+				'user_id'		=> $notify_user_id,
 				'username'		=> $row['username'],
 				'user_email'	=> $row['user_email'],
 				'user_jabber'	=> $row['user_jabber'],
@@ -1273,7 +1286,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		}
 	}
 
-
 	// Now, we have to do a little step before really sending, we need to distinguish our users a little bit. ;)
 	$msg_users = $delete_ids = $update_notification = array();
 	foreach ($notify_rows as $user_id => $row)
@@ -1286,6 +1298,20 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		{
 			$msg_users[] = $row;
 			$update_notification[$row['notify_type']][] = $row['user_id'];
+
+			/*
+			* We also update the forums watch table for this user when we are
+			* sending out a topic notification to prevent sending out another
+			* notification in case this user is also subscribed to the forum
+			* this topic was posted in.
+			* Since an UPDATE query is used, this has no effect on users only
+			* subscribed to the topic (i.e. no row is created) and should not
+			* be a performance issue.
+			*/
+			if ($row['notify_type'] === 'topic')
+			{
+				$update_notification['forum'][] = $row['user_id'];
+			}
 		}
 	}
 	unset($notify_rows);
@@ -1323,6 +1349,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 					'USERNAME'		=> htmlspecialchars_decode($addr['name']),
 					'TOPIC_TITLE'	=> htmlspecialchars_decode($topic_title),
 					'FORUM_NAME'	=> htmlspecialchars_decode($forum_name),
+					'AUTHOR_NAME'	=> htmlspecialchars_decode($author_name),
 
 					'U_FORUM'				=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id",
 					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id",
@@ -1642,8 +1669,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	// First of all make sure the subject and topic title are having the correct length.
 	// To achieve this without cutting off between special chars we convert to an array and then count the elements.
-	$subject = truncate_string($subject);
-	$data['topic_title'] = truncate_string($data['topic_title']);
+	$subject = truncate_string($subject, 120);
+	$data['topic_title'] = truncate_string($data['topic_title'], 120);
 
 	// Collect some basic information about which tables and which rows to update/insert
 	$sql_data = $topic_row = array();
@@ -1855,9 +1882,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		case 'edit_topic':
 		case 'edit_first_post':
-			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
+			if (isset($poll['poll_options']))
 			{
-				$poll_start = ($poll['poll_start']) ? $poll['poll_start'] : $current_time;
+				$poll_start = ($poll['poll_start'] || empty($poll['poll_options'])) ? $poll['poll_start'] : $current_time;
 				$poll_length = $poll['poll_length'] * 86400;
 				if ($poll_length < 0)
 				{
@@ -2005,11 +2032,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Update Poll Tables
-	if (isset($poll['poll_options']) && !empty($poll['poll_options']))
+	if (isset($poll['poll_options']))
 	{
 		$cur_poll_options = array();
 
-		if ($poll['poll_start'] && $mode == 'edit')
+		if ($mode == 'edit')
 		{
 			$sql = 'SELECT *
 				FROM ' . POLL_OPTIONS_TABLE . '
@@ -2350,20 +2377,15 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	if ($update_search_index && $data['enable_indexing'])
 	{
 		// Select the search method and do some additional checks to ensure it can actually be utilised
-		$search_type = basename($config['search_type']);
+		$search_type = $config['search_type'];
 
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		if (!class_exists($search_type))
 		{
 			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
-		if (!class_exists($search_type))
-		{
-			include("{$phpbb_root_path}includes/search/$search_type.$phpEx");
-		}
-
 		$error = false;
-		$search = new $search_type($error);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		if ($error)
 		{
@@ -2433,7 +2455,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// Send Notifications
 	if (($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_approval)
 	{
-		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
+		$username = ($username) ? $username : $user->data['username'];
+		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id'], $username);
 	}
 
 	$params = $add_anchor = '';
@@ -2455,6 +2478,108 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	$url = (!$params) ? "{$phpbb_root_path}viewforum.$phpEx" : "{$phpbb_root_path}viewtopic.$phpEx";
 	$url = append_sid($url, 'f=' . $data['forum_id'] . $params) . $add_anchor;
+
+	return $url;
+}
+
+/**
+* Handle topic bumping
+* @param int $forum_id The ID of the forum the topic is being bumped belongs to
+* @param int $topic_id The ID of the topic is being bumping
+* @param array $post_data Passes some topic parameters:
+*				- 'topic_title'
+*				- 'topic_last_post_id'
+*				- 'topic_last_poster_id'
+*				- 'topic_last_post_subject'
+*				- 'topic_last_poster_name'
+*				- 'topic_last_poster_colour'
+* @param int $bump_time The time at which topic was bumped, usually it is a current time as obtained via time().
+* @return string An URL to the bumped topic, example: ./viewtopic.php?forum_id=1&amptopic_id=2&ampp=3#p3
+*/
+function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
+{
+	global $config, $db, $user, $phpEx, $phpbb_root_path;
+
+	if ($bump_time === false)
+	{
+		$bump_time = time();
+	}
+
+	// Begin bumping
+	$db->sql_transaction('begin');
+
+	// Update the topic's last post post_time
+	$sql = 'UPDATE ' . POSTS_TABLE . "
+		SET post_time = $bump_time
+		WHERE post_id = {$post_data['topic_last_post_id']}
+			AND topic_id = $topic_id";
+	$db->sql_query($sql);
+
+	// Sync the topic's last post time, the rest of the topic's last post data isn't changed
+	$sql = 'UPDATE ' . TOPICS_TABLE . "
+		SET topic_last_post_time = $bump_time,
+			topic_bumped = 1,
+			topic_bumper = " . $user->data['user_id'] . "
+		WHERE topic_id = $topic_id";
+	$db->sql_query($sql);
+
+	// Update the forum's last post info
+	$sql = 'UPDATE ' . FORUMS_TABLE . "
+		SET forum_last_post_id = " . $post_data['topic_last_post_id'] . ",
+			forum_last_poster_id = " . $post_data['topic_last_poster_id'] . ",
+			forum_last_post_subject = '" . $db->sql_escape($post_data['topic_last_post_subject']) . "',
+			forum_last_post_time = $bump_time,
+			forum_last_poster_name = '" . $db->sql_escape($post_data['topic_last_poster_name']) . "',
+			forum_last_poster_colour = '" . $db->sql_escape($post_data['topic_last_poster_colour']) . "'
+		WHERE forum_id = $forum_id";
+	$db->sql_query($sql);
+
+	// Update bumper's time of the last posting to prevent flood
+	$sql = 'UPDATE ' . USERS_TABLE . "
+		SET user_lastpost_time = $bump_time
+		WHERE user_id = " . $user->data['user_id'];
+	$db->sql_query($sql);
+
+	$db->sql_transaction('commit');
+
+	// Mark this topic as posted to
+	markread('post', $forum_id, $topic_id, $bump_time);
+
+	// Mark this topic as read
+	markread('topic', $forum_id, $topic_id, $bump_time);
+
+	// Update forum tracking info
+	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	{
+		$sql = 'SELECT mark_time
+			FROM ' . FORUMS_TRACK_TABLE . '
+			WHERE user_id = ' . $user->data['user_id'] . '
+				AND forum_id = ' . $forum_id;
+		$result = $db->sql_query($sql);
+		$f_mark_time = (int) $db->sql_fetchfield('mark_time');
+		$db->sql_freeresult($result);
+	}
+	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+	{
+		$f_mark_time = false;
+	}
+
+	if (($config['load_db_lastread'] && $user->data['is_registered']) || $config['load_anon_lastread'] || $user->data['is_registered'])
+	{
+		// Update forum info
+		$sql = 'SELECT forum_last_post_time
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . $forum_id;
+		$result = $db->sql_query($sql);
+		$forum_last_post_time = (int) $db->sql_fetchfield('forum_last_post_time');
+		$db->sql_freeresult($result);
+
+		update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time, false);
+	}
+
+	add_log('mod', $forum_id, $topic_id, 'LOG_BUMP_TOPIC', $post_data['topic_title']);
+
+	$url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p={$post_data['topic_last_post_id']}") . "#p{$post_data['topic_last_post_id']}";
 
 	return $url;
 }

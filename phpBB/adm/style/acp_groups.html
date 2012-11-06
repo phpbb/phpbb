@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT -->
 
@@ -239,11 +239,11 @@
 	<!-- END member -->
 	</tbody>
 	</table>
-	<!-- IF PAGINATION -->
 	<div class="pagination">
-			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-	</div>
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->
 	<!-- ENDIF -->
+	</div>
 
 	<fieldset class="quick">
 		<select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select>
@@ -350,7 +350,7 @@
 			<td style="text-align: center;">{groups.TOTAL_MEMBERS}</td>
 			<td style="text-align: center;"><a href="{groups.U_EDIT}">{L_SETTINGS}</a></td>
 			<td style="text-align: center;"><a href="{groups.U_LIST}">{L_MEMBERS}</a></td>
-			<td style="text-align: center;"><!-- IF not groups.S_GROUP_SPECIAL and groups.U_DELETE --><a href="{groups.U_DELETE}">{L_DELETE}</a><!-- ELSE -->{L_DELETE}<!-- ENDIF --></td>
+			<td style="text-align: center;"><!-- IF not groups.S_GROUP_SPECIAL and groups.U_DELETE --><a href="{groups.U_DELETE}" data-ajax="row_delete">{L_DELETE}</a><!-- ELSE -->{L_DELETE}<!-- ENDIF --></td>
 		</tr>
 		<!-- ENDIF -->
 	<!-- END groups -->

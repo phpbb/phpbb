@@ -1,16 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}" xml:lang="{S_USER_LANG}">
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset={S_CONTENT_ENCODING}" />
-<meta http-equiv="content-language" content="{S_USER_LANG}" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="imagetoolbar" content="no" />
-<meta name="resource-type" content="document" />
-<meta name="distribution" content="global" />
+<meta charset="utf-8">
 <meta name="keywords" content="" />
 <meta name="description" content="" />
-<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9" />
 {META}
 <title><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
 
@@ -25,6 +18,7 @@
 <!-- ENDIF -->
 
 <link rel="stylesheet" href="{T_STYLESHEET_LINK}" type="text/css" />
+<link rel="stylesheet" href="{T_STYLESHEET_LANG_LINK}" type="text/css" />
 
 <script type="text/javascript">
 // <![CDATA[
@@ -77,11 +71,7 @@ function find_username(url)
 */
 function marklist(id, name, state)
 {
-	var parent = document.getElementById(id);
-	if (!parent)
-	{
-		eval('parent = document.' + id);
-	}
+	var parent = document.getElementById(id) || document[id];
 
 	if (!parent)
 	{
@@ -89,7 +79,7 @@ function marklist(id, name, state)
 	}
 
 	var rb = parent.getElementsByTagName('input');
-	
+
 	for (var r = 0; r < rb.length; r++)
 	{
 		if (rb[r].name.substr(0, name.length) == name)
@@ -149,7 +139,7 @@ function marklist(id, name, state)
 	<div id="logodesc">
 		<table width="100%" cellspacing="0">
 		<tr>
-			<td><a href="{U_INDEX}">{SITE_LOGO_IMG}</a></td>
+			<td><a href="<!-- IF U_SITE_HOME -->{U_SITE_HOME}<!-- ELSE -->{U_INDEX}<!-- ENDIF -->" class="imageset">{SITE_LOGO_IMG}</a></td>
 			<td width="100%" align="center"><h1>{SITENAME}</h1><span class="gen">{SITE_DESCRIPTION}</span></td>
 		</tr>
 		</table>

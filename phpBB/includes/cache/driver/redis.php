@@ -3,7 +3,7 @@
 *
 * @package acm
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -23,12 +23,6 @@ if (!defined('PHPBB_ACM_REDIS_PORT'))
 if (!defined('PHPBB_ACM_REDIS_HOST'))
 {
 	define('PHPBB_ACM_REDIS_HOST', 'localhost');
-}
-
-if (!defined('PHPBB_ACM_REDIS'))
-{
-	//can define multiple servers with host1/port1,host2/port2 format
-	define('PHPBB_ACM_REDIS', PHPBB_ACM_REDIS_HOST . '/' . PHPBB_ACM_REDIS_PORT);
 }
 
 /**
@@ -51,12 +45,8 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory
 		parent::__construct();
 
 		$this->redis = new Redis();
-		foreach (explode(',', PHPBB_ACM_REDIS) as $server)
-		{
-			$parts = explode('/', $server);
-			$this->redis->connect(trim($parts[0]), trim($parts[1]));
-		}
-		
+		$this->redis->connect(PHPBB_ACM_REDIS_HOST, PHPBB_ACM_REDIS_PORT);
+
 		if (defined('PHPBB_ACM_REDIS_PASSWORD'))
 		{
 			if (!$this->redis->auth(PHPBB_ACM_REDIS_PASSWORD))

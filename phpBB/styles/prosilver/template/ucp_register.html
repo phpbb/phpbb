@@ -12,7 +12,7 @@
 	}
 
 	<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_REFRESH -->
-	onload_functions.push('apply_onkeypress_event()');
+	onload_functions.push(apply_onkeypress_event);
 	<!-- ENDIF -->
 
 // ]]>
@@ -21,7 +21,7 @@
 <form method="post" action="{S_UCP_ACTION}" id="register">
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h2>{SITENAME} - {L_REGISTRATION}</h2>
 
@@ -39,10 +39,6 @@
 		<dd><input type="text" tabindex="2" name="email" id="email" size="25" maxlength="100" value="{EMAIL}" class="inputbox autowidth" title="{L_EMAIL_ADDRESS}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="email_confirm">{L_CONFIRM_EMAIL}:</label></dt>
-		<dd><input type="text" tabindex="3" name="email_confirm" id="email_confirm" size="25" maxlength="100" value="{EMAIL_CONFIRM}" class="inputbox autowidth" title="{L_CONFIRM_EMAIL}" /></dd>
-	</dl>
-	<dl>
 		<dt><label for="new_password">{L_PASSWORD}:</label><br /><span>{L_PASSWORD_EXPLAIN}</span></dt>
 		<dd><input type="password" tabindex="4" name="new_password" id="new_password" size="25" value="{PASSWORD}" class="inputbox autowidth" title="{L_NEW_PASSWORD}" /></dd>
 	</dl>
@@ -57,10 +53,8 @@
 		<dt><label for="lang">{L_LANGUAGE}:</label></dt>
 		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
 	</dl>
-	<dl>
-		<dt><label for="tz">{L_TIMEZONE}:</label></dt>
-		<dd><select name="tz" id="tz" tabindex="7" class="autowidth">{S_TZ_OPTIONS}</select></dd>
-	</dl>
+
+	<!-- INCLUDE timezone_option.html -->
 
 	<!-- IF .profile_fields -->
 		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>
@@ -76,7 +70,7 @@
 	<!-- ENDIF -->
 
 	</fieldset>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 <!-- IF CAPTCHA_TEMPLATE -->
 	<!-- DEFINE $CAPTCHA_TAB_INDEX = 8 -->
@@ -87,17 +81,17 @@
 
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h4>{L_COPPA_COMPLIANCE}</h4>
 
 	<p>{L_COPPA_EXPLAIN}</p>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 <!-- ENDIF -->
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
@@ -106,8 +100,11 @@
 		{S_FORM_TOKEN}
 	</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 </form>
+
+<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/timezone.js"></script>
+<script type="text/javascript">phpbb_preselect_tz_select();</script>
 
 <!-- INCLUDE overall_footer.html -->

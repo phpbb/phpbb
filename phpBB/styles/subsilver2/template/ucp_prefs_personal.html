@@ -71,16 +71,7 @@
 	<td class="row2"><select name="style">{S_STYLE_OPTIONS}</select></td>
 </tr>
 <!-- ENDIF -->
-<tr>
-	<td class="row1" width="50%"><b class="genmed">{L_BOARD_TIMEZONE}:</b></td>
-	<td class="row2">
-		<select id="tz" name="tz">{S_TZ_OPTIONS}</select>
-	</td>
-</tr>
-<tr>
-	<td class="row1" width="50%"><b class="genmed">{L_BOARD_DST}:</b></td>
-	<td class="row2"><input type="radio" class="radio" name="dst" value="1"<!-- IF S_DST --> checked="checked"<!-- ENDIF --> /> <span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" class="radio" name="dst" value="0"<!-- IF not S_DST --> checked="checked"<!-- ENDIF --> /> <span class="genmed">{L_NO}</span></td>
-</tr>
+<!-- INCLUDE timezone_option.html -->
 <tr>
 	<td class="row1" width="50%"><b class="genmed">{L_BOARD_DATE_FORMAT}:</b><br /><span class="gensmall">{L_BOARD_DATE_FORMAT_EXPLAIN}</span></td>
 	<td class="row2">

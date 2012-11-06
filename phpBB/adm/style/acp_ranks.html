@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT -->
 
@@ -35,7 +35,7 @@
 	</dl>
 	<dl>
 		<dt><label for="special_rank">{L_RANK_SPECIAL}:</label></dt>
-		<dd><label><input onclick="dE('posts', -1)" type="radio" class="radio" name="special_rank" value="1" id="special_rank"<!-- IF S_SPECIAL_RANK --> checked="checked"<!-- ENDIF --> />{L_YES}</label>
+		<dd><label><input onclick="dE('posts', -1)" type="radio" class="radio" name="special_rank" value="1" id="special_rank"<!-- IF S_SPECIAL_RANK --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 			<label><input onclick="dE('posts', 1)" type="radio" class="radio" name="special_rank" value="0"<!-- IF not S_SPECIAL_RANK --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
 	<!-- IF S_SPECIAL_RANK --><div id="posts" style="display: none;"><!-- ELSE --><div id="posts"><!-- ENDIF -->
@@ -80,7 +80,7 @@
 		<td style="text-align: center;"><!-- IF ranks.S_RANK_IMAGE --><img src="{ranks.RANK_IMAGE}" alt="{ranks.RANK_TITLE}" title="{ranks.RANK_TITLE}" /><!-- ELSE -->&nbsp; - &nbsp;<!-- ENDIF --></td>
 		<td style="text-align: center;">{ranks.RANK_TITLE}</td>
 		<td style="text-align: center;"><!-- IF ranks.S_SPECIAL_RANK -->&nbsp; - &nbsp;<!-- ELSE -->{ranks.MIN_POSTS}<!-- ENDIF --></td>
-		<td style="text-align: center;"><a href="{ranks.U_EDIT}">{ICON_EDIT}</a> <a href="{ranks.U_DELETE}">{ICON_DELETE}</a></td>
+		<td style="text-align: center;"><a href="{ranks.U_EDIT}">{ICON_EDIT}</a> <a href="{ranks.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a></td>
 	</tr>
 	<!-- END ranks -->
 	</tbody>

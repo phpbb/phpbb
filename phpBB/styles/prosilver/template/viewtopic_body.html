@@ -4,18 +4,15 @@
 <!-- NOTE: remove the style="display: none" when you want to have the forum description on the topic body -->
 <!-- IF FORUM_DESC --><div style="display: none !important;">{FORUM_DESC}<br /></div><!-- ENDIF -->
 
-<!-- IF MODERATORS or U_MCP -->
-	<p>
-		<!-- IF MODERATORS -->
-			<strong><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->:</strong> {MODERATORS}
-		<!-- ENDIF -->
-
-	</p>
+<!-- IF MODERATORS -->
+<p>
+	<strong><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->:</strong> {MODERATORS}
+</p>
 <!-- ENDIF -->
 
 <!-- IF S_FORUM_RULES -->
 	<div class="rules">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<!-- IF U_FORUM_RULES -->
 			<a href="{U_FORUM_RULES}">{L_FORUM_RULES}</a>
@@ -24,7 +21,7 @@
 			{FORUM_RULES}
 		<!-- ENDIF -->
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- ENDIF -->
 
@@ -38,21 +35,24 @@
 
 	<!-- IF S_DISPLAY_SEARCHBOX -->
 		<div class="search-box">
-			<form method="post" id="topic-search" action="{S_SEARCHBOX_ACTION}">
+			<form method="get" id="topic-search" action="{S_SEARCHBOX_ACTION}">
 			<fieldset>
 				<input class="inputbox search tiny"  type="text" name="keywords" id="search_keywords" size="20" value="{L_SEARCH_TOPIC}" onclick="if(this.value=='{LA_SEARCH_TOPIC}')this.value='';" onblur="if(this.value=='')this.value='{LA_SEARCH_TOPIC}';" />
 				<input class="button2" type="submit" value="{L_SEARCH}" />
-				<input type="hidden" value="{TOPIC_ID}" name="t" />
-				<input type="hidden" value="msgonly" name="sf" />
+				{S_SEARCH_LOCAL_HIDDEN_FIELDS}
 			</fieldset>
 			</form>
 		</div>
 	<!-- ENDIF -->
 
-	<!-- IF PAGINATION or TOTAL_POSTS -->
+	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
-			<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS}
-			<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+			<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS} &bull; 
+			<!-- IF .pagination --> 
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE --> 
+				{PAGE_NUMBER}
+			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
 
@@ -63,7 +63,7 @@
 	<form method="post" action="{S_POLL_ACTION}">
 
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
 			<h2>{POLL_QUESTION}</h2>
@@ -102,7 +102,7 @@
 			</fieldset>
 		</div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 		{S_FORM_TOKEN}
 		{S_HIDDEN_FIELDS}
 	</div>
@@ -115,7 +115,7 @@
 <!-- BEGIN postrow -->
 	<!-- IF postrow.S_FIRST_UNREAD --><a id="unread"></a><!-- ENDIF -->
 	<div id="p{postrow.POST_ID}" class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF postrow.S_UNREAD_POST --> unreadpost<!-- ENDIF --><!-- IF postrow.S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_IGNORE_POST --> online<!-- ENDIF -->">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="postbody">
 			<!-- IF postrow.S_IGNORE_POST -->
@@ -126,7 +126,7 @@
 			<!-- IF postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE -->
 				<ul class="profile-icons">
 					<!-- IF postrow.U_EDIT --><li class="edit-icon"><a href="{postrow.U_EDIT}" title="{L_EDIT_POST}"><span>{L_EDIT_POST}</span></a></li><!-- ENDIF -->
-					<!-- IF postrow.U_DELETE --><li class="delete-icon"><a href="{postrow.U_DELETE}" title="{L_DELETE_POST}"><span>{L_DELETE_POST}</span></a></li><!-- ENDIF -->
+					<!-- IF postrow.U_DELETE --><li class="delete-icon"><a href="{postrow.U_DELETE}" title="{L_DELETE_POST}" data-ajax="post_delete"<!-- IF postrow.POST_NUMBER == 1 --> data-refresh="true"<!-- ENDIF -->><span>{L_DELETE_POST}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_REPORT --><li class="report-icon"><a href="{postrow.U_REPORT}" title="{L_REPORT_POST}"><span>{L_REPORT_POST}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_WARN --><li class="warn-icon"><a href="{postrow.U_WARN}" title="{L_WARN_USER}"><span>{L_WARN_USER}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_INFO --><li class="info-icon"><a href="{postrow.U_INFO}" title="{L_INFORMATION}"><span>{L_INFORMATION}</span></a></li><!-- ENDIF -->
@@ -139,17 +139,37 @@
 			<p class="author"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><!-- ENDIF -->{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; {postrow.POST_DATE} </p>
 
 			<!-- IF postrow.S_POST_UNAPPROVED or postrow.S_POST_REPORTED -->
+			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}" data-ajax="post_approve">
 				<p class="rules">
-					<!-- IF postrow.S_POST_UNAPPROVED -->{UNAPPROVED_IMG} <a href="{postrow.U_MCP_APPROVE}"><strong>{L_POST_UNAPPROVED}</strong></a><br /><!-- ENDIF -->
+					<!-- IF postrow.S_POST_UNAPPROVED -->
+						{UNAPPROVED_IMG} <strong>{L_POST_UNAPPROVED}</strong>
+						<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
+						<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
+						<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
+						{S_FORM_TOKEN}
+					<br /><!-- ENDIF -->
 					<!-- IF postrow.S_POST_REPORTED -->{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a><!-- ENDIF -->
 				</p>
+			</form>
 			<!-- ENDIF -->
 
 			<div class="content">{postrow.MESSAGE}</div>
 
 			<!-- IF postrow.S_HAS_ATTACHMENTS -->
 				<dl class="attachbox">
-					<dt>{L_ATTACHMENTS}</dt>
+					<dt>
+						{L_ATTACHMENTS}
+						<!-- IF postrow.S_MULTIPLE_ATTACHMENTS -->
+							<div class="dl_links">
+								<strong>{L_DOWNLOAD_ALL}:</strong>
+								<ul>
+								<!-- BEGIN dl_method -->
+									<li>[ <a href="{postrow.dl_method.LINK}">{postrow.dl_method.TYPE}</a> ]</li>
+								<!-- END dl_method -->
+								</ul>
+							</div>
+						<!-- ENDIF -->
+					</dt>
 					<!-- BEGIN attachment -->
 						<dd>{postrow.attachment.DISPLAY_ATTACHMENT}</dd>
 					<!-- END attachment -->
@@ -217,7 +237,7 @@
 
 		<div class="back2top"><a href="#wrap" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a></div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 	<hr class="divider" />
@@ -225,7 +245,7 @@
 <!-- IF S_QUICK_REPLY -->
 	<!-- INCLUDE quickreply_editor.html -->
 <!-- ENDIF -->
-<!-- IF S_NUM_POSTS > 1 or PREVIOUS_PAGE -->
+<!-- IF S_NUM_POSTS > 1 or PREVIOUS_PAGE or NEXT_PAGE -->
 	<form id="viewtopic" method="post" action="{S_TOPIC_ACTION}">
 
 	<fieldset class="display-options" style="margin-top: 0; ">
@@ -248,20 +268,51 @@
 	<!-- ENDIF -->
 	</div>
 
-	<!-- IF PAGINATION or TOTAL_POSTS -->
+	<!-- IF S_HAS_ATTACHMENTS -->
+		<div class="dl_links">
+			<strong>{L_DOWNLOAD_ALL_ATTACHMENTS}:</strong>
+			<ul>
+			<!-- BEGIN dl_method -->
+				<li>[ <a href="{dl_method.LINK}">{dl_method.TYPE}</a> ]</li>
+			<!-- END dl_method -->
+			</ul>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
-			{TOTAL_POSTS}
-			<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+			{TOTAL_POSTS} &bull; 
+			<!-- IF .pagination --> 
+				<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull;
+				<ul>
+				<!-- BEGIN pagination -->
+					<!-- IF pagination.S_IS_PREV -->
+					<!-- ELSEIF pagination.S_IS_CURRENT --><li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+					<!-- ELSEIF pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+					<!-- ELSEIF pagination.S_IS_NEXT -->
+					<!-- ELSE --><li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
+					<!-- ENDIF -->
+				<!-- END pagination -->
+				</ul>
+			<!-- ELSE --> 
+				{PAGE_NUMBER}
+			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
 </div>
 
 <!-- INCLUDE jumpbox.html -->
 
-<!-- IF S_TOPIC_MOD -->
-	<form method="post" action="{S_MOD_ACTION}">
+<!-- IF .quickmod -->
+	<form method="post" action="{S_MOD_ACTION}" id="quickmodform">
 	<fieldset class="quickmod">
-		<label for="quick-mod-select">{L_QUICK_MOD}:</label> {S_TOPIC_MOD} <input type="submit" value="{L_GO}" class="button2" />
+		<label for="quick-mod-select">{L_QUICK_MOD}:</label>
+		<select name="action" id="quick-mod-select">
+			<!-- BEGIN quickmod -->
+			<option value="{quickmod.VALUE}">{quickmod.TITLE}</option>
+			<!-- END quickmod -->
+		</select>
+		<input type="submit" value="{L_GO}" class="button2" />
 		{S_FORM_TOKEN}
 	</fieldset>
 	</form>

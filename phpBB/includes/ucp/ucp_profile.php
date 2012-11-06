@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -47,10 +46,9 @@ class ucp_profile
 				$data = array(
 					'username'			=> utf8_normalize_nfc(request_var('username', $user->data['username'], true)),
 					'email'				=> strtolower(request_var('email', $user->data['user_email'])),
-					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
-					'new_password'		=> request_var('new_password', '', true),
-					'cur_password'		=> request_var('cur_password', '', true),
-					'password_confirm'	=> request_var('password_confirm', '', true),
+					'new_password'		=> $request->variable('new_password', '', true),
+					'cur_password'		=> $request->variable('cur_password', '', true),
+					'password_confirm'	=> $request->variable('password_confirm', '', true),
 				);
 
 				add_form_key('ucp_reg_details');
@@ -66,7 +64,6 @@ class ucp_profile
 						'email'				=> array(
 							array('string', false, 6, 60),
 							array('email')),
-						'email_confirm'		=> array('string', true, 6, 60),
 					);
 
 					if ($auth->acl_get('u_chgname') && $config['allow_namechange'])
@@ -81,12 +78,7 @@ class ucp_profile
 
 					if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && $data['password_confirm'] != $data['new_password'])
 					{
-						$error[] = 'NEW_PASSWORD_ERROR';
-					}
-
-					if (($data['new_password'] || ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email']) || ($data['username'] != $user->data['username'] && $auth->acl_get('u_chgname') && $config['allow_namechange'])) && !phpbb_check_hash($data['cur_password'], $user->data['user_password']))
-					{
-						$error[] = 'CUR_PASSWORD_ERROR';
+						$error[] = ($data['password_confirm']) ? 'NEW_PASSWORD_ERROR' : 'NEW_PASSWORD_CONFIRM_EMPTY';
 					}
 
 					// Only check the new password against the previous password if there have been no errors
@@ -95,9 +87,9 @@ class ucp_profile
 						$error[] = 'SAME_PASSWORD_ERROR';
 					}
 
-					if ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email'] && $data['email_confirm'] != $data['email'])
+					if (!phpbb_check_hash($data['cur_password'], $user->data['user_password']))
 					{
-						$error[] = 'NEW_EMAIL_ERROR';
+						$error[] = ($data['cur_password']) ? 'CUR_PASSWORD_ERROR' : 'CUR_PASSWORD_EMPTY';
 					}
 
 					if (!check_form_key('ucp_reg_details'))
@@ -151,10 +143,7 @@ class ucp_profile
 
 							$messenger->to($data['email'], $data['username']);
 
-							$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-							$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-							$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-							$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+							$messenger->anti_abuse_headers($config, $user);
 
 							$messenger->assign_vars(array(
 								'USERNAME'		=> htmlspecialchars_decode($data['username']),
@@ -251,8 +240,8 @@ class ucp_profile
 					'NEW_PASSWORD'		=> $data['new_password'],
 					'CUR_PASSWORD'		=> '',
 
-					'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+					'L_USERNAME_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
+					'L_CHANGE_PASSWORD_EXPLAIN'	=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars']), $user->lang('CHARACTERS', (int) $config['max_pass_chars'])),
 
 					'S_FORCE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd') && $config['chg_passforce'] && $user->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400)) ? true : false,
 					'S_CHANGE_USERNAME' => ($config['allow_namechange'] && $auth->acl_get('u_chgname')) ? true : false,
@@ -540,7 +529,7 @@ class ucp_profile
 					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 					'MAX_FONT_SIZE'			=> (int) $config['max_sig_font_size'],
 
-					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
+					'L_SIGNATURE_EXPLAIN'	=> $user->lang('SIGNATURE_EXPLAIN', (int) $config['max_sig_chars']),
 
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
@@ -605,7 +594,7 @@ class ucp_profile
 
 					'S_FORM_ENCTYPE'	=> ($can_upload && ($config['allow_avatar_upload'] || $config['allow_avatar_remote_upload'])) ? ' enctype="multipart/form-data"' : '',
 
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
+					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 				));
 
 				if ($config['allow_avatar'] && $display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
@@ -627,6 +616,60 @@ class ucp_profile
 						'S_DISPLAY_GALLERY'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false)
 					);
 				}
+
+			break;
+
+			case 'autologin_keys':
+
+				add_form_key('ucp_autologin_keys');
+
+				if ($submit)
+				{
+					$keys = request_var('keys', array(''));
+
+					if (!check_form_key('ucp_autologin_keys'))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+
+					if (!sizeof($error))
+					{
+						if (!empty($keys))
+						{
+							$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+								WHERE user_id = ' . (int) $user->data['user_id'] . '
+								AND ' . $db->sql_in_set('key_id', $keys) ;
+
+							$db->sql_query($sql);
+
+							meta_refresh(3, $this->u_action);
+							$message = $user->lang['AUTOLOGIN_SESSION_KEYS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+							trigger_error($message);
+						}
+					}
+
+					// Replace "error" strings with their real, localised form
+					$error = array_map(array($user, 'lang'), $error);
+				}
+
+				$sql = 'SELECT key_id, last_ip, last_login
+					FROM ' . SESSIONS_KEYS_TABLE . '
+					WHERE user_id = ' . (int) $user->data['user_id'];
+
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$template->assign_block_vars('sessions', array(
+						'errors' => $error,
+
+						'KEY' => $row['key_id'],
+						'IP' => $row['last_ip'],
+						'LOGIN_TIME' => $user->format_date($row['last_login']),
+					));
+				}
+
+				$db->sql_freeresult($result);
 
 			break;
 		}

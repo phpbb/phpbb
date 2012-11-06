@@ -4,9 +4,8 @@
 * ucp [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -39,7 +38,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'TERMS_OF_USE_CONTENT'	=> 'By accessing “%1$s” (hereinafter “we”, “us”, “our”, “%1$s”, “%2$s”), you agree to be legally bound by the following terms. If you do not agree to be legally bound by all of the following terms then please do not access and/or use “%1$s”. We may change these at any time and we’ll do our utmost in informing you, though it would be prudent to review this regularly yourself as your continued usage of “%1$s” after changes mean you agree to be legally bound by these terms as they are updated and/or amended.<br />
 	<br />
-	Our forums are powered by phpBB (hereinafter “they”, “them”, “their”, “phpBB software”, “www.phpbb.com”, “phpBB Group”, “phpBB Teams”) which is a bulletin board solution released under the “<a href="http://opensource.org/licenses/gpl-license.php">General Public License</a>” (hereinafter “GPL”) and can be downloaded from <a href="http://www.phpbb.com/">www.phpbb.com</a>. The phpBB software only facilitates internet based discussions, the phpBB Group are not responsible for what we allow and/or disallow as permissible content and/or conduct. For further information about phpBB, please see: <a href="http://www.phpbb.com/">http://www.phpbb.com/</a>.<br />
+	Our forums are powered by phpBB (hereinafter “they”, “them”, “their”, “phpBB software”, “www.phpbb.com”, “phpBB Group”, “phpBB Teams”) which is a bulletin board solution released under the “<a href="http://opensource.org/licenses/gpl-2.0.php">GNU General Public License v2</a>” (hereinafter “GPL”) and can be downloaded from <a href="http://www.phpbb.com/">www.phpbb.com</a>. The phpBB software only facilitates internet based discussions, the phpBB Group are not responsible for what we allow and/or disallow as permissible content and/or conduct. For further information about phpBB, please see: <a href="http://www.phpbb.com/">http://www.phpbb.com/</a>.<br />
 	<br />
 	You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any laws be it of your country, the country where “%1$s” is hosted or International Law. Doing so may lead to you being immediately and permanently banned, with notification of your Internet Service Provider if deemed required by us. The IP address of all posts are recorded to aid in enforcing these conditions. You agree that “%1$s” have the right to remove, edit, move or close any topic at any time should we see fit. As a user you agree to any information you have entered to being stored in a database. While this information will not be disclosed to any third party without your consent, neither “%1$s” nor phpBB shall be held responsible for any hacking attempt that may lead to the data being compromised.
 	',
@@ -50,9 +49,9 @@ $lang = array_merge($lang, array(
 	<br />
 	We may also create cookies external to the phpBB software whilst browsing “%1$s”, though these are outside the scope of this document which is intended to only cover the pages created by the phpBB software. The second way in which we collect your information is by what you submit to us. This can be, and is not limited to: posting as an anonymous user (hereinafter “anonymous posts”), registering on “%1$s” (hereinafter “your account”) and posts submitted by you after registration and whilst logged in (hereinafter “your posts”).<br />
 	<br />
-	Your account will at a bare minimum contain a uniquely identifiable name (hereinafter “your user name”), a personal password used for logging into your account (hereinafter “your password”) and a personal, valid e-mail address (hereinafter “your e-mail”). Your information for your account at “%1$s” is protected by data-protection laws applicable in the country that hosts us. Any information beyond your user name, your password, and your e-mail address required by “%1$s” during the registration process is either mandatory or optional, at the discretion of “%1$s”. In all cases, you have the option of what information in your account is publicly displayed. Furthermore, within your account, you have the option to opt-in or opt-out of automatically generated e-mails from the phpBB software.<br />
+	Your account will at a bare minimum contain a uniquely identifiable name (hereinafter “your user name”), a personal password used for logging into your account (hereinafter “your password”) and a personal, valid email address (hereinafter “your email”). Your information for your account at “%1$s” is protected by data-protection laws applicable in the country that hosts us. Any information beyond your user name, your password, and your email address required by “%1$s” during the registration process is either mandatory or optional, at the discretion of “%1$s”. In all cases, you have the option of what information in your account is publicly displayed. Furthermore, within your account, you have the option to opt-in or opt-out of automatically generated emails from the phpBB software.<br />
 	<br />
-	Your password is ciphered (a one-way hash) so that it is secure. However, it is recommended that you do not reuse the same password across a number of different websites. Your password is the means of accessing your account at “%1$s”, so please guard it carefully and under no circumstance will anyone affiliated with “%1$s”, phpBB or another 3rd party, legitimately ask you for your password. Should you forget your password for your account, you can use the “I forgot my password” feature provided by the phpBB software. This process will ask you to submit your user name and your e-mail, then the phpBB software will generate a new password to reclaim your account.<br />
+	Your password is ciphered (a one-way hash) so that it is secure. However, it is recommended that you do not reuse the same password across a number of different websites. Your password is the means of accessing your account at “%1$s”, so please guard it carefully and under no circumstance will anyone affiliated with “%1$s”, phpBB or another 3rd party, legitimately ask you for your password. Should you forget your password for your account, you can use the “I forgot my password” feature provided by the phpBB software. This process will ask you to submit your user name and your email, then the phpBB software will generate a new password to reclaim your account.<br />
 	',
 ));
 
@@ -62,13 +61,13 @@ $lang = array_merge($lang, array(
 	'ACCOUNT_ACTIVE_ADMIN'			=> 'The account has now been activated.',
 	'ACCOUNT_ACTIVE_PROFILE'		=> 'Your account has now been successfully reactivated.',
 	'ACCOUNT_ADDED'					=> 'Thank you for registering, your account has been created. You may now login with your username and password.',
-	'ACCOUNT_COPPA'					=> 'Your account has been created but has to be approved, please check your e-mail for details.',
-	'ACCOUNT_EMAIL_CHANGED'			=> 'Your account has been updated. However, this board requires account reactivation on e-mail changes. An activation key has been sent to the new e-mail address you provided. Please check your e-mail for further information.',
-	'ACCOUNT_EMAIL_CHANGED_ADMIN'	=> 'Your account has been updated. However, this board requires account reactivation by the administrators on e-mail changes. An e-mail has been sent to them and you will be informed when your account has been reactivated.',
-	'ACCOUNT_INACTIVE'				=> 'Your account has been created. However, this board requires account activation, an activation key has been sent to the e-mail address you provided. Please check your e-mail for further information.',
-	'ACCOUNT_INACTIVE_ADMIN'		=> 'Your account has been created. However, this board requires account activation by the administrator group. An e-mail has been sent to them and you will be informed when your account has been activated.',
-	'ACTIVATION_EMAIL_SENT'			=> 'The activation e-mail has been sent to your e-mail address.',
-	'ACTIVATION_EMAIL_SENT_ADMIN'	=> 'The activation e-mail has been sent to the administrators e-mail addresses.',
+	'ACCOUNT_COPPA'					=> 'Your account has been created but has to be approved, please check your email for details.',
+	'ACCOUNT_EMAIL_CHANGED'			=> 'Your account has been updated. However, this board requires account reactivation on email changes. An activation key has been sent to the new email address you provided. Please check your email for further information.',
+	'ACCOUNT_EMAIL_CHANGED_ADMIN'	=> 'Your account has been updated. However, this board requires account reactivation by the administrators on email changes. An email has been sent to them and you will be informed when your account has been reactivated.',
+	'ACCOUNT_INACTIVE'				=> 'Your account has been created. However, this board requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information.',
+	'ACCOUNT_INACTIVE_ADMIN'		=> 'Your account has been created. However, this board requires account activation by the administrator group. An email has been sent to them and you will be informed when your account has been activated.',
+	'ACTIVATION_EMAIL_SENT'			=> 'The activation email has been sent to your email address.',
+	'ACTIVATION_EMAIL_SENT_ADMIN'	=> 'The activation email has been sent to the administrators email addresses.',
 	'ADD'							=> 'Add',
 	'ADD_BCC'						=> 'Add [BCC]',
 	'ADD_FOES'						=> 'Add new foes',
@@ -80,7 +79,7 @@ $lang = array_merge($lang, array(
 	'ADD_RULE'						=> 'Add rule',
 	'ADD_TO'						=> 'Add [To]',
 	'ADD_USERS_UCP_EXPLAIN'			=> 'Here you can add new users to the group. You may select whether this group becomes the new default for the selected users. Please enter each username on a separate line.',
-	'ADMIN_EMAIL'					=> 'Administrators can e-mail me information',
+	'ADMIN_EMAIL'					=> 'Administrators can email me information',
 	'AGREE'							=> 'I agree to these terms',
 	'ALLOW_PM'						=> 'Allow users to send you private messages',
 	'ALLOW_PM_EXPLAIN'				=> 'Note that administrators and moderators will always be able to send you messages.',
@@ -88,8 +87,9 @@ $lang = array_merge($lang, array(
 	'ATTACHMENTS_EXPLAIN'			=> 'This is a list of attachments you have made in posts to this board.',
 	'ATTACHMENTS_DELETED'			=> 'Attachments successfully deleted.',
 	'ATTACHMENT_DELETED'			=> 'Attachment successfully deleted.',
+	'AUTOLOGIN_SESSION_KEYS_DELETED'=> 'The selected persistent login keys were successfully deleted.',
 	'AVATAR_CATEGORY'				=> 'Category',
-	'AVATAR_EXPLAIN'				=> 'Maximum dimensions; width: %1$d pixels, height: %2$d pixels, file size: %3$.2f KiB.',
+	'AVATAR_EXPLAIN'				=> 'Maximum dimensions; width: %1$s, height: %2$s, file size: %3$.2f KiB.',
 	'AVATAR_FEATURES_DISABLED'		=> 'The avatar functionality is currently disabled.',
 	'AVATAR_GALLERY'				=> 'Local gallery',
 	'AVATAR_GENERAL_UPLOAD_ERROR'	=> 'Could not upload avatar to %s.',
@@ -103,7 +103,6 @@ $lang = array_merge($lang, array(
 	'BIRTHDAY_EXPLAIN'			=> 'Setting a year will list your age when it is your birthday.',
 	'BOARD_DATE_FORMAT'			=> 'My date format',
 	'BOARD_DATE_FORMAT_EXPLAIN'	=> 'The syntax used is identical to the PHP <a href="http://www.php.net/date">date()</a> function.',
-	'BOARD_DST'					=> 'Summer Time/<abbr title="Daylight Saving Time">DST</abbr> is in effect',
 	'BOARD_LANGUAGE'			=> 'My language',
 	'BOARD_STYLE'				=> 'My board style',
 	'BOARD_TIMEZONE'			=> 'My timezone',
@@ -119,11 +118,10 @@ $lang = array_merge($lang, array(
 	'CANNOT_REMOVE_FOLDER'		=> 'This folder cannot be removed.',
 	'CHANGE_DEFAULT_GROUP'		=> 'Change default group',
 	'CHANGE_PASSWORD'			=> 'Change password',
+	'CLICK_GOTO_FOLDER'			=> '%1$sGo to your “%3$s” folder%2$s',
 	'CLICK_RETURN_FOLDER'		=> '%1$sReturn to your “%3$s” folder%2$s',
 	'CONFIRMATION'				=> 'Confirmation of registration',
 	'CONFIRM_CHANGES'			=> 'Confirm changes',
-	'CONFIRM_EMAIL'				=> 'Confirm e-mail address',
-	'CONFIRM_EMAIL_EXPLAIN'		=> 'You only need to specify this if you are changing your e-mail address.',
 	'CONFIRM_EXPLAIN'			=> 'To prevent automated registrations the board requires you to enter a confirmation code. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.',
 	'VC_REFRESH'				=> 'Refresh confirmation code',
 	'VC_REFRESH_EXPLAIN'		=> 'If you cannot read the code you can request a new one by clicking the button.',
@@ -136,7 +134,9 @@ $lang = array_merge($lang, array(
 	'CREATE_FOLDER'				=> 'Add folder…',
 	'CURRENT_IMAGE'				=> 'Current image',
 	'CURRENT_PASSWORD'			=> 'Current password',
-	'CURRENT_PASSWORD_EXPLAIN'	=> 'You must confirm your current password if you wish to change it, alter your e-mail address or username.',
+	'CURRENT_PASSWORD_EXPLAIN'	=> 'You must enter your current password if you wish to alter your email address or username.',
+	'CURRENT_CHANGE_PASSWORD_EXPLAIN' => 'To change your password, your email address, or your username, you must enter your current password.',
+	'CUR_PASSWORD_EMPTY'		=> 'You did not enter your current password.',
 	'CUR_PASSWORD_ERROR'		=> 'The current password you entered is incorrect.',
 	'CUSTOM_DATEFORMAT'			=> 'Custom…',
 
@@ -165,17 +165,17 @@ $lang = array_merge($lang, array(
 	'DEMOTE_SELECTED'			=> 'Demote selected',
 	'DISABLE_CENSORS'			=> 'Enable word censoring',
 	'DISPLAY_GALLERY'			=> 'Display gallery',
-	'DOMAIN_NO_MX_RECORD_EMAIL'	=> 'The entered e-mail domain has no valid MX record.',
+	'DOMAIN_NO_MX_RECORD_EMAIL'	=> 'The entered email domain has no valid MX record.',
 	'DOWNLOADS'					=> 'Downloads',
 	'DRAFTS_DELETED'			=> 'All selected drafts were successfully deleted.',
 	'DRAFTS_EXPLAIN'			=> 'Here you can view, edit and delete your saved drafts.',
 	'DRAFT_UPDATED'				=> 'Draft successfully updated.',
 
 	'EDIT_DRAFT_EXPLAIN'		=> 'Here you are able to edit your draft. Drafts do not contain attachment and poll information.',
-	'EMAIL_BANNED_EMAIL'		=> 'The e-mail address you entered is not allowed to be used.',
-	'EMAIL_INVALID_EMAIL'		=> 'The e-mail address you entered is invalid.',
-	'EMAIL_REMIND'				=> 'This must be the e-mail address associated with your account. If you have not changed this via your user control panel then it is the e-mail address you registered your account with.',
-	'EMAIL_TAKEN_EMAIL'			=> 'The entered e-mail address is already in use.',
+	'EMAIL_BANNED_EMAIL'		=> 'The email address you entered is not allowed to be used.',
+	'EMAIL_INVALID_EMAIL'		=> 'The email address you entered is invalid.',
+	'EMAIL_REMIND'				=> 'This must be the email address associated with your account. If you have not changed this via your user control panel then it is the email address you registered your account with.',
+	'EMAIL_TAKEN_EMAIL'			=> 'The entered email address is already in use.',
 	'EMPTY_DRAFT'				=> 'You must enter a message to submit your changes.',
 	'EMPTY_DRAFT_TITLE'			=> 'You must enter a draft title.',
 	'EXPORT_AS_XML'				=> 'Export as XML',
@@ -186,26 +186,39 @@ $lang = array_merge($lang, array(
 	'EXPORT_FOLDER'				=> 'Export this view',
 
 	'FIELD_REQUIRED'					=> 'The field “%s” must be completed.',
-	'FIELD_TOO_SHORT'					=> 'The field “%1$s” is too short, a minimum of %2$d characters is required.',
-	'FIELD_TOO_LONG'					=> 'The field “%1$s” is too long, a maximum of %2$d characters is allowed.',
-	'FIELD_TOO_SMALL'					=> 'The value of “%1$s” is too small, a minimum value of %2$d is required.',
-	'FIELD_TOO_LARGE'					=> 'The value of “%1$s” is too large, a maximum value of %2$d is allowed.',
+	'FIELD_TOO_SHORT'					=> array(
+		1	=> 'The field “%2$s” is too short, a minimum of %1$d character is required.',
+		2	=> 'The field “%2$s” is too short, a minimum of %1$d characters is required.',
+	),
+	'FIELD_TOO_LONG'					=> array(
+		1	=> 'The field “%2$s” is too long, a maximum of %1$d character is allowed.',
+		2	=> 'The field “%2$s” is too long, a maximum of %1$d characters is allowed.',
+	),
+	'FIELD_TOO_SMALL'					=> 'The value of “%2$s” is too small, a minimum value of %1$d is required.',
+	'FIELD_TOO_LARGE'					=> 'The value of “%2$s” is too large, a maximum value of %1$d is allowed.',
 	'FIELD_INVALID_CHARS_NUMBERS_ONLY'	=> 'The field “%s” has invalid characters, only numbers are allowed.',
 	'FIELD_INVALID_CHARS_ALPHA_ONLY'	=> 'The field “%s” has invalid characters, only alphanumeric characters are allowed.',
 	'FIELD_INVALID_CHARS_SPACERS_ONLY'	=> 'The field “%s” has invalid characters, only alphanumeric, space or -+_[] characters are allowed.',
 	'FIELD_INVALID_DATE'				=> 'The field “%s” has an invalid date.',
+	'FIELD_INVALID_VALUE'				=> 'The field “%s” has an invalid value.',
 
 	'FOE_MESSAGE'				=> 'Message from foe',
 	'FOES_EXPLAIN'				=> 'Foes are users which will be ignored by default. Posts by these users will not be fully visible. Personal messages from foes are still permitted. Please note that you cannot ignore moderators or administrators.',
 	'FOES_UPDATED'				=> 'Your foes list has been updated successfully.',
 	'FOLDER_ADDED'				=> 'Folder successfully added.',
-	'FOLDER_MESSAGE_STATUS'		=> '%1$d from %2$d messages stored',
+	'FOLDER_MESSAGE_STATUS'		=> array(
+		1	=> '%2$d from %1$d message stored',
+		2	=> '%2$d from %1$d messages stored',
+	),
 	'FOLDER_NAME_EMPTY'			=> 'You must enter a name for this folder.',
 	'FOLDER_NAME_EXIST'			=> 'Folder <strong>%s</strong> already exists.',
 	'FOLDER_OPTIONS'			=> 'Folder options',
 	'FOLDER_RENAMED'			=> 'Folder successfully renamed.',
 	'FOLDER_REMOVED'			=> 'Folder successfully removed.',
-	'FOLDER_STATUS_MSG'			=> 'Folder is %1$d%% full (%2$d from %3$d messages stored)',
+	'FOLDER_STATUS_MSG'			=> array(
+		1	=> 'Folder is %3$d%% full (%2$d from %1$d message stored)',
+		2	=> 'Folder is %3$d%% full (%2$d from %1$d messages stored)',
+	),
 	'FORWARD_PM'				=> 'Forward PM',
 	'FORCE_PASSWORD_EXPLAIN'	=> 'Before you may continue browsing the board you are required to change your password.',
 	'FRIEND_MESSAGE'			=> 'Message from friend',
@@ -243,6 +256,8 @@ $lang = array_merge($lang, array(
 	'LINK_REMOTE_SIZE'			=> 'Avatar dimensions',
 	'LINK_REMOTE_SIZE_EXPLAIN'	=> 'Specify the width and height of the avatar, leave blank to attempt automatic verification.',
 	'LOGIN_EXPLAIN_UCP'			=> 'Please login in order to access the User Control Panel.',
+	'LOGIN_KEY'					=> 'Login Key',
+	'LOGIN_TIME'				=> 'Login Time',
 	'LOGIN_REDIRECT'			=> 'You have been successfully logged in.',
 	'LOGOUT_FAILED'				=> 'You were not logged out, as the request did not match your session. Please contact the board administrator if you continue to experience problems.',
 	'LOGOUT_REDIRECT'			=> 'You have been successfully logged out.',
@@ -253,8 +268,9 @@ $lang = array_merge($lang, array(
 	'MESSAGE_BY_AUTHOR'				=> 'by',
 	'MESSAGE_COLOURS'				=> 'Message colours',
 	'MESSAGE_DELETED'				=> 'Message successfully deleted.',
+	'MESSAGE_EDITED'				=> 'Message successfully edited.',
 	'MESSAGE_HISTORY'				=> 'Message history',
-	'MESSAGE_REMOVED_FROM_OUTBOX'	=> 'This message has been removed by its author before it was delivered.',
+	'MESSAGE_REMOVED_FROM_OUTBOX'	=> 'This message was deleted by its author.',
 	'MESSAGE_SENT_ON'				=> 'on',
 	'MESSAGE_STORED'				=> 'This message has been sent successfully.',
 	'MESSAGE_TO'					=> 'To',
@@ -262,17 +278,19 @@ $lang = array_merge($lang, array(
 	'MOVE_DELETED_MESSAGES_TO'		=> 'Move messages from removed folder to',
 	'MOVE_DOWN'						=> 'Move down',
 	'MOVE_MARKED_TO_FOLDER'			=> 'Move marked to %s',
-	'MOVE_PM_ERROR'					=> 'An error occurred while moving the messages to the new folder, only %1d from %2d messages were moved.',
+	'MOVE_PM_ERROR'					=> array(
+		2	=> 'An error occurred while moving the messages to the new folder, only %2d from %1d messages were moved.',
+	),
 	'MOVE_TO_FOLDER'				=> 'Move to folder',
 	'MOVE_UP'						=> 'Move up',
 
-	'NEW_EMAIL_ERROR'				=> 'The e-mail addresses you entered do not match.',
 	'NEW_FOLDER_NAME'				=> 'New folder name',
 	'NEW_PASSWORD'					=> 'New password',
+	'NEW_PASSWORD_CONFIRM_EMPTY'	=> 'You did not enter a confirm password.',
 	'NEW_PASSWORD_ERROR'			=> 'The passwords you entered do not match.',
 	'NOTIFY_METHOD'					=> 'Notification method',
 	'NOTIFY_METHOD_BOTH'			=> 'Both',
-	'NOTIFY_METHOD_EMAIL'			=> 'E-mail only',
+	'NOTIFY_METHOD_EMAIL'			=> 'Email only',
 	'NOTIFY_METHOD_EXPLAIN'			=> 'Method for sending messages sent via this board.',
 	'NOTIFY_METHOD_IM'				=> 'Jabber only',
 	'NOTIFY_ON_PM'					=> 'Notify me on new private messages',
@@ -287,8 +305,10 @@ $lang = array_merge($lang, array(
 	'NOT_ADDED_FOES_SELF'			=> 'You cannot add yourself to the foes list.',
 	'NOT_AGREE'						=> 'I do not agree to these terms',
 	'NOT_ENOUGH_SPACE_FOLDER'		=> 'The destination folder “%s” seems to be full. The requested action has not been taken.',
-	'NOT_MOVED_MESSAGE'				=> 'You have 1 private message currently on hold because of full folder.',
-	'NOT_MOVED_MESSAGES'			=> 'You have %d private messages currently on hold because of full folder.',
+	'NOT_MOVED_MESSAGES'			=> array(
+		1	=> 'You have %d private message currently on hold because of full folder.',
+		2	=> 'You have %d private messages currently on hold because of full folder.',
+	),
 	'NO_ACTION_MODE'				=> 'No message action specified.',
 	'NO_AUTHOR'						=> 'No author defined for this message',
 	'NO_AVATAR_CATEGORY'			=> 'None',
@@ -308,7 +328,7 @@ $lang = array_merge($lang, array(
 	'NO_BOOKMARKS'				=> 'You have no bookmarks.',
 	'NO_BOOKMARKS_SELECTED'		=> 'You have selected no bookmarks.',
 	'NO_EDIT_READ_MESSAGE'		=> 'Private message cannot be edited because it has already been read.',
-	'NO_EMAIL_USER'				=> 'The e-mail/username information submitted could not be found.',
+	'NO_EMAIL_USER'				=> 'The email/username information submitted could not be found.',
 	'NO_FOES'					=> 'No foes currently defined',
 	'NO_FRIENDS'				=> 'No friends currently defined',
 	'NO_FRIENDS_OFFLINE'		=> 'No friends offline',
@@ -328,13 +348,13 @@ $lang = array_merge($lang, array(
 	'NO_WATCHED_SELECTED'		=> 'You have not selected any subscribed topics or forums.',
 	'NO_WATCHED_TOPICS'			=> 'You are not subscribed to any topics.',
 
-	'PASS_TYPE_ALPHA_EXPLAIN'	=> 'Password must be between %1$d and %2$d characters long, must contain letters in mixed case and must contain numbers.',
-	'PASS_TYPE_ANY_EXPLAIN'		=> 'Must be between %1$d and %2$d characters.',
-	'PASS_TYPE_CASE_EXPLAIN'	=> 'Password must be between %1$d and %2$d characters long and must contain letters in mixed case.',
-	'PASS_TYPE_SYMBOL_EXPLAIN'	=> 'Password must be between %1$d and %2$d characters long, must contain letters in mixed case, must contain numbers and must contain symbols.',
+	'PASS_TYPE_ALPHA_EXPLAIN'	=> 'Password must be between %1$s and %2$s long, must contain letters in mixed case and must contain numbers.',
+	'PASS_TYPE_ANY_EXPLAIN'		=> 'Must be between %1$s and %2$s.',
+	'PASS_TYPE_CASE_EXPLAIN'	=> 'Password must be between %1$s and %2$s long and must contain letters in mixed case.',
+	'PASS_TYPE_SYMBOL_EXPLAIN'	=> 'Password must be between %1$s and %2$s long, must contain letters in mixed case, must contain numbers and must contain symbols.',
 	'PASSWORD'					=> 'Password',
 	'PASSWORD_ACTIVATED'		=> 'Your new password has been activated.',
-	'PASSWORD_UPDATED'			=> 'A new password was sent to your registered e-mail address.',
+	'PASSWORD_UPDATED'			=> 'A new password was sent to your registered email address.',
 	'PERMISSIONS_RESTORED'		=> 'Successfully restored original permissions.',
 	'PERMISSIONS_TRANSFERRED'	=> 'Successfully transferred permissions from <strong>%s</strong>, you are now able to browse the board with this user’s permissions.<br />Please note that admin permissions were not transferred. You are able to revert to your permission set at any time.',
 	'PM_DISABLED'				=> 'Private messaging has been disabled on this board.',
@@ -360,6 +380,8 @@ $lang = array_merge($lang, array(
 	'PREFERENCES_UPDATED'		=> 'Your preferences have been updated.',
 	'PROFILE_INFO_NOTICE'		=> 'Please note that this information may be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
 	'PROFILE_UPDATED'			=> 'Your profile has been updated.',
+	'PROFILE_AUTOLOGIN_KEYS'	=> 'The persistent login keys automatically log you in when you visit the board. If you logout, the persistent login key is deleted only on the computer you are using to logout. Here you can see persistent login keys created on other computers you used to access this site.',
+	'PROFILE_NO_AUTOLOGIN_KEYS'	=> 'There are no saved persistent login keys.',
 
 	'RECIPIENT'							=> 'Recipient',
 	'RECIPIENTS'						=> 'Recipients',
@@ -382,18 +404,23 @@ $lang = array_merge($lang, array(
 	'RULE_ADDED'						=> 'Rule successfully added.',
 	'RULE_ALREADY_DEFINED'				=> 'This rule was defined previously.',
 	'RULE_DELETED'						=> 'Rule successfully removed.',
+	'RULE_LIMIT_REACHED'				=> 'You cannot add more PM rules. You have reached the maximum number of rules.',
 	'RULE_NOT_DEFINED'					=> 'Rule not correctly specified.',
-	'RULE_REMOVED_MESSAGE'				=> 'One private message had been removed due to private message filters.',
-	'RULE_REMOVED_MESSAGES'				=> '%d private messages were removed due to private message filters.',
+	'RULE_REMOVED_MESSAGES'				=> array(
+		1	=> '%d private message was removed due to private message filters.',
+		2	=> '%d private messages were removed due to private message filters.',
+	),
 
 	'SAME_PASSWORD_ERROR'		=> 'The new password you entered is the same as your current password.',
 	'SEARCH_YOUR_POSTS'			=> 'Show your posts',
 	'SEND_PASSWORD'				=> 'Send password',
 	'SENT_AT'					=> 'Sent',			// Used before dates in private messages
-	'SHOW_EMAIL'				=> 'Users can contact me by e-mail',
+	'SHOW_EMAIL'				=> 'Users can contact me by email',
 	'SIGNATURE_EXPLAIN'			=> 'This is a block of text that can be added to posts you make. There is a %d character limit.',
 	'SIGNATURE_PREVIEW'			=> 'Your signature will appear like this in posts',
 	'SIGNATURE_TOO_LONG'		=> 'Your signature is too long.',
+	'SELECT_CURRENT_TIME'		=> 'Select current time',
+	'SELECT_TIMEZONE'			=> 'Select timezone',
 	'SORT'						=> 'Sort',
 	'SORT_COMMENT'				=> 'File comment',
 	'SORT_DOWNLOADS'			=> 'Downloads',
@@ -403,18 +430,20 @@ $lang = array_merge($lang, array(
 	'SORT_SIZE'					=> 'File size',
 
 	'TIMEZONE'					=> 'Timezone',
+	'TIMEZONE_DATE_SUGGESTION'	=> 'Suggestion: %s',
+	'TIMEZONE_INVALID'			=> 'The timezone you selected is invalid.',
 	'TO'						=> 'To',
 	'TOO_MANY_RECIPIENTS'		=> 'You tried to send a private message to too many recipients.',
 	'TOO_MANY_REGISTERS'		=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.',
 
 	'UCP'						=> 'User Control Panel',
 	'UCP_ACTIVATE'				=> 'Activate account',
-	'UCP_ADMIN_ACTIVATE'		=> 'Please note that you will need to enter a valid e-mail address before your account is activated. The administrator will review your account and if approved you will receive an e-mail at the address you specified.',
+	'UCP_ADMIN_ACTIVATE'		=> 'Please note that you will need to enter a valid email address before your account is activated. The administrator will review your account and if approved you will receive an email at the address you specified.',
 	'UCP_AIM'					=> 'AOL Instant Messenger',
 	'UCP_ATTACHMENTS'			=> 'Attachments',
 	'UCP_COPPA_BEFORE'			=> 'Before %s',
 	'UCP_COPPA_ON_AFTER'		=> 'On or after %s',
-	'UCP_EMAIL_ACTIVATE'		=> 'Please note that you will need to enter a valid e-mail address before your account is activated. You will receive an e-mail at the address you provide that contains an account activation link.',
+	'UCP_EMAIL_ACTIVATE'		=> 'Please note that you will need to enter a valid email address before your account is activated. You will receive an email at the address you provide that contains an account activation link.',
 	'UCP_ICQ'					=> 'ICQ number',
 	'UCP_JABBER'				=> 'Jabber address',
 
@@ -447,6 +476,7 @@ $lang = array_merge($lang, array(
 	'UCP_PROFILE_PROFILE_INFO'	=> 'Edit profile',
 	'UCP_PROFILE_REG_DETAILS'	=> 'Edit account settings',
 	'UCP_PROFILE_SIGNATURE'		=> 'Edit signature',
+	'UCP_PROFILE_AUTOLOGIN_KEYS'=> 'Edit persistent login keys',
 
 	'UCP_USERGROUPS'			=> 'Usergroups',
 	'UCP_USERGROUPS_MEMBER'		=> 'Edit memberships',
@@ -454,7 +484,7 @@ $lang = array_merge($lang, array(
 
 	'UCP_REGISTER_DISABLE'			=> 'Creating a new account is currently not possible.',
 	'UCP_REMIND'					=> 'Send password',
-	'UCP_RESEND'					=> 'Send activation e-mail',
+	'UCP_RESEND'					=> 'Send activation email',
 	'UCP_WELCOME'					=> 'Welcome to the User Control Panel. From here you can monitor, view and update your profile, preferences, subscribed forums and topics. You can also send messages to other users (if permitted). Please ensure you read any announcements before continuing.',
 	'UCP_YIM'						=> 'Yahoo Messenger',
 	'UCP_ZEBRA'						=> 'Friends &amp; Foes',
@@ -466,12 +496,12 @@ $lang = array_merge($lang, array(
 	'UPLOAD_AVATAR_FILE'			=> 'Upload from your machine',
 	'UPLOAD_AVATAR_URL'				=> 'Upload from a URL',
 	'UPLOAD_AVATAR_URL_EXPLAIN'		=> 'Enter the URL of the location containing the image. The image will be copied to this site.',
-	'USERNAME_ALPHA_ONLY_EXPLAIN'	=> 'Username must be between %1$d and %2$d chars long and use only alphanumeric characters.',
-	'USERNAME_ALPHA_SPACERS_EXPLAIN'=> 'Username must be between %1$d and %2$d chars long and use alphanumeric, space or -+_[] characters.',
-	'USERNAME_ASCII_EXPLAIN'		=> 'Username must be between %1$d and %2$d chars long and use only ASCII characters, so no special symbols.',
-	'USERNAME_LETTER_NUM_EXPLAIN'	=> 'Username must be between %1$d and %2$d chars long and use only letter or number characters.',
-	'USERNAME_LETTER_NUM_SPACERS_EXPLAIN'=> 'Username must be between %1$d and %2$d chars long and use letter, number, space or -+_[] characters.',
-	'USERNAME_CHARS_ANY_EXPLAIN'	=> 'Length must be between %1$d and %2$d characters.',
+	'USERNAME_ALPHA_ONLY_EXPLAIN'	=> 'Username must be between %1$s and %2$s long and use only alphanumeric characters.',
+	'USERNAME_ALPHA_SPACERS_EXPLAIN'=> 'Username must be between %1$s and %2$s long and use alphanumeric, space or -+_[] characters.',
+	'USERNAME_ASCII_EXPLAIN'		=> 'Username must be between %1$s and %2$s long and use only ASCII characters, so no special symbols.',
+	'USERNAME_LETTER_NUM_EXPLAIN'	=> 'Username must be between %1$s and %2$s long and use only letter or number characters.',
+	'USERNAME_LETTER_NUM_SPACERS_EXPLAIN'=> 'Username must be between %1$s and %2$s long and use letter, number, space or -+_[] characters.',
+	'USERNAME_CHARS_ANY_EXPLAIN'	=> 'Length must be between %1$s and %2$s.',
 	'USERNAME_TAKEN_USERNAME'		=> 'The username you entered is already in use, please select an alternative.',
 	'USERNAME_DISALLOWED_USERNAME'	=> 'The username you entered has been disallowed or contains a disallowed word. Please choose a different name.',
 	'USER_NOT_FOUND_OR_INACTIVE'	=> 'The usernames you specified could either not be found or are not activated users.',
@@ -484,8 +514,10 @@ $lang = array_merge($lang, array(
 	'VIEW_NEXT_PM'				=> 'Next PM',
 	'VIEW_PM'					=> 'View message',
 	'VIEW_PM_INFO'				=> 'Message details',
-	'VIEW_PM_MESSAGE'			=> '1 message',
-	'VIEW_PM_MESSAGES'			=> '%d messages',
+	'VIEW_PM_MESSAGES'			=> array(
+		1	=> '%d message',
+		2	=> '%d messages',
+	),
 	'VIEW_PREVIOUS_HISTORY'		=> 'Previous PM in history',
 	'VIEW_PREVIOUS_PM'			=> 'Previous PM',
 	'VIEW_SIGS'					=> 'Display signatures',

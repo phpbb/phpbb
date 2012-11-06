@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -31,22 +30,32 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_class_loader
 {
-	private $phpbb_root_path;
+	private $prefix;
+	private $path;
 	private $php_ext;
 	private $cache;
+
+	/**
+	* A map of looked up class names to paths relative to $this->path.
+	* This map is stored in cache and looked up if the cache is available.
+	*
+	* @var array
+	*/
 	private $cached_paths = array();
 
 	/**
 	* Creates a new phpbb_class_loader, which loads files with the given
-	* file extension from the given phpbb root path.
+	* file extension from the given path.
 	*
-	* @param string $phpbb_root_path phpBB's root directory containing includes/
-	* @param string $php_ext         The file extension for PHP files
+	* @param string $prefix  Required class name prefix for files to be loaded
+	* @param string $path    Directory to load files from
+	* @param string $php_ext The file extension for PHP files
 	* @param phpbb_cache_driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function __construct($phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null)
+	public function __construct($prefix, $path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->prefix = $prefix;
+		$this->path = $path;
 		$this->php_ext = $php_ext;
 
 		$this->set_cache($cache);
@@ -63,7 +72,7 @@ class phpbb_class_loader
 	{
 		if ($cache)
 		{
-			$this->cached_paths = $cache->get('class_loader');
+			$this->cached_paths = $cache->get('class_loader_' . $this->prefix);
 
 			if ($this->cached_paths === false)
 			{
@@ -100,23 +109,21 @@ class phpbb_class_loader
 	*/
 	public function resolve_path($class)
 	{
-		$path_prefix = $this->phpbb_root_path . 'includes/';
-
 		if (isset($this->cached_paths[$class]))
 		{
-			return $path_prefix . $this->cached_paths[$class] . $this->php_ext;
+			return $this->path . $this->cached_paths[$class] . $this->php_ext;
 		}
 
-		if (!preg_match('/phpbb_[a-zA-Z0-9_]+/', $class))
+		if (!preg_match('/^' . $this->prefix . '[a-zA-Z0-9_]+$/', $class))
 		{
 			return false;
 		}
 
-		$parts = explode('_', substr($class, 6));
+		$parts = explode('_', substr($class, strlen($this->prefix)));
 
 		$dirs = '';
 
-		for ($i = 0, $n = sizeof($parts); $i < $n && is_dir($path_prefix . $dirs . $parts[$i]); $i++)
+		for ($i = 0, $n = sizeof($parts); $i < $n && is_dir($this->path . $dirs . $parts[$i]); $i++)
 		{
 			$dirs .= $parts[$i] . '/';
 		}
@@ -129,7 +136,7 @@ class phpbb_class_loader
 
 		$relative_path = $dirs . implode(array_slice($parts, $i, sizeof($parts) - $i), '_');
 
-		if (!file_exists($path_prefix . $relative_path . $this->php_ext))
+		if (!file_exists($this->path . $relative_path . $this->php_ext))
 		{
 			return false;
 		}
@@ -137,10 +144,10 @@ class phpbb_class_loader
 		if ($this->cache)
 		{
 			$this->cached_paths[$class] = $relative_path;
-			$this->cache->put('class_loader', $this->cached_paths);
+			$this->cache->put('class_loader_' . $this->prefix, $this->cached_paths);
 		}
 
-		return $path_prefix . $relative_path . $this->php_ext;
+		return $this->path . $relative_path . $this->php_ext;
 	}
 
 	/**
@@ -150,7 +157,7 @@ class phpbb_class_loader
 	*/
 	public function load_class($class)
 	{
-		if (substr($class, 0, 6) === 'phpbb_')
+		if (substr($class, 0, strlen($this->prefix)) === $this->prefix)
 		{
 			$path = $this->resolve_path($class);
 

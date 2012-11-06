@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -25,7 +24,7 @@ class acp_ranks
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/posting');
@@ -52,7 +51,7 @@ class acp_ranks
 				}
 				$rank_title = utf8_normalize_nfc(request_var('title', '', true));
 				$special_rank = request_var('special_rank', 0);
-				$min_posts = ($special_rank) ? 0 : request_var('min_posts', 0);
+				$min_posts = ($special_rank) ? 0 : max(0, request_var('min_posts', 0));
 				$rank_image = request_var('rank_image', '');
 
 				// The rank image has to be a jpg, gif or png
@@ -123,6 +122,18 @@ class acp_ranks
 					$cache->destroy('_ranks');
 
 					add_log('admin', 'LOG_RANK_REMOVED', $rank_title);
+					
+					if ($request->is_ajax())
+					{
+						$json_response = new phpbb_json_response;
+						$json_response->send(array(
+							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+							'MESSAGE_TEXT'	=> $user->lang['RANK_REMOVED'],
+							'REFRESH_DATA'	=> array(
+								'time'	=> 3
+							)
+						));
+					}
 				}
 				else
 				{
@@ -199,7 +210,7 @@ class acp_ranks
 					'RANK_TITLE'		=> (isset($ranks['rank_title'])) ? $ranks['rank_title'] : '',
 					'S_FILENAME_LIST'	=> $filename_list,
 					'RANK_IMAGE'		=> ($edit_img) ? $phpbb_root_path . $config['ranks_path'] . '/' . $edit_img : $phpbb_admin_path . 'images/spacer.gif',
-					'S_SPECIAL_RANK'	=> (!isset($ranks['rank_special']) || $ranks['rank_special']) ? true : false,
+					'S_SPECIAL_RANK'	=> (isset($ranks['rank_special']) && $ranks['rank_special']) ? true : false,
 					'MIN_POSTS'			=> (isset($ranks['rank_min']) && !$ranks['rank_special']) ? $ranks['rank_min'] : 0)
 				);
 						

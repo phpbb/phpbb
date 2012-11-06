@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -101,11 +100,25 @@ class acp_language
 			switch ($method)
 			{
 				case 'ftp':
-					$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new ftp(
+						request_var('host', ''),
+						request_var('username', ''),
+						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+						request_var('root_path', ''),
+						request_var('port', ''),
+						request_var('timeout', '')
+					);
 				break;
 
 				case 'ftp_fsock':
-					$transfer = new ftp_fsock(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new ftp_fsock(
+						request_var('host', ''),
+						request_var('username', ''),
+						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+						request_var('root_path', ''),
+						request_var('port', ''),
+						request_var('timeout', '')
+					);
 				break;
 
 				default:
@@ -405,7 +418,14 @@ class acp_language
 						trigger_error($user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
 					}
 
-					$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new $method(
+						request_var('host', ''),
+						request_var('username', ''),
+						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+						request_var('root_path', ''),
+						request_var('port', ''),
+						request_var('timeout', '')
+					);
 
 					if (($result = $transfer->open_session()) !== true)
 					{
@@ -797,11 +817,6 @@ class acp_language
 					$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
 					$db->sql_query($sql);
 
-					$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . " WHERE image_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
-					$result = $db->sql_query($sql);
-
-					$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
-
 					add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
 
 					trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
@@ -866,66 +881,6 @@ class acp_language
 				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				$lang_id = $db->sql_nextid();
 
-				$valid_localized = array(
-					'icon_back_top', 'icon_contact_aim', 'icon_contact_email', 'icon_contact_icq', 'icon_contact_jabber', 'icon_contact_msnm', 'icon_contact_pm', 'icon_contact_yahoo', 'icon_contact_www', 'icon_post_delete', 'icon_post_edit', 'icon_post_info', 'icon_post_quote', 'icon_post_report', 'icon_user_online', 'icon_user_offline', 'icon_user_profile', 'icon_user_search', 'icon_user_warn', 'button_pm_forward', 'button_pm_new', 'button_pm_reply', 'button_topic_locked', 'button_topic_new', 'button_topic_reply',
-				);
-
-				$sql_ary = array();
-
-				$sql = 'SELECT *
-					FROM ' . STYLES_IMAGESET_TABLE;
-				$result = $db->sql_query($sql);
-				while ($imageset_row = $db->sql_fetchrow($result))
-				{
-					if (@file_exists("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['iso']}/imageset.cfg"))
-					{
-						$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['iso']}/imageset.cfg");
-						foreach ($cfg_data_imageset_data as $image_name => $value)
-						{
-							if (strpos($value, '*') !== false)
-							{
-								if (substr($value, -1, 1) === '*')
-								{
-									list($image_filename, $image_height) = explode('*', $value);
-									$image_width = 0;
-								}
-								else
-								{
-									list($image_filename, $image_height, $image_width) = explode('*', $value);
-								}
-							}
-							else
-							{
-								$image_filename = $value;
-								$image_height = $image_width = 0;
-							}
-
-							if (strpos($image_name, 'img_') === 0 && $image_filename)
-							{
-								$image_name = substr($image_name, 4);
-								if (in_array($image_name, $valid_localized))
-								{
-									$sql_ary[] = array(
-										'image_name'		=> (string) $image_name,
-										'image_filename'	=> (string) $image_filename,
-										'image_height'		=> (int) $image_height,
-										'image_width'		=> (int) $image_width,
-										'imageset_id'		=> (int) $imageset_row['imageset_id'],
-										'image_lang'		=> (string) $lang_pack['iso'],
-									);
-								}
-							}
-						}
-					}
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($sql_ary))
-				{
-					$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
-					$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
-				}
-
 				// Now let's copy the default language entries for custom profile fields for this new language - makes admin's life easier.
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
@@ -933,6 +888,9 @@ class acp_language
 				$result = $db->sql_query($sql);
 				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
 				$db->sql_freeresult($result);
+
+				// We want to notify the admin that custom profile fields need to be updated for the new language.
+				$notify_cpf_update = false;
 
 				// From the mysql documentation:
 				// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
@@ -947,6 +905,7 @@ class acp_language
 				{
 					$row['lang_id'] = $lang_id;
 					$db->sql_query('INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $row));
+					$notify_cpf_update = true;
 				}
 				$db->sql_freeresult($result);
 
@@ -959,12 +918,15 @@ class acp_language
 				{
 					$row['lang_id'] = $lang_id;
 					$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $row));
+					$notify_cpf_update = true;
 				}
 				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
 
-				trigger_error(sprintf($user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']) . adm_back_link($this->u_action));
+				$message = sprintf($user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']);
+				$message .= ($notify_cpf_update) ? '<br /><br />' . $user->lang['LANGUAGE_PACK_CPF_UPDATE'] : '';
+				trigger_error($message . adm_back_link($this->u_action));
 
 			break;
 
@@ -1194,10 +1156,9 @@ class acp_language
 * {FILENAME} [{LANG_NAME}]
 *
 * @package language
-* @version $' . 'Id: ' . '$
 * @copyright (c) ' . date('Y') . ' phpBB Group
 * @author {CHANGED} - {AUTHOR}
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 

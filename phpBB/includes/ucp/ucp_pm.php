@@ -1,9 +1,8 @@
 <?php
 /**
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -115,7 +114,7 @@ class ucp_pm
 			case 'compose':
 				$action = request_var('action', 'post');
 
-				get_folder($user->data['user_id']);
+				$user_folders = get_folder($user->data['user_id']);
 
 				if (!$auth->acl_get('u_sendpm'))
 				{
@@ -130,7 +129,7 @@ class ucp_pm
 				}
 
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
-				compose_pm($id, $mode, $action);
+				compose_pm($id, $mode, $action, $user_folders);
 
 				$tpl_file = 'posting_body';
 			break;
@@ -243,7 +242,7 @@ class ucp_pm
 				$num_not_moved = $num_removed = 0;
 				$release = request_var('release', 0);
 
-				if ($user->data['user_new_privmsg'] && $action == 'view_folder')
+				if ($user->data['user_new_privmsg'] && ($action == 'view_folder' || $action == 'view_message'))
 				{
 					$return = place_pm_into_folder($global_privmsgs_rules, $release);
 					$num_not_moved = $return['not_moved'];
@@ -345,8 +344,8 @@ class ucp_pm
 					'NUM_NOT_MOVED'			=> $num_not_moved,
 					'NUM_REMOVED'			=> $num_removed,
 					'RELEASE_MESSAGE_INFO'	=> sprintf($user->lang['RELEASE_MESSAGES'], '<a href="' . $this->u_action . '&amp;folder=' . $folder_id . '&amp;release=1">', '</a>'),
-					'NOT_MOVED_MESSAGES'	=> ($num_not_moved == 1) ? $user->lang['NOT_MOVED_MESSAGE'] : sprintf($user->lang['NOT_MOVED_MESSAGES'], $num_not_moved),
-					'RULE_REMOVED_MESSAGES'	=> ($num_removed == 1) ? $user->lang['RULE_REMOVED_MESSAGE'] : sprintf($user->lang['RULE_REMOVED_MESSAGES'], $num_removed),
+					'NOT_MOVED_MESSAGES'	=> $user->lang('NOT_MOVED_MESSAGES', (int) $num_not_moved),
+					'RULE_REMOVED_MESSAGES'	=> $user->lang('RULE_REMOVED_MESSAGES', (int) $num_removed),
 
 					'S_FOLDER_OPTIONS'		=> $s_folder_options,
 					'S_TO_FOLDER_OPTIONS'	=> $s_to_folder_options,

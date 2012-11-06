@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 * @todo check for writable cache/store/files directory
 */
@@ -72,7 +71,7 @@ class install_update extends module
 
 	function main($mode, $sub)
 	{
-		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
+		global $style, $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
 		global $request;
 
 		$this->tpl_name = 'install_update';
@@ -132,10 +131,7 @@ class install_update extends module
 		}
 
 		// Set custom template again. ;)
-		$template->set_custom_template('../adm/style', 'admin');
-
-		// still, the acp template is never stored in the database
-		$user->theme['template_storedb'] = false;
+		$phpbb_style->set_custom_style('admin', '../adm/style', '');
 
 		$template->assign_vars(array(
 			'S_USER_LANG'			=> $user->lang['USER_LANG'],
@@ -353,7 +349,7 @@ class install_update extends module
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
 				$update_list = ($request->variable('check_again', false, false, phpbb_request_interface::POST)) ? false : $cache->get('_update_list');
-				$modified = ($update_list !== false) ? @filemtime($cache->cache_dir . 'data_update_list.' . $phpEx) : 0;
+				$modified = ($update_list !== false) ? @filemtime($cache->get_driver()->cache_dir . 'data_update_list.' . $phpEx) : 0;
 
 				// Make sure the list is up-to-date
 				if ($update_list !== false)
@@ -507,56 +503,6 @@ class install_update extends module
 				{
 					// Add database update to log
 					add_log('admin', 'LOG_UPDATE_PHPBB', $this->current_version, $this->update_to_version);
-
-					// Refresh prosilver css data - this may cause some unhappy users, but
-					$sql = 'SELECT *
-						FROM ' . STYLES_THEME_TABLE . "
-						WHERE LOWER(theme_name) = 'prosilver'";
-					$result = $db->sql_query($sql);
-					$theme = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					if ($theme)
-					{
-						$recache = (empty($theme['theme_data'])) ? true : false;
-						$update_time = time();
-
-						// We test for stylesheet.css because it is faster and most likely the only file changed on common themes
-						if (!$recache && $theme['theme_mtime'] < @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
-						{
-							$recache = true;
-							$update_time = @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
-						}
-						else if (!$recache)
-						{
-							$last_change = $theme['theme_mtime'];
-							$dir = @opendir("{$phpbb_root_path}styles/{$theme['theme_path']}/theme");
-
-							if ($dir)
-							{
-								while (($entry = readdir($dir)) !== false)
-								{
-									if (substr(strrchr($entry, '.'), 1) == 'css' && $last_change < @filemtime("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/{$entry}"))
-									{
-										$recache = true;
-										break;
-									}
-								}
-								closedir($dir);
-							}
-						}
-
-						if ($recache)
-						{
-							// Instead of re-caching here, we simply remove theme_data... HAR HAR HAR (think about a carribean pirate)
-							$sql = 'UPDATE ' . STYLES_THEME_TABLE . " SET theme_data = ''
-								WHERE theme_id = " . $theme['theme_id'];
-							$db->sql_query($sql);
-
-							$cache->destroy('sql', STYLES_THEME_TABLE);
-							$cache->destroy('sql', STYLES_TABLE);
-						}
-					}
 
 					$db->sql_return_on_error(true);
 					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
@@ -916,7 +862,14 @@ class install_update extends module
 					$test_connection = false;
 					if ($test_ftp_connection || $submit)
 					{
-						$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+						$transfer = new $method(
+							request_var('host', ''),
+							request_var('username', ''),
+							htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+							request_var('root_path', ''),
+							request_var('port', ''),
+							request_var('timeout', '')
+						);
 						$test_connection = $transfer->open_session();
 
 						// Make sure that the directory is correct by checking for the existence of common.php
@@ -1002,7 +955,14 @@ class install_update extends module
 				}
 				else
 				{
-					$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new $method(
+						request_var('host', ''),
+						request_var('username', ''),
+						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+						request_var('root_path', ''),
+						request_var('port', ''),
+						request_var('timeout', '')
+					);
 					$transfer->open_session();
 				}
 
@@ -1698,9 +1658,9 @@ class install_update extends module
 					$info['custom'] = array();
 /*
 					// Get custom installed styles...
-					$sql = 'SELECT template_name, template_path
-						FROM ' . STYLES_TEMPLATE_TABLE . "
-						WHERE LOWER(template_name) NOT IN ('subsilver2', 'prosilver')";
+					$sql = 'SELECT style_name, style_path
+						FROM ' . STYLES_TABLE . "
+						WHERE LOWER(style_name) NOT IN ('subsilver2', 'prosilver')";
 					$result = $db->sql_query($sql);
 
 					$templates = array();
@@ -1719,7 +1679,7 @@ class install_update extends module
 							{
 								foreach ($templates as $row)
 								{
-									$info['custom'][$filename][] = str_replace('/prosilver/', '/' . $row['template_path'] . '/', $filename);
+									$info['custom'][$filename][] = str_replace('/prosilver/', '/' . $row['style_path'] . '/', $filename);
 								}
 							}
 						}

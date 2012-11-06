@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -42,9 +41,8 @@ class ucp_prefs
 					'dateformat'	=> request_var('dateformat', $user->data['user_dateformat'], true),
 					'lang'			=> basename(request_var('lang', $user->data['user_lang'])),
 					'style'			=> request_var('style', (int) $user->data['user_style']),
-					'tz'			=> request_var('tz', (float) $user->data['user_timezone']),
+					'tz'			=> request_var('tz', $user->data['user_timezone']),
 
-					'dst'			=> request_var('dst', (bool) $user->data['user_dst']),
 					'viewemail'		=> request_var('viewemail', (bool) $user->data['user_allow_viewemail']),
 					'massemail'		=> request_var('massemail', (bool) $user->data['user_allow_massemail']),
 					'hideonline'	=> request_var('hideonline', (bool) !$user->data['user_allow_viewonline']),
@@ -61,12 +59,19 @@ class ucp_prefs
 
 				if ($submit)
 				{
-					$data['style'] = ($config['override_user_style']) ? $config['default_style'] : $data['style'];
+					if ($config['override_user_style'])
+					{
+						$data['style'] = (int) $config['default_style'];
+					}
+					else if (!phpbb_style_is_active($data['style']))
+					{
+						$data['style'] = (int) $user->data['user_style'];
+					}
 
 					$error = validate_data($data, array(
 						'dateformat'	=> array('string', false, 1, 30),
 						'lang'			=> array('language_iso_name'),
-						'tz'			=> array('num', false, -14, 14),
+						'tz'			=> array('timezone'),
 					));
 
 					if (!check_form_key('ucp_prefs_personal'))
@@ -87,7 +92,6 @@ class ucp_prefs
 							'user_notify_pm'		=> $data['notifypm'],
 							'user_options'			=> $user->data['user_options'],
 
-							'user_dst'				=> $data['dst'],
 							'user_dateformat'		=> $data['dateformat'],
 							'user_lang'				=> $data['lang'],
 							'user_timezone'			=> $data['tz'],
@@ -127,6 +131,7 @@ class ucp_prefs
 				}
 				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
+				$timezone_selects = phpbb_timezone_select($user, $data['tz'], true);
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
@@ -139,7 +144,6 @@ class ucp_prefs
 					'S_HIDE_ONLINE'		=> $data['hideonline'],
 					'S_NOTIFY_PM'		=> $data['notifypm'],
 					'S_POPUP_PM'		=> $data['popuppm'],
-					'S_DST'				=> $data['dst'],
 
 					'DATE_FORMAT'			=> $data['dateformat'],
 					'A_DATE_FORMAT'			=> addslashes($data['dateformat']),
@@ -150,7 +154,8 @@ class ucp_prefs
 
 					'S_LANG_OPTIONS'		=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['style']),
-					'S_TZ_OPTIONS'			=> tz_select($data['tz'], true),
+					'S_TZ_OPTIONS'			=> $timezone_selects['tz_select'],
+					'S_TZ_DATE_OPTIONS'		=> $timezone_selects['tz_dates'],
 					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
 					'S_SELECT_NOTIFY'		=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
 				);

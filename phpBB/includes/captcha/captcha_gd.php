@@ -2,9 +2,8 @@
 /**
 *
 * @package VC
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -77,7 +76,7 @@ class captcha
 		{
 			$denom = ($code_len - $i);
 			$denom = max(1.3, $denom);
-			$offset[$i] = mt_rand(0, (1.5 * $width_avail) / $denom);
+			$offset[$i] = phpbb_mt_rand(0, (int) round((1.5 * $width_avail) / $denom));
 			$width_avail -= $offset[$i];
 		}
 

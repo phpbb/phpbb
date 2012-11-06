@@ -12,7 +12,7 @@
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_SUBJECT}</span></td>
-		<td class="row2" colspan="2"><input class="post" style="width: 350px" type="text" size="35" maxlength="64" name="subject" value="{SPLIT_SUBJECT}" /></td>
+		<td class="row2" colspan="2"><input class="post" style="width: 350px" type="text" size="35" maxlength="124" name="subject" value="{SPLIT_SUBJECT}" /></td>
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_FORUM}</span></td>
@@ -35,7 +35,7 @@
 
 <!-- IF S_CAN_MERGE -->
 	<tr>
-		<th colspan="3" nowrap="nowrap">{L_MERGE_TOPIC}</th>
+		<th colspan="3" nowrap="nowrap">{L_MERGE_POSTS}</th>
 	</tr>
 	<tr>
 		<td class="row2" colspan="3" align="center"><span class="gensmall">{L_MERGE_TOPIC_EXPLAIN}</span></td>
@@ -79,7 +79,7 @@
 			</tr>
 			</table>
 		</td>
-		<td width="5%" align="center"><a href="{postrow.U_POST_DETAILS}">{INFO_IMG}</a></td>
+		<td width="5%" align="center"><a href="{postrow.U_POST_DETAILS}" class="imageset">{INFO_IMG}</a></td>
 	</tr>
 
 	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
@@ -135,6 +135,7 @@
 		<!-- IF S_CAN_DELETE --><option value="delete_post">{L_DELETE_POSTS}</option><!-- ENDIF -->
 		<!-- IF S_CAN_MERGE --><option value="merge_posts"<!-- IF ACTION eq 'merge' --> selected="selected"<!-- ENDIF -->>{L_MERGE_POSTS}</option><!-- ENDIF -->
 		<!-- IF S_CAN_SPLIT --><option value="split_all"<!-- IF ACTION eq 'split' --> selected="selected"<!-- ENDIF -->>{L_SPLIT_POSTS}</option><option value="split_beyond">{L_SPLIT_AFTER}</option><!-- ENDIF -->
+		<!-- IF S_CAN_SYNC --><option value="resync">{L_RESYNC}</option><!-- ENDIF -->
 	</select>&nbsp;<input class="btnmain" type="submit" name="mcp_topic_submit" value="{L_SUBMIT}" /></td>
 </tr>
 </table>

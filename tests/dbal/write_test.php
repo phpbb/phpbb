@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -16,7 +16,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/config.xml');
 	}
 
-	public static function build_array_insert_data()
+	public function build_array_insert_data()
 	{
 		return array(
 			array(array(
@@ -104,7 +104,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	public static function update_data()
+	public function update_data()
 	{
 		return array(
 			array(

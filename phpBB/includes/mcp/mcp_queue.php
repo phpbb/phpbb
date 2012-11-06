@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -216,6 +215,7 @@ class mcp_queue
 					'POST_IP'				=> $post_info['poster_ip'],
 					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
+					'S_FIRST_POST'			=> ($post_info['topic_first_post_id'] == $post_id),
 
 					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id . '&amp;lookup=' . $post_info['poster_ip']) . '#ip' : '',
 				));
@@ -267,8 +267,6 @@ class mcp_queue
 					{
 						trigger_error('NOT_MODERATOR');
 					}
-
-					$forum_list = implode(', ', $forum_list);
 
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . '
@@ -331,7 +329,7 @@ class mcp_queue
 
 					if (sizeof($post_ids))
 					{
-						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.username_clean, u.user_colour
+						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 								AND t.topic_id = p.topic_id
@@ -360,7 +358,7 @@ class mcp_queue
 				}
 				else
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_attachment AS post_attachment, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
 						FROM ' . TOPICS_TABLE . " t
 						WHERE " . $db->sql_in_set('forum_id', $forum_list) . "
 							AND topic_approved = 0
@@ -415,10 +413,14 @@ class mcp_queue
 						'FORUM_NAME'	=> $forum_names[$row['forum_id']],
 						'POST_SUBJECT'	=> ($row['post_subject'] != '') ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
-						'POST_TIME'		=> $user->format_date($row['post_time']))
-					);
+						'POST_TIME'		=> $user->format_date($row['post_time']),
+						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					));
 				}
 				unset($rowset, $forum_names);
+
+				$base_url = $this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
 
 				// Now display the page
 				$template->assign_vars(array(
@@ -431,10 +433,9 @@ class mcp_queue
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
 					'S_TOPICS'				=> ($mode == 'unapproved_posts') ? false : true,
 
-					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
-					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
-					'TOTAL'					=> ($total == 1) ? (($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POST'] : $user->lang['VIEW_FORUM_TOPIC']) : sprintf((($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POSTS'] : $user->lang['VIEW_FORUM_TOPICS']), $total),
+					'TOTAL'					=> $user->lang((($mode == 'unapproved_posts') ? 'VIEW_TOPIC_POSTS' : 'VIEW_FORUM_TOPICS'), (int) $total),
 				));
 
 				$this->tpl_name = 'mcp_queue';
@@ -450,6 +451,7 @@ function approve_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
+	global $request;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
@@ -708,7 +710,20 @@ function approve_post($post_id_list, $id, $mode)
 			$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
 		}
 
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message);
+		$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
+
+		if ($request->is_ajax())
+		{
+			$json_response = new phpbb_json_response;
+			$json_response->send(array(
+				'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+				'MESSAGE_TEXT'		=> $message,
+				'REFRESH_DATA'		=> null,
+				'approved'				=> true
+			));
+		}
+
+		trigger_error($message);
 	}
 }
 
@@ -754,7 +769,10 @@ function disapprove_post($post_id_list, $id, $mode)
 		if (!$row || (!$reason && strtolower($row['reason_title']) == 'other'))
 		{
 			$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
+
 			$request->overwrite('confirm', null, phpbb_request_interface::POST);
+			$request->overwrite('confirm_key', null, phpbb_request_interface::POST);
+			$request->overwrite('confirm_key', null, phpbb_request_interface::REQUEST);
 		}
 		else
 		{
@@ -964,7 +982,20 @@ function disapprove_post($post_id_list, $id, $mode)
 	}
 	else
 	{
+		$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>');
+
+		if ($request->is_ajax())
+		{
+			$json_response = new phpbb_json_response;
+			$json_response->send(array(
+				'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+				'MESSAGE_TEXT'		=> $message,
+				'REFRESH_DATA'		=> null,
+				'approved'				=> false
+			));
+		}
+
 		meta_refresh(3, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
+		trigger_error($message);
 	}
 }

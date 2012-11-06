@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <h1>{L_TITLE}</h1>
 
@@ -12,9 +12,9 @@
 	{L_SEARCH_KEYWORDS}: <input type="text" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
 </fieldset>
 
-<!-- IF PAGINATION -->
+<!-- IF .pagination -->
 <div class="pagination" style="float: right; margin: 15px 0 2px 0">
-	<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+	<!-- INCLUDE pagination.html -->
 </div>
 <!-- ENDIF -->
 
@@ -54,9 +54,9 @@
 	</tbody>
 	</table>
 
-<!-- IF PAGINATION -->
+<!-- IF .pagination -->
 	<div class="pagination">
-		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+		<!-- INCLUDE pagination.html -->
 	</div>
 <!-- ENDIF -->
 

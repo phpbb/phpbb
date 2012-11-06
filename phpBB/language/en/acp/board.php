@@ -4,9 +4,8 @@
 * acp_board [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -45,15 +44,20 @@ $lang = array_merge($lang, array(
 	'DEFAULT_STYLE'					=> 'Default style',
 	'DISABLE_BOARD'					=> 'Disable board',
 	'DISABLE_BOARD_EXPLAIN'			=> 'This will make the board unavailable to users. You can also enter a short (255 character) message to display if you wish.',
+	'DISPLAY_LAST_SUBJECT'			=> 'Display subject of last added post on forum list',
+	'DISPLAY_LAST_SUBJECT_EXPLAIN'	=> 'The subject of the last added post will be displayed in the forum list with a hyperlink to the post. Subjects from password protected forums and forums in which user doesn’t have read access are not shown.',
 	'OVERRIDE_STYLE'				=> 'Override user style',
 	'OVERRIDE_STYLE_EXPLAIN'		=> 'Replaces user’s style with the default.',
 	'SITE_DESC'						=> 'Site description',
+	'SITE_HOME_TEXT'				=> 'Main website text',
+	'SITE_HOME_TEXT_EXPLAIN'		=> 'This text will be displayed as a link to your website homepage in the board’s breadcrumbs. If not specified, it will default to “Home”.',
+	'SITE_HOME_URL'					=> 'Main website URL',
+	'SITE_HOME_URL_EXPLAIN'			=> 'If specified, a link to this URL will be prepended to your board’s breadcrumbs and the board logo will link to this URL instead of the forum index. An absolute URL is required, e.g. <samp>http://www.phpbb.com</samp>.',
 	'SITE_NAME'						=> 'Site name',
-	'SYSTEM_DST'					=> 'Enable Summer Time/<abbr title="Daylight Saving Time">DST</abbr>',
 	'SYSTEM_TIMEZONE'				=> 'Guest timezone',
 	'SYSTEM_TIMEZONE_EXPLAIN'			=> 'Timezone to use for displaying times to users who are not logged in (guests, bots). Logged in users set their timezone during registration and can change it in their user control panel.',
 	'WARNINGS_EXPIRE'				=> 'Warning duration',
-	'WARNINGS_EXPIRE_EXPLAIN'		=> 'Number of days that will elapse before the warning will automatically expire from a user’s record.',
+	'WARNINGS_EXPIRE_EXPLAIN'		=> 'Number of days that will elapse before a warning will automatically expire from a user’s record. Set this value to 0 to make warnings permanent.',
 ));
 
 // Board Features
@@ -108,7 +112,7 @@ $lang = array_merge($lang, array(
 	'MAX_AVATAR_SIZE'				=> 'Maximum avatar dimensions',
 	'MAX_AVATAR_SIZE_EXPLAIN'		=> 'Width x Height in pixels.',
 	'MAX_FILESIZE'					=> 'Maximum avatar file size',
-	'MAX_FILESIZE_EXPLAIN'			=> 'For uploaded avatar files.',
+	'MAX_FILESIZE_EXPLAIN'			=> 'For uploaded avatar files. If this value is 0, the uploaded filesize is only limited by your PHP configuration.',
 	'MIN_AVATAR_SIZE'				=> 'Minimum avatar dimensions',
 	'MIN_AVATAR_SIZE_EXPLAIN'		=> 'Width x Height in pixels.',
 ));
@@ -151,7 +155,7 @@ $lang = array_merge($lang, array(
 	'ALLOW_POST_FLASH_EXPLAIN'			=> 'If disallowed the <code>[FLASH]</code> BBCode tag is disabled in posts. Otherwise the permission system controls which users can use the <code>[FLASH]</code> BBCode tag.',
 
 	'BUMP_INTERVAL'					=> 'Bump interval',
-	'BUMP_INTERVAL_EXPLAIN'			=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump this topic. Setting the value to 0 disables this feature.',
+	'BUMP_INTERVAL_EXPLAIN'			=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump that topic. Setting the value to 0 disables bumping entirely.',
 	'CHAR_LIMIT'					=> 'Maximum characters per post/message',
 	'CHAR_LIMIT_EXPLAIN'			=> 'The number of characters allowed within a post/private message. Set to 0 for unlimited characters.',
 	'DELETE_TIME'					=> 'Limit deleting time',
@@ -174,7 +178,7 @@ $lang = array_merge($lang, array(
 	'MAX_POST_URLS'					=> 'Maximum links per post',
 	'MAX_POST_URLS_EXPLAIN'			=> 'Maximum number of URLs in a post. Set to 0 for unlimited links.',
 	'MIN_CHAR_LIMIT'				=> 'Minimum characters per post/message',
-	'MIN_CHAR_LIMIT_EXPLAIN'		=> 'The minimum number of characters the user need to enter within a post/private message.',
+	'MIN_CHAR_LIMIT_EXPLAIN'		=> 'The minimum number of characters the user need to enter within a post/private message. The minimum for this setting is 1.',
 	'POSTING'						=> 'Posting',
 	'POSTS_PER_PAGE'				=> 'Posts per page',
 	'QUOTE_DEPTH_LIMIT'				=> 'Maximum nesting depth for quotes',
@@ -208,19 +212,19 @@ $lang = array_merge($lang, array(
 	'ACP_REGISTER_SETTINGS_EXPLAIN'		=> 'Here you are able to define registration and profile related settings.',
 
 	'ACC_ACTIVATION'				=> 'Account activation',
-	'ACC_ACTIVATION_EXPLAIN'		=> 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations.',
+	'ACC_ACTIVATION_EXPLAIN'		=> 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations. “Board-wide email” must be enabled in order to use user or admin activation.',
 	'NEW_MEMBER_POST_LIMIT'			=> 'New member post limit',
 	'NEW_MEMBER_POST_LIMIT_EXPLAIN'	=> 'New members are within the <em>Newly Registered Users</em> group until they reach this number of posts. You can use this group to keep them from using the PM system or to review their posts. <strong>A value of 0 disables this feature.</strong>',
 	'NEW_MEMBER_GROUP_DEFAULT'		=> 'Set Newly Registered Users group to default',
 	'NEW_MEMBER_GROUP_DEFAULT_EXPLAIN'	=> 'If set to yes, and a new member post limit is specified, newly registered users will not only be put into the <em>Newly Registered Users</em> group, but this group will also be their default one. This may come in handy if you want to assign a group default rank and/or avatar the user then inherits.',
 
-	'ACC_ADMIN'					=> 'By Admin',
-	'ACC_DISABLE'				=> 'Disable',
-	'ACC_NONE'					=> 'None',
-	'ACC_USER'					=> 'By User',
+	'ACC_ADMIN'					=> 'By admin',
+	'ACC_DISABLE'				=> 'Disable registration',
+	'ACC_NONE'					=> 'No activation (immediate access)',
+	'ACC_USER'					=> 'By user (email verification)',
 //	'ACC_USER_ADMIN'			=> 'User + Admin',
-	'ALLOW_EMAIL_REUSE'			=> 'Allow e-mail address re-use',
-	'ALLOW_EMAIL_REUSE_EXPLAIN'	=> 'Different users can register with the same e-mail address.',
+	'ALLOW_EMAIL_REUSE'			=> 'Allow email address re-use',
+	'ALLOW_EMAIL_REUSE_EXPLAIN'	=> 'Different users can register with the same email address.',
 	'COPPA'						=> 'COPPA',
 	'COPPA_FAX'					=> 'COPPA fax number',
 	'COPPA_MAIL'				=> 'COPPA mailing address',
@@ -353,8 +357,11 @@ $lang = array_merge($lang, array(
 	'LIMIT_SESSIONS'				=> 'Limit sessions',
 	'LIMIT_SESSIONS_EXPLAIN'		=> 'If the number of sessions exceeds this value within a one minute period the board will go offline. Set to 0 for unlimited sessions.',
 	'LOAD_CPF_MEMBERLIST'			=> 'Allow styles to display custom profile fields in memberlist',
+	'LOAD_CPF_PM'					=> 'Display custom profile fields in private messages',
 	'LOAD_CPF_VIEWPROFILE'			=> 'Display custom profile fields in user profiles',
 	'LOAD_CPF_VIEWTOPIC'			=> 'Display custom profile fields on topic pages',
+	'LOAD_JQUERY_CDN'				=> 'Serve jQuery using Google’s CDN',
+	'LOAD_JQUERY_CDN_EXPLAIN'		=> 'If this setting is enabled, jQuery will be served from Google’s AJAX API CDN instead of the copy included with phpBB on your server. If the CDN fails, phpBB will attempt to fall back to the copy included with phpBB.',
 	'LOAD_USER_ACTIVITY'			=> 'Show user’s activity',
 	'LOAD_USER_ACTIVITY_EXPLAIN'	=> 'Displays active topic/forum in user profiles and user control panel. It is recommended to disable this on boards with more than one million posts.',
 	'RECOMPILE_STYLES'				=> 'Recompile stale style components',
@@ -388,10 +395,10 @@ $lang = array_merge($lang, array(
 
 	'LDAP_DN'						=> 'LDAP base <var>dn</var>',
 	'LDAP_DN_EXPLAIN'				=> 'This is the Distinguished Name, locating the user information, e.g. <samp>o=My Company,c=US</samp>.',
-	'LDAP_EMAIL'					=> 'LDAP e-mail attribute',
-	'LDAP_EMAIL_EXPLAIN'			=> 'Set this to the name of your user entry e-mail attribute (if one exists) in order to automatically set the e-mail address for new users. Leaving this empty results in empty e-mail address for users who log in for the first time.',
+	'LDAP_EMAIL'					=> 'LDAP email attribute',
+	'LDAP_EMAIL_EXPLAIN'			=> 'Set this to the name of your user entry email attribute (if one exists) in order to automatically set the email address for new users. Leaving this empty results in empty email address for users who log in for the first time.',
 	'LDAP_INCORRECT_USER_PASSWORD'	=> 'Binding to LDAP server failed with specified user/password.',
-	'LDAP_NO_EMAIL'					=> 'The specified e-mail attribute does not exist.',
+	'LDAP_NO_EMAIL'					=> 'The specified email attribute does not exist.',
 	'LDAP_NO_IDENTITY'				=> 'Could not find a login identity for %s.',
 	'LDAP_PASSWORD'					=> 'LDAP password',
 	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous binding, otherwise fill in the password for the above user. Required for Active Directory Servers.<br /><em><strong>Warning:</strong> This password will be stored as plain text in the database, visible to everybody who can access your database or who can view this configuration page.</em>',
@@ -409,7 +416,7 @@ $lang = array_merge($lang, array(
 
 // Server Settings
 $lang = array_merge($lang, array(
-	'ACP_SERVER_SETTINGS_EXPLAIN'	=> 'Here you define server and domain dependant settings. Please ensure the data you enter is accurate, errors will result in e-mails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
+	'ACP_SERVER_SETTINGS_EXPLAIN'	=> 'Here you define server and domain dependent settings. Please ensure the data you enter is accurate, errors will result in emails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
 
 	'ENABLE_GZIP'				=> 'Enable GZip compression',
 	'ENABLE_GZIP_EXPLAIN'		=> 'Generated content will be compressed prior to sending it to the user. This can reduce network traffic but will also increase CPU usage on both server and client side. Requires zlib PHP extension to be loaded.',
@@ -452,20 +459,26 @@ $lang = array_merge($lang, array(
 	'CHECK_DNSBL_EXPLAIN'			=> 'If enabled the user’s IP address is checked against the following DNSBL services on registration and posting: <a href="http://spamcop.net">spamcop.net</a> and <a href="http://www.spamhaus.org">www.spamhaus.org</a>. This lookup may take a while, depending on the server’s configuration. If slowdowns are experienced or too many false positives reported it is recommended to disable this check.',
 	'CLASS_B'						=> 'A.B',
 	'CLASS_C'						=> 'A.B.C',
-	'EMAIL_CHECK_MX'				=> 'Check e-mail domain for valid MX record',
-	'EMAIL_CHECK_MX_EXPLAIN'		=> 'If enabled, the e-mail domain provided on registration and profile changes is checked for a valid MX record.',
+	'EMAIL_CHECK_MX'				=> 'Check email domain for valid MX record',
+	'EMAIL_CHECK_MX_EXPLAIN'		=> 'If enabled, the email domain provided on registration and profile changes is checked for a valid MX record.',
 	'FORCE_PASS_CHANGE'				=> 'Force password change',
 	'FORCE_PASS_CHANGE_EXPLAIN'		=> 'Require user to change their password after a set number of days. Setting this value to 0 disables this behaviour.',
 	'FORM_TIME_MAX'					=> 'Maximum time to submit forms',
 	'FORM_TIME_MAX_EXPLAIN'			=> 'The time a user has to submit a form. Use -1 to disable. Note that a form might become invalid if the session expires, regardless of this setting.',
 	'FORM_SID_GUESTS'				=> 'Tie forms to guest sessions',
 	'FORM_SID_GUESTS_EXPLAIN'		=> 'If enabled, the form token issued to guests will be session-exclusive. This can cause problems with some ISPs.',
-	'FORWARDED_FOR_VALID'			=> 'Validated <var>X_FORWARDED_FOR</var> header',
+	'FORWARDED_FOR_VALID'			=> 'Validate <var>X_FORWARDED_FOR</var> header',
 	'FORWARDED_FOR_VALID_EXPLAIN'	=> 'Sessions will only be continued if the sent <var>X_FORWARDED_FOR</var> header equals the one sent with the previous request. Bans will be checked against IPs in <var>X_FORWARDED_FOR</var> too.',
 	'IP_VALID'						=> 'Session IP validation',
 	'IP_VALID_EXPLAIN'				=> 'Determines how much of the users IP is used to validate a session; <samp>All</samp> compares the complete address, <samp>A.B.C</samp> the first x.x.x, <samp>A.B</samp> the first x.x, <samp>None</samp> disables checking. On IPv6 addresses <samp>A.B.C</samp> compares the first 4 blocks and <samp>A.B</samp> the first 3 blocks.',
-	'MAX_LOGIN_ATTEMPTS'			=> 'Maximum number of login attempts',
-	'MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> 'After this number of failed logins the user needs to additionally solve the anti-spambot task.',
+	'IP_LOGIN_LIMIT_MAX'			=> 'Maximum number of login attempts per IP address',
+	'IP_LOGIN_LIMIT_MAX_EXPLAIN'	=> 'The threshold of login attempts allowed from a single IP address before an anti-spambot task is triggered. Enter 0 to prevent the anti-spambot task from being triggered by IP addresses.',
+	'IP_LOGIN_LIMIT_TIME'			=> 'IP address login attempt expiration time',
+	'IP_LOGIN_LIMIT_TIME_EXPLAIN'	=> 'Login attempts expire after this period.',
+	'IP_LOGIN_LIMIT_USE_FORWARDED'	=> 'Limit login attempts by <var>X_FORWARDED_FOR</var> header',
+	'IP_LOGIN_LIMIT_USE_FORWARDED_EXPLAIN'	=> 'Instead of limiting login attempts by IP address they are limited by <var>X_FORWARDED_FOR</var> values. <br /><em><strong>Warning:</strong> Only enable this if you are operating a proxy server that sets <var>X_FORWARDED_FOR</var> to trustworthy values.</em>',
+	'MAX_LOGIN_ATTEMPTS'			=> 'Maximum number of login attempts per username',
+	'MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> 'The number of login attempts allowed for a single account before the anti-spambot task is triggered. Enter 0 to prevent the anti-spambot task from being triggered for distinct user accounts.',
 	'NO_IP_VALIDATION'				=> 'None',
 	'NO_REF_VALIDATION'				=> 'None',
 	'PASSWORD_TYPE'					=> 'Password complexity',
@@ -484,24 +497,24 @@ $lang = array_merge($lang, array(
 
 // Email Settings
 $lang = array_merge($lang, array(
-	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends e-mails to your users. Please ensure the e-mail address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) e-mail service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary). If the server requires authentication (and only if it does) enter the necessary username, password and authentication method.',
+	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary). If the server requires authentication (and only if it does) enter the necessary username, password and authentication method.',
 
-	'ADMIN_EMAIL'					=> 'Return e-mail address',
-	'ADMIN_EMAIL_EXPLAIN'			=> 'This will be used as the return address on all e-mails, the technical contact e-mail address. It will always be used as the <samp>Return-Path</samp> and <samp>Sender</samp> address in e-mails.',
-	'BOARD_EMAIL_FORM'				=> 'Users send e-mail via board',
-	'BOARD_EMAIL_FORM_EXPLAIN'		=> 'Instead of showing the users e-mail address users are able to send e-mails via the board.',
-	'BOARD_HIDE_EMAILS'				=> 'Hide e-mail addresses',
-	'BOARD_HIDE_EMAILS_EXPLAIN'		=> 'This function keeps e-mail addresses completely private.',
-	'CONTACT_EMAIL'					=> 'Contact e-mail address',
-	'CONTACT_EMAIL_EXPLAIN'			=> 'This address will be used whenever a specific contact point is needed, e.g. spam, error output, etc. It will always be used as the <samp>From</samp> and <samp>Reply-To</samp> address in e-mails.',
-	'EMAIL_FUNCTION_NAME'			=> 'E-mail function name',
-	'EMAIL_FUNCTION_NAME_EXPLAIN'	=> 'The e-mail function used to send mails through PHP.',
-	'EMAIL_PACKAGE_SIZE'			=> 'E-mail package size',
-	'EMAIL_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of maximum e-mails sent out in one package. This setting is applied to the internal message queue; set this value to 0 if you have problems with non-delivered notification e-mails.',
-	'EMAIL_SIG'						=> 'E-mail signature',
-	'EMAIL_SIG_EXPLAIN'				=> 'This text will be attached to all e-mails the board sends.',
-	'ENABLE_EMAIL'					=> 'Enable board-wide e-mails',
-	'ENABLE_EMAIL_EXPLAIN'			=> 'If this is set to disabled no e-mails will be sent by the board at all. <em>Note the user and admin account activation settings require this setting to be enabled. If currently using “user” or “admin” activation in the activation settings, disabling this setting will require no activation of new accounts.</em>',
+	'ADMIN_EMAIL'					=> 'Return email address',
+	'ADMIN_EMAIL_EXPLAIN'			=> 'This will be used as the return address on all emails, the technical contact email address. It will always be used as the <samp>Return-Path</samp> and <samp>Sender</samp> address in emails.',
+	'BOARD_EMAIL_FORM'				=> 'Users send email via board',
+	'BOARD_EMAIL_FORM_EXPLAIN'		=> 'Instead of showing the users email address users are able to send emails via the board.',
+	'BOARD_HIDE_EMAILS'				=> 'Hide email addresses',
+	'BOARD_HIDE_EMAILS_EXPLAIN'		=> 'This function keeps email addresses completely private.',
+	'CONTACT_EMAIL'					=> 'Contact email address',
+	'CONTACT_EMAIL_EXPLAIN'			=> 'This address will be used whenever a specific contact point is needed, e.g. spam, error output, etc. It will always be used as the <samp>From</samp> and <samp>Reply-To</samp> address in emails.',
+	'EMAIL_FUNCTION_NAME'			=> 'Email function name',
+	'EMAIL_FUNCTION_NAME_EXPLAIN'	=> 'The email function used to send mails through PHP.',
+	'EMAIL_PACKAGE_SIZE'			=> 'Email package size',
+	'EMAIL_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of maximum emails sent out in one package. This setting is applied to the internal message queue; set this value to 0 if you have problems with non-delivered notification emails.',
+	'EMAIL_SIG'						=> 'Email signature',
+	'EMAIL_SIG_EXPLAIN'				=> 'This text will be attached to all emails the board sends.',
+	'ENABLE_EMAIL'					=> 'Enable board-wide emails',
+	'ENABLE_EMAIL_EXPLAIN'			=> 'If this is set to disabled no emails will be sent by the board at all. <em>Note the user and admin account activation settings require this setting to be enabled. If currently using “user” or “admin” activation in the activation settings, disabling this setting will require no activation of new accounts.</em>',
 	'SMTP_AUTH_METHOD'				=> 'Authentication method for SMTP',
 	'SMTP_AUTH_METHOD_EXPLAIN'		=> 'Only used if a username/password is set, ask your provider if you are unsure which method to use.',
 	'SMTP_CRAM_MD5'					=> 'CRAM-MD5',
@@ -517,8 +530,8 @@ $lang = array_merge($lang, array(
 	'SMTP_SETTINGS'					=> 'SMTP settings',
 	'SMTP_USERNAME'					=> 'SMTP username',
 	'SMTP_USERNAME_EXPLAIN'			=> 'Only enter a username if your SMTP server requires it.',
-	'USE_SMTP'						=> 'Use SMTP server for e-mail',
-	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send e-mail via a named server instead of the local mail function.',
+	'USE_SMTP'						=> 'Use SMTP server for email',
+	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send email via a named server instead of the local mail function.',
 ));
 
 // Jabber settings

@@ -3,7 +3,7 @@
 *
 * @package phpBB3
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -21,6 +21,13 @@ if (!defined('IN_PHPBB'))
 */
 interface phpbb_cron_task
 {
+	/**
+	* Returns the name of the task.
+	*
+	* @return string		Name of wrapped task.
+	*/
+	public function get_name();
+
 	/**
 	* Runs this cron task.
 	*

@@ -3,11 +3,12 @@
 *
 * @package testing
 * @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_dbal_select_test extends phpbb_database_test_case
 {
@@ -16,7 +17,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/three_users.xml');
 	}
 
-	public static function return_on_error_select_data()
+	public function return_on_error_select_data()
 	{
 		return array(
 			array('phpbb_users', "username_clean = 'bertie'", array(array('username_clean' => 'bertie'))),
@@ -43,7 +44,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	public static function fetchrow_data()
+	public function fetchrow_data()
 	{
 		return array(
 			array('', array(array('username_clean' => 'barfoo'),
@@ -94,7 +95,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	public static function fetchfield_data()
+	public function fetchfield_data()
 	{
 		return array(
 			array('', array('barfoo', 'foobar', 'bertie')),
@@ -122,6 +123,32 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 
 		$this->assertEquals($expected, $ary);
+	}
+
+	public static function fetchfield_seek_data()
+	{
+		return array(
+			array(1, 'foobar'),
+			array(0, 'barfoo'),
+			array(2, 'bertie'),
+		);
+	}
+
+	/**
+	* @dataProvider fetchfield_seek_data
+	*/
+	public function test_fetchfield_seek($rownum, $expected)
+	{
+		$db = $this->new_dbal();
+
+		$result = $db->sql_query('SELECT username_clean
+			FROM phpbb_users
+			ORDER BY user_id ASC');
+
+		$field = $db->sql_fetchfield('username_clean', $rownum, $result);
+		$db->sql_freeresult($result);
+
+		$this->assertEquals($expected, $field);
 	}
 
 	public static function query_limit_data()
@@ -165,7 +192,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $ary);
 	}
 
-	public static function like_expression_data()
+	public function like_expression_data()
 	{
 		// * = any_char; # = one_char
 		return array(
@@ -202,7 +229,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	public static function in_set_data()
+	public function in_set_data()
 	{
 		return array(
 			array('user_id', 3, false, false, array(array('username_clean' => 'bertie'))),
@@ -276,7 +303,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	public static function build_array_data()
+	public function build_array_data()
 	{
 		return array(
 			array(array('username_clean' => 'barfoo'), array(array('username_clean' => 'barfoo'))),
@@ -316,5 +343,71 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 
 		$db->sql_freeresult($result);
+	}
+
+	public function test_nested_transactions()
+	{
+		$db = $this->new_dbal();
+
+		// nested transactions should work on systems that do not require
+		// buffering of nested transactions, so ignore the ones that need
+		// buffering
+		if ($db->sql_buffer_nested_transactions())
+		{
+			return;
+		}
+
+		$sql = 'SELECT user_id FROM phpbb_users ORDER BY user_id ASC';
+		$result1 = $db->sql_query($sql);
+
+		$db->sql_transaction('begin');
+		$result2 = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result2);
+		$db->sql_transaction('commit');
+
+		$this->assertEquals('1', $row['user_id']);
+	}
+
+	/**
+	 * fix for PHPBB3-10307
+	 */
+	public function test_sql_fetchrow_returns_false_when_empty()
+	{
+		$db = $this->new_dbal();
+
+		$sql = 'SELECT user_id
+			FROM phpbb_users
+			WHERE 1 = 0';
+		$result = $db->sql_query($sql);
+
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$this->assertSame(false, $row);
+	}
+
+	public function test_get_row_count()
+	{
+		$this->assertSame(
+			3,
+			(int) $this->new_dbal()->get_row_count('phpbb_users'),
+			"Failed asserting that user table has exactly 3 rows."
+		);
+	}
+
+	public function test_get_estimated_row_count()
+	{
+		$actual = $this->new_dbal()->get_estimated_row_count('phpbb_users');
+
+		if (is_string($actual) && isset($actual[0]) && $actual[0] === '~')
+		{
+			$actual = substr($actual, 1);
+		}
+
+		$this->assertGreaterThan(
+			1,
+			$actual,
+			"Failed asserting that estimated row count of user table is greater than 1."
+		);
 	}
 }

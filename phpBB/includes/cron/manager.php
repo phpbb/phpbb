@@ -3,7 +3,7 @@
 *
 * @package phpBB3
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -32,136 +32,35 @@ class phpbb_cron_manager
 	*/
 	protected $tasks = array();
 
-	/**
-	* Path to the root of directory tree with tasks.
-	* For bundled phpBB tasks, this is the path to includes/cron/tasks
-	* under phpBB root.
-	* @var string
-	*/
-	protected $task_path;
-
-	/**
-	* PHP file extension
-	* @var string
-	*/
-	protected $phpEx;
-
-	/**
-	* Cache driver
-	* @var phpbb_cache_driver_interface
-	*/
-	protected $cache;
+	protected $phpbb_root_path;
+	protected $php_ext;
 
 	/**
 	* Constructor. Loads all available tasks.
 	*
-	* Tasks will be looked up in directory tree rooted at $task_path.
-	* Task classes will be autoloaded and must be named according to
-	* autoloading naming conventions. To load cron tasks shipped with
-	* phpbb, pass $phpbb_root_path . 'includes/cron/task' as $task_path.
-	*
-	* If $cache is given, names of found cron tasks will be cached in it
-	* for one hour. Note that the cron task names are stored without
-	* namespacing; if two different phbb_cron_manager instances are
-	* constructed with different $task_path arguments but the same $cache,
-	* the second instance will use task names found by the first instance.
-	*
-	* @param string $task_path                   Directory containing cron tasks
-	* @param string $phpEx                       PHP file extension
-	* @param phpbb_cache_driver_interface $cache Cache for task names (optional)
-	* @return void
+	* @param array|Traversable $tasks Provides an iterable set of task names
 	*/
-	public function __construct($task_path, $phpEx, phpbb_cache_driver_interface $cache = null)
+	public function __construct($tasks, $phpbb_root_path, $php_ext)
 	{
-		$this->task_path = $task_path;
-		$this->phpEx = $phpEx;
-		$this->cache = $cache;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 
-		$task_names = $this->find_cron_task_names();
-		$this->load_tasks($task_names);
-	}
-
-	/**
-	* Finds cron task names.
-	*
-	* A cron task file must follow the naming convention:
-	* includes/cron/task/$mod/$name.php.
-	* $mod is core for tasks that are part of phpbb.
-	* Modifications should use their name as $mod.
-	* $name is the name of the cron task.
-	* Cron task is expected to be a class named phpbb_cron_task_${mod}_${name}.
-	*
-	* @return array		List of task names
-	*/
-	public function find_cron_task_names()
-	{
-		if ($this->cache)
-		{
-			$task_names = $this->cache->get('_cron_tasks');
-
-			if ($task_names !== false)
-			{
-				return $task_names;
-			}
-		}
-
-		$task_names = array();
-		$ext = '.' . $this->phpEx;
-		$ext_length = strlen($ext);
-
-		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->task_path));
-
-		foreach ($iterator as $fileinfo)
-		{
-			$file = preg_replace('#^' . preg_quote($this->task_path, '#') . '#', '', $fileinfo->getPathname());
-
-			// skip directories and files direclty in the task root path
-			if ($fileinfo->isFile() && strpos($file, '/') !== false)
-			{
-				$task_name = str_replace('/', '_', substr($file, 0, -$ext_length));
-				if (substr($file, -$ext_length) == $ext && $this->is_valid_name($task_name))
-				{
-					$task_names[] = 'phpbb_cron_task_' . $task_name;
-				}
-			}
-		}
-
-		if ($this->cache)
-		{
-			$this->cache->put('_cron_tasks', $task_names, 3600);
-		}
-
-		return $task_names;
-	}
-
-	/**
-	* Checks whether $name is a valid identifier, and
-	* therefore part of valid cron task class name.
-	*
-	* @param string $name		Name to check
-	*
-	* @return bool
-	*/
-	public function is_valid_name($name)
-	{
-		return (bool) preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $name);
+		$this->load_tasks($tasks);
 	}
 
 	/**
 	* Loads tasks given by name, wraps them
 	* and puts them into $this->tasks.
 	*
-	* @param array $task_names		Array of strings
+	* @param array|Traversable $tasks		Array of instances of phpbb_cron_task
 	*
 	* @return void
 	*/
-	public function load_tasks(array $task_names)
+	public function load_tasks($tasks)
 	{
-		foreach ($task_names as $task_name)
+		foreach ($tasks as $task)
 		{
-			$task = new $task_name();
-			$wrapper = new phpbb_cron_task_wrapper($task);
-			$this->tasks[] = $wrapper;
+			$this->tasks[] = $this->wrap_task($task);
 		}
 	}
 
@@ -227,25 +126,13 @@ class phpbb_cron_manager
 	}
 
 	/**
-	* Creates an instance of parametrized cron task $name with args $args.
-	* The constructed task is wrapped with cron task wrapper before being returned.
+	* Wraps a task inside an instance of phpbb_cron_task_wrapper.
 	*
-	* @param string $name		The task name, which is the same as cron task class name.
-	* @param array $args		Will be passed to the task class's constructor.
-	*
-	* @return phpbb_cron_task_wrapper|null
+	* @param  phpbb_cron_task 			$task The task.
+	* @return phpbb_cron_task_wrapper	The wrapped task.
 	*/
-	public function instantiate_task($name, array $args)
+	public function wrap_task(phpbb_cron_task $task)
 	{
-		$task = $this->find_task($name);
-		if ($task)
-		{
-			// task here is actually an instance of cron task wrapper
-			$class = $task->get_name();
-			$task = new $class($args);
-			// need to wrap the new task too
-			$task = new phpbb_cron_task_wrapper($task);
-		}
-		return $task;
+		return new phpbb_cron_task_wrapper($task, $this->phpbb_root_path, $this->php_ext);
 	}
 }

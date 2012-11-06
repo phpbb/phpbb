@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -61,11 +60,6 @@ $submit = (isset($_POST['submit'])) ? true : false;
 $default_key = 'c';
 $sort_key = request_var('sk', $default_key);
 $sort_dir = request_var('sd', 'a');
-
-
-// Grab rank information for later
-$ranks = $cache->obtain_ranks();
-
 
 // What do you want to do today? ... oops, I think that line is taken ...
 switch ($mode)
@@ -229,7 +223,7 @@ switch ($mode)
 					if (isset($user_ary[$user_id]))
 					{
 						$row = $user_ary[$user_id];
-						if (!$config['teampage_multiple'] && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['group_teampage'])
+						if ($config['teampage_memberships'] == 1 && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['group_teampage'])
 						{
 							// Display users in their primary group, instead of the first group, when it is displayed on the teampage.
 							continue;
@@ -259,7 +253,7 @@ switch ($mode)
 							'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
 						));
 
-						if (!$config['teampage_multiple'])
+						if ($config['teampage_memberships'] != 2)
 						{
 							unset($user_ary[$user_id]);
 						}
@@ -572,14 +566,34 @@ switch ($mode)
 			$module->list_modules('ucp');
 			$module->list_modules('mcp');
 
-			$user_notes_enabled = ($module->loaded('notes', 'user_notes')) ? true : false;
-			$warn_user_enabled = ($module->loaded('warn', 'warn_user')) ? true : false;
-			$zebra_enabled = ($module->loaded('zebra')) ? true : false;
-			$friends_enabled = ($module->loaded('zebra', 'friends')) ? true : false;
-			$foes_enabled = ($module->loaded('zebra', 'foes')) ? true : false;
+			$user_notes_enabled = ($module->loaded('mcp_notes', 'user_notes')) ? true : false;
+			$warn_user_enabled = ($module->loaded('mcp_warn', 'warn_user')) ? true : false;
+			$zebra_enabled = ($module->loaded('ucp_zebra')) ? true : false;
+			$friends_enabled = ($module->loaded('ucp_zebra', 'friends')) ? true : false;
+			$foes_enabled = ($module->loaded('ucp_zebra', 'foes')) ? true : false;
 
 			unset($module);
 		}
+
+		/**
+		* Modify user data before we display the profile
+		*
+		* @event core.memberlist_view_profile
+		* @var	array	member					Title of the index page
+		* @var	bool	user_notes_enabled		Is the mcp user notes module
+		*										enabled?
+		* @var	bool	warn_user_enabled		Is the mcp warnings module
+		*										enabled?
+		* @var	bool	zebra_enabled			Is the ucp zebra module
+		*										enabled?
+		* @var	bool	friends_enabled			Is the ucp friends module
+		*										enabled?
+		* @var	bool	foes_enabled			Is the ucp foes module
+		*										enabled?
+		* @since 3.1-A1
+		*/
+		$vars = array('member', 'user_notes_enabled', 'warn_user_enabled', 'zebra_enabled', 'friends_enabled', 'foes_enabled');
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_view_profile', compact($vars)));
 
 		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
 
@@ -612,8 +626,8 @@ switch ($mode)
 		$template->assign_vars(array(
 			'L_POSTS_IN_QUEUE'	=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
 
-			'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
-			'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
+			'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
+			'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
 
 			'OCCUPATION'	=> (!empty($member['user_occ'])) ? censor_text($member['user_occ']) : '',
 			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',
@@ -906,10 +920,7 @@ switch ($mode)
 						$notify_type = NOTIFY_EMAIL;
 					}
 
-					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+					$messenger->anti_abuse_headers($config, $user);
 
 					$messenger->assign_vars(array(
 						'BOARD_CONTACT'	=> $config['board_contact'],
@@ -1226,21 +1237,16 @@ switch ($mode)
 			// Misusing the avatar function for displaying group avatars...
 			$avatar_img = get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR');
 
+			// ... same for group rank
 			$rank_title = $rank_img = $rank_img_src = '';
 			if ($group_row['group_rank'])
 			{
-				if (isset($ranks['special'][$group_row['group_rank']]))
+				get_user_rank($group_row['group_rank'], false, $rank_title, $rank_img, $rank_img_src);
+
+				if ($rank_img)
 				{
-					$rank_title = $ranks['special'][$group_row['group_rank']]['rank_title'];
+					$rank_img .= '<br />';
 				}
-				$rank_img = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] . '" alt="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" title="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" /><br />' : '';
-				$rank_img_src = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] : '';
-			}
-			else
-			{
-				$rank_title = '';
-				$rank_img = '';
-				$rank_img_src = '';
 			}
 
 			$template->assign_vars(array(
@@ -1295,13 +1301,6 @@ switch ($mode)
 			$total_users = $config['num_users'];
 		}
 
-		$s_char_options = '<option value=""' . ((!$first_char) ? ' selected="selected"' : '') . '>&nbsp; &nbsp;</option>';
-		for ($i = 97; $i < 123; $i++)
-		{
-			$s_char_options .= '<option value="' . chr($i) . '"' . (($first_char == chr($i)) ? ' selected="selected"' : '') . '>' . chr($i-32) . '</option>';
-		}
-		$s_char_options .= '<option value="other"' . (($first_char == 'other') ? ' selected="selected"' : '') . '>' . $user->lang['OTHER'] . '</option>';
-
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
 
@@ -1331,6 +1330,7 @@ switch ($mode)
 			'first_char'	=> array('first_char', ''),
 		);
 
+		$u_first_char_params = array();
 		foreach ($check_params as $key => $call)
 		{
 			if (!isset($_REQUEST[$key]))
@@ -1342,6 +1342,10 @@ switch ($mode)
 			$param = urlencode($key) . '=' . ((is_string($param)) ? urlencode($param) : $param);
 			$params[] = $param;
 
+			if ($key != 'first_char')
+			{
+				$u_first_char_params[] = $param;
+			}
 			if ($key != 'sk' && $key != 'sd')
 			{
 				$sort_params[] = $param;
@@ -1353,6 +1357,7 @@ switch ($mode)
 		if ($mode)
 		{
 			$params[] = "mode=$mode";
+			$u_first_char_params[] = "mode=$mode";
 		}
 		$sort_params[] = "mode=$mode";
 
@@ -1360,6 +1365,27 @@ switch ($mode)
 		$sort_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", implode('&amp;', $sort_params));
 
 		unset($search_params, $sort_params);
+
+		$u_first_char_params = implode('&amp;', $u_first_char_params);
+		$u_first_char_params .= ($u_first_char_params) ? '&amp;' : '';
+
+		$first_characters = array();
+		$first_characters[''] = $user->lang['ALL'];
+		for ($i = 97; $i < 123; $i++)
+		{
+			$first_characters[chr($i)] = chr($i - 32);
+		}
+		$first_characters['other'] = $user->lang['OTHER'];
+
+		foreach ($first_characters as $char => $desc)
+		{
+			$template->assign_block_vars('first_char', array(
+				'DESC'			=> $desc,
+				'VALUE'			=> $char,
+				'S_SELECTED'	=> ($first_char == $char) ? true : false,
+				'U_SORT'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", $u_first_char_params . 'first_char=' . $char) . '#memberlist',
+			));
+		}
 
 		// Some search user specific data
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
@@ -1528,7 +1554,7 @@ switch ($mode)
 			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
 			{
 				$user_id = $user_list[$i];
-				$row =& $id_cache[$user_id];
+				$row = $id_cache[$user_id];
 				$is_leader = (isset($row['group_leader']) && $row['group_leader']) ? true : false;
 				$leaders_set = ($leaders_set || $is_leader);
 
@@ -1566,11 +1592,12 @@ switch ($mode)
 			}
 		}
 
+		phpbb_generate_template_pagination($template, $pagination_url, 'pagination', 'start', $total_users, $config['topics_per_page'], $start);
+
 		// Generate page
 		$template->assign_vars(array(
-			'PAGINATION'	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
-			'PAGE_NUMBER'	=> on_page($total_users, $config['topics_per_page'], $start),
-			'TOTAL_USERS'	=> ($total_users == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $total_users),
+			'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $pagination_url, $total_users, $config['topics_per_page'], $start),
+			'TOTAL_USERS'	=> $user->lang('LIST_USERS', (int) $total_users),
 
 			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang['PROFILE']),
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
@@ -1605,7 +1632,6 @@ switch ($mode)
 			'S_LEADERS_SET'		=> $leaders_set,
 			'S_MODE_SELECT'		=> $s_sort_key,
 			'S_ORDER_SELECT'	=> $s_sort_dir,
-			'S_CHAR_OPTIONS'	=> $s_char_options,
 			'S_MODE_ACTION'		=> $pagination_url)
 		);
 }
@@ -1625,7 +1651,7 @@ page_footer();
 */
 function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = false)
 {
-	global $config, $auth, $template, $user, $phpEx, $phpbb_root_path;
+	global $config, $auth, $template, $user, $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
 	$username = $data['username'];
 	$user_id = $data['user_id'];
@@ -1669,7 +1695,8 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 		if ($bday_year)
 		{
-			$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
+			$now = $user->create_datetime();
+			$now = phpbb_gmgetdate($now->getTimestamp() + $now->getOffset());
 
 			$diff = $now['mon'] - $bday_month;
 			if ($diff == 0)
@@ -1681,12 +1708,12 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 				$diff = ($diff < 0) ? 1 : 0;
 			}
 
-			$age = (int) ($now['year'] - $bday_year - $diff);
+			$age = max(0, (int) ($now['year'] - $bday_year - $diff));
 		}
 	}
 
 	// Dump it out to the template
-	return array(
+	$template_data = array(
 		'AGE'			=> $age,
 		'RANK_TITLE'	=> $rank_title,
 		'JOINED'		=> $user->format_date($data['user_regdate']),
@@ -1734,6 +1761,19 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
 	);
+
+	/**
+	* Preparing a user's data before displaying it in profile and memberlist
+	*
+	* @event core.memberlist_prepare_profile_data
+	* @var	array	data				Array with user's data
+	* @var	array	template_data		Template array with user's data
+	* @since 3.1-A1
+	*/
+	$vars = array('data', 'template_data');
+	extract($phpbb_dispatcher->trigger_event('core.memberlist_prepare_profile_data', compact($vars)));
+
+	return $template_data;
 }
 
 function _sort_last_active($first, $second)

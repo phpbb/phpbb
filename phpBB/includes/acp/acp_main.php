@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -25,7 +24,7 @@ class acp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $config, $db, $user, $auth, $template, $request;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		// Show restore permissions notice
@@ -130,6 +129,11 @@ class acp_main
 						set_config('record_online_users', 1, true);
 						set_config('record_online_date', time(), true);
 						add_log('admin', 'LOG_RESET_ONLINE');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('RESET_ONLINE_SUCCESS');
+						}
 					break;
 
 					case 'stats':
@@ -180,6 +184,11 @@ class acp_main
 						update_last_username();
 
 						add_log('admin', 'LOG_RESYNC_STATS');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('RESYNC_STATS_SUCCESS');
+						}
 					break;
 
 					case 'user':
@@ -201,7 +210,7 @@ class acp_main
 						// No maximum post id? :o
 						if (!$max_post_id)
 						{
-							$sql = 'SELECT MAX(post_id)
+							$sql = 'SELECT MAX(post_id) as max_post_id
 								FROM ' . POSTS_TABLE;
 							$result = $db->sql_query($sql);
 							$max_post_id = (int) $db->sql_fetchfield('max_post_id');
@@ -242,7 +251,11 @@ class acp_main
 						}
 
 						add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
-
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('RESYNC_POSTCOUNTS_SUCCESS');
+						}
 					break;
 
 					case 'date':
@@ -253,6 +266,11 @@ class acp_main
 
 						set_config('board_startdate', time() - 1);
 						add_log('admin', 'LOG_RESET_DATE');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('RESET_DATE_SUCCESS');
+						}
 					break;
 
 					case 'db_track':
@@ -328,14 +346,14 @@ class acp_main
 						}
 
 						add_log('admin', 'LOG_RESYNC_POST_MARKING');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('RESYNC_POST_MARKING_SUCCESS');
+						}
 					break;
 
 					case 'purge_cache':
-						if ((int) $user->data['user_type'] !== USER_FOUNDER)
-						{
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
-
 						global $cache;
 						$cache->purge();
 
@@ -344,6 +362,11 @@ class acp_main
 						cache_moderators();
 
 						add_log('admin', 'LOG_PURGE_CACHE');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('PURGE_CACHE_SUCCESS');
+						}
 					break;
 
 					case 'purge_sessions':
@@ -390,6 +413,11 @@ class acp_main
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_PURGE_SESSIONS');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('PURGE_SESSIONS_SUCCESS');
+						}
 					break;
 				}
 			}
@@ -398,11 +426,11 @@ class acp_main
 		// Version check
 		$user->add_lang('install');
 
-		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.2.0', '<'))
+		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.3.2', '<'))
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="http://www.phpbb.com/community/viewtopic.php?f=14&amp;t=1958605">', '</a>'),
+				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="http://www.phpbb.com/community/viewtopic.php?f=14&amp;t=2152375">', '</a>'),
 			));
 		}
 
@@ -415,11 +443,8 @@ class acp_main
 		{
 			$latest_version_info = explode("\n", $latest_version_info);
 
-			$latest_version = str_replace('rc', 'RC', strtolower(trim($latest_version_info[0])));
-			$current_version = str_replace('rc', 'RC', strtolower($config['version']));
-
 			$template->assign_vars(array(
-				'S_VERSION_UP_TO_DATE'	=> version_compare($current_version, $latest_version, '<') ? false : true,
+				'S_VERSION_UP_TO_DATE'	=> phpbb_version_compare(trim($latest_version_info[0]), $config['version'], '<='),
 			));
 		}
 
@@ -521,7 +546,7 @@ class acp_main
 			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
 			'U_INACTIVE_USERS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=inactive&amp;mode=list'),
 			'U_VERSIONCHECK'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=update&amp;mode=version_check'),
-			'U_VERSIONCHECK_FORCE'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=1&amp;versioncheck_force=1'),
+			'U_VERSIONCHECK_FORCE'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'versioncheck_force=1'),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
 			'S_FOUNDER'			=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
@@ -601,6 +626,17 @@ class acp_main
 		{
 			// World-Writable? (000x)
 			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));
+		}
+
+		if (extension_loaded('mbstring'))
+		{
+			$template->assign_vars(array(
+				'S_MBSTRING_LOADED'						=> true,
+				'S_MBSTRING_FUNC_OVERLOAD_FAIL'			=> (intval(@ini_get('mbstring.func_overload')) & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
+				'S_MBSTRING_ENCODING_TRANSLATION_FAIL'	=> (@ini_get('mbstring.encoding_translation') != 0),
+				'S_MBSTRING_HTTP_INPUT_FAIL'			=> (@ini_get('mbstring.http_input') != 'pass'),
+				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> (@ini_get('mbstring.http_output') != 'pass'),
+			));
 		}
 
 		// Fill dbms version if not yet filled

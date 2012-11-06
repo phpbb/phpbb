@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -79,7 +78,7 @@ function mcp_front_view($id, $mode, $action)
 
 			if ($total)
 			{
-				$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.username, u.username_clean, u.user_colour, t.topic_id, t.topic_title, t.topic_first_post_id, p.forum_id
+				$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.post_attachment, p.poster_id, p.post_username, u.username, u.username_clean, u.user_colour, t.topic_id, t.topic_title, t.topic_first_post_id, p.forum_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 					WHERE ' . $db->sql_in_set('p.post_id', $post_list) . '
 						AND t.topic_id = p.topic_id
@@ -105,8 +104,9 @@ function mcp_front_view($id, $mode, $action)
 						'POST_ID'		=> $row['post_id'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
 						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
-						'POST_TIME'		=> $user->format_date($row['post_time']))
-					);
+						'POST_TIME'		=> $user->format_date($row['post_time']),
+						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					));
 				}
 				$db->sql_freeresult($result);
 			}
@@ -118,22 +118,9 @@ function mcp_front_view($id, $mode, $action)
 			$template->assign_vars(array(
 				'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 				'S_MCP_QUEUE_ACTION'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue"),
+				'L_UNAPPROVED_TOTAL'	=> $user->lang('UNAPPROVED_POSTS_TOTAL', (int) $total),
+				'S_HAS_UNAPPROVED_POSTS'=> ($total != 0),
 			));
-
-			if ($total == 0)
-			{
-				$template->assign_vars(array(
-					'L_UNAPPROVED_TOTAL'		=> $user->lang['UNAPPROVED_POSTS_ZERO_TOTAL'],
-					'S_HAS_UNAPPROVED_POSTS'	=> false)
-				);
-			}
-			else
-			{
-				$template->assign_vars(array(
-					'L_UNAPPROVED_TOTAL'		=> ($total == 1) ? $user->lang['UNAPPROVED_POST_TOTAL'] : sprintf($user->lang['UNAPPROVED_POSTS_TOTAL'], $total),
-					'S_HAS_UNAPPROVED_POSTS'	=> true)
-				);
-			}
 		}
 	}
 
@@ -158,22 +145,22 @@ function mcp_front_view($id, $mode, $action)
 
 			if ($total)
 			{
-				$sql = $db->sql_build_query('SELECT', array(
-					'SELECT'	=> 'r.report_time, p.post_id, p.post_subject, p.post_time, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
+				$sql_ary = array(
+					'SELECT'	=> 'r.report_time, p.post_id, p.post_subject, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
 
 					'FROM'		=> array(
 						REPORTS_TABLE			=> 'r',
 						REPORTS_REASONS_TABLE	=> 'rr',
 						TOPICS_TABLE			=> 't',
 						USERS_TABLE				=> array('u', 'u2'),
-						POSTS_TABLE				=> 'p'
+						POSTS_TABLE				=> 'p',
 					),
 
 					'LEFT_JOIN'	=> array(
 						array(
 							'FROM'	=> array(FORUMS_TABLE => 'f'),
-							'ON'	=> 'f.forum_id = p.forum_id'
-						)
+							'ON'	=> 'f.forum_id = p.forum_id',
+						),
 					),
 
 					'WHERE'		=> 'r.post_id = p.post_id
@@ -185,8 +172,9 @@ function mcp_front_view($id, $mode, $action)
 						AND p.poster_id = u2.user_id
 						AND ' . $db->sql_in_set('p.forum_id', $forum_list),
 
-					'ORDER_BY'	=> 'p.post_time DESC'
-				));
+					'ORDER_BY'	=> 'p.post_time DESC',
+				);
+				$sql = $db->sql_build_query('SELECT', $sql_ary);
 				$result = $db->sql_query_limit($sql, 5);
 
 				while ($row = $db->sql_fetchrow($result))
@@ -213,24 +201,15 @@ function mcp_front_view($id, $mode, $action)
 						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'REPORT_TIME'	=> $user->format_date($row['report_time']),
 						'POST_TIME'		=> $user->format_date($row['post_time']),
+						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 					));
 				}
 			}
 
-			if ($total == 0)
-			{
-				$template->assign_vars(array(
-					'L_REPORTS_TOTAL'	=>	$user->lang['REPORTS_ZERO_TOTAL'],
-					'S_HAS_REPORTS'		=>	false)
-				);
-			}
-			else
-			{
-				$template->assign_vars(array(
-					'L_REPORTS_TOTAL'	=> ($total == 1) ? $user->lang['REPORT_TOTAL'] : sprintf($user->lang['REPORTS_TOTAL'], $total),
-					'S_HAS_REPORTS'		=> true)
-				);
-			}
+			$template->assign_vars(array(
+				'L_REPORTS_TOTAL'	=> $user->lang('REPORTS_TOTAL', (int) $total),
+				'S_HAS_REPORTS'		=> ($total != 0),
+			));
 		}
 	}
 
@@ -253,14 +232,14 @@ function mcp_front_view($id, $mode, $action)
 		{
 			include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 
-			$sql = $db->sql_build_query('SELECT', array(
-				'SELECT'	=> 'r.report_id, r.report_time, p.msg_id, p.message_subject, p.message_time, p.to_address, p.bcc_address, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id',
+			$sql_ary = array(
+				'SELECT'	=> 'r.report_id, r.report_time, p.msg_id, p.message_subject, p.message_time, p.to_address, p.bcc_address, p.message_attachment, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id',
 
 				'FROM'		=> array(
 					REPORTS_TABLE			=> 'r',
 					REPORTS_REASONS_TABLE	=> 'rr',
 					USERS_TABLE				=> array('u', 'u2'),
-					PRIVMSGS_TABLE				=> 'p'
+					PRIVMSGS_TABLE				=> 'p',
 				),
 
 				'WHERE'		=> 'r.pm_id = p.msg_id
@@ -270,8 +249,9 @@ function mcp_front_view($id, $mode, $action)
 					AND r.user_id = u.user_id
 					AND p.author_id = u2.user_id',
 
-				'ORDER_BY'	=> 'p.message_time DESC'
-			));
+				'ORDER_BY'	=> 'p.message_time DESC',
+			);
+			$sql = $db->sql_build_query('SELECT', $sql_ary);
 			$result = $db->sql_query_limit($sql, 5);
 
 			$pm_by_id = $pm_list = array();
@@ -304,24 +284,15 @@ function mcp_front_view($id, $mode, $action)
 					'REPORT_TIME'		=> $user->format_date($row['report_time']),
 					'PM_TIME'			=> $user->format_date($row['message_time']),
 					'RECIPIENTS'		=> implode(', ', $address_list[$row['msg_id']]),
+					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 				));
 			}
 		}
 
-		if ($total == 0)
-		{
-			$template->assign_vars(array(
-				'L_PM_REPORTS_TOTAL'	=>	$user->lang['PM_REPORTS_ZERO_TOTAL'],
-				'S_HAS_PM_REPORTS'		=>	false)
-			);
-		}
-		else
-		{
-			$template->assign_vars(array(
-				'L_PM_REPORTS_TOTAL'	=> ($total == 1) ? $user->lang['PM_REPORT_TOTAL'] : sprintf($user->lang['PM_REPORTS_TOTAL'], $total),
-				'S_HAS_PM_REPORTS'		=> true)
-			);
-		}
+		$template->assign_vars(array(
+			'L_PM_REPORTS_TOTAL'	=> $user->lang('PM_REPORTS_TOTAL', (int) $total),
+			'S_HAS_PM_REPORTS'		=> ($total != 0),
+		));
 	}
 
 	// Latest 5 logs

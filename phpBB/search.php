@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -73,7 +72,7 @@ switch ($search_id)
 			login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
 		}
 	break;
-	
+
 	// The "new posts" search uses user_lastvisit which is user based, so it should require user to log in.
 	case 'newposts':
 		if ($user->data['user_id'] == ANONYMOUS)
@@ -81,7 +80,7 @@ switch ($search_id)
 			login_box('', $user->lang['LOGIN_EXPLAIN_NEWPOSTS']);
 		}
 	break;
-	
+
 	default:
 		// There's nothing to do here for now ;)
 	break;
@@ -136,7 +135,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	{
 		if ((strpos($author, '*') !== false) && (utf8_strlen(str_replace(array('*', '%'), '', $author)) < $config['min_search_author_chars']))
 		{
-			trigger_error(sprintf($user->lang['TOO_FEW_AUTHOR_CHARS'], $config['min_search_author_chars']));
+			trigger_error($user->lang('TOO_FEW_AUTHOR_CHARS', (int) $config['min_search_author_chars']));
 		}
 
 		$sql_where = (strpos($author, '*') !== false) ? ' username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($author))) : " username_clean = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
@@ -273,32 +272,39 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// Select which method we'll use to obtain the post_id or topic_id information
-	$search_type = basename($config['search_type']);
+	$search_type = $config['search_type'];
 
-	if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	if (!class_exists($search_type))
 	{
 		trigger_error('NO_SUCH_SEARCH_MODULE');
 	}
-
-	require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
-
 	// We do some additional checks in the module to ensure it can actually be utilised
 	$error = false;
-	$search = new $search_type($error);
+	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 	if ($error)
 	{
 		trigger_error($error);
 	}
 
+	$common_words = $search->get_common_words();
+
 	// let the search module split up the keywords
 	if ($keywords)
 	{
 		$correct_query = $search->split_keywords($keywords, $search_terms);
-		if (!$correct_query || (empty($search->search_query) && !sizeof($author_id_ary) && !$search_id))
+		if (!$correct_query || (!$search->get_search_query() && !sizeof($author_id_ary) && !$search_id))
 		{
-			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $search->common_words)) . '<br />' : '';
-			trigger_error($ignored . sprintf($user->lang['NO_KEYWORDS'], $search->word_length['min'], $search->word_length['max']));
+			$ignored = (sizeof($common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $common_words)) . '<br />' : '';
+			$word_length = $search->get_word_length();
+			if ($word_length)
+			{
+				trigger_error($ignored . $user->lang('NO_KEYWORDS', $user->lang('CHARACTERS', (int) $word_length['min']), $user->lang('CHARACTERS', (int) $word_length['max'])));
+			}
+			else
+			{
+				trigger_error($ignored);
+			}
 		}
 	}
 
@@ -469,32 +475,59 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$per_page = ($show_results == 'posts') ? $config['posts_per_page'] : $config['topics_per_page'];
 	$total_match_count = 0;
 
+	// Set limit for the $total_match_count to reduce server load
+	$total_matches_limit = 1000;
+	$found_more_search_matches = false;
+
 	if ($search_id)
 	{
 		if ($sql)
 		{
-			// only return up to 1000 ids (the last one will be removed later)
-			$result = $db->sql_query_limit($sql, 1001 - $start, $start);
+			// Only return up to $total_matches_limit+1 ids (the last one will be removed later)
+			$result = $db->sql_query_limit($sql, $total_matches_limit + 1);
 
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$id_ary[] = (int) $row[$field];
 			}
 			$db->sql_freeresult($result);
-
-			$total_match_count = sizeof($id_ary) + $start;
-			$id_ary = array_slice($id_ary, 0, $per_page);
 		}
 		else if ($search_id == 'unreadposts')
 		{
-			$id_ary = array_keys(get_unread_topics($user->data['user_id'], $sql_where, $sql_sort, 1001 - $start, $start));
-
-			$total_match_count = sizeof($id_ary) + $start;
-			$id_ary = array_slice($id_ary, 0, $per_page);
+			// Only return up to $total_matches_limit+1 ids (the last one will be removed later)
+			$id_ary = array_keys(get_unread_topics($user->data['user_id'], $sql_where, $sql_sort, $total_matches_limit + 1));
 		}
 		else
 		{
 			$search_id = '';
+		}
+
+		$total_match_count = sizeof($id_ary);
+		if ($total_match_count)
+		{
+			// Limit the number to $total_matches_limit for pre-made searches
+			if ($total_match_count > $total_matches_limit)
+			{
+				$found_more_search_matches = true;
+				$total_match_count = $total_matches_limit;
+			}
+
+			// Make sure $start is set to the last page if it exceeds the amount
+			if ($start < 0)
+			{
+				$start = 0;
+			}
+			else if ($start >= $total_match_count)
+			{
+				$start = floor(($total_match_count - 1) / $per_page) * $per_page;
+			}
+
+			$id_ary = array_slice($id_ary, $start, $per_page);
+		}
+		else
+		{
+			// Set $start to 0 if no matches were found
+			$start = 0;
 		}
 	}
 
@@ -503,7 +536,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	sort($m_approve_fid_ary);
 	sort($author_id_ary);
 
-	if (!empty($search->search_query))
+	if ($search->get_search_query())
 	{
 		$total_match_count = $search->keyword_search($show_results, $search_fields, $search_terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page);
 	}
@@ -543,15 +576,13 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$icons = $cache->obtain_icons();
 
 	// Output header
-	if ($search_id && ($total_match_count > 1000))
+	if ($found_more_search_matches)
 	{
-		// limit the number to 1000 for pre-made searches
-		$total_match_count--;
-		$l_search_matches = sprintf($user->lang['FOUND_MORE_SEARCH_MATCHES'], $total_match_count);
+		$l_search_matches = $user->lang('FOUND_MORE_SEARCH_MATCHES', (int) $total_match_count);
 	}
 	else
 	{
-		$l_search_matches = ($total_match_count == 1) ? sprintf($user->lang['FOUND_SEARCH_MATCH'], $total_match_count) : sprintf($user->lang['FOUND_SEARCH_MATCHES'], $total_match_count);
+		$l_search_matches = $user->lang('FOUND_SEARCH_MATCHES', (int) $total_match_count);
 	}
 
 	// define some vars for urls
@@ -575,13 +606,25 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
 	$u_search .= ($return_chars != 300) ? '&amp;ch=' . $return_chars : '';
 
+	// Check if search backend supports phrase search or not
+	$phrase_search_disabled = '';
+	if (strpos(html_entity_decode($keywords), '"') !== false && method_exists($search, 'supports_phrase_search'))
+	{
+		$phrase_search_disabled = $search->supports_phrase_search() ? false : true;
+	}
+
+	phpbb_generate_template_pagination($template, $u_search, 'pagination', 'start', $total_match_count, $per_page, $start);
+
 	$template->assign_vars(array(
 		'SEARCH_TITLE'		=> $l_search_title,
 		'SEARCH_MATCHES'	=> $l_search_matches,
-		'SEARCH_WORDS'		=> $search->search_query,
-		'IGNORED_WORDS'		=> (sizeof($search->common_words)) ? implode(' ', $search->common_words) : '',
-		'PAGINATION'		=> generate_pagination($u_search, $total_match_count, $per_page, $start),
-		'PAGE_NUMBER'		=> on_page($total_match_count, $per_page, $start),
+		'SEARCH_WORDS'		=> $keywords,
+		'SEARCHED_QUERY'	=> $search->get_search_query(),
+		'IGNORED_WORDS'		=> (sizeof($common_words)) ? implode(' ', $common_words) : '',
+		'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $u_search, $total_match_count, $per_page, $start),
+
+		'PHRASE_SEARCH_DISABLED'		=> $phrase_search_disabled,
+
 		'TOTAL_MATCHES'		=> $total_match_count,
 		'SEARCH_IN_RESULTS'	=> ($search_id) ? false : true,
 
@@ -867,15 +910,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 					'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 
-					'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
 					'TOPIC_TYPE'		=> $topic_type,
 
 					'TOPIC_IMG_STYLE'		=> $folder_img,
 					'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-					'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 					'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
-					'TOPIC_FOLDER_IMG_WIDTH'=> $user->img($folder_img, '', false, '', 'width'),
-					'TOPIC_FOLDER_IMG_HEIGHT'	=> $user->img($folder_img, '', false, '', 'height'),
 
 					'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 					'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
@@ -974,6 +1013,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '')
 			));
+
+			if ($show_results == 'topics')
+			{
+				phpbb_generate_template_pagination($template, $view_topic_url, 'searchresults.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
+			}
 		}
 
 		if ($topic_id && ($topic_id == $result_topic_id))

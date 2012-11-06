@@ -3,7 +3,7 @@
 *
 * @package acm
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -321,50 +321,34 @@ class phpbb_cache_service
 	/**
 	* Obtain cfg file data
 	*/
-	function obtain_cfg_items($theme)
+	function obtain_cfg_items($style)
 	{
 		global $config, $phpbb_root_path;
 
-		$parsed_items = array(
-			'theme'		=> array(),
-			'template'	=> array(),
-			'imageset'	=> array()
-		);
+		$parsed_array = $this->driver->get('_cfg_' . $style['style_path']);
 
-		foreach ($parsed_items as $key => $parsed_array)
+		if ($parsed_array === false)
 		{
-			$parsed_array = $this->driver->get('_cfg_' . $key . '_' . $theme[$key . '_path']);
-
-			if ($parsed_array === false)
-			{
-				$parsed_array = array();
-			}
-
-			$reparse = false;
-			$filename = $phpbb_root_path . 'styles/' . $theme[$key . '_path'] . '/' . $key . '/' . $key . '.cfg';
-
-			if (!file_exists($filename))
-			{
-				continue;
-			}
-
-			if (!isset($parsed_array['filetime']) || (($config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
-			{
-				$reparse = true;
-			}
-
-			// Re-parse cfg file
-			if ($reparse)
-			{
-				$parsed_array = parse_cfg_file($filename);
-				$parsed_array['filetime'] = @filemtime($filename);
-
-				$this->driver->put('_cfg_' . $key . '_' . $theme[$key . '_path'], $parsed_array);
-			}
-			$parsed_items[$key] = $parsed_array;
+			$parsed_array = array();
 		}
 
-		return $parsed_items;
+		$filename = $phpbb_root_path . 'styles/' . $style['style_path'] . '/style.cfg';
+
+		if (!file_exists($filename))
+		{
+			return $parsed_array;
+		}
+
+		if (!isset($parsed_array['filetime']) || (($config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
+		{
+			// Re-parse cfg file
+			$parsed_array = parse_cfg_file($filename);
+			$parsed_array['filetime'] = @filemtime($filename);
+
+			$this->driver->put('_cfg_' . $style['style_path'], $parsed_array);
+		}
+
+		return $parsed_array;
 	}
 
 	/**

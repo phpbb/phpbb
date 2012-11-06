@@ -1,19 +1,13 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : create_variable_overview.php
-// STARTED   : Fri Aug 15 2003
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
-
-/*
-	This script generates an index of some template vars and their use within the templates.
-	It writes down all language variables used by various templates.
+/**
+*
+* @package phpBB3
+* @copyright (c) 2003 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+* This script generates an index of some template vars and their use within the templates.
+* It writes down all language variables used by various templates.
+*
 */
 
 //
@@ -44,7 +38,7 @@ fwrite($fp, $contents);
 fclose($fp);
 
 $html_skeleton = '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="subSilver.css" type="text/css">
@@ -83,7 +77,7 @@ $html_skeleton .= '<br><br><a name="ref"></a><b>References: </b>{SEE_FILES}';
 
 $html_skeleton .= '
 <br><br>
-<div class="copyright" align="center">Powered by phpBB 2.2 &copy; <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a>, 2003</div>
+<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group</div>
 
 		<br clear="all" /></td>
 	</tr>
@@ -362,7 +356,7 @@ echo '<br>Store Files';
 $fp = fopen($store_dir . 'index.html', 'w');
 
 $html_data = '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="subSilver.css" type="text/css">
@@ -405,7 +399,7 @@ $html_data .= '<br><li><a href="./lang_index.html" class="gen">Appendix A: Langu
 
 $html_data .= '
 </ol><br><br>
-<div class="copyright" align="center">Powered by phpBB 2.2 &copy; <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a>, 2003</div>
+<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group</div>
 
 		<br clear="all" /></td>
 	</tr>
@@ -427,7 +421,7 @@ fwrite($common_fp, "<?php\n\n \$lang = array(\n");
 $fp = fopen($store_dir . 'lang_index.html', 'w');
 
 $html_data = '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="subSilver.css" type="text/css">
@@ -528,7 +522,7 @@ foreach ($lang_fp as $filepointer)
 
 $html_data .= '
 <br><br>
-<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a> &copy; phpBB Group</div>
+<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group</div>
 
 		<br clear="all" /></td>
 	</tr>

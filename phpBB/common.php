@@ -2,12 +2,15 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
-* Minimum Requirement: PHP 4.3.3
+* Minimum Requirement: PHP 5.3.2
 */
+
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
 */
@@ -16,107 +19,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-$starttime = explode(' ', microtime());
-$starttime = $starttime[1] + $starttime[0];
-
-// Report all errors, except notices and deprecation messages
-if (!defined('E_DEPRECATED'))
-{
-	define('E_DEPRECATED', 8192);
-}
-error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
-
-/*
-* Remove variables created by register_globals from the global scope
-* Thanks to Matt Kavanagh
-*/
-function deregister_globals()
-{
-	$not_unset = array(
-		'GLOBALS'	=> true,
-		'_GET'		=> true,
-		'_POST'		=> true,
-		'_COOKIE'	=> true,
-		'_REQUEST'	=> true,
-		'_SERVER'	=> true,
-		'_SESSION'	=> true,
-		'_ENV'		=> true,
-		'_FILES'	=> true,
-		'phpEx'		=> true,
-		'phpbb_root_path'	=> true
-	);
-
-	// Not only will array_merge and array_keys give a warning if
-	// a parameter is not an array, array_merge will actually fail.
-	// So we check if _SESSION has been initialised.
-	if (!isset($_SESSION) || !is_array($_SESSION))
-	{
-		$_SESSION = array();
-	}
-
-	// Merge all into one extremely huge array; unset this later
-	$input = array_merge(
-		array_keys($_GET),
-		array_keys($_POST),
-		array_keys($_COOKIE),
-		array_keys($_SERVER),
-		array_keys($_SESSION),
-		array_keys($_ENV),
-		array_keys($_FILES)
-	);
-
-	foreach ($input as $varname)
-	{
-		if (isset($not_unset[$varname]))
-		{
-			// Hacking attempt. No point in continuing unless it's a COOKIE
-			if ($varname !== 'GLOBALS' || isset($_GET['GLOBALS']) || isset($_POST['GLOBALS']) || isset($_SERVER['GLOBALS']) || isset($_SESSION['GLOBALS']) || isset($_ENV['GLOBALS']) || isset($_FILES['GLOBALS']))
-			{
-				exit;
-			}
-			else
-			{
-				$cookie = &$_COOKIE;
-				while (isset($cookie['GLOBALS']))
-				{
-					foreach ($cookie['GLOBALS'] as $registered_var => $value)
-					{
-						if (!isset($not_unset[$registered_var]))
-						{
-							unset($GLOBALS[$registered_var]);
-						}
-					}
-					$cookie = &$cookie['GLOBALS'];
-				}
-			}
-		}
-
-		unset($GLOBALS[$varname]);
-	}
-
-	unset($input);
-}
-
-// If we are on PHP >= 6.0.0 we do not need some code
-if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
-{
-	/**
-	* @ignore
-	*/
-	define('STRIP', false);
-}
-else
-{
-	@set_magic_quotes_runtime(0);
-
-	// Be paranoid with passed vars
-	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on' || !function_exists('ini_get'))
-	{
-		deregister_globals();
-	}
-
-	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
-}
+require($phpbb_root_path . 'includes/startup.' . $phpEx);
 
 if (file_exists($phpbb_root_path . 'config.' . $phpEx))
 {
@@ -126,6 +29,8 @@ if (file_exists($phpbb_root_path . 'config.' . $phpEx))
 if (!defined('PHPBB_INSTALLED'))
 {
 	// Redirect the user to the installer
+	require($phpbb_root_path . 'includes/functions.' . $phpEx);
+
 	// We have to generate a full HTTP/1.1 header here since we can't guarantee to have any of the information
 	// available as used by the redirect function
 	$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
@@ -138,10 +43,13 @@ if (!defined('PHPBB_INSTALLED'))
 		$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
 	}
 
+	// $phpbb_root_path accounts for redirects from e.g. /adm
+	$script_path = trim(dirname($script_name)) . '/' . $phpbb_root_path . 'install/index.' . $phpEx;
 	// Replace any number of consecutive backslashes and/or slashes with a single slash
 	// (could happen on some proxy setups and/or Windows servers)
-	$script_path = trim(dirname($script_name)) . '/install/index.' . $phpEx;
 	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
+	// Eliminate . and .. from the path
+	$script_path = phpbb_clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 
@@ -159,15 +67,6 @@ if (!defined('PHPBB_INSTALLED'))
 	exit;
 }
 
-if (defined('DEBUG_EXTRA'))
-{
-	$base_memory_usage = 0;
-	if (function_exists('memory_get_usage'))
-	{
-		$base_memory_usage = memory_get_usage();
-	}
-}
-
 // Load Extensions
 // dl() is deprecated and disabled by default as of PHP 5.3.
 if (!empty($load_extensions) && function_exists('dl'))
@@ -182,53 +81,65 @@ if (!empty($load_extensions) && function_exists('dl'))
 
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-require($phpbb_root_path . 'includes/template.' . $phpEx);
-require($phpbb_root_path . 'includes/session.' . $phpEx);
-require($phpbb_root_path . 'includes/auth.' . $phpEx);
+require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
+require($phpbb_root_path . 'includes/di/processor/config.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+require($phpbb_root_path . 'includes/db/' . ltrim($dbms, 'dbal_') . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
+$phpbb_container = new ContainerBuilder();
+$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/config'));
+$loader->load('services.yml');
+
+$processor = new phpbb_di_processor_config($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx);
+$processor->process($phpbb_container);
+
 // Setup class loader first
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
-$class_loader->register();
+$phpbb_class_loader = $phpbb_container->get('class_loader');
+$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
 
 // set up caching
-$cache_factory = new phpbb_cache_factory($acm_type);
-$cache = $cache_factory->get_service();
-$class_loader->set_cache($cache->get_driver());
+$cache = $phpbb_container->get('cache');
 
 // Instantiate some basic classes
-$request	= new phpbb_request();
-$user		= new user();
-$auth		= new auth();
-$template	= new template();
-$db			= new $sql_db();
+$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+$request	= $phpbb_container->get('request');
+$user		= $phpbb_container->get('user');
+$auth		= $phpbb_container->get('auth');
+$db			= $phpbb_container->get('dbal.conn');
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
-// Connect to DB
-$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false);
-
-// We do not need this any longer, unset for safety purposes
-unset($dbpasswd);
-
 // Grab global variables, re-cache if necessary
-$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
+$config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
+// load extensions
+$phpbb_extension_manager = $phpbb_container->get('ext.manager');
+$phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
+
+$template = $phpbb_container->get('template');
+$phpbb_style = $phpbb_container->get('style');
+
+$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
+foreach ($ids as $id)
+{
+	$processor = $phpbb_container->get($id);
+	$processor->process($phpbb_container);
+}
+
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
-$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('phpbb_template', 'display')));
 
 foreach ($cache->obtain_hooks() as $hook)
 {
@@ -237,5 +148,20 @@ foreach ($cache->obtain_hooks() as $hook)
 
 if (!$config['use_system_cron'])
 {
-	$cron = new phpbb_cron_manager($phpbb_root_path . 'includes/cron/task', $phpEx, $cache->get_driver());
+	$cron = $phpbb_container->get('cron.manager');
 }
+
+/**
+* Main event which is triggered on every page
+*
+* You can use this event to load function files and initiate objects
+*
+* NOTE:	At this point the global session ($user) and permissions ($auth)
+*		do NOT exist yet. If you need to use the user object
+*		(f.e. to include language files) or need to check permissions,
+*		please use the core.user_setup event instead!
+*
+* @event core.common
+* @since 3.1-A1
+*/
+$phpbb_dispatcher->dispatch('core.common');

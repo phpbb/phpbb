@@ -1,10 +1,10 @@
 	<form id="list" method="post" action="{U_ACTION}">
 
-	<!-- IF PAGINATION -->
 	<div class="pagination">
-			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-	</div>
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->
 	<!-- ENDIF -->
+	</div>
 
 	<!-- IF .log -->
 	<table cellspacing="1">
@@ -44,11 +44,11 @@
 		<input class="button2" type="submit" value="{L_GO}" name="sort" />
 	</fieldset>
 	<hr />
-	<!-- IF PAGINATION -->
 	<div class="pagination">
-			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-	</div>
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->
 	<!-- ENDIF -->
+	</div>
 
 	<!-- IF S_CLEARLOGS -->
 		<fieldset class="quick">

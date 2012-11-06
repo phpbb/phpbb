@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -14,7 +13,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Helper functions for phpBB 2.0.x to phpBB 3.0.x conversion
+* Helper functions for phpBB 2.0.x to phpBB 3.1.x conversion
 */
 
 /**
@@ -94,6 +93,7 @@ function phpbb_insert_forums()
 	{
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' ON');
 		break;
 	}
@@ -291,6 +291,7 @@ function phpbb_insert_forums()
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' OFF');
 		break;
 
@@ -1727,6 +1728,7 @@ function phpbb_create_userconv_table()
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$map_dbms = 'mssql';
 		break;
 

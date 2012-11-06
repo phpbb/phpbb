@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -243,6 +242,15 @@ class acp_profile
 				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_PROFILE_FIELD_ACTIVATE', $field_ident);
+
+				if ($request->is_ajax())
+				{
+					$json_response = new phpbb_json_response();
+					$json_response->send(array(
+						'text'	=> $user->lang('DEACTIVATE'),
+					));
+				}
+
 				trigger_error($user->lang['PROFILE_FIELD_ACTIVATED'] . adm_back_link($this->u_action));
 
 			break;
@@ -267,7 +275,16 @@ class acp_profile
 				$field_ident = (string) $db->sql_fetchfield('field_ident');
 				$db->sql_freeresult($result);
 
+				if ($request->is_ajax())
+				{
+					$json_response = new phpbb_json_response();
+					$json_response->send(array(
+						'text'	=> $user->lang('ACTIVATE'),
+					));
+				}
+
 				add_log('admin', 'LOG_PROFILE_FIELD_DEACTIVATE', $field_ident);
+
 				trigger_error($user->lang['PROFILE_FIELD_DEACTIVATED'] . adm_back_link($this->u_action));
 
 			break;
@@ -366,10 +383,12 @@ class acp_profile
 					$field_row = array_merge($default_values[$field_type], array(
 						'field_ident'		=> str_replace(' ', '_', utf8_clean_string(request_var('field_ident', '', true))),
 						'field_required'	=> 0,
+						'field_show_novalue'=> 0,
 						'field_hide'		=> 0,
 						'field_show_profile'=> 0,
 						'field_no_view'		=> 0,
 						'field_show_on_reg'	=> 0,
+						'field_show_on_pm'	=> 0,
 						'field_show_on_vt'	=> 0,
 						'lang_name'			=> utf8_normalize_nfc(request_var('field_ident', '', true)),
 						'lang_explain'		=> '',
@@ -381,7 +400,7 @@ class acp_profile
 
 				// $exclude contains the data we gather in each step
 				$exclude = array(
-					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_vt', 'field_required', 'field_hide', 'field_show_profile', 'field_no_view'),
+					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_required', 'field_show_novalue', 'field_hide', 'field_show_profile', 'field_no_view'),
 					2	=> array('field_length', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value'),
 					3	=> array('l_lang_name', 'l_lang_explain', 'l_lang_default_value', 'l_lang_options')
 				);
@@ -406,7 +425,9 @@ class acp_profile
 				// Visibility Options...
 				$visibility_ary = array(
 					'field_required',
+					'field_show_novalue',
 					'field_show_on_reg',
+					'field_show_on_pm',
 					'field_show_on_vt',
 					'field_show_profile',
 					'field_hide',
@@ -507,11 +528,34 @@ class acp_profile
 							}
 						}
 					}
-					/* else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
+					else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
 					{
-						// Get the number of options if this key is 'field_maxlen'
-						$var = request_var('field_default_value', 0);
-					}*/
+						// 'field_length' == 1 defines radio buttons. Possible values are 1 or 2 only.
+						// 'field_length' == 2 defines checkbox. Possible values are 0 or 1 only.
+						// If we switch the type on step 2, we have to adjust field value.
+						// 1 is a common value for the checkbox and radio buttons.
+
+						// Adjust unchecked checkbox value.
+						// If we return or save settings from 2nd/3rd page
+						// and the checkbox is unchecked, set the value to 0.
+						if (isset($_REQUEST['step']) && !isset($_REQUEST[$key]))
+						{
+							$var = 0;
+						}
+
+						// If we switch to the checkbox type but former radio buttons value was 2,
+						// which is not the case for the checkbox, set it to 0 (unchecked).
+						if ($cp->vars['field_length'] == 2 && $var == 2)
+						{
+							$var = 0;
+						}
+						// If we switch to the radio buttons but the former checkbox value was 0,
+						// which is not the case for the radio buttons, set it to 0.
+						else if ($cp->vars['field_length'] == 1 && $var == 0)
+						{
+							$var = 2;
+						}
+					}
 					else if ($field_type == FIELD_INT && $key == 'field_default_value')
 					{
 						// Permit an empty string
@@ -679,6 +723,10 @@ class acp_profile
 						{
 							$_new_key_ary[$key] = utf8_normalize_nfc(request_var($key, array(array('')), true));
 						}
+						else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
+						{
+							$_new_key_ary[$key] =  request_var($key, $cp->vars[$key]);
+						}
 						else
 						{
 							if (!isset($_REQUEST[$key]))
@@ -733,7 +781,9 @@ class acp_profile
 						$template->assign_vars(array(
 							'S_STEP_ONE'		=> true,
 							'S_FIELD_REQUIRED'	=> ($cp->vars['field_required']) ? true : false,
+							'S_FIELD_SHOW_NOVALUE'=> ($cp->vars['field_show_novalue']) ? true : false,
 							'S_SHOW_ON_REG'		=> ($cp->vars['field_show_on_reg']) ? true : false,
+							'S_SHOW_ON_PM'		=> ($cp->vars['field_show_on_pm']) ? true : false,
 							'S_SHOW_ON_VT'		=> ($cp->vars['field_show_on_vt']) ? true : false,
 							'S_FIELD_HIDE'		=> ($cp->vars['field_hide']) ? true : false,
 							'S_SHOW_PROFILE'	=> ($cp->vars['field_show_profile']) ? true : false,
@@ -1049,7 +1099,9 @@ class acp_profile
 			'field_default_value'	=> $cp->vars['field_default_value'],
 			'field_validation'		=> $cp->vars['field_validation'],
 			'field_required'		=> $cp->vars['field_required'],
+			'field_show_novalue'	=> $cp->vars['field_show_novalue'],
 			'field_show_on_reg'		=> $cp->vars['field_show_on_reg'],
+			'field_show_on_pm'		=> $cp->vars['field_show_on_pm'],
 			'field_show_on_vt'		=> $cp->vars['field_show_on_vt'],
 			'field_hide'			=> $cp->vars['field_hide'],
 			'field_show_profile'	=> $cp->vars['field_show_profile'],

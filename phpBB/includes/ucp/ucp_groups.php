@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -194,47 +193,43 @@ class ucp_groups
 								if ($group_row[$group_id]['group_type'] == GROUP_FREE)
 								{
 									group_user_add($group_id, $user->data['user_id']);
-
-									$email_template = 'group_added';
 								}
 								else
 								{
 									group_user_add($group_id, $user->data['user_id'], false, false, false, 0, 1);
 
-									$email_template = 'group_request';
+									include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+									$messenger = new messenger();
+
+									$sql = 'SELECT u.username, u.username_clean, u.user_email, u.user_notify_type, u.user_jabber, u.user_lang
+										FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . " u
+										WHERE ug.user_id = u.user_id
+											AND ug.group_leader = 1
+											AND ug.group_id = $group_id";
+									$result = $db->sql_query($sql);
+
+									while ($row = $db->sql_fetchrow($result))
+									{
+										$messenger->template('group_request', $row['user_lang']);
+
+										$messenger->to($row['user_email'], $row['username']);
+										$messenger->im($row['user_jabber'], $row['username']);
+
+										$messenger->assign_vars(array(
+											'USERNAME'			=> htmlspecialchars_decode($row['username']),
+											'GROUP_NAME'		=> htmlspecialchars_decode($group_row[$group_id]['group_name']),
+											'REQUEST_USERNAME'	=> $user->data['username'],
+
+											'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=manage&action=list&g=$group_id",
+											'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&g=$group_id")
+										);
+
+										$messenger->send($row['user_notify_type']);
+									}
+									$db->sql_freeresult($result);
+
+									$messenger->save_queue();
 								}
-
-								include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-								$messenger = new messenger();
-
-								$sql = 'SELECT u.username, u.username_clean, u.user_email, u.user_notify_type, u.user_jabber, u.user_lang
-									FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
-									WHERE ug.user_id = u.user_id
-										AND ' . (($group_row[$group_id]['group_type'] == GROUP_FREE) ? "ug.user_id = {$user->data['user_id']}" : 'ug.group_leader = 1') . "
-										AND ug.group_id = $group_id";
-								$result = $db->sql_query($sql);
-
-								while ($row = $db->sql_fetchrow($result))
-								{
-									$messenger->template($email_template, $row['user_lang']);
-
-									$messenger->to($row['user_email'], $row['username']);
-									$messenger->im($row['user_jabber'], $row['username']);
-
-									$messenger->assign_vars(array(
-										'USERNAME'			=> htmlspecialchars_decode($row['username']),
-										'GROUP_NAME'		=> htmlspecialchars_decode($group_row[$group_id]['group_name']),
-										'REQUEST_USERNAME'	=> $user->data['username'],
-
-										'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=manage&action=list&g=$group_id",
-										'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&g=$group_id")
-									);
-
-									$messenger->send($row['user_notify_type']);
-								}
-								$db->sql_freeresult($result);
-
-								$messenger->save_queue();
 
 								add_log('user', $user->data['user_id'], 'LOG_USER_GROUP_JOIN' . (($group_row[$group_id]['group_type'] == GROUP_FREE) ? '' : '_PENDING'), $group_row[$group_id]['group_name']);
 
@@ -565,7 +560,7 @@ class ucp_groups
 								{
 									if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 									{
-										$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+										$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 									}
 								}
 
@@ -575,7 +570,7 @@ class ucp_groups
 									{
 										if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
 										{
-											$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+											$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 										}
 									}
 								}
@@ -736,7 +731,7 @@ class ucp_groups
 
 							'U_SWATCH'			=> append_sid("{$phpbb_root_path}adm/swatch.$phpEx", 'form=ucp&amp;name=group_colour'),
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;action=$action&amp;g=$group_id",
-							'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
+							'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 						));
 
 					break;
@@ -849,11 +844,13 @@ class ucp_groups
 							$s_action_options .= '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
 						}
 
+						$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
+						phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total_members, $config['topics_per_page'], $start);
+
 						$template->assign_vars(array(
 							'S_LIST'			=> true,
 							'S_ACTION_OPTIONS'	=> $s_action_options,
-							'S_ON_PAGE'			=> on_page($total_members, $config['topics_per_page'], $start),
-							'PAGINATION'		=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start),
+							'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $total_members, $config['topics_per_page'], $start),
 
 							'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;g=$group_id",
@@ -1072,7 +1069,8 @@ class ucp_groups
 								'mode'		=> $mode,
 								'action'	=> $action
 							);
-							confirm_box(false, sprintf($user->lang['GROUP_CONFIRM_ADD_USER' . ((sizeof($name_ary) == 1) ? '' : 'S')], implode(', ', $name_ary)), build_hidden_fields($s_hidden_fields));
+
+							confirm_box(false, $user->lang('GROUP_CONFIRM_ADD_USERS', sizeof($name_ary), implode($user->lang['COMMA_SEPARATOR'], $name_ary)), build_hidden_fields($s_hidden_fields));
 						}
 
 						trigger_error($user->lang['NO_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));

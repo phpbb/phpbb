@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -570,7 +569,7 @@ class install_convert extends module
 	*/
 	function convert_data($sub)
 	{
-		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache;
+		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache, $auth;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
 		global $request;
 
@@ -736,24 +735,22 @@ class install_convert extends module
 			$this->p_master->error(sprintf($user->lang['COULD_NOT_FIND_PATH'], $convert->options['forum_path']), __LINE__, __FILE__);
 		}
 
-		$search_type = basename(trim($config['search_type']));
+		$search_type = $config['search_type'];
 
 		// For conversions we are a bit less strict and set to a search backend we know exist...
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		if (!class_exists($search_type))
 		{
-			$search_type = 'fulltext_native';
+			$search_type = 'phpbb_search_fulltext_native';
 			set_config('search_type', $search_type);
 		}
 
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		if (!class_exists($search_type))
 		{
 			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
-		require($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx);
-
 		$error = false;
-		$convert->fulltext_search = new $search_type($error);
+		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		if ($error)
 		{
@@ -936,7 +933,7 @@ class install_convert extends module
 				}
 				else if (sizeof($missing_tables))
 				{
-					$this->p_master->error(sprintf($user->lang['TABLES_MISSING'], implode(', ', $missing_tables)) . '<br /><br />' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
+					$this->p_master->error(sprintf($user->lang['TABLES_MISSING'], implode($user->lang['COMMA_SEPARATOR'], $missing_tables)) . '<br /><br />' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
 				}
 
 				$url = $this->save_convert_progress('&amp;confirm=1');
@@ -1697,19 +1694,16 @@ class install_convert extends module
 
 			fix_empty_primary_groups();
 
-			if (!isset($config['board_startdate']))
-			{
-				$sql = 'SELECT MIN(user_regdate) AS board_startdate
-					FROM ' . USERS_TABLE;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+			$sql = 'SELECT MIN(user_regdate) AS board_startdate
+				FROM ' . USERS_TABLE;
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-				if (($row['board_startdate'] < $config['board_startdate'] && $row['board_startdate'] > 0) || !isset($config['board_startdate']))
-				{
-					set_config('board_startdate', $row['board_startdate']);
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_regdate = ' . $row['board_startdate'] . ' WHERE user_id = ' . ANONYMOUS);
-				}
+			if (!isset($config['board_startdate']) || ($row['board_startdate'] < $config['board_startdate'] && $row['board_startdate'] > 0))
+			{
+				set_config('board_startdate', $row['board_startdate']);
+				$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_regdate = ' . $row['board_startdate'] . ' WHERE user_id = ' . ANONYMOUS);
 			}
 
 			update_dynamic_config();

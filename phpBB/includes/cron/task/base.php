@@ -3,7 +3,7 @@
 *
 * @package phpBB3
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -28,6 +28,28 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_cron_task_base implements phpbb_cron_task
 {
+	private $name;
+
+	/**
+	* Returns the name of the task.
+	*
+	* @return string		Name of wrapped task.
+	*/
+	public function get_name()
+	{
+		return $this->name;
+	}
+
+	/**
+	* Sets the name of the task.
+	*
+	* @param string	$name The task name
+	*/
+	public function set_name($name)
+	{
+		$this->name = $name;
+	}
+
 	/**
 	* Returns whether this cron task can run, given current board configuration.
 	*

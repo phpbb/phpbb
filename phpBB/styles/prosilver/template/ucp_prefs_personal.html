@@ -5,7 +5,7 @@
 <h2>{L_TITLE}</h2>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<fieldset>
 	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
@@ -73,17 +73,7 @@
 			<dd><select name="style" id="style">{S_STYLE_OPTIONS}</select></dd>
 		</dl>
 	<!-- ENDIF -->
-	<dl>
-		<dt><label for="timezone">{L_BOARD_TIMEZONE}:</label></dt>
-		<dd><select name="tz" id="timezone" class="autowidth">{S_TZ_OPTIONS}</select></dd>
-	</dl>
-	<dl>
-		<dt><label for="dst1">{L_BOARD_DST}:</label></dt>
-		<dd>
-			<label for="dst1"><input type="radio" name="dst" id="dst1" value="1"<!-- IF S_DST --> checked="checked"<!-- ENDIF --> /> {L_YES}</label> 
-			<label for="dst0"><input type="radio" name="dst" id="dst0" value="0"<!-- IF not S_DST --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
-		</dd>
-	</dl>
+	<!-- INCLUDE timezone_option.html -->
 	<dl>
 		<dt><label for="dateformat">{L_BOARD_DATE_FORMAT}:</label><br /><span>{L_BOARD_DATE_FORMAT_EXPLAIN}</span></dt>
 		<dd>
@@ -95,7 +85,7 @@
 	</dl>
 	</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 	
 <fieldset class="submit-buttons">

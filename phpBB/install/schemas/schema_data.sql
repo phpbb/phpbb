@@ -8,10 +8,10 @@
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_attachments', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_autologin', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_local', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote_upload', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_birthdays', '1');
@@ -54,12 +54,11 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_salt', 'php
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact', 'contact@yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable_msg', '');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_dst', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email', 'address@yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig', '{L_CONFIG_BOARD_EMAIL_SIG}');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_hide_emails', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone', 'UTC');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_interval', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_type', 'd');
@@ -88,17 +87,19 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('dbms_version', '')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat', 'D M d, Y g:i a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_edited', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_subject', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_order', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('delete_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_check_mx', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_function_name', 'mail');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_max_chunk_size', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_http_auth', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit_post', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit_topic', '10');
@@ -123,6 +124,11 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_co
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_load_upd', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_max_chars', '14');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_min_chars', '3');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_max_word_len', '254');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_min_word_len', '4');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_ts_name', 'simple');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_indexer_mem_limit', '512');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_stopwords', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path', 'images/icons');
@@ -136,6 +142,9 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_thumb_widt
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_width', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_min_thumb_filesize', '12000');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '3');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_login_limit_max', '50');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_login_limit_time', '21600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_login_limit_use_forwarded', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_enable', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_host', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_password', '');
@@ -157,10 +166,13 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_search_load'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_anon_lastread', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_birthdays', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_memberlist', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_profile', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewprofile', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewtopic', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_track', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_cdn', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jumpbox', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online', '1');
@@ -219,7 +231,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_block_size'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_interval', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_anonymous_interval', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_type', 'fulltext_native');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_type', 'phpbb_search_fulltext_native');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_store_results', '1800');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_deny', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_empty_referer', '1');
@@ -230,6 +242,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_protocol', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc', '{L_CONFIG_SITE_DESC}');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_url', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_text', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename', '{L_CONFIG_SITENAME}');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path', 'images/smilies');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_per_page', '50');
@@ -239,7 +253,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_password', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_port', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_username', '');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_multiple', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_memberships', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_forums', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
@@ -333,6 +347,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_board', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_bots', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_clearlogs', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_email', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_extensions', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_fauth', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_forum', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_forumadd', 1);
@@ -430,86 +445,7 @@ INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order)
 INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_NEW_MEMBER', 'ROLE_DESCRIPTION_FORUM_NEW_MEMBER', 'f_', 10);
 
 # -- phpbb_styles
-INSERT INTO phpbb_styles (style_name, style_copyright, style_active, template_id, theme_id, imageset_id) VALUES ('prosilver', '&copy; phpBB Group', 1, 1, 1, 1);
-
-# -- phpbb_styles_imageset
-INSERT INTO phpbb_styles_imageset (imageset_name, imageset_copyright, imageset_path) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver');
-
-# -- phpbb_styles_imageset_data
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('site_logo', 'site_logo.gif', '', 52, 139, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_link', 'forum_link.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_read', 'forum_read.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_read_locked', 'forum_read_locked.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_read_subforum', 'forum_read_subforum.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_unread', 'forum_unread.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_unread_locked', 'forum_unread_locked.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_unread_subforum', 'forum_unread_subforum.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_moved', 'topic_moved.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read', 'topic_read.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_mine', 'topic_read_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_hot', 'topic_read_hot.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_hot_mine', 'topic_read_hot_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_locked', 'topic_read_locked.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_locked_mine', 'topic_read_locked_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread', 'topic_unread.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_mine', 'topic_unread_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_hot', 'topic_unread_hot.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_hot_mine', 'topic_unread_hot_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_locked', 'topic_unread_locked.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_locked_mine', 'topic_unread_locked_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read', 'sticky_read.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read_mine', 'sticky_read_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read_locked', 'sticky_read_locked.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read_locked_mine', 'sticky_read_locked_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread', 'sticky_unread.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread_mine', 'sticky_unread_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread_locked', 'sticky_unread_locked.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread_locked_mine', 'sticky_unread_locked_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read', 'announce_read.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read_mine', 'announce_read_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read_locked', 'announce_read_locked.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read_locked_mine', 'announce_read_locked_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread', 'announce_unread.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread_mine', 'announce_unread_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread_locked', 'announce_unread_locked.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread_locked_mine', 'announce_unread_locked_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read', 'announce_read.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read_mine', 'announce_read_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read_locked', 'announce_read_locked.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read_locked_mine', 'announce_read_locked_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread', 'announce_unread.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread_mine', 'announce_unread_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread_locked', 'announce_unread_locked.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread_locked_mine', 'announce_unread_locked_mine.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('pm_read', 'topic_read.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('pm_unread', 'topic_unread.gif', '', 27, 27, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_back_top', 'icon_back_top.gif', '', 11, 11, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_aim', 'icon_contact_aim.gif', '', 20, 20, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_email', 'icon_contact_email.gif', '', 20, 20, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_icq', 'icon_contact_icq.gif', '', 20, 20, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_jabber', 'icon_contact_jabber.gif', '', 20, 20, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_msnm', 'icon_contact_msnm.gif', '', 20, 20, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_www', 'icon_contact_www.gif', '', 20, 20, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_yahoo', 'icon_contact_yahoo.gif', '', 20, 20, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_delete', 'icon_post_delete.gif', '', 20, 20, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_info', 'icon_post_info.gif', '', 20, 20, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_report', 'icon_post_report.gif', '', 20, 20, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_target', 'icon_post_target.gif', '', 9, 11, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_target_unread', 'icon_post_target_unread.gif', '', 9, 11, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_attach', 'icon_topic_attach.gif', '', 10, 7, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_latest', 'icon_topic_latest.gif', '', 9, 11, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_newest', 'icon_topic_newest.gif', '', 9, 11, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_reported', 'icon_topic_reported.gif', '', 14, 16, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_unapproved', 'icon_topic_unapproved.gif', '', 14, 16, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_warn', 'icon_user_warn.gif', '', 20, 20, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('subforum_read', 'subforum_read.gif', '', 9, 11, 1);
-INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('subforum_unread', 'subforum_unread.gif', '', 9, 11, 1);
-
-# -- phpbb_styles_template
-INSERT INTO phpbb_styles_template (template_name, template_copyright, template_path, bbcode_bitfield, template_storedb) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver', 'lNg=', 0);
-
-# -- phpbb_styles_theme
-INSERT INTO phpbb_styles_theme (theme_name, theme_copyright, theme_path, theme_storedb, theme_data) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver', 1, '');
+INSERT INTO phpbb_styles (style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '');
 
 # -- Forums
 INSERT INTO phpbb_forums (forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts, forum_topics, forum_topics_real, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_poster_colour, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_uid, forum_desc_uid, prune_days, prune_viewed, forum_parents) VALUES ('{L_FORUMS_FIRST_CATEGORY}', '', 1, 4, 0, 0, 1, 1, 1, 1, 2, 'Admin', 'AA0000', 972086460, '', '', '', '', '', '', '', 0, 0, '');

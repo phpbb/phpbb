@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF U_BACK -->
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
@@ -248,7 +248,7 @@
 					<!-- ELSE --><br /><span>&raquo; {L_ALLOWED_IN_PM_POST}</span><!-- ENDIF -->
 				</td>
 				<td>{groups.CATEGORY}</td>
-				<td align="center" valign="middle" style="white-space: nowrap;">&nbsp;<a href="{groups.U_EDIT}">{ICON_EDIT}</a>&nbsp;&nbsp;<a href="{groups.U_DELETE}">{ICON_DELETE}</a>&nbsp;</td>
+				<td align="center" valign="middle" style="white-space: nowrap;">&nbsp;<a href="{groups.U_EDIT}">{ICON_EDIT}</a>&nbsp;&nbsp;<a href="{groups.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>&nbsp;</td>
 			</tr>
 		<!-- END groups -->
 		</tbody>
@@ -378,11 +378,16 @@
 	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
-	<!-- IF PAGINATION  or TOTAL_FILES -->
 	<div class="pagination">
-		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}<!-- IF S_ON_PAGE --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {S_ON_PAGE}<!-- ENDIF --><!-- ENDIF -->
-	</div>
+	<!-- IF .pagination or TOTAL_FILES -->
+		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}
+		<!-- IF .pagination -->
+			&bull; <!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {S_ON_PAGE}
+		<!-- ENDIF -->
 	<!-- ENDIF -->
+	</div>
 
 	<table cellspacing="1">
 	<thead>
@@ -421,7 +426,12 @@
 	<hr />
 
 	<div class="pagination">
-		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}<!-- IF S_ON_PAGE --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {S_ON_PAGE}<!-- ENDIF --><!-- ENDIF -->
+		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}
+		<!-- IF .pagination -->
+			&bull; <!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {S_ON_PAGE}
+		<!-- ENDIF -->
 	</div>
 	<!-- ENDIF -->
 

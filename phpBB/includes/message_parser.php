@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -102,20 +101,22 @@ class bbcode_firstpass extends bbcode
 	/**
 	* Init bbcode data for later parsing
 	*/
-	function bbcode_init()
+	function bbcode_init($allow_custom_bbcode = true)
 	{
 		static $rowset;
 
 		// This array holds all bbcode data. BBCodes will be processed in this
 		// order, so it is important to keep [code] in first position and
 		// [quote] in second position.
+		// To parse multiline URL we enable dotall option setting only for URL text
+		// but not for link itself, thus [url][/url] is not affected.
 		$this->bbcodes = array(
 			'code'			=> array('bbcode_id' => 8,	'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#uise' => "\$this->bbcode_code('\$1', '\$2')")),
 			'quote'			=> array('bbcode_id' => 0,	'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#uise' => "\$this->bbcode_quote('\$0')")),
 			'attachment'	=> array('bbcode_id' => 12,	'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#uise' => "\$this->bbcode_attachment('\$1', '\$2')")),
 			'b'				=> array('bbcode_id' => 1,	'regexp' => array('#\[b\](.*?)\[/b\]#uise' => "\$this->bbcode_strong('\$1')")),
 			'i'				=> array('bbcode_id' => 2,	'regexp' => array('#\[i\](.*?)\[/i\]#uise' => "\$this->bbcode_italic('\$1')")),
-			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](.*)\[/url\]#uiUe' => "\$this->validate_url('\$2', '\$3')")),
+			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](?(1)((?s).*(?-s))|(.*))\[/url\]#uiUe' => "\$this->validate_url('\$2', ('\$3') ? '\$3' : '\$4')")),
 			'img'			=> array('bbcode_id' => 4,	'regexp' => array('#\[img\](.*)\[/img\]#uiUe' => "\$this->bbcode_img('\$1')")),
 			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?\d+)\](.*?)\[/size\]#uise' => "\$this->bbcode_size('\$1', '\$2')")),
 			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!uise' => "\$this->bbcode_color('\$1', '\$2')")),
@@ -131,6 +132,11 @@ class bbcode_firstpass extends bbcode
 		foreach ($this->bbcodes as $tag => $bbcode_data)
 		{
 			$this->parsed_items[$tag] = 0;
+		}
+
+		if (!$allow_custom_bbcode)
+		{
+			return;
 		}
 
 		if (!is_array($rowset))
@@ -203,7 +209,7 @@ class bbcode_firstpass extends bbcode
 
 		if ($config['max_' . $this->mode . '_font_size'] && $config['max_' . $this->mode . '_font_size'] < $stx)
 		{
-			$this->warn_msg[] = sprintf($user->lang['MAX_FONT_SIZE_EXCEEDED'], $config['max_' . $this->mode . '_font_size']);
+			$this->warn_msg[] = $user->lang('MAX_FONT_SIZE_EXCEEDED', (int) $config['max_' . $this->mode . '_font_size']);
 
 			return '[size=' . $stx . ']' . $in . '[/size]';
 		}
@@ -312,13 +318,13 @@ class bbcode_firstpass extends bbcode
 				if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $stats[1])
 				{
 					$error = true;
-					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+					$this->warn_msg[] = $user->lang('MAX_IMG_HEIGHT_EXCEEDED', (int) $config['max_' . $this->mode . '_img_height']);
 				}
 
 				if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $stats[0])
 				{
 					$error = true;
-					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+					$this->warn_msg[] = $user->lang('MAX_IMG_WIDTH_EXCEEDED', (int) $config['max_' . $this->mode . '_img_width']);
 				}
 			}
 		}
@@ -367,13 +373,13 @@ class bbcode_firstpass extends bbcode
 			if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $height)
 			{
 				$error = true;
-				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+				$this->warn_msg[] = $user->lang('MAX_FLASH_HEIGHT_EXCEEDED', (int) $config['max_' . $this->mode . '_img_height']);
 			}
 
 			if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $width)
 			{
 				$error = true;
-				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+				$this->warn_msg[] = $user->lang('MAX_FLASH_WIDTH_EXCEEDED', (int) $config['max_' . $this->mode . '_img_width']);
 			}
 		}
 
@@ -765,7 +771,7 @@ class bbcode_firstpass extends bbcode
 					if ($config['max_quote_depth'] && sizeof($close_tags) >= $config['max_quote_depth'])
 					{
 						// there are too many nested quotes
-						$error_ary['quote_depth'] = sprintf($user->lang['QUOTE_DEPTH_EXCEEDED'], $config['max_quote_depth']);
+						$error_ary['quote_depth'] = $user->lang('QUOTE_DEPTH_EXCEEDED', (int) $config['max_quote_depth']);
 
 						$out .= $buffer . $tok;
 						$tok = '[]';
@@ -1110,7 +1116,7 @@ class parse_message extends bbcode_firstpass
 		// Maximum message length check. 0 disables this check completely.
 		if ((int) $config['max_' . $mode . '_chars'] > 0 && $message_length > (int) $config['max_' . $mode . '_chars'])
 		{
-			$this->warn_msg[] = sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $message_length, (int) $config['max_' . $mode . '_chars']);
+			$this->warn_msg[] = $user->lang('TOO_MANY_CHARS_' . strtoupper($mode), $message_length, (int) $config['max_' . $mode . '_chars']);
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
@@ -1119,7 +1125,7 @@ class parse_message extends bbcode_firstpass
 		{
 			if (!$message_length || $message_length < (int) $config['min_post_chars'])
 			{
-				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_FEW_CHARS_LIMIT'], $message_length, (int) $config['min_post_chars']);
+				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : $user->lang('TOO_FEW_CHARS_LIMIT', $message_length, (int) $config['min_post_chars']);
 				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
 		}
@@ -1438,7 +1444,7 @@ class parse_message extends bbcode_firstpass
 			}
 			else
 			{
-				$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
+				$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
 			}
 		}
 
@@ -1529,7 +1535,7 @@ class parse_message extends bbcode_firstpass
 				}
 				else
 				{
-					$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
+					$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
 				}
 			}
 		}

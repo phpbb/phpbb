@@ -3,7 +3,7 @@
 *
 * @package acm
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -75,7 +75,7 @@ interface phpbb_cache_driver_interface
 	/**
 	* Save sql query
 	*/
-	public function sql_save($query, &$query_result, $ttl);
+	public function sql_save($query, $query_result, $ttl);
 
 	/**
 	* Ceck if a given sql query exist in cache

@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT -->
 
@@ -56,12 +56,20 @@
 			<dd><input type="checkbox" class="radio" id="field_show_on_reg" name="field_show_on_reg" value="1"<!-- IF S_SHOW_ON_REG --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
+			<dt><label for="field_show_on_pm">{L_DISPLAY_ON_PM}:</label><br /><span>{L_DISPLAY_ON_PM_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_show_on_pm" name="field_show_on_pm" value="1"<!-- IF S_SHOW_ON_PM --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
 			<dt><label for="field_show_on_vt">{L_DISPLAY_ON_VT}:</label><br /><span>{L_DISPLAY_ON_VT_EXPLAIN}</span></dt>
 			<dd><input type="checkbox" class="radio" id="field_show_on_vt" name="field_show_on_vt" value="1"<!-- IF S_SHOW_ON_VT --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
 			<dt><label for="field_required">{L_REQUIRED_FIELD}:</label><br /><span>{L_REQUIRED_FIELD_EXPLAIN}</span></dt>
 			<dd><input type="checkbox" class="radio" id="field_required" name="field_required" value="1"<!-- IF S_FIELD_REQUIRED --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_show_novalue">{L_SHOW_NOVALUE_FIELD}:</label><br /><span>{L_SHOW_NOVALUE_FIELD_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_show_novalue" name="field_show_novalue" value="1"<!-- IF S_FIELD_SHOW_NOVALUE --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
 			<dt><label for="field_hide">{L_HIDE_PROFILE_FIELD}:</label><br /><span>{L_HIDE_PROFILE_FIELD_EXPLAIN}</span></dt>
@@ -191,7 +199,7 @@
 
 		<td>{fields.FIELD_IDENT}</td>
 		<td>{fields.FIELD_TYPE}</td>
-		<td style="text-align: center;"><a href="{fields.U_ACTIVATE_DEACTIVATE}">{fields.L_ACTIVATE_DEACTIVATE}</a><!-- IF fields.S_NEED_EDIT --> | <a href="{fields.U_TRANSLATE}" style="color: red;">{L_TRANSLATE}</a><!-- ENDIF --></td>
+		<td style="text-align: center;"><a href="{fields.U_ACTIVATE_DEACTIVATE}" data-ajax="activate_deactivate">{fields.L_ACTIVATE_DEACTIVATE}</a><!-- IF fields.S_NEED_EDIT --> | <a href="{fields.U_TRANSLATE}" style="color: red;">{L_TRANSLATE}</a><!-- ENDIF --></td>
 
 		<td style="width: 80px; text-align: right; white-space: nowrap;">
 			<!-- IF fields.S_FIRST_ROW && not fields.S_LAST_ROW -->
@@ -209,7 +217,7 @@
 			<!-- ELSE -->
 				{ICON_EDIT_DISABLED}
 			<!-- ENDIF -->
-			<a href="{fields.U_DELETE}">{ICON_DELETE}</a>
+			<a href="{fields.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
 		</td>
 
 	</tr>

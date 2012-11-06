@@ -4,7 +4,7 @@
 
 <h2>{L_TITLE}</h2>
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<!-- IF S_FORCE_PASSWORD -->
 		<p>{L_FORCE_PASSWORD_EXPLAIN}</p>
@@ -20,12 +20,6 @@
 		<dt><label for="email">{L_EMAIL_ADDRESS}:</label></dt>
 		<dd><!-- IF S_CHANGE_EMAIL --><input type="text" name="email" id="email" maxlength="100" value="{EMAIL}" class="inputbox" title="{L_EMAIL_ADDRESS}" /><!-- ELSE --><strong>{EMAIL}</strong><!-- ENDIF --></dd>
 	</dl>
-	<!-- IF S_CHANGE_EMAIL -->
-		<dl>
-			<dt><label for="email_confirm">{L_CONFIRM_EMAIL}:</label><br /><span>{L_CONFIRM_EMAIL_EXPLAIN}</span></dt>
-			<dd><input type="text" name="email_confirm" id="email_confirm" maxlength="100" value="{CONFIRM_EMAIL}" class="inputbox" title="{L_CONFIRM_EMAIL}" /></dd>
-		</dl>
-	<!-- ENDIF -->
 	<!-- IF S_CHANGE_PASSWORD -->
 		<dl>
 			<dt><label for="new_password">{L_NEW_PASSWORD}:</label><br /><span>{L_CHANGE_PASSWORD_EXPLAIN}</span></dt>
@@ -37,24 +31,24 @@
 		</dl>
 	<!-- ENDIF -->
 	</fieldset>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<fieldset>
 	<dl>
-		<dt><label for="cur_password">{L_CURRENT_PASSWORD}:</label><br /><span>{L_CURRENT_PASSWORD_EXPLAIN}</span></dt>
+		<dt><label for="cur_password">{L_CURRENT_PASSWORD}:</label><br /><span><!-- IF S_CHANGE_PASSWORD -->{L_CURRENT_CHANGE_PASSWORD_EXPLAIN}<!-- ELSE -->{L_CURRENT_PASSWORD_EXPLAIN}<!-- ENDIF --></span></dt>
 		<dd><input type="password" name="cur_password" id="cur_password" maxlength="255" value="{CUR_PASSWORD}" class="inputbox" title="{L_CURRENT_PASSWORD}" /></dd>
 	</dl>
 	</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <fieldset class="submit-buttons">
-	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
+	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
 	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
 	{S_FORM_TOKEN}
 </fieldset>

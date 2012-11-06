@@ -4,7 +4,7 @@
 * @package testing
 * @version $Id$
 * @copyright (c) 2009 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -45,6 +45,26 @@ class phpbb_type_cast_helper_test extends phpbb_test_case
 		$expected = array('eviL&lt;3');
 
 		$this->type_cast_helper->recursive_set_var($data, array(0 => ''), true);
+
+		$this->assertEquals($expected, $data);
+	}
+
+	public function test_simple_untrimmed_recursive_set_var()
+	{
+		$data = " eviL<3\t\t";
+		$expected = " eviL&lt;3\t\t";
+
+		$this->type_cast_helper->recursive_set_var($data, '', true, false);
+
+		$this->assertEquals($expected, $data);
+	}
+
+	public function test_nested_untrimmed_recursive_set_var()
+	{
+		$data = array(" eviL<3\t\t");
+		$expected = array(" eviL&lt;3\t\t");
+
+		$this->type_cast_helper->recursive_set_var($data, array(0 => ''), true, false);
 
 		$this->assertEquals($expected, $data);
 	}

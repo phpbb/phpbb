@@ -2,9 +2,8 @@
 /**
 *
 * @package build
-* @version $Id$
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -177,7 +176,7 @@ class build_package
 			}
 
 			// Is binary?
-			if (preg_match('/^Binary files ' . $package_name . '\/(.*) and [a-z0-9_-]+\/\1 differ/i', $line, $match))
+			if (preg_match('/^Binary files ' . $package_name . '\/(.*) and [a-z0-9._-]+\/\1 differ/i', $line, $match))
 			{
 				$binary[] = trim($match[1]);
 			}

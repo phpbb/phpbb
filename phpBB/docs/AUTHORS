@@ -13,7 +13,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>.
+* along with this program. If not, see <http://opensource.org/licenses/gpl-2.0.php>
 *
 */
 
@@ -22,16 +22,12 @@ involved in phpBB.
 
 phpBB Lead Developer:  naderman (Nils Adermann)
 
-phpBB Developers:      Acyd Burn (Meik Sievertsen) [Lead 09/2005 - 01/2010]
-                       APTX (Marek A. R.)
-                       bantu (Andreas Fischer)
-                       ckwalsh (Cullen Walsh)
+phpBB Developers:      bantu (Andreas Fischer)
                        igorw (Igor Wiedler)
-                       kellanved (Henry Sudhof)
+                       imkingdavid (David King)
                        nickvergessen (Joas Schilling)
-                       nn- (Oleg Pudeyev)
+                       Oleg (Oleg Pudeyev)
                        rxu (Ruslan Uzdenov)
-                       ToonArmy (Chris Smith)
 
 Contributions by:      leviatan21 (Gabriel Vazquez)
                        Raimon (Raimon Meuldijk)
@@ -40,18 +36,25 @@ Contributions by:      leviatan21 (Gabriel Vazquez)
 
 -- Former Contributors --
 
-phpBB Project Manager: theFinn (James Atkinson) [Founder - 04/2007]
+phpBB Project Manager: theFinn (James Atkinson)      [Founder - 04/2007]
                        SHS` (Jonathan Stanley)
 
-phpBB Lead Developer:  psoTFX (Paul S. Owen) [2001 - 09/2005]
+phpBB Lead Developer:  Acyd Burn (Meik Sievertsen)   [09/2005 - 01/2010]
+                       psoTFX (Paul S. Owen)         [2001 - 09/2005]
 
 phpBB Developers:      A_Jelly_Doughnut (Josh Woody) [01/2010 - 11/2010]
+                       Acyd Burn (Meik Sievertsen)   [02/2003 - 09/2005]
+                       APTX (Marek A. Ruszczyński)   [12/2007 - 04/2011]
+                       Arty (Vjacheslav Trushkin)    [02/2012 - 07/2012]
                        Ashe (Ludovic Arnaud)         [10/2002 - 11/2003, 06/2006 - 10/2006]
                        BartVB (Bart van Bragt)       [11/2000 - 03/2006]
+                       ckwalsh (Cullen Walsh)        [01/2010 - 07/2011]
                        DavidMJ (David M.)            [12/2005 - 08/2009]
                        dhn (Dominik Dröscher)        [05/2007 - 01/2011]
                        GrahamJE (Graham Eames)       [09/2005 - 11/2006]
+                       kellanved (Henry Sudhof)      [04/2007 - 03/2011]
                        TerraFrost (Jim Wigginton)    [04/2009 - 01/2011]
+                       ToonArmy (Chris Smith)        [06/2008 - 11/2011]
                        Vic D'Elfant (Vic D'Elfant)   [04/2007 - 04/2009]
 
 -- Copyrights --
@@ -72,9 +75,14 @@ phpMyAdmin (c) 2001,2003 phpMyAdmin Devel team, http://www.phpmyadmin.net/
 Jabber Class (c) 2006 Flyspray.org, http://www.flyspray.org/
 Chora (c) 2000-2006, The Horde Project. http://horde.org/chora/
 Horde Project (c) 2000-2006, The Horde Project. http://horde.org/
+jQuery (c) 2011, John Resig. http://jquery.com/
+Sphinx Technologies Inc (c) 2001-2012 Andrew Aksyonoff, http://sphinxsearch.com/
 
 PHP License, version 3.0:
 Pear (c) 2001-2004 PHP Group, http://pear.php.net
 
 Text_Diff-0.2.1 http://pear.php.net/package/Text_Diff
+
+MIT licenced:
+Symfony2 (c) 2004-2011 Fabien Potencier, http://symfony.com/
 

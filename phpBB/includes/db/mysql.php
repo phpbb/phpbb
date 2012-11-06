@@ -2,9 +2,8 @@
 /**
 *
 * @package dbal
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -121,6 +120,14 @@ class dbal_mysql extends dbal
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return 'CONCAT(' . $expr1 . ', ' . $expr2 . ')';
+	}
+
+	/**
 	* SQL Transaction
 	* @access private
 	*/
@@ -165,7 +172,7 @@ class dbal_mysql extends dbal
 				$this->sql_report('start', $query);
 			}
 
-			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
+			$this->query_result = ($cache_ttl) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
 			if ($this->query_result === false)
@@ -180,10 +187,10 @@ class dbal_mysql extends dbal
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl && method_exists($cache, 'sql_save'))
+				if ($cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$cache->sql_save($query, $this->query_result, $cache_ttl);
+					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{
@@ -242,7 +249,7 @@ class dbal_mysql extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -263,7 +270,7 @@ class dbal_mysql extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
@@ -291,7 +298,7 @@ class dbal_mysql extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_freeresult($query_id);
 		}
@@ -316,6 +323,76 @@ class dbal_mysql extends dbal
 		}
 
 		return @mysql_real_escape_string($msg, $this->db_connect_id);
+	}
+
+	/**
+	* Gets the estimated number of rows in a specified table.
+	*
+	* @param string $table_name		Table name
+	*
+	* @return string				Number of rows in $table_name.
+	*								Prefixed with ~ if estimated (otherwise exact).
+	*
+	* @access public
+	*/
+	function get_estimated_row_count($table_name)
+	{
+		$table_status = $this->get_table_status($table_name);
+
+		if (isset($table_status['Engine']))
+		{
+			if ($table_status['Engine'] === 'MyISAM')
+			{
+				return $table_status['Rows'];
+			}
+			else if ($table_status['Engine'] === 'InnoDB' && $table_status['Rows'] > 100000)
+			{
+				return '~' . $table_status['Rows'];
+			}
+		}
+
+		return parent::get_row_count($table_name);
+	}
+
+	/**
+	* Gets the exact number of rows in a specified table.
+	*
+	* @param string $table_name		Table name
+	*
+	* @return string				Exact number of rows in $table_name.
+	*
+	* @access public
+	*/
+	function get_row_count($table_name)
+	{
+		$table_status = $this->get_table_status($table_name);
+
+		if (isset($table_status['Engine']) && $table_status['Engine'] === 'MyISAM')
+		{
+			return $table_status['Rows'];
+		}
+
+		return parent::get_row_count($table_name);
+	}
+
+	/**
+	* Gets some information about the specified table.
+	*
+	* @param string $table_name		Table name
+	*
+	* @return array
+	*
+	* @access protected
+	*/
+	function get_table_status($table_name)
+	{
+		$sql = "SHOW TABLE STATUS
+			LIKE '" . $this->sql_escape($table_name) . "'";
+		$result = $this->sql_query($sql);
+		$table_status = $this->sql_fetchrow($result);
+		$this->sql_freeresult($result);
+
+		return $table_status;
 	}
 
 	/**

@@ -3,7 +3,7 @@
 *
 * @package phpbb_request
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -32,7 +32,8 @@ class phpbb_request implements phpbb_request_interface
 		phpbb_request_interface::POST => '_POST',
 		phpbb_request_interface::GET => '_GET',
 		phpbb_request_interface::REQUEST => '_REQUEST',
-		phpbb_request_interface::COOKIE => '_COOKIE'
+		phpbb_request_interface::COOKIE => '_COOKIE',
+		phpbb_request_interface::SERVER => '_SERVER',
 	);
 
 	/**
@@ -199,6 +200,163 @@ class phpbb_request implements phpbb_request_interface
 	*/
 	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST)
 	{
+		return $this->_variable($var_name, $default, $multibyte, $super_global, true);
+	}
+
+	/**
+	* Get a variable, but without trimming strings.
+	* Same functionality as variable(), except does not run trim() on strings.
+	* This method should be used when handling passwords.
+	*
+	* @param	string|array	$var_name	The form variable's name from which data shall be retrieved.
+	* 										If the value is an array this may be an array of indizes which will give
+	* 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
+	* 										then specifying array("var", 1) as the name will return "a".
+	* @param	mixed			$default	A default value that is returned if the variable was not set.
+	* 										This function will always return a value of the same type as the default.
+	* @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
+	*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
+	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
+	* 										Specifies which super global should be used
+	*
+	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
+	*					the same as that of $default. If the variable is not set $default is returned.
+	*/
+	public function untrimmed_variable($var_name, $default, $multibyte, $super_global = phpbb_request_interface::REQUEST)
+	{
+		return $this->_variable($var_name, $default, $multibyte, $super_global, false);
+	}
+
+	/**
+	* Shortcut method to retrieve SERVER variables.
+	*
+	* Also fall back to getenv(), some CGI setups may need it (probably not, but
+	* whatever).
+	*
+	* @param	string|array	$var_name		See phpbb_request_interface::variable
+	* @param	mixed			$Default		See phpbb_request_interface::variable
+	*
+	* @return	mixed	The server variable value.
+	*/
+	public function server($var_name, $default = '')
+	{
+		$multibyte = true;
+
+		if ($this->is_set($var_name, phpbb_request_interface::SERVER))
+		{
+			return $this->variable($var_name, $default, $multibyte, phpbb_request_interface::SERVER);
+		}
+		else
+		{
+			$var = getenv($var_name);
+			$this->type_cast_helper->recursive_set_var($var, $default, $multibyte);
+			return $var;
+		}
+	}
+
+	/**
+	* Shortcut method to retrieve the value of client HTTP headers.
+	*
+	* @param	string|array	$header_name	The name of the header to retrieve.
+	* @param	mixed			$default		See phpbb_request_interface::variable
+	*
+	* @return	mixed	The header value.
+	*/
+	public function header($header_name, $default = '')
+	{
+		$var_name = 'HTTP_' . str_replace('-', '_', strtoupper($header_name));
+		return $this->server($var_name, $default);
+	}
+
+	/**
+	* Checks whether a certain variable was sent via POST.
+	* To make sure that a request was sent using POST you should call this function
+	* on at least one variable.
+	*
+	* @param	string	$name	The name of the form variable which should have a
+	*							_p suffix to indicate the check in the code that creates the form too.
+	*
+	* @return	bool			True if the variable was set in a POST request, false otherwise.
+	*/
+	public function is_set_post($name)
+	{
+		return $this->is_set($name, phpbb_request_interface::POST);
+	}
+
+	/**
+	* Checks whether a certain variable is set in one of the super global
+	* arrays.
+	*
+	* @param	string	$var	Name of the variable
+	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
+	*							Specifies the super global which shall be checked
+	*
+	* @return	bool			True if the variable was sent as input
+	*/
+	public function is_set($var, $super_global = phpbb_request_interface::REQUEST)
+	{
+		return isset($this->input[$super_global][$var]);
+	}
+
+	/**
+	* Checks whether the current request is an AJAX request (XMLHttpRequest)
+	*
+	* @return	bool			True if the current request is an ajax request
+	*/
+	public function is_ajax()
+	{
+		return $this->header('X-Requested-With') == 'XMLHttpRequest';
+	}
+
+	/**
+	* Checks if the current request is happening over HTTPS.
+	*
+	* @return	bool			True if the request is secure.
+	*/
+	public function is_secure()
+	{
+		return $this->server('HTTPS') == 'on';
+	}
+
+	/**
+	* Returns all variable names for a given super global
+	*
+	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
+	*					The super global from which names shall be taken
+	*
+	* @return	array	All variable names that are set for the super global.
+	*					Pay attention when using these, they are unsanitised!
+	*/
+	public function variable_names($super_global = phpbb_request_interface::REQUEST)
+	{
+		if (!isset($this->input[$super_global]))
+		{
+			return array();
+		}
+
+		return array_keys($this->input[$super_global]);
+	}
+
+	/**
+	* Helper function used by variable() and untrimmed_variable().
+	*
+	* @param	string|array	$var_name	The form variable's name from which data shall be retrieved.
+	* 										If the value is an array this may be an array of indizes which will give
+	* 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
+	* 										then specifying array("var", 1) as the name will return "a".
+	* @param	mixed			$default	A default value that is returned if the variable was not set.
+	* 										This function will always return a value of the same type as the default.
+	* @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
+	*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
+	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
+	* 										Specifies which super global should be used
+	* @param	bool			$trim		Indicates whether trim() should be applied to string values.
+	*
+	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
+	*					the same as that of $default. If the variable is not set $default is returned.
+	*/
+	protected function _variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST, $trim = true)
+	{
 		$path = false;
 
 		// deep direct access to multi dimensional arrays
@@ -236,57 +394,8 @@ class phpbb_request implements phpbb_request_interface
 			}
 		}
 
-		$this->type_cast_helper->recursive_set_var($var, $default, $multibyte);
+		$this->type_cast_helper->recursive_set_var($var, $default, $multibyte, $trim);
 
 		return $var;
-	}
-
-	/**
-	* Checks whether a certain variable was sent via POST.
-	* To make sure that a request was sent using POST you should call this function
-	* on at least one variable.
-	*
-	* @param	string	$name	The name of the form variable which should have a
-	*							_p suffix to indicate the check in the code that creates the form too.
-	*
-	* @return	bool			True if the variable was set in a POST request, false otherwise.
-	*/
-	public function is_set_post($name)
-	{
-		return $this->is_set($name, phpbb_request_interface::POST);
-	}
-
-	/**
-	* Checks whether a certain variable is set in one of the super global
-	* arrays.
-	*
-	* @param	string	$var	Name of the variable
-	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
-	*							Specifies the super global which shall be checked
-	*
-	* @return	bool			True if the variable was sent as input
-	*/
-	public function is_set($var, $super_global = phpbb_request_interface::REQUEST)
-	{
-		return isset($this->input[$super_global][$var]);
-	}
-
-	/**
-	* Returns all variable names for a given super global
-	*
-	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
-	*					The super global from which names shall be taken
-	*
-	* @return	array	All variable names that are set for the super global.
-	*					Pay attention when using these, they are unsanitised!
-	*/
-	public function variable_names($super_global = phpbb_request_interface::REQUEST)
-	{
-		if (!isset($this->input[$super_global]))
-		{
-			return array();
-		}
-
-		return array_keys($this->input[$super_global]);
 	}
 }
