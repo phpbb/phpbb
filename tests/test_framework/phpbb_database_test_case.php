@@ -137,7 +137,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	*
 	* @return string The string with the specified match converted to uppercase
 	*/
-	public static function to_upper($matches)
+	static public function to_upper($matches)
 	{
 		return $matches[1] . strtoupper($matches[2]) . $matches[3];
 	}
