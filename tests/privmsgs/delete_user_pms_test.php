@@ -16,7 +16,7 @@ class phpbb_privmsgs_delete_user_pms_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/delete_user_pms.xml');
 	}
 
-	public static function delete_user_pms_data()
+	static public function delete_user_pms_data()
 	{
 		return array(
 		//	array(
