@@ -1520,16 +1520,18 @@ function get_schema_struct()
 
 	$schema_data['phpbb_reports'] = array(
 		'COLUMNS'		=> array(
-			'report_id'				=> array('UINT', NULL, 'auto_increment'),
-			'reason_id'				=> array('USINT', 0),
-			'post_id'				=> array('UINT', 0),
-			'pm_id'					=> array('UINT', 0),
-			'user_id'				=> array('UINT', 0),
-			'user_notify'			=> array('BOOL', 0),
-			'report_closed'			=> array('BOOL', 0),
-			'report_time'			=> array('TIMESTAMP', 0),
-			'report_text'			=> array('MTEXT_UNI', ''),
-			'reported_post_text'	=> array('MTEXT_UNI', ''),
+			'report_id'					=> array('UINT', NULL, 'auto_increment'),
+			'reason_id'					=> array('USINT', 0),
+			'post_id'					=> array('UINT', 0),
+			'pm_id'						=> array('UINT', 0),
+			'user_id'					=> array('UINT', 0),
+			'user_notify'				=> array('BOOL', 0),
+			'report_closed'				=> array('BOOL', 0),
+			'report_time'				=> array('TIMESTAMP', 0),
+			'report_text'				=> array('MTEXT_UNI', ''),
+			'reported_post_text'		=> array('MTEXT_UNI', ''),
+			'reported_post_uid'			=> array('VCHAR:8', ''),
+			'reported_post_bitfield'	=> array('VCHAR:255', ''),
 		),
 		'PRIMARY_KEY'	=> 'report_id',
 		'KEYS'			=> array(

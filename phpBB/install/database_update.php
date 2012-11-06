@@ -1134,7 +1134,9 @@ function database_update_info()
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
 				REPORTS_TABLE		=> array(
-					'reported_post_text'	=> array('MTEXT_UNI', ''),
+					'reported_post_text'		=> array('MTEXT_UNI', ''),
+					'reported_post_uid'			=> array('VCHAR:8', ''),
+					'reported_post_bitfield'	=> array('VCHAR:255', ''),
 				),
 			),
 			'change_columns'	=> array(
