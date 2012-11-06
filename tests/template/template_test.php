@@ -94,7 +94,7 @@ class phpbb_template_template_test extends phpbb_test_case
 	/**
 	 * @todo put test data into templates/xyz.test
 	 */
-	public static function template_data()
+	static public function template_data()
 	{
 		return array(
 			/*
@@ -419,7 +419,7 @@ class phpbb_template_template_test extends phpbb_test_case
 		$GLOBALS['config']['tpl_allow_php'] = false;
 	}
 
-	public static function alter_block_array_data()
+	static public function alter_block_array_data()
 	{
 		return array(
 			array(
