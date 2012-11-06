@@ -574,8 +574,6 @@ function user_delete($mode, $user_ids, $retain_username = true)
 
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
-	$author_id_sql = $db->sql_in_set('author_id', $user_ids);
-
 	// Delete user log entries about this user
 	$sql = 'DELETE FROM ' . LOG_TABLE . '
 		WHERE ' . $db->sql_in_set('reportee_id', $user_ids);
