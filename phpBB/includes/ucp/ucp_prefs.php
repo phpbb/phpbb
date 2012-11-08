@@ -138,7 +138,7 @@ class ucp_prefs
 				$sql = 'SELECT COUNT(lang_id) as languages_count
 								FROM ' . LANG_TABLE;
 				$result = $db->sql_query($sql);
-				if($db->sql_fetchfield('languages_count') > 1)
+				if ($db->sql_fetchfield('languages_count') > 1)
 				{
 					$s_more_languages = true;
 				}
@@ -153,7 +153,7 @@ class ucp_prefs
 								FROM ' . STYLES_TABLE . '
 								WHERE style_active = 1';
 				$result = $db->sql_query($sql);
-				if($db->sql_fetchfield('styles_count') > 1)
+				if ($db->sql_fetchfield('styles_count') > 1)
 				{
 					$s_more_styles = true;
 				}
