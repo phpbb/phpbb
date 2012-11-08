@@ -121,6 +121,22 @@ class phpbb_search_native_test extends phpbb_database_test_case
 				array(),
 				array(),
 			),
+			// all common
+			array(
+				'commonword',
+				'all',
+				false,
+				array(),
+				array(),
+			),
+			// some common
+			array(
+				'commonword foo',
+				'all',
+				true,
+				array(1),
+				array(),
+			),
 		);
 	}
 

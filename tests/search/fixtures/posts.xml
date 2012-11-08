@@ -14,6 +14,11 @@
 			<value>bar</value>
 			<value>bar</value>
 		</row>
+		<row>
+			<value>commonword</value>
+			<value>commonword</value>
+			<value>commonword</value>
+		</row>
 	</table>
 	<table name="phpbb_search_wordlist">
 		<column>word_id</column>
@@ -28,6 +33,11 @@
 			<value>2</value>
 			<value>bar</value>
 			<value>0</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>commonword</value>
+			<value>1</value>
 		</row>
 	</table>
 </dataset>
