@@ -107,6 +107,7 @@ class phpbb_search_native_test extends phpbb_database_test_case
 	{
 		$rv = $this->search->split_keywords($keywords, $terms);
 		$this->assertEquals($ok, $rv);
+		// http://stackoverflow.com/questions/3838288/phpunit-assert-two-arrays-are-equal-but-order-of-elements-not-important
 		$this->assertEmpty(array_diff($must_contain, $this->search->get_must_contain_ids()));
 		$this->assertEmpty(array_diff($must_not_contain, $this->search->get_must_not_contain_ids()));
 	}
