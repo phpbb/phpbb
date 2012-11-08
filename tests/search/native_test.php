@@ -62,11 +62,13 @@ class phpbb_search_native_test extends phpbb_database_test_case
 			// ok
 			// must contain ids
 			// must not contain ids
+			// common words
 			array(
 				'foo',
 				'all',
 				true,
 				array(1),
+				array(),
 				array(),
 			),
 			array(
@@ -74,6 +76,7 @@ class phpbb_search_native_test extends phpbb_database_test_case
 				'all',
 				true,
 				array(1, 2),
+				array(),
 				array(),
 			),
 			// leading, trailing and multiple spaces
@@ -83,21 +86,25 @@ class phpbb_search_native_test extends phpbb_database_test_case
 				true,
 				array(1, 2),
 				array(),
+				array(),
 			),
 			// words too short
 			array(
 				'f',
 				'all',
 				false,
-				array(),
-				array(),
+				null,
+				null,
+				// short words count as "common" words
+				array('f'),
 			),
 			array(
 				'f o o',
 				'all',
 				false,
-				array(),
-				array(),
+				null,
+				null,
+				array('f', 'o', 'o'),
 			),
 			array(
 				'foo -bar',
@@ -105,20 +112,23 @@ class phpbb_search_native_test extends phpbb_database_test_case
 				true,
 				array(1),
 				array(2),
+				array(),
 			),
 			// all negative
 			array(
 				'-foo',
 				'all',
 				false,
-				array(),
+				null,
+				null,
 				array(),
 			),
 			array(
 				'-foo -bar',
 				'all',
 				false,
-				array(),
+				null,
+				null,
 				array(),
 			),
 			// all common
@@ -126,8 +136,9 @@ class phpbb_search_native_test extends phpbb_database_test_case
 				'commonword',
 				'all',
 				false,
-				array(),
-				array(),
+				null,
+				null,
+				array('commonword'),
 			),
 			// some common
 			array(
@@ -136,6 +147,7 @@ class phpbb_search_native_test extends phpbb_database_test_case
 				true,
 				array(1),
 				array(),
+				array('commonword'),
 			),
 		);
 	}
@@ -143,12 +155,32 @@ class phpbb_search_native_test extends phpbb_database_test_case
 	/**
 	* @dataProvider keywords
 	*/
-	public function test_split_keywords($keywords, $terms, $ok, $must_contain, $must_not_contain)
+	public function test_split_keywords($keywords, $terms, $ok, $must_contain, $must_not_contain, $common)
 	{
 		$rv = $this->search->split_keywords($keywords, $terms);
 		$this->assertEquals($ok, $rv);
+		if ($ok)
+		{
+			// only check criteria if the search is going to be performed
+			$this->assert_array_content_equals($must_contain, $this->search->get_must_contain_ids());
+			$this->assert_array_content_equals($must_not_contain, $this->search->get_must_not_contain_ids());
+		}
+		$this->assert_array_content_equals($common, $this->search->get_common_words());
+	}
+
+	public function assert_array_content_equals($one, $two)
+	{
 		// http://stackoverflow.com/questions/3838288/phpunit-assert-two-arrays-are-equal-but-order-of-elements-not-important
-		$this->assertEmpty(array_diff($must_contain, $this->search->get_must_contain_ids()));
-		$this->assertEmpty(array_diff($must_not_contain, $this->search->get_must_not_contain_ids()));
+		// but one array_diff is not enough!
+		if (sizeof(array_diff($one, $two)) || sizeof(array_diff($two, $one)))
+		{
+			// get a nice error message
+			$this->assertEquals($one, $two);
+		}
+		else
+		{
+			// increase assertion count
+			$this->assertTrue(true);
+		}
 	}
 }
