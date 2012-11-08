@@ -74,7 +74,7 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 				),
 			)
 		);
-		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->extension_manager);
+		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, new phpbb_template_context, $this->extension_manager);
 		$this->style_provider = new phpbb_style_path_provider();
 		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider, $this->template);
 		$this->style->set_custom_style('tests', array($this->template_path), '');
