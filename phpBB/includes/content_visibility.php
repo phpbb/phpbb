@@ -393,7 +393,7 @@ class phpbb_content_visibility
 				{
 					$sql_ary['posts_softdeleted'] = ' - ' . $cur_softdeleted_posts;
 				}
-				if ($cur_posts + $cur_unapproved_posts)
+				if ($cur_softdeleted_posts + $cur_unapproved_posts)
 				{
 					$sql_ary['posts'] = ' + ' . ($cur_softdeleted_posts + $cur_unapproved_posts);
 				}
