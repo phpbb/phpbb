@@ -76,6 +76,29 @@ class phpbb_search_native_test extends phpbb_database_test_case
 				array(1, 2),
 				array(),
 			),
+			// leading, trailing and multiple spaces
+			array(
+				'      foo    bar   ',
+				'all',
+				true,
+				array(1, 2),
+				array(),
+			),
+			// words too short
+			array(
+				'f',
+				'all',
+				false,
+				array(),
+				array(),
+			),
+			array(
+				'f o o',
+				'all',
+				false,
+				array(),
+				array(),
+			),
 			array(
 				'foo -bar',
 				'all',
@@ -83,6 +106,7 @@ class phpbb_search_native_test extends phpbb_database_test_case
 				array(1),
 				array(2),
 			),
+			// all negative
 			array(
 				'-foo',
 				'all',
