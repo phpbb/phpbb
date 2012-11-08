@@ -110,17 +110,26 @@ class phpbb_style
 	*
 	* @param string $name Name of style, used for cache prefix. Examples: "admin", "prosilver"
 	* @param array or string $paths Array of style paths, relative to current root directory
+	* @param array $names Array of names of templates in inheritance tree order, used by extensions. If empty, $name will be used.
 	* @param string $template_path Path to templates, relative to style directory. False if path should be set to default (templates/).
 	*/
-	public function set_custom_style($name, $paths, $template_path = false)
+	public function set_custom_style($name, $paths, $names = array(), $template_path = false)
 	{
 		if (is_string($paths))
 		{
 			$paths = array($paths);
 		}
 
+		if (empty($names))
+		{
+			$names = array($name);
+		}
+		$this->names = $names;
+
 		$this->provider->set_styles($paths);
 		$this->locator->set_paths($this->provider);
+
+		$this->template->style_names = $names;
 
 		if ($template_path !== false)
 		{

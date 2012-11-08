@@ -89,14 +89,13 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Name of the style that the template being compiled and/or rendered
-	* belongs to.
+	* belongs to, and its parents, in inheritance tree order.
 	*
-	* This is used by hooks implementation to invoke style-specific
-	* template hooks.
+	* Used to invoke style-specific template events.
 	*
-	* @var string
+	* @var array
 	*/
-	private $style_name;
+	private $style_names;
 
 	/**
 	* Extension manager.
@@ -169,7 +168,7 @@ class phpbb_template_filter extends php_user_filter
 	/**
 	* Initializer, called on creation.
 	*
-	* Get the allow_php option, style_name, root directory and locator from params,
+	* Get the allow_php option, style_names, root directory and locator from params,
 	* which are passed to stream_filter_append.
 	*/
 	public function onCreate()
@@ -179,7 +178,7 @@ class phpbb_template_filter extends php_user_filter
 		$this->allow_php = $this->params['allow_php'];
 		$this->locator = $this->params['locator'];
 		$this->phpbb_root_path = $this->params['phpbb_root_path'];
-		$this->style_name = $this->params['style_name'];
+		$this->style_names = $this->params['style_names'];
 		$this->extension_manager = $this->params['extension_manager'];
 		if (isset($this->params['user']))
 		{

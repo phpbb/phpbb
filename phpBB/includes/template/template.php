@@ -83,14 +83,13 @@ class phpbb_template
 
 	/**
 	* Name of the style that the template being compiled and/or rendered
-	* belongs to.
+	* belongs to, and its parents, in inheritance tree order.
 	*
-	* This is used by hooks implementation to invoke style-specific
-	* template hooks.
+	* Used to invoke style-specific template events.
 	*
-	* @var string
+	* @var array
 	*/
-	private $style_name;
+	public $style_names;
 
 	/**
 	* Constructor.
@@ -302,7 +301,7 @@ class phpbb_template
 			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
-		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->style_name, $this->locator, $this->phpbb_root_path, $this->extension_manager, $this->user);
+		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->style_names, $this->locator, $this->phpbb_root_path, $this->extension_manager, $this->user);
 
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{

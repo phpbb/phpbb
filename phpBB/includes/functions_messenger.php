@@ -231,7 +231,7 @@ class messenger
 				}
 			}
 
-			$style->set_custom_style($template_lang . '_email', array($template_path, $fallback_template_path), '');
+			$style->set_custom_style($template_lang . '_email', array($template_path, $fallback_template_path), array(), '');
 
 			$tpl->set_filenames(array(
 				'body'		=> $template_file . '.txt',
