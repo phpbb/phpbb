@@ -91,16 +91,22 @@ class phpbb_style
 	{
 		$style_path = $this->user->style['style_path'];
 		$style_dirs = ($this->user->style['style_parent_id']) ? array_reverse(explode('/', $this->user->style['style_parent_tree'])) : array();
-		$paths = array($this->get_style_path($style_path));
+
+		$names = array($style_path);
 		foreach ($style_dirs as $dir)
 		{
-			$paths[] = $this->get_style_path($dir);
+			$names[] = $dir;
+		}
+		// Add 'all' path, used as last fallback path by hooks and extensions
+		//$names[] = 'all';
+
+		$paths = array();
+		foreach ($names as $name)
+		{
+			$paths[] = $this->get_style_path($name);
 		}
 
-		// Add 'all' path, used as last fallback path by hooks and extensions
-		$paths[] = $this->get_style_path('all');
-
-		return $this->set_custom_style($style_path, $paths);
+		return $this->set_custom_style($style_path, $names, $paths);
 	}
 
 	/**
