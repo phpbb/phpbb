@@ -59,6 +59,10 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 		{
 			include($this->phpbb_root_path . 'includes/utf/utf_normalizer.' . $this->php_ext);
 		}
+		if (!function_exists('utf8_decode_ncr'))
+		{
+			include($this->phpbb_root_path . 'includes/utf/utf_tools.' . $this->php_ext);
+		}
 
 		$error = false;
 	}
