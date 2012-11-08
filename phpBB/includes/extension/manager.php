@@ -67,6 +67,17 @@ class phpbb_extension_manager
 	*/
 	public function load_extensions()
 	{
+		$this->extensions = array();
+
+		// Do not try to load any extensions when installing or updating
+		// Note: database updater invokes this code, and in 3.0
+		// there is no extension table therefore the rest of this function
+		// fails
+		if (defined('IN_INSTALL'))
+		{
+			return;
+		}
+
 		$sql = 'SELECT *
 			FROM ' . $this->extension_table;
 
@@ -74,7 +85,6 @@ class phpbb_extension_manager
 		$extensions = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
-		$this->extensions = array();
 		foreach ($extensions as $extension)
 		{
 			$extension['ext_path'] = $this->get_extension_path($extension['ext_name']);
