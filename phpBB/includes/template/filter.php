@@ -929,11 +929,19 @@ class phpbb_template_filter extends php_user_filter
 				->extension_directory("/styles/all/template")
 				->get_files();
 
-			$files = array_merge($files, $finder
-				->extension_prefix($location)
-				->extension_suffix('.html')
-				->extension_directory("/styles/" . $this->style_name . "/template")
-				->get_files());
+			foreach ($this->style_names as $style_name)
+			{
+				$more_files = $finder
+					->extension_prefix($location)
+					->extension_suffix('.html')
+					->extension_directory("/styles/" . $style_name . "/template")
+					->get_files();
+				if (!empty($more_files))
+				{
+					$files = array_merge($files, $more_files);
+					break;
+				}
+			}
 
 			$all_compiled = '';
 			foreach ($files as $file)
