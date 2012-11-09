@@ -2132,8 +2132,9 @@ function change_database_data(&$no_updates, $version)
 			foreach ($bots_to_update as $bot_name => $bot_agent)
 			{
 				$sql = 'SELECT user_id
-					FROM ' . USERS_TABLE . "
-					WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($bot_name)) . "'";
+					FROM ' . USERS_TABLE . '
+					WHERE user_type = ' . USER_IGNORE . "
+						AND username_clean = '" . $db->sql_escape(utf8_clean_string($bot_name)) . "'";
 				$result = $db->sql_query($sql);
 				$bot_user_id = (int) $db->sql_fetchfield('user_id');
 				$db->sql_freeresult($result);
