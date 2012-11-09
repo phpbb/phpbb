@@ -24,6 +24,16 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_post extends phpbb_notification_type_base
 {
 	/**
+	* Get notification type name
+	*
+	* @return string
+	*/
+	public function get_type()
+	{
+		return 'post';
+	}
+
+	/**
 	* Language key used to output the text
 	*
 	* @var string
@@ -114,7 +124,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		$update_notifications = array();
 		$sql = 'SELECT *
 			FROM ' . NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . get_class($this) . "'
+			WHERE item_type = '" . $this->get_type() . "'
 				AND item_parent_id = " . (int) self::get_item_parent_id($post) . '
 				AND unread = 1
 				AND is_enabled = 1';
@@ -124,7 +134,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 			// Do not create a new notification
 			unset($notify_users[$row['user_id']]);
 
-			$notification = $this->notification_manager->get_item_type_class(get_class($this), $row);
+			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);
 			$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
 				SET ' . $this->db->sql_build_array('UPDATE', $notification->add_responders($post)) . '
 				WHERE notification_id = ' . $row['notification_id'];

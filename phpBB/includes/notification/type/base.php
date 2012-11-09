@@ -116,7 +116,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	public function __toString()
 	{
-		return (!empty($this->data)) ? var_export($this->data, true) : get_class($this);
+		return (!empty($this->data)) ? var_export($this->data, true) : $this->get_type();
 	}
 
 	/**
@@ -156,7 +156,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		// Defaults
 		$this->data = array_merge(array(
 			'item_id'				=> static::get_item_id($type_data),
-			'item_type'	   			=> get_class($this),
+			'item_type'	   			=> $this->get_type(),
 			'item_parent_id'		=> static::get_item_parent_id($type_data),
 
 			'time'					=> time(),
@@ -319,7 +319,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
-			'item_type'			=> get_class($this),
+			'item_type'			=> $this->get_type(),
 			'item_id'			=> 0, // Global by default
 		), $options);
 

@@ -7,6 +7,8 @@
 *
 */
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
 /**
 * @ignore
 */
@@ -21,6 +23,9 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_notification_manager
 {
+	/** @var ContainerBuilder */
+	protected $phpbb_container = null;
+	
 	/** @var dbal */
 	protected $db = null;
 
@@ -55,8 +60,9 @@ class phpbb_notification_manager
 	*/
 	protected $users = array();
 
-	public function __construct(dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
+	public function __construct(ContainerBuilder $phpbb_container, dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
+		$this->phpbb_container = $phpbb_container;
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->template = $template;
@@ -495,17 +501,17 @@ class phpbb_notification_manager
 	{
 		$subscription_types = array();
 
-		foreach ($this->get_subscription_files('notification/type/') as $class_name)
+		foreach ($this->phpbb_container->findTaggedServiceIds('notification.type') as $type_name => $data)
 		{
-			$class = $this->get_item_type_class($class_name);
+			$type = $this->get_item_type_class($type_name);
 
-			if ($class instanceof phpbb_notification_type_interface && $class->is_available())
+			if ($type instanceof phpbb_notification_type_interface && $type->is_available())
 			{
 				$options = array_merge(array(
-					'id'		=> $class_name,
-					'lang'		=> 'NOTIFICATION_TYPE_' . strtoupper($class_name),
+					'id'		=> $type->get_type(),
+					'lang'		=> 'NOTIFICATION_TYPE_' . strtoupper($type->get_type()),
 					'group'		=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
-				), (($class_name::$notification_option !== false) ? $class_name::$notification_option : array()));
+				), (($type::$notification_option !== false) ? $type::$notification_option : array()));
 
 				$subscription_types[$options['group']][$options['id']] = $options;
 			}
@@ -531,13 +537,16 @@ class phpbb_notification_manager
 	{
 		$subscription_methods = array();
 
-		foreach ($this->get_subscription_files('notification/method/') as $class_name)
+		foreach ($this->phpbb_container->findTaggedServiceIds('notification.method') as $method_name => $data)
 		{
-			$method = $this->get_method_class($class_name);
+			$method = $this->get_method_class($method_name);
 
 			if ($method instanceof phpbb_notification_method_interface && $method->is_available())
 			{
-				$subscription_methods[] = $class_name;
+				$subscription_methods[$method_name] = array(
+					'id'		=> $method->get_type(),
+					'lang'		=> 'NOTIFICATION_METHOD_' . strtoupper($method->get_type()),
+				);
 			}
 		}
 
@@ -783,7 +792,7 @@ class phpbb_notification_manager
 	*/
 	public function get_item_type_class($item_type, $data = array())
 	{
-		$item = new $item_type($this, $this->db, $this->cache, $this->template, $this->extension_manager, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext);
+		$item = $this->phpbb_container->get($item_type);
 
 		$item->set_initial_data($data);
 
@@ -795,43 +804,6 @@ class phpbb_notification_manager
 	*/
 	public function get_method_class($method_name)
 	{
-		return new $method_name($this, $this->db, $this->cache, $this->template, $this->extension_manager, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext);
-	}
-
-	/**
-	* Helper to get subscription related files with the finder
-	*/
-	private function get_subscription_files($path)
-	{
-		$finder = $this->extension_manager->get_finder();
-
-		$subscription_files = array();
-
-		$classes = $finder
-			->core_path('includes/' . $path)
-			->extension_directory($path)
-			->get_classes();
-
-		if (array_search('phpbb_notification_type_interface', $classes) !== false)
-		{
-			unset($classes[array_search('phpbb_notification_type_interface', $classes)]);
-		}
-
-		if (array_search('phpbb_notification_type_base', $classes) !== false)
-		{
-			unset($classes[array_search('phpbb_notification_type_base', $classes)]);
-		}
-
-		if (array_search('phpbb_notification_method_interface', $classes) !== false)
-		{
-			unset($classes[array_search('phpbb_notification_method_interface', $classes)]);
-		}
-
-		if (array_search('phpbb_notification_method_base', $classes) !== false)
-		{
-			unset($classes[array_search('phpbb_notification_method_base', $classes)]);
-		}
-
-		return $classes;
+		return $this->phpbb_container->get($method_name);
 	}
 }

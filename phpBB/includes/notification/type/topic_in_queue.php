@@ -24,6 +24,16 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_topic_in_queue extends phpbb_notification_type_topic
 {
 	/**
+	* Get notification type name
+	*
+	* @return string
+	*/
+	public function get_type()
+	{
+		return 'topic_in_queue';
+	}
+
+	/**
 	* Language key used to output the text
 	*
 	* @var string

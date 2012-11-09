@@ -24,6 +24,16 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_method_jabber extends phpbb_notification_method_email
 {
 	/**
+	* Get notification method name
+	*
+	* @return string
+	*/
+	public function get_type()
+	{
+		return 'jabber';
+	}
+
+	/**
 	* Notify method (since jabber gets sent through the same messenger, we let the jabber class inherit from this to reduce code duplication)
 	*
 	* @var mixed

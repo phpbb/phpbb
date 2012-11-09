@@ -24,6 +24,16 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_quote extends phpbb_notification_type_post
 {
 	/**
+	* Get notification type name
+	*
+	* @return string
+	*/
+	public function get_type()
+	{
+		return 'quote';
+	}
+
+	/**
 	* regular expression to match to find usernames
 	*
 	* @var string
@@ -112,7 +122,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 		$update_notifications = array();
 		$sql = 'SELECT *
 			FROM ' . NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . get_class($this) . "'
+			WHERE item_type = '" . $this->get_type() . "'
 				AND item_parent_id = " . (int) self::get_item_parent_id($post) . '
 				AND unread = 1
 				AND is_enabled = 1';
@@ -122,7 +132,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 			// Do not create a new notification
 			unset($notify_users[$row['user_id']]);
 
-			$notification = $this->notification_manager->get_item_type_class(get_class($this), $row);
+			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);
 			$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
 				SET ' . $this->db->sql_build_array('UPDATE', $notification->add_responders($post)) . '
 				WHERE notification_id = ' . $row['notification_id'];
@@ -143,7 +153,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 		$old_notifications = array();
 		$sql = 'SELECT user_id
 			FROM ' . NOTIFICATIONS_TABLE . "
-			WHERE item_type = '" . get_class($this) . "'
+			WHERE item_type = '" . $this->get_type() . "'
 				AND item_id = " . self::get_item_id($post) . '
 				AND is_enabled = 1';
 		$result = $this->db->sql_query($sql);
@@ -167,13 +177,13 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 		}
 
 		// Add the necessary notifications
-		$this->notification_manager->add_notifications_for_users(get_class($this), $post, $add_notifications);
+		$this->notification_manager->add_notifications_for_users($this->get_type(), $post, $add_notifications);
 
 		// Remove the necessary notifications
 		if (!empty($remove_notifications))
 		{
 			$sql = 'DELETE FROM ' . NOTIFICATIONS_TABLE . "
-				WHERE item_type = '" . get_class($this) . "'
+				WHERE item_type = '" . $this->get_type() . "'
 					AND item_id = " . self::get_item_id($post) . '
 					AND ' . $this->db->sql_in_set('user_id', $remove_notifications);
 			$this->db->sql_query($sql);
