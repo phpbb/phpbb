@@ -2128,15 +2128,6 @@ function change_database_data(&$no_updates, $version)
 				'W3C [Validator]'	=> array('W3C_Validator', ''),
 			);
 
-			$bots_to_delete = array(
-				'NG-Search [Bot]',
-				'Nutch/CVS [Bot]',
-				'OmniExplorer [Bot]',
-				'Seekport [Bot]',
-				'Synoo [Bot]',
-				'WiseNut [Bot]',
-			);
-
 			foreach ($bots_to_update as $bot_name => $bot_array)
 			{
 				list($bot_agent, $bot_ip) = $bot_array;
@@ -2165,6 +2156,15 @@ function change_database_data(&$no_updates, $version)
 			{
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 			}
+
+			$bots_to_delete = array(
+				'NG-Search [Bot]',
+				'Nutch/CVS [Bot]',
+				'OmniExplorer [Bot]',
+				'Seekport [Bot]',
+				'Synoo [Bot]',
+				'WiseNut [Bot]',
+			);
 
 			foreach ($bots_to_delete as $bot_name)
 			{
