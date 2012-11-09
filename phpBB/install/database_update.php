@@ -2120,6 +2120,7 @@ function change_database_data(&$no_updates, $version)
 					AND module_mode = \'signature\'';
 			_sql($sql, $errored, $error_ary);
 
+			// Update bot list
 			$bots_to_update = array(
 				'Baidu [Spider]'	=> array('Baiduspider', ''),
 				'Exabot [Bot]'		=> array('Exabot', ''),
