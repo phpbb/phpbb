@@ -101,14 +101,6 @@ if (!defined('EXT_TABLE'))
 {
 	define('EXT_TABLE', $table_prefix . 'ext');
 }
-if (!defined('NOTIFICATIONS_TABLE'))
-{
-	define('NOTIFICATIONS_TABLE', $table_prefix . 'notifications');
-}
-if (!defined('USER_NOTIFICATIONS_TABLE'))
-{
-	define('USER_NOTIFICATIONS_TABLE', $table_prefix . 'user_notifications');
-}
 
 // Setup class loader first
 $phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
@@ -1183,7 +1175,7 @@ function database_update_info()
 						'ext_name'		=> array('UNIQUE', 'ext_name'),
 					),
 				),
-				NOTIFICATIONS_TABLE		=> array(
+				$table_prefix . 'notifications'		=> array(
 					'COLUMNS'			=> array(
 						'notification_id'	=> array('UINT', NULL, 'auto_increment'),
 						'item_type'			=> array('VCHAR:255', ''),
@@ -1206,7 +1198,7 @@ function database_update_info()
 						'is_enabled'		=> array('INDEX', 'is_enabled'),
 					),
 				),
-				USER_NOTIFICATIONS_TABLE	=> array(
+				$table_prefix . 'user_notifications'	=> array(
 					'COLUMNS'			=> array(
 						'item_type'			=> array('VCHAR:255', ''),
 						'item_id'			=> array('UINT', 0),
@@ -3051,7 +3043,7 @@ function change_database_data(&$no_updates, $version)
 						$result = $db->sql_query($sql);
 						while ($row = $db->sql_fetchrow($result))
 						{
-							_sql('INSERT INTO ' . USER_NOTIFICATIONS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+							_sql('INSERT INTO ' . $table_prefix . 'user_notifications ' . $db->sql_build_array('INSERT', array(
 								'item_type'		=> $convert_data['item_type'],
 								'item_id'		=> 0,
 								'user_id'		=> $row['user_id'],
@@ -3060,7 +3052,7 @@ function change_database_data(&$no_updates, $version)
 
 							if ($row['user_notify_type'] == NOTIFY_EMAIL || $row['user_notify_type'] == NOTIFY_BOTH)
 							{
-								_sql('INSERT INTO ' . USER_NOTIFICATIONS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+								_sql('INSERT INTO ' . $table_prefix . 'user_notifications ' . $db->sql_build_array('INSERT', array(
 									'item_type'		=> $convert_data['item_type'],
 									'item_id'		=> 0,
 									'user_id'		=> $row['user_id'],
@@ -3070,7 +3062,7 @@ function change_database_data(&$no_updates, $version)
 
 							if ($row['user_notify_type'] == NOTIFY_IM || $row['user_notify_type'] == NOTIFY_BOTH)
 							{
-								_sql('INSERT INTO ' . USER_NOTIFICATIONS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+								_sql('INSERT INTO ' . $table_prefix . 'user_notifications ' . $db->sql_build_array('INSERT', array(
 									'item_type'		=> $convert_data['item_type'],
 									'item_id'		=> 0,
 									'user_id'		=> $row['user_id'],

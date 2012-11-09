@@ -131,6 +131,8 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notifications%
+            - %tables.user_notifications%
 
     http_kernel:
         class: Symfony\Component\HttpKernel\HttpKernel
