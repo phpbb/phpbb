@@ -35,7 +35,7 @@ $submit		= (isset($_POST['post'])) ? true : false;
 $preview	= (isset($_POST['preview'])) ? true : false;
 $save		= (isset($_POST['save'])) ? true : false;
 $load		= (isset($_POST['load'])) ? true : false;
-$confirm	= (isset($_POST['confirm'])) ? true : false;
+$confirm	= $request->is_set_post('confirm');
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
 $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load || $preview);
@@ -328,7 +328,7 @@ if ($mode == 'delete' || $mode == 'soft_delete')
 		trigger_error('NO_POST');
 	}
 
-	$soft_delete_reason = ($mode == 'soft_delete' && $auth->acl_get('m_softdelete', $forum_id)) ? utf8_normalize_nfc(request_var('delete_reason', '', true)) : '';
+	$soft_delete_reason = ($mode == 'soft_delete' && $auth->acl_get('m_softdelete', $forum_id)) ? $request->variable('delete_reason', '', true) : '';
 	handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete'), $soft_delete_reason);
 	return;
 }
@@ -1119,7 +1119,7 @@ if ($submit || $preview || $refresh)
 			// Handle delete mode...
 			if ($request->is_set_post('delete') || $request->is_set_post('delete_permanent'))
 			{
-				$soft_delete_reason = (!$request->is_set_post('delete_permanent') && $auth->acl_get('m_softdelete', $forum_id)) ? utf8_normalize_nfc(request_var('delete_reason', '', true)) : '';
+				$soft_delete_reason = (!$request->is_set_post('delete_permanent') && $auth->acl_get('m_softdelete', $forum_id)) ? $request->variable('delete_reason', '', true) : '';
 				handle_post_delete($forum_id, $topic_id, $post_id, $post_data, !$request->is_set_post('delete_permanent'), $soft_delete_reason);
 				return;
 			}

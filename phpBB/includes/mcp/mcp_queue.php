@@ -32,7 +32,7 @@ class mcp_queue
 
 	public function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $cache;
+		global $auth, $db, $user, $template, $cache, $request;
 		global $config, $phpbb_root_path, $phpEx, $action;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
@@ -49,8 +49,8 @@ class mcp_queue
 			case 'restore':
 				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
-				$post_id_list = request_var('post_id_list', array(0));
-				$topic_id_list = request_var('topic_id_list', array(0));
+				$post_id_list = $request->variable('post_id_list', array(0));
+				$topic_id_list = $request->variable('topic_id_list', array(0));
 
 				if ($action != 'disapprove')
 				{
@@ -213,7 +213,7 @@ class mcp_queue
 					'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f=$forum_id"),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
-					'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED) ,
+					'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED),
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_USER_NOTES'			=> true,
 
@@ -263,7 +263,7 @@ class mcp_queue
 
 				$user->add_lang(array('viewtopic', 'viewforum'));
 
-				$topic_id = request_var('t', 0);
+				$topic_id = $request->variable('t', 0);
 				$forum_info = array();
 
 				if ($topic_id)
@@ -503,7 +503,7 @@ class mcp_queue
 			trigger_error('NOT_AUTHORISED');
 		}
 
-		$redirect = request_var('redirect', build_url(array('quickmod')));
+		$redirect = $request->variable('redirect', build_url(array('quickmod')));
 		$success_msg = $post_url = '';
 		$approve_log = array();
 
@@ -519,7 +519,7 @@ class mcp_queue
 
 		if (confirm_box(true))
 		{
-			$notify_poster = ($action == 'approve' && isset($_REQUEST['notify_poster'])) ? true : false;
+			$notify_poster = ($action == 'approve' && isset($_REQUEST['notify_poster']));
 
 			$topic_info = array();
 
@@ -642,7 +642,7 @@ class mcp_queue
 			confirm_box(false, strtoupper($action) . '_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 		}
 
-		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = $request->variable('redirect', "index.$phpEx");
 		$redirect = reapply_sid($redirect);
 
 		if (!$success_msg)
@@ -696,7 +696,7 @@ class mcp_queue
 			trigger_error('NOT_AUTHORISED');
 		}
 
-		$redirect = request_var('redirect', build_url(array('quickmod')));
+		$redirect = $request->variable('redirect', build_url(array('quickmod')));
 		$success_msg = $topic_url = '';
 		$approve_log = array();
 
@@ -806,7 +806,7 @@ class mcp_queue
 			confirm_box(false, strtoupper($action) . '_TOPIC' . ((sizeof($topic_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 		}
 
-		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = $request->variable('redirect', "index.$phpEx");
 		$redirect = reapply_sid($redirect);
 
 		if (!$success_msg)
@@ -852,17 +852,16 @@ class mcp_queue
 	static public function disapprove_posts($post_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $config;
-		global $phpEx, $phpbb_root_path;
-		global $request;
+		global $phpEx, $phpbb_root_path, $request;
 
 		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
 			trigger_error('NOT_AUTHORISED');
 		}
 
-		$redirect = request_var('redirect', build_url(array('t', 'mode', 'quickmod')) . "&amp;mode=$mode");
-		$reason = utf8_normalize_nfc(request_var('reason', '', true));
-		$reason_id = request_var('reason_id', 0);
+		$redirect = $request->variable('redirect', build_url(array('t', 'mode', 'quickmod')) . "&amp;mode=$mode");
+		$reason = $request->variable('reason', '', true);
+		$reason_id = $request->variable('reason_id', 0);
 		$success_msg = $additional_msg = '';
 
 		$s_hidden_fields = build_hidden_fields(array(
@@ -1097,7 +1096,7 @@ class mcp_queue
 			confirm_box(false, 'DISAPPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 		}
 
-		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = $request->variable('redirect', "index.$phpEx");
 		$redirect = reapply_sid($redirect);
 
 		if (!$success_msg)

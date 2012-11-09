@@ -110,8 +110,8 @@ class mcp_main
 
 				// f parameter is not reliable for permission usage, however we just use it to decide
 				// which permission we will check later on. So if it is manipulated, we will still catch it later on.
-				$forum_id = request_var('f', 0);
-				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
+				$forum_id = $request->variable('f', 0);
+				$topic_ids = (!$quickmod) ? $request->variable('topic_id_list', array(0)) : array($request->variable('t', 0));
 				$soft_delete = (($request->is_set_post('confirm') && !$request->is_set_post('delete_permanent')) || !$auth->acl_get('m_delete', $forum_id)) ? true : false;
 
 				if (!sizeof($topic_ids))
@@ -119,7 +119,7 @@ class mcp_main
 					trigger_error('NO_TOPIC_SELECTED');
 				}
 
-				mcp_delete_topic($topic_ids, $soft_delete, ($soft_delete) ? request_var('delete_reason', '', true) : '');
+				mcp_delete_topic($topic_ids, $soft_delete, ($soft_delete) ? $request->variable('delete_reason', '', true) : '');
 			break;
 
 			case 'delete_post':
@@ -127,8 +127,8 @@ class mcp_main
 
 				// f parameter is not reliable for permission usage, however we just use it to decide
 				// which permission we will check later on. So if it is manipulated, we will still catch it later on.
-				$forum_id = request_var('f', 0);
-				$post_ids = (!$quickmod) ? request_var('post_id_list', array(0)) : array(request_var('p', 0));
+				$forum_id = $request->variable('f', 0);
+				$post_ids = (!$quickmod) ? $request->variable('post_id_list', array(0)) : array($request->variable('p', 0));
 				$soft_delete = (($request->is_set_post('confirm') && !$request->is_set_post('delete_permanent')) || !$auth->acl_get('m_delete', $forum_id)) ? true : false;
 
 				if (!sizeof($post_ids))
@@ -136,13 +136,13 @@ class mcp_main
 					trigger_error('NO_POST_SELECTED');
 				}
 
-				mcp_delete_post($post_ids, $soft_delete, ($soft_delete) ? request_var('delete_reason', '', true) : '');
+				mcp_delete_post($post_ids, $soft_delete, ($soft_delete) ? $request->variable('delete_reason', '', true) : '');
 			break;
 
 			case 'restore_topic':
 				$user->add_lang('posting');
 
-				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
+				$topic_ids = (!$quickmod) ? $request->variable('topic_id_list', array(0)) : array($request->variable('t', 0));
 
 				if (!sizeof($topic_ids))
 				{
@@ -654,15 +654,15 @@ function mcp_move_topic($topic_ids)
 */
 function mcp_restore_topic($topic_ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
 
 	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_approve')))
 	{
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
-	$forum_id = request_var('f', 0);
+	$redirect = $request->variable('redirect', build_url(array('action', 'quickmod')));
+	$forum_id = $request->variable('f', 0);
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'topic_id_list'	=> $topic_ids,
@@ -692,10 +692,10 @@ function mcp_restore_topic($topic_ids)
 		confirm_box(false, (sizeof($topic_ids) == 1) ? 'RESTORE_TOPIC' : 'RESTORE_TOPICS', $s_hidden_fields);
 	}
 
-	$topic_id = request_var('t', 0);
-	if (!isset($_REQUEST['quickmod']))
+	$topic_id = $request->variable('t', 0);
+	if (!$request->is_set('quickmod', phpbb_request_interface::REQUEST))
 	{
-		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = $request->variable('redirect', "index.$phpEx");
 		$redirect = reapply_sid($redirect);
 		$redirect_message = 'PAGE';
 	}
@@ -726,15 +726,15 @@ function mcp_restore_topic($topic_ids)
 */
 function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = '')
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
 
 	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_delete')))
 	{
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
-	$forum_id = request_var('f', 0);
+	$redirect = $request->variable('redirect', build_url(array('action', 'quickmod')));
+	$forum_id = $request->variable('f', 0);
 
 	$s_hidden_fields = array(
 		'topic_id_list'	=> $topic_ids,
@@ -820,10 +820,10 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 		confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 	}
 
-	$topic_id = request_var('t', 0);
-	if (!isset($_REQUEST['quickmod']))
+	$topic_id = $request->variable('t', 0);
+	if (!$request->is_set('quickmod', phpbb_request_interface::REQUEST))
 	{
-		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = $request->variable('redirect', "index.$phpEx");
 		$redirect = reapply_sid($redirect);
 		$redirect_message = 'PAGE';
 	}
@@ -854,15 +854,15 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 */
 function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
 
 	if (!check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_softdelete')))
 	{
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
-	$forum_id = request_var('f', 0);
+	$redirect = $request->variable('redirect', build_url(array('action', 'quickmod')));
+	$forum_id = $request->variable('f', 0);
 
 	$s_hidden_fields = array(
 		'post_id_list'	=> $post_ids,
@@ -926,7 +926,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
 			add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_SOFTDELETE_POST', $row['post_subject'], $post_username);
 		}
 
-		$topic_id = request_var('t', 0);
+		$topic_id = $request->variable('t', 0);
 
 		// Return links
 		$return_link = array();
@@ -980,7 +980,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
 		$deleted_topics = ($row = $db->sql_fetchrow($result)) ? ($affected_topics - $row['topics_left']) : $affected_topics;
 		$db->sql_freeresult($result);
 
-		$topic_id = request_var('t', 0);
+		$topic_id = $request->variable('t', 0);
 
 		// Return links
 		$return_link = array();
@@ -1056,7 +1056,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
 		confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = $request->variable('redirect', "index.$phpEx");
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
