@@ -22,6 +22,13 @@ if (!defined('IN_PHPBB'))
 interface phpbb_notification_type_interface
 {
 	/**
+	* Get notification type name
+	*
+	* @return string
+	*/
+	public function get_type();
+	
+	/**
 	* Set initial data from the database
 	*
 	* @param array $data Row directly from the database

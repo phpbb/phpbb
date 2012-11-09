@@ -1,6 +1,7 @@
 imports:
     - { resource: tables.yml }
     - { resource: cron_tasks.yml }
+    - { resource: notifications.yml }
 
 services:
     auth:
@@ -120,6 +121,7 @@ services:
     notification_manager:
         class: phpbb_notification_manager
         arguments:
+            - @container
             - @dbal.conn
             - @cache.driver
             - @template

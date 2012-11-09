@@ -22,6 +22,13 @@ if (!defined('IN_PHPBB'))
 interface phpbb_notification_method_interface
 {
 	/**
+	* Get notification method name
+	*
+	* @return string
+	*/
+	public function get_type();
+
+	/**
 	* Is this method available for the user?
 	* This is checked on the notifications options
 	*/
