@@ -2171,6 +2171,12 @@ function change_database_data(&$no_updates, $version)
 				}
 			}
 
+			// Disable receiving pms for bots
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_allow_pm = 0
+				WHERE user_type = ' . USER_IGNORE;
+			$db->sql_query($sql);
+
 			$no_updates = false;
 		break;
 	}
