@@ -2121,17 +2121,16 @@ function change_database_data(&$no_updates, $version)
 			_sql($sql, $errored, $error_ary);
 
 			// Update bot list
+			// Bot name to bot user agent map
 			$bots_to_update = array(
-				'Baidu [Spider]'	=> array('Baiduspider', ''),
-				'Exabot [Bot]'		=> array('Exabot', ''),
-				'Voyager [Bot]'		=> array('voyager/', ''),
-				'W3C [Validator]'	=> array('W3C_Validator', ''),
+				'Baidu [Spider]'	=> 'Baiduspider',
+				'Exabot [Bot]'		=> 'Exabot',
+				'Voyager [Bot]'		=> 'voyager/',
+				'W3C [Validator]'	=> 'W3C_Validator',
 			);
 
-			foreach ($bots_to_update as $bot_name => $bot_array)
+			foreach ($bots_to_update as $bot_name => $bot_agent)
 			{
-				list($bot_agent, $bot_ip) = $bot_array;
-
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . "
 					WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($bot_name)) . "'";
@@ -2141,13 +2140,8 @@ function change_database_data(&$no_updates, $version)
 
 				if ($bot_user_id)
 				{
-					$update_array = array(
-						'bot_agent'		=> $bot_agent,
-						'bot_ip'		=> $bot_ip,
-					);
-
 					$sql = 'UPDATE ' . BOTS_TABLE . '
-						SET ' . $db->sql_build_array('UPDATE', $update_array) . "
+						SET bot_agent = ' .  $db->sql_escape($bot_agent) . "
 						WHERE user_id = $bot_user_id";
 					_sql($sql, $errored, $error_ary);
 				}
