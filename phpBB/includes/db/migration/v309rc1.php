@@ -53,46 +53,54 @@ class phpbb_db_migration_v309rc1 extends phpbb_db_migration
 
 	function update_data()
 	{
-		set_config('ip_login_limit_max', '50');
-		set_config('ip_login_limit_time', '21600');
-		set_config('ip_login_limit_use_forwarded', '0');
+		return array(
+			array('config.add', array('ip_login_limit_max', 50)),
+			array('config.add', array('ip_login_limit_time', 21600)),
+			array('config.add', array('ip_login_limit_use_forwarded', 0)),
+			array('custom', array(array(&$this, 'update_file_extension_group_names'))),
+			array('custom', array(array(&$this, 'fix_firebird_qa_captcha'))),
+		);
+	}
 
+	function update_file_extension_group_names()
+	{
 		// Update file extension group names to use language strings, again.
 		$sql = 'SELECT group_id, group_name
 			FROM ' . EXTENSION_GROUPS_TABLE . '
-			WHERE group_name ' . $db->sql_like_expression('EXT_GROUP_' . $db->any_char);
-		$result = $db->sql_query($sql);
+			WHERE group_name ' . $this->db->sql_like_expression('EXT_GROUP_' . $this->db->any_char);
+		$result = $this->db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$sql_ary = array(
 				'group_name'	=> substr($row['group_name'], 10), // Strip off 'EXT_GROUP_'
 			);
 
 			$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+				SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE group_id = ' . $row['group_id'];
-			_sql($sql, $errored, $error_ary);
+			$this->sql_query($sql, $errored, $error_ary);
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
+	}
 
-		global $db_tools, $table_prefix;
-
+	function fix_firebird_qa_captcha()
+	{
 		// Recover from potentially broken Q&A CAPTCHA table on firebird
 		// Q&A CAPTCHA was uninstallable, so it's safe to remove these
 		// without data loss
-		if ($db_tools->sql_layer == 'firebird')
+		if ($this->db_tools->sql_layer == 'firebird')
 		{
 			$tables = array(
-				$table_prefix . 'captcha_questions',
-				$table_prefix . 'captcha_answers',
-				$table_prefix . 'qa_confirm',
+				$this->table_prefix . 'captcha_questions',
+				$this->table_prefix . 'captcha_answers',
+				$this->table_prefix . 'qa_confirm',
 			);
 			foreach ($tables as $table)
 			{
-				if ($db_tools->sql_table_exists($table))
+				if ($this->db_tools->sql_table_exists($table))
 				{
-					$db_tools->sql_table_drop($table);
+					$this->db_tools->sql_table_drop($table);
 				}
 			}
 		}
