@@ -1,0 +1,65 @@
+<html>
+<head>
+<title>phpBB Editor | Shibu Lijack</title>
+<script type="text/javascript" src="ckeditor.js"></script>
+</head>
+<body>
+<center><h1>PHASE #1</h1></center>
+<p><b>AIM:</b> To make use of a JavaScript text editor to produce BBcode.</p>
+<p><b>Text Editor:</b> CKEditor[modified]</p>
+<p><b>Change Log:</b><br>
+<p>1. CSS of the editor has been completely modified to suit phpBB prosilver style.<br>
+2. Additional plugin has also been added to the editor to output BBcode.</p></p>
+<form action="assets/_posteddata.php" method="post">
+	<label for="phpBB_visual_editor_shibu">
+				<b>phpBB Visual Editor:</b><br></label>
+<br><textarea cols="80" id="editor1" name="phpBB_visual_editor" rows="10">Text</textarea>
+<script type="text/javascript">
+			//<![CDATA[
+
+			// Replace the <textarea id="editor"> with an CKEditor
+			// instance, using the "bbcode" plugin, shaping some of the
+			// editor configuration to fit BBCode environment.
+			CKEDITOR.replace( 'editor1',
+				{
+					
+					extraPlugins : 'bbcode',
+					// Remove unused plugins.
+					removePlugins : 'bidi,button,dialogadvtab,div,filebrowser,flash,format,forms,horizontalrule,iframe,liststyle,pagebreak,showborders,stylescombo,table,tabletools,templates',
+					// Width and height are not supported in the BBCode format, so object resizing is disabled.
+					disableObjectResizing : true,
+					// Define font sizes in percent values.
+					fontSize_sizes : "30/30%;50/50%;100/100%;120/120%;150/150%;200/200%;300/300%",
+					toolbar :
+					[
+						['Source'],
+						['Save'],['NewPage'],['Undo'],['Redo'],
+						['Find'],['Replace'],['SelectAll'],['RemoveFormat'],
+						['Link'],['Unlink'], ['Image'], ['Smiley'],['SpecialChar'],
+						'/',
+						['Bold'], ['Italic'],['Underline'],
+						['FontSize'],
+						['TextColor'],
+						['NumberedList'],['BulletedList'],['Blockquote'],
+						['Maximize']
+					],
+					// Strip CKEditor smileys to those commonly used in BBCode.
+					smiley_images :
+					[
+						'regular_smile.gif','sad_smile.gif','wink_smile.gif','teeth_smile.gif','tounge_smile.gif',
+						'embaressed_smile.gif','omg_smile.gif','whatchutalkingabout_smile.gif','angel_smile.gif','shades_smile.gif',
+						'cry_smile.gif','kiss.gif'
+					],
+					smiley_descriptions :
+					[
+						'smiley', 'sad', 'wink', 'laugh', 'cheeky', 'blush', 'surprise',
+						'indecision', 'angel', 'cool', 'crying', 'kiss'
+					]
+			} );
+
+			//]]>
+			</script>
+<input type="submit" value="Submit">
+</form>
+</body>
+</html>

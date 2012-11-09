@@ -121,6 +121,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		}
 
 		$template->assign_vars(array(
+			'S_VISUAL_EDITOR'	=> $user->data['user_selecteditor'],
 			'S_SHOW_PM_BOX'		=> true,
 			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
 			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group')) ? $group_options : '',

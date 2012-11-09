@@ -140,12 +140,55 @@
 			<!-- IF S_DISPLAY_REVIEW --><strong><a href="#review">{L_TOPIC_REVIEW}</a></strong><!-- ENDIF -->
 		<!-- ENDIF -->
 	</div>
-
+	<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/editor/ckeditor.js"></script>
 	<div id="message-box">
 		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
-	</div>
-</fieldset>
+<!-- IF S_VISUAL_EDITOR -->
+<script type="text/javascript">
+			//<![CDATA[
 
+				CKEDITOR.replace( 'message',
+				{
+					
+					extraPlugins : 'bbcode',
+					// Remove unused plugins.
+					removePlugins : 'bidi,button,dialogadvtab,div,filebrowser,flash,format,forms,horizontalrule,iframe,liststyle,pagebreak,showborders,stylescombo,table,tabletools,templates',
+					// Width and height are not supported in the BBCode format, so object resizing is disabled.
+					disableObjectResizing : true,
+					// Define font sizes in percent values.
+					fontSize_sizes : "30/30%;50/50%;100/100%;120/120%;150/150%;200/200%;300/300%",
+					toolbar :
+					[
+						['Source'],
+						['Save'],['NewPage'],['Undo'],['Redo'],
+						['Find'],['Replace'],['SelectAll'],['RemoveFormat'],
+						['Link'],['Unlink'], ['Image'], ['Smiley'],['SpecialChar'],
+						'/',
+						['Bold'], ['Italic'],['Underline'],
+						['FontSize'],
+						['TextColor'],
+						['NumberedList'],['BulletedList'],['Blockquote'],
+						['Maximize']
+					],
+					// Strip CKEditor smileys to those commonly used in BBCode.
+					smiley_images :
+					[
+						'regular_smile.gif','sad_smile.gif','wink_smile.gif','teeth_smile.gif','tounge_smile.gif',
+						'embaressed_smile.gif','omg_smile.gif','whatchutalkingabout_smile.gif','angel_smile.gif','shades_smile.gif',
+						'cry_smile.gif','kiss.gif'
+					],
+					smiley_descriptions :
+					[
+						'smiley', 'sad', 'wink', 'laugh', 'cheeky', 'blush', 'surprise',
+						'indecision', 'angel', 'cool', 'crying', 'kiss'
+					]
+			} );
+
+			//]]>
+			</script>
+	<!-- ENDIF -->
+			</div>
+	</fieldset>
 <!-- IF $EXTRA_POSTING_OPTIONS eq 1 -->
 
 	<!-- IF not S_SHOW_DRAFTS -->
