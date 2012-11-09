@@ -62,11 +62,6 @@ $default_key = 'c';
 $sort_key = request_var('sk', $default_key);
 $sort_dir = request_var('sd', 'a');
 
-
-// Grab rank information for later
-$ranks = $cache->obtain_ranks();
-
-
 // What do you want to do today? ... oops, I think that line is taken ...
 switch ($mode)
 {
@@ -1221,21 +1216,16 @@ switch ($mode)
 			// Misusing the avatar function for displaying group avatars...
 			$avatar_img = get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR');
 
+			// ... same for group rank
 			$rank_title = $rank_img = $rank_img_src = '';
 			if ($group_row['group_rank'])
 			{
-				if (isset($ranks['special'][$group_row['group_rank']]))
+				get_user_rank($group_row['group_rank'], false, $rank_title, $rank_img, $rank_img_src);
+
+				if ($rank_img)
 				{
-					$rank_title = $ranks['special'][$group_row['group_rank']]['rank_title'];
+					$rank_img .= '<br />';
 				}
-				$rank_img = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] . '" alt="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" title="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" /><br />' : '';
-				$rank_img_src = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] : '';
-			}
-			else
-			{
-				$rank_title = '';
-				$rank_img = '';
-				$rank_img_src = '';
 			}
 
 			$template->assign_vars(array(
@@ -1346,6 +1336,7 @@ switch ($mode)
 		if ($mode)
 		{
 			$params[] = "mode=$mode";
+			$u_first_char_params[] = "mode=$mode";
 		}
 		$sort_params[] = "mode=$mode";
 

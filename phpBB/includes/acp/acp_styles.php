@@ -667,7 +667,9 @@ inherit_from = {INHERIT_FROM}
 
 						if ($name && !in_array($name, $installed))
 						{
-							$new_ary[] = array(
+							// The array key is used for sorting later on.
+							// $file is appended because $name doesn't have to be unique.
+							$new_ary[$name . $file] = array(
 								'path'		=> $file,
 								'name'		=> $name,
 								'copyright'	=> $items['copyright'],
@@ -683,6 +685,8 @@ inherit_from = {INHERIT_FROM}
 
 		if (sizeof($new_ary))
 		{
+			ksort($new_ary);
+
 			foreach ($new_ary as $cfg)
 			{
 				$template->assign_block_vars('uninstalled', array(

@@ -2,18 +2,18 @@
 
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
-	<property name="newversion" value="3.0.10" />
-	<property name="prevversion" value="3.0.9" />
-	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7, 3.0.7-PL1, 3.0.8, 3.0.10-RC1, 3.0.10-RC2, 3.0.10-RC3" />
+	<property name="newversion" value="3.0.11" />
+	<property name="prevversion" value="3.0.10" />
+	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7, 3.0.7-PL1, 3.0.8, 3.0.9, 3.0.11-RC1, 3.0.11-RC2" />
 	<!-- no configuration should be needed beyond this point -->
 
 	<property name="oldversions" value="${olderversions}, ${prevversion}" />
 	<property name="versions" value="${oldversions}, ${newversion}" />
 
 	<!-- These are the main targets which you will probably want to use -->
-	<target name="package" depends="clean,prepare,create-package" />
-	<target name="all" depends="clean,prepare,test,docs,create-package" />
-	<target name="build" depends="clean,prepare,test,docs" />
+	<target name="package" depends="clean,prepare,composer,create-package" />
+	<target name="all" depends="clean,prepare,composer,test,docs,create-package" />
+	<target name="build" depends="clean,prepare,composer,test,docs" />
 
 	<target name="prepare">
 		<mkdir dir="build/logs" />
@@ -43,7 +43,13 @@
 		<delete dir="build/save" />
 	</target>
 
-	<target name="test" depends="clean,prepare">
+	<target name="composer" depends="clean,prepare">
+		<exec dir="./phpBB/"
+			command="php ../composer.phar install"
+			passthru="true" />
+	</target>
+
+	<target name="test" depends="clean,prepare,composer">
 		<exec dir="."
 			command="phpunit --log-junit build/logs/phpunit.xml
 			--coverage-clover build/logs/clover.xml
@@ -51,7 +57,7 @@
 			passthru="true" />
 	</target>
 
-	<target name="test-slow" depends="clean,prepare">
+	<target name="test-slow" depends="clean,prepare,composer">
 		<exec dir="."
 			command="phpunit --log-junit build/logs/phpunit.xml
 			--configuration phpunit.xml.all
@@ -155,6 +161,11 @@
 		<exec dir="phpBB"
 			command="git archive ${revision} | tar -xf - -C ../${dir}"
 			checkreturn="true" />
+
+		<exec dir="${dir}"
+			command="php ../composer.phar install"
+			passthru="true" />
+
 		<delete file="${dir}/config.php" />
 		<delete dir="${dir}/develop" />
 		<delete dir="${dir}/install/data" />

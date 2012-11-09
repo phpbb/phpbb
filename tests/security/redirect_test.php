@@ -14,7 +14,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
 
 class phpbb_security_redirect_test extends phpbb_security_test_base
 {
-	public static function provider()
+	static public function provider()
 	{
 		// array(Input -> redirect(), expected triggered error (else false), expected returned result url (else false))
 		return array(

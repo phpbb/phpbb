@@ -50,6 +50,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'firebird',
 			'MODULE'		=> 'interbase',
 			'DELIM'			=> ';;',
+			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'firebird',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -59,6 +60,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
 			'DELIM'			=> ';',
+			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'mysqli',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -68,6 +70,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mysql',
 			'MODULE'		=> 'mysql',
 			'DELIM'			=> ';',
+			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'mysql',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -77,6 +80,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'mssql',
 			'DELIM'			=> 'GO',
+			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'mssql',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -86,6 +90,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc',
 			'DELIM'			=> 'GO',
+			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'mssql_odbc',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -95,6 +100,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'sqlsrv',
 			'DELIM'			=> 'GO',
+			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'mssqlnative',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -104,6 +110,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'oracle',
 			'MODULE'		=> 'oci8',
 			'DELIM'			=> '/',
+			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'oracle',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -113,6 +120,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql',
 			'DELIM'			=> ';',
+			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'postgres',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -122,6 +130,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite',
 			'DELIM'			=> ';',
+			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'sqlite',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -465,16 +474,39 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 /**
 * Removes comments from schema files
+*
+* @deprecated		Use phpbb_remove_comments() instead.
 */
-function remove_comments($sql)
+function remove_remarks(&$sql)
 {
-	// Remove /* */ comments (http://ostermiller.org/findcomment.html)
-	$sql = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $sql);
-
 	// Remove # style comments
 	$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
 
-	return $sql;
+	// Return by reference
+}
+
+/**
+* Removes "/* style" as well as "# style" comments from $input.
+*
+* @param string $input		Input string
+*
+* @return string			Input string with comments removed
+*/
+function phpbb_remove_comments($input)
+{
+	if (!function_exists('remove_comments'))
+	{
+		global $phpbb_root_path, $phpEx;
+		require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+	}
+
+	// Remove /* */ comments
+	remove_comments($input);
+
+	// Remove # style comments
+	remove_remarks($input);
+
+	return $input;
 }
 
 /**
@@ -510,6 +542,63 @@ function adjust_language_keys_callback($matches)
 
 		return (!empty($lang[$matches[1]])) ? $db->sql_escape($lang[$matches[1]]) : $db->sql_escape($matches[1]);
 	}
+}
+
+/**
+* Creates the output to be stored in a phpBB config.php file
+*
+* @param	array	$data Array containing the database connection information
+* @param	string	$dbms The name of the DBAL class to use
+* @param	array	$load_extensions Array of additional extensions that should be loaded
+* @param	bool	$debug If the debug constants should be enabled by default or not
+* @param	bool	$debug_test If the DEBUG_TEST constant should be added
+*					NOTE: Only for use within the testing framework
+*
+* @return	string	The output to write to the file
+*/
+function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = false, $debug_test = false)
+{
+	$load_extensions = implode(',', $load_extensions);
+
+	$config_data = "<?php\n";
+	$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
+
+	$config_data_array = array(
+		'dbms'			=> $dbms,
+		'dbhost'		=> $data['dbhost'],
+		'dbport'		=> $data['dbport'],
+		'dbname'		=> $data['dbname'],
+		'dbuser'		=> $data['dbuser'],
+		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
+		'table_prefix'	=> $data['table_prefix'],
+		'acm_type'		=> 'file',
+		'load_extensions'	=> $load_extensions,
+	);
+
+	foreach ($config_data_array as $key => $value)
+	{
+		$config_data .= "\${$key} = '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $value)) . "';\n";
+	}
+
+	$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
+
+	if ($debug)
+	{
+		$config_data .= "@define('DEBUG', true);\n";
+		$config_data .= "@define('DEBUG_EXTRA', true);\n";
+	}
+	else
+	{
+		$config_data .= "// @define('DEBUG', true);\n";
+		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
+	}
+
+	if ($debug_test)
+	{
+		$config_data .= "@define('DEBUG_TEST', true);\n";
+	}
+
+	return $config_data;
 }
 
 ?>

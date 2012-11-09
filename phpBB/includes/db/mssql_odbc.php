@@ -256,49 +256,6 @@ class dbal_mssql_odbc extends dbal
 	}
 
 	/**
-	* Seek to given row number
-	* rownum is zero-based
-	*/
-	function sql_rowseek($rownum, &$query_id)
-	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_rowseek($rownum, $query_id);
-		}
-
-		if ($query_id === false)
-		{
-			return false;
-		}
-
-		$this->sql_freeresult($query_id);
-		$query_id = $this->sql_query($this->last_query_text);
-
-		if ($query_id === false)
-		{
-			return false;
-		}
-
-		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
-		for ($i = 0; $i < $rownum; $i++)
-		{
-			if (!$this->sql_fetchrow($query_id))
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
 	* Get last inserted id after insert statement
 	*/
 	function sql_nextid()
@@ -351,6 +308,14 @@ class dbal_mssql_odbc extends dbal
 	function sql_escape($msg)
 	{
 		return str_replace(array("'", "\0"), array("''", ''), $msg);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_lower_text($column_name)
+	{
+		return "LOWER(SUBSTRING($column_name, 1, DATALENGTH($column_name)))";
 	}
 
 	/**

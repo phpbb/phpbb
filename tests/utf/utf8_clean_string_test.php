@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_utf_utf8_clean_string_test extends phpbb_test_case
 {
-	public static function cleanable_strings()
+	static public function cleanable_strings()
 	{
 		return array(
 			array('MiXed CaSe', 'mixed case', 'Checking case folding'),

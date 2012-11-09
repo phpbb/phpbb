@@ -707,7 +707,7 @@ class fulltext_mysql extends search_backend
 	*/
 	function index_remove($post_ids, $author_ids, $forum_ids)
 	{
-		$this->destroy_cache(array(), $author_ids);
+		$this->destroy_cache(array(), array_unique($author_ids));
 	}
 
 	/**
@@ -747,7 +747,7 @@ class fulltext_mysql extends search_backend
 		{
 			if ($db->sql_layer == 'mysqli' || version_compare($db->sql_server_info(true), '4.1.3', '>='))
 			{
-				//$alter[] = 'MODIFY post_subject varchar(100) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
+				$alter[] = 'MODIFY post_subject varchar(255) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
 			}
 			else
 			{
@@ -896,11 +896,7 @@ class fulltext_mysql extends search_backend
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT COUNT(post_id) as total_posts
-			FROM ' . POSTS_TABLE;
-		$result = $db->sql_query($sql);
-		$this->stats['total_posts'] = (int) $db->sql_fetchfield('total_posts');
-		$db->sql_freeresult($result);
+		$this->stats['total_posts'] = empty($this->stats) ? 0 : $db->get_estimated_row_count(POSTS_TABLE);
 	}
 
 	/**

@@ -26,7 +26,7 @@
 			<td class="row1"><b class="genmed">{L_USERNAMES}:</b></td>
 		</tr>
 		<tr>
-			<td class="row2"><textarea name="username_list" rows="5" cols="22"></textarea><br />
+			<td class="row2"><textarea name="username_list" rows="5" cols="22" tabindex="1"></textarea><br />
 				[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]
 			</td>
 		</tr>
@@ -41,7 +41,7 @@
 	<!-- ENDIF -->
 	<!-- IF S_ALLOW_MASS_PM -->
 		<tr>
-			<td class="row1"><div style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<input class="post" type="submit" name="add_bcc" value="{L_ADD_BCC}" />&nbsp;</div><div style="float: {S_CONTENT_FLOW_END};">&nbsp;<input class="post" type="submit" name="add_to" value="{L_ADD_TO}" />&nbsp;</div></td>
+			<td class="row1"><div style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<input class="post" type="submit" name="add_bcc" value="{L_ADD_BCC}" tabindex="1" />&nbsp;</div><div style="float: {S_CONTENT_FLOW_END};">&nbsp;<input class="post" type="submit" name="add_to" value="{L_ADD_TO}" tabindex="1" />&nbsp;</div></td>
 		</tr>
 	<!-- ENDIF -->
 	</table>

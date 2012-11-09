@@ -87,10 +87,6 @@ dl.icon {
 	float: none;
 }
 
-* html .forumbg table.table1 {
-	margin: 0 -2px 0px -1px;
-}
-
 /* Headerbar height fix for IE7 and below */
 * html #site-description p {
 	margin-bottom: 1.0em;
@@ -98,4 +94,14 @@ dl.icon {
 
 *:first-child+html #site-description p {
 	margin-bottom: 1.0em;
+}
+
+/* #minitabs fix for IE */
+.tabs-container {
+	zoom: 1;
+}
+
+#minitabs {
+	white-space: nowrap;
+	*min-width: 50%;
 }

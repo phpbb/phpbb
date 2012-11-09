@@ -17,7 +17,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/three_users.xml');
 	}
 
-	public static function return_on_error_select_data()
+	static public function return_on_error_select_data()
 	{
 		return array(
 			array('phpbb_users', "username_clean = 'bertie'", array(array('username_clean' => 'bertie'))),
@@ -44,7 +44,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	public static function fetchrow_data()
+	static public function fetchrow_data()
 	{
 		return array(
 			array('', array(array('username_clean' => 'barfoo'),
@@ -95,7 +95,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	public static function fetchfield_data()
+	static public function fetchfield_data()
 	{
 		return array(
 			array('', array('barfoo', 'foobar', 'bertie')),
@@ -125,7 +125,33 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $ary);
 	}
 
-	public static function query_limit_data()
+	static public function fetchfield_seek_data()
+	{
+		return array(
+			array(1, 'foobar'),
+			array(0, 'barfoo'),
+			array(2, 'bertie'),
+		);
+	}
+
+	/**
+	* @dataProvider fetchfield_seek_data
+	*/
+	public function test_fetchfield_seek($rownum, $expected)
+	{
+		$db = $this->new_dbal();
+
+		$result = $db->sql_query('SELECT username_clean
+			FROM phpbb_users
+			ORDER BY user_id ASC');
+
+		$field = $db->sql_fetchfield('username_clean', $rownum, $result);
+		$db->sql_freeresult($result);
+
+		$this->assertEquals($expected, $field);
+	}
+
+	static public function query_limit_data()
 	{
 		return array(
 			array(0, 0, array(array('username_clean' => 'barfoo'),
@@ -166,7 +192,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $ary);
 	}
 
-	public static function like_expression_data()
+	static public function like_expression_data()
 	{
 		// * = any_char; # = one_char
 		return array(
@@ -203,7 +229,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	public static function in_set_data()
+	static public function in_set_data()
 	{
 		return array(
 			array('user_id', 3, false, false, array(array('username_clean' => 'bertie'))),
@@ -277,7 +303,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	public static function build_array_data()
+	static public function build_array_data()
 	{
 		return array(
 			array(array('username_clean' => 'barfoo'), array(array('username_clean' => 'barfoo'))),
@@ -349,12 +375,39 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$sql = 'SELECT * FROM (SELECT 1) AS TBL WHERE 1 = 0';
+		$sql = 'SELECT user_id
+			FROM phpbb_users
+			WHERE 1 = 0';
 		$result = $db->sql_query($sql);
 
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		$this->assertSame(false, $row);
+	}
+
+	public function test_get_row_count()
+	{
+		$this->assertSame(
+			3,
+			(int) $this->new_dbal()->get_row_count('phpbb_users'),
+			"Failed asserting that user table has exactly 3 rows."
+		);
+	}
+
+	public function test_get_estimated_row_count()
+	{
+		$actual = $this->new_dbal()->get_estimated_row_count('phpbb_users');
+
+		if (is_string($actual) && isset($actual[0]) && $actual[0] === '~')
+		{
+			$actual = substr($actual, 1);
+		}
+
+		$this->assertGreaterThan(
+			1,
+			$actual,
+			"Failed asserting that estimated row count of user table is greater than 1."
+		);
 	}
 }

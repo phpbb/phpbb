@@ -163,7 +163,7 @@ function login_db($username, $password, $ip = '', $browser = '', $forwarded_for 
 		$password_old_format = (!STRIP) ? addslashes($password_old_format) : $password_old_format;
 		$password_new_format = '';
 
-		set_var($password_new_format, stripslashes($password_old_format), 'string');
+		set_var($password_new_format, stripslashes($password_old_format), 'string', true);
 
 		if ($password == $password_new_format)
 		{

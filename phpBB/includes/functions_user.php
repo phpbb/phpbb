@@ -528,62 +528,12 @@ function user_delete($mode, $user_id, $post_username = false)
 		WHERE session_user_id = ' . $user_id;
 	$db->sql_query($sql);
 
-	// Remove any undelivered mails...
-	$sql = 'SELECT msg_id, user_id
-		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE author_id = ' . $user_id . '
-			AND folder_id = ' . PRIVMSGS_NO_BOX;
-	$result = $db->sql_query($sql);
-
-	$undelivered_msg = $undelivered_user = array();
-	while ($row = $db->sql_fetchrow($result))
+	// Clean the private messages tables from the user
+	if (!function_exists('phpbb_delete_user_pms'))
 	{
-		$undelivered_msg[] = $row['msg_id'];
-		$undelivered_user[$row['user_id']][] = true;
+		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 	}
-	$db->sql_freeresult($result);
-
-	if (sizeof($undelivered_msg))
-	{
-		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
-			WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
-		$db->sql_query($sql);
-	}
-
-	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE author_id = ' . $user_id . '
-			AND folder_id = ' . PRIVMSGS_NO_BOX;
-	$db->sql_query($sql);
-
-	// Delete all to-information
-	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE user_id = ' . $user_id;
-	$db->sql_query($sql);
-
-	// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
-	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
-	$db->sql_query($sql);
-
-	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
-	$db->sql_query($sql);
-
-	foreach ($undelivered_user as $_user_id => $ary)
-	{
-		if ($_user_id == $user_id)
-		{
-			continue;
-		}
-
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_new_privmsg = user_new_privmsg - ' . sizeof($ary) . ',
-				user_unread_privmsg = user_unread_privmsg - ' . sizeof($ary) . '
-			WHERE user_id = ' . $_user_id;
-		$db->sql_query($sql);
-	}
+	phpbb_delete_user_pms($user_id);
 
 	$db->sql_transaction('commit');
 
@@ -1946,6 +1896,27 @@ function validate_jabber($jid)
 	}
 
 	return false;
+}
+
+/**
+* Verifies whether a style ID corresponds to an active style.
+*
+* @param int $style_id The style_id of a style which should be checked if activated or not.
+* @return boolean
+*/
+function phpbb_style_is_active($style_id)
+{
+	global $db;
+
+	$sql = 'SELECT style_active
+		FROM ' . STYLES_TABLE . '
+		WHERE style_id = '. (int) $style_id;
+	$result = $db->sql_query($sql);
+
+	$style_is_active = (bool) $db->sql_fetchfield('style_active');
+	$db->sql_freeresult($result);
+
+	return $style_is_active;
 }
 
 /**
@@ -3585,6 +3556,39 @@ function remove_newly_registered($user_id, $user_data = false)
 	}
 
 	return $user_data['group_id'];
+}
+
+/**
+* Gets user ids of currently banned registered users.
+*
+* @param array $user_ids Array of users' ids to check for banning,
+*						leave empty to get complete list of banned ids
+* @return array	Array of banned users' ids if any, empty array otherwise
+*/
+function phpbb_get_banned_user_ids($user_ids = array())
+{
+	global $db;
+
+	$sql_user_ids = (!empty($user_ids)) ? $db->sql_in_set('ban_userid', $user_ids) : 'ban_userid <> 0';
+
+	// Get banned User ID's
+	// Ignore stale bans which were not wiped yet
+	$banned_ids_list = array();
+	$sql = 'SELECT ban_userid
+		FROM ' . BANLIST_TABLE . "
+		WHERE $sql_user_ids
+			AND ban_exclude <> 1
+			AND (ban_end > " . time() . '
+				OR ban_end = 0)';
+	$result = $db->sql_query($sql);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$user_id = (int) $row['ban_userid'];
+		$banned_ids_list[$user_id] = $user_id;
+	}
+	$db->sql_freeresult($result);
+
+	return $banned_ids_list;
 }
 
 ?>

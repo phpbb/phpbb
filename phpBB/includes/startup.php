@@ -19,7 +19,23 @@ if (!defined('E_DEPRECATED'))
 {
 	define('E_DEPRECATED', 8192);
 }
-error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+$level = E_ALL & ~E_NOTICE & ~E_DEPRECATED;
+if (version_compare(PHP_VERSION, '5.4.0-dev', '>='))
+{
+	// PHP 5.4 adds E_STRICT to E_ALL.
+	// Our utf8 normalizer triggers E_STRICT output on PHP 5.4.
+	// Unfortunately it cannot be made E_STRICT-clean while
+	// continuing to work on PHP 4.
+	// Therefore, in phpBB 3.0.x we disable E_STRICT on PHP 5.4+,
+	// while phpBB 3.1 will fix utf8 normalizer.
+	// E_STRICT is defined starting with PHP 5
+	if (!defined('E_STRICT'))
+	{
+		define('E_STRICT', 2048);
+	}
+	$level &= ~E_STRICT;
+}
+error_reporting($level);
 
 /*
 * Remove variables created by register_globals from the global scope

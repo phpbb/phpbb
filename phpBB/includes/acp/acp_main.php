@@ -201,7 +201,7 @@ class acp_main
 						// No maximum post id? :o
 						if (!$max_post_id)
 						{
-							$sql = 'SELECT MAX(post_id)
+							$sql = 'SELECT MAX(post_id) as max_post_id
 								FROM ' . POSTS_TABLE;
 							$result = $db->sql_query($sql);
 							$max_post_id = (int) $db->sql_fetchfield('max_post_id');
@@ -398,11 +398,11 @@ class acp_main
 		// Version check
 		$user->add_lang('install');
 
-		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.2.0', '<'))
+		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.3.2', '<'))
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="http://www.phpbb.com/community/viewtopic.php?f=14&amp;t=1958605">', '</a>'),
+				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="http://www.phpbb.com/community/viewtopic.php?f=14&amp;t=2152375">', '</a>'),
 			));
 		}
 
