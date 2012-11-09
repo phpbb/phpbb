@@ -2152,8 +2152,8 @@ function change_database_data(&$no_updates, $version)
 				if ($is_user)
 				{
 					$sql = 'UPDATE ' . BOTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
-						'bot_agent'		=> (string) $bot_agent,
-						'bot_ip'		=> (string) $bot_ip,
+						'bot_agent'		=> $bot_agent,
+						'bot_ip'		=> $bot_ip,
 					)) . " WHERE bot_name = '" . $db->sql_escape($bot_name) . "'";
 
 					_sql($sql, $errored, $error_ary);
