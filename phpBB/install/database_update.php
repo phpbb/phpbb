@@ -60,8 +60,6 @@ $updates_to_version = UPDATES_TO_VERSION;
 $debug_from_version = DEBUG_FROM_VERSION;
 $oldest_from_version = OLDEST_FROM_VERSION;
 
-error_reporting(E_ALL);
-
 @set_time_limit(0);
 
 // Include essential scripts
