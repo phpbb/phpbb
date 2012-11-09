@@ -1599,7 +1599,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 		}
 		else
 		{
-			global $template, $request;
+			global $user, $template, $request;
 
 			$template->assign_vars(array(
 				'S_SOFTDELETED'			=> $post_data['post_visibility'] == ITEM_DELETED,
@@ -1621,23 +1621,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 			}
 
 			// @todo: This needs fixing! AJAX confirm_box should be able to call template files!
-			if ($request->is_ajax())
-			{
-				$l_confirm = (!isset($user->lang[$l_confirm . '_CONFIRM'])) ? $l_confirm : $user->lang[$l_confirm . '_CONFIRM'];
-				if ($auth->acl_gets('m_delete', 'f_delete', $forum_id) && $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id))
-				{
-					$l_confirm .= '<br />' . $user->lang['DELETE_PERMANENTLY'] . ': <input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" />';
-				}
-				if ($auth->acl_get('m_softdelete', $forum_id))
-				{
-					$l_confirm .= '<br />' . $user->lang['DELETE_REASON'] . ': <input type="text" name="delete_reason" id="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" />';
-				}
-				confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields));
-			}
-			else
-			{
-				confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
-			}
+			confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 		}
 	}
 
