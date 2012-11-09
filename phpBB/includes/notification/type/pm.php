@@ -24,6 +24,16 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_pm extends phpbb_notification_type_base
 {
 	/**
+	* Get notification type name
+	*
+	* @return string
+	*/
+	public function get_type()
+	{
+		return 'pm';
+	}
+
+	/**
 	* Notification option data (for outputting to the user)
 	*
 	* @var bool|array False if the service should use it's default data

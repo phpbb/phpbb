@@ -24,6 +24,16 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 {
 	/**
+	* Get notification type name
+	*
+	* @return string
+	*/
+	public function get_type()
+	{
+		return 'report_pm';
+	}
+
+	/**
 	* Language key used to output the text
 	*
 	* @var string

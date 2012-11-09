@@ -48,15 +48,15 @@ class ucp_notifications
 					{
 						foreach($subscription_types as $type => $data)
 						{
-							foreach($notification_methods as $method)
+							foreach($notification_methods as $method => $method_data)
 							{
-								if ($request->is_set_post($type . '_' . $method) && (!isset($subscriptions[$type]) || !in_array($method, $subscriptions[$type])))
+								if ($request->is_set_post($type . '_' . $method_data['id']) && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
 								{
-									$phpbb_notifications->add_subscription($type, 0, $method);
+									$phpbb_notifications->add_subscription($type, 0, $method_data['id']);
 								}
-								else if (!$request->is_set_post($type . '_' . $method) && isset($subscriptions[$type]) && in_array($method, $subscriptions[$type]))
+								else if (!$request->is_set_post($type . '_' . $method_data['id']) && isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type]))
 								{
-									$phpbb_notifications->delete_subscription($type, 0, $method);
+									$phpbb_notifications->delete_subscription($type, 0, $method_data['id']);
 								}
 							}
 
@@ -186,14 +186,14 @@ class ucp_notifications
 					'SUBSCRIBED'		=> (isset($subscriptions[$type])) ? true : false,
 				));
 
-				foreach($notification_methods as $method)
+				foreach($notification_methods as $method => $method_data)
 				{
 					$template->assign_block_vars($block . '.notification_methods', array(
-						'METHOD'			=> $method,
+						'METHOD'			=> $method_data['id'],
 
-						'NAME'				=> $user->lang(strtoupper($method)),
+						'NAME'				=> $user->lang($method_data['lang']),
 
-						'SUBSCRIBED'		=> (isset($subscriptions[$type]) && in_array($method, $subscriptions[$type])) ? true : false,
+						'SUBSCRIBED'		=> (isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type])) ? true : false,
 					));
 				}
 			}
@@ -212,12 +212,12 @@ class ucp_notifications
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 
-		foreach($notification_methods as $method)
+		foreach($notification_methods as $method => $method_data)
 		{
 			$template->assign_block_vars($block, array(
-				'METHOD'			=> $method,
+				'METHOD'			=> $method_data['id'],
 
-				'NAME'				=> $user->lang(strtoupper($method)),
+				'NAME'				=> $user->lang($method_data['lang']),
 			));
 		}
 	}

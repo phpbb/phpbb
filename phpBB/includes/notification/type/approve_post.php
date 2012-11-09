@@ -24,6 +24,16 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_approve_post extends phpbb_notification_type_post
 {
 	/**
+	* Get notification type name
+	*
+	* @return string
+	*/
+	public function get_type()
+	{
+		return 'approve_post';
+	}
+	
+	/**
 	* Language key used to output the text
 	*
 	* @var string

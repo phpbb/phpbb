@@ -24,6 +24,16 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_report_post_closed extends phpbb_notification_type_post
 {
 	/**
+	* Get notification type name
+	*
+	* @return string
+	*/
+	public function get_type()
+	{
+		return 'report_post_closed';
+	}
+
+	/**
 	* Email template to use to send notifications
 	*
 	* @var string
