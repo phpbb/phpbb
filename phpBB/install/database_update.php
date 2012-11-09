@@ -2132,22 +2132,23 @@ function change_database_data(&$no_updates, $version)
 			{
 				list($bot_agent, $bot_ip) = $bot_array;
 
-				$bot_name_clean = utf8_clean_string($bot_name);
-
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . "
-					WHERE username_clean = '" . $db->sql_escape($bot_name_clean) . "'";
+					WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($bot_name)) . "'";
 				$result = $db->sql_query($sql);
-				$is_user = (bool) $db->sql_fetchfield('user_id');
+				$bot_user_id = (int) $db->sql_fetchfield('user_id');
 				$db->sql_freeresult($result);
 
-				if ($is_user)
+				if ($bot_user_id)
 				{
-					$sql = 'UPDATE ' . BOTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
+					$update_array = array(
 						'bot_agent'		=> $bot_agent,
 						'bot_ip'		=> $bot_ip,
-					)) . " WHERE bot_name = '" . $db->sql_escape($bot_name) . "'";
+					);
 
+					$sql = 'UPDATE ' . BOTS_TABLE . '
+						SET ' . $db->sql_build_array('UPDATE', $update_array) . "
+						WHERE user_id = $bot_user_id";
 					_sql($sql, $errored, $error_ary);
 				}
 			}
