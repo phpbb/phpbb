@@ -65,7 +65,7 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 		$defaults = $this->config_defaults();
 		$config = new phpbb_config(array_merge($defaults, $new_config));
 
-		$this->template_path = dirname(__FILE__) . "/datasets/$dataset/templates";
+		$this->template_path = dirname(__FILE__) . "/datasets/$dataset/styles/silver/template";
 		$this->style_resource_locator = new phpbb_style_resource_locator();
 		$this->extension_manager = new phpbb_mock_filesystem_extension_manager(
 			dirname(__FILE__) . "/datasets/$dataset/"
