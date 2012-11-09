@@ -716,9 +716,10 @@ class phpbb_notification_manager
 
 	/**
 	* Disable all notifications of a certain type
-	* 	This should be called when an extension which has notification types
-	* 	is disabled so that all those notifications are hidden and do not
-	* 	cause errors
+	*
+	* This should be called when an extension which has notification types
+	* is disabled so that all those notifications are hidden and do not
+	* cause errors
 	*
 	* @param string $item_type
 	*/
@@ -732,9 +733,10 @@ class phpbb_notification_manager
 
 	/**
 	* Enable all notifications of a certain type
-	* 	This should be called when an extension which has notification types
-	* 	that was disabled is re-enabled so that all those notifications that
-	*	were hidden are shown again
+	*
+	* This should be called when an extension which has notification types
+	* that was disabled is re-enabled so that all those notifications that
+	* were hidden are shown again
 	*
 	* @param string $item_type
 	*/
