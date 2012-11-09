@@ -51,6 +51,12 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	/** @var string */
 	protected $php_ext = null;
 
+	/** @var string */
+	protected $notifications_table = null;
+
+	/** @var string */
+	protected $user_notifications_table = null;
+
 	/**
 	* Notification option data (for outputting to the user)
 	*
@@ -78,7 +84,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	private $data = array();
 
-	public function __construct(phpbb_notification_manager $notification_manager, dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
+	public function __construct(phpbb_notification_manager $notification_manager, dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext, $notifications_table, $user_notifications_table)
 	{
 		$this->notification_manager = $notification_manager;
 		$this->db = $db;
@@ -88,8 +94,12 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->config = $config;
+
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+
+		$this->notifications_table = $notifications_table;
+		$this->user_notifications_table = $user_notifications_table;
 	}
 
 	/**
