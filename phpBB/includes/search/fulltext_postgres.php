@@ -82,20 +82,20 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	 * Operators are prefixed in search query and common words excluded
 	 * @var string
 	 */
-	public $search_query;
+	protected $search_query;
 
 	/**
 	 * Contains common words.
 	 * Common words are words with length less/more than min/max length
 	 * @var array
 	 */
-	public $common_words = array();
+	protected $common_words = array();
 
 	/**
 	 * Associative array stores the min and max word length to be searched
 	 * @var array
 	 */
-	public $word_length = array();
+	protected $word_length = array();
 
 	/**
 	 * Constructor

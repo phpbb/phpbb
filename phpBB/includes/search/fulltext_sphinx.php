@@ -118,7 +118,7 @@ class phpbb_search_fulltext_sphinx
 	 * Operators are prefixed in search query and common words excluded
 	 * @var string
 	 */
-	public $search_query;
+	protected $search_query;
 
 	/**
 	 * Constructor
