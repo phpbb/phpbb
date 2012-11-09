@@ -239,7 +239,6 @@ define('LOG_TABLE',					$table_prefix . 'log');
 define('LOGIN_ATTEMPT_TABLE',		$table_prefix . 'login_attempts');
 define('MODERATOR_CACHE_TABLE',		$table_prefix . 'moderator_cache');
 define('MODULES_TABLE',				$table_prefix . 'modules');
-define('NOTIFICATIONS_TABLE',		$table_prefix . 'notifications');
 define('POLL_OPTIONS_TABLE',		$table_prefix . 'poll_options');
 define('POLL_VOTES_TABLE',			$table_prefix . 'poll_votes');
 define('POSTS_TABLE',				$table_prefix . 'posts');
@@ -273,11 +272,9 @@ define('TOPICS_POSTED_TABLE',		$table_prefix . 'topics_posted');
 define('TOPICS_TRACK_TABLE',		$table_prefix . 'topics_track');
 define('TOPICS_WATCH_TABLE',		$table_prefix . 'topics_watch');
 define('USER_GROUP_TABLE',			$table_prefix . 'user_group');
-define('USER_NOTIFICATIONS_TABLE',	$table_prefix . 'user_notifications');
 define('USERS_TABLE',				$table_prefix . 'users');
 define('WARNINGS_TABLE',			$table_prefix . 'warnings');
 define('WORDS_TABLE',				$table_prefix . 'words');
 define('ZEBRA_TABLE',				$table_prefix . 'zebra');
 
 // Additional tables
-
