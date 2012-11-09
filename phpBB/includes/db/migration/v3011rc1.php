@@ -21,27 +21,38 @@ class phpbb_db_migration_v3011rc1 extends phpbb_db_migration
 
 	function update_data()
 	{
+		return array(
+			array('custom', array(array(&$this, 'cleanup_deactivated_styles'))),
+			array('custom', array(array(&$this, 'delete_orphan_private_messages'))),
+		);
+	}
+
+	function cleanup_deactivated_styles()
+	{
 		// Updates users having current style a deactivated one
 		$sql = 'SELECT style_id
 			FROM ' . STYLES_TABLE . '
 			WHERE style_active = 0';
-		$result = $db->sql_query($sql);
+		$result = $this->sql_query($sql);
 
 		$deactivated_style_ids = array();
-		while ($style_id = $db->sql_fetchfield('style_id', false, $result))
+		while ($style_id = $this->db->sql_fetchfield('style_id', false, $result))
 		{
 			$deactivated_style_ids[] = (int) $style_id;
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if (!empty($deactivated_style_ids))
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_style = ' . (int) $config['default_style'] .'
-				WHERE ' . $db->sql_in_set('user_style', $deactivated_style_ids);
-			_sql($sql, $errored, $error_ary);
+				SET user_style = ' . (int) $this->config['default_style'] .'
+				WHERE ' . $this->db->sql_in_set('user_style', $deactivated_style_ids);
+			$this->sql_query($sql, $errored, $error_ary);
 		}
+	}
 
+	function delete_orphan_private_messages()
+	{
 		// Delete orphan private messages
 		$batch_size = 500;
 
@@ -58,26 +69,28 @@ class phpbb_db_migration_v3011rc1 extends phpbb_db_migration
 			),
 			'WHERE'		=> 't.user_id IS NULL',
 		);
-		$sql = $db->sql_build_query('SELECT', $sql_array);
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 
-		do
+		$result = $this->db->sql_query_limit($sql, $batch_size);
+
+		$delete_pms = array();
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$result = $db->sql_query_limit($sql, $batch_size);
-
-			$delete_pms = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$delete_pms[] = (int) $row['msg_id'];
-			}
-			$db->sql_freeresult($result);
-
-			if (!empty($delete_pms))
-			{
-				$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
-					WHERE ' . $db->sql_in_set('msg_id', $delete_pms);
-				_sql($sql, $errored, $error_ary);
-			}
+			$delete_pms[] = (int) $row['msg_id'];
 		}
-		while (sizeof($delete_pms) == $batch_size);
+		$db->sql_freeresult($result);
+
+		if (!empty($delete_pms))
+		{
+			$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
+				WHERE ' . $this->db->sql_in_set('msg_id', $delete_pms);
+			$this->sql_query($sql, $errored, $error_ary);
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 }

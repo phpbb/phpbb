@@ -21,9 +21,8 @@ class phpbb_db_migration_v3010rc1 extends phpbb_db_migration
 
 	function update_data()
 	{
-		if (!isset($config['email_max_chunk_size']))
-		{
-			set_config('email_max_chunk_size', '50');
-		}
+		return array(
+			array('config.add', array('email_max_chunk_size', 50)),
+		);
 	}
 }
