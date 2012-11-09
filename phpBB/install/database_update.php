@@ -2120,16 +2120,30 @@ function change_database_data(&$no_updates, $version)
 					AND module_mode = \'signature\'';
 			_sql($sql, $errored, $error_ary);
 
-			// Update bot list
-			// Bot name to bot user agent map
-			$bots_to_update = array(
+			// Update bots
+			if (!function_exists('user_delete'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
+
+			$bots_updates = array(
+				// Bot Deletions
+				'NG-Search [Bot]'		=> false,
+				'Nutch/CVS [Bot]'		=> false,
+				'OmniExplorer [Bot]'	=> false,
+				'Seekport [Bot]'		=> false,
+				'Synoo [Bot]'			=> false,
+				'WiseNut [Bot]'			=> false,
+
+				// Bot Updates
+				// Bot name to bot user agent map
 				'Baidu [Spider]'	=> 'Baiduspider',
 				'Exabot [Bot]'		=> 'Exabot',
 				'Voyager [Bot]'		=> 'voyager/',
 				'W3C [Validator]'	=> 'W3C_Validator',
 			);
 
-			foreach ($bots_to_update as $bot_name => $bot_agent)
+			foreach ($bots_updates as $bot_name => $bot_agent)
 			{
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . '
@@ -2141,44 +2155,21 @@ function change_database_data(&$no_updates, $version)
 
 				if ($bot_user_id)
 				{
-					$sql = 'UPDATE ' . BOTS_TABLE . '
-						SET bot_agent = ' .  $db->sql_escape($bot_agent) . "
-						WHERE user_id = $bot_user_id";
-					_sql($sql, $errored, $error_ary);
-				}
-			}
+					if ($bot_agent === false)
+					{
+						$sql = 'DELETE FROM ' . BOTS_TABLE . "
+							WHERE user_id = $bot_user_id";
+						_sql($sql, $errored, $error_ary);
 
-			if (!function_exists('user_delete'))
-			{
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-			}
-
-			$bots_to_delete = array(
-				'NG-Search [Bot]',
-				'Nutch/CVS [Bot]',
-				'OmniExplorer [Bot]',
-				'Seekport [Bot]',
-				'Synoo [Bot]',
-				'WiseNut [Bot]',
-			);
-
-			foreach ($bots_to_delete as $bot_name)
-			{
-				$sql = 'SELECT user_id
-					FROM ' . USERS_TABLE . '
-					WHERE user_type = ' . USER_IGNORE . "
-						AND username_clean = '" . $db->sql_escape(utf8_clean_string($bot_name)) . "'";
-				$result = $db->sql_query($sql);
-				$bot_user_id = (int) $db->sql_fetchfield('user_id');
-				$db->sql_freeresult($result);
-
-				if ($bot_user_id)
-				{
-					$sql = 'DELETE FROM ' . BOTS_TABLE . "
-						WHERE user_id = $bot_user_id";
-					_sql($sql, $errored, $error_ary);
-
-					user_delete('remove', $bot_user_id);
+						user_delete('remove', $bot_user_id);
+					}
+					else
+					{
+						$sql = 'UPDATE ' . BOTS_TABLE . "
+							SET bot_agent = '" .  $db->sql_escape($bot_agent) . "'
+							WHERE user_id = $bot_user_id";
+						_sql($sql, $errored, $error_ary);
+					}
 				}
 			}
 
