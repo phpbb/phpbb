@@ -2136,7 +2136,7 @@ function change_database_data(&$no_updates, $version)
 				'WiseNut [Bot]',
 			);
 
-			foreach($bots_to_update as $bot_name => $bot_array)
+			foreach ($bots_to_update as $bot_name => $bot_array)
 			{
 				list($bot_agent, $bot_ip) = $bot_array;
 
@@ -2165,7 +2165,7 @@ function change_database_data(&$no_updates, $version)
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 			}
 
-			foreach($bots_to_delete as $bot_name)
+			foreach ($bots_to_delete as $bot_name)
 			{
 				$bot_name_clean = utf8_clean_string($bot_name);
 
