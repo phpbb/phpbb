@@ -122,25 +122,25 @@ class phpbb_notification_manager
 		if ($options['count_unread'])
 		{
 			// Get the total number of unread notifications
-			$sql = 'SELECT COUNT(*) AS count
+			$sql = 'SELECT COUNT(*) AS unread_count
 				FROM ' . NOTIFICATIONS_TABLE . '
 				WHERE user_id = ' . (int) $options['user_id'] . '
 					AND unread = 1
 					AND is_enabled = 1';
 			$result = $this->db->sql_query($sql);
-			$unread_count = (int) $this->db->sql_fetchfield('count', $result);
+			$unread_count = (int) $this->db->sql_fetchfield('unread_count', $result);
 			$this->db->sql_freeresult($result);
 		}
 
 		if ($options['count_total'])
 		{
 			// Get the total number of notifications
-			$sql = 'SELECT COUNT(*) AS count
+			$sql = 'SELECT COUNT(*) AS total_count
 				FROM ' . NOTIFICATIONS_TABLE . '
 				WHERE user_id = ' . (int) $options['user_id'] . '
 					AND is_enabled = 1';
 			$result = $this->db->sql_query($sql);
-			$total_count = (int) $this->db->sql_fetchfield('count', $result);
+			$total_count = (int) $this->db->sql_fetchfield('total_count', $result);
 			$this->db->sql_freeresult($result);
 		}
 
@@ -675,7 +675,7 @@ class phpbb_notification_manager
 		// If no method, make sure that no other notification methods for this item are selected before deleting
 		if ($method === '')
 		{
-			$sql = 'SELECT COUNT(*) as count
+			$sql = 'SELECT COUNT(*) as num_notifications
 				FROM ' . USER_NOTIFICATIONS_TABLE . "
 				WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
 					AND item_id = " . (int) $item_id . '
@@ -683,10 +683,10 @@ class phpbb_notification_manager
 					AND method <> ''
 					AND notify = 1";
 			$this->db->sql_query($sql);
-			$count = $this->db->sql_fetchfield('count');
+			$num_notifications = $this->db->sql_fetchfield('num_notifications');
 			$this->db->sql_freeresult();
 
-			if ($count)
+			if ($num_notifications)
 			{
 				return;
 			}
