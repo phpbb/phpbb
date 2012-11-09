@@ -2164,21 +2164,18 @@ function change_database_data(&$no_updates, $version)
 
 			foreach ($bots_to_delete as $bot_name)
 			{
-				$bot_name_clean = utf8_clean_string($bot_name);
-
 				$sql = 'SELECT user_id
-					FROM ' . USERS_TABLE . "
-					WHERE username_clean = '" . $db->sql_escape($bot_name_clean) . "'";
+					FROM ' . USERS_TABLE . '
+					WHERE user_type = ' . USER_IGNORE . "
+						AND username_clean = '" . $db->sql_escape(utf8_clean_string($bot_name)) . "'";
 				$result = $db->sql_query($sql);
-				$bot_user_id = $db->sql_fetchfield('user_id');
-				$is_user = (bool) $bot_user_id;
+				$bot_user_id = (int) $db->sql_fetchfield('user_id');
 				$db->sql_freeresult($result);
 
-				if ($is_user)
+				if ($bot_user_id)
 				{
 					$sql = 'DELETE FROM ' . BOTS_TABLE . "
-						WHERE bot_name = '" . $db->sql_escape($bot_name) . "'";
-
+						WHERE user_id = $bot_user_id";
 					_sql($sql, $errored, $error_ary);
 
 					user_delete('remove', $bot_user_id);
