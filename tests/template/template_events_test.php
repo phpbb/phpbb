@@ -72,6 +72,16 @@ Omega test event in all
 Zeta test event in all
 Kappa test event in silver_inherit',
 			),
+			array(
+				'Definition in parent style',
+				'event_inheritance',
+				array('silver_inherit', 'silver'),
+				'event_two.html',
+				array(),
+				array(),
+				array(),
+'two in silver in omega',
+			),
 		);
 	}
 
