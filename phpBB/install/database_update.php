@@ -2749,14 +2749,12 @@ function change_database_data(&$no_updates, $version)
 				$config->set('site_home_url', '');
 				$config->set('site_home_text', '');
 			}
-			
-			
+
 			// ticket/10601: Make inbox default. Add basename to ucp's pm category
 			// Check if this was already applied
 			$sql = 'SELECT module_id, module_basename, parent_id, left_id, right_id 
 					FROM ' . MODULES_TABLE . '
-					WHERE 
-					module_basename = \'ucp_pm\'
+					WHERE module_basename = "ucp_pm"
 					ORDER BY module_id';
 			$result = $db->sql_query_limit($sql, 1);
 
@@ -2766,13 +2764,13 @@ function change_database_data(&$no_updates, $version)
 				if ($row['left_id'] === $row['right_id'] - 1)
 				{
 					// This update is still not applied. Applying it
-					
+
 					$sql = 'UPDATE ' . MODULES_TABLE . '
 						SET module_basename = \'ucp_pm\'
 						WHERE  module_id = ' . (int) $row['parent_id'];
-					
+
 					_sql($sql, $errored, $error_ary);
-				
+
 				}
 			}
 			$db->sql_freeresult($result);
