@@ -1038,7 +1038,7 @@ while ($row = $db->sql_fetchrow($result))
 	}
 
 	$rowset[$row['post_id']] = array(
-		'hide_post'			=> ($row['foe'] && ($view != 'show' || $post_id != $row['post_id'])) ? true : false,
+		'hide_post'			=> (($row['foe'] || $row['post_visibility'] == ITEM_DELETED) && ($view != 'show' || $post_id != $row['post_id'])) ? true : false,
 
 		'post_id'			=> $row['post_id'],
 		'post_time'			=> $row['post_time'],
@@ -1548,11 +1548,19 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			$display_username = get_username_string('full', $row['post_delete_user'], $user_cache[$row['post_delete_user']]['username'], $user_cache[$row['post_delete_user']]['user_colour']);
 		}
 
+		if ($row['post_delete_reason'])
+		{
+			$l_deleted_message = $user->lang('POST_DELETED_BY_REASON', $display_username, $user->format_date($row['post_delete_time'], false, true), $row['post_delete_reason']);
+		}
+		else
+		{
+			$l_deleted_message = $user->lang('POST_DELETED_BY', $display_username, $user->format_date($row['post_delete_time'], false, true));
+		}
 		$l_deleted_by = $user->lang('DELETED_INFORMATION', $display_username, $user->format_date($row['post_delete_time'], false, true));
 	}
 	else
 	{
-		$l_deleted_by = '';
+		$l_deleted_by = $l_deleted_message = '';
 	}
 
 	// Bump information
@@ -1670,6 +1678,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'S_MULTIPLE_ATTACHMENTS'	=> !empty($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]) > 1,
 		'S_POST_UNAPPROVED'	=> ($row['post_visibility'] == ITEM_UNAPPROVED) ? true : false,
 		'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED) ? true : false,
+		'L_POST_DELETED_MESSAGE'	=> $l_deleted_message,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $forum_id)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'],
 		'S_FRIEND'			=> ($row['friend']) ? true : false,
@@ -1678,8 +1687,10 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'S_CUSTOM_FIELDS'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
 		'S_TOPIC_POSTER'	=> ($topic_data['topic_poster'] == $poster_id) ? true : false,
 
-		'S_IGNORE_POST'		=> ($row['hide_post']) ? true : false,
-		'L_IGNORE_POST'		=> ($row['hide_post']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
+		'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
+		'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
+		'S_POST_HIDDEN'		=> $row['hide_post'],
+		'L_POST_DISPLAY'	=> ($row['hide_post']) ? $user->lang('POST_DISPLAY', '<a class="display_post" data-post-id="' . $row['post_id'] . '" href="#">', '</a>') : '',
 	);
 
 	$user_poster_data = $user_cache[$poster_id];

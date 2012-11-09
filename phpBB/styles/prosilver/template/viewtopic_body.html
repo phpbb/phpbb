@@ -114,13 +114,24 @@
 
 <!-- BEGIN postrow -->
 	<!-- IF postrow.S_FIRST_UNREAD --><a id="unread"></a><!-- ENDIF -->
-	<div id="p{postrow.POST_ID}" class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF postrow.S_UNREAD_POST --> unreadpost<!-- ENDIF --><!-- IF postrow.S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_IGNORE_POST --> online<!-- ENDIF -->">
+	<div id="p{postrow.POST_ID}" class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF postrow.S_UNREAD_POST --> unreadpost<!-- ENDIF --><!-- IF postrow.S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF postrow.S_POST_DELETED --> deleted<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> online<!-- ENDIF -->">
 		<div class="inner">
 
 		<div class="postbody">
-			<!-- IF postrow.S_IGNORE_POST -->
-				<div class="ignore">{postrow.L_IGNORE_POST}</div>
-			<!-- ELSE -->
+			<!-- IF postrow.S_POST_HIDDEN -->
+				<!-- IF postrow.S_POST_DELETED -->
+					<div class="ignore" id="post_hidden{postrow.POST_ID}">
+						{postrow.L_POST_DELETED_MESSAGE}<br />
+						{postrow.L_POST_DISPLAY}
+					</div>
+				<!-- ELSEIF postrow.S_IGNORE_POST -->
+					<div class="ignore" id="post_hidden{postrow.POST_ID}">
+						{postrow.L_IGNORE_POST}<br />
+						{postrow.L_POST_DISPLAY}
+					</div>
+				<!-- ENDIF -->
+			<!-- ENDIF -->
+			<div id="post_content{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
 
 		<!-- IF not S_IS_BOT -->
 			<!-- IF postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE -->
@@ -156,7 +167,9 @@
 						{S_FORM_TOKEN}
 						<br />
 					<!-- ENDIF -->
-					<!-- IF postrow.S_POST_REPORTED -->{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a><!-- ENDIF -->
+					<!-- IF postrow.S_POST_REPORTED -->
+						{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a>
+					<!-- ENDIF -->
 				</p>
 			</form>
 			<!-- ENDIF -->
@@ -197,12 +210,11 @@
 
 			<!-- IF postrow.BUMPED_MESSAGE --><div class="notice"><br /><br />{postrow.BUMPED_MESSAGE}</div><!-- ENDIF -->
 			<!-- IF postrow.SIGNATURE --><div id="sig{postrow.POST_ID}" class="signature">{postrow.SIGNATURE}</div><!-- ENDIF -->
-		<!-- ENDIF -->
+			</div>
 
 		</div>
 
-		<!-- IF not postrow.S_IGNORE_POST -->
-			<dl class="postprofile" id="profile{postrow.POST_ID}">
+		<dl class="postprofile" id="profile{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
 			<dt>
 				<!-- IF postrow.POSTER_AVATAR -->
 					<!-- IF postrow.U_POST_AUTHOR --><a href="{postrow.U_POST_AUTHOR}">{postrow.POSTER_AVATAR}</a><!-- ELSE -->{postrow.POSTER_AVATAR}<!-- ENDIF --><br />
@@ -245,7 +257,6 @@
 		<!-- ENDIF -->
 
 		</dl>
-	<!-- ENDIF -->
 
 		<div class="back2top"><a href="#wrap" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a></div>
 

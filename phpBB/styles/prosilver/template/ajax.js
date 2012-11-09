@@ -77,6 +77,20 @@ $('#qr_full_editor').click(function() {
 });
 
 
+/**
+ * Make the display post links to use JS
+ */
+$('.display_post').click(function(e) {
+	// Do not follow the link
+	e.preventDefault();
+
+	var post_id = $(this).attr('data-post-id');
+	$('#post_content' + post_id).show();
+	$('#profile' + post_id).show();
+	$('#post_hidden' + post_id).hide();
+});
+
+
 
 /**
  * This AJAXifies the quick-mod tools. The reason it cannot be a standard
