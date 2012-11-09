@@ -17,6 +17,7 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 			/*
 			array(
 				'', // File
+				'', // Dataset
 				array(), // vars
 				array(), // block vars
 				array(), // destroy
@@ -25,6 +26,7 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 			*/
 			array(
 				'Simple template event',
+				'ext_trivial',
 				'event_simple.html',
 				array(),
 				array(),
@@ -33,6 +35,7 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 			),
 			array(
 				'Universal template event ("all" style)',
+				'ext_trivial',
 				'event_universal.html',
 				array(),
 				array(),
@@ -45,34 +48,27 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 	/**
 	* @dataProvider template_data
 	*/
-	public function test_event($desc, $file, array $vars, array $block_vars, array $destroy, $expected)
+	public function test_event($desc, $dataset, $file, array $vars, array $block_vars, array $destroy, $expected)
 	{
 		// Reset the engine state
-		$this->setup_engine();
+		$this->setup_engine_with_dataset($dataset);
 
 		// Run test
 		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
 		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
 	}
 
-	protected function setup_engine(array $new_config = array())
+	protected function setup_engine_with_dataset($dataset, array $new_config = array())
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
 		$defaults = $this->config_defaults();
 		$config = new phpbb_config(array_merge($defaults, $new_config));
 
-		$this->template_path = dirname(__FILE__) . '/datasets/ext_trivial/templates';
+		$this->template_path = dirname(__FILE__) . "/datasets/$dataset/templates";
 		$this->style_resource_locator = new phpbb_style_resource_locator();
-		$this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/datasets/ext_trivial/',
-			array(
-				'trivial' => array(
-					'ext_name'      => 'trivial',
-					'ext_active'    => true,
-					'ext_path'      => 'ext/trivial/',
-				),
-			)
+		$this->extension_manager = new phpbb_mock_filesystem_extension_manager(
+			dirname(__FILE__) . "/datasets/$dataset/"
 		);
 		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, new phpbb_template_context, $this->extension_manager);
 		$this->style_provider = new phpbb_style_path_provider();
