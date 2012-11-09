@@ -28,26 +28,101 @@ define('SPHINX_CONNECT_WAIT_TIME', 300);
 */
 class phpbb_search_fulltext_sphinx
 {
+	/**
+	 * Associative array holding index stats
+	 * @var array
+	 */
 	protected $stats = array();
+
+	/**
+	 * Holds the words entered by user, obtained by splitting the entered query on whitespace
+	 * @var array
+	 */
 	protected $split_words = array();
+
+	/**
+	 * Holds unique sphinx id
+	 * @var string
+	 */
 	protected $id;
+
+	/**
+	 * Stores the names of both main and delta sphinx indexes
+	 * separated by a semicolon
+	 * @var string
+	 */
 	protected $indexes;
+
+	/**
+	 * Sphinx searchd client object
+	 * @var SphinxClient
+	 */
 	protected $sphinx;
+
+	/**
+	 * Relative path to board root
+	 * @var string
+	 */
 	protected $phpbb_root_path;
+
+	/**
+	 * PHP Extension
+	 * @var string
+	 */
 	protected $php_ext;
+
+	/**
+	 * Auth object
+	 * @var phpbb_auth
+	 */
 	protected $auth;
+
+	/**
+	 * Config object
+	 * @var phpbb_config
+	 */
 	protected $config;
+
+	/**
+	 * DBAL object
+	 * @var dbal
+	 */
 	protected $db;
+
+	/**
+	 * Database Tools object
+	 * @var phpbb_db_tools
+	 */
 	protected $db_tools;
+
+	/**
+	 * Stores the database type if supported by sphinx
+	 * @var string
+	 */
 	protected $dbtype;
+
+	/**
+	 * User object
+	 * @var phpbb_user
+	 */
 	protected $user;
+
+	/**
+	 * Stores the generated content of the sphinx config file
+	 * @var string
+	 */
 	protected $config_file_data = '';
+
+	/**
+	 * Contains tidied search query.
+	 * Operators are prefixed in search query and common words excluded
+	 * @var string
+	 */
 	protected $search_query;
-	protected $common_words = array();
 
 	/**
 	 * Constructor
-	 * Creates a new phpbb_search_fulltext_postgres, which is used as a search backend.
+	 * Creates a new phpbb_search_fulltext_postgres, which is used as a search backend
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
 	 */
@@ -119,13 +194,13 @@ class phpbb_search_fulltext_sphinx
 	}
 
 	/**
-	 * Returns the common_words array
+	 * Returns an empty array as there are no common_words
 	 *
 	 * @return array common words that are ignored by search backend
 	 */
 	public function get_common_words()
 	{
-		return $this->common_words;
+		return array();
 	}
 
 	/**
@@ -360,7 +435,7 @@ class phpbb_search_fulltext_sphinx
 	}
 
 	/**
-	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first.
+	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first
 	*
 	* @param	string		$type				contains either posts or topics depending on what should be searched for
 	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
