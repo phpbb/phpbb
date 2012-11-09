@@ -932,7 +932,7 @@ class mcp_queue
 				// If the count of disapproved posts for the topic is equal
 				// to the number of unapproved posts in the topic, and there are no different
 				// posts, we disapprove the hole topic
-				if ($topic_information[$topic_id]['topic_posts'] == 0 &&
+				if ($topic_information[$topic_id]['topic_posts_approved'] == 0 &&
 					$topic_information[$topic_id]['topic_posts_softdeleted'] == 0 &&
 					$topic_information[$topic_id]['topic_posts_unapproved'] == $topic_posts_unapproved[$topic_id])
 				{

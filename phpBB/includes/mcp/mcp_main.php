@@ -494,7 +494,7 @@ function mcp_move_topic($topic_ids)
 				$topics_moved_softdeleted++;
 			}
 
-			$posts_moved += $topic_info['topic_posts'];
+			$posts_moved += $topic_info['topic_posts_approved'];
 			$posts_moved_unapproved += $topic_info['topic_posts_unapproved'];
 			$posts_moved_softdeleted += $topic_info['topic_posts_softdeleted'];
 		}
@@ -534,7 +534,7 @@ function mcp_move_topic($topic_ids)
 					'topic_time'			=>	(int) $row['topic_time'],
 					'topic_time_limit'		=>	(int) $row['topic_time_limit'],
 					'topic_views'			=>	(int) $row['topic_views'],
-					'topic_posts'			=>	(int) $row['topic_posts'],
+					'topic_posts_approved'	=>	(int) $row['topic_posts_approved'],
 					'topic_posts_unapproved'=>	(int) $row['topic_posts_unapproved'],
 					'topic_posts_softdeleted'=>	(int) $row['topic_posts_softdeleted'],
 					'topic_status'			=>	ITEM_MOVED,
@@ -1180,7 +1180,7 @@ function mcp_fork_topic($topic_ids)
 				'topic_title'				=> (string) $topic_row['topic_title'],
 				'topic_poster'				=> (int) $topic_row['topic_poster'],
 				'topic_time'				=> (int) $topic_row['topic_time'],
-				'topic_posts'				=> (int) $topic_row['topic_posts'],
+				'topic_posts_approved'		=> (int) $topic_row['topic_posts_approved'],
 				'topic_posts_unapproved'	=> (int) $topic_row['topic_posts_unapproved'],
 				'topic_posts_softdeleted'	=> (int) $topic_row['topic_posts_softdeleted'],
 				'topic_status'				=> (int) $topic_row['topic_status'],

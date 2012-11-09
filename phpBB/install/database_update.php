@@ -1100,8 +1100,10 @@ function database_update_info()
 			),
 			'add_columns'		=> array(
 				FORUMS_TABLE		=> array(
+					'forum_posts_approved'		=> array('UINT', 0),
 					'forum_posts_unapproved'	=> array('UINT', 0),
 					'forum_posts_softdeleted'	=> array('UINT', 0),
+					'forum_topics_approved'		=> array('UINT', 0),
 					'forum_topics_unapproved'	=> array('UINT', 0),
 					'forum_topics_softdeleted'	=> array('UINT', 0),
 				),
@@ -1131,7 +1133,7 @@ function database_update_info()
 					'topic_delete_time'		=> array('TIMESTAMP', 0),
 					'topic_delete_reason'	=> array('STEXT_UNI', ''),
 					'topic_delete_user'		=> array('UINT', 0),
-					'topic_posts'			=> array('UINT', 0),
+					'topic_posts_approved'		=> array('UINT', 0),
 					'topic_posts_unapproved'	=> array('UINT', 0),
 					'topic_posts_softdeleted'	=> array('UINT', 0),
 				),
@@ -2756,13 +2758,13 @@ function change_database_data(&$no_updates, $version)
 			if ($db_tools->sql_column_exists(TOPICS_TABLE, 'topic_replies'))
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_posts = topic_replies + 1,
+					SET topic_posts_approved = topic_replies + 1,
 						topic_posts_unapproved = topic_replies_real - topic_replies
 					WHERE topic_visibility = ' . ITEM_APPROVED;
 				_sql($sql, $errored, $error_ary);
 
 				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_posts = 0,
+					SET topic_posts_approved = 0,
 						topic_posts_unapproved = (topic_replies_real - topic_replies) + 1
 					WHERE topic_visibility = ' . ITEM_UNAPPROVED;
 				_sql($sql, $errored, $error_ary);
@@ -2779,17 +2781,17 @@ function change_database_data(&$no_updates, $version)
 					if (!isset($update_forums[$forum_id]))
 					{
 						$update_forums[$forum_id] = array(
-							'forum_posts'				=> 0,
+							'forum_posts_approved'		=> 0,
 							'forum_posts_unapproved'	=> 0,
-							'forum_topics'				=> 0,
+							'forum_topics_approved'		=> 0,
 							'forum_topics_unapproved'	=> 0,
 						);
 					}
 
-					$update_forums[$forum_id]['forum_posts'] += (int) $row['sum_posts'];
+					$update_forums[$forum_id]['forum_posts_approved'] += (int) $row['sum_posts'];
 					$update_forums[$forum_id]['forum_posts_unapproved'] += (int) $row['sum_posts_unapproved'];
 
-					$update_forums[$forum_id][(($row['topic_visibility'] == ITEM_APPROVED) ? 'forum_topics' : 'forum_topics_unapproved')] += (int) $row['sum_topics'];
+					$update_forums[$forum_id][(($row['topic_visibility'] == ITEM_APPROVED) ? 'forum_topics_approved' : 'forum_topics_unapproved')] += (int) $row['sum_topics'];
 				}
 				$db->sql_freeresult($result);
 

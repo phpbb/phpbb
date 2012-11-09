@@ -1669,10 +1669,10 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$forum_data[$forum_id] = $row;
 				if ($sync_extra)
 				{
-					$forum_data[$forum_id]['posts'] = 0;
+					$forum_data[$forum_id]['posts_approved'] = 0;
 					$forum_data[$forum_id]['posts_unapproved'] = 0;
 					$forum_data[$forum_id]['posts_softdeleted'] = 0;
-					$forum_data[$forum_id]['topics'] = 0;
+					$forum_data[$forum_id]['topics_approved'] = 0;
 					$forum_data[$forum_id]['topics_unapproved'] = 0;
 					$forum_data[$forum_id]['topics_softdeleted'] = 0;
 				}
@@ -1746,7 +1746,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				{
 					$forum_id = (sizeof($forum_ids) == 1) ? (int) $forum_ids[0] : (int) $row['forum_id'];
 
-					$forum_data[$forum_id]['posts'] = (int) $row['forum_posts'];
+					$forum_data[$forum_id]['posts_approved'] = (int) $row['forum_posts'];
 					$forum_data[$forum_id]['posts_unapproved'] = (int) $row['forum_posts_unapproved'];
 					$forum_data[$forum_id]['posts_softdeleted'] = (int) $row['forum_posts_softdeleted'];
 				}
@@ -1829,7 +1829,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			if ($sync_extra)
 			{
-				array_push($fieldnames, 'posts', 'posts_unapproved', 'posts_softdeleted', 'topics', 'topics_unapproved', 'topics_softdeleted');
+				array_push($fieldnames, 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'topics_approved', 'topics_unapproved', 'topics_softdeleted');
 			}
 
 			foreach ($forum_data as $forum_id => $row)
@@ -1884,7 +1884,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$topic_id = (int) $row['topic_id'];
 				$topic_data[$topic_id] = $row;
 				$topic_data[$topic_id]['visibility'] = ITEM_UNAPPROVED;
-				$topic_data[$topic_id]['posts'] = 0;
+				$topic_data[$topic_id]['posts_approved'] = 0;
 				$topic_data[$topic_id]['posts_unapproved'] = 0;
 				$topic_data[$topic_id]['posts_softdeleted'] = 0;
 				$topic_data[$topic_id]['first_post_id'] = 0;
@@ -1930,7 +1930,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 					if ($row['post_visibility'] == ITEM_APPROVED)
 					{
-						$topic_data[$topic_id]['posts'] = $row['total_posts'];
+						$topic_data[$topic_id]['posts_approved'] = $row['total_posts'];
 					}
 					else if ($row['post_visibility'] == ITEM_UNAPPROVED)
 					{
@@ -2141,7 +2141,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			}
 
 			// These are fields that will be synchronised
-			$fieldnames = array('time', 'visibility', 'posts', 'posts_unapproved', 'posts_softdeleted', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+			$fieldnames = array('time', 'visibility', 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
 
 			if ($sync_extra)
 			{
