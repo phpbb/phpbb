@@ -88,6 +88,7 @@ if (!empty($load_extensions) && function_exists('dl'))
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
@@ -2723,10 +2724,10 @@ function change_database_data(&$no_updates, $version)
 
 			// Create config value for displaying last subject on forum list
 			if (!isset($config['display_last_subject']))
-			{			
+			{
 				$config->set('display_last_subject', '1');
 			}
-			
+
 			$no_updates = false;
 
 			if (!isset($config['assets_version']))
@@ -2759,7 +2760,7 @@ function change_database_data(&$no_updates, $version)
 				// After we have calculated the timezones we can delete user_dst column from user table.
 				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
 			}
-			
+
 			if (!isset($config['site_home_url']))
 			{
 				$config->set('site_home_url', '');

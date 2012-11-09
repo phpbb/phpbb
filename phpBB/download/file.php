@@ -48,6 +48,7 @@ if (isset($_GET['avatar']))
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
+	require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
@@ -404,7 +405,7 @@ else
 			$disallowed[$attach['extension']] = $attach['extension'];
 			continue;
 		}
-		
+
 		$prefix = '';
 		if ($topic_id)
 		{
