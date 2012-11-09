@@ -135,7 +135,7 @@ class phpbb_style
 		$this->provider->set_styles($paths);
 		$this->locator->set_paths($this->provider);
 
-		$this->template->style_names = $names;
+		$this->template->set_style_names($names);
 
 		if ($template_path !== false)
 		{

@@ -89,7 +89,7 @@ class phpbb_template
 	*
 	* @var array
 	*/
-	public $style_names;
+	private $style_names;
 
 	/**
 	* Constructor.
@@ -121,6 +121,18 @@ class phpbb_template
 		$this->locator->set_filenames($filename_array);
 
 		return true;
+	}
+
+	/**
+	* Sets the style names corresponding to style hierarchy being compiled
+	* and/or rendered.
+	*
+	* @param array $style_names List of style names in inheritance tree order
+	* @return null
+	*/
+	public function set_style_names(array $style_names)
+	{
+		$this->style_names = $style_names;
 	}
 
 	/**
