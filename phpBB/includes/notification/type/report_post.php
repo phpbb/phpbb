@@ -24,6 +24,16 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_type_report_post extends phpbb_notification_type_post_in_queue
 {
 	/**
+	* Get notification type name
+	*
+	* @return string
+	*/
+	public function get_type()
+	{
+		return 'report_post';
+	}
+
+	/**
 	* Language key used to output the text
 	*
 	* @var string
