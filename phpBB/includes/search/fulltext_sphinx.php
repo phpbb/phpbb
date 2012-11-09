@@ -194,13 +194,13 @@ class phpbb_search_fulltext_sphinx
 	}
 
 	/**
-	 * Returns the common_words array
+	 * Returns an empty array as there are no common_words
 	 *
 	 * @return array common words that are ignored by search backend
 	 */
 	public function get_common_words()
 	{
-		return $this->common_words;
+		return array();
 	}
 
 	/**
