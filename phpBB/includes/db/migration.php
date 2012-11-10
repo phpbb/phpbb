@@ -95,29 +95,29 @@ class phpbb_db_migration
 			echo "<br />\n{$sql}\n<br />";
 		}
 
-		$db->sql_return_on_error(true);
+		$this->db->sql_return_on_error(true);
 
 		if ($sql === 'begin')
 		{
-			$result = $db->sql_transaction('begin');
+			$result = $this->db->sql_transaction('begin');
 		}
 		else if ($sql === 'commit')
 		{
-			$result = $db->sql_transaction('commit');
+			$result = $this->db->sql_transaction('commit');
 		}
 		else
 		{
-			$result = $db->sql_query($sql);
-			if ($db->sql_error_triggered)
+			$result = $this->db->sql_query($sql);
+			if ($this->db->sql_error_triggered)
 			{
 				$this->errors[] = array(
-					'sql' => $db->sql_error_sql,
-					'code' => $db->sql_error_returned,
+					'sql'	=> $this->db->sql_error_sql,
+					'code'	=> $this->db->sql_error_returned,
 				);
 			}
 		}
 
-		$db->sql_return_on_error(false);
+		$this->db->sql_return_on_error(false);
 
 		return $result;
 	}
