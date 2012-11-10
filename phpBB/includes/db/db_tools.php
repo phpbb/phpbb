@@ -20,7 +20,6 @@ if (!defined('IN_PHPBB'))
 * Currently not supported is returning SQL for creating tables.
 *
 * @package dbal
-* @note currently not used within phpBB3, but may be utilized later.
 */
 class phpbb_db_tools
 {

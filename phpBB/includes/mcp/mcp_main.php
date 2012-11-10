@@ -915,7 +915,7 @@ function mcp_fork_topic($topic_ids)
 				}
 
 				$error = false;
-				$search = new $search_type($error);
+				$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 				$search_mode = 'post';
 
 				if ($error)
