@@ -245,9 +245,8 @@ class phpbb_plupload
 	 * the whole file first before performing any checks on it.
 	 *
 	 * @param string $form_name The name of the file element in the upload form
-	 * @return null If there are no chunks to piece together
-	 * @return array Returns an array containing the path to the pieced-together
-	 * 	file and its size
+	 * @return array|null Null if there are no chunks to piece together or an
+	 *	array containing the path to the pieced-together file and its size
 	 */
 	public function handle_upload($form_name)
 	{
