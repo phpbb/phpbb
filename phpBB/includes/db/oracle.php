@@ -236,7 +236,7 @@ class dbal_oracle extends dbal
 			global $cache;
 
 			// EXPLAIN only in extra debug mode
-			if (defined('DEBUG_EXTRA'))
+			if (defined('DEBUG'))
 			{
 				$this->sql_report('start', $query);
 			}
@@ -413,7 +413,7 @@ class dbal_oracle extends dbal
 					}
 				}
 
-				if (defined('DEBUG_EXTRA'))
+				if (defined('DEBUG'))
 				{
 					$this->sql_report('stop', $query);
 				}
@@ -428,7 +428,7 @@ class dbal_oracle extends dbal
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
 			}
-			else if (defined('DEBUG_EXTRA'))
+			else if (defined('DEBUG'))
 			{
 				$this->sql_report('fromcache', $query);
 			}
