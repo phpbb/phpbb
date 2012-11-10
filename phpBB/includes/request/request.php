@@ -289,7 +289,8 @@ class phpbb_request implements phpbb_request_interface
 	*
 	* @param string $form_name The name of the file input form element
 	*
-	* @return array The uploaded file's information
+	* @return array The uploaded file's information or an empty array if the
+	* variable does not exist in _FILES.
 	*/
 	public function file($form_name)
 	{
