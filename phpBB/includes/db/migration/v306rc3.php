@@ -7,11 +7,11 @@
 *
 */
 
-class phpbb_db_migration_v306rc3 extends phpbb_db_migration
+class phpbb_db_migration_3_0_6_rc3 extends phpbb_db_migration
 {
 	function depends_on()
 	{
-		return array('phpbb_db_migration_v306rc2');
+		return array('phpbb_db_migration_3_0_6_rc2');
 	}
 
 	function update_schema()
