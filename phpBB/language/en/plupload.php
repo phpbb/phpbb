@@ -58,5 +58,7 @@ $lang = array_merge($lang, array(
 	'PLUPLOAD_START_CURRENT_UPLOAD'	=> 'Start uploading queue',
 	'PLUPLOAD_STOP_UPLOAD'		=> 'Stop upload',
 	'PLUPLOAD_STOP_CURRENT_UPLOAD'	=> 'Stop current upload',
+	// Note: This string is formatted independently by plupload and so does not
+	// use the same formatting rules as normal phpBB translation strings
 	'PLUPLOAD_UPLOADED'			=> 'Uploaded %d/%d files',
 ));
