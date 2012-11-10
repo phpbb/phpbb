@@ -37,8 +37,8 @@ class phpbb_db_migration_v308rc1 extends phpbb_db_migration
 				),
 			)),
 			array('config.add', array('load_unreads_search', 1)),
-			array('config.update_if', array(600, 'queue_interval', 60)),
-			array('config.update_if', array(50, 'email_package_size', 20)),
+			array('config.update_if_equals', array(600, 'queue_interval', 60)),
+			array('config.update_if_equals', array(50, 'email_package_size', 20)),
 		);
 	}
 
