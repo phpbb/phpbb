@@ -59,7 +59,7 @@ if (isset($_GET['avatar']))
 	$phpbb_class_loader_ext->register();
 
 	// Set up container
-	$phpbb_container = phpbb_create_compiled_container(
+	$phpbb_container = phpbb_create_dumped_container_unless_debug(
 		array(
 			new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
 			new phpbb_di_extension_core($phpbb_root_path),

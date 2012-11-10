@@ -77,14 +77,6 @@ function phpbb_create_install_container($phpbb_root_path, $php_ext)
 */
 function phpbb_create_compiled_container(array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
-	// Check for our cached container; if it exists, use it
-	$container_filename = phpbb_container_filename($phpbb_root_path, $php_ext);
-	if (file_exists($container_filename))
-	{
-		require($container_filename);
-		return new phpbb_cache_container();
-	}
-
 	// Create a temporary container for access to the ext.manager service
 	$tmp_container = phpbb_create_container($extensions, $phpbb_root_path, $php_ext);
 	$tmp_container->compile();
@@ -102,6 +94,21 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 	}
 	$container->compile();
 
+	return $container;
+}
+
+function phpbb_create_dumped_container(array $extensions, array $passes, $phpbb_root_path, $php_ext)
+{
+	// Check for our cached container; if it exists, use it
+	$container_filename = phpbb_container_filename($phpbb_root_path, $php_ext);
+	if (file_exists($container_filename))
+	{
+		require($container_filename);
+		return new phpbb_cache_container();
+	}
+
+	$container = phpbb_create_compiled_container($extensions, $passes, $phpbb_root_path, $php_ext);
+
 	// Lastly, we create our cached container class
 	$dumper = new PhpDumper($container);
 	$cached_container_dump = $dumper->dump(array(
@@ -112,6 +119,15 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 	file_put_contents($container_filename, $cached_container_dump);
 
 	return $container;
+}
+
+function phpbb_create_dumped_container_unless_debug(array $extensions, array $passes, $phpbb_root_path, $php_ext)
+{
+	if (defined('DEBUG')) {
+		return phpbb_create_compiled_container($extensions, $passes, $phpbb_root_path, $php_ext);
+	}
+
+	return phpbb_create_dumped_container($extensions, $passes, $phpbb_root_path, $php_ext);
 }
 
 function phpbb_container_filename($phpbb_root_path, $php_ext)
