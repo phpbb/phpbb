@@ -94,7 +94,7 @@ class phpbb_search_base
 	*
 	* @return int SEARCH_RESULT_NOT_IN_CACHE or SEARCH_RESULT_IN_CACHE or SEARCH_RESULT_INCOMPLETE
 	*/
-	function obtain_ids($search_key, &$result_count, &$id_ary, $start, $per_page, $sort_dir)
+	function obtain_ids($search_key, &$result_count, &$id_ary, &$start, $per_page, $sort_dir)
 	{
 		global $cache;
 		if (!($stored_ids = $cache->get('_search_results_' . $search_key)))
