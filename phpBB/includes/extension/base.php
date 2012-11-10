@@ -22,6 +22,8 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_extension_base implements phpbb_extension_interface
 {
+	protected $umil_instructions = array();
+
 	/**
 	* Single enable step that does nothing
 	*
@@ -30,6 +32,20 @@ class phpbb_extension_base implements phpbb_extension_interface
 	*/
 	public function enable_step($old_state)
 	{
+		if (!empty($this->umil_instructions))
+		{
+			global $phpbb_root_path, $phpEx, $db;
+
+			if (!class_exists('umil'))
+			{
+				include($phpbb_root_path . 'includes/umil/umil.' . $phpEx);
+			}
+
+			$umil = new umil(true, $db);
+
+			$umil->run_actions('update', $this->umil_instructions, __CLASS__);
+		}
+
 		return false;
 	}
 
@@ -52,6 +68,20 @@ class phpbb_extension_base implements phpbb_extension_interface
 	*/
 	public function purge_step($old_state)
 	{
+		if (!empty($this->umil_instructions))
+		{
+			global $phpbb_root_path, $phpEx, $db;
+
+			if (!class_exists('umil'))
+			{
+				include($phpbb_root_path . 'includes/umil/umil.' . $phpEx);
+			}
+
+			$umil = new umil(true, $db);
+
+			$umil->run_actions('uninstall', $this->umil_instructions, __CLASS__);
+		}
+
 		return false;
 	}
 }
