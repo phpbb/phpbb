@@ -19,7 +19,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 	{
 		$db = $this->get_db();
 		$query = "
-			UPDATE " . self::$config['table_prefix'] . "extension_groups
+			UPDATE phpbb_extension_groups
 			SET allow_in_pm = '$val'
 			WHERE group_name = 'IMAGES'
 		";
