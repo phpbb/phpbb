@@ -91,13 +91,6 @@ services:
             - .%core.php_ext%
             - @cache.driver
 
-    processor.ext:
-        class: phpbb_di_processor_ext
-        arguments:
-            - @ext.manager
-        tags:
-            - { name: container.processor }
-
     request:
         class: phpbb_request
 

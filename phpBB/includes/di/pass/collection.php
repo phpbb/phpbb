@@ -18,8 +18,17 @@ if (!defined('IN_PHPBB'))
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
-class phpbb_di_pass_cron implements CompilerPassInterface
+class phpbb_di_pass_collection implements CompilerPassInterface
 {
+	private $collection_service;
+	private $service_tag;
+
+	public function __construct($collection_service, $service_tag)
+	{
+		$this->collection_service = $collection_service;
+		$this->service_tag = $service_tag;
+	}
+
 	/**
 	* Modify the container before it is passed to the rest of the code
 	*
@@ -28,9 +37,9 @@ class phpbb_di_pass_cron implements CompilerPassInterface
 	*/
 	public function process(ContainerBuilder $container)
 	{
-		$definition = $container->getDefinition('cron.task_collection');
+		$definition = $container->getDefinition($this->collection_service);
 
-		foreach ($container->findTaggedServiceIds('cron.task') as $id => $data)
+		foreach ($container->findTaggedServiceIds($this->service_tag) as $id => $data)
 		{
 			$definition->addMethodCall('add', array($id));
 		}

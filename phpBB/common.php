@@ -106,7 +106,7 @@ $phpbb_container = phpbb_create_compiled_container(
 		new phpbb_di_extension_core($phpbb_root_path),
 	),
 	array(
-		new phpbb_di_pass_cron(),
+		new phpbb_di_pass_collection('cron.task_collection', 'cron.task'),
 	),
 	$phpbb_root_path,
 	$phpEx
