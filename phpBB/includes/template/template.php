@@ -538,7 +538,11 @@ class phpbb_template
 		// Locate file
 		if ($locate)
 		{
-			$file = $this->locator->get_first_file_location(array($file), true, true);
+			$located = $this->locator->get_first_file_location(array($file), false, true);
+			if ($located)
+			{
+				$file = $located;
+			}
 		}
 		else if ($relative)
 		{
