@@ -78,26 +78,22 @@ function phpbb_create_install_container($phpbb_root_path, $php_ext)
 function phpbb_create_compiled_container(array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
 	// Check for our cached container; if it exists, use it
-	if (file_exists("{$phpbb_root_path}cache/container.$php_ext"))
+	$container_filename = phpbb_container_filename($phpbb_root_path, $php_ext);
+	if (file_exists($container_filename))
 	{
-		require("{$phpbb_root_path}cache/container.$php_ext");
+		require($container_filename);
 		return new phpbb_cache_container();
 	}
 
-	// We must use an absolute path in the container because we cannot
-	// change the value at runtime when accessing it in different
-	// directory levels.
-	$phpbb_absolute_path = phpbb_realpath($phpbb_root_path) . '/';
-
 	// Create a temporary container for access to the ext.manager service
-	$tmp_container = phpbb_create_container($extensions, $phpbb_absolute_path, $php_ext);
+	$tmp_container = phpbb_create_container($extensions, $phpbb_root_path, $php_ext);
 	$tmp_container->compile();
 
 	// Now pass the enabled extension paths into the ext compiler extension
 	$extensions[] = new phpbb_di_extension_ext($tmp_container->get('ext.manager')->all_enabled());
 
 	// Create the final container to be compiled and cached
-	$container = phpbb_create_container($extensions, $phpbb_absolute_path, $php_ext);
+	$container = phpbb_create_container($extensions, $phpbb_root_path, $php_ext);
 
 	// Compile the container
 	foreach ($passes as $pass)
@@ -113,7 +109,13 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 		'base_class'    => 'Symfony\\Component\\DependencyInjection\\ContainerBuilder',
 	));
 
-	$file = file_put_contents("{$phpbb_absolute_path}cache/container.{$php_ext}", $cached_container_dump);
+	file_put_contents($container_filename, $cached_container_dump);
 
 	return $container;
+}
+
+function phpbb_container_filename($phpbb_root_path, $php_ext)
+{
+	$filename = str_replace(array('/', '.'), array('slash', 'dot'), $phpbb_root_path);
+	return $phpbb_root_path . 'cache/' . $filename . '_container.' . $php_ext;
 }
