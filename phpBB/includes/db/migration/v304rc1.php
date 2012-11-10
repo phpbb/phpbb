@@ -57,12 +57,19 @@ class phpbb_db_migration_v304rc1 extends phpbb_db_migration
 
 	function update_data()
 	{
+		return array(
+			array('custom', array(array(&$this, 'update_custom_profile_fields'))),
+		);
+	}
+
+	function update_custom_profile_fields()
+	{
 		// Update the Custom Profile Fields based on previous settings to the new format
 		$sql = 'SELECT field_id, field_required, field_show_on_reg, field_hide
 				FROM ' . PROFILE_FIELDS_TABLE;
-		$result = _sql($sql, $errored, $error_ary);
+		$result = $this->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$sql_ary = array(
 				'field_required'	=> 0,
@@ -90,7 +97,7 @@ class phpbb_db_migration_v304rc1 extends phpbb_db_migration
 				$sql_ary['field_show_profile'] = 1;
 			}
 
-			_sql('UPDATE ' . PROFILE_FIELDS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE field_id = ' . $row['field_id'], $errored, $error_ary);
+			$this->sql_query('UPDATE ' . $this->table_prefix . 'profile_fields SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE field_id = ' . $row['field_id'], $errored, $error_ary);
 		}
 	}
 }
