@@ -370,7 +370,8 @@ class phpbb_template_filter extends php_user_filter
 	* @param string $path The path to parse
 	* @param string $include_type The type of template function to call
 	* @return string An appropriately formatted string to include in the
-	* 	template
+	* 	template or an empty string if an expression like S_FIRST_ROW was
+	* 	incorrectly used
 	*/
 	private function parse_dynamic_path($path, $include_type)
 	{
