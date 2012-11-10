@@ -125,7 +125,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			$this->extension_manager = new phpbb_extension_manager(
 				$this->get_db(),
-				new phpbb_config(),
+				new phpbb_config(array()),
 				self::$config['table_prefix'] . 'ext',
 				$phpbb_root_path,
 				".$phpEx",
