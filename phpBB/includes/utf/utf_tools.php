@@ -1648,19 +1648,13 @@ function utf8_case_fold_nfkc($text, $option = 'full')
 		"\xF0\x9D\x9E\xBB"	=> "\xCF\x83",
 		"\xF0\x9D\x9F\x8A"	=> "\xCF\x9D",
 	);
-	global $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx, $utf_normalizer;
 
 	// do the case fold
 	$text = utf8_case_fold($text, $option);
 
-	if (!class_exists('utf_normalizer'))
-	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
-	}
-
 	// convert to NFKC
-	utf_normalizer::nfkc($text);
+	$utf_normalizer->nfkc($text);
 
 	// FC_NFKC_Closure, http://www.unicode.org/Public/5.0.0/ucd/DerivedNormalizationProps.txt
 	$text = strtr($text, $fc_nfkc_closure);
@@ -1765,20 +1759,16 @@ function utf8_case_fold_nfc($text, $option = 'full')
 */
 function utf8_normalize_nfc($strings)
 {
+	global $utf_normalizer;
+
 	if (empty($strings))
 	{
 		return $strings;
 	}
 
-	if (!class_exists('utf_normalizer'))
-	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
-	}
-
 	if (!is_array($strings))
 	{
-		utf_normalizer::nfc($strings);
+		$utf_normalizer->nfc($strings);
 	}
 	else if (is_array($strings))
 	{
@@ -1788,12 +1778,12 @@ function utf8_normalize_nfc($strings)
 			{
 				foreach ($string as $_key => $_string)
 				{
-					utf_normalizer::nfc($strings[$key][$_key]);
+					$utf_normalizer->nfc($strings[$key][$_key]);
 				}
 			}
 			else
 			{
-				utf_normalizer::nfc($strings[$key]);
+				$utf_normalizer->nfc($strings[$key]);
 			}
 		}
 	}

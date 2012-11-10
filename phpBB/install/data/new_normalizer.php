@@ -180,7 +180,7 @@ class utf_new_normalizer
 	*/
 	function recompose($str, $pos, $len, &$qc, &$decomp_map)
 	{
-		global $utf_canonical_comp;
+		global $utf_canonical_comp, $utf_normalizer;
 
 		// Load the canonical composition table
 		if (!isset($utf_canonical_comp))
@@ -189,7 +189,7 @@ class utf_new_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_canonical_comp.' . $phpEx);
 		}
 
-		return utf_normalizer::recompose($str, $pos, $len, $qc, $decomp_map);
+		return $utf_normalizer->recompose($str, $pos, $len, $qc, $decomp_map);
 	}
 }
 

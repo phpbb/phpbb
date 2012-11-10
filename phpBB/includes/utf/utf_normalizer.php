@@ -110,7 +110,7 @@ class utf_normalizer
 			"\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
 		);
 
-		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfc_qc'], $GLOBALS['utf_canonical_decomp']);
+		$str = $this->recompose($str, $pos, $len, $GLOBALS['utf_nfc_qc'], $GLOBALS['utf_canonical_decomp']);
 	}
 
 	/**
@@ -142,7 +142,7 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_canonical_decomp.' . $phpEx);
 		}
 
-		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfc_qc'], $GLOBALS['utf_canonical_decomp']);
+		$str = $this->recompose($str, $pos, $len, $GLOBALS['utf_nfc_qc'], $GLOBALS['utf_canonical_decomp']);
 	}
 
 	/**
@@ -174,7 +174,7 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_compatibility_decomp.' . $phpEx);
 		}
 
-		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfkc_qc'], $GLOBALS['utf_compatibility_decomp']);
+		$str = $this->recompose($str, $pos, $len, $GLOBALS['utf_nfkc_qc'], $GLOBALS['utf_compatibility_decomp']);
 	}
 
 	/**
@@ -200,7 +200,7 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_canonical_decomp.' . $phpEx);
 		}
 
-		$str = utf_normalizer::decompose($str, $pos, $len, $GLOBALS['utf_canonical_decomp']);
+		$str = $this->decompose($str, $pos, $len, $GLOBALS['utf_canonical_decomp']);
 	}
 
 	/**
@@ -226,7 +226,7 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_compatibility_decomp.' . $phpEx);
 		}
 
-		$str = utf_normalizer::decompose($str, $pos, $len, $GLOBALS['utf_compatibility_decomp']);
+		$str = $this->decompose($str, $pos, $len, $GLOBALS['utf_compatibility_decomp']);
 	}
 
 
