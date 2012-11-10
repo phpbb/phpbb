@@ -2461,14 +2461,14 @@ function change_database_data(&$no_updates, $version)
 			// Localise Global Announcements
 			if ($db_tools->sql_column_exists(TOPICS_TABLE, 'topic_approved'))
 			{
-				$sql = 'SELECT topic_id, topic_approved, (topic_replies + 1) AS topic_posts, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
+				$sql = 'SELECT topic_id, topic_approved, (topic_replies + 1) AS topic_posts_approved, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
 					FROM ' . TOPICS_TABLE . '
 					WHERE forum_id = 0
 						AND topic_type = ' . POST_GLOBAL;
 			}
 			else
 			{
-				$sql = 'SELECT topic_id, topic_visibility, (topic_replies + 1) AS topic_posts, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
+				$sql = 'SELECT topic_id, topic_visibility, (topic_replies + 1) AS topic_posts_approved, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
 					FROM ' . TOPICS_TABLE . '
 					WHERE forum_id = 0
 						AND topic_type = ' . POST_GLOBAL;

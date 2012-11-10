@@ -516,9 +516,9 @@ class phpbb_content_visibility
 	*/
 	static public function add_post_to_statistic($data, &$sql_data)
 	{
-		$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_replies = topic_replies + 1';
+		$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_approved = topic_posts_approved + 1';
 
-		$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts = forum_posts + 1';
+		$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_approved = forum_posts_approved + 1';
 
 		if ($data['post_postcount'])
 		{
@@ -537,8 +537,8 @@ class phpbb_content_visibility
 	*/
 	static public function remove_post_from_statistic($data, &$sql_data)
 	{
-		$sql_data[TOPICS_TABLE] = ((!empty($sql_data[TOPICS_TABLE])) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts = topic_posts - 1';
-		$sql_data[FORUMS_TABLE] = ((!empty($sql_data[FORUMS_TABLE])) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts = forum_posts - 1';
+		$sql_data[TOPICS_TABLE] = ((!empty($sql_data[TOPICS_TABLE])) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_approved = topic_posts_approved - 1';
+		$sql_data[FORUMS_TABLE] = ((!empty($sql_data[FORUMS_TABLE])) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_approved = forum_posts_approved - 1';
 
 		if ($data['post_postcount'])
 		{
@@ -579,7 +579,7 @@ class phpbb_content_visibility
 		$sql_data[FORUMS_TABLE] .= ', forum_posts_softdeleted = forum_posts_softdeleted - ' . $topic_row['topic_posts_softdeleted'];
 
 		set_config_count('num_topics', -1, true);
-		set_config_count('num_posts', $topic_row['topic_posts'] * (-1), true);
+		set_config_count('num_posts', $topic_row['topic_posts_approved'] * (-1), true);
 
 		// Get user post count information
 		$sql = 'SELECT poster_id, COUNT(post_id) AS num_posts

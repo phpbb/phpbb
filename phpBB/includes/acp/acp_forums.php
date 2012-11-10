@@ -283,7 +283,7 @@ class acp_forums
 
 				@set_time_limit(0);
 
-				$sql = 'SELECT forum_name, (forum_topics + forum_topics_unapproved + forum_topics_softdeleted) AS total_topics
+				$sql = 'SELECT forum_name, (forum_topics_approved + forum_topics_unapproved + forum_topics_softdeleted) AS total_topics
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
 				$result = $db->sql_query($sql);

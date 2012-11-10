@@ -98,7 +98,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$sort_by_sql = $sort_order_sql = array();
 	mcp_sorting('viewforum', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id);
 
-	$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
+	$forum_topics = ($total == -1) ? $forum_info['forum_topics_approved'] : $total;
 	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 	$base_url = $url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;sd=$sort_dir&amp;sk=$sort_key&amp;st=$sort_days" . (($merge_select) ? $selected_ids : '');

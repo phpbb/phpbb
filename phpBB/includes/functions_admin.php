@@ -1707,7 +1707,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 					if ($row['topic_visibility'] == ITEM_APPROVED)
 					{
-						$forum_data[$forum_id]['topics'] = $row['total_topics'];
+						$forum_data[$forum_id]['topics_approved'] = $row['total_topics'];
 					}
 					else if ($row['topic_visibility'] == ITEM_UNAPPROVED)
 					{
@@ -1726,14 +1726,14 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			{
 				if (sizeof($forum_ids) == 1)
 				{
-					$sql = 'SELECT SUM(t.topic_posts) AS forum_posts, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
+					$sql = 'SELECT SUM(t.topic_posts_approved) AS forum_posts_approved, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
 							AND t.topic_status <> ' . ITEM_MOVED;
 				}
 				else
 				{
-					$sql = 'SELECT t.forum_id, SUM(t.topic_posts) AS forum_posts, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
+					$sql = 'SELECT t.forum_id, SUM(t.topic_posts_approved) AS forum_posts_approved, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
 							AND t.topic_status <> ' . ITEM_MOVED . '
@@ -1746,7 +1746,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				{
 					$forum_id = (sizeof($forum_ids) == 1) ? (int) $forum_ids[0] : (int) $row['forum_id'];
 
-					$forum_data[$forum_id]['posts_approved'] = (int) $row['forum_posts'];
+					$forum_data[$forum_id]['posts_approved'] = (int) $row['forum_posts_approved'];
 					$forum_data[$forum_id]['posts_unapproved'] = (int) $row['forum_posts_unapproved'];
 					$forum_data[$forum_id]['posts_softdeleted'] = (int) $row['forum_posts_softdeleted'];
 				}
@@ -1868,7 +1868,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			$db->sql_transaction('begin');
 
-			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_visibility, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_posts, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
+			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_visibility, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
 				FROM ' . TOPICS_TABLE . " t
 				$where_sql";
 			$result = $db->sql_query($sql);

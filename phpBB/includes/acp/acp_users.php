@@ -636,14 +636,14 @@ class acp_users
 
 							if (sizeof($topic_id_ary))
 							{
-								$sql = 'SELECT topic_id, forum_id, topic_title, topic_posts, topic_posts_unapproved, topic_posts_softdeleted, topic_attachment
+								$sql = 'SELECT topic_id, forum_id, topic_title, topic_posts_approved, topic_posts_unapproved, topic_posts_softdeleted, topic_attachment
 									FROM ' . TOPICS_TABLE . '
 									WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
 								$result = $db->sql_query($sql);
 
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if ($topic_id_ary[$row['topic_id']][ITEM_APPROVED] == $row['topic_posts']
+									if ($topic_id_ary[$row['topic_id']][ITEM_APPROVED] == $row['topic_posts_approved']
 									 && $topic_id_ary[$row['topic_id']][ITEM_UNAPPROVED] == $row['topic_posts_unapproved']
 									 && $topic_id_ary[$row['topic_id']][ITEM_DELETED] == $row['topic_posts_softdeleted'])
 									{

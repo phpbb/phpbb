@@ -570,8 +570,8 @@ function mcp_move_topic($topic_ids)
 		$sync_sql = array();
 		if ($posts_moved)
 		{
-			$sync_sql[$to_forum_id][] = 'forum_posts = forum_posts + ' . (int) $posts_moved;
-			$sync_sql[$forum_id][] = 'forum_posts = forum_posts - ' . (int) $posts_moved;
+			$sync_sql[$to_forum_id][] = 'forum_posts_approved = forum_posts_approved + ' . (int) $posts_moved;
+			$sync_sql[$forum_id][] = 'forum_posts_approved = forum_posts_approved - ' . (int) $posts_moved;
 		}
 		if ($posts_moved_unapproved)
 		{
@@ -586,10 +586,10 @@ function mcp_move_topic($topic_ids)
 
 		if ($topics_moved)
 		{
-			$sync_sql[$to_forum_id][] = 'forum_topics = forum_topics + ' . (int) $topics_moved;
+			$sync_sql[$to_forum_id][] = 'forum_topics_approved = forum_topics_approved + ' . (int) $topics_moved;
 			if ($topics_moved - $shadow_topics > 0)
 			{
-				$sync_sql[$forum_id][] = 'forum_topics = forum_topics - ' . (int) ($topics_moved - $shadow_topics);
+				$sync_sql[$forum_id][] = 'forum_topics_approved = forum_topics_approved - ' . (int) ($topics_moved - $shadow_topics);
 			}
 		}
 		if ($topics_moved_unapproved)
@@ -1348,8 +1348,8 @@ function mcp_fork_topic($topic_ids)
 
 		// Sync new topics, parent forums and board stats
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
-			SET forum_posts = forum_posts + ' . $total_posts . ',
-				forum_topics = forum_topics + ' . sizeof($new_topic_id_list) . '
+			SET forum_posts_approved = forum_posts_approved + ' . $total_posts . ',
+				forum_topics_approved = forum_topics_approved + ' . sizeof($new_topic_id_list) . '
 			WHERE forum_id = ' . $to_forum_id;
 		$db->sql_query($sql);
 

@@ -305,11 +305,11 @@ class mcp_queue
 						trigger_error('NOT_MODERATOR');
 					}
 
-					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
+					$sql = 'SELECT SUM(forum_topics_approved) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . '
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
 					$result = $db->sql_query($sql);
-					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
+					$forum_info['forum_topics_approved'] = (int) $db->sql_fetchfield('sum_forum_topics');
 					$db->sql_freeresult($result);
 				}
 				else
@@ -336,7 +336,7 @@ class mcp_queue
 				$sort_by_sql = $sort_order_sql = array();
 				mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
-				$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
+				$forum_topics = ($total == -1) ? $forum_info['forum_topics_approved'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 				$forum_names = array();

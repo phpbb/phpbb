@@ -26,7 +26,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$info_data = array(
 			'topic_first_post_id'	=> 1,
 			'topic_last_post_id'	=> 3,
-			'topic_posts'				=> 3,
+			'topic_posts_approved'		=> 3,
 			'topic_posts_unapproved'	=> 0,
 			'topic_posts_softdeleted'	=> 0,
 			'topic_visibility'		=> ITEM_APPROVED,
@@ -54,14 +54,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 						'topic_visibility'		=> ITEM_APPROVED,
 						'topic_first_post_id'	=> 1,
 						'topic_last_post_id'	=> 3,
-						'topic_posts'				=> 2,
+						'topic_posts_approved'		=> 2,
 						'topic_posts_unapproved'	=> 0,
 						'topic_posts_softdeleted'	=> 0,
 						'topic_delete_reason'	=> '',
 					),
 				),
 				array(
-					array('forum_posts' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
+					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
 				),
 			),
 			array(
@@ -80,14 +80,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 						'topic_visibility'		=> ITEM_APPROVED,
 						'topic_first_post_id'	=> 2,
 						'topic_last_post_id'	=> 3,
-						'topic_posts'				=> 2,
+						'topic_posts_approved'		=> 2,
 						'topic_posts_unapproved'	=> 0,
 						'topic_posts_softdeleted'	=> 0,
 						'topic_delete_reason'	=> '',
 					),
 				),
 				array(
-					array('forum_posts' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
+					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
 				),
 			),
 			array(
@@ -106,14 +106,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 						'topic_visibility'		=> ITEM_APPROVED,
 						'topic_first_post_id'	=> 1,
 						'topic_last_post_id'	=> 2,
-						'topic_posts'				=> 2,
+						'topic_posts_approved'		=> 2,
 						'topic_posts_unapproved'	=> 0,
 						'topic_posts_softdeleted'	=> 0,
 						'topic_delete_reason'	=> '',
 					),
 				),
 				array(
-					array('forum_posts' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 2),
+					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 2),
 				),
 			),
 			array(
@@ -132,14 +132,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 						'topic_visibility'		=> ITEM_APPROVED,
 						'topic_first_post_id'	=> 1,
 						'topic_last_post_id'	=> 3,
-						'topic_posts'				=> 2,
+						'topic_posts_approved'		=> 2,
 						'topic_posts_unapproved'	=> 0,
 						'topic_posts_softdeleted'	=> 1,
 						'topic_delete_reason'	=> '',
 					),
 				),
 				array(
-					array('forum_posts' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
+					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
 				),
 			),
 			array(
@@ -158,14 +158,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 						'topic_visibility'		=> ITEM_APPROVED,
 						'topic_first_post_id'	=> 2,
 						'topic_last_post_id'	=> 3,
-						'topic_posts'				=> 2,
+						'topic_posts_approved'		=> 2,
 						'topic_posts_unapproved'	=> 0,
 						'topic_posts_softdeleted'	=> 1,
 						'topic_delete_reason'	=> '',
 					),
 				),
 				array(
-					array('forum_posts' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
+					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
 				),
 			),
 			array(
@@ -184,14 +184,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 						'topic_visibility'		=> ITEM_APPROVED,
 						'topic_first_post_id'	=> 1,
 						'topic_last_post_id'	=> 2,
-						'topic_posts'				=> 2,
+						'topic_posts_approved'		=> 2,
 						'topic_posts_unapproved'	=> 0,
 						'topic_posts_softdeleted'	=> 1,
 						'topic_delete_reason'	=> '',
 					),
 				),
 				array(
-					array('forum_posts' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 2),
+					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 2),
 				),
 			),
 
@@ -200,7 +200,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 				array(
 					'topic_first_post_id'	=> 4,
 					'topic_last_post_id'	=> 4,
-					'topic_posts'				=> 1,
+					'topic_posts_approved'		=> 1,
 					'topic_posts_unapproved'	=> 0,
 					'topic_posts_softdeleted'	=> 0,
 					'topic_visibility'		=> ITEM_APPROVED,
@@ -216,7 +216,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 				array(
 				),
 				array(
-					array('forum_posts' => 0, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics' => 0, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 0),
+					array('forum_posts_approved' => 0, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics_approved' => 0, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 0),
 				),
 			),
 
@@ -225,7 +225,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 				array(
 					'topic_first_post_id'	=> 4,
 					'topic_last_post_id'	=> 4,
-					'topic_posts'				=> 1,
+					'topic_posts_approved'		=> 1,
 					'topic_posts_unapproved'	=> 0,
 					'topic_posts_softdeleted'	=> 0,
 					'topic_visibility'		=> ITEM_APPROVED,
@@ -244,14 +244,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 						'topic_visibility'		=> ITEM_DELETED,
 						'topic_first_post_id'	=> 4,
 						'topic_last_post_id'	=> 4,
-						'topic_posts'				=> 0,
+						'topic_posts_approved'		=> 0,
 						'topic_posts_unapproved'	=> 0,
 						'topic_posts_softdeleted'	=> 1,
 						'topic_delete_reason'	=> 'soft delete',
 					),
 				),
 				array(
-					array('forum_posts' => 0, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics' => 0, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 1, 'forum_last_post_id' => 0),
+					array('forum_posts_approved' => 0, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics_approved' => 0, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 1, 'forum_last_post_id' => 0),
 				),
 			),
 		);
@@ -287,14 +287,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$this->assertEquals($expected_posts, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
 
-		$result = $db->sql_query('SELECT topic_visibility, topic_first_post_id, topic_last_post_id, topic_posts, topic_posts_unapproved, topic_posts_softdeleted, topic_delete_reason
+		$result = $db->sql_query('SELECT topic_visibility, topic_first_post_id, topic_last_post_id, topic_posts_approved, topic_posts_unapproved, topic_posts_softdeleted, topic_delete_reason
 			FROM phpbb_topics
 			WHERE topic_id = ' . $topic_id);
 
 		$this->assertEquals($expected_topic, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
 
-		$result = $db->sql_query('SELECT forum_posts, forum_posts_unapproved, forum_posts_softdeleted, forum_topics, forum_topics_unapproved, forum_topics_softdeleted, forum_last_post_id
+		$result = $db->sql_query('SELECT forum_posts_approved, forum_posts_unapproved, forum_posts_softdeleted, forum_topics_approved, forum_topics_unapproved, forum_topics_softdeleted, forum_last_post_id
 			FROM phpbb_forums
 			WHERE forum_id = ' . $forum_id);
 

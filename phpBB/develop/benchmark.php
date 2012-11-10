@@ -192,13 +192,13 @@ function get_topic_count($forum_id)
 {
 	global $db;
 	
-	$sql = "SELECT forum_topics
+	$sql = "SELECT forum_topics_approved
 		FROM " . FORUMS_TABLE . "
 		WHERE (forum_id = $forum_id)";
 	if($result = $db->sql_query($sql))
 	{
 		$row = $db->sql_fetchrow($result);
-		$topic_count = $row['forum_topics'];
+		$topic_count = $row['forum_topics_approved'];
 
 		unset($result);
 		unset($row);
@@ -282,10 +282,10 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 		if($db->sql_query($sql))
 		{
 			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1";
+				SET forum_last_post_id = $new_post_id, forum_posts_approved = forum_posts_approved + 1";
 			if($mode == "newtopic")
 			{
-				$sql .= ", forum_topics = forum_topics + 1";
+				$sql .= ", forum_topics_approved = forum_topics_approved + 1";
 			}
 			$sql .= " WHERE forum_id = $forum_id";
 	

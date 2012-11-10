@@ -2,10 +2,10 @@
 <dataset>
 	<table name="phpbb_forums">
 		<column>forum_id</column>
-		<column>forum_posts</column>
+		<column>forum_posts_approved</column>
 		<column>forum_posts_unapproved</column>
 		<column>forum_posts_softdeleted</column>
-		<column>forum_topics</column>
+		<column>forum_topics_approved</column>
 		<column>forum_topics_unapproved</column>
 		<column>forum_topics_softdeleted</column>
 		<column>forum_last_post_id</column>
@@ -50,7 +50,7 @@
 		<column>topic_delete_user</column>
 		<column>topic_delete_time</column>
 		<column>topic_delete_reason</column>
-		<column>topic_posts</column>
+		<column>topic_posts_approved</column>
 		<column>topic_posts_unapproved</column>
 		<column>topic_posts_softdeleted</column>
 
@@ -155,7 +155,7 @@
 		<column>user_interests</column>
 		<row>
 			<value>1</value>
-			<value>1</value>
+			<value>4</value>
 			<value>user 1</value>
 			<value>user 1</value>
 			<value></value>

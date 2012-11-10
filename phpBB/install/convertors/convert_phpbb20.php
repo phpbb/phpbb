@@ -529,7 +529,7 @@ if (!$get_info)
 				array('topic_title',			'topics.topic_title',				'phpbb_set_encoding'),
 				array('topic_time',				'topics.topic_time',				''),
 				array('topic_views',			'topics.topic_views',				''),
-				array('topic_posts',			'topics.topic_replies + 1',			''),
+				array('topic_posts_approved',	'topics.topic_replies + 1',			''),
 				array('topic_posts_unapproved',	0,									''),
 				array('topic_posts_softdeleted',0,									''),
 				array('topic_last_post_id',		'topics.topic_last_post_id',		''),

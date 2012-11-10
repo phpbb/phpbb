@@ -1491,7 +1491,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 				// counting is fun! we only have to do sizeof($forum_ids) number of queries,
 				// even if the topic is moved back to where its shadow lives (we count how many times it is in a forum)
 				$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET forum_topics = forum_topics - ' . $topic_count . '
+					SET forum_topics_approved = forum_topics_approved - ' . $topic_count . '
 					WHERE forum_id = ' . $updated_forum;
 				$db->sql_query($sql);
 				update_post_information('forum', $updated_forum);
@@ -1508,7 +1508,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 
 				if ($data['topic_visibility'] == ITEM_APPROVED)
 				{
-					$sql_data[FORUMS_TABLE] .= 'forum_posts = forum_posts - 1, forum_topics = forum_topics - 1';
+					$sql_data[FORUMS_TABLE] .= 'forum_posts_approved = forum_posts_approved - 1, forum_topics_approved = forum_topics_approved - 1';
 				}
 				else if ($data['topic_visibility'] == ITEM_UNAPPROVED)
 				{
@@ -1608,7 +1608,6 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			$db->sql_freeresult($result);
 		break;
 	}
-
 
 	if (($post_mode == 'delete') || ($post_mode == 'delete_last_post') || ($post_mode == 'delete_first_post'))
 	{
@@ -1733,7 +1732,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// Retrieve some additional information if not present
 	if ($mode == 'edit' && (!isset($data['post_visibility']) || !isset($data['topic_visibility']) || $data['post_visibility'] === false || $data['topic_visibility'] === false))
 	{
-		$sql = 'SELECT p.post_visibility, t.topic_type, t.topic_posts, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_visibility
+		$sql = 'SELECT p.post_visibility, t.topic_type, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_visibility
 			FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
 			WHERE t.topic_id = p.topic_id
 				AND p.post_id = ' . $data['post_id'];
@@ -1919,8 +1918,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 			if ($post_visibility == ITEM_APPROVED)
 			{
-				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics = forum_topics + 1';
-				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_approved = forum_topics_approved + 1';
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts_approved = forum_posts_approved + 1';
 			}
 			else if ($post_visibility == ITEM_UNAPPROVED)
 			{
@@ -1938,7 +1937,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_view_time = ' . $current_time . ',
 				topic_bumped = 0,
 				topic_bumper = 0' .
-				(($post_visibility == ITEM_APPROVED) ? ', topic_posts = topic_posts + 1' : '') .
+				(($post_visibility == ITEM_APPROVED) ? ', topic_posts_approved = topic_posts_approved + 1' : '') .
 				(($post_visibility == ITEM_UNAPPROVED) ? ', topic_posts_unapproved = topic_posts_unapproved + 1' : '') .
 				(($post_visibility == ITEM_DELETED) ? ', topic_posts_softdeleted = topic_posts_softdeleted + 1' : '') .
 				((!empty($data['attachment_data']) || (isset($data['topic_attachment']) && $data['topic_attachment'])) ? ', topic_attachment = 1' : '');
@@ -1947,7 +1946,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 			if ($post_visibility == ITEM_APPROVED)
 			{
-				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts_approved = forum_posts_approved + 1';
 			}
 			else if ($post_visibility == ITEM_UNAPPROVED)
 			{
