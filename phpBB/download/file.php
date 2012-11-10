@@ -7,13 +7,16 @@
 *
 */
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 /**
 * @ignore
 */
 define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-
 
 // Thank you sun.
 if (isset($_SERVER['CONTENT_TYPE']))
@@ -39,26 +42,31 @@ if (isset($_GET['avatar']))
 	}
 
 	require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
+	require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
+	require($phpbb_root_path . 'includes/di/processor/config.' . $phpEx);
+
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
-	$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
-	$phpbb_class_loader_ext->register();
-	$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
-	$phpbb_class_loader->register();
+	$phpbb_container = new ContainerBuilder();
+	$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/../config'));
+	$loader->load('services.yml');
+
+	$processor = new phpbb_di_processor_config($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx);
+	$processor->process($phpbb_container);
+
+	$phpbb_class_loader = $phpbb_container->get('class_loader');
+	$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
 
 	// set up caching
-	$cache_factory = new phpbb_cache_factory($acm_type);
-	$cache = $cache_factory->get_service();
-	$phpbb_class_loader_ext->set_cache($cache->get_driver());
-	$phpbb_class_loader->set_cache($cache->get_driver());
+	$cache = $phpbb_container->get('cache');
 
-	$phpbb_dispatcher = new phpbb_event_dispatcher();
-	$request = new phpbb_request();
-	$db = new $sql_db();
+	$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+	$request	= $phpbb_container->get('request');
+	$db			= $phpbb_container->get('dbal.conn');
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
@@ -69,18 +77,23 @@ if (isset($_GET['avatar']))
 
 	request_var('', 0, false, false, $request);
 
-	// worst-case default
-	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
-
-	$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
+	$config = $phpbb_container->get('config');
 	set_config(null, null, null, $config);
 	set_config_count(null, null, null, $config);
 
 	// load extensions
-	$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
+	$phpbb_extension_manager = $phpbb_container->get('ext.manager');
+	$phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 
-	$phpbb_subscriber_loader = new phpbb_event_extension_subscriber_loader($phpbb_dispatcher, $phpbb_extension_manager);
-	$phpbb_subscriber_loader->load();
+	$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
+	foreach ($ids as $id)
+	{
+		$processor = $phpbb_container->get($id);
+		$processor->process($phpbb_container);
+	}
+
+	// worst-case default
+	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
 
 	$filename = request_var('avatar', '');
 	$avatar_group = false;

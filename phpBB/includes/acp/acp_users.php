@@ -32,7 +32,7 @@ class acp_users
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
-		global $phpbb_dispatcher;
+		global $phpbb_dispatcher, $request;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -772,8 +772,8 @@ class acp_users
 						'username'			=> utf8_normalize_nfc(request_var('user', $user_row['username'], true)),
 						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
 						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
-						'new_password'		=> request_var('new_password', '', true),
-						'password_confirm'	=> request_var('password_confirm', '', true),
+						'new_password'		=> $request->variable('new_password', '', true),
+						'password_confirm'	=> $request->variable('password_confirm', '', true),
 					);
 
 					// Validation data - we do not check the password complexity setting here
@@ -1161,7 +1161,7 @@ class acp_users
 
 				$base_url = $this->u_action . "&amp;u=$user_id&amp;$u_sort_param";
 				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
-				
+
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
 					'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
@@ -2077,7 +2077,7 @@ class acp_users
 
 				$base_url = $this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir";
 				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
-				
+
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
 					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $num_attachments, $config['topics_per_page'], $start),

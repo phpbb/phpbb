@@ -143,7 +143,7 @@ class install_install extends module
 		// Test the minimum PHP version
 		$php_version = PHP_VERSION;
 
-		if (version_compare($php_version, '5.3.2') < 0)
+		if (version_compare($php_version, '5.3.3') < 0)
 		{
 			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
@@ -250,7 +250,7 @@ class install_install extends module
 			'S_EXPLAIN'		=> true,
 			'S_LEGEND'		=> false,
 		));
-		
+
 		// Check for php json support
 		if (@extension_loaded('json'))
 		{
@@ -1481,12 +1481,12 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager;
+		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config;
 
 		// modules require an extension manager
 		if (empty($phpbb_extension_manager))
 		{
-			$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+			$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx");
 		}
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
@@ -2034,9 +2034,9 @@ class install_install extends module
 		'Alexa [Bot]'				=> array('ia_archiver', ''),
 		'Alta Vista [Bot]'			=> array('Scooter/', ''),
 		'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
-		'Baidu [Spider]'			=> array('Baiduspider+(', ''),
-		'Bing [Bot]'                => array('bingbot/', ''),
-		'Exabot [Bot]'				=> array('Exabot/', ''),
+		'Baidu [Spider]'			=> array('Baiduspider', ''),
+		'Bing [Bot]'				=> array('bingbot/', ''),
+		'Exabot [Bot]'				=> array('Exabot', ''),
 		'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
 		'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),
 		'Francis [Bot]'				=> array('http://www.neomo.de/', ''),
@@ -2055,27 +2055,21 @@ class install_install extends module
 		'MSN NewsBlogs'				=> array('msnbot-NewsBlogs/', ''),
 		'MSN [Bot]'					=> array('msnbot/', ''),
 		'MSNbot Media'				=> array('msnbot-media/', ''),
-		'NG-Search [Bot]'			=> array('NG-Search/', ''),
 		'Nutch [Bot]'				=> array('http://lucene.apache.org/nutch/', ''),
-		'Nutch/CVS [Bot]'			=> array('NutchCVS/', ''),
-		'OmniExplorer [Bot]'		=> array('OmniExplorer_Bot/', ''),
 		'Online link [Validator]'	=> array('online link validator', ''),
 		'psbot [Picsearch]'			=> array('psbot/0', ''),
-		'Seekport [Bot]'			=> array('Seekbot/', ''),
 		'Sensis [Crawler]'			=> array('Sensis Web Crawler', ''),
 		'SEO Crawler'				=> array('SEO search Crawler/', ''),
 		'Seoma [Crawler]'			=> array('Seoma [SEO Crawler]', ''),
 		'SEOSearch [Crawler]'		=> array('SEOsearch/', ''),
 		'Snappy [Bot]'				=> array('Snappy/1.1 ( http://www.urltrends.com/ )', ''),
 		'Steeler [Crawler]'			=> array('http://www.tkl.iis.u-tokyo.ac.jp/~crawler/', ''),
-		'Synoo [Bot]'				=> array('SynooBot/', ''),
 		'Telekom [Bot]'				=> array('crawleradmin.t-info@telekom.de', ''),
 		'TurnitinBot [Bot]'			=> array('TurnitinBot/', ''),
-		'Voyager [Bot]'				=> array('voyager/1.0', ''),
+		'Voyager [Bot]'				=> array('voyager/', ''),
 		'W3 [Sitesearch]'			=> array('W3 SiteSearch Crawler', ''),
 		'W3C [Linkcheck]'			=> array('W3C-checklink/', ''),
-		'W3C [Validator]'			=> array('W3C_*Validator', ''),
-		'WiseNut [Bot]'				=> array('http://www.WISEnutbot.com', ''),
+		'W3C [Validator]'			=> array('W3C_Validator', ''),
 		'YaCy [Bot]'				=> array('yacybot', ''),
 		'Yahoo MMCrawler [Bot]'		=> array('Yahoo-MMCrawler/', ''),
 		'Yahoo Slurp [Bot]'			=> array('Yahoo! DE Slurp', ''),

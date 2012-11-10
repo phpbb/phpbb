@@ -274,14 +274,24 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		trigger_error($error);
 	}
 
+	$common_words = $search->get_common_words();
+
 	// let the search module split up the keywords
 	if ($keywords)
 	{
 		$correct_query = $search->split_keywords($keywords, $search_terms);
-		if (!$correct_query || (empty($search->search_query) && !sizeof($author_id_ary) && !$search_id))
+		if (!$correct_query || (!$search->get_search_query() && !sizeof($author_id_ary) && !$search_id))
 		{
-			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $search->common_words)) . '<br />' : '';
-			trigger_error($ignored . $user->lang('NO_KEYWORDS', $user->lang('CHARACTERS', (int) $search->word_length['min']), $user->lang('CHARACTERS', (int) $search->word_length['max'])));
+			$ignored = (sizeof($common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $common_words)) . '<br />' : '';
+			$word_length = $search->get_word_length();
+			if ($word_length)
+			{
+				trigger_error($ignored . $user->lang('NO_KEYWORDS', $user->lang('CHARACTERS', (int) $word_length['min']), $user->lang('CHARACTERS', (int) $word_length['max'])));
+			}
+			else
+			{
+				trigger_error($ignored);
+			}
 		}
 	}
 
@@ -512,7 +522,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 // @TODO	sort($m_approve_fid_ary);
 	sort($author_id_ary);
 
-	if (!empty($search->search_query))
+	if ($search->get_search_query())
 	{
 		$total_match_count = $search->keyword_search($show_results, $search_fields, $search_terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_posts_fid_sql, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page);
 	}
@@ -590,13 +600,13 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	phpbb_generate_template_pagination($template, $u_search, 'pagination', 'start', $total_match_count, $per_page, $start);
-	
+
 	$template->assign_vars(array(
 		'SEARCH_TITLE'		=> $l_search_title,
 		'SEARCH_MATCHES'	=> $l_search_matches,
 		'SEARCH_WORDS'		=> $keywords,
-		'SEARCHED_QUERY'	=> $search->search_query,
-		'IGNORED_WORDS'		=> (sizeof($search->common_words)) ? implode(' ', $search->common_words) : '',
+		'SEARCHED_QUERY'	=> $search->get_search_query(),
+		'IGNORED_WORDS'		=> (sizeof($common_words)) ? implode(' ', $common_words) : '',
 		'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $u_search, $total_match_count, $per_page, $start),
 
 		'PHRASE_SEARCH_DISABLED'		=> $phrase_search_disabled,
@@ -992,7 +1002,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '')
 			));
-			
+
 			if ($show_results == 'topics')
 			{
 				phpbb_generate_template_pagination($template, $view_topic_url, 'searchresults.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);

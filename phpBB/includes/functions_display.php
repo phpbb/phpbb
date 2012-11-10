@@ -54,12 +54,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	// Handle marking everything read
 	if ($mark_read == 'all')
 	{
-		$redirect = build_url(array('mark', 'hash'));
+		$redirect = build_url(array('mark', 'hash', 'mark_time'));
 		meta_refresh(3, $redirect);
 
 		if (check_link_hash(request_var('hash', ''), 'global'))
 		{
-			markread('all');
+			markread('all', false, false, request_var('mark_time', 0));
 
 			trigger_error(
 				$user->lang['FORUMS_MARKED'] . '<br /><br />' .
@@ -306,11 +306,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	// Handle marking posts
 	if ($mark_read == 'forums')
 	{
-		$redirect = build_url(array('mark', 'hash'));
+		$redirect = build_url(array('mark', 'hash', 'mark_time'));
 		$token = request_var('hash', '');
 		if (check_link_hash($token, 'global'))
 		{
-			markread('topics', $forum_ids);
+			markread('topics', $forum_ids, false, request_var('mark_time', 0));
 			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
 
@@ -552,7 +552,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	}
 
 	$template->assign_vars(array(
-		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums') : '',
+		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums&amp;mark_time=' . time()) : '',
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
 		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
@@ -1401,7 +1401,8 @@ function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $php
 
 	foreach ($methods as $method)
 	{
-		$type = array_pop(explode('.', $method));
+		$exploded = explode('.', $method);
+		$type = array_pop($exploded);
 		$params = array('archive' => $method);
 		$params[$param_key] = $param_val;
 

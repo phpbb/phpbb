@@ -1,0 +1,34 @@
+<!-- INCLUDE overall_header.html -->
+
+	<a name="maincontent"></a>
+
+	<h1>{L_EXTENSIONS_ADMIN}</h1>
+
+	<p>{L_EXTENSIONS_EXPLAIN}</p>
+	<p>{L_DISABLE_EXPLAIN}</p>
+
+	<!-- IF PRE -->
+	<div class="errorbox">
+		<p>{L_DISABLE_CONFIRM}</p>
+	</div>
+
+	<form id="acp_extensions" method="post" action="{U_DISABLE}">
+	<fieldset class="submit-buttons">
+		<legend>{L_DISABLE}</legend>
+		<input class="button1" type="submit" name="disable" value="{L_DISABLE}" />
+		<input class="button2" type="submit" name="cancel" value="{L_CANCEL}" />
+	</fieldset>
+	</form>
+	<!-- ELSEIF S_NEXT_STEP -->
+		<div class="errorbox">
+			<p>{L_DISABLE_IN_PROGRESS}</p>
+		</div>
+	<!-- ELSE -->
+		<div class="successbox">
+			<p>{L_DISABLE_SUCCESS}</p>
+			<br />
+			<p><a href="{U_RETURN}">{L_RETURN}</a></p>
+		</div>
+	<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

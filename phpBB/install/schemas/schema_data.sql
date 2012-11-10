@@ -242,6 +242,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_protocol', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc', '{L_CONFIG_SITE_DESC}');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_url', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_text', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename', '{L_CONFIG_SITENAME}');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path', 'images/smilies');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_per_page', '50');
@@ -349,6 +351,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_board', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_bots', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_clearlogs', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_email', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_extensions', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_fauth', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_forum', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_forumadd', 1);

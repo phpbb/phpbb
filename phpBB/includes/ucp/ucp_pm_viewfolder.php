@@ -453,7 +453,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 
 	$base_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param");
 	phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $pm_count, $config['topics_per_page'], $start);
-	
+
 	$template->assign_vars(array(
 		'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $pm_count, $config['topics_per_page'], $start),
 		'TOTAL_MESSAGES'	=> $user->lang('VIEW_PM_MESSAGES', (int) $pm_count),

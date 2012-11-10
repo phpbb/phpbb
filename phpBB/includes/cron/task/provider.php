@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\DependencyInjection\TaggedContainerInterface;
+
 /**
 * Provides cron manager with tasks
 *
@@ -22,27 +24,36 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_cron_task_provider extends phpbb_extension_provider
+class phpbb_cron_task_provider implements IteratorAggregate
 {
-	/**
-	* Finds cron task names using the extension manager.
-	*
-	* All PHP files in includes/cron/task/core/ are considered tasks. Tasks
-	* in extensions have to be located in a directory called cron or a subdir
-	* of a directory called cron. The class and filename must end in a _task
-	* suffix. Additionally all PHP files in includes/cron/task/core/ are
-	* tasks.
-	*
-	* @return array     List of task names
-	*/
-	protected function find()
-	{
-		$finder = $this->extension_manager->get_finder();
+	private $container;
 
-		return $finder
-			->extension_suffix('_task')
-			->extension_directory('/cron')
-			->core_path('includes/cron/task/core/')
-			->get_classes();
+	public function __construct(TaggedContainerInterface $container)
+	{
+		$this->container = $container;
+	}
+
+	/**
+	* Retrieve an iterator over all items
+	*
+	* @return ArrayIterator An iterator for the array of cron tasks
+	*/
+	public function getIterator()
+	{
+		$definitions = $this->container->findTaggedServiceIds('cron.task');
+
+		$tasks = array();
+		foreach ($definitions as $name => $definition)
+		{
+			$task = $this->container->get($name);
+			if ($task instanceof phpbb_cron_task_base)
+			{
+				$task->set_name($name);
+			}
+
+			$tasks[] = $task;
+		}
+
+		return new ArrayIterator($tasks);
 	}
 }

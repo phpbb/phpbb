@@ -159,8 +159,10 @@ class compress
 
 	/**
 	* Return available methods
+	*
+	* @return array Array of strings of available compression methods (.tar, .tar.gz, .zip, etc.)
 	*/
-	function methods()
+	static public function methods()
 	{
 		$methods = array('.tar');
 		$available_methods = array('.tar.gz' => 'zlib', '.tar.bz2' => 'bz2', '.zip' => 'zlib');

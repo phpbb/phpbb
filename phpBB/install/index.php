@@ -7,6 +7,10 @@
 *
 */
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 /**#@+
 * @ignore
 */
@@ -17,9 +21,9 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-if (version_compare(PHP_VERSION, '5.3.2') < 0)
+if (version_compare(PHP_VERSION, '5.3.3') < 0)
 {
-	die('You are running an unsupported PHP version. Please upgrade to PHP 5.3.2 or higher before trying to install phpBB 3.1');
+	die('You are running an unsupported PHP version. Please upgrade to PHP 5.3.3 or higher before trying to install phpBB 3.1');
 }
 
 function phpbb_require_updated($path, $optional = false)
@@ -71,6 +75,9 @@ else
 
 // Include essential scripts
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
+require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
+require($phpbb_root_path . 'includes/di/processor/config.' . $phpEx);
+
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
@@ -79,19 +86,23 @@ include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
-$phpbb_class_loader_ext->register();
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
-$phpbb_class_loader->register();
+$phpbb_container = new ContainerBuilder();
+$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/../config'));
+$loader->load('services.yml');
+
+$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
+$phpbb_container->setParameter('core.php_ext', $phpEx);
+
+$phpbb_container->setAlias('cache.driver', 'cache.driver.install');
+
+$phpbb_class_loader = $phpbb_container->get('class_loader');
+$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
 
 // set up caching
-$cache_factory = new phpbb_cache_factory('file');
-$cache = $cache_factory->get_service();
-$phpbb_class_loader_ext->set_cache($cache->get_driver());
-$phpbb_class_loader->set_cache($cache->get_driver());
+$cache = $phpbb_container->get('cache');
 
-$phpbb_dispatcher = new phpbb_event_dispatcher();
-$request = new phpbb_request();
+$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+$request	= $phpbb_container->get('request');
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
@@ -202,7 +213,7 @@ $config = new phpbb_config(array(
 
 $phpbb_style_resource_locator = new phpbb_style_resource_locator();
 $phpbb_style_path_provider = new phpbb_style_path_provider();
-$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator);
+$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, new phpbb_template_context());
 $phpbb_style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
 $phpbb_style->set_ext_dir_prefix('adm/');
 $phpbb_style->set_custom_style('admin', '../adm/style', '');
@@ -583,7 +594,7 @@ class module
 		echo '		</div>';
 		echo '	</div>';
 		echo '	<div id="page-footer">';
-		echo '		Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group';
+		echo '		Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group';
 		echo '	</div>';
 		echo '</div>';
 		echo '</body>';

@@ -49,13 +49,13 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		}
 	}
 
-	public static function get_instance()
+	static public function get_instance()
 	{
 		$instance = new phpbb_captcha_gd();
 		return $instance;
 	}
 
-	function is_available()
+	static public function is_available()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -80,7 +80,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		return true;
 	}
 
-	function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_GD';
 	}

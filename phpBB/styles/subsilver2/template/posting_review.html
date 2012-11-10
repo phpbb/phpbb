@@ -34,7 +34,7 @@
 					<table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td>&nbsp;</td>
-						<td class="gensmall" valign="middle" nowrap="nowrap"><b>{L_POST_SUBJECT}:</b>&nbsp;</td>
+						<td class="gensmall" valign="middle" nowrap="nowrap"><b>{L_POST_SUBJECT}{L_COLON}</b>&nbsp;</td>
 						<td class="gensmall" width="100%" valign="middle">{post_review_row.POST_SUBJECT}</td>
 						<td>&nbsp;</td>
 					</tr>
@@ -57,7 +57,7 @@
 
 									<table class="tablebg" width="100%" cellspacing="1">
 									<tr>
-										<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+										<td class="row3"><b class="genmed">{L_ATTACHMENTS}{L_COLON} </b></td>
 									</tr>
 									<!-- BEGIN attachment -->
 										<tr>
@@ -78,7 +78,7 @@
 							<tr valign="middle">
 								<td width="100%">&nbsp;</td>
 								<td width="10" nowrap="nowrap"><!-- IF S_IS_BOT -->{post_review_row.MINI_POST_IMG}<!-- ELSE --><a href="{post_review_row.U_MINI_POST}" class="imageset">{post_review_row.MINI_POST_IMG}</a><!-- ENDIF --></td>
-								<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {post_review_row.POST_DATE}</td>
+								<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}{L_COLON}</b> {post_review_row.POST_DATE}</td>
 							</tr>
 							</table>
 						</td>
