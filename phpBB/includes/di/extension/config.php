@@ -37,8 +37,6 @@ class phpbb_di_extension_config extends Extension
 	* @param ContainerBuilder $container A ContainerBuilder instance
 	*
 	* @throws InvalidArgumentException When provided tag is not defined in this extension
-	*
-	* @api
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
@@ -61,8 +59,6 @@ class phpbb_di_extension_config extends Extension
 	* This alias is also the mandatory prefix to use when using YAML.
 	*
 	* @return string The alias
-	*
-	* @api
 	*/
 	public function getAlias()
 	{
