@@ -1142,7 +1142,6 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 function phpbb_delete_user_pms($user_id)
 {
 	global $db, $user, $phpbb_root_path, $phpEx;
-	global $phpbb_notifications;
 
 	$user_id = (int) $user_id;
 
@@ -1164,6 +1163,7 @@ function phpbb_delete_user_pms($user_id)
 function phpbb_delete_users_pms($user_ids)
 {
 	global $db, $user, $phpbb_root_path, $phpEx;
+	global $phpbb_notifications;
 
 	$user_id_sql = $db->sql_in_set('user_id', $user_ids);
 	$author_id_sql = $db->sql_in_set('author_id', $user_ids);
