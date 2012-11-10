@@ -366,6 +366,7 @@ class module
 
 		$template->assign_vars(array(
 			'L_CHANGE'				=> $lang['CHANGE'],
+			'L_COLON'				=> $lang['COLON'],
 			'L_INSTALL_PANEL'		=> $lang['INSTALL_PANEL'],
 			'L_SELECT_LANG'			=> $lang['SELECT_LANG'],
 			'L_SKIP'				=> $lang['SKIP'],
