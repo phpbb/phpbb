@@ -67,18 +67,6 @@ if (!defined('PHPBB_INSTALLED'))
 	exit;
 }
 
-// Load Extensions
-// dl() is deprecated and disabled by default as of PHP 5.3.
-if (!empty($load_extensions) && function_exists('dl'))
-{
-	$load_extensions = explode(',', $load_extensions);
-
-	foreach ($load_extensions as $extension)
-	{
-		@dl(trim($extension));
-	}
-}
-
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
