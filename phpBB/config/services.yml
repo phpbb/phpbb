@@ -45,7 +45,7 @@ services:
             - %tables.config%
 
     cron.task_collection:
-        class: phpbb_cron_task_collection
+        class: phpbb_di_service_collection
         arguments:
             - @service_container
 

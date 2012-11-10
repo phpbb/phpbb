@@ -15,29 +15,29 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-use Symfony\Component\DependencyInjection\TaggedContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
-* Collects cron tasks
+* Collection of services to be configured at container compile time.
 *
 * @package phpBB3
 */
-class phpbb_cron_task_collection extends ArrayObject
+class phpbb_di_service_collection extends ArrayObject
 {
 	/**
 	* Constructor
 	*
-	* @param TaggedContainerInterface $container Container object
+	* @param ContainerInterface $container Container object
 	*/
-	public function __construct(TaggedContainerInterface $container)
+	public function __construct(ContainerInterface $container)
 	{
 		$this->container = $container;
 	}
 
 	/**
-	* Add a cron task to the collection
+	* Add a service to the collection
 	*
-	* @param string $name The service name of the cron task
+	* @param string $name The service name
 	* @return null
 	*/
 	public function add($name)
