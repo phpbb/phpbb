@@ -2140,13 +2140,14 @@ function avatar_remote($data, &$error)
 */
 function avatar_upload($data, &$error)
 {
-	global $phpbb_root_path, $config, $db, $user, $phpEx;
+	global $phpbb_root_path, $config, $db, $user, $phpEx, $request;
 
 	// Init upload class
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], (isset($config['mime_triggers']) ? explode('|', $config['mime_triggers']) : false));
 
-	if (!empty($_FILES['uploadfile']['name']))
+	$uploadfile = $request->file('uploadfile');
+	if (!empty($uploadfile['name']))
 	{
 		$file = $upload->form_upload('uploadfile');
 	}
@@ -2369,7 +2370,7 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 */
 function avatar_process_user(&$error, $custom_userdata = false, $can_upload = null)
 {
-	global $config, $phpbb_root_path, $auth, $user, $db;
+	global $config, $phpbb_root_path, $auth, $user, $db, $request;
 
 	$data = array(
 		'uploadurl'		=> request_var('uploadurl', ''),
@@ -2411,7 +2412,8 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 		$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 	}
 
-	if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
+	$uploadfile = $request->file('uploadfile');
+	if ((!empty($uploadfile['name']) || $data['uploadurl']) && $can_upload)
 	{
 		list($sql_ary['user_avatar_type'], $sql_ary['user_avatar'], $sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = avatar_upload($data, $error);
 	}
