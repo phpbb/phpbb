@@ -11,7 +11,7 @@ class phpbb_db_migration_v305 extends phpbb_db_migration
 {
 	function depends_on()
 	{
-		return array('phpbb_db_migration_v305rc1');
+		return array('phpbb_db_migration_v305rc1part2');
 	}
 
 	function update_schema()
