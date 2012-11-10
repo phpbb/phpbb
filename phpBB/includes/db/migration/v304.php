@@ -21,20 +21,27 @@ class phpbb_db_migration_v304 extends phpbb_db_migration
 
 	function update_data()
 	{
+		return array(
+			array('custom', array(array(&$this, 'rename_log_delete_topic'))),
+		);
+	}
+
+	function rename_log_delete_topic()
+	{
 		if ($db->sql_layer == 'oracle')
 		{
 			// log_operation is CLOB - but we can change this later
-			$sql = 'UPDATE ' . LOG_TABLE . "
+			$sql = 'UPDATE ' . $this->table_prefix . "log
 				SET log_operation = 'LOG_DELETE_TOPIC'
 				WHERE log_operation LIKE 'LOG_TOPIC_DELETED'";
-			_sql($sql, $errored, $error_ary);
+			$this->sql_query($sql);
 		}
 		else
 		{
-			$sql = 'UPDATE ' . LOG_TABLE . "
+			$sql = 'UPDATE ' . $this->table_prefix . "log
 				SET log_operation = 'LOG_DELETE_TOPIC'
 				WHERE log_operation = 'LOG_TOPIC_DELETED'";
-			_sql($sql, $errored, $error_ary);
+			$this->sql_query($sql);
 		}
 	}
 }
