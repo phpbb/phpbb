@@ -11,13 +11,14 @@ class phpbb_mock_request implements phpbb_request_interface
 {
 	protected $data;
 
-	public function __construct($get = array(), $post = array(), $cookie = array(), $server = array(), $request = false)
+	public function __construct($get = array(), $post = array(), $cookie = array(), $server = array(), $request = false, $files = array())
 	{
 		$this->data[phpbb_request_interface::GET] = $get;
 		$this->data[phpbb_request_interface::POST] = $post;
 		$this->data[phpbb_request_interface::COOKIE] = $cookie;
 		$this->data[phpbb_request_interface::REQUEST] = ($request === false) ? $post + $get : $request;
 		$this->data[phpbb_request_interface::SERVER] = $server;
+		$this->data[phpbb_request_interface::FILES] = $files;
 	}
 
 	public function overwrite($var_name, $value, $super_global = phpbb_request_interface::REQUEST)
@@ -40,6 +41,12 @@ class phpbb_mock_request implements phpbb_request_interface
 	{
 		$var_name = 'HTTP_' . str_replace('-', '_', strtoupper($header_name));
 		return $this->server($var_name, $default);
+	}
+
+	public function file($form_name)
+	{
+		$super_global = phpbb_request_interface::FILES;
+		return isset($this->data[$super_global][$form_name]) ? $this->data[$super_global][$form_name] : array();
 	}
 
 	public function is_set_post($name)
