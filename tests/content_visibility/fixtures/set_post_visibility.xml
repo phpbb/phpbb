@@ -7,6 +7,9 @@
 		<column>topic_title</column>
 		<column>topic_first_post_id</column>
 		<column>topic_last_post_id</column>
+		<column>topic_posts_approved</column>
+		<column>topic_posts_softdeleted</column>
+		<column>topic_posts_unapproved</column>
 		<row>
 			<value>1</value>
 			<value>1</value>
@@ -14,6 +17,9 @@
 			<value>Approved</value>
 			<value>2</value>
 			<value>2</value>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
 		</row>
 
 		<row>
@@ -23,6 +29,9 @@
 			<value>2 Approved posts</value>
 			<value>5</value>
 			<value>6</value>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
 		</row>
 
 		<row>
@@ -32,6 +41,9 @@
 			<value>Only 1 Approved posts</value>
 			<value>8</value>
 			<value>8</value>
+			<value>1</value>
+			<value>0</value>
+			<value>0</value>
 		</row>
 	</table>
 	<table name="phpbb_posts">

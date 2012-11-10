@@ -115,8 +115,9 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 	*/
 	public function test_set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest, $expected, $expected_topic)
 	{
-		global $db;
+		global $cache, $db;
 
+		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 
 		phpbb_content_visibility::set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest);

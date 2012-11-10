@@ -119,8 +119,9 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 	*/
 	public function test_get_forums_visibility_sql($table, $mode, $forum_ids, $table_alias, $permissions, $expected)
 	{
-		global $db, $auth;
+		global $cache, $db, $auth;
 
+		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 
 		// Create auth mock

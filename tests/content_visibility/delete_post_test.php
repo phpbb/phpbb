@@ -262,9 +262,10 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 	*/
 	public function test_delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason, $expected_posts, $expected_topic, $expected_forum)
 	{
-		global $auth, $config, $db;
+		global $auth, $cache, $config, $db;
 
 		$config['search_type'] = 'phpbb_mock_search';
+		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 		set_config_count(null, null, null, new phpbb_config(array('num_posts' => 3, 'num_topics' => 1)));
 
