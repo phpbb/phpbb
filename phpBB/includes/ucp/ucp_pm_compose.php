@@ -838,11 +838,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$post_id = request_var('p', 0);
 			if ($config['allow_post_links'])
 			{
-				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}: {$message_subject}[/url]\n\n";
+				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}[/url]\n\n";
 			}
 			else
 			{
-				$message_link = $user->lang['SUBJECT'] . ': ' . $message_subject . " (" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id})\n\n";
+				$message_link = $user->lang['SUBJECT'] . $user->lang['COLON'] . ' ' . $message_subject . " (" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id})\n\n";
 			}
 		}
 		else

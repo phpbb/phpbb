@@ -13,25 +13,25 @@
 <legend>{L_GENERAL_OPTIONS}</legend>
 
 <dl>
-	<dt><label for="enable_confirm">{L_VISUAL_CONFIRM_REG}:</label><br /><span>{L_VISUAL_CONFIRM_REG_EXPLAIN}</span></dt>
+	<dt><label for="enable_confirm">{L_VISUAL_CONFIRM_REG}{L_COLON}</label><br /><span>{L_VISUAL_CONFIRM_REG_EXPLAIN}</span></dt>
 	<dd><label><input type="radio" class="radio" id="enable_confirm" name="enable_confirm" value="1"<!-- IF REG_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
 		<label><input type="radio" class="radio" name="enable_confirm" value="0"<!-- IF not REG_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
 </dl>
 <dl>
-	<dt><label for="max_reg_attempts">{L_REG_LIMIT}:</label><br /><span>{L_REG_LIMIT_EXPLAIN}</span></dt>
+	<dt><label for="max_reg_attempts">{L_REG_LIMIT}{L_COLON}</label><br /><span>{L_REG_LIMIT_EXPLAIN}</span></dt>
 	<dd><input id="max_reg_attempts" type="text" size="4" maxlength="4" name="max_reg_attempts" value="{REG_LIMIT}" /></dd>
 </dl>
 <dl>
-	<dt><label for="max_login_attempts">{L_MAX_LOGIN_ATTEMPTS}:</label><br /><span>{L_MAX_LOGIN_ATTEMPTS_EXPLAIN}</span></dt>
+	<dt><label for="max_login_attempts">{L_MAX_LOGIN_ATTEMPTS}{L_COLON}</label><br /><span>{L_MAX_LOGIN_ATTEMPTS_EXPLAIN}</span></dt>
 	<dd><input id="max_login_attempts" type="text" size="4" maxlength="4" name="max_login_attempts" value="{MAX_LOGIN_ATTEMPTS}" /></dd>
 </dl>
 <dl>
-	<dt><label for="enable_post_confirm">{L_VISUAL_CONFIRM_POST}:</label><br /><span>{L_VISUAL_CONFIRM_POST_EXPLAIN}</span></dt>
+	<dt><label for="enable_post_confirm">{L_VISUAL_CONFIRM_POST}{L_COLON}</label><br /><span>{L_VISUAL_CONFIRM_POST_EXPLAIN}</span></dt>
 	<dd><label><input type="radio" class="radio" id="enable_post_confirm" name="enable_post_confirm" value="1"<!-- IF POST_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
 		<label><input type="radio" class="radio" name="enable_post_confirm" value="0"<!-- IF not POST_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
 </dl>
 <dl>
-	<dt><label for="confirm_refresh">{L_VISUAL_CONFIRM_REFRESH}:</label><br /><span>{L_VISUAL_CONFIRM_REFRESH_EXPLAIN}</span></dt>
+	<dt><label for="confirm_refresh">{L_VISUAL_CONFIRM_REFRESH}{L_COLON}</label><br /><span>{L_VISUAL_CONFIRM_REFRESH_EXPLAIN}</span></dt>
 	<dd><label><input type="radio" class="radio" id="confirm_refresh" name="confirm_refresh" value="1"<!-- IF CONFIRM_REFRESH --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
 		<label><input type="radio" class="radio" name="confirm_refresh" value="0"<!-- IF not CONFIRM_REFRESH --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
 </dl>
@@ -40,12 +40,12 @@
 <fieldset>
 <legend>{L_AVAILABLE_CAPTCHAS}</legend>
 <dl>
-	<dt><label for="captcha_select">{L_CAPTCHA_SELECT}:</label><br /><span>{L_CAPTCHA_SELECT_EXPLAIN}</span></dt>
+	<dt><label for="captcha_select">{L_CAPTCHA_SELECT}{L_COLON}</label><br /><span>{L_CAPTCHA_SELECT_EXPLAIN}</span></dt>
 	<dd><select id="captcha_select" name="select_captcha" onchange="(document.getElementById('acp_captcha')).submit()" >{CAPTCHA_SELECT}</select></dd>
 </dl>
  <!-- IF S_CAPTCHA_HAS_CONFIG -->
 <dl>
-	<dt><label for="configure">{L_CAPTCHA_CONFIGURE}:</label><br /><span>{L_CAPTCHA_CONFIGURE_EXPLAIN}</span></dt>
+	<dt><label for="configure">{L_CAPTCHA_CONFIGURE}{L_COLON}</label><br /><span>{L_CAPTCHA_CONFIGURE_EXPLAIN}</span></dt>
 	<dd><input class="button2" type="submit" id="configure" name="configure" value="{L_CONFIGURE}" /></dd>
 </dl>
 <!-- ENDIF -->
