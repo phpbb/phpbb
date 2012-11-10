@@ -476,7 +476,6 @@ class phpbb_questionnaire_phpbb_data_provider
 
 		$result['dbms'] = $dbms;
 		$result['acm_type'] = $acm_type;
-		$result['load_extensions'] = $load_extensions;
 		$result['user_agent'] = 'Unknown';
 		$result['dbms_version'] = $db->sql_server_info(true);
 

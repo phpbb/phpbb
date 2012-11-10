@@ -57,19 +57,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 
 	static public function is_available()
 	{
-		global $phpbb_root_path, $phpEx;
-
-		if (@extension_loaded('gd'))
-		{
-			return true;
-		}
-
-		if (!function_exists('can_load_dll'))
-		{
-			include($phpbb_root_path . 'includes/functions_install.' . $phpEx);
-		}
-
-		return can_load_dll('gd');
+		return @extension_loaded('gd');
 	}
 
 	/**
