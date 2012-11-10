@@ -571,6 +571,11 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			$author_name,
 		)));
 
+		if ($start < 0)
+		{
+			$start = 0;
+		}
+
 		// try reading the results from cache
 		$result_count = 0;
 		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
@@ -676,8 +681,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		// retrieve the total result count if needed
 		if (!$result_count)
 		{
-			$sql = 'SELECT FOUND_ROWS() as result_count';
-			$result = $this->db->sql_query($sql);
+			$sql_found_rows = 'SELECT FOUND_ROWS() as result_count';
+			$result = $this->db->sql_query($sql_found_rows);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 			$this->db->sql_freeresult($result);
 
@@ -686,6 +691,20 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 				return false;
 			}
 		}
+
+		if ($start >= $result_count)
+		{
+			$start = floor(($result_count - 1) / $per_page) * $per_page;
+		}
+
+		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$id_ary[] = (int) $row[$field];
+		}
+		$this->db->sql_freeresult($result);
+
+		$id_ary = array_unique($id_ary);
 
 		if (sizeof($id_ary))
 		{
