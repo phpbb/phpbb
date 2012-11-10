@@ -220,12 +220,11 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$topic_title = censor_text($row['topic_title']);
 
-		// @todo:
 		$topic_unapproved = ($row['topic_visibility'] == ITEM_UNAPPROVED  && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
 		$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_posts_unapproved'] && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
-		$topic_deleted = ($row['topic_visibility'] == ITEM_DELETED) ? true : false;
+		$topic_deleted = $row['topic_visibility'] == ITEM_DELETED;
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $url . '&amp;i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . '&amp;t=' . $row['topic_id'] : '';
-		$u_mcp_queue = (!$u_mcp_queue && $topic_deleted) ? $url . 'i=queue&amp;mode=deleted_posts&amp;t=' . $topic_id : $u_mcp_queue;
+		$u_mcp_queue = (!$u_mcp_queue && $topic_deleted) ? $url . 'i=queue&amp;mode=deleted_topics&amp;t=' . $topic_id : $u_mcp_queue;
 
 		$topic_row = array(
 			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',

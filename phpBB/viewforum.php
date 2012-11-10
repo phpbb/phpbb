@@ -688,11 +688,10 @@ if (sizeof($topic_list))
 
 		$topic_unapproved = ($row['topic_visibility'] == ITEM_UNAPPROVED && $auth->acl_get('m_approve', $row['forum_id']));
 		$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_posts_unapproved'] && $auth->acl_get('m_approve', $row['forum_id']));
-		$topic_deleted = ($row['topic_visibility'] == ITEM_DELETED);
-		$posts_deleted = ($row['topic_visibility'] == ITEM_DELETED && $row['topic_posts_softdeleted'] && $auth->acl_get('m_approve', $row['forum_id']));
-		//@todo: this is still some kind of wrong!
+		$topic_deleted = $row['topic_visibility'] == ITEM_DELETED;
+
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id", true, $user->session_id) : '';
-		$u_mcp_queue = (!$u_mcp_queue && ($topic_deleted || $posts_deleted)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=deleted_posts&amp;t=' . $topic_id, true, $user->session_id) : $u_mcp_queue;
+		$u_mcp_queue = (!$u_mcp_queue && $topic_deleted) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=deleted_topics&amp;t=' . $topic_id, true, $user->session_id) : $u_mcp_queue;
 
 		// Send vars to template
 		$topic_row = array(
