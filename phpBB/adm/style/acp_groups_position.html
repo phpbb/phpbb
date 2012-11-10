@@ -9,7 +9,7 @@
 	<fieldset>
 		<legend>{L_LEGEND_SETTINGS}</legend>
 		<dl>
-			<dt><label for="legend_sort_groupname">{L_LEGEND_SORT_GROUPNAME}:</label><br /><span>{L_LEGEND_SORT_GROUPNAME_EXPLAIN}</span></dt>
+			<dt><label for="legend_sort_groupname">{L_LEGEND_SORT_GROUPNAME}{L_COLON}</label><br /><span>{L_LEGEND_SORT_GROUPNAME_EXPLAIN}</span></dt>
 			<dd>
 				<label><input type="radio" name="legend_sort_groupname" class="radio" value="1"<!-- IF LEGEND_SORT_GROUPNAME --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" name="legend_sort_groupname" class="radio" value="0"<!-- IF not LEGEND_SORT_GROUPNAME --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
@@ -82,7 +82,7 @@
 	<fieldset>
 		<legend>{L_TEAMPAGE_SETTINGS}</legend>
 		<dl>
-			<dt><label for="teampage_multiple">{L_TEAMPAGE_MEMBERSHIPS}:</label></dt>
+			<dt><label for="teampage_multiple">{L_TEAMPAGE_MEMBERSHIPS}{L_COLON}</label></dt>
 			<dd>
 				<label><input type="radio" name="teampage_memberships" class="radio" value="0"<!-- IF DISPLAY_MEMBERSHIPS == 0 --> checked="checked"<!-- ENDIF --> /> {L_TEAMPAGE_DISP_FIRST}</label><br />
 				<label><input type="radio" name="teampage_memberships" class="radio" value="1"<!-- IF DISPLAY_MEMBERSHIPS == 1 --> checked="checked"<!-- ENDIF --> /> {L_TEAMPAGE_DISP_DEFAULT}</label><br />
@@ -90,7 +90,7 @@
 			</dd>
 		</dl>
 		<dl>
-			<dt><label for="teampage_forums">{L_TEAMPAGE_FORUMS}:</label><br /><span>{L_TEAMPAGE_FORUMS_EXPLAIN}</span></dt>
+			<dt><label for="teampage_forums">{L_TEAMPAGE_FORUMS}{L_COLON}</label><br /><span>{L_TEAMPAGE_FORUMS_EXPLAIN}</span></dt>
 			<dd>
 				<label><input type="radio" name="teampage_forums" class="radio" value="1"<!-- IF DISPLAY_FORUMS --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" name="teampage_forums" class="radio" value="0"<!-- IF not DISPLAY_FORUMS --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>

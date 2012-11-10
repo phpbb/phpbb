@@ -221,13 +221,13 @@
 			<!-- BEGIN new -->
 				<dl>
 					<dt style="width: 60%;"><strong><!-- IF new.DIR_PART -->{new.DIR_PART}<br /><!-- ENDIF -->{new.FILE_PART}</strong>
-					<!-- IF new.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{new.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+					<!-- IF new.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{new.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
 				</dt>
-				<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">
+				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">
 					<!-- IF not new.S_BINARY -->[<a href="{new.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
 				</dd>
 				<!-- IF new.S_CUSTOM -->
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;"><label><input type="checkbox" name="no_update[]" value="{new.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{new.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
 				<!-- ENDIF -->
 				</dl>
 			<!-- END new -->
@@ -245,11 +245,11 @@
 			<!-- BEGIN not_modified -->
 				<dl>
 					<dt style="width: 60%;"><strong><!-- IF not_modified.DIR_PART -->{not_modified.DIR_PART}<br /><!-- ENDIF -->{not_modified.FILE_PART}</strong>
-						<!-- IF not_modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{not_modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+						<!-- IF not_modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{not_modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
 					</dt>
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;"><!-- IF not not_modified.S_BINARY -->[<a href="{not_modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{not_modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not not_modified.S_BINARY -->[<a href="{not_modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{not_modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
 					<!-- IF not_modified.S_CUSTOM -->
-						<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;"><label><input type="checkbox" name="no_update[]" value="{not_modified.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+						<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{not_modified.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
 					<!-- ENDIF -->
 				</dl>
 			<!-- END not_modified -->
@@ -266,24 +266,24 @@
 				<legend><img src="{T_IMAGE_PATH}file_modified.gif" alt="{L_STATUS_MODIFIED}" /></legend>
 				<dl>
 					<dt style="width: 60%;"><strong><!-- IF modified.DIR_PART -->{modified.DIR_PART}<br /><!-- ENDIF -->{modified.FILE_PART}</strong>
-					<!-- IF modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+					<!-- IF modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
 				</dt>
-				<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">&nbsp;</dd>
+				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">&nbsp;</dd>
 				<!-- IF modified.S_CUSTOM -->
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;"><label><input type="checkbox" name="no_update[]" value="{modified.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{modified.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
 				<!-- ENDIF -->
 				</dl>
 				<dl>
 					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="0" checked="checked" /> {L_MERGE_MODIFICATIONS_OPTION}</label></dt>
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
 				</dl>
 				<dl>
 					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="1" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_VIEW_NO_MERGE_NEW}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_VIEW_NO_MERGE_NEW}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
 				</dl>
 				<dl>
 					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="2" /> {L_MERGE_NO_MERGE_MOD_OPTION}</label></dt>
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_VIEW_NO_MERGE_MOD}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_VIEW_NO_MERGE_MOD}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
 				</dl>
 			</fieldset>
 			<!-- END modified -->
@@ -299,13 +299,13 @@
 			<!-- BEGIN new_conflict -->
 				<dl>
 					<dt style="width: 60%;"><strong><!-- IF new_conflict.DIR_PART -->{new_conflict.DIR_PART}<br /><!-- ENDIF -->{new_conflict.FILE_PART}</strong>
-					<!-- IF new_conflict.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{new_conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+					<!-- IF new_conflict.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{new_conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
 				</dt>
-				<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">
+				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">
 					<!-- IF not new_conflict.S_BINARY -->[<a href="{new_conflict.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new_conflict.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
 				</dd>
 				<!-- IF new_conflict.S_CUSTOM -->
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;"><label><input type="checkbox" name="no_update[]" value="{new_conflict.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{new_conflict.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
 				<!-- ENDIF -->
 				</dl>
 			<!-- END new_conflict -->
@@ -322,38 +322,38 @@
 				<legend><img src="{T_IMAGE_PATH}file_conflict.gif" alt="{L_STATUS_CONFLICT}" /></legend>
 				<dl>
 					<dt style="width: 60%;"><strong><!-- IF conflict.DIR_PART -->{conflict.DIR_PART}<br /><!-- ENDIF -->{conflict.FILE_PART}</strong>
-						<!-- IF conflict.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
-						<!-- IF conflict.NUM_CONFLICTS --><br /><span>{L_NUM_CONFLICTS}: {conflict.NUM_CONFLICTS}</span><!-- ENDIF -->
+						<!-- IF conflict.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+						<!-- IF conflict.NUM_CONFLICTS --><br /><span>{L_NUM_CONFLICTS}{L_COLON} {conflict.NUM_CONFLICTS}</span><!-- ENDIF -->
 					</dt>
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">
 						<!-- IF not conflict.S_BINARY -->[<a href="{conflict.U_SHOW_DIFF}">{L_DOWNLOAD_CONFLICTS}</a>]<br />{L_DOWNLOAD_CONFLICTS_EXPLAIN}
 						<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
 					</dd>
 					<!-- IF conflict.S_CUSTOM -->
-						<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;"><label><input type="checkbox" name="no_update[]" value="{conflict.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+						<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{conflict.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
 					<!-- ENDIF -->
 				</dl>
 				<!-- IF conflict.S_BINARY -->
 					<dl>
 						<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{conflict.FILENAME}]" value="1" checked="checked" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
-						<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">&nbsp;</dd>
+						<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">&nbsp;</dd>
 					</dl>
 				<!-- ELSE -->
 					<dl>
 						<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{conflict.FILENAME}]" value="3" checked="checked" /> {L_MERGE_NEW_FILE_OPTION}</label></dt>
-						<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">[<a href="{conflict.U_VIEW_NEW_FILE}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_MODIFIED}</a>]</dd>
+						<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">[<a href="{conflict.U_VIEW_NEW_FILE}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_MODIFIED}</a>]</dd>
 					</dl>
 					<dl>
 						<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{conflict.FILENAME}]" value="4" /> {L_MERGE_MOD_FILE_OPTION}</label></dt>
-						<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">[<a href="{conflict.U_VIEW_MOD_FILE}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_MODIFIED}</a>]</dd>
+						<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">[<a href="{conflict.U_VIEW_MOD_FILE}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_MODIFIED}</a>]</dd>
 					</dl>
 					<dl>
 						<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{conflict.FILENAME}]" value="1" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
-						<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">[<a href="{conflict.U_VIEW_NO_MERGE_NEW}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
+						<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">[<a href="{conflict.U_VIEW_NO_MERGE_NEW}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
 					</dl>
 					<dl>
 						<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{conflict.FILENAME}]" value="2" /> {L_MERGE_NO_MERGE_MOD_OPTION}</label></dt>
-						<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">[<a href="{conflict.U_VIEW_NO_MERGE_MOD}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
+						<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">[<a href="{conflict.U_VIEW_NO_MERGE_MOD}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
 					</dl>
 				<!-- ENDIF -->
 			</fieldset>
@@ -392,7 +392,7 @@
 	<fieldset>
 		<legend>{L_SELECT_DOWNLOAD_FORMAT}</legend>
 	<dl>
-		<dt><label for="use_method">{L_DOWNLOAD_AS}:</label></dt>
+		<dt><label for="use_method">{L_DOWNLOAD_AS}{L_COLON}</label></dt>
 		<dd>{RADIO_BUTTONS}</dd>
 	</dl>
 	</fieldset>
@@ -455,12 +455,12 @@
 	<fieldset>
 		<legend>{L_FTP_SETTINGS}</legend>
 	<dl>
-		<dt><label>{L_UPLOAD_METHOD}:</label></dt>
+		<dt><label>{L_UPLOAD_METHOD}{L_COLON}</label></dt>
 		<dd><strong>{UPLOAD_METHOD}</strong></dd>
 	</dl>
 	<!-- BEGIN data -->
 	<dl>
-		<dt><label for="{data.DATA}">{data.NAME}:</label><br /><span>{data.EXPLAIN}</span></dt>
+		<dt><label for="{data.DATA}">{data.NAME}{L_COLON}</label><br /><span>{data.EXPLAIN}</span></dt>
 		<dd><input type="<!-- IF data.DATA == 'password' -->password<!-- ELSE -->text<!-- ENDIF -->" id="{data.DATA}" name="{data.DATA}" value="{data.DEFAULT}" /></dd>
 	</dl>
 	<!-- END data -->
