@@ -528,12 +528,10 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_test
 	if ($debug)
 	{
 		$config_data .= "@define('DEBUG', true);\n";
-		$config_data .= "@define('DEBUG_EXTRA', true);\n";
 	}
 	else
 	{
 		$config_data .= "// @define('DEBUG', true);\n";
-		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
 	}
 
 	if ($debug_test)

@@ -620,7 +620,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 {
 	global $db;
 
-	if (defined('DEBUG_EXTRA'))
+	if (defined('DEBUG'))
 	{
 		echo "<br />\n{$sql}\n<br />";
 	}
