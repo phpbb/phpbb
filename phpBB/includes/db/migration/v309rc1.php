@@ -79,7 +79,7 @@ class phpbb_db_migration_v309rc1 extends phpbb_db_migration
 			$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
 				SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE group_id = ' . $row['group_id'];
-			$this->sql_query($sql, $errored, $error_ary);
+			$this->sql_query($sql);
 		}
 		$this->db->sql_freeresult($result);
 	}
