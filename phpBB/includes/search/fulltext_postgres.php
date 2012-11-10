@@ -583,6 +583,11 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			$author_name,
 		)));
 
+		if ($start < 0)
+		{
+			$start = 0;
+		}
+
 		// try reading the results from cache
 		$result_count = 0;
 		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
@@ -724,6 +729,20 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		}
 
 		$this->db->sql_transaction('commit');
+
+		if ($start >= $result_count)
+		{
+			$start = floor(($result_count - 1) / $per_page) * $per_page;
+		}
+
+		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$id_ary[] = (int) $row[$field];
+		}
+		$this->db->sql_freeresult($result);
+
+		$id_ary = array_unique($id_ary);
 
 		if (sizeof($id_ary))
 		{
