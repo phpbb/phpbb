@@ -1482,7 +1482,7 @@ class fulltext_native extends search_backend
 	*/
 	function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx, $utf_normalizer;
 		static $conv = array(), $conv_loaded = array();
 		$words = $allow = array();
 
@@ -1511,7 +1511,7 @@ class fulltext_native extends search_backend
 		* If we use it more widely, an instance of that class should be held in a
 		* a global variable instead
 		*/
-		utf_normalizer::nfc($text);
+		$utf_normalizer->nfc($text);
 
 		/**
 		* The first thing we do is:
