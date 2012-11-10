@@ -29,7 +29,8 @@ class acp_captcha
 		$user->add_lang('acp/board');
 
 		include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-		$captchas = phpbb_captcha_factory::get_captcha_types();
+		$factory = new phpbb_captcha_factory();
+		$captchas = $factory->get_captcha_types();
 
 		$selected = request_var('select_captcha', $config['captcha_plugin']);
 		$selected = (isset($captchas['available'][$selected]) || isset($captchas['unavailable'][$selected])) ? $selected : $config['captcha_plugin'];

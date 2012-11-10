@@ -71,9 +71,11 @@ if ($post_id)
 		trigger_error('POST_NOT_EXIST');
 	}
 
-	$forum_id 			= (int) $report_data['forum_id'];
-	$topic_id 			= (int) $report_data['topic_id'];
-	$reported_post_text	= $report_data['post_text'];
+	$forum_id 				= (int) $report_data['forum_id'];
+	$topic_id 				= (int) $report_data['topic_id'];
+	$reported_post_text		= $report_data['post_text'];
+	$reported_post_bitfield	= $report_data['bbcode_bitfield'];
+	$reported_post_uid		= $report_data['bbcode_uid'];
 
 	$sql = 'SELECT *
 		FROM ' . FORUMS_TABLE . '
@@ -131,8 +133,10 @@ else
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_PM'], '<a href="' . $redirect_url . '">', '</a>');
 		trigger_error($message);
 	}
-
-	$reported_post_text = $report_data['message_text'];
+	
+	$reported_post_text 	= $report_data['message_text'];
+	$reported_post_bitfield	= $report_data['bbcode_bitfield'];
+	$reported_post_uid		= $report_data['bbcode_uid'];
 }
 
 // Submit report?
@@ -151,15 +155,17 @@ if ($submit && $reason_id)
 	}
 
 	$sql_ary = array(
-		'reason_id'		=> (int) $reason_id,
-		'post_id'		=> $post_id,
-		'pm_id'			=> $pm_id,
-		'user_id'		=> (int) $user->data['user_id'],
-		'user_notify'	=> (int) $user_notify,
-		'report_closed'	=> 0,
-		'report_time'	=> (int) time(),
-		'report_text'	=> (string) $report_text,
+		'reason_id'				=> (int) $reason_id,
+		'post_id'				=> $post_id,
+		'pm_id'					=> $pm_id,
+		'user_id'				=> (int) $user->data['user_id'],
+		'user_notify'			=> (int) $user_notify,
+		'report_closed'			=> 0,
+		'report_time'			=> (int) time(),
+		'report_text'			=> (string) $report_text,
 		'reported_post_text'	=> $reported_post_text,
+		'reported_post_uid'		=> $reported_post_uid,
+		'reported_post_bitfield'=> $reported_post_bitfield,
 	);
 
 	$sql = 'INSERT INTO ' . REPORTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);

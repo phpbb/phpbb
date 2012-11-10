@@ -22,25 +22,84 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_fulltext_native extends phpbb_search_base
 {
+	/**
+	 * Associative array holding index stats
+	 * @var array
+	 */
 	protected $stats = array();
+
+	/**
+	 * Associative array stores the min and max word length to be searched
+	 * @var array
+	 */
 	protected $word_length = array();
+
+	/**
+	 * Contains tidied search query.
+	 * Operators are prefixed in search query and common words excluded
+	 * @var string
+	 */
 	protected $search_query;
+
+	/**
+	 * Contains common words.
+	 * Common words are words with length less/more than min/max length
+	 * @var array
+	 */
 	protected $common_words = array();
 
+	/**
+	 * Post ids of posts containing words that are to be included
+	 * @var array
+	 */
 	protected $must_contain_ids = array();
+
+	/**
+	 * Post ids of posts containing words that should not be included
+	 * @var array
+	 */
 	protected $must_not_contain_ids = array();
+
+	/**
+	 * Post ids of posts containing atleast one word that needs to be excluded
+	 * @var array
+	 */
 	protected $must_exclude_one_ids = array();
 
+	/**
+	 * Relative path to board root
+	 * @var string
+	 */
 	protected $phpbb_root_path;
+
+	/**
+	 * PHP Extension
+	 * @var string
+	 */
 	protected $php_ext;
+
+	/**
+	 * Config object
+	 * @var phpbb_config
+	 */
 	protected $config;
+
+	/**
+	 * DBAL object
+	 * @var dbal
+	 */
 	protected $db;
+
+	/**
+	 * User object
+	 * @var phpbb_user
+	 */
 	protected $user;
 
 	/**
-	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded.
+	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded
 	*
-	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure.
+	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure
 	*/
 	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
 	{
@@ -58,6 +117,10 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 		if (!class_exists('utf_normalizer'))
 		{
 			include($this->phpbb_root_path . 'includes/utf/utf_normalizer.' . $this->php_ext);
+		}
+		if (!function_exists('utf8_decode_ncr'))
+		{
+			include($this->phpbb_root_path . 'includes/utf/utf_tools.' . $this->php_ext);
 		}
 
 		$error = false;
@@ -104,14 +167,14 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	}
 
 	/**
-	* This function fills $this->search_query with the cleaned user search query.
+	* This function fills $this->search_query with the cleaned user search query
 	*
 	* If $terms is 'any' then the words will be extracted from the search query
 	* and combined with | inside brackets. They will afterwards be treated like
 	* an standard search query.
 	*
 	* Then it analyses the query and fills the internal arrays $must_not_contain_ids,
-	* $must_contain_ids and $must_exclude_one_ids which are later used by keyword_search().
+	* $must_contain_ids and $must_exclude_one_ids which are later used by keyword_search()
 	*
 	* @param	string	$keywords	contains the search query string as entered by the user
 	* @param	string	$terms		is either 'all' (use search query as entered, default words to 'must be contained in post')
@@ -434,7 +497,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	}
 
 	/**
-	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first.
+	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first
 	*
 	* @param	string		$type				contains either posts or topics depending on what should be searched for
 	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
@@ -800,7 +863,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 		// if we use mysql and the total result count is not cached yet, retrieve it from the db
 		if (!$total_results && $is_mysql)
 		{
-			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
+			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it
 			$sql_array_copy = $sql_array;
 			$sql_array_copy['SELECT'] = 'SQL_CALC_FOUND_ROWS p.post_id ';
 
@@ -849,7 +912,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	*/
 	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
-		// No author? No posts.
+		// No author? No posts
 		if (!sizeof($author_ary))
 		{
 			return 0;
@@ -1728,19 +1791,19 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 
 		$tpl = '
 		<dl>
-			<dt><label for="fulltext_native_load_upd">' . $this->user->lang['YES_SEARCH_UPDATE'] . ':</label><br /><span>' . $this->user->lang['YES_SEARCH_UPDATE_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_load_upd">' . $this->user->lang['YES_SEARCH_UPDATE'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['YES_SEARCH_UPDATE_EXPLAIN'] . '</span></dt>
 			<dd><label><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . (($this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!$this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['NO'] . '</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_min_chars">' . $this->user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $this->user->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_min_chars">' . $this->user->lang['MIN_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_native_min_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_min_chars]" value="' . (int) $this->config['fulltext_native_min_chars'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_max_chars">' . $this->user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $this->user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_max_chars">' . $this->user->lang['MAX_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_native_max_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_max_chars]" value="' . (int) $this->config['fulltext_native_max_chars'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_common_thres">' . $this->user->lang['COMMON_WORD_THRESHOLD'] . ':</label><br /><span>' . $this->user->lang['COMMON_WORD_THRESHOLD_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_common_thres">' . $this->user->lang['COMMON_WORD_THRESHOLD'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['COMMON_WORD_THRESHOLD_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_native_common_thres" type="text" size="3" maxlength="3" name="config[fulltext_native_common_thres]" value="' . (double) $this->config['fulltext_native_common_thres'] . '" /> %</dd>
 		</dl>
 		';

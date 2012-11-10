@@ -12,17 +12,17 @@
 
 	<fieldset>
 	<dl class="fields2">
-		<dt><label>{L_IM_RECIPIENT}:</label></dt>
+		<dt><label>{L_IM_RECIPIENT}{L_COLON}</label></dt>
 		<dd><strong>{USERNAME}</strong><!-- IF S_SEND_ICQ or S_SEND_AIM or S_SEND_MSNM or S_NO_SEND_JABBER --> [ {IM_CONTACT} ]<!-- ENDIF --><!-- IF PRESENCE_IMG --> {PRESENCE_IMG}<!-- ENDIF --></dd>
 	</dl>
 
 	<!-- IF S_SEND_ICQ -->
 		<dl class="fields2">
-			<dt><label for="from">{L_IM_NAME}:</label></dt>
+			<dt><label for="from">{L_IM_NAME}{L_COLON}</label></dt>
 			<dd><input class="inputbox autowidth" type="text" name="from" id="from" size="20" /></dd>
 		</dl>
 		<dl class="fields2">
-			<dt><label for="body">{L_IM_MESSAGE}:</label></dt>
+			<dt><label for="body">{L_IM_MESSAGE}{L_COLON}</label></dt>
 			<dd><textarea class="inputbox autowidth" name="body" id="body" rows="5" cols="45"></textarea></dd>
 		</dl>
 		<dl class="fields2">
@@ -54,7 +54,7 @@
 
 	<!-- IF S_SEND_JABBER -->
 		<dl class="fields2">
-			<dt><label for="message">{L_IM_MESSAGE}:</label></dt>
+			<dt><label for="message">{L_IM_MESSAGE}{L_COLON}</label></dt>
 			<dd><textarea class="inputbox autowidth" name="message" id="message" rows="5" cols="45"></textarea></dd>
 		</dl>
 		<dl class="fields2">

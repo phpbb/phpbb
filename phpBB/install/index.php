@@ -21,9 +21,9 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-if (version_compare(PHP_VERSION, '5.3.2') < 0)
+if (version_compare(PHP_VERSION, '5.3.3') < 0)
 {
-	die('You are running an unsupported PHP version. Please upgrade to PHP 5.3.2 or higher before trying to install phpBB 3.1');
+	die('You are running an unsupported PHP version. Please upgrade to PHP 5.3.3 or higher before trying to install phpBB 3.1');
 }
 
 function phpbb_require_updated($path, $optional = false)
@@ -213,7 +213,7 @@ $config = new phpbb_config(array(
 
 $phpbb_style_resource_locator = new phpbb_style_resource_locator();
 $phpbb_style_path_provider = new phpbb_style_path_provider();
-$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator);
+$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, new phpbb_template_context());
 $phpbb_style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
 $phpbb_style->set_ext_dir_prefix('adm/');
 $phpbb_style->set_custom_style('admin', '../adm/style', '');
@@ -366,6 +366,7 @@ class module
 
 		$template->assign_vars(array(
 			'L_CHANGE'				=> $lang['CHANGE'],
+			'L_COLON'				=> $lang['COLON'],
 			'L_INSTALL_PANEL'		=> $lang['INSTALL_PANEL'],
 			'L_SELECT_LANG'			=> $lang['SELECT_LANG'],
 			'L_SKIP'				=> $lang['SKIP'],

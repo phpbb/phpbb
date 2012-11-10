@@ -63,8 +63,6 @@ $updates_to_version = UPDATES_TO_VERSION;
 $debug_from_version = DEBUG_FROM_VERSION;
 $oldest_from_version = OLDEST_FROM_VERSION;
 
-error_reporting(E_ALL);
-
 @set_time_limit(0);
 
 // Include essential scripts
@@ -73,17 +71,6 @@ include($phpbb_root_path . 'config.' . $phpEx);
 if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 {
 	die("Please read: <a href='../docs/INSTALL.html'>INSTALL.html</a> before attempting to update.");
-}
-
-// Load Extensions
-if (!empty($load_extensions) && function_exists('dl'))
-{
-	$load_extensions = explode(',', $load_extensions);
-
-	foreach ($load_extensions as $extension)
-	{
-		@dl(trim($extension));
-	}
 }
 
 // Include files
@@ -1101,6 +1088,8 @@ function database_update_info()
 		),
 		// No changes from 3.0.11-RC2 to 3.0.11
 		'3.0.11-RC2'	=> array(),
+		// No changes from 3.0.11 to 3.0.12-RC1
+		'3.0.11'		=> array(),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 */
 
@@ -1175,7 +1164,9 @@ function database_update_info()
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
 				REPORTS_TABLE		=> array(
-					'reported_post_text'	=> array('MTEXT_UNI', ''),
+					'reported_post_text'		=> array('MTEXT_UNI', ''),
+					'reported_post_uid'			=> array('VCHAR:8', ''),
+					'reported_post_bitfield'	=> array('VCHAR:255', ''),
 				),
 			),
 			'change_columns'	=> array(
@@ -2289,6 +2280,71 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.11-RC2 to 3.0.11
 		case '3.0.11-RC2':
+		break;
+
+		// Changes from 3.0.11 to 3.0.12-RC1
+		case '3.0.11':
+			$sql = 'UPDATE ' . MODULES_TABLE . '
+				SET module_auth = \'acl_u_sig\'
+				WHERE module_class = \'ucp\'
+					AND module_basename = \'profile\'
+					AND module_mode = \'signature\'';
+			_sql($sql, $errored, $error_ary);
+
+			// Update bots
+			if (!function_exists('user_delete'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
+
+			$bots_updates = array(
+				// Bot Deletions
+				'NG-Search [Bot]'		=> false,
+				'Nutch/CVS [Bot]'		=> false,
+				'OmniExplorer [Bot]'	=> false,
+				'Seekport [Bot]'		=> false,
+				'Synoo [Bot]'			=> false,
+				'WiseNut [Bot]'			=> false,
+
+				// Bot Updates
+				// Bot name to bot user agent map
+				'Baidu [Spider]'	=> 'Baiduspider',
+				'Exabot [Bot]'		=> 'Exabot',
+				'Voyager [Bot]'		=> 'voyager/',
+				'W3C [Validator]'	=> 'W3C_Validator',
+			);
+
+			foreach ($bots_updates as $bot_name => $bot_agent)
+			{
+				$sql = 'SELECT user_id
+					FROM ' . USERS_TABLE . '
+					WHERE user_type = ' . USER_IGNORE . "
+						AND username_clean = '" . $db->sql_escape(utf8_clean_string($bot_name)) . "'";
+				$result = $db->sql_query($sql);
+				$bot_user_id = (int) $db->sql_fetchfield('user_id');
+				$db->sql_freeresult($result);
+
+				if ($bot_user_id)
+				{
+					if ($bot_agent === false)
+					{
+						$sql = 'DELETE FROM ' . BOTS_TABLE . "
+							WHERE user_id = $bot_user_id";
+						_sql($sql, $errored, $error_ary);
+
+						user_delete('remove', $bot_user_id);
+					}
+					else
+					{
+						$sql = 'UPDATE ' . BOTS_TABLE . "
+							SET bot_agent = '" .  $db->sql_escape($bot_agent) . "'
+							WHERE user_id = $bot_user_id";
+						_sql($sql, $errored, $error_ary);
+					}
+				}
+			}
+
+			$no_updates = false;
 		break;
 
 		// Changes from 3.1.0-dev to 3.1.0-A1

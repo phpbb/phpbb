@@ -5,7 +5,7 @@
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
-* Minimum Requirement: PHP 5.3.2
+* Minimum Requirement: PHP 5.3.3
 */
 
 use Symfony\Component\Config\FileLocator;
@@ -65,18 +65,6 @@ if (!defined('PHPBB_INSTALLED'))
 	$url .= $script_path;
 	header('Location: ' . $url);
 	exit;
-}
-
-// Load Extensions
-// dl() is deprecated and disabled by default as of PHP 5.3.
-if (!empty($load_extensions) && function_exists('dl'))
-{
-	$load_extensions = explode(',', $load_extensions);
-
-	foreach ($load_extensions as $extension)
-	{
-		@dl(trim($extension));
-	}
 }
 
 // Include files
