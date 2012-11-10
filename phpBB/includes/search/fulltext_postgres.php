@@ -371,6 +371,11 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			implode(',', $author_ary)
 		)));
 
+		if ($start < 0)
+		{
+			$start = 0;
+		}
+
 		// try reading the results from cache
 		$result_count = 0;
 		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
@@ -495,11 +500,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 		$id_ary = array_unique($id_ary);
 
-		if (!sizeof($id_ary))
-		{
-			return false;
-		}
-
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count)
 		{
@@ -517,6 +517,21 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		}
 
 		$this->db->sql_transaction('commit');
+
+		if ($start >= $result_count)
+		{
+			$start = floor(($result_count - 1) / $per_page) * $per_page;
+		}
+
+		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$id_ary[] = $row[$field];
+		}
+		$this->db->sql_freeresult($result);
+
+		$id_ary = array_unique($id_ary);
 
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
 		$this->save_ids($search_key, implode(' ', $this->split_words), $author_ary, $result_count, $id_ary, $start, $sort_dir);
