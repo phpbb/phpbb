@@ -21,11 +21,18 @@ class phpbb_db_migration_v306rc3 extends phpbb_db_migration
 
 	function update_data()
 	{
+		return array(
+			array('custom', array(array(&$this, 'update_cp_fields'))),
+		);
+	}
+
+	function update_cp_fields()
+	{
 		// Update the Custom Profile Fields based on previous settings to the new format
 		$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . '
 			SET field_show_on_vt = 1
 			WHERE field_hide = 0
 				AND (field_required = 1 OR field_show_on_reg = 1 OR field_show_profile = 1)';
-		_sql($sql, $errored, $error_ary);
+		$this->sql_query($sql);
 	}
 }

@@ -30,17 +30,22 @@ class phpbb_db_migration_v307rc1 extends phpbb_db_migration
 
 	function update_data()
 	{
-		// ATOM Feeds
-		set_config('feed_overall', '1');
-		set_config('feed_http_auth', '0');
-		set_config('feed_limit_post', (string) (isset($config['feed_limit']) ? (int) $config['feed_limit'] : 15));
-		set_config('feed_limit_topic', (string) (isset($config['feed_overall_topics_limit']) ? (int) $config['feed_overall_topics_limit'] : 10));
-		set_config('feed_topics_new', (!empty($config['feed_overall_topics']) ? '1' : '0'));
-		set_config('feed_topics_active', (!empty($config['feed_overall_topics']) ? '1' : '0'));
+		return array(
+			array('config.add', array('feed_overall', 1)),
+			array('config.add', array('feed_http_auth', 0)),
+			array('config.add', array('feed_limit_post', $this->config['feed_limit'])),
+			array('config.add', array('feed_limit_topic', $this->config['feed_overall_topics_limit'])),
+			array('config.add', array('feed_topics_new', $this->config['feed_overall_topics'])),
+			array('config.add', array('feed_topics_active', $this->config['feed_overall_topics'])),
+			array('custom', array(array(&$this, 'delete_text_templates'))),
+		);
+	}
 
+	function delete_text_templates()
+	{
 		// Delete all text-templates from the template_data
 		$sql = 'DELETE FROM ' . STYLES_TEMPLATE_DATA_TABLE . '
-			WHERE template_filename ' . $db->sql_like_expression($db->any_char . '.txt');
-		_sql($sql, $errored, $error_ary);
+			WHERE template_filename ' . $this->db->sql_like_expression($this->db->any_char . '.txt');
+		$this->sql_query($sql);
 	}
 }
