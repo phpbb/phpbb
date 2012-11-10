@@ -481,7 +481,38 @@ class fulltext_mysql extends search_backend
 
 		if (!sizeof($id_ary))
 		{
-			return false;
+			$sql_count = "SELECT COUNT(*) as result_count
+			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
+			WHERE MATCH ($sql_match) AGAINST ('" . $db->sql_escape(htmlspecialchars_decode($this->search_query)) . "' IN BOOLEAN MODE)
+			$sql_where_options
+			ORDER BY $sql_sort";
+			$result = $db->sql_query($sql_count);
+			$total_match_count = (int) $db->sql_fetchfield('result_count');
+
+			if ($total_match_count)
+			{
+				if ($start < 0)
+				{
+					$start = 0;
+				}
+				else if ($start >= $total_match_count)
+				{
+					$start = floor(($total_match_count - 1) / $per_page) * $per_page;
+				}
+				$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$id_ary[] = (int) $row[$field];
+				}
+				$db->sql_freeresult($result);
+				
+				$id_ary = array_unique($id_ary);
+			}
+
+			if (!sizeof($id_ary))
+			{
+				return false;
+			}
 		}
 
 		// if the total result count is not cached yet, retrieve it from the db
