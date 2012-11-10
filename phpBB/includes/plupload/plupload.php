@@ -128,9 +128,9 @@ class phpbb_plupload
 	 */
 	public function configure($cache, $template, $s_action, $forum_id)
 	{
-		$filters = $this->gen_filter_string($cache, $forum_id);
+		$filters = $this->generate_filter_string($cache, $forum_id);
 		$chunk_size = $this->get_chunk_size();
-		$resize = $this->gen_resize_string();
+		$resize = $this->generate_resize_string();
 
 		$template->assign_vars(array(
 			'S_RESIZE'			=> $resize,
@@ -173,7 +173,7 @@ class phpbb_plupload
 	 *
 	 * @return string
 	 */
-	protected function gen_filter_string($cache, $forum_id)
+	protected function generate_filter_string($cache, $forum_id)
 	{
 		$attach_extensions = $cache->obtain_attach_extensions($forum_id);
 		unset($attach_extensions['_allowed_']);
@@ -209,7 +209,7 @@ class phpbb_plupload
 	 *
 	 * @return string
 	 */
-	protected function gen_resize_string()
+	protected function generate_resize_string()
 	{
 		$resize = '';
 		if ($this->config['img_max_height'] > 0 && $this->config['img_max_width'] > 0)
