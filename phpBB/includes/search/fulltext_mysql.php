@@ -375,6 +375,11 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			implode(',', $author_ary)
 		)));
 
+		if ($start < 0)
+		{
+			$start = 0;
+		}
+
 		// try reading the results from cache
 		$result_count = 0;
 		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
@@ -487,47 +492,11 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 		$id_ary = array_unique($id_ary);
 
-		if (!sizeof($id_ary))
-		{
-			$sql_count = "SELECT COUNT(*) as result_count
-				FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
-				WHERE MATCH ($sql_match) AGAINST ('" . $this->db->sql_escape(htmlspecialchars_decode($this->search_query)) . "' IN BOOLEAN MODE)
-					$sql_where_options
-				ORDER BY $sql_sort";
-			$result = $this->db->sql_query($sql_count);
-			$total_match_count = (int) $this->db->sql_fetchfield('result_count');
-
-			if ($total_match_count)
-			{
-				if ($start < 0)
-				{
-					$start = 0;
-				}
-				else if ($start >= $total_match_count)
-				{
-					$start = floor(($total_match_count - 1) / $per_page) * $per_page;
-				}
-				$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					$id_ary[] = (int) $row[$field];
-				}
-				$this->db->sql_freeresult($result);
-
-				$id_ary = array_unique($id_ary);
-			}
-
-			if (!sizeof($id_ary))
-			{
-				return false;
-			}
-		}
-
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count)
 		{
-			$sql = 'SELECT FOUND_ROWS() as result_count';
-			$result = $this->db->sql_query($sql);
+			$sql_found_rows = 'SELECT FOUND_ROWS() as result_count';
+			$result = $this->db->sql_query($sql_found_rows);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 			$this->db->sql_freeresult($result);
 
@@ -536,6 +505,21 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 				return false;
 			}
 		}
+
+		if ($start >= $result_count)
+		{
+			$start = floor(($result_count - 1) / $per_page) * $per_page;
+		}
+
+		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$id_ary[] = (int) $row[$field];
+		}
+		$this->db->sql_freeresult($result);
+
+		$id_ary = array_unique($id_ary);
 
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
 		$this->save_ids($search_key, implode(' ', $this->split_words), $author_ary, $result_count, $id_ary, $start, $sort_dir);
