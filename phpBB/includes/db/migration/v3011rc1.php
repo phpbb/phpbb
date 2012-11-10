@@ -47,7 +47,7 @@ class phpbb_db_migration_v3011rc1 extends phpbb_db_migration
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_style = ' . (int) $this->config['default_style'] .'
 				WHERE ' . $this->db->sql_in_set('user_style', $deactivated_style_ids);
-			$this->sql_query($sql, $errored, $error_ary);
+			$this->sql_query($sql);
 		}
 	}
 
@@ -84,7 +84,7 @@ class phpbb_db_migration_v3011rc1 extends phpbb_db_migration
 		{
 			$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
 				WHERE ' . $this->db->sql_in_set('msg_id', $delete_pms);
-			$this->sql_query($sql, $errored, $error_ary);
+			$this->sql_query($sql);
 
 			return true;
 		}
