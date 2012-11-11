@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
-class phpbb_di_pass_collection implements CompilerPassInterface
+class phpbb_di_pass_collection_pass implements CompilerPassInterface
 {
 	private $collection_service;
 	private $service_tag;
