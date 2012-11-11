@@ -1749,6 +1749,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'JOINED'		=> $user->format_date($data['user_regdate']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
+		'TOPICS'		=> ($data['user_topics']) ? $data['user_topics'] : 0,
 		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
 		'USERNAME_FULL'		=> get_username_string('full', $user_id, $username, $data['user_colour']),
