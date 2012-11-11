@@ -1115,7 +1115,6 @@ function database_update_info()
 					'field_show_on_pm'		=> array('BOOL', 0),
 				),
 				STYLES_TABLE		=> array(
-					'style_path'			=> array('VCHAR:100', ''),
 					'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
 					'style_parent_id'		=> array('UINT:4', 0),
 					'style_parent_tree'		=> array('TEXT', ''),
@@ -1130,6 +1129,9 @@ function database_update_info()
 				GROUPS_TABLE		=> array(
 					'group_legend'		=> array('UINT', 0),
 				),
+                STYLES_TABLE		=> array(
+                    'style_name'		=> array('VCHAR:100', ''),
+                ),
 				USERS_TABLE			=> array(
 					'user_timezone'		=> array('VCHAR:100', ''),
 				),
