@@ -5,7 +5,7 @@ function phpbb_autosave_prompt (data) {
 	
 	for (var key in data) {
 		dt = new Date((key + phpbb_autosave_tz_offset) * 1000);
-		str += "\n" + count + ') ' + phpbb_autosave_timestr(dt);
+		str += "\n" + (keys.length + 1) + ') ' + phpbb_autosave_timestr(dt);
 
 		keys.push(key);
 	}
@@ -24,7 +24,7 @@ function phpbb_autosave_prompt (data) {
 				continue;
 			}
 
-			if (choice < 1 || > keys.length) {
+			if (choice < 1 || choice > keys.length) {
 				continue;
 			}
 
