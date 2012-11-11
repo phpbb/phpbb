@@ -174,7 +174,7 @@ class dbal_mysqli extends dbal
 			global $cache;
 
 			// EXPLAIN only in extra debug mode
-			if (defined('DEBUG_EXTRA'))
+			if (defined('DEBUG'))
 			{
 				$this->sql_report('start', $query);
 			}
@@ -189,7 +189,7 @@ class dbal_mysqli extends dbal
 					$this->sql_error($query);
 				}
 
-				if (defined('DEBUG_EXTRA'))
+				if (defined('DEBUG'))
 				{
 					$this->sql_report('stop', $query);
 				}
@@ -199,7 +199,7 @@ class dbal_mysqli extends dbal
 					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
 			}
-			else if (defined('DEBUG_EXTRA'))
+			else if (defined('DEBUG'))
 			{
 				$this->sql_report('fromcache', $query);
 			}

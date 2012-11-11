@@ -184,6 +184,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				'value',
 			),
 			array(
+				'include_variables.html',
+				array('SUBDIR' => 'subdir', 'VARIABLE' => 'value'),
+				array(),
+				array(),
+				'value',
+			),
+			array(
 				'loop_vars.html',
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
