@@ -123,7 +123,7 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	*/
 	public function get_email_template()
 	{
-		return 'notifications/report_pm';
+		return 'report_pm';
 	}
 
 	/**

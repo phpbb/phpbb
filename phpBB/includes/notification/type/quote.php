@@ -200,7 +200,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 	*/
 	public function get_email_template()
 	{
-		return 'notifications/quote';
+		return 'quote';
 	}
 
 	/**
