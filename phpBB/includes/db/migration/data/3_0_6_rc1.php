@@ -62,12 +62,10 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 	function update_data()
 	{
 		return array(
-			//array('custom', array(array(&$this, '')))
 			array('config.add', array('captcha_plugin', 'phpbb_captcha_nogd')),
-			array('config.update_if', array(
+			array('if', array(
 				($this->config['captcha_gd']),
-				'captcha_plugin',
-				'phpbb_captcha_gd',
+				array('config.update', array('captcha_plugin', 'phpbb_captcha_gd')),
 			)),
 
 			array('config.add', array('feed_enable', 0)),
@@ -89,83 +87,70 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 			array('config.add', array('delete_time', $this->config['edit_time'])),
 
 			array('config.add', array('allow_avatar', 0)),
-			array('config.add_if', array(
+			array('if', array(
 				($this->config['allow_avatar_upload'] || $this->config['allow_avatar_local'] || $this->config['allow_avatar_remote']),
-				'allow_avatar',
-				1,
+				array('config.add', array('allow_avatar', 1)),
 			)),
 			array('config.add', array('allow_avatar_remote_upload', 0)),
-			array('config.add_if', array(
+			array('if', array(
 				($this->config['allow_avatar_remote'] && $this->config['allow_avatar_upload']),
-				'allow_avatar_remote_upload',
-				1,
+				array('config.add', array('allow_avatar_remote_upload', 1)),
 			)),
 
 			array('module.add', array(
-				'feed' => array(
-					'base'		=> 'board',
-					'class'		=> 'acp',
-					'title'		=> 'ACP_FEED_SETTINGS',
-					'auth'		=> 'acl_a_board',
-					'cat'		=> 'ACP_BOARD_CONFIGURATION',
-					'after'		=> array('signature', 'ACP_SIGNATURE_SETTINGS')
+				'acp',
+				'ACP_BOARD_CONFIGURATION',
+				array(
+					'module_basename'	=> 'board',
+					'modes'				=> array('feed'),
 				),
 			)),
 			array('module.add', array(
-				'warnings' => array(
-					'base'		=> 'users',
-					'class'		=> 'acp',
-					'title'		=> 'ACP_USER_WARNINGS',
-					'auth'		=> 'acl_a_user',
-					'display'	=> 0,
-					'cat'		=> 'ACP_CAT_USERS',
-					'after'		=> array('feedback', 'ACP_USER_FEEDBACK')
+				'acp',
+				'ACP_CAT_USERS',
+				array(
+					'module_basename'	=> 'users',
+					'modes'				=> array('warnings'),
 				),
 			)),
 			array('module.add', array(
-				'send_statistics' => array(
-					'base'		=> 'send_statistics',
-					'class'		=> 'acp',
-					'title'		=> 'ACP_SEND_STATISTICS',
-					'auth'		=> 'acl_a_server',
-					'cat'		=> 'ACP_SERVER_CONFIGURATION'
+				'acp',
+				'ACP_SERVER_CONFIGURATION',
+				array(
+					'module_basename'	=> 'send_statistics',
+					'modes'				=> array('send_statistics'),
 				),
 			)),
 			array('module.add', array(
-				'setting_forum_copy' => array(
-					'base'		=> 'permissions',
-					'class'		=> 'acp',
-					'title'		=> 'ACP_FORUM_PERMISSIONS_COPY',
-					'auth'		=> 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth',
-					'cat'		=> 'ACP_FORUM_BASED_PERMISSIONS',
-					'after'		=> array('setting_forum_local', 'ACP_FORUM_PERMISSIONS')
+				'acp',
+				'ACP_FORUM_BASED_PERMISSIONS',
+				array(
+					'module_basename'	=> 'permissions',
+					'modes'				=> array('setting_forum_copy'),
 				),
 			)),
 			array('module.add', array(
-				'pm_reports' => array(
-					'base'		=> 'pm_reports',
-					'class'		=> 'mcp',
-					'title'		=> 'MCP_PM_REPORTS_OPEN',
-					'auth'		=> 'aclf_m_report',
-					'cat'		=> 'MCP_REPORTS'
+				'mcp',
+				'MCP_REPORTS',
+				array(
+					'module_basename'	=> 'pm_reports',
+					'modes'				=> array('pm_reports'),
 				),
 			)),
 			array('module.add', array(
-				'pm_reports_closed' => array(
-					'base'		=> 'pm_reports',
-					'class'		=> 'mcp',
-					'title'		=> 'MCP_PM_REPORTS_CLOSED',
-					'auth'		=> 'aclf_m_report',
-					'cat'		=> 'MCP_REPORTS'
+				'mcp',
+				'MCP_REPORTS',
+				array(
+					'module_basename'	=> 'pm_reports',
+					'modes'				=> array('pm_reports_closed'),
 				),
 			)),
 			array('module.add', array(
-				'pm_report_details' => array(
-					'base'		=> 'pm_reports',
-					'class'		=> 'mcp',
-					'title'		=> 'MCP_PM_REPORT_DETAILS',
-					'auth'		=> 'aclf_m_report',
-					'cat'		=> 'MCP_REPORTS'
+				'mcp',
+				'MCP_REPORTS',
+				array(
+					'module_basename'	=> 'pm_reports',
+					'modes'				=> array('pm_report_details'),
 				),
 			)),
 			array('custom', array(array(&$this, 'add_newly_registered_group'))),

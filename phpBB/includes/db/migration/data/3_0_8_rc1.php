@@ -27,13 +27,11 @@ class phpbb_db_migration_data_3_0_8_rc1 extends phpbb_db_migration
 			array('custom', array(array(&$this, 'update_bots'))),
 			array('custom', array(array(&$this, 'delete_orphan_shadow_topics'))),
 			array('module.add', array(
-				'post'	=> array(
-					'base'		=> 'board',
-					'class'		=> 'acp',
-					'title'		=> 'ACP_POST_SETTINGS',
-					'auth'		=> 'acl_a_board',
-					'cat'		=> 'ACP_MESSAGES',
-					'after'		=> array('message', 'ACP_MESSAGE_SETTINGS')
+				'acp',
+				'ACP_MESSAGES',
+				array(
+					'module_basename'	=> 'board',
+					'modes'				=> array('post'),
 				),
 			)),
 			array('config.add', array('load_unreads_search', 1)),
