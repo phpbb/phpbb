@@ -59,7 +59,7 @@ class phpbb_update_rows_avoiding_duplicates_test extends phpbb_database_test_cas
 
 		phpbb_update_rows_avoiding_duplicates($db, TOPICS_WATCH_TABLE, 'topic_id', $from, $to);
 
-		$sql = 'SELECT count(*) AS remaining_rows
+		$sql = 'SELECT COUNT(*) AS remaining_rows
 			FROM ' . TOPICS_WATCH_TABLE . '
 			WHERE topic_id = ' . (int) $to;
 		$result = $db->sql_query($sql);
