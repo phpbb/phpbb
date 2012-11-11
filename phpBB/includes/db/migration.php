@@ -44,10 +44,10 @@ class phpbb_db_migration
 	* @param string			$phpbb_root_path
 	* @param string			$php_ext
 	*/
-	function phpbb_db_migration(&$db, &$db_tools, $table_prefix, $phpbb_root_path, $php_ext)
+	function phpbb_db_migration($db, $db_tools, $table_prefix, $phpbb_root_path, $php_ext)
 	{
-		$this->db = &$db;
-		$this->db_tools = &$db_tools;
+		$this->db = $db;
+		$this->db_tools = $db_tools;
 		$this->table_prefix = $table_prefix;
 
 		$this->phpbb_root_path = $phpbb_root_path;

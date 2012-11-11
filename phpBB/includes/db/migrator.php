@@ -45,10 +45,10 @@ class phpbb_db_migrator
 	* @param string			$phpbb_root_path
 	* @param string			$php_ext
 	*/
-	function phpbb_db_migrator(&$db, &$db_tools, $table_prefix, $migrations_table, $phpbb_root_path, $php_ext)
+	function phpbb_db_migrator($db, $db_tools, $table_prefix, $migrations_table, $phpbb_root_path, $php_ext)
 	{
-		$this->db = &$db;
-		$this->db_tools = &$db_tools;
+		$this->db = $db;
+		$this->db_tools = $db_tools;
 		$this->table_prefix = $table_prefix;
 		$this->migrations_table = $migrations_table;
 		$this->migrations = array();
@@ -131,7 +131,7 @@ class phpbb_db_migrator
 			return false;
 		}
 
-		$migration =& new $name($this->db, $this->db_tools, $this->table_prefix, $this->phpbb_root_path, $this->php_ext);
+		$migration = new $name($this->db, $this->db_tools, $this->table_prefix, $this->phpbb_root_path, $this->php_ext);
 		$state = (isset($this->migration_state[$name])) ?
 			$this->migration_state[$name] :
 			array(
@@ -182,7 +182,7 @@ class phpbb_db_migrator
 		return true;
 	}
 
-	function process_data_step(&$migration)
+	function process_data_step($migration)
 	{
 		$continue = false;
 		$steps = $migration->update_data();
@@ -199,7 +199,7 @@ class phpbb_db_migrator
 		return $continue;
 	}
 
-	function run_step(&$step)
+	function run_step($step)
 	{
 
 	}
@@ -234,7 +234,7 @@ class phpbb_db_migrator
 			return true;
 		}
 
-		$migration =& new $name($this->db, $this->db_tools, $this->table_prefix, $this->phpbb_root_path, $this->php_ext);
+		$migration = new $name($this->db, $this->db_tools, $this->table_prefix, $this->phpbb_root_path, $this->php_ext);
 		$depends = $migration->depends_on();
 
 		foreach ($depends as $depend)
