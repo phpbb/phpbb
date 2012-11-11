@@ -98,13 +98,6 @@ if (isset($_GET['avatar']))
 	$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 	$phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 
-	$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
-	foreach ($ids as $id)
-	{
-		$processor = $phpbb_container->get($id);
-		$processor->process($phpbb_container);
-	}
-
 	// worst-case default
 	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
 
