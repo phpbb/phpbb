@@ -26,14 +26,14 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_db_migration
 {
-	var $db;
-	var $db_tools;
-	var $table_prefix;
+	protected $db;
+	protected $db_tools;
+	protected $table_prefix;
 
-	var $phpbb_root_path;
-	var $php_ext;
+	protected $phpbb_root_path;
+	protected $php_ext;
 
-	var $errors;
+	protected $errors;
 
 	/**
 	* Migration constructor
@@ -44,7 +44,7 @@ class phpbb_db_migration
 	* @param string			$phpbb_root_path
 	* @param string			$php_ext
 	*/
-	function phpbb_db_migration($db, $db_tools, $table_prefix, $phpbb_root_path, $php_ext)
+	public function phpbb_db_migration($db, $db_tools, $table_prefix, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->db_tools = $db_tools;
@@ -61,7 +61,7 @@ class phpbb_db_migration
 	*
 	* @return array An array of migration class names
 	*/
-	function depends_on()
+	public function depends_on()
 	{
 		return array();
 	}
@@ -71,24 +71,24 @@ class phpbb_db_migration
 	*
 	* @return array
 	*/
-	function update_schema()
+	public function update_schema()
 	{
 		return array();
 	}
 
 	/**
-	* Updates data
+	* Updates data by returning a list of instructions to be executed
 	*
-	* @return null
+	* @return array
 	*/
-	function update_data()
+	public function update_data()
 	{
 	}
 
 	/**
 	* Wrapper for running queries to generate user feedback on updates
 	*/
-	function sql_query($sql)
+	protected function sql_query($sql)
 	{
 		if (defined('DEBUG_EXTRA'))
 		{

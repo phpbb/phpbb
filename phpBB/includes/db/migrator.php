@@ -22,17 +22,17 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_db_migrator
 {
-	var $db;
-	var $db_tools;
-	var $table_prefix;
+	protected $db;
+	protected $db_tools;
+	protected $table_prefix;
 
-	var $phpbb_root_path;
-	var $php_ext;
+	protected $phpbb_root_path;
+	protected $php_ext;
 
-	var $migrations_table;
-	var $migration_state;
+	protected $migrations_table;
+	protected $migration_state;
 
-	var $migrations;
+	protected $migrations;
 
 	/**
 	* Constructor of the database migrator
@@ -45,7 +45,7 @@ class phpbb_db_migrator
 	* @param string			$phpbb_root_path
 	* @param string			$php_ext
 	*/
-	function phpbb_db_migrator($db, $db_tools, $table_prefix, $migrations_table, $phpbb_root_path, $php_ext)
+	public function phpbb_db_migrator($db, $db_tools, $table_prefix, $migrations_table, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->db_tools = $db_tools;
@@ -64,7 +64,7 @@ class phpbb_db_migrator
 	*
 	* @return null
 	*/
-	function load_migration_state()
+	public function load_migration_state()
 	{
 		$sql = "SELECT *
 			FROM " . $this->migrations_table;
@@ -85,7 +85,7 @@ class phpbb_db_migrator
 	* @param array $class_names An array of migration class names
 	* @return null
 	*/
-	function set_migrations($class_names)
+	public function set_migrations($class_names)
 	{
 		$this->migrations = $class_names;
 	}
@@ -98,7 +98,7 @@ class phpbb_db_migrator
 	*
 	* @return null
 	*/
-	function update()
+	public function update()
 	{
 		foreach ($this->migrations as $name)
 		{
@@ -124,7 +124,7 @@ class phpbb_db_migrator
 	* @param	string	The class name of the migration
 	* @return	bool	Whether any update step was successfully run
 	*/
-	function try_apply($name)
+	protected function try_apply($name)
 	{
 		if (!class_exists($name))
 		{
@@ -182,7 +182,7 @@ class phpbb_db_migrator
 		return true;
 	}
 
-	function process_data_step($migration)
+	protected function process_data_step($migration)
 	{
 		$continue = false;
 		$steps = $migration->update_data();
@@ -190,6 +190,7 @@ class phpbb_db_migrator
 		foreach ($steps as $step)
 		{
 			$continue = $this->run_step($step);
+
 			if (!$continue)
 			{
 				return false;
@@ -199,12 +200,99 @@ class phpbb_db_migrator
 		return $continue;
 	}
 
-	function run_step($step)
+	protected function run_step($step)
 	{
+		try
+		{
+			$callable_and_parameters = $this->get_callable_from_step($step);
+			$callable = $callable_and_parameters[0];
+			$parameters = $callable_and_parameters[1];
 
+			call_user_func_array($callable, $parameters);
+
+			return false;
+		}
+		catch (phpbb_db_migration_exception $e)
+		{
+			echo $e;die();
+		}
 	}
 
-	function insert_migration($name, $state)
+	public function get_callable_from_step($step)
+	{
+		$type = $step[0];
+		$parameters = $step[1];
+
+		$parts = explode('.', $type);
+
+		$class = $parts[0];
+		$method = false;
+
+		if (isset($parts[1]))
+		{
+			$method = $parts[1];
+		}
+
+		switch ($class)
+		{
+			case 'if':
+				if (!isset($parameters[0]))
+				{
+					throw new phpbb_db_migration_exception('MIGRATION_INVALID_DATA_MISSING_CONDITION', $step);
+				}
+
+				if (!isset($parameters[1]))
+				{
+					throw new phpbb_db_migration_exception('MIGRATION_INVALID_DATA_MISSING_STEP', $step);
+				}
+
+				$condition = $parameters[0];
+				$step = $parameters[1];
+
+				$callable_and_parameters = $this->get_callable_from_step($step);
+				$callable = $callable_and_parameters[0];
+				$sub_parameters = $callable_and_parameters[1];
+				return array(
+					function ($condition) use ($callable, $sub_parameters) {
+						return call_user_func_array($callable, $sub_parameters);
+					},
+					array($condition)
+				);
+			break;
+			case 'custom':
+				if (!is_callable($parameters[0]))
+				{
+					throw new phpbb_db_migration_exception('MIGRATION_INVALID_DATA_CUSTOM_NOT_CALLABLE', $step);
+				}
+
+				return array($parameters[0], array());
+			break;
+
+			default:
+				if (!$method)
+				{
+					throw new phpbb_db_migration_exception('MIGRATION_INVALID_DATA_UNKNOWN_TYPE', $step);
+				}
+
+				if (!isset($this->tools[$class]))
+				{
+					throw new phpbb_db_migration_exception('MIGRATION_INVALID_DATA_UNDEFINED_TOOL', $step);
+				}
+
+				if (!method_exists(get_class($this->tools[$class]), $method))
+				{
+					throw new phpbb_db_migration_exception('MIGRATION_INVALID_DATA_UNDEFINED_METHOD', $step);
+				}
+
+				return array(
+					array($this->tools[$class], $method),
+					$parameters
+				);
+			break;
+		}
+	}
+
+	protected function insert_migration($name, $state)
 	{
 		$migration_row = $state;
 		$migration_row['migration_name'] = $name;
@@ -222,7 +310,7 @@ class phpbb_db_migrator
 	* @param	string	$name	The class name of the migration
 	* @return	bool			Whether the migration cannot be fulfilled
 	*/
-	function unfulfillable($name)
+	public function unfulfillable($name)
 	{
 		if (isset($this->migration_state[$name]))
 		{
@@ -253,7 +341,7 @@ class phpbb_db_migrator
 	*
 	* @return bool Whether the migrations have been applied
 	*/
-	function finished()
+	public function finished()
 	{
 		foreach ($this->migrations as $name)
 		{
@@ -279,7 +367,7 @@ class phpbb_db_migrator
 		return true;
 	}
 
-	function apply_schema_changes($schema_changes)
+	protected function apply_schema_changes($schema_changes)
 	{
 		$this->db_tools->perform_schema_changes($schema_changes);
 	}
