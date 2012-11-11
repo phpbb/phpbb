@@ -167,7 +167,7 @@ class phpbb_db_migrator
 		}
 		else
 		{
-			$migration->update_data();
+			$this->process_data_step($migration);
 			$state['migration_data_done'] = true;
 			$state['migration_end_time'] = time();
 		}
@@ -180,6 +180,28 @@ class phpbb_db_migrator
 		$this->migration_state[$name] = $state;
 
 		return true;
+	}
+
+	function process_data_step(&$migration)
+	{
+		$continue = false;
+		$steps = $migration->update_data();
+
+		foreach ($steps as $step)
+		{
+			$continue = $this->run_step($step);
+			if (!$continue)
+			{
+				return false;
+			}
+		}
+
+		return $continue;
+	}
+
+	function run_step(&$step)
+	{
+
 	}
 
 	function insert_migration($name, $state)
