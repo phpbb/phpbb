@@ -5,7 +5,6 @@
 		<column>style_name</column>
 		<column>style_copyright</column>
 		<column>style_active</column>
-		<column>style_path</column>
 		<column>bbcode_bitfield</column>
 		<column>style_parent_id</column>
 		<column>style_parent_tree</column>
@@ -14,7 +13,6 @@
 			<value>prosilver</value>
 			<value>&amp;copy; phpBB Group</value>
 			<value>1</value>
-			<value>prosilver</value>
 			<value>kNg=</value>
 			<value>0</value>
 			<value></value>
@@ -24,7 +22,6 @@
 			<value>prosilver2</value>
 			<value>&amp;copy; phpBB Group</value>
 			<value>0</value>
-			<value>prosilver2</value>
 			<value>kNg=</value>
 			<value>0</value>
 			<value></value>
@@ -34,7 +31,6 @@
 			<value>Prosilver1</value>
 			<value>&amp;copy; phpBB Group</value>
 			<value>0</value>
-			<value>prosilver1</value>
 			<value>kNg=</value>
 			<value>1</value>
 			<value>prosilver</value>
