@@ -92,7 +92,6 @@
 			<dt>{L_TOTAL_USER_TOPICS}{L_COLON}</dt>
 				<dd>{TOPICS} <!-- IF S_DISPLAY_SEARCH -->| <strong><a href="{U_SEARCH_USER_TOPICS}">{L_SEARCH_USER_TOPICS}</a></strong><!-- ENDIF -->
 					<!-- IF TOPICS_PCT --><br />({TOPICS_PCT} / {TOPICS_DAY})<!-- ENDIF -->
-					<!-- IF TOPICS_IN_QUEUE and U_MCP_QUEUE --><br />(<a href="{U_MCP_QUEUE}">{L_TOPICS_IN_QUEUE}</a>)<!-- ELSEIF TOPICS_IN_QUEUE --><br />({L_TOPICS_IN_QUEUE})<!-- ENDIF -->
 				</dd>
 			<!-- IF S_SHOW_ACTIVITY and POSTS -->
 				<dt>{L_ACTIVE_IN_FORUM}{L_COLON}</dt> <dd><!-- IF ACTIVE_FORUM != '' --><strong><a href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></strong><br />({ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT})<!-- ELSE --> - <!-- ENDIF --></dd>
