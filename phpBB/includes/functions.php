@@ -3367,7 +3367,7 @@ function add_log()
 		return false;
 	}
 
-	// no log class set, create a temporary one ourselves to keep backwards compatability
+	// no log class set, create a temporary one ourselves to keep backwards compatibility
 	if ($phpbb_log === null)
 	{
 		$phpbb_log = new phpbb_log(LOG_TABLE);

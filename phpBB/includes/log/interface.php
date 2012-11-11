@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 interface phpbb_log_interface
 {
 	/**
-	* This function returns the state of the log-system.
+	* This function returns the state of the log system.
 	*
 	* @param	string	$type	The log type we want to check. Empty to get global log status.
 	*
@@ -32,7 +32,7 @@ interface phpbb_log_interface
 	public function is_enabled($type = '');
 
 	/**
-	* This function allows disable the log-system. When add_log is called, the log will not be added to the database.
+	* This function allows disable the log system. When add_log is called, the log will not be added to the database.
 	*
 	* @param	mixed	$type	The log type we want to disable. Empty to disable all logs.
 	*							Can also be an array of types
@@ -42,7 +42,7 @@ interface phpbb_log_interface
 	public function disable($type = '');
 
 	/**
-	* This function allows re-enable the log-system.
+	* This function allows re-enable the log system.
 	*
 	* @param	mixed	$type	The log type we want to enable. Empty to enable all logs.
 	*							Can also be an array of types
@@ -93,7 +93,7 @@ interface phpbb_log_interface
 	static public function generate_sql_keyword($keywords);
 
 	/**
-	* Determinate whether the user is allowed to read and/or moderate the forum of the topic
+	* Determine whether the user is allowed to read and/or moderate the forum of the topic
 	*
 	* @param	array	$topic_ids	Array with the topic ids
 	*
