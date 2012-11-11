@@ -83,7 +83,7 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 	*/
 	public function get_email_template()
 	{
-		return 'notifications/report_post';
+		return 'report_post';
 	}
 
 	/**
