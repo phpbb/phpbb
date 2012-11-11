@@ -51,11 +51,8 @@ class phpbb_di_extension_core extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
-		if (file_exists($this->root_path . 'config/services.yml'))
-		{
-			$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($this->root_path . 'config')));
-			$loader->load('services.yml');
-		}
+		$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($this->root_path . 'config')));
+		$loader->load('services.yml');
 	}
 
 	/**
