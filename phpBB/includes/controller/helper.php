@@ -79,11 +79,6 @@ class phpbb_controller_helper
 	*/
 	public function render($template_file, $page_title = '', $status_code = 200)
 	{
-		if (!function_exists('page_header'))
-		{
-			include("{$this->phpbb_root_path}includes/functions.{$this->php_ext}");
-		}
-
 		page_header($page_title);
 
 		$this->template->set_filenames(array(
