@@ -41,6 +41,13 @@ class phpbb_notification_method_email extends phpbb_notification_method_base
 	protected $notify_method = NOTIFY_EMAIL;
 
 	/**
+	* Base directory to prepend to the email template name
+	*
+	* @var string
+	*/
+	protected $email_template_base_dir = '';
+
+	/**
 	* Is this method available for the user?
 	* This is checked on the notifications options
 	*/
@@ -100,7 +107,7 @@ class phpbb_notification_method_email extends phpbb_notification_method_base
 				continue;
 			}
 
-			$messenger->template($notification->get_email_template(), $user['user_lang']);
+			$messenger->template($this->email_template_base_dir . $notification->get_email_template(), $user['user_lang']);
 
 			$messenger->to($user['user_email'], $user['username']);
 

@@ -41,6 +41,13 @@ class phpbb_notification_method_jabber extends phpbb_notification_method_email
 	protected $notify_method = NOTIFY_IM;
 
 	/**
+	* Base directory to prepend to the email template name
+	*
+	* @var string
+	*/
+	protected $email_template_base_dir = 'short/';
+
+	/**
 	* Is this method available for the user?
 	* This is checked on the notifications options
 	*/
