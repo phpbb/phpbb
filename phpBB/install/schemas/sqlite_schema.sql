@@ -630,8 +630,8 @@ CREATE TABLE phpbb_reports (
 	report_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_text mediumtext(16777215) NOT NULL DEFAULT '',
 	reported_post_text mediumtext(16777215) NOT NULL DEFAULT '',
-	reported_post_bitfield varchar(255) NOT NULL DEFAULT '',
-	reported_post_uid varchar(8) NOT NULL DEFAULT ''
+	reported_post_uid varchar(8) NOT NULL DEFAULT '',
+	reported_post_bitfield varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);
@@ -737,10 +737,9 @@ CREATE INDEX phpbb_smilies_display_on_post ON phpbb_smilies (display_on_posting)
 # Table: 'phpbb_styles'
 CREATE TABLE phpbb_styles (
 	style_id INTEGER PRIMARY KEY NOT NULL ,
-	style_name varchar(255) NOT NULL DEFAULT '',
+	style_name varchar(100) NOT NULL DEFAULT '',
 	style_copyright varchar(255) NOT NULL DEFAULT '',
 	style_active INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	style_path varchar(100) NOT NULL DEFAULT '',
 	bbcode_bitfield varchar(255) NOT NULL DEFAULT 'kNg=',
 	style_parent_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	style_parent_tree text(65535) NOT NULL DEFAULT ''
