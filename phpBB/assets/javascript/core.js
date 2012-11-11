@@ -591,7 +591,7 @@ phpbb.add_ajax_callback('toggle_link', function() {
 phpbb.attachment_lightbox = function()
 {
 	this.init = function() {
-		if(this.sources === undefined)
+		if (this.sources === undefined)
 		{
 			return this.addSources();
 		}
@@ -600,11 +600,11 @@ phpbb.attachment_lightbox = function()
 			return this.enable();
 		}
 	}
-	
+
 	this.addSources = function() {
 		this.sources = [];
 		this.imageAlts = [];
-		$('.attach-image img').each(function(i, image){
+		$('.attach-image img').each(function(i, image) {
 			this.sources.push(image.src);
 			this.imageAlts.push(image.alt);
 		});
