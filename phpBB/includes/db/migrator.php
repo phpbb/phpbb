@@ -22,6 +22,7 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_db_migrator
 {
+	protected $container;
 	protected $db;
 	protected $db_tools;
 	protected $table_prefix;
@@ -37,24 +38,26 @@ class phpbb_db_migrator
 	/**
 	* Constructor of the database migrator
 	*
-	* @param dbal			$db			Connected database abstraction instance
-	* @param phpbb_db_tools	$db_tools	Instance of db schema manipulation tools
-	* @param string			$table_prefix The prefix for all table names
-	* @param string			$migrations_table The name of the db table storing
-	*									information on applied migrations
-	* @param string			$phpbb_root_path
-	* @param string			$php_ext
+	* @param \Symfony\Component\DependencyInjection\ContainerInterface	$container	Container supplying dependencies
 	*/
-	public function phpbb_db_migrator($db, $db_tools, $table_prefix, $migrations_table, $phpbb_root_path, $php_ext)
+	public function phpbb_db_migrator(\Symfony\Component\DependencyInjection\ContainerInterface $container, $migrations)
 	{
-		$this->db = $db;
-		$this->db_tools = $db_tools;
-		$this->table_prefix = $table_prefix;
-		$this->migrations_table = $migrations_table;
-		$this->migrations = array();
+		$this->container = $container;
+		$this->db = $this->container->get('dbal.conn');
+		$this->db_tools = $this->container->get('dbal.tools');
+		$this->table_prefix = $this->container->getParameters('core.table_prefix');
+		$this->migrations_table = $this->container->getParameters('tables.migrations');
+		$this->migrations = $migrations;
 
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
+		$this->phpbb_root_path = $this->container->getParameters('core.root_path');
+		$this->php_ext = $this->container->getParameters('core.php_ext');
+
+		/** @todo replace with collection_pass when merged */
+		$this->tools = array(
+			'config' => new phpbb_db_migration_tools_config,
+			'module' => new phpbb_db_migration_tools_module,
+			'permission' => new phpbb_db_migration_tools_permission,
+		);
 
 		$this->load_migration_state();
 	}
