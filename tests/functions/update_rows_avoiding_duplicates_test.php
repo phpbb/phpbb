@@ -61,7 +61,7 @@ class phpbb_update_rows_avoiding_duplicates_test extends phpbb_database_test_cas
 
 		$sql = 'SELECT count(*) AS count
 			FROM ' . TOPICS_WATCH_TABLE . '
-			WHERE topic_id = ' . $db->sql_escape($to);
+			WHERE topic_id = ' . (int) $to;
 		$result = $db->sql_query($sql);
 		$result_count = $db->sql_fetchfield('count');
 		$db->sql_freeresult($result);
