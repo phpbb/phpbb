@@ -167,7 +167,7 @@ class acp_users
 				$user->add_lang('acp/ban');
 
 				$delete			= request_var('delete', 0);
-				$delete_type	= request_var('delete_type', '');
+				$delete_content	= request_var('delete_content', array(''));
 				$ip				= request_var('ip', 'ip');
 
 				if ($submit)
@@ -191,11 +191,11 @@ class acp_users
 							trigger_error($user->lang['CANNOT_REMOVE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
-						if ($delete_type)
+						if ($delete_content)
 						{
 							if (confirm_box(true))
 							{
-								user_delete($delete_type, $user_id, $user_row['username']);
+								user_delete($delete_content, $user_id, $user_row['username']);
 
 								add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
 								trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));
@@ -209,8 +209,8 @@ class acp_users
 									'action'		=> $action,
 									'update'		=> true,
 									'delete'		=> 1,
-									'delete_type'	=> $delete_type))
-								);
+									'delete_content'=> $delete_content,
+								)));
 							}
 						}
 						else
@@ -1038,11 +1038,23 @@ class acp_users
 				$user_row['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 				$db->sql_freeresult($result);
 
+				// Total post count, might differ from user_posts
 				$sql = 'SELECT post_id
 					FROM ' . POSTS_TABLE . '
 					WHERE poster_id = '. $user_id;
 				$result = $db->sql_query_limit($sql, 1);
 				$user_row['user_has_posts'] = (bool) $db->sql_fetchfield('post_id');
+				$db->sql_freeresult($result);
+
+				// Votes on open polls
+				$sql = 'SELECT v.poll_option_id
+					FROM ' . POLL_VOTES_TABLE . ' v, ' . TOPICS_TABLE . ' t
+					WHERE v.vote_user_id = ' . $user_id . '
+						AND v.topic_id = t.topic_id
+						AND (t.poll_length = 0
+							OR t.poll_start + t.poll_length > ' . time() . ')';
+				$result = $db->sql_query_limit($sql, 1);
+				$user_row['user_has_votes'] = (bool) $db->sql_fetchfield('poll_option_id');
 				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
@@ -1073,6 +1085,7 @@ class acp_users
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
 					'USER_POSTS'		=> $user_row['user_posts'],
 					'USER_HAS_POSTS'	=> $user_row['user_has_posts'],
+					'USER_HAS_VOTES'	=> $user_row['user_has_votes'],
 					'USER_INACTIVE_REASON'	=> $inactive_reason,
 				));
 
