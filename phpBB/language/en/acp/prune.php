@@ -51,6 +51,8 @@ $lang = array_merge($lang, array(
 	'LAST_ACTIVE_EXPLAIN'		=> 'Enter a date in <kbd>YYYY-MM-DD</kbd> format. Enter <kbd>0000-00-00</kbd> to prune users who never logged in, <em>Before</em> and <em>After</em> conditions will be ignored.',
 
 	'POSTS_ON_QUEUE'			=> 'Posts Awaiting Approval',
+	'PRUNE_DELETE_USERS'		=> 'Delete pruned users',
+	'PRUNE_DELETE_USERS_EXPLAIN'=> 'Deleting posts and votes has no effect if users are deactivated',
 	'PRUNE_USERS_GROUP_EXPLAIN'	=> 'Selects all members of the group for pruning.',
 	'PRUNE_USERS_LIST'				=> 'Users to be pruned',
 	'PRUNE_USERS_LIST_DELETE'		=> 'With the selected critera for pruning users the following accounts will be removed. You can remove individual users from the deletion list by unchecking the box next to their username.',

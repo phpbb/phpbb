@@ -230,14 +230,14 @@ class acp_prune
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
-		$user->add_lang('memberlist');
+		$user->add_lang(array('acp/users', 'memberlist'));
 
 		$prune = (isset($_POST['prune'])) ? true : false;
 
 		if ($prune)
 		{
 			$action = request_var('action', 'deactivate');
-			$deleteposts = request_var('deleteposts', 0);
+			$delete_content = request_var('delete_content', array(''));
 
 			if (confirm_box(true))
 			{
@@ -253,16 +253,13 @@ class acp_prune
 					}
 					else if ($action == 'delete')
 					{
-						if ($deleteposts)
+						user_delete($delete_content, $user_ids, !in_array('posts', $delete_content));
+						if (in_array('posts', $delete_content))
 						{
-							user_delete('remove', $user_ids);
-							
 							$l_log = 'LOG_PRUNE_USER_DEL_DEL';
 						}
 						else
 						{
-							user_delete('retain', $user_ids, true);
-
 							$l_log = 'LOG_PRUNE_USER_DEL_ANON';
 						}
 					}
@@ -293,7 +290,7 @@ class acp_prune
 				{
 					$template->assign_block_vars('users', array(
 						'USERNAME'			=> $usernames[$user_id],
-						'USER_ID'           => $user_id,
+						'USER_ID'			=> $user_id,
 						'U_PROFILE'			=> append_sid($phpbb_root_path . 'memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $user_id),
 						'U_USER_ADMIN'		=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
 					));
@@ -309,7 +306,7 @@ class acp_prune
 					'mode'			=> $mode,
 					'prune'			=> 1,
 
-					'deleteposts'	=> request_var('deleteposts', 0),
+					'delete_content'=> request_var('delete_content', array('')),
 					'action'		=> request_var('action', ''),
 				)), 'confirm_body_prune.html');
 			}

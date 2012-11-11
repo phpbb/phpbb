@@ -134,16 +134,6 @@
 		<form id="user_delete" method="post" action="{U_ACTION}">
 			<fieldset>
 				<legend>{L_DELETE_USER}</legend>
-				<dl>
-					<dt><label for="delete_type">{L_DELETE_USER}{L_COLON}</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
-					<dd>
-					<!-- IF USER_HAS_POSTS -->
-						<select id="delete_type" name="delete_type"><option class="sep" value="">{L_SELECT_OPTION}</option><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select>
-					<!-- ELSE -->
-						{L_USER_NO_POSTS_TO_DELETE}<input type="hidden" id="delete_type" name="delete_type" value="retain" />
-					<!-- ENDIF -->
-					</dd>
-				</dl>
 
 				<dl>
 					<dt><label>{L_DELETE_USER}{L_COLON}</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
