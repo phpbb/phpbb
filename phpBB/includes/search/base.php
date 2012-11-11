@@ -97,6 +97,7 @@ class phpbb_search_base
 	function obtain_ids($search_key, &$result_count, &$id_ary, &$start, $per_page, $sort_dir)
 	{
 		global $cache;
+
 		if (!($stored_ids = $cache->get('_search_results_' . $search_key)))
 		{
 			// no search results cached for this search_key
@@ -108,7 +109,7 @@ class phpbb_search_base
 			$reverse_ids = ($stored_ids[-2] != $sort_dir) ? true : false;
 			$complete = true;
 
-			// change start parameter in case out of bounds
+			// Change start parameter in case out of bounds
 			if ($result_count)
 			{
 				if ($start < 0)

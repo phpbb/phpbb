@@ -386,6 +386,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		{
 			return $result_count;
 		}
+
 		$id_ary = array();
 
 		$join_topic = ($type == 'posts') ? false : true;
