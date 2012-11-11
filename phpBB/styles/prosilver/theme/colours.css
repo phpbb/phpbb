@@ -649,14 +649,6 @@ fieldset.polls dd div {
 Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
 
-/* Big button images */
-.reply-icon span	{ background-image: url("./en/button_topic_reply.gif"); }
-.post-icon span		{ background-image: url("./en/button_topic_new.gif"); }
-.locked-icon span	{ background-image: url("./en/button_topic_locked.gif"); }
-.pmreply-icon span	{ background-image: url("./en/button_pm_reply.gif") ;}
-.newpm-icon span 	{ background-image: url("./en/button_pm_new.gif") ;}
-.forwardpm-icon span	{ background-image: url("./en/button_pm_forward.gif") ;}
-
 a.print {
 	background-image: url("./images/icon_print.gif");
 }
