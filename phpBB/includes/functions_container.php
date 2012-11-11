@@ -53,15 +53,18 @@ function phpbb_create_container(array $extensions, $phpbb_root_path, $php_ext)
 */
 function phpbb_create_install_container($phpbb_root_path, $php_ext)
 {
-	// We have to do it like this instead of with extensions
-	$container = new ContainerBuilder();
-	$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../config'));
-	$loader->load('services.yml');
+	$core = new phpbb_di_extension_core($phpbb_root_path);
+	$container = phpbb_create_container(array($core), $phpbb_root_path, $php_ext);
 
 	$container->setParameter('core.root_path', $phpbb_root_path);
 	$container->setParameter('core.php_ext', $php_ext);
+	$container->setParameter('core.table_prefix', '');
+
+	$container->register('dbal.conn')->setSynthetic(true);
 
 	$container->setAlias('cache.driver', 'cache.driver.install');
+
+	$container->compile();
 
 	return $container;
 }
