@@ -84,38 +84,6 @@ interface phpbb_log_interface
 	public function get_logs($mode, $count_logs = true, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $log_time = 0, $sort_by = 'l.log_time DESC', $keywords = '');
 
 	/**
-	* Generates a sql condition out of the specified keywords
-	*
-	* @param	string	$keywords	The keywords the user specified to search for
-	*
-	* @return	string		Returns the SQL condition searching for the keywords
-	*/
-	static public function generate_sql_keyword($keywords);
-
-	/**
-	* Determine whether the user is allowed to read and/or moderate the forum of the topic
-	*
-	* @param	array	$topic_ids	Array with the topic ids
-	*
-	* @return	array		Returns an array with two keys 'm_' and 'read_f' which are also an array of topic_id => forum_id sets when the permissions are given. Sample:
-	*						array(
-	*							'permission' => array(
-	*								topic_id => forum_id
-	*							),
-	*						),
-	*/
-	static public function get_topic_auth($topic_ids);
-
-	/**
-	* Get the data for all reportee form the database
-	*
-	* @param	array	$reportee_ids	Array with the user ids of the reportees
-	*
-	* @return	array		Returns an array with the reportee data
-	*/
-	static public function get_reportee_data($reportee_ids);
-
-	/**
 	* Get total log count
 	*
 	* @return	int			Returns the number of matching logs from the last call to get_logs()

@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_log implements phpbb_log_interface
 {
 	/**
-	* Keeps the status of the log-system. Is the log enabled or disabled?
+	* Keeps the status of the log system. Is the log enabled or disabled?
 	*/
 	private $disabled_logs;
 
@@ -54,7 +54,7 @@ class phpbb_log implements phpbb_log_interface
 	}
 
 	/**
-	* This function returns the state of the log-system.
+	* This function returns the state of the log system.
 	*
 	* @param	string	$type	The log type we want to check. Empty to get global log status.
 	*
@@ -70,7 +70,7 @@ class phpbb_log implements phpbb_log_interface
 	}
 
 	/**
-	* This function allows disable the log-system. When add_log is called, the log will not be added to the database.
+	* This function allows disable the log system. When add_log is called, the log will not be added to the database.
 	*
 	* @param	mixed	$type	The log type we want to enable. Empty to disable all logs.
 	*							Can also be an array of types
@@ -97,7 +97,7 @@ class phpbb_log implements phpbb_log_interface
 	}
 
 	/**
-	* This function allows re-enable the log-system.
+	* This function allows re-enable the log system.
 	*
 	* @param	mixed	$type	The log type we want to enable. Empty to enable all logs.
 	*
@@ -320,7 +320,7 @@ class phpbb_log implements phpbb_log_interface
 		if (!empty($keywords))
 		{
 			// Get the SQL condition for our keywords
-			$sql_keywords = self::generate_sql_keyword($keywords);
+			$sql_keywords = $this->generate_sql_keyword($keywords);
 		}
 
 		if ($count_logs)
@@ -465,7 +465,7 @@ class phpbb_log implements phpbb_log_interface
 
 		if (sizeof($topic_id_list))
 		{
-			$topic_auth = self::get_topic_auth($topic_id_list);
+			$topic_auth = $this->get_topic_auth($topic_id_list);
 
 			foreach ($log as $key => $row)
 			{
@@ -476,7 +476,7 @@ class phpbb_log implements phpbb_log_interface
 
 		if (sizeof($reportee_id_list))
 		{
-			$reportee_data_list = self::get_reportee_data($reportee_id_list);
+			$reportee_data_list = $this->get_reportee_data($reportee_id_list);
 
 			foreach ($log as $key => $row)
 			{
@@ -496,9 +496,11 @@ class phpbb_log implements phpbb_log_interface
 	/**
 	* Generates a sql condition out of the specified keywords
 	*
-	* {@inheritDoc}
+	* @param	string	$keywords	The keywords the user specified to search for
+	*
+	* @return	string		Returns the SQL condition searching for the keywords
 	*/
-	static public function generate_sql_keyword($keywords)
+	private function generate_sql_keyword($keywords)
 	{
 		global $db, $user;
 
@@ -542,11 +544,18 @@ class phpbb_log implements phpbb_log_interface
 	}
 
 	/**
-	* Determinate whether the user is allowed to read and/or moderate the forum of the topic
+	* Determine whether the user is allowed to read and/or moderate the forum of the topic
 	*
-	* {@inheritDoc}
+	* @param	array	$topic_ids	Array with the topic ids
+	*
+	* @return	array		Returns an array with two keys 'm_' and 'read_f' which are also an array of topic_id => forum_id sets when the permissions are given. Sample:
+	*						array(
+	*							'permission' => array(
+	*								topic_id => forum_id
+	*							),
+	*						),
 	*/
-	static public function get_topic_auth($topic_ids)
+	private function get_topic_auth($topic_ids)
 	{
 		global $auth, $db;
 
@@ -579,11 +588,13 @@ class phpbb_log implements phpbb_log_interface
 	}
 
 	/**
-	* Get the data for all reportee form the database
+	* Get the data for all reportee from the database
 	*
-	* {@inheritDoc}
+	* @param	array	$reportee_ids	Array with the user ids of the reportees
+	*
+	* @return	array		Returns an array with the reportee data
 	*/
-	static public function get_reportee_data($reportee_ids)
+	private function get_reportee_data($reportee_ids)
 	{
 		global $db;
 
