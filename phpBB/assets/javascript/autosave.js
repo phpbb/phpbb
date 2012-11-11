@@ -17,14 +17,13 @@ function phpbb_autosave_prompt (data) {
 
 		while (true) {
 			choice = prompt(str);
-
-			try {
-				choice = parseInt(choice);
-			} catch (e) {
-				continue;
+			if (choice === null) {
+				return '';
 			}
 
-			if (choice < 1 || choice > keys.length) {
+			choice = parseInt(choice);
+			
+			if (isNaN(choice) || choice < 1 || choice > keys.length) {
 				continue;
 			}
 
