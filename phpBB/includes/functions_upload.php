@@ -587,11 +587,11 @@ class fileupload
 			$result = $plupload->handle_upload($form_name);
 			if (is_array($result))
 			{
-				$upload[$form_name] = array_merge($upload[$form_name], $result);
+				$upload = array_merge($upload, $result);
 			}
 		}
 
-		$file = new filespec($upload[$form_name], $this, $plupload);
+		$file = new filespec($upload, $this, $plupload);
 
 		if ($file->init_error)
 		{

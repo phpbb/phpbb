@@ -84,11 +84,13 @@ class phpbb_plupload
 	 */
 	protected function check_file_valid($is_multipart, $form_name)
 	{
+		$upload = $this->request->file($form_name);
+
 		if (
 			$is_multipart
 			&& (
-				!isset($_FILES[$form_name]['tmp_name'])
-				|| !is_uploaded_file($_FILES[$form_name]['tmp_name'])
+				!isset($upload['tmp_name'])
+				|| !is_uploaded_file($upload['tmp_name'])
 			)
 		)
 		{
@@ -349,12 +351,13 @@ class phpbb_plupload
 	 */
 	protected function move_chunk_tmp_dir($tmp_dir, $form_name)
 	{
+		$upload = $this->request->file($form_name);
 		$tmp_file =
 			$tmp_dir
 			. '/'
-			. basename($_FILES[$form_name]['tmp_name']);
+			. basename($upload['tmp_name']);
 
-		if (!move_uploaded_file($_FILES[$form_name]['tmp_name'], $tmp_file))
+		if (!move_uploaded_file($upload['tmp_name'], $tmp_file))
 		{
 			$this->emit_error(103, 'PLUPLOAD_ERR_MOVE_UPLOADED');
 		}
