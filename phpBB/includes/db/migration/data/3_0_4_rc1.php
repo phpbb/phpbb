@@ -59,6 +59,8 @@ class phpbb_db_migration_data_3_0_4_rc1 extends phpbb_db_migration
 	{
 		return array(
 			array('custom', array(array(&$this, 'update_custom_profile_fields'))),
+
+			array('config.update', array('version', '3.0.4-rc1')),
 		);
 	}
 

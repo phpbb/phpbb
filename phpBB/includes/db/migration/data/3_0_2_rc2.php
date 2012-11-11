@@ -48,5 +48,8 @@ class phpbb_db_migration_data_3_0_2_rc2 extends phpbb_db_migration
 
 	function update_data()
 	{
+		return array(
+			array('config.update', array('version', '3.0.2-rc2')),
+		);
 	}
 }

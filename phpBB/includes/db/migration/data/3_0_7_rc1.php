@@ -38,6 +38,8 @@ class phpbb_db_migration_data_3_0_7_rc1 extends phpbb_db_migration
 			array('config.add', array('feed_topics_new', $this->config['feed_overall_topics'])),
 			array('config.add', array('feed_topics_active', $this->config['feed_overall_topics'])),
 			array('custom', array(array(&$this, 'delete_text_templates'))),
+
+			array('config.update', array('version', '3.0.7-rc1')),
 		);
 	}
 

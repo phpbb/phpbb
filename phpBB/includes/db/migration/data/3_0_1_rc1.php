@@ -44,6 +44,8 @@ class phpbb_db_migration_data_3_0_1_rc1 extends phpbb_db_migration
 		return array(
 			array('custom', array(array(&$this, 'fix_unset_last_view_time'))),
 			array('custom', array(array(&$this, 'reset_smiley_size'))),
+
+			array('config.update', array('version', '3.0.1-rc1')),
 		);
 	}
 

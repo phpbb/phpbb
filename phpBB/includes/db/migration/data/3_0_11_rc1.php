@@ -24,6 +24,8 @@ class phpbb_db_migration_data_3_0_11_rc1 extends phpbb_db_migration
 		return array(
 			array('custom', array(array(&$this, 'cleanup_deactivated_styles'))),
 			array('custom', array(array(&$this, 'delete_orphan_private_messages'))),
+
+			array('config.update', array('version', '3.0.11-rc1')),
 		);
 	}
 

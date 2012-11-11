@@ -21,5 +21,8 @@ class phpbb_db_migration_data_3_0_9 extends phpbb_db_migration
 
 	function update_data()
 	{
+		return array(
+			array('config.update', array('version', '3.0.9')),
+		);
 	}
 }

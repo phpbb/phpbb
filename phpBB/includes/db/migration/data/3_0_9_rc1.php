@@ -59,6 +59,8 @@ class phpbb_db_migration_data_3_0_9_rc1 extends phpbb_db_migration
 			array('config.add', array('ip_login_limit_use_forwarded', 0)),
 			array('custom', array(array(&$this, 'update_file_extension_group_names'))),
 			array('custom', array(array(&$this, 'fix_firebird_qa_captcha'))),
+
+			array('config.update', array('version', '3.0.9-rc1')),
 		);
 	}
 

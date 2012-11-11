@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_db_migration_data_3_0_1_rc1 extends phpbb_db_migration
+class phpbb_db_migration_data_3_0_2_rc1 extends phpbb_db_migration
 {
 	function depends_on()
 	{
@@ -25,6 +25,8 @@ class phpbb_db_migration_data_3_0_1_rc1 extends phpbb_db_migration
 			array('config.add', array('referer_validation', '1')),
 			array('config.add', array('check_attachment_content', '1')),
 			array('config.add', array('mime_triggers', 'body|head|html|img|plaintext|a href|pre|script|table|title')),
+
+			array('config.update', array('version', '3.0.2-rc1')),
 		);
 	}
 }

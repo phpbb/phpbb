@@ -23,6 +23,8 @@ class phpbb_db_migration_data_3_0_4 extends phpbb_db_migration
 	{
 		return array(
 			array('custom', array(array(&$this, 'rename_log_delete_topic'))),
+
+			array('config.update', array('version', '3.0.4')),
 		);
 	}
 
