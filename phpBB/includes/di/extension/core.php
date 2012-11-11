@@ -29,16 +29,16 @@ class phpbb_di_extension_core extends Extension
 	* phpBB Root path
 	* @var string
 	*/
-	protected $phpbb_root_path;
+	protected $root_path;
 
 	/**
 	* Constructor
 	*
-	* @param string $phpbb_root_path Root path
+	* @param string $root_path Root path
 	*/
-	public function __construct($phpbb_root_path)
+	public function __construct($root_path)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->root_path = $root_path;
 	}
 
 	/**
@@ -51,9 +51,9 @@ class phpbb_di_extension_core extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
-		if (file_exists($this->phpbb_root_path . 'config/services.yml'))
+		if (file_exists($this->root_path . 'config/services.yml'))
 		{
-			$loader = new YamlFileLoader($container, new FileLocator(realpath($this->phpbb_root_path . 'config')));
+			$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($this->root_path . 'config')));
 			$loader->load('services.yml');
 		}
 	}
