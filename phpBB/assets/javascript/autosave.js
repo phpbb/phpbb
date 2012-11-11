@@ -1,11 +1,11 @@
-function phpbb_autosave_prompt (data) {
+phpbb.autosave_prompt = function (data) {
 	var str = phpbb_autosave_prompt_msg;
 	var dt;
 	var keys = [];
 	
 	for (var key in data) {
 		dt = new Date((key + phpbb_autosave_tz_offset) * 1000);
-		str += "\n" + (keys.length + 1) + ') ' + phpbb_autosave_timestr(dt);
+		str += '\n' + (keys.length + 1) + ') ' + phpbb.autosave_timestr(dt);
 
 		keys.push(key);
 	}
@@ -21,7 +21,7 @@ function phpbb_autosave_prompt (data) {
 				return '';
 			}
 
-			choice = parseInt(choice);
+			choice = Number(choice);
 			
 			if (isNaN(choice) || choice < 1 || choice > keys.length) {
 				continue;
@@ -32,18 +32,18 @@ function phpbb_autosave_prompt (data) {
 
 		return data[keys[choice - 1]];
 	}
-}
+};
 
-function phpbb_autosave_save (key) {
+phpbb.autosave_save = function (key) {
 	try {
-		window.localStorage[key] = $('textarea[name=message]').attr('value');
+		window.localStorage[key] = $('textarea[name=message]').val();
 	} catch (e) {
 		// Quota exceeded, should inform the user that their autosave isn't
 		// working
 	}
-}
+};
 
-function phpbb_autosave_timestr (dt) {
+phpbb.autosave_timestr = function (dt) {
 	var hrs = dt.getUTCHours();
 	var mins = dt.getUTCMinutes();
 
@@ -56,7 +56,7 @@ function phpbb_autosave_timestr (dt) {
 	}
 
 	return hrs + ':' + mins;
-}
+};
 
 jQuery(function($) {
 	// localStorage not supported or no post box on the page
@@ -70,7 +70,7 @@ jQuery(function($) {
 
 	// Just store a variable without the creation time for convenience
 	var key_no_creation = key;
-	key += '_' + $('input[name=creation_time]').attr('value');
+	key += '_' + $('input[name=creation_time]').val();
 	
 	// If we have data in localStorage when the page loads we can assume it's
 	// ok to load their autosave
@@ -82,11 +82,11 @@ jQuery(function($) {
 		}
 	}
 
-	$('textarea[name=message]').attr('value', phpbb_autosave_prompt(data));
+	$('textarea[name=message]').val(phpbb.autosave_prompt(data));
 
 	// Create a closure to pass variables to the setInterval call
 	var bind = function () {
-		return phpbb_autosave_save(key);
+		return phpbb.autosave_save(key);
 	};
 
 	setInterval(bind, 30 * 1000);
