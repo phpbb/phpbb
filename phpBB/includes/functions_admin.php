@@ -898,11 +898,11 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 /**
 * Remove users votes from polls
 *
-* @param int		$user_id	The ID of the user we want to delete the votes of
+* @param array		$user_ids	IDs of the users we want to delete the votes of
 * @param boolean	$delete_all	Shall we delete all votes, or just the ones, where the poll did not end yet.
 * @return null
 */
-function phpbb_delete_user_poll_votes($user_id, $delete_all = false)
+function phpbb_delete_user_poll_votes($user_ids, $delete_all = false)
 {
 	global $db;
 
@@ -910,7 +910,7 @@ function phpbb_delete_user_poll_votes($user_id, $delete_all = false)
 	{
 		$sql = 'SELECT v.poll_option_id, v.topic_id
 			FROM ' . POLL_VOTES_TABLE . ' v, ' . TOPICS_TABLE . ' t
-			WHERE v.vote_user_id = ' . $user_id . '
+			WHERE ' . $db->sql_in_set('v.vote_user_id', $user_ids) . '
 				AND v.topic_id = t.topic_id
 				AND (t.poll_length = 0
 					OR t.poll_start + t.poll_length > ' . time() . ')';
@@ -920,7 +920,7 @@ function phpbb_delete_user_poll_votes($user_id, $delete_all = false)
 	{
 		$sql = 'SELECT poll_option_id, topic_id
 			FROM ' . POLL_VOTES_TABLE . '
-			WHERE vote_user_id = ' . $user_id;
+			WHERE ' . $db->sql_in_set('vote_user_id', $user_ids);
 		$result = $db->sql_query($sql);
 	}
 
@@ -943,7 +943,7 @@ function phpbb_delete_user_poll_votes($user_id, $delete_all = false)
 		$db->sql_query($sql);
 
 		$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . '
-			WHERE user_id = ' . $user_id . '
+			WHERE ' . $db->sql_in_set('vote_user_id', $user_ids) . '
 				AND topic_id = ' . $topic_id . '
 				AND ' . $sql_voted_options;
 		$db->sql_query($sql);
