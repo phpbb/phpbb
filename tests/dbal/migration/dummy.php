@@ -27,6 +27,13 @@ class phpbb_dbal_migration_dummy extends phpbb_db_migration
 
 	function update_data()
 	{
-		$this->db->sql_query('UPDATE phpbb_config SET extra_column = 1');
+		return array(
+			array('if', array(true, array('custom', array(array($this, 'set_extra_column'))))),
+		);
+	}
+
+	public function set_extra_column()
+	{
+		$this->sql_query('UPDATE phpbb_config SET extra_column = 1');
 	}
 }
