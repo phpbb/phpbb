@@ -743,8 +743,6 @@ $lang = array_merge($lang, array(
 		2	=> 'Total members <strong>%d</strong>',
 	),
 	'TOTAL_USER_TOPICS'  => 'Total topics',
-	'TOPIC_DAY'    => '%.2f topics per day',
-	'TOPIC_PCT'    => '%.2f%% of all topics',
 	'TRACKED_PHP_ERROR'	=> 'Tracked PHP errors: %s',
 
 	'UNABLE_GET_IMAGE_SIZE'	=> 'It was not possible to determine the dimensions of the image.',
