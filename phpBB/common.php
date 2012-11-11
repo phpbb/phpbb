@@ -125,6 +125,9 @@ foreach ($ids as $id)
 	$processor->process($phpbb_container);
 }
 
+$phpbb_php_ini = new phpbb_php_ini();
+$phpbb_mimetype_extension_map = new phpbb_mimetype_extension_map();
+
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 $phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('phpbb_template', 'display')));

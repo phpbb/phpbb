@@ -23,7 +23,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 {
 	global $template, $db, $auth, $user;
 	global $phpbb_root_path, $phpEx, $config;
-	global $request;
+	global $request, $cache, $phpbb_php_ini, $phpbb_mimetype_extension_map;
 
 	// Damn php and globals - i know, this is horrible
 	// Needed for handle_message_list_actions()
@@ -388,6 +388,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	$message_parser = new parse_message();
+	$plupload = new phpbb_plupload($config, $request, $user, $phpbb_root_path, $phpbb_php_ini, $phpbb_mimetype_extension_map);
+	$message_parser->set_plupload($plupload);
 
 	$message_parser->message = ($action == 'reply') ? '' : $message_text;
 	unset($message_text);
@@ -1101,6 +1103,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	// Show attachment box for adding attachments if true
 	$allowed = ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype);
+
+	if ($allowed)
+	{
+		$plupload->configure($cache, $template, $s_action, false);
+	}
 
 	// Attachment entry
 	posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);

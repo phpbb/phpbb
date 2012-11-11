@@ -2716,6 +2716,16 @@ function change_database_data(&$no_updates, $version)
 				$config->set('assets_version', '1');
 			}
 
+			if (!isset($config['plupload_last_gc']))
+			{
+				$config->set('plupload_last_gc', '0');
+			}
+
+			if (!isset($config['plupload_salt']))
+			{
+				$config->set('plupload_salt', md5(mt_rand()));
+			}
+
 			// If the column exists, we did not yet update the users timezone
 			if ($db_tools->sql_column_exists(USERS_TABLE, 'user_dst'))
 			{

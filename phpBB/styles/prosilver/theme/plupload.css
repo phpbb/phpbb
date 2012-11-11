@@ -1,0 +1,11 @@
+.plupload_filelist li.can_delete:hover {
+	cursor: pointer;
+}
+
+.plupload_filelist li.can_delete:hover a {
+	background: url('../../../assets/plupload/jquery.plupload.queue/img/delete.gif');
+}
+
+.plupload_filelist li a.working {
+	background: url('../../../assets/plupload/jquery.plupload.queue/img/throbber.gif');
+}

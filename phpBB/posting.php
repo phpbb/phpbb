@@ -422,6 +422,8 @@ if ($mode == 'edit')
 $orig_poll_options_size = sizeof($post_data['poll_options']);
 
 $message_parser = new parse_message();
+$plupload = new phpbb_plupload($config, $request, $user, $phpbb_root_path, $phpbb_php_ini, $phpbb_mimetype_extension_map);
+$message_parser->set_plupload($plupload);
 
 if (isset($post_data['post_text']))
 {
@@ -1485,6 +1487,11 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 
 // Show attachment box for adding attachments if true
 $allowed = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && $config['allow_attachments'] && $form_enctype);
+
+if ($allowed)
+{
+	$plupload->configure($cache, $template, $s_action, $forum_id);
+}
 
 // Attachment entry
 posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
