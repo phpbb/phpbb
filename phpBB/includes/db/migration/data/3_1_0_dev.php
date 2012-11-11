@@ -241,7 +241,12 @@ class phpbb_db_migration_data_extensions extends phpbb_db_migration
 		if (!empty($global_announcements))
 		{
 			// Update the post/topic-count for the forum and the last-post if needed
-			$ga_forum_id = request_var('ga_forum_id', 0);
+			$sql = 'SELECT forum_id
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_type = ' . FORUM_POST;
+			$result = $this->db->sql_query_limit($sql, 1);
+			$ga_forum_id = $this->db->sql_fetchfield('forum_id');
+			$this->db->sql_freeresult($result);
 
 			$sql = 'SELECT forum_last_post_time
 				FROM ' . FORUMS_TABLE . '
