@@ -1125,6 +1125,9 @@ function database_update_info()
 					'reported_post_uid'			=> array('VCHAR:8', ''),
 					'reported_post_bitfield'	=> array('VCHAR:255', ''),
 				),
+				USERS_TABLE			=> array(
+					'user_topics'	=> array('UINT:8', ''),
+				),
 			),
 			'change_columns'	=> array(
 				GROUPS_TABLE		=> array(
