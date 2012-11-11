@@ -132,6 +132,6 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 	*/
 	public function get_email_template()
 	{
-		return 'notifications/post_in_queue';
+		return 'post_in_queue';
 	}
 }
