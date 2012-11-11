@@ -1,4 +1,4 @@
-plupload.addI18n(plupload.phpbb.i18n);
+plupload.addI18n(phpbb.plupload.i18n);
 plupload.attachment_data = [];
 
 /**
@@ -63,12 +63,12 @@ function phpbb_plupload_clear_params(obj) {
 }
 
 jQuery(function($) {
-	$(plupload.phpbb.config.element_hook).pluploadQueue(plupload.phpbb.config);
-	var uploader = $(plupload.phpbb.config.element_hook).pluploadQueue();
+	$(phpbb.plupload.config.element_hook).pluploadQueue(phpbb.plupload.config);
+	var uploader = $(phpbb.plupload.config.element_hook).pluploadQueue();
 
 	// Check the page for already-existing attachment data and add it to the
 	// array
-	var form = $(plupload.phpbb.config.form_hook)[0];
+	var form = $(phpbb.plupload.config.form_hook)[0];
 	for (var i = 0; i < form.length; i++) {
 		if (form[i].name.indexOf('attachment_data[') !== 0) {
 			continue;
@@ -205,7 +205,7 @@ jQuery(function($) {
 
 		// Insert a bunch of hidden input elements containing the attachment
 		// data so that the save/preview/submit buttons work as expected.
-		var form = $(plupload.phpbb.config.form_hook)[0];
+		var form = $(phpbb.plupload.config.form_hook)[0];
 		var data = phpbb_plupload_attachment_data_serialize();
 
 		// Update already existing hidden inputs
@@ -264,7 +264,7 @@ jQuery(function($) {
 					);
 				};
 				
-				$.ajax(plupload.phpbb.config.url, {
+				$.ajax(phpbb.plupload.config.url, {
 					type: 'POST',
 					data: $.extend(fields, phpbb_plupload_attachment_data_serialize()),
 					headers: {'X-PHPBB-USING-PLUPLOAD': '1'}
