@@ -161,8 +161,7 @@ class acp_styles
 
 		// Install each style
 		$messages = array();
-		$installed_names = array();
-		$installed_dirs = array();
+		$installed_styles = array();
 		$last_installed = false;
 		foreach ($dirs as $dir)
 		{
@@ -172,8 +171,8 @@ class acp_styles
 				// Check if:
 				// 1. Directory matches directory we are looking for
 				// 2. Style is not installed yet
-				// 3. Style with same name or directory hasn't been installed already within this function
-				if ($style['style_path'] == $dir && empty($style['_installed']) && !in_array($style['style_path'], $installed_dirs) && !in_array($style['style_name'], $installed_names))
+				// 3. Style hasn't been installed already within this function
+				if ($style['style_name'] == $dir && empty($style['_installed']) && !in_array($style['style_name'], $installed_styles))
 				{
 					// Install style
 					$style['style_active'] = 1;
@@ -181,8 +180,7 @@ class acp_styles
 					$style['_installed'] = true;
 					$found = true;
 					$last_installed = $style['style_id'];
-					$installed_names[] = $style['style_name'];
-					$installed_dirs[] = $style['style_path'];
+					$installed_styles[] = $style['style_name'];
 					$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($style['style_name']));
 				}
 			}
@@ -285,7 +283,7 @@ class acp_styles
 			// Attempt to delete files
 			if ($delete_files)
 			{
-				$messages[] = sprintf($this->user->lang[$this->delete_style_files($style['style_path']) ? 'DELETE_STYLE_FILES_SUCCESS' : 'DELETE_STYLE_FILES_FAILED'], $style['style_name']);
+				$messages[] = sprintf($this->user->lang[$this->delete_style_files($style['style_name']) ? 'DELETE_STYLE_FILES_SUCCESS' : 'DELETE_STYLE_FILES_FAILED'], $style['style_name']);
 			}
 		}
 
@@ -412,31 +410,10 @@ class acp_styles
 			}
 
 			$update = array(
-				'style_name'		=> trim($this->request->variable('style_name', $style['style_name'])),
 				'style_parent_id'	=> $this->request->variable('style_parent', (int) $style['style_parent_id']),
 				'style_active'		=> $this->request->variable('style_active', (int) $style['style_active']),
 			);
 			$update_action = $this->u_action . '&amp;action=details&amp;id=' . $id;
-
-			// Check style name
-			if ($update['style_name'] != $style['style_name'])
-			{
-				if (!strlen($update['style_name']))
-				{
-					trigger_error($this->user->lang['STYLE_ERR_STYLE_NAME'] . adm_back_link($update_action), E_USER_WARNING);
-				}
-				foreach ($styles as $row)
-				{
-					if ($row['style_name'] == $update['style_name'])
-					{
-						trigger_error($this->user->lang['STYLE_ERR_NAME_EXIST'] . adm_back_link($update_action), E_USER_WARNING);
-					}
-				}
-			}
-			else
-			{
-				unset($update['style_name']);
-			}
 
 			// Check parent style id
 			if ($update['style_parent_id'] != $style['style_parent_id'])
@@ -449,7 +426,7 @@ class acp_styles
 						if ($row['style_id'] == $update['style_parent_id'])
 						{
 							$found = true;
-							$update['style_parent_tree'] = ($row['style_parent_tree'] != '' ? $row['style_parent_tree'] . '/' : '') . $row['style_path'];
+							$update['style_parent_tree'] = ($row['style_parent_tree'] != '' ? $row['style_parent_tree'] . '/' : '') . $row['style_name'];
 							break;
 						}
 					}
@@ -538,7 +515,6 @@ class acp_styles
 			'S_STYLE_DETAILS'	=> true,
 			'STYLE_ID'			=> $style['style_id'],
 			'STYLE_NAME'		=> htmlspecialchars($style['style_name']),
-			'STYLE_PATH'		=> htmlspecialchars($style['style_path']),
 			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
 			'STYLE_PARENT'		=> $style['style_parent_id'],
 			'S_STYLE_ACTIVE'	=> $style['style_active'],
@@ -689,16 +665,14 @@ class acp_styles
 		// Get list of installed styles
 		$installed = $this->get_styles();
 
-		$installed_dirs = array();
-		$installed_names = array();
+		$installed_styles = array();
 		foreach ($installed as $style)
 		{
-			$installed_dirs[] = $style['style_path'];
-			$installed_names[$style['style_name']] = array(
-				'path'		=> $style['style_path'],
+			$installed_styles[$style['style_name']] = array(
+				'name'		=> $style['style_name'],
 				'id'		=> $style['style_id'],
 				'parent'	=> $style['style_parent_id'],
-				'tree'		=> (strlen($style['style_parent_tree']) ? $style['style_parent_tree'] . '/' : '') . $style['style_path'],
+				'tree'		=> (strlen($style['style_parent_tree']) ? $style['style_parent_tree'] . '/' : '') . $style['style_name'],
 			);
 		}
 
@@ -709,7 +683,7 @@ class acp_styles
 		$styles = array();
 		foreach ($dirs as $dir)
 		{
-			if (in_array($dir, $installed_dirs))
+			if (isset($installed_styles[$dir]))
 			{
 				// Style is already installed
 				continue;
@@ -725,10 +699,9 @@ class acp_styles
 			$parent = $cfg['parent'];
 			$style = array(
 				'style_id'			=> 0,
-				'style_name'		=> $cfg['name'],
+				'style_name'		=> $dir,
 				'style_copyright'	=> $cfg['copyright'],
 				'style_active'		=> 0,
-				'style_path'		=> $dir,
 				'bbcode_bitfield'	=> $cfg['template_bitfield'],
 				'style_parent_id'	=> 0,
 				'style_parent_tree'	=> '',
@@ -742,10 +715,10 @@ class acp_styles
 			// Check style inheritance
 			if ($parent != '')
 			{
-				if (isset($installed_names[$parent]))
+				if (isset($installed_styles[$parent]))
 				{
 					// Parent style is installed
-					$row = $installed_names[$parent];
+					$row = $installed_styles[$parent];
 					$style['style_parent_id'] = $row['id'];
 					$style['style_parent_tree'] = $row['tree'];
 				}
@@ -814,7 +787,7 @@ class acp_styles
 	protected function update_styles_tree(&$styles, $style = false)
 	{
 		$parent_id = ($style === false) ? 0 : $style['style_id'];
-		$parent_tree = ($style === false) ? '' : ($style['style_parent_tree'] == '' ? '' : $style['style_parent_tree']) . $style['style_path'];
+		$parent_tree = ($style === false) ? '' : ($style['style_parent_tree'] == '' ? '' : $style['style_parent_tree']) . $style['style_name'];
 		$update = false;
 		$updated = false;
 		foreach ($styles as &$row)
@@ -859,7 +832,6 @@ class acp_styles
 				$results[] = array(
 					'style_id'		=> $style['style_id'],
 					'style_name'	=> $style['style_name'],
-					'style_path'	=> $style['style_path'],
 					'style_parent_id'	=> $style['style_parent_id'],
 					'style_parent_tree'	=> $style['style_parent_tree'],
 					'level'			=> $level
@@ -888,7 +860,6 @@ class acp_styles
 			// Style data
 			'STYLE_ID'		=> $style['style_id'],
 			'STYLE_NAME'	=> htmlspecialchars($style['style_name']),
-			'STYLE_PATH'	=> htmlspecialchars($style['style_path']),
 			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
 			'STYLE_ACTIVE'	=> $style['style_active'],
 
@@ -898,7 +869,6 @@ class acp_styles
 			'LEVEL'			=> $level,
 			'PADDING'		=> (4 + 16 * $level),
 			'SHOW_COPYRIGHT'	=> ($style['style_id']) ? false : true,
-			'STYLE_PATH_FULL'	=> htmlspecialchars($this->styles_path_absolute . '/' . $style['style_path']) . '/',
 
 			// Comment to show below style
 			'COMMENT'		=> (isset($style['_note'])) ? $style['_note'] : '',
@@ -955,7 +925,7 @@ class acp_styles
 			else
 			{
 				$actions[] = array(
-					'U_ACTION'	=> $this->u_action . '&amp;action=install&amp;dir=' . urlencode($style['style_path']),
+					'U_ACTION'	=> $this->u_action . '&amp;action=install&amp;dir=' . urlencode($style['style_name']),
 					'L_ACTION'	=> $this->user->lang['INSTALL_STYLE']
 				);
 			}
@@ -1056,7 +1026,7 @@ class acp_styles
 	*/
 	protected function read_style_cfg($dir)
 	{
-		static $required = array('name', 'phpbb_version', 'copyright');
+		static $required = array('phpbb_version', 'copyright');
 		$cfg = parse_cfg_file($this->styles_path . $dir . '/style.cfg');
 
 		// Check if it is a valid file
@@ -1069,7 +1039,7 @@ class acp_styles
 		}
 
 		// Check data
-		if (!isset($cfg['parent']) || !is_string($cfg['parent']) || $cfg['parent'] == $cfg['name'])
+		if (!isset($cfg['parent']) || !is_string($cfg['parent']) || $cfg['parent'] == $dir)
 		{
 			$cfg['parent'] = '';
 		}
@@ -1163,7 +1133,7 @@ class acp_styles
 	protected function uninstall_style($style)
 	{
 		$id = $style['style_id'];
-		$path = $style['style_path'];
+		$path = $style['style_name'];
 
 		// Check if style has child styles
 		$sql = 'SELECT style_id
