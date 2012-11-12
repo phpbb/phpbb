@@ -41,7 +41,7 @@ abstract class phpbb_db_migration
 	*
 	* @param \Symfony\Component\DependencyInjection\ContainerInterface	$container	Container supplying dependencies
 	*/
-	public function phpbb_db_migration(\Symfony\Component\DependencyInjection\ContainerInterface $container)
+	public function __construct(\Symfony\Component\DependencyInjection\ContainerInterface $container)
 	{
 		$this->config = $this->container->get('config');
 		$this->db = $this->container->get('dbal.conn');
