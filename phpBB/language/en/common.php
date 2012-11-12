@@ -78,6 +78,8 @@ $lang = array_merge($lang, array(
 	'ALL_TIMES'						=> 'All times are <abbr title="%2$s">%1$s</abbr>',
 	'ALL_TOPICS'					=> 'All Topics',
 	'AND'							=> 'And',
+	'API_CONTROLLER_NOT_FOUND'      => 'Controller not found.',
+	'API_METHOD_NOT_FOUND'          => 'Method not found',
 	'ARE_WATCHING_FORUM'			=> 'You have subscribed to be notified of new posts in this forum.',
 	'ARE_WATCHING_TOPIC'			=> 'You have subscribed to be notified of new posts in this topic.',
 	'ASCENDING'						=> 'Ascending',
