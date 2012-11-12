@@ -107,6 +107,14 @@ class phpbb_search_native_test extends phpbb_database_test_case
 				array('f', 'o', 'o'),
 			),
 			array(
+				'f -o -o',
+				'all',
+				false,
+				null,
+				null,
+				array('f', 'o', 'o'),
+			),
+			array(
 				'foo -bar',
 				'all',
 				true,
