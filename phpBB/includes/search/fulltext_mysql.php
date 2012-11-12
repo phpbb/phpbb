@@ -238,7 +238,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			}
 			else
 			{
-				$tmp_split_words[] = $word . ' ';
+				$tmp_split_words[] = $word;
 			}
 		}
 		if ($phrase)
