@@ -126,11 +126,8 @@ function phpbb_create_dumped_container(array $extensions, array $passes, $phpbb_
 
 function phpbb_create_dumped_container_unless_debug(array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
-	if (defined('DEBUG')) {
-		return phpbb_create_compiled_container($extensions, $passes, $phpbb_root_path, $php_ext);
-	}
-
-	return phpbb_create_dumped_container($extensions, $passes, $phpbb_root_path, $php_ext);
+	$container_factory = defined('DEBUG') ? 'phpbb_create_compiled_container' : 'phpbb_create_dumped_container';
+	return $container_factory($extensions, $passes, $phpbb_root_path, $php_ext);
 }
 
 function phpbb_container_filename($phpbb_root_path, $php_ext)
