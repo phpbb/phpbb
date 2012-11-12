@@ -37,14 +37,15 @@
 			</dl>
 		<!-- ENDIF -->
 	<!-- ELSE -->
-		</fieldset>
+	</fieldset>
 
-		<fieldset>
-			<legend>{L_AVATAR_GALLERY}</legend>
+	<fieldset>
+		<legend>{L_AVATAR_GALLERY}</legend>
 		<dl>
 			<dt><label for="category">{L_AVATAR_CATEGORY}{L_COLON}</label></dt>
 			<dd><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="button2" type="submit" value="{L_GO}" name="display_gallery" /></dd>
-	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+		</dl>
+		<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
 		<dl>
 			<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
 			<dd>{AVATAR}</dd>
