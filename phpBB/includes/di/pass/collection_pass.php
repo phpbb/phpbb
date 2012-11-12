@@ -37,7 +37,7 @@ class phpbb_di_pass_collection_pass implements CompilerPassInterface
 		{
 			$definition = $container->getDefinition($id);
 
-			foreach ($container->findTaggedServiceIds($data['tag']) as $service_id => $service_data)
+			foreach ($container->findTaggedServiceIds($data[0]['tag']) as $service_id => $service_data)
 			{
 				$definition->addMethodCall('add', array($service_id));
 			}
