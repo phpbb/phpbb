@@ -121,14 +121,14 @@ class phpbb_search_mysql_test extends phpbb_database_test_case
 			array(
 				'-fooo',
 				'all',
-				false,
-				null,
+				true,
+				array('-fooo'),
 				array(),
 			),
 			array(
 				'-fooo -baar',
 				'all',
-				false,
+				true,
 				array('-fooo', '-baar'),
 				array(),
 			),
