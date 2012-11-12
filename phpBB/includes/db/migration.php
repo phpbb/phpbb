@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package db
 */
-class phpbb_db_migration
+abstract class phpbb_db_migration
 {
 	protected $config;
 	protected $db;
@@ -88,7 +88,7 @@ class phpbb_db_migration
 	*/
 	protected function sql_query($sql)
 	{
-		if (defined('DEBUG_EXTRA'))
+		if (defined('DEBUG'))
 		{
 			echo "<br />\n{$sql}\n<br />";
 		}
