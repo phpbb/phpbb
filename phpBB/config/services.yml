@@ -113,8 +113,6 @@ services:
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
-<<<<<<< HEAD
-=======
     
     ext.finder:
         class: phpbb_extension_finder
@@ -138,7 +136,6 @@ services:
             - @user
         tags:
             - { name: kernel.event_subscriber }
->>>>>>> 719171f... [feature/controller] Implement a front controller
 
     request:
         class: phpbb_request
