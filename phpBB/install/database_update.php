@@ -113,6 +113,7 @@ $phpbb_container = phpbb_create_dumped_container_unless_debug(
 	),
 	array(
 		new phpbb_di_pass_collection_pass(),
+		new phpbb_di_pass_kernel(),
 	),
 	$phpbb_root_path,
 	$phpEx
