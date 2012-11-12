@@ -7,7 +7,7 @@
 *
 */
 
-function phpbb_search_wrapper($class)
+function phpbb_native_search_wrapper($class)
 {
 	$wrapped = $class . '_wrapper';
 	if (!class_exists($wrapped))
@@ -45,7 +45,7 @@ class phpbb_search_native_test extends phpbb_database_test_case
 
 		$this->db = $this->new_dbal();
 		$error = null;
-		$class = phpbb_search_wrapper('phpbb_search_fulltext_native');
+		$class = phpbb_native_search_wrapper('phpbb_search_fulltext_native');
 		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user);
 	}
 
