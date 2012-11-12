@@ -77,7 +77,7 @@ class acp_update
 			'U_VERSIONCHECK_FORCE' => append_sid($this->u_action . '&amp;versioncheck_force=1'),
 
 			'LATEST_VERSION'	=> $latest_version,
-			'CURRENT_VERSION'	=> $config['version'],
+			'CURRENT_VERSION'	=> $current_version,
 			'AUTO_VERSION'		=> $version_update_from,
 			'NEXT_FEATURE_VERSION'	=> $next_feature_version,
 

@@ -413,10 +413,19 @@ class acp_main
 		}
 		else
 		{
+			// Determine if update is in progress ...
+			$sql = 'SELECT config_value
+				FROM ' . CONFIG_TABLE . "
+				WHERE config_name = 'version_update_from'";
+			$result = $db->sql_query($sql);
+			$version_update_from = (string) $db->sql_fetchfield('config_value');
+			$db->sql_freeresult($result);
+
 			$latest_version_info = explode("\n", $latest_version_info);
+			$current_version = (!empty($version_update_from)) ? $version_update_from : $config['version'];
 
 			$template->assign_vars(array(
-				'S_VERSION_UP_TO_DATE'	=> phpbb_version_compare(trim($latest_version_info[0]), $config['version'], '<='),
+				'S_VERSION_UP_TO_DATE'	=> phpbb_version_compare(trim($latest_version_info[0]), $current_version, '<='),
 			));
 		}
 
@@ -512,7 +521,7 @@ class acp_main
 			'S_TOTAL_ORPHAN'	=> ($total_orphan === false) ? false : true,
 			'GZIP_COMPRESSION'	=> ($config['gzip_compress'] && @extension_loaded('zlib')) ? $user->lang['ON'] : $user->lang['OFF'],
 			'DATABASE_INFO'		=> $db->sql_server_info(),
-			'BOARD_VERSION'		=> $config['version'],
+			'BOARD_VERSION'		=> $current_version,
 
 			'U_ACTION'			=> $this->u_action,
 			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
