@@ -34,7 +34,7 @@
     -webkit-box-shadow: 0 0 0 1px #fff inset;
     text-shadow: 1px 1px 0 #fff, -1px -1px 1px rgba(188, 42, 77, 0.25);
     padding: 3px 22px 3px 8px;
-	font-family: "Futura-Medium", Verdana;
+	font-family: "Futura-Medium", Verdana, Arial, Helvetica;
     color: #bc2a4d !important;
     position: relative;
     text-decoration: none !important;
