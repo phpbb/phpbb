@@ -1,4 +1,4 @@
-[![phpBB](http://www.phpbb.com/theme/images/logos/blue/160x52.png)](http://www.phpbb.com)
+[![phpBB](https://www.phpbb.com/theme/images/logos/blue/160x52.png)](http://www.phpbb.com)
 
 ## ABOUT
 
@@ -13,7 +13,7 @@ Find support and lots more on [phpBB.com](http://www.phpbb.com)! Discuss the dev
 To be able to run an installation from the repo (and not from a pre-built package) you need to run the following commands to install phpBB's dependencies.
 
 	cd phpBB
-	php ../composer.phar install
+	php ../composer.phar install --dev
 
 
 ## CONTRIBUTE

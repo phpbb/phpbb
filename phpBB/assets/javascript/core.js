@@ -383,7 +383,7 @@ phpbb.ajaxify = function(options) {
 			return;
 		}
 
-		if (overlay)
+		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') == 'true'))
 		{
 			phpbb.loading_alert();
 		}
@@ -417,8 +417,19 @@ phpbb.ajaxify = function(options) {
 * @param	bool	keep_selection		Shall we keep the value selected, or shall the user be forced to repick one.
 */
 phpbb.timezone_switch_date = function(keep_selection) {
-	$('#timezone > optgroup').css('display', 'none');
-	$("#timezone > optgroup[label='" + $('#tz_date').val() + "']").css('display', 'block');
+	if ($('#timezone_copy').length == 0) {
+		// We make a backup of the original dropdown, so we can remove optgroups
+		// instead of setting display to none, because IE and chrome will not
+		// hide options inside of optgroups and selects via css
+		$('#timezone').clone().attr('id', 'timezone_copy').css('display', 'none').attr('name', 'tz_copy').insertAfter('#timezone');
+	} else {
+		// Copy the content of our backup, so we can remove all unneeded options
+		$('#timezone').replaceWith($('#timezone_copy').clone().attr('id', 'timezone').css('display', 'block').attr('name', 'tz'));
+	}
+
+	if ($('#tz_date').val() != '') {
+		$('#timezone > optgroup').remove(":not([label='" + $('#tz_date').val() + "'])");
+	}
 
 	if ($('#tz_date').val() == $('#tz_select_date_suggest').attr('data-suggested-tz')) {
 		$('#tz_select_date_suggest').css('display', 'none');
@@ -488,18 +499,20 @@ phpbb.timezone_preselect_select = function(force_selector) {
 			if ($('#tz_date').val() != option.value && !force_selector) {
 				// We do not select the option for the user, but notify him,
 				// that we would suggest a different setting.
-				$('#tz_select_date_suggest').css('display', 'inline');
-				$('#tz_select_date_suggest').attr('title', $('#tz_select_date_suggest').attr('data-l-suggestion').replace("%s", option.innerHTML));
-				$('#tz_select_date_suggest').attr('value', $('#tz_select_date_suggest').attr('data-l-suggestion').replace("%s", option.innerHTML.substring(0, 9)));
-				$('#tz_select_date_suggest').attr('data-suggested-tz', option.innerHTML);
 				phpbb.timezone_switch_date(true);
+				$('#tz_select_date_suggest').css('display', 'inline');
 			} else {
 				option.selected = true;
 				phpbb.timezone_switch_date(!force_selector);
-				$('#tz_select_date_suggest').attr('data-suggested-tz', option.innerHTML);
 				$('#tz_select_date_suggest').css('display', 'none');
 			}
-			break;
+
+			$('#tz_select_date_suggest').attr('title', $('#tz_select_date_suggest').attr('data-l-suggestion').replace("%s", option.innerHTML));
+			$('#tz_select_date_suggest').attr('value', $('#tz_select_date_suggest').attr('data-l-suggestion').replace("%s", option.innerHTML.substring(0, 9)));
+			$('#tz_select_date_suggest').attr('data-suggested-tz', option.innerHTML);
+
+			// Found the suggestion, there cannot be more, so return from here.
+			return;
 		}
 	}
 }

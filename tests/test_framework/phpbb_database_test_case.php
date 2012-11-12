@@ -100,8 +100,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 		$config = $this->get_database_config();
 
-		$dbms = $config['dbms'];
-		$db = new $dbms();
+		$db = new $config['dbms']();
 		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
 
 		return $db;
@@ -136,7 +135,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	*
 	* @return string The string with the specified match converted to uppercase
 	*/
-	public static function to_upper($matches)
+	static public function to_upper($matches)
 	{
 		return $matches[1] . strtoupper($matches[2]) . $matches[3];
 	}

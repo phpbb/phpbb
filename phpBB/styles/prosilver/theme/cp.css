@@ -260,8 +260,9 @@ ul.cplist {
 
 /* Friends list */
 .cp-mini {
-	padding: 0 5px;
 	margin: 10px 15px 10px 5px;
+	padding: 5px 10px;
+	border-radius: 7px;
 }
 
 dl.mini dt {

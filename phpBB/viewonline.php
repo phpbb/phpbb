@@ -121,13 +121,30 @@ if (!$show_guests)
 }
 
 // Get user list
-$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_browser, s.session_viewonline, s.session_forum_id
-	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
-	WHERE u.user_id = s.session_user_id
+$sql_ary = array(
+	'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_browser, s.session_viewonline, s.session_forum_id',
+	'FROM'		=> array(
+		USERS_TABLE		=> 'u',
+		SESSIONS_TABLE	=> 's',
+	),
+	'WHERE'		=> 'u.user_id = s.session_user_id
 		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-		((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
-	ORDER BY ' . $order_by;
-$result = $db->sql_query($sql);
+		((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : ''),
+	'ORDER_BY'	=> $order_by,
+);
+
+/**
+* Modify the SQL query for getting the user data to display viewonline list
+*
+* @event core.viewonline_modify_sql
+* @var	array	sql_ary			The SQL array
+* @var	bool	show_guests		Do we display guests in the list
+* @since 3.1-A1
+*/
+$vars = array('sql_ary', 'show_guests');
+extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
+
+$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 $prev_id = $prev_ip = $user_list = array();
 $logged_visible_online = $logged_hidden_online = $counter = 0;
@@ -320,6 +337,19 @@ while ($row = $db->sql_fetchrow($result))
 		break;
 	}
 
+	/**
+	* Overwrite the location's name and URL, which are displayed in the list
+	*
+	* @event core.viewonline_overwrite_location
+	* @var	array	on_page			File name and query string
+	* @var	array	row				Array with the users sql row
+	* @var	string	location		Page name to displayed in the list
+	* @var	string	location_url	Page url to displayed in the list
+	* @since 3.1-A1
+	*/
+	$vars = array('on_page', 'row', 'location', 'location_url');
+	extract($phpbb_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));
+
 	$template->assign_block_vars('user_row', array(
 		'USERNAME' 			=> $row['username'],
 		'USERNAME_COLOUR'	=> $row['user_colour'],
@@ -392,7 +422,6 @@ $template->assign_vars(array(
 	'TOTAL_REGISTERED_USERS_ONLINE'	=> $user->lang('REG_USERS_ONLINE', (int) $logged_visible_online, $user->lang('HIDDEN_USERS_ONLINE', (int) $logged_hidden_online)),
 	'TOTAL_GUEST_USERS_ONLINE'		=> $user->lang('GUEST_USERS_ONLINE', (int) $guest_counter),
 	'LEGEND'						=> $legend,
-	'PAGINATION'					=> $pagination,
 	'PAGE_NUMBER'					=> phpbb_on_page($template, $user, $base_url, $counter, $config['topics_per_page'], $start),
 
 	'U_SORT_USERNAME'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),

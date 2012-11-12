@@ -23,37 +23,44 @@ if (!defined('IN_PHPBB'))
 abstract class phpbb_extension_controller implements phpbb_extension_controller_interface
 {
 	/**
-	* @var phpbb_request Request class object
+	* Request class object
+	* @var phpbb_request
 	*/
 	protected $request;
 
 	/**
-	* @var dbal DBAL class object
+	* DBAL class object
+	* @var dbal
 	*/
 	protected $db;
 
 	/**
-	* @var user User class object
+	* User class object
+	* @var phpbb_user
 	*/
 	protected $user;
 
 	/**
-	* @var phpbb_template Template class object
+	* Template class object
+	* @var phpbb_template
 	*/
 	protected $template;
 
 	/**
-	* @var array Config array
+	* Config object
+	* @var phpbb_config
 	*/
 	protected $config;
 
 	/**
-	* @var string PHP Extension
+	* PHP Extension
+	* @var string
 	*/
 	protected $php_ext;
 
 	/**
-	* @var string Relative path to board root
+	* Relative path to board root
+	* @var string
 	*/
 	protected $phpbb_root_path;
 
@@ -64,14 +71,14 @@ abstract class phpbb_extension_controller implements phpbb_extension_controller_
 	public function __construct()
 	{
 		global $request, $db, $user, $template, $config;
-		global $php_ext, $phpbb_root_path;
+		global $phpEx, $phpbb_root_path;
 
 		$this->request = $request;
 		$this->db = $db;
 		$this->user = $user;
 		$this->template = $template;
 		$this->config = $config;
-		$this->php_ext = $php_ext;
+		$this->php_ext = $phpEx;
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 }

@@ -16,27 +16,6 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Determine if we are able to load a specified PHP module and do so if possible
-*/
-function can_load_dll($dll)
-{
-	// SQLite2 is a tricky thing, from 5.0.0 it requires PDO; if PDO is not loaded we must state that SQLite is unavailable
-	// as the installer doesn't understand that the extension has a prerequisite.
-	//
-	// On top of this sometimes the SQLite extension is compiled for a different version of PDO
-	// by some Linux distributions which causes phpBB to bomb out with a blank page.
-	//
-	// Net result we'll disable automatic inclusion of SQLite support
-	//
-	// See: r9618 and #56105
-	if ($dll == 'sqlite')
-	{
-		return false;
-	}
-	return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && function_exists('dl') && @dl($dll . '.' . PHP_SHLIB_SUFFIX)) ? true : false;
-}
-
-/**
 * Returns an array of available DBMS with some data, if a DBMS is specified it will only
 * return data for that DBMS and will load its extension if necessary.
 */
@@ -159,18 +138,15 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 
 		if (!@extension_loaded($dll))
 		{
-			if (!can_load_dll($dll))
+			if ($return_unavailable)
 			{
-				if ($return_unavailable)
-				{
-					$available_dbms[$db_name]['AVAILABLE'] = false;
-				}
-				else
-				{
-					unset($available_dbms[$db_name]);
-				}
-				continue;
+				$available_dbms[$db_name]['AVAILABLE'] = false;
 			}
+			else
+			{
+				unset($available_dbms[$db_name]);
+			}
+			continue;
 		}
 		$any_db_support = true;
 	}
@@ -513,15 +489,14 @@ function adjust_language_keys_callback($matches)
 *
 * @param	array	$data Array containing the database connection information
 * @param	string	$dbms The name of the DBAL class to use
-* @param	array	$load_extensions Array of additional extensions that should be loaded
 * @param	bool	$debug If the debug constants should be enabled by default or not
+* @param	bool	$debug_test If the DEBUG_TEST constant should be added
+*					NOTE: Only for use within the testing framework
 *
 * @return	string	The output to write to the file
 */
-function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = false)
+function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_test = false)
 {
-	$load_extensions = implode(',', $load_extensions);
-
 	$config_data = "<?php\n";
 	$config_data .= "// phpBB 3.1.x auto-generated configuration file\n// Do not change anything in this file!\n";
 
@@ -533,8 +508,7 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 		'dbuser'		=> $data['dbuser'],
 		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
 		'table_prefix'	=> $data['table_prefix'],
-		'acm_type'		=> 'file',
-		'load_extensions'	=> $load_extensions,
+		'acm_type'		=> 'phpbb_cache_driver_file',
 	);
 
 	foreach ($config_data_array as $key => $value)
@@ -547,12 +521,15 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 	if ($debug)
 	{
 		$config_data .= "@define('DEBUG', true);\n";
-		$config_data .= "@define('DEBUG_EXTRA', true);\n";
 	}
 	else
 	{
 		$config_data .= "// @define('DEBUG', true);\n";
-		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
+	}
+
+	if ($debug_test)
+	{
+		$config_data .= "@define('DEBUG_TEST', true);\n";
 	}
 
 	return $config_data;

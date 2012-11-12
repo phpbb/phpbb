@@ -32,6 +32,7 @@ class acp_users
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $phpbb_dispatcher, $request;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -749,6 +750,19 @@ class acp_users
 							}
 
 						break;
+
+						default:
+							/**
+							* Run custom quicktool code
+							*
+							* @event core.acp_users_overview_run_quicktool
+							* @var	array	user_row	Current user data
+							* @var	string	action		Quick tool that should be run
+							* @since 3.1-A1
+							*/
+							$vars = array('action', 'user_row');
+							extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_run_quicktool', compact($vars)));
+						break;
 					}
 
 					// Handle registration info updates
@@ -756,8 +770,8 @@ class acp_users
 						'username'			=> utf8_normalize_nfc(request_var('user', $user_row['username'], true)),
 						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
 						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
-						'new_password'		=> request_var('new_password', '', true),
-						'password_confirm'	=> request_var('password_confirm', '', true),
+						'new_password'		=> $request->variable('new_password', '', true),
+						'password_confirm'	=> $request->variable('password_confirm', '', true),
 					);
 
 					// Validation data - we do not check the password complexity setting here
@@ -855,6 +869,18 @@ class acp_users
 							}
 						}
 
+						/**
+						* Modify user data before we update it
+						*
+						* @event core.acp_users_overview_modify_data
+						* @var	array	user_row	Current user data
+						* @var	array	data		Submitted user data
+						* @var	array	sql_ary		User data we udpate
+						* @since 3.1-A1
+						*/
+						$vars = array('user_row', 'data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_modify_data', compact($vars)));
+
 						if ($update_username !== false)
 						{
 							$sql_ary['username'] = $update_username;
@@ -945,12 +971,6 @@ class acp_users
 					}
 				}
 
-				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
-				foreach ($quick_tool_ary as $value => $lang)
-				{
-					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
-				}
-
 				if ($config['load_onlinetrack'])
 				{
 					$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
@@ -963,6 +983,23 @@ class acp_users
 					$user_row['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
 					$user_row['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] : 0;
 					unset($row);
+				}
+
+				/**
+				* Add additional quick tool options and overwrite user data
+				*
+				* @event core.acp_users_display_overview
+				* @var	array	user_row			Array with user data
+				* @var	array	quick_tool_ary		Ouick tool options
+				* @since 3.1-A1
+				*/
+				$vars = array('user_row', 'quick_tool_ary');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_display_overview', compact($vars)));
+
+				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
+				foreach ($quick_tool_ary as $value => $lang)
+				{
+					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
 				}
 
 				$last_visit = (!empty($user_row['session_time'])) ? $user_row['session_time'] : $user_row['user_lastvisit'];
@@ -1122,7 +1159,7 @@ class acp_users
 
 				$base_url = $this->u_action . "&amp;u=$user_id&amp;$u_sort_param";
 				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
-				
+
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
 					'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
@@ -1943,7 +1980,7 @@ class acp_users
 
 						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
 
-						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode(', ', $log_attachments));
+						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode($user->lang['COMMA_SEPARATOR'], $log_attachments));
 						trigger_error($message . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 					else
@@ -2038,7 +2075,7 @@ class acp_users
 
 				$base_url = $this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir";
 				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
-				
+
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
 					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $num_attachments, $config['topics_per_page'], $start),

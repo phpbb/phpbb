@@ -22,6 +22,8 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_extension_manager
 {
+	protected $db;
+	protected $config;
 	protected $cache;
 	protected $php_ext;
 	protected $extensions;
@@ -33,16 +35,18 @@ class phpbb_extension_manager
 	* Creates a manager and loads information from database
 	*
 	* @param dbal $db A database connection
+	* @param phpbb_config $config phpbb_config
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(phpbb_db_driver $db, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
+		$this->config = $config;
 		$this->cache = $cache;
 		$this->php_ext = $php_ext;
 		$this->extension_table = $extension_table;
@@ -63,6 +67,17 @@ class phpbb_extension_manager
 	*/
 	public function load_extensions()
 	{
+		$this->extensions = array();
+
+		// Do not try to load any extensions when installing or updating
+		// Note: database updater invokes this code, and in 3.0
+		// there is no extension table therefore the rest of this function
+		// fails
+		if (defined('IN_INSTALL'))
+		{
+			return;
+		}
+
 		$sql = 'SELECT *
 			FROM ' . $this->extension_table;
 
@@ -70,7 +85,6 @@ class phpbb_extension_manager
 		$extensions = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
-		$this->extensions = array();
 		foreach ($extensions as $extension)
 		{
 			$extension['ext_path'] = $this->get_extension_path($extension['ext_name']);
@@ -118,6 +132,18 @@ class phpbb_extension_manager
 		{
 			return new phpbb_extension_base;
 		}
+	}
+
+	/**
+	* Instantiates the metadata manager for the extension with the given name
+	*
+	* @param string $name The extension name
+	* @param string $template The template manager
+	* @return phpbb_extension_metadata_manager Instance of the metadata manager
+	*/
+	public function create_extension_metadata_manager($name, phpbb_template $template)
+	{
+		return new phpbb_extension_metadata_manager($name, $this->db, $this, $this->phpbb_root_path, $this->php_ext, $template, $this->config);
 	}
 
 	/**

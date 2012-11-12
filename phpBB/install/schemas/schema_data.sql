@@ -127,6 +127,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_mi
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_max_word_len', '254');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_min_word_len', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_ts_name', 'simple');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_indexer_mem_limit', '512');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_stopwords', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path', 'images/icons');
@@ -240,6 +242,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_protocol', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc', '{L_CONFIG_SITE_DESC}');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_url', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_text', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename', '{L_CONFIG_SITENAME}');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path', 'images/smilies');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_per_page', '50');
@@ -343,6 +347,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_board', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_bots', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_clearlogs', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_email', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_extensions', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_fauth', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_forum', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_forumadd', 1);

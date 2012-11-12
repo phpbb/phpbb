@@ -582,6 +582,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value blob NOT NULL,
 	field_validation varbinary(60) DEFAULT '' NOT NULL,
 	field_required tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	field_show_novalue tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_reg tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_pm tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_vt tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -648,6 +649,8 @@ CREATE TABLE phpbb_reports (
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumblob NOT NULL,
 	reported_post_text mediumblob NOT NULL,
+	reported_post_bitfield varbinary(255) DEFAULT '' NOT NULL,
+	reported_post_uid varbinary(8) DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id),
 	KEY post_id (post_id),
 	KEY pm_id (pm_id)

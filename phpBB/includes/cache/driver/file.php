@@ -385,6 +385,8 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 		{
 			$query_result = $query_id;
 		}
+
+		return $query_id;
 	}
 
 	/**

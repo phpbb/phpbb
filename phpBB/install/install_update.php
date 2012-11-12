@@ -348,7 +348,7 @@ class install_update extends module
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
 				$update_list = ($request->variable('check_again', false, false, phpbb_request_interface::POST)) ? false : $cache->get('_update_list');
-				$modified = ($update_list !== false) ? @filemtime($cache->cache_dir . 'data_update_list.' . $phpEx) : 0;
+				$modified = ($update_list !== false) ? @filemtime($cache->get_driver()->cache_dir . 'data_update_list.' . $phpEx) : 0;
 
 				// Make sure the list is up-to-date
 				if ($update_list !== false)
@@ -861,7 +861,14 @@ class install_update extends module
 					$test_connection = false;
 					if ($test_ftp_connection || $submit)
 					{
-						$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+						$transfer = new $method(
+							request_var('host', ''),
+							request_var('username', ''),
+							htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+							request_var('root_path', ''),
+							request_var('port', ''),
+							request_var('timeout', '')
+						);
 						$test_connection = $transfer->open_session();
 
 						// Make sure that the directory is correct by checking for the existence of common.php
@@ -947,7 +954,14 @@ class install_update extends module
 				}
 				else
 				{
-					$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new $method(
+						request_var('host', ''),
+						request_var('username', ''),
+						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+						request_var('root_path', ''),
+						request_var('port', ''),
+						request_var('timeout', '')
+					);
 					$transfer->open_session();
 				}
 

@@ -104,7 +104,7 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-$legend = implode(', ', $legend);
+$legend = implode($user->lang['COMMA_SEPARATOR'], $legend);
 
 // Generate birthday list if required ...
 $birthday_list = array();
@@ -157,7 +157,7 @@ $template->assign_vars(array(
 	'NEWEST_USER'	=> $user->lang('NEWEST_USER', get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
 
 	'LEGEND'		=> $legend,
-	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode(', ', $birthday_list),
+	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode($user->lang['COMMA_SEPARATOR'], $birthday_list),
 
 	'FORUM_IMG'				=> $user->img('forum_read', 'NO_UNREAD_POSTS'),
 	'FORUM_UNREAD_IMG'			=> $user->img('forum_unread', 'UNREAD_POSTS'),
@@ -167,12 +167,24 @@ $template->assign_vars(array(
 	'S_LOGIN_ACTION'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),
 	'S_DISPLAY_BIRTHDAY_LIST'	=> ($config['load_birthdays']) ? true : false,
 
-	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums') : '',
+	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums&amp;mark_time=' . time()) : '',
 	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')
 );
 
+$page_title = $user->lang['INDEX'];
+
+/**
+* You can use this event to modify the page title and load data for the index
+*
+* @event core.index_modify_page_title
+* @var	string	page_title		Title of the index page
+* @since 3.1-A1
+*/
+$vars = array('page_title');
+extract($phpbb_dispatcher->trigger_event('core.index_modify_page_title', compact($vars)));
+
 // Output page
-page_header($user->lang['INDEX']);
+page_header($page_title);
 
 $template->set_filenames(array(
 	'body' => 'index_body.html')

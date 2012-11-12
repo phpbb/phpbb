@@ -1100,6 +1100,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value varchar2(765) DEFAULT '' ,
 	field_validation varchar2(60) DEFAULT '' ,
 	field_required number(1) DEFAULT '0' NOT NULL,
+	field_show_novalue number(1) DEFAULT '0' NOT NULL,
 	field_show_on_reg number(1) DEFAULT '0' NOT NULL,
 	field_show_on_pm number(1) DEFAULT '0' NOT NULL,
 	field_show_on_vt number(1) DEFAULT '0' NOT NULL,
@@ -1215,6 +1216,8 @@ CREATE TABLE phpbb_reports (
 	report_time number(11) DEFAULT '0' NOT NULL,
 	report_text clob DEFAULT '' ,
 	reported_post_text clob DEFAULT '' ,
+	reported_post_bitfield varchar2(255) DEFAULT '' ,
+	reported_post_uid varchar2(8) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_reports PRIMARY KEY (report_id)
 )
 /

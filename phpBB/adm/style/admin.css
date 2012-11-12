@@ -1148,55 +1148,79 @@ input.disabled {
 	width: auto;
 	text-align: right;
 	margin-top: 5px;
-	font-size: 0.85em;
-	padding-bottom: 2px;
+	float: right;
 }
 
 .rtl .pagination {
 	text-align: left;
+	float: left;
 }
 
-.pagination strong,
-.pagination b {
-	font-weight: normal;
-}
-
-.pagination span.page-sep {
-	display:none;
-}
-
-.pagination span strong {
-	padding: 0 2px;
-	margin: 0 2px;
-	font-weight: normal;
-	font-size: 0.85em;
-	color: #FFFFFF;
-	background: #4692BF;
-	border: 1px solid #4692BF;
-}
-
-.pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active {
-	font-weight: normal;
-	font-size: 0.85em;
-	text-decoration: none;
-	color: #5C758C;
-	margin: 0 2px;
-	padding: 0 2px;
-	background: #ECEDEE;
-	border: 1px solid #B4BAC0;
-}
-
-.pagination span a:hover {
-	border-color: #368AD2;
-	background: #368AD2;
-	color: #FFFFFF;
-	text-decoration: none;
+li.pagination {
+	margin-top: 0;
 }
 
 .pagination img {
 	vertical-align: middle;
 }
 
+.pagination ul {
+	display: inline-block;
+	*display: inline; /* IE7 inline-block hack */
+	*zoom: 1;
+	margin-left: 0;
+	margin-bottom: 0;
+}
+
+li.pagination ul {
+	margin-top: -2px;
+	vertical-align: middle;
+}
+
+.pagination ul li, dl .pagination ul li, dl.icon .pagination ul li {
+	display: inline;
+	padding: 0;
+	font-size: 100%;
+	line-height: normal;
+}
+
+.pagination li a, .pagnation li span, li .pagination li a, li .pagnation li span, .pagination li.active span, .pagination li.ellipsis span {
+	font-weight: normal;
+	text-decoration: none;
+	padding: 0 2px;
+	border: 1px solid transparent;
+	font-size: 0.9em;
+	line-height: 1.5em;
+}
+
+.pagination li a, .pagination li a:link, .pagination li a:visited {
+	color: #5C758C;
+	background-color: #ECEDEE;
+	border-color: #B4BAC0;
+}
+
+.pagination li.ellipsis  span {
+	background-color: transparent;
+	color: #000000;
+}
+
+.pagination li.active span {
+	color: #FFFFFF;
+	background-color: #4692BF;
+	border-color: #4692BF;
+}
+
+.pagination li a:hover, .pagination .active a:hover {
+	color: #FFFFFF;
+	background-color: #368AD2;
+	border-color: #368AD2;
+}
+
+.pagination li a:active, .pagination li.active a:active {
+	color: #5C758C;
+	background-color: #ECEDEE;
+	border-color: #B4BAC0;
+}
 
 /* Action Highlighting
 ---------------------------------------- */
@@ -1717,4 +1741,14 @@ fieldset.permissions .padding {
 
 .phpinfo td, .phpinfo th, .phpinfo h2, .phpinfo h1 {
 	text-align: left;
+}
+
+.requirements_not_met {
+	padding: 5px;
+	background-color: #BC2A4D;
+}
+
+.requirements_not_met dt label, .requirements_not_met dd p {
+	color: #FFFFFF;
+	font-size: 1.4em;
 }

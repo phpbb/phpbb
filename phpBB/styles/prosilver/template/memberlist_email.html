@@ -12,30 +12,30 @@
 		<fieldset class="fields2">
 		<!-- IF S_SEND_USER -->
 			<dl>
-				<dt><label>{L_RECIPIENT}:</label></dt>
+				<dt><label>{L_RECIPIENT}{L_COLON}</label></dt>
 				<dd><strong>{USERNAME}</strong></dd>
 			</dl>
 			<dl>
-				<dt><label for="subject">{L_SUBJECT}:</label></dt>
+				<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
 				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" tabindex="1" value="{SUBJECT}" /></dd>
 			</dl>
 		<!-- ELSE -->
 			<dl>
-				<dt><label for="email">{L_EMAIL_ADDRESS}:</label></dt>
+				<dt><label for="email">{L_EMAIL_ADDRESS}{L_COLON}</label></dt>
 				<dd><input class="inputbox autowidth" type="text" name="email" id="email" size="50" maxlength="100" tabindex="2" value="{EMAIL}" /></dd>
 			</dl>
 			<dl>
-				<dt><label for="name">{L_REAL_NAME}:</label></dt>
+				<dt><label for="name">{L_REAL_NAME}{L_COLON}</label></dt>
 				<dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" tabindex="3" value="{NAME}" /></dd>
 			</dl>
 			<dl>
-				<dt><label for="lang">{L_DEST_LANG}:</label><br />
+				<dt><label for="lang">{L_DEST_LANG}{L_COLON}</label><br />
 					<span>{L_DEST_LANG_EXPLAIN}</span></dt>
 				<dd><select name="lang">{S_LANG_OPTIONS}</select></dd>
 			</dl>
 		<!-- ENDIF -->
 		<dl>
-			<dt><label for="message">{L_MESSAGE_BODY}:</label><br />
+			<dt><label for="message">{L_MESSAGE_BODY}{L_COLON}</label><br />
 			<span>{L_EMAIL_BODY_EXPLAIN}</span></dt>
 			<dd><textarea class="inputbox" name="message" id="message" rows="15" cols="76" tabindex="4">{MESSAGE}</textarea></dd>
 		</dl>

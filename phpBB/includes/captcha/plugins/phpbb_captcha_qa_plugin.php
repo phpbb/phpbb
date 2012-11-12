@@ -98,7 +98,7 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	public static function get_instance()
+	static public function get_instance()
 	{
 		$instance = new phpbb_captcha_qa();
 
@@ -108,7 +108,7 @@ class phpbb_captcha_qa
 	/**
 	* See if the captcha has created its tables.
 	*/
-	function is_installed()
+	static public function is_installed()
 	{
 		global $db, $phpbb_root_path, $phpEx;
 
@@ -124,14 +124,14 @@ class phpbb_captcha_qa
 	/**
 	*  API function - for the captcha to be available, it must have installed itself and there has to be at least one question in the board's default lang
 	*/
-	function is_available()
+	static public function is_available()
 	{
 		global $config, $db, $phpbb_root_path, $phpEx, $user;
 
 		// load language file for pretty display in the ACP dropdown
 		$user->add_lang('captcha_qa');
 
-		if (!phpbb_captcha_qa::is_installed())
+		if (!self::is_installed())
 		{
 			return false;
 		}
@@ -157,7 +157,7 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_QA';
 	}
@@ -612,7 +612,7 @@ class phpbb_captcha_qa
 		$user->add_lang('acp/board');
 		$user->add_lang('captcha_qa');
 
-		if (!$this->is_installed())
+		if (!self::is_installed())
 		{
 			$this->install();
 		}

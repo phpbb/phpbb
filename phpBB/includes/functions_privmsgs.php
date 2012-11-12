@@ -269,46 +269,46 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 		case RULE_IS_LIKE:
 			$result = preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
 		break;
-		
+
 		case RULE_IS_NOT_LIKE:
 			$result = !preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
 		break;
-		
+
 		case RULE_IS:
 			$result = ($check0 == $rule_row['rule_string']);
 		break;
-		
+
 		case RULE_IS_NOT:
 			$result = ($check0 != $rule_row['rule_string']);
 		break;
-		
+
 		case RULE_BEGINS_WITH:
 			$result = preg_match("/^" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
 		break;
-		
+
 		case RULE_ENDS_WITH:
 			$result = preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '$/i', $check0);
 		break;
-		
+
 		case RULE_IS_FRIEND:
 		case RULE_IS_FOE:
 		case RULE_ANSWERED:
 		case RULE_FORWARDED:
 			$result = ($check0 == 1);
 		break;
-		
+
 		case RULE_IS_USER:
 			$result = ($check0 == $rule_row['rule_user_id']);
 		break;
-		
+
 		case RULE_IS_GROUP:
 			$result = in_array($rule_row['rule_group_id'], $check0);
 		break;
-		
+
 		case RULE_TO_GROUP:
 			$result = (in_array('g_' . $message_row[$check_ary['check2']], $check0) || in_array('g_' . $message_row[$check_ary['check2']], $message_row[$check_ary['check1']]));
 		break;
-		
+
 		case RULE_TO_ME:
 			$result = (in_array('u_' . $user_id, $check0) || in_array('u_' . $user_id, $message_row[$check_ary['check1']]));
 		break;
@@ -1145,6 +1145,23 @@ function phpbb_delete_user_pms($user_id)
 		return false;
 	}
 
+	return phpbb_delete_users_pms(array($user_id));
+}
+
+/**
+* Delete all PM(s) for given users and delete the ones without references
+*
+* @param	array		$user_ids	IDs of the users whose private messages we want to delete
+*
+* @return	boolean		False if there were no pms found, true otherwise.
+*/
+function phpbb_delete_users_pms($user_ids)
+{
+	global $db, $user, $phpbb_root_path, $phpEx;
+
+	$user_id_sql = $db->sql_in_set('user_id', $user_ids);
+	$author_id_sql = $db->sql_in_set('author_id', $user_ids);
+
 	// Get PM Information for later deleting
 	// The two queries where split, so we can use our indexes
 	$undelivered_msg = $delete_ids = array();
@@ -1152,7 +1169,7 @@ function phpbb_delete_user_pms($user_id)
 	// Part 1: get PMs the user received
 	$sql = 'SELECT msg_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE user_id = ' . $user_id;
+		WHERE ' . $user_id_sql;
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -1162,12 +1179,12 @@ function phpbb_delete_user_pms($user_id)
 	}
 	$db->sql_freeresult($result);
 
-	// Part 2: get PMs the user sent, but have yet to be received
-	// We cannot simply delete them. First we have to check,
+	// Part 2: get PMs the users sent, but are yet to be received.
+	// We cannot simply delete them. First we have to check
 	// whether another user already received and read the message.
 	$sql = 'SELECT msg_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE author_id = ' . $user_id . '
+		WHERE ' . $author_id_sql . '
 			AND folder_id = ' . PRIVMSGS_NO_BOX;
 	$result = $db->sql_query($sql);
 
@@ -1193,7 +1210,7 @@ function phpbb_delete_user_pms($user_id)
 		// received them.
 		$sql = 'SELECT msg_id
 			FROM ' . PRIVMSGS_TO_TABLE . '
-			WHERE author_id = ' . $user_id . '
+			WHERE ' . $author_id_sql . '
 				AND folder_id <> ' . PRIVMSGS_NO_BOX . '
 				AND folder_id <> ' . PRIVMSGS_OUTBOX . '
 				AND folder_id <> ' . PRIVMSGS_SENTBOX;
@@ -1213,7 +1230,7 @@ function phpbb_delete_user_pms($user_id)
 		// Count the messages we delete, so we can correct the user pm data
 		$sql = 'SELECT user_id, COUNT(msg_id) as num_undelivered_privmsgs
 			FROM ' . PRIVMSGS_TO_TABLE . '
-			WHERE author_id = ' . $user_id . '
+			WHERE ' . $author_id_sql . '
 				AND folder_id = ' . PRIVMSGS_NO_BOX . '
 					AND ' . $db->sql_in_set('msg_id', array_merge($undelivered_msg, $delivered_msg)) . '
 			GROUP BY user_id';
@@ -1271,12 +1288,12 @@ function phpbb_delete_user_pms($user_id)
 	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_new_privmsg = 0,
 			user_unread_privmsg = 0
-		WHERE user_id = ' . $user_id;
+		WHERE ' . $user_id_sql;
 	$db->sql_query($sql);
 
 	// Delete private message data of the user
 	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE user_id = ' . (int) $user_id;
+		WHERE ' . $user_id_sql;
 	$db->sql_query($sql);
 
 	if (!empty($delete_ids))
@@ -1313,12 +1330,12 @@ function phpbb_delete_user_pms($user_id)
 	// This way users are still able to read messages from users being removed
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
 		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
+		WHERE ' . $author_id_sql;
 	$db->sql_query($sql);
 
 	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
 		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
+		WHERE ' . $author_id_sql;
 	$db->sql_query($sql);
 
 	$db->sql_transaction('commit');
@@ -2084,7 +2101,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 			'SUBJECT'			=> $subject,
 			'SENT_DATE'			=> $user->format_date($row['message_time']),
 			'MESSAGE'			=> $message,
-			'FOLDER'			=> implode(', ', $row['folder']),
+			'FOLDER'			=> implode($user->lang['COMMA_SEPARATOR'], $row['folder']),
 			'DECODED_MESSAGE'	=> $decoded_message,
 
 			'S_CURRENT_MSG'		=> ($row['msg_id'] == $msg_id),
