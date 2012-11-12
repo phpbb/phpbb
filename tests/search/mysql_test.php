@@ -42,6 +42,10 @@ class phpbb_search_mysql_test extends phpbb_database_test_case
 		// dbal uses cache
 		$cache = new phpbb_cache_driver_null;
 
+		//  set config values
+		$config['fulltext_mysql_min_word_len'] = 4;
+		$config['fulltext_mysql_max_word_len'] = 254;
+
 		$this->db = $this->new_dbal();
 		$error = null;
 		$class = phpbb_search_wrapper('phpbb_search_fulltext_mysql');
@@ -77,10 +81,10 @@ class phpbb_search_mysql_test extends phpbb_database_test_case
 			),
 			// leading, trailing and multiple spaces
 			array(
-				'      foo    bar   ',
+				'      fooo    baar   ',
 				'all',
 				true,
-				array('foo', 'bar'),
+				array('fooo', 'baar'),
 				array(),
 			),
 			// words too short
@@ -100,25 +104,32 @@ class phpbb_search_mysql_test extends phpbb_database_test_case
 				array('f', 'o', 'o'),
 			),
 			array(
-				'foo -bar',
+				'f -o -o',
+				'all',
+				false,
+				null,
+				array('f', '-o', '-o'),
+			),
+			array(
+				'fooo -baar',
 				'all',
 				true,
-				array('-bar', 'foo'),
+				array('-baar', 'fooo'),
 				array(),
 			),
 			// all negative
 			array(
-				'-foo',
+				'-fooo',
 				'all',
 				false,
 				null,
 				array(),
 			),
 			array(
-				'-foo -bar',
+				'-fooo -baar',
 				'all',
 				false,
-				array('-foo', '-bar'),
+				array('-fooo', '-baar'),
 				array(),
 			),
 		);
