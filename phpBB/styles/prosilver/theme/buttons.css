@@ -39,6 +39,7 @@
     position: relative;
     text-decoration: none !important;
     outline-style: none !important;
+	*padding-right: 8px;
 }
 
 .buttons div span { display: none; }
