@@ -1130,6 +1130,10 @@ function database_update_info()
 			'change_columns'	=> array(
 				GROUPS_TABLE		=> array(
 					'group_legend'		=> array('UINT', 0),
+					'group_avatar_type'		=> array('VCHAR:32', 0),
+				),
+				USERS_TABLE		=> array(
+					'user_avatar_type'		=> array('VCHAR:32', 0),
 				),
 				USERS_TABLE			=> array(
 					'user_timezone'		=> array('VCHAR:100', ''),
@@ -2708,6 +2712,26 @@ function change_database_data(&$no_updates, $version)
 			if (!isset($config['display_last_subject']))
 			{
 				$config->set('display_last_subject', '1');
+			}
+
+			// Update avatars to modular types
+			$avatar_type_map = array(
+				AVATAR_UPLOAD	=> 'upload',
+				AVATAR_GALLERY	=> 'local',
+				AVATAR_REMOTE	=> 'remote',
+			);
+
+			foreach ($avatar_type_map as $old => $new)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . "
+					SET user_avatar_type = '" . $db->sql_escape($new) . "'
+					WHERE user_avatar_type = '" . $db->sql_escape($old) . "'";
+				_sql($sql, $errored, $error_ary);
+
+				$sql = 'UPDATE ' . GROUPS_TABLE . "
+					SET group_avatar_type = '" . $db->sql_escape($new) . "'
+					WHERE group_avatar_type = '" . $db->sql_escape($old) . "'";
+				_sql($sql, $errored, $error_ary);
 			}
 
 			$no_updates = false;

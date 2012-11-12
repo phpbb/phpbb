@@ -2048,6 +2048,7 @@ function avatar_delete($mode, $row, $clean_db = false)
 		avatar_remove_db($row[$mode . '_avatar']);
 	}
 	$filename = get_avatar_filename($row[$mode . '_avatar']);
+
 	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $filename))
 	{
 		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $filename);

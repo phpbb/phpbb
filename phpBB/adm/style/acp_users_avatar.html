@@ -1,4 +1,4 @@
-	<form id="avatar_settings" method="post" action="{U_ACTION}"<!-- IF S_CAN_UPLOAD --> enctype="multipart/form-data"<!-- ENDIF -->>
+	<form id="avatar_settings" method="post" action="{U_ACTION}" enctype="multipart/form-data">
 
 	<fieldset>
 		<legend>{L_ACP_USER_AVATAR}</legend>
@@ -44,35 +44,37 @@
 		<dl>
 			<dt><label for="category">{L_AVATAR_CATEGORY}{L_COLON}</label></dt>
 			<dd><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="button2" type="submit" value="{L_GO}" name="display_gallery" /></dd>
-		</dl>
+	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
 		<dl>
-			<table cellspacing="1">
-			<!-- BEGIN avatar_row -->
-			<tr> 
-				<!-- BEGIN avatar_column -->
-					<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
-				<!-- END avatar_column -->
-			</tr>
-			<tr>
-				<!-- BEGIN avatar_option_column -->
-					<td class="row2" style="text-align: center;"><input type="radio" class="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
-				<!-- END avatar_option_column -->
-			</tr>
-			<!-- END avatar_row -->
-			</table>
+			<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
+			<dd>{AVATAR}</dd>
 		</dl>
-		</fieldset>
-		
-		<fieldset class="quick" style="margin-top: -15px;">
-			<input class="button2" type="submit" name="cancel" value="{L_CANCEL}" />
-		</fieldset>
-	
-	<!-- ENDIF -->
+	</fieldset>
+	<fieldset>
+		<legend>{L_AVATAR_SELECT_NEW}</legend>
+		<dl>
+			<dt><label>{L_AVATAR_TYPE}</label></dt>
+			<dd><select name="avatar_driver" id="avatar_driver">
+				<option value="">{L_NO_AVATAR}</option>
+				<!-- BEGIN avatar_drivers -->
+				<option value="{avatar_drivers.DRIVER}"<!-- IF avatar_drivers.SELECTED --> selected="selected"<!-- ENDIF -->>{avatar_drivers.L_TITLE}</option>
+				<!-- END avatar_drivers -->
+			</select></dd>
+		</dl>
+		<div id="av_options">
+		<!-- BEGIN avatar_drivers -->
+			<div id="av_option_{avatar_drivers.DRIVER}">
+				<p>{avatar_drivers.L_EXPLAIN}</p>
+				{avatar_drivers.OUTPUT}
+			</div>
+		<!-- END avatar_drivers -->
+		</div>
 	</fieldset>
 
 	<fieldset class="quick">
-		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
-		{S_FORM_TOKEN}
+		<input type="submit" name="update" value="{L_SUBMIT}" class="button1" />
 	</fieldset>
-	
+	{S_FORM_TOKEN}
 	</form>
+
+	<!-- INCLUDEJS avatars.js -->

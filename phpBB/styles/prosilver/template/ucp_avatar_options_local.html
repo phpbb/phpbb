@@ -1,0 +1,16 @@
+<label for="category">{L_AVATAR_CATEGORY}: <select name="av_local_cat" id="category">
+<option value="">{L_NO_AVATAR_CATEGORY}</option>
+<!-- BEGIN av_local_cats -->
+<option value="{av_local_cats.NAME}"<!-- IF av_local_cats.SELECTED --> selected="selected"<!-- ENDIF -->>{av_local_cats.NAME}</option>
+<!-- END av_local_cats -->
+</select></label>
+<input type="submit" value="{L_GO}" name="av_local_go" class="button2" />
+
+<div id="gallery">
+<!-- BEGIN av_local_row -->
+<!-- BEGIN av_local_col -->
+	<label for="av-{av_local_row.av_local_col.S_ROW_COUNT}"><img src="{av_local_row.av_local_col.AVATAR_IMAGE}" alt="" /><br />
+	<input type="radio" name="av_local_file" id="av-{av_local_row.av_local_col.S_ROW_COUNT}" value="{av_local_row.av_local_col.AVATAR_FILE}" /></label>
+<!-- END av_local_col -->
+<!-- END av_local_row -->
+</div>

@@ -1,0 +1,27 @@
+<dl>
+	<dt><label for="category">{L_AVATAR_CATEGORY}:</label></dt>
+	<dd><select name="av_local_cat" id="category">
+		<option value="">{L_NO_AVATAR_CATEGORY}</option>
+		<!-- BEGIN av_local_cats -->
+		<option value="{av_local_cats.NAME}"<!-- IF av_local_cats.SELECTED --> selected="selected"<!-- ENDIF -->>{av_local_cats.NAME}</option>
+		<!-- END av_local_cats -->
+	</select>&nbsp;<input type="submit" value="{L_GO}" name="av_local_go" class="button2" /></dd>
+</dl>
+<dl>
+	<!-- IF AV_LOCAL_SHOW -->
+	<table cellspacing="1">
+	<!-- BEGIN av_local_row -->
+	<tr>
+		<!-- BEGIN av_local_col -->
+			<td class="row1" style="text-align: center;"><img src="{av_local_row.av_local_col.AVATAR_IMAGE}" alt="{av_local_row.av_local_col.AVATAR_NAME}" title="{av_local_row.av_local_col.AVATAR_NAME}"/></td>
+		<!-- END av_local_col -->
+	</tr>
+	<tr>
+		<!-- BEGIN av_local_col -->
+			<td class="row2" style="text-align: center;"><input type="radio" name="av_local_file" id="av-{av_local_row.av_local_col.S_ROW_COUNT}" value="{av_local_row.av_local_col.AVATAR_FILE}" /></td>
+		<!-- END av_local_col -->
+	</tr>
+	<!-- END av_local_row -->
+	</table>
+	<!-- ENDIF -->
+</dl>
