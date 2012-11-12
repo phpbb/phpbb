@@ -44,15 +44,17 @@ services:
             - @cache.driver
             - %tables.config%
 
-    cron.task_provider:
-        class: phpbb_cron_task_provider
+    cron.task_collection:
+        class: phpbb_di_service_collection
         arguments:
-            - @container
+            - @service_container
+        tags:
+            - { name: service_collection, tag: cron.task }
 
     cron.manager:
         class: phpbb_cron_manager
         arguments:
-            - @cron.task_provider
+            - @cron.task_collection
             - %core.root_path%
             - %core.php_ext%
 
@@ -65,6 +67,8 @@ services:
 
     dispatcher:
         class: phpbb_event_dispatcher
+        arguments:
+            - @service_container
 
     dbal.conn:
         class: %dbal.driver.class%
@@ -88,13 +92,6 @@ services:
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
-
-    processor.ext:
-        class: phpbb_di_processor_ext
-        arguments:
-            - @ext.manager
-        tags:
-            - { name: container.processor }
 
     request:
         class: phpbb_request
