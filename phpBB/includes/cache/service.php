@@ -58,11 +58,6 @@ class phpbb_cache_service
 		return call_user_func_array(array($this->driver, $method), $arguments);
 	}
 
-	public function __get($var)
-	{
-		return $this->driver->$var;
-	}
-
 	/**
 	* Obtain list of naughty words and build preg style replacement arrays for use by the
 	* calling script
@@ -412,40 +407,5 @@ class phpbb_cache_service
 		}
 
 		return $hook_files;
-	}
-
-	public function sql_load()
-	{
-		return call_user_func_array(array($this->driver, __FUNCTION__), func_get_args());
-	}
-
-	public function sql_save($query, &$query_result, $ttl)
-	{
-		return call_user_func_array(array($this->driver, __FUNCTION__), array($query, &$query_result, $ttl));
-	}
-
-	public function sql_exists()
-	{
-		return call_user_func_array(array($this->driver, __FUNCTION__), func_get_args());
-	}
-
-	public function sql_fetchrow()
-	{
-		return call_user_func_array(array($this->driver, __FUNCTION__), func_get_args());
-	}
-
-	public function sql_fetchfield()
-	{
-		return call_user_func_array(array($this->driver, __FUNCTION__), func_get_args());
-	}
-
-	public function sql_rowseek()
-	{
-		return call_user_func_array(array($this->driver, __FUNCTION__), func_get_args());
-	}
-
-	public function sql_freeresult()
-	{
-		return call_user_func_array(array($this->driver, __FUNCTION__), func_get_args());
 	}
 }

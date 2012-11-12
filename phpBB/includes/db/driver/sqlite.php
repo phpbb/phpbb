@@ -110,12 +110,12 @@ class phpbb_db_driver_sqlite extends phpbb_db_driver
 			global $cache;
 
 			// EXPLAIN only in extra debug mode
-			if (defined('DEBUG_EXTRA'))
+			if (defined('DEBUG'))
 			{
 				$this->sql_report('start', $query);
 			}
 
-			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
+			$this->query_result = ($cache_ttl) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
 			if ($this->query_result === false)
@@ -125,22 +125,22 @@ class phpbb_db_driver_sqlite extends phpbb_db_driver
 					$this->sql_error($query);
 				}
 
-				if (defined('DEBUG_EXTRA'))
+				if (defined('DEBUG'))
 				{
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl && method_exists($cache, 'sql_save'))
+				if ($cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$cache->sql_save($query, $this->query_result, $cache_ttl);
+					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
 			}
-			else if (defined('DEBUG_EXTRA'))
+			else if (defined('DEBUG'))
 			{
 				$this->sql_report('fromcache', $query);
 			}
@@ -191,7 +191,7 @@ class phpbb_db_driver_sqlite extends phpbb_db_driver
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -212,7 +212,7 @@ class phpbb_db_driver_sqlite extends phpbb_db_driver
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
@@ -240,7 +240,7 @@ class phpbb_db_driver_sqlite extends phpbb_db_driver
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_freeresult($query_id);
 		}

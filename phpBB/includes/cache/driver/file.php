@@ -368,7 +368,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	/**
 	* Save sql query
 	*/
-	function sql_save($query, &$query_result, $ttl)
+	function sql_save($query, $query_result, $ttl)
 	{
 		global $db;
 

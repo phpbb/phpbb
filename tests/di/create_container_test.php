@@ -9,7 +9,6 @@
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_container.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/dbal.php';
 
 class phpbb_di_container_test extends phpbb_test_case
 {
@@ -52,7 +51,7 @@ class phpbb_di_container_test extends phpbb_test_case
     }
 }
 
-class dbal_container_mock extends dbal
+class phpbb_db_driver_container_mock extends phpbb_db_driver
 {
     public function sql_connect()
     {
