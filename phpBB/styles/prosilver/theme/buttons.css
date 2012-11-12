@@ -32,8 +32,9 @@
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff', EndColorStr='#e9e9e9')";
     box-shadow: 0 0 0 1px #fff inset;
     -webkit-box-shadow: 0 0 0 1px #fff inset;
-    text-shadow: 1px 1px 0 #fff, -1px -1px 0 rgba(188, 42, 77, 0.25);
+    text-shadow: 1px 1px 0 #fff, -1px -1px 1px rgba(188, 42, 77, 0.25);
     padding: 3px 22px 3px 8px;
+	font-family: "Futura-Medium", Verdana;
     color: #bc2a4d !important;
     position: relative;
     text-decoration: none !important;
