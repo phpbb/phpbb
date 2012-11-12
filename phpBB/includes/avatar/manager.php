@@ -72,11 +72,16 @@ class phpbb_avatar_manager
 
 		$r = new ReflectionClass($avatar_type);
 
-		if ($r->isSubClassOf('phpbb_avatar_driver')) {
+		if ($r->isSubClassOf('phpbb_avatar_driver'))
+		{
 			$driver = new $avatar_type($this->config, $this->request, $this->phpbb_root_path, $this->phpEx, $this->cache);
-		} else if ($r->implementsInterface('phpbb_avatar_driver')) {
+		}
+		else if ($r->implementsInterface('phpbb_avatar_driver'))
+		{
 			$driver = new $avatar_type();
-		} else {
+		}
+		else
+		{
 			$message = "Invalid avatar driver class name '%s' provided. It must implement phpbb_avatar_driver_interface.";
 			trigger_error(sprintf($message, $avatar_type));
 		}

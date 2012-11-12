@@ -330,7 +330,8 @@ class acp_groups
 						$submit_ary['founder_manage'] = isset($_REQUEST['group_founder_manage']) ? 1 : 0;
 					}
 					
-					if ($config['allow_avatar']) {
+					if ($config['allow_avatar'])
+					{
 						// Handle avatar
 						$driver = request_var('avatar_driver', '');
 						if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$driver"])

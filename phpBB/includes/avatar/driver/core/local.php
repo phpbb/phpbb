@@ -142,7 +142,8 @@ class phpbb_avatar_driver_core_local extends phpbb_avatar_driver
 
 			if ($dh)
 			{
-				while (($cat = readdir($dh)) !== false) {
+				while (($cat = readdir($dh)) !== false)
+				{
 					if ($cat[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $cat) && is_dir("$path/$cat"))
 					{
 						if ($ch = @opendir("$path/$cat"))
