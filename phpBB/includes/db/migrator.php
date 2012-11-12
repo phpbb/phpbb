@@ -40,7 +40,7 @@ class phpbb_db_migrator
 	*
 	* @param \Symfony\Component\DependencyInjection\ContainerInterface	$container	Container supplying dependencies
 	*/
-	public function phpbb_db_migrator(\Symfony\Component\DependencyInjection\ContainerInterface $container, $migrations)
+	public function __construct(\Symfony\Component\DependencyInjection\ContainerInterface $container, $migrations)
 	{
 		$this->container = $container;
 		$this->db = $this->container->get('dbal.conn');
