@@ -64,11 +64,13 @@ class phpbb_controller_test extends phpbb_test_case
 		}
 
 		$resolver = new phpbb_controller_resolver(new phpbb_user, $container);
-		$symfony_request = new Request(array(), array(), array('_controller' => 'foo.controller:handle'));
+		$symfony_request = new Request();
+		$symfony_request->attributes->set('_controller', 'foo.controller:handle');
 
 		$this->assertEquals($resolver->getController($symfony_request), array(new phpbb_ext_foo_controller, 'handle'));
 
-		$symfony_request = new Request(array(), array(), array('_controller' => 'core_foo.controller:bar'));
+		$symfony_request = new Request();
+		$symfony_request->attributes->set('_controller', 'core_foo.controller:bar');
 
 		$this->assertEquals($resolver->getController($symfony_request), array(new phpbb_controller_foo, 'bar'));
 	}
