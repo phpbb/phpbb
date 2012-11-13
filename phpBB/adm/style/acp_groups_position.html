@@ -17,8 +17,8 @@
 		</dl>
 
 	<p class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" name="reset" value="{L_RESET}" />
 		<input type="hidden" name="action" value="set_config_legend" />
 		{S_FORM_TOKEN}
 	</p>
@@ -66,7 +66,7 @@
 	</tbody>
 	</table>
 
-	<form id="acp_groups" method="post" action="{U_ACTION_LEGEND}">
+	<form id="legend_add_group" method="post" action="{U_ACTION_LEGEND}">
 		<fieldset class="quick">
 			<select name="g"><option value="0">{L_SELECT_GROUP}</option>{S_GROUP_SELECT_LEGEND}</select>
 			<input class="button2" type="submit" name="submit" value="{L_ADD}" />
@@ -82,7 +82,7 @@
 	<fieldset>
 		<legend>{L_TEAMPAGE_SETTINGS}</legend>
 		<dl>
-			<dt><label for="teampage_multiple">{L_TEAMPAGE_MEMBERSHIPS}{L_COLON}</label></dt>
+			<dt><label for="teampage_memberships">{L_TEAMPAGE_MEMBERSHIPS}{L_COLON}</label></dt>
 			<dd>
 				<label><input type="radio" name="teampage_memberships" class="radio" value="0"<!-- IF DISPLAY_MEMBERSHIPS == 0 --> checked="checked"<!-- ENDIF --> /> {L_TEAMPAGE_DISP_FIRST}</label><br />
 				<label><input type="radio" name="teampage_memberships" class="radio" value="1"<!-- IF DISPLAY_MEMBERSHIPS == 1 --> checked="checked"<!-- ENDIF --> /> {L_TEAMPAGE_DISP_DEFAULT}</label><br />
@@ -98,8 +98,8 @@
 		</dl>
 
 	<p class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" name="reset" value="{L_RESET}" />
 		<input type="hidden" name="action" value="set_config_teampage" />
 		{S_FORM_TOKEN}
 	</p>
@@ -147,7 +147,7 @@
 	</tbody>
 	</table>
 
-	<form id="acp_groups" method="post" action="{U_ACTION_TEAMPAGE}">
+	<form id="teampage_add_group" method="post" action="{U_ACTION_TEAMPAGE}">
 		<fieldset class="quick">
 			<select name="g"><option value="0">{L_SELECT_GROUP}</option>{S_GROUP_SELECT_TEAMPAGE}</select>
 			<input class="button2" type="submit" name="submit" value="{L_ADD}" />
