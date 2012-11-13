@@ -219,48 +219,27 @@ class phpbb_template
 	*
 	* @param string $handle Handle to operate on
 	* @param string $template_var Template variable to assign compiled handle to
-	* @param bool $return_contents If true return compiled handle, otherwise assign to $template_var
-	* @return bool|string If $return_content is true return string of the compiled handle, otherwise return true
-	* @throws RuntimeException
+	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
+	* @return bool|string false on failure, otherwise if $return_content is true return string of the compiled handle, otherwise return true
 	*/
-	public function assign_display($handle, $template_var = '', $return_contents = true)
-	{
-		$contents = $this->return_display($handle);
-
-		if (!$template_var && !$return_contents)
-		{
-			throw new RuntimeException($this->user->lang('TEMPLATE_CANNOT_BE_ASSIGNED'));
-		}
-
-		if ($template_var)
-		{
-			$this->assign_var($template_var, $contents);
-		}
-
-		// If !$return_content evaluates to true, true will be returned
-		// Otherwise, the value of $contents will be returned
-		return !$return_contents ?: $contents;
-	}
-
-	/**
-	* Return the compiled template code as a string
-	*
-	* @param string $handle Handle to operate on
-	* @return string Compiled template code; can be output directly to page
-	* @throws RuntimeException
-	*/
-	public function return_display($handle)
+	public function assign_display($handle, $template_var = '', $return_content = true)
 	{
 		ob_start();
 		$result = $this->display($handle);
 		$contents = ob_get_clean();
-
 		if ($result === false)
 		{
-			throw new RuntimeException($user->lang('TEMPLATE_HANDLE_NOT_FOUND'));
+			return false;
 		}
 
-		return $contents;
+		if ($return_content)
+		{
+			return $contents;
+		}
+
+		$this->assign_var($template_var, $contents);
+
+		return true;
 	}
 
 	/**
