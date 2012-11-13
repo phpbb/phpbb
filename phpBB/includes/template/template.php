@@ -229,7 +229,7 @@ class phpbb_template
 
 		if (!$template_var)
 		{
-			throw new RuntimeException($this->user->lang('TEMPLATE_CANNOT_BE_ASSIGNED')
+			throw new RuntimeException($this->user->lang('TEMPLATE_CANNOT_BE_ASSIGNED'));
 		}
 
 		$this->assign_var($template_var, $contents);
