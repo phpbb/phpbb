@@ -1216,8 +1216,8 @@ CREATE TABLE phpbb_reports (
 	report_time number(11) DEFAULT '0' NOT NULL,
 	report_text clob DEFAULT '' ,
 	reported_post_text clob DEFAULT '' ,
-	reported_post_bitfield varchar2(255) DEFAULT '' ,
 	reported_post_uid varchar2(8) DEFAULT '' ,
+	reported_post_bitfield varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_reports PRIMARY KEY (report_id)
 )
 /
@@ -1469,6 +1469,36 @@ FOR EACH ROW WHEN (
 BEGIN
 	SELECT phpbb_styles_seq.nextval
 	INTO :new.style_id
+	FROM dual;
+END;
+/
+
+
+/*
+	Table: 'phpbb_teampage'
+*/
+CREATE TABLE phpbb_teampage (
+	teampage_id number(8) NOT NULL,
+	group_id number(8) DEFAULT '0' NOT NULL,
+	teampage_name varchar2(765) DEFAULT '' ,
+	teampage_position number(8) DEFAULT '0' NOT NULL,
+	teampage_parent number(8) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_teampage PRIMARY KEY (teampage_id)
+)
+/
+
+
+CREATE SEQUENCE phpbb_teampage_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_teampage
+BEFORE INSERT ON phpbb_teampage
+FOR EACH ROW WHEN (
+	new.teampage_id IS NULL OR new.teampage_id = 0
+)
+BEGIN
+	SELECT phpbb_teampage_seq.nextval
+	INTO :new.teampage_id
 	FROM dual;
 END;
 /

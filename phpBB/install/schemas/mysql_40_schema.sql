@@ -649,8 +649,8 @@ CREATE TABLE phpbb_reports (
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumblob NOT NULL,
 	reported_post_text mediumblob NOT NULL,
-	reported_post_bitfield varbinary(255) DEFAULT '' NOT NULL,
 	reported_post_uid varbinary(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varbinary(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id),
 	KEY post_id (post_id),
 	KEY pm_id (pm_id)
@@ -770,6 +770,17 @@ CREATE TABLE phpbb_styles (
 	style_parent_tree blob NOT NULL,
 	PRIMARY KEY (style_id),
 	UNIQUE style_name (style_name(255))
+);
+
+
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	teampage_name blob NOT NULL,
+	teampage_position mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	teampage_parent mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (teampage_id)
 );
 
 

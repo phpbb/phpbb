@@ -912,8 +912,8 @@ CREATE TABLE phpbb_reports (
 	report_time INTEGER DEFAULT 0 NOT NULL,
 	report_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
 	reported_post_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
-	reported_post_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	reported_post_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL
+	reported_post_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	reported_post_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_reports ADD PRIMARY KEY (report_id);;
@@ -1108,6 +1108,29 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.style_id = GEN_ID(phpbb_styles_gen, 1);
+END;;
+
+
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id INTEGER NOT NULL,
+	group_id INTEGER DEFAULT 0 NOT NULL,
+	teampage_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	teampage_position INTEGER DEFAULT 0 NOT NULL,
+	teampage_parent INTEGER DEFAULT 0 NOT NULL
+);;
+
+ALTER TABLE phpbb_teampage ADD PRIMARY KEY (teampage_id);;
+
+
+CREATE GENERATOR phpbb_teampage_gen;;
+SET GENERATOR phpbb_teampage_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_teampage FOR phpbb_teampage
+BEFORE INSERT
+AS
+BEGIN
+	NEW.teampage_id = GEN_ID(phpbb_teampage_gen, 1);
 END;;
 
 

@@ -855,8 +855,8 @@ CREATE TABLE phpbb_reports (
 	report_time INT4 DEFAULT '0' NOT NULL CHECK (report_time >= 0),
 	report_text TEXT DEFAULT '' NOT NULL,
 	reported_post_text TEXT DEFAULT '' NOT NULL,
-	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
 	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id)
 );
 
@@ -1006,6 +1006,21 @@ CREATE TABLE phpbb_styles (
 );
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
+
+/*
+	Table: 'phpbb_teampage'
+*/
+CREATE SEQUENCE phpbb_teampage_seq;
+
+CREATE TABLE phpbb_teampage (
+	teampage_id INT4 DEFAULT nextval('phpbb_teampage_seq'),
+	group_id INT4 DEFAULT '0' NOT NULL CHECK (group_id >= 0),
+	teampage_name varchar(255) DEFAULT '' NOT NULL,
+	teampage_position INT4 DEFAULT '0' NOT NULL CHECK (teampage_position >= 0),
+	teampage_parent INT4 DEFAULT '0' NOT NULL CHECK (teampage_parent >= 0),
+	PRIMARY KEY (teampage_id)
+);
+
 
 /*
 	Table: 'phpbb_topics'

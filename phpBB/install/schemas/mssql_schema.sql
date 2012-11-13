@@ -1111,8 +1111,8 @@ CREATE TABLE [phpbb_reports] (
 	[report_time] [int] DEFAULT (0) NOT NULL ,
 	[report_text] [text] DEFAULT ('') NOT NULL ,
 	[reported_post_text] [text] DEFAULT ('') NOT NULL ,
-	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[reported_post_uid] [varchar] (8) DEFAULT ('') NOT NULL 
+	[reported_post_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
+	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -1341,6 +1341,26 @@ ALTER TABLE [phpbb_styles] WITH NOCHECK ADD
 GO
 
 CREATE  UNIQUE  INDEX [style_name] ON [phpbb_styles]([style_name]) ON [PRIMARY]
+GO
+
+
+/*
+	Table: 'phpbb_teampage'
+*/
+CREATE TABLE [phpbb_teampage] (
+	[teampage_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[group_id] [int] DEFAULT (0) NOT NULL ,
+	[teampage_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[teampage_position] [int] DEFAULT (0) NOT NULL ,
+	[teampage_parent] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_teampage] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_teampage] PRIMARY KEY  CLUSTERED 
+	(
+		[teampage_id]
+	)  ON [PRIMARY] 
 GO
 
 

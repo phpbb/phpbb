@@ -630,8 +630,8 @@ CREATE TABLE phpbb_reports (
 	report_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_text mediumtext(16777215) NOT NULL DEFAULT '',
 	reported_post_text mediumtext(16777215) NOT NULL DEFAULT '',
-	reported_post_bitfield varchar(255) NOT NULL DEFAULT '',
-	reported_post_uid varchar(8) NOT NULL DEFAULT ''
+	reported_post_uid varchar(8) NOT NULL DEFAULT '',
+	reported_post_bitfield varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);
@@ -747,6 +747,16 @@ CREATE TABLE phpbb_styles (
 );
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
+
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id INTEGER PRIMARY KEY NOT NULL ,
+	group_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	teampage_name varchar(255) NOT NULL DEFAULT '',
+	teampage_position INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	teampage_parent INTEGER UNSIGNED NOT NULL DEFAULT '0'
+);
+
 
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
