@@ -620,7 +620,6 @@ CREATE TABLE phpbb_groups (
 	group_message_limit number(8) DEFAULT '0' NOT NULL,
 	group_max_recipients number(8) DEFAULT '0' NOT NULL,
 	group_legend number(8) DEFAULT '0' NOT NULL,
-	group_teampage number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_groups PRIMARY KEY (group_id)
 )
 /
