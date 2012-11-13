@@ -25,6 +25,13 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			'PHP_Token_Stream_CachingFactory' => array('cache'),
 
 			'phpbb_database_test_case' => array('already_connected'),
+
+			'phpbb_functional_test_case' => array('config'),
+		);
+
+		$this->backupGlobalsBlacklist = array_merge(
+			$this->backupGlobalsBlacklist,
+			array('php_builtin_webserver', 'phpbb_functional_already_installed')
 		);
 	}
 

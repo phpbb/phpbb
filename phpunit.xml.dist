@@ -23,7 +23,6 @@
 
     <groups>
         <exclude>
-            <group>functional</group>
             <group>slow</group>
         </exclude>
     </groups>

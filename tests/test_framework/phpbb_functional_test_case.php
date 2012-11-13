@@ -9,6 +9,7 @@
 use Symfony\Component\BrowserKit\CookieJar;
 
 require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
+require_once __DIR__ . '/phpbb_builtin_webserver.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
@@ -28,10 +29,19 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected $lang = array();
 
 	static protected $config = array();
-	static protected $already_installed = false;
 
 	public function setUp()
 	{
+		self::$config['table_prefix'] = 'phpbb_func_';
+
+		global $phpbb_functional_already_installed;
+		if (!$phpbb_functional_already_installed)
+		{
+			$this->install_board();
+			$this->bootstrap();
+			$phpbb_functional_already_installed = true;
+		}
+
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
 			$this->markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
@@ -65,15 +75,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		parent::__construct($name, $data, $dataName);
 
-		$this->backupStaticAttributesBlacklist += array(
-			'phpbb_functional_test_case' => array('config', 'already_installed'),
-		);
-
-		if (!static::$already_installed)
+		if (!self::$config)
 		{
-			$this->install_board();
-			$this->bootstrap();
-			static::$already_installed = true;
+			self::$config = phpbb_test_case_helpers::get_test_config();
+			self::start_builtin_webserver();
 		}
 	}
 
@@ -81,14 +86,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		self::$config = phpbb_test_case_helpers::get_test_config();
-
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
 			return;
 		}
 
-		self::$config['table_prefix'] = 'phpbb_';
 		$this->recreate_database(self::$config);
 
 		if (file_exists($phpbb_root_path . "config.$phpEx"))
@@ -182,7 +184,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$login = $this->client->submit($form, array('username' => 'admin', 'password' => 'admin'));
 
 		$cookies = $this->cookieJar->all();
-		
+
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
 		foreach ($cookies as $cookie);
 		{
@@ -228,5 +230,35 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$args[0] = $this->lang[$key];
 
 		return call_user_func_array('sprintf', $args);
+	}
+
+	static protected function start_builtin_webserver()
+	{
+		if (isset(self::$config['phpbb_functional_url']) && !isset(self::$config['phpbb_use_php_builtin_webserver']))
+		{
+			return;
+		}
+		self::$config['phpbb_functional_port'] = (isset(self::$config['phpbb_functional_port'])) ? (int) self::$config['phpbb_functional_port'] : 8743;
+
+		global $php_builtin_webserver;
+
+		if ($php_builtin_webserver)
+		{
+			return;
+		}
+
+		$php_builtin_webserver = new phpbb_builtin_webserver(self::$config['phpbb_functional_port']);
+
+		if ($php_builtin_webserver->start())
+		{
+			self::$config['phpbb_functional_url'] = 'http://localhost:' . self::$config['phpbb_functional_port'] . '/';
+			self::$config['phpbb_use_php_builtin_webserver'] = true;
+		}
+	}
+
+	static protected function stop_builtin_webserver()
+	{
+		global $php_builtin_webserver;
+		$php_builtin_webserver = null;
 	}
 }
