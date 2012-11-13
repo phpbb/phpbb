@@ -227,12 +227,15 @@ class phpbb_template
 	{
 		$contents = $this->return_display($handle);
 
-		if (!$template_var)
+		if (!$template_var && !$return_contents)
 		{
 			throw new RuntimeException($this->user->lang('TEMPLATE_CANNOT_BE_ASSIGNED'));
 		}
 
-		$this->assign_var($template_var, $contents);
+		if ($template_var)
+		{
+			$this->assign_var($template_var, $contents);
+		}
 
 		// If !$return_content evaluates to true, true will be returned
 		// Otherwise, the value of $contents will be returned
