@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
-class phpbb_di_pass_kernel implements CompilerPassInterface
+class phpbb_di_pass_kernel_pass implements CompilerPassInterface
 {
 	/**
 	* Modify the container before it is passed to the rest of the code
