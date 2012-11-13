@@ -61,9 +61,11 @@ class acp_groups
 		// Grab basic data for group, if group_id is set and exists
 		if ($group_id)
 		{
-			$sql = 'SELECT *
-				FROM ' . GROUPS_TABLE . "
-				WHERE group_id = $group_id";
+			$sql = 'SELECT g.*, t.teampage_position AS group_teampage
+				FROM ' . GROUPS_TABLE . ' g
+				LEFT JOIN ' . TEAMPAGE_TABLE . ' t
+					ON (t.group_id = g.group_id)
+				WHERE g.group_id = ' . $group_id;
 			$result = $db->sql_query($sql);
 			$group_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -497,6 +499,7 @@ class acp_groups
 							}
 
 							$cache->destroy('sql', GROUPS_TABLE);
+							$cache->destroy('sql', TEAMPAGE_TABLE);
 
 							$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 							trigger_error($user->lang[$message] . adm_back_link($this->u_action));
