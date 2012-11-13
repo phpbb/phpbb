@@ -204,21 +204,32 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 		{
 			if ($parent_id != self::NO_PARENT)
 			{
-				// Get value of last child from this parent and add group there
-				$sql = 'SELECT teampage_position
+				// Check, whether the given parent is a category
+				$sql = 'SELECT teampage_id
 					FROM ' . TEAMPAGE_TABLE . '
-					WHERE teampage_parent = ' . (int) $parent_id . '
-						OR teampage_id = ' . (int) $parent_id . '
-					ORDER BY teampage_position DESC';
+					WHERE group_id = 0
+						AND teampage_id = ' . (int) $parent_id;
 				$result = $this->db->sql_query_limit($sql, 1);
-				$new_position = (int) $this->db->sql_fetchfield('teampage_position');
+				$parent_is_category = (bool) $this->db->sql_fetchfield('teampage_id');
 				$this->db->sql_freeresult($result);
 
-				$sql = 'UPDATE ' . TEAMPAGE_TABLE . '
-					SET teampage_position = teampage_position + 1
-					WHERE teampage_position > ' . $new_position;
-				$this->db->sql_query($sql);
+				if ($parent_is_category)
+				{
+					// Get value of last child from this parent and add group there
+					$sql = 'SELECT teampage_position
+						FROM ' . TEAMPAGE_TABLE . '
+						WHERE teampage_parent = ' . (int) $parent_id . '
+							OR teampage_id = ' . (int) $parent_id . '
+						ORDER BY teampage_position DESC';
+					$result = $this->db->sql_query_limit($sql, 1);
+					$new_position = (int) $this->db->sql_fetchfield('teampage_position');
+					$this->db->sql_freeresult($result);
 
+					$sql = 'UPDATE ' . TEAMPAGE_TABLE . '
+						SET teampage_position = teampage_position + 1
+						WHERE teampage_position > ' . $new_position;
+					$this->db->sql_query($sql);
+				}
 			}
 			else
 			{
@@ -245,13 +256,18 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	*/
 	public function add_category_teampage($category_name)
 	{
+		if ($category_name === '')
+		{
+			return;
+		}
+
 		$num_entries = $this->get_group_count();
 
 		$sql_ary = array(
 			'group_id'			=> 0,
 			'teampage_position'	=> $num_entries + 1,
 			'teampage_parent'	=> 0,
-			'teampage_name'		=> $category_name,
+			'teampage_name'		=> truncate_string($category_name, 255, 255),
 		);
 
 		$sql = 'INSERT INTO ' . TEAMPAGE_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
@@ -384,12 +400,17 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 				ORDER BY teampage_position' . (($move_up) ? ' DESC' : ' ASC');
 			$result = $this->db->sql_query_limit($sql, $delta);
 
+			$sibling_count = 0;
+			$sibling_limit = $delta;
+
 			// Reset the delta, as we recalculate the new real delta
 			$delta = 0;
 			while ($row = $this->db->sql_fetchrow($result))
 			{
+				$sibling_count++;
 				$delta = $current_value - $row['teampage_position'];
-				if (!$move_up && $data['teampage_parent'] == self::NO_PARENT)
+
+				if (!$move_up && $data['teampage_parent'] == self::NO_PARENT && $sibling_count == $sibling_limit)
 				{
 					// Remove the additional sibling we added previously
 					$delta++;

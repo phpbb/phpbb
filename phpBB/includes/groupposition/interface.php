@@ -47,10 +47,10 @@ interface phpbb_groupposition_interface
 	public function add_group($group_id);
 
 	/**
-	* Deletes a group by setting the field to self::GROUP_DISABLED and closing the gap in the list.
+	* Deletes a group by group_id
 	*
 	* @param	int		$group_id		group_id of the group to be deleted
-	* @param	bool	$skip_group		Skip setting the group to GROUP_DISABLED, to save the query, when you need to update it anyway.
+	* @param	bool	$skip_group		Skip setting the value for this group, to save the query, when you need to update it anyway.
 	* @return	null
 	*/
 	public function delete_group($group_id, $skip_group = false);
