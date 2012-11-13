@@ -1,7 +1,8 @@
 phpbb.autosave_prompt = function (data) {
-	var str = phpbb_autosave_prompt_msg;
-	var dt;
-	var keys = [];
+	var dt,
+		choice,
+		str = phpbb_autosave_prompt_msg,
+		keys = [];
 	
 	for (var key in data) {
 		dt = new Date((key + phpbb_autosave_tz_offset) * 1000);
@@ -13,8 +14,6 @@ phpbb.autosave_prompt = function (data) {
 	if (keys.length < 2) {
 		return data[keys[0]];
 	} else {
-		var choice;
-
 		while (true) {
 			choice = prompt(str);
 			if (choice === null) {
@@ -44,8 +43,8 @@ phpbb.autosave_save = function (key) {
 };
 
 phpbb.autosave_timestr = function (dt) {
-	var hrs = dt.getUTCHours();
-	var mins = dt.getUTCMinutes();
+	var hrs = dt.getUTCHours(),
+		mins = dt.getUTCMinutes();
 
 	if (hrs < 10) {
 		hrs = '0' + hrs;
@@ -59,24 +58,30 @@ phpbb.autosave_timestr = function (dt) {
 };
 
 jQuery(function($) {
+	var key,
+		key_no_creation,
+		data,
+		explode,
+		bind;
+
 	// localStorage not supported or no post box on the page
 	if (!window.localStorage || $('textarea[name=message]').length < 1) {
 		return;
 	}
 
-	var key = window.location.host + window.location.pathname;
+	key = window.location.host + window.location.pathname;
 	// Extract the f=, t= or p= from the URL and separate with underscores
 	key += window.location.search.replace(/.*?\W(f|t|p)=(\d)+.*?/g, '_$2');
 
 	// Just store a variable without the creation time for convenience
-	var key_no_creation = key;
+	key_no_creation = key;
 	key += '_' + $('input[name=creation_time]').val();
 	
 	// If we have data in localStorage when the page loads we can assume it's
 	// ok to load their autosave
-	var data = {};
+	data = {};
 	for (var storage_key in window.localStorage) {
-		var explode = storage_key.split('_');
+		explode = storage_key.split('_');
 		if (key_no_creation === explode.slice(0, -1).join('_')) {
 			data[parseInt(explode.pop())] = window.localStorage[storage_key];
 		}
@@ -85,7 +90,7 @@ jQuery(function($) {
 	$('textarea[name=message]').val(phpbb.autosave_prompt(data));
 
 	// Create a closure to pass variables to the setInterval call
-	var bind = function () {
+	bind = function () {
 		return phpbb.autosave_save(key);
 	};
 
