@@ -108,6 +108,8 @@
 
 	<p>{L_TEAMPAGE_EXPLAIN}</p>
 
+	<!-- IF S_TEAMPAGE_CATEGORY and CUR_CATEGORY_NAME --><p><strong><a href="{U_ACTION}">{L_TEAMPAGE}</a> &raquo; {CUR_CATEGORY_NAME}</strong></p><!-- ENDIF -->
+
 	<table cellspacing="1">
 		<col class="col1" /><col class="col2" /><col class="col2" />
 	<thead>
@@ -120,8 +122,15 @@
 	<tbody>
 	<!-- BEGIN teampage -->
 		<tr>
-			<td><strong{teampage.GROUP_COLOUR}>{teampage.GROUP_NAME}</strong></td>
-			<td style="text-align: center;">{teampage.GROUP_TYPE}</td>
+			<td>
+				<!-- IF teampage.U_CATEGORY -->
+					<a href="{teampage.U_CATEGORY}">{teampage.GROUP_NAME}</a>
+				<!-- ELSE -->
+					<strong{teampage.GROUP_COLOUR}>{teampage.GROUP_NAME}</strong>
+				<!-- ENDIF -->
+			</td>
+			<td style="text-align: center;"><!-- IF teampage.GROUP_TYPE -->{teampage.GROUP_TYPE}<!-- ELSE -->-<!-- ENDIF -->
+			</td></td>
 			<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
 				<!-- IF teampage.S_FIRST_ROW && not teampage.S_LAST_ROW -->
 					{ICON_MOVE_UP_DISABLED}
@@ -146,6 +155,17 @@
 	<!-- END teampage -->
 	</tbody>
 	</table>
+
+	<!-- IF not S_TEAMPAGE_CATEGORY -->
+	<form id="teampage_add_category" method="post" action="{U_ACTION_TEAMPAGE}">
+		<fieldset class="quick">
+			<input class="inputbox autowidth" type="text" name="category_name" placeholder="{L_CATEGORY_NAME}" />
+			<input class="button2" type="submit" name="submit" value="{L_ADD_CATEGORY}" />
+			<input type="hidden" name="action" value="add_category" />
+			{S_FORM_TOKEN}
+		</fieldset>
+	</form>
+	<!-- ENDIF -->
 
 	<form id="teampage_add_group" method="post" action="{U_ACTION_TEAMPAGE}">
 		<fieldset class="quick">
