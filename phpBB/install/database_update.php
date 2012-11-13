@@ -1130,13 +1130,11 @@ function database_update_info()
 			'change_columns'	=> array(
 				GROUPS_TABLE		=> array(
 					'group_legend'		=> array('UINT', 0),
-					'group_avatar_type'		=> array('VCHAR:32', 0),
-				),
-				USERS_TABLE		=> array(
-					'user_avatar_type'		=> array('VCHAR:32', 0),
+					'group_avatar_type'		=> array('VCHAR:255', ''),
 				),
 				USERS_TABLE			=> array(
 					'user_timezone'		=> array('VCHAR:100', ''),
+					'user_avatar_type'		=> array('VCHAR:255', ''),
 				),
 			),
 		),
