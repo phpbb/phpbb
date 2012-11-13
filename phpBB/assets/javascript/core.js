@@ -240,6 +240,8 @@ phpbb.parse_querystring = function(string) {
  * @param function callback Callback to call on completion of event. Has
  * 	three parameters: the element that the event was evoked from, the JSON
  * 	that was returned and (if it is a form) the form action.
+ * @param bool overlay Define wether the ajax overlay should be displayed
+ *  while performing the ajax request
  */
 phpbb.ajaxify = function(options) {
 	var elements = $(options.selector),
