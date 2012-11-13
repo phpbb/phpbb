@@ -15,9 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
 * Controller helper class, contains methods that do things for controllers
@@ -26,25 +24,25 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class phpbb_controller_helper
 {
 	/**
-	* Container
-	* @var ContainerBuilder
-	*/
-	protected $container;
-
-	/**
 	* Template object
 	* @var phpbb_template
 	*/
 	protected $template;
 
 	/**
-	* phpBB Root Path
-	* @var string
+	* User object
+	* @var phpbb_user
 	*/
-	protected $phpbb_root_path;
+	protected $user;
 
 	/**
-	* PHP Extension
+	* phpBB root path
+	* @var string
+	*/
+	protected $root_path;
+
+	/**
+	* PHP extension
 	* @var string
 	*/
 	protected $php_ext;
@@ -58,15 +56,17 @@ class phpbb_controller_helper
 	/**
 	* Constructor
 	*
-	* @param ContainerBuilder $container DI Container
+	* @param phpbb_template $template Template object
+	* @param phpbb_user $user User object
+	* @param string $root_path phpBB root path
+	* @param string $php_ext PHP extension
 	*/
-	public function __construct(ContainerBuilder $container)
+	public function __construct(phpbb_template $template, phpbb_user $user, $root_path, $php_ext)
 	{
-		$this->container = $container;
-
-		$this->template = $this->container->get('template');
-		$this->phpbb_root_path = $this->container->getParameter('core.root_path');
-		$this->php_ext = $this->container->getParameter('core.php_ext');
+		$this->template = $template;
+		$this->user = $user;
+		$this->root_path = $root_path;
+		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -101,7 +101,7 @@ class phpbb_controller_helper
 	*/
 	public function url(array $url_parts, $query = '')
 	{
-		return append_sid($this->phpbb_root_path . $this->url_base . implode('/', $url_parts), $query);
+		return append_sid($this->root_path . $this->url_base . implode('/', $url_parts), $query);
 	}
 
 	/**
@@ -129,9 +129,9 @@ class phpbb_controller_helper
 	{
 		$this->template->assign_vars(array(
 			'MESSAGE_TEXT'	=> $message,
-			'MESSAGE_TITLE'	=> $this->container->get('user')->lang('INFORMATION'),
+			'MESSAGE_TITLE'	=> $this->user->lang('INFORMATION'),
 		));
 
-		return $this->render('message_body.html', $this->container->get('user')->lang('INFORMATION'), $code);
+		return $this->render('message_body.html', $this->user->lang('INFORMATION'), $code);
 	}
 }
