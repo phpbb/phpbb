@@ -38,24 +38,24 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN legend -->
-		<tr>
+		<tr data-down="{legend.U_MOVE_DOWN}" data-up="{legend.U_MOVE_UP}">
 			<td><strong{legend.GROUP_COLOUR}>{legend.GROUP_NAME}</strong></td>
 			<td style="text-align: center;">{legend.GROUP_TYPE}</td>
 			<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
 				<!-- IF legend.S_FIRST_ROW && not legend.S_LAST_ROW -->
-					{ICON_MOVE_UP_DISABLED}
-					<a href="{legend.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
+					<span class="up">{ICON_MOVE_UP_DISABLED}</span>
+					<span class="down"><a href="{legend.U_MOVE_DOWN}" data-ajax="forum_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
 				<!-- ELSEIF not legend.S_FIRST_ROW && not legend.S_LAST_ROW -->
-					<a href="{legend.U_MOVE_UP}">{ICON_MOVE_UP}</a>
-					<a href="{legend.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
+					<span class="up"><a href="{legend.U_MOVE_UP}" data-ajax="forum_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
+					<span class="down"><a href="{legend.U_MOVE_DOWN}" data-ajax="forum_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
 				<!-- ELSEIF legend.S_LAST_ROW && not legend.S_FIRST_ROW -->
-					<a href="{legend.U_MOVE_UP}">{ICON_MOVE_UP}</a>
-					{ICON_MOVE_DOWN_DISABLED}
+					<span class="up"><a href="{legend.U_MOVE_UP}" data-ajax="forum_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
+					<span class="down">{ICON_MOVE_DOWN_DISABLED}</span>
 				<!-- ELSE -->
-					{ICON_MOVE_UP_DISABLED}
-					{ICON_MOVE_DOWN_DISABLED}
+					<span class="up">{ICON_MOVE_UP_DISABLED}</span>
+					<span class="down">{ICON_MOVE_DOWN_DISABLED}</span>
 				<!-- ENDIF -->
-				<a href="{legend.U_DELETE}">{ICON_DELETE}</a>
+				<a href="{legend.U_DELETE}" data-ajax="row_delete" data-overlay="false">{ICON_DELETE}</a>
 			</td>
 		</tr>
 	<!-- BEGINELSE -->
@@ -121,7 +121,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN teampage -->
-		<tr>
+		<tr data-down="{teampage.U_MOVE_DOWN}" data-up="{teampage.U_MOVE_UP}">
 			<td>
 				<!-- IF teampage.U_CATEGORY -->
 					<a href="{teampage.U_CATEGORY}">{teampage.GROUP_NAME}</a>
@@ -133,19 +133,19 @@
 			</td></td>
 			<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
 				<!-- IF teampage.S_FIRST_ROW && not teampage.S_LAST_ROW -->
-					{ICON_MOVE_UP_DISABLED}
-					<a href="{teampage.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
+					<span class="up">{ICON_MOVE_UP_DISABLED}</span>
+					<span class="down"><a href="{teampage.U_MOVE_DOWN}" data-ajax="forum_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
 				<!-- ELSEIF not teampage.S_FIRST_ROW && not teampage.S_LAST_ROW -->
-					<a href="{teampage.U_MOVE_UP}">{ICON_MOVE_UP}</a>
-					<a href="{teampage.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
+					<span class="up"><a href="{teampage.U_MOVE_UP}" data-ajax="forum_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
+					<span class="down"><a href="{teampage.U_MOVE_DOWN}" data-ajax="forum_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
 				<!-- ELSEIF teampage.S_LAST_ROW && not teampage.S_FIRST_ROW -->
-					<a href="{teampage.U_MOVE_UP}">{ICON_MOVE_UP}</a>
-					{ICON_MOVE_DOWN_DISABLED}
+					<span class="up"><a href="{teampage.U_MOVE_UP}" data-ajax="forum_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
+					<span class="down">{ICON_MOVE_DOWN_DISABLED}</span>
 				<!-- ELSE -->
-					{ICON_MOVE_UP_DISABLED}
-					{ICON_MOVE_DOWN_DISABLED}
+					<span class="up">{ICON_MOVE_UP_DISABLED}</span>
+					<span class="down">{ICON_MOVE_DOWN_DISABLED}</span>
 				<!-- ENDIF -->
-				<a href="{teampage.U_DELETE}">{ICON_DELETE}</a>
+				<a href="{teampage.U_DELETE}" data-ajax="row_delete" data-overlay="false">{ICON_DELETE}</a>
 			</td>
 		</tr>
 	<!-- BEGINELSE -->
@@ -175,5 +175,13 @@
 			{S_FORM_TOKEN}
 		</fieldset>
 	</form>
+
+	<div class="hidden">
+		<a class="template-up-img" href="#">{ICON_MOVE_UP}</a>
+		<span class="template-up-img-disabled">{ICON_MOVE_UP_DISABLED}</span>
+
+		<a class="template-down-img" href="#">{ICON_MOVE_DOWN}</a>
+		<span class="template-down-img-disabled">{ICON_MOVE_DOWN_DISABLED}</span>
+	</div>
 
 <!-- INCLUDE overall_footer.html -->

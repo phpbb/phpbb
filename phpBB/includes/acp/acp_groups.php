@@ -899,6 +899,12 @@ class acp_groups
 			}
 		}
 
+		if (($action == 'move_up' || $action == 'move_down') && $request->is_ajax())
+		{
+			$json_response = new phpbb_json_response;
+			$json_response->send(array('success' => true));
+		}
+
 		$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
 			FROM ' . GROUPS_TABLE . '
 			ORDER BY group_legend ASC, group_type DESC, group_name ASC';
@@ -911,13 +917,13 @@ class acp_groups
 			if ($row['group_legend'])
 			{
 				$template->assign_block_vars('legend', array(
-					'GROUP_NAME' => $group_name,
-					'GROUP_COLOUR' => ($row['group_colour']) ? ' style="color: #' . $row['group_colour'] . '"' : '',
-					'GROUP_TYPE' => $user->lang[phpbb_groupposition_legend::group_type_language($row['group_type'])],
+					'GROUP_NAME'	=> $group_name,
+					'GROUP_COLOUR'	=> ($row['group_colour']) ? ' style="color: #' . $row['group_colour'] . '"' : '',
+					'GROUP_TYPE'	=> $user->lang[phpbb_groupposition_legend::group_type_language($row['group_type'])],
 
-					'U_MOVE_DOWN' => "{$this->u_action}&amp;field=legend&amp;action=move_down&amp;g=" . $row['group_id'],
-					'U_MOVE_UP' => "{$this->u_action}&amp;field=legend&amp;action=move_up&amp;g=" . $row['group_id'],
-					'U_DELETE' => "{$this->u_action}&amp;field=legend&amp;action=delete&amp;g=" . $row['group_id'],
+					'U_MOVE_DOWN'	=> "{$this->u_action}&amp;field=legend&amp;action=move_down&amp;g=" . $row['group_id'],
+					'U_MOVE_UP'		=> "{$this->u_action}&amp;field=legend&amp;action=move_up&amp;g=" . $row['group_id'],
+					'U_DELETE'		=> "{$this->u_action}&amp;field=legend&amp;action=delete&amp;g=" . $row['group_id'],
 				));
 			}
 			else
