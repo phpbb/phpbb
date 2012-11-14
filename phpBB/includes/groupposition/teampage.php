@@ -35,14 +35,22 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	const NO_PARENT = 0;
 
 	/**
-	* phpbb-database object
+	* Database object
+	* @var dbal
 	*/
 	private $db = null;
 
 	/**
-	* phpbb-user object
+	* User object
+	* @var phpbb_user
 	*/
 	private $user = null;
+
+	/**
+	* Cache object
+	* @var phpbb_cache_driver_interface
+	*/
+	private $cache = null;
 
 	/**
 	* URI for the adm_back_link when there was an error.
@@ -52,14 +60,24 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	/**
 	* Constructor
 	*
-	* @param phpbb_dbal	$db				Database object
-	* @param string		$adm_back_link	Return URL to use after an error occured
+	* @param dbal		$db		Database object
+	* @param phpbb_user	$user	User object
 	*/
-	public function __construct($db, phpbb_user $user, $adm_back_link = '')
+	public function __construct(dbal $db, phpbb_user $user, phpbb_cache_driver_interface $cache)
 	{
-		$this->adm_back_link = $adm_back_link;
 		$this->db = $db;
 		$this->user = $user;
+		$this->cache = $cache;
+	}
+
+	/**
+	* Set the back link for error messages
+	*
+	* @param string		$adm_back_link	Return URL to use after an error occured
+	*/
+	public function set_admin_back_link($adm_back_link)
+	{
+		$this->adm_back_link = $adm_back_link;
 	}
 
 	/**
@@ -246,6 +264,8 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 			$sql = 'INSERT INTO ' . TEAMPAGE_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 			$this->db->sql_query($sql);
 		}
+
+		$this->cache->destroy('sql', TEAMPAGE_TABLE);
 	}
 
 	/**
@@ -272,6 +292,8 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 
 		$sql = 'INSERT INTO ' . TEAMPAGE_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
+
+		$this->cache->destroy('sql', TEAMPAGE_TABLE);
 	}
 
 	/**
@@ -294,6 +316,8 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 				WHERE group_id = ' . $group_id;
 			$this->db->sql_query($sql);
 		}
+
+		$this->cache->destroy('sql', TEAMPAGE_TABLE);
 	}
 
 	/**
@@ -321,6 +345,8 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 				WHERE teampage_position > ' . $current_value;
 			$this->db->sql_query($sql);
 		}
+
+		$this->cache->destroy('sql', TEAMPAGE_TABLE);
 	}
 
 	/**
@@ -438,6 +464,8 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 
 			$this->db->sql_transaction('commit');
 		}
+
+		$this->cache->destroy('sql', TEAMPAGE_TABLE);
 	}
 
 	/**
@@ -532,6 +560,8 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 
 			$this->db->sql_transaction('commit');
 		}
+
+		$this->cache->destroy('sql', TEAMPAGE_TABLE);
 	}
 
 	/**
@@ -539,7 +569,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	*
 	* {@inheritDoc}
 	*/
-	public function error($message)
+	private function error($message)
 	{
 		trigger_error($this->user->lang[$message] . (($this->adm_back_link) ? adm_back_link($this->adm_back_link) : ''), E_USER_WARNING);
 	}

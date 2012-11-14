@@ -81,12 +81,4 @@ interface phpbb_groupposition_interface
 	* @return	null
 	*/
 	public function move($group_id, $delta);
-
-	/**
-	* Error
-	*
-	* @param	string		$message	Error message to display
-	* @return	null
-	*/
-	public function error($message);
 }

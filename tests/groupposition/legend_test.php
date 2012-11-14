@@ -35,7 +35,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$user = new phpbb_user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user, '');
+		$test_class = new phpbb_groupposition_legend($db, $user);
 		$this->assertEquals($expected, $test_class->get_group_value($group_id));
 	}
 
@@ -48,7 +48,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$user = new phpbb_user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user, '');
+		$test_class = new phpbb_groupposition_legend($db, $user);
 		$this->assertEquals(2, $test_class->get_group_count());
 	}
 
@@ -80,7 +80,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$user = new phpbb_user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user, '');
+		$test_class = new phpbb_groupposition_legend($db, $user);
 		$test_class->add_group($group_id);
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -138,7 +138,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$user = new phpbb_user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user, '');
+		$test_class = new phpbb_groupposition_legend($db, $user);
 		$test_class->delete_group($group_id, $skip_group);
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -181,7 +181,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$user = new phpbb_user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user, '');
+		$test_class = new phpbb_groupposition_legend($db, $user);
 		$test_class->move_up($group_id);
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -224,7 +224,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$user = new phpbb_user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user, '');
+		$test_class = new phpbb_groupposition_legend($db, $user);
 		$test_class->move_down($group_id);
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -287,7 +287,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$user = new phpbb_user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user, '');
+		$test_class = new phpbb_groupposition_legend($db, $user);
 		$test_class->move($group_id, $increment);
 
 		$result = $db->sql_query('SELECT group_id, group_legend

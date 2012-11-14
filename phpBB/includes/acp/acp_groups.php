@@ -830,13 +830,12 @@ class acp_groups
 			// Invalid mode
 			trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
-		else if ($field == 'legend')
+		else if ($field)
 		{
-			$group_position = new phpbb_groupposition_legend($db, $user, $this->u_action);
-		}
-		else if ($field == 'teampage')
-		{
-			$group_position = new phpbb_groupposition_teampage($db, $user, $this->u_action);
+			global $phpbb_container;
+
+			$group_position = $phpbb_container->get('groupposition.' . $field);
+			$group_position->set_admin_back_link($this->u_action);
 		}
 
 		if ($field == 'teampage')
@@ -863,9 +862,6 @@ class acp_groups
 					$group_position->move_down_teampage($teampage_id);
 				break;
 			}
-
-			global $cache;
-			$cache->destroy('sql', TEAMPAGE_TABLE);
 		}
 		else if ($field == 'legend')
 		{

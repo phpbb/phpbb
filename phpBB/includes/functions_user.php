@@ -2602,8 +2602,10 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		$current_legend = phpbb_groupposition_legend::GROUP_DISABLED;
 		$current_teampage = phpbb_groupposition_teampage::GROUP_DISABLED;
 
-		$legend = new phpbb_groupposition_legend($db, $user, '');
-		$teampage = new phpbb_groupposition_teampage($db, $user, '');
+		global $phpbb_container;
+
+		$legend = $phpbb_container->get('groupposition.legend');
+		$teampage = $phpbb_container->get('groupposition.teampage');
 		if ($group_id)
 		{
 			$current_legend = $legend->get_group_value($group_id);
@@ -2623,7 +2625,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 				$group_attributes['group_legend'] = $current_legend;
 			}
 		}
-		else if ($group_id && ($current_legend > phpbb_groupposition_legend::GROUP_DISABLED))
+		else if ($group_id && ($current_legend != phpbb_groupposition_legend::GROUP_DISABLED))
 		{
 			// Group is removed from the legend
 			$legend->delete_group($group_id, true);
@@ -2746,7 +2748,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 				$teampage->add_group($group_id);
 			}
 		}
-		else if ($group_id && ($current_teampage > phpbb_groupposition_teampage::GROUP_DISABLED))
+		else if ($group_id && ($current_teampage != phpbb_groupposition_teampage::GROUP_DISABLED))
 		{
 			$teampage->delete_group($group_id);
 		}
@@ -2833,7 +2835,7 @@ function avatar_remove_db($avatar_name)
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db, $user, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $db, $user, $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_container;
 
 	if (!$group_name)
 	{
@@ -2875,11 +2877,11 @@ function group_delete($group_id, $group_name = false)
 	while ($start);
 
 	// Delete group from legend and teampage
-	$legend = new phpbb_groupposition_legend($db, $user, '');
+	$legend = $phpbb_container->get('groupposition.legend');
 	$legend->delete_group($group_id);
 	unset($legend);
 
-	$teampage = new phpbb_groupposition_teampage($db, $user, '');
+	$teampage = $phpbb_container->get('groupposition.teampage');
 	$teampage->delete_group($group_id);
 	unset($teampage);
 

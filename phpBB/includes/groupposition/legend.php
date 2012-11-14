@@ -31,12 +31,14 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 	const GROUP_DISABLED = 0;
 
 	/**
-	* phpbb-database object
+	* Database object
+	* @var dbal
 	*/
 	private $db = null;
 
 	/**
-	* phpbb-user object
+	* User object
+	* @var phpbb_user
 	*/
 	private $user = null;
 
@@ -48,14 +50,23 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 	/**
 	* Constructor
 	*
-	* @param phpbb_dbal	$db				Database object
-	* @param string		$adm_back_link	Return URL to use after an error occured
+	* @param dbal		$db		Database object
+	* @param phpbb_user	$user	User object
 	*/
-	public function __construct($db, phpbb_user $user, $adm_back_link = '')
+	public function __construct(dbal $db, phpbb_user $user)
 	{
-		$this->adm_back_link = $adm_back_link;
 		$this->db = $db;
 		$this->user = $user;
+	}
+
+	/**
+	* Set the back link for error messages
+	*
+	* @param string		$adm_back_link	Return URL to use after an error occured
+	*/
+	public function set_admin_back_link($adm_back_link)
+	{
+		$this->adm_back_link = $adm_back_link;
 	}
 
 	/**
@@ -221,7 +232,7 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 	*
 	* {@inheritDoc}
 	*/
-	public function error($message)
+	private function error($message)
 	{
 		trigger_error($this->user->lang[$message] . (($this->adm_back_link) ? adm_back_link($this->adm_back_link) : ''), E_USER_WARNING);
 	}

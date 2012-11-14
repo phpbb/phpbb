@@ -91,6 +91,19 @@ services:
             - .%core.php_ext%
             - @cache.driver
 
+    groupposition.legend:
+        class: phpbb_groupposition_legend
+        arguments:
+            - @dbal.conn
+            - @user
+
+    groupposition.teampage:
+        class: phpbb_groupposition_teampage
+        arguments:
+            - @dbal.conn
+            - @user
+            - @cache.driver
+
     request:
         class: phpbb_request
 
