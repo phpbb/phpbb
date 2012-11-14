@@ -123,7 +123,7 @@ services:
             - @ext.manager
             - %core.root_path%
             - @cache.driver
-            - %core.php_ext%
+            - .%core.php_ext%
             - _ext_finder
 
     http_kernel:
