@@ -1372,7 +1372,7 @@ function get_avatar($row, $alt, $ignore_config = false)
 	{
 		if ($avatar->custom_html)
 		{
-			return $avatar->get_html($row, $ignore_config);
+			return $avatar->get_custom_html($row, $ignore_config, $alt);
 		}
 
 		$avatar_data = $avatar->get_data($row, $ignore_config);

@@ -41,7 +41,7 @@ interface phpbb_avatar_driver_interface
 	*        the avatar anyways. Useful for the ACP.
 	* @return string HTML
 	*/
-	public function get_custom_html($row, $ignore_config = false);
+	public function get_custom_html($row, $ignore_config = false, $alt = '');
 
 	/**
 	* @TODO
