@@ -2570,7 +2570,7 @@ function phpbb_avatar_explanation_string()
 */
 function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow_desc_bbcode = false, $allow_desc_urls = false, $allow_desc_smilies = false)
 {
-	global $phpbb_root_path, $config, $db, $user, $file_upload;
+	global $phpbb_root_path, $config, $db, $user, $file_upload, $phpbb_container;
 
 	$error = array();
 
@@ -2601,8 +2601,6 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 	{
 		$current_legend = phpbb_groupposition_legend::GROUP_DISABLED;
 		$current_teampage = phpbb_groupposition_teampage::GROUP_DISABLED;
-
-		global $phpbb_container;
 
 		$legend = $phpbb_container->get('groupposition.legend');
 		$teampage = $phpbb_container->get('groupposition.teampage');
@@ -2731,6 +2729,13 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			$db->sql_query($sql);
 		}
 
+		// Remove the group from the teampage, only if unselected and we are editing a group,
+		// which is currently displayed.
+		if (!$group_teampage && $group_id && $current_teampage != phpbb_groupposition_teampage::GROUP_DISABLED)
+		{
+			$teampage->delete_group($group_id);
+		}
+
 		if (!$group_id)
 		{
 			$group_id = $db->sql_nextid();
@@ -2739,6 +2744,11 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			{
 				group_correct_avatar($group_id, $sql_ary['group_avatar']);
 			}
+		}
+
+		if ($group_teampage && $current_teampage == phpbb_groupposition_teampage::GROUP_DISABLED)
+		{
+			$teampage->add_group($group_id);
 		}
 
 		if ($group_teampage)
