@@ -331,20 +331,20 @@ a.top2 {
 }
 
 /* Arrow links  */
-a.up		{ background-image: url("./images/arrow_up.gif") }
-a.down		{ background-image: url("./images/arrow_down.gif") }
-a.left		{ background-image: url("./images/arrow_left.gif") }
-a.right		{ background-image: url("./images/arrow_right.gif") }
+a.arrow-up			{ background-image: url("./images/arrow_up.gif") }
+a.arrow-down		{ background-image: url("./images/arrow_down.gif") }
+a.arrow-left		{ background-image: url("./images/arrow_left.gif") }
+a.arrow-right		{ background-image: url("./images/arrow_right.gif") }
 
-a.up:hover {
+a.arrow-up:hover {
 	background-color: transparent;
 }
 
-a.left:hover {
+a.arrow-left:hover {
 	color: #368AD2;
 }
 
-a.right:hover {
+a.arrow-right:hover {
 	color: #368AD2;
 }
 

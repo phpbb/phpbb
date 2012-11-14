@@ -555,12 +555,6 @@ class phpbb_feed_base
 			$forum_ids = array_flip($this->get_moderator_approve_forums());
 		}
 
-		if (!$forum_id)
-		{
-			// Global announcement, your a moderator in any forum than it's okay.
-			return (!empty($forum_ids)) ? true : false;
-		}
-
 		return (isset($forum_ids[$forum_id])) ? true : false;
 	}
 

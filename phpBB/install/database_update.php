@@ -77,6 +77,7 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
@@ -98,20 +99,27 @@ if (!defined('EXT_TABLE'))
 	define('EXT_TABLE', $table_prefix . 'ext');
 }
 
-$phpbb_container = new ContainerBuilder();
-$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/../config'));
-$loader->load('services.yml');
-
-// We must include the DI processor class files because the class loader
-// is not yet set up
-require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
-require($phpbb_root_path . 'includes/di/processor/config.' . $phpEx);
-$processor = new phpbb_di_processor_config($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx);
-$processor->process($phpbb_container);
-
 // Setup class loader first
-$phpbb_class_loader = $phpbb_container->get('class_loader');
-$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
+$phpbb_class_loader->register();
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+$phpbb_class_loader_ext->register();
+
+// Set up container
+$phpbb_container = phpbb_create_dumped_container_unless_debug(
+	array(
+		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
+		new phpbb_di_extension_core($phpbb_root_path),
+	),
+	array(
+		new phpbb_di_pass_collection_pass(),
+	),
+	$phpbb_root_path,
+	$phpEx
+);
+
+$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
+$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
 // set up caching
 $cache = $phpbb_container->get('cache');
@@ -122,13 +130,6 @@ $request	= $phpbb_container->get('request');
 $user		= $phpbb_container->get('user');
 $auth		= $phpbb_container->get('auth');
 $db			= $phpbb_container->get('dbal.conn');
-
-$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
-foreach ($ids as $id)
-{
-	$processor = $phpbb_container->get($id);
-	$processor->process($phpbb_container);
-}
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
