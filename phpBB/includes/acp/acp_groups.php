@@ -819,11 +819,11 @@ class acp_groups
 		$this->tpl_name = 'acp_groups_position';
 		$this->page_title = 'ACP_GROUPS_POSITION';
 
-		$field = request_var('field', '');
-		$action = request_var('action', '');
-		$group_id = request_var('g', 0);
-		$teampage_id = request_var('t', 0);
-		$category_id = request_var('c', 0);
+		$field = $request->variable('field', '');
+		$action = $request->variable('action', '');
+		$group_id = $request->variable('g', 0);
+		$teampage_id = $request->variable('t', 0);
+		$category_id = $request->variable('c', 0);
 
 		if ($field && !in_array($field, array('legend', 'teampage')))
 		{
@@ -889,12 +889,12 @@ class acp_groups
 			switch ($action)
 			{
 				case 'set_config_teampage':
-					set_config('teampage_forums', $request->variable('teampage_forums', 0));
-					set_config('teampage_memberships', $request->variable('teampage_memberships', 0));
+					$config->set('teampage_forums', $request->variable('teampage_forums', 0));
+					$config->set('teampage_memberships', $request->variable('teampage_memberships', 0));
 				break;
 
 				case 'set_config_legend':
-					set_config('legend_sort_groupname', $request->variable('legend_sort_groupname', 0));
+					$config->set('legend_sort_groupname', $request->variable('legend_sort_groupname', 0));
 				break;
 			}
 		}
