@@ -132,14 +132,25 @@ services:
             - @dispatcher
             - @controller.resolver
 
-    kernel_event_subscriber:
-        class: phpbb_event_kernel_subscriber
+    kernel_request_subscriber:
+        class: phpbb_event_kernel_request_subscriber
         arguments:
-            - @template
-            - @user
             - @ext.finder
             - %core.root_path%
             - .%core.php_ext%
+        tags:
+            - { name: kernel.event_subscriber }
+
+    kernel_exception_subscriber:
+        class: phpbb_event_kernel_exception_subscriber
+        arguments:
+            - @template
+            - @user
+        tags:
+            - { name: kernel.event_subscriber }
+
+    kernel_terminate_subscriber:
+        class: phpbb_event_kernel_terminate_subscriber
         tags:
             - { name: kernel.event_subscriber }
 
