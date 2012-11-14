@@ -123,7 +123,7 @@ services:
             - @ext.manager
             - %core.root_path%
             - @cache.driver
-            - .%core.php_ext%
+            - %core.php_ext%
             - _ext_finder
 
     http_kernel:
@@ -137,21 +137,14 @@ services:
         arguments:
             - @template
             - @user
+            - @ext.finder
+            - %core.root_path%
+            - .%core.php_ext%
         tags:
             - { name: kernel.event_subscriber }
 
     request:
         class: phpbb_request
-
-    request.context:
-        class: Symfony\Component\Routing\RequestContext
-
-    router_listener:
-        class: Symfony\Component\HttpKernel\EventListener\RouterListener
-        arguments:
-            - @url_matcher
-        tags:
-            - { name: kernel.event_subscriber }
 
     style:
         class: phpbb_style
@@ -188,12 +181,6 @@ services:
 
     template_context:
         class: phpbb_template_context
-
-    url_matcher:
-        class: Symfony\Component\Routing\Matcher\UrlMatcher
-        arguments:
-            - @controller.route_collection
-            - @request.context
 
     user:
         class: phpbb_user
