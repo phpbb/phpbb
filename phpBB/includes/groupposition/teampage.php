@@ -60,8 +60,9 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	/**
 	* Constructor
 	*
-	* @param dbal		$db		Database object
-	* @param phpbb_user	$user	User object
+	* @param dbal							$db		Database object
+	* @param phpbb_user						$user	User object
+	* @param phpbb_cache_driver_interface	$cache	Cache object
 	*/
 	public function __construct(dbal $db, phpbb_user $user, phpbb_cache_driver_interface $cache)
 	{

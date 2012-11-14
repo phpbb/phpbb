@@ -93,10 +93,6 @@ switch ($mode)
 					'ON'	=> 'ug.group_id = g.group_id AND ug.user_pending = 0 AND ug.user_id = ' . (int) $user->data['user_id'],
 				),
 			),
-
-			'WHERE'		=> '',
-
-			'ORDER_BY'	=> '',
 		);
 
 		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
