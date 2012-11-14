@@ -39,7 +39,7 @@ class phpbb_template_compile
 	* @param array $style_names Name of style to which the template being compiled belongs and parents in style tree order
 	* @param phpbb_style_resource_locator $locator Resource locator
 	* @param string $phpbb_root_path Path to phpBB root directory
-	* @param phpbb_extension_manager $extension_manager Extension manager to use for finding template fragments in extensions; if null, template hooks will not be invoked
+	* @param phpbb_extension_manager $extension_manager Extension manager to use for finding template fragments in extensions; if null, template events will not be invoked
 	* @param phpbb_user $user Current user
 	*/
 	public function __construct($allow_php, $style_names, $locator, $phpbb_root_path, $extension_manager = null, $user = null)

@@ -106,6 +106,7 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Current user
+	*
 	* @var phpbb_user
 	*/
 	private $user;
@@ -170,6 +171,8 @@ class phpbb_template_filter extends php_user_filter
 	*
 	* Get the allow_php option, style_names, root directory and locator from params,
 	* which are passed to stream_filter_append.
+	*
+	* @return boolean Returns true
 	*/
 	public function onCreate()
 	{
@@ -902,12 +905,13 @@ class phpbb_template_filter extends php_user_filter
 	* such template fragments would have no effect.
 	*
 	* @param string $tag_args EVENT tag arguments, as a string - for EVENT this is the event name
+	* @return string compiled template code
 	*/
 	private function compile_tag_event($tag_args)
 	{
 		if (!preg_match('/^\w+$/', $tag_args))
 		{
-			// The hook location is improperly formatted,
+			// The event location is improperly formatted,
 			if ($this->user)
 			{
 				trigger_error($this->user->lang('ERR_TEMPLATE_EVENT_LOCATION', $tag_args), E_USER_ERROR);
@@ -950,7 +954,14 @@ class phpbb_template_filter extends php_user_filter
 
 				if ($compiled === false)
 				{
-					trigger_error(sprintf('The file could not be compiled: %s', phpbb_filter_root_path($file)), E_USER_ERROR);
+					if ($this->user)
+					{
+						trigger_error($this->user->lang('ERR_TEMPLATE_COMPILATION', phpbb_filter_root_path($file)), E_USER_ERROR);
+					}
+					else
+					{
+						trigger_error(sprintf('The file could not be compiled: %s', phpbb_filter_root_path($file)), E_USER_ERROR);
+					}
 				}
 
 				$all_compiled .= $compiled;

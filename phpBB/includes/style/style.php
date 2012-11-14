@@ -97,7 +97,7 @@ class phpbb_style
 		{
 			$names[] = $dir;
 		}
-		// Add 'all' path, used as last fallback path by hooks and extensions
+		// Add 'all' path, used as last fallback path by events and extensions
 		//$names[] = 'all';
 
 		$paths = array();

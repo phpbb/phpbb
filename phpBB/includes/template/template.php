@@ -98,7 +98,7 @@ class phpbb_template
 	* @param user $user current user
 	* @param phpbb_template_locator $locator template locator
 	* @param phpbb_template_context $context template context
-	* @param phpbb_extension_manager $extension_manager extension manager, if null then template hooks will not be invoked
+	* @param phpbb_extension_manager $extension_manager extension manager, if null then template events will not be invoked
 	*/
 	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_locator $locator, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null)
 	{
