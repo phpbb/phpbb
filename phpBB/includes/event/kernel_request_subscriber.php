@@ -50,8 +50,6 @@ class phpbb_event_kernel_request_subscriber implements EventSubscriberInterface
 	*/
 	public function __construct(phpbb_extension_finder $finder, $root_path, $php_ext)
 	{
-		$this->template = $template;
-		$this->user = $user;
 		$this->finder = $finder;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
@@ -71,11 +69,11 @@ class phpbb_event_kernel_request_subscriber implements EventSubscriberInterface
 		$context = new RequestContext();
 		$context->fromRequest($request);
 
-		if (!function_exists('phpbb_create_url_matcher'))
+		if (!function_exists('phpbb_load_url_matcher'))
 		{
 			include($this->root_path . 'includes/functions_url_matcher' . $this->php_ext);
 		}
-		$matcher = phpbb_create_url_matcher($this->finder, $context, $this->root_path, $this->php_ext);
+		$matcher = phpbb_get_url_matcher($this->finder, $context, $this->root_path, $this->php_ext);
 
 		$router_listener = new RouterListener($matcher, $context);
 		$router_listener->onKernelRequest($event);
