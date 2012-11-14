@@ -35,7 +35,7 @@ function phpbb_get_url_matcher(phpbb_extension_finder $finder, RequestContext $c
 		return phpbb_create_url_matcher($finder, $context);
 	}
 
-	if (phpbb_url_matcher_dumped($root_path, $php_ext) === false)
+	if (!phpbb_url_matcher_dumped($root_path, $php_ext))
 	{
 		phpbb_create_dumped_url_matcher($finder, $context, $root_path, $php_ext);
 	}
@@ -55,7 +55,8 @@ function phpbb_get_url_matcher(phpbb_extension_finder $finder, RequestContext $c
 function phpbb_create_dumped_url_matcher(phpbb_extension_finder $finder, RequestContext $context, $root_path, $php_ext)
 {
 	$provider = new phpbb_controller_provider();
-	$dumper = new PhpMatcherDumper($provider->get_paths($finder)->find());
+	$routes = $provider->get_paths($finder)->find();
+	$dumper = new PhpMatcherDumper($routes);
 	$cached_url_matcher_dump = $dumper->dump(array(
 		'class'			=> 'phpbb_url_matcher',
 	));
