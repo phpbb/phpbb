@@ -10,12 +10,12 @@ var img_templates = {
 };
 
 /**
- * The following callbacks are  for reording forums in acp_forums. forum_down
- * is triggered when a forum is moved down, and forum_up is triggered when
- * a forum is moved up. It moves the row up or down, and deactivates /
+ * The following callbacks are for reording items. row_down
+ * is triggered when a forum is moved down, and row_up is triggered when
+ * an item is moved up. It moves the row up or down, and deactivates /
  * activates any up / down icons that require it (the ones at the top or bottom).
  */
-phpbb.add_ajax_callback('forum_down', function() {
+phpbb.add_ajax_callback('row_down', function() {
 	var el = $(this),
 		tr = el.parents('tr');
 
@@ -26,16 +26,19 @@ phpbb.add_ajax_callback('forum_down', function() {
 
 		tr.next().find('.up').html(img_templates.up_disabled);
 
+		var down_img = img_templates.down.clone().attr('href', tr.next().attr('data-down'));
+		tr.next().find('.down').html(down_img);
+
 		phpbb.ajaxify({
 			selector: el.parents('span').siblings('.up').children('a'),
-			callback: 'forum_up',
+			callback: 'row_up',
 			overlay: false
 		});
 	}
 
 	tr.insertAfter(tr.next());
 
-	if (tr.is(':last-child'))
+	if (!tr.prev().is(':first-child') && tr.is(':last-child'))
 	{
 		el.replaceWith(img_templates.down_disabled);
 
@@ -44,13 +47,17 @@ phpbb.add_ajax_callback('forum_down', function() {
 
 		phpbb.ajaxify({
 			selector: tr.prev().find('.down').children('a'),
-			callback: 'forum_down',
+			callback: 'row_down',
 			overlay: false
 		});
 	}
+	else if (tr.is(':last-child'))
+	{
+		el.replaceWith(img_templates.down_disabled);
+	}
 });
 
-phpbb.add_ajax_callback('forum_up', function() {
+phpbb.add_ajax_callback('row_up', function() {
 	var el = $(this),
 		tr = el.parents('tr');
 
@@ -61,16 +68,19 @@ phpbb.add_ajax_callback('forum_up', function() {
 
 		tr.prev().find('.down').html(img_templates.down_disabled);
 
+		var up_img = img_templates.down.clone().attr('href', tr.prev().attr('data-up'));
+		tr.prev().find('.up').html(up_img);
+
 		phpbb.ajaxify({
 			selector: el.parents('span').siblings('.down').children('a'),
-			callback: 'forum_down',
+			callback: 'row_down',
 			overlay: false
 		});
 	}
 
 	tr.insertBefore(tr.prev());
 
-	if (tr.is(':first-child'))
+	if (!tr.next().is(':last-child') && tr.is(':first-child'))
 	{
 		el.replaceWith(img_templates.up_disabled);
 
@@ -79,9 +89,13 @@ phpbb.add_ajax_callback('forum_up', function() {
 
 		phpbb.ajaxify({
 			selector: tr.next().find('.up').children('a'),
-			callback: 'forum_up',
+			callback: 'row_up',
 			overlay: false
 		});
+	}
+	else if (tr.is(':first-child'))
+	{
+		el.replaceWith(img_templates.up_disabled);
 	}
 });
 
