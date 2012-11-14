@@ -128,7 +128,7 @@ $phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 $template = $phpbb_container->get('template');
 $phpbb_style = $phpbb_container->get('style');
 
-$phpbb_avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $phpbb_extension_manager, $cache->get_driver());
+$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);

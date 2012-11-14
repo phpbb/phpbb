@@ -21,6 +21,28 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 {
+	private $name;
+
+	/**
+	* Returns the name of the driver.
+	*
+	* @return string		Name of wrapped driver.
+	*/
+	public function get_name()
+	{
+		return $this->name;
+	}
+
+	/**
+	* Sets the name of the driver.
+	*
+	* @param string	$name The driver name
+	*/
+	public function set_name($name)
+	{
+		$this->name = $name;
+	}
+
 	/**
 	* Current board configuration
 	* @type phpbb_config

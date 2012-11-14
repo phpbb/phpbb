@@ -1,0 +1,44 @@
+services:
+    avatar.driver.core.gravatar:
+        class: phpbb_avatar_driver_core_gravatar
+        arguments:
+            - @config
+            - @request
+            - %core.root_path%
+            - .%core.php_ext%
+            - @cache.driver
+        tags:
+            - { name: avatar.driver }
+
+    avatar.driver.core.local:
+        class: phpbb_avatar_driver_core_local
+        arguments:
+            - @config
+            - @request
+            - %core.root_path%
+            - .%core.php_ext%
+            - @cache.driver
+        tags:
+            - { name: avatar.driver }
+
+    avatar.driver.core.remote:
+        class: phpbb_avatar_driver_core_remote
+        arguments:
+            - @config
+            - @request
+            - %core.root_path%
+            - .%core.php_ext%
+            - @cache.driver
+        tags:
+            - { name: avatar.driver }
+
+    avatar.driver.core.upload:
+        class: phpbb_avatar_driver_core_upload
+        arguments:
+            - @config
+            - @request
+            - %core.root_path%
+            - .%core.php_ext%
+            - @cache.driver
+        tags:
+            - { name: avatar.driver }

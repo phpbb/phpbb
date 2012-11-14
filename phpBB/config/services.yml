@@ -1,10 +1,29 @@
 imports:
     - { resource: tables.yml }
     - { resource: cron_tasks.yml }
+    - { resource: avatars.yml }
 
 services:
     auth:
         class: phpbb_auth
+
+    avatar.driver_collection:
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: avatar.driver }
+
+    avatar.manager:
+        class: phpbb_avatar_manager
+        arguments:
+            - %core.root_path%
+            - .%core.php_ext%
+            - @config
+            - @request
+            - @cache.driver
+            - @avatar.driver_collection
+            - @service_container
 
     cache:
         class: phpbb_cache_service

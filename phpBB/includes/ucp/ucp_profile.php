@@ -563,8 +563,9 @@ class ucp_profile
 					{
 						if (check_form_key('ucp_avatar'))
 						{
-							$driver = request_var('avatar_driver', '');
-							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$driver"])
+							$driver = str_replace('_', '.', request_var('avatar_driver', ''));
+							$config_name = preg_replace('#^avatar.driver.core.#', '', $driver);
+							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"])
 							{
 								$avatar = $phpbb_avatar_manager->get_driver($driver);
 								$result = $avatar->process_form($template, $avatar_data, $error);
@@ -643,7 +644,7 @@ class ucp_profile
 									'L_TITLE' => $user->lang('AVATAR_DRIVER_' . $driver_u . '_TITLE'), // @TODO add lang values
 									'L_EXPLAIN' => $user->lang('AVATAR_DRIVER_' . $driver_u . '_EXPLAIN'),
 
-									'DRIVER' => $driver,
+									'DRIVER' => str_replace('.', '_', $driver),
 									'SELECTED' => ($driver == $focused_driver),
 									'OUTPUT' => $template->assign_display('avatar'),
 								));

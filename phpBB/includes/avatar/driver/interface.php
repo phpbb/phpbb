@@ -22,6 +22,13 @@ if (!defined('IN_PHPBB'))
 interface phpbb_avatar_driver_interface
 {
 	/**
+	* Returns the name of the driver.
+	*
+	* @return string		Name of wrapped driver.
+	*/
+	public function get_name();
+
+	/**
 	* Get the avatar url and dimensions
 	*
 	* @param $ignore_config Whether this function should respect the users prefs

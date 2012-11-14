@@ -50,9 +50,9 @@ class phpbb_avatar_driver_core_remote extends phpbb_avatar_driver
 	public function prepare_form($template, $row, &$error)
 	{
 		$template->assign_vars(array(
-			'AV_REMOTE_WIDTH' => (($row['avatar_type'] == AVATAR_REMOTE || $row['avatar_type'] == 'remote') && $row['avatar_width']) ? $row['avatar_width'] : $this->request->variable('av_local_width', 0),
-			'AV_REMOTE_HEIGHT' => (($row['avatar_type'] == AVATAR_REMOTE || $row['avatar_type'] == 'remote') && $row['avatar_height']) ? $row['avatar_height'] : $this->request->variable('av_local_width', 0),
-			'AV_REMOTE_URL' => (($row['avatar_type'] == AVATAR_REMOTE || $row['avatar_type'] == 'remote') && $row['avatar']) ? $row['avatar'] : '',
+			'AV_REMOTE_WIDTH' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_width']) ? $row['avatar_width'] : $this->request->variable('av_local_width', 0),
+			'AV_REMOTE_HEIGHT' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_height']) ? $row['avatar_height'] : $this->request->variable('av_local_width', 0),
+			'AV_REMOTE_URL' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar']) ? $row['avatar'] : '',
 		));
 
 		return true;
@@ -72,7 +72,7 @@ class phpbb_avatar_driver_core_remote extends phpbb_avatar_driver
 			$url = 'http://' . $url;
 		}
 
-		require_once($this->phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
+		require_once($this->phpbb_root_path . 'includes/functions_user' . $this->phpEx);
 
 		$error = array_merge($error, validate_data(array(
 			'url' => $url,
@@ -118,7 +118,7 @@ class phpbb_avatar_driver_core_remote extends phpbb_avatar_driver
 			return false;
 		}
 
-		include_once($this->phpbb_root_path . 'includes/functions_upload.' . $this->phpEx);
+		include_once($this->phpbb_root_path . 'includes/functions_upload' . $this->phpEx);
 		$types = fileupload::image_types();
 		$extension = strtolower(filespec::get_extension($url));
 
