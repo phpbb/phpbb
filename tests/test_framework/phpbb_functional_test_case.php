@@ -205,7 +205,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$login = $this->client->submit($form, array('username' => 'admin', 'password' => 'admin'));
 
 		$cookies = $this->cookieJar->all();
-		
+
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
 		foreach ($cookies as $cookie);
 		{
@@ -251,5 +251,20 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$args[0] = $this->lang[$key];
 
 		return call_user_func_array('sprintf', $args);
+	}
+
+	/**
+	* Heuristic function to check that the response is success.
+	*
+	* When php decides to die with a fatal error, it still sends 200 OK
+	* status code. This assertion tries to catch that.
+	*
+	* @return null
+	*/
+	public function assert_response_success()
+	{
+		$this->assertEquals(200, $this->client->getResponse()->getStatus());
+		$content = $this->client->getResponse()->getContent();
+		$this->assertNotContains('Fatal error:', $content);
 	}
 }
