@@ -9,11 +9,14 @@
 use Symfony\Component\BrowserKit\CookieJar;
 
 require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
+require_once __DIR__ . '/../../phpBB/includes/acm/acm_file.php';
+require_once __DIR__ . '/../../phpBB/includes/cache.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
 	protected $client;
 	protected $root_url;
+	protected $cache = null;
 
 	/**
 	* Session ID for current test's session (each test makes its own)
@@ -47,6 +50,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// that were added in other tests are gone
 		$this->lang = array();
 		$this->add_lang('common');
+		$this->purge_cache();
 	}
 
 	public function request($method, $path)
@@ -59,6 +63,25 @@ class phpbb_functional_test_case extends phpbb_test_case
 	// test cases can override this
 	protected function bootstrap()
 	{
+	}
+
+	protected function get_cache_driver()
+	{
+		if (!$this->cache)
+		{
+			$this->cache = new cache();
+		}
+
+		return $this->cache;
+	}
+
+	protected function purge_cache()
+	{
+		$cache = $this->get_cache_driver();
+
+		$cache->purge();
+		$cache->unload();
+		$cache->load();
 	}
 
 	public function __construct($name = NULL, array $data = array(), $dataName = '')
