@@ -80,7 +80,7 @@ class phpbb_api
 	 *
 	 * @param string $message The message to error with.
 	 */
-	public function throw404($message, $format = false)
+	public function show_404($message, $format = false)
 	{
 		send_status_line(404, 'Not Found');
 

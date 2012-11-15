@@ -26,7 +26,7 @@ $path = explode('/', $request->server('PATH_INFO'));
 if (preg_match('/[^a-z0-9]/i', $path[1]) || $path[1] === 'api')
 {
 	$api = new phpbb_api;
-	$api->throw404($user->lang('API_CONTROLLER_NOT_FOUND'), $format);
+	$api->show_404($user->lang('API_CONTROLLER_NOT_FOUND'), $format);
 }
 
 if (substr($path[1], -1) === 's')
@@ -34,16 +34,16 @@ if (substr($path[1], -1) === 's')
 	$path[1] = substr($path[1], 0, -1);
 }
 
-if (is_readable($phpbb_root_path . '/includes/api/' . $path[1] . '.php'))
+if (is_readable($phpbb_root_path . '/includes/api/' . $path[1] . '.' . $phpEx))
 {
-	include($phpbb_root_path . '/includes/api/' . $path[1] . '.php');
+	include($phpbb_root_path . '/includes/api/' . $path[1] . '.' . $phpEx);
 }
 
 $class_name = 'phpbb_api_' . $path[1];
 if (!class_exists($class_name))
 {
 	$api = new phpbb_api;
-	$api->throw404($user->lang('API_CONTROLLER_NOT_FOUND'), $format);
+	$api->show_404($user->lang('API_CONTROLLER_NOT_FOUND'), $format);
 }
 $controller = new $class_name;
 
@@ -75,7 +75,7 @@ foreach ($path as $index => $path_section)
 
 if (!$controller->call($method, $path_data, $format))
 {
-	$controller->throw404($user->lang('API_METHOD_NOT_FOUND'));
+	$controller->show_404($user->lang('API_METHOD_NOT_FOUND'));
 }
 
 garbage_collection();
