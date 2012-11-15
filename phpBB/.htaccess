@@ -1,5 +1,3 @@
-Options +FollowSymLinks
-
 <IfModule mod_rewrite.c>
 #
 # Uncomment the following line if you will be using any of the URL
@@ -23,6 +21,12 @@ Options +FollowSymLinks
 #RewriteCond %{REQUEST_FILENAME} !-f
 #RewriteCond %{REQUEST_FILENAME} !-d
 #RewriteRule ^(.*)$ app.php [QSA,L]
+
+#
+# On Windows, you must also uncomment the following line so that SymLinks
+# are followed.
+#
+#Options +FollowSymLinks
 </IfModule>
 
 <Files "config.php">
