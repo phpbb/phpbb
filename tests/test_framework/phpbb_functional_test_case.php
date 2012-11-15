@@ -51,6 +51,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// that were added in other tests are gone
 		$this->lang = array();
 		$this->add_lang('common');
+		$this->purge_cache();
 	}
 
 	public function request($method, $path)

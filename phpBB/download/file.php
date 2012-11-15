@@ -65,7 +65,7 @@ if (isset($_GET['avatar']))
 			new phpbb_di_extension_core($phpbb_root_path),
 		),
 		array(
-			new phpbb_di_pass_collection_pass('cron.task_collection', 'cron.task'),
+			new phpbb_di_pass_collection_pass(),
 		),
 		$phpbb_root_path,
 		$phpEx

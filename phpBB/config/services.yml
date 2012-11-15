@@ -48,6 +48,8 @@ services:
         class: phpbb_di_service_collection
         arguments:
             - @service_container
+        tags:
+            - { name: service_collection, tag: cron.task }
 
     cron.manager:
         class: phpbb_cron_manager

@@ -18,17 +18,13 @@ if (!defined('IN_PHPBB'))
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
+/**
+* Appends an add method call to the definition of each collection service for
+* the services tagged with the appropriate name defined in the collection's
+* service_collection tag.
+*/
 class phpbb_di_pass_collection_pass implements CompilerPassInterface
 {
-	private $collection_service;
-	private $service_tag;
-
-	public function __construct($collection_service, $service_tag)
-	{
-		$this->collection_service = $collection_service;
-		$this->service_tag = $service_tag;
-	}
-
 	/**
 	* Modify the container before it is passed to the rest of the code
 	*
@@ -37,11 +33,14 @@ class phpbb_di_pass_collection_pass implements CompilerPassInterface
 	*/
 	public function process(ContainerBuilder $container)
 	{
-		$definition = $container->getDefinition($this->collection_service);
-
-		foreach ($container->findTaggedServiceIds($this->service_tag) as $id => $data)
+		foreach ($container->findTaggedServiceIds('service_collection') as $id => $data)
 		{
-			$definition->addMethodCall('add', array($id));
+			$definition = $container->getDefinition($id);
+
+			foreach ($container->findTaggedServiceIds($data[0]['tag']) as $service_id => $service_data)
+			{
+				$definition->addMethodCall('add', array($service_id));
+			}
 		}
 	}
 }
