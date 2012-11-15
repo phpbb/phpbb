@@ -30,31 +30,14 @@ class phpbb_api
 		$this->args = $path_data['args'];
 		$this->format = $format;
 
-		switch ($method)
-		{
-			case 'GET':
-				$func_name = count($this->args) ? 'get' : 'list';
-			break;
-
-			case 'POST':
-				$func_name = count($this->args) ? 'new' : 'post';
-			break;
-
-			case 'PUT':
-				$func_name = 'edit';
-			break;
-
-			case 'DELETE':
-				$func_name = count($this->args) ? 'delete' : 'destroy';
-			break;
-
-			default:
-				// @todo: Hook for custom methods
-				return false;
-			break;
-		}
-
-		$func_name = $this->controller . '_' . $func_name;
+		// @todo: Hook for custom methods
+		$func_name = array(
+			'GET'       => count($this->args) ? 'get' : 'list',
+			'POST'      => count($this->args) ? 'new' : 'post',
+			'PUT'       => 'edit',
+			'DELETE'    => count($this->args) ? 'delete' : 'destroy'
+		);
+		$func_name = $this->controller . '_' . $func_name[$method];
 
 		if (!method_exists($this, $func_name))
 		{

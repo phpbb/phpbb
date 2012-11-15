@@ -25,7 +25,8 @@ $path = explode('/', $request->server('PATH_INFO'));
 
 if (preg_match('/[^a-z0-9]/i', $path[1]) || $path[1] === 'api')
 {
-	exit;
+	$api = new phpbb_api;
+	$api->throw404($user->lang('API_CONTROLLER_NOT_FOUND'), $format);
 }
 
 if (substr($path[1], -1) === 's')
