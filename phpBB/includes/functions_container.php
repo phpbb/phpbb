@@ -133,5 +133,5 @@ function phpbb_create_dumped_container_unless_debug(array $extensions, array $pa
 function phpbb_container_filename($phpbb_root_path, $php_ext)
 {
 	$filename = str_replace(array('/', '.'), array('slash', 'dot'), $phpbb_root_path);
-	return $phpbb_root_path . 'cache/' . $filename . '_container.' . $php_ext;
+	return $phpbb_root_path . 'cache/container_' . $filename . '.' . $php_ext;
 }
