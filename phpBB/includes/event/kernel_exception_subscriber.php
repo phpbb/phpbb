@@ -67,7 +67,8 @@ class phpbb_event_kernel_exception_subscriber implements EventSubscriberInterfac
 
 		page_footer(true, false, false);
 
-		$event->setResponse(new Response($this->template->assign_display('body'), 404));
+		$response = new Response($this->template->assign_display('body'), 404);
+		$event->setResponse($response);
 	}
 
 	public static function getSubscribedEvents()
