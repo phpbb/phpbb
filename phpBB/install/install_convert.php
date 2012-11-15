@@ -208,6 +208,7 @@ class install_convert extends module
 
 				require($phpbb_root_path . 'config.' . $phpEx);
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
+				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
 				$db = new $dbms();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
