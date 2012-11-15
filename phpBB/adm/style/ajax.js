@@ -20,7 +20,7 @@ phpbb.add_ajax_callback('row_down', function() {
 		tr = el.parents('tr'),
 		tr_swap = tr.next();
 
-	/**
+	/*
 	* If the element was the first one, we have to:
 	* - Add the up-link to the row we moved
 	* - Remove the up-link on the next row
@@ -41,7 +41,7 @@ phpbb.add_ajax_callback('row_down', function() {
 
 	tr.insertAfter(tr_swap);
 
-	/**
+	/*
 	* As well as:
 	* - Remove the down-link on the moved row, if it is now the last row
 	* - Add the down-link to the next row, if it was the last row
@@ -66,7 +66,7 @@ phpbb.add_ajax_callback('row_up', function() {
 		tr = el.parents('tr'),
 		tr_swap = tr.prev();
 
-	/**
+	/*
 	* If the element was the last one, we have to:
 	* - Add the down-link to the row we moved
 	* - Remove the down-link on the next row
@@ -87,7 +87,7 @@ phpbb.add_ajax_callback('row_up', function() {
 
 	tr.insertBefore(tr_swap);
 
-	/**
+	/*
 	* As well as:
 	* - Remove the up-link on the moved row, if it is now the first row
 	* - Add the up-link to the previous row, if it was the first row
