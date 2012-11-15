@@ -343,4 +343,19 @@ class phpbb_functional_test_case extends phpbb_test_case
     {
         $this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
     }
+
+	/**
+	* Heuristic function to check that the response is success.
+	*
+	* When php decides to die with a fatal error, it still sends 200 OK
+	* status code. This assertion tries to catch that.
+	*
+	* @return null
+	*/
+	public function assert_response_success()
+	{
+		$this->assertEquals(200, $this->client->getResponse()->getStatus());
+		$content = $this->client->getResponse()->getContent();
+		$this->assertNotContains('Fatal error:', $content);
+	}
 }
