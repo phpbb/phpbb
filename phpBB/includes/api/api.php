@@ -21,6 +21,8 @@ class phpbb_api
 	 * @param string $method Request method.
 	 * @param array $path_data Array of path data.
 	 * @param string $format Desired output format.
+	 *
+	 * @return boolean Whether API function was called successfully.
 	 */
 	public function call($method, $path_data, $format)
 	{
@@ -45,7 +47,7 @@ class phpbb_api
 		}
 
 		$result = call_user_func_array(array($this, $func_name), $this->args);
-		$this->handleOutputData($result, $format);
+		$this->handle_output_data($result, $format);
 
 		return true;
 	}
@@ -59,7 +61,7 @@ class phpbb_api
 	 * @param array $data Array of data to handle.
 	 * @param string $format Format to turn the data into.
 	 */
-	protected function handleOutputData($data, $format)
+	protected function handle_output_data($data, $format)
 	{
 		if ($format === 'xml')
 		{
@@ -80,9 +82,9 @@ class phpbb_api
 	 */
 	public function throw404($message, $format = false)
 	{
-		header('HTTP/1.0 404 Not Found');
+		send_status_line(404, 'Not Found');
 
-		$this->handleOutputData(array(
+		$this->handle_output_data(array(
 			'error'     => $message
 		), $format ?: $this->format);
 
