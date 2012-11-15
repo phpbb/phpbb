@@ -23,8 +23,9 @@
 #RewriteRule ^(.*)$ app.php [QSA,L]
 
 #
-# On Windows, you must also uncomment the following line so that SymLinks
-# are followed.
+# If symbolic links are not already being followed,
+# uncomment the line below.
+# http://anothersysadmin.wordpress.com/2008/06/10/mod_rewrite-forbidden-403-with-apache-228/
 #
 #Options +FollowSymLinks
 </IfModule>
