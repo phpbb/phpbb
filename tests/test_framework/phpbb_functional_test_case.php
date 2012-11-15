@@ -236,9 +236,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* When php decides to die with a fatal error, it still sends 200 OK
 	* status code. This assertion tries to catch that.
 	*
-	* @param string $message Optional failure message
+	* @return null
 	*/
-	public function assert_response_success($message = null)
+	public function assert_response_success()
 	{
 		$this->assertEquals(200, $this->client->getResponse()->getStatus());
 		$content = $this->client->getResponse()->getContent();
