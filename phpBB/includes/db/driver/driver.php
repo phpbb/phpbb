@@ -75,9 +75,9 @@ class phpbb_db_driver
 	function __construct()
 	{
 		$this->num_queries = array(
-			'cached'        => 0,
-			'normal'        => 0,
-			'total'         => 0,
+			'cached'	=> 0,
+			'normal'	=> 0,
+			'total'		=> 0,
 		);
 
 		// Fill default sql layer based on the class being called.
@@ -288,10 +288,10 @@ class phpbb_db_driver
 	*
 	* Note: The two statements action_true and action_false must have the same data type (int, vchar, ...) in the database!
 	*
-	* @param    string  $condition      The condition which must be true, to use action_true rather then action_else
-	* @param    string  $action_true    SQL expression that is used, if the condition is true
-	* @param    string  $action_else    SQL expression that is used, if the condition is false, optional
-	* @return   string          CASE expression including the condition and statements
+	* @param	string	$condition		The condition which must be true, to use action_true rather then action_else
+	* @param	string	$action_true	SQL expression that is used, if the condition is true
+	* @param	string	$action_else	SQL expression that is used, if the condition is false, optional
+	* @return	string			CASE expression including the condition and statements
 	*/
 	public function sql_case($condition, $action_true, $action_false = false)
 	{
@@ -305,9 +305,9 @@ class phpbb_db_driver
 	/**
 	* Build a concatenated expression
 	*
-	* @param    string  $expr1      Base SQL expression where we append the second one
-	* @param    string  $expr2      SQL expression that is appended to the first expression
-	* @return   string      Concatenated string
+	* @param	string	$expr1		Base SQL expression where we append the second one
+	* @param	string	$expr2		SQL expression that is appended to the first expression
+	* @return	string		Concatenated string
 	*/
 	public function sql_concatenate($expr1, $expr2)
 	{
@@ -447,10 +447,10 @@ class phpbb_db_driver
 	* arrays to improve comparison speed
 	*
 	* @access public
-	* @param    string  $field              name of the sql column that shall be compared
-	* @param    array   $array              array of values that are allowed (IN) or not allowed (NOT IN)
-	* @param    bool    $negate             true for NOT IN (), false for IN () (default)
-	* @param    bool    $allow_empty_set    If true, allow $array to be empty, this function will return 1=1 or 1=0 then. Default to false.
+	* @param	string	$field				name of the sql column that shall be compared
+	* @param	array	$array				array of values that are allowed (IN) or not allowed (NOT IN)
+	* @param	bool	$negate				true for NOT IN (), false for IN () (default)
+	* @param	bool	$allow_empty_set	If true, allow $array to be empty, this function will return 1=1 or 1=0 then. Default to false.
 	*/
 	function sql_in_set($field, $array, $negate = false, $allow_empty_set = false)
 	{
@@ -555,9 +555,9 @@ class phpbb_db_driver
 	/**
 	* Run LOWER() on DB column of type text (i.e. neither varchar nor char).
 	*
-	* @param string $column_name    The column name to use
+	* @param string $column_name	The column name to use
 	*
-	* @return string                A SQL statement like "LOWER($column_name)"
+	* @return string				A SQL statement like "LOWER($column_name)"
 	*/
 	function sql_lower_text($column_name)
 	{
@@ -1010,10 +1010,10 @@ class phpbb_db_driver
 	/**
 	* Gets the estimated number of rows in a specified table.
 	*
-	* @param string $table_name     Table name
+	* @param string $table_name		Table name
 	*
-	* @return string                Number of rows in $table_name.
-	*                               Prefixed with ~ if estimated (otherwise exact).
+	* @return string				Number of rows in $table_name.
+	*								Prefixed with ~ if estimated (otherwise exact).
 	*
 	* @access public
 	*/
@@ -1025,9 +1025,9 @@ class phpbb_db_driver
 	/**
 	* Gets the exact number of rows in a specified table.
 	*
-	* @param string $table_name     Table name
+	* @param string $table_name		Table name
 	*
-	* @return string                Exact number of rows in $table_name.
+	* @return string				Exact number of rows in $table_name.
 	*
 	* @access public
 	*/
