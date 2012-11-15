@@ -39,7 +39,7 @@ class phpbb_controller_provider
 	*/
 	public function __construct($routing_paths = array())
 	{
-		$this->set_paths($routing_paths);
+		$this->routing_paths = $routing_paths;
 	}
 
 	/**
@@ -48,28 +48,16 @@ class phpbb_controller_provider
 	*
 	* @return The current instance of this object for method chaining
 	*/
-	public function get_paths(phpbb_extension_finder $finder)
+	public function import_paths_from_finder(phpbb_extension_finder $finder)
 	{
 		// We hardcode the path to the core config directory
 		// because the finder cannot find it
-		$this->set_paths(array_merge(array('config'), array_map('dirname', array_keys($finder
+		$this->routing_paths = array_merge(array('config'), array_map('dirname', array_keys($finder
 			->directory('config')
 			->prefix('routing')
 			->suffix('yml')
 			->find()
-		))));
-
-		return $this;
-	}
-
-	/**
-	* Set the $routing_paths property with a given list of paths
-	*
-	* @return The current instance of this object for method chaining
-	*/
-	public function set_paths(array $paths)
-	{
-		$this->routing_paths = $paths;
+		)));
 
 		return $this;
 	}
