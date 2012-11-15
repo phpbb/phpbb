@@ -84,8 +84,11 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 	$tmp_container = phpbb_create_container($extensions, $phpbb_root_path, $php_ext);
 	$tmp_container->compile();
 
+	$GLOBALS['cache'] = $tmp_container->get('cache');
+	$installed_exts = $tmp_container->get('ext.manager')->all_enabled();
+
 	// Now pass the enabled extension paths into the ext compiler extension
-	$extensions[] = new phpbb_di_extension_ext($tmp_container->get('ext.manager')->all_enabled());
+	$extensions[] = new phpbb_di_extension_ext($installed_exts);
 
 	// Create the final container to be compiled and cached
 	$container = phpbb_create_container($extensions, $phpbb_root_path, $php_ext);
