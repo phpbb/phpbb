@@ -82,6 +82,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	{
 		$this->phpbb_extension_manager->enable('foobar');
 		$crawler = $this->request('GET', 'index.php?ext=foobar');
+		$this->assert_response_success();
 		$this->assertContains("This is for testing purposes.", $crawler->filter('#page-body')->text());
 		$this->phpbb_extension_manager->purge('foobar');
 	}
@@ -94,6 +95,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = $this->request('GET', 'index.php?ext=foo/bar');
+		$this->assert_response_success();
 		$this->assertContains("This is for testing purposes.", $crawler->filter('#page-body')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
