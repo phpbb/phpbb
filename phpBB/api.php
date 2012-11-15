@@ -55,21 +55,13 @@ $path_data = array(
 
 foreach ($path as $index => $path_section)
 {
-	switch ($index)
+	if ($index === 1)
 	{
-		case 0:
-		break;
-
-		case 1:
-			$path_data['controller'] = htmlspecialchars_decode($path_section);
-		break;
-
-		default:
-			if ($path_section)
-			{
-				$path_data['args'][] = htmlspecialchars_decode($path_section);
-			}
-		break;
+		$path_data['controller'] = htmlspecialchars_decode($path_section);
+	}
+	else if ($path_section)
+	{
+		$path_data['args'][] = htmlspecialchars_decode($path_section);
 	}
 }
 
