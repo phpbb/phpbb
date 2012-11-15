@@ -332,17 +332,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return call_user_func_array('sprintf', $args);
 	}
 
-    /**
-     * assertContains for language strings
-     *
-     * @param string $needle Search string
-     * @param string $haystack Search this
-     * @param string $message Optional failure message
-     */
-    public function assertContainsLang($needle, $haystack, $message = null)
-    {
-        $this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
-    }
+	/**
+	 * assertContains for language strings
+	 *
+	 * @param string $needle Search string
+	 * @param string $haystack Search this
+	 * @param string $message Optional failure message
+	 */
+	public function assertContainsLang($needle, $haystack, $message = null)
+	{
+		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+	}
 
 	/**
 	* Heuristic function to check that the response is success.
