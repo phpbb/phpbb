@@ -33,7 +33,7 @@ class phpbb_controller_test extends phpbb_test_case
 	{
 		$provider = new phpbb_controller_provider;
 		$routes = $provider
-			->get_paths($this->extension_manager->get_finder())
+			->import_paths_from_finder($this->extension_manager->get_finder())
 			->find('./tests/controller/');
 
 		// This will need to be updated if any new routes are defined
