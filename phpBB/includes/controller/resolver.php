@@ -54,7 +54,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	*
 	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
 	* @return bool|Callable Callable or false
-	* @throws RuntimeException
+	* @throws phpbb_controller_exception
 	*/
 	public function getController(Request $request)
 	{
@@ -62,20 +62,20 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 
 		if (!$controller)
 		{
-			throw new RuntimeException($this->user->lang['CONTROLLER_NOT_SPECIFIED']);
+			throw new phpbb_controller_exception($this->user->lang['CONTROLLER_NOT_SPECIFIED']);
 		}
 
 		// Require a method name along with the service name
 		if (stripos($controller, ':') === false)
 		{
-			throw new RuntimeException($this->user->lang['CONTROLLER_METHOD_NOT_SPECIFIED']);
+			throw new phpbb_controller_exception($this->user->lang['CONTROLLER_METHOD_NOT_SPECIFIED']);
 		}
 
 		list($service, $method) = explode(':', $controller);
 
 		if (!$this->container->has($service))
 		{
-			throw new RuntimeException($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $service));
+			throw new phpbb_controller_exception($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $service));
 		}
 
 		$controller_object = $this->container->get($service);
@@ -92,6 +92,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
 	* @param string $controller Controller class name
 	* @return bool False
+	* @throws phpbb_controller_exception
 	*/
 	public function getArguments(Request $request, $controller)
 	{
@@ -114,7 +115,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 			}
 			else
 			{
-				throw new RuntimeException($user->lang('CONTROLLER_ARGUMENT_VALUE_MISSING', $param->getPosition() + 1, get_class($object) . ':' . $method, $param->name));
+				throw new phpbb_controller_exception($user->lang('CONTROLLER_ARGUMENT_VALUE_MISSING', $param->getPosition() + 1, get_class($object) . ':' . $method, $param->name));
 			}
 		}
 
