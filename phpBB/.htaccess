@@ -16,7 +16,7 @@
 # Uncomment the following 3 lines if you want to rewrite URLs passed through
 # the front controller to not use app.php in the actual URL. In other words,
 # a controller is by default accessed at /app.php/my/controller, but will then
-# be accessed at /my/controller directly.
+# be accessible at either /app.php/my/controller or just /my/controller
 #
 #RewriteCond %{REQUEST_FILENAME} !-f
 #RewriteCond %{REQUEST_FILENAME} !-d
