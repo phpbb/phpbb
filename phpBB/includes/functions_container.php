@@ -84,6 +84,8 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 	$tmp_container = phpbb_create_container($extensions, $phpbb_root_path, $php_ext);
 	$tmp_container->compile();
 
+	// XXX stop writing to global $cache when
+	// http://tracker.phpbb.com/browse/PHPBB3-11203 is fixed
 	$GLOBALS['cache'] = $tmp_container->get('cache');
 	$installed_exts = $tmp_container->get('ext.manager')->all_enabled();
 
