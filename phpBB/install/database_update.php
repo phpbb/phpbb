@@ -1129,11 +1129,16 @@ function database_update_info()
 				GROUPS_TABLE		=> array(
 					'group_legend'		=> array('UINT', 0),
 				),
-                STYLES_TABLE		=> array(
-                    'style_name'		=> array('VCHAR:100', ''),
-                ),
+				STYLES_TABLE		=> array(
+					'style_name'		=> array('VCHAR:100', ''),
+				),
 				USERS_TABLE			=> array(
 					'user_timezone'		=> array('VCHAR:100', ''),
+				),
+			),
+			'drop_columns'	=> array(
+				STYLES_TABLE		=> array(
+					'style_path',
 				),
 			),
 		),
