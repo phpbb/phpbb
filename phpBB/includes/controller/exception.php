@@ -19,6 +19,6 @@ if (!defined('IN_PHPBB'))
 * Controller exception class
 * @package phpBB3
 */
-class phpbb_controller_provider extends RuntimeException
+class phpbb_controller_exception extends RuntimeException
 {
 }
