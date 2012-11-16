@@ -94,15 +94,15 @@ class phpbb_api
 	/**
 	 * A very small library to turn an array into XML.
 	 *
-	 * @param string $body Name of main element.
+	 * @param string $main_element Name of main element.
 	 * @param array $array The array to be turned into XML.
 	 * @param boolean $include_header Include the header? (<?xml...)
 	 * @return string XML!
 	 */
-	protected function toXML($body, $array, $include_header = true)
+	protected function toXML($main_element, $array, $include_header = true)
 	{
 		$string = $include_header ? '<?xml version="1.0" encoding="utf-8" ?>' : '';
-		$string .= '<' . htmlspecialchars($body) . '>';
+		$string .= '<' . htmlspecialchars($main_element) . '>';
 
 		foreach ($array as $name => $value)
 		{
@@ -112,7 +112,7 @@ class phpbb_api
 				: '<' . $name . '>' . htmlspecialchars($value) . '</' . $name . '>';
 		}
 
-		$string .= '</' . htmlspecialchars($body) . '>';
+		$string .= '</' . htmlspecialchars($main_element) . '>';
 
 		return $string;
 	}
