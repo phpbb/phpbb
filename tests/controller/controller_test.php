@@ -43,9 +43,8 @@ class phpbb_controller_test extends phpbb_test_case
 	public function test_controller_resolver()
 	{
 		$container = new ContainerBuilder();
-		// For some reason, I cannot get it to load more than one services
-		// file at a time, even when givein multiple paths
-		// So instead, I am looping through all of the paths
+		// YamlFileLoader only uses one path at a time, so we need to loop
+		// through all of the ones we are using.
 		foreach (array(__DIR__.'/config', __DIR__.'/ext/foo/config') as $path)
 		{
 			$loader = new YamlFileLoader($container, new FileLocator($path));
@@ -53,7 +52,7 @@ class phpbb_controller_test extends phpbb_test_case
 		}
 
 		// Autoloading classes within the tests folder does not work
-		// so I'll include them manually
+		// so I'll include them manually.
 		if (!class_exists('phpbb_ext_foo_controller'))
 		{
 			include(__DIR__.'/ext/foo/controller.php');
