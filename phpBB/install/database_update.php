@@ -2732,6 +2732,14 @@ function change_database_data(&$no_updates, $version)
 				_sql($sql, $errored, $error_ary);
 			}
 
+			// update avatar module_auth
+			$sql = 'UPDATE ' . MODULES_TABLE . '
+				SET module_auth = \'cfg_allow_avatar && (cfg_allow_avatar_local || cfg_allow_avatar_remote || cfg_allow_avatar_upload || cfg_allow_avatar_remote_upload || cfg_allow_avatar_gravatar)\'
+				WHERE module_class = \'ucp\'
+					AND module_basename = \'ucp_profile\'
+					AND module_mode = \'avatar\'';
+			_sql($sql, $errored, $error_ary);
+
 			$no_updates = false;
 
 			if (!isset($config['assets_version']))
