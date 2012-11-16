@@ -54,4 +54,14 @@ class phpbb_get_formatted_filesize_test extends phpbb_test_case
 
 		$this->assertEquals($expected, $output);
 	}
+
+	/**
+	* @dataProvider get_formatted_filesize_test_data
+	*/
+	public function test_get_formatted_filesize_string($input, $expected)
+	{
+		$output = get_formatted_filesize("$input");
+
+		$this->assertEquals($expected, $output);
+	}
 }
