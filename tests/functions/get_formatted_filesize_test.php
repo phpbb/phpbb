@@ -21,6 +21,13 @@ class phpbb_get_formatted_filesize_test extends phpbb_test_case
 			array(1073741824, '1 GIB'),
 			array(1099511627776, '1 TIB'),
 
+			// exact powers of 10
+			array(1000, '1000 BYTES'),
+			array(1000000, '976.56 KIB'),
+			array(1000000000, '953.67 MIB'),
+			array(1000000000000, '931.32 GIB'),
+			array(100000000000000, '90.95 TIB'),
+
 			array(0, '0 BYTES'),
 			array(2, '2 BYTES'),
 			array(-2, '-2 BYTES'),
