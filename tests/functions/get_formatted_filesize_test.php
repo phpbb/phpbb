@@ -34,12 +34,8 @@ class phpbb_get_formatted_filesize_test extends phpbb_test_case
 			array(1023, '1023 BYTES'),
 			array(1025, '1 KIB'),
 			array(1048575, '1024 KIB'),
-		);
-	}
 
-	public function get_formatted_filesize_test_data_string()
-	{
-		return array(
+			// String values
 			// exact powers of 2
 			array('1', '1 BYTES'),
 			array('1024', '1 KIB'),
@@ -67,16 +63,6 @@ class phpbb_get_formatted_filesize_test extends phpbb_test_case
 	* @dataProvider get_formatted_filesize_test_data
 	*/
 	public function test_get_formatted_filesize($input, $expected)
-	{
-		$output = get_formatted_filesize($input);
-
-		$this->assertEquals($expected, $output);
-	}
-
-	/**
-	* @dataProvider get_formatted_filesize_test_data_string
-	*/
-	public function test_get_formatted_filesize_string($input, $expected)
 	{
 		$output = get_formatted_filesize($input);
 
