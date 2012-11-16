@@ -101,11 +101,11 @@ class phpbb_controller_helper
 	/**
 	* Output an error, effectively the same thing as trigger_error
 	*
-	* @param string $code The error code (e.g. 404, 500, 503, etc.)
 	* @param string $message The error message
+	* @param string $code The error code (e.g. 404, 500, 503, etc.)
 	* @return Response A Reponse instance
 	*/
-	public function error($code = 500, $message = '')
+	public function error($message, $code = 500)
 	{
 		$this->template->assign_vars(array(
 			'MESSAGE_TEXT'	=> $message,
