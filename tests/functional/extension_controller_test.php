@@ -46,10 +46,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	
 		foreach (self::$fixtures as $fixture)
 		{
-			if (!copy("tests/functional/fixtures/ext/$fixture", "{$phpbb_root_path}ext/$fixture"))
-			{
-				echo 'Could not copy file ' . $fixture;
-			}
+			copy("tests/functional/fixtures/ext/$fixture", "{$phpbb_root_path}ext/$fixture");
 		}
 	}
 
@@ -62,10 +59,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		global $phpbb_root_path;
 		foreach (self::$fixtures as $fixture)
 		{
-			if (!unlink("{$phpbb_root_path}ext/$fixture"))
-			{
-				echo 'Could not delete file ' . $fixture;
-			}
+			unlink("{$phpbb_root_path}ext/$fixture");
 		}
 
 		rmdir("{$phpbb_root_path}ext/foo/bar/config");
