@@ -115,7 +115,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 			}
 			else
 			{
-				throw new phpbb_controller_exception($user->lang('CONTROLLER_ARGUMENT_VALUE_MISSING', $param->getPosition() + 1, get_class($object) . ':' . $method, $param->name));
+				throw new phpbb_controller_exception($this->user->lang('CONTROLLER_ARGUMENT_VALUE_MISSING', $param->getPosition() + 1, get_class($object) . ':' . $method, $param->name));
 			}
 		}
 
