@@ -642,7 +642,7 @@ class ucp_profile
 								$driver_u = strtoupper($driver_n);
 
 								$template->assign_block_vars('avatar_drivers', array(
-									'L_TITLE' => $user->lang($driver_u . '_TITLE'), // @TODO add lang values
+									'L_TITLE' => $user->lang($driver_u . '_TITLE'),
 									'L_EXPLAIN' => $user->lang($driver_u . '_EXPLAIN'),
 
 									'DRIVER' => $driver_n,

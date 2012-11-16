@@ -1744,8 +1744,9 @@ class acp_users
 					{
 						if (check_form_key($form_name))
 						{
-							$driver = request_var('avatar_driver', '');
-							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$driver"])
+							$driver = str_replace('_', '.', request_var('avatar_driver', ''));
+							$config_name = preg_replace('#^avatar.driver.#', '', $driver);
+							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"])
 							{
 								$avatar = $phpbb_avatar_manager->get_driver($driver);
 								$result = $avatar->process_form($template, $avatar_data, $error);
@@ -1791,27 +1792,30 @@ class acp_users
 						}
 					}
 
-					$focused_driver = request_var('avatar_driver', $user_row['user_avatar_type']);
+					$focused_driver = str_replace('_', '.', request_var('avatar_driver', $user_row['user_avatar_type']));
 
 					foreach ($avatar_drivers as $driver)
 					{
-						if ($config["allow_avatar_$driver"])
+						$avatar = $phpbb_avatar_manager->get_driver($driver);
+
+						if ($avatar->is_enabled())
 						{
 							$avatars_enabled = true;
+							$config_name = preg_replace('#^avatar.driver.#', '', $driver);
 							$template->set_filenames(array(
-								'avatar' => "acp_avatar_options_$driver.html",
+								'avatar' => "acp_avatar_options_$config_name.html",
 							));
-
-							$avatar = $phpbb_avatar_manager->get_driver($driver);
 
 							if ($avatar->prepare_form($template, $avatar_data, $error))
 							{
-								$driver_u = strtoupper($driver);
-								$template->assign_block_vars('avatar_drivers', array(
-									'L_TITLE' => $user->lang('AVATAR_DRIVER_' . $driver_u . '_TITLE'), // @TODO add lang values
-									'L_EXPLAIN' => $user->lang('AVATAR_DRIVER_' . $driver_u . '_EXPLAIN'),
+								$driver_n = str_replace('.', '_', $driver);
+								$driver_u = strtoupper($driver_n);
 
-									'DRIVER' => $driver,
+								$template->assign_block_vars('avatar_drivers', array(
+									'L_TITLE' => $user->lang($driver_u . '_TITLE'),
+									'L_EXPLAIN' => $user->lang($driver_u . '_EXPLAIN'),
+
+									'DRIVER' => $driver_n,
 									'SELECTED' => ($driver == $focused_driver),
 									'OUTPUT' => $template->assign_display('avatar'),
 								));
