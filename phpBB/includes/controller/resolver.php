@@ -90,7 +90,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	* controller.
 	*
 	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
-	* @param string $controller Controller class name
+	* @param mixed $controller A callable (controller class, method)
 	* @return bool False
 	* @throws phpbb_controller_exception
 	*/
