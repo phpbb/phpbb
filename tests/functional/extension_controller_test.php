@@ -18,7 +18,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		'foo/bar/config/routing.yml',
 		'foo/bar/config/services.yml',
 		'foo/bar/controller/controller.php',
-		'foo/bar/ext.php',
+		'foo/bar/styles/prosilver/template/foo_bar_body.html',
 	);
 
 	/**
@@ -34,6 +34,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 			$phpbb_root_path . 'ext/foo/bar/',
 			$phpbb_root_path . 'ext/foo/bar/config/',
 			$phpbb_root_path . 'ext/foo/bar/controller/',
+			$phpbb_root_path . 'ext/foo/bar/styles/prosilver/template',
 		);
 
 		foreach ($directories as $dir)
@@ -43,10 +44,12 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 				mkdir($dir, 0777, true);
 			}
 		}
-	
+
 		foreach (self::$fixtures as $fixture)
 		{
-			copy("tests/functional/fixtures/ext/$fixture", "{$phpbb_root_path}ext/$fixture");
+			copy(
+				"tests/functional/fixtures/ext/$fixture",
+				"{$phpbb_root_path}ext/$fixture");
 		}
 	}
 
@@ -57,6 +60,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	static public function tearDownAfterClass()
 	{
 		global $phpbb_root_path;
+
 		foreach (self::$fixtures as $fixture)
 		{
 			unlink("{$phpbb_root_path}ext/$fixture");
@@ -64,6 +68,9 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 
 		rmdir("{$phpbb_root_path}ext/foo/bar/config");
 		rmdir("{$phpbb_root_path}ext/foo/bar/controller");
+		rmdir("{$phpbb_root_path}ext/foo/bar/styles/prosilver/template");
+		rmdir("{$phpbb_root_path}ext/foo/bar/styles/prosilver");
+		rmdir("{$phpbb_root_path}ext/foo/bar/styles");
 		rmdir("{$phpbb_root_path}ext/foo/bar");
 		rmdir("{$phpbb_root_path}ext/foo");
 	}
@@ -78,7 +85,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	}
 
 	/**
-	* Check a controller for extension foo/bar
+	* Check a controller for extension foo/bar.
 	*/
 	public function test_foo_bar()
 	{
@@ -88,6 +95,21 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 
+	/**
+	* Check the output of a controller using the template system
+	*/
+	public function test_controller_with_template()
+	{
+		$this->phpbb_extension_manager->enable('foo/bar');
+		$crawler = $this->request('GET', 'app.php/foo/template');
+		$this->assertContains("I am a variable", $crawler->filter('#content')->text());
+		$this->phpbb_extension_manager->purge('foo/bar');
+	}
+
+	/**
+	* Check the error produced by calling a controller without a required
+	* argument.
+	*/
 	public function test_missing_argument()
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
@@ -97,7 +119,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	}
 
 	/**
-	* Check the error produced by extension at ./ext/does/not/exist
+	* Check the error produced by extension at ./ext/does/not/exist.
 	*
 	* If an extension is disabled, its routes are not loaded. Because we
 	* are not looking for a controller based on a specified extension,

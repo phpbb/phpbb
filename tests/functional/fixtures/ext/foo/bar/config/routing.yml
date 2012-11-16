@@ -5,3 +5,7 @@ foo_bar_controller:
 foo_baz_controller:
     pattern: /foo/baz
     defaults: { _controller: foo_bar.controller:baz }
+
+foo_template_controller:
+    pattern: /foo/template
+    defaults: { _controller: foo_bar.controller:template }

@@ -3,6 +3,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class phpbb_ext_foo_bar_controller
 {
+	protected $template;
+
+	public function __construct(phpbb_controller_helper $helper, phpbb_template $template)
+	{
+		$this->template = $template;
+		$this->helper = $helper;
+	}
+
 	public function handle()
 	{
 		return new Response('foo/bar controller handle() method', 200);
@@ -11,5 +19,12 @@ class phpbb_ext_foo_bar_controller
 	public function baz($test)
 	{
 		return new Response('Value of "test" URL argument is: ' . $test);
+	}
+
+	public function template()
+	{
+		$this->template->assign_var('A_VARIABLE', 'I am a variable');
+
+		return $this->helper->render('foo_bar_body.html');
 	}
 }
