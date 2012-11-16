@@ -568,9 +568,11 @@ $lang = array_merge($lang, array(
 	'SUBJECT'					=> 'Subject',
 	'SUBMIT'					=> 'Submit',
 
+	'TB'				=> 'TB',
 	'TERMS_USE'			=> 'Terms of use',
 	'TEST_CONNECTION'	=> 'Test connection',
 	'THE_TEAM'			=> 'The team',
+	'TIB'				=> 'TiB',
 	'TIME'				=> 'Time',
 	
 	'TOO_LARGE'						=> 'The value you entered is too large.',

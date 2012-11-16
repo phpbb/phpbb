@@ -289,7 +289,8 @@ function phpbb_gmgetdate($time = false)
 /**
 * Return formatted string for filesizes
 *
-* @param int	$value			filesize in bytes
+* @param mixed	$value			filesize in bytes
+*								(non-negative number; int, float or string)
 * @param bool	$string_only	true if language string should be returned
 * @param array	$allowed_units	only allow these units (data array indexes)
 *
@@ -301,6 +302,12 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
 	global $user;
 
 	$available_units = array(
+		'tb' => array(
+			'min' 		=> 1099511627776, // pow(2, 40)
+			'index'		=> 4,
+			'si_unit'	=> 'TB',
+			'iec_unit'	=> 'TIB',
+		),
 		'gb' => array(
 			'min' 		=> 1073741824, // pow(2, 30)
 			'index'		=> 3,
