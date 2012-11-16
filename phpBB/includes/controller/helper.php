@@ -39,7 +39,7 @@ class phpbb_controller_helper
 	* phpBB root path
 	* @var string
 	*/
-	protected $root_path;
+	protected $phpbb_root_path;
 
 	/**
 	* PHP extension
@@ -52,14 +52,14 @@ class phpbb_controller_helper
 	*
 	* @param phpbb_template $template Template object
 	* @param phpbb_user $user User object
-	* @param string $root_path phpBB root path
+	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_template $template, phpbb_user $user, $root_path, $php_ext)
+	public function __construct(phpbb_template $template, phpbb_user $user, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
-		$this->root_path = $root_path;
+		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
 
@@ -95,7 +95,7 @@ class phpbb_controller_helper
 	*/
 	public function url(array $url_parts, $query = '')
 	{
-		return append_sid($this->root_path . implode('/', $url_parts), $query);
+		return append_sid($this->phpbb_root_path . implode('/', $url_parts), $query);
 	}
 
 	/**
