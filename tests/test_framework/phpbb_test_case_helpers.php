@@ -78,7 +78,7 @@ class phpbb_test_case_helpers
 			include($test_config);
 
 			$config = array_merge($config, array(
-				'dbms'		=> 'phpbb_db_driver_' . $dbms,
+				'dbms'		=> $this->convert_30_dbms($dbms),
 				'dbhost'	=> $dbhost,
 				'dbport'	=> $dbport,
 				'dbname'	=> $dbname,
@@ -96,7 +96,7 @@ class phpbb_test_case_helpers
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
 		{
 			$config = array_merge($config, array(
-				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? 'phpbb_db_driver_' . $_SERVER['PHPBB_TEST_DBMS'] : '',
+				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? $this->convert_30_dbms($_SERVER['PHPBB_TEST_DBMS']) : '',
 				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
 				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
 				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
@@ -222,5 +222,21 @@ class phpbb_test_case_helpers
 				unlink($path . $file);
 			}
 		}
+	}
+
+	/**
+	* Convert 3.0 dbms to 3.1 db driver class name
+	*
+	* @param string $dbms dbms parameter
+	* @return db driver class
+	*/
+	protected function convert_30_dbms($dbms)
+	{
+		if (!preg_match('#^phpbb_db_driver_#', $dbms))
+		{
+			return 'phpbb_db_driver_'.$dbms;
+		}
+
+		return $dbms;
 	}
 }
