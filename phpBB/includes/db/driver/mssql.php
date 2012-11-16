@@ -157,7 +157,7 @@ class phpbb_db_driver_mssql extends phpbb_db_driver
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl && method_exists($cache, 'sql_save'))
+				if ($cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
