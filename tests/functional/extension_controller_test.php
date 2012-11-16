@@ -91,7 +91,15 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = $this->request('GET', 'app.php/foo/bar');
 		$this->assertContains("foo/bar controller handle() method", $crawler->filter('body')->text());
-		$this->phpbb_extension_manager->purge('foobar');
+		$this->phpbb_extension_manager->purge('foo/bar');
+	}
+
+	public function test_missing_argument()
+	{
+		$this->phpbb_extension_manager->enable('foo/bar');
+		$crawler = $this->request('GET', 'app.php/foo/baz');
+		$this->assertContains('Missing value for argument #1: test in class phpbb_ext_foo_bar_controller:baz', $crawler->filter('body')->text());
+		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 
 	/**

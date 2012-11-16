@@ -7,4 +7,9 @@ class phpbb_ext_foo_bar_controller
 	{
 		return new Response('foo/bar controller handle() method', 200);
 	}
+
+	public function baz($test)
+	{
+		return new Response('Value of "test" URL argument is: ' . $test);
+	}
 }

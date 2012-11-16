@@ -1,3 +1,7 @@
 foo_bar_controller:
     pattern: /foo/bar
     defaults: { _controller: foo_bar.controller:handle }
+
+foo_baz_controller:
+    pattern: /foo/baz
+    defaults: { _controller: foo_bar.controller:baz }
