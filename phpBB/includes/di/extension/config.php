@@ -44,7 +44,7 @@ class phpbb_di_extension_config extends Extension
 
 		$container->setParameter('core.table_prefix', $table_prefix);
 		$container->setParameter('cache.driver.class', $this->convert_30_acm_type($acm_type));
-		$container->setParameter('dbal.driver.class', $this->convert_30_dbms($dbms));
+		$container->setParameter('dbal.driver.class', phpbb_convert_30_dbms_to_31($dbms));
 		$container->setParameter('dbal.dbhost', $dbhost);
 		$container->setParameter('dbal.dbuser', $dbuser);
 		$container->setParameter('dbal.dbpasswd', $dbpasswd);
@@ -79,21 +79,5 @@ class phpbb_di_extension_config extends Extension
 		}
 
 		return $acm_type;
-	}
-
-	/**
-	* Convert 3.0 dbms to 3.1 db driver class name
-	*
-	* @param string $dbms dbms parameter
-	* @return db driver class
-	*/
-	protected function convert_30_dbms($dbms)
-	{
-		if (!preg_match('#^phpbb_db_driver_#', $dbms))
-		{
-			return 'phpbb_db_driver_'.$dbms;
-		}
-
-		return $dbms;
 	}
 }

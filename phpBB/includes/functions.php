@@ -5412,3 +5412,19 @@ function phpbb_to_numeric($input)
 {
 	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
 }
+
+/**
+* Convert 3.0 dbms to 3.1 db driver class name
+*
+* @param string $dbms dbms parameter
+* @return db driver class
+*/
+function phpbb_convert_30_dbms_to_31($dbms)
+{
+	if (!preg_match('#^phpbb_db_driver_#', $dbms))
+	{
+		return 'phpbb_db_driver_'.$dbms;
+	}
+
+	return $dbms;
+}

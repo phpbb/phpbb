@@ -123,6 +123,8 @@ class install_convert extends module
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
+				$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
 				$db = new $dbms();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 				unset($dbpasswd);
@@ -209,6 +211,8 @@ class install_convert extends module
 				require($phpbb_root_path . 'config.' . $phpEx);
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
+
+				$dbms = phpbb_convert_30_dbms_to_31($dbms);
 
 				$db = new $dbms();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -331,6 +335,8 @@ class install_convert extends module
 		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
+
+		$dbms = phpbb_convert_30_dbms_to_31($dbms);
 
 		$db = new $dbms();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -572,6 +578,8 @@ class install_convert extends module
 		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
+
+		$dbms = phpbb_convert_30_dbms_to_31($dbms);
 
 		$db = new $dbms();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
