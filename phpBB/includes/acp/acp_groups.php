@@ -498,8 +498,7 @@ class acp_groups
 								}
 							}
 
-							$cache->destroy('sql', GROUPS_TABLE);
-							$cache->destroy('sql', TEAMPAGE_TABLE);
+							$cache->destroy('sql', array(GROUPS_TABLE, TEAMPAGE_TABLE));
 
 							$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 							trigger_error($user->lang[$message] . adm_back_link($this->u_action));
@@ -814,7 +813,7 @@ class acp_groups
 
 	public function manage_position()
 	{
-		global $config, $db, $template, $user, $request;
+		global $config, $db, $template, $user, $request, $phpbb_container;
 
 		$this->tpl_name = 'acp_groups_position';
 		$this->page_title = 'ACP_GROUPS_POSITION';
@@ -832,7 +831,6 @@ class acp_groups
 		}
 		else if ($field)
 		{
-			global $phpbb_container;
 
 			$group_position = $phpbb_container->get('groupposition.' . $field);
 			$group_position->set_admin_back_link($this->u_action);
