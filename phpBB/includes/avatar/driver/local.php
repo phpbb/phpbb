@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Handles avatars selected from the board gallery
 * @package avatars
 */
-class phpbb_avatar_driver_core_local extends phpbb_avatar_driver
+class phpbb_avatar_driver_local extends phpbb_avatar_driver
 {
 	/**
 	* @inheritdoc

@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Handles avatars uploaded to the board
 * @package avatars
 */
-class phpbb_avatar_driver_core_upload extends phpbb_avatar_driver
+class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 {
 	/**
 	* @inheritdoc

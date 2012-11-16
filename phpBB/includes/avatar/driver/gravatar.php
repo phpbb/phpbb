@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 * @package avatars
 */
 // @todo: rename classes to phpbb_ext_foo_avatar_driver_foo and similar
-class phpbb_avatar_driver_core_gravatar extends phpbb_avatar_driver
+class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 {
 	/**
 	* We'll need to create a different type of avatar for gravatar

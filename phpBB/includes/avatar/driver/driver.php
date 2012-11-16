@@ -147,7 +147,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	**/
 	public function is_enabled()
 	{
-		$driver = preg_replace('#^phpbb_avatar_driver_core_#', '', get_class($this));
+		$driver = preg_replace('#^phpbb_avatar_driver_#', '', get_class($this));
 
 		return $this->config["allow_avatar_$driver"];
 	}
@@ -157,7 +157,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	**/
 	public function get_template_name()
 	{
-		$driver = preg_replace('#^phpbb_avatar_driver_core_#', '', get_class($this));
+		$driver = preg_replace('#^phpbb_avatar_driver_#', '', get_class($this));
 		$template = "ucp_avatar_options_$driver.html";
 
 		return $template;

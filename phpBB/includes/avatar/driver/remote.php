@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Handles avatars hosted remotely
 * @package avatars
 */
-class phpbb_avatar_driver_core_remote extends phpbb_avatar_driver
+class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 {
 	/**
 	* @inheritdoc

@@ -564,7 +564,7 @@ class ucp_profile
 						if (check_form_key('ucp_avatar'))
 						{
 							$driver = str_replace('_', '.', request_var('avatar_driver', ''));
-							$config_name = preg_replace('#^avatar.driver.core.#', '', $driver);
+							$config_name = preg_replace('#^avatar.driver.#', '', $driver);
 							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"])
 							{
 								$avatar = $phpbb_avatar_manager->get_driver($driver);
