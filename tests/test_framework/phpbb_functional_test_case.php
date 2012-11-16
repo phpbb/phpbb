@@ -51,6 +51,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// that were added in other tests are gone
 		$this->lang = array();
 		$this->add_lang('common');
+		$this->purge_cache();
 	}
 
 	public function request($method, $path)
@@ -327,15 +328,30 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return call_user_func_array('sprintf', $args);
 	}
 
-    /**
-     * assertContains for language strings
-     *
-     * @param string $needle Search string
-     * @param string $haystack Search this
-     * @param string $message Optional failure message
-     */
-    public function assertContainsLang($needle, $haystack, $message = null)
-    {
-        $this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
-    }
+	/**
+	 * assertContains for language strings
+	 *
+	 * @param string $needle Search string
+	 * @param string $haystack Search this
+	 * @param string $message Optional failure message
+	 */
+	public function assertContainsLang($needle, $haystack, $message = null)
+	{
+		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+	}
+
+	/**
+	* Heuristic function to check that the response is success.
+	*
+	* When php decides to die with a fatal error, it still sends 200 OK
+	* status code. This assertion tries to catch that.
+	*
+	* @return null
+	*/
+	public function assert_response_success()
+	{
+		$this->assertEquals(200, $this->client->getResponse()->getStatus());
+		$content = $this->client->getResponse()->getContent();
+		$this->assertNotContains('Fatal error:', $content);
+	}
 }
