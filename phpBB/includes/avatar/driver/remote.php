@@ -50,8 +50,8 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 	public function prepare_form($template, $row, &$error)
 	{
 		$template->assign_vars(array(
-			'AV_REMOTE_WIDTH' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_width']) ? $row['avatar_width'] : $this->request->variable('av_local_width', 0),
-			'AV_REMOTE_HEIGHT' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_height']) ? $row['avatar_height'] : $this->request->variable('av_local_width', 0),
+			'AV_REMOTE_WIDTH' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_width']) ? $row['avatar_width'] : $this->request->variable('av_remote_width', 0),
+			'AV_REMOTE_HEIGHT' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_height']) ? $row['avatar_height'] : $this->request->variable('av_remote_width', 0),
 			'AV_REMOTE_URL' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar']) ? $row['avatar'] : '',
 		));
 

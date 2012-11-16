@@ -70,8 +70,8 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	public function prepare_form($template, $row, &$error)
 	{
 		$template->assign_vars(array(
-			'AV_GRAVATAR_WIDTH' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_width']) ? $row['avatar_width'] : $this->request->variable('av_local_width', 0),
-			'AV_GRAVATAR_HEIGHT' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_height']) ? $row['avatar_height'] : $this->request->variable('av_local_width', 0),
+			'AV_GRAVATAR_WIDTH' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_width']) ? $row['avatar_width'] : $this->request->variable('av_gravatar_width', 0),
+			'AV_GRAVATAR_HEIGHT' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_height']) ? $row['avatar_height'] : $this->request->variable('av_gravatar_width', 0),
 			'AV_GRAVATAR_EMAIL' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar']) ? $row['avatar'] : '',
 		));
 

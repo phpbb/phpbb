@@ -623,7 +623,7 @@ class ucp_profile
 						}
 					}
 
-					$focused_driver = request_var('avatar_driver', $user->data['user_avatar_type']);
+					$focused_driver = str_replace('_', '.', request_var('avatar_driver', $user->data['user_avatar_type']));
 
 					foreach ($avatar_drivers as $driver)
 					{
