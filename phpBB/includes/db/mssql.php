@@ -15,14 +15,14 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/mssql_base.' . $phpEx);
 
 /**
 * MSSQL Database Abstraction Layer
 * Minimum Requirement is MSSQL 2000+
 * @package dbal
 */
-class dbal_mssql extends dbal
+class dbal_mssql extends dbal_mssql_base
 {
 	/**
 	* Connect to server
@@ -183,38 +183,6 @@ class dbal_mssql extends dbal
 	}
 
 	/**
-	* Build LIMIT query
-	*/
-	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
-	{
-		$this->query_result = false;
-
-		// Since TOP is only returning a set number of rows we won't need it if total is set to 0 (return all rows)
-		if ($total)
-		{
-			// We need to grab the total number of rows + the offset number of rows to get the correct result
-			if (strpos($query, 'SELECT DISTINCT') === 0)
-			{
-				$query = 'SELECT DISTINCT TOP ' . ($total + $offset) . ' ' . substr($query, 15);
-			}
-			else
-			{
-				$query = 'SELECT TOP ' . ($total + $offset) . ' ' . substr($query, 6);
-			}
-		}
-
-		$result = $this->sql_query($query, $cache_ttl);
-
-		// Seek by $offset rows
-		if ($offset)
-		{
-			$this->sql_rowseek($offset, $result);
-		}
-
-		return $result;
-	}
-
-	/**
 	* Return number of affected rows
 	*/
 	function sql_affectedrows()
@@ -325,31 +293,6 @@ class dbal_mssql extends dbal
 	}
 
 	/**
-	* Escape string used in sql query
-	*/
-	function sql_escape($msg)
-	{
-		return str_replace(array("'", "\0"), array("''", ''), $msg);
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_lower_text($column_name)
-	{
-		return "LOWER(SUBSTRING($column_name, 1, DATALENGTH($column_name)))";
-	}
-
-	/**
-	* Build LIKE expression
-	* @access private
-	*/
-	function _sql_like_expression($expression)
-	{
-		return $expression . " ESCAPE '\\'";
-	}
-
-	/**
 	* return sql error array
 	* @access private
 	*/
@@ -386,15 +329,6 @@ class dbal_mssql extends dbal
 		}
 
 		return $error;
-	}
-
-	/**
-	* Build db-specific query data
-	* @access private
-	*/
-	function _sql_custom_build($stage, $data)
-	{
-		return $data;
 	}
 
 	/**

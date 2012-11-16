@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/mysql_base.' . $phpEx);
 
 /**
 * MySQL4 Database Abstraction Layer
@@ -26,7 +26,7 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 * MySQL 5.0+
 * @package dbal
 */
-class dbal_mysql extends dbal
+class dbal_mysql extends dbal_mysql_base
 {
 	var $multi_insert = true;
 
@@ -211,25 +211,6 @@ class dbal_mysql extends dbal
 	}
 
 	/**
-	* Build LIMIT query
-	*/
-	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
-	{
-		$this->query_result = false;
-
-		// if $total is set to 0 we do not want to limit the number of rows
-		if ($total == 0)
-		{
-			// Having a value of -1 was always a bug
-			$total = '18446744073709551615';
-		}
-
-		$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
-
-		return $this->sql_query($query, $cache_ttl);
-	}
-
-	/**
 	* Return number of affected rows
 	*/
 	function sql_affectedrows()
@@ -323,101 +304,6 @@ class dbal_mysql extends dbal
 		}
 
 		return @mysql_real_escape_string($msg, $this->db_connect_id);
-	}
-
-	/**
-	* Gets the estimated number of rows in a specified table.
-	*
-	* @param string $table_name		Table name
-	*
-	* @return string				Number of rows in $table_name.
-	*								Prefixed with ~ if estimated (otherwise exact).
-	*
-	* @access public
-	*/
-	function get_estimated_row_count($table_name)
-	{
-		$table_status = $this->get_table_status($table_name);
-
-		if (isset($table_status['Engine']))
-		{
-			if ($table_status['Engine'] === 'MyISAM')
-			{
-				return $table_status['Rows'];
-			}
-			else if ($table_status['Engine'] === 'InnoDB' && $table_status['Rows'] > 100000)
-			{
-				return '~' . $table_status['Rows'];
-			}
-		}
-
-		return parent::get_row_count($table_name);
-	}
-
-	/**
-	* Gets the exact number of rows in a specified table.
-	*
-	* @param string $table_name		Table name
-	*
-	* @return string				Exact number of rows in $table_name.
-	*
-	* @access public
-	*/
-	function get_row_count($table_name)
-	{
-		$table_status = $this->get_table_status($table_name);
-
-		if (isset($table_status['Engine']) && $table_status['Engine'] === 'MyISAM')
-		{
-			return $table_status['Rows'];
-		}
-
-		return parent::get_row_count($table_name);
-	}
-
-	/**
-	* Gets some information about the specified table.
-	*
-	* @param string $table_name		Table name
-	*
-	* @return array
-	*
-	* @access protected
-	*/
-	function get_table_status($table_name)
-	{
-		$sql = "SHOW TABLE STATUS
-			LIKE '" . $this->sql_escape($table_name) . "'";
-		$result = $this->sql_query($sql);
-		$table_status = $this->sql_fetchrow($result);
-		$this->sql_freeresult($result);
-
-		return $table_status;
-	}
-
-	/**
-	* Build LIKE expression
-	* @access private
-	*/
-	function _sql_like_expression($expression)
-	{
-		return $expression;
-	}
-
-	/**
-	* Build db-specific query data
-	* @access private
-	*/
-	function _sql_custom_build($stage, $data)
-	{
-		switch ($stage)
-		{
-			case 'FROM':
-				$data = '(' . $data . ')';
-			break;
-		}
-
-		return $data;
 	}
 
 	/**
