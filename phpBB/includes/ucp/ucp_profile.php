@@ -638,13 +638,14 @@ class ucp_profile
 
 							if ($avatar->prepare_form($template, $avatar_data, $error))
 							{
-								$driver_u = strtoupper($driver);
+								$driver_n = str_replace('.', '_', $driver);
+								$driver_u = strtoupper($driver_n);
 
 								$template->assign_block_vars('avatar_drivers', array(
-									'L_TITLE' => $user->lang('AVATAR_DRIVER_' . $driver_u . '_TITLE'), // @TODO add lang values
-									'L_EXPLAIN' => $user->lang('AVATAR_DRIVER_' . $driver_u . '_EXPLAIN'),
+									'L_TITLE' => $user->lang($driver_u . '_TITLE'), // @TODO add lang values
+									'L_EXPLAIN' => $user->lang($driver_u . '_EXPLAIN'),
 
-									'DRIVER' => str_replace('.', '_', $driver),
+									'DRIVER' => $driver_n,
 									'SELECTED' => ($driver == $focused_driver),
 									'OUTPUT' => $template->assign_display('avatar'),
 								));
