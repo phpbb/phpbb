@@ -289,7 +289,7 @@ function phpbb_gmgetdate($time = false)
 /**
 * Return formatted string for filesizes
 *
-* @param int	$value			filesize in bytes
+* @param int	$value			filesize in bytes (non-negative number)
 * @param bool	$string_only	true if language string should be returned
 * @param array	$allowed_units	only allow these units (data array indexes)
 *

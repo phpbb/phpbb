@@ -30,18 +30,10 @@ class phpbb_get_formatted_filesize_test extends phpbb_test_case
 
 			array(0, '0 BYTES'),
 			array(2, '2 BYTES'),
-			array(-2, '-2 BYTES'),
 
 			array(1023, '1023 BYTES'),
 			array(1025, '1 KIB'),
-			array(-1023, '-1023 BYTES'),
-			array(-1025, '-1025 BYTES'),
-
 			array(1048575, '1024 KIB'),
-
-			// large negatives
-			array(-1073741824, '-1073741824 BYTES'),
-			array(-1099511627776, '-1099511627776 BYTES'),
 		);
 	}
 
@@ -64,18 +56,10 @@ class phpbb_get_formatted_filesize_test extends phpbb_test_case
 
 			array('0', '0 BYTES'),
 			array('2', '2 BYTES'),
-			array('-2', '-2 BYTES'),
 
 			array('1023', '1023 BYTES'),
 			array('1025', '1 KIB'),
-			array('-1023', '-1023 BYTES'),
-			array('-1025', '-1025 BYTES'),
-
 			array('1048575', '1024 KIB'),
-
-			// large negatives
-			array('-1073741824', '-1073741824 BYTES'),
-			array('-1099511627776', '-1099511627776 BYTES'),
 		);
 	}
 
