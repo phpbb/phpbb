@@ -5348,7 +5348,9 @@ function garbage_collection()
 	* @event core.garbage_collection
 	* @since 3.1-A1
 	*/
-	$phpbb_dispatcher->dispatch('core.garbage_collection');
+	if (!empty($phpbb_dispatcher)) {
+		$phpbb_dispatcher->dispatch('core.garbage_collection');
+	}
 
 	// Unload cache, must be done before the DB connection if closed
 	if (!empty($cache))
