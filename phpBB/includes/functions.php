@@ -2874,7 +2874,7 @@ function send_status_line($code, $message)
 * Returns the HTTP version used in the current request.
 *
 * Handles the case of being called before $request is present,
-* In which case it falls back to the $_SERVER superglobal.
+* in which case it falls back to the $_SERVER superglobal.
 *
 * @return string HTTP version
 */
