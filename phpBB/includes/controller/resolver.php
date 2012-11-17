@@ -109,6 +109,10 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 			{
 				$arguments[] = $attributes[$param->name];
 			}
+			else if ($param->getClass() && $param->getClass()->isInstance($request))
+			{
+				$arguments[] = $request;
+			}
 			else if ($param->isDefaultValueAvailable())
 			{
 				$arguments[] = $param->getDefaultValue();
