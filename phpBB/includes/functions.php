@@ -5421,10 +5421,15 @@ function phpbb_to_numeric($input)
 */
 function phpbb_convert_30_dbms_to_31($dbms)
 {
-	if (!preg_match('#^phpbb_db_driver_#', $dbms))
+	if (class_exists($dbms))
 	{
-		return 'phpbb_db_driver_'.$dbms;
+		return $dbms;
 	}
 
-	return $dbms;
+	if (class_exists('phpbb_db_driver_' . $dbms))
+	{
+		return 'phpbb_db_driver_' . $dbms;
+	}
+
+	throw new \RuntimeException('You have specified an invalid dbms driver.');
 }
