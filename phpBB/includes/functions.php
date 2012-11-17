@@ -2865,7 +2865,7 @@ function send_status_line($code, $message)
 	}
 	else
 	{
-		$version = get_http_version();
+		$version = phpbb_request_http_version();
 		header("$version $code $message", true, $code);
 	}
 }
@@ -2878,7 +2878,7 @@ function send_status_line($code, $message)
 *
 * @return string HTTP version
 */
-function get_http_version()
+function phpbb_request_http_version()
 {
 	global $request;
 
