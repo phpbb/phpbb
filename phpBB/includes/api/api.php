@@ -102,17 +102,16 @@ class phpbb_api
 	protected function toXML($main_element, $array, $include_header = true)
 	{
 		$string = $include_header ? '<?xml version="1.0" encoding="utf-8" ?>' : '';
-		$string .= '<' . htmlspecialchars($main_element) . '>';
+		$string .= '<' . $main_element . '>';
 
 		foreach ($array as $name => $value)
 		{
-			$name = htmlspecialchars($name);
 			$string .= is_array($value)
 				? $this->toXML($value, false)
 				: '<' . $name . '>' . htmlspecialchars($value) . '</' . $name . '>';
 		}
 
-		$string .= '</' . htmlspecialchars($main_element) . '>';
+		$string .= '</' . $main_element . '>';
 
 		return $string;
 	}
