@@ -2858,8 +2858,6 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 */
 function send_status_line($code, $message)
 {
-	global $request;
-
 	if (substr(strtolower(@php_sapi_name()), 0, 3) === 'cgi')
 	{
 		// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
@@ -2867,16 +2865,33 @@ function send_status_line($code, $message)
 	}
 	else
 	{
-		if ($request->server('SERVER_PROTOCOL'))
-		{
-			$version = $request->server('SERVER_PROTOCOL');
-		}
-		else
-		{
-			$version = 'HTTP/1.0';
-		}
+		$version = get_http_version();
 		header("$version $code $message", true, $code);
 	}
+}
+
+/**
+* Returns the HTTP version used in the current request.
+*
+* Handles the case of being called before `$request` is present,
+* In which case it falls back to the $_SERVER superglobal.
+*
+* @return string HTTP version
+*/
+function get_http_version()
+{
+	global $request;
+
+	if ($request && $request->server('SERVER_PROTOCOL'))
+	{
+		return $request->server('SERVER_PROTOCOL');
+	}
+	else if (isset($_SERVER['SERVER_PROTOCOL']))
+	{
+		return $_SERVER['SERVER_PROTOCOL'];
+	}
+
+	return 'HTTP/1.0';
 }
 
 //Form validation
