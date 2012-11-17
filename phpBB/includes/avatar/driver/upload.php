@@ -29,7 +29,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 		if ($ignore_config || $this->config['allow_avatar_upload'])
 		{
 			return array(
-				'src' => $this->phpbb_root_path . 'download/file.' . $this->phpEx . '?avatar=' . $row['avatar'],
+				'src' => $this->phpbb_root_path . 'download/file' . $this->phpEx . '?avatar=' . $row['avatar'],
 				'width' => $row['avatar_width'],
 				'height' => $row['avatar_height'],
 			);
