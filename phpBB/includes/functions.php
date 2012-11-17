@@ -2346,20 +2346,6 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
-	// Make sure we have a Symfony Request object; tests do not have one
-	// unless they need it.
-	if ($symfony_request)
-	{
-		// Correct the path when we are accessing it through a controller
-		// This simply rewrites the value given by $phpbb_root_path to the
-		// script_path in config.
-		$path_info = $symfony_request->getPathInfo();
-		if (!empty($path_info) && $path_info != '/')
-		{
-			$url = $config['script_path'] . '/' . substr($url, strlen($phpbb_root_path));
-		}
-	}
-
 	$append_sid_overwrite = false;
 
 	/**
@@ -5056,7 +5042,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 	// Determine board url - we may need it later
 	$board_url = generate_board_url() . '/';
-	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $config['script_path'] . '/';
+	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
 
 	// Send a proper content-language to the output
 	$user_lang = $user->lang['USER_LANG'];

@@ -7,6 +7,8 @@
 *
 */
 
+use Symfony\Component\HttpFoundation\Request;
+
 /**
 */
 
@@ -23,6 +25,12 @@ include($phpbb_root_path . 'includes/functions_url_matcher.' . $phpEx);
 $user->session_begin();
 $auth->acl($user->data);
 $user->setup('app');
+
+// Until we fix the issue with relative paths, we have to fake path info to
+// allow urls like app.php?controller=foo/bar
+$controller = $request->variable('controller', '', false, phpbb_request_interface::GET);
+$uri = '/' . $controller;
+$symfony_request = Request::create($uri);
 
 $http_kernel = $phpbb_container->get('http_kernel');
 $response = $http_kernel->handle($symfony_request);
