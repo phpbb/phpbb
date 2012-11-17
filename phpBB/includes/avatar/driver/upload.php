@@ -77,8 +77,9 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 		$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $this->config['avatar_filesize'], $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], (isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
 
 		$url = $this->request->variable('av_upload_url', '');
+		$upload_file = $this->request->file('av_upload_file');
 
-		if (!empty($_FILES['av_upload_file']['name']))
+		if (!empty($upload_file['name']))
 		{
 			$file = $upload->form_upload('av_upload_file');
 		}
