@@ -2873,7 +2873,7 @@ function send_status_line($code, $message)
 /**
 * Returns the HTTP version used in the current request.
 *
-* Handles the case of being called before `$request` is present,
+* Handles the case of being called before $request is present,
 * In which case it falls back to the $_SERVER superglobal.
 *
 * @return string HTTP version
@@ -5348,7 +5348,8 @@ function garbage_collection()
 	* @event core.garbage_collection
 	* @since 3.1-A1
 	*/
-	if (!empty($phpbb_dispatcher)) {
+	if (!empty($phpbb_dispatcher))
+	{
 		$phpbb_dispatcher->dispatch('core.garbage_collection');
 	}
 
