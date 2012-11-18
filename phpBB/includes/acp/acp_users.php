@@ -1746,7 +1746,8 @@ class acp_users
 						{
 							$driver = str_replace('_', '.', request_var('avatar_driver', ''));
 							$config_name = preg_replace('#^avatar.driver.#', '', $driver);
-							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"])
+							$av_delete = $request->variable('av_delete', '');
+							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"] && empty($av_delete))
 							{
 								$avatar = $phpbb_avatar_manager->get_driver($driver);
 								$result = $avatar->process_form($template, $avatar_data, $error);
@@ -1770,6 +1771,11 @@ class acp_users
 							}
 							else
 							{
+								if ($avatar = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']))
+								{
+									$avatar->delete($avatar_data);
+								}
+
 								// Removing the avatar
 								$result = array(
 									'user_avatar' => '',
