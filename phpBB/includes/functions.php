@@ -7,9 +7,6 @@
 *
 */
 
-use Symfony\Component\Routing\Matcher\Dumper\PhpMatcherDumper;
-use Symfony\Component\Routing\RequestContext;
-
 /**
 * @ignore
 */
@@ -2338,7 +2335,7 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
-	global $phpbb_dispatcher, $phpbb_root_path, $config, $symfony_request;
+	global $phpbb_dispatcher;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
