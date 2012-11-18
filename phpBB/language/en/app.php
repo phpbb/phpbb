@@ -46,10 +46,4 @@ $lang = array_merge($lang, array(
 	'CONTROLLER_SERVICE_NOT_GIVEN'		=> 'The controller "<strong>%s</strong>" must have a service specified in ./config/routing.yml.',
 	'CONTROLLER_SERVICE_UNDEFINED'		=> 'The service for controller "<strong>%s</strong>" is not defined in ./config/services.yml.',
 	'CONTROLLER_RETURN_TYPE_INVALID'	=> 'The controller object <strong>%s</strong> must return a Symfony\Component\HttpFoundation\Response object.',
-
-	// Core error controller messages
-	'PAGE_NOT_FOUND_ERROR'				=> 'The page you have requested does not exist.',
-	'NOT_AUTHORISED_ERROR'				=> 'You do not have permission to access this page.',
-	'NOT_AUTHENTICATED_ERROR'			=> 'You must log in to access this page.',
-	'INTERNAL_SERVER_ERROR_ERROR'		=> 'An unknown error occured.',
 ));
