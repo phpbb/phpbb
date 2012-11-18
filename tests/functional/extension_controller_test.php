@@ -90,7 +90,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	public function test_foo_bar()
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
-		$crawler = $this->request('GET', 'app.php/foo/bar');
+		$crawler = $this->request('GET', 'app.php?controller=foo/bar');
 		$this->assert_response_success();
 		$this->assertContains("foo/bar controller handle() method", $crawler->filter('body')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
@@ -102,7 +102,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	public function test_controller_with_template()
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
-		$crawler = $this->request('GET', 'app.php/foo/template');
+		$crawler = $this->request('GET', 'app.php?controller=foo/template');
 		$this->assert_response_success();
 		$this->assertContains("I am a variable", $crawler->filter('#content')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
@@ -115,7 +115,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	public function test_missing_argument()
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
-		$crawler = $this->request('GET', 'app.php/foo/baz');
+		$crawler = $this->request('GET', 'app.php?controller=foo/baz');
 		$this->assertEquals(404, $this->client->getResponse()->getStatus());
 		$this->assertContains('Missing value for argument #1: test in class phpbb_ext_foo_bar_controller:baz', $crawler->filter('body')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
@@ -132,7 +132,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_error_ext_disabled_or_404()
 	{
-		$crawler = $this->request('GET', 'app.php/does/not/exist');
+		$crawler = $this->request('GET', 'app.php?controller=does/not/exist');
 		$this->assertEquals(404, $this->client->getResponse()->getStatus());
 		$this->assertContains('No route found for "GET /does/not/exist"', $crawler->filter('body')->text());
 	}
