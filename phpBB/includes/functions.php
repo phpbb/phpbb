@@ -5436,6 +5436,9 @@ function phpbb_to_numeric($input)
 /**
 * Create a Symfony Request object from a given URI and phpbb_request object
 *
+* Note that everything passed into the Request object has already been HTML
+* escaped by the phpbb_request object.
+*
 * @param string $uri Request URI
 * @param phpbb_request $request Request object
 * @return Request A Symfony Request object
