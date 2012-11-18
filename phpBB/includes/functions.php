@@ -7,6 +7,8 @@
 *
 */
 
+use Symfony\Component\HttpFoundation\Request;
+
 /**
 * @ignore
 */
@@ -5429,4 +5431,41 @@ function phpbb_pcre_utf8_support()
 function phpbb_to_numeric($input)
 {
 	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
+}
+
+/**
+* Create a Symfony Request object from a given URI and phpbb_request object
+*
+* @param string $uri Request URI
+* @param phpbb_request $request Request object
+* @return Request A Symfony Request object
+*/
+function phpbb_create_symfony_request($uri, phpbb_request $request)
+{
+	$request_method = $request->server('REQUEST_METHOD');
+	$parameter_names = array();
+	$parameter_names['request'] = array_merge(
+		$request->variable_names(phpbb_request_interface::GET),
+		// POST overwrites duplicated GET parameters
+		$request->variable_names(phpbb_request_interface::POST)
+	);
+	$parameter_names['server'] = $request->variable_names(phpbb_request_interface::SERVER);
+	$parameter_names['files'] = $request->variable_names(phpbb_request_interface::FILES);
+	$parameter_names['cookie'] = $request->variable_names(phpbb_request_interface::COOKIE);
+
+	$parameters = array(
+		'request'	=> array(),
+		'cookie'	=> array(),
+		'files'		=> array(),
+		'server'	=> array(),
+	);
+	foreach ($parameter_names as $type => $names)
+	{
+		foreach ($names as $name)
+		{
+			$parameters[$type][$name] = $request->variable($name, '');
+		}
+	}
+
+	return Request::create($uri, $request_method, $parameters['request'], $parameters['cookie'], $parameters['files'], $parameters['server']);
 }
