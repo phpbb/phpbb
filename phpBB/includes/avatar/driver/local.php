@@ -95,6 +95,10 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 					'AVATAR_FILE' => $img['filename'],
 				));
 
+				$template->assign_block_vars('av_local_row.av_local_option', array(
+					'S_OPTIONS_AVATAR'	=> $img['filename']
+				));
+
 				$col_count = ($col_count + 1) % $table_cols;
 
 				++$av_pos;
