@@ -19,11 +19,10 @@ if (!defined('IN_PHPBB'))
 * Handles avatars hosted at gravatar.com
 * @package avatars
 */
-// @todo: rename classes to phpbb_ext_foo_avatar_driver_foo and similar
 class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 {
 	/**
-	* We'll need to create a different type of avatar for gravatar
+	* @inheritdoc
 	*/
 	public $custom_html = true;
 
@@ -32,7 +31,6 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	*/
 	public function get_data($row, $ignore_config = false)
 	{
-		// @todo: add allow_avatar_gravatar to database_update.php etc.
 		if ($ignore_config || $this->config['allow_avatar_gravatar'])
 		{
 			return array(

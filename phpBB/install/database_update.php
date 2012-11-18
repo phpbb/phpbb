@@ -2740,6 +2740,11 @@ function change_database_data(&$no_updates, $version)
 					AND module_mode = \'avatar\'';
 			_sql($sql, $errored, $error_ary);
 
+			if (!isset($config['allow_avatar_gravatar']))
+			{
+				$config->set('allow_avatar_gravatar', '');
+			}
+
 			$no_updates = false;
 
 			if (!isset($config['assets_version']))

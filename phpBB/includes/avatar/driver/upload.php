@@ -139,7 +139,9 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	}
 
 	/**
-	* @TODO
+	* Check if user is able to upload an avatar
+	*
+	* @return bool True if user can upload, false if not
 	*/
 	private function can_upload()
 	{

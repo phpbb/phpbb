@@ -132,7 +132,9 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	}
 
 	/**
-	* @TODO
+	* Get a list of avatars that are locally available
+	*
+	* @return array An array containing the locally available avatars
 	*/
 	private function get_avatar_list()
 	{

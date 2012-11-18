@@ -51,27 +51,51 @@ interface phpbb_avatar_driver_interface
 	public function get_custom_html($row, $ignore_config = false, $alt = '');
 
 	/**
-	* @TODO
+	* Prepare form for changing the settings of this avatar
+	*
+	* @param object	$template The template object
+	* @param array	$row The user data or group data that has been cleaned with 
+	*        phpbb_avatar_manager::clean_row
+	* @param array	&$error The reference to an error array
+	*
+	* @return bool Returns true if form has been successfully prepared
 	**/
 	public function prepare_form($template, $row, &$error);
 
 	/**
-	* @TODO
+	* Process form data
+	*
+	* @param object	$template The template object
+	* @param array	$row The user data or group data that has been cleaned with 
+	*        phpbb_avatar_manager::clean_row
+	* @param array	&$error The reference to an error array
+	*
+	* @return array An array containing the avatar data as follows:
+	*        ['avatar'], ['avatar_width'], ['avatar_height']
 	**/
 	public function process_form($template, $row, &$error);
 
 	/**
-	* @TODO
+	* Delete avatar
+	*
+	* @param array $row The user data or group data that has been cleaned with 
+	*        phpbb_avatar_manager::clean_row
+	*
+	* @return bool True if avatar has been deleted or there is no need to delete
 	**/
 	public function delete($row);
 
 	/**
-	* @TODO
+	* Check if avatar is enabled
+	*
+	* @return bool True if avatar is enabled, false if it's disabled
 	**/
 	public function is_enabled();
 
 	/**
-	* @TODO
+	* Get the avatars template name
+	*
+	* @return string The avatars template name
 	**/
 	public function get_template_name();
 }

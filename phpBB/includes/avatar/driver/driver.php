@@ -81,7 +81,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	public $custom_html = false;
 
 	/**
-	* Construct an driver object
+	* Construct a driver object
 	*
 	* @param $config The phpBB configuration
 	* @param $request The request object
