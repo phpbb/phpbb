@@ -29,7 +29,6 @@ class phpbb_di_pass_kernel_pass implements CompilerPassInterface
 	public function process(ContainerBuilder $container)
 	{
 		$definition = $container->getDefinition('dispatcher');
-		$user = $container->get('user');
 
 		foreach ($container->findTaggedServiceIds('kernel.event_listener') as $id => $events)
 		{
@@ -39,12 +38,12 @@ class phpbb_di_pass_kernel_pass implements CompilerPassInterface
 
 				if (!isset($event['event']))
 				{
-					throw new InvalidArgumentException($user->lang('NO_EVENT_ATTRIBUTE', $id));
+					throw new InvalidArgumentException(sprintf('Service "%1$s" must define the "event" attribute on "kernel.event_listener" tags.', $id));
 				}
 
 				if (!isset($event['method']))
 				{
-					throw new InvalidArgumentException($user->lang('NO_METHOD_ATTRIBUTE', $id));
+					throw new InvalidArgumentException(sprintf('Service "%1$s" must define the "method" attribute on "kernel.event_listener" tags.', $id));
 				}
 
 				$definition->addMethodCall('addListenerService', array($event['event'], array($id, $event['method']), $priority));
@@ -60,7 +59,7 @@ class phpbb_di_pass_kernel_pass implements CompilerPassInterface
 			$interface = 'Symfony\Component\EventDispatcher\EventSubscriberInterface';
 			if (!$refClass->implementsInterface($interface))
 			{
-				throw new InvalidArgumentException($user->lang('SUBSCRIBER_WRONG_TYPE', $id, $interface));
+				throw new InvalidArgumentException(sprintf('Service "%1$s" must implement interface "%2$s".', $id, $interface));
 			}
 
 			$definition->addMethodCall('addSubscriberService', array($id, $class));

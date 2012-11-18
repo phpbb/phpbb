@@ -47,11 +47,6 @@ $lang = array_merge($lang, array(
 	'CONTROLLER_SERVICE_UNDEFINED'		=> 'The service for controller "<strong>%s</strong>" is not defined in ./config/services.yml.',
 	'CONTROLLER_RETURN_TYPE_INVALID'	=> 'The controller object <strong>%s</strong> must return a Symfony\Component\HttpFoundation\Response object.',
 
-	// Event Listener/Subscriber error messages
-	'NO_EVENT_ATTRIBUTE'				=> 'Service "%1$s" must define the "event" attribute on "kernel.event_listener" tags.',
-	'NO_METHOD_ATTRIBUTE'				=> 'Service "%1$s" must define the "method" attribute on "kernel.event_listener" tags.',
-	'SUBSCRIBER_WRONG_TYPE'				=> 'Service "%1$s" must implement interface "%2$s".',
-
 	// Core error controller messages
 	'PAGE_NOT_FOUND_ERROR'				=> 'The page you have requested does not exist.',
 	'NOT_AUTHORISED_ERROR'				=> 'You do not have permission to access this page.',
