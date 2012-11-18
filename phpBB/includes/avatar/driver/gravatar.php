@@ -56,7 +56,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	*/
 	public function get_custom_html($row, $ignore_config = false, $alt = '')
 	{
-		$html = '<img src="http://www.gravatar.com/avatar/' . md5(strtolower(trim($row['avatar']))) .  
+		$html = '<img src="https://secure.gravatar.com/avatar/' . md5(strtolower(trim($row['avatar']))) .  
 			(($row['avatar_width'] || $row['avatar_height']) ? ('?s=' . max($row['avatar_width'], $row['avatar_height'])) : '') . '" ' .
 			($row['avatar_width'] ? ('width="' . $row['avatar_width'] . '" ') : '') .
 			($row['avatar_height'] ? ('height="' . $row['avatar_height'] . '" ') : '') .
@@ -106,8 +106,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 		if (function_exists('getimagesize'))
 		{
 			// build URL
-			// @todo: add https support
-			$url = 'http://www.gravatar.com/avatar/' . md5(strtolower(trim($email)));
+			$url = 'https://secure.gravatar.com/' . md5(strtolower(trim($email)));
 
 			if (($width <= 0 || $height <= 0) && (($image_data = @getimagesize($url)) === false))
 			{
