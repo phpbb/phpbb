@@ -121,7 +121,10 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 
-	public function test_exception_thrown_status_code()
+	/**
+	* Check the status code resulting from an exception thrown by a controller
+	*/
+	public function test_exception_should_result_in_500_status_code()
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = $this->request('GET', 'app.php?controller=foo/exception');
@@ -142,8 +145,6 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	public function test_error_ext_disabled_or_404()
 	{
 		$crawler = $this->request('GET', 'app.php?controller=does/not/exist');
-		// This is 500 response because the exception is thrown from within Symfony
-		// and does not provide a exception code, so we assign it 500 by default
 		$this->assertEquals(404, $this->client->getResponse()->getStatus());
 		$this->assertContains('No route found for "GET /does/not/exist"', $crawler->filter('body')->text());
 	}
