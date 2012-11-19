@@ -7,6 +7,8 @@
 *
 */
 
+use Symfony\Component\HttpFoundation\Request;
+
 /**
 * @ignore
 */
@@ -5231,8 +5233,12 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 /**
 * Generate page footer
+*
+* @param bool $run_cron Whether or not to run the cron
+* @param bool $display_template Whether or not to display the template
+* @param bool $exit_handler Whether or not to run the exit_handler()
 */
-function page_footer($run_cron = true)
+function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
 	global $request, $phpbb_dispatcher;
@@ -5327,10 +5333,17 @@ function page_footer($run_cron = true)
 		}
 	}
 
-	$template->display('body');
+	if ($display_template)
+	{
+		$template->display('body');
+	}
 
 	garbage_collection();
-	exit_handler();
+
+	if ($exit_handler)
+	{
+		exit_handler();
+	}
 }
 
 /**
@@ -5436,4 +5449,50 @@ function phpbb_pcre_utf8_support()
 function phpbb_to_numeric($input)
 {
 	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
+}
+
+/**
+* Create a Symfony Request object from phpbb_request object
+*
+* @param phpbb_request $request Request object
+* @return Request A Symfony Request object
+*/
+function phpbb_create_symfony_request(phpbb_request $request)
+{
+	// This function is meant to sanitize the global input arrays
+	$sanitizer = function(&$value, $key) {
+		$type_cast_helper = new phpbb_request_type_cast_helper();
+		$type_cast_helper->set_var($value, $value, gettype($value), true);
+	};
+
+	// We need to re-enable the super globals so we can access them here
+	$request->enable_super_globals();
+	$get_parameters = $_GET;
+	$post_parameters = $_POST;
+	$server_parameters = $_SERVER;
+	$files_parameters = $_FILES;
+	$cookie_parameters = $_COOKIE;
+	// And now disable them again for security
+	$request->disable_super_globals();
+
+	array_walk_recursive($get_parameters, $sanitizer);
+	array_walk_recursive($post_parameters, $sanitizer);
+
+	// Until we fix the issue with relative paths, we have to fake path info
+	// to allow urls like app.php?controller=foo/bar
+	$controller = $request->variable('controller', '');
+	$path_info = '/' . $controller;
+	$request_uri = $server_parameters['REQUEST_URI'];
+
+	// Remove the query string from REQUEST_URI
+	if ($pos = strpos($request_uri, '?'))
+	{
+		$request_uri = substr($request_uri, 0, $pos);
+	}
+
+	// Add the path info (i.e. controller route) to the REQUEST_URI
+	$server_parameters['REQUEST_URI'] = $request_uri . $path_info;
+	$server_parameters['SCRIPT_NAME'] = '';
+
+	return new Request($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
 }
