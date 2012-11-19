@@ -426,4 +426,133 @@ class phpbb_database_test_connection_manager
 			$this->pdo->exec($query);
 		}
 	}
+
+	/**
+	* Performs synchronisations on the database after a fixture has been loaded
+	*/
+	public function post_setup_synchronisation()
+	{
+		$this->ensure_connected(__METHOD__);
+		$queries = array();
+
+		switch ($this->config['dbms'])
+		{
+			case 'oracle':
+				// Get all of the information about the sequences
+				$sql = "SELECT t.table_name, tc.column_name, d.referenced_name as sequence_name
+					FROM USER_TRIGGERS t
+					JOIN USER_DEPENDENCIES d on d.name = t.trigger_name
+					JOIN USER_TRIGGER_COLS tc on (tc.trigger_name = t.trigger_name)
+					WHERE d.referenced_type = 'SEQUENCE'
+						AND d.type = 'TRIGGER'";
+				$result = $this->pdo->query($sql);
+
+				while ($row = $result->fetch(PDO::FETCH_ASSOC))
+				{
+					// Get the current max value of the table
+					$sql = "SELECT MAX({$row['COLUMN_NAME']}) + 1 FROM {$row['TABLE_NAME']}";
+
+					$max_result = $this->pdo->query($sql);
+					$max_row = $max_result->fetch(PDO::FETCH_NUM);
+
+					if (!$max_row)
+					{
+						continue;
+					}
+
+					$maxval = current($max_row);
+					if ($maxval == null)
+					{
+						$maxval = 1;
+					}
+
+					// Get the sequence's next value
+					$sql = "SELECT {$row['SEQUENCE_NAME']}.nextval FROM dual";
+					try
+					{
+						$nextval_result = $this->pdo->query($sql);
+					}
+					catch (PDOException $e)
+					{
+						// If we catch an exception here it's because the sequencer hasn't been initialized yet.
+						// If the table hasn't been used, then there's nothing to do.
+						continue;
+					}
+					$nextval_row = $nextval_result->fetch(PDO::FETCH_NUM);
+
+					if ($nextval_row)
+					{
+						$nextval = current($nextval_row);
+
+						// Make sure we aren't setting the new increment to zero.
+						if ($maxval != $nextval)
+						{
+							// This is a multi-step process. First we need to get the sequence back into position.
+							// That means either advancing it or moving it backwards. Sequences have a minimum value
+							// of 1, so you cannot go past that. Once the offset it determined, you have to request
+							// the next sequence value to actually move the pointer into position. So if you're at 21
+							// and need to be back at 1, set the incrementer to -20. When it's requested, it'll give
+							// you 1. Then we have to set the increment amount back to 1 to resume normal behavior.
+
+							// Move the sequence to the correct position.
+							$sql = "ALTER SEQUENCE {$row['SEQUENCE_NAME']} INCREMENT BY " . ($maxval - $nextval);
+							$this->pdo->exec($sql);
+
+							// Select the next value to actually update the sequence values
+							$sql = "SELECT {$row['SEQUENCE_NAME']}.nextval FROM dual";
+							$this->pdo->query($sql);
+
+							// Reset the sequence's increment amount
+							$sql = "ALTER SEQUENCE {$row['SEQUENCE_NAME']} INCREMENT BY 1";
+							$this->pdo->exec($sql);
+						}
+					}
+				}
+			break;
+
+			case 'postgres':
+				// First get the sequences
+				$sequences = array();
+				$sql = "SELECT relname FROM pg_class WHERE relkind = 'S'";
+				$result = $this->pdo->query($sql);
+				while ($row = $result->fetch(PDO::FETCH_ASSOC))
+				{
+					$sequences[] = $row['relname'];
+				}
+
+				// Now get the name of the column using it
+				foreach ($sequences as $sequence)
+				{
+					$table = str_replace('_seq', '', $sequence);
+					$sql = "SELECT column_name FROM information_schema.columns
+						WHERE table_name = '$table'
+						AND column_default = 'nextval(''$sequence''::regclass)'";
+					$result = $this->pdo->query($sql);
+					$row = $result->fetch(PDO::FETCH_ASSOC);
+
+					// Finally, set the new sequence value
+					if ($row)
+					{
+						$column = $row['column_name'];
+
+						// Get the old value if it exists, or use 1 if it doesn't
+						$sql = "SELECT COALESCE((SELECT MAX({$column}) + 1 FROM {$table}), 1) AS val";
+						$result = $this->pdo->query($sql);
+						$row = $result->fetch(PDO::FETCH_ASSOC);
+
+						if ($row)
+						{
+							// The last parameter is false so that the system doesn't increment it again
+							$queries[] = "SELECT SETVAL('{$sequence}', {$row['val']}, false)";
+						}
+					}
+				}
+			break;
+		}
+
+		foreach ($queries as $query)
+		{
+			$this->pdo->exec($query);
+		}
+	}
 }

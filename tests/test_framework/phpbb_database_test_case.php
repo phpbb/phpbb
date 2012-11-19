@@ -28,6 +28,16 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		);
 	}
 
+	protected function setUp()
+	{
+		parent::setUp();
+
+		$config = $this->get_database_config();
+		$manager = $this->create_connection_manager($config);
+		$manager->connect();
+		$manager->post_setup_synchronisation();
+	}
+
 	public function createXMLDataSet($path)
 	{
 		$db_config = $this->get_database_config();
