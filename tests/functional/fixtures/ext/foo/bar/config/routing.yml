@@ -11,5 +11,5 @@ foo_template_controller:
     defaults: { _controller: foo_bar.controller:template }
 
 foo_exception_controller:
-    pattern: /foo/foo_exception
+    pattern: /foo/exception
     defaults: { _controller: foo_bar.controller:exception }
