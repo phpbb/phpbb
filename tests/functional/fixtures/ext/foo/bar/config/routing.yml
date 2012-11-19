@@ -9,3 +9,7 @@ foo_baz_controller:
 foo_template_controller:
     pattern: /foo/template
     defaults: { _controller: foo_bar.controller:template }
+
+foo_exception_controller:
+    pattern: /foo/foo_exception
+    defaults: { _controller: foo_bar.controller:exception }

@@ -18,6 +18,7 @@ if (!defined('IN_PHPBB'))
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
 class phpbb_event_kernel_exception_subscriber implements EventSubscriberInterface
@@ -56,9 +57,11 @@ class phpbb_event_kernel_exception_subscriber implements EventSubscriberInterfac
 	{
 		page_header($this->user->lang('INFORMATION'));
 
+		$exception = $event->getException();
+
 		$this->template->assign_vars(array(
 			'MESSAGE_TITLE'		=> $this->user->lang('INFORMATION'),
-			'MESSAGE_TEXT'		=> $event->getException()->getMessage(),
+			'MESSAGE_TEXT'		=> $exception->getMessage(),
 		));
 
 		$this->template->set_filenames(array(
@@ -67,7 +70,9 @@ class phpbb_event_kernel_exception_subscriber implements EventSubscriberInterfac
 
 		page_footer(true, false, false);
 
-		$response = new Response($this->template->assign_display('body'), 404);
+
+		$status_code = $exception instanceof NotFoundHttpException ? $exception->getStatusCode() : 500;
+		$response = new Response($this->template->assign_display('body'), $status_code);
 		$event->setResponse($response);
 	}
 

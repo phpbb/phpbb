@@ -24,12 +24,7 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('app');
 
-// Until we fix the issue with relative paths, we have to fake path info to
-// allow urls like app.php?controller=foo/bar
-$controller = $request->variable('controller', '');
-$uri = '/' . $controller;
-$symfony_request = phpbb_create_symfony_request($uri, $request);
-
+$symfony_request = phpbb_create_symfony_request($request);
 $http_kernel = $phpbb_container->get('http_kernel');
 $response = $http_kernel->handle($symfony_request);
 $response->send();

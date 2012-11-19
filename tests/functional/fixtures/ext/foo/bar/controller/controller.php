@@ -27,4 +27,9 @@ class phpbb_ext_foo_bar_controller
 
 		return $this->helper->render('foo_bar_body.html');
 	}
+
+	public function exception()
+	{
+		throw new phpbb_controller_exception('Exception thrown from foo/exception route');
+	}
 }
