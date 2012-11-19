@@ -5434,41 +5434,47 @@ function phpbb_to_numeric($input)
 }
 
 /**
-* Create a Symfony Request object from a given URI and phpbb_request object
+* Create a Symfony Request object from phpbb_request object
 *
-* Note that everything passed into the Request object has already been HTML
-* escaped by the phpbb_request object.
-*
-* @param string $uri Request URI
 * @param phpbb_request $request Request object
 * @return Request A Symfony Request object
 */
-function phpbb_create_symfony_request($uri, phpbb_request $request)
+function phpbb_create_symfony_request(phpbb_request $request)
 {
-	$request_method = $request->server('REQUEST_METHOD');
-	$parameter_names = array();
-	$parameter_names['request'] = array_merge(
-		$request->variable_names(phpbb_request_interface::GET),
-		// POST overwrites duplicated GET parameters
-		$request->variable_names(phpbb_request_interface::POST)
-	);
-	$parameter_names['server'] = $request->variable_names(phpbb_request_interface::SERVER);
-	$parameter_names['files'] = $request->variable_names(phpbb_request_interface::FILES);
-	$parameter_names['cookie'] = $request->variable_names(phpbb_request_interface::COOKIE);
+	// This function is meant to sanitize the global input arrays
+	$sanitizer = function(&$value, $key) {
+		$type_cast_helper = new phpbb_request_type_cast_helper();
+		$type_cast_helper->set_var($value, $value, gettype($value), true);
+	};
 
-	$parameters = array(
-		'request'	=> array(),
-		'cookie'	=> array(),
-		'files'		=> array(),
-		'server'	=> array(),
-	);
-	foreach ($parameter_names as $type => $names)
+	// We need to re-enable the super globals so we can access them here
+	$request->enable_super_globals();
+	$get_parameters = $_GET;
+	$post_parameters = $_POST;
+	$server_parameters = $_SERVER;
+	$files_parameters = $_FILES;
+	$cookie_parameters = $_COOKIE;
+	// And now disable them again for security
+	$request->disable_super_globals();
+
+	array_walk_recursive($get_parameters, $sanitizer);
+	array_walk_recursive($post_parameters, $sanitizer);
+
+	// Until we fix the issue with relative paths, we have to fake path info
+	// to allow urls like app.php?controller=foo/bar
+	$controller = $request->variable('controller', '');
+	$path_info = '/' . $controller;
+	$request_uri = $server_parameters['REQUEST_URI'];
+
+	// Remove the query string from REQUEST_URI
+	if ($pos = strpos($request_uri, '?'))
 	{
-		foreach ($names as $name)
-		{
-			$parameters[$type][$name] = $request->variable($name, '');
-		}
+		$request_uri = substr($request_uri, 0, $pos);
 	}
 
-	return Request::create($uri, $request_method, $parameters['request'], $parameters['cookie'], $parameters['files'], $parameters['server']);
+	// Add the path info (i.e. controller route) to the REQUEST_URI
+	$server_parameters['REQUEST_URI'] = $request_uri . $path_info;
+	$server_parameters['SCRIPT_NAME'] = '';
+
+	return new Request($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
 }
