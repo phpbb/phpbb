@@ -136,7 +136,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	*
 	* @return array An array containing the locally available avatars
 	*/
-	private function get_avatar_list()
+	protected function get_avatar_list()
 	{
 		$avatar_list = ($this->cache == null) ? false : $this->cache->get('av_local_list');
 

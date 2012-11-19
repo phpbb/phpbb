@@ -143,7 +143,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	*
 	* @return bool True if user can upload, false if not
 	*/
-	private function can_upload()
+	protected function can_upload()
 	{
 		return (file_exists($this->phpbb_root_path . $this->config['avatar_path']) && phpbb_is_writable($this->phpbb_root_path . $this->config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on'));
 	}

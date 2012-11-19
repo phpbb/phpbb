@@ -20,14 +20,14 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_avatar_manager
 {
-	private $phpbb_root_path;
-	private $phpEx;
-	private $config;
-	private $request;
-	private $cache;
-	private static $valid_drivers = false;
-	private $avatar_drivers;
-	private $container;
+	protected $phpbb_root_path;
+	protected $phpEx;
+	protected $config;
+	protected $request;
+	protected $cache;
+	protected static $valid_drivers = false;
+	protected $avatar_drivers;
+	protected $container;
 
 	/**
 	* Construct an avatar manager object
@@ -102,7 +102,7 @@ class phpbb_avatar_manager
 	* Load the list of valid drivers
 	* This is executed once and fills self::$valid_drivers
 	**/
-	private function load_valid_drivers()
+	protected function load_valid_drivers()
 	{
 		if (!empty($this->avatar_drivers))
 		{

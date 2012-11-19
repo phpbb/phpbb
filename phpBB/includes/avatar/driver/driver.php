@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 {
-	private $name;
+	protected $name;
 
 	/**
 	* Returns the name of the driver.
