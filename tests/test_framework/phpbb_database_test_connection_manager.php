@@ -439,10 +439,11 @@ class phpbb_database_test_connection_manager
 		{
 			case 'oracle':
 				// Get all of the information about the sequences
-				$sql = "SELECT t.table_name, tc.column_name, d.referenced_name as sequence_name
+				$sql = "SELECT t.table_name, tc.column_name, d.referenced_name as sequence_name, s.increment_by, s.min_value
 					FROM USER_TRIGGERS t
-					JOIN USER_DEPENDENCIES d on d.name = t.trigger_name
-					JOIN USER_TRIGGER_COLS tc on (tc.trigger_name = t.trigger_name)
+					JOIN USER_DEPENDENCIES d ON (d.name = t.trigger_name)
+					JOIN USER_TRIGGER_COLS tc ON (tc.trigger_name = t.trigger_name)
+					JOIN USER_SEQUENCES s ON (s.sequence_name = d.referenced_name)
 					WHERE d.referenced_type = 'SEQUENCE'
 						AND d.type = 'TRIGGER'";
 				$result = $this->pdo->query($sql);
@@ -450,63 +451,27 @@ class phpbb_database_test_connection_manager
 				while ($row = $result->fetch(PDO::FETCH_ASSOC))
 				{
 					// Get the current max value of the table
-					$sql = "SELECT MAX({$row['COLUMN_NAME']}) + 1 FROM {$row['TABLE_NAME']}";
-
+					$sql = "SELECT MAX({$row['COLUMN_NAME']}) AS max FROM {$row['TABLE_NAME']}";
 					$max_result = $this->pdo->query($sql);
-					$max_row = $max_result->fetch(PDO::FETCH_NUM);
+					$max_row = $max_result->fetch(PDO::FETCH_ASSOC);
 
 					if (!$max_row)
 					{
 						continue;
 					}
 
-					$maxval = current($max_row);
-					if ($maxval == null)
-					{
-						$maxval = 1;
-					}
+					$maxval = (int)$max_row['MAX'];
+					$maxval++;
 
-					// Get the sequence's next value
-					$sql = "SELECT {$row['SEQUENCE_NAME']}.nextval FROM dual";
-					try
-					{
-						$nextval_result = $this->pdo->query($sql);
-					}
-					catch (PDOException $e)
-					{
-						// If we catch an exception here it's because the sequencer hasn't been initialized yet.
-						// If the table hasn't been used, then there's nothing to do.
-						continue;
-					}
-					$nextval_row = $nextval_result->fetch(PDO::FETCH_NUM);
-
-					if ($nextval_row)
-					{
-						$nextval = current($nextval_row);
-
-						// Make sure we aren't setting the new increment to zero.
-						if ($maxval != $nextval)
-						{
-							// This is a multi-step process. First we need to get the sequence back into position.
-							// That means either advancing it or moving it backwards. Sequences have a minimum value
-							// of 1, so you cannot go past that. Once the offset it determined, you have to request
-							// the next sequence value to actually move the pointer into position. So if you're at 21
-							// and need to be back at 1, set the incrementer to -20. When it's requested, it'll give
-							// you 1. Then we have to set the increment amount back to 1 to resume normal behavior.
-
-							// Move the sequence to the correct position.
-							$sql = "ALTER SEQUENCE {$row['SEQUENCE_NAME']} INCREMENT BY " . ($maxval - $nextval);
-							$this->pdo->exec($sql);
-
-							// Select the next value to actually update the sequence values
-							$sql = "SELECT {$row['SEQUENCE_NAME']}.nextval FROM dual";
-							$this->pdo->query($sql);
-
-							// Reset the sequence's increment amount
-							$sql = "ALTER SEQUENCE {$row['SEQUENCE_NAME']} INCREMENT BY 1";
-							$this->pdo->exec($sql);
-						}
-					}
+					// This is not the "proper" way, but the proper way does not allow you to completely reset
+					// tables with no rows since you have to select the next value to make the change go into effct.
+					// You would have to go past the minimum value to set it correctly, but that's illegal.
+					// Since we have no objects attached to our sequencers (triggers aren't attached), this works fine.
+					$queries[] = 'DROP SEQUENCE ' . $row['SEQUENCE_NAME'];
+					$queries[] = "CREATE SEQUENCE {$row['SEQUENCE_NAME']} 
+									MINVALUE {$row['MIN_VALUE']} 
+									INCREMENT BY {$row['INCREMENT_BY']} 
+									START WITH $maxval";
 				}
 			break;
 
