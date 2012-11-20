@@ -5745,16 +5745,12 @@ function phpbb_get_web_root_path(Request $symfony_request)
 	$path_info = $symfony_request->getPathInfo();
 	if ($path_info == '/')
 	{
-		return '';
+		$path = '';
+		return $path;
 	}
 
-	$corrections = substr_count($symfony_request->getPathInfo(), '/');
-
-	$path = '';
-	for ($i = 0; $i < $corrections; $i++)
-	{
-		$path .= '../';
-	}
+	$corrections = substr_count($path_info, '/');
+	$path = str_repeat('../', $corrections);
 
 	return $path;
 }
