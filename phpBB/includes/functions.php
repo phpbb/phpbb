@@ -5743,7 +5743,16 @@ function phpbb_get_web_root_path(Request $symfony_request)
 	}
 
 	$path_info = $symfony_request->getPathInfo();
-	if ($path_info == '/')
+
+	// When no path is given (i.e. REQUEST_URI = "./app.php") path info from
+	// the Symfony Request object is "/". However, that is the same as when
+	// the REQUEST_URI is "./app.php/". So we want to correct the path when
+	// we have a trailing slash in the REQUEST_URI, but not when we don't.
+	$request_uri = $symfony_request->server->get('REQUEST_URI');
+	$trailing_slash = substr($request_uri, -1) === '/';
+
+	// If pathinfo is / and we do not have a trailing slash in the REQUEST_URI
+	if (!$trailing_slash && '/' === $path_info)
 	{
 		$path = '';
 		return $path;
