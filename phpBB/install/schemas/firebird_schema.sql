@@ -573,6 +573,18 @@ CREATE INDEX phpbb_login_attempts_att_for ON phpbb_login_attempts(attempt_forwar
 CREATE INDEX phpbb_login_attempts_att_time ON phpbb_login_attempts(attempt_time);;
 CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts(user_id);;
 
+# Table: 'phpbb_migrations'
+CREATE TABLE phpbb_migrations (
+	migration_name VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	migration_schema_done INTEGER DEFAULT 0 NOT NULL,
+	migration_data_done INTEGER DEFAULT 0 NOT NULL,
+	migration_data_state BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL,
+	migration_start_time INTEGER DEFAULT 0 NOT NULL,
+	migration_end_time INTEGER DEFAULT 0 NOT NULL
+);;
+
+CREATE UNIQUE INDEX phpbb_migrations_migration_name ON phpbb_migrations(migration_name);;
+
 # Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (
 	forum_id INTEGER DEFAULT 0 NOT NULL,
