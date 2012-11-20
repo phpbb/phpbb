@@ -36,7 +36,7 @@ class phpbb_template
 	* Stores template data used during template rendering.
 	* @var phpbb_template_context
 	*/
-	public $context;
+	private $context;
 
 	/**
 	* Path of the cache directory for the template
@@ -75,26 +75,21 @@ class phpbb_template
 	private $locator;
 
 	/**
-	* Location of templates directory within style directories
-	* @var string
-	*/
-	public $template_path = 'template/';
-
-	/**
 	* Constructor.
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
 	* @param phpbb_template_locator $locator template locator
+	* @param phpbb_template_context $context template context
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_locator $locator)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_locator $locator, phpbb_template_context $context)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
 		$this->locator = $locator;
-		$this->template_path = $this->locator->template_path;
+		$this->context = $context;
 	}
 
 	/**
@@ -248,7 +243,7 @@ class phpbb_template
 	* If template cache is writable the compiled php code will be stored
 	* on filesystem and template will not be subsequently recompiled.
 	* If template cache is not writable template source will be recompiled
-	* every time it is needed. DEBUG_EXTRA define and load_tplcompile
+	* every time it is needed. DEBUG define and load_tplcompile
 	* configuration setting may be used to force templates to be always
 	* recompiled.
 	*
@@ -266,7 +261,7 @@ class phpbb_template
 	{
 		$output_file = $this->_compiled_file_for_handle($handle);
 
-		$recompile = defined('DEBUG_EXTRA') ||
+		$recompile = defined('DEBUG') ||
 			!file_exists($output_file) ||
 			@filesize($output_file) === 0;
 
@@ -457,42 +452,6 @@ class phpbb_template
 	}
 
 	/**
-	* Locates source template path, accounting for styles tree and verifying that
-	* the path exists.
-	*
-	* @param string or array $files List of templates to locate. If there is only
-	*				one template, $files can be a string to make code easier to read.
-	* @param bool $return_default Determines what to return if template does not
-	*				exist. If true, function will return location where template is
-	*				supposed to be. If false, function will return false.
-	* @param bool $return_full_path If true, function will return full path
-	*				to template. If false, function will return template file name.
-	*				This parameter can be used to check which one of set of template
-	*				files is available.
-	* @return string or boolean Source template path if template exists or $return_default is
-	*				true. False if template does not exist and $return_default is false
-	*/
-	public function locate($files, $return_default = false, $return_full_path = true)
-	{
-		// add tempalte path prefix
-		$templates = array();
-		if (is_string($files))
-		{
-			$templates[] = $this->template_path . $files;
-		}
-		else
-		{
-			foreach ($files as $file)
-			{
-				$templates[] = $this->template_path . $file;
-			}
-		}
-
-		// use resource locator to find files
-		return $this->locator->get_first_file_location($templates, $return_default, $return_full_path);
-	}
-
-	/**
 	* Include JS file
 	*
 	* @param string $file file name
@@ -504,7 +463,11 @@ class phpbb_template
 		// Locate file
 		if ($locate)
 		{
-			$file = $this->locator->get_first_file_location(array($file), true, true);
+			$located = $this->locator->get_first_file_location(array($file), false, true);
+			if ($located)
+			{
+				$file = $located;
+			}
 		}
 		else if ($relative)
 		{

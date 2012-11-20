@@ -1,0 +1,3 @@
+services:
+    core_foo.controller:
+        class: phpbb_controller_foo

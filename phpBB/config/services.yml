@@ -44,15 +44,41 @@ services:
             - @cache.driver
             - %tables.config%
 
-    cron.task_provider:
-        class: phpbb_cron_task_provider
+    controller.helper:
+        class: phpbb_controller_helper
         arguments:
-            - @container
+            - @template
+            - @user
+            - %core.root_path%
+            - .%core.php_ext%
+
+    controller.resolver:
+        class: phpbb_controller_resolver
+        arguments:
+            - @user
+            - @service_container
+            - @ext.finder
+
+    controller.route_collection:
+        class: phpbb_controller_route_collection
+        arguments:
+            - @ext.finder
+            - @controller.provider
+
+    controller.provider:
+        class: phpbb_controller_provider
+
+    cron.task_collection:
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: cron.task }
 
     cron.manager:
         class: phpbb_cron_manager
         arguments:
-            - @cron.task_provider
+            - @cron.task_collection
             - %core.root_path%
             - %core.php_ext%
 
@@ -65,6 +91,8 @@ services:
 
     dispatcher:
         class: phpbb_event_dispatcher
+        arguments:
+            - @service_container
 
     dbal.conn:
         class: %dbal.driver.class%
@@ -89,12 +117,42 @@ services:
             - .%core.php_ext%
             - @cache.driver
 
-    processor.ext:
-        class: phpbb_di_processor_ext
+    ext.finder:
+        class: phpbb_extension_finder
         arguments:
             - @ext.manager
+            - %core.root_path%
+            - @cache.driver
+            - .%core.php_ext%
+            - _ext_finder
+
+    http_kernel:
+        class: Symfony\Component\HttpKernel\HttpKernel
+        arguments:
+            - @dispatcher
+            - @controller.resolver
+
+    kernel_request_subscriber:
+        class: phpbb_event_kernel_request_subscriber
+        arguments:
+            - @ext.finder
+            - %core.root_path%
+            - .%core.php_ext%
         tags:
-            - { name: container.processor }
+            - { name: kernel.event_subscriber }
+
+    kernel_exception_subscriber:
+        class: phpbb_event_kernel_exception_subscriber
+        arguments:
+            - @template
+            - @user
+        tags:
+            - { name: kernel.event_subscriber }
+
+    kernel_terminate_subscriber:
+        class: phpbb_event_kernel_terminate_subscriber
+        tags:
+            - { name: kernel.event_subscriber }
 
     request:
         class: phpbb_request
@@ -130,7 +188,10 @@ services:
             - @config
             - @user
             - @style.resource_locator
-            - @style.path_provider_ext
+            - @template_context
+
+    template_context:
+        class: phpbb_template_context
 
     user:
         class: phpbb_user

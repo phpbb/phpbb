@@ -39,18 +39,18 @@ class phpbb_captcha_nogd extends phpbb_default_captcha
 		}
 	}
 
-	public static function get_instance()
+	static public function get_instance()
 	{
 		$instance = new phpbb_captcha_nogd();
 		return $instance;
 	}
 
-	function is_available()
+	static public function is_available()
 	{
 		return true;
 	}
 
-	function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_NO_GD';
 	}

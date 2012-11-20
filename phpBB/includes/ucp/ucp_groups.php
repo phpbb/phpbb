@@ -513,7 +513,8 @@ class ucp_groups
 							$data['height']		= request_var('height', '');
 							$delete				= request_var('delete', '');
 
-							if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
+							$uploadfile = $request->file('uploadfile');
+							if (!empty($uploadfile['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
 							{
 								// Avatar stuff
 								$var_ary = array(
@@ -527,7 +528,7 @@ class ucp_groups
 								{
 									$data['user_id'] = "g$group_id";
 
-									if ((!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl']) && $can_upload)
+									if ((!empty($uploadfile['tmp_name']) || $data['uploadurl']) && $can_upload)
 									{
 										list($submit_ary['avatar_type'], $submit_ary['avatar'], $submit_ary['avatar_width'], $submit_ary['avatar_height']) = avatar_upload($data, $error);
 									}
