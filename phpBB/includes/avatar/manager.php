@@ -79,7 +79,7 @@ class phpbb_avatar_manager
 			break;
 		}
 
-		if (!in_array($avatar_type, self::$valid_drivers))
+		if (!isset(self::$valid_drivers[$avatar_type]))
 		{
 			return null;
 		}
@@ -109,7 +109,7 @@ class phpbb_avatar_manager
 			self::$valid_drivers = array();
 			foreach ($this->avatar_drivers as $driver)
 			{
-				self::$valid_drivers[] = $driver->get_name();
+				self::$valid_drivers[$driver->get_name()] = $driver->get_name();
 			}
 		}
 	}
