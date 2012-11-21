@@ -1,12 +1,24 @@
 services:
+    notification.type_collection:
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: notification.type }
+
+    notification.method_collection:
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: notification.method }
+
     notification.type.approve_post:
         class: phpbb_notification_type_approve_post
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -20,11 +32,9 @@ services:
     notification.type.approve_topic:
         class: phpbb_notification_type_approve_topic
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -38,11 +48,9 @@ services:
     notification.type.bookmark:
         class: phpbb_notification_type_bookmark
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -56,11 +64,9 @@ services:
     notification.type.disapprove_post:
         class: phpbb_notification_type_disapprove_post
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -74,11 +80,9 @@ services:
     notification.type.disapprove_topic:
         class: phpbb_notification_type_disapprove_topic
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -92,11 +96,9 @@ services:
     notification.type.pm:
         class: phpbb_notification_type_pm
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -110,11 +112,9 @@ services:
     notification.type.post:
         class: phpbb_notification_type_post
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -128,11 +128,9 @@ services:
     notification.type.post_in_queue:
         class: phpbb_notification_type_post_in_queue
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -146,11 +144,9 @@ services:
     notification.type.quote:
         class: phpbb_notification_type_quote
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -164,11 +160,9 @@ services:
     notification.type.report_pm:
         class: phpbb_notification_type_report_pm
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -182,11 +176,9 @@ services:
     notification.type.report_pm_closed:
         class: phpbb_notification_type_report_pm_closed
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -200,11 +192,9 @@ services:
     notification.type.report_post:
         class: phpbb_notification_type_report_post
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -218,11 +208,9 @@ services:
     notification.type.report_post_closed:
         class: phpbb_notification_type_report_post
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -236,11 +224,9 @@ services:
     notification.type.topic:
         class: phpbb_notification_type_topic
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -254,11 +240,9 @@ services:
     notification.type.topic_in_queue:
         class: phpbb_notification_type_topic_in_queue
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -272,11 +256,9 @@ services:
     notification.method.email:
         class: phpbb_notification_method_email
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config
@@ -288,11 +270,9 @@ services:
     notification.method.jabber:
         class: phpbb_notification_method_jabber
         arguments:
-            - @notification_manager
+            - @user_loader
             - @dbal.conn
             - @cache.driver
-            - @template
-            - @ext.manager
             - @user
             - @auth
             - @config

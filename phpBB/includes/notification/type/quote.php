@@ -121,7 +121,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
 		$update_notifications = array();
 		$sql = 'SELECT *
-			FROM ' . NOTIFICATIONS_TABLE . "
+			FROM ' . $this->notifications_table . "
 			WHERE item_type = '" . $this->get_type() . "'
 				AND item_parent_id = " . (int) self::get_item_parent_id($post) . '
 				AND unread = 1
@@ -133,7 +133,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 			unset($notify_users[$row['user_id']]);
 
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);
-			$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
+			$sql = 'UPDATE ' . $this->notifications_table . '
 				SET ' . $this->db->sql_build_array('UPDATE', $notification->add_responders($post)) . '
 				WHERE notification_id = ' . $row['notification_id'];
 			$this->db->sql_query($sql);
@@ -152,7 +152,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 	{
 		$old_notifications = array();
 		$sql = 'SELECT user_id
-			FROM ' . NOTIFICATIONS_TABLE . "
+			FROM ' . $this->notifications_table . "
 			WHERE item_type = '" . $this->get_type() . "'
 				AND item_id = " . self::get_item_id($post) . '
 				AND is_enabled = 1';
@@ -182,7 +182,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 		// Remove the necessary notifications
 		if (!empty($remove_notifications))
 		{
-			$sql = 'DELETE FROM ' . NOTIFICATIONS_TABLE . "
+			$sql = 'DELETE FROM ' . $this->notifications_table . "
 				WHERE item_type = '" . $this->get_type() . "'
 					AND item_id = " . self::get_item_id($post) . '
 					AND ' . $this->db->sql_in_set('user_id', $remove_notifications);
@@ -210,7 +210,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 	*/
 	public function get_email_template_variables()
 	{
-		$user_data = $this->notification_manager->get_user($this->get_data('poster_id'));
+		$user_data = $this->user_loader->get_user($this->get_data('poster_id'));
 
 		return array_merge(parent::get_email_template_variables(), array(
 			'AUTHOR_NAME'		=> htmlspecialchars_decode($user_data['username']),

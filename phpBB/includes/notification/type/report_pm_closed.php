@@ -106,7 +106,7 @@ class phpbb_notification_type_report_pm_closed extends phpbb_notification_type_p
 	*/
 	public function get_title()
 	{
-		$user_data = $this->notification_manager->get_user($this->get_data('closer_id'));
+		$user_data = $this->user_loader->get_user($this->get_data('closer_id'));
 
 		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 
