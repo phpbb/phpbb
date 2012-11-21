@@ -3017,19 +3017,19 @@ function change_database_data(&$no_updates, $version)
 				$convert_notifications = array(
 					array(
 						'check'			=> ($config['allow_topic_notify']),
-						'item_type'		=> 'phpbb_notification_type_post',
+						'item_type'		=> 'post',
 					),
 					array(
 						'check'			=> ($config['allow_forum_notify']),
-						'item_type'		=> 'phpbb_notification_type_topic',
+						'item_type'		=> 'topic',
 					),
 					array(
 						'check'			=> ($config['allow_bookmarks']),
-						'item_type'		=> 'phpbb_notification_type_bookmark',
+						'item_type'		=> 'bookmark',
 					),
 					array(
 						'check'			=> ($config['allow_privmsg']),
-						'item_type'		=> 'phpbb_notification_type_pm',
+						'item_type'		=> 'pm',
 					),
 				);
 
@@ -3056,7 +3056,7 @@ function change_database_data(&$no_updates, $version)
 									'item_type'		=> $convert_data['item_type'],
 									'item_id'		=> 0,
 									'user_id'		=> $row['user_id'],
-									'method'		=> 'phpbb_notification_method_email',
+									'method'		=> 'email',
 								)), $errored, $error_ary);
 							}
 
@@ -3066,7 +3066,7 @@ function change_database_data(&$no_updates, $version)
 									'item_type'		=> $convert_data['item_type'],
 									'item_id'		=> 0,
 									'user_id'		=> $row['user_id'],
-									'method'		=> 'phpbb_notification_method_jabber',
+									'method'		=> 'jabber',
 								)), $errored, $error_ary);
 							}
 						}

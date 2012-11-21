@@ -24,6 +24,9 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	/** @var phpbb_notification_manager */
 	protected $notification_manager = null;
 
+	/** @var phpbb_user_loader */
+	protected $user_loader = null;
+
 	/** @var dbal */
 	protected $db = null;
 
@@ -32,9 +35,6 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/** @var phpbb_template */
 	protected $template = null;
-
-	/** @var phpbb_extension_manager */
-	protected $extension_manager = null;
 
 	/** @var phpbb_user */
 	protected $user = null;
@@ -84,13 +84,11 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	private $data = array();
 
-	public function __construct(phpbb_notification_manager $notification_manager, dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext, $notifications_table, $user_notifications_table)
+	public function __construct(phpbb_user_loader $user_loader, dbal $db, phpbb_cache_driver_interface $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext, $notifications_table, $user_notifications_table)
 	{
-		$this->notification_manager = $notification_manager;
+		$this->user_loader = $user_loader;
 		$this->db = $db;
 		$this->cache = $cache;
-		$this->template = $template;
-		$this->extension_manager = $extension_manager;
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->config = $config;
@@ -100,6 +98,11 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 		$this->notifications_table = $notifications_table;
 		$this->user_notifications_table = $user_notifications_table;
+	}
+
+	public function set_notification_manager(phpbb_notification_manager $notification_manager)
+	{
+		$this->notification_manager = $notification_manager;
 	}
 
 	/**
@@ -357,7 +360,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		$rowset = $resulting_user_ids = array();
 
 		$sql = 'SELECT user_id, method, notify
-			FROM ' . USER_NOTIFICATIONS_TABLE . '
+			FROM ' . $this->user_notifications_table . '
 			WHERE ' . $this->db->sql_in_set('user_id', $user_ids) . "
 				AND item_type = '" . $this->db->sql_escape($options['item_type']) . "'
 				AND item_id = " . (int) $options['item_id'];
@@ -395,24 +398,6 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	}
 
 	/**
-	* Get avatar helper
-	*
-	* @param int $user_id
-	* @return string
-	*/
-	protected function get_user_avatar($user_id)
-	{
-		$user = $this->notification_manager->get_user($user_id);
-
-		if (!function_exists('get_user_avatar'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
-		}
-
-		return get_user_avatar($user['user_avatar'], $user['user_avatar_type'], $user['user_avatar_width'], $user['user_avatar_height'], $user['username'], false, 'notifications-avatar');
-	}
-
-	/**
 	* Mark this item read/unread helper
 	*
 	* @param bool $unread Unread (True/False) (Default: False)
@@ -435,7 +420,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 			return $where;
 		}
 
-		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
+		$sql = 'UPDATE ' . $this->notifications_table . '
 			SET unread = ' . (int) $this->unread . '
 			WHERE ' . $where;
 		$this->db->sql_query($sql);
