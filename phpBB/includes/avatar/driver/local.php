@@ -111,6 +111,17 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 
 	/**
 	* @inheritdoc
+	**/
+	public function prepare_form_acp()
+	{
+		return array(
+			'allow_avatar_local'	=> array('lang' => 'ALLOW_LOCAL',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+			'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
+		);
+	}
+
+	/**
+	* @inheritdoc
 	*/
 	public function process_form($template, $row, &$error)
 	{

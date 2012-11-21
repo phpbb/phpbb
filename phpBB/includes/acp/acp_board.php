@@ -28,7 +28,7 @@ class acp_board
 	{
 		global $db, $user, $auth, $template;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $cache;
+		global $cache, $phpbb_avatar_manager;
 
 		$user->add_lang('acp/board');
 
@@ -107,6 +107,15 @@ class acp_board
 			break;
 
 			case 'avatar':
+				$avatar_drivers = $phpbb_avatar_manager->get_valid_drivers();
+				sort($avatar_drivers);
+				$avatar_vars = array();
+				foreach ($avatar_drivers as $driver)
+				{
+					$avatar = $phpbb_avatar_manager->get_driver($driver);
+					$avatar_vars += $avatar->prepare_form_acp();
+				}
+
 				$display_vars = array(
 					'title'	=> 'ACP_AVATAR_SETTINGS',
 					'vars'	=> array(
@@ -118,18 +127,15 @@ class acp_board
 						'avatar_max_height'		=> array('lang' => 'MAX_AVATAR_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false),
 
 						'allow_avatar'			=> array('lang' => 'ALLOW_AVATARS',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'allow_avatar_gravatar'	=> array('lang' => 'ALLOW_GRAVATAR',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
-						'allow_avatar_local'	=> array('lang' => 'ALLOW_LOCAL',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
-						'allow_avatar_remote'	=> array('lang' => 'ALLOW_REMOTE',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'allow_avatar_upload'	=> array('lang' => 'ALLOW_UPLOAD',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
-						'allow_avatar_remote_upload'=> array('lang' => 'ALLOW_REMOTE_UPLOAD', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'avatar_filesize'		=> array('lang' => 'MAX_FILESIZE',			'validate' => 'int:0',	'type' => 'text:4:10', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
 						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'avatar_max'			=> array('lang' => 'MAX_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
-						'avatar_path'			=> array('lang' => 'AVATAR_STORAGE_PATH',	'validate' => 'rwpath',	'type' => 'text:20:255', 'explain' => true),
-						'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
 					)
 				);
+
+				if (sizeof($avatar_vars))
+				{
+					$display_vars['vars'] += $avatar_vars;
+				}
 			break;
 
 			case 'message':

@@ -63,6 +63,13 @@ interface phpbb_avatar_driver_interface
 	public function prepare_form($template, $row, &$error);
 
 	/**
+	* Prepare form for changing the acp settings of this avatar
+	*
+	* @return array Return the array containing the acp settings
+	**/
+	public function prepare_form_acp();
+
+	/**
 	* Process form data
 	*
 	* @param object	$template The template object
