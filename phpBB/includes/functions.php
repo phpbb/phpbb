@@ -1340,12 +1340,12 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			// Mark all topic notifications read for this user
 			$phpbb_notifications->mark_notifications_read(array(
-				'phpbb_notification_type_topic',
-				'phpbb_notification_type_quote',
-				'phpbb_notification_type_bookmark',
-				'phpbb_notification_type_post',
-				'phpbb_notification_type_approve_topic',
-				'phpbb_notification_type_approve_post',
+				'topic',
+				'quote',
+				'bookmark',
+				'post',
+				'approve_topic',
+				'approve_post',
 			), false, $user->data['user_id'], $post_time);
 
 			if ($config['load_db_lastread'] && $user->data['is_registered'])
@@ -1402,8 +1402,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 
 		$phpbb_notifications->mark_notifications_read_by_parent(array(
-			'phpbb_notification_type_topic',
-			'phpbb_notification_type_approve_topic',
+			'topic',
+			'approve_topic',
 		), $forum_id, $user->data['user_id'], $post_time);
 
 		// Mark all post/quote notifications read for this user in this forum
@@ -1419,10 +1419,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		$db->sql_freeresult($result);
 
 		$phpbb_notifications->mark_notifications_read_by_parent(array(
-			'phpbb_notification_type_quote',
-			'phpbb_notification_type_bookmark',
-			'phpbb_notification_type_post',
-			'phpbb_notification_type_approve_post',
+			'quote',
+			'bookmark',
+			'post',
+			'approve_post',
 		), $topic_ids, $user->data['user_id'], $post_time);
 
 		// Add 0 to forums array to mark global announcements correctly
@@ -1524,14 +1524,14 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 		// Mark post notifications read for this user in this topic
 		$phpbb_notifications->mark_notifications_read(array(
-			'phpbb_notification_type_topic',
-			'phpbb_notification_type_approve_topic',
+			'topic',
+			'approve_topic',
 		), $topic_id, $user->data['user_id'], $post_time);
 		$phpbb_notifications->mark_notifications_read_by_parent(array(
-			'phpbb_notification_type_quote',
-			'phpbb_notification_type_bookmark',
-			'phpbb_notification_type_post',
-			'phpbb_notification_type_approve_post',
+			'quote',
+			'bookmark',
+			'post',
+			'approve_post',
 		), $topic_id, $user->data['user_id'], $post_time);
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])

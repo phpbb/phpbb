@@ -82,7 +82,7 @@ class phpbb_notification_method_email extends phpbb_notification_method_base
 		$banned_users = phpbb_get_banned_user_ids($user_ids);
 
 		// Load all the users we need
-		$this->notification_manager->load_users($user_ids);
+		$this->user_loader->load_users($user_ids);
 
 		// Load the messenger
 		if (!class_exists('messenger'))
@@ -100,7 +100,7 @@ class phpbb_notification_method_email extends phpbb_notification_method_base
 				continue;
 			}
 
-			$user = $this->notification_manager->get_user($notification->user_id);
+			$user = $this->user_loader->get_user($notification->user_id);
 
 			if ($user['user_type'] == USER_IGNORE || in_array($notification->user_id, $banned_users))
 			{

@@ -717,9 +717,9 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 	}
 
 	$phpbb_notifications->delete_notifications(array(
-		'phpbb_notification_type_topic',
-		'phpbb_notification_type_approve_topic',
-		'phpbb_notification_type_topic_in_queue',
+		'topic',
+		'approve_topic',
+		'topic_in_queue',
 	), $topic_ids);
 
 	return $return;
@@ -901,11 +901,11 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	$phpbb_notifications->delete_notifications(array(
-		'phpbb_notification_type_quote',
-		'phpbb_notification_type_bookmark',
-		'phpbb_notification_type_post',
-		'phpbb_notification_type_approve_post',
-		'phpbb_notification_type_post_in_queue',
+		'quote',
+		'bookmark',
+		'post',
+		'approve_post',
+		'post_in_queue',
 	), $post_ids);
 
 	return sizeof($post_ids);

@@ -121,14 +121,12 @@ services:
     notification_manager:
         class: phpbb_notification_manager
         arguments:
-            - @container
+            - @notification.type_collection
+            - @notification.method_collection
+            - @service_container
+            - @user_loader
             - @dbal.conn
-            - @cache.driver
-            - @template
-            - @ext.manager
             - @user
-            - @auth
-            - @config
             - %core.root_path%
             - %core.php_ext%
             - %tables.notifications%
@@ -204,3 +202,11 @@ services:
 
     user:
         class: phpbb_user
+
+    user_loader:
+        class: phpbb_user_loader
+        arguments:
+            - @dbal.conn
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.users%

@@ -160,7 +160,7 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	{
 		$this->user->add_lang('mcp');
 
-		$user_data = $this->notification_manager->get_user($this->get_data('reporter_id'));
+		$user_data = $this->user_loader->get_user($this->get_data('reporter_id'));
 
 		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 
@@ -197,7 +197,7 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	*/
 	public function get_avatar()
 	{
-		return $this->get_user_avatar($this->get_data('reporter_id'));
+		return $this->user_loader->get_avatar($this->get_data('reporter_id'));
 	}
 
 	/**

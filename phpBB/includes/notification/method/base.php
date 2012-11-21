@@ -24,6 +24,9 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	/** @var phpbb_notification_manager */
 	protected $notification_manager = null;
 
+	/** @var phpbb_user_loader */
+	protected $user_loader = null;
+
 	/** @var dbal */
 	protected $db = null;
 
@@ -58,18 +61,21 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	*/
 	protected $queue = array();
 
-	public function __construct(phpbb_notification_manager $notification_manager, dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
+	public function __construct(phpbb_user_loader $user_loader, dbal $db, phpbb_cache_driver_interface $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
-		$this->notification_manager = $notification_manager;
+		$this->user_loader = $user_loader;
 		$this->db = $db;
 		$this->cache = $cache;
-		$this->template = $template;
-		$this->extension_manager = $extension_manager;
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+	}
+
+	public function set_notification_manager(phpbb_notification_manager $notification_manager)
+	{
+		$this->notification_manager = $notification_manager;
 	}
 
 	/**
