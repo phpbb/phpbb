@@ -78,10 +78,15 @@ class phpbb_notification_manager
 	*				order_dir			Order direction (Default: DESC)
 	* 				limit				Number of notifications to load (Default: 5)
 	* 				start				Notifications offset (Default: 0)
-	* 				all_unread			Load all unread messages? If set to true, count_unread is set to true (Default: false)
-	* 				count_unread		Count all unread messages? (Default: false)
+	* 				all_unread			Load all unread notifications? If set to true, count_unread is set to true (Default: false)
+	* 				count_unread		Count all unread notifications? (Default: false)
+	* 				count_total			Count all notifications? (Default: false)
+	* @return array Array of information based on the request with keys:
+	*	'notifications'		array of notification type objects
+	*	'unread_count'		number of unread notifications the user has if count_unread is true in the options
+	*	'total_count'		number of notifications the user has if count_total is true in the options
 	*/
-	public function load_notifications($options = array())
+	public function load_notifications(array $options = array())
 	{
 		// Merge default options
 		$options = array_merge(array(
@@ -297,8 +302,11 @@ class phpbb_notification_manager
 	*			Note: If you send an array of types, any user who could receive multiple notifications from this single item will only receive
 	* 			a single notification. If they MUST receive multiple notifications, call this function multiple times instead of sending an array
 	* @param array $data Data specific for this type that will be inserted
+	* @param array $options Optional options to control what notifications are loaded
+	* 			ignore_users	array of data to specify which users should not receive certain types of notifications
+	* @return array Information about what users were notified and how they were notified
 	*/
-	public function add_notifications($item_type, $data, $options = array())
+	public function add_notifications($item_type, $data, array $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
