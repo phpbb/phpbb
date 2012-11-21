@@ -21,6 +21,8 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 {
+	const GRAVATAR_URL = 'https://secure.gravatar.com/avatar/';
+
 	/**
 	* @inheritdoc
 	*/
@@ -54,8 +56,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	*/
 	public function get_custom_html($row, $ignore_config = false, $alt = '')
 	{
-		$html = '<img src="https://secure.gravatar.com/avatar/' . md5(strtolower(trim($row['avatar']))) .  
-			(($row['avatar_width'] || $row['avatar_height']) ? ('?s=' . max($row['avatar_width'], $row['avatar_height'])) : '') . '" ' .
+		$html = '<img src="' . $this->get_gravatar_url($row) . '" ' .
 			($row['avatar_width'] ? ('width="' . $row['avatar_width'] . '" ') : '') .
 			($row['avatar_height'] ? ('height="' . $row['avatar_height'] . '" ') : '') .
 			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
@@ -81,14 +82,14 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	*/
 	public function process_form($template, $row, &$error)
 	{
-		$email = $this->request->variable('av_gravatar_email', '');
-		$width = $this->request->variable('av_gravatar_width', 0);
-		$height = $this->request->variable('av_gravatar_height', 0);
+		$row['avatar'] = $this->request->variable('av_gravatar_email', '');
+		$row['avatar_width'] = $this->request->variable('av_gravatar_width', 0);
+		$row['avatar_height'] = $this->request->variable('av_gravatar_height', 0);
 
 		require_once($this->phpbb_root_path . 'includes/functions_user' . $this->phpEx);
 
 		$error = array_merge($error, validate_data(array(
-			'email' => $email,
+			'email' => $row['avatar'],
 		), array(
 			'email' => array(
 				array('string', false, 6, 60),
@@ -101,12 +102,16 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 		}
 
 		// Make sure getimagesize works...
-		if (function_exists('getimagesize'))
+		if (function_exists('getimagesize') && ($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0))
 		{
-			// build URL
-			$url = 'https://secure.gravatar.com/' . md5(strtolower(trim($email)));
+			/**
+			* default to the minimum of the maximum allowed avatar size if the size
+			* is not or only partially entered
+			*/
+			$row['avatar_width'] = $row['avatar_height'] = min($this->config['avatar_max_width'], $this->config['avatar_max_height']);
+			$url = $this->get_gravatar_url($row);
 
-			if (($width <= 0 || $height <= 0) && (($image_data = @getimagesize($url)) === false))
+			if (($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0) && (($image_data = @getimagesize($url)) === false))
 			{
 				$error[] = 'UNABLE_GET_IMAGE_SIZE';
 				return false;
@@ -118,20 +123,38 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 				return false;
 			}
 
-			$width = ($width && $height) ? $width : $image_data[0];
-			$height = ($width && $height) ? $height : $image_data[1];
+			$row['avatar_width'] = ($row['avatar_width'] && $row['avatar_height']) ? $row['avatar_width'] : $image_data[0];
+			$row['avatar_height'] = ($row['avatar_width'] && $row['avatar_height']) ? $row['avatar_height'] : $image_data[1];
 		}
 
-		if ($width <= 0 || $height <= 0)
+		if ($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0)
 		{
 			$error[] = 'AVATAR_NO_SIZE';
 			return false;
 		}
 
 		return array(
-			'avatar' => $email,
-			'avatar_width' => $width,
-			'avatar_height' => $height,
+			'avatar' => $row['avatar'],
+			'avatar_width' => $row['avatar_width'],
+			'avatar_height' => $row['avatar_height'],
 		);
+	}
+
+	/**
+	* Build gravatar URL for output on page
+	*
+	* @return string The gravatar URL
+	*/
+	protected function get_gravatar_url($row)
+	{
+		$url = self::GRAVATAR_URL;
+		$url .=  md5(strtolower(trim($row['avatar'])));
+
+		if ($row['avatar_width'] || $row['avatar_height'])
+		{
+			$url .= '?s=' . max($row['avatar_width'], $row['avatar_height']);
+		}
+
+		return $url;
 	}
 }
