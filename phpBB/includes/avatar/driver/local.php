@@ -159,45 +159,33 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 			$avatar_list = array();
 			$path = $this->phpbb_root_path . $this->config['avatar_gallery_path'];
 
-			$dh = @opendir($path);
-
-			if ($dh)
+			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS), RecursiveIteratorIterator::SELF_FIRST);
+			foreach ($iterator as $file_info)
 			{
-				while (($cat = readdir($dh)) !== false)
-				{
-					if ($cat[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $cat) && is_dir("$path/$cat"))
-					{
-						if ($ch = @opendir("$path/$cat"))
-						{
-							while (($image = readdir($ch)) !== false)
-							{
-								// Match all images in the gallery folder
-								if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $image))
-								{
-									if (function_exists('getimagesize'))
-									{
-										$dims = getimagesize($this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $cat . '/' . $image);
-									}
-									else
-									{
-										$dims = array(0, 0);
-									}
-									$avatar_list[$cat][$image] = array(
-										'file'      => rawurlencode($cat) . '/' . rawurlencode($image),
-										'filename'  => rawurlencode($image),
-										'name'      => ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $image))),
-										'width'     => $dims[0],
-										'height'    => $dims[1],
-									);
-								}
-							}
-							@closedir($ch);
-						}
-					}
-				}
-				@closedir($dh);
-			}
+				$file_path = $file_info->getPath();
+				$image = $file_info->getFilename();
 
+				// Match all images in the gallery folder
+				if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $image) && is_file($file_path . '/' . $image))
+				{
+					if (function_exists('getimagesize'))
+					{
+						$dims = getimagesize($file_path . '/' . $image);
+					}
+					else
+					{
+						$dims = array(0, 0);
+					}
+					$cat = str_replace("$path/", '', $file_path);
+					$avatar_list[$cat][$image] = array(
+						'file'      => rawurlencode($cat) . '/' . rawurlencode($image),
+						'filename'  => rawurlencode($image),
+						'name'      => ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $image))),
+						'width'     => $dims[0],
+						'height'    => $dims[1],
+					);
+				}
+			}
 			@ksort($avatar_list);
 
 			if ($this->cache != null)
