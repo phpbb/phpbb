@@ -132,6 +132,24 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 			$error[] = 'AVATAR_NO_SIZE';
 			return false;
 		}
+		
+		if ($this->config['avatar_max_width'] || $this->config['avatar_max_height'])
+		{
+			if ($row['avatar_width'] > $this->config['avatar_max_width'] || $row['avatar_height'] > $this->config['avatar_max_height'])
+			{
+				$error[] = array('AVATAR_WRONG_SIZE', $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], $row['avatar_width'], $row['avatar_height']);
+				return false;
+			}
+		}
+
+		if ($this->config['avatar_min_width'] || $this->config['avatar_min_height'])
+		{
+			if ($row['avatar_width'] < $this->config['avatar_min_width'] || $row['avatar_height'] < $this->config['avatar_min_height'])
+			{
+				$error[] = array('AVATAR_WRONG_SIZE', $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], $row['avatar_width'], $row['avatar_height']);
+				return false;
+			}
+		}
 
 		return array(
 			'avatar' => $row['avatar'],
