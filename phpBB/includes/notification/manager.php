@@ -755,7 +755,9 @@ class phpbb_notification_manager
 	*/
 	public function get_item_type_class($item_type, $data = array())
 	{
-		$item = $this->load_object('notification.type.' . $item_type);
+		$item_type = (strpos($item_type, 'notification.type.') === 0) ? $item_type : 'notification.type.' . $item_type;
+
+		$item = $this->load_object($item_type);
 
 		$item->set_initial_data($data);
 
@@ -767,7 +769,9 @@ class phpbb_notification_manager
 	*/
 	public function get_method_class($method_name)
 	{
-		return $this->load_object('notification.method.' . $method_name);
+		$method_name = (strpos($method_name, 'notification.method.') === 0) ? $method_name : 'notification.method.' . $method_name;
+
+		return $this->load_object($method_name);
 	}
 
 	/**
