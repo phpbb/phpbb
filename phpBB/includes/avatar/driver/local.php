@@ -52,9 +52,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 		$avatar_list = $this->get_avatar_list();
 		$category = $this->request->variable('av_local_cat', '');
 
-		$categories = array_keys($avatar_list);
-
-		foreach ($categories as $cat)
+		foreach ($avatar_list as $cat => $null)
 		{
 			if (!empty($avatar_list[$cat]))
 			{
@@ -62,6 +60,11 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 					'NAME' => $cat,
 					'SELECTED' => ($cat == $category),
 				));
+			}
+			
+			if ($cat != $category)
+			{
+				unset($avatar_list[$cat]);
 			}
 		}
 
