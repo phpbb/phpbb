@@ -70,16 +70,16 @@ class phpbb_avatar_manager
 		{
 			case AVATAR_GALLERY:
 				$avatar_type = 'avatar.driver.local';
-				break;
+			break;
 			case AVATAR_UPLOAD:
 				$avatar_type = 'avatar.driver.upload';
-				break;
+			break;
 			case AVATAR_REMOTE:
 				$avatar_type = 'avatar.driver.remote';
-				break;
+			break;
 		}
 
-		if (false === array_search($avatar_type, self::$valid_drivers))
+		if (!in_array($avatar_type, self::$valid_drivers))
 		{
 			return null;
 		}
