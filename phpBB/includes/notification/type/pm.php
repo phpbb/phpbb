@@ -92,7 +92,7 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 
 		unset($pm['recipients'][$pm['from_user_id']]);
 
-		$this->notification_manager->load_users(array_keys($pm['recipients']));
+		$this->user_loader->load_users(array_keys($pm['recipients']));
 
 		return $this->check_user_notification_options(array_keys($pm['recipients']), $options);
 	}
@@ -102,7 +102,7 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 	*/
 	public function get_avatar()
 	{
-		return $this->get_user_avatar($this->get_data('from_user_id'));
+		return $this->user_loader->get_avatar($this->get_data('from_user_id'));
 	}
 
 	/**
@@ -112,7 +112,7 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 	*/
 	public function get_title()
 	{
-		$user_data = $this->notification_manager->get_user($this->get_data('from_user_id'));
+		$user_data = $this->user_loader->get_user($this->get_data('from_user_id'));
 
 		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
 
@@ -136,7 +136,7 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 	*/
 	public function get_email_template_variables()
 	{
-		$user_data = $this->notification_manager->get_user($this->get_data('from_user_id'));
+		$user_data = $this->user_loader->get_user($this->get_data('from_user_id'));
 
 		return array(
 			'AUTHOR_NAME'				=> htmlspecialchars_decode($user_data['username']),

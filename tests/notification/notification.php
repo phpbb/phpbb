@@ -6,10 +6,10 @@
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
-
+//calls: [ [set_notification_manager, [@notification_manager]] ]
 class phpbb_notification_test extends phpbb_database_test_case
 {
-	protected $notifications;
+	protected $notifications, $db, $container, $user, $config, $auth, $cache;
 
 	public function getDataSet()
 	{
@@ -30,34 +30,69 @@ class phpbb_notification_test extends phpbb_database_test_case
 
 		include_once(__DIR__ . '/ext/test/notification/type/test.' . $phpEx);
 
-		$db = $this->new_dbal();
-		$config = new phpbb_config(array(
+		$db = $this->db = $this->new_dbal();
+		$this->config = new phpbb_config(array(
 			'allow_privmsg'			=> true,
 			'allow_bookmarks'		=> true,
 			'allow_topic_notify'	=> true,
 			'allow_forum_notify'	=> true,
 		));
-		$user = new phpbb_mock_user();
+		$this->user = new phpbb_mock_user();
+		$this->user_loader = new phpbb_user_loader($this->db, 'phpbb_users');
+		$this->auth = new phpbb_mock_notifications_auth();
+		$this->cache = new phpbb_mock_cache();
 
-		$this->notifications = new phpbb_notification_manager(
-			$db,
-			new phpbb_mock_cache(),
-			new phpbb_template($phpbb_root_path, $phpEx, $config, $user, new phpbb_style_resource_locator()),
-			new phpbb_mock_extension_manager($phpbb_root_path,
-				array(
-					'test' => array(
-						'ext_name' => 'test',
-						'ext_active' => '1',
-						'ext_path' => 'ext/test/',
-					),
-				)
-			),
-			$user,
-			new phpbb_mock_notifications_auth(),
-			$config,
+		$this->container = new phpbb_mock_container_builder();
+
+		$this->notifications = new phpbb_mock_notifications_notification_manager(
+			array(),
+			array(),
+			$this->container,
+			$this->user_loader,
+			$this->db,
+			$this->user,
 			$phpbb_root_path,
-			$phpEx
+			$phpEx,
+			'phpbb_notifications',
+			'phpbb_user_notifications'
 		);
+
+		$this->notifications->setDependencies($this->auth, $this->cache, $this->config);
+
+		$types = array();
+		foreach (array(
+			'test',
+			'approve_post',
+			'approve_topic',
+			'bookmark',
+			'disapprove_post',
+			'disapprove_topic',
+			'pm',
+			'post',
+			'post_in_queue',
+			'quote',
+			'report_pm',
+			'report_pm_closed',
+			'report_post',
+			'report_post_closed',
+			'topic',
+			'topic_in_queue',
+		) as $type)
+		{
+			$class = $this->build_type('phpbb_notification_type_' . $type);
+
+			$types[$type] = $class;
+			$this->container->set('notification.type.' . $type, $class);
+		}
+
+		$this->notifications->set_var('notification_types', $types);
+	}
+
+	protected function build_type($type)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		return new $type($this->user_loader, $this->db, $this->cache, $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notifications', 'phpbb_user_notifications');
 	}
 
 	public function test_get_subscription_types()
@@ -67,12 +102,12 @@ class phpbb_notification_test extends phpbb_database_test_case
 		$this->assertArrayHasKey('NOTIFICATION_GROUP_MISCELLANEOUS', $subscription_types);
 		$this->assertArrayHasKey('NOTIFICATION_GROUP_POSTING', $subscription_types);
 
-		$this->assertArrayHasKey('phpbb_notification_type_bookmark', $subscription_types['NOTIFICATION_GROUP_POSTING']);
-		$this->assertArrayHasKey('phpbb_notification_type_post', $subscription_types['NOTIFICATION_GROUP_POSTING']);
-		$this->assertArrayHasKey('phpbb_notification_type_quote', $subscription_types['NOTIFICATION_GROUP_POSTING']);
-		$this->assertArrayHasKey('phpbb_notification_type_topic', $subscription_types['NOTIFICATION_GROUP_POSTING']);
+		$this->assertArrayHasKey('bookmark', $subscription_types['NOTIFICATION_GROUP_POSTING']);
+		$this->assertArrayHasKey('post', $subscription_types['NOTIFICATION_GROUP_POSTING']);
+		$this->assertArrayHasKey('quote', $subscription_types['NOTIFICATION_GROUP_POSTING']);
+		$this->assertArrayHasKey('topic', $subscription_types['NOTIFICATION_GROUP_POSTING']);
 
-		$this->assertArrayHasKey('phpbb_notification_type_pm', $subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']);
+		$this->assertArrayHasKey('pm', $subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']);
 
 		//get_subscription_types
 		//get_subscription_methods
@@ -80,13 +115,13 @@ class phpbb_notification_test extends phpbb_database_test_case
 
 	public function test_subscriptions()
 	{
-		$this->notifications->delete_subscription('phpbb_notification_type_post', 0, '', 2);
+		$this->notifications->delete_subscription('post', 0, '', 2);
 
-		$this->assertArrayNotHasKey('phpbb_notification_type_post', $this->notifications->get_global_subscriptions(2));
+		$this->assertArrayNotHasKey('post', $this->notifications->get_global_subscriptions(2));
 
-		$this->notifications->add_subscription('phpbb_notification_type_post', 0, '', 2);
+		$this->notifications->add_subscription('post', 0, '', 2);
 
-		$this->assertArrayHasKey('phpbb_notification_type_post', $this->notifications->get_global_subscriptions(2));
+		$this->assertArrayHasKey('post', $this->notifications->get_global_subscriptions(2));
 	}
 
 	public function test_notifications()
@@ -108,25 +143,25 @@ class phpbb_notification_test extends phpbb_database_test_case
 			'count_unread'	=> true,
 		)));
 
-		$this->notifications->add_notifications('phpbb_ext_test_notification_type_test', array(
+		$this->notifications->add_notifications('test', array(
 			'post_id'		=> '1',
 			'topic_id'		=> '1',
 			'post_time'		=> 1349413321,
 		));
 
-		$this->notifications->add_notifications('phpbb_ext_test_notification_type_test', array(
+		$this->notifications->add_notifications('test', array(
 			'post_id'		=> '2',
 			'topic_id'		=> '2',
 			'post_time'		=> 1349413322,
 		));
 
-		$this->notifications->add_notifications('phpbb_ext_test_notification_type_test', array(
+		$this->notifications->add_notifications('test', array(
 			'post_id'		=> '3',
 			'topic_id'		=> '2',
 			'post_time'		=> 1349413323,
 		));
 
-		$this->notifications->add_notifications(array('phpbb_notification_type_quote', 'phpbb_notification_type_bookmark', 'phpbb_notification_type_post', 'phpbb_ext_test_notification_type_test'), array(
+		$this->notifications->add_notifications(array('quote', 'bookmark', 'post', 'test'), array(
 			'post_id'		=> '4',
 			'topic_id'		=> '2',
 			'post_time'		=> 1349413324,
@@ -142,7 +177,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 			'user_id'			=> 0,
 		)));
 
-		$this->notifications->add_notifications(array('phpbb_notification_type_quote', 'phpbb_notification_type_bookmark', 'phpbb_notification_type_post', 'phpbb_ext_test_notification_type_test'), array(
+		$this->notifications->add_notifications(array('quote', 'bookmark', 'post', 'test'), array(
 			'post_id'		=> '5',
 			'topic_id'		=> '2',
 			'post_time'		=> 1349413325,
@@ -153,9 +188,9 @@ class phpbb_notification_test extends phpbb_database_test_case
 			'forum_name'	=> 'Your first forum',
 		));
 
-		$this->notifications->delete_subscription('phpbb_ext_test_notification_type_test');
+		$this->notifications->delete_subscription('test');
 
-		$this->notifications->add_notifications('phpbb_ext_test_notification_type_test', array(
+		$this->notifications->add_notifications('test', array(
 			'post_id'		=> '6',
 			'topic_id'		=> '2',
 			'post_time'		=> 1349413326,
@@ -167,7 +202,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 
 		$expected = array(
 			1 => array(
-				'item_type'			=> 'phpbb_ext_test_notification_type_test',
+				'item_type'			=> 'test',
 				'item_id'			=> 1,
 				'item_parent_id'	=> 1,
 				'user_id'	   		=> 0,
@@ -176,7 +211,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'data'				=> array(),
 			),
 			2 => array(
-				'item_type'			=> 'phpbb_ext_test_notification_type_test',
+				'item_type'			=> 'test',
 				'item_id'			=> 2,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -185,7 +220,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'data'				=> array(),
 			),
 			3 => array(
-				'item_type'			=> 'phpbb_ext_test_notification_type_test',
+				'item_type'			=> 'test',
 				'item_id'			=> 3,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -194,7 +229,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'data'				=> array(),
 			),
 			4 => array(
-				'item_type'			=> 'phpbb_notification_type_post',
+				'item_type'			=> 'post',
 				'item_id'			=> 4,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -210,7 +245,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				),
 			),
 			5 => array(
-				'item_type'			=> 'phpbb_notification_type_bookmark',
+				'item_type'			=> 'bookmark',
 				'item_id'			=> 5,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -245,19 +280,19 @@ class phpbb_notification_test extends phpbb_database_test_case
 
 		// Now test updating -------------------------------
 
-		$this->notifications->update_notifications('phpbb_ext_test_notification_type_test', array(
+		$this->notifications->update_notifications('test', array(
 			'post_id'		=> '1',
 			'topic_id'		=> '2', // change parent_id
 			'post_time'		=> 1349413321,
 		));
 
-		$this->notifications->update_notifications('phpbb_ext_test_notification_type_test', array(
+		$this->notifications->update_notifications('test', array(
 			'post_id'		=> '3',
 			'topic_id'		=> '2',
 			'post_time'		=> 1234, // change time
 		));
 
-		$this->notifications->update_notifications(array('phpbb_notification_type_quote', 'phpbb_notification_type_bookmark', 'phpbb_notification_type_post', 'phpbb_ext_test_notification_type_test'), array(
+		$this->notifications->update_notifications(array('quote', 'bookmark', 'post', 'test'), array(
 			'post_id'		=> '5',
 			'topic_id'		=> '2',
 			'poster_id'		=> 2,
@@ -273,7 +308,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 
 		$expected = array(
 			1 => array(
-				'item_type'			=> 'phpbb_ext_test_notification_type_test',
+				'item_type'			=> 'test',
 				'item_id'			=> 1,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -282,7 +317,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'data'				=> array(),
 			),
 			2 => array(
-				'item_type'			=> 'phpbb_ext_test_notification_type_test',
+				'item_type'			=> 'test',
 				'item_id'			=> 2,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -291,7 +326,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'data'				=> array(),
 			),
 			3 => array(
-				'item_type'			=> 'phpbb_ext_test_notification_type_test',
+				'item_type'			=> 'test',
 				'item_id'			=> 3,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -300,7 +335,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'data'				=> array(),
 			),
 			4 => array(
-				'item_type'			=> 'phpbb_notification_type_post',
+				'item_type'			=> 'post',
 				'item_id'			=> 4,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -316,7 +351,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				),
 			),
 			5 => array(
-				'item_type'			=> 'phpbb_notification_type_bookmark',
+				'item_type'			=> 'bookmark',
 				'item_id'			=> 5,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,

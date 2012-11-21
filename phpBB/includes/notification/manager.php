@@ -7,8 +7,6 @@
 *
 */
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-
 /**
 * @ignore
 */
@@ -23,29 +21,23 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_notification_manager
 {
+	/** @var array */
+	protected $notification_types = null;
+
+	/** @var array */
+	protected $notification_methods = null;
+
 	/** @var ContainerBuilder */
 	protected $phpbb_container = null;
-	
+
+	/** @var phpbb_user_loader */
+	protected $user_loader = null;
+
 	/** @var dbal */
 	protected $db = null;
 
-	/** @var phpbb_cache_service */
-	protected $cache = null;
-
-	/** @var phpbb_template */
-	protected $template = null;
-
-	/** @var phpbb_extension_manager */
-	protected $extension_manager = null;
-
 	/** @var phpbb_user */
 	protected $user = null;
-
-	/** @var phpbb_auth */
-	protected $auth = null;
-
-	/** @var phpbb_config */
-	protected $config = null;
 
 	/** @var string */
 	protected $phpbb_root_path = null;
@@ -59,23 +51,15 @@ class phpbb_notification_manager
 	/** @var string */
 	protected $user_notifications_table = null;
 
-	/**
-	* Users loaded from the DB
-	*
-	* @var array Array of user data that we've loaded from the DB
-	*/
-	protected $users = array();
-
-	public function __construct(ContainerBuilder $phpbb_container, dbal $db, phpbb_cache_driver_interface $cache, phpbb_template $template, phpbb_extension_manager $extension_manager, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext, $notifications_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, $phpbb_container, phpbb_user_loader $user_loader, dbal $db, $user, $phpbb_root_path, $php_ext, $notifications_table, $user_notifications_table)
 	{
+		$this->notification_types = $notification_types;
+		$this->notification_methods = $notification_methods;
 		$this->phpbb_container = $phpbb_container;
+
+		$this->user_loader = $user_loader;
 		$this->db = $db;
-		$this->cache = $cache;
-		$this->template = $template;
-		$this->extension_manager = $extension_manager;
 		$this->user = $user;
-		$this->auth = $auth;
-		$this->config = $config;
 
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -209,7 +193,7 @@ class phpbb_notification_manager
 				$notifications[$row['notification_id']] = $notification;
 			}
 
-			$this->load_users($user_ids);
+			$this->user_loader->load_users($user_ids);
 
 			// Allow each type to load its own special items
 			foreach ($load_special as $item_type => $data)
@@ -334,7 +318,7 @@ class phpbb_notification_manager
 			return $notified_users;
 		}
 
-		$item_id = $item_type::get_item_id($data);
+		$item_id = $this->get_item_type_class($item_type)->get_item_id($data);
 
 		// find out which users want to receive this type of notification
 		$notify_users = $this->get_item_type_class($item_type)->find_users_for_notification($data, $options);
@@ -363,7 +347,7 @@ class phpbb_notification_manager
 			return;
 		}
 
-		$item_id = $item_type::get_item_id($data);
+		$item_id = $this->get_item_type_class($item_type)->get_item_id($data);
 
 		$user_ids = array();
 		$notification_objects = $notification_methods = array();
@@ -428,7 +412,7 @@ class phpbb_notification_manager
 		$this->db->sql_multi_insert($this->notifications_table, $new_rows);
 
 		// We need to load all of the users to send notifications
-		$this->load_users($user_ids);
+		$this->user_loader->load_users($user_ids);
 
 		// run the queue for each method to send notifications
 		foreach ($notification_methods as $method)
@@ -467,7 +451,7 @@ class phpbb_notification_manager
 			}
 		}
 
-		$item_id = $item_type::get_item_id($data);
+		$item_id = $notification->get_item_id($data);
 		$update_array = $notification->create_update_array($data);
 
 		$sql = 'UPDATE ' . $this->notifications_table . '
@@ -511,7 +495,7 @@ class phpbb_notification_manager
 	{
 		$subscription_types = array();
 
-		foreach ($this->phpbb_container->findTaggedServiceIds('notification.type') as $type_name => $data)
+		foreach ($this->notification_types as $type_name => $data)
 		{
 			$type = $this->get_item_type_class($type_name);
 
@@ -547,7 +531,7 @@ class phpbb_notification_manager
 	{
 		$subscription_methods = array();
 
-		foreach ($this->phpbb_container->findTaggedServiceIds('notification.method') as $method_name => $data)
+		foreach ($this->notification_methods as $method_name => $data)
 		{
 			$method = $this->get_method_class($method_name);
 
@@ -759,52 +743,11 @@ class phpbb_notification_manager
 	}
 
 	/**
-	* Load user helper
-	*
-	* @param array $user_ids
-	*/
-	public function load_users($user_ids)
-	{
-		$user_ids[] = ANONYMOUS;
-
-		// Load the users
-		$user_ids = array_unique($user_ids);
-
-		// Do not load users we already have in $this->users
-		$user_ids = array_diff($user_ids, array_keys($this->users));
-
-		if (sizeof($user_ids))
-		{
-			$sql = 'SELECT *
-				FROM ' . USERS_TABLE . '
-				WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
-			$result = $this->db->sql_query($sql);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$this->users[$row['user_id']] = $row;
-			}
-			$this->db->sql_freeresult($result);
-		}
-	}
-
-	/**
-	* Get a user row from our users cache
-	*
-	* @param int $user_id
-	* @return array
-	*/
-	public function get_user($user_id)
-	{
-		return (isset($this->users[$user_id])) ? $this->users[$user_id] : $this->users[ANONYMOUS];
-	}
-
-	/**
 	* Helper to get the notifications item type class and set it up
 	*/
 	public function get_item_type_class($item_type, $data = array())
 	{
-		$item = $this->phpbb_container->get($item_type);
+		$item = $this->load_object('notification.type.' . $item_type);
 
 		$item->set_initial_data($data);
 
@@ -816,6 +759,32 @@ class phpbb_notification_manager
 	*/
 	public function get_method_class($method_name)
 	{
-		return $this->phpbb_container->get($method_name);
+		return $this->load_object('notification.method.' . $method_name);
+	}
+
+	/**
+	* Helper to load objects (notification types/methods)
+	*/
+	protected function load_object($object_name)
+	{
+		// Here we cannot just use ContainerBuilder->get(name)
+		// The reason for this is because get handles services
+		// which are initialized once and shared. Here we need
+		// separate new objects because we pass around objects
+		// that store row data in each object, which would lead
+		// to over-writing of data if we used get()
+
+		$parameterBag = $this->phpbb_container->getParameterBag();
+		$definition = $this->phpbb_container->getDefinition($object_name);
+        $arguments = $this->phpbb_container->resolveServices(
+            $parameterBag->unescapeValue($parameterBag->resolveValue($definition->getArguments()))
+        );
+		$r = new \ReflectionClass($parameterBag->resolveValue($definition->getClass()));
+
+		$object = null === $r->getConstructor() ? $r->newInstance() : $r->newInstanceArgs($arguments);
+
+		$object->set_notification_manager($this);
+
+		return $object;
 	}
 }

@@ -15,8 +15,13 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_ext_test_notification_type_test extends phpbb_notification_type_base
+class phpbb_notification_type_test extends phpbb_notification_type_base
 {
+	public function get_type()
+	{
+		return 'test';
+	}
+
 	public static function get_item_id($post)
 	{
 		return (int) $post['post_id'];
