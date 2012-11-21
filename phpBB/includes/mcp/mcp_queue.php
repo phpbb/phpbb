@@ -86,7 +86,7 @@ class mcp_queue
 					{
 						$post_id = (int) $topic_info[$topic_id]['topic_first_post_id'];
 
-						$phpbb_notifications->mark_notifications_read('phpbb_notification_type_topic_in_queue', $topic_id, $user->data['user_id']);
+						$phpbb_notifications->mark_notifications_read('topic_in_queue', $topic_id, $user->data['user_id']);
 					}
 					else
 					{
@@ -94,7 +94,7 @@ class mcp_queue
 					}
 				}
 
-				$phpbb_notifications->mark_notifications_read('phpbb_notification_type_post_in_queue', $post_id, $user->data['user_id']);
+				$phpbb_notifications->mark_notifications_read('post_in_queue', $post_id, $user->data['user_id']);
 
 				$post_info = get_post_data(array($post_id), 'm_approve', true);
 
@@ -610,28 +610,28 @@ function approve_post($post_id_list, $id, $mode)
 		{
 			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
 			{
-				$phpbb_notifications->delete_notifications('phpbb_notification_type_topic_in_queue', $post_data['topic_id']);
+				$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
 
-				$phpbb_notifications->add_notifications('phpbb_notification_type_topic', $post_data);
+				$phpbb_notifications->add_notifications('topic', $post_data);
 
 				if ($notify_poster)
 				{
-					$phpbb_notifications->add_notifications('phpbb_notification_type_approve_topic', $post_data);
+					$phpbb_notifications->add_notifications('approve_topic', $post_data);
 				}
 			}
 			else
 			{
-				$phpbb_notifications->delete_notifications('phpbb_notification_type_post_in_queue', $post_id);
+				$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 
 				$phpbb_notifications->add_notifications(array(
-					'phpbb_notification_type_quote',
-					'phpbb_notification_type_bookmark',
-					'phpbb_notification_type_post',
+					'quote',
+					'bookmark',
+					'post',
 				), $post_data);
 
 				if ($notify_poster)
 				{
-					$phpbb_notifications->add_notifications('phpbb_notification_type_approve_post', $post_data);
+					$phpbb_notifications->add_notifications('approve_post', $post_data);
 				}
 			}
 		}
@@ -859,11 +859,11 @@ function disapprove_post($post_id_list, $id, $mode)
 		{
 			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
 			{
-				$phpbb_notifications->delete_notifications('phpbb_notification_type_topic_in_queue', $post_data['topic_id']);
+				$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
 			}
 			else
 			{
-				$phpbb_notifications->delete_notifications('phpbb_notification_type_post_in_queue', $post_id);
+				$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 			}
 		}
 
@@ -909,14 +909,14 @@ function disapprove_post($post_id_list, $id, $mode)
 				{
 					if ($notify_poster)
 					{
-						$phpbb_notifications->add_notifications('phpbb_notification_type_disapprove_topic', $post_data);
+						$phpbb_notifications->add_notifications('disapprove_topic', $post_data);
 					}
 				}
 				else
 				{
 					if ($notify_poster)
 					{
-						$phpbb_notifications->add_notifications('phpbb_notification_type_disapprove_post', $post_data);
+						$phpbb_notifications->add_notifications('disapprove_post', $post_data);
 					}
 				}
 			}

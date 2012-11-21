@@ -88,7 +88,7 @@ class mcp_reports
 					trigger_error('NO_REPORT');
 				}
 
-				$phpbb_notifications->mark_notifications_read('phpbb_notification_type_report_post', $post_id, $user->data['user_id']);
+				$phpbb_notifications->mark_notifications_read('report_post', $post_id, $user->data['user_id']);
 
 				if (!$report_id && $report['report_closed'])
 				{
@@ -647,20 +647,20 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 
 				if ($pm)
 				{
-					$phpbb_notifications->add_notifications('phpbb_notification_type_report_pm_closed', array_merge($post_info[$post_id], array(
+					$phpbb_notifications->add_notifications('report_pm_closed', array_merge($post_info[$post_id], array(
 						'reporter'			=> $reporter['user_id'],
 						'closer_id'			=> $user->data['user_id'],
 						'from_user_id'		=> $post_info[$post_id]['author_id'],
 					)));
-					$phpbb_notifications->delete_notifications('phpbb_notification_type_report_pm', $post_id);
+					$phpbb_notifications->delete_notifications('report_pm', $post_id);
 				}
 				else
 				{
-					$phpbb_notifications->add_notifications('phpbb_notification_type_report_post_closed', array_merge($post_info[$post_id], array(
+					$phpbb_notifications->add_notifications('report_post_closed', array_merge($post_info[$post_id], array(
 						'reporter'			=> $reporter['user_id'],
 						'closer_id'			=> $user->data['user_id'],
 					)));
-					$phpbb_notifications->delete_notifications('phpbb_notification_type_report_post', $post_id);
+					$phpbb_notifications->delete_notifications('report_post', $post_id);
 				}
 			}
 		}
