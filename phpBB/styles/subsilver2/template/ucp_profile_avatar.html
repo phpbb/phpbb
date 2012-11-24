@@ -12,7 +12,7 @@
 <tr> 
 	<td class="row1" width="35%"><b class="genmed">{L_CURRENT_IMAGE}{L_COLON} </b><br /><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
 	<td class="row2" align="center"><br />
-		<!-- IF AVATAR -->{AVATAR}<br /><br /><input type="checkbox" class="radio" name="av_delete" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span>
+		<!-- IF AVATAR -->{AVATAR}<br /><br /><input type="checkbox" class="radio" name="avatar_delete" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span>
 		<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" />
 		<!-- ENDIF --></td>
 </tr>
@@ -35,10 +35,10 @@
 			</select></td>
 	</tr>
 <!-- BEGIN avatar_drivers -->
-	<tr class="av_option_{avatar_drivers.DRIVER}">
+	<tr class="avatar_option_{avatar_drivers.DRIVER}">
 		<td class="row1" width="35%" colspan="2"><noscript><b class="genmed">{avatar_drivers.L_TITLE} </b><br /></noscript>{avatar_drivers.L_EXPLAIN}</span></td>
 	</tr>
-	<tr class="av_option_{avatar_drivers.DRIVER}">
+	<tr class="avatar_option_{avatar_drivers.DRIVER}">
 		<td colspan="2" style="padding: 0">{avatar_drivers.OUTPUT}</td>
 	</tr>
 <!-- END avatar_drivers -->

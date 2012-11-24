@@ -56,7 +56,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 
 		$template->assign_vars(array(
 			'S_UPLOAD_AVATAR_URL' => ($this->config['allow_avatar_remote_upload']) ? true : false,
-			'AV_UPLOAD_SIZE' => $this->config['avatar_filesize'],
+			'AVATAR_UPLOAD_SIZE' => $this->config['avatar_filesize'],
 		));
 
 		return true;
@@ -76,12 +76,12 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 
 		$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $this->config['avatar_filesize'], $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], (isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
 
-		$url = $this->request->variable('av_upload_url', '');
-		$upload_file = $this->request->file('av_upload_file');
+		$url = $this->request->variable('avatar_upload_url', '');
+		$upload_file = $this->request->file('avatar_upload_file');
 
 		if (!empty($upload_file['name']))
 		{
-			$file = $upload->form_upload('av_upload_file');
+			$file = $upload->form_upload('avatar_upload_file');
 		}
 		else
 		{

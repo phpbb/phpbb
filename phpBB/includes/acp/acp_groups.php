@@ -335,8 +335,8 @@ class acp_groups
 						// Handle avatar
 						$driver = str_replace('_', '.', request_var('avatar_driver', ''));
 						$config_name = preg_replace('#^avatar.driver.#', '', $driver);
-						$av_delete = $request->variable('av_delete', '');
-						if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"] && empty($av_delete))
+						$avatar_delete = $request->variable('avatar_delete', '');
+						if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"] && empty($avatar_delete))
 						{
 							$avatar = $phpbb_avatar_manager->get_driver($driver);
 							$result = $avatar->process_form($template, $avatar_data, $avatar_error);
@@ -541,14 +541,14 @@ class acp_groups
 
 							if ($avatar->prepare_form($template, $avatar_data, $avatar_error))
 							{
-								$driver_n = str_replace('.', '_', $driver);
-								$driver_u = strtoupper($driver_n);
+								$driver_name = str_replace('.', '_', $driver);
+								$driver_upper = strtoupper($driver_name);
 								$template->assign_block_vars('avatar_drivers', array(
-									'L_TITLE' => $user->lang($driver_u . '_TITLE'),
-									'L_EXPLAIN' => $user->lang($driver_u . '_EXPLAIN'),
+									'L_TITLE' => $user->lang($driver_upper . '_TITLE'),
+									'L_EXPLAIN' => $user->lang($driver_upper . '_EXPLAIN'),
 
-									'DRIVER' => $driver_n,
-									'SELECTED' => ($driver == $focused_driver),
+									'DRIVER' => $driver_name,
+									'SELECTED' => $driver == $focused_driver,
 									'OUTPUT' => $template->assign_display('avatar'),
 								));
 							}

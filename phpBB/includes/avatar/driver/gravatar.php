@@ -69,9 +69,9 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	public function prepare_form($template, $row, &$error)
 	{
 		$template->assign_vars(array(
-			'AV_GRAVATAR_WIDTH' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_width']) ? $row['avatar_width'] : $this->request->variable('av_gravatar_width', 0),
-			'AV_GRAVATAR_HEIGHT' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_height']) ? $row['avatar_height'] : $this->request->variable('av_gravatar_width', 0),
-			'AV_GRAVATAR_EMAIL' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar']) ? $row['avatar'] : '',
+			'AVATAR_GRAVATAR_WIDTH' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_width']) ? $row['avatar_width'] : $this->request->variable('avatar_gravatar_width', 0),
+			'AVATAR_GRAVATAR_HEIGHT' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_height']) ? $row['avatar_height'] : $this->request->variable('avatar_gravatar_width', 0),
+			'AVATAR_GRAVATAR_EMAIL' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar']) ? $row['avatar'] : '',
 		));
 
 		return true;
@@ -92,9 +92,9 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	*/
 	public function process_form($template, $row, &$error)
 	{
-		$row['avatar'] = $this->request->variable('av_gravatar_email', '');
-		$row['avatar_width'] = $this->request->variable('av_gravatar_width', 0);
-		$row['avatar_height'] = $this->request->variable('av_gravatar_height', 0);
+		$row['avatar'] = $this->request->variable('avatar_gravatar_email', '');
+		$row['avatar_width'] = $this->request->variable('avatar_gravatar_width', 0);
+		$row['avatar_height'] = $this->request->variable('avatar_gravatar_height', 0);
 
 		require_once($this->phpbb_root_path . 'includes/functions_user' . $this->phpEx);
 

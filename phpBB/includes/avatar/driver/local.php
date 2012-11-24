@@ -50,13 +50,13 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	public function prepare_form($template, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list();
-		$category = $this->request->variable('av_local_cat', '');
+		$category = $this->request->variable('avatar_local_cat', '');
 
 		foreach ($avatar_list as $cat => $null)
 		{
 			if (!empty($avatar_list[$cat]))
 			{
-				$template->assign_block_vars('av_local_cats', array(
+				$template->assign_block_vars('avatar_local_cats', array(
 					'NAME' => $cat,
 					'SELECTED' => ($cat == $category),
 				));
@@ -71,16 +71,16 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 		if (!empty($avatar_list[$category]))
 		{
 			$template->assign_vars(array(
-				'AV_LOCAL_SHOW' => true,
+				'AVATAR_LOCAL_SHOW' => true,
 			));
 
-			$table_cols = isset($row['av_gallery_cols']) ? $row['av_gallery_cols'] : 4;
-			$row_count = $col_count = $av_pos = 0;
-			$av_count = sizeof($avatar_list[$category]);
+			$table_cols = isset($row['avatar_gallery_cols']) ? $row['avatar_gallery_cols'] : 4;
+			$row_count = $col_count = $avatar_pos = 0;
+			$avatar_count = sizeof($avatar_list[$category]);
 
 			reset($avatar_list[$category]);
 
-			while ($av_pos < $av_count)
+			while ($avatar_pos < $avatar_count)
 			{
 				$img = current($avatar_list[$category]);
 				next($avatar_list[$category]);
@@ -88,24 +88,24 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 				if ($col_count == 0)
 				{
 					++$row_count;
-					$template->assign_block_vars('av_local_row', array(
+					$template->assign_block_vars('avatar_local_row', array(
 					));
 				}
 
-				$template->assign_block_vars('av_local_row.av_local_col', array(
+				$template->assign_block_vars('avatar_local_row.avatar_local_col', array(
 					'AVATAR_IMAGE'  => $this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $img['file'],
 					'AVATAR_NAME' 	=> $img['name'],
 					'AVATAR_FILE' 	=> $img['filename'],
 				));
 
-				$template->assign_block_vars('av_local_row.av_local_option', array(
+				$template->assign_block_vars('avatar_local_row.avatar_local_option', array(
 					'AVATAR_FILE' 		=> $img['filename'],
 					'S_OPTIONS_AVATAR'	=> $img['filename']
 				));
 
 				$col_count = ($col_count + 1) % $table_cols;
 
-				++$av_pos;
+				++$avatar_pos;
 			}
 		}
 
@@ -129,9 +129,9 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	public function process_form($template, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list();
-		$category = $this->request->variable('av_local_cat', '');
+		$category = $this->request->variable('avatar_local_cat', '');
 
-		$file = $this->request->variable('av_local_file', '');
+		$file = $this->request->variable('avatar_local_file', '');
 		if (!isset($avatar_list[$category][urldecode($file)]))
 		{
 			$error[] = 'AVATAR_URL_NOT_FOUND';
@@ -152,7 +152,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	*/
 	protected function get_avatar_list()
 	{
-		$avatar_list = ($this->cache == null) ? false : $this->cache->get('av_local_list');
+		$avatar_list = ($this->cache == null) ? false : $this->cache->get('avatar_local_list');
 
 		if (!$avatar_list)
 		{
@@ -190,7 +190,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 
 			if ($this->cache != null)
 			{
-				$this->cache->put('av_local_list', $avatar_list);
+				$this->cache->put('avatar_local_list', $avatar_list);
 			}
 		}
 

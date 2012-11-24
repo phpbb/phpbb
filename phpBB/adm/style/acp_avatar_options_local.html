@@ -1,25 +1,25 @@
 <dl>
 	<dt><label for="category">{L_AVATAR_CATEGORY}{L_COLON}</label></dt>
-	<dd><select name="av_local_cat" id="category">
+	<dd><select name="avatar_local_cat" id="category">
 		<option value="">{L_NO_AVATAR_CATEGORY}</option>
-		<!-- BEGIN av_local_cats -->
-		<option value="{av_local_cats.NAME}"<!-- IF av_local_cats.SELECTED --> selected="selected"<!-- ENDIF -->>{av_local_cats.NAME}</option>
-		<!-- END av_local_cats -->
-	</select>&nbsp;<input type="submit" value="{L_GO}" name="av_local_go" class="button2" /></dd>
+		<!-- BEGIN avatar_local_cats -->
+		<option value="{avatar_local_cats.NAME}"<!-- IF avatar_local_cats.SELECTED --> selected="selected"<!-- ENDIF -->>{avatar_local_cats.NAME}</option>
+		<!-- END avatar_local_cats -->
+	</select>&nbsp;<input type="submit" value="{L_GO}" name="avatar_local_go" class="button2" /></dd>
 </dl>
-	<!-- IF AV_LOCAL_SHOW -->
+	<!-- IF AVATAR_LOCAL_SHOW -->
 	<table style="border-spacing: 1px;">
-	<!-- BEGIN av_local_row -->
+	<!-- BEGIN avatar_local_row -->
 	<tr>
-		<!-- BEGIN av_local_col -->
-			<td class="row1" style="text-align: center;"><img src="{av_local_row.av_local_col.AVATAR_IMAGE}" alt="{av_local_row.av_local_col.AVATAR_NAME}" title="{av_local_row.av_local_col.AVATAR_NAME}"/></td>
-		<!-- END av_local_col -->
+		<!-- BEGIN avatar_local_col -->
+			<td class="row1" style="text-align: center;"><img src="{avatar_local_row.avatar_local_col.AVATAR_IMAGE}" alt="{avatar_local_row.avatar_local_col.AVATAR_NAME}" title="{avatar_local_row.avatar_local_col.AVATAR_NAME}"/></td>
+		<!-- END avatar_local_col -->
 	</tr>
 	<tr>
-		<!-- BEGIN av_local_option -->
-			<td class="row2" style="text-align: center;"><input type="radio" name="av_local_file" id="av-{av_local_row.S_ROW_COUNT}-{av_local_row.av_local_option.S_ROW_COUNT}" value="{av_local_row.av_local_option.AVATAR_FILE}" /></td>
-		<!-- END av_local_option -->
+		<!-- BEGIN avatar_local_option -->
+			<td class="row2" style="text-align: center;"><input type="radio" name="avatar_local_file" id="av-{avatar_local_row.S_ROW_COUNT}-{avatar_local_row.avatar_local_option.S_ROW_COUNT}" value="{avatar_local_row.avatar_local_option.AVATAR_FILE}" /></td>
+		<!-- END avatar_local_option -->
 	</tr>
-	<!-- END av_local_row -->
+	<!-- END avatar_local_row -->
 	</table>
 	<!-- ENDIF -->

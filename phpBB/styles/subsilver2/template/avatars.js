@@ -3,10 +3,10 @@
 "use strict";
 
 function avatar_simplify() {
-    $('.[class^="av_option_"]').hide();
+    $('.[class^="avatar_option_"]').hide();
 
     var selected = $('#avatar_driver').val();
-    $('.av_option_' + selected).show();
+    $('.avatar_option_' + selected).show();
 }
 
 avatar_simplify();

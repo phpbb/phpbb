@@ -9,7 +9,7 @@
 		<dl>
 			<dt><label>{L_CURRENT_IMAGE}{L_COLON}</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
 			<dd><!-- IF AVATAR -->{AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF --></dd>
-			<dd><label for="av_delete"><input type="checkbox" name="av_delete" id="av_delete" /> {L_DELETE_AVATAR}</label></dd>
+			<dd><label for="avatar_delete"><input type="checkbox" name="avatar_delete" id="avatar_delete" /> {L_DELETE_AVATAR}</label></dd>
 		</dl>
 	</fieldset>
 	<h3>{L_AVATAR_SELECT}</h3>
@@ -24,9 +24,9 @@
 			</select></dd>
 		</dl>
 	</fieldset>
-	<div id="av_options">
+	<div id="avatar_options">
 <!-- BEGIN avatar_drivers -->
-	<div id="av_option_{avatar_drivers.DRIVER}">
+	<div id="avatar_option_{avatar_drivers.DRIVER}">
 	<noscript>
 	<h3 class="avatar_section_header">{avatar_drivers.L_TITLE}</h3>
 	</noscript>
