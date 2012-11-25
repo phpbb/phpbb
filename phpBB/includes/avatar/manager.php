@@ -152,4 +152,30 @@ class phpbb_avatar_manager
 
 		return array_combine($keys, $values);
 	}
+
+	/**
+	* Clean driver names that are returned from template files
+	* Underscores are replaced with dots
+	*
+	* @param string $name Driver name
+	*
+	* @return string Cleaned driver name
+	*/
+	public static function clean_driver_name($name)
+	{
+		return str_replace('_', '.', $name);
+	}
+
+	/**
+	* Prepare driver names for use in template files
+	* Dots are replaced with underscores
+	*
+	* @param string $name Clean driver name
+	*
+	* @return string Prepared driver name
+	*/
+	public static function prepare_driver_name($name)
+	{
+		return str_replace('.', '_', $name);
+	}
 }

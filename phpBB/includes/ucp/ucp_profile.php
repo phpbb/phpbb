@@ -564,7 +564,7 @@ class ucp_profile
 					{
 						if (check_form_key('ucp_avatar'))
 						{
-							$driver = str_replace('_', '.', request_var('avatar_driver', ''));
+							$driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
 							$config_name = preg_replace('#^avatar\.driver.#', '', $driver);
 							$avatar_delete = $request->variable('avatar_delete', '');
 							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"] && empty($avatar_delete))
@@ -624,7 +624,7 @@ class ucp_profile
 						}
 					}
 
-					$focused_driver = str_replace('_', '.', request_var('avatar_driver', $user->data['user_avatar_type']));
+					$focused_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $user->data['user_avatar_type']));
 
 					foreach ($avatar_drivers as $driver)
 					{
@@ -639,7 +639,7 @@ class ucp_profile
 
 							if ($avatar->prepare_form($template, $avatar_data, $error))
 							{
-								$driver_name = str_replace('.', '_', $driver);
+								$driver_name = $phpbb_avatar_manager->prepare_driver_name($driver);
 								$driver_upper = strtoupper($driver_name);
 
 								$template->assign_block_vars('avatar_drivers', array(
