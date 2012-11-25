@@ -1836,21 +1836,19 @@ class acp_users
 				}
 
 				// Replace "error" strings with their real, localised form
-				$err = $error;
-				$error = array();
-				foreach ($err as $e)
+				foreach ($error as $key => $lang)
 				{
-					if (is_array($e))
+					if (is_array($lang))
 					{
-						$key = array_shift($e);
-						$error[] = vsprintf($user->lang($key), $e);
+						$lang_key = array_shift($lang);
+						$error[$key] = vsprintf($user->lang($lang_key), $lang);
 					}
 					else
 					{
-						$error[] = $user->lang((string) $e);
+						$error[$key] = $user->lang("$lang");
 					}
 				}
-				
+
 				$avatar = get_user_avatar($user_row, 'USER_AVATAR', true);
 
 				$template->assign_vars(array(

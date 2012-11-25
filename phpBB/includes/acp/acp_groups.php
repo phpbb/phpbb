@@ -559,16 +559,16 @@ class acp_groups
 				* Merge any avatar errors into the primary error array
 				* Drivers use language constants, so we need to map to the actual strings
 				*/
-				foreach ($avatar_error as $e)
+				foreach ($avatar_error as $lang)
 				{
-					if (is_array($e))
+					if (is_array($lang))
 					{
-						$key = array_shift($e);
-						$error[] = vsprintf($user->lang($key), $e);
+						$key = array_shift($lang);
+						$error[] = vsprintf($user->lang($key), $lang);
 					}
 					else
 					{
-						$error[] = $user->lang("$e");
+						$error[] = $user->lang("$lang");
 					}
 				}
 
