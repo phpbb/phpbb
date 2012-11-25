@@ -337,6 +337,7 @@ class acp_groups
 						$driver = str_replace('_', '.', request_var('avatar_driver', ''));
 						$config_name = preg_replace('#^avatar\.driver.#', '', $driver);
 						$avatar_delete = $request->variable('avatar_delete', '');
+
 						if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"] && empty($avatar_delete))
 						{
 							$avatar = $phpbb_avatar_manager->get_driver($driver);
@@ -344,19 +345,15 @@ class acp_groups
 
 							if ($result && empty($avatar_error))
 							{
-								$result = array(
-									'avatar_type'		=> $driver,
-									'avatar' 			=> $result['avatar'],
-									'avatar_width' 	=> $result['avatar_width'],
-									'avatar_height' 	=> $result['avatar_height'],
-								);
+								$result['avatar_type'] = $driver;
 								
 								$submit_ary = array_merge($submit_ary, $result);
 							}
 						}
 						else
 						{
-							if ($avatar = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']))
+							$avatar = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type'])
+							if ($avatar)
 							{
 								$avatar->delete($avatar_data);
 							}
