@@ -82,7 +82,7 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 			$url = 'http://' . $url;
 		}
 
-		require_once($this->phpbb_root_path . 'includes/functions_user' . $this->phpEx);
+		require_once($this->phpbb_root_path . 'includes/functions_user' . $this->php_ext);
 
 		$error = array_merge($error, validate_data(array(
 			'url' => $url,
@@ -128,7 +128,7 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 			return false;
 		}
 
-		include_once($this->phpbb_root_path . 'includes/functions_upload' . $this->phpEx);
+		include_once($this->phpbb_root_path . 'includes/functions_upload' . $this->php_ext);
 		$types = fileupload::image_types();
 		$extension = strtolower(filespec::get_extension($url));
 

@@ -24,34 +24,14 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	protected $name;
 
 	/**
-	* Returns the name of the driver.
-	*
-	* @return string		Name of wrapped driver.
-	*/
-	public function get_name()
-	{
-		return $this->name;
-	}
-
-	/**
-	* Sets the name of the driver.
-	*
-	* @param string	$name The driver name
-	*/
-	public function set_name($name)
-	{
-		$this->name = $name;
-	}
-
-	/**
 	* Current board configuration
 	* @type phpbb_config
 	*/
 	protected $config;
 
 	/**
-	* Current board configuration
-	* @type phpbb_config
+	* Request object
+	* @type phpbb_request
 	*/
 	protected $request;
 
@@ -62,10 +42,10 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	protected $phpbb_root_path;
 
 	/**
-	* Current $phpEx
+	* Current $php_ext
 	* @type string
 	*/
-	protected $phpEx;
+	protected $php_ext;
 
 	/**
 	* A cache driver
@@ -83,18 +63,18 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	/**
 	* Construct a driver object
 	*
-	* @param $config The phpBB configuration
-	* @param $request The request object
-	* @param $phpbb_root_path The path to the phpBB root
-	* @param $phpEx The php file extension
-	* @param $cache A cache driver
+	* @param phpbb_config $config The phpBB configuration
+	* @param phpbb_request $request The request object
+	* @param string $phpbb_root_path The path to the phpBB root
+	* @param string $php_ext The php file extension
+	* @param phpbb_cache_driver_interface $cache A cache driver
 	*/
-	public function __construct(phpbb_config $config, phpbb_request $request, $phpbb_root_path, $phpEx, phpbb_cache_driver_interface $cache = null)
+	public function __construct(phpbb_config $config, phpbb_request $request, $phpbb_root_path, $php_ext, phpbb_cache_driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->request = $request;
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 		$this->cache = $cache;
 	}
 
@@ -169,5 +149,23 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 		$template = "ucp_avatar_options_$driver.html";
 
 		return $template;
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function get_name()
+	{
+		return $this->name;
+	}
+
+	/**
+	* Sets the name of the driver.
+	*
+	* @param string	$name The driver name
+	*/
+	public function set_name($name)
+	{
+		$this->name = $name;
 	}
 }

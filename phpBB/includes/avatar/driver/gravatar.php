@@ -95,7 +95,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 		$row['avatar_width'] = $this->request->variable('avatar_gravatar_width', 0);
 		$row['avatar_height'] = $this->request->variable('avatar_gravatar_height', 0);
 
-		require_once($this->phpbb_root_path . 'includes/functions_user' . $this->phpEx);
+		require_once($this->phpbb_root_path . 'includes/functions_user' . $this->php_ext);
 
 		$error = array_merge($error, validate_data(array(
 			'email' => $row['avatar'],
