@@ -166,12 +166,6 @@ class phpbb_database_test_connection_manager
 		switch ($this->config['dbms'])
 		{
 			case 'sqlite':
-				if (file_exists($this->config['dbhost']))
-				{
-					unlink($this->config['dbhost']);
-				}
-			break;
-
 			case 'firebird':
 				$this->connect();
 				// Drop all of the tables

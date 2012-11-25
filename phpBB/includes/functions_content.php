@@ -408,7 +408,7 @@ function strip_bbcode(&$text, $uid = '')
 * For display of custom parsed text on user-facing pages
 * Expects $text to be the value directly from the database (stored value)
 */
-function generate_text_for_display($text, $uid, $bitfield, $flags)
+function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text = true)
 {
 	static $bbcode;
 	global $phpbb_dispatcher;
@@ -417,8 +417,6 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 	{
 		return '';
 	}
-
-	$censor_text = true;
 
 	/**
 	* Use this event to modify the text before it is parsed

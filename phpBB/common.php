@@ -5,12 +5,8 @@
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
-* Minimum Requirement: PHP 5.3.2
+* Minimum Requirement: PHP 5.3.3
 */
-
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
 */
@@ -29,6 +25,8 @@ if (file_exists($phpbb_root_path . 'config.' . $phpEx))
 if (!defined('PHPBB_INSTALLED'))
 {
 	// Redirect the user to the installer
+	require($phpbb_root_path . 'includes/functions.' . $phpEx);
+
 	// We have to generate a full HTTP/1.1 header here since we can't guarantee to have any of the information
 	// available as used by the redirect function
 	$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
@@ -41,10 +39,13 @@ if (!defined('PHPBB_INSTALLED'))
 		$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
 	}
 
+	// $phpbb_root_path accounts for redirects from e.g. /adm
+	$script_path = trim(dirname($script_name)) . '/' . $phpbb_root_path . 'install/index.' . $phpEx;
 	// Replace any number of consecutive backslashes and/or slashes with a single slash
 	// (could happen on some proxy setups and/or Windows servers)
-	$script_path = trim(dirname($script_name)) . '/install/index.' . $phpEx;
 	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
+	// Eliminate . and .. from the path
+	$script_path = phpbb_clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 
@@ -62,25 +63,12 @@ if (!defined('PHPBB_INSTALLED'))
 	exit;
 }
 
-// Load Extensions
-// dl() is deprecated and disabled by default as of PHP 5.3.
-if (!empty($load_extensions) && function_exists('dl'))
-{
-	$load_extensions = explode(',', $load_extensions);
-
-	foreach ($load_extensions as $extension)
-	{
-		@dl(trim($extension));
-	}
-}
-
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
-require($phpbb_root_path . 'includes/di/processor/config.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . ltrim($dbms, 'dbal_') . '.' . $phpEx);
@@ -89,23 +77,28 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
-$phpbb_container = new ContainerBuilder();
-$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/config'));
-$loader->load('services.yml');
-
-$processor = new phpbb_di_processor_config($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx);
-$processor->process($phpbb_container);
-
 // Setup class loader first
-$phpbb_class_loader = $phpbb_container->get('class_loader');
-$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
+$phpbb_class_loader->register();
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+$phpbb_class_loader_ext->register();
 
-$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
-foreach ($ids as $id)
-{
-	$processor = $phpbb_container->get($id);
-	$processor->process($phpbb_container);
-}
+// Set up container
+$phpbb_container = phpbb_create_dumped_container_unless_debug(
+	array(
+		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
+		new phpbb_di_extension_core($phpbb_root_path),
+	),
+	array(
+		new phpbb_di_pass_collection_pass(),
+		new phpbb_di_pass_kernel_pass(),
+	),
+	$phpbb_root_path,
+	$phpEx
+);
+
+$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
+$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
 // set up caching
 $cache = $phpbb_container->get('cache');

@@ -103,7 +103,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$base_url = $url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;sd=$sort_dir&amp;sk=$sort_key&amp;st=$sort_days" . (($merge_select) ? $selected_ids : '');
 	phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $forum_topics, $topics_per_page, $start);
-	
+
 	$template->assign_vars(array(
 		'ACTION'				=> $action,
 		'FORUM_NAME'			=> $forum_info['forum_name'],
@@ -446,7 +446,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		confirm_box(false, 'MERGE_TOPICS', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -455,7 +455,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 	}
 	else
 	{
-		meta_refresh(3, append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$to_forum_id&amp;t=$to_topic_id"));
+		meta_refresh(3, $redirect);
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
