@@ -2714,9 +2714,9 @@ function change_database_data(&$no_updates, $version)
 
 			// Update avatars to modular types
 			$avatar_type_map = array(
-				AVATAR_UPLOAD	=> 'upload',
-				AVATAR_GALLERY	=> 'local',
-				AVATAR_REMOTE	=> 'remote',
+				AVATAR_UPLOAD	=> 'avatar.driver.upload',
+				AVATAR_GALLERY	=> 'avatar.driver.local',
+				AVATAR_REMOTE	=> 'avatar.driver.remote',
 			);
 
 			foreach ($avatar_type_map as $old => $new)
