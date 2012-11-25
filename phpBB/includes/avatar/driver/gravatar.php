@@ -78,7 +78,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 
 	/**
 	* @inheritdoc
-	**/
+	*/
 	public function prepare_form_acp()
 	{
 		return array(
@@ -170,7 +170,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	/**
 	* Build gravatar URL for output on page
 	*
-	* @return string The gravatar URL
+	* @return string Gravatar URL
 	*/
 	protected function get_gravatar_url($row)
 	{

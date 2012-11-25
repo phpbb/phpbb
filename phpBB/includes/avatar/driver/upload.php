@@ -124,7 +124,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 
 	/**
 	* @inheritdoc
-	**/
+	*/
 	public function prepare_form_acp()
 	{
 		global $user;

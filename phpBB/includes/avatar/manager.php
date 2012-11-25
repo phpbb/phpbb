@@ -32,14 +32,14 @@ class phpbb_avatar_manager
 	/**
 	* Construct an avatar manager object
 	*
-	* @param $phpbb_root_path The path to the phpBB root
-	* @param $phpEx The php file extension
-	* @param $config The phpBB configuration
-	* @param $request The request object
-	* @param $cache A cache driver
-	* @param $avatar_drivers The avatars drivers passed via the service container
-	* @param $container The container object
-	**/
+	* @param string $phpbb_root_path Path to the phpBB root
+	* @param string $phpEx PHP file extension
+	* @param phpbb_config $config phpBB configuration
+	* @param phpbb_request $request Request object
+	* @param phpbb_cache_driver_interface $cache Cache driver
+	* @param array $avatar_drivers Avatar drivers passed via the service container
+	* @param object $container Container object
+	*/
 	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config, phpbb_request $request, phpbb_cache_driver_interface $cache, $avatar_drivers, $container)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -54,10 +54,10 @@ class phpbb_avatar_manager
 	/**
 	* Get the driver object specified by the avatar type
 	*
-	* @param string The avatar type; by default an avatar's service container name
+	* @param string Avatar type; by default an avatar's service container name
 	*
-	* @return object The avatar driver object
-	**/
+	* @return object Avatar driver object
+	*/
 	public function get_driver($avatar_type)
 	{
 		if (self::$valid_drivers === false)
@@ -101,7 +101,7 @@ class phpbb_avatar_manager
 	/**
 	* Load the list of valid drivers
 	* This is executed once and fills self::$valid_drivers
-	**/
+	*/
 	protected function load_valid_drivers()
 	{
 		if (!empty($this->avatar_drivers))
@@ -117,8 +117,8 @@ class phpbb_avatar_manager
 	/**
 	* Get a list of valid avatar drivers
 	*
-	* @return array An array containing a list of the valid avatar drivers
-	**/
+	* @return array Array containing a list of the valid avatar drivers
+	*/
 	public function get_valid_drivers()
 	{
 		if (self::$valid_drivers === false)
@@ -132,11 +132,11 @@ class phpbb_avatar_manager
 	/**
 	* Strip out user_ and group_ prefixes from keys
 	*
-	* @param array	$row The user data or group data
+	* @param array	$row User data or group data
 	*
-	* @return array The user data or group data with keys that have been
+	* @return array User data or group data with keys that have been
 	*        stripped from the preceding "user_" or "group_"
-	**/
+	*/
 	public static function clean_row($row)
 	{
 		$keys = array_keys($row);

@@ -114,7 +114,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 
 	/**
 	* @inheritdoc
-	**/
+	*/
 	public function prepare_form_acp()
 	{
 		return array(
@@ -148,7 +148,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	/**
 	* Get a list of avatars that are locally available
 	*
-	* @return array An array containing the locally available avatars
+	* @return array Array containing the locally available avatars
 	*/
 	protected function get_avatar_list()
 	{

@@ -60,7 +60,7 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 
 	/**
 	* @inheritdoc
-	**/
+	*/
 	public function prepare_form_acp()
 	{
 		return array(

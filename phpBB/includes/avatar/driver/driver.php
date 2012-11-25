@@ -21,53 +21,57 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 {
+	/**
+	* Avatar driver name
+	* @var string
+	*/
 	protected $name;
 
 	/**
 	* Current board configuration
-	* @type phpbb_config
+	* @var phpbb_config
 	*/
 	protected $config;
 
 	/**
 	* Request object
-	* @type phpbb_request
+	* @var phpbb_request
 	*/
 	protected $request;
 
 	/**
 	* Current $phpbb_root_path
-	* @type string
+	* @var string
 	*/
 	protected $phpbb_root_path;
 
 	/**
 	* Current $php_ext
-	* @type string
+	* @var string
 	*/
 	protected $php_ext;
 
 	/**
-	* A cache driver
-	* @type phpbb_cache_driver_interface
+	* Cache driver
+	* @var phpbb_cache_driver_interface
 	*/
 	protected $cache;
 
 	/**
 	* This flag should be set to true if the avatar requires a nonstandard image
 	* tag, and will generate the html itself.
-	* @type boolean
+	* @var boolean
 	*/
 	public $custom_html = false;
 
 	/**
 	* Construct a driver object
 	*
-	* @param phpbb_config $config The phpBB configuration
-	* @param phpbb_request $request The request object
-	* @param string $phpbb_root_path The path to the phpBB root
-	* @param string $php_ext The php file extension
-	* @param phpbb_cache_driver_interface $cache A cache driver
+	* @param phpbb_config $config phpBB configuration
+	* @param phpbb_request $request Request object
+	* @param string $phpbb_root_path Path to the phpBB root
+	* @param string $php_ext PHP file extension
+	* @param phpbb_cache_driver_interface $cache Cache driver
 	*/
 	public function __construct(phpbb_config $config, phpbb_request $request, $phpbb_root_path, $php_ext, phpbb_cache_driver_interface $cache = null)
 	{
@@ -100,7 +104,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 
 	/**
 	* @inheritdoc
-	**/
+	*/
 	public function prepare_form($template, $row, &$error)
 	{
 		return false;
@@ -108,7 +112,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 
 	/**
 	* @inheritdoc
-	**/
+	*/
 	public function prepare_form_acp()
 	{
 		return array();
@@ -116,7 +120,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 
 	/**
 	* @inheritdoc
-	**/
+	*/
 	public function process_form($template, $row, &$error)
 	{
 		return false;
@@ -124,7 +128,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 
 	/**
 	* @inheritdoc
-	**/
+	*/
 	public function delete($row)
 	{
 		return true;
@@ -132,7 +136,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 
 	/**
 	* @inheritdoc
-	**/
+	*/
 	public function is_enabled()
 	{
 		$driver = preg_replace('#^phpbb_avatar_driver_#', '', get_class($this));
@@ -142,7 +146,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 
 	/**
 	* @inheritdoc
-	**/
+	*/
 	public function get_template_name()
 	{
 		$driver = preg_replace('#^phpbb_avatar_driver_#', '', get_class($this));
@@ -162,7 +166,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	/**
 	* Sets the name of the driver.
 	*
-	* @param string	$name The driver name
+	* @param string	$name Driver name
 	*/
 	public function set_name($name)
 	{
