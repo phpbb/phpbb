@@ -39,8 +39,8 @@ class phpbb_cache_file_test extends phpbb_database_test_case
 		}
 		$this->create_cache_dir();
 
-		$cache_factory = new phpbb_cache_factory('file');
-		$this->cache = $cache = $cache_factory->get_service(dirname(__FILE__) . '/../../phpBB', 'php', $this->cache_dir);
+		$driver = new phpbb_cache_driver_file(dirname(__FILE__) . '/../../phpBB', 'php', $this->cache_dir);
+		$this->cache = $cache = new phpbb_cache_service($driver, $driver);
 
 		$this->assertEquals($this->cache_dir, $this->cache->get_cache_dir());
 
