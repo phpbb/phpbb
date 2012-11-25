@@ -1353,7 +1353,7 @@ function get_avatar($row, $alt, $ignore_config = false)
 {
 	global $user, $config, $cache, $phpbb_root_path, $phpEx;
 	global $request;
-	global $phpbb_avatar_manager;
+	global $phpbb_container;
 
 	if (!$config['allow_avatar'] && !$ignore_config)
 	{
@@ -1366,6 +1366,7 @@ function get_avatar($row, $alt, $ignore_config = false)
 		'height' => $row['avatar_height'],
 	);
 
+	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 	$avatar = $phpbb_avatar_manager->get_driver($row['avatar_type']);
 
 	if ($avatar)

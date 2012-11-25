@@ -27,7 +27,7 @@ class ucp_groups
 	{
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $cache, $template;
-		global $request, $phpbb_avatar_manager;
+		global $request, $phpbb_container;
 
 		$user->add_lang('groups');
 
@@ -484,6 +484,7 @@ class ucp_groups
 						$error = array();
 
 						// Setup avatar data for later
+						$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 						$avatars_enabled = false;
 						$avatar_drivers = null;
 						$avatar_data = null;

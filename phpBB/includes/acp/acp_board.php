@@ -28,7 +28,7 @@ class acp_board
 	{
 		global $db, $user, $auth, $template;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $cache, $phpbb_avatar_manager;
+		global $cache, $phpbb_container;
 
 		$user->add_lang('acp/board');
 
@@ -107,6 +107,7 @@ class acp_board
 			break;
 
 			case 'avatar':
+				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 				$avatar_drivers = $phpbb_avatar_manager->get_valid_drivers();
 				sort($avatar_drivers);
 				$avatar_vars = array();

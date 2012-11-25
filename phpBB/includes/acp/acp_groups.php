@@ -26,7 +26,7 @@ class acp_groups
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
-		global $request, $phpbb_avatar_manager;
+		global $request, $phpbb_container;
 
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
@@ -282,6 +282,7 @@ class acp_groups
 				$user->add_lang('ucp');
 
 				// Setup avatar data for later
+				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 				$avatars_enabled = false;
 				$avatar_drivers = null;
 				$avatar_data = null;

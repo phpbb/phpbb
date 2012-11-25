@@ -30,7 +30,7 @@ class ucp_profile
 	{
 		global $cache, $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 		global $request;
-		global $phpbb_avatar_manager;
+		global $phpbb_container;
 
 		$user->add_lang('posting');
 
@@ -549,6 +549,7 @@ class ucp_profile
 
 				add_form_key('ucp_avatar');
 
+				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 				$avatars_enabled = false;
 
 				if ($config['allow_avatar'] && $auth->acl_get('u_chgavatar'))
