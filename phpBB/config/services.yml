@@ -10,7 +10,7 @@ services:
         class: phpbb_cache_service
         arguments:
              - @cache.driver
-             - @cache.sql_driver
+             - @cache.sql_container
 
     cache.driver:
         class: %cache.driver.class%
@@ -18,8 +18,13 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
+    cache.sql_container:
+        class: %cache.driver.sql_container%
+        arguments:
+            - @cache.sql_driver
+
     cache.sql_driver:
-        class: %cache.driver.sql_class%
+        class: %cache.driver.sql_driver%
         arguments:
             - %core.root_path%
             - %core.php_ext%

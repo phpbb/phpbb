@@ -44,7 +44,6 @@ class phpbb_di_extension_config extends Extension
 
 		$container->setParameter('core.table_prefix', $table_prefix);
 		$container->setParameter('cache.driver.class', $this->fix_acm_type($acm_type));
-		$container->setParameter('cache.driver.sql_class', (isset($acm_sql_type) ? $this->fix_acm_type($acm_sql_type) : 'phpbb_cache_driver_file'));
 		$container->setParameter('dbal.driver.class', 'dbal_'.$dbms);
 		$container->setParameter('dbal.dbhost', $dbhost);
 		$container->setParameter('dbal.dbuser', $dbuser);
@@ -52,6 +51,20 @@ class phpbb_di_extension_config extends Extension
 		$container->setParameter('dbal.dbname', $dbname);
 		$container->setParameter('dbal.dbport', $dbport);
 		$container->setParameter('dbal.new_link', defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK);
+
+		$acm_sql_type = (isset($acm_sql_type) ? $this->fix_acm_type($acm_sql_type) : 'phpbb_cache_driver_file');
+		$sql_cache_reflection = new ReflectionClass($acm_sql_type);
+		if (in_array('phpbb_cache_driver_sql_interface', $sql_cache_reflection->getInterfaceNames()))
+		{
+			$container->setParameter('cache.driver.sql_container', $acm_sql_type);
+			$container->setParameter('cache.driver.sql_driver', 'phpbb_cache_driver_null');
+		}
+		else
+		{
+			$container->setParameter('cache.driver.sql_container', 'phpbb_cache_driver_sql_generic');
+			$container->setParameter('cache.driver.sql_driver', $acm_sql_type);
+		}
+		unset($sql_cache_reflection);
 	}
 
 	/**
