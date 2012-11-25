@@ -90,7 +90,7 @@ $lang = array_merge($lang, array(
 	'AUTOLOGIN_SESSION_KEYS_DELETED'=> 'The selected persistent login keys were successfully deleted.',
 	'AVATAR_CATEGORY'				=> 'Category',
 	'AVATAR_DRIVER_GRAVATAR_TITLE'	=> 'Gravatar',
-	'AVATAR_DRIVER_GRAVATAR_EXPLAIN'=> 'Gravatar is a service that provides you with a globally unique avatar.',
+	'AVATAR_DRIVER_GRAVATAR_EXPLAIN'=> 'Gravatar is a service that allows you to maintain the same avatar across multiple websites. Visit <a href="http://www.gravatar.com/">Gravatar</a> for more information.',
 	'AVATAR_DRIVER_LOCAL_TITLE'		=> 'Gallery avatar',
 	'AVATAR_DRIVER_LOCAL_EXPLAIN'	=> 'You can choose your avatar from a locally available set of avatars.',
 	'AVATAR_DRIVER_REMOTE_TITLE'	=> 'Remote avatar',
