@@ -454,7 +454,7 @@ class acp_users
 							{
 								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
-							
+
 							$sql_ary = array(
 								'user_avatar'			=> '',
 								'user_avatar_type'		=> '',
@@ -1745,7 +1745,7 @@ class acp_users
 						if (check_form_key($form_name))
 						{
 							$driver = str_replace('_', '.', request_var('avatar_driver', ''));
-							$config_name = preg_replace('#^avatar.driver.#', '', $driver);
+							$config_name = preg_replace('#^avatar\.driver.#', '', $driver);
 							$avatar_delete = $request->variable('avatar_delete', '');
 							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"] && empty($avatar_delete))
 							{
@@ -1761,6 +1761,7 @@ class acp_users
 										'user_avatar_width' => $result['avatar_width'],
 										'user_avatar_height' => $result['avatar_height'],
 									);
+
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', $result) . '
 										WHERE user_id = ' . $user_id;
@@ -1771,7 +1772,8 @@ class acp_users
 							}
 							else
 							{
-								if ($avatar = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']))
+								$avatar = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']);
+								if ($avatar)
 								{
 									$avatar->delete($avatar_data);
 								}
@@ -1786,7 +1788,7 @@ class acp_users
 								
 								$sql = 'UPDATE ' . USERS_TABLE . '
 									SET ' . $db->sql_build_array('UPDATE', $result) . '
-									WHERE user_id = ' . $user_id;
+									WHERE user_id = ' . (int) $user_id;
 
 								$db->sql_query($sql);
 								trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
@@ -1807,7 +1809,7 @@ class acp_users
 						if ($avatar->is_enabled())
 						{
 							$avatars_enabled = true;
-							$config_name = preg_replace('#^avatar.driver.#', '', $driver);
+							$config_name = preg_replace('#^avatar\.driver.#', '', $driver);
 							$template->set_filenames(array(
 								'avatar' => "acp_avatar_options_$config_name.html",
 							));

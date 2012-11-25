@@ -334,7 +334,7 @@ class acp_groups
 					{
 						// Handle avatar
 						$driver = str_replace('_', '.', request_var('avatar_driver', ''));
-						$config_name = preg_replace('#^avatar.driver.#', '', $driver);
+						$config_name = preg_replace('#^avatar\.driver.#', '', $driver);
 						$avatar_delete = $request->variable('avatar_delete', '');
 						if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"] && empty($avatar_delete))
 						{
@@ -534,7 +534,7 @@ class acp_groups
 						if ($avatar->is_enabled())
 						{
 							$avatars_enabled = true;
-							$config_name = preg_replace('#^avatar.driver.#', '', $driver);
+							$config_name = preg_replace('#^avatar\.driver.#', '', $driver);
 							$template->set_filenames(array(
 								'avatar' => "acp_avatar_options_$config_name.html",
 							));
@@ -558,8 +558,10 @@ class acp_groups
 				
 				$avatar = get_group_avatar($group_row, 'GROUP_AVATAR', true);
 				
-				// Merge any avatars errors into the primary error array
-				// Drivers use lang constants, so we need to map to the actual strings
+				/*
+				* Merge any avatar errors into the primary error array
+				* Drivers use language constants, so we need to map to the actual strings
+				*/
 				foreach ($avatar_error as $e)
 				{
 					if (is_array($e))
@@ -569,7 +571,7 @@ class acp_groups
 					}
 					else
 					{
-						$error[] = $user->lang((string) $e);
+						$error[] = $user->lang("$e");
 					}
 				}
 
@@ -615,7 +617,7 @@ class acp_groups
 
 					'S_RANK_OPTIONS'		=> $rank_options,
 					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
-					'AVATAR'				=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
+					'AVATAR'				=> empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar,
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
 					'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
 					'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',

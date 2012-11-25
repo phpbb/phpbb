@@ -2722,27 +2722,27 @@ function change_database_data(&$no_updates, $version)
 			foreach ($avatar_type_map as $old => $new)
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_avatar_type = '" . $db->sql_escape($new) . "'
-					WHERE user_avatar_type = '" . $db->sql_escape($old) . "'";
+					SET user_avatar_type = '" . $new . "'
+					WHERE user_avatar_type = '" . $old . "'";
 				_sql($sql, $errored, $error_ary);
 
 				$sql = 'UPDATE ' . GROUPS_TABLE . "
-					SET group_avatar_type = '" . $db->sql_escape($new) . "'
-					WHERE group_avatar_type = '" . $db->sql_escape($old) . "'";
+					SET group_avatar_type = '" . $new . "'
+					WHERE group_avatar_type = '" . $old . "'";
 				_sql($sql, $errored, $error_ary);
 			}
 
 			// update avatar module_auth
-			$sql = 'UPDATE ' . MODULES_TABLE . '
-				SET module_auth = \'cfg_allow_avatar && (cfg_allow_avatar_local || cfg_allow_avatar_remote || cfg_allow_avatar_upload || cfg_allow_avatar_remote_upload || cfg_allow_avatar_gravatar)\'
-				WHERE module_class = \'ucp\'
-					AND module_basename = \'ucp_profile\'
-					AND module_mode = \'avatar\'';
+			$sql = 'UPDATE ' . MODULES_TABLE . "
+				SET module_auth = 'cfg_allow_avatar && (cfg_allow_avatar_local || cfg_allow_avatar_remote || cfg_allow_avatar_upload || cfg_allow_avatar_remote_upload || cfg_allow_avatar_gravatar)'
+				WHERE module_class = 'ucp'
+					AND module_basename = 'ucp_profile'
+					AND module_mode = 'avatar'";
 			_sql($sql, $errored, $error_ary);
 
 			if (!isset($config['allow_avatar_gravatar']))
 			{
-				$config->set('allow_avatar_gravatar', '');
+				$config->set('allow_avatar_gravatar', '0');
 			}
 
 			$no_updates = false;

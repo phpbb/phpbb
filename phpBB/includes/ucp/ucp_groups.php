@@ -521,7 +521,7 @@ class ucp_groups
 							{
 								// Handle avatar
 								$driver = str_replace('_', '.', request_var('avatar_driver', ''));
-								$config_name = preg_replace('#^avatar.driver.#', '', $driver);
+								$config_name = preg_replace('#^avatar\.driver.#', '', $driver);
 								$avatar_delete = $request->variable('avatar_delete', '');
 								if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"] && empty($avatar_delete))
 								{

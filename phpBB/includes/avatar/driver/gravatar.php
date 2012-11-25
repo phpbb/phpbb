@@ -56,11 +56,10 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	*/
 	public function get_custom_html($row, $ignore_config = false, $alt = '')
 	{
-		$html = '<img src="' . $this->get_gravatar_url($row) . '" ' .
+		return '<img src="' . $this->get_gravatar_url($row) . '" ' .
 			($row['avatar_width'] ? ('width="' . $row['avatar_width'] . '" ') : '') .
 			($row['avatar_height'] ? ('height="' . $row['avatar_height'] . '" ') : '') .
 			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
-		return $html;
 	}
 
 	/**
@@ -121,7 +120,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 			$row['avatar_width'] = $row['avatar_height'] = min($this->config['avatar_max_width'], $this->config['avatar_max_height']);
 			$url = $this->get_gravatar_url($row);
 
-			if (($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0) && (($image_data = @getimagesize($url)) === false))
+			if (($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0) && (($image_data = getimagesize($url)) === false))
 			{
 				$error[] = 'UNABLE_GET_IMAGE_SIZE';
 				return false;
