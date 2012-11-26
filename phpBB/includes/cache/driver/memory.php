@@ -181,38 +181,8 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 	/**
 	* Destroy cache data
 	*/
-	function destroy($var_name, $table = '')
+	function destroy($var_name)
 	{
-		if ($var_name == 'sql' && !empty($table))
-		{
-			if (!is_array($table))
-			{
-				$table = array($table);
-			}
-
-			foreach ($table as $table_name)
-			{
-				// gives us the md5s that we want
-				$temp = $this->_read('sql_' . $table_name);
-
-				if ($temp === false)
-				{
-					continue;
-				}
-
-				// delete each query ref
-				foreach ($temp as $md5_id => $void)
-				{
-					$this->_delete('sql_' . $md5_id);
-				}
-
-				// delete the table ref
-				$this->_delete('sql_' . $table_name);
-			}
-
-			return;
-		}
-
 		if (!$this->_exists($var_name))
 		{
 			return;

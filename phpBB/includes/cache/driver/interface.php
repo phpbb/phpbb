@@ -60,7 +60,7 @@ interface phpbb_cache_driver_interface
 	/**
 	* Destroy cache data
 	*/
-	public function destroy($var_name, $table = '');
+	public function destroy($var_name);
 
 	/**
 	* Check if a given cache entry exist

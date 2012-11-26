@@ -203,60 +203,8 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	/**
 	* Destroy cache data
 	*/
-	function destroy($var_name, $table = '')
+	function destroy($var_name)
 	{
-		if ($var_name == 'sql' && !empty($table))
-		{
-			if (!is_array($table))
-			{
-				$table = array($table);
-			}
-
-			$dir = @opendir($this->cache_dir);
-
-			if (!$dir)
-			{
-				return;
-			}
-
-			while (($entry = readdir($dir)) !== false)
-			{
-				if (strpos($entry, 'sql_') !== 0)
-				{
-					continue;
-				}
-
-				if (!($handle = @fopen($this->cache_dir . $entry, 'rb')))
-				{
-					continue;
-				}
-
-				// Skip the PHP header
-				fgets($handle);
-
-				// Skip expiration
-				fgets($handle);
-
-				// Grab the query, remove the LF
-				$query = substr(fgets($handle), 0, -1);
-
-				fclose($handle);
-
-				foreach ($table as $check_table)
-				{
-					// Better catch partial table names than no table names. ;)
-					if (strpos($query, $check_table) !== false)
-					{
-						$this->remove_file($this->cache_dir . $entry);
-						break;
-					}
-				}
-			}
-			closedir($dir);
-
-			return;
-		}
-
 		if (!$this->_exists($var_name))
 		{
 			return;
@@ -406,12 +354,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 					{
 						break;
 					}
-
-					if (strpos($filename, 'data_sql_') === 0)
-					{
-						// Skip the next line (the query)
-						fgets($handle);
-					}
 				}
 				else if ($line == 1)
 				{
@@ -475,7 +417,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	* <code>
 	* <?php exit; ?>
 	* (expiration)
-	* (query) [SQL files only]
 	* (length of serialised data)
 	* (serialised data)
 	* </code>
@@ -484,10 +425,9 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	* @param string $filename Filename to write
 	* @param mixed $data Data to store
 	* @param int $expires Timestamp when the data expires
-	* @param string $query Query when caching SQL queries
 	* @return bool True if the file was successfully created, otherwise false
 	*/
-	function _write($filename, $data = null, $expires = 0, $query = '')
+	function _write($filename, $data = null, $expires = 0)
 	{
 		$file = "{$this->cache_dir}$filename." . $this->phpEx;
 
@@ -525,10 +465,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 			{
 				fwrite($handle, "\n" . $expires . "\n");
 
-				if (strpos($filename, 'data_sql_') === 0)
-				{
-					fwrite($handle, $query . "\n");
-				}
 				$data = serialize($data);
 
 				fwrite($handle, strlen($data) . "\n");

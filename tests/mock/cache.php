@@ -111,7 +111,7 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 	function purge()
 	{
 	}
-	function destroy($var_name, $table = '')
+	function destroy($var_name)
 	{
 		unset($this->data[$var_name]);
 	}

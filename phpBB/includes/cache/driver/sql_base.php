@@ -37,6 +37,7 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	public function __construct(dbal $db = null, phpbb_cache_driver_interface $cache_driver)
 	{
 		$this->db = $db;
+		/** @todo remove db **/
 
 		// Cache driver is always sent because of limitations to setting up services with YML
 		// If you create your own sql cache system implementing phpbb_cache_driver_sql_interface,

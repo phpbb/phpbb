@@ -82,4 +82,21 @@ interface phpbb_cache_driver_sql_interface
 	* @return bool False if the query does not exist, True on success
 	*/
 	public function freeresult($query_id);
+
+	/**
+	* Tidy SQL cache data
+	*/
+	public function tidy();
+
+	/**
+	* Purge all SQL cache data
+	*/
+	public function purge();
+
+	/**
+	* Destroy cache data
+	*
+	* @param string $table Table name to destroy cached queries for
+	*/
+	public function destroy($table);
 }

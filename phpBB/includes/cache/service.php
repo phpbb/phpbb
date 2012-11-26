@@ -86,9 +86,21 @@ class phpbb_cache_service
 
 	public function __call($method, $arguments)
 	{
+		// Also call sql_ functions for some methods
+		if (in_array($method, array('tidy', 'purge')))
+		{
+			$this->sql_{$method}();
+		}
+
 		if (substr($method, 0, 4) == 'sql_')
 		{
 			$method = substr($method, 4);
+			return call_user_func_array(array($this->sql_driver, $method), $arguments);
+		}
+
+		if ($method == 'destroy' && $arguments[0] == 'sql')
+		{
+			array_shift($arguments);
 			return call_user_func_array(array($this->sql_driver, $method), $arguments);
 		}
 
