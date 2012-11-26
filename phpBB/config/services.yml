@@ -11,6 +11,7 @@ services:
         arguments:
              - @cache.driver
              - @cache.sql_container
+             - @dbal.conn
 
     cache.driver:
         class: %cache.driver.class%

@@ -50,7 +50,7 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	* @param int $query_id (to load the results from)
 	* @return bool True if the query_id exists in the rowset, False if not
 	*/
-	public function sql_exists($query_id)
+	public function exists($query_id)
 	{
 		return isset($this->sql_rowset[$query_id]);
 	}
@@ -61,9 +61,9 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	* @param int $query_id (to load the results from)
 	* @return array|bool Array of row data, False if query_id isn't set or past the last row
 	*/
-	public function sql_fetchrow($query_id)
+	public function fetchrow($query_id)
 	{
-		if ($this->sql_exists($query_id) && $this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
+		if ($this->exists($query_id) && $this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
 		{
 			$row = $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]];
 
@@ -82,9 +82,9 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	* @param string $field Column to return
 	* @return mixed Field on success, Bool False if the query does not exist or past the last row
 	*/
-	public function sql_fetchfield($query_id, $field)
+	public function fetchfield($query_id, $field)
 	{
-		if ($this->sql_exists($query_id) && $this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
+		if ($this->exists($query_id) && $this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
 		{
 			$row = $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]];
 
@@ -106,9 +106,9 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	* @param int $query_id (to load the results from)
 	* @return bool False if the query does not exist or past the last row, True on success
 	*/
-	public function sql_rowseek($rownum, $query_id)
+	public function rowseek($rownum, $query_id)
 	{
-		if ($this->sql_exists($query_id) && $rownum >= sizeof($this->sql_rowset[$query_id]))
+		if ($this->exists($query_id) && $rownum >= sizeof($this->sql_rowset[$query_id]))
 		{
 			return false;
 		}
@@ -124,9 +124,9 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	* @param int $query_id (to clear the results from)
 	* @return bool False if the query does not exist, True on success
 	*/
-	public function sql_freeresult($query_id)
+	public function freeresult($query_id)
 	{
-		if (!$this->sql_exists($query_id))
+		if (!$this->exists($query_id))
 		{
 			return false;
 		}

@@ -29,7 +29,7 @@ interface phpbb_cache_driver_sql_interface
 	* @param string $query SQL Query
 	* @return int|bool Integer query_id on success, bool false on failure
 	*/
-	public function sql_load($query);
+	public function load($query);
 
 	/**
 	* Save sql query
@@ -39,7 +39,7 @@ interface phpbb_cache_driver_sql_interface
 	* @param int $ttl Time in seconds from now to store the query result
 	* @return int query_id (to load the results from)
 	*/
-	public function sql_save($query, $query_result, $ttl);
+	public function save($query, $query_result, $ttl);
 
 	/**
 	* Check if a given sql query id exist in cache
@@ -47,7 +47,7 @@ interface phpbb_cache_driver_sql_interface
 	* @param int $query_id (to load the results from)
 	* @return bool True if the query_id exists in the rowset, False if not
 	*/
-	public function sql_exists($query_id);
+	public function exists($query_id);
 
 	/**
 	* Fetch row from cache (database)
@@ -55,7 +55,7 @@ interface phpbb_cache_driver_sql_interface
 	* @param int $query_id (to load the results from)
 	* @return array|bool Array of row data, False if query_id isn't set or past the last row
 	*/
-	public function sql_fetchrow($query_id);
+	public function fetchrow($query_id);
 
 	/**
 	* Fetch a field from the current row of a cached database result (database)
@@ -64,7 +64,7 @@ interface phpbb_cache_driver_sql_interface
 	* @param string $field Column to return
 	* @return mixed Field on success, Bool False if the query does not exist or past the last row
 	*/
-	public function sql_fetchfield($query_id, $field);
+	public function fetchfield($query_id, $field);
 
 	/**
 	* Seek a specific row in an a cached database result (database)
@@ -73,7 +73,7 @@ interface phpbb_cache_driver_sql_interface
 	* @param int $query_id (to load the results from)
 	* @return bool False if the query does not exist or past the last row, True on success
 	*/
-	public function sql_rowseek($rownum, $query_id);
+	public function rowseek($rownum, $query_id);
 
 	/**
 	* Free memory used for a cached database result (database)
@@ -81,5 +81,5 @@ interface phpbb_cache_driver_sql_interface
 	* @param int $query_id (to clear the results from)
 	* @return bool False if the query does not exist, True on success
 	*/
-	public function sql_freeresult($query_id);
+	public function freeresult($query_id);
 }

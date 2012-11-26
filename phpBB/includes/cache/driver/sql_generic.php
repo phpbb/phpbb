@@ -16,6 +16,10 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
+* @todo SQL Cache purge/tidy?
+*/
+
+/**
 * A generic cache driver service that takes a phpbb_cache_driver and
 * turn it into an SQL cache driver
 *
@@ -29,7 +33,7 @@ class phpbb_cache_driver_sql_generic extends phpbb_cache_driver_sql_base
 	* @param string $query SQL Query
 	* @return int|bool Integer query_id on success, bool false on failure
 	*/
-	public function sql_load($query)
+	public function load($query)
 	{
 		$query = $this->normalise_query($query);
 
@@ -51,7 +55,7 @@ class phpbb_cache_driver_sql_generic extends phpbb_cache_driver_sql_base
 	* @param int $ttl Time in seconds from now to store the query result
 	* @return int query_id (to load the results from)
 	*/
-	public function sql_save($query, $query_result, $ttl)
+	public function save($query, $query_result, $ttl)
 	{
 		$query = $this->normalise_query($query);
 

@@ -23,16 +23,19 @@ class phpbb_cache_service
 {
 	private $driver;
 	private $sql_driver;
+	private $db;
 
 	/**
 	* Creates a cache service around a cache driver
 	*
 	* @param phpbb_cache_driver_interface $driver The cache driver
 	*/
-	public function __construct($driver = null, $sql_driver = null)
+	public function __construct(phpbb_cache_driver_interface $driver = null, phpbb_cache_driver_sql_interface $sql_driver = null, dbal $db = null)
 	{
 		$this->set_driver($driver);
 		$this->set_sql_driver($sql_driver);
+
+		$this->db = $db;
 	}
 
 	/**
@@ -77,8 +80,9 @@ class phpbb_cache_service
 
 	public function __call($method, $arguments)
 	{
-		if (method_exists($this->sql_driver, $method))
+		if (substr($method, 0, 4) == 'sql_')
 		{
+			$method = substr($method, 4);
 			return call_user_func_array(array($this->sql_driver, $method), $arguments);
 		}
 
@@ -91,21 +95,19 @@ class phpbb_cache_service
 	*/
 	public function obtain_word_list()
 	{
-		global $db;
-
 		if (($censors = $this->driver->get('_word_censors')) === false)
 		{
 			$sql = 'SELECT word, replacement
 				FROM ' . WORDS_TABLE;
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
 			$censors = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$censors['match'][] = get_censor_preg_expression($row['word']);
 				$censors['replace'][] = $row['replacement'];
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_word_censors', $censors);
 		}
@@ -120,23 +122,21 @@ class phpbb_cache_service
 	{
 		if (($icons = $this->driver->get('_icons')) === false)
 		{
-			global $db;
-
 			// Topic icons
 			$sql = 'SELECT *
 				FROM ' . ICONS_TABLE . '
 				ORDER BY icons_order';
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
 			$icons = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$icons[$row['icons_id']]['img'] = $row['icons_url'];
 				$icons[$row['icons_id']]['width'] = (int) $row['icons_width'];
 				$icons[$row['icons_id']]['height'] = (int) $row['icons_height'];
 				$icons[$row['icons_id']]['display'] = (bool) $row['display_on_posting'];
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_icons', $icons);
 		}
@@ -151,15 +151,13 @@ class phpbb_cache_service
 	{
 		if (($ranks = $this->driver->get('_ranks')) === false)
 		{
-			global $db;
-
 			$sql = 'SELECT *
 				FROM ' . RANKS_TABLE . '
 				ORDER BY rank_min DESC';
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
 			$ranks = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				if ($row['rank_special'])
 				{
@@ -177,7 +175,7 @@ class phpbb_cache_service
 					);
 				}
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_ranks', $ranks);
 		}
@@ -196,8 +194,6 @@ class phpbb_cache_service
 	{
 		if (($extensions = $this->driver->get('_extensions')) === false)
 		{
-			global $db;
-
 			$extensions = array(
 				'_allowed_post'	=> array(),
 				'_allowed_pm'	=> array(),
@@ -208,9 +204,9 @@ class phpbb_cache_service
 				FROM ' . EXTENSIONS_TABLE . ' e, ' . EXTENSION_GROUPS_TABLE . ' g
 				WHERE e.group_id = g.group_id
 					AND (g.allow_group = 1 OR g.allow_in_pm = 1)';
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$extension = strtolower(trim($row['extension']));
 
@@ -237,7 +233,7 @@ class phpbb_cache_service
 					$extensions['_allowed_pm'][$extension] = 0;
 				}
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_extensions', $extensions);
 		}
@@ -302,9 +298,7 @@ class phpbb_cache_service
 	{
 		if (($bots = $this->driver->get('_bots')) === false)
 		{
-			global $db;
-
-			switch ($db->sql_layer)
+			switch ($this->db->sql_layer)
 			{
 				case 'mssql':
 				case 'mssql_odbc':
@@ -330,14 +324,14 @@ class phpbb_cache_service
 					ORDER BY LENGTH(bot_agent) DESC';
 				break;
 			}
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
 			$bots = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$bots[] = $row;
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_bots', $bots);
 		}
@@ -385,18 +379,16 @@ class phpbb_cache_service
 	{
 		if (($usernames = $this->driver->get('_disallowed_usernames')) === false)
 		{
-			global $db;
-
 			$sql = 'SELECT disallow_username
 				FROM ' . DISALLOW_TABLE;
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
 			$usernames = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$usernames[] = str_replace('%', '.*?', preg_quote(utf8_clean_string($row['disallow_username']), '#'));
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_disallowed_usernames', $usernames);
 		}
