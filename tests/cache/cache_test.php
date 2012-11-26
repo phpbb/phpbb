@@ -13,6 +13,7 @@ class phpbb_cache_file_test extends phpbb_test_case
 {
 	private $cache_dir;
 	private $cache;
+	private $db;
 
 	public function __construct()
 	{
@@ -21,7 +22,7 @@ class phpbb_cache_file_test extends phpbb_test_case
 
 	protected function setUp()
 	{
-		global $cache, $config, $db;
+		global $cache;
 
 		parent::setUp();
 
@@ -34,12 +35,6 @@ class phpbb_cache_file_test extends phpbb_test_case
 		$this->create_cache_dir();
 
 		$this->cache = $cache = new phpbb_cache_driver_file(__DIR__ . '/../../phpBB', 'php', $this->cache_dir);
-
-		// Config is needed for tidy()
-		$config = new phpbb_config(array());
-		set_config(null, null, null, $config);
-
-		$this->assertEquals($this->cache_dir, $this->cache->get_cache_dir());
 	}
 
 	protected function tearDown()
@@ -70,16 +65,27 @@ class phpbb_cache_file_test extends phpbb_test_case
 		rmdir($this->cache_dir);
 	}
 
+	public function test_global()
+	{
+		$this->cache->put('foo', 'bar');
+		$this->assertEquals('bar', $this->cache->get('foo'));
+		$this->cache->save();
+		$this->assertEquals('bar', $this->cache->get('foo'));
+
+		// Data should destroy
+		$this->cache->destroy('foo');
+		$this->assertEquals(false, $this->cache->get('foo'));
+	}
+
 	public function test_data()
 	{
 		$this->cache->put('_new_file', 'foo');
 
 		// File should exist and load correct data
-		$this->assertFileExists($this->cache_dir . 'data_new_file.php');
+		$this->assertEquals('foo', $this->cache->get('_new_file'));
 
 		// File should destroy
 		$this->cache->destroy('_new_file');
-		$this->assertFileNotExists($this->cache_dir . 'data_new_file.php');
 	}
 
 	public function test_purge()
@@ -88,30 +94,13 @@ class phpbb_cache_file_test extends phpbb_test_case
 		$this->cache->save();
 		$this->cache->put('_new_file', 'foo');
 
-		$this->assertFileExists($this->cache_dir . 'data_global.php');
-		$this->assertFileExists($this->cache_dir . 'data_new_file.php');
+		$this->assertEquals('bar', $this->cache->get('foo'));
+		$this->assertEquals('foo', $this->cache->get('_new_file'));
 
 		// Cache directory should not have the global, nor new file
 		$this->cache->purge();
-		$this->assertFileNotExists($this->cache_dir . 'data_global.php');
-		$this->assertFileNotExists($this->cache_dir . 'data_new_file.php');
-	}
 
-	public function test_tidy()
-	{
-		$this->cache->put('foo', 'bar');
-		$this->cache->save();
-		$this->cache->put('_new_file', 'foo');
-		$this->cache->put('_new_file2', 'foo', -1);
-
-		$this->assertFileExists($this->cache_dir . 'data_global.php');
-		$this->assertFileExists($this->cache_dir . 'data_new_file.php');
-		$this->assertFileExists($this->cache_dir . 'data_new_file2.php');
-
-		// Cache directory should have the global and the new file, not the second new file
-		$this->cache->tidy();
-		$this->assertFileExists($this->cache_dir . 'data_global.php');
-		$this->assertFileExists($this->cache_dir . 'data_new_file.php');
-		$this->assertFileNotExists($this->cache_dir . 'data_new_file2.php');
+		$this->assertEquals(false, $this->cache->get('foo'));
+		$this->assertEquals(false, $this->cache->get('_new_file'));
 	}
 }
