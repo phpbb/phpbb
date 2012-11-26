@@ -545,7 +545,10 @@ class ucp_profile
 			break;
 
 			case 'avatar':
-				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				if (!function_exists('display_forums'))
+				{
+					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				}
 
 				add_form_key('ucp_avatar');
 

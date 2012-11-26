@@ -72,7 +72,10 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 			return false;
 		}
 
-		include_once($this->phpbb_root_path . 'includes/functions_upload' . $this->php_ext);
+		if (!class_exists('fileupload'))
+		{
+			include_once($this->phpbb_root_path . 'includes/functions_upload' . $this->php_ext);
+		}
 
 		$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $this->config['avatar_filesize'], $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], (isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
 
