@@ -9,7 +9,7 @@
 
 require_once __DIR__ . '/../../phpBB/includes/functions.php';
 
-class phpbb_cache_file_test extends phpbb_test_case
+class phpbb_cache_test extends phpbb_test_case
 {
 	private $cache_dir;
 	private $cache;
