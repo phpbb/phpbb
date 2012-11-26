@@ -1678,7 +1678,7 @@ class acp_users
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
-				// Display board default values (which cannot be over-written) for bots/anonymous users
+				// Display board default values (which cannot be overwritten) for bots/anonymous users
 				if ($user_row['user_type'] == USER_IGNORE || $user_id == ANONYMOUS)
 				{
 					$data['lang'] = $config['default_lang'];
