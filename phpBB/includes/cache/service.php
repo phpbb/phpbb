@@ -24,10 +24,6 @@ class phpbb_cache_service
 	private $driver;
 	private $sql_driver;
 
-	// SQL Cache data
-	private $sql_rowset;
-	private $sql_row_pointer;
-
 	/**
 	* Creates a cache service around a cache driver
 	*

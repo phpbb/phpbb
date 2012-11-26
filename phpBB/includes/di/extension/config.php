@@ -52,15 +52,20 @@ class phpbb_di_extension_config extends Extension
 		$container->setParameter('dbal.dbport', $dbport);
 		$container->setParameter('dbal.new_link', defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK);
 
-		$acm_sql_type = (isset($acm_sql_type) ? $this->fix_acm_type($acm_sql_type) : 'phpbb_cache_driver_file');
+		// ACM SQL Type defaults to the normal ACM type if not declared
+		$acm_sql_type = $this->fix_acm_type((isset($acm_sql_type) ? $acm_sql_type : $acm_type));
 		$sql_cache_reflection = new ReflectionClass($acm_sql_type);
 		if (in_array('phpbb_cache_driver_sql_interface', $sql_cache_reflection->getInterfaceNames()))
 		{
+			// If the ACM SQL type is a "proper" SQL cache system, it will implement phpbb_cache_driver_sql_interface
 			$container->setParameter('cache.driver.sql_container', $acm_sql_type);
+
+			// Set the sql driver to null as it shouldn't be used (but is required to setup the parent because of the config)
 			$container->setParameter('cache.driver.sql_driver', 'phpbb_cache_driver_null');
 		}
 		else
 		{
+			// If the ACM SQL type is a standard cache driver, it will use the generic driver, which runs on top of a standard cache driver
 			$container->setParameter('cache.driver.sql_container', 'phpbb_cache_driver_sql_generic');
 			$container->setParameter('cache.driver.sql_driver', $acm_sql_type);
 		}
