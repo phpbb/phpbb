@@ -24,18 +24,24 @@ class phpbb_cache_service
 	private $driver;
 	private $sql_driver;
 	private $db;
+	private $config;
+	private $phpbb_root_path;
+	private $php_ext;
 
 	/**
 	* Creates a cache service around a cache driver
 	*
 	* @param phpbb_cache_driver_interface $driver The cache driver
 	*/
-	public function __construct(phpbb_cache_driver_interface $driver = null, phpbb_cache_driver_sql_interface $sql_driver = null, dbal $db = null)
+	public function __construct(phpbb_cache_driver_interface $driver = null, phpbb_cache_driver_sql_interface $sql_driver = null, dbal $db = null, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->set_driver($driver);
 		$this->set_sql_driver($sql_driver);
 
 		$this->db = $db;
+		$this->config = $config;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -344,8 +350,6 @@ class phpbb_cache_service
 	*/
 	public function obtain_cfg_items($style)
 	{
-		global $config, $phpbb_root_path;
-
 		$parsed_array = $this->driver->get('_cfg_' . $style['style_path']);
 
 		if ($parsed_array === false)
@@ -353,14 +357,14 @@ class phpbb_cache_service
 			$parsed_array = array();
 		}
 
-		$filename = $phpbb_root_path . 'styles/' . $style['style_path'] . '/style.cfg';
+		$filename = $this->phpbb_root_path . 'styles/' . $style['style_path'] . '/style.cfg';
 
 		if (!file_exists($filename))
 		{
 			return $parsed_array;
 		}
 
-		if (!isset($parsed_array['filetime']) || (($config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
+		if (!isset($parsed_array['filetime']) || (($this->config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
 		{
 			// Re-parse cfg file
 			$parsed_array = parse_cfg_file($filename);
@@ -401,22 +405,20 @@ class phpbb_cache_service
 	*/
 	public function obtain_hooks()
 	{
-		global $phpbb_root_path, $phpEx;
-
 		if (($hook_files = $this->driver->get('_hooks')) === false)
 		{
 			$hook_files = array();
 
 			// Now search for hooks...
-			$dh = @opendir($phpbb_root_path . 'includes/hooks/');
+			$dh = @opendir($this->phpbb_root_path . 'includes/hooks/');
 
 			if ($dh)
 			{
 				while (($file = readdir($dh)) !== false)
 				{
-					if (strpos($file, 'hook_') === 0 && substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx)
+					if (strpos($file, 'hook_') === 0 && substr($file, -(strlen($this->php_ext) + 1)) === '.' . $this->php_ext)
 					{
-						$hook_files[] = substr($file, 0, -(strlen($phpEx) + 1));
+						$hook_files[] = substr($file, 0, -(strlen($this->php_ext) + 1));
 					}
 				}
 				closedir($dh);

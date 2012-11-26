@@ -9,9 +9,12 @@ services:
     cache:
         class: phpbb_cache_service
         arguments:
-             - @cache.driver
-             - @cache.sql_container
-             - @dbal.conn
+            - @cache.driver
+            - @cache.sql_container
+            - @dbal.conn
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
 
     cache.driver:
         class: %cache.driver.class%
