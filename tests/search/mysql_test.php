@@ -149,18 +149,4 @@ class phpbb_search_mysql_test extends phpbb_database_test_case
 		}
 		$this->assert_array_content_equals($common, $this->search->get_common_words());
 	}
-
-	public function assert_array_content_equals($one, $two)
-	{
-		if (sizeof(array_diff($one, $two)) || sizeof(array_diff($two, $one)))
-		{
-			// get a nice error message
-			$this->assertEquals($one, $two);
-		}
-		else
-		{
-			// increase assertion count
-			$this->assertTrue(true);
-		}
-	}
 }
