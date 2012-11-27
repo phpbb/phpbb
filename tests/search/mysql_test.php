@@ -38,11 +38,6 @@ class phpbb_search_mysql_test extends phpbb_search_test_case
 		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user);
 	}
 
-	protected function tearDown()
-	{
-		parent::tearDown();
-	}
-
 	public function keywords()
 	{
 		return array(
