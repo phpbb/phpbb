@@ -7,23 +7,9 @@
 *
 */
 
-function phpbb_search_wrapper($class)
-{
-	$wrapped = $class . '_wrapper';
-	if (!class_exists($wrapped))
-	{
-		$code = "
-class $wrapped extends $class
-{
-	public function get_split_words() { return \$this->split_words; }
-}
-		";
-		eval($code);
-	}
-	return $wrapped;
-}
+require_once dirname(__FILE__) . '/../test_framework/phpbb_search_test_case.php';
 
-class phpbb_search_mysql_test extends phpbb_database_test_case
+class phpbb_search_mysql_test extends phpbb_search_test_case
 {
 	protected $db;
 	protected $search;
@@ -48,7 +34,7 @@ class phpbb_search_mysql_test extends phpbb_database_test_case
 
 		$this->db = $this->new_dbal();
 		$error = null;
-		$class = phpbb_search_wrapper('phpbb_search_fulltext_mysql');
+		$class = self::get_search_wrapper('phpbb_search_fulltext_mysql');
 		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user);
 	}
 

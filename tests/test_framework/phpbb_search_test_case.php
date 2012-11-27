@@ -19,6 +19,7 @@ class $wrapped extends $class
 {
 	public function get_must_contain_ids() { return \$this->must_contain_ids; }
 	public function get_must_not_contain_ids() { return \$this->must_not_contain_ids; }
+	public function get_split_words() { return \$this->split_words; }
 }
 			";
 			eval($code);

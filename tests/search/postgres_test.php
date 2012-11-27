@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_search_postgres_test extends phpbb_database_test_case
+require_once dirname(__FILE__) . '/../test_framework/phpbb_search_test_case.php';
+
+class phpbb_search_postgres_test extends phpbb_search_test_case
 {
 	protected $db;
 	protected $search;
@@ -30,14 +32,9 @@ class phpbb_search_postgres_test extends phpbb_database_test_case
 		$config['fulltext_postgres_min_word_len'] = 4;
 		$config['fulltext_postgres_max_word_len'] = 254;
 
-		if(!function_exists('phpbb_search_wrapper'))
-		{
-			include('mysql_test.' . $phpEx);
-		}
-
 		$this->db = $this->new_dbal();
 		$error = null;
-		$class = phpbb_search_wrapper('phpbb_search_fulltext_postgres');
+		$class = self::get_search_wrapper('phpbb_search_fulltext_postgres');
 		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user);
 	}
 
