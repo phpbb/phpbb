@@ -26,6 +26,7 @@ class phpbb_mock_filesystem_extension_manager extends phpbb_mock_extension_manag
 				$extensions[$name] = $extension;
 			}
 		}
+		ksort($extensions);
 		parent::__construct($phpbb_root_path, $extensions);
 	}
 }
