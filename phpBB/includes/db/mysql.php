@@ -190,7 +190,11 @@ class dbal_mysql extends dbal
 				if ($cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
+
+					$rowset = $this->sql_fetchrowset($this->query_result);
+					$this->sql_freeresult($this->query_result);
+
+					$this->query_result = $cache->sql_save($query, $rowset, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{
