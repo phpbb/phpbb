@@ -767,6 +767,7 @@ class p_master
 			}
 			else
 			{
+				// if the category has a name, then use it.
 				$u_title .=  $item_ary['name'];
 			}
 			// If the item is not a category append the mode
