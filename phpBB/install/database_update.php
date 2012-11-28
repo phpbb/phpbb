@@ -2753,9 +2753,9 @@ function change_database_data(&$no_updates, $version)
 			// ticket/10601: Make inbox default. Add basename to ucp's pm category
 			// Check if this was already applied
 			$sql = 'SELECT module_id, module_basename, parent_id, left_id, right_id 
-					FROM ' . MODULES_TABLE . '
-					WHERE module_basename = "ucp_pm"
-					ORDER BY module_id';
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'ucp_pm'
+					ORDER BY module_id";
 			$result = $db->sql_query_limit($sql, 1);
 
 			if ($row = $db->sql_fetchrow($result))
@@ -2765,9 +2765,9 @@ function change_database_data(&$no_updates, $version)
 				{
 					// This update is still not applied. Applying it
 
-					$sql = 'UPDATE ' . MODULES_TABLE . '
-						SET module_basename = \'ucp_pm\'
-						WHERE  module_id = ' . (int) $row['parent_id'];
+					$sql = 'UPDATE ' . MODULES_TABLE . "
+						SET module_basename = 'ucp_pm'
+						WHERE  module_id = " . (int) $row['parent_id'];
 
 					_sql($sql, $errored, $error_ary);
 
