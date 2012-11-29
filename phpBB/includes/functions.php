@@ -2745,7 +2745,7 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 *
 * @param int $code HTTP status code
 * @param string $message Message for the status code
-* @return void
+* @return null
 */
 function send_status_line($code, $message)
 {
@@ -4332,7 +4332,7 @@ function phpbb_optionset($bit, $set, $data)
 *
 * @param array	$param		Parameter array, see $param_defaults array.
 *
-* @return void
+* @return null
 */
 function phpbb_http_login($param)
 {
