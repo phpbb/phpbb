@@ -4940,13 +4940,47 @@ function phpbb_quoteattr($data, $entities = null)
 	return $data;
 }
 
+function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
+{
+	$names = $request->variable_names(phpbb_request_interface::GET);
+	$hidden = '';
+	foreach ($names as $name)
+	{
+		// Sessions are dealt with elsewhere, omit sid always
+		if ($name == 'sid')
+		{
+			continue;
+		}
+
+		// Omit any additional parameters requested
+		if (!empty($exclude) && in_array($name, $exclude))
+		{
+			continue;
+		}
+
+		$escaped_name = phpbb_quoteattr($name);
+
+		// Note: we might retrieve the variable from POST or cookies
+		// here. To avoid exposing cookies, skip variables that are
+		// overwritten somewhere other than GET entirely.
+		$value = $request->variable($name, '', true);
+		$get_value = $request->variable($name, '', true, phpbb_request_interface::GET);
+		if ($value === $get_value)
+		{
+			$escaped_value = phpbb_quoteattr($value);
+			$hidden .= "<input type='hidden' name=$escaped_name value=$escaped_value />";
+		}
+	}
+	return $hidden;
+}
+
 /**
 * Generate page header
 */
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher;
+	global $phpbb_dispatcher, $request;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5135,6 +5169,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		$timezone_name = $user->lang['timezones'][$timezone_name];
 	}
 
+	$hidden_fields_for_jumpbox = phpbb_build_hidden_fields_for_query_params($request, array('f'));
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -5149,6 +5185,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'RECORD_USERS'					=> $l_online_record,
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
+		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
@@ -5507,7 +5544,8 @@ function phpbb_to_numeric($input)
 function phpbb_create_symfony_request(phpbb_request $request)
 {
 	// This function is meant to sanitize the global input arrays
-	$sanitizer = function(&$value, $key) {
+	$sanitizer = function(&$value, $key)
+	{
 		$type_cast_helper = new phpbb_request_type_cast_helper();
 		$type_cast_helper->set_var($value, $value, gettype($value), true);
 	};

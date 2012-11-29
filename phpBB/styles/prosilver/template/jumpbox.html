@@ -17,6 +17,7 @@
 	<!-- ELSE -->
 		<fieldset class="jumpbox">
 	<!-- ENDIF -->
+			{HIDDEN_FIELDS_FOR_JUMPBOX}
 			<label for="f" accesskey="j"><!-- IF S_IN_MCP and S_MERGE_SELECT -->{L_SELECT_TOPICS_FROM}<!-- ELSEIF S_IN_MCP -->{L_MODERATE_FORUM}<!-- ELSE -->{L_JUMP_TO}<!-- ENDIF -->{L_COLON}</label>
 			<select name="f" id="f" onchange="if(this.options[this.selectedIndex].value != -1){ document.forms['jumpbox'].submit() }">
 			<!-- BEGIN jumpbox_forums -->
