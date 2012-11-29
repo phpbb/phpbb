@@ -5558,8 +5558,7 @@ function phpbb_to_numeric($input)
 function phpbb_create_symfony_request(phpbb_request $request)
 {
 	// This function is meant to sanitize the global input arrays
-	$sanitizer = function(&$value, $key)
-	{
+	$sanitizer = function(&$value, $key) {
 		$type_cast_helper = new phpbb_request_type_cast_helper();
 		$type_cast_helper->set_var($value, $value, gettype($value), true);
 	};
