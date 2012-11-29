@@ -74,7 +74,7 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory
 	/**
 	* Unload the cache resources
 	*
-	* @return void
+	* @return null
 	*/
 	function unload()
 	{
@@ -86,7 +86,7 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory
 	/**
 	* Purge cache data
 	*
-	* @return void
+	* @return null
 	*/
 	function purge()
 	{
