@@ -40,8 +40,7 @@ interface phpbb_avatar_driver_interface
 	public function get_data($row, $ignore_config = false);
 
 	/**
-	* Returns custom html for displaying this avatar.
-	* Only called if $custom_html is true.
+	* Returns custom html if it is needed for displaying this avatar
 	*
 	* @param bool $ignore_config Whether this function should respect the users prefs
 	*        and board configuration configuration option, or should just render

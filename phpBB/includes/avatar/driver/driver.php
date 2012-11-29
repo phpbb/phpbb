@@ -58,13 +58,6 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	protected $cache;
 
 	/**
-	* This flag should be set to true if the avatar requires a nonstandard image
-	* tag, and will generate the html itself.
-	* @var boolean
-	*/
-	public $custom_html = false;
-
-	/**
 	* Construct a driver object
 	*
 	* @param phpbb_config $config phpBB configuration

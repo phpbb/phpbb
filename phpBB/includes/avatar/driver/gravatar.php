@@ -21,12 +21,10 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 {
-	const GRAVATAR_URL = 'https://secure.gravatar.com/avatar/';
-
 	/**
-	* @inheritdoc
+	* The URL for the gravatar service
 	*/
-	public $custom_html = true;
+	const GRAVATAR_URL = 'https://secure.gravatar.com/avatar/';
 
 	/**
 	* @inheritdoc

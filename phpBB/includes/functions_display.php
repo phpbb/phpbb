@@ -1368,12 +1368,14 @@ function get_avatar($row, $alt, $ignore_config = false)
 
 	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 	$avatar = $phpbb_avatar_manager->get_driver($row['avatar_type']);
+	$html = '';
 
 	if ($avatar)
 	{
-		if ($avatar->custom_html)
+		$html = $avatar->get_custom_html($row, $ignore_config, $alt);
+		if (!empty($html))
 		{
-			return $avatar->get_custom_html($row, $ignore_config, $alt);
+			return $html;
 		}
 
 		$avatar_data = $avatar->get_data($row, $ignore_config);
@@ -1382,8 +1384,6 @@ function get_avatar($row, $alt, $ignore_config = false)
 	{
 		$avatar_data['src'] = '';
 	}
-
-	$html = '';
 
 	if (!empty($avatar_data['src']))
 	{
