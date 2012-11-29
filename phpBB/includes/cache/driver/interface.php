@@ -70,41 +70,70 @@ interface phpbb_cache_driver_interface
 	/**
 	* Load cached sql query
 	*
-	* @param string $query		SQL query
+	* @param string $query			SQL query
 	*
-	* @return int|bool			Query ID (integer) if cache contains a rowset
-	*							for the specified query.
-	*							False otherwise.
+	* @return int|bool				Query ID (integer) if cache contains a rowset
+	*								for the specified query.
+	*								False otherwise.
 	*/
 	public function sql_load($query);
 
 	/**
 	* Save sql query
+	*
+	* @param string $query			SQL query, should be used for generating storage key
+	* @param mixed $query_result	The result from dbal::sql_query, to be passed to
+	* 								dbal::sql_fetchrow to get all rows and store them
+	* 								in cache.
+	* @param int $ttl				Time to live, after this timeout the query should
+	*								expire from the cache.
+	* @return int|mixed				If storing in cache succeeded, an integer $query_id
+	* 								representing the query should be returned. Otherwise
+	* 								the original $query_result should be returned.
 	*/
 	public function sql_save($query, $query_result, $ttl);
 
 	/**
 	* Ceck if a given sql query exist in cache
+	*
+	* @param int $query_id
+	* @return bool
 	*/
 	public function sql_exists($query_id);
 
 	/**
 	* Fetch row from cache (database)
+	*
+	* @param int $query_id
+	* @return array|bool 			The query result if found in the cache, otherwise
+	* 								false.
 	*/
 	public function sql_fetchrow($query_id);
 
 	/**
 	* Fetch a field from the current row of a cached database result (database)
+	*
+	* @param int $query_id
+	* @param $field 				The name of the column.
+	* @return string|bool 			The field of the query result if found in the cache,
+	* 								otherwise false.
 	*/
 	public function sql_fetchfield($query_id, $field);
 
 	/**
 	* Seek a specific row in an a cached database result (database)
+	*
+	* @param int $rownum 			Row to seek to.
+	* @param int $query_id
+	* @return bool
 	*/
 	public function sql_rowseek($rownum, $query_id);
 
 	/**
 	* Free memory used for a cached database result (database)
+	*
+	* @param int $query_id
+	* @return bool
 	*/
 	public function sql_freeresult($query_id);
 }
