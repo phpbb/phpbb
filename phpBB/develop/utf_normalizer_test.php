@@ -222,7 +222,7 @@ die("\n\nALL TESTS PASSED SUCCESSFULLY\n");
 * Download a file to the develop/ dir
 *
 * @param	string	$url		URL of the file to download
-* @return	void
+* @return	null
 */
 function download($url)
 {
