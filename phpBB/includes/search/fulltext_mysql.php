@@ -86,6 +86,14 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 		$this->word_length = array('min' => $this->config['fulltext_mysql_min_word_len'], 'max' => $this->config['fulltext_mysql_max_word_len']);
 
+		/**
+		 * Load the UTF tools
+		 */
+		if (!function_exists('utf8_strlen'))
+		{
+			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+		}
+
 		$error = false;
 	}
 
@@ -230,7 +238,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			}
 			else
 			{
-				$tmp_split_words[] = $word . ' ';
+				$tmp_split_words[] = $word;
 			}
 		}
 		if ($phrase)
