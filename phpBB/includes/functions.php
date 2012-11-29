@@ -4940,6 +4940,20 @@ function phpbb_quoteattr($data, $entities = null)
 	return $data;
 }
 
+/**
+* Converts query string (GET) parameters in request into hidden fields.
+*
+* Useful for forwarding GET parameters when submitting forms with GET method.
+*
+* It is possible to omit some of the GET parameters, which is useful if
+* they are specified in the form being submitted.
+*
+* sid is always omitted.
+*
+* @param phpbb_request $request Request object
+* @param array $exclude A list of variable names that should not be forwarded
+* @return string HTML with hidden fields
+*/
 function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 {
 	$names = $request->variable_names(phpbb_request_interface::GET);
