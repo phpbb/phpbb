@@ -108,7 +108,7 @@ class acp_board
 
 			case 'avatar':
 				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
-				$avatar_drivers = $phpbb_avatar_manager->get_valid_drivers();
+				$avatar_drivers = $phpbb_avatar_manager->get_valid_drivers(true);
 				sort($avatar_drivers);
 				$avatar_vars = array();
 				foreach ($avatar_drivers as $driver)

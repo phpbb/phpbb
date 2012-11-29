@@ -101,15 +101,20 @@ class phpbb_avatar_manager
 	/**
 	* Load the list of valid drivers
 	* This is executed once and fills self::$valid_drivers
+	*
+	* @param bool $force_all Force showing all avatar drivers
 	*/
-	protected function load_valid_drivers()
+	protected function load_valid_drivers($force_all = false)
 	{
 		if (!empty($this->avatar_drivers))
 		{
 			self::$valid_drivers = array();
 			foreach ($this->avatar_drivers as $driver)
 			{
-				self::$valid_drivers[$driver->get_name()] = $driver->get_name();
+				if ($force_all || $this->is_enabled($driver))
+				{
+					self::$valid_drivers[$driver->get_name()] = $driver->get_name();
+				}
 			}
 		}
 	}
@@ -117,13 +122,15 @@ class phpbb_avatar_manager
 	/**
 	* Get a list of valid avatar drivers
 	*
+	* @param bool $force_all Force showing all avatar drivers
+	*
 	* @return array Array containing a list of the valid avatar drivers
 	*/
-	public function get_valid_drivers()
+	public function get_valid_drivers($force_all = false)
 	{
 		if (self::$valid_drivers === false)
 		{
-			$this->load_valid_drivers();
+			$this->load_valid_drivers($force_all);
 		}
 
 		return self::$valid_drivers;
@@ -177,5 +184,19 @@ class phpbb_avatar_manager
 	public static function prepare_driver_name($name)
 	{
 		return str_replace('.', '_', $name);
+	}
+
+	/**
+	* Check if avatar is enabled
+	*
+	* @param object $driver Avatar driver object
+	*
+	* @return bool True if avatar is enabled, false if it's disabled
+	*/
+	public function is_enabled($driver)
+	{
+		$config_name = preg_replace('#^phpbb_avatar_driver_#', '', get_class($driver));
+
+		return $this->config["allow_avatar_{$config_name}"];
 	}
 }

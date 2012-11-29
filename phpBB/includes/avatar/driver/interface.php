@@ -92,13 +92,6 @@ interface phpbb_avatar_driver_interface
 	public function delete($row);
 
 	/**
-	* Check if avatar is enabled
-	*
-	* @return bool True if avatar is enabled, false if it's disabled
-	*/
-	public function is_enabled();
-
-	/**
 	* Get the avatars template name
 	*
 	* @return string Avatar's template name
