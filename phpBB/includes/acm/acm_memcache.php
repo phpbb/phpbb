@@ -71,7 +71,7 @@ class acm extends acm_memory
 	/**
 	* Unload the cache resources
 	*
-	* @return void
+	* @return null
 	*/
 	function unload()
 	{
@@ -83,7 +83,7 @@ class acm extends acm_memory
 	/**
 	* Purge cache data
 	*
-	* @return void
+	* @return null
 	*/
 	function purge()
 	{
