@@ -1733,12 +1733,11 @@ class acp_users
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 				$avatars_enabled = false;
-				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 
 				if ($config['allow_avatar'])
 				{
+					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 					$avatar_drivers = $phpbb_avatar_manager->get_valid_drivers();
-					sort($avatar_drivers);
 
 					// This is normalised data, without the user_ prefix
 					$avatar_data = phpbb_avatar_manager::clean_row($user_row);
@@ -1747,19 +1746,18 @@ class acp_users
 					{
 						if (check_form_key($form_name))
 						{
-							$driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
-							$config_name = preg_replace('#^avatar\.driver.#', '', $driver);
+							$driver_name = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
 
-							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$config_name"] && !$request->is_set_post('avatar_delete'))
+							if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
 							{
-								$avatar = $phpbb_avatar_manager->get_driver($driver);
-								$result = $avatar->process_form($template, $avatar_data, $error);
+								$driver = $phpbb_avatar_manager->get_driver($driver_name);
+								$result = $driver->process_form($template, $avatar_data, $error);
 
 								if ($result && empty($error))
 								{
 									// Success! Lets save the result in the database
 									$result = array(
-										'user_avatar_type' => $driver,
+										'user_avatar_type' => $driver_name,
 										'user_avatar' => $result['avatar'],
 										'user_avatar_width' => $result['avatar_width'],
 										'user_avatar_height' => $result['avatar_height'],
@@ -1775,10 +1773,10 @@ class acp_users
 							}
 							else
 							{
-								$avatar = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']);
-								if ($avatar)
+								$driver = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']);
+								if ($driver)
 								{
-									$avatar->delete($avatar_data);
+									$driver->delete($avatar_data);
 								}
 
 								// Removing the avatar
@@ -1805,19 +1803,19 @@ class acp_users
 
 					$focused_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $user_row['user_avatar_type']));
 
-					foreach ($avatar_drivers as $driver)
+					foreach ($avatar_drivers as $current_driver)
 					{
-						$avatar = $phpbb_avatar_manager->get_driver($driver);
+						$driver = $phpbb_avatar_manager->get_driver($current_driver);
 
 						$avatars_enabled = true;
-						$config_name = preg_replace('#^avatar\.driver.#', '', $driver);
+						$config_name = preg_replace('#^avatar\.driver.#', '', $current_driver);
 						$template->set_filenames(array(
 							'avatar' => "acp_avatar_options_$config_name.html",
 						));
 
-						if ($avatar->prepare_form($template, $avatar_data, $error))
+						if ($driver->prepare_form($template, $avatar_data, $error))
 						{
-							$driver_name = $phpbb_avatar_manager->prepare_driver_name($driver);
+							$driver_name = $phpbb_avatar_manager->prepare_driver_name($current_driver);
 							$driver_upper = strtoupper($driver_name);
 
 							$template->assign_block_vars('avatar_drivers', array(
@@ -1825,7 +1823,7 @@ class acp_users
 								'L_EXPLAIN' => $user->lang($driver_upper . '_EXPLAIN'),
 
 								'DRIVER' => $driver_name,
-								'SELECTED' => $driver == $focused_driver,
+								'SELECTED' => $current_driver == $focused_driver,
 								'OUTPUT' => $template->assign_display('avatar'),
 							));
 						}
@@ -1842,7 +1840,7 @@ class acp_users
 					}
 					else
 					{
-						$error[$key] = $user->lang("$lang");
+						$error[$key] = $user->lang($lang);
 					}
 				}
 

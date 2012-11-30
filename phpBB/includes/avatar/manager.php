@@ -117,6 +117,7 @@ class phpbb_avatar_manager
 					self::$valid_drivers[$driver->get_name()] = $driver->get_name();
 				}
 			}
+			asort(self::$valid_drivers);
 		}
 	}
 
