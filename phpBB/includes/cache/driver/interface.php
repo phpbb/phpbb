@@ -63,7 +63,7 @@ interface phpbb_cache_driver_interface
 	public function destroy($var_name, $table = '');
 
 	/**
-	* Check if a given cache entry exist
+	* Check if a given cache entry exists
 	*/
 	public function _exists($var_name);
 
@@ -94,7 +94,7 @@ interface phpbb_cache_driver_interface
 	public function sql_save($query, $query_result, $ttl);
 
 	/**
-	* Ceck if a given sql query exist in cache
+	* Check if a given sql query exists in cache
 	*
 	* @param int $query_id
 	* @return bool
