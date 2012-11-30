@@ -299,7 +299,7 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 		if (!preg_match('/FROM \\(?(`?\\w+`?(?: \\w+)?(?:, ?`?\\w+`?(?: \\w+)?)*)\\)?/', $query, $regs))
 		{
 			// Bail out if the match fails.
-			return;
+			return $query_result;
 		}
 		$tables = array_map('trim', explode(',', $regs[1]));
 
@@ -338,8 +338,6 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 		$db->sql_freeresult($query_result);
 
 		$this->_write('sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
-
-		$query_result = $query_id;
 
 		return $query_id;
 	}
