@@ -24,7 +24,7 @@ interface phpbb_avatar_driver_interface
 	/**
 	* Returns the name of the driver.
 	*
-	* @return string	Name of wrapped driver.
+	* @return string	Name of driver.
 	*/
 	public function get_name();
 
@@ -50,10 +50,13 @@ interface phpbb_avatar_driver_interface
 	/**
 	* Prepare form for changing the settings of this avatar
 	*
-	* @param object	$template Template object
+	* @param phpbb_template	$template Template object
 	* @param array	$row User data or group data that has been cleaned with 
 	*        phpbb_avatar_manager::clean_row
-	* @param array	&$error Reference to an error array
+	* @param array	&$error Reference to an error array that is filled by this
+	*        function. Key values can either be a string with a language key or
+	*        an array that will be passed to vsprintf() with the language key in
+	*        the first array key.
 	*
 	* @return bool True if form has been successfully prepared
 	*/
@@ -62,17 +65,22 @@ interface phpbb_avatar_driver_interface
 	/**
 	* Prepare form for changing the acp settings of this avatar
 	*
-	* @return array Array containing the acp settings
+	* @return array Array of configuration options as consumed by acp_board.
+	*        The setting for enabling/disabling the avatar will be handled by
+	*        the avatar manager.
 	*/
 	public function prepare_form_acp();
 
 	/**
 	* Process form data
 	*
-	* @param object	$template Template object
+	* @param phpbb_template	$template Template object
 	* @param array	$row User data or group data that has been cleaned with 
 	*        phpbb_avatar_manager::clean_row
-	* @param array	&$error Reference to an error array
+	* @param array	&$error Reference to an error array that is filled by this
+	*        function. Key values can either be a string with a language key or
+	*        an array that will be passed to vsprintf() with the language key in
+	*        the first array key.
 	*
 	* @return array Array containing the avatar data as follows:
 	*        ['avatar'], ['avatar_width'], ['avatar_height']
@@ -85,14 +93,15 @@ interface phpbb_avatar_driver_interface
 	* @param array $row User data or group data that has been cleaned with 
 	*        phpbb_avatar_manager::clean_row
 	*
-	* @return bool True if avatar has been deleted or there is no need to delete
+	* @return bool True if avatar has been deleted or there is no need to delete,
+	*        i.e. when the avatar is not hosted locally.
 	*/
 	public function delete($row);
 
 	/**
-	* Get the avatars template name
+	* Get the avatar driver's template name
 	*
-	* @return string Avatar's template name
+	* @return string Avatar driver's template name
 	*/
 	public function get_template_name();
 }

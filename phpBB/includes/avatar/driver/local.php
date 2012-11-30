@@ -174,7 +174,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 					);
 				}
 			}
-			@ksort($avatar_list);
+			ksort($avatar_list);
 
 			if ($this->cache != null)
 			{

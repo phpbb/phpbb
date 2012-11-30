@@ -545,7 +545,7 @@ class ucp_profile
 			break;
 
 			case 'avatar':
-				if (!function_exists('display_forums'))
+				if (!function_exists('get_user_avatar'))
 				{
 					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 				}

@@ -85,16 +85,11 @@ class phpbb_avatar_manager
 			return null;
 		}
 
+		/*
+		* There is no need to handle invalid avatar types as the following code
+		* will cause a ServiceNotFoundException if the type does not exist
+		*/
 		$driver = $this->container->get($avatar_type);
-		if ($driver !== false)
-		{
-			return $driver;
-		}
-		else
-		{
-			$message = "Invalid avatar driver class name '%s' provided.";
-			trigger_error(sprintf($message, $avatar_type));
-		}
 
 		return $driver;
 	}

@@ -61,7 +61,7 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 			$url = 'http://' . $url;
 		}
 
-		if (!function_exists('user_add'))
+		if (!function_exists('validate_data'))
 		{
 			require($this->phpbb_root_path . 'includes/functions_user' . $this->php_ext);
 		}

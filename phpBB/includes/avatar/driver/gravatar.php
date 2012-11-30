@@ -72,7 +72,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 		$row['avatar_width'] = $this->request->variable('avatar_gravatar_width', 0);
 		$row['avatar_height'] = $this->request->variable('avatar_gravatar_height', 0);
 
-		if (!function_exists('user_add'))
+		if (!function_exists('validate_data'))
 		{
 			require($this->phpbb_root_path . 'includes/functions_user' . $this->php_ext);
 		}
