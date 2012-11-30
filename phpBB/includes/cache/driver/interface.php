@@ -68,7 +68,7 @@ interface phpbb_cache_driver_interface
 	public function _exists($var_name);
 
 	/**
-	* Load cached sql query
+	* Load result of an SQL query from cache.
 	*
 	* @param string $query			SQL query
 	*
@@ -79,7 +79,11 @@ interface phpbb_cache_driver_interface
 	public function sql_load($query);
 
 	/**
-	* Save sql query
+	* Save result of an SQL query in cache.
+	*
+	* In persistent cache stores, this function stores the query
+	* result to persistent storage. In other words, there is no need
+	* to call save() afterwards.
 	*
 	* @param string $query			SQL query, should be used for generating storage key
 	* @param mixed $query_result	The result from dbal::sql_query, to be passed to
@@ -94,7 +98,7 @@ interface phpbb_cache_driver_interface
 	public function sql_save($query, $query_result, $ttl);
 
 	/**
-	* Check if a given sql query exists in cache
+	* Check if result for a given SQL query exists in cache.
 	*
 	* @param int $query_id
 	* @return bool
