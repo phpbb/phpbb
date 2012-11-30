@@ -294,7 +294,7 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 		if (!preg_match('/FROM \\(?(`?\\w+`?(?: \\w+)?(?:, ?`?\\w+`?(?: \\w+)?)*)\\)?/', $query, $regs))
 		{
 			// Bail out if the match fails.
-			return;
+			return $query_result;
 		}
 		$tables = array_map('trim', explode(',', $regs[1]));
 
