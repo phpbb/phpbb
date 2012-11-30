@@ -78,18 +78,6 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	/**
 	* @inheritdoc
 	*/
-	public function get_data($row)
-	{
-		return array(
-			'src' => '',
-			'width' => 0,
-			'height' => 0,
-		);
-	}
-
-	/**
-	* @inheritdoc
-	*/
 	public function get_custom_html($row, $alt = '')
 	{
 		return '';
@@ -98,25 +86,9 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form($template, $row, &$error)
-	{
-		return false;
-	}
-
-	/**
-	* @inheritdoc
-	*/
 	public function prepare_form_acp()
 	{
 		return array();
-	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function process_form($template, $row, &$error)
-	{
-		return false;
 	}
 
 	/**

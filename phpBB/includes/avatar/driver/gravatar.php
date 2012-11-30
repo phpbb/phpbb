@@ -66,16 +66,6 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form_acp()
-	{
-		return array(
-			'allow_avatar_gravatar'	=> array('lang' => 'ALLOW_GRAVATAR',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
-		);
-	}
-
-	/**
-	* @inheritdoc
-	*/
 	public function process_form($template, $row, &$error)
 	{
 		$row['avatar'] = $this->request->variable('avatar_gravatar_email', '');

@@ -26,22 +26,11 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	*/
 	public function get_data($row, $ignore_config = false)
 	{
-		if ($ignore_config || $this->config['allow_avatar_upload'])
-		{
-			return array(
-				'src' => $this->phpbb_root_path . 'download/file' . $this->php_ext . '?avatar=' . $row['avatar'],
-				'width' => $row['avatar_width'],
-				'height' => $row['avatar_height'],
-			);
-		}
-		else
-		{
-			return array(
-				'src' => '',
-				'width' => 0,
-				'height' => 0,
-			);
-		}
+		return array(
+			'src' => $this->phpbb_root_path . 'download/file' . $this->php_ext . '?avatar=' . $row['avatar'],
+			'width' => $row['avatar_width'],
+			'height' => $row['avatar_height'],
+		);
 	}
 
 	/**
@@ -133,7 +122,6 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 		global $user;
 
 		return array(
-			'allow_avatar_upload'	=> array('lang' => 'ALLOW_UPLOAD',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 			'allow_avatar_remote_upload'=> array('lang' => 'ALLOW_REMOTE_UPLOAD', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 			'avatar_filesize'		=> array('lang' => 'MAX_FILESIZE',			'validate' => 'int:0',	'type' => 'text:4:10', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
 			'avatar_path'			=> array('lang' => 'AVATAR_STORAGE_PATH',	'validate' => 'rwpath',	'type' => 'text:20:255', 'explain' => true),

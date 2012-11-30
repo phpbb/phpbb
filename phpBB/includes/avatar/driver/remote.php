@@ -50,16 +50,6 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form_acp()
-	{
-		return array(
-			'allow_avatar_remote'	=> array('lang' => 'ALLOW_REMOTE',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-		);
-	}
-
-	/**
-	* @inheritdoc
-	*/
 	public function process_form($template, $row, &$error)
 	{
 		$url = $this->request->variable('avatar_remote_url', '');
