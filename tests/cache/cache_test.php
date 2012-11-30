@@ -94,7 +94,7 @@ class phpbb_cache_test extends phpbb_database_test_case
 
 		$this->assertFileExists($this->cache_dir . 'sql_' . md5(preg_replace('/[\n\r\s\t]+/', ' ', $sql)) . '.php');
 
-		$sql = "DELETE FROM phpbb_config";
+		$sql = 'DELETE FROM phpbb_config';
 		$result = $db->sql_query($sql);
 
 		$sql = "SELECT * FROM phpbb_config
@@ -128,7 +128,7 @@ class phpbb_cache_test extends phpbb_database_test_case
 		$expected = array('config_name' => 'foo', 'config_value' => '23', 'is_dynamic' => 0);
 		$this->assertEquals($expected, $first_result);
 
-		$sql = "DELETE FROM phpbb_config";
+		$sql = 'DELETE FROM phpbb_config';
 		$result = $db->sql_query($sql);
 
 		// As null cache driver does not actually cache,
