@@ -78,7 +78,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	/**
 	* @inheritdoc
 	*/
-	public function get_data($row, $ignore_config = false)
+	public function get_data($row)
 	{
 		return array(
 			'src' => '',
@@ -90,7 +90,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	/**
 	* @inheritdoc
 	*/
-	public function get_custom_html($row, $ignore_config = false, $alt = '')
+	public function get_custom_html($row, $alt = '')
 	{
 		return '';
 	}

@@ -24,24 +24,13 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function get_data($row, $ignore_config = false)
+	public function get_data($row)
 	{
-		if ($ignore_config || $this->config['allow_avatar_local'])
-		{
-			return array(
-				'src' => $this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $row['avatar'],
-				'width' => $row['avatar_width'],
-				'height' => $row['avatar_height'],
-			);
-		}
-		else
-		{
-			return array(
-				'src' => '',
-				'width' => 0,
-				'height' => 0,
-			);
-		}
+		return array(
+			'src' => $this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $row['avatar'],
+			'width' => $row['avatar_width'],
+			'height' => $row['avatar_height'],
+		);
 	}
 
 	/**

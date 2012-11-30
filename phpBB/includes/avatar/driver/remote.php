@@ -24,24 +24,13 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function get_data($row, $ignore_config = false)
+	public function get_data($row)
 	{
-		if ($ignore_config || $this->config['allow_avatar_remote'])
-		{
-			return array(
-				'src' => $row['avatar'],
-				'width' => $row['avatar_width'],
-				'height' => $row['avatar_height'],
-			);
-		}
-		else
-		{
-			return array(
-				'src' => '',
-				'width' => 0,
-				'height' => 0,
-			);
-		}
+		return array(
+			'src' => $row['avatar'],
+			'width' => $row['avatar_width'],
+			'height' => $row['avatar_height'],
+		);
 	}
 
 	/**

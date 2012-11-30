@@ -54,15 +54,16 @@ class phpbb_avatar_manager
 	/**
 	* Get the driver object specified by the avatar type
 	*
-	* @param string Avatar type; by default an avatar's service container name
+	* @param string $avatar_type Avatar type; by default an avatar's service container name
+	* @param bool $force_all Grab all avatar drivers, no matter if enabled or not
 	*
 	* @return object Avatar driver object
 	*/
-	public function get_driver($avatar_type)
+	public function get_driver($avatar_type, $force_all = false)
 	{
-		if (self::$valid_drivers === false)
+		if (self::$valid_drivers === false || $force_all)
 		{
-			$this->load_valid_drivers();
+			$this->load_valid_drivers($force_all);
 		}
 
 		// Legacy stuff...

@@ -31,23 +31,21 @@ interface phpbb_avatar_driver_interface
 	/**
 	* Get the avatar url and dimensions
 	*
-	* @param $ignore_config Whether this function should respect the users prefs
-	*        and board configuration configuration option, or should just render
-	*        the avatar anyways. Useful for the ACP.
+	* @param array	$row User data or group data that has been cleaned with 
+	*        phpbb_avatar_manager::clean_row
 	* @return array Avatar data, must have keys src, width and height, e.g.
-	*         ['src' => '', 'width' => 0, 'height' => 0]
+	*        ['src' => '', 'width' => 0, 'height' => 0]
 	*/
-	public function get_data($row, $ignore_config = false);
+	public function get_data($row);
 
 	/**
 	* Returns custom html if it is needed for displaying this avatar
 	*
-	* @param bool $ignore_config Whether this function should respect the users prefs
-	*        and board configuration configuration option, or should just render
-	*        the avatar anyways. Useful for the ACP.
+	* @param string $alt Alternate text for avatar image
+	*
 	* @return string HTML
 	*/
-	public function get_custom_html($row, $ignore_config = false, $alt = '');
+	public function get_custom_html($row, $alt = '');
 
 	/**
 	* Prepare form for changing the settings of this avatar

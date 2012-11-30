@@ -351,7 +351,7 @@ class acp_groups
 						}
 						else
 						{
-							$avatar = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type'])
+							$avatar = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']);
 							if ($avatar)
 							{
 								$avatar->delete($avatar_data);

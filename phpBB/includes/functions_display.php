@@ -1367,7 +1367,7 @@ function get_avatar($row, $alt, $ignore_config = false)
 	);
 
 	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
-	$avatar = $phpbb_avatar_manager->get_driver($row['avatar_type']);
+	$avatar = $phpbb_avatar_manager->get_driver($row['avatar_type'], $ignore_config);
 	$html = '';
 
 	if ($avatar)
