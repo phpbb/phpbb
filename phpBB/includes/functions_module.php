@@ -759,7 +759,26 @@ class p_master
 				}
 			}
 
-			$u_title = $module_url . $delim . 'i=' . (($item_ary['cat']) ? $item_ary['id'] : $item_ary['name'] . (($item_ary['is_duplicate']) ? '&amp;icat=' . $current_id : '') . '&amp;mode=' . $item_ary['mode']);
+			$u_title = $module_url . $delim . 'i=';
+			// if the item has a name use it, else use its id
+			if (empty($item_ary['name']))
+			{
+				$u_title .=  $item_ary['id'];
+			}
+			else
+			{
+				// if the category has a name, then use it.
+				$u_title .=  $item_ary['name'];
+			}
+			// If the item is not a category append the mode
+			if (!$item_ary['cat'])
+			{
+				if ($item_ary['is_duplicate'])
+				{
+					$u_title .= '&amp;icat=' . $current_id;
+				}
+				$u_title .= '&amp;mode=' . $item_ary['mode'];
+			}
 
 			// Was not allowed in categories before - /*!$item_ary['cat'] && */
 			$u_title .= (isset($item_ary['url_extra'])) ? $item_ary['url_extra'] : '';
