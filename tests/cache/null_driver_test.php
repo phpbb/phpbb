@@ -9,18 +9,25 @@
 
 class phpbb_cache_null_driver_test extends phpbb_database_test_case
 {
+	protected $driver;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
 	}
 
+	protected function setUp()
+	{
+		parent::setUp();
+
+		$this->driver = new phpbb_cache_driver_null;
+	}
+
 	public function test_null_cache_sql()
 	{
-		$driver = new phpbb_cache_driver_null;
-
 		global $db, $cache;
 		$db = $this->new_dbal();
-		$cache = new phpbb_cache_service($driver);
+		$cache = new phpbb_cache_service($this->driver);
 
 		$sql = "SELECT * FROM phpbb_config
 			WHERE config_name = 'foo'";
