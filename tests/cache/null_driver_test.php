@@ -23,6 +23,16 @@ class phpbb_cache_null_driver_test extends phpbb_database_test_case
 		$this->driver = new phpbb_cache_driver_null;
 	}
 
+	public function test_get_put()
+	{
+		$this->assertSame(false, $this->driver->get('key'));
+
+		$this->driver->put('key', 'value');
+
+		// null driver does not cache
+		$this->assertSame(false, $this->driver->get('key'));
+	}
+
 	public function test_null_cache_sql()
 	{
 		global $db, $cache;

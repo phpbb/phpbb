@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_cache_redis_driver_test extends phpbb_database_test_case
+require_once dirname(__FILE__) . '/common_test_case.php';
+
+class phpbb_cache_redis_driver_test extends phpbb_cache_common_test_case
 {
 	protected static $config;
 	protected $driver;

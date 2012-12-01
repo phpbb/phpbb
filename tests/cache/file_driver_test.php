@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_cache_file_driver_test extends phpbb_database_test_case
+require_once dirname(__FILE__) . '/common_test_case.php';
+
+class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 {
 	private $cache_dir;
 	protected $driver;
@@ -63,18 +65,6 @@ class phpbb_cache_file_driver_test extends phpbb_database_test_case
 			}
 		}
 		rmdir($this->cache_dir);
-	}
-
-	public function test_cache_driver_file()
-	{
-		$this->driver->put('test_key', 'test_value');
-		$this->driver->save();
-
-		$this->assertEquals(
-			'test_value',
-			$this->driver->get('test_key'),
-			'File ACM put and get'
-		);
 	}
 
 	public function test_cache_sql_file()
