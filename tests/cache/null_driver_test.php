@@ -33,6 +33,12 @@ class phpbb_cache_null_driver_test extends phpbb_database_test_case
 		$this->assertSame(false, $this->driver->get('key'));
 	}
 
+	public function test_purge()
+	{
+		// does nothing
+		$this->driver->purge();
+	}
+
 	public function test_cache_sql()
 	{
 		global $db, $cache;
