@@ -1478,8 +1478,14 @@ class install_install extends module
 
 			foreach ($this->module_categories[$module_class] as $cat_name => $subs)
 			{
+				$basename = '';
+				// Check if this sub-category has a basename. If it has, use it.
+				if (isset($this->module_categories_basenames[$cat_name]))
+				{
+					$basename = $this->module_categories_basenames[$cat_name];
+				}
 				$module_data = array(
-					'module_basename'	=> '',
+					'module_basename'	=> $basename,
 					'module_enabled'	=> 1,
 					'module_display'	=> 1,
 					'parent_id'			=> 0,
@@ -1507,8 +1513,14 @@ class install_install extends module
 				{
 					foreach ($subs as $level2_name)
 					{
+						$basename = '';
+						// Check if this sub-category has a basename. If it has, use it.
+						if (isset($this->module_categories_basenames[$level2_name]))
+						{
+							$basename = $this->module_categories_basenames[$level2_name];
+						}
 						$module_data = array(
-							'module_basename'	=> '',
+							'module_basename'	=> $basename,
 							'module_enabled'	=> 1,
 							'module_display'	=> 1,
 							'parent_id'			=> (int) $categories[$cat_name]['id'],
@@ -2115,6 +2127,9 @@ class install_install extends module
 			'UCP_USERGROUPS'	=> null,
 			'UCP_ZEBRA'			=> null,
 		),
+	);
+	var $module_categories_basenames = array(
+		'UCP_PM' => 'ucp_pm',
 	);
 
 	var $module_extras = array(
