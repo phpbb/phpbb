@@ -118,7 +118,7 @@ class phpbb_template_compile
 	*
 	* @param resource $source_stream Source stream
 	* @param resource $dest_stream Destination stream
-	* @return void
+	* @return null
 	*/
 	private function compile_stream_to_stream($source_stream, $dest_stream)
 	{

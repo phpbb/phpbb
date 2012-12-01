@@ -54,7 +54,7 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run()
 	{

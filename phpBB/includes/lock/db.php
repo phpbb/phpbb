@@ -125,7 +125,7 @@ class phpbb_lock_db
 	* Note: Attempting to release a lock that is already released,
 	* that is, calling release() multiple times, is harmless.
 	*
-	* @return void
+	* @return null
 	*/
 	public function release()
 	{

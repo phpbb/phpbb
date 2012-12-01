@@ -433,7 +433,7 @@ function set_modified_headers($stamp, $browser)
 *
 * @param bool $exit		Whether to die or not.
 *
-* @return void
+* @return null
 */
 function file_gc($exit = true)
 {
