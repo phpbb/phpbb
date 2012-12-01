@@ -39,6 +39,12 @@ class phpbb_cache_null_driver_test extends phpbb_database_test_case
 		$this->driver->purge();
 	}
 
+	public function test_destroy()
+	{
+		// does nothing
+		$this->driver->destroy('foo');
+	}
+
 	public function test_cache_sql()
 	{
 		global $db, $cache;

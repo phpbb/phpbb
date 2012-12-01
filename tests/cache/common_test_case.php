@@ -38,4 +38,27 @@ abstract class phpbb_cache_common_test_case extends phpbb_database_test_case
 
 		$this->assertSame(false, $this->driver->get('test_key'));
 	}
+
+	public function test_destroy()
+	{
+		$this->driver->put('first_key', 'first_value');
+		$this->driver->put('second_key', 'second_value');
+
+		$this->assertEquals(
+			'first_value',
+			$this->driver->get('first_key')
+		);
+		$this->assertEquals(
+			'second_value',
+			$this->driver->get('second_key')
+		);
+
+		$this->driver->destroy('first_key');
+
+		$this->assertFalse($this->driver->_exists('first_key'));
+		$this->assertEquals(
+			'second_value',
+			$this->driver->get('second_key')
+		);
+	}
 }
