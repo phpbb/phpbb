@@ -67,7 +67,7 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		rmdir($this->cache_dir);
 	}
 
-	public function test_cache_sql_file()
+	public function test_cache_sql()
 	{
 		global $db, $cache;
 		$db = $this->new_dbal();

@@ -47,7 +47,7 @@ class phpbb_cache_redis_driver_test extends phpbb_cache_common_test_case
 		$this->driver->purge();
 	}
 
-	public function test_cache_sql_redis()
+	public function test_cache_sql()
 	{
 		global $db, $cache;
 		$db = $this->new_dbal();
