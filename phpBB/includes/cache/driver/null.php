@@ -109,6 +109,7 @@ class phpbb_cache_driver_null extends phpbb_cache_driver_base
 	*/
 	function sql_save($query, $query_result, $ttl)
 	{
+		return $query_result;
 	}
 
 	/**

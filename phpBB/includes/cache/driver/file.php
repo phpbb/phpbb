@@ -388,10 +388,10 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 		if ($this->_write('sql_' . md5($query), $this->sql_rowset[$query_id], $ttl + time(), $query))
 		{
-			$query_result = $query_id;
+			return $query_id;
 		}
 
-		return $query_id;
+		return $query_result;
 	}
 
 	/**
