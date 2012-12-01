@@ -2750,28 +2750,25 @@ function change_database_data(&$no_updates, $version)
 				$config->set('site_home_text', '');
 			}
 
-			// ticket/10601: Make inbox default. Add basename to ucp's pm category
-			// Check if this was already applied
-			$sql = 'SELECT module_id, module_basename, parent_id, left_id, right_id 
+			// PHPBB3-10601: Make inbox default. Add basename to ucp's pm category
+			
+			// Get the category wanted while checking, at the same time, if this has already been applied
+			$sql = 'SELECT module_id, module_basename
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'ucp_pm'
+					WHERE module_basename <> 'ucp_pm' AND
+						module_langname='UCP_PM'
 					ORDER BY module_id";
 			$result = $db->sql_query_limit($sql, 1);
 
 			if ($row = $db->sql_fetchrow($result))
 			{
-				// Checking if this is not a category
-				if ($row['left_id'] === $row['right_id'] - 1)
-				{
-					// This update is still not applied. Applying it
+				// This update is still not applied. Applying it
 
-					$sql = 'UPDATE ' . MODULES_TABLE . "
-						SET module_basename = 'ucp_pm'
-						WHERE  module_id = " . (int) $row['parent_id'];
+				$sql = 'UPDATE ' . MODULES_TABLE . "
+					SET module_basename = 'ucp_pm'
+					WHERE  module_id = " . (int) $row['module_id'];
 
-					_sql($sql, $errored, $error_ary);
-
-				}
+				_sql($sql, $errored, $error_ary);		
 			}
 			$db->sql_freeresult($result);
 
