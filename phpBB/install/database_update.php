@@ -2757,7 +2757,7 @@ function change_database_data(&$no_updates, $version)
 					FROM ' . MODULES_TABLE . "
 					WHERE module_basename <> 'ucp_pm' AND
 						module_langname='UCP_PM'
-					ORDER BY module_id";
+						";
 			$result = $db->sql_query_limit($sql, 1);
 
 			if ($row = $db->sql_fetchrow($result))
