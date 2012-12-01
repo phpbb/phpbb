@@ -20,11 +20,7 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_avatar_manager
 {
-	protected $phpbb_root_path;
-	protected $phpEx;
 	protected $config;
-	protected $request;
-	protected $cache;
 	protected static $valid_drivers = false;
 	protected $avatar_drivers;
 	protected $container;
@@ -40,13 +36,9 @@ class phpbb_avatar_manager
 	* @param array $avatar_drivers Avatar drivers passed via the service container
 	* @param object $container Container object
 	*/
-	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config, phpbb_request $request, phpbb_cache_driver_interface $cache, $avatar_drivers, $container)
+	public function __construct(phpbb_config $config, $avatar_drivers, $container)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
 		$this->config = $config;
-		$this->request = $request;
-		$this->cache = $cache;
 		$this->avatar_drivers = $avatar_drivers;
 		$this->container = $container;
 	}

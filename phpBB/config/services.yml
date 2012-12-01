@@ -17,11 +17,7 @@ services:
     avatar.manager:
         class: phpbb_avatar_manager
         arguments:
-            - %core.root_path%
-            - .%core.php_ext%
             - @config
-            - @request
-            - @cache.driver
             - @avatar.driver_collection
             - @service_container
 
