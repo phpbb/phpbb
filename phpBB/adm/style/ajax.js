@@ -36,7 +36,7 @@ phpbb.add_ajax_callback('row_down', function() {
 			overlay: false
 		});
 
-		tr_swap.find('.up').html(img_templates.up_disabled);
+		tr_swap.find('.up').html(img_templates.up_disabled.clone());
 	}
 
 	tr.insertAfter(tr_swap);
@@ -48,7 +48,7 @@ phpbb.add_ajax_callback('row_down', function() {
 	*/
 	if (tr.is(':last-child'))
 	{
-		tr.find('.down').html(img_templates.down_disabled);
+		tr.find('.down').html(img_templates.down_disabled.clone());
 
 		var down_img = img_templates.down.clone().attr('href', tr_swap.attr('data-down'));
 		tr_swap.find('.down').html(down_img);
@@ -82,7 +82,7 @@ phpbb.add_ajax_callback('row_up', function() {
 			overlay: false
 		});
 
-		tr_swap.find('.down').html(img_templates.down_disabled);
+		tr_swap.find('.down').html(img_templates.down_disabled.clone());
 	}
 
 	tr.insertBefore(tr_swap);
@@ -94,7 +94,7 @@ phpbb.add_ajax_callback('row_up', function() {
 	*/
 	if (tr.is(':first-child'))
 	{
-		tr.find('.up').html(img_templates.up_disabled);
+		tr.find('.up').html(img_templates.up_disabled.clone());
 
 		var up_img = img_templates.up.clone().attr('href', tr_swap.attr('data-up'));
 		tr_swap.find('.up').html(up_img);
