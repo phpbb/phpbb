@@ -140,18 +140,7 @@ class mcp_reports
 
 				$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
 
-				// Process message, leave it uncensored
-				$message = $post_info['post_text'];
 
-				if ($post_info['bbcode_bitfield'])
-				{
-					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-					$bbcode = new bbcode($post_info['bbcode_bitfield']);
-					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
-				}
-
-				$message = bbcode_nl2br($message);
-				$message = smiley_text($message);
 				$report['report_text'] = make_clickable(bbcode_nl2br($report['report_text']));
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
@@ -172,7 +161,7 @@ class mcp_reports
 					if (sizeof($attachments))
 					{
 						$update_count = array();
-						parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
+						parse_attachments($post_info['forum_id'], $report['reported_post_text'], $attachments, $update_count);
 					}
 
 					// Display not already displayed Attachments for this post, we already parsed them. ;)
