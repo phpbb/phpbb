@@ -127,7 +127,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// These are the forums from where you can read all topics
 	// For the other ones, you can only read the topics you started
 	$unlimited_read_forums = $auth->acl_getf('f_read_other', true);
-	//limit the appearence
+	// Limit the appearance
 	$topic_limiter = ' AND (' . $db->sql_in_set('t.forum_id', array_keys($unlimited_read_forums)) . '
 							OR t.topic_poster = ' . (int) $user->data['user_id'] . ' ) ';
 
