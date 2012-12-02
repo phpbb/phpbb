@@ -1302,6 +1302,8 @@ function tz_select($default = '', $truncate = false)
 * If this results in rows violating uniqueness constraints, the duplicate
 * rows are eliminated.
 *
+* The only supported tables are bookmarks and topics_watch.
+*
 * @param dbal $db Database object
 * @param string $table Table on which to perform the update
 * @param string $column Column whose values to change
