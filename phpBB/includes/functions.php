@@ -1311,12 +1311,75 @@ function tz_select($default = '', $truncate = false)
 */
 function phpbb_update_rows_avoiding_duplicates($db, $table, $column, $from_values, $to_value)
 {
-	$db->sql_return_on_error(true);
-	$condition = $db->sql_in_set($column, $from_values);
-	$db->sql_query('UPDATE ' . $table . ' SET ' . $column . ' = ' . (int) $to_value. ' WHERE ' . $condition);
-	$db->sql_return_on_error(false);
+	$sql = "SELECT $column, user_id
+		FROM $table
+		WHERE " . $db->sql_in_set($column, $from_values);
+	$result = $db->sql_query($sql);
 
-	$db->sql_query('DELETE FROM ' . $table . ' WHERE ' . $condition);
+	$old_user_ids = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$old_user_ids[$row[$column]][] = $row['user_id'];
+	}
+	$db->sql_freeresult($result);
+
+	$sql = "SELECT $column, user_id
+		FROM $table
+		WHERE $column = '" . (int) $to_value . "'";
+	$result = $db->sql_query($sql);
+
+	$new_user_ids = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$new_user_ids[$row[$column]][] = $row['user_id'];
+	}
+	$db->sql_freeresult($result);
+
+	$queries = array();
+	$any_found = false;
+	foreach ($from_values as $from_value)
+	{
+		if (!isset($old_user_ids[$from_value]))
+		{
+			continue;
+		}
+		$any_found = true;
+		if (empty($new_user_ids))
+		{
+			$sql = "UPDATE $table
+				SET $column = " . (int) $to_value. "
+				WHERE $column = '" . $db->sql_escape($from_value) . "'";
+			$queries[] = $sql;
+		}
+		else
+		{
+			$different_user_ids = array_diff($old_user_ids[$from_value], $new_user_ids[$to_value]);
+			if (!empty($different_user_ids))
+			{
+				$sql = "UPDATE $table
+					SET $column = " . (int) $to_value. "
+					WHERE $column = '" . $db->sql_escape($from_value) . "'
+					AND " . $db->sql_in_set('user_id', $different_user_ids);
+				$queries[] = $sql;
+			}
+		}
+	}
+
+	if ($any_found)
+	{
+		//$db->sql_transaction('begin');
+
+		foreach ($queries as $sql)
+		{
+			$db->sql_query($sql);
+		}
+
+		$sql = "DELETE FROM $table
+			WHERE " . $db->sql_in_set($column, $from_values);
+		$db->sql_query($sql);
+
+		//$db->sql_transaction('commit');
+	}
 }
 
 // Functions handling topic/post tracking/marking
