@@ -476,6 +476,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			$tmp_sql_match[] = "to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', " . $sql_match_column . ") @@ to_tsquery ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', '" . $this->db->sql_escape($this->tsearch_query) . "')";
 		}
 
+		$this->db->sql_transaction('begin');
 		$sql = "SELECT $sql_select
 			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
 			WHERE (" . implode(' OR ', $tmp_sql_match) . ")
@@ -499,13 +500,21 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count)
 		{
-			$result_count = sizeof ($id_ary);
+			$sql_count = "SELECT COUNT(*) as result_count
+				FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
+				WHERE (" . implode(' OR ', $tmp_sql_match) . ")
+				$sql_where_options";
+			$result = $this->db->sql_query($sql_count);
+			$result_count = (int) $this->db->sql_fetchfield('result_count');
+			$this->db->sql_freeresult($result);
 
 			if (!$result_count)
 			{
 				return false;
 			}
 		}
+
+		$this->db->sql_transaction('commit');
 
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
 		$this->save_ids($search_key, implode(' ', $this->split_words), $author_ary, $result_count, $id_ary, $start, $sort_dir);
