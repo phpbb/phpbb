@@ -1367,7 +1367,7 @@ function phpbb_update_rows_avoiding_duplicates($db, $table, $column, $from_value
 
 	if ($any_found)
 	{
-		//$db->sql_transaction('begin');
+		$db->sql_transaction('begin');
 
 		foreach ($queries as $sql)
 		{
@@ -1378,7 +1378,7 @@ function phpbb_update_rows_avoiding_duplicates($db, $table, $column, $from_value
 			WHERE " . $db->sql_in_set($column, $from_values);
 		$db->sql_query($sql);
 
-		//$db->sql_transaction('commit');
+		$db->sql_transaction('commit');
 	}
 }
 
