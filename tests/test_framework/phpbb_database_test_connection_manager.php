@@ -429,11 +429,18 @@ class phpbb_database_test_connection_manager
 
 	/**
 	* Performs synchronisations on the database after a fixture has been loaded
+	*
+	* @param	PHPUnit_Extensions_Database_DataSet_XmlDataSet	$tables		Tables contained within the loaded fixture
+	*
+	* @return null
 	*/
-	public function post_setup_synchronisation()
+	public function post_setup_synchronisation($xmlDataSet)
 	{
 		$this->ensure_connected(__METHOD__);
 		$queries = array();
+
+		// Get escaped versions of the table names used in the fixture
+		$table_names = array_map(array($this->pdo, 'PDO::quote'), $xmlDataSet->getTableNames());
 
 		switch ($this->config['dbms'])
 		{
@@ -445,7 +452,9 @@ class phpbb_database_test_connection_manager
 					JOIN USER_TRIGGER_COLS tc ON (tc.trigger_name = t.trigger_name)
 					JOIN USER_SEQUENCES s ON (s.sequence_name = d.referenced_name)
 					WHERE d.referenced_type = 'SEQUENCE'
-						AND d.type = 'TRIGGER'";
+						AND d.type = 'TRIGGER'
+						AND t.table_name IN (" . implode(', ', array_map('strtoupper', $table_names)) . ')';
+
 				$result = $this->pdo->query($sql);
 
 				while ($row = $result->fetch(PDO::FETCH_ASSOC))
@@ -476,41 +485,43 @@ class phpbb_database_test_connection_manager
 			break;
 
 			case 'postgres':
-				// First get the sequences
-				$sequences = array();
-				$sql = "SELECT relname FROM pg_class WHERE relkind = 'S'";
+				// Get the sequences attached to the tables
+				$sql = 'SELECT column_name, table_name FROM information_schema.columns
+					WHERE table_name IN (' . implode(', ', $table_names) . ")
+						AND strpos(column_default, '_seq''::regclass') > 0";
 				$result = $this->pdo->query($sql);
+
+				$setval_queries = array();
 				while ($row = $result->fetch(PDO::FETCH_ASSOC))
 				{
-					$sequences[] = $row['relname'];
+					// Get the columns used in the fixture for this table
+					$column_names = $xmlDataSet->getTableMetaData($row['table_name'])->getColumns();
+
+					// Skip sequences that weren't specified in the fixture
+					if (!in_array($row['column_name'], $column_names))
+					{
+						continue;
+					}
+
+					// Get the old value if it exists, or use 1 if it doesn't
+					$sql = "SELECT COALESCE((SELECT MAX({$row['column_name']}) + 1 FROM {$row['table_name']}), 1) AS val";
+					$result_max = $this->pdo->query($sql);
+					$row_max = $result_max->fetch(PDO::FETCH_ASSOC);
+
+					if ($row_max)
+					{
+						$seq_name = $this->pdo->quote($row['table_name'] . '_seq');
+						$max_val = (int) $row_max['val'];
+
+						// The last parameter is false so that the system doesn't increment it again
+						$setval_queries[] = "SETVAL($seq_name, $max_val, false)";
+					}
 				}
 
-				// Now get the name of the column using it
-				foreach ($sequences as $sequence)
+				// Combine all of the SETVALs into one query
+				if (sizeof($setval_queries))
 				{
-					$table = str_replace('_seq', '', $sequence);
-					$sql = "SELECT column_name FROM information_schema.columns
-						WHERE table_name = '$table'
-						AND column_default = 'nextval(''$sequence''::regclass)'";
-					$result = $this->pdo->query($sql);
-					$row = $result->fetch(PDO::FETCH_ASSOC);
-
-					// Finally, set the new sequence value
-					if ($row)
-					{
-						$column = $row['column_name'];
-
-						// Get the old value if it exists, or use 1 if it doesn't
-						$sql = "SELECT COALESCE((SELECT MAX({$column}) + 1 FROM {$table}), 1) AS val";
-						$result = $this->pdo->query($sql);
-						$row = $result->fetch(PDO::FETCH_ASSOC);
-
-						if ($row)
-						{
-							// The last parameter is false so that the system doesn't increment it again
-							$queries[] = "SELECT SETVAL('{$sequence}', {$row['val']}, false)";
-						}
-					}
+					$queries[] = 'SELECT ' . implode(', ', $setval_queries);
 				}
 			break;
 		}
