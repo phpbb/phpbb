@@ -8,27 +8,10 @@
 *
 */
 
-class phpbb_avatar_test extends PHPUnit_Framework_TestCase
+require_once dirname(__FILE__) . '/driver/foobar.php';
+
+class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 {
-	protected $avatar_list = array(
-		'avatar.driver.gravatar',
-		'avatar.driver.local',
-		'avatar.driver.remote',
-		'avatar.driver.upload',
-	);
-
-	protected $dirty_user_row = array(
-		'user_avatar' => 'foobar',
-		'user_avatar_width' => 50,
-		'user_avatar_height' => 50,
-	);
-
-	protected $clean_user_row = array(
-		'avatar' => 'foobar',
-		'avatar_width' => 50,
-		'avatar_height' => 50,
-	);
-
 	public function setUp()
 	{
 		global $phpbb_root_path, $phpEx;
@@ -37,17 +20,17 @@ class phpbb_avatar_test extends PHPUnit_Framework_TestCase
 		$this->phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$this->phpbb_container->expects($this->any())
 			->method('get')
-			->with('avatar.driver.gravatar')->will($this->returnValue('avatar_foo'));
+			->with('avatar.driver.foobar')->will($this->returnValue('avatar.driver.foobar'));
 
 		// Prepare dependencies for avatar manager and driver
 		$config = new phpbb_config(array());
 		$request = $this->getMock('phpbb_request');
 		$cache = $this->getMock('phpbb_cache_driver_interface');
-
-		// Create new avatar driver object for manager
-		$this->avatar_gravatar = new phpbb_avatar_driver_gravatar($config, $request, $phpbb_root_path, $phpEx, $cache);
-		$this->avatar_gravatar->set_name('avatar.driver.gravatar');
-		$avatar_drivers = array($this->avatar_gravatar);
+		$this->avatar_foobar = $this->getMock('phpbb_avatar_driver_foobar', array('get_name'), array($config, $request, $phpbb_root_path, $phpEx, $cache));
+		$this->avatar_foobar->expects($this->any())
+            ->method('get_name')
+            ->will($this->returnValue('avatar.driver.foobar'));
+		$avatar_drivers = array($this->avatar_foobar);
 
 		// Set up avatar manager
 		$this->manager = new phpbb_avatar_manager($config, $avatar_drivers, $this->phpbb_container);
@@ -55,26 +38,26 @@ class phpbb_avatar_test extends PHPUnit_Framework_TestCase
 
 	public function test_get_driver()
 	{
-		$driver = $this->manager->get_driver('avatar.driver.gravatar', true);
-		$this->assertEquals('avatar_foo', $driver);
+		$driver = $this->manager->get_driver('avatar.driver.foobar', true);
+		$this->assertEquals('avatar.driver.foobar', $driver);
 
-		$driver = $this->manager->get_driver('avatar.driver.foo', true);
+		$driver = $this->manager->get_driver('avatar.driver.foo_wrong', true);
 		$this->assertNull($driver);
 	}
 
 	public function test_get_valid_drivers()
 	{
 		$valid_drivers = $this->manager->get_valid_drivers(true);
-		$this->assertArrayHasKey('avatar.driver.gravatar', $valid_drivers);
-		$this->assertEquals('avatar.driver.gravatar', $valid_drivers['avatar.driver.gravatar']);
+		$this->assertArrayHasKey('avatar.driver.foobar', $valid_drivers);
+		$this->assertEquals('avatar.driver.foobar', $valid_drivers['avatar.driver.foobar']);
 	}
 
 	public function test_get_avatar_settings()
 	{
-		$avatar_settings = $this->manager->get_avatar_settings($this->avatar_gravatar);
+		$avatar_settings = $this->manager->get_avatar_settings($this->avatar_foobar);
 
 		$expected_settings = array(
-			'allow_avatar_gravatar'	=> array('lang' => 'ALLOW_GRAVATAR', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+			'allow_avatar_' . get_class($this->avatar_foobar)	=> array('lang' => 'ALLOW_' . strtoupper(get_class($this->avatar_foobar)), 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 		);
 
 		$this->assertEquals($expected_settings, $avatar_settings);
