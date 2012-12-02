@@ -1,6 +1,6 @@
 <?php
 
-class phpbb_avatar_driver_foobar extends phpbb_avatar_driver implements phpbb_avatar_driver_interface
+class phpbb_avatar_driver_foobar extends phpbb_avatar_driver
 {
 	public function get_data($row)
 	{
