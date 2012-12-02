@@ -268,13 +268,14 @@ exit_handler();
 		// if the user cannot read, he cannot read without limits
 		return array_intersect($forum_ids, $readable_forum_ids);
 	}
+
 		global $auth, $db, $user;
 
 
 		$unlimited_access_forums = $this->get_unlimited_reading_forums($forum_ids);
 
 				AND (' . $db->sql_in_set('forum_id', $unlimited_access_forums, false, true) . '
-					OR topic_poster = ' . $user->data['user_id'] . '
+					OR topic_poster = ' . (int) $user->data['user_id'] . '
 					)
 	// The user is able to read all forums
 	var $unlimited_read = false;
@@ -291,6 +292,7 @@ exit_handler();
 				!$auth->acl_get('f_read_other', $this->forum_id)
 			))
 	var $unlimited_reading_forums = array();
+
 		$this->unlimited_reading_forums = $this->get_unlimited_reading_forums($in_fid_ary);
 			// Who has no right to see all forums cannot see how many topics are there
 			if (isset($this->unlimited_reading_forums[$row['forum_id']]))
@@ -309,11 +311,11 @@ exit_handler();
 		$unlimited_access_forums = $this->get_unlimited_reading_forums($in_fid_ary);
 
 				AND (' . $db->sql_in_set('forum_id', $unlimited_access_forums, false, true) . '
-					OR topic_poster = ' . $user->data['user_id'] . '
+					OR topic_poster = ' . (int) $user->data['user_id'] . '
 					)
 		global $db, $config, $user;
 		// Get the forums where you can read topics started by others
 		$unlimited_access_forums = $this->get_unlimited_reading_forums($in_fid_ary);
 			AND (' . $db->sql_in_set('forum_id', $unlimited_access_forums, false, true) . '
-					OR topic_poster = ' . $user->data['user_id'] . '
+					OR topic_poster = ' . (int) $user->data['user_id'] . '
 				)
