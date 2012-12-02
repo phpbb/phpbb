@@ -73,6 +73,9 @@ $report_id = request_var('r', 0);
 $user_id = request_var('u', 0);
 $username = utf8_normalize_nfc(request_var('username', '', true));
 
+// If $topic_owner stays with value 0, then the evaluation that decides if it's ok to continue processing is
+// postproned to a later file included by this one.
+// If the topic owner is known (!= 0) by the following query, then we can decide here and now if this user may view this or not.
 $topic_owner = 0;
 
 if ($post_id)
