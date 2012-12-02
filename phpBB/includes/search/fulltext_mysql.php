@@ -510,17 +510,17 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		if ($start >= $result_count)
 		{
 			$start = floor(($result_count - 1) / $per_page) * $per_page;
+
+			$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$id_ary[] = (int) $row[$field];
+			}
+			$this->db->sql_freeresult($result);
+
+			$id_ary = array_unique($id_ary);
 		}
-
-		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
-
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$id_ary[] = (int) $row[$field];
-		}
-		$this->db->sql_freeresult($result);
-
-		$id_ary = array_unique($id_ary);
 
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
 		$this->save_ids($search_key, implode(' ', $this->split_words), $author_ary, $result_count, $id_ary, $start, $sort_dir);
@@ -696,16 +696,16 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		if ($start >= $result_count)
 		{
 			$start = floor(($result_count - 1) / $per_page) * $per_page;
-		}
 
-		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$id_ary[] = (int) $row[$field];
-		}
-		$this->db->sql_freeresult($result);
+			$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$id_ary[] = (int) $row[$field];
+			}
+			$this->db->sql_freeresult($result);
 
-		$id_ary = array_unique($id_ary);
+			$id_ary = array_unique($id_ary);
+		}
 
 		if (sizeof($id_ary))
 		{
