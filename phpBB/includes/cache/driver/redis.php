@@ -67,6 +67,7 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory
 		{
 			$ok = $this->redis->connect(PHPBB_ACM_REDIS_HOST, PHPBB_ACM_REDIS_PORT);
 		}
+
 		if (!$ok)
 		{
 			trigger_error('Could not connect to redis server');
