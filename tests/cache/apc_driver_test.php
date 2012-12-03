@@ -27,7 +27,7 @@ class phpbb_cache_apc_driver_test extends phpbb_cache_common_test_case
 	{
 		if (!extension_loaded('apc'))
 		{
-			self::markTestSkipped('apc extension is not loaded');
+			self::markTestSkipped('APC extension is not loaded');
 		}
 
 		$php_ini = new phpbb_php_ini;
