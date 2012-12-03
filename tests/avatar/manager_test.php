@@ -47,7 +47,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 
 	public function test_get_valid_drivers()
 	{
-		$valid_drivers = $this->manager->get_valid_drivers(true);
+		$valid_drivers = $this->manager->get_all_drivers();
 		$this->assertArrayHasKey('avatar.driver.foobar', $valid_drivers);
 		$this->assertEquals('avatar.driver.foobar', $valid_drivers['avatar.driver.foobar']);
 	}

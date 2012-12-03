@@ -109,13 +109,32 @@ class phpbb_avatar_manager
 	}
 
 	/**
-	* Get a list of valid avatar drivers
+	* Get a list of all avatar drivers
 	*
-	* @param bool $force_all Force showing all avatar drivers
+	* @return array Array containing a list of all avatar drivers
+	*/
+	public function get_all_drivers()
+	{
+		$drivers = array();
+
+		if (!empty($this->avatar_drivers))
+		{
+			foreach ($this->avatar_drivers as $driver)
+			{
+				$drivers[$driver->get_name()] = $driver->get_name();
+			}
+			asort($drivers);
+		}
+
+		return $drivers;
+	}
+
+	/**
+	* Get a list of valid avatar drivers
 	*
 	* @return array Array containing a list of the valid avatar drivers
 	*/
-	public function get_valid_drivers($force_all = false)
+	public function get_valid_drivers()
 	{
 		if (self::$valid_drivers === false)
 		{
