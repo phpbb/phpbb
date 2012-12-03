@@ -7,11 +7,12 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/common_test_case.php';
 
-class phpbb_cache_test extends phpbb_database_test_case
+class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 {
 	private $cache_dir;
+	protected $driver;
 
 	public function __construct()
 	{
@@ -34,6 +35,8 @@ class phpbb_cache_test extends phpbb_database_test_case
 			$this->remove_cache_dir();
 		}
 		$this->create_cache_dir();
+
+		$this->driver = new phpbb_cache_driver_file($this->cache_dir);
 	}
 
 	protected function tearDown()
@@ -64,35 +67,24 @@ class phpbb_cache_test extends phpbb_database_test_case
 		rmdir($this->cache_dir);
 	}
 
-	public function test_cache_driver_file()
-	{
-		$driver = new phpbb_cache_driver_file($this->cache_dir);
-		$driver->put('test_key', 'test_value');
-		$driver->save();
-
-		$this->assertEquals(
-			'test_value',
-			$driver->get('test_key'),
-			'File ACM put and get'
-		);
-	}
-
 	public function test_cache_sql()
 	{
-		$driver = new phpbb_cache_driver_file($this->cache_dir);
-
 		global $db, $cache;
 		$db = $this->new_dbal();
-		$cache = new phpbb_cache_service($driver);
+		$cache = new phpbb_cache_service($this->driver);
 
 		$sql = "SELECT * FROM phpbb_config
 			WHERE config_name = 'foo'";
+
+		$cache_path = $this->cache_dir . 'sql_' . md5(preg_replace('/[\n\r\s\t]+/', ' ', $sql)) . '.php';
+		$this->assertFileNotExists($cache_path);
+
 		$result = $db->sql_query($sql, 300);
 		$first_result = $db->sql_fetchrow($result);
 		$expected = array('config_name' => 'foo', 'config_value' => '23', 'is_dynamic' => 0);
 		$this->assertEquals($expected, $first_result);
 
-		$this->assertFileExists($this->cache_dir . 'sql_' . md5(preg_replace('/[\n\r\s\t]+/', ' ', $sql)) . '.php');
+		$this->assertFileExists($cache_path);
 
 		$sql = 'DELETE FROM phpbb_config';
 		$result = $db->sql_query($sql);
@@ -109,35 +101,6 @@ class phpbb_cache_test extends phpbb_database_test_case
 
 		$no_cache_result = $db->sql_fetchrow($result);
 		$this->assertSame(false, $no_cache_result);
-
-		$db->sql_close();
-	}
-
-	public function test_null_cache_sql()
-	{
-		$driver = new phpbb_cache_driver_null($this->cache_dir);
-
-		global $db, $cache;
-		$db = $this->new_dbal();
-		$cache = new phpbb_cache_service($driver);
-
-		$sql = "SELECT * FROM phpbb_config
-			WHERE config_name = 'foo'";
-		$result = $db->sql_query($sql, 300);
-		$first_result = $db->sql_fetchrow($result);
-		$expected = array('config_name' => 'foo', 'config_value' => '23', 'is_dynamic' => 0);
-		$this->assertEquals($expected, $first_result);
-
-		$sql = 'DELETE FROM phpbb_config';
-		$result = $db->sql_query($sql);
-
-		// As null cache driver does not actually cache,
-		// this should return no results
-		$sql = "SELECT * FROM phpbb_config
-			WHERE config_name = 'foo'";
-		$result = $db->sql_query($sql, 300);
-
-		$this->assertSame(false, $db->sql_fetchrow($result));
 
 		$db->sql_close();
 	}
