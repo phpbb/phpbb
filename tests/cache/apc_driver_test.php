@@ -29,6 +29,12 @@ class phpbb_cache_apc_driver_test extends phpbb_cache_common_test_case
 		{
 			self::markTestSkipped('apc extension is not loaded');
 		}
+
+		$php_ini = new phpbb_php_ini;
+		if (PHP_SAPI == 'cli' && !$php_ini->get_bool('apc.enable_cli'))
+		{
+			self::markTestSkipped('APC is not enabled for CLI. Set apc.enable_cli=1 in php.ini');
+		}
 	}
 
 	protected function setUp()
