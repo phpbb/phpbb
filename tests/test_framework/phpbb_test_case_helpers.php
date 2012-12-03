@@ -92,13 +92,13 @@ class phpbb_test_case_helpers
 				$config['phpbb_functional_url'] = $phpbb_functional_url;
 			}
 
-			if (isset($redis_host))
+			if (isset($phpbb_redis_host))
 			{
-				$config['redis_host'] = $redis_host;
+				$config['redis_host'] = $phpbb_redis_host;
 			}
-			if (isset($redis_port))
+			if (isset($phpbb_redis_port))
 			{
-				$config['redis_port'] = $redis_port;
+				$config['redis_port'] = $phpbb_redis_port;
 			}
 		}
 

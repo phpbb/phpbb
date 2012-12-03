@@ -80,8 +80,8 @@ or port must be specified in test configuration. This can be done via
 test_config.php as follows:
 
     <?php
-    $redis_host = 'localhost';
-    $redis_port = 6379;
+    $phpbb_redis_host = 'localhost';
+    $phpbb_redis_port = 6379;
 
 Or via environment variables as follows:
 
