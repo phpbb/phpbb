@@ -79,7 +79,7 @@ In order to run tests for the Redis cache driver, at least one of Redis host
 or port must be specified in test configuration. This can be done via
 test_config.php as follows:
 
-    <?
+    <?php
     $redis_host = 'localhost';
     $redis_port = 6379;
 
