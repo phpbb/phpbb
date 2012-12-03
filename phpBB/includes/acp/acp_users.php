@@ -1801,7 +1801,7 @@ class acp_users
 						}
 					}
 
-					$focused_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $user_row['user_avatar_type']));
+					$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $user_row['user_avatar_type']));
 
 					foreach ($avatar_drivers as $current_driver)
 					{
@@ -1823,7 +1823,7 @@ class acp_users
 								'L_EXPLAIN' => $user->lang($driver_upper . '_EXPLAIN'),
 
 								'DRIVER' => $driver_name,
-								'SELECTED' => $current_driver == $focused_driver,
+								'SELECTED' => $current_driver == $selected_driver,
 								'OUTPUT' => $template->assign_display('avatar'),
 							));
 						}

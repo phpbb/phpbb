@@ -646,7 +646,7 @@ class ucp_groups
 						if ($config['allow_avatar'])
 						{
 							$avatars_enabled = false;
-							$focused_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $avatar_data['avatar_type']));
+							$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $avatar_data['avatar_type']));
 
 							foreach ($avatar_drivers as $current_driver)
 							{
@@ -666,7 +666,7 @@ class ucp_groups
 										'L_EXPLAIN' => $user->lang($driver_upper . '_EXPLAIN'),
 
 										'DRIVER' => $driver_name,
-										'SELECTED' => $current_driver == $focused_driver,
+										'SELECTED' => $current_driver == $selected_driver,
 										'OUTPUT' => $template->assign_display('avatar'),
 									));
 								}
