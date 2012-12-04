@@ -658,13 +658,14 @@ class queue
 	{
 		global $db, $config, $phpEx, $phpbb_root_path, $user;
 
-		$lock_fp = $this->lock();
+		$lock = new phpbb_lock_flock($this->cache_file);
+		$lock->acquire();
 
 		set_config('last_queue_run', time(), true);
 
 		if (!file_exists($this->cache_file) || filemtime($this->cache_file) > time() - $config['queue_interval'])
 		{
-			$this->unlock($lock_fp);
+			$lock->release();
 			return;
 		}
 
@@ -731,7 +732,7 @@ class queue
 				break;
 
 				default:
-					$this->unlock($lock_fp);
+					$lock->release();
 					return;
 			}
 
@@ -807,7 +808,7 @@ class queue
 			}
 		}
 
-		$this->unlock($lock_fp);
+		$lock->release();
 	}
 
 	/**
@@ -820,7 +821,8 @@ class queue
 			return;
 		}
 
-		$lock_fp = $this->lock();
+		$lock = new phpbb_lock_flock($this->cache_file);
+		$lock->acquire();
 
 		if (file_exists($this->cache_file))
 		{
@@ -847,7 +849,7 @@ class queue
 			phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
 		}
 
-		$this->unlock($lock_fp);
+		$lock->release();
 	}
 }
 
