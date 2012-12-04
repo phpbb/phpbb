@@ -77,7 +77,7 @@ class phpbb_lock_flock_test extends phpbb_test_case
 			$ok = $lock->acquire();
 			$delta = time() - $start;
 			$this->assertTrue($ok);
-			$this->assertTrue($delta > 0.5);
+			$this->assertGreaterThan(0.5, $delta);
 
 			$lock->release();
 
@@ -86,7 +86,7 @@ class phpbb_lock_flock_test extends phpbb_test_case
 			$ok = $lock->acquire();
 			$delta = time() - $start;
 			$this->assertTrue($ok);
-			$this->assertTrue($delta < 0.1);
+			$this->assertLessThan(0.1, $delta);
 
 			// reap the child
 			$status = null;
