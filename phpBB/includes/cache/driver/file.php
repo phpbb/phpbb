@@ -653,10 +653,11 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 		$file = "{$this->cache_dir}$filename.$phpEx";
 
+		$lock = new phpbb_lock_flock($file);
+		$lock->acquire();
+
 		if ($handle = @fopen($file, 'wb'))
 		{
-			@flock($handle, LOCK_EX);
-
 			// File header
 			fwrite($handle, '<' . '?php exit; ?' . '>');
 
@@ -697,7 +698,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 				fwrite($handle, $data);
 			}
 
-			@flock($handle, LOCK_UN);
 			fclose($handle);
 
 			if (!function_exists('phpbb_chmod'))
@@ -708,10 +708,16 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 			phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
 
-			return true;
+			$rv = true;
+		}
+		else
+		{
+			$rv = false;
 		}
 
-		return false;
+		$lock->release();
+
+		return $rv;
 	}
 
 	/**
