@@ -15,9 +15,10 @@ class phpbb_lint_test extends phpbb_test_case
 	{
 		$output = array();
 		$status = 1;
-		exec('php -v', $output, $status);
+		exec('(php -v) 2>&1', $output, $status);
 		if ($status)
 		{
+			$output = implode("\n", $output);
 			self::markTestSkipped("php is not in PATH or broken: $output");
 		}
 
@@ -61,7 +62,7 @@ class phpbb_lint_test extends phpbb_test_case
 			else if (substr($filename, strlen($filename)-4) == '.php')
 			{
 				// assume php binary is called php and it is in PATH
-				$cmd = 'php -l ' . escapeshellarg($path);
+				$cmd = '(php -l ' . escapeshellarg($path) . ') 2>&1';
 				$output = array();
 				$status = 1;
 				exec($cmd, $output, $status);
