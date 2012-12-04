@@ -360,10 +360,20 @@ class dbal_mssql_odbc extends dbal
 	*/
 	function _sql_error()
 	{
-		return array(
-			'message'	=> @odbc_errormsg(),
-			'code'		=> @odbc_error()
-		);
+		if (function_exists('odbc_errormsg'))
+		{
+			return array(
+				'message'	=> @odbc_errormsg(),
+				'code'		=> @odbc_error()
+			);
+		}
+		else
+		{
+			return array(
+				'message'	=> $this->connect_error,
+				'code'		=> '',
+			);
+		}
 	}
 
 	/**

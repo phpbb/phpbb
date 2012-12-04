@@ -439,10 +439,20 @@ class dbal_mysql extends dbal
 	{
 		if (!$this->db_connect_id)
 		{
-			return array(
-				'message'	=> @mysql_error(),
-				'code'		=> @mysql_errno()
-			);
+			if (function_exists('mysql_error'))
+			{
+				return array(
+					'message'	=> @mysql_error(),
+					'code'		=> @mysql_errno()
+				);
+			}
+			else
+			{
+				return array(
+					'message'	=> $this->connect_error,
+					'code'		=> '',
+				);
+			}
 		}
 
 		return array(

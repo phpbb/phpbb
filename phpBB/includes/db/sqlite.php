@@ -300,10 +300,20 @@ class dbal_sqlite extends dbal
 	*/
 	function _sql_error()
 	{
-		return array(
-			'message'	=> @sqlite_error_string(@sqlite_last_error($this->db_connect_id)),
-			'code'		=> @sqlite_last_error($this->db_connect_id)
-		);
+		if (function_exists('sqlite_error_string'))
+		{
+			return array(
+				'message'	=> @sqlite_error_string(@sqlite_last_error($this->db_connect_id)),
+				'code'		=> @sqlite_last_error($this->db_connect_id)
+			);
+		}
+		else
+		{
+			return array(
+				'message'	=> $this->connect_error,
+				'code'		=> '',
+			);
+		}
 	}
 
 	/**

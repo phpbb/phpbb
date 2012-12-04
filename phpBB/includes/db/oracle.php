@@ -674,17 +674,27 @@ class dbal_oracle extends dbal
 	*/
 	function _sql_error()
 	{
-		$error = @ocierror();
-		$error = (!$error) ? @ocierror($this->query_result) : $error;
-		$error = (!$error) ? @ocierror($this->db_connect_id) : $error;
-
-		if ($error)
+		if (function_exists('ocierror'))
 		{
-			$this->last_error_result = $error;
+			$error = @ocierror();
+			$error = (!$error) ? @ocierror($this->query_result) : $error;
+			$error = (!$error) ? @ocierror($this->db_connect_id) : $error;
+
+			if ($error)
+			{
+				$this->last_error_result = $error;
+			}
+			else
+			{
+				$error = (isset($this->last_error_result) && $this->last_error_result) ? $this->last_error_result : array();
+			}
 		}
 		else
 		{
-			$error = (isset($this->last_error_result) && $this->last_error_result) ? $this->last_error_result : array();
+			$error = array(
+				'message'	=> $this->connect_error,
+				'code'		=> '',
+			);
 		}
 
 		return $error;
