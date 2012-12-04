@@ -31,7 +31,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected $lang = array();
 
 	static protected $config = array();
-	static protected $already_installed = false;
 
 	static public function setUpBeforeClass()
 	{
@@ -43,18 +42,15 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			self::markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
 		}
+
+		self::install_board();
 	}
 
 	public function setUp()
 	{
 		parent::setUp();
 
-		if (!static::$already_installed)
-		{
-			$this->install_board();
-			$this->bootstrap();
-			static::$already_installed = true;
-		}
+		$this->bootstrap();
 
 		$this->cookieJar = new CookieJar;
 		$this->client = new Goutte\Client(array(), null, $this->cookieJar);
@@ -109,12 +105,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 	}
 
-	protected function install_board()
+	static protected function install_board()
 	{
 		global $phpbb_root_path, $phpEx;
 
 		self::$config['table_prefix'] = 'phpbb_';
-		$this->recreate_database(self::$config);
+		self::recreate_database(self::$config);
 
 		if (file_exists($phpbb_root_path . "config.$phpEx"))
 		{
@@ -159,20 +155,20 @@ class phpbb_functional_test_case extends phpbb_test_case
 		));
 		// end data
 
-		$content = $this->do_request('install');
-		$this->assertNotSame(false, $content);
-		$this->assertContains('Welcome to Installation', $content);
+		$content = self::do_request('install');
+		self::assertNotSame(false, $content);
+		self::assertContains('Welcome to Installation', $content);
 
-		$this->do_request('create_table', $data);
+		self::do_request('create_table', $data);
 
-		$this->do_request('config_file', $data);
+		self::do_request('config_file', $data);
 		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], array(), true, true));
 
-		$this->do_request('final', $data);
+		self::do_request('final', $data);
 		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
 	}
 
-	private function do_request($sub, $post_data = null)
+	static private function do_request($sub, $post_data = null)
 	{
 		$context = null;
 
