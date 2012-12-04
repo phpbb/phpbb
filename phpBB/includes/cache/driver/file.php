@@ -708,16 +708,16 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 			phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
 
-			$rv = true;
+			$return_value = true;
 		}
 		else
 		{
-			$rv = false;
+			$return_value = false;
 		}
 
 		$lock->release();
 
-		return $rv;
+		return $return_value;
 	}
 
 	/**
