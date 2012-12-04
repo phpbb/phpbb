@@ -35,7 +35,7 @@ class phpbb_cache_redis_driver_test extends phpbb_cache_common_test_case
 		}
 		else
 		{
-			$this->markTestSkipped('Test redis host/port is not specified');
+			self::markTestSkipped('Test redis host/port is not specified');
 		}
 	}
 
