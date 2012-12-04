@@ -69,7 +69,7 @@ class phpbb_lock_flock_test extends phpbb_test_case
 		{
 			// parent
 			// wait 0.5 s, acquire the lock, note how long it took
-			sleep(0.5);
+			sleep(1);
 
 			$lock = new phpbb_lock_flock($path);
 			$start = time();
