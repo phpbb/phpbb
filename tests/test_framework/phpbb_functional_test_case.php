@@ -33,11 +33,27 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static protected $config = array();
 	static protected $already_installed = false;
 
-	public function setUp()
+	static public function setUpBeforeClass()
 	{
+		parent::setUpBeforeClass();
+
+		self::$config = phpbb_test_case_helpers::get_test_config();
+
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
-			$this->markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
+			self::markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
+		}
+	}
+
+	public function setUp()
+	{
+		parent::setUp();
+
+		if (!static::$already_installed)
+		{
+			$this->install_board();
+			$this->bootstrap();
+			static::$already_installed = true;
 		}
 
 		$this->cookieJar = new CookieJar;
@@ -91,25 +107,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->backupStaticAttributesBlacklist += array(
 			'phpbb_functional_test_case' => array('config', 'already_installed'),
 		);
-
-		if (!static::$already_installed)
-		{
-			$this->install_board();
-			$this->bootstrap();
-			static::$already_installed = true;
-		}
 	}
 
 	protected function install_board()
 	{
 		global $phpbb_root_path, $phpEx;
-
-		self::$config = phpbb_test_case_helpers::get_test_config();
-
-		if (!isset(self::$config['phpbb_functional_url']))
-		{
-			return;
-		}
 
 		self::$config['table_prefix'] = 'phpbb_';
 		$this->recreate_database(self::$config);
@@ -158,6 +160,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// end data
 
 		$content = $this->do_request('install');
+		$this->assertNotSame(false, $content);
 		$this->assertContains('Welcome to Installation', $content);
 
 		$this->do_request('create_table', $data);
