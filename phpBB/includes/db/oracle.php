@@ -74,7 +74,7 @@ class dbal_oracle extends dbal
 				$this->connect_error = 'ocilogon function does not exist, is oci extension installed?';
 				return $this->sql_error('');
 			}
-			$this->db_connect_id = @ocilogon($this->user, $sqlpassword, $connect, 'UTF8'));
+			$this->db_connect_id = @ocilogon($this->user, $sqlpassword, $connect, 'UTF8');
 		}
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
