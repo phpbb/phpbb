@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_lock_flock
 {
 	/**
-	* Path to the file access to which is controlled
+	* Path to the file to which access is controlled
 	*
 	* @var string
 	*/
@@ -39,7 +39,7 @@ class phpbb_lock_flock
 	*
 	* You have to call acquire() to actually acquire the lock.
 	*
-	* @param	string	$path	Path to the file access to which is controlled
+	* @param	string	$path	Path to the file to which access is controlled
 	*/
 	public function __construct($path)
 	{
