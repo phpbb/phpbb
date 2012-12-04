@@ -38,7 +38,5 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 			// should have a legitimate message
 			$this->assertNotEmpty($e->getMessage());
 		}
-
-		return $db;
 	}
 }
