@@ -61,4 +61,37 @@ abstract class phpbb_cache_common_test_case extends phpbb_database_test_case
 			$this->driver->get('second_key')
 		);
 	}
+
+	public function test_cache_sql()
+	{
+		global $db, $cache;
+		$db = $this->new_dbal();
+		$cache = new phpbb_cache_service($this->driver);
+
+		$sql = "SELECT * FROM phpbb_config
+			WHERE config_name = 'foo'";
+
+		$result = $db->sql_query($sql, 300);
+		$first_result = $db->sql_fetchrow($result);
+		$expected = array('config_name' => 'foo', 'config_value' => '23', 'is_dynamic' => 0);
+		$this->assertEquals($expected, $first_result);
+
+		$sql = 'DELETE FROM phpbb_config';
+		$result = $db->sql_query($sql);
+
+		$sql = "SELECT * FROM phpbb_config
+			WHERE config_name = 'foo'";
+		$result = $db->sql_query($sql, 300);
+
+		$this->assertEquals($expected, $db->sql_fetchrow($result));
+
+		$sql = "SELECT * FROM phpbb_config
+			WHERE config_name = 'foo'";
+		$result = $db->sql_query($sql);
+
+		$no_cache_result = $db->sql_fetchrow($result);
+		$this->assertSame(false, $no_cache_result);
+
+		$db->sql_close();
+	}
 }
