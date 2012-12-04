@@ -651,64 +651,6 @@ class queue
 	}
 
 	/**
-	* Obtains exclusive lock on queue cache file.
-	* Returns resource representing the lock
-	*/
-	function lock()
-	{
-		// For systems that can't have two processes opening
-		// one file for writing simultaneously
-		if (file_exists($this->cache_file . '.lock'))
-		{
-			$mode = 'rb';
-		}
-		else
-		{
-			$mode = 'wb';
-		}
-
-		$lock_fp = @fopen($this->cache_file . '.lock', $mode);
-
-		if ($mode == 'wb')
-		{
-			if (!$lock_fp)
-			{
-				// Two processes may attempt to create lock file at the same time.
-				// Have the losing process try opening the lock file again for reading
-				// on the assumption that the winning process created it
-				$mode = 'rb';
-				$lock_fp = @fopen($this->cache_file . '.lock', $mode);
-			}
-			else
-			{
-				// Only need to set mode when the lock file is written
-				@chmod($this->cache_file . '.lock', 0666);
-			}
-		}
-
-		if ($lock_fp)
-		{
-			@flock($lock_fp, LOCK_EX);
-		}
-
-		return $lock_fp;
-	}
-
-	/**
-	* Releases lock on queue cache file, using resource obtained from lock()
-	*/
-	function unlock($lock_fp)
-	{
-		// lock() will return null if opening lock file, and thus locking, failed.
-		// Accept null values here so that client code does not need to check them
-		if ($lock_fp)
-		{
-			@flock($lock_fp, LOCK_UN);
-			fclose($lock_fp);
-		}
-	}
-
-	/**
 	* Process queue
 	* Using lock file
 	*/
