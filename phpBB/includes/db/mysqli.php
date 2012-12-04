@@ -425,10 +425,20 @@ class dbal_mysqli extends dbal
 	{
 		if (!$this->db_connect_id)
 		{
-			return array(
-				'message'	=> @mysqli_connect_error(),
-				'code'		=> @mysqli_connect_errno()
-			);
+			if (function_exists('mysqli_connect_error'))
+			{
+				return array(
+					'message'	=> @mysqli_connect_error(),
+					'code'		=> @mysqli_connect_errno(),
+				);
+			}
+			else
+			{
+				return array(
+					'message'	=> $this->connect_error,
+					'code'		=> '',
+				);
+			}
 		}
 
 		return array(
