@@ -77,7 +77,7 @@ class phpbb_lock_flock_test extends phpbb_test_case
 			$ok = $lock->acquire();
 			$delta = time() - $start;
 			$this->assertTrue($ok);
-			$this->assertGreaterThan(0.5, $delta);
+			$this->assertGreaterThan(0.5, $delta, 'First lock acquired too soon');
 
 			$lock->release();
 
@@ -86,7 +86,7 @@ class phpbb_lock_flock_test extends phpbb_test_case
 			$ok = $lock->acquire();
 			$delta = time() - $start;
 			$this->assertTrue($ok);
-			$this->assertLessThan(0.1, $delta);
+			$this->assertLessThan(0.1, $delta, 'Second lock not acquired instantaneously');
 
 			// reap the child
 			$status = null;
