@@ -11,6 +11,11 @@ class phpbb_lint_test extends phpbb_test_case
 {
 	public function test_lint()
 	{
+		if (version_compare(PHP_VERSION, '5.3.0', '<'))
+		{
+			$this->markTestSkipped('phpBB uses PHP 5.3 syntax in some files, linting on PHP < 5.3 will fail');
+		}
+
 		$root = dirname(__FILE__) . '/..';
 		$this->check($root);
 	}
