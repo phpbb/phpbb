@@ -65,7 +65,8 @@ class phpbb_lock_flock_test extends phpbb_test_case
 
 		$path = __DIR__ . '/../tmp/precious';
 
-		if ($pid = pcntl_fork())
+		$pid = pcntl_fork();
+		if ($pid)
 		{
 			// parent
 			// wait 0.5 s, acquire the lock, note how long it took
