@@ -35,9 +35,9 @@ class phpbb_lock_flock
 	private $lock_fp;
 
 	/**
-	* Creates an instance of the lock.
+	* Constructor.
 	*
-	* You have to call acquire() to actually create the lock.
+	* You have to call acquire() to actually acquire the lock.
 	*
 	* @param	string	$path	Path to the file access to which is controlled
 	*/
@@ -50,8 +50,17 @@ class phpbb_lock_flock
 	/**
 	* Tries to acquire the lock.
 	*
-	* As a lock may only be held by one process at a time, lock
-	* acquisition may fail if another process is holding the lock.
+	* If the lock is already held by another process, this call will block
+	* until the other process releases the lock. If a lock is acquired and
+	* is not released before script finishes but the process continues to
+	* live (apache/fastcgi) then subsequent processes trying to acquire
+	* the same lock will be blocked forever.
+	*
+	* If the lock is already held by the same process via another instance
+	* of this class, this call will block forever.
+	*
+	* If flock function is disabled in php or fails to work, lock
+	* acquisition will fail and false will be returned.
 	*
 	* @return	bool			true if lock was acquired
 	*							false otherwise
