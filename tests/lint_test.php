@@ -9,6 +9,17 @@
 
 class phpbb_lint_test extends phpbb_test_case
 {
+	static protected $exclude;
+
+	static public function setUpBeforeClass()
+	{
+		self::$exclude = array(
+			// PHP Fatal error:  Cannot declare class Container because the name is already in use in /var/www/projects/phpbb3/tests/../phpBB/vendor/symfony/dependency-injection/Symfony/Component/DependencyInjection/Tests/Fixtures/php/services1-1.php on line 20
+			// https://gist.github.com/e003913ffd493da63cbc
+			dirname(__FILE__) . '/../phpBB/vendor',
+		);
+	}
+
 	public function test_lint()
 	{
 		if (version_compare(PHP_VERSION, '5.3.0', '<'))
@@ -35,7 +46,7 @@ class phpbb_lint_test extends phpbb_test_case
 			{
 				continue;
 			}
-			if (is_dir($path))
+			if (is_dir($path) && !in_array($path, self::$exclude))
 			{
 				$this->check($path);
 			}
