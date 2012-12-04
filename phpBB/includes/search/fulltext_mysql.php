@@ -41,8 +41,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	protected $config;
 	
 	/**
-	 * DBAL object
-	 * @var dbal
+	 * Database connection
+	 * @var phpbb_db_driver
 	 */
 	protected $db;
 	

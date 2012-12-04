@@ -34,7 +34,7 @@ class phpbb_extension_manager
 	/**
 	* Creates a manager and loads information from database
 	*
-	* @param dbal $db A database connection
+	* @param phpbb_db_driver $db A database connection
 	* @param phpbb_config $config phpbb_config
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.

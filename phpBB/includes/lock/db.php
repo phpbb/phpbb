@@ -48,7 +48,7 @@ class phpbb_lock_db
 
 	/**
 	* A database connection
-	* @var dbal
+	* @var phpbb_db_driver
 	*/
 	private $db;
 
@@ -59,7 +59,7 @@ class phpbb_lock_db
 	*
 	* @param	string	$config_name	A config variable to be used for locking
 	* @param	array	$config			The phpBB configuration
-	* @param	dbal	$db				A database connection
+	* @param	phpbb_db_driver	$db				A database connection
 	*/
 	public function __construct($config_name, phpbb_config $config, phpbb_db_driver $db)
 	{

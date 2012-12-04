@@ -34,7 +34,7 @@ class phpbb_extension_metadata_manager
 	/**
 	* Creates the metadata manager
 	*
-	* @param dbal $db A database connection
+	* @param phpbb_db_driver $db A database connection
 	* @param string $extension_manager An instance of the phpbb extension manager
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $phpEx php file extension
