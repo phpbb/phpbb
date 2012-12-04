@@ -522,26 +522,26 @@ class acp_groups
 					$avatars_enabled = false;
 					$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $avatar_data['avatar_type']));
 
-					foreach ($avatar_drivers as $driver)
+					foreach ($avatar_drivers as $current_driver)
 					{
-						$driver = $phpbb_avatar_manager->get_driver($driver);
+						$driver = $phpbb_avatar_manager->get_driver($current_driver);
 
 						$avatars_enabled = true;
-						$config_name = preg_replace('#^avatar\.driver.#', '', $driver);
+						$config_name = $phpbb_avatar_manager->get_driver_config_name($driver);
 						$template->set_filenames(array(
 							'avatar' => "acp_avatar_options_$config_name.html",
 						));
 
 						if ($driver->prepare_form($template, $avatar_data, $avatar_error))
 						{
-							$driver_name = $phpbb_avatar_manager->prepare_driver_name($driver);
+							$driver_name = $phpbb_avatar_manager->prepare_driver_name($current_driver);
 							$driver_upper = strtoupper($driver_name);
 							$template->assign_block_vars('avatar_drivers', array(
 								'L_TITLE' => $user->lang($driver_upper . '_TITLE'),
 								'L_EXPLAIN' => $user->lang($driver_upper . '_EXPLAIN'),
 
 								'DRIVER' => $driver_name,
-								'SELECTED' => $driver == $selected_driver,
+								'SELECTED' => $current_driver == $selected_driver,
 								'OUTPUT' => $template->assign_display('avatar'),
 							));
 						}

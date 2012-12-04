@@ -113,7 +113,7 @@ class acp_board
 				$avatar_vars = array();
 				foreach ($avatar_drivers as $current_driver)
 				{
-					$driver = $phpbb_avatar_manager->get_driver($current_driver);
+					$driver = $phpbb_avatar_manager->get_driver($current_driver, false);
 
 					/*
 					* First grab the settings for enabling/disabling the avatar

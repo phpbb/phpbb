@@ -47,16 +47,18 @@ class phpbb_avatar_manager
 	* Get the driver object specified by the avatar type
 	*
 	* @param string $avatar_type Avatar type; by default an avatar's service container name
-	* @param bool $force_all Grab all avatar drivers, no matter if enabled or not
+	* @param bool $load_valid Load only valid avatars
 	*
 	* @return object Avatar driver object
 	*/
-	public function get_driver($avatar_type, $force_all = false)
+	public function get_driver($avatar_type, $load_valid = true)
 	{
-		if (self::$valid_drivers === false || $force_all)
+		if (self::$valid_drivers === false)
 		{
-			$this->load_valid_drivers($force_all);
+			$this->load_valid_drivers();
 		}
+
+		$avatar_drivers = ($load_valid) ? self::$valid_drivers : $this->get_all_drivers();
 
 		// Legacy stuff...
 		switch ($avatar_type)
@@ -72,7 +74,7 @@ class phpbb_avatar_manager
 			break;
 		}
 
-		if (!isset(self::$valid_drivers[$avatar_type]))
+		if (!isset($avatar_drivers[$avatar_type]))
 		{
 			return null;
 		}
@@ -89,17 +91,15 @@ class phpbb_avatar_manager
 	/**
 	* Load the list of valid drivers
 	* This is executed once and fills self::$valid_drivers
-	*
-	* @param bool $force_all Force showing all avatar drivers
 	*/
-	protected function load_valid_drivers($force_all = false)
+	protected function load_valid_drivers()
 	{
 		if (!empty($this->avatar_drivers))
 		{
 			self::$valid_drivers = array();
 			foreach ($this->avatar_drivers as $driver)
 			{
-				if ($force_all || $this->is_enabled($driver))
+				if ($this->is_enabled($driver))
 				{
 					self::$valid_drivers[$driver->get_name()] = $driver->get_name();
 				}
@@ -138,7 +138,7 @@ class phpbb_avatar_manager
 	{
 		if (self::$valid_drivers === false)
 		{
-			$this->load_valid_drivers($force_all);
+			$this->load_valid_drivers();
 		}
 
 		return self::$valid_drivers;

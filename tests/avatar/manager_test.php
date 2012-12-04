@@ -38,10 +38,13 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 
 	public function test_get_driver()
 	{
-		$driver = $this->manager->get_driver('avatar.driver.foobar', true);
+		$driver = $this->manager->get_driver('avatar.driver.foobar', false);
 		$this->assertEquals('avatar.driver.foobar', $driver);
 
-		$driver = $this->manager->get_driver('avatar.driver.foo_wrong', true);
+		$driver = $this->manager->get_driver('avatar.driver.foo_wrong', false);
+		$this->assertNull($driver);
+
+		$driver = $this->manager->get_driver('avatar.driver.foobar');
 		$this->assertNull($driver);
 	}
 
