@@ -1808,7 +1808,7 @@ class acp_users
 						$driver = $phpbb_avatar_manager->get_driver($current_driver);
 
 						$avatars_enabled = true;
-						$config_name = preg_replace('#^avatar\.driver.#', '', $current_driver);
+						$config_name = $phpbb_avatar_manager->get_driver_config_name($driver);
 						$template->set_filenames(array(
 							'avatar' => "acp_avatar_options_$config_name.html",
 						));

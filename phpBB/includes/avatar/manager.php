@@ -203,7 +203,7 @@ class phpbb_avatar_manager
 	*/
 	public function is_enabled($driver)
 	{
-		$config_name = preg_replace('#^phpbb_avatar_driver_#', '', get_class($driver));
+		$config_name = $this->get_driver_config_name($driver);
 
 		return $this->config["allow_avatar_{$config_name}"];
 	}
@@ -211,16 +211,28 @@ class phpbb_avatar_manager
 	/**
 	* Get the settings array for enabling/disabling an avatar driver
 	*
-	* @param string $driver Avatar driver object
+	* @param object $driver Avatar driver object
 	*
 	* @return array Array of configuration options as consumed by acp_board
 	*/
 	public function get_avatar_settings($driver)
 	{
-		$config_name = preg_replace('#^phpbb_avatar_driver_#', '', get_class($driver));
+		$config_name = $this->get_driver_config_name($driver);
 
 		return array(
 			'allow_avatar_' . $config_name	=> array('lang' => 'ALLOW_' . strtoupper($config_name),		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 		);
+	}
+
+	/**
+	* Get the config name of an avatar driver
+	*
+	* @param object $driver Avatar driver object
+	*
+	* @return string Avatar driver config name
+	*/
+	public function get_driver_config_name($driver)
+	{
+		return preg_replace('#^phpbb_avatar_driver_#', '', get_class($driver));
 	}
 }
