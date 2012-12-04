@@ -5431,5 +5431,5 @@ function phpbb_convert_30_dbms_to_31($dbms)
 		return 'phpbb_db_driver_' . $dbms;
 	}
 
-	throw new \RuntimeException('You have specified an invalid dbms driver.');
+	throw new \RuntimeException("You have specified an invalid dbms driver: $dbms");
 }
