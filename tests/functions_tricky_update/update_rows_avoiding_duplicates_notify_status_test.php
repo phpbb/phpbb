@@ -90,7 +90,8 @@ class phpbb_update_rows_avoiding_duplicates_notify_status_test extends phpbb_dat
 		// user id of 1 is the user being updated
 		$sql = 'SELECT notify_status
 			FROM ' . TOPICS_WATCH_TABLE . '
-			WHERE topic_id = ' . (int) $to . ' AND user_id = 1';
+			WHERE topic_id = ' . (int) $to . '
+                        AND user_id = 1';
 		$result = $db->sql_query($sql);
 		$notify_status = $db->sql_fetchfield('notify_status');
 		$db->sql_freeresult($result);
