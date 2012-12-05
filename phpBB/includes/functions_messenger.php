@@ -661,13 +661,20 @@ class queue
 		$lock = new phpbb_lock_flock($this->cache_file);
 		$lock->acquire();
 
-		set_config('last_queue_run', time(), true);
-
-		if (!file_exists($this->cache_file) || filemtime($this->cache_file) > time() - $config['queue_interval'])
+		// avoid races, check file existence once
+		$have_cache_file = file_exists($this->cache_file);
+		if (!$have_cache_file || $config['last_queue_run'] > time() - $config['queue_interval'])
 		{
+			if (!$have_cache_file)
+			{
+				set_config('last_queue_run', time(), true);
+			}
+
 			$lock->release();
 			return;
 		}
+
+		set_config('last_queue_run', time(), true);
 
 		include($this->cache_file);
 
