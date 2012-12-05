@@ -539,18 +539,20 @@ class dbal_mssqlnative extends dbal
 				$error = (isset($this->last_error_result) && $this->last_error_result) ? $this->last_error_result : array();
 			}
 
-			return array(
+			$error = array(
 				'message'	=> $error,
 				'code'		=> $code,
 			);
 		}
 		else
 		{
-			return array(
+			$error = array(
 				'message'	=> $this->connect_error,
 				'code'		=> '',
 			);
 		}
+
+		return $error;
 	}
 
 	/**

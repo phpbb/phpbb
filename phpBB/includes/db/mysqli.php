@@ -423,28 +423,32 @@ class dbal_mysqli extends dbal
 	*/
 	function _sql_error()
 	{
-		if (!$this->db_connect_id)
+		if ($this->db_connect_id)
+		{
+			$error = array(
+				'message'	=> @mysqli_error($this->db_connect_id),
+				'code'		=> @mysqli_errno($this->db_connect_id)
+			);
+		}
+		else
 		{
 			if (function_exists('mysqli_connect_error'))
 			{
-				return array(
+				$error = array(
 					'message'	=> @mysqli_connect_error(),
 					'code'		=> @mysqli_connect_errno(),
 				);
 			}
 			else
 			{
-				return array(
+				$error = array(
 					'message'	=> $this->connect_error,
 					'code'		=> '',
 				);
 			}
 		}
 
-		return array(
-			'message'	=> @mysqli_error($this->db_connect_id),
-			'code'		=> @mysqli_errno($this->db_connect_id)
-		);
+		return $error;
 	}
 
 	/**

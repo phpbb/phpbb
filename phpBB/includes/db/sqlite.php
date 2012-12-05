@@ -302,18 +302,20 @@ class dbal_sqlite extends dbal
 	{
 		if (function_exists('sqlite_error_string'))
 		{
-			return array(
+			$error = array(
 				'message'	=> @sqlite_error_string(@sqlite_last_error($this->db_connect_id)),
 				'code'		=> @sqlite_last_error($this->db_connect_id),
 			);
 		}
 		else
 		{
-			return array(
+			$error = array(
 				'message'	=> $this->connect_error,
 				'code'		=> '',
 			);
 		}
+
+		return $error;
 	}
 
 	/**
