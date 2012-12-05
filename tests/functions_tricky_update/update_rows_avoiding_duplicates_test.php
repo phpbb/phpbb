@@ -53,7 +53,7 @@ class phpbb_update_rows_avoiding_duplicates_test extends phpbb_database_test_cas
 	/**
 	* @dataProvider fixture_data
 	*/
-	public function test_trivial_update($description, $from, $to, $expected_result_count)
+	public function test_update($description, $from, $to, $expected_result_count)
 	{
 		$db = $this->new_dbal();
 
