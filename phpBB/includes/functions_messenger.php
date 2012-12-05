@@ -715,13 +715,18 @@ class queue
 
 		$lock_fp = $this->lock();
 
-		set_config('last_queue_run', time(), true);
-
-		if (!file_exists($this->cache_file) || filemtime($this->cache_file) > time() - $config['queue_interval'])
+		if (!file_exists($this->cache_file) || $config['last_queue_run'] > time() - $config['queue_interval'])
 		{
+			if (!file_exists($this->cache_file))
+			{
+				set_config('last_queue_run', time(), true);
+			}
+
 			$this->unlock($lock_fp);
 			return;
 		}
+
+		set_config('last_queue_run', time(), true);
 
 		include($this->cache_file);
 
