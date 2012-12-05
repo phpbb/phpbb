@@ -364,7 +364,7 @@ class dbal_mssql_odbc extends dbal
 		{
 			return array(
 				'message'	=> @odbc_errormsg(),
-				'code'		=> @odbc_error()
+				'code'		=> @odbc_error(),
 			);
 		}
 		else

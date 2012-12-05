@@ -33,7 +33,8 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 		{
 			$db->sql_connect($config['dbhost'], 'phpbbogus', 'phpbbogus', 'phpbbogus', $config['dbport']);
 			$this->assertFalse(true);
-		} catch (Exception $e)
+		}
+		catch (Exception $e)
 		{
 			// should have a legitimate message
 			$this->assertNotEmpty($e->getMessage());

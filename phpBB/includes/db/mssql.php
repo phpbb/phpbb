@@ -367,7 +367,7 @@ class dbal_mssql extends dbal
 		{
 			$error = array(
 				'message'	=> @mssql_get_last_message(),
-				'code'		=> ''
+				'code'		=> '',
 			);
 
 			// Get error code number

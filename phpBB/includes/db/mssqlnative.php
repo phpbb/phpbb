@@ -526,10 +526,10 @@ class dbal_mssqlnative extends dbal
 			{
 				foreach ($errors as $error)
 				{
-					$error_message .= "SQLSTATE: ".$error[ 'SQLSTATE']."\n";
-					$error_message .= "code: ".$error[ 'code']."\n";
+					$error_message .= "SQLSTATE: " . $error[ 'SQLSTATE'] . "\n";
+					$error_message .= "code: " . $error[ 'code'] . "\n";
 					$code = $error['code'];
-					$error_message .= "message: ".$error[ 'message']."\n";
+					$error_message .= "message: " . $error[ 'message'] . "\n";
 				}
 				$this->last_error_result = $error_message;
 				$error = $this->last_error_result;
