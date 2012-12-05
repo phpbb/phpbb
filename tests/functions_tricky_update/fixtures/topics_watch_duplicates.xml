@@ -14,17 +14,17 @@
 
 		<!-- non-conflicting entries -->
 		<row>
-			<value>2</value>
+			<value>1</value>
 			<value>2</value>
 			<value>1</value>
 		</row>
 		<row>
+			<value>2</value>
 			<value>3</value>
-			<value>3</value>
-			<value>1</value>
+			<value>0</value>
 		</row>
 
-		<!-- conflicting entries -->
+		<!-- conflicting entries, same notify status -->
 		<row>
 			<value>1</value>
 			<value>4</value>
@@ -36,20 +36,44 @@
 			<value>1</value>
 		</row>
 
-		<!-- conflicting and non-conflicting entries -->
+		<!-- conflicting entries, notify status 0 into 1 -->
 		<row>
 			<value>1</value>
 			<value>6</value>
-			<value>1</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>1</value>
 			<value>7</value>
 			<value>1</value>
 		</row>
+
+		<!-- conflicting entries, notify status 1 into 0 -->
+		<row>
+			<value>1</value>
+			<value>8</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>9</value>
+			<value>0</value>
+		</row>
+
+		<!-- conflicting and non-conflicting entries -->
+		<row>
+			<value>1</value>
+			<value>10</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>11</value>
+			<value>1</value>
+		</row>
 		<row>
 			<value>2</value>
-			<value>6</value>
+			<value>10</value>
 			<value>1</value>
 		</row>
 	</table>
