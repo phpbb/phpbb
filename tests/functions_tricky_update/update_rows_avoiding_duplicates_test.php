@@ -13,7 +13,7 @@ class phpbb_update_rows_avoiding_duplicates_test extends phpbb_database_test_cas
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/duplicates.xml');
+		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/bookmarks_duplicates.xml');
 	}
 
 	public static function fixture_data()
@@ -57,10 +57,10 @@ class phpbb_update_rows_avoiding_duplicates_test extends phpbb_database_test_cas
 	{
 		$db = $this->new_dbal();
 
-		phpbb_update_rows_avoiding_duplicates($db, TOPICS_WATCH_TABLE, 'topic_id', $from, $to);
+		phpbb_update_rows_avoiding_duplicates($db, BOOKMARKS_TABLE, 'topic_id', $from, $to);
 
 		$sql = 'SELECT COUNT(*) AS remaining_rows
-			FROM ' . TOPICS_WATCH_TABLE . '
+			FROM ' . BOOKMARKS_TABLE . '
 			WHERE topic_id = ' . (int) $to;
 		$result = $db->sql_query($sql);
 		$result_count = $db->sql_fetchfield('remaining_rows');
