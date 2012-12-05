@@ -67,7 +67,7 @@ class phpbb_lock_flock
 	*/
 	public function acquire()
 	{
-		if ($this->locked)
+		if ($this->lock_fp)
 		{
 			return false;
 		}
