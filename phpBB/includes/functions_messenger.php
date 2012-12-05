@@ -715,9 +715,11 @@ class queue
 
 		$lock_fp = $this->lock();
 
-		if (!file_exists($this->cache_file) || $config['last_queue_run'] > time() - $config['queue_interval'])
+		// avoid races, check file existence once
+		$have_cache_file = file_exists($this->cache_file);
+		if (!$have_cache_file || $config['last_queue_run'] > time() - $config['queue_interval'])
 		{
-			if (!file_exists($this->cache_file))
+			if (!$have_cache_file)
 			{
 				set_config('last_queue_run', time(), true);
 			}
