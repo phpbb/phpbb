@@ -620,11 +620,11 @@ function merge_posts($topic_id, $to_topic_id)
 		else
 		{
 			// If the topic no longer exist, we will update the topic watch table.
-			if (!function_exists('phpbb_update_rows_avoiding_duplicates'))
+			if (!function_exists('phpbb_update_rows_avoiding_duplicates_notify_status'))
 			{
 				include($phpbb_root_path . 'includes/functions_tricky_update.' . $phpEx);
 			}
-			phpbb_update_rows_avoiding_duplicates($db, TOPICS_WATCH_TABLE, 'topic_id', $topic_ids, $to_topic_id);
+			phpbb_update_rows_avoiding_duplicates_notify_status($db, TOPICS_WATCH_TABLE, 'topic_id', $topic_ids, $to_topic_id);
 		}
 
 		// Link to the new topic
