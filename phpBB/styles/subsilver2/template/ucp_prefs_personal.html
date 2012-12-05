@@ -61,11 +61,13 @@
 	<td class="row1" width="50%"><b class="genmed">{L_POPUP_ON_PM}:</b></td>
 	<td class="row2"><input type="radio" class="radio" name="popuppm" value="1"<!-- IF S_POPUP_PM --> checked="checked"<!-- ENDIF --> /><span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" class="radio" name="popuppm" value="0"<!-- IF not S_POPUP_PM --> checked="checked"<!-- ENDIF --> /><span class="genmed">{L_NO}</span></td>
 </tr>
+<!-- IF S_MORE_LANGUAGES -->
 <tr>
 	<td class="row1" width="50%"><b class="genmed">{L_BOARD_LANGUAGE}:</b></td>
 	<td class="row2"><select name="lang">{S_LANG_OPTIONS}</select></td>
 </tr>
-<!-- IF S_STYLE_OPTIONS -->
+<!-- ENDIF -->
+<!-- IF S_STYLE_OPTIONS and S_MORE_STYLES -->
 <tr>
 	<td class="row1" width="50%"><b class="genmed">{L_BOARD_STYLE}:</b></td>
 	<td class="row2"><select name="style">{S_STYLE_OPTIONS}</select></td>
