@@ -444,22 +444,19 @@ class dbal_mysql extends dbal
 				'code'		=> @mysql_errno($this->db_connect_id),
 			);
 		}
+		else if (function_exists('mysql_error'))
+		{
+			$error = array(
+				'message'	=> @mysql_error(),
+				'code'		=> @mysql_errno(),
+			);
+		}
 		else
 		{
-			if (function_exists('mysql_error'))
-			{
-				$error = array(
-					'message'	=> @mysql_error(),
-					'code'		=> @mysql_errno(),
-				);
-			}
-			else
-			{
-				$error = array(
-					'message'	=> $this->connect_error,
-					'code'		=> '',
-				);
-			}
+			$error = array(
+				'message'	=> $this->connect_error,
+				'code'		=> '',
+			);
 		}
 
 		return $error;
