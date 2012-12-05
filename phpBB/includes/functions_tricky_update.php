@@ -150,7 +150,8 @@ function phpbb_update_rows_avoiding_duplicates_notify_status($db, $table, $colum
 	);
 	foreach ($from_values as $from_value)
 	{
-		foreach ($extra_updates as $notify_status => $extra_update) {
+		foreach ($extra_updates as $notify_status => $extra_update)
+		{
 			if (!isset($old_user_ids[$notify_status][$from_value]))
 			{
 				continue;
@@ -174,8 +175,9 @@ function phpbb_update_rows_avoiding_duplicates_notify_status($db, $table, $colum
 						AND " . $db->sql_in_set('user_id', $different_user_ids);
 					$queries[] = $sql;
 				}
-				
-				if ($extra_update) {
+
+				if ($extra_update)
+				{
 					$same_user_ids = array_diff($old_user_ids[$notify_status][$from_value], $different_user_ids);
 					if (!empty($same_user_ids))
 					{
