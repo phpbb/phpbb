@@ -56,14 +56,12 @@ function phpbb_update_rows_avoiding_duplicates($db, $table, $column, $from_value
 	$db->sql_freeresult($result);
 
 	$queries = array();
-	$any_found = false;
 	foreach ($from_values as $from_value)
 	{
 		if (!isset($old_user_ids[$from_value]))
 		{
 			continue;
 		}
-		$any_found = true;
 		if (empty($new_user_ids))
 		{
 			$sql = "UPDATE $table
@@ -85,7 +83,7 @@ function phpbb_update_rows_avoiding_duplicates($db, $table, $column, $from_value
 		}
 	}
 
-	if ($any_found)
+	if (!empty($queries))
 	{
 		$db->sql_transaction('begin');
 
@@ -143,7 +141,6 @@ function phpbb_update_rows_avoiding_duplicates_notify_status($db, $table, $colum
 	$db->sql_freeresult($result);
 
 	$queries = array();
-	$any_found = false;
 	$extra_updates = array(
 		0 => 'notify_status = 0',
 		1 => '',
@@ -156,7 +153,6 @@ function phpbb_update_rows_avoiding_duplicates_notify_status($db, $table, $colum
 			{
 				continue;
 			}
-			$any_found = true;
 			if (empty($new_user_ids))
 			{
 				$sql = "UPDATE $table
@@ -192,7 +188,7 @@ function phpbb_update_rows_avoiding_duplicates_notify_status($db, $table, $colum
 		}
 	}
 
-	if ($any_found)
+	if (!empty($queries))
 	{
 		$db->sql_transaction('begin');
 
