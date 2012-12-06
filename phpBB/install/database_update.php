@@ -2830,6 +2830,14 @@ function change_database_data(&$no_updates, $version)
 				$auth_admin->acl_clear_prefetch();
 			}
 
+			// Update the auth setting for the module
+			$sql = 'UPDATE ' . MODULES_TABLE . "
+				SET module_auth = 'acl_u_chgprofileinfo'
+				WHERE module_class = 'ucp'
+					AND module_basename = 'profile'
+					AND module_mode = 'profile_info'";
+			_sql($sql, $errored, $error_ary);
+
 			$no_updates = false;
 
 		break;
