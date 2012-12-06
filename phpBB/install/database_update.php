@@ -1123,9 +1123,12 @@ function database_update_info()
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
 				REPORTS_TABLE		=> array(
-					'reported_post_text'		=> array('MTEXT_UNI', ''),
-					'reported_post_uid'			=> array('VCHAR:8', ''),
-					'reported_post_bitfield'	=> array('VCHAR:255', ''),
+					'reported_post_text'				=> array('MTEXT_UNI', ''),
+					'reported_post_uid'					=> array('VCHAR:8', ''),
+					'reported_post_bitfield'			=> array('VCHAR:255', ''),
+					'reported_post_enable_bbcode'		=> array('BOOL', 1),
+					'reported_post_enable_smilies'		=> array('BOOL', 1),
+					'reported_post_enable_magic_url'	=> array('BOOL', 1),
 				),
 			),
 			'change_columns'	=> array(
@@ -2791,23 +2794,7 @@ function change_database_data(&$no_updates, $version)
 				_sql($sql, $errored, $error_ary);		
 			}
 			$db->sql_freeresult($result);
-
-			// PHPBB3-11171: Copy bbcode fields, etc. for reported posts. Add 5 columns to the reports table
 			
-			// Add the columns used by these changes
-			$changes['add_columns'] = array(
-				REPORTS_TABLE => array(
-					'reported_post_enable_bbcode'		=> array('BOOL', 1),
-					'reported_post_enable_smilies'		=> array('BOOL', 1),
-					'reported_post_enable_magic_url'	=> array('BOOL', 1)
-				)
-			);
-			$statements = $db_tools->perform_schema_changes($changes);
-
-			foreach ($statements as $sql)
-			{
-				_sql($sql, $errored, $error_ary);
-			}
 
 		break;
 	}
