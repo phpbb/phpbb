@@ -898,14 +898,13 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 /**
 * Remove users votes from polls
 *
+* @param dbal		$db			Database object
 * @param array		$user_ids	IDs of the users we want to delete the votes of
 * @param boolean	$delete_all	Shall we delete all votes, or just the ones, where the poll did not end yet.
 * @return null
 */
-function phpbb_delete_user_poll_votes($user_ids, $delete_all = false)
+function phpbb_delete_user_poll_votes($db, $user_ids, $delete_all = false)
 {
-	global $db;
-
 	if (!$delete_all)
 	{
 		$sql = 'SELECT v.poll_option_id, v.topic_id

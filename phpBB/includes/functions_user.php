@@ -565,7 +565,7 @@ function user_delete($delete_contents, $user_ids, $retain_username = true)
 		}
 
 		// Delete votes on open polls
-		phpbb_delete_user_poll_votes($user_ids);
+		phpbb_delete_user_poll_votes($db, $user_ids);
 	}
 	else
 	{
