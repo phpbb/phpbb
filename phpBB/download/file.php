@@ -42,8 +42,6 @@ if (isset($_GET['avatar']))
 	}
 
 	require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-	require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
-	require($phpbb_root_path . 'includes/di/processor/config.' . $phpEx);
 
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
@@ -66,6 +64,7 @@ if (isset($_GET['avatar']))
 		),
 		array(
 			new phpbb_di_pass_collection_pass(),
+			new phpbb_di_pass_kernel_pass(),
 		),
 		$phpbb_root_path,
 		$phpEx

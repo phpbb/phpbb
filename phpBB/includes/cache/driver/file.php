@@ -215,6 +215,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 		while (($entry = readdir($dir)) !== false)
 		{
 			if (strpos($entry, 'container_') !== 0 &&
+				strpos($entry, 'url_matcher') !== 0 &&
 				strpos($entry, 'sql_') !== 0 &&
 				strpos($entry, 'data_') !== 0 &&
 				strpos($entry, 'ctpl_') !== 0 &&
@@ -387,10 +388,10 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 		if ($this->_write('sql_' . md5($query), $this->sql_rowset[$query_id], $ttl + time(), $query))
 		{
-			$query_result = $query_id;
+			return $query_id;
 		}
 
-		return $query_id;
+		return $query_result;
 	}
 
 	/**
@@ -652,10 +653,11 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 		$file = "{$this->cache_dir}$filename.$phpEx";
 
+		$lock = new phpbb_lock_flock($file);
+		$lock->acquire();
+
 		if ($handle = @fopen($file, 'wb'))
 		{
-			@flock($handle, LOCK_EX);
-
 			// File header
 			fwrite($handle, '<' . '?php exit; ?' . '>');
 
@@ -696,7 +698,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 				fwrite($handle, $data);
 			}
 
-			@flock($handle, LOCK_UN);
 			fclose($handle);
 
 			if (!function_exists('phpbb_chmod'))
@@ -707,10 +708,16 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 			phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
 
-			return true;
+			$return_value = true;
+		}
+		else
+		{
+			$return_value = false;
 		}
 
-		return false;
+		$lock->release();
+
+		return $return_value;
 	}
 
 	/**

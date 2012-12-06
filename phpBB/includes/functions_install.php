@@ -87,7 +87,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'2.0.x'			=> false,
 		),
 		'postgres' => array(
-			'LABEL'			=> 'PostgreSQL 7.x/8.x',
+			'LABEL'			=> 'PostgreSQL 8.3+',
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql',
 			'DELIM'			=> ';',
