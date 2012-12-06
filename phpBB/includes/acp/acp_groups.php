@@ -948,7 +948,7 @@ class acp_groups
 			if ($row['teampage_id'] == $category_id)
 			{
 				$template->assign_vars(array(
-					'CUR_CATEGORY_NAME'		=> $row['teampage_name'],
+					'CURRENT_CATEGORY_NAME'		=> $row['teampage_name'],
 				));
 				continue;
 			}
