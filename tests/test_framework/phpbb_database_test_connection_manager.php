@@ -430,17 +430,17 @@ class phpbb_database_test_connection_manager
 	/**
 	* Performs synchronisations on the database after a fixture has been loaded
 	*
-	* @param	PHPUnit_Extensions_Database_DataSet_XmlDataSet	$tables		Tables contained within the loaded fixture
+	* @param	PHPUnit_Extensions_Database_DataSet_XmlDataSet	$xml_data_set		Information about the tables contained within the loaded fixture
 	*
 	* @return null
 	*/
-	public function post_setup_synchronisation($xmlDataSet)
+	public function post_setup_synchronisation($xml_data_set)
 	{
 		$this->ensure_connected(__METHOD__);
 		$queries = array();
 
 		// Get escaped versions of the table names used in the fixture
-		$table_names = array_map(array($this->pdo, 'PDO::quote'), $xmlDataSet->getTableNames());
+		$table_names = array_map(array($this->pdo, 'PDO::quote'), $xml_data_set->getTableNames());
 
 		switch ($this->config['dbms'])
 		{
@@ -469,18 +469,20 @@ class phpbb_database_test_connection_manager
 						continue;
 					}
 
-					$maxval = (int)$max_row['MAX'];
-					$maxval++;
+					$max_val = (int) $max_row['MAX'];
+					$max_val++;
 
-					// This is not the "proper" way, but the proper way does not allow you to completely reset
-					// tables with no rows since you have to select the next value to make the change go into effct.
-					// You would have to go past the minimum value to set it correctly, but that's illegal.
-					// Since we have no objects attached to our sequencers (triggers aren't attached), this works fine.
+					/**
+					* This is not the "proper" way, but the proper way does not allow you to completely reset
+					* tables with no rows since you have to select the next value to make the change go into effect.
+					* You would have to go past the minimum value to set it correctly, but that's illegal.
+					* Since we have no objects attached to our sequencers (triggers aren't attached), this works fine.
+					*/
 					$queries[] = 'DROP SEQUENCE ' . $row['SEQUENCE_NAME'];
 					$queries[] = "CREATE SEQUENCE {$row['SEQUENCE_NAME']} 
 									MINVALUE {$row['MIN_VALUE']} 
 									INCREMENT BY {$row['INCREMENT_BY']} 
-									START WITH $maxval";
+									START WITH $max_val";
 				}
 			break;
 
@@ -495,7 +497,7 @@ class phpbb_database_test_connection_manager
 				while ($row = $result->fetch(PDO::FETCH_ASSOC))
 				{
 					// Get the columns used in the fixture for this table
-					$column_names = $xmlDataSet->getTableMetaData($row['table_name'])->getColumns();
+					$column_names = $xml_data_set->getTableMetaData($row['table_name'])->getColumns();
 
 					// Skip sequences that weren't specified in the fixture
 					if (!in_array($row['column_name'], $column_names))
