@@ -13,6 +13,8 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	protected $test_case_helpers;
 
+	protected $fixture_xml_data;
+
 	public function __construct($name = NULL, array $data = array(), $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
@@ -26,6 +28,20 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 			'phpbb_database_test_case' => array('already_connected'),
 		);
+	}
+
+	protected function setUp()
+	{
+		parent::setUp();
+
+		// Resynchronise tables if a fixture was loaded
+		if (isset($this->fixture_xml_data))
+		{
+			$config = $this->get_database_config();
+			$manager = $this->create_connection_manager($config);
+			$manager->connect();
+			$manager->post_setup_synchronisation($this->fixture_xml_data);
+		}
 	}
 
 	public function createXMLDataSet($path)
@@ -47,7 +63,9 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			$path = $meta_data['uri'];
 		}
 
-		return parent::createXMLDataSet($path);
+		$this->fixture_xml_data = parent::createXMLDataSet($path);
+
+		return $this->fixture_xml_data;
 	}
 
 	public function get_test_case_helpers()
