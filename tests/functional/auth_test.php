@@ -18,16 +18,18 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 
 		// check for logout link
 		$crawler = $this->request('GET', 'index.php');
+		$this->assert_response_success();
 		$this->assertContains($this->lang('LOGOUT_USER', 'admin'), $crawler->filter('.navbar')->text());
 	}
 
 	public function test_login_other()
 	{
-		$this->create_user('user');
-		$this->login('user');
+		$this->create_user('anothertestuser');
+		$this->login('anothertestuser');
 		$crawler = $this->request('GET', 'index.php');
-		$this->assertContains('user', $crawler->filter('.icon-logout')->text());
-		$this->delete_user('user');
+		$this->assert_response_success();
+		$this->assertContains('anothertestuser', $crawler->filter('.icon-logout')->text());
+		$this->delete_user('anothertestuser');
 	}
 
 	/**
@@ -40,10 +42,12 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 
 		// logout
 		$crawler = $this->request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
+		$this->assert_response_success();
 		$this->assertContains($this->lang('LOGOUT_REDIRECT'), $crawler->filter('#message')->text());
 
 		// look for a register link, which should be visible only when logged out
 		$crawler = $this->request('GET', 'index.php');
+		$this->assert_response_success();
 		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 	}
 }
