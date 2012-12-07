@@ -29,7 +29,6 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$crawler = $this->request('GET', 'index.php');
 		$this->assert_response_success();
 		$this->assertContains('anothertestuser', $crawler->filter('.icon-logout')->text());
-		$this->delete_user('anothertestuser');
 	}
 
 	/**

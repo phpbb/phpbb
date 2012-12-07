@@ -216,9 +216,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* Creates a new user with limited permissions
 	*
-	* Always call delete_user after running a test that
-	* requires create_user.
-	*
 	* @param string $username Also doubles up as the user's password
 	* @return int ID of created user
 	*/
@@ -264,18 +261,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'user_password' => phpbb_hash($username),
 		);
 		return user_add($user_row);
-	}
-
-	/**
-	* Deletes a user
-	*
-	* @param string $username The username of the user to delete
-	*/
-	protected function delete_user($username)
-	{
-		$db = $this->get_db();
-		$query = "DELETE FROM " . self::$config['table_prefix'] . "users WHERE username = '" . $db->sql_escape($username) . "'";
-		$db->sql_query($query);
 	}
 
 	protected function login($username = 'admin')
