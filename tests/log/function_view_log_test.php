@@ -24,7 +24,8 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 	public static function test_view_log_function_data()
 	{
-		global $phpEx;
+		global $phpEx, $phpbb_dispatcher;
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$expected_data_sets = array(
 			1 => array(
@@ -299,11 +300,12 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 	*/
 	public function test_view_log_function($expected, $expected_returned, $mode, $log_count, $limit = 5, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_id ASC', $keywords = '')
 	{
-		global $cache, $db, $user, $auth, $phpbb_dispatcher;
+		global $cache, $db, $user, $auth, $phpbb_log, $phpbb_dispatcher;
 
 		$db = $this->new_dbal();
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$phpbb_log = new phpbb_log(LOGS_TABLE);
 
 		// Create auth mock
 		$auth = $this->getMock('phpbb_auth');
