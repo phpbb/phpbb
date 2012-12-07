@@ -25,22 +25,22 @@ class phpbb_log implements phpbb_log_interface
 	/**
 	* Keeps the status of the log system. Is the log enabled or disabled?
 	*/
-	private $disabled_logs;
+	protected $disabled_logs;
 
 	/**
 	* Keeps the total log count of the last call to get_logs()
 	*/
-	private $logs_total;
+	protected $logs_total;
 
 	/**
 	* Keeps the offset of the last valid page of the last call to get_logs()
 	*/
-	private $logs_offset;
+	protected $logs_offset;
 
 	/**
 	* The table we use to store our logs.
 	*/
-	private $log_table;
+	protected $log_table;
 
 	/**
 	* Constructor
