@@ -21,6 +21,15 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$this->assertContains($this->lang('LOGOUT_USER', 'admin'), $crawler->filter('.navbar')->text());
 	}
 
+	public function test_login_other()
+	{
+		$this->create_user('user');
+		$this->login('user');
+		$crawler = $this->request('GET', 'index.php');
+		$this->assertContains('user', $crawler->filter('.icon-logout')->text());
+		$this->delete_user('user');
+	}
+
 	/**
 	* @depends test_login
 	*/
