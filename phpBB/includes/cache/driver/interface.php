@@ -63,7 +63,7 @@ interface phpbb_cache_driver_interface
 	public function destroy($var_name);
 
 	/**
-	* Check if a given cache entry exist
+	* Check if a given cache entry exists
 	*/
 	public function _exists($var_name);
 }

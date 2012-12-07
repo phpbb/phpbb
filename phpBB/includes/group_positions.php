@@ -104,7 +104,7 @@ class phpbb_group_positions
 	* Addes a group by group_id
 	*
 	* @param	int		$group_id	group_id of the group to be added
-	* @return	void
+	* @return	null
 	*/
 	public function add_group($group_id)
 	{
@@ -128,7 +128,7 @@ class phpbb_group_positions
 	*
 	* @param	int		$group_id		group_id of the group to be deleted
 	* @param	bool	$skip_group		Skip setting the group to GROUP_DISABLED, to save the query, when you need to update it anyway.
-	* @return	void
+	* @return	null
 	*/
 	public function delete_group($group_id, $skip_group = false)
 	{
@@ -159,7 +159,7 @@ class phpbb_group_positions
 	* Moves a group up by group_id
 	*
 	* @param	int		$group_id	group_id of the group to be moved
-	* @return	void
+	* @return	null
 	*/
 	public function move_up($group_id)
 	{
@@ -170,7 +170,7 @@ class phpbb_group_positions
 	* Moves a group down by group_id
 	*
 	* @param	int		$group_id	group_id of the group to be moved
-	* @return	void
+	* @return	null
 	*/
 	public function move_down($group_id)
 	{
@@ -184,7 +184,7 @@ class phpbb_group_positions
 	* @param	int		$delta		number of steps:
 	*								- positive = move up
 	*								- negative = move down
-	* @return	void
+	* @return	null
 	*/
 	public function move($group_id, $delta)
 	{
