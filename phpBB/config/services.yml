@@ -59,12 +59,6 @@ services:
             - @service_container
             - @ext.finder
 
-    controller.route_collection:
-        class: phpbb_controller_route_collection
-        arguments:
-            - @ext.finder
-            - @controller.provider
-
     controller.provider:
         class: phpbb_controller_provider
 
