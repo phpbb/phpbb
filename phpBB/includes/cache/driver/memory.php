@@ -33,7 +33,7 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 	*/
 	function __construct($phpbb_root_path, $php_ext, $cache_dir = 'cache/')
 	{
-		parent::__construct($phpbb_root_path, $php_ext, $cache_dir = 'cache/');
+		parent::__construct($phpbb_root_path, $php_ext, $cache_dir);
 
 		global $dbname, $table_prefix;
 

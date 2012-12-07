@@ -49,7 +49,7 @@ class phpbb_cache_driver_memcache extends phpbb_cache_driver_memory
 
 	function __construct($phpbb_root_path, $php_ext, $cache_dir = 'cache/')
 	{
-		parent::__construct($phpbb_root_path, $php_ext, $cache_dir = 'cache/');
+		parent::__construct($phpbb_root_path, $php_ext, $cache_dir);
 
 		$this->memcache = new Memcache;
 		foreach(explode(',', PHPBB_ACM_MEMCACHE) as $u)
