@@ -48,4 +48,3 @@ class phpbb_session_append_sid_test extends phpbb_test_case
 		$this->assertEquals($expected, append_sid($url, $params, $is_amp, $session_id));
 	}
 }
-
