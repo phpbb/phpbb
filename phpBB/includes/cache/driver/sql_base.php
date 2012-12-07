@@ -17,13 +17,14 @@ if (!defined('IN_PHPBB'))
 
 /**
 * A base sql driver
-* This class handles basic
+* This class handles common tasks of the sql cache driver
+* Checking if results exists, fetching rows, freeing memory, etc
 *
 * @package acm
 */
 abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_interface
 {
-	/** @var phpbb_cache_driver_interface **/
+	/** @var phpbb_cache_driver **/
 	protected $cache_driver = null;
 
 	/** @var array Array of queries loaded at the time, but not (yet) freed **/
