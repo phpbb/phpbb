@@ -112,6 +112,7 @@ $phpbb_container = phpbb_create_dumped_container_unless_debug(
 	),
 	array(
 		new phpbb_di_pass_collection_pass(),
+		new phpbb_di_pass_kernel_pass(),
 	),
 	$phpbb_root_path,
 	$phpEx
@@ -2301,6 +2302,26 @@ function change_database_data(&$no_updates, $version)
 				}
 			}
 
+			// Disable receiving pms for bots
+			$sql = 'SELECT user_id
+				FROM ' . BOTS_TABLE;
+			$result = $db->sql_query($sql);
+
+			$bot_user_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$bot_user_ids[] = (int) $row['user_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (!empty($bot_user_ids))
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_allow_pm = 0
+					WHERE ' . $db->sql_in_set('user_id', $bot_user_ids);
+				_sql($sql, $errored, $error_ary);
+			}
+
 			$no_updates = false;
 		break;
 
@@ -2747,6 +2768,28 @@ function change_database_data(&$no_updates, $version)
 				$config->set('site_home_url', '');
 				$config->set('site_home_text', '');
 			}
+
+			// PHPBB3-10601: Make inbox default. Add basename to ucp's pm category
+			
+			// Get the category wanted while checking, at the same time, if this has already been applied
+			$sql = 'SELECT module_id, module_basename
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename <> 'ucp_pm' AND
+						module_langname='UCP_PM'
+						";
+			$result = $db->sql_query_limit($sql, 1);
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				// This update is still not applied. Applying it
+
+				$sql = 'UPDATE ' . MODULES_TABLE . "
+					SET module_basename = 'ucp_pm'
+					WHERE  module_id = " . (int) $row['module_id'];
+
+				_sql($sql, $errored, $error_ary);		
+			}
+			$db->sql_freeresult($result);
 
 		break;
 	}

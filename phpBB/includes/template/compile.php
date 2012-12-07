@@ -58,6 +58,9 @@ class phpbb_template_compile
 	*/
 	public function compile_file_to_file($source_file, $compiled_file)
 	{
+		$lock = new phpbb_lock_flock($compiled_file);
+		$lock->acquire();
+
 		$source_handle = @fopen($source_file, 'rb');
 		$destination_handle = @fopen($compiled_file, 'wb');
 
@@ -66,15 +69,14 @@ class phpbb_template_compile
 			return false;
 		}
 
-		@flock($destination_handle, LOCK_EX);
-
 		$this->compile_stream_to_stream($source_handle, $destination_handle);
 
 		@fclose($source_handle);
-		@flock($destination_handle, LOCK_UN);
 		@fclose($destination_handle);
 
 		phpbb_chmod($compiled_file, CHMOD_READ | CHMOD_WRITE);
+
+		$lock->release();
 
 		clearstatcache();
 
@@ -118,7 +120,7 @@ class phpbb_template_compile
 	*
 	* @param resource $source_stream Source stream
 	* @param resource $dest_stream Destination stream
-	* @return void
+	* @return null
 	*/
 	private function compile_stream_to_stream($source_stream, $dest_stream)
 	{

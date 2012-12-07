@@ -63,6 +63,7 @@ if (isset($_GET['avatar']))
 		),
 		array(
 			new phpbb_di_pass_collection_pass(),
+			new phpbb_di_pass_kernel_pass(),
 		),
 		$phpbb_root_path,
 		$phpEx

@@ -70,7 +70,7 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run()
 	{
@@ -138,7 +138,7 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	*
 	* @param phpbb_request_interface $request Request object.
 	*
-	* @return void
+	* @return null
 	*/
 	public function parse_parameters(phpbb_request_interface $request)
 	{

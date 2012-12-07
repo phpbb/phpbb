@@ -121,6 +121,14 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			}
 		}
 
+		/**
+		 * Load the UTF tools
+		 */
+		if (!function_exists('utf8_strlen'))
+		{
+			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+		}
+
 		$error = false;
 	}
 

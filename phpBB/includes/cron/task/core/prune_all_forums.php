@@ -50,7 +50,7 @@ class phpbb_cron_task_core_prune_all_forums extends phpbb_cron_task_base
 	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run()
 	{

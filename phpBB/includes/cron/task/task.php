@@ -31,7 +31,7 @@ interface phpbb_cron_task
 	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run();
 
