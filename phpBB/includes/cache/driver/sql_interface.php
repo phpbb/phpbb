@@ -35,11 +35,11 @@ interface phpbb_cache_driver_sql_interface
 	* Save sql query
 	*
 	* @param string $query SQL Query
-	* @param object $query_result Query result (sql result object)
+	* @param object $query_rowset Query result rowset
 	* @param int $ttl Time in seconds from now to store the query result
 	* @return int query_id (to load the results from)
 	*/
-	public function save($query, $query_result, $ttl);
+	public function save($query, $query_rowset, $ttl);
 
 	/**
 	* Check if a given sql query id exist in cache

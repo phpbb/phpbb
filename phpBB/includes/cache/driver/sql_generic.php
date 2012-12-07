@@ -47,11 +47,11 @@ class phpbb_cache_driver_sql_generic extends phpbb_cache_driver_sql_base
 	* Save sql query
 	*
 	* @param string $query SQL Query
-	* @param object $query_result Query result (sql result object)
+	* @param object $query_rowset Query result rowset
 	* @param int $ttl Time in seconds from now to store the query result
 	* @return int query_id (to load the results from)
 	*/
-	public function save($query, $query_result, $ttl)
+	public function save($query, $query_rowset, $ttl)
 	{
 		$query = $this->normalise_query($query);
 		$hash = md5($query);
@@ -89,12 +89,9 @@ class phpbb_cache_driver_sql_generic extends phpbb_cache_driver_sql_base
 			$this->cache_driver->put('_sql_' . $table_name, $table_queries);
 		}
 
-		$rowset = $this->db->sql_fetchrowset($query_result);
-		$this->db->sql_freeresult($query_result);
+		$this->cache_driver->put('_sql_' . $hash, $query_rowset, $ttl);
 
-		$this->cache_driver->put('_sql_' . $hash, $rowset, $ttl);
-
-		return $this->store_rowset($rowset);
+		return $this->store_rowset($query_rowset);
 	}
 
 	/**

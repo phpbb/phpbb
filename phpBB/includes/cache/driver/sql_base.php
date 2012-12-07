@@ -22,9 +22,6 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_interface
 {
-	/** @var DBAL **/
-	protected $db = null;
-
 	/** @var phpbb_cache_driver_interface **/
 	protected $cache_driver = null;
 
@@ -34,11 +31,8 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	/** @var array Array of pointer locations for each rowset ([$query_id] = 0) **/
 	protected $sql_row_pointer;
 
-	public function __construct(dbal $db = null, phpbb_cache_driver_interface $cache_driver)
+	public function __construct(phpbb_cache_driver_interface $cache_driver)
 	{
-		$this->db = $db;
-		/** @todo remove db **/
-
 		// Cache driver is always sent because of limitations to setting up services with YML
 		// If you create your own sql cache system implementing phpbb_cache_driver_sql_interface,
 		// you will be sent phpbb_cache_driver_null as a cache driver (just ignore it)
