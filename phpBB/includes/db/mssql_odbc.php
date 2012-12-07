@@ -32,6 +32,7 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 class dbal_mssql_odbc extends dbal
 {
 	var $last_query_text = '';
+	var $connect_error = '';
 
 	/**
 	* Connect to server
@@ -68,7 +69,24 @@ class dbal_mssql_odbc extends dbal
 			@ini_set('odbc.defaultlrl', $max_size);
 		}
 
-		$this->db_connect_id = ($this->persistency) ? @odbc_pconnect($this->server, $this->user, $sqlpassword) : @odbc_connect($this->server, $this->user, $sqlpassword);
+		if ($this->persistency)
+		{
+			if (!function_exists('odbc_pconnect'))
+			{
+				$this->connect_error = 'odbc_pconnect function does not exist, is odbc extension installed?';
+				return $this->sql_error('');
+			}
+			$this->db_connect_id = @odbc_pconnect($this->server, $this->user, $sqlpassword);
+		}
+		else
+		{
+			if (!function_exists('odbc_connect'))
+			{
+				$this->connect_error = 'odbc_connect function does not exist, is odbc extension installed?';
+				return $this->sql_error('');
+			}
+			$this->db_connect_id = @odbc_connect($this->server, $this->user, $sqlpassword);
+		}
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
@@ -342,10 +360,22 @@ class dbal_mssql_odbc extends dbal
 	*/
 	function _sql_error()
 	{
-		return array(
-			'message'	=> @odbc_errormsg(),
-			'code'		=> @odbc_error()
-		);
+		if (function_exists('odbc_errormsg'))
+		{
+			$error = array(
+				'message'	=> @odbc_errormsg(),
+				'code'		=> @odbc_error(),
+			);
+		}
+		else
+		{
+			$error = array(
+				'message'	=> $this->connect_error,
+				'code'		=> '',
+			);
+		}
+
+		return $error;
 	}
 
 	/**
