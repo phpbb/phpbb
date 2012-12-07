@@ -44,6 +44,7 @@ class phpbb_di_extension_config extends Extension
 
 		$container->setParameter('core.table_prefix', $table_prefix);
 		$container->setParameter('cache.driver.class', $this->fix_acm_type($acm_type));
+		$container->setParameter('cache.driver.directory', (isset($acm_directory) ? $acm_directory : 'cache/'));
 		$container->setParameter('dbal.driver.class', 'dbal_'.$dbms);
 		$container->setParameter('dbal.dbhost', $dbhost);
 		$container->setParameter('dbal.dbuser', $dbuser);

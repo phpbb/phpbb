@@ -21,6 +21,7 @@ services:
         arguments:
             - %core.root_path%
             - %core.php_ext%
+            - %cache.driver.directory%
 
     cache.sql_container:
         class: %cache.driver.sql_container%
@@ -32,6 +33,7 @@ services:
         arguments:
             - %core.root_path%
             - %core.php_ext%
+            - %cache.driver.directory%
 
     cache.driver.install:
         class: phpbb_cache_driver_file
