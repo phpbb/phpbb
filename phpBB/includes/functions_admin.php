@@ -2490,12 +2490,6 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 {
 	global $phpbb_log;
 
-	// no log class set, create a temporary one ourselves to keep backwards compatability
-	if ($phpbb_log === null)
-	{
-		$phpbb_log = new phpbb_log(LOG_TABLE);
-	}
-
 	$count_logs = ($log_count !== false);
 
 	$log = $phpbb_log->get_logs($mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $limit_days, $sort_by, $keywords);

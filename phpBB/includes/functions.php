@@ -3367,12 +3367,6 @@ function add_log()
 		return false;
 	}
 
-	// no log class set, create a temporary one ourselves to keep backwards compatibility
-	if ($phpbb_log === null)
-	{
-		$phpbb_log = new phpbb_log(LOG_TABLE);
-	}
-
 	$mode = array_shift($args);
 
 	// This looks kind of dirty, but add_log has some additional data before the log_operation
