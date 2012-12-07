@@ -325,14 +325,14 @@ class phpbb_cache_service
 	{
 		global $config, $phpbb_root_path;
 
-		$parsed_array = $this->driver->get('_cfg_' . $style['style_path']);
+		$parsed_array = $this->driver->get('_cfg_' . $style['style_name']);
 
 		if ($parsed_array === false)
 		{
 			$parsed_array = array();
 		}
 
-		$filename = $phpbb_root_path . 'styles/' . $style['style_path'] . '/style.cfg';
+		$filename = $phpbb_root_path . 'styles/' . $style['style_name'] . '/style.cfg';
 
 		if (!file_exists($filename))
 		{
@@ -345,7 +345,7 @@ class phpbb_cache_service
 			$parsed_array = parse_cfg_file($filename);
 			$parsed_array['filetime'] = @filemtime($filename);
 
-			$this->driver->put('_cfg_' . $style['style_path'], $parsed_array);
+			$this->driver->put('_cfg_' . $style['style_name'], $parsed_array);
 		}
 
 		return $parsed_array;

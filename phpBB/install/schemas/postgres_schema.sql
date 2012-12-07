@@ -855,8 +855,8 @@ CREATE TABLE phpbb_reports (
 	report_time INT4 DEFAULT '0' NOT NULL CHECK (report_time >= 0),
 	report_text TEXT DEFAULT '' NOT NULL,
 	reported_post_text TEXT DEFAULT '' NOT NULL,
-	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
 	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id)
 );
 
@@ -995,10 +995,9 @@ CREATE SEQUENCE phpbb_styles_seq;
 
 CREATE TABLE phpbb_styles (
 	style_id INT4 DEFAULT nextval('phpbb_styles_seq'),
-	style_name varchar(255) DEFAULT '' NOT NULL,
+	style_name varchar(100) DEFAULT '' NOT NULL,
 	style_copyright varchar(255) DEFAULT '' NOT NULL,
 	style_active INT2 DEFAULT '1' NOT NULL CHECK (style_active >= 0),
-	style_path varchar(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
 	style_parent_id INT4 DEFAULT '0' NOT NULL CHECK (style_parent_id >= 0),
 	style_parent_tree varchar(8000) DEFAULT '' NOT NULL,

@@ -649,8 +649,8 @@ CREATE TABLE phpbb_reports (
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumblob NOT NULL,
 	reported_post_text mediumblob NOT NULL,
-	reported_post_bitfield varbinary(255) DEFAULT '' NOT NULL,
 	reported_post_uid varbinary(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varbinary(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id),
 	KEY post_id (post_id),
 	KEY pm_id (pm_id)
@@ -761,15 +761,14 @@ CREATE TABLE phpbb_smilies (
 # Table: 'phpbb_styles'
 CREATE TABLE phpbb_styles (
 	style_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	style_name blob NOT NULL,
+	style_name varbinary(100) DEFAULT '' NOT NULL,
 	style_copyright blob NOT NULL,
 	style_active tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	style_path varbinary(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varbinary(255) DEFAULT 'kNg=' NOT NULL,
 	style_parent_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
 	style_parent_tree blob NOT NULL,
 	PRIMARY KEY (style_id),
-	UNIQUE style_name (style_name(255))
+	UNIQUE style_name (style_name)
 );
 
 

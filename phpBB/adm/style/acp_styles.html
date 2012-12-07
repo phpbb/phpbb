@@ -36,15 +36,11 @@
 	<input type="hidden" name="id" value="{STYLE_ID}" />
 	<fieldset>
 	<dl>
-		<dt><label for="name">{L_STYLE_NAME}{L_COLON}</label></dt>
-		<dd><input type="text" id="name" name="style_name" value="{STYLE_NAME}" /></dd>
-	</dl>
-	<dl>
 		<dt><label>{L_STYLE_PATH}</label></dt>
-		<dd><strong>{STYLE_PATH}</strong></dd>
+		<dd><strong>{STYLE_NAME}</strong></dd>
 	</dl>
 	<dl>
-		<dt><label for="name">{L_COPYRIGHT}{L_COLON}</label></dt>
+		<dt><label>{L_COPYRIGHT}{L_COLON}</label></dt>
 		<dd><strong>{STYLE_COPYRIGHT}</strong></dd>
 	</dl>
 	<dl>
@@ -112,9 +108,6 @@
 			<!-- IF styles_list.COMMENT != '' -->
 				<span class="error"><br />{styles_list.COMMENT}</span>
 			<!-- ENDIF -->
-			<!-- IF not styles_list.STYLE_ID and styles_list.COMMENT == '' -->
-				<span class="style-path"><br />{L_STYLE_PATH} {styles_list.STYLE_PATH_FULL}</span>
-			<!-- ENDIF -->
 		</td>
 		<!-- IF not STYLES_LIST_HIDE_COUNT -->
 			<td class="{$ROW_CLASS}" style="text-align: center;">{styles_list.USERS}</td>
@@ -136,7 +129,7 @@
 				<!-- IF styles_list.COMMENT != '' -->
 					&nbsp;
 				<!-- ELSE -->
-					<input class="checkbox" type="checkbox" name="dirs[]" value="{styles_list.STYLE_PATH}" />
+					<input class="checkbox" type="checkbox" name="dirs[]" value="{styles_list.STYLE_NAME}" />
 				<!-- ENDIF -->
 			<!-- ENDIF -->
 		</td>

@@ -1216,8 +1216,8 @@ CREATE TABLE phpbb_reports (
 	report_time number(11) DEFAULT '0' NOT NULL,
 	report_text clob DEFAULT '' ,
 	reported_post_text clob DEFAULT '' ,
-	reported_post_bitfield varchar2(255) DEFAULT '' ,
 	reported_post_uid varchar2(8) DEFAULT '' ,
+	reported_post_bitfield varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_reports PRIMARY KEY (report_id)
 )
 /
@@ -1445,10 +1445,9 @@ END;
 */
 CREATE TABLE phpbb_styles (
 	style_id number(8) NOT NULL,
-	style_name varchar2(765) DEFAULT '' ,
+	style_name varchar2(100) DEFAULT '' ,
 	style_copyright varchar2(765) DEFAULT '' ,
 	style_active number(1) DEFAULT '1' NOT NULL,
-	style_path varchar2(100) DEFAULT '' ,
 	bbcode_bitfield varchar2(255) DEFAULT 'kNg=' NOT NULL,
 	style_parent_id number(4) DEFAULT '0' NOT NULL,
 	style_parent_tree clob DEFAULT '' ,
