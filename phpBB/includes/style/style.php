@@ -110,7 +110,7 @@ class phpbb_style
 	*
 	* @param string $name Name of style, used for cache prefix. Examples: "admin", "prosilver"
 	* @param array or string $paths Array of style paths, relative to current root directory
-	* @param string $template_path Path to templates, relative to style directory. False if path should not be changed.
+	* @param string $template_path Path to templates, relative to style directory. False if path should be set to default (templates/).
 	*/
 	public function set_custom_style($name, $paths, $template_path = false)
 	{
@@ -122,12 +122,16 @@ class phpbb_style
 		$this->provider->set_styles($paths);
 		$this->locator->set_paths($this->provider);
 
-		$this->template->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $name) . '_';
-
 		if ($template_path !== false)
 		{
-			$this->template->template_path = $this->locator->template_path = $template_path;
+			$this->locator->set_template_path($template_path);
 		}
+		else
+		{
+			$this->locator->set_default_template_path();
+		}
+
+		$this->template->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $name) . '_';
 
 		return true;
 	}

@@ -96,7 +96,7 @@ class phpbb_config_db extends phpbb_config
 	* @param  String $key       The configuration option's name
 	* @param  bool   $use_cache Whether this variable should be cached or if it
 	*                           changes too frequently to be efficiently cached
-	* @return void
+	* @return null
 	*/
 	public function delete($key, $use_cache = true)
 	{

@@ -26,7 +26,7 @@ class phpbb_cache_driver_apc extends phpbb_cache_driver_memory
 	/**
 	* Purge cache data
 	*
-	* @return void
+	* @return null
 	*/
 	function purge()
 	{

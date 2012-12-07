@@ -71,7 +71,7 @@ class install_update extends module
 
 	function main($mode, $sub)
 	{
-		global $style, $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
+		global $phpbb_style, $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
 		global $request;
 
 		$this->tpl_name = 'install_update';

@@ -49,7 +49,7 @@ class phpbb_di_extension_ext extends Extension
 		{
 			if (file_exists($path . '/config/services.yml'))
 			{
-				$loader = new YamlFileLoader($container, new FileLocator(phpbb_real_path($path . '/config')));
+				$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($path . '/config')));
 				$loader->load('services.yml');
 			}
 		}

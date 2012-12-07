@@ -426,4 +426,111 @@ class phpbb_database_test_connection_manager
 			$this->pdo->exec($query);
 		}
 	}
+
+	/**
+	* Performs synchronisations on the database after a fixture has been loaded
+	*
+	* @param	PHPUnit_Extensions_Database_DataSet_XmlDataSet	$xml_data_set		Information about the tables contained within the loaded fixture
+	*
+	* @return null
+	*/
+	public function post_setup_synchronisation($xml_data_set)
+	{
+		$this->ensure_connected(__METHOD__);
+		$queries = array();
+
+		// Get escaped versions of the table names used in the fixture
+		$table_names = array_map(array($this->pdo, 'PDO::quote'), $xml_data_set->getTableNames());
+
+		switch ($this->config['dbms'])
+		{
+			case 'oracle':
+				// Get all of the information about the sequences
+				$sql = "SELECT t.table_name, tc.column_name, d.referenced_name as sequence_name, s.increment_by, s.min_value
+					FROM USER_TRIGGERS t
+					JOIN USER_DEPENDENCIES d ON (d.name = t.trigger_name)
+					JOIN USER_TRIGGER_COLS tc ON (tc.trigger_name = t.trigger_name)
+					JOIN USER_SEQUENCES s ON (s.sequence_name = d.referenced_name)
+					WHERE d.referenced_type = 'SEQUENCE'
+						AND d.type = 'TRIGGER'
+						AND t.table_name IN (" . implode(', ', array_map('strtoupper', $table_names)) . ')';
+
+				$result = $this->pdo->query($sql);
+
+				while ($row = $result->fetch(PDO::FETCH_ASSOC))
+				{
+					// Get the current max value of the table
+					$sql = "SELECT MAX({$row['COLUMN_NAME']}) AS max FROM {$row['TABLE_NAME']}";
+					$max_result = $this->pdo->query($sql);
+					$max_row = $max_result->fetch(PDO::FETCH_ASSOC);
+
+					if (!$max_row)
+					{
+						continue;
+					}
+
+					$max_val = (int) $max_row['MAX'];
+					$max_val++;
+
+					/**
+					* This is not the "proper" way, but the proper way does not allow you to completely reset
+					* tables with no rows since you have to select the next value to make the change go into effect.
+					* You would have to go past the minimum value to set it correctly, but that's illegal.
+					* Since we have no objects attached to our sequencers (triggers aren't attached), this works fine.
+					*/
+					$queries[] = 'DROP SEQUENCE ' . $row['SEQUENCE_NAME'];
+					$queries[] = "CREATE SEQUENCE {$row['SEQUENCE_NAME']} 
+									MINVALUE {$row['MIN_VALUE']} 
+									INCREMENT BY {$row['INCREMENT_BY']} 
+									START WITH $max_val";
+				}
+			break;
+
+			case 'postgres':
+				// Get the sequences attached to the tables
+				$sql = 'SELECT column_name, table_name FROM information_schema.columns
+					WHERE table_name IN (' . implode(', ', $table_names) . ")
+						AND strpos(column_default, '_seq''::regclass') > 0";
+				$result = $this->pdo->query($sql);
+
+				$setval_queries = array();
+				while ($row = $result->fetch(PDO::FETCH_ASSOC))
+				{
+					// Get the columns used in the fixture for this table
+					$column_names = $xml_data_set->getTableMetaData($row['table_name'])->getColumns();
+
+					// Skip sequences that weren't specified in the fixture
+					if (!in_array($row['column_name'], $column_names))
+					{
+						continue;
+					}
+
+					// Get the old value if it exists, or use 1 if it doesn't
+					$sql = "SELECT COALESCE((SELECT MAX({$row['column_name']}) + 1 FROM {$row['table_name']}), 1) AS val";
+					$result_max = $this->pdo->query($sql);
+					$row_max = $result_max->fetch(PDO::FETCH_ASSOC);
+
+					if ($row_max)
+					{
+						$seq_name = $this->pdo->quote($row['table_name'] . '_seq');
+						$max_val = (int) $row_max['val'];
+
+						// The last parameter is false so that the system doesn't increment it again
+						$setval_queries[] = "SETVAL($seq_name, $max_val, false)";
+					}
+				}
+
+				// Combine all of the SETVALs into one query
+				if (sizeof($setval_queries))
+				{
+					$queries[] = 'SELECT ' . implode(', ', $setval_queries);
+				}
+			break;
+		}
+
+		foreach ($queries as $query)
+		{
+			$this->pdo->exec($query);
+		}
+	}
 }

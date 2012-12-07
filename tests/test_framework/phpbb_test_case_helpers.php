@@ -91,6 +91,15 @@ class phpbb_test_case_helpers
 			{
 				$config['phpbb_functional_url'] = $phpbb_functional_url;
 			}
+
+			if (isset($phpbb_redis_host))
+			{
+				$config['redis_host'] = $phpbb_redis_host;
+			}
+			if (isset($phpbb_redis_port))
+			{
+				$config['redis_port'] = $phpbb_redis_port;
+			}
 		}
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
@@ -111,6 +120,16 @@ class phpbb_test_case_helpers
 			$config = array_merge($config, array(
 				'phpbb_functional_url'	=> isset($_SERVER['PHPBB_FUNCTIONAL_URL']) ? $_SERVER['PHPBB_FUNCTIONAL_URL'] : '',
 			));
+		}
+
+		if (isset($_SERVER['PHPBB_TEST_REDIS_HOST']))
+		{
+			$config['redis_host'] = $_SERVER['PHPBB_TEST_REDIS_HOST'];
+		}
+
+		if (isset($_SERVER['PHPBB_TEST_REDIS_PORT']))
+		{
+			$config['redis_port'] = $_SERVER['PHPBB_TEST_REDIS_PORT'];
 		}
 
 		return $config;
