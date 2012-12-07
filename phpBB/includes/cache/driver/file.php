@@ -474,11 +474,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 			fclose($handle);
 
-			if (!function_exists('phpbb_chmod'))
-			{
-				include($this->phpbb_root_path . 'includes/functions.' . $this->php_ext);
-			}
-
 			phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
 
 			$return_value = true;
