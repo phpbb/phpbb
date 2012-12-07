@@ -28,9 +28,9 @@ class phpbb_cache_driver_xcache extends phpbb_cache_driver_memory
 {
 	var $extension = 'XCache';
 
-	function __construct($phpbb_root_path, $phpEx, $cache_dir = 'cache/')
+	function __construct($phpbb_root_path, $php_ext, $cache_dir = 'cache/')
 	{
-		parent::__construct($phpbb_root_path, $phpEx, $cache_dir = 'cache/');
+		parent::__construct($phpbb_root_path, $php_ext, $cache_dir = 'cache/');
 
 		if (!function_exists('ini_get') || (int) ini_get('xcache.var_size') <= 0)
 		{

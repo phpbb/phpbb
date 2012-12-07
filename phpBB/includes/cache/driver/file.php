@@ -58,7 +58,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 		if (!$this->_write('data_global'))
 		{
-			die('Fatal: Not able to open ' . $this->cache_dir . 'data_global.' . $this->phpEx);
+			die('Fatal: Not able to open ' . $this->cache_dir . 'data_global.' . $this->php_ext);
 			exit;
 		}
 
@@ -107,7 +107,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 		}
 		closedir($dir);
 
-		if (file_exists($this->cache_dir . 'data_global.' . $this->phpEx))
+		if (file_exists($this->cache_dir . 'data_global.' . $this->php_ext))
 		{
 			if (!sizeof($this->vars))
 			{
@@ -212,7 +212,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 		if ($var_name[0] == '_')
 		{
-			$this->remove_file($this->cache_dir . 'data' . $var_name . '.' . $this->phpEx, true);
+			$this->remove_file($this->cache_dir . 'data' . $var_name . '.' . $this->php_ext, true);
 		}
 		else if (isset($this->vars[$var_name]))
 		{
@@ -232,7 +232,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	{
 		if ($var_name[0] == '_')
 		{
-			return file_exists($this->cache_dir . 'data' . $var_name . '.' . $this->phpEx);
+			return file_exists($this->cache_dir . 'data' . $var_name . '.' . $this->php_ext);
 		}
 		else
 		{
@@ -259,7 +259,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	*/
 	function _read($filename)
 	{
-		$file = "{$this->cache_dir}$filename." . $this->phpEx;
+		$file = "{$this->cache_dir}$filename." . $this->php_ext;
 
 		if (!file_exists($file))
 		{
@@ -429,7 +429,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	*/
 	function _write($filename, $data = null, $expires = 0)
 	{
-		$file = "{$this->cache_dir}$filename." . $this->phpEx;
+		$file = "{$this->cache_dir}$filename." . $this->php_ext;
 
 		$lock = new phpbb_lock_flock($file);
 		$lock->acquire();
@@ -476,7 +476,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 			if (!function_exists('phpbb_chmod'))
 			{
-				include($this->phpbb_root_path . 'includes/functions.' . $this->phpEx);
+				include($this->phpbb_root_path . 'includes/functions.' . $this->php_ext);
 			}
 
 			phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);

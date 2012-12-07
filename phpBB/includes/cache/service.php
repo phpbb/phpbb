@@ -21,11 +21,22 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cache_service
 {
+	/** @var phpbb_cache_driver */
 	private $driver;
+
+	/** @var phpbb_cache_driver_sql */
 	private $sql_driver;
+
+	/** @var dbal */
 	private $db;
+
+	/** @var phpbb_config */
 	private $config;
+
+	/** @var string */
 	private $phpbb_root_path;
+
+	/** @var string */
 	private $php_ext;
 
 	/**
