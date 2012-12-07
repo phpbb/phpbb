@@ -2834,7 +2834,7 @@ function change_database_data(&$no_updates, $version)
 			$sql = 'UPDATE ' . MODULES_TABLE . "
 				SET module_auth = 'acl_u_chgprofileinfo'
 				WHERE module_class = 'ucp'
-					AND module_basename = 'profile'
+					AND module_basename = 'ucp_profile'
 					AND module_mode = 'profile_info'";
 			_sql($sql, $errored, $error_ary);
 
