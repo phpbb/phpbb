@@ -17,6 +17,7 @@ if (!defined('IN_PHPBB'))
 
 /**
 * A base sql driver
+* This class handles basic
 *
 * @package acm
 */
@@ -26,10 +27,10 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	protected $cache_driver = null;
 
 	/** @var array Array of queries loaded at the time, but not (yet) freed **/
-	protected $sql_rowset;
+	protected $sql_rowsets;
 
 	/** @var array Array of pointer locations for each rowset ([$query_id] = 0) **/
-	protected $sql_row_pointer;
+	protected $sql_row_pointers;
 
 	public function __construct(phpbb_cache_driver_interface $cache_driver)
 	{
@@ -47,7 +48,7 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	*/
 	public function exists($query_id)
 	{
-		return isset($this->sql_rowset[$query_id]);
+		return isset($this->sql_rowsets[$query_id]);
 	}
 
 	/**
@@ -58,11 +59,11 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	*/
 	public function fetchrow($query_id)
 	{
-		if ($this->exists($query_id) && $this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
+		if ($this->exists($query_id) && $this->sql_row_pointers[$query_id] < sizeof($this->sql_rowsets[$query_id]))
 		{
-			$row = $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]];
+			$row = $this->sql_rowsets[$query_id][$this->sql_row_pointers[$query_id]];
 
-			$this->sql_row_pointer[$query_id]++;
+			$this->sql_row_pointers[$query_id]++;
 
 			return $row;
 		}
@@ -79,13 +80,13 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	*/
 	public function fetchfield($query_id, $field)
 	{
-		if ($this->exists($query_id) && $this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
+		if ($this->exists($query_id) && $this->sql_row_pointers[$query_id] < sizeof($this->sql_rowsets[$query_id]))
 		{
-			$row = $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]];
+			$row = $this->sql_rowsets[$query_id][$this->sql_row_pointers[$query_id]];
 
 			if (isset($row[$field]))
 			{
-				$this->sql_row_pointer[$query_id]++;
+				$this->sql_row_pointers[$query_id]++;
 
 				return $row[$field];
 			}
@@ -103,12 +104,12 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 	*/
 	public function rowseek($rownum, $query_id)
 	{
-		if ($this->exists($query_id) && $rownum >= sizeof($this->sql_rowset[$query_id]))
+		if ($this->exists($query_id) && $rownum >= sizeof($this->sql_rowsets[$query_id]))
 		{
 			return false;
 		}
 
-		$this->sql_row_pointer[$query_id] = $rownum;
+		$this->sql_row_pointers[$query_id] = $rownum;
 
 		return true;
 	}
@@ -126,23 +127,23 @@ abstract class phpbb_cache_driver_sql_base implements phpbb_cache_driver_sql_int
 			return false;
 		}
 
-		unset($this->sql_rowset[$query_id]);
-		unset($this->sql_row_pointer[$query_id]);
+		unset($this->sql_rowsets[$query_id]);
+		unset($this->sql_row_pointers[$query_id]);
 
 		return true;
 	}
 
 	/**
-	* Store a rowset in $this->sql_rowset
+	* Store a rowset in $this->sql_rowsets
 	*
 	* @param array $rowset Rowset from the database
 	* @return int Query ID
 	*/
 	protected function store_rowset($rowset)
 	{
-		$query_id = sizeof($this->sql_rowset);
-		$this->sql_rowset[$query_id] = $rowset;
-		$this->sql_row_pointer[$query_id] = 0;
+		$query_id = sizeof($this->sql_rowsets);
+		$this->sql_rowsets[$query_id] = $rowset;
+		$this->sql_row_pointers[$query_id] = 0;
 
 		return $query_id;
 	}
