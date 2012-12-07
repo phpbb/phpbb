@@ -278,14 +278,14 @@ class phpbb_log implements phpbb_log_interface
 			break;
 
 			default:
-				$log_type = null;
+				$log_type = false;
 				$sql_additional = '';
 		}
 
 		/**
 		* Overwrite log type and limitations before we count and get the logs
 		*
-		* NOTE: if log_type is not set, no entries will be returned.
+		* NOTE: if log_type is false, no entries will be returned.
 		*
 		* @event core.get_logs_modify_type
 		* @var	string	mode		Mode of the entries we display
@@ -302,7 +302,7 @@ class phpbb_log implements phpbb_log_interface
 		*							keywords in log_operation or log_data
 		* @var	string	profile_url	URL to the users profile
 		* @var	int		log_type	Limit logs to a certain type. If log_type
-		*							is not set, no entries will be returned.
+		*							is false, no entries will be returned.
 		* @var	string	sql_additional	Additional conditions for the entries,
 		*								e.g.: 'AND l.forum_id = 1'
 		* @since 3.1-A1
@@ -310,7 +310,7 @@ class phpbb_log implements phpbb_log_interface
 		$vars = array('mode', 'count_logs', 'limit', 'offset', 'forum_id', 'topic_id', 'user_id', 'log_time', 'sort_by', 'keywords', 'profile_url', 'log_type', 'sql_additional');
 		extract($phpbb_dispatcher->trigger_event('core.get_logs_modify_type', $vars));
 
-		if (!isset($log_type))
+		if ($log_type === false)
 		{
 			$this->logs_offset = 0;
 			return array();
