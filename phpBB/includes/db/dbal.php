@@ -766,8 +766,8 @@ class dbal
 
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
-			// The DEBUG_EXTRA constant is for development only!
-			if ((isset($auth) && $auth->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG_EXTRA'))
+			// The DEBUG constant is for development only!
+			if ((isset($auth) && $auth->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG'))
 			{
 				$message .= ($sql) ? '<br /><br />SQL<br /><br />' . htmlspecialchars($sql) : '';
 			}

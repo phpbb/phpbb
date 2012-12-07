@@ -22,18 +22,59 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_fulltext_mysql extends phpbb_search_base
 {
+	/**
+	 * Associative array holding index stats
+	 * @var array
+	 */
 	protected $stats = array();
+
+	/**
+	 * Holds the words entered by user, obtained by splitting the entered query on whitespace
+	 * @var array
+	 */
 	protected $split_words = array();
+
+	/**
+	 * Config object
+	 * @var phpbb_config
+	 */
 	protected $config;
+	
+	/**
+	 * DBAL object
+	 * @var dbal
+	 */
 	protected $db;
+	
+	/**
+	 * User object
+	 * @var phpbb_user
+	 */
 	protected $user;
-	public $word_length = array();
-	public $search_query;
-	public $common_words = array();
+
+	/**
+	 * Associative array stores the min and max word length to be searched
+	 * @var array
+	 */
+	protected $word_length = array();
+
+	/**
+	 * Contains tidied search query.
+	 * Operators are prefixed in search query and common words excluded
+	 * @var string
+	 */
+	protected $search_query;
+
+	/**
+	 * Contains common words.
+	 * Common words are words with length less/more than min/max length
+	 * @var array
+	 */
+	protected $common_words = array();
 
 	/**
 	 * Constructor
-	 * Creates a new phpbb_search_fulltext_mysql, which is used as a search backend.
+	 * Creates a new phpbb_search_fulltext_mysql, which is used as a search backend
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
 	 */
@@ -44,6 +85,14 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		$this->user = $user;
 
 		$this->word_length = array('min' => $this->config['fulltext_mysql_min_word_len'], 'max' => $this->config['fulltext_mysql_max_word_len']);
+
+		/**
+		 * Load the UTF tools
+		 */
+		if (!function_exists('utf8_strlen'))
+		{
+			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+		}
 
 		$error = false;
 	}
@@ -56,6 +105,36 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	public function get_name()
 	{
 		return 'MySQL Fulltext';
+	}
+
+	/**
+	 * Returns the search_query
+	 *
+	 * @return string search query
+	 */
+	public function get_search_query()
+	{
+		return $this->search_query;
+	}
+
+	/**
+	 * Returns the common_words array
+	 *
+	 * @return array common words that are ignored by search backend
+	 */
+	public function get_common_words()
+	{
+		return $this->common_words;
+	}
+
+	/**
+	 * Returns the word_length array
+	 *
+	 * @return array min and max word length for searching
+	 */
+	public function get_word_length()
+	{
+		return $this->word_length;
 	}
 
 	/**
@@ -159,7 +238,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			}
 			else
 			{
-				$tmp_split_words[] = $word . ' ';
+				$tmp_split_words[] = $word;
 			}
 		}
 		if ($phrase)
@@ -255,7 +334,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	}
 
 	/**
-	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first.
+	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first
 	*
 	* @param	string		$type				contains either posts or topics depending on what should be searched for
 	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
@@ -276,7 +355,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
-		// No keywords? No posts.
+		// No keywords? No posts
 		if (!$this->search_query)
 		{
 			return false;
@@ -456,7 +535,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
-		// No author? No posts.
+		// No author? No posts
 		if (!sizeof($author_ary))
 		{
 			return 0;
@@ -605,7 +684,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	}
 
 	/**
-	* Destroys cached search results, that contained one of the new words in a post so the results won't be outdated.
+	* Destroys cached search results, that contained one of the new words in a post so the results won't be outdated
 	*
 	* @param	string		$mode contains the post mode: edit, post, reply, quote ...
 	* @param	int			$post_id	contains the post id of the post to index
@@ -834,11 +913,11 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	{
 		$tpl = '
 		<dl>
-			<dt><label>' . $this->user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label>' . $this->user->lang['MIN_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
 			<dd>' . $this->config['fulltext_mysql_min_word_len'] . '</dd>
 		</dl>
 		<dl>
-			<dt><label>' . $this->user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label>' . $this->user->lang['MAX_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
 			<dd>' . $this->config['fulltext_mysql_max_word_len'] . '</dd>
 		</dl>
 		';

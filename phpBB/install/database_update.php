@@ -7,6 +7,10 @@
 *
 */
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 define('UPDATES_TO_VERSION', '3.1.0-dev');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
@@ -59,8 +63,6 @@ $updates_to_version = UPDATES_TO_VERSION;
 $debug_from_version = DEBUG_FROM_VERSION;
 $oldest_from_version = OLDEST_FROM_VERSION;
 
-error_reporting(E_ALL);
-
 @set_time_limit(0);
 
 // Include essential scripts
@@ -71,21 +73,11 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 	die("Please read: <a href='../docs/INSTALL.html'>INSTALL.html</a> before attempting to update.");
 }
 
-// Load Extensions
-if (!empty($load_extensions) && function_exists('dl'))
-{
-	$load_extensions = explode(',', $load_extensions);
-
-	foreach ($load_extensions as $extension)
-	{
-		@dl(trim($extension));
-	}
-}
-
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
@@ -107,21 +99,38 @@ if (!defined('EXT_TABLE'))
 	define('EXT_TABLE', $table_prefix . 'ext');
 }
 
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
-$phpbb_class_loader_ext->register();
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
+// Setup class loader first
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
 $phpbb_class_loader->register();
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+$phpbb_class_loader_ext->register();
+
+// Set up container
+$phpbb_container = phpbb_create_dumped_container_unless_debug(
+	array(
+		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
+		new phpbb_di_extension_core($phpbb_root_path),
+	),
+	array(
+		new phpbb_di_pass_collection_pass(),
+		new phpbb_di_pass_kernel_pass(),
+	),
+	$phpbb_root_path,
+	$phpEx
+);
+
+$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
+$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
 // set up caching
-$cache_factory = new phpbb_cache_factory($acm_type);
-$cache = $cache_factory->get_service();
-$phpbb_class_loader_ext->set_cache($cache->get_driver());
-$phpbb_class_loader->set_cache($cache->get_driver());
+$cache = $phpbb_container->get('cache');
 
-$phpbb_dispatcher = new phpbb_event_dispatcher();
-$request = new phpbb_request();
-$user = new phpbb_user();
-$db = new $sql_db();
+// Instantiate some basic classes
+$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+$request	= $phpbb_container->get('request');
+$user		= $phpbb_container->get('user');
+$auth		= $phpbb_container->get('auth');
+$db			= $phpbb_container->get('dbal.conn');
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
@@ -597,7 +606,7 @@ function _print_footer()
 	</div>
 
 	<div id="page-footer">
-		Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
+		Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
 	</div>
 </div>
 
@@ -613,7 +622,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 {
 	global $db;
 
-	if (defined('DEBUG_EXTRA'))
+	if (defined('DEBUG'))
 	{
 		echo "<br />\n{$sql}\n<br />";
 	}
@@ -683,12 +692,12 @@ function _write_result($no_updates, $errored, $error_ary)
 
 function _add_modules($modules_to_install)
 {
-	global $phpbb_root_path, $phpEx, $db, $phpbb_extension_manager;
+	global $phpbb_root_path, $phpEx, $db, $phpbb_extension_manager, $config;
 
 	// modules require an extension manager
 	if (empty($phpbb_extension_manager))
 	{
-		$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+		$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx");
 	}
 
 	include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
@@ -1079,6 +1088,10 @@ function database_update_info()
 				),
 			),
 		),
+		// No changes from 3.0.11-RC2 to 3.0.11
+		'3.0.11-RC2'	=> array(),
+		// No changes from 3.0.11 to 3.0.12-RC1
+		'3.0.11'		=> array(),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 */
 
@@ -1110,7 +1123,9 @@ function database_update_info()
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
 				REPORTS_TABLE		=> array(
-					'reported_post_text'	=> array('MTEXT_UNI', ''),
+					'reported_post_text'		=> array('MTEXT_UNI', ''),
+					'reported_post_uid'			=> array('VCHAR:8', ''),
+					'reported_post_bitfield'	=> array('VCHAR:255', ''),
 				),
 			),
 			'change_columns'	=> array(
@@ -2222,6 +2237,95 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.11-RC1':
 		break;
 
+		// No changes from 3.0.11-RC2 to 3.0.11
+		case '3.0.11-RC2':
+		break;
+
+		// Changes from 3.0.11 to 3.0.12-RC1
+		case '3.0.11':
+			$sql = 'UPDATE ' . MODULES_TABLE . '
+				SET module_auth = \'acl_u_sig\'
+				WHERE module_class = \'ucp\'
+					AND module_basename = \'profile\'
+					AND module_mode = \'signature\'';
+			_sql($sql, $errored, $error_ary);
+
+			// Update bots
+			if (!function_exists('user_delete'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
+
+			$bots_updates = array(
+				// Bot Deletions
+				'NG-Search [Bot]'		=> false,
+				'Nutch/CVS [Bot]'		=> false,
+				'OmniExplorer [Bot]'	=> false,
+				'Seekport [Bot]'		=> false,
+				'Synoo [Bot]'			=> false,
+				'WiseNut [Bot]'			=> false,
+
+				// Bot Updates
+				// Bot name to bot user agent map
+				'Baidu [Spider]'	=> 'Baiduspider',
+				'Exabot [Bot]'		=> 'Exabot',
+				'Voyager [Bot]'		=> 'voyager/',
+				'W3C [Validator]'	=> 'W3C_Validator',
+			);
+
+			foreach ($bots_updates as $bot_name => $bot_agent)
+			{
+				$sql = 'SELECT user_id
+					FROM ' . USERS_TABLE . '
+					WHERE user_type = ' . USER_IGNORE . "
+						AND username_clean = '" . $db->sql_escape(utf8_clean_string($bot_name)) . "'";
+				$result = $db->sql_query($sql);
+				$bot_user_id = (int) $db->sql_fetchfield('user_id');
+				$db->sql_freeresult($result);
+
+				if ($bot_user_id)
+				{
+					if ($bot_agent === false)
+					{
+						$sql = 'DELETE FROM ' . BOTS_TABLE . "
+							WHERE user_id = $bot_user_id";
+						_sql($sql, $errored, $error_ary);
+
+						user_delete('remove', $bot_user_id);
+					}
+					else
+					{
+						$sql = 'UPDATE ' . BOTS_TABLE . "
+							SET bot_agent = '" .  $db->sql_escape($bot_agent) . "'
+							WHERE user_id = $bot_user_id";
+						_sql($sql, $errored, $error_ary);
+					}
+				}
+			}
+
+			// Disable receiving pms for bots
+			$sql = 'SELECT user_id
+				FROM ' . BOTS_TABLE;
+			$result = $db->sql_query($sql);
+
+			$bot_user_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$bot_user_ids[] = (int) $row['user_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (!empty($bot_user_ids))
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_allow_pm = 0
+					WHERE ' . $db->sql_in_set('user_id', $bot_user_ids);
+				_sql($sql, $errored, $error_ary);
+			}
+
+			$no_updates = false;
+		break;
+
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
 
@@ -2623,11 +2727,9 @@ function change_database_data(&$no_updates, $version)
 
 			// Create config value for displaying last subject on forum list
 			if (!isset($config['display_last_subject']))
-			{			
+			{
 				$config->set('display_last_subject', '1');
 			}
-			
-			$no_updates = false;
 
 			if (!isset($config['assets_version']))
 			{
@@ -2659,6 +2761,84 @@ function change_database_data(&$no_updates, $version)
 				// After we have calculated the timezones we can delete user_dst column from user table.
 				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
 			}
+
+			if (!isset($config['site_home_url']))
+			{
+				$config->set('site_home_url', '');
+				$config->set('site_home_text', '');
+			}
+
+			// PHPBB3-10601: Make inbox default. Add basename to ucp's pm category
+
+			// Get the category wanted while checking, at the same time, if this has already been applied
+			$sql = 'SELECT module_id, module_basename
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename <> 'ucp_pm' AND
+						module_langname='UCP_PM'
+						";
+			$result = $db->sql_query_limit($sql, 1);
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				// This update is still not applied. Applying it
+
+				$sql = 'UPDATE ' . MODULES_TABLE . "
+					SET module_basename = 'ucp_pm'
+					WHERE  module_id = " . (int) $row['module_id'];
+
+				_sql($sql, $errored, $error_ary);
+			}
+			$db->sql_freeresult($result);
+
+			// Add new permission u_chgprofileinfo and duplicate settings from u_sig
+			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+			$auth_admin = new auth_admin();
+
+			// Only add the new permission if it does not already exist
+			if (empty($auth_admin->acl_options['id']['u_chgprofileinfo']))
+			{
+				$auth_admin->acl_add_option(array('global' => array('u_chgprofileinfo')));
+
+				// Now the tricky part, filling the permission
+				$old_id = $auth_admin->acl_options['id']['u_sig'];
+				$new_id = $auth_admin->acl_options['id']['u_chgprofileinfo'];
+
+				$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
+
+				foreach ($tables as $table)
+				{
+					$sql = 'SELECT *
+						FROM ' . $table . '
+						WHERE auth_option_id = ' . $old_id;
+					$result = _sql($sql, $errored, $error_ary);
+
+					$sql_ary = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$row['auth_option_id'] = $new_id;
+						$sql_ary[] = $row;
+					}
+					$db->sql_freeresult($result);
+
+					if (sizeof($sql_ary))
+					{
+						$db->sql_multi_insert($table, $sql_ary);
+					}
+				}
+
+				// Remove any old permission entries
+				$auth_admin->acl_clear_prefetch();
+			}
+
+			// Update the auth setting for the module
+			$sql = 'UPDATE ' . MODULES_TABLE . "
+				SET module_auth = 'acl_u_chgprofileinfo'
+				WHERE module_class = 'ucp'
+					AND module_basename = 'ucp_profile'
+					AND module_mode = 'profile_info'";
+			_sql($sql, $errored, $error_ary);
+
+			$no_updates = false;
 
 		break;
 	}

@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * ACM Abstract Memory Class
 * @package acm
 */
-class phpbb_cache_driver_memory extends phpbb_cache_driver_base
+abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 {
 	var $key_prefix;
 
@@ -162,7 +162,12 @@ class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 
 		while (($entry = readdir($dir)) !== false)
 		{
-			if (strpos($entry, 'sql_') !== 0 && strpos($entry, 'data_') !== 0 && strpos($entry, 'ctpl_') !== 0 && strpos($entry, 'tpl_') !== 0)
+			if (strpos($entry, 'container_') !== 0 &&
+				strpos($entry, 'url_matcher') !== 0 &&
+				strpos($entry, 'sql_') !== 0 &&
+				strpos($entry, 'data_') !== 0 &&
+				strpos($entry, 'ctpl_') !== 0 &&
+				strpos($entry, 'tpl_') !== 0)
 			{
 				continue;
 			}
@@ -294,7 +299,7 @@ class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 		if (!preg_match('/FROM \\(?(`?\\w+`?(?: \\w+)?(?:, ?`?\\w+`?(?: \\w+)?)*)\\)?/', $query, $regs))
 		{
 			// Bail out if the match fails.
-			return;
+			return $query_result;
 		}
 		$tables = array_map('trim', explode(',', $regs[1]));
 
@@ -333,8 +338,6 @@ class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 		$db->sql_freeresult($query_result);
 
 		$this->_write('sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
-
-		$query_result = $query_id;
 
 		return $query_id;
 	}

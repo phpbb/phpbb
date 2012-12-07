@@ -17,48 +17,12 @@ define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 // Start session management
 $user->session_begin();
 $auth->acl($user->data);
-$user->setup();
-
-// Handle the display of extension front pages
-if ($ext = $request->variable('ext', ''))
-{
-	$class = 'phpbb_ext_' . str_replace('/', '_', $ext) . '_controller';
-
-	if (!$phpbb_extension_manager->available($ext))
-	{
-		send_status_line(404, 'Not Found');
-		trigger_error($user->lang('EXTENSION_DOES_NOT_EXIST', $ext));	
-	}
-	else if (!$phpbb_extension_manager->enabled($ext))
-	{
-		send_status_line(404, 'Not Found');
-		trigger_error($user->lang('EXTENSION_DISABLED', $ext));
-	}
-	else if (!class_exists($class))
-	{
-		send_status_line(404, 'Not Found');
-		trigger_error($user->lang('EXTENSION_CONTROLLER_MISSING', $ext));
-	}
-
-	$controller = new $class;
-
-	if (!($controller instanceof phpbb_extension_controller_interface))
-	{
-		send_status_line(500, 'Internal Server Error');
-		trigger_error($user->lang('EXTENSION_CLASS_WRONG_TYPE', $class));
-	}
-
-	$controller->handle();
-	exit_handler();
-}
-
-include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-
-$user->add_lang('viewforum');
+$user->setup('viewforum');
 
 display_forums('', $config['load_moderators']);
 
@@ -167,7 +131,7 @@ $template->assign_vars(array(
 	'S_LOGIN_ACTION'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),
 	'S_DISPLAY_BIRTHDAY_LIST'	=> ($config['load_birthdays']) ? true : false,
 
-	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums') : '',
+	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums&amp;mark_time=' . time()) : '',
 	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')
 );
 

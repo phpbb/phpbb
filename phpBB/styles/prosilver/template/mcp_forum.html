@@ -3,7 +3,7 @@
 <!-- DEFINE $CUSTOM_FIELDSET_CLASS = 'forum-selection2' -->
 <!-- INCLUDE jumpbox.html -->
 
-<h2><a href="{U_VIEW_FORUM}">{L_FORUM}: {FORUM_NAME}</a></h2>
+<h2><a href="{U_VIEW_FORUM}">{L_FORUM}{L_COLON} {FORUM_NAME}</a></h2>
 
 <form method="post" id="mcp" action="{S_MCP_ACTION}">
 
@@ -80,9 +80,9 @@
 	<!-- ENDIF -->
 
 	<fieldset class="display-options">
-		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box {S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
-		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
-		<label>{L_DISPLAY_TOPICS}: {S_SELECT_SORT_DAYS}</label>
+		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
+		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
+		<label>{L_DISPLAY_TOPICS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
 		<label>{S_SELECT_SORT_DIR} <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
 	</fieldset>

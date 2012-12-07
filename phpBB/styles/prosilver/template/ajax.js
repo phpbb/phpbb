@@ -106,6 +106,10 @@ phpbb.ajaxify({
 	}
 });
 
+$('#quick-mod-select').change(function () {
+	$('#quickmodform').submit();
+});
+
 
 
 })(jQuery); // Avoid conflicts with other libraries

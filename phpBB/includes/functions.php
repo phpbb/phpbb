@@ -7,6 +7,8 @@
 *
 */
 
+use Symfony\Component\HttpFoundation\Request;
+
 /**
 * @ignore
 */
@@ -229,7 +231,8 @@ function phpbb_gmgetdate($time = false)
 /**
 * Return formatted string for filesizes
 *
-* @param int	$value			filesize in bytes
+* @param mixed	$value			filesize in bytes
+*								(non-negative number; int, float or string)
 * @param bool	$string_only	true if language string should be returned
 * @param array	$allowed_units	only allow these units (data array indexes)
 *
@@ -241,6 +244,12 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
 	global $user;
 
 	$available_units = array(
+		'tb' => array(
+			'min' 		=> 1099511627776, // pow(2, 40)
+			'index'		=> 4,
+			'si_unit'	=> 'TB',
+			'iec_unit'	=> 'TIB',
+		),
 		'gb' => array(
 			'min' 		=> 1073741824, // pow(2, 30)
 			'index'		=> 3,
@@ -1018,6 +1027,36 @@ else
 	}
 }
 
+/**
+* Eliminates useless . and .. components from specified path.
+*
+* @param string $path Path to clean
+* @return string Cleaned path
+*/
+function phpbb_clean_path($path)
+{
+	$exploded = explode('/', $path);
+	$filtered = array();
+	foreach ($exploded as $part)
+	{
+		if ($part === '.' && !empty($filtered))
+		{
+			continue;
+		}
+
+		if ($part === '..' && !empty($filtered) && $filtered[sizeof($filtered) - 1] !== '..')
+		{
+			array_pop($filtered);
+		}
+		else
+		{
+			$filtered[] = $part;
+		}
+	}
+	$path = implode('/', $filtered);
+	return $path;
+}
+
 // functions used for building option fields
 
 /**
@@ -1280,12 +1319,18 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 * Marks a topic/forum as read
 * Marks a topic as posted to
 *
+* @param string $mode (all, topics, topic, post)
+* @param int|bool $forum_id Used in all, topics, and topic mode
+* @param int|bool $topic_id Used in topic and post mode
+* @param int $post_time 0 means current time(), otherwise to set a specific mark time
 * @param int $user_id can only be used with $mode == 'post'
 */
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
 	global $db, $user, $config;
 	global $request;
+
+	$post_time = ($post_time === 0 || $post_time > time()) ? time() : (int) $post_time;
 
 	if ($mode == 'all')
 	{
@@ -1294,9 +1339,20 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			if ($config['load_db_lastread'] && $user->data['is_registered'])
 			{
 				// Mark all forums read (index page)
-				$db->sql_query('DELETE FROM ' . TOPICS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
-				$db->sql_query('DELETE FROM ' . FORUMS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
-				$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . " WHERE user_id = {$user->data['user_id']}");
+				$tables = array(TOPICS_TRACK_TABLE, FORUMS_TRACK_TABLE);
+				foreach ($tables as $table)
+				{
+					$sql = 'DELETE FROM ' . $table . "
+						WHERE user_id = {$user->data['user_id']}
+							AND mark_time < $post_time";
+					$db->sql_query($sql);
+				}
+
+				$sql = 'UPDATE ' . USERS_TABLE . "
+					SET user_lastmark = $post_time
+					WHERE user_id = {$user->data['user_id']}
+						AND user_lastmark < $post_time";
+				$db->sql_query($sql);
 			}
 			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 			{
@@ -1306,16 +1362,20 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				unset($tracking_topics['tf']);
 				unset($tracking_topics['t']);
 				unset($tracking_topics['f']);
-				$tracking_topics['l'] = base_convert(time() - $config['board_startdate'], 10, 36);
+				$tracking_topics['l'] = base_convert($post_time - $config['board_startdate'], 10, 36);
 
-				$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
+				$user->set_cookie('track', tracking_serialize($tracking_topics), $post_time + 31536000);
 				$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking_topics), phpbb_request_interface::COOKIE);
 
 				unset($tracking_topics);
 
 				if ($user->data['is_registered'])
 				{
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . " WHERE user_id = {$user->data['user_id']}");
+					$sql = 'UPDATE ' . USERS_TABLE . "
+						SET user_lastmark = $post_time
+						WHERE user_id = {$user->data['user_id']}
+							AND user_lastmark < $post_time";
+					$db->sql_query($sql);
 				}
 			}
 		}
@@ -1337,12 +1397,14 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
+					AND mark_time < $post_time
 					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$db->sql_query($sql);
 
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
+					AND mark_time < $post_time
 					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);
 
@@ -1355,9 +1417,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			if (sizeof($sql_update))
 			{
-				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . '
-					SET mark_time = ' . time() . "
+				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . "
+					SET mark_time = $post_time
 					WHERE user_id = {$user->data['user_id']}
+						AND mark_time < $post_time
 						AND " . $db->sql_in_set('forum_id', $sql_update);
 				$db->sql_query($sql);
 			}
@@ -1370,7 +1433,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 					$sql_ary[] = array(
 						'user_id'	=> (int) $user->data['user_id'],
 						'forum_id'	=> (int) $f_id,
-						'mark_time'	=> time()
+						'mark_time'	=> $post_time,
 					);
 				}
 
@@ -1401,7 +1464,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 					unset($tracking['f'][$f_id]);
 				}
 
-				$tracking['f'][$f_id] = base_convert(time() - $config['board_startdate'], 10, 36);
+				$tracking['f'][$f_id] = base_convert($post_time - $config['board_startdate'], 10, 36);
 			}
 
 			if (isset($tracking['tf']) && empty($tracking['tf']))
@@ -1409,7 +1472,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				unset($tracking['tf']);
 			}
 
-			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
+			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
 			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
 
 			unset($tracking);
@@ -1426,9 +1489,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{
-			$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . '
-				SET mark_time = ' . (($post_time) ? $post_time : time()) . "
+			$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . "
+				SET mark_time = $post_time
 				WHERE user_id = {$user->data['user_id']}
+					AND mark_time < $post_time
 					AND topic_id = $topic_id";
 			$db->sql_query($sql);
 
@@ -1441,7 +1505,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 					'user_id'		=> (int) $user->data['user_id'],
 					'topic_id'		=> (int) $topic_id,
 					'forum_id'		=> (int) $forum_id,
-					'mark_time'		=> ($post_time) ? (int) $post_time : time(),
+					'mark_time'		=> $post_time,
 				);
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TRACK_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
@@ -1461,7 +1525,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking['tf'][$forum_id][$topic_id36] = true;
 			}
 
-			$post_time = ($post_time) ? $post_time : time();
 			$tracking['t'][$topic_id36] = base_convert($post_time - $config['board_startdate'], 10, 36);
 
 			// If the cookie grows larger than 10000 characters we will remove the smallest value
@@ -1497,7 +1560,12 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				if ($user->data['is_registered'])
 				{
 					$user->data['user_lastmark'] = intval(base_convert(max($time_keys) + $config['board_startdate'], 36, 10));
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . $user->data['user_lastmark'] . " WHERE user_id = {$user->data['user_id']}");
+
+					$sql = 'UPDATE ' . USERS_TABLE . "
+						SET user_lastmark = $post_time
+						WHERE user_id = {$user->data['user_id']}
+							AND mark_time < $post_time";
+					$db->sql_query($sql);
 				}
 				else
 				{
@@ -1505,7 +1573,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				}
 			}
 
-			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
+			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
 			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
 		}
 
@@ -1527,7 +1595,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$sql_ary = array(
 				'user_id'		=> (int) $use_user_id,
 				'topic_id'		=> (int) $topic_id,
-				'topic_posted'	=> 1
+				'topic_posted'	=> 1,
 			);
 
 			$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
@@ -2085,7 +2153,7 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 
 	$on_page = floor($start_item / $per_page) + 1;
 	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
-	
+
 	if ($reverse_count)
 	{
 		$start_page = ($total_pages > 5) ? $total_pages - 4 : 1;
@@ -2094,9 +2162,9 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	else
 	{
 		// What we're doing here is calculating what the "start" and "end" pages should be. We
-		// do this by assuming pagination is "centered" around the currently active page with 
-		// the three previous and three next page links displayed. Anything more than that and 
-		// we display the ellipsis, likewise anything less. 
+		// do this by assuming pagination is "centered" around the currently active page with
+		// the three previous and three next page links displayed. Anything more than that and
+		// we display the ellipsis, likewise anything less.
 		//
 		// $start_page is the page at which we start creating the list. When we have five or less
 		// pages we start at page 1 since there will be no ellipsis displayed. Anymore than that
@@ -2112,21 +2180,21 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 		$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
 	}
 
-	if ($on_page != $total_pages)
+	if ($on_page != 1)
 	{
 		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> '', 
-			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page),
-			'S_IS_CURRENT'	=> false, 
-			'S_IS_PREV'		=> false,  
-			'S_IS_NEXT'		=> true, 
-			'S_IS_ELLIPSIS'	=> false, 
+			'PAGE_NUMBER'	=> '',
+			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page),
+			'S_IS_CURRENT'	=> false,
+			'S_IS_PREV'		=> true,
+			'S_IS_NEXT'		=> false,
+			'S_IS_ELLIPSIS'	=> false,
 		));
-	}	
+	}
 
 	// This do...while exists purely to negate the need for start and end assign_block_vars, i.e.
-	// to display the first and last page in the list plus any ellipsis. We use this loop to jump 
-	// around a little within the list depending on where we're starting (and ending). 
+	// to display the first and last page in the list plus any ellipsis. We use this loop to jump
+	// around a little within the list depending on where we're starting (and ending).
 	$at_page = 1;
 	do
 	{
@@ -2137,17 +2205,17 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 		// of those points and of course do we even need to display it, i.e. is the list starting
 		// on at least page 3 and ending three pages before the final item.
 		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> $at_page,  
+			'PAGE_NUMBER'	=> $at_page,
 			'PAGE_URL'		=> $page_url,
-			'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page), 
-			'S_IS_NEXT'		=> false, 
-			'S_IS_PREV'		=> false, 
-			'S_IS_ELLIPSIS'	=> ($at_page == 2 && $start_page > 2) || ($at_page == $total_pages - 1 && $end_page < $total_pages - 1), 
+			'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page),
+			'S_IS_NEXT'		=> false,
+			'S_IS_PREV'		=> false,
+			'S_IS_ELLIPSIS'	=> ($at_page == 2 && $start_page > 2) || ($at_page == $total_pages - 1 && $end_page < $total_pages - 1),
 		));
 
-		// We may need to jump around in the list depending on whether we have or need to display 
+		// We may need to jump around in the list depending on whether we have or need to display
 		// the ellipsis. Are we on page 2 and are we more than one page away from the start
-		// of the list? Yes? Then we jump to the start of the list. Likewise are we at the end of 
+		// of the list? Yes? Then we jump to the start of the list. Likewise are we at the end of
 		// the list and are there more than two pages left in total? Yes? Then jump to the penultimate
 		// page (so we can display the ellipsis next pass). Else, increment the counter and keep
 		// going
@@ -2166,21 +2234,60 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	}
 	while ($at_page <= $total_pages);
 
-	if ($on_page != 1)
+	if ($on_page != $total_pages)
 	{
 		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> '', 
-			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page),
-			'S_IS_CURRENT'	=> false, 
-			'S_IS_PREV'		=> true, 
-			'S_IS_NEXT'		=> false, 
-			'S_IS_ELLIPSIS'	=> false, 
+			'PAGE_NUMBER'	=> '',
+			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page),
+			'S_IS_CURRENT'	=> false,
+			'S_IS_PREV'		=> false,
+			'S_IS_NEXT'		=> true,
+			'S_IS_ELLIPSIS'	=> false,
 		));
+	}
+
+	// If the block_var_name is a nested block, we will use the last (most
+	// inner) block as a prefix for the template variables. If the last block
+	// name is pagination, the prefix is empty. If the rest of the
+	// block_var_name is not empty, we will modify the last row of that block
+	// and add our pagination items.
+	$tpl_block_name = $tpl_prefix = '';
+	if (strrpos($block_var_name, '.') !== false)
+	{
+		$tpl_block_name = substr($block_var_name, 0, strrpos($block_var_name, '.'));
+		$tpl_prefix = strtoupper(substr($block_var_name, strrpos($block_var_name, '.') + 1));
+	}
+	else
+	{
+		$tpl_prefix = strtoupper($block_var_name);
+	}
+	$tpl_prefix = ($tpl_prefix == 'PAGINATION') ? '' : $tpl_prefix . '_';
+
+	$previous_page = ($on_page != 1) ? $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page) : '';
+
+	$template_array = array(
+		$tpl_prefix . 'BASE_URL'		=> $base_url,
+		'A_' . $tpl_prefix . 'BASE_URL'		=> addslashes($base_url),
+		$tpl_prefix . 'PER_PAGE'		=> $per_page,
+		$tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
+		$tpl_prefix . 'PREV_PAGE'		=> $previous_page,
+		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
+		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
+		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
+	);
+
+	if ($tpl_block_name)
+	{
+		$template->alter_block_array($tpl_block_name, $template_array, true, 'change');
+	}
+	else
+	{
+		$template->assign_vars($template_array);
 	}
 }
 
 /**
-* Return current page 
+* Return current page
 * This function also sets certain specific template variables
 *
 * @param object $template the template object
@@ -2200,9 +2307,8 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 
 	$template->assign_vars(array(
 		'PER_PAGE'		=> $per_page,
-		'ON_PAGE'		=> $on_page, 
-		
-		'A_BASE_URL'	=> addslashes($base_url), 
+		'ON_PAGE'		=> $on_page,
+		'A_BASE_URL'	=> addslashes($base_url),
 	));
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
@@ -2231,6 +2337,7 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
+	global $phpbb_dispatcher;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -2238,6 +2345,39 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
+	$append_sid_overwrite = false;
+
+	/**
+	* This event can either supplement or override the append_sid() function
+	*
+	* To override this function, the event must set $append_sid_overwrite to
+	* the new URL value, which will be returned following the event
+	*
+	* @event core.append_sid
+	* @var	string		url						The url the session id needs
+	*											to be appended to (can have
+	*											params)
+	* @var	mixed		params					String or array of additional
+	*											url parameters
+	* @var	bool		is_amp					Is url using &amp; (true) or
+	*											& (false)
+	* @var	bool|string	session_id				Possibility to use a custom
+	*											session id (string) instead of
+	*											the global one (false)
+	* @var	bool|string	append_sid_overwrite	Overwrite function (string
+	*											URL) or not (false)
+	* @since 3.1-A1
+	*/
+	$vars = array('url', 'params', 'is_amp', 'session_id', 'append_sid_overwrite');
+	extract($phpbb_dispatcher->trigger_event('core.append_sid', compact($vars)));
+
+	if ($append_sid_overwrite)
+	{
+		return $append_sid_overwrite;
+	}
+
+	// The following hook remains for backwards compatibility, though use of
+	// the event above is preferred.
 	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropriately.
 	// They could mimic most of what is within this function
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
@@ -2716,12 +2856,10 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 *
 * @param int $code HTTP status code
 * @param string $message Message for the status code
-* @return void
+* @return null
 */
 function send_status_line($code, $message)
 {
-	global $request;
-
 	if (substr(strtolower(@php_sapi_name()), 0, 3) === 'cgi')
 	{
 		// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
@@ -2729,16 +2867,33 @@ function send_status_line($code, $message)
 	}
 	else
 	{
-		if ($request->server('SERVER_PROTOCOL'))
-		{
-			$version = $request->server('SERVER_PROTOCOL');
-		}
-		else
-		{
-			$version = 'HTTP/1.0';
-		}
+		$version = phpbb_request_http_version();
 		header("$version $code $message", true, $code);
 	}
+}
+
+/**
+* Returns the HTTP version used in the current request.
+*
+* Handles the case of being called before $request is present,
+* in which case it falls back to the $_SERVER superglobal.
+*
+* @return string HTTP version
+*/
+function phpbb_request_http_version()
+{
+	global $request;
+
+	if ($request && $request->server('SERVER_PROTOCOL'))
+	{
+		return $request->server('SERVER_PROTOCOL');
+	}
+	else if (isset($_SERVER['SERVER_PROTOCOL']))
+	{
+		return $_SERVER['SERVER_PROTOCOL'];
+	}
+
+	return 'HTTP/1.0';
 }
 
 //Form validation
@@ -2821,7 +2976,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 		$diff = time() - $creation_time;
 
 		// If creation_time and the time() now is zero we can assume it was not a human doing this (the check for if ($diff)...
-		if ($diff && ($diff <= $timespan || $timespan === -1))
+		if (defined('DEBUG_TEST') || $diff && ($diff <= $timespan || $timespan === -1))
 		{
 			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
 			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
@@ -3010,11 +3165,11 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				trigger_error('NO_AUTH_ADMIN');
 			}
 
-			$password	= request_var('password_' . $credential, '', true);
+			$password	= $request->untrimmed_variable('password_' . $credential, '', true);
 		}
 		else
 		{
-			$password	= request_var('password', '', true);
+			$password	= $request->untrimmed_variable('password', '', true);
 		}
 
 		$username	= request_var('username', '', true);
@@ -3343,7 +3498,7 @@ function parse_cfg_file($filename, $lines = false)
 
 		$parsed_items[$key] = $value;
 	}
-	
+
 	if (isset($parsed_items['parent']) && isset($parsed_items['name']) && $parsed_items['parent'] == $parsed_items['name'])
 	{
 		unset($parsed_items['parent']);
@@ -4037,12 +4192,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$log_text .= '<br /><br />BACKTRACE<br />' . $backtrace;
 			}
 
-			if (defined('IN_INSTALL') || defined('DEBUG_EXTRA') || isset($auth) && $auth->acl_get('a_'))
+			if (defined('IN_INSTALL') || defined('DEBUG') || isset($auth) && $auth->acl_get('a_'))
 			{
 				$msg_text = $log_text;
 			}
 
-			if ((defined('DEBUG') || defined('IN_CRON') || defined('IMAGE_OUTPUT')) && isset($db))
+			if ((defined('IN_CRON') || defined('IMAGE_OUTPUT')) && isset($db))
 			{
 				// let's avoid loops
 				$db->sql_return_on_error(true);
@@ -4090,7 +4245,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '	</div>';
 			echo '	</div>';
 			echo '	<div id="page-footer">';
-			echo '		Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group';
+			echo '		Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group';
 			echo '	</div>';
 			echo '</div>';
 			echo '</body>';
@@ -4617,7 +4772,7 @@ function phpbb_get_plural_form($rule, $number)
 *
 * @param array	$param		Parameter array, see $param_defaults array.
 *
-* @return void
+* @return null
 */
 function phpbb_http_login($param)
 {
@@ -4937,6 +5092,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> $user->lang['FORUM_INDEX'],
+		'L_SITE_HOME'		=> ($config['site_home_text'] !== '') ? $config['site_home_text'] : $user->lang['HOME'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
@@ -4948,6 +5104,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
 		'U_SEARCH'				=> append_sid("{$phpbb_root_path}search.$phpEx"),
+		'U_SITE_HOME'			=> $config['site_home_url'],
 		'U_REGISTER'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
 		'U_PROFILE'				=> append_sid("{$phpbb_root_path}ucp.$phpEx"),
 		'U_MODCP'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", false, true, $user->session_id),
@@ -5053,8 +5210,12 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 /**
 * Generate page footer
+*
+* @param bool $run_cron Whether or not to run the cron
+* @param bool $display_template Whether or not to display the template
+* @param bool $exit_handler Whether or not to run the exit_handler()
 */
-function page_footer($run_cron = true)
+function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
 	global $request, $phpbb_dispatcher;
@@ -5085,14 +5246,14 @@ function page_footer($run_cron = true)
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-		if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG_EXTRA') && method_exists($db, 'sql_report'))
+		if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG') && method_exists($db, 'sql_report'))
 		{
 			$db->sql_report('display');
 		}
 
 		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . (($config['gzip_compress'] && @extension_loaded('zlib')) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
 
-		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
+		if ($auth->acl_get('a_') && defined('DEBUG'))
 		{
 			if (function_exists('memory_get_peak_usage'))
 			{
@@ -5111,7 +5272,7 @@ function page_footer($run_cron = true)
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
-		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
+		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
 
 		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", false, true, $user->session_id) : '')
 	);
@@ -5149,10 +5310,17 @@ function page_footer($run_cron = true)
 		}
 	}
 
-	$template->display('body');
+	if ($display_template)
+	{
+		$template->display('body');
+	}
 
 	garbage_collection();
-	exit_handler();
+
+	if ($exit_handler)
+	{
+		exit_handler();
+	}
 }
 
 /**
@@ -5170,7 +5338,10 @@ function garbage_collection()
 	* @event core.garbage_collection
 	* @since 3.1-A1
 	*/
-	$phpbb_dispatcher->dispatch('core.garbage_collection');
+	if (!empty($phpbb_dispatcher))
+	{
+		$phpbb_dispatcher->dispatch('core.garbage_collection');
+	}
 
 	// Unload cache, must be done before the DB connection if closed
 	if (!empty($cache))
@@ -5255,4 +5426,50 @@ function phpbb_pcre_utf8_support()
 function phpbb_to_numeric($input)
 {
 	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
+}
+
+/**
+* Create a Symfony Request object from phpbb_request object
+*
+* @param phpbb_request $request Request object
+* @return Request A Symfony Request object
+*/
+function phpbb_create_symfony_request(phpbb_request $request)
+{
+	// This function is meant to sanitize the global input arrays
+	$sanitizer = function(&$value, $key) {
+		$type_cast_helper = new phpbb_request_type_cast_helper();
+		$type_cast_helper->set_var($value, $value, gettype($value), true);
+	};
+
+	// We need to re-enable the super globals so we can access them here
+	$request->enable_super_globals();
+	$get_parameters = $_GET;
+	$post_parameters = $_POST;
+	$server_parameters = $_SERVER;
+	$files_parameters = $_FILES;
+	$cookie_parameters = $_COOKIE;
+	// And now disable them again for security
+	$request->disable_super_globals();
+
+	array_walk_recursive($get_parameters, $sanitizer);
+	array_walk_recursive($post_parameters, $sanitizer);
+
+	// Until we fix the issue with relative paths, we have to fake path info
+	// to allow urls like app.php?controller=foo/bar
+	$controller = $request->variable('controller', '');
+	$path_info = '/' . $controller;
+	$request_uri = $server_parameters['REQUEST_URI'];
+
+	// Remove the query string from REQUEST_URI
+	if ($pos = strpos($request_uri, '?'))
+	{
+		$request_uri = substr($request_uri, 0, $pos);
+	}
+
+	// Add the path info (i.e. controller route) to the REQUEST_URI
+	$server_parameters['REQUEST_URI'] = $request_uri . $path_info;
+	$server_parameters['SCRIPT_NAME'] = '';
+
+	return new Request($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
 }

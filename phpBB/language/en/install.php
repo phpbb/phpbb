@@ -210,7 +210,7 @@ $lang = array_merge($lang, array(
 	<p>phpBB3 supports the following databases:</p>
 	<ul>
 		<li>MySQL 3.23 or above (MySQLi supported)</li>
-		<li>PostgreSQL 7.3+</li>
+		<li>PostgreSQL 8.3+</li>
 		<li>SQLite 2.8.2+</li>
 		<li>Firebird 2.1+</li>
 		<li>MS SQL Server 2000 or above (directly or via ODBC)</li>
@@ -302,10 +302,10 @@ $lang = array_merge($lang, array(
 	'PHP_REGISTER_GLOBALS_EXPLAIN'	=> 'phpBB will still run if this setting is enabled, but if possible, it is recommended that register_globals is disabled on your PHP install for security reasons.',
 	'PHP_SAFE_MODE'					=> 'Safe mode',
 	'PHP_SETTINGS'					=> 'PHP version and settings',
-	'PHP_SETTINGS_EXPLAIN'			=> '<strong>Required</strong> - You must be running at least version 5.3.2 of PHP in order to install phpBB. If <var>safe mode</var> is displayed below your PHP installation is running in that mode. This will impose limitations on remote administration and similar features.',
+	'PHP_SETTINGS_EXPLAIN'			=> '<strong>Required</strong> - You must be running at least version 5.3.3 of PHP in order to install phpBB. If <var>safe mode</var> is displayed below your PHP installation is running in that mode. This will impose limitations on remote administration and similar features.',
 	'PHP_URL_FOPEN_SUPPORT'			=> 'PHP setting <var>allow_url_fopen</var> is enabled',
 	'PHP_URL_FOPEN_SUPPORT_EXPLAIN'	=> '<strong>Optional</strong> - This setting is optional, however certain phpBB functions like off-site avatars will not work properly without it.',
-	'PHP_VERSION_REQD'				=> 'PHP version >= 5.3.2',
+	'PHP_VERSION_REQD'				=> 'PHP version >= 5.3.3',
 	'POST_ID'						=> 'Post ID',
 	'PREFIX_FOUND'					=> 'A scan of your tables has shown a valid installation using <strong>%s</strong> as table prefix.',
 	'PREPROCESS_STEP'				=> 'Executing pre-processing functions/queries',

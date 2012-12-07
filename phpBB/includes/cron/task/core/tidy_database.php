@@ -22,17 +22,34 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_tidy_database extends phpbb_cron_task_base
 {
+	protected $phpbb_root_path;
+	protected $php_ext;
+	protected $config;
+
+	/**
+	* Constructor.
+	*
+	* @param string $phpbb_root_path The root path
+	* @param string $php_ext The PHP extension
+	* @param phpbb_config $config The config
+	*/
+	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config)
+	{
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+		$this->config = $config;
+	}
+
 	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run()
 	{
-		global $phpbb_root_path, $phpEx;
 		if (!function_exists('tidy_database'))
 		{
-			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+			include($this->phpbb_root_path . 'includes/functions_admin.' . $this->php_ext);
 		}
 		tidy_database();
 	}
@@ -48,7 +65,6 @@ class phpbb_cron_task_core_tidy_database extends phpbb_cron_task_base
 	*/
 	public function should_run()
 	{
-		global $config;
-		return $config['database_last_gc'] < time() - $config['database_gc'];
+		return $this->config['database_last_gc'] < time() - $this->config['database_gc'];
 	}
 }

@@ -1196,7 +1196,7 @@ class install_convert extends module
 
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> "skip_rows = $skip_rows",
-					'RESULT'	=> $rows . ((defined('DEBUG_EXTRA') && function_exists('memory_get_usage')) ? ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] : ''),
+					'RESULT'	=> $rows . ((defined('DEBUG') && function_exists('memory_get_usage')) ? ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] : ''),
 				));
 
 				$mtime = explode(' ', microtime());
@@ -1380,7 +1380,7 @@ class install_convert extends module
 			}
 
 			// When we reach this point, either the current table has been processed or we're running out of time.
-			if (still_on_time() && $counting < $convert->batch_size/* && !defined('DEBUG_EXTRA')*/)
+			if (still_on_time() && $counting < $convert->batch_size/* && !defined('DEBUG')*/)
 			{
 				$skip_rows = 0;
 				$current_table++;
@@ -1469,7 +1469,7 @@ class install_convert extends module
 			sync('topic', 'range', 'topic_id BETWEEN ' . $sync_batch . ' AND ' . $end, true, true);
 
 			$template->assign_block_vars('checks', array(
-				'TITLE'		=> sprintf($user->lang['SYNC_TOPIC_ID'], $sync_batch, ($sync_batch + $batch_size)) . ((defined('DEBUG_EXTRA') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] . ']' : ''),
+				'TITLE'		=> sprintf($user->lang['SYNC_TOPIC_ID'], $sync_batch, ($sync_batch + $batch_size)) . ((defined('DEBUG') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] . ']' : ''),
 				'RESULT'	=> $user->lang['DONE'],
 			));
 
@@ -1757,7 +1757,7 @@ class install_convert extends module
 		global $convert;
 
 		// Can we use IGNORE with this DBMS?
-		$sql_ignore = (strpos($db->sql_layer, 'mysql') === 0 && !defined('DEBUG_EXTRA')) ? 'IGNORE ' : '';
+		$sql_ignore = (strpos($db->sql_layer, 'mysql') === 0 && !defined('DEBUG')) ? 'IGNORE ' : '';
 		$insert_query = 'INSERT ' . $sql_ignore . 'INTO ' . $schema['target'] . ' (';
 
 		$aliases = array();

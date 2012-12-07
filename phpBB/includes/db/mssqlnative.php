@@ -218,7 +218,6 @@ class dbal_mssqlnative extends dbal
 		$this->server = $sqlserver . (($port) ? $port_delimiter . $port : '');
 
 		//connect to database
-		error_reporting(E_ALL);
 		$this->db_connect_id = sqlsrv_connect($this->server, array(
 			'Database' => $this->dbname,
 			'UID' => $this->user,
@@ -312,7 +311,7 @@ class dbal_mssqlnative extends dbal
 			global $cache;
 
 			// EXPLAIN only in extra debug mode
-			if (defined('DEBUG_EXTRA'))
+			if (defined('DEBUG'))
 			{
 				$this->sql_report('start', $query);
 			}
@@ -330,7 +329,7 @@ class dbal_mssqlnative extends dbal
 				// reset options for next query
 				$this->query_options = array();
 
-				if (defined('DEBUG_EXTRA'))
+				if (defined('DEBUG'))
 				{
 					$this->sql_report('stop', $query);
 				}
@@ -345,7 +344,7 @@ class dbal_mssqlnative extends dbal
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
 			}
-			else if (defined('DEBUG_EXTRA'))
+			else if (defined('DEBUG'))
 			{
 				$this->sql_report('fromcache', $query);
 			}
