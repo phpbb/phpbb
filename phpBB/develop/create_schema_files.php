@@ -1309,13 +1309,8 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'		=> 'notification_id',
 		'KEYS'				=> array(
-			'item_type'			=> array('INDEX', 'item_type'),
-			'item_id'			=> array('INDEX', 'item_id'),
-			'item_pid'			=> array('INDEX', 'item_parent_id'),
-			'user_id'			=> array('INDEX', 'user_id'),
-			'time'				=> array('INDEX', 'time'),
-			'unread'			=> array('INDEX', 'unread'),
-			'is_enabled'		=> array('INDEX', 'is_enabled'),
+			'item_ident'		=> array('INDEX', array('item_type', 'item_id')),
+			'user'				=> array('INDEX', array('user_id', 'unread')),
 		),
 	);
 
@@ -1790,11 +1785,6 @@ function get_schema_struct()
 			'item_id',
 			'user_id',
 			'method',
-		),
-		'KEYS'				=> array(
-			'it'				=> array('INDEX', 'item_type'),
-			'uid'				=> array('INDEX', 'user_id'),
-			'no'				=> array('INDEX', 'notify'),
 		),
 	);
 
