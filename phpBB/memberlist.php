@@ -1719,12 +1719,21 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 	// Can this user receive a Private Message?
 	$can_receive_pm = (
-		$data['user_type'] != USER_IGNORE && // They must be a "normal" user
-		($data['user_type'] != USER_INACTIVE && $data['user_inactive_reason'] == INACTIVE_MANUAL) && // They must not be deactivated by the administrator
-		sizeof($auth->acl_get_list($user_id, 'u_readpm')) && // They must be able to read PMs
-		!sizeof(phpbb_get_banned_user_ids($user_id, false)) && // They must not be permanently banned
-		(($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || $data['user_allow_pm']) // They must allow users to contact via PM
-	) ? true : false;
+		// They must be a "normal" user
+		$data['user_type'] != USER_IGNORE &&
+
+		// They must not be deactivated by the administrator
+		($data['user_type'] != USER_INACTIVE && $data['user_inactive_reason'] == INACTIVE_MANUAL) &&
+
+		// They must be able to read PMs
+		sizeof($auth->acl_get_list($user_id, 'u_readpm')) &&
+
+		// They must not be permanently banned
+		!sizeof(phpbb_get_banned_user_ids($user_id, false)) &&
+
+		// They must allow users to contact via PM
+		(($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || $data['user_allow_pm'])
+	);
 
 	// Dump it out to the template
 	$template_data = array(
