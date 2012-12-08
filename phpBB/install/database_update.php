@@ -77,6 +77,7 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
@@ -98,20 +99,28 @@ if (!defined('EXT_TABLE'))
 	define('EXT_TABLE', $table_prefix . 'ext');
 }
 
-$phpbb_container = new ContainerBuilder();
-$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/../config'));
-$loader->load('services.yml');
-
-// We must include the DI processor class files because the class loader
-// is not yet set up
-require($phpbb_root_path . 'includes/di/processor/interface.' . $phpEx);
-require($phpbb_root_path . 'includes/di/processor/config.' . $phpEx);
-$processor = new phpbb_di_processor_config($phpbb_root_path . 'config.' . $phpEx, $phpbb_root_path, $phpEx);
-$processor->process($phpbb_container);
-
 // Setup class loader first
-$phpbb_class_loader = $phpbb_container->get('class_loader');
-$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
+$phpbb_class_loader->register();
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+$phpbb_class_loader_ext->register();
+
+// Set up container
+$phpbb_container = phpbb_create_dumped_container_unless_debug(
+	array(
+		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
+		new phpbb_di_extension_core($phpbb_root_path),
+	),
+	array(
+		new phpbb_di_pass_collection_pass(),
+		new phpbb_di_pass_kernel_pass(),
+	),
+	$phpbb_root_path,
+	$phpEx
+);
+
+$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
+$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
 // set up caching
 $cache = $phpbb_container->get('cache');
@@ -122,13 +131,6 @@ $request	= $phpbb_container->get('request');
 $user		= $phpbb_container->get('user');
 $auth		= $phpbb_container->get('auth');
 $db			= $phpbb_container->get('dbal.conn');
-
-$ids = array_keys($phpbb_container->findTaggedServiceIds('container.processor'));
-foreach ($ids as $id)
-{
-	$processor = $phpbb_container->get($id);
-	$processor->process($phpbb_container);
-}
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
@@ -620,7 +622,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 {
 	global $db;
 
-	if (defined('DEBUG_EXTRA'))
+	if (defined('DEBUG'))
 	{
 		echo "<br />\n{$sql}\n<br />";
 	}
@@ -2301,6 +2303,26 @@ function change_database_data(&$no_updates, $version)
 				}
 			}
 
+			// Disable receiving pms for bots
+			$sql = 'SELECT user_id
+				FROM ' . BOTS_TABLE;
+			$result = $db->sql_query($sql);
+
+			$bot_user_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$bot_user_ids[] = (int) $row['user_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (!empty($bot_user_ids))
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_allow_pm = 0
+					WHERE ' . $db->sql_in_set('user_id', $bot_user_ids);
+				_sql($sql, $errored, $error_ary);
+			}
+
 			$no_updates = false;
 		break;
 
@@ -2709,8 +2731,6 @@ function change_database_data(&$no_updates, $version)
 				$config->set('display_last_subject', '1');
 			}
 
-			$no_updates = false;
-
 			if (!isset($config['assets_version']))
 			{
 				$config->set('assets_version', '1');
@@ -2747,6 +2767,78 @@ function change_database_data(&$no_updates, $version)
 				$config->set('site_home_url', '');
 				$config->set('site_home_text', '');
 			}
+
+			// PHPBB3-10601: Make inbox default. Add basename to ucp's pm category
+
+			// Get the category wanted while checking, at the same time, if this has already been applied
+			$sql = 'SELECT module_id, module_basename
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename <> 'ucp_pm' AND
+						module_langname='UCP_PM'
+						";
+			$result = $db->sql_query_limit($sql, 1);
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				// This update is still not applied. Applying it
+
+				$sql = 'UPDATE ' . MODULES_TABLE . "
+					SET module_basename = 'ucp_pm'
+					WHERE  module_id = " . (int) $row['module_id'];
+
+				_sql($sql, $errored, $error_ary);
+			}
+			$db->sql_freeresult($result);
+
+			// Add new permission u_chgprofileinfo and duplicate settings from u_sig
+			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+			$auth_admin = new auth_admin();
+
+			// Only add the new permission if it does not already exist
+			if (empty($auth_admin->acl_options['id']['u_chgprofileinfo']))
+			{
+				$auth_admin->acl_add_option(array('global' => array('u_chgprofileinfo')));
+
+				// Now the tricky part, filling the permission
+				$old_id = $auth_admin->acl_options['id']['u_sig'];
+				$new_id = $auth_admin->acl_options['id']['u_chgprofileinfo'];
+
+				$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
+
+				foreach ($tables as $table)
+				{
+					$sql = 'SELECT *
+						FROM ' . $table . '
+						WHERE auth_option_id = ' . $old_id;
+					$result = _sql($sql, $errored, $error_ary);
+
+					$sql_ary = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$row['auth_option_id'] = $new_id;
+						$sql_ary[] = $row;
+					}
+					$db->sql_freeresult($result);
+
+					if (sizeof($sql_ary))
+					{
+						$db->sql_multi_insert($table, $sql_ary);
+					}
+				}
+
+				// Remove any old permission entries
+				$auth_admin->acl_clear_prefetch();
+			}
+
+			// Update the auth setting for the module
+			$sql = 'UPDATE ' . MODULES_TABLE . "
+				SET module_auth = 'acl_u_chgprofileinfo'
+				WHERE module_class = 'ucp'
+					AND module_basename = 'ucp_profile'
+					AND module_mode = 'profile_info'";
+			_sql($sql, $errored, $error_ary);
+
+			$no_updates = false;
 
 		break;
 	}

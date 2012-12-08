@@ -44,7 +44,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* style directory, such as admin control panel templates.
 	* @var string
 	*/
-	public $template_path = 'template/';
+	private $template_path;
 
 	/**
 	* Map from root index to handles to source template file paths.
@@ -62,6 +62,16 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* @var array
 	*/
 	private $filenames = array();
+
+	/**
+	* Constructor.
+	*
+	* Sets default template path to template/.
+	*/
+	public function __construct()
+	{
+		$this->set_default_template_path();
+	}
 
 	/**
 	* Sets the list of style paths
@@ -91,6 +101,31 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 				$this->roots[$key][] = $path;
 			}
 		}
+	}
+
+	/**
+	* Sets the location of templates directory within style directories.
+	*
+	* The location must be a relative path, with a trailing slash.
+	* Typically it is one directory level deep, e.g. "template/".
+	*
+	* @param string $template_path Relative path to templates directory within style directories
+	* @return null
+	*/
+	public function set_template_path($template_path)
+	{
+		$this->template_path = $template_path;
+	}
+
+	/**
+	* Sets the location of templates directory within style directories
+	* to the default, which is "template/".
+	*
+	* @return null
+	*/
+	public function set_default_template_path()
+	{
+		$this->template_path = 'template/';
 	}
 
 	/**
@@ -228,5 +263,86 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 
 		// search failed
 		return $default_result;
+	}
+
+	/**
+	* Obtains filesystem path for a template file.
+	*
+	* The simplest use is specifying a single template file as a string
+	* in the first argument. This template file should be a basename
+	* of a template file in the selected style, or its parent styles
+	* if template inheritance is being utilized.
+	*
+	* Note: "selected style" is whatever style the style resource locator
+	* is configured for.
+	*
+	* The return value then will be a path, relative to the current
+	* directory or absolute, to the template file in the selected style
+	* or its closest parent.
+	*
+	* If the selected style does not have the template file being searched,
+	* (and if inheritance is involved, none of the parents have it either),
+	* false will be returned.
+	*
+	* Specifying true for $return_default will cause the function to
+	* return the first path which was checked for existence in the event
+	* that the template file was not found, instead of false.
+	* This is the path in the selected style itself, not any of its
+	* parents.
+	*
+	* $files can be given an array of templates instead of a single
+	* template. When given an array, the function will try to resolve
+	* each template in the array to a path, and will return the first
+	* path that exists, or false if none exist.
+	*
+	* If $files is an array and template inheritance is involved, first
+	* each of the files will be checked in the selected style, then each
+	* of the files will be checked in the immediate parent, and so on.
+	*
+	* If $return_full_path is false, then instead of returning a usable
+	* path (when the template is found) only the template's basename
+	* will be returned. This can be used to check which of the templates
+	* specified in $files exists. Naturally more than one template must
+	* be given in $files.
+	*
+	* This function works identically to get_first_file_location except
+	* it operates on a list of templates, not files. Practically speaking,
+	* the templates given in the first argument first are prepended with
+	* the template path (property in this class), then given to
+	* get_first_file_location for the rest of the processing.
+	*
+	* Templates given to this function can be relative paths for templates
+	* located in subdirectories of the template directories. The paths
+	* should be relative to the templates directory (template/ by default).
+	*
+	* @param string or array $files List of templates to locate. If there is only
+	*				one template, $files can be a string to make code easier to read.
+	* @param bool $return_default Determines what to return if template does not
+	*				exist. If true, function will return location where template is
+	*				supposed to be. If false, function will return false.
+	* @param bool $return_full_path If true, function will return full path
+	*				to template. If false, function will return template file name.
+	*				This parameter can be used to check which one of set of template
+	*				files is available.
+	* @return string or boolean Source template path if template exists or $return_default is
+	*				true. False if template does not exist and $return_default is false
+	*/
+	public function get_first_template_location($templates, $return_default = false, $return_full_path = true)
+	{
+		// add template path prefix
+		$files = array();
+		if (is_string($templates))
+		{
+			$files[] = $this->template_path . $templates;
+		}
+		else
+		{
+			foreach ($templates as $template)
+			{
+				$files[] = $this->template_path . $template;
+			}
+		}
+
+		return $this->get_first_file_location($files, $return_default, $return_full_path);
 	}
 }
