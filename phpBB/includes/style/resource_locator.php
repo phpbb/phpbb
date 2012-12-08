@@ -110,7 +110,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* Typically it is one directory level deep, e.g. "template/".
 	*
 	* @param string $template_path Relative path to templates directory within style directories
-	* @return void
+	* @return null
 	*/
 	public function set_template_path($template_path)
 	{
@@ -121,7 +121,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* Sets the location of templates directory within style directories
 	* to the default, which is "template/".
 	*
-	* @return void
+	* @return null
 	*/
 	public function set_default_template_path()
 	{

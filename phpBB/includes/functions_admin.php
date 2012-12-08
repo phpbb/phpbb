@@ -3324,7 +3324,7 @@ function obtain_latest_version_info($force_update = false, $warn_fail = false, $
  * @param int		$flag			The binary flag which is OR-ed with the current column value
  * @param string	$sql_more		This string is attached to the sql query generated to update the table.
  *
- * @return void
+ * @return null
  */
 function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more = '')
 {
