@@ -151,7 +151,7 @@ class filespec
 	*/
 	function is_image()
 	{
-		return (strpos($this->mimetype, 'image/') !== false) ? true : false;
+		return (strpos($this->mimetype, 'image/') === 0);
 	}
 
 	/**
@@ -566,10 +566,11 @@ class fileupload
 	*/
 	function form_upload($form_name)
 	{
-		global $user;
+		global $user, $request;
 
-		unset($_FILES[$form_name]['local_mode']);
-		$file = new filespec($_FILES[$form_name], $this);
+		$upload = $request->file($form_name);
+		unset($upload['local_mode']);
+		$file = new filespec($upload, $this);
 
 		if ($file->init_error)
 		{
@@ -578,9 +579,9 @@ class fileupload
 		}
 
 		// Error array filled?
-		if (isset($_FILES[$form_name]['error']))
+		if (isset($upload['error']))
 		{
-			$error = $this->assign_internal_error($_FILES[$form_name]['error']);
+			$error = $this->assign_internal_error($upload['error']);
 
 			if ($error !== false)
 			{
@@ -590,7 +591,7 @@ class fileupload
 		}
 
 		// Check if empty file got uploaded (not catched by is_uploaded_file)
-		if (isset($_FILES[$form_name]['size']) && $_FILES[$form_name]['size'] == 0)
+		if (isset($upload['size']) && $upload['size'] == 0)
 		{
 			$file->error[] = $user->lang[$this->error_prefix . 'EMPTY_FILEUPLOAD'];
 			return $file;
@@ -631,17 +632,17 @@ class fileupload
 	*/
 	function local_upload($source_file, $filedata = false)
 	{
-		global $user;
+		global $user, $request;
 
-		$form_name = 'local';
+		$upload = array();
 
-		$_FILES[$form_name]['local_mode'] = true;
-		$_FILES[$form_name]['tmp_name'] = $source_file;
+		$upload['local_mode'] = true;
+		$upload['tmp_name'] = $source_file;
 
 		if ($filedata === false)
 		{
-			$_FILES[$form_name]['name'] = utf8_basename($source_file);
-			$_FILES[$form_name]['size'] = 0;
+			$upload['name'] = utf8_basename($source_file);
+			$upload['size'] = 0;
 			$mimetype = '';
 
 			if (function_exists('mime_content_type'))
@@ -655,16 +656,16 @@ class fileupload
 				$mimetype = 'application/octetstream';
 			}
 
-			$_FILES[$form_name]['type'] = $mimetype;
+			$upload['type'] = $mimetype;
 		}
 		else
 		{
-			$_FILES[$form_name]['name'] = $filedata['realname'];
-			$_FILES[$form_name]['size'] = $filedata['size'];
-			$_FILES[$form_name]['type'] = $filedata['type'];
+			$upload['name'] = $filedata['realname'];
+			$upload['size'] = $filedata['size'];
+			$upload['type'] = $filedata['type'];
 		}
 
-		$file = new filespec($_FILES[$form_name], $this);
+		$file = new filespec($upload, $this);
 
 		if ($file->init_error)
 		{
@@ -672,9 +673,9 @@ class fileupload
 			return $file;
 		}
 
-		if (isset($_FILES[$form_name]['error']))
+		if (isset($upload['error']))
 		{
-			$error = $this->assign_internal_error($_FILES[$form_name]['error']);
+			$error = $this->assign_internal_error($upload['error']);
 
 			if ($error !== false)
 			{
@@ -709,6 +710,7 @@ class fileupload
 		}
 
 		$this->common_checks($file);
+		$request->overwrite('local', $upload, phpbb_request_interface::FILES);
 
 		return $file;
 	}
@@ -1001,7 +1003,10 @@ class fileupload
 	*/
 	function is_valid($form_name)
 	{
-		return (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none') ? true : false;
+		global $request;
+		$upload = $request->file($form_name);
+
+		return (!empty($upload) && $upload['name'] !== 'none');
 	}
 
 

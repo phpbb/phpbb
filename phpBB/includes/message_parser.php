@@ -1363,13 +1363,14 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
 	{
-		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db;
+		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db, $request;
 
 		$error = array();
 
 		$num_attachments = sizeof($this->attachment_data);
 		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
-		$upload_file = (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none' && trim($_FILES[$form_name]['name'])) ? true : false;
+		$upload = $request->file($form_name);
+		$upload_file = (!empty($upload) && $upload['name'] !== 'none' && trim($upload['name']));
 
 		$add_file		= (isset($_POST['add_file'])) ? true : false;
 		$delete_file	= (isset($_POST['delete_file'])) ? true : false;

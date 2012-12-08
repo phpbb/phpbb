@@ -71,7 +71,7 @@ class mcp_reports
 				// closed reports are accessed by report id
 				$report_id = request_var('r', 0);
 
-				$sql = 'SELECT r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, r.reported_post_text, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
+				$sql = 'SELECT r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, r.reported_post_text, r.reported_post_uid, r.reported_post_bitfield, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
 					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
 					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id") . '
 						AND rr.reason_id = r.reason_id
@@ -227,7 +227,7 @@ class mcp_reports
 					'REPORTER_NAME'				=> get_username_string('username', $report['user_id'], $report['username'], $report['user_colour']),
 					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
 
-					'POST_PREVIEW'			=> bbcode_nl2br($report['reported_post_text']),
+					'POST_PREVIEW'			=> generate_text_for_display($report['reported_post_text'], $report['reported_post_uid'], $report['reported_post_bitfield'], OPTION_FLAG_BBCODE | OPTION_FLAG_SMILIES, false),
 					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
@@ -411,6 +411,9 @@ class mcp_reports
 					unset($report_ids, $row);
 				}
 
+				$base_url = $this->u_action . "&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
+
 				// Now display the page
 				$template->assign_vars(array(
 					'L_EXPLAIN'				=> ($mode == 'reports') ? $user->lang['MCP_REPORTS_OPEN_EXPLAIN'] : $user->lang['MCP_REPORTS_CLOSED_EXPLAIN'],
@@ -421,8 +424,7 @@ class mcp_reports
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false,
 
-					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
-					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total,
 					'TOTAL_REPORTS'			=> $user->lang('LIST_REPORTS', (int) $total),

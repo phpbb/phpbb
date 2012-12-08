@@ -7,8 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/cache.php';
-
 class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 {
 	public function setUp()

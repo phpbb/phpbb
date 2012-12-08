@@ -145,25 +145,30 @@ dl.details dd {
 /* Pagination
 ---------------------------------------- */
 
-.pagination span strong {
-	color: #FFFFFF;
-	background-color: #4692BF;
-	border-color: #4692BF;
-}
-
-.pagination span a, .pagination span a:link, .pagination span a:visited {
+.pagination li a, .pagination li a:link, .pagination li a:visited {
 	color: #5C758C;
 	background-color: #ECEDEE;
 	border-color: #B4BAC0;
 }
 
-.pagination span a:hover {
-	border-color: #368AD2;
-	background-color: #368AD2;
-	color: #FFF;
+.pagination li.ellipsis span {
+	background-color: transparent;
+	color:	#000000;
 }
 
-.pagination span a:active {
+.pagination li.active span {
+	color: #FFFFFF;
+	background-color: #4692BF;
+	border-color: #4692BF;
+}
+
+.pagination li a:hover, .pagination .active a:hover {
+	border-color: #368AD2;
+	background-color: #368AD2;
+	color: #FFFFFF;
+}
+
+.pagination li a:active, .pagination li.active a:active {
 	color: #5C758C;
 	background-color: #ECEDEE;
 	border-color: #B4BAC0;
@@ -326,20 +331,20 @@ a.top2 {
 }
 
 /* Arrow links  */
-a.up		{ background-image: url("./images/arrow_up.gif") }
-a.down		{ background-image: url("./images/arrow_down.gif") }
-a.left		{ background-image: url("./images/arrow_left.gif") }
-a.right		{ background-image: url("./images/arrow_right.gif") }
+a.arrow-up			{ background-image: url("./images/arrow_up.gif") }
+a.arrow-down		{ background-image: url("./images/arrow_down.gif") }
+a.arrow-left		{ background-image: url("./images/arrow_left.gif") }
+a.arrow-right		{ background-image: url("./images/arrow_right.gif") }
 
-a.up:hover {
+a.arrow-up:hover {
 	background-color: transparent;
 }
 
-a.left:hover {
+a.arrow-left:hover {
 	color: #368AD2;
 }
 
-a.right:hover {
+a.arrow-right:hover {
 	color: #368AD2;
 }
 

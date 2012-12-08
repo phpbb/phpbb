@@ -123,6 +123,14 @@ class dbal_mysqli extends dbal
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return 'CONCAT(' . $expr1 . ', ' . $expr2 . ')';
+	}
+
+	/**
 	* SQL Transaction
 	* @access private
 	*/
@@ -166,12 +174,12 @@ class dbal_mysqli extends dbal
 			global $cache;
 
 			// EXPLAIN only in extra debug mode
-			if (defined('DEBUG_EXTRA'))
+			if (defined('DEBUG'))
 			{
 				$this->sql_report('start', $query);
 			}
 
-			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
+			$this->query_result = ($cache_ttl) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
 			if ($this->query_result === false)
@@ -181,17 +189,17 @@ class dbal_mysqli extends dbal
 					$this->sql_error($query);
 				}
 
-				if (defined('DEBUG_EXTRA'))
+				if (defined('DEBUG'))
 				{
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl && method_exists($cache, 'sql_save'))
+				if ($cache_ttl)
 				{
-					$cache->sql_save($query, $this->query_result, $cache_ttl);
+					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
 			}
-			else if (defined('DEBUG_EXTRA'))
+			else if (defined('DEBUG'))
 			{
 				$this->sql_report('fromcache', $query);
 			}
@@ -243,7 +251,7 @@ class dbal_mysqli extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
+		if (!is_object($query_id) && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -270,7 +278,7 @@ class dbal_mysqli extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
+		if (!is_object($query_id) && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
@@ -298,7 +306,7 @@ class dbal_mysqli extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
+		if (!is_object($query_id) && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_freeresult($query_id);
 		}

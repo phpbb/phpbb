@@ -42,11 +42,7 @@ function jumpto()
 */
 function marklist(id, name, state)
 {
-	var parent = document.getElementById(id);
-	if (!parent)
-	{
-		eval('parent = document.' + id);
-	}
+	var parent = document.getElementById(id) || document[id];
 
 	if (!parent)
 	{

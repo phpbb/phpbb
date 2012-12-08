@@ -383,7 +383,7 @@ phpbb.ajaxify = function(options) {
 			return;
 		}
 
-		if (overlay)
+		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') == 'true'))
 		{
 			phpbb.loading_alert();
 		}
@@ -411,6 +411,112 @@ phpbb.ajaxify = function(options) {
 	return this;
 }
 
+/**
+* Hide the optgroups that are not the selected timezone
+*
+* @param	bool	keep_selection		Shall we keep the value selected, or shall the user be forced to repick one.
+*/
+phpbb.timezone_switch_date = function(keep_selection) {
+	if ($('#timezone_copy').length == 0) {
+		// We make a backup of the original dropdown, so we can remove optgroups
+		// instead of setting display to none, because IE and chrome will not
+		// hide options inside of optgroups and selects via css
+		$('#timezone').clone().attr('id', 'timezone_copy').css('display', 'none').attr('name', 'tz_copy').insertAfter('#timezone');
+	} else {
+		// Copy the content of our backup, so we can remove all unneeded options
+		$('#timezone').replaceWith($('#timezone_copy').clone().attr('id', 'timezone').css('display', 'block').attr('name', 'tz'));
+	}
+
+	if ($('#tz_date').val() != '') {
+		$('#timezone > optgroup').remove(":not([label='" + $('#tz_date').val() + "'])");
+	}
+
+	if ($('#tz_date').val() == $('#tz_select_date_suggest').attr('data-suggested-tz')) {
+		$('#tz_select_date_suggest').css('display', 'none');
+	} else {
+		$('#tz_select_date_suggest').css('display', 'inline');
+	}
+
+	if ($("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option").size() == 1) {
+		// If there is only one timezone for the selected date, we just select that automatically.
+		$("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option:first").attr('selected', true);
+		keep_selection = true;
+	}
+
+	if (typeof keep_selection !== 'undefined' && !keep_selection) {
+		$('#timezone > option:first').attr('selected', true);
+	}
+}
+
+/**
+* Display the date/time select
+*/
+phpbb.timezone_enable_date_selection = function() {
+	$('#tz_select_date').css('display', 'block');
+}
+
+/**
+* Preselect a date/time or suggest one, if it is not picked.
+*
+* @param	bool	force_selector		Shall we select the suggestion?
+*/
+phpbb.timezone_preselect_select = function(force_selector) {
+
+	// The offset returned here is in minutes and negated.
+	// http://www.w3schools.com/jsref/jsref_getTimezoneOffset.asp
+	var offset = (new Date()).getTimezoneOffset();
+
+	if (offset < 0) {
+		var sign = '+';
+		offset = -offset;
+	} else {
+		var sign = '-';
+	}
+
+	var minutes = offset % 60;
+	var hours = (offset - minutes) / 60;
+
+	if (hours < 10) {
+		hours = '0' + hours.toString();
+	} else {
+		hours = hours.toString();
+	}
+
+	if (minutes < 10) {
+		minutes = '0' + minutes.toString();
+	} else {
+		minutes = minutes.toString();
+	}
+
+	var prefix = 'GMT' + sign + hours + ':' + minutes;
+	var prefix_length = prefix.length;
+	var selector_options = $('#tz_date > option');
+
+	for (var i = 0; i < selector_options.length; ++i) {
+		var option = selector_options[i];
+
+		if (option.value.substring(0, prefix_length) == prefix) {
+			if ($('#tz_date').val() != option.value && !force_selector) {
+				// We do not select the option for the user, but notify him,
+				// that we would suggest a different setting.
+				phpbb.timezone_switch_date(true);
+				$('#tz_select_date_suggest').css('display', 'inline');
+			} else {
+				option.selected = true;
+				phpbb.timezone_switch_date(!force_selector);
+				$('#tz_select_date_suggest').css('display', 'none');
+			}
+
+			$('#tz_select_date_suggest').attr('title', $('#tz_select_date_suggest').attr('data-l-suggestion').replace("%s", option.innerHTML));
+			$('#tz_select_date_suggest').attr('value', $('#tz_select_date_suggest').attr('data-l-suggestion').replace("%s", option.innerHTML.substring(0, 9)));
+			$('#tz_select_date_suggest').attr('data-suggested-tz', option.innerHTML);
+
+			// Found the suggestion, there cannot be more, so return from here.
+			return;
+		}
+	}
+}
+
 phpbb.ajax_callbacks = {};
 
 /**
@@ -436,14 +542,47 @@ phpbb.add_ajax_callback = function(id, callback)
  * the alt-text data attribute, and replaces the text in the attribute with the
  * current text so that the process can be repeated.
  */
-phpbb.add_ajax_callback('alt_text', function(data) {
+phpbb.add_ajax_callback('alt_text', function() {
 	var el = $(this),
 		alt_text;
 
 	alt_text = el.attr('data-alt-text');
+	el.attr('data-alt-text', el.text());
 	el.attr('title', alt_text);
 	el.text(alt_text);
 });
 
+/**
+ * This callback is based on the alt_text callback.
+ *
+ * It replaces the current text with the text in the alt-text data attribute,
+ * and replaces the text in the attribute with the current text so that the
+ * process can be repeated.
+ * Additionally it replaces the class of the link's parent
+ * and changes the link itself.
+ */
+phpbb.add_ajax_callback('toggle_link', function() {
+	var el = $(this),
+		toggle_text,
+		toggle_url,
+		toggle_class;
+
+	// Toggle link text
+
+	toggle_text = el.attr('data-toggle-text');
+	el.attr('data-toggle-text', el.text());
+	el.attr('title', toggle_text);
+	el.text(toggle_text);
+
+	// Toggle link url
+	toggle_url = el.attr('data-toggle-url');
+	el.attr('data-toggle-url', el.attr('href'));
+	el.attr('href', toggle_url);
+
+	// Toggle class of link parent
+	toggle_class = el.attr('data-toggle-class');
+	el.attr('data-toggle-class', el.parent().attr('class'));
+	el.parent().attr('class', toggle_class);
+});
 
 })(jQuery); // Avoid conflicts with other libraries

@@ -1884,7 +1884,7 @@ function add_bots()
 			'user_email'			=> '',
 			'user_lang'				=> $config['default_lang'],
 			'user_style'			=> 1,
-			'user_timezone'			=> 0,
+			'user_timezone'			=> 'UTC',
 			'user_allow_massemail'	=> 0,
 		);
 

@@ -32,6 +32,7 @@ class acp_users
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $phpbb_dispatcher, $request;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -749,6 +750,19 @@ class acp_users
 							}
 
 						break;
+
+						default:
+							/**
+							* Run custom quicktool code
+							*
+							* @event core.acp_users_overview_run_quicktool
+							* @var	array	user_row	Current user data
+							* @var	string	action		Quick tool that should be run
+							* @since 3.1-A1
+							*/
+							$vars = array('action', 'user_row');
+							extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_run_quicktool', compact($vars)));
+						break;
 					}
 
 					// Handle registration info updates
@@ -756,8 +770,8 @@ class acp_users
 						'username'			=> utf8_normalize_nfc(request_var('user', $user_row['username'], true)),
 						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
 						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
-						'new_password'		=> request_var('new_password', '', true),
-						'password_confirm'	=> request_var('password_confirm', '', true),
+						'new_password'		=> $request->variable('new_password', '', true),
+						'password_confirm'	=> $request->variable('password_confirm', '', true),
 					);
 
 					// Validation data - we do not check the password complexity setting here
@@ -855,6 +869,18 @@ class acp_users
 							}
 						}
 
+						/**
+						* Modify user data before we update it
+						*
+						* @event core.acp_users_overview_modify_data
+						* @var	array	user_row	Current user data
+						* @var	array	data		Submitted user data
+						* @var	array	sql_ary		User data we udpate
+						* @since 3.1-A1
+						*/
+						$vars = array('user_row', 'data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_modify_data', compact($vars)));
+
 						if ($update_username !== false)
 						{
 							$sql_ary['username'] = $update_username;
@@ -945,12 +971,6 @@ class acp_users
 					}
 				}
 
-				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
-				foreach ($quick_tool_ary as $value => $lang)
-				{
-					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
-				}
-
 				if ($config['load_onlinetrack'])
 				{
 					$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
@@ -963,6 +983,23 @@ class acp_users
 					$user_row['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
 					$user_row['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] : 0;
 					unset($row);
+				}
+
+				/**
+				* Add additional quick tool options and overwrite user data
+				*
+				* @event core.acp_users_display_overview
+				* @var	array	user_row			Array with user data
+				* @var	array	quick_tool_ary		Ouick tool options
+				* @since 3.1-A1
+				*/
+				$vars = array('user_row', 'quick_tool_ary');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_display_overview', compact($vars)));
+
+				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
+				foreach ($quick_tool_ary as $value => $lang)
+				{
+					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
 				}
 
 				$last_visit = (!empty($user_row['session_time'])) ? $user_row['session_time'] : $user_row['user_lastvisit'];
@@ -1120,10 +1157,12 @@ class acp_users
 				$log_count = 0;
 				$start = view_log('user', $log_data, $log_count, $config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
 
+				$base_url = $this->u_action . "&amp;u=$user_id&amp;$u_sort_param";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
-					'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
-					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
+					'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
 
 					'S_LIMIT_DAYS'	=> $s_limit_days,
 					'S_SORT_KEY'	=> $s_sort_key,
@@ -1458,9 +1497,8 @@ class acp_users
 				$data = array(
 					'dateformat'		=> utf8_normalize_nfc(request_var('dateformat', $user_row['user_dateformat'], true)),
 					'lang'				=> basename(request_var('lang', $user_row['user_lang'])),
-					'tz'				=> request_var('tz', (float) $user_row['user_timezone']),
+					'tz'				=> request_var('tz', $user_row['user_timezone']),
 					'style'				=> request_var('style', $user_row['user_style']),
-					'dst'				=> request_var('dst', $user_row['user_dst']),
 					'viewemail'			=> request_var('viewemail', $user_row['user_allow_viewemail']),
 					'massemail'			=> request_var('massemail', $user_row['user_allow_massemail']),
 					'hideonline'		=> request_var('hideonline', !$user_row['user_allow_viewonline']),
@@ -1495,7 +1533,7 @@ class acp_users
 					$error = validate_data($data, array(
 						'dateformat'	=> array('string', false, 1, 30),
 						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
-						'tz'			=> array('num', false, -14, 14),
+						'tz'			=> array('timezone'),
 
 						'topic_sk'		=> array('string', false, 1, 1),
 						'topic_sd'		=> array('string', false, 1, 1),
@@ -1531,7 +1569,6 @@ class acp_users
 							'user_notify_type'		=> $data['notifymethod'],
 							'user_notify_pm'		=> $data['notifypm'],
 
-							'user_dst'				=> $data['dst'],
 							'user_dateformat'		=> $data['dateformat'],
 							'user_lang'				=> $data['lang'],
 							'user_timezone'			=> $data['tz'],
@@ -1641,6 +1678,7 @@ class acp_users
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
+				$timezone_selects = phpbb_timezone_select($user, $data['tz'], true);
 				$template->assign_vars(array(
 					'S_PREFS'			=> true,
 					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
@@ -1654,7 +1692,6 @@ class acp_users
 					'NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
 					'NOTIFY_PM'			=> $data['notifypm'],
 					'POPUP_PM'			=> $data['popuppm'],
-					'DST'				=> $data['dst'],
 					'BBCODE'			=> $data['bbcode'],
 					'SMILIES'			=> $data['smilies'],
 					'ATTACH_SIG'		=> $data['sig'],
@@ -1681,7 +1718,8 @@ class acp_users
 
 					'S_LANG_OPTIONS'	=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
-					'S_TZ_OPTIONS'		=> tz_select($data['tz'], true),
+					'S_TZ_OPTIONS'			=> $timezone_selects['tz_select'],
+					'S_TZ_DATE_OPTIONS'		=> $timezone_selects['tz_dates'],
 					)
 				);
 
@@ -1942,7 +1980,7 @@ class acp_users
 
 						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
 
-						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode(', ', $log_attachments));
+						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode($user->lang['COMMA_SEPARATOR'], $log_attachments));
 						trigger_error($message . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 					else
@@ -2035,14 +2073,15 @@ class acp_users
 				}
 				$db->sql_freeresult($result);
 
+				$base_url = $this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
+
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
-					'S_ON_PAGE'			=> on_page($num_attachments, $config['topics_per_page'], $start),
+					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $num_attachments, $config['topics_per_page'], $start),
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir,
-
-					'PAGINATION'		=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start, true))
-				);
+				));
 
 			break;
 

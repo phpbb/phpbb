@@ -121,8 +121,9 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 	public function sql_load($query)
 	{
 	}
-	public function sql_save($query, &$query_result, $ttl)
+	public function sql_save($query, $query_result, $ttl)
 	{
+		return $query_result;
 	}
 	public function sql_exists($query_id)
 	{

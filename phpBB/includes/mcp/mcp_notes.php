@@ -215,6 +215,9 @@ class mcp_notes
 			}
 		}
 
+		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
@@ -225,8 +228,7 @@ class mcp_notes
 
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
-			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
 			'TOTAL_REPORTS'		=> $user->lang('LIST_REPORTS', (int) $log_count),
 
 			'RANK_TITLE'		=> $rank_title,

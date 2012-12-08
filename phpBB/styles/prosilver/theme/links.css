@@ -66,6 +66,15 @@ a.topictitle:hover {
 	text-decoration: underline;
 }
 
+a.lastsubject {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a.lastsubject:hover {
+	text-decoration: underline;
+}
+
 /* Post body links */
 .postlink {
 	text-decoration: none;
@@ -136,44 +145,44 @@ a.top2 {
 }
 
 /* Arrow links  */
-a.up		{ background: none no-repeat left center; }
-a.down		{ background: none no-repeat right center; }
-a.left		{ background: none no-repeat 3px 60%; }
-a.right		{ background: none no-repeat 95% 60%; }
+a.arrow-up		{ background: none no-repeat left center; }
+a.arrow-down		{ background: none no-repeat right center; }
+a.arrow-left		{ background: none no-repeat 3px 60%; }
+a.arrow-right		{ background: none no-repeat 95% 60%; }
 
-a.up, a.up:link, a.up:active, a.up:visited {
+a.arrow-up, a.arrow-up:link, a.arrow-up:active, a.arrow-up:visited {
 	padding-left: 10px;
 	text-decoration: none;
 	border-bottom-width: 0;
 }
 
-a.up:hover {
+a.arrow-up:hover {
 	background-position: left top;
 }
 
-a.down, a.down:link, a.down:active, a.down:visited {
+a.arrow-down, a.arrow-down:link, a.arrow-down:active, a.arrow-down:visited {
 	padding-right: 10px;
 }
 
-a.down:hover {
+a.arrow-down:hover {
 	background-position: right bottom;
 	text-decoration: none;
 }
 
-a.left, a.left:active, a.left:visited {
+a.arrow-left, a.arrow-left:active, a.arrow-left:visited {
 	padding-left: 12px;
 }
 
-a.left:hover {
+a.arrow-left:hover {
 	text-decoration: none;
 	background-position: 0 60%;
 }
 
-a.right, a.right:active, a.right:visited {
+a.arrow-right, a.arrow-right:active, a.arrow-right:visited {
 	padding-right: 12px;
 }
 
-a.right:hover {
+a.arrow-right:hover {
 	text-decoration: none;
 	background-position: 100% 60%;
 }

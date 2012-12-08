@@ -565,6 +565,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value varchar(255) NOT NULL DEFAULT '',
 	field_validation varchar(20) NOT NULL DEFAULT '',
 	field_required INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	field_show_novalue INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_reg INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_pm INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_vt INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -628,7 +629,9 @@ CREATE TABLE phpbb_reports (
 	report_closed INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_text mediumtext(16777215) NOT NULL DEFAULT '',
-	reported_post_text mediumtext(16777215) NOT NULL DEFAULT ''
+	reported_post_text mediumtext(16777215) NOT NULL DEFAULT '',
+	reported_post_bitfield varchar(255) NOT NULL DEFAULT '',
+	reported_post_uid varchar(8) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);
@@ -864,8 +867,7 @@ CREATE TABLE phpbb_users (
 	user_inactive_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_posts INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_lang varchar(30) NOT NULL DEFAULT '',
-	user_timezone decimal(5,2) NOT NULL DEFAULT '0',
-	user_dst INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_timezone varchar(100) NOT NULL DEFAULT 'UTC',
 	user_dateformat varchar(30) NOT NULL DEFAULT 'd M Y H:i',
 	user_style INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_rank INTEGER UNSIGNED NOT NULL DEFAULT '0',

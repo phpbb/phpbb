@@ -206,7 +206,7 @@ class dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if ($cache->sql_exists($query_id))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
@@ -256,7 +256,7 @@ class dbal
 				$this->sql_rowseek($rownum, $query_id);
 			}
 
-			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
+			if (!is_object($query_id) && $cache->sql_exists($query_id))
 			{
 				return $cache->sql_fetchfield($query_id, $field);
 			}
@@ -281,6 +281,37 @@ class dbal
 		$expression = utf8_str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
 
 		return $this->_sql_like_expression('LIKE \'' . $this->sql_escape($expression) . '\'');
+	}
+
+	/**
+	* Build a case expression
+	*
+	* Note: The two statements action_true and action_false must have the same data type (int, vchar, ...) in the database!
+	*
+	* @param	string	$condition		The condition which must be true, to use action_true rather then action_else
+	* @param	string	$action_true	SQL expression that is used, if the condition is true
+	* @param	string	$action_else	SQL expression that is used, if the condition is false, optional
+	* @return	string			CASE expression including the condition and statements
+	*/
+	public function sql_case($condition, $action_true, $action_false = false)
+	{
+		$sql_case = 'CASE WHEN ' . $condition;
+		$sql_case .= ' THEN ' . $action_true;
+		$sql_case .= ($action_false !== false) ? ' ELSE ' . $action_false : '';
+		$sql_case .= ' END';
+		return $sql_case;
+	}
+
+	/**
+	* Build a concatenated expression
+	*
+	* @param	string	$expr1		Base SQL expression where we append the second one
+	* @param	string	$expr2		SQL expression that is appended to the first expression
+	* @return	string		Concatenated string
+	*/
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return $expr1 . ' || ' . $expr2;
 	}
 
 	/**
@@ -735,8 +766,8 @@ class dbal
 
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
-			// The DEBUG_EXTRA constant is for development only!
-			if ((isset($auth) && $auth->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG_EXTRA'))
+			// The DEBUG constant is for development only!
+			if ((isset($auth) && $auth->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG'))
 			{
 				$message .= ($sql) ? '<br /><br />SQL<br /><br />' . htmlspecialchars($sql) : '';
 			}

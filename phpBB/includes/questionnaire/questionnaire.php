@@ -70,7 +70,7 @@ class phpbb_questionnaire_data_collector
 	/**
 	* Collect info into the data property.
 	*
-	* @return	void
+	* @return	null
 	*/
 	function collect()
 	{
@@ -304,7 +304,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'avatar_max_width' => true,
 			'avatar_min_height' => true,
 			'avatar_min_width' => true,
-			'board_dst' => true,
 			'board_email_form' => true,
 			'board_hide_emails' => true,
 			'board_timezone' => true,
@@ -477,7 +476,6 @@ class phpbb_questionnaire_phpbb_data_provider
 
 		$result['dbms'] = $dbms;
 		$result['acm_type'] = $acm_type;
-		$result['load_extensions'] = $load_extensions;
 		$result['user_agent'] = 'Unknown';
 		$result['dbms_version'] = $db->sql_server_info(true);
 

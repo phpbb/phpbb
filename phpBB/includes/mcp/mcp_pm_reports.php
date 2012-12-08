@@ -291,12 +291,15 @@ class mcp_pm_reports
 								'REPORT_ID'				=> $row['report_id'],
 								'REPORT_TIME'			=> $user->format_date($row['report_time']),
 
-								'RECIPIENTS'			=> implode(', ', $address_list[$row['msg_id']]),
+								'RECIPIENTS'			=> implode($user->lang['COMMA_SEPARATOR'], $address_list[$row['msg_id']]),
 								'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $row['message_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 							));
 						}
 					}
 				}
+
+				$base_url = $this->u_action . "&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
 
 				// Now display the page
 				$template->assign_vars(array(
@@ -307,8 +310,7 @@ class mcp_pm_reports
 					'S_MCP_ACTION'			=> $this->u_action,
 					'S_CLOSED'				=> ($mode == 'pm_reports_closed') ? true : false,
 
-					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
-					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $total, $config['topics_per_page'], $start),
 					'TOTAL'					=> $total,
 					'TOTAL_REPORTS'			=> $user->lang('LIST_REPORTS', (int) $total),
 					)

@@ -150,7 +150,7 @@ if ($config['gzip_compress'])
 }
 
 // IF debug extra is enabled and admin want to "explain" the page we need to set other headers...
-if (defined('DEBUG_EXTRA') && request_var('explain', 0) && $auth->acl_get('a_'))
+if (defined('DEBUG') && request_var('explain', 0) && $auth->acl_get('a_'))
 {
 	header('Content-type: text/html; charset=UTF-8');
 	header('Cache-Control: private, no-cache="set-cookie"');
@@ -254,16 +254,8 @@ function feed_format_date($time)
 	{
 		global $user;
 
-		$zone_offset = (int) $user->timezone + (int) $user->dst;
-
-		$sign = ($zone_offset < 0) ? '-' : '+';
-		$time_offset = abs($zone_offset);
-
-		$offset_seconds	= $time_offset % 3600;
-		$offset_minutes	= $offset_seconds / 60;
-		$offset_hours	= ($time_offset - $offset_seconds) / 3600;
-
-		$offset_string	= sprintf("%s%02d:%02d", $sign, $offset_hours, $offset_minutes);
+		$zone_offset = $user->create_datetime()->getOffset();
+		$offset_string = phpbb_format_timezone_offset($zone_offset);
 	}
 
 	return gmdate("Y-m-d\TH:i:s", $time + $zone_offset) . $offset_string;
@@ -561,12 +553,6 @@ class phpbb_feed_base
 		if (!isset($forum_ids))
 		{
 			$forum_ids = array_flip($this->get_moderator_approve_forums());
-		}
-
-		if (!$forum_id)
-		{
-			// Global announcement, your a moderator in any forum than it's okay.
-			return (!empty($forum_ids)) ? true : false;
 		}
 
 		return (isset($forum_ids[$forum_id])) ? true : false;

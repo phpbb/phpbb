@@ -408,16 +408,34 @@ function strip_bbcode(&$text, $uid = '')
 * For display of custom parsed text on user-facing pages
 * Expects $text to be the value directly from the database (stored value)
 */
-function generate_text_for_display($text, $uid, $bitfield, $flags)
+function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text = true)
 {
 	static $bbcode;
+	global $phpbb_dispatcher;
 
 	if (!$text)
 	{
 		return '';
 	}
 
-	$text = censor_text($text);
+	/**
+	* Use this event to modify the text before it is parsed
+	*
+	* @event core.modify_text_for_display_before
+	* @var string	text			The text to parse
+	* @var string	uid				The BBCode UID
+	* @var string	bitfield		The BBCode Bitfield
+	* @var int		flags			The BBCode Flags
+	* @var bool		censor_text		Whether or not to apply word censors
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'uid', 'bitfield', 'flags', 'censor_text');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_before', compact($vars)));
+
+	if ($censor_text)
+	{		
+		$text = censor_text($text);
+	}
 
 	// Parse bbcode if bbcode uid stored and bbcode enabled
 	if ($uid && ($flags & OPTION_FLAG_BBCODE))
@@ -443,6 +461,19 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 	$text = bbcode_nl2br($text);
 	$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
 
+	/**
+	* Use this event to modify the text after it is parsed
+	*
+	* @event core.modify_text_for_display_after
+	* @var string	text		The text to parse
+	* @var string	uid			The BBCode UID
+	* @var string	bitfield	The BBCode Bitfield
+	* @var int		flags		The BBCode Flags
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'uid', 'bitfield', 'flags');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_after', compact($vars)));
+
 	return $text;
 }
 
@@ -453,7 +484,23 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 */
 function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
 {
-	global $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+
+	/**
+	* Use this event to modify the text before it is prepared for storage
+	*
+	* @event core.modify_text_for_storage_before
+	* @var string	text			The text to parse
+	* @var string	uid				The BBCode UID
+	* @var string	bitfield		The BBCode Bitfield
+	* @var int		flags			The BBCode Flags
+	* @var bool		allow_bbcode	Whether or not to parse BBCode
+	* @var bool		allow_urls		Whether or not to parse URLs
+	* @var bool		allow_smilies	Whether or not to parse Smilies
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'uid', 'bitfield', 'flags', 'allow_bbcode', 'allow_urls', 'allow_smilies');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_before', compact($vars)));
 
 	$uid = $bitfield = '';
 	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
@@ -482,6 +529,19 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 
 	$bitfield = $message_parser->bbcode_bitfield;
 
+	/**
+	* Use this event to modify the text after it is prepared for storage
+	*
+	* @event core.modify_text_for_storage_after
+	* @var string	text			The text to parse
+	* @var string	uid				The BBCode UID
+	* @var string	bitfield		The BBCode Bitfield
+	* @var int		flags			The BBCode Flags
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'uid', 'bitfield', 'flags');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_after', compact($vars)));
+
 	return;
 }
 
@@ -491,9 +551,32 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 */
 function generate_text_for_edit($text, $uid, $flags)
 {
-	global $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+
+	/**
+	* Use this event to modify the text before it is decoded for editing
+	*
+	* @event core.modify_text_for_edit_before
+	* @var string	text			The text to parse
+	* @var string	uid				The BBCode UID
+	* @var int		flags			The BBCode Flags
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'uid', 'flags');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_edit_before', compact($vars)));
 
 	decode_message($text, $uid);
+
+	/**
+	* Use this event to modify the text after it is decoded for editing
+	*
+	* @event core.modify_text_for_edit_after
+	* @var string	text			The text to parse
+	* @var int		flags			The BBCode Flags
+	* @since 3.1-A1
+	*/
+	$vars = array('text', 'flags');
+	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_edit_after', compact($vars)));
 
 	return array(
 		'allow_bbcode'	=> ($flags & OPTION_FLAG_BBCODE) ? 1 : 0,
@@ -1175,6 +1258,7 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false, $custom_profile_url = false)
 {
 	static $_profile_cache;
+	global $phpbb_dispatcher;
 
 	// We cache some common variables we need within this function
 	if (empty($_profile_cache))
@@ -1252,10 +1336,34 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 
 	if (($mode == 'full' && !$profile_url) || $mode == 'no_profile')
 	{
-		return str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_noprofile'] : $_profile_cache['tpl_noprofile_colour']);
+		$username_string = str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_noprofile'] : $_profile_cache['tpl_noprofile_colour']);
 	}
+	else
+	{
+		$username_string = str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_profile'] : $_profile_cache['tpl_profile_colour']);
+	}
+	
+	/**
+	* Use this event to change the output of get_username_string()
+	*
+	* @event core.modify_username_string
+	* @var string mode				profile|username|colour|full|no_profile
+	* @var int user_id				String or array of additional url
+	*								parameters
+	* @var string username			The user's username
+	* @var string username_colour	The user's colour
+	* @var string guest_username	Optional parameter to specify the
+	*								guest username.
+	* @var string custom_profile_url Optional parameter to specify a
+	*								profile url.
+	* @var string username_string	The string that has been generated
+	* @var array _profile_cache		Array of original return templates
+	* @since 3.1-A1
+	*/
+	$vars = array('mode', 'user_id', 'username', 'username_colour', 'guest_username', 'custom_profile_url', 'username_string', '_profile_cache');
+	extract($phpbb_dispatcher->trigger_event('core.modify_username_string', compact($vars)));
 
-	return str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_profile'] : $_profile_cache['tpl_profile_colour']);
+	return $username_string;
 }
 
 /**

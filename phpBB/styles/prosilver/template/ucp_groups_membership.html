@@ -93,7 +93,7 @@
 				<!-- IF pending.GROUP_DESC --><br />{pending.GROUP_DESC}<!-- ENDIF -->
 				<!-- IF not pending.GROUP_SPECIAL --><br /><i>{pending.GROUP_STATUS}</i><!-- ENDIF -->
 				</dt>
-				<dd class="mark"><input type="radio" name="selected" value="{pending.GROUP_ID}" <!-- IF pending.GROUP_SPECIAL -->disabled="diabled"<!-- ENDIF --> /></dd>
+				<dd class="mark"><input type="radio" name="selected" value="{pending.GROUP_ID}" <!-- IF pending.GROUP_SPECIAL -->disabled="disabled"<!-- ENDIF --> /></dd>
 			</dl>
 		</li>
 		<!-- END pending -->
@@ -146,7 +146,7 @@
 
 		<!-- IF $SHOW_BUTTONS eq 1 -->
 		<div class="right-box">
-			<label for="action">{L_SELECT}:</label> 
+			<label for="action">{L_SELECT}{L_COLON}</label> 
 			<select name="action" id="action">
 				<option value="join">{L_JOIN_SELECTED}</option>
 				<option value="resign">{L_RESIGN_SELECTED}</option>

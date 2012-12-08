@@ -27,7 +27,7 @@
 			d: '{LA_BBCODE_D_HELP}',
 			tip: '{L_STYLES_TIP}'
 			<!-- BEGIN custom_tags -->
-				,cb_{custom_tags.BBCODE_ID}: '{custom_tags.A_BBCODE_HELPLINE}'
+				,cb_{custom_tags.BBCODE_ID}{L_COLON} '{custom_tags.A_BBCODE_HELPLINE}'
 			<!-- END custom_tags -->
 		}
 
@@ -55,7 +55,7 @@
 		<!-- IF S_BBCODE_FLASH -->
 			<input type="button" class="btnbbcode" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" onmouseover="helpline('d')" onmouseout="helpline('tip')" />
 		<!-- ENDIF -->
-		<span class="genmed nowrap">{L_FONT_SIZE}: <select class="gensmall" name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')" onmouseout="helpline('tip')">
+		<span class="genmed nowrap">{L_FONT_SIZE}{L_COLON} <select class="gensmall" name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')" onmouseout="helpline('tip')">
 			<option value="50">{L_FONT_TINY}</option>
 			<option value="85">{L_FONT_SMALL}</option>
 			<option value="100" selected="selected">{L_FONT_NORMAL}</option>

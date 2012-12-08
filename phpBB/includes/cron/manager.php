@@ -32,31 +32,35 @@ class phpbb_cron_manager
 	*/
 	protected $tasks = array();
 
+	protected $phpbb_root_path;
+	protected $php_ext;
+
 	/**
 	* Constructor. Loads all available tasks.
 	*
-	* @param array|Traversable $task_names Provides an iterable set of task names
+	* @param array|Traversable $tasks Provides an iterable set of task names
 	*/
-	public function __construct($task_names)
+	public function __construct($tasks, $phpbb_root_path, $php_ext)
 	{
-		$this->load_tasks($task_names);
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+
+		$this->load_tasks($tasks);
 	}
 
 	/**
 	* Loads tasks given by name, wraps them
 	* and puts them into $this->tasks.
 	*
-	* @param array|Traversable $task_names		Array of strings
+	* @param array|Traversable $tasks		Array of instances of phpbb_cron_task
 	*
-	* @return void
+	* @return null
 	*/
-	public function load_tasks($task_names)
+	public function load_tasks($tasks)
 	{
-		foreach ($task_names as $task_name)
+		foreach ($tasks as $task)
 		{
-			$task = new $task_name();
-			$wrapper = new phpbb_cron_task_wrapper($task);
-			$this->tasks[] = $wrapper;
+			$this->tasks[] = $this->wrap_task($task);
 		}
 	}
 
@@ -122,25 +126,13 @@ class phpbb_cron_manager
 	}
 
 	/**
-	* Creates an instance of parametrized cron task $name with args $args.
-	* The constructed task is wrapped with cron task wrapper before being returned.
+	* Wraps a task inside an instance of phpbb_cron_task_wrapper.
 	*
-	* @param string $name		The task name, which is the same as cron task class name.
-	* @param array $args		Will be passed to the task class's constructor.
-	*
-	* @return phpbb_cron_task_wrapper|null
+	* @param  phpbb_cron_task 			$task The task.
+	* @return phpbb_cron_task_wrapper	The wrapped task.
 	*/
-	public function instantiate_task($name, array $args)
+	public function wrap_task(phpbb_cron_task $task)
 	{
-		$task = $this->find_task($name);
-		if ($task)
-		{
-			// task here is actually an instance of cron task wrapper
-			$class = $task->get_name();
-			$task = new $class($args);
-			// need to wrap the new task too
-			$task = new phpbb_cron_task_wrapper($task);
-		}
-		return $task;
+		return new phpbb_cron_task_wrapper($task, $this->phpbb_root_path, $this->php_ext);
 	}
 }

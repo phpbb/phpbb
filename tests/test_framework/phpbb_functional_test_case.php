@@ -34,16 +34,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static protected $config = array();
 	static protected $already_installed = false;
 
-	static public function setUpBeforeClass()
-	{
-		if (!extension_loaded('phar'))
-		{
-			self::markTestSkipped('phar extension is not loaded');
-		}
-
-		require_once 'phar://' . __DIR__ . '/../../vendor/goutte.phar';
-	}
-
 	public function setUp()
 	{
 		if (!isset(self::$config['phpbb_functional_url']))
@@ -52,12 +42,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 
 		$this->cookieJar = new CookieJar;
-		$this->client = new Goutte\Client(array(), array(), null, $this->cookieJar);
+		$this->client = new Goutte\Client(array(), null, $this->cookieJar);
+		// Reset the curl handle because it is 0 at this point and not a valid
+		// resource
+		$this->client->getClient()->getCurlMulti()->reset(true);
 		$this->root_url = self::$config['phpbb_functional_url'];
 		// Clear the language array so that things
 		// that were added in other tests are gone
 		$this->lang = array();
 		$this->add_lang('common');
+		$this->purge_cache();
 	}
 
 	public function request($method, $path)
@@ -132,6 +126,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			$this->extension_manager = new phpbb_extension_manager(
 				$this->get_db(),
+				new phpbb_config(array()),
 				self::$config['table_prefix'] . 'ext',
 				$phpbb_root_path,
 				".$phpEx",
@@ -204,13 +199,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$this->do_request('create_table', $data);
 
-		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], array(), true));
-
 		$this->do_request('config_file', $data);
-
-		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
+		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], true, true));
 
 		$this->do_request('final', $data);
+		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
 	}
 
 	private function do_request($sub, $post_data = null)
@@ -251,11 +244,53 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$cookies = $this->cookieJar->all();
 
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-		foreach ($cookies as $key => $cookie);
+		foreach ($cookies as $cookie);
 		{
-			if (substr($key, -4) == '_sid')
+			if (substr($cookie->getName(), -4) == '_sid')
 			{
 				$this->sid = $cookie->getValue();
+			}
+		}
+	}
+
+	/**
+	* Login to the ACP
+	* You must run login() before calling this.
+	*/
+	protected function admin_login()
+	{
+		$this->add_lang('acp/common');
+
+		// Requires login first!
+		if (empty($this->sid))
+		{
+			$this->fail('$this->sid is empty. Make sure you call login() before admin_login()');
+			return;
+		}
+
+		$crawler = $this->request('GET', 'adm/index.php?sid=' . $this->sid);
+		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
+
+		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
+
+		foreach ($form->getValues() as $field => $value)
+		{
+			if (strpos($field, 'password_') === 0)
+			{
+				$login = $this->client->submit($form, array('username' => 'admin', $field => 'admin'));
+
+				$cookies = $this->cookieJar->all();
+
+				// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
+				foreach ($cookies as $cookie);
+				{
+					if (substr($cookie->getName(), -4) == '_sid')
+					{
+						$this->sid = $cookie->getValue();
+					}
+				}
+
+				break;
 			}
 		}
 	}
@@ -295,5 +330,32 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$args[0] = $this->lang[$key];
 
 		return call_user_func_array('sprintf', $args);
+	}
+
+	/**
+	 * assertContains for language strings
+	 *
+	 * @param string $needle Search string
+	 * @param string $haystack Search this
+	 * @param string $message Optional failure message
+	 */
+	public function assertContainsLang($needle, $haystack, $message = null)
+	{
+		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+	}
+
+	/**
+	* Heuristic function to check that the response is success.
+	*
+	* When php decides to die with a fatal error, it still sends 200 OK
+	* status code. This assertion tries to catch that.
+	*
+	* @return null
+	*/
+	public function assert_response_success()
+	{
+		$this->assertEquals(200, $this->client->getResponse()->getStatus());
+		$content = $this->client->getResponse()->getContent();
+		$this->assertNotContains('Fatal error:', $content);
 	}
 }

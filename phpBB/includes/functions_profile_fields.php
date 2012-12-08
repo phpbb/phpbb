@@ -121,7 +121,7 @@ class custom_profile
 
 			case FIELD_BOOL:
 				$field_value = (bool) $field_value;
-			
+
 				if (!$field_value && $field_data['field_required'])
 				{
 					return 'FIELD_REQUIRED';
@@ -133,7 +133,7 @@ class custom_profile
 				{
 					return false;
 				}
-				
+
 				$field_value = (int) $field_value;
 
 				if ($field_value < $field_data['field_minlen'])
@@ -455,6 +455,8 @@ class custom_profile
 
 			$user_fields = array();
 
+			$user_ids = $user_id;
+
 			// Go through the fields in correct order
 			foreach (array_keys($this->profile_cache) as $used_ident)
 			{
@@ -462,6 +464,15 @@ class custom_profile
 				{
 					$user_fields[$user_id][$used_ident]['value'] = $row['pf_' . $used_ident];
 					$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
+				}
+
+				foreach ($user_ids as $user_id)
+				{
+					if (!isset($user_fields[$user_id][$used_ident]) && $this->profile_cache[$used_ident]['field_show_novalue'])
+					{
+						$user_fields[$user_id][$used_ident]['value'] = '';
+						$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
+					}
 				}
 			}
 
@@ -520,7 +531,7 @@ class custom_profile
 		switch ($this->profile_types[$field_type])
 		{
 			case 'int':
-				if ($value === '')
+				if ($value === '' && !$ident_ary['data']['field_show_novalue'])
 				{
 					return NULL;
 				}
@@ -529,7 +540,7 @@ class custom_profile
 
 			case 'string':
 			case 'text':
-				if (!$value)
+				if (!$value && !$ident_ary['data']['field_show_novalue'])
 				{
 					return NULL;
 				}
@@ -547,16 +558,19 @@ class custom_profile
 				$month = (isset($date[1])) ? (int) $date[1] : 0;
 				$year = (isset($date[2])) ? (int) $date[2] : 0;
 
-				if (!$day && !$month && !$year)
+				if (!$day && !$month && !$year && !$ident_ary['data']['field_show_novalue'])
 				{
 					return NULL;
 				}
 				else if ($day && $month && $year)
 				{
 					global $user;
-					// Date should display as the same date for every user regardless of timezone, so remove offset
-					// to compensate for the offset added by phpbb_user::format_date()
-					return $user->format_date(gmmktime(0, 0, 0, $month, $day, $year) - ($user->timezone + $user->dst), $user->lang['DATE_FORMAT'], true);
+					// Date should display as the same date for every user regardless of timezone
+
+					return $user->create_datetime()
+						->setDate($year, $month, $day)
+						->setTime(0, 0, 0)
+						->format($user->lang['DATE_FORMAT'], true);
 				}
 
 				return $value;
@@ -570,12 +584,7 @@ class custom_profile
 					$this->get_option_lang($field_id, $lang_id, FIELD_DROPDOWN, false);
 				}
 
-				// If a dropdown field is required, users
-				// cannot choose the "no value" option.
-				// They must choose one of the other options.
-				// Therefore, here we treat a value equal to
-				// the "no value" as a lack of value, i.e. NULL.
-				if ($value == $ident_ary['data']['field_novalue'] && $ident_ary['data']['field_required'])
+				if ($value == $ident_ary['data']['field_novalue'] && !$ident_ary['data']['field_show_novalue'])
 				{
 					return NULL;
 				}
@@ -585,7 +594,14 @@ class custom_profile
 				// User not having a value assigned
 				if (!isset($this->options_lang[$field_id][$lang_id][$value]))
 				{
-					return NULL;
+					if ($ident_ary['data']['field_show_novalue'])
+					{
+						$value = $ident_ary['data']['field_novalue'];
+					}
+					else
+					{
+						return NULL;
+					}
 				}
 
 				return $this->options_lang[$field_id][$lang_id][$value];
@@ -597,6 +613,11 @@ class custom_profile
 				if (!isset($this->options_lang[$field_id][$lang_id]))
 				{
 					$this->get_option_lang($field_id, $lang_id, FIELD_BOOL, false);
+				}
+
+				if (!$value && $ident_ary['data']['field_show_novalue'])
+				{
+					$value = $ident_ary['data']['field_default_value'];
 				}
 
 				if ($ident_ary['data']['field_length'] == 1)

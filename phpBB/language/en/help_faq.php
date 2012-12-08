@@ -43,7 +43,7 @@ $help = array(
 	),
 	array(
 		0 => 'Why do I get logged off automatically?',
-		1 => 'If you do not check the <em>Log me in automatically</em> box when you login, the board will only keep you logged in for a preset time. This prevents misuse of your account by anyone else. To stay logged in, check the box during login. This is not recommended if you access the board from a shared computer, e.g. library, internet cafe, university computer lab, etc. If you do not see this checkbox, it means the board administrator has disabled this feature.'
+		1 => 'If you do not check the <em>Remember me</em> box when you login, the board will only keep you logged in for a preset time. This prevents misuse of your account by anyone else. To stay logged in, check the box during login. This is not recommended if you access the board from a shared computer, e.g. library, internet cafe, university computer lab, etc. If you do not see this checkbox, it means the board administrator has disabled this feature.'
 	),
 	array(
 		0 => 'How do I prevent my username appearing in the online user listings?',
@@ -87,7 +87,7 @@ $help = array(
 	),
 	array(
 		0 => 'I changed the timezone and the time is still wrong!',
-		1 => 'If you are sure you have set the timezone and Summer Time/DST correctly and the time is still incorrect, then the time stored on the server clock is incorrect. Please notify an administrator to correct the problem.'
+		1 => 'If you are sure you have set the timezone correctly and the time is still incorrect, then the time stored on the server clock is incorrect. Please notify an administrator to correct the problem.'
 	),
 	array(
 		0 => 'My language is not in the list!',

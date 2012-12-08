@@ -1,0 +1,20 @@
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_BOARD_TIMEZONE}{L_COLON}</b></td>
+	<td class="row2">
+		<!-- IF S_TZ_DATE_OPTIONS -->
+		<div id="tz_select_date" style="display: none;">
+			<select name="tz_date" id="tz_date" class="autowidth tz_select">
+				<option value="">{L_SELECT_CURRENT_TIME}</option>
+				{S_TZ_DATE_OPTIONS}
+			</select><br />
+			<input type="button" id="tz_select_date_suggest" class="btnlite" style="display: none;" data-is-registration="<!-- IF S_REGISTRATION -->true<!-- ELSE -->false<!-- ENDIF -->" data-l-suggestion="{L_TIMEZONE_DATE_SUGGESTION}" value="{L_TIMEZONE_DATE_SUGGESTION}" />
+		</div>
+		<!-- ENDIF -->
+		<select name="tz" id="timezone" class="autowidth tz_select">
+			<option value="">{L_SELECT_TIMEZONE}</option>
+			{S_TZ_OPTIONS}
+		</select>
+
+		<!-- INCLUDEJS template/timezone.js -->
+	</td>
+</tr>

@@ -575,6 +575,26 @@ switch ($mode)
 			unset($module);
 		}
 
+		/**
+		* Modify user data before we display the profile
+		*
+		* @event core.memberlist_view_profile
+		* @var	array	member					Title of the index page
+		* @var	bool	user_notes_enabled		Is the mcp user notes module
+		*										enabled?
+		* @var	bool	warn_user_enabled		Is the mcp warnings module
+		*										enabled?
+		* @var	bool	zebra_enabled			Is the ucp zebra module
+		*										enabled?
+		* @var	bool	friends_enabled			Is the ucp friends module
+		*										enabled?
+		* @var	bool	foes_enabled			Is the ucp foes module
+		*										enabled?
+		* @since 3.1-A1
+		*/
+		$vars = array('member', 'user_notes_enabled', 'warn_user_enabled', 'zebra_enabled', 'friends_enabled', 'foes_enabled');
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_view_profile', compact($vars)));
+
 		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
 
 		// Custom Profile Fields
@@ -1572,10 +1592,11 @@ switch ($mode)
 			}
 		}
 
+		phpbb_generate_template_pagination($template, $pagination_url, 'pagination', 'start', $total_users, $config['topics_per_page'], $start);
+
 		// Generate page
 		$template->assign_vars(array(
-			'PAGINATION'	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
-			'PAGE_NUMBER'	=> on_page($total_users, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $pagination_url, $total_users, $config['topics_per_page'], $start),
 			'TOTAL_USERS'	=> $user->lang('LIST_USERS', (int) $total_users),
 
 			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang['PROFILE']),
@@ -1630,7 +1651,7 @@ page_footer();
 */
 function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = false)
 {
-	global $config, $auth, $template, $user, $phpEx, $phpbb_root_path;
+	global $config, $auth, $template, $user, $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
 	$username = $data['username'];
 	$user_id = $data['user_id'];
@@ -1674,7 +1695,8 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 		if ($bday_year)
 		{
-			$now = phpbb_gmgetdate(time() + $user->timezone + $user->dst);
+			$now = $user->create_datetime();
+			$now = phpbb_gmgetdate($now->getTimestamp() + $now->getOffset());
 
 			$diff = $now['mon'] - $bday_month;
 			if ($diff == 0)
@@ -1705,7 +1727,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 	) ? true : false;
 
 	// Dump it out to the template
-	return array(
+	$template_data = array(
 		'AGE'			=> $age,
 		'RANK_TITLE'	=> $rank_title,
 		'JOINED'		=> $user->format_date($data['user_regdate']),
@@ -1753,6 +1775,19 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
 	);
+
+	/**
+	* Preparing a user's data before displaying it in profile and memberlist
+	*
+	* @event core.memberlist_prepare_profile_data
+	* @var	array	data				Array with user's data
+	* @var	array	template_data		Template array with user's data
+	* @since 3.1-A1
+	*/
+	$vars = array('data', 'template_data');
+	extract($phpbb_dispatcher->trigger_event('core.memberlist_prepare_profile_data', compact($vars)));
+
+	return $template_data;
 }
 
 function _sort_last_active($first, $second)

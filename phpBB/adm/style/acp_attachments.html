@@ -54,7 +54,7 @@
 		<!-- ELSE -->
 
 			<dl>
-				<dt><label for="{options.KEY}">{options.TITLE}:</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+				<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
 				<dd>{options.CONTENT}</dd>
 			</dl>
 
@@ -78,11 +78,11 @@
 		<legend>{L_SECURE_TITLE}</legend>
 		<p>{L_DOWNLOAD_ADD_IPS_EXPLAIN}</p>
 	<dl>
-		<dt><label for="ip_hostname">{L_IP_HOSTNAME}:</label></dt>
+		<dt><label for="ip_hostname">{L_IP_HOSTNAME}{L_COLON}</label></dt>
 		<dd><textarea id="ip_hostname" cols="40" rows="3" name="ips"></textarea></dd>
 	</dl>
 	<dl>
-		<dt><label for="exclude">{L_IP_EXCLUDE}:</label><br /><span>{L_EXCLUDE_ENTERED_IP}</span></dt>
+		<dt><label for="exclude">{L_IP_EXCLUDE}{L_COLON}</label><br /><span>{L_EXCLUDE_ENTERED_IP}</span></dt>
 		<dd><label><input type="radio" id="exclude" name="ipexclude" value="1" class="radio" /> {L_YES}</label>
 			<label><input type="radio" name="ipexclude" value="0" checked="checked" class="radio" /> {L_NO}</label></dd>
 	</dl>
@@ -97,7 +97,7 @@
 	<!-- IF S_DEFINED_IPS -->
 			<p>{L_DOWNLOAD_REMOVE_IPS_EXPLAIN}</p>
 		<dl>
-			<dt><label for="remove_ip_hostname">{L_IP_HOSTNAME}:</label></dt>
+			<dt><label for="remove_ip_hostname">{L_IP_HOSTNAME}{L_COLON}</label></dt>
 			<dd><select name="unip[]" id="remove_ip_hostname" multiple="multiple" size="10">{DEFINED_IPS}</select></dd>
 		</dl>
 
@@ -172,39 +172,39 @@
 
 			<legend>{L_LEGEND}</legend>
 		<dl>
-			<dt><label for="group_name">{L_GROUP_NAME}:</label></dt>
+			<dt><label for="group_name">{L_GROUP_NAME}{L_COLON}</label></dt>
 			<dd><input type="text" id="group_name" size="20" maxlength="100" name="group_name" value="{GROUP_NAME}" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="category">{L_SPECIAL_CATEGORY}:</label><br /><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
+			<dt><label for="category">{L_SPECIAL_CATEGORY}{L_COLON}</label><br /><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
 			<dd>{S_CATEGORY_SELECT}</dd>
 		</dl>
 		<dl>
-			<dt><label for="allowed">{L_ALLOWED}:</label></dt>
+			<dt><label for="allowed">{L_ALLOWED}{L_COLON}</label></dt>
 			<dd><input type="checkbox" class="radio" id="allowed" name="allow_group" value="1"<!-- IF ALLOW_GROUP --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
-			<dt><label for="allow_in_pm">{L_ALLOW_IN_PM}:</label></dt>
+			<dt><label for="allow_in_pm">{L_ALLOW_IN_PM}{L_COLON}</label></dt>
 			<dd><input type="checkbox" class="radio" id="allow_in_pm" name="allow_in_pm" value="1"<!-- IF ALLOW_IN_PM --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
-			<dt><label for="upload_icon">{L_UPLOAD_ICON}:</label></dt>
+			<dt><label for="upload_icon">{L_UPLOAD_ICON}{L_COLON}</label></dt>
 			<dd><select name="upload_icon" id="upload_icon" onchange="update_image(this.options[selectedIndex].value);">
 					<option value="no_image"<!-- IF S_NO_IMAGE --> selected="selected"<!-- ENDIF -->>{L_NO_IMAGE}</option>{S_FILENAME_LIST}
 			</select></dd>
 			<dd>&nbsp;<img <!-- IF S_NO_IMAGE -->src="{PHPBB_ROOT_PATH}images/spacer.gif"<!-- ELSE -->src="{UPLOAD_ICON_SRC}"<!-- ENDIF --> id="image_upload_icon" alt="" title="" />&nbsp;</dd>
 		</dl>
 		<dl>
-			<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}:</label></dt>
+			<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}{L_COLON}</label></dt>
 			<dd><input type="text" id="extgroup_filesize" size="3" maxlength="15" name="max_filesize" value="{EXTGROUP_FILESIZE}" /> <select name="size_select">{S_EXT_GROUP_SIZE_OPTIONS}</select></dd>
 		</dl>
 		<dl>
-			<dt><label for="assigned_extensions">{L_ASSIGNED_EXTENSIONS}:</label></dt>
+			<dt><label for="assigned_extensions">{L_ASSIGNED_EXTENSIONS}{L_COLON}</label></dt>
 			<dd><div id="ext">{ASSIGNED_EXTENSIONS}</div> <span>[<a href="{U_EXTENSIONS}">{L_GO_TO_EXTENSIONS}</a> ]</span></dd>
 			<dd><select name="extensions[]" id="assigned_extensions" class="narrow" onchange="show_extensions(this);" multiple="multiple" size="8">{S_EXTENSION_OPTIONS}</select></dd>
 		</dl>
 		<dl>
-			<dt><label for="allowed_forums">{L_ALLOWED_FORUMS}:</label><br /><span>{L_ALLOWED_FORUMS_EXPLAIN}</span></dt>
+			<dt><label for="allowed_forums">{L_ALLOWED_FORUMS}{L_COLON}</label><br /><span>{L_ALLOWED_FORUMS_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> /> {L_ALLOW_ALL_FORUMS}</label>
 				<label><input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> /> {L_ALLOW_SELECTED_FORUMS}</label></dd>
 			<dd><select name="allowed_forums[]" multiple="multiple" size="8">{S_FORUM_ID_OPTIONS}</select></dd>
@@ -254,7 +254,7 @@
 		</tbody>
 		</table>
 		<p class="quick">
-				{L_CREATE_GROUP}: <input type="text" name="group_name" maxlength="30" />
+				{L_CREATE_GROUP}{L_COLON} <input type="text" name="group_name" maxlength="30" />
 				<input class="button2" name="add" type="submit" value="{L_SUBMIT}" />
 		</p>
 		{S_FORM_TOKEN}
@@ -348,7 +348,7 @@
 			<td><a href="{orphan.U_FILE}">{orphan.REAL_FILENAME}</a></td>
 			<td>{orphan.FILETIME}</td>
 			<td>{orphan.FILESIZE}</td>
-			<td><strong>{L_ATTACH_ID}: </strong><input type="text" name="post_id[{orphan.ATTACH_ID}]" size="7" maxlength="10" value="{orphan.POST_ID}" /></td>
+			<td><strong>{L_ATTACH_ID}{L_COLON} </strong><input type="text" name="post_id[{orphan.ATTACH_ID}]" size="7" maxlength="10" value="{orphan.POST_ID}" /></td>
 			<td><input type="checkbox" class="radio" name="add[{orphan.ATTACH_ID}]" /></td>
 			<td><input type="checkbox" class="radio" name="delete[{orphan.ATTACH_ID}]" /></td>
 		</tr>
@@ -378,11 +378,16 @@
 	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
-	<!-- IF PAGINATION  or TOTAL_FILES -->
 	<div class="pagination">
-		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}<!-- IF S_ON_PAGE --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {S_ON_PAGE}<!-- ENDIF --><!-- ENDIF -->
-	</div>
+	<!-- IF .pagination or TOTAL_FILES -->
+		{L_NUMBER_FILES}{L_COLON} {TOTAL_FILES} &bull; {L_TOTAL_SIZE}{L_COLON} {TOTAL_SIZE}
+		<!-- IF .pagination -->
+			&bull; <!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {S_ON_PAGE}
+		<!-- ENDIF -->
 	<!-- ENDIF -->
+	</div>
 
 	<table cellspacing="1">
 	<thead>
@@ -397,8 +402,8 @@
 	<!-- BEGIN attachments -->
 		<!-- IF attachments.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 			<td>
-				<!-- IF attachments.S_IN_MESSAGE -->{L_EXTENSION_GROUP}: <strong><!-- IF attachments.EXT_GROUP_NAME -->{attachments.EXT_GROUP_NAME}<!-- ELSE -->{L_NO_EXT_GROUP}<!-- ENDIF --></strong><br />{attachments.L_DOWNLOAD_COUNT}<br />{L_IN} {L_PRIVATE_MESSAGE}
-				<!-- ELSE --><a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br /><!-- IF attachments.COMMENT -->{attachments.COMMENT}<br /><!-- ENDIF -->{attachments.L_DOWNLOAD_COUNT}<br />{L_TOPIC}: <a href="{attachments.U_VIEW_TOPIC}">{attachments.TOPIC_TITLE}</a><!-- ENDIF -->
+				<!-- IF attachments.S_IN_MESSAGE -->{L_EXTENSION_GROUP}{L_COLON} <strong><!-- IF attachments.EXT_GROUP_NAME -->{attachments.EXT_GROUP_NAME}<!-- ELSE -->{L_NO_EXT_GROUP}<!-- ENDIF --></strong><br />{attachments.L_DOWNLOAD_COUNT}<br />{L_IN} {L_PRIVATE_MESSAGE}
+				<!-- ELSE --><a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br /><!-- IF attachments.COMMENT -->{attachments.COMMENT}<br /><!-- ENDIF -->{attachments.L_DOWNLOAD_COUNT}<br />{L_TOPIC}{L_COLON} <a href="{attachments.U_VIEW_TOPIC}">{attachments.TOPIC_TITLE}</a><!-- ENDIF -->
 			</td>
 			<td>{attachments.FILETIME}<br />{L_POST_BY_AUTHOR} {attachments.ATTACHMENT_POSTER}</td>
 			<td>{attachments.FILESIZE}</td>
@@ -414,14 +419,19 @@
 
 	<!-- IF TOTAL_FILES -->
 	<fieldset class="display-options">
-		{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}
+		{L_DISPLAY_LOG}{L_COLON} &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}{L_COLON} {S_SORT_KEY} {S_SORT_DIR}
 		<input class="button2" type="submit" value="{L_GO}" name="sort" />
 	</fieldset>
 
 	<hr />
 
 	<div class="pagination">
-		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}<!-- IF S_ON_PAGE --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {S_ON_PAGE}<!-- ENDIF --><!-- ENDIF -->
+		{L_NUMBER_FILES}{L_COLON} {TOTAL_FILES} &bull; {L_TOTAL_SIZE}{L_COLON} {TOTAL_SIZE}
+		<!-- IF .pagination -->
+			&bull; <!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {S_ON_PAGE}
+		<!-- ENDIF -->
 	</div>
 	<!-- ENDIF -->
 

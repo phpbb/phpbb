@@ -72,6 +72,7 @@ $lang = array_merge($lang, array(
 	'WORDS_IN_NO_POST'		=> 'No posts were found because the words <strong>%s</strong> are not contained in any post.',
 
 	'POST_CHARACTERS'		=> 'characters of posts',
+	'PHRASE_SEARCH_DISABLED'	=> 'Searching by exact phrase is not supported on this board.',
 
 	'RECENT_SEARCHES'		=> 'Recent searches',
 	'RESULT_DAYS'			=> 'Limit results to previous',
@@ -81,6 +82,7 @@ $lang = array_merge($lang, array(
 
 	'SEARCHED_FOR'				=> 'Search term used',
 	'SEARCHED_TOPIC'			=> 'Searched topic',
+	'SEARCHED_QUERY'			=> 'Searched query',
 	'SEARCH_ALL_TERMS'			=> 'Search for all terms or use query as entered',
 	'SEARCH_ANY_TERMS'			=> 'Search for any terms',
 	'SEARCH_AUTHOR'				=> 'Search for author',
@@ -103,6 +105,8 @@ $lang = array_merge($lang, array(
 	'SORT_FORUM'				=> 'Forum',
 	'SORT_POST_SUBJECT'			=> 'Post subject',
 	'SORT_TIME'					=> 'Post time',
+	'SPHINX_SEARCH_FAILED'		=> 'Search failed: %s',
+	'SPHINX_SEARCH_FAILED_LOG'	=> 'Sorry, search could not be performed. More information about this failure has been logged in the error log.',
 
 	'TOO_FEW_AUTHOR_CHARS'	=> array(
 		1	=> 'You must specify at least %d character of the authors name.',
