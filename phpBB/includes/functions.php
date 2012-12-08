@@ -1328,7 +1328,7 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
 	global $db, $user, $config;
-	global $request;
+	global $request, $phpbb_notifications;
 
 	$post_time = ($post_time === 0 || $post_time > time()) ? time() : (int) $post_time;
 
@@ -1336,6 +1336,18 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 	{
 		if ($forum_id === false || !sizeof($forum_id))
 		{
+			// Mark all forums read (index page)
+
+			// Mark all topic notifications read for this user
+			$phpbb_notifications->mark_notifications_read(array(
+				'topic',
+				'quote',
+				'bookmark',
+				'post',
+				'approve_topic',
+				'approve_post',
+			), false, $user->data['user_id'], $post_time);
+
 			if ($config['load_db_lastread'] && $user->data['is_registered'])
 			{
 				// Mark all forums read (index page)
@@ -1389,6 +1401,30 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			$forum_id = array($forum_id);
 		}
+
+		$phpbb_notifications->mark_notifications_read_by_parent(array(
+			'topic',
+			'approve_topic',
+		), $forum_id, $user->data['user_id'], $post_time);
+
+		// Mark all post/quote notifications read for this user in this forum
+		$topic_ids = array();
+		$sql = 'SELECT topic_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $forum_id);
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$topic_ids[] = $row['topic_id'];
+		}
+		$db->sql_freeresult($result);
+
+		$phpbb_notifications->mark_notifications_read_by_parent(array(
+			'quote',
+			'bookmark',
+			'post',
+			'approve_post',
+		), $topic_ids, $user->data['user_id'], $post_time);
 
 		// Add 0 to forums array to mark global announcements correctly
 		// $forum_id[] = 0;
@@ -1486,6 +1522,18 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			return;
 		}
+
+		// Mark post notifications read for this user in this topic
+		$phpbb_notifications->mark_notifications_read(array(
+			'topic',
+			'approve_topic',
+		), $topic_id, $user->data['user_id'], $post_time);
+		$phpbb_notifications->mark_notifications_read_by_parent(array(
+			'quote',
+			'bookmark',
+			'post',
+			'approve_post',
+		), $topic_id, $user->data['user_id'], $post_time);
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{
@@ -4899,7 +4947,7 @@ function phpbb_http_login($param)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher;
+	global $phpbb_dispatcher, $phpbb_notifications;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5088,6 +5136,20 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		$timezone_name = $user->lang['timezones'][$timezone_name];
 	}
 
+	// Output the notifications
+	if ($config['load_notifications'])
+	{
+		$notifications = $phpbb_notifications->load_notifications(array(
+			'all_unread'	=> true,
+			'limit'			=> 5,
+		));
+
+		foreach ($notifications['notifications'] as $notification)
+		{
+			$template->assign_block_vars('notifications', $notification->prepare_for_display());
+		}
+	}
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -5102,6 +5164,11 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'RECORD_USERS'					=> $l_online_record,
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
+
+		'UNREAD_NOTIFICATIONS_COUNT'	=> ($config['load_notifications']) ? $notifications['unread_count'] : '',
+		'NOTIFICATIONS_COUNT'			=> ($config['load_notifications']) ? $user->lang('NOTIFICATIONS_COUNT', $notifications['unread_count']) : '',
+		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
+		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'],
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],

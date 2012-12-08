@@ -1108,6 +1108,49 @@ function database_update_info()
 						'ext_name'		=> array('UNIQUE', 'ext_name'),
 					),
 				),
+				$table_prefix . 'notifications'		=> array(
+					'COLUMNS'			=> array(
+						'notification_id'	=> array('UINT', NULL, 'auto_increment'),
+						'item_type'			=> array('VCHAR:255', ''),
+						'item_id'			=> array('UINT', 0),
+						'item_parent_id'	=> array('UINT', 0),
+						'user_id'			=> array('UINT', 0),
+						'unread'			=> array('BOOL', 1),
+						'is_enabled'		=> array('BOOL', 1),
+						'time'				=> array('TIMESTAMP', 1),
+						'data'				=> array('TEXT_UNI', ''),
+					),
+					'PRIMARY_KEY'		=> 'notification_id',
+					'KEYS'				=> array(
+						'item_type'			=> array('INDEX', 'item_type'),
+						'item_id'			=> array('INDEX', 'item_id'),
+						'item_pid'			=> array('INDEX', 'item_parent_id'),
+						'user_id'			=> array('INDEX', 'user_id'),
+						'time'				=> array('INDEX', 'time'),
+						'unread'			=> array('INDEX', 'unread'),
+						'is_enabled'		=> array('INDEX', 'is_enabled'),
+					),
+				),
+				$table_prefix . 'user_notifications'	=> array(
+					'COLUMNS'			=> array(
+						'item_type'			=> array('VCHAR:255', ''),
+						'item_id'			=> array('UINT', 0),
+						'user_id'			=> array('UINT', 0),
+						'method'			=> array('VCHAR:255', ''),
+						'notify'			=> array('BOOL', 1),
+					),
+					'PRIMARY_KEY'		=> array(
+						'item_type',
+						'item_id',
+						'user_id',
+						'method',
+					),
+					'KEYS'				=> array(
+						'it'				=> array('INDEX', 'item_type'),
+						'uid'				=> array('INDEX', 'user_id'),
+						'no'				=> array('INDEX', 'notify'),
+					),
+				),
 			),
 			'add_columns'		=> array(
 				GROUPS_TABLE		=> array(
@@ -2496,6 +2539,20 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> '',
 					'cat'		=> 'UCP_PROFILE',
 				),
+				'notification_options'	=> array(
+					'base'		=> 'ucp_notifications',
+					'class'		=> 'ucp',
+					'title'		=> 'UCP_NOTIFICATION_OPTIONS',
+					'auth'		=> '',
+					'cat'		=> 'UCP_PREFS',
+				),
+				'notification_list'	=> array(
+					'base'		=> 'ucp_notifications',
+					'class'		=> 'ucp',
+					'title'		=> 'UCP_NOTIFICATION_LIST',
+					'auth'		=> '',
+					'cat'		=> 'UCP_MAIN',
+				),
 			);
 
 			_add_modules($modules_to_install);
@@ -2768,6 +2825,72 @@ function change_database_data(&$no_updates, $version)
 				$config->set('site_home_text', '');
 			}
 
+			if (!isset($config['load_notifications']))
+			{
+				$config->set('load_notifications', 1);
+
+				// Convert notifications
+				$convert_notifications = array(
+					array(
+						'check'			=> ($config['allow_topic_notify']),
+						'item_type'		=> 'post',
+					),
+					array(
+						'check'			=> ($config['allow_forum_notify']),
+						'item_type'		=> 'topic',
+					),
+					array(
+						'check'			=> ($config['allow_bookmarks']),
+						'item_type'		=> 'bookmark',
+					),
+					array(
+						'check'			=> ($config['allow_privmsg']),
+						'item_type'		=> 'pm',
+					),
+				);
+
+				foreach ($convert_notifications as $convert_data)
+				{
+					if ($convert_data['check'])
+					{
+						$sql = 'SELECT user_id, user_notify_type
+							FROM ' . USERS_TABLE . '
+								WHERE user_notify = 1';
+						$result = $db->sql_query($sql);
+						while ($row = $db->sql_fetchrow($result))
+						{
+							_sql('INSERT INTO ' . $table_prefix . 'user_notifications ' . $db->sql_build_array('INSERT', array(
+								'item_type'		=> $convert_data['item_type'],
+								'item_id'		=> 0,
+								'user_id'		=> $row['user_id'],
+								'method'		=> '',
+							)), $errored, $error_ary);
+
+							if ($row['user_notify_type'] == NOTIFY_EMAIL || $row['user_notify_type'] == NOTIFY_BOTH)
+							{
+								_sql('INSERT INTO ' . $table_prefix . 'user_notifications ' . $db->sql_build_array('INSERT', array(
+									'item_type'		=> $convert_data['item_type'],
+									'item_id'		=> 0,
+									'user_id'		=> $row['user_id'],
+									'method'		=> 'email',
+								)), $errored, $error_ary);
+							}
+
+							if ($row['user_notify_type'] == NOTIFY_IM || $row['user_notify_type'] == NOTIFY_BOTH)
+							{
+								_sql('INSERT INTO ' . $table_prefix . 'user_notifications ' . $db->sql_build_array('INSERT', array(
+									'item_type'		=> $convert_data['item_type'],
+									'item_id'		=> 0,
+									'user_id'		=> $row['user_id'],
+									'method'		=> 'jabber',
+								)), $errored, $error_ary);
+							}
+						}
+						$db->sql_freeresult($result);
+					}
+				}
+			}
+
 			// PHPBB3-10601: Make inbox default. Add basename to ucp's pm category
 
 			// Get the category wanted while checking, at the same time, if this has already been applied
@@ -2839,7 +2962,6 @@ function change_database_data(&$no_updates, $version)
 			_sql($sql, $errored, $error_ary);
 
 			$no_updates = false;
-
 		break;
 	}
 }
