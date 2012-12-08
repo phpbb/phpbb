@@ -99,8 +99,6 @@ class phpbb_cache_sql_test extends phpbb_database_test_case
 		// Query results should be from DB and file should have been created
 		$this->assertNotContains('Query results obtained from the cache', $this->db->sql_report);
 
-
-		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'foo\'';
 		$result = $this->db->sql_query($sql, 300);
 
 		// Now the query should have loaded results from the cache
@@ -122,7 +120,6 @@ class phpbb_cache_sql_test extends phpbb_database_test_case
 		// Query results should be from DB and file should have been created
 		$this->assertNotContains('Query results obtained from the cache', $this->db->sql_report);
 
-		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'bar\'';
 		$result = $this->db->sql_query($sql, -1);
 
 		$this->assertEquals($second_result, $this->db->sql_fetchrow($result));
