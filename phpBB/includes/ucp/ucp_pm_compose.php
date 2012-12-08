@@ -1263,7 +1263,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		}
 		$db->sql_freeresult($result);
 
-		// print a notice about users not being added who do not want to receive pms
+		// print a notice about users not being added who do not have permission to receive PMs
 		if ($removed)
 		{
 			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
