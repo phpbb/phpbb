@@ -25,7 +25,7 @@ $auth->acl($user->data);
 $user->setup('viewforum');
 
 // Mark notifications read
-if (($mark_notification = request_var('mark_notification', 0)))
+if (($mark_notification = $request->variable('mark_notification', 0)))
 {
 	$notification = $phpbb_notifications->load_notifications(array(
 		'notification_id'	=> $mark_notification
@@ -37,7 +37,7 @@ if (($mark_notification = request_var('mark_notification', 0)))
 
 		$notification->mark_read();
 
-		if (($redirect = request_var('redirect', '')))
+		if (($redirect = $request->variable('redirect', '')))
 		{
 			redirect(append_sid($phpbb_root_path . $redirect));
 		}

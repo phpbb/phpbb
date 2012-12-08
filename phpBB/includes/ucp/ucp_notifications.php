@@ -26,8 +26,8 @@ class ucp_notifications
 
 		add_form_key('ucp_notification');
 
-		$start = request_var('start', 0);
-		$form_time = min(request_var('form_time', 0), time());
+		$start = $request->variable('start', 0);
+		$form_time = min($request->variable('form_time', 0), time());
 
 		switch ($mode)
 		{
@@ -87,7 +87,7 @@ class ucp_notifications
 			case 'notification_list':
 			default:
 				// Mark all items read
-				if (request_var('mark', '') == 'all' && (confirm_box(true) || check_link_hash(request_var('token', ''), 'mark_all_notifications_read')))
+				if ($request->variable('mark', '') == 'all' && (confirm_box(true) || check_link_hash($request->variable('token', ''), 'mark_all_notifications_read')))
 				{
 					if (confirm_box(true))
 					{
@@ -114,7 +114,7 @@ class ucp_notifications
 						trigger_error('FORM_INVALID');
 					}
 
-					$mark_read = request_var('mark', array(0));
+					$mark_read = $request->variable('mark', array(0));
 
 					if (!empty($mark_read))
 					{
