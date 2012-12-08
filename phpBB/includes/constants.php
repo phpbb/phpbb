@@ -46,10 +46,10 @@ define('USER_INACTIVE', 1);
 define('USER_IGNORE', 2);
 define('USER_FOUNDER', 3);
 
-define('INACTIVE_REGISTER', 1);
-define('INACTIVE_PROFILE', 2);
-define('INACTIVE_MANUAL', 3);
-define('INACTIVE_REMIND', 4);
+define('INACTIVE_REGISTER', 1); // Newly registered account
+define('INACTIVE_PROFILE', 2); // Profile details changed
+define('INACTIVE_MANUAL', 3); // Account deactivated by administrator
+define('INACTIVE_REMIND', 4); // Forced user account reactivation
 
 // ACL
 define('ACL_NEVER', 0);
