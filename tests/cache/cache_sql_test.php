@@ -31,6 +31,12 @@ class phpbb_cache_sql_test extends phpbb_database_test_case
 
 		parent::setUp();
 
+		if (!defined('DEBUG'))
+		{
+			// For $this->assertContains('Query results obtained from the cache', $db->sql_report);
+			define('DEBUG', true);
+		}
+
 		if (file_exists($this->cache_dir))
 		{
 			// cache directory possibly left after aborted
@@ -80,12 +86,6 @@ class phpbb_cache_sql_test extends phpbb_database_test_case
 
 	public function test_cache_sql()
 	{
-		if (!defined('DEBUG'))
-		{
-			// For $this->assertContains('Query results obtained from the cache', $db->sql_report);
-			define('DEBUG', true);
-		}
-
 		$sql = 'SELECT * FROM phpbb_config WHERE config_name = \'foo\'';
 		$result = $this->db->sql_query($sql, 300);
 		$first_result = $this->db->sql_fetchrow($result);
