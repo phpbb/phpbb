@@ -633,13 +633,8 @@ CREATE TABLE phpbb_notifications (
 
 ALTER TABLE phpbb_notifications ADD PRIMARY KEY (notification_id);;
 
-CREATE INDEX phpbb_notifications_item_type ON phpbb_notifications(item_type);;
-CREATE INDEX phpbb_notifications_item_id ON phpbb_notifications(item_id);;
-CREATE INDEX phpbb_notifications_item_pid ON phpbb_notifications(item_parent_id);;
-CREATE INDEX phpbb_notifications_user_id ON phpbb_notifications(user_id);;
-CREATE INDEX phpbb_notifications_time ON phpbb_notifications(time);;
-CREATE INDEX phpbb_notifications_unread ON phpbb_notifications(unread);;
-CREATE INDEX phpbb_notifications_is_enabled ON phpbb_notifications(is_enabled);;
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications(item_type, item_id);;
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications(user_id, unread);;
 
 CREATE GENERATOR phpbb_notifications_gen;;
 SET GENERATOR phpbb_notifications_gen TO 0;;

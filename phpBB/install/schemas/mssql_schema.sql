@@ -774,25 +774,10 @@ ALTER TABLE [phpbb_notifications] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-CREATE  INDEX [item_type] ON [phpbb_notifications]([item_type]) ON [PRIMARY]
+CREATE  INDEX [item_ident] ON [phpbb_notifications]([item_type], [item_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [item_id] ON [phpbb_notifications]([item_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [item_pid] ON [phpbb_notifications]([item_parent_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [user_id] ON [phpbb_notifications]([user_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [time] ON [phpbb_notifications]([time]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [unread] ON [phpbb_notifications]([unread]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [is_enabled] ON [phpbb_notifications]([is_enabled]) ON [PRIMARY]
+CREATE  INDEX [user] ON [phpbb_notifications]([user_id], [unread]) ON [PRIMARY]
 GO
 
 
