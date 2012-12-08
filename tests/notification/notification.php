@@ -16,7 +16,6 @@ class phpbb_notification_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/notification.xml');
 	}
 
-
 	protected function setUp()
 	{
 		parent::setUp();
