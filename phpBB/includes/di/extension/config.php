@@ -42,6 +42,7 @@ class phpbb_di_extension_config extends Extension
 	{
 		require($this->config_file);
 
+		$container->setParameter('core.adm_relative_path', (isset($adm_relative_path) ? $adm_relative_path : 'adm/'));
 		$container->setParameter('core.table_prefix', $table_prefix);
 		$container->setParameter('cache.driver.class', $this->fix_acm_type($acm_type));
 		$container->setParameter('dbal.driver.class', 'dbal_'.$dbms);
