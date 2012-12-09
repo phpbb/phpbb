@@ -4942,12 +4942,107 @@ function phpbb_http_login($param)
 }
 
 /**
+* Escapes and quotes a string for use as an HTML/XML attribute value.
+*
+* This is a port of Python xml.sax.saxutils quoteattr.
+*
+* The function will attempt to choose a quote character in such a way as to
+* avoid escaping quotes in the string. If this is not possible the string will
+* be wrapped in double quotes and double quotes will be escaped.
+*
+* @param string $data The string to be escaped
+* @param array $entities Associative array of additional entities to be escaped
+* @return string Escaped and quoted string
+*/
+function phpbb_quoteattr($data, $entities = null)
+{
+	$data = str_replace('&', '&amp;', $data);
+	$data = str_replace('>', '&gt;', $data);
+	$data = str_replace('<', '&lt;', $data);
+
+	$data = str_replace("\n", '&#10;', $data);
+	$data = str_replace("\r", '&#13;', $data);
+	$data = str_replace("\t", '&#9;', $data);
+
+	if (!empty($entities))
+	{
+		$data = str_replace(array_keys($entities), array_values($entities), $data);
+	}
+
+	if (strpos($data, '"') !== false)
+	{
+		if (strpos($data, "'") !== false)
+		{
+			$data = '"' . str_replace('"', '&quot;', $data) . '"';
+		}
+		else
+		{
+			$data = "'" . $data . "'";
+		}
+	}
+	else
+	{
+		$data = '"' . $data . '"';
+	}
+
+	return $data;
+}
+
+/**
+* Converts query string (GET) parameters in request into hidden fields.
+*
+* Useful for forwarding GET parameters when submitting forms with GET method.
+*
+* It is possible to omit some of the GET parameters, which is useful if
+* they are specified in the form being submitted.
+*
+* sid is always omitted.
+*
+* @param phpbb_request $request Request object
+* @param array $exclude A list of variable names that should not be forwarded
+* @return string HTML with hidden fields
+*/
+function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
+{
+	$names = $request->variable_names(phpbb_request_interface::GET);
+	$hidden = '';
+	foreach ($names as $name)
+	{
+		// Sessions are dealt with elsewhere, omit sid always
+		if ($name == 'sid')
+		{
+			continue;
+		}
+
+		// Omit any additional parameters requested
+		if (!empty($exclude) && in_array($name, $exclude))
+		{
+			continue;
+		}
+
+		$escaped_name = phpbb_quoteattr($name);
+
+		// Note: we might retrieve the variable from POST or cookies
+		// here. To avoid exposing cookies, skip variables that are
+		// overwritten somewhere other than GET entirely.
+		$value = $request->variable($name, '', true);
+		$get_value = $request->variable($name, '', true, phpbb_request_interface::GET);
+		if ($value === $get_value)
+		{
+			$escaped_value = phpbb_quoteattr($value);
+			$hidden .= "<input type='hidden' name=$escaped_name value=$escaped_value />";
+		}
+	}
+	return $hidden;
+}
+
+/**
 * Generate page header
 */
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $phpbb_notifications;
+	global $phpbb_dispatcher, $request, $phpbb_notifications;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5135,7 +5230,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	{
 		$timezone_name = $user->lang['timezones'][$timezone_name];
 	}
-
+	
 	// Output the notifications
 	if ($config['load_notifications'])
 	{
@@ -5149,6 +5244,9 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 			$template->assign_block_vars('notifications', $notification->prepare_for_display());
 		}
 	}
+
+	$hidden_fields_for_jumpbox = phpbb_build_hidden_fields_for_query_params($request, array('f'));
+
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
@@ -5164,6 +5262,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'RECORD_USERS'					=> $l_online_record,
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
+		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
 
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($config['load_notifications']) ? $notifications['unread_count'] : '',
 		'NOTIFICATIONS_COUNT'			=> ($config['load_notifications']) ? $user->lang('NOTIFICATIONS_COUNT', $notifications['unread_count']) : '',
