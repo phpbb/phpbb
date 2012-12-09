@@ -15,6 +15,7 @@ services:
 
     notification.type.approve_post:
         class: phpbb_notification_type_approve_post
+        scope: prototype # scope MUST be prototype for this to work! # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -31,6 +32,7 @@ services:
 
     notification.type.approve_topic:
         class: phpbb_notification_type_approve_topic
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -47,6 +49,7 @@ services:
 
     notification.type.bookmark:
         class: phpbb_notification_type_bookmark
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -63,6 +66,7 @@ services:
 
     notification.type.disapprove_post:
         class: phpbb_notification_type_disapprove_post
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -79,6 +83,7 @@ services:
 
     notification.type.disapprove_topic:
         class: phpbb_notification_type_disapprove_topic
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -95,6 +100,7 @@ services:
 
     notification.type.pm:
         class: phpbb_notification_type_pm
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -111,6 +117,7 @@ services:
 
     notification.type.post:
         class: phpbb_notification_type_post
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -127,6 +134,7 @@ services:
 
     notification.type.post_in_queue:
         class: phpbb_notification_type_post_in_queue
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -143,6 +151,7 @@ services:
 
     notification.type.quote:
         class: phpbb_notification_type_quote
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -159,6 +168,7 @@ services:
 
     notification.type.report_pm:
         class: phpbb_notification_type_report_pm
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -175,6 +185,7 @@ services:
 
     notification.type.report_pm_closed:
         class: phpbb_notification_type_report_pm_closed
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -191,6 +202,7 @@ services:
 
     notification.type.report_post:
         class: phpbb_notification_type_report_post
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -207,6 +219,7 @@ services:
 
     notification.type.report_post_closed:
         class: phpbb_notification_type_report_post
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -223,6 +236,7 @@ services:
 
     notification.type.topic:
         class: phpbb_notification_type_topic
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -239,6 +253,7 @@ services:
 
     notification.type.topic_in_queue:
         class: phpbb_notification_type_topic_in_queue
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -255,6 +270,7 @@ services:
 
     notification.method.email:
         class: phpbb_notification_method_email
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
@@ -269,6 +285,7 @@ services:
 
     notification.method.jabber:
         class: phpbb_notification_method_jabber
+        scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
             - @dbal.conn
