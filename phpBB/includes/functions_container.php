@@ -84,8 +84,13 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 	$tmp_container = phpbb_create_container($extensions, $phpbb_root_path, $php_ext);
 	$tmp_container->compile();
 
+	// XXX stop writing to global $cache when
+	// http://tracker.phpbb.com/browse/PHPBB3-11203 is fixed
+	$GLOBALS['cache'] = $tmp_container->get('cache');
+	$installed_exts = $tmp_container->get('ext.manager')->all_enabled();
+
 	// Now pass the enabled extension paths into the ext compiler extension
-	$extensions[] = new phpbb_di_extension_ext($tmp_container->get('ext.manager')->all_enabled());
+	$extensions[] = new phpbb_di_extension_ext($installed_exts);
 
 	// Create the final container to be compiled and cached
 	$container = phpbb_create_container($extensions, $phpbb_root_path, $php_ext);
@@ -126,15 +131,12 @@ function phpbb_create_dumped_container(array $extensions, array $passes, $phpbb_
 
 function phpbb_create_dumped_container_unless_debug(array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
-	if (defined('DEBUG')) {
-		return phpbb_create_compiled_container($extensions, $passes, $phpbb_root_path, $php_ext);
-	}
-
-	return phpbb_create_dumped_container($extensions, $passes, $phpbb_root_path, $php_ext);
+	$container_factory = defined('DEBUG') ? 'phpbb_create_compiled_container' : 'phpbb_create_dumped_container';
+	return $container_factory($extensions, $passes, $phpbb_root_path, $php_ext);
 }
 
 function phpbb_container_filename($phpbb_root_path, $php_ext)
 {
 	$filename = str_replace(array('/', '.'), array('slash', 'dot'), $phpbb_root_path);
-	return $phpbb_root_path . 'cache/' . $filename . '_container.' . $php_ext;
+	return $phpbb_root_path . 'cache/container_' . $filename . '.' . $php_ext;
 }

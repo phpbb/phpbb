@@ -59,6 +59,21 @@ services:
             - @cache.driver
             - %tables.config%
 
+    controller.helper:
+        class: phpbb_controller_helper
+        arguments:
+            - @template
+            - @user
+            - %core.root_path%
+            - .%core.php_ext%
+
+    controller.resolver:
+        class: phpbb_controller_resolver
+        arguments:
+            - @user
+            - @service_container
+            - @ext.finder
+
     cron.task_collection:
         class: phpbb_di_service_collection
         arguments:
@@ -107,6 +122,43 @@ services:
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
+
+    ext.finder:
+        class: phpbb_extension_finder
+        arguments:
+            - @ext.manager
+            - %core.root_path%
+            - @cache.driver
+            - .%core.php_ext%
+            - _ext_finder
+
+    http_kernel:
+        class: Symfony\Component\HttpKernel\HttpKernel
+        arguments:
+            - @dispatcher
+            - @controller.resolver
+
+    kernel_request_subscriber:
+        class: phpbb_event_kernel_request_subscriber
+        arguments:
+            - @ext.finder
+            - %core.root_path%
+            - .%core.php_ext%
+        tags:
+            - { name: kernel.event_subscriber }
+
+    kernel_exception_subscriber:
+        class: phpbb_event_kernel_exception_subscriber
+        arguments:
+            - @template
+            - @user
+        tags:
+            - { name: kernel.event_subscriber }
+
+    kernel_terminate_subscriber:
+        class: phpbb_event_kernel_terminate_subscriber
+        tags:
+            - { name: kernel.event_subscriber }
 
     request:
         class: phpbb_request

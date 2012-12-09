@@ -35,7 +35,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 	* @param int				  $stackPtr  The position of the current token
 	*										in the stack passed in $tokens.
 	*
-	* @return void
+	* @return null
 	*/
 	public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
 	{
@@ -120,7 +120,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 	 * @param integer The stack pointer for the first comment token.
 	 * @param array(string=>array) $tags The found file doc comment tags.
 	 * 
-	 * @return void
+	 * @return null
 	 */
 	protected function processPackage(PHP_CodeSniffer_File $phpcsFile, $ptr, $tags)
 	{
@@ -143,7 +143,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
      * @param integer The stack pointer for the first comment token.
      * @param array(string=>array) $tags The found file doc comment tags.
      * 
-     * @return void
+     * @return null
 	 */
 	protected function processVersion(PHP_CodeSniffer_File $phpcsFile, $ptr, $tags)
     {
@@ -166,7 +166,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
      * @param integer The stack pointer for the first comment token.
      * @param array(string=>array) $tags The found file doc comment tags.
      * 
-     * @return void
+     * @return null
      */
     protected function processCopyright(PHP_CodeSniffer_File $phpcsFile, $ptr, $tags)
     {
@@ -189,7 +189,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
      * @param integer The stack pointer for the first comment token.
      * @param array(string=>array) $tags The found file doc comment tags.
      * 
-     * @return void
+     * @return null
      */
     protected function processLicense(PHP_CodeSniffer_File $phpcsFile, $ptr, $tags)
     {

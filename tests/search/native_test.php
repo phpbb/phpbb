@@ -7,24 +7,9 @@
 *
 */
 
-function phpbb_search_wrapper($class)
-{
-	$wrapped = $class . '_wrapper';
-	if (!class_exists($wrapped))
-	{
-		$code = "
-class $wrapped extends $class
-{
-	public function get_must_contain_ids() { return \$this->must_contain_ids; }
-	public function get_must_not_contain_ids() { return \$this->must_not_contain_ids; }
-}
-		";
-		eval($code);
-	}
-	return $wrapped;
-}
+require_once dirname(__FILE__) . '/../test_framework/phpbb_search_test_case.php';
 
-class phpbb_search_native_test extends phpbb_database_test_case
+class phpbb_search_native_test extends phpbb_search_test_case
 {
 	protected $db;
 	protected $search;
@@ -41,17 +26,12 @@ class phpbb_search_native_test extends phpbb_database_test_case
 		parent::setUp();
 
 		// dbal uses cache
-		$cache = new phpbb_cache_driver_null;
+		$cache = new phpbb_mock_cache();
 
 		$this->db = $this->new_dbal();
 		$error = null;
-		$class = phpbb_search_wrapper('phpbb_search_fulltext_native');
+		$class = self::get_search_wrapper('phpbb_search_fulltext_native');
 		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user);
-	}
-
-	protected function tearDown()
-	{
-		parent::tearDown();
 	}
 
 	public function keywords()
@@ -100,6 +80,14 @@ class phpbb_search_native_test extends phpbb_database_test_case
 			),
 			array(
 				'f o o',
+				'all',
+				false,
+				null,
+				null,
+				array('f', 'o', 'o'),
+			),
+			array(
+				'f -o -o',
 				'all',
 				false,
 				null,
@@ -166,21 +154,5 @@ class phpbb_search_native_test extends phpbb_database_test_case
 			$this->assert_array_content_equals($must_not_contain, $this->search->get_must_not_contain_ids());
 		}
 		$this->assert_array_content_equals($common, $this->search->get_common_words());
-	}
-
-	public function assert_array_content_equals($one, $two)
-	{
-		// http://stackoverflow.com/questions/3838288/phpunit-assert-two-arrays-are-equal-but-order-of-elements-not-important
-		// but one array_diff is not enough!
-		if (sizeof(array_diff($one, $two)) || sizeof(array_diff($two, $one)))
-		{
-			// get a nice error message
-			$this->assertEquals($one, $two);
-		}
-		else
-		{
-			// increase assertion count
-			$this->assertTrue(true);
-		}
 	}
 }
