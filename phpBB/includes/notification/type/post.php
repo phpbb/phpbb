@@ -181,9 +181,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 			}
 			else
 			{
-				$user_data = $this->user_loader->get_user($responder['poster_id']);
-
-				$usernames[] = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+				$usernames[] = $this->user_loader->get_username($responder['poster_id'], 'no_profile');
 			}
 		}
 
@@ -217,9 +215,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		}
 		else
 		{
-			$user_data = $this->user_loader->get_user($this->get_data('poster_id'));
-
-			$username = get_username_string('username', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+			$username = $this->user_loader->get_username($this->get_data('poster_id'), 'no_profile');
 		}
 
 		return array(
