@@ -127,9 +127,7 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 	{
 		$this->user->add_lang('mcp');
 
-		$user_data = $this->user_loader->get_user($this->get_data('reporter_id'));
-
-		$username = get_username_string('no_profile', $user_data['user_id'], $user_data['username'], $user_data['user_colour']);
+		$username = $this->user_loader->get_username($this->get_data('reporter_id'), 'no_profile');
 
 		if ($this->get_data('report_text'))
 		{
