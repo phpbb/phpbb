@@ -154,6 +154,17 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    log:
+        class: phpbb_log
+        arguments:
+            - @dbal.conn
+            - @user
+            - @auth
+            - @dispatcher
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.log%
+
     request:
         class: phpbb_request
 

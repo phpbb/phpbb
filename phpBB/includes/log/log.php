@@ -43,14 +43,95 @@ class phpbb_log implements phpbb_log_interface
 	protected $log_table;
 
 	/**
+	* Database object
+	* @var dbal
+	*/
+	protected $db;
+
+	/**
+	* User object
+	* @var phpbb_user
+	*/
+	protected $user;
+
+	/**
+	* Auth object
+	* @var phpbb_auth
+	*/
+	protected $auth;
+
+	/**
+	* Event dispatcher object
+	* @var phpbb_dispatcher
+	*/
+	protected $dispatcher;
+
+	/**
+	* phpBB root path
+	* @var string
+	*/
+	protected $phpbb_root_path;
+
+	/**
+	* Admin root path
+	* @var string
+	*/
+	protected $phpbb_admin_path;
+
+	/**
+	* PHP Extension
+	* @var string
+	*/
+	protected $php_ext;
+
+	/**
 	* Constructor
 	*
-	* @param	string	$log_table		The table we use to store our logs
+	* @param	dbal		$db		Database object
+	* @param	phpbb_user	$user	User object
+	* @param	phpbb_auth	$auth	Auth object
+	* @param	phpbb_dispatcher	$phpbb_dispatcher	Event dispatcher
+	* @param	string		$phpbb_root_path		Root path
+	* @param	string		$php_ext			PHP Extension
+	* @param	string		$log_table		Name of the table we use to store our logs
+	* @return	null
 	*/
-	public function __construct($log_table)
+	public function __construct(dbal $db, phpbb_user $user, phpbb_auth $auth, phpbb_dispatcher $phpbb_dispatcher, $phpbb_root_path, $php_ext, $log_table)
+	{
+		$this->db = $db;
+		$this->user = $user;
+		$this->auth = $auth;
+		$this->dispatcher = $phpbb_dispatcher;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+		$this->log_table = $log_table;
+
+		$this->enable();
+		$this->set_admin_path('', false);
+	}
+
+	/**
+	* Set phpbb_admin_path and is_in_admin in order to return administrative user profile links in get_logs()
+	*
+	* @param	string	$phpbb_admin_path	Full path from current file to admin root
+	* @param	bool	$is_in_admin		Are we called from within the acp?
+	* @return	null
+	*/
+	public function set_admin_path($phpbb_admin_path, $is_in_admin)
+	{
+		$this->phpbb_admin_path = $phpbb_admin_path;
+		$this->is_in_admin = (bool) $is_in_admin;
+	}
+
+	/**
+	* Set table name
+	*
+	* @param	string	$log_table		Can overwrite the table to use for the logs
+	* @return	null
+	*/
+	public function set_log_table($log_table)
 	{
 		$this->log_table = $log_table;
-		$this->enable();
 	}
 
 	/**
@@ -134,8 +215,6 @@ class phpbb_log implements phpbb_log_interface
 			return false;
 		}
 
-		global $db, $phpbb_dispatcher;
-
 		if ($log_time == false)
 		{
 			$log_time = time();
@@ -208,7 +287,7 @@ class phpbb_log implements phpbb_log_interface
 		* @since 3.1-A1
 		*/
 		$vars = array('mode', 'user_id', 'log_ip', 'log_operation', 'log_time', 'additional_data', 'sql_ary');
-		extract($phpbb_dispatcher->trigger_event('core.add_log', $vars));
+		extract($this->dispatcher->trigger_event('core.add_log', $vars));
 
 		// We didn't find a log_type, so we don't save it in the database.
 		if (!isset($sql_ary['log_type']))
@@ -216,9 +295,9 @@ class phpbb_log implements phpbb_log_interface
 			return false;
 		}
 
-		$db->sql_query('INSERT INTO ' . $this->log_table . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+		$this->db->sql_query('INSERT INTO ' . $this->log_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
 
-		return $db->sql_nextid();
+		return $this->db->sql_nextid();
 	}
 
 	/**
@@ -228,14 +307,12 @@ class phpbb_log implements phpbb_log_interface
 	*/
 	public function get_logs($mode, $count_logs = true, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $log_time = 0, $sort_by = 'l.log_time DESC', $keywords = '')
 	{
-		global $db, $user, $auth, $phpEx, $phpbb_root_path, $phpbb_admin_path, $phpbb_dispatcher;
-
 		$this->logs_total = 0;
 		$this->logs_offset = $offset;
 
 		$topic_id_list = $reportee_id_list = array();
 
-		$profile_url = (defined('IN_ADMIN')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview') : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile');
+		$profile_url = ($this->is_in_admin && $this->phpbb_admin_path) ? append_sid("{$this->phpbb_admin_path}index.{$this->php_ext}", 'i=users&amp;mode=overview') : append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=viewprofile');
 
 		switch ($mode)
 		{
@@ -254,7 +331,7 @@ class phpbb_log implements phpbb_log_interface
 				}
 				else if (is_array($forum_id))
 				{
-					$sql_additional = 'AND ' . $db->sql_in_set('l.forum_id', array_map('intval', $forum_id));
+					$sql_additional = 'AND ' . $this->db->sql_in_set('l.forum_id', array_map('intval', $forum_id));
 				}
 				else if ($forum_id)
 				{
@@ -308,7 +385,7 @@ class phpbb_log implements phpbb_log_interface
 		* @since 3.1-A1
 		*/
 		$vars = array('mode', 'count_logs', 'limit', 'offset', 'forum_id', 'topic_id', 'user_id', 'log_time', 'sort_by', 'keywords', 'profile_url', 'log_type', 'sql_additional');
-		extract($phpbb_dispatcher->trigger_event('core.get_logs_modify_type', $vars));
+		extract($this->dispatcher->trigger_event('core.get_logs_modify_type', $vars));
 
 		if ($log_type === false)
 		{
@@ -332,9 +409,9 @@ class phpbb_log implements phpbb_log_interface
 					AND l.log_time >= $log_time
 					$sql_keywords
 					$sql_additional";
-			$result = $db->sql_query($sql);
-			$this->logs_total = (int) $db->sql_fetchfield('total_entries');
-			$db->sql_freeresult($result);
+			$result = $this->db->sql_query($sql);
+			$this->logs_total = (int) $this->db->sql_fetchfield('total_entries');
+			$this->db->sql_freeresult($result);
 
 			if ($this->logs_total == 0)
 			{
@@ -358,11 +435,11 @@ class phpbb_log implements phpbb_log_interface
 				$sql_keywords
 				$sql_additional
 			ORDER BY $sort_by";
-		$result = $db->sql_query_limit($sql, $limit, $this->logs_offset);
+		$result = $this->db->sql_query_limit($sql, $limit, $this->logs_offset);
 
 		$i = 0;
 		$log = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$row['forum_id'] = (int) $row['forum_id'];
 			if ($row['topic_id'])
@@ -391,8 +468,8 @@ class phpbb_log implements phpbb_log_interface
 				'forum_id'			=> (int) $row['forum_id'],
 				'topic_id'			=> (int) $row['topic_id'],
 
-				'viewforum'			=> ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : false,
-				'action'			=> (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
+				'viewforum'			=> ($row['forum_id'] && $this->auth->acl_get('f_read', $row['forum_id'])) ? append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $row['forum_id']) : false,
+				'action'			=> (isset($this->user->lang[$row['log_operation']])) ? $this->user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
 			);
 
 			/**
@@ -404,7 +481,7 @@ class phpbb_log implements phpbb_log_interface
 			* @since 3.1-A1
 			*/
 			$vars = array('row', 'log_entry_data');
-			extract($phpbb_dispatcher->trigger_event('core.get_logs_modify_entry_data', $vars));
+			extract($this->dispatcher->trigger_event('core.get_logs_modify_entry_data', $vars));
 
 			$log[$i] = $log_entry_data;
 
@@ -413,7 +490,7 @@ class phpbb_log implements phpbb_log_interface
 				$log_data_ary = @unserialize($row['log_data']);
 				$log_data_ary = ($log_data_ary !== false) ? $log_data_ary : array();
 
-				if (isset($user->lang[$row['log_operation']]))
+				if (isset($this->user->lang[$row['log_operation']]))
 				{
 					// Check if there are more occurrences of % than arguments, if there are we fill out the arguments array
 					// It doesn't matter if we add more arguments than placeholders
@@ -447,7 +524,7 @@ class phpbb_log implements phpbb_log_interface
 
 			$i++;
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		/**
 		* Get some additional data after we got all log entries
@@ -461,7 +538,7 @@ class phpbb_log implements phpbb_log_interface
 		* @since 3.1-A1
 		*/
 		$vars = array('log', 'topic_id_list', 'reportee_id_list');
-		extract($phpbb_dispatcher->trigger_event('core.get_logs_get_additional_data', $vars));
+		extract($this->dispatcher->trigger_event('core.get_logs_get_additional_data', $vars));
 
 		if (sizeof($topic_id_list))
 		{
@@ -469,8 +546,8 @@ class phpbb_log implements phpbb_log_interface
 
 			foreach ($log as $key => $row)
 			{
-				$log[$key]['viewtopic'] = (isset($topic_auth['f_read'][$row['topic_id']])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_auth['f_read'][$row['topic_id']] . '&amp;t=' . $row['topic_id']) : false;
-				$log[$key]['viewlogs'] = (isset($topic_auth['m_'][$row['topic_id']])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $user->session_id) : false;
+				$log[$key]['viewtopic'] = (isset($topic_auth['f_read'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'f=' . $topic_auth['f_read'][$row['topic_id']] . '&amp;t=' . $row['topic_id']) : false;
+				$log[$key]['viewlogs'] = (isset($topic_auth['m_'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}mcp.{$this->php_ext}", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $this->user->session_id) : false;
 			}
 		}
 
@@ -502,8 +579,6 @@ class phpbb_log implements phpbb_log_interface
 	*/
 	private function generate_sql_keyword($keywords)
 	{
-		global $db, $user;
-
 		// Use no preg_quote for $keywords because this would lead to sole backslashes being added
 		// We also use an OR connection here for spaces and the | string. Currently, regex is not supported for searching (but may come later).
 		$keywords = preg_split('#[\s|]+#u', utf8_strtolower($keywords), 0, PREG_SPLIT_NO_EMPTY);
@@ -517,13 +592,13 @@ class phpbb_log implements phpbb_log_interface
 			for ($i = 0, $num_keywords = sizeof($keywords); $i < $num_keywords; $i++)
 			{
 				$keywords_pattern[] = preg_quote($keywords[$i], '#');
-				$keywords[$i] = $db->sql_like_expression($db->any_char . $keywords[$i] . $db->any_char);
+				$keywords[$i] = $this->db->sql_like_expression($this->db->any_char . $keywords[$i] . $this->db->any_char);
 			}
 
 			$keywords_pattern = '#' . implode('|', $keywords_pattern) . '#ui';
 
 			$operations = array();
-			foreach ($user->lang as $key => $value)
+			foreach ($this->user->lang as $key => $value)
 			{
 				if (substr($key, 0, 4) == 'LOG_' && preg_match($keywords_pattern, $value))
 				{
@@ -534,9 +609,9 @@ class phpbb_log implements phpbb_log_interface
 			$sql_keywords = 'AND (';
 			if (!empty($operations))
 			{
-				$sql_keywords .= $db->sql_in_set('l.log_operation', $operations) . ' OR ';
+				$sql_keywords .= $this->db->sql_in_set('l.log_operation', $operations) . ' OR ';
 			}
-			$sql_lower = $db->sql_lower_text('l.log_data');
+			$sql_lower = $this->db->sql_lower_text('l.log_data');
 			$sql_keywords .= " $sql_lower " . implode(" OR $sql_lower ", $keywords) . ')';
 		}
 
@@ -557,32 +632,30 @@ class phpbb_log implements phpbb_log_interface
 	*/
 	private function get_topic_auth($topic_ids)
 	{
-		global $auth, $db;
-
 		$forum_auth = array('f_read' => array(), 'm_' => array());
 		$topic_ids = array_unique($topic_ids);
 
 		$sql = 'SELECT topic_id, forum_id
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', array_map('intval', $topic_ids));
-		$result = $db->sql_query($sql);
+			WHERE ' . $this->db->sql_in_set('topic_id', array_map('intval', $topic_ids));
+		$result = $this->db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$row['topic_id'] = (int) $row['topic_id'];
 			$row['forum_id'] = (int) $row['forum_id'];
 
-			if ($auth->acl_get('f_read', $row['forum_id']))
+			if ($this->auth->acl_get('f_read', $row['forum_id']))
 			{
 				$forum_auth['f_read'][$row['topic_id']] = $row['forum_id'];
 			}
 
-			if ($auth->acl_gets('a_', 'm_', $row['forum_id']))
+			if ($this->auth->acl_gets('a_', 'm_', $row['forum_id']))
 			{
 				$forum_auth['m_'][$row['topic_id']] = $row['forum_id'];
 			}
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		return $forum_auth;
 	}
@@ -596,21 +669,19 @@ class phpbb_log implements phpbb_log_interface
 	*/
 	private function get_reportee_data($reportee_ids)
 	{
-		global $db;
-
 		$reportee_ids = array_unique($reportee_ids);
 		$reportee_data_list = array();
 
 		$sql = 'SELECT user_id, username, user_colour
 			FROM ' . USERS_TABLE . '
-			WHERE ' . $db->sql_in_set('user_id', $reportee_ids);
-		$result = $db->sql_query($sql);
+			WHERE ' . $this->db->sql_in_set('user_id', $reportee_ids);
+		$result = $this->db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$reportee_data_list[$row['user_id']] = $row;
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		return $reportee_data_list;
 	}
