@@ -779,24 +779,6 @@ class phpbb_notification_manager
 	*/
 	protected function load_object($object_name)
 	{
-		// Here we cannot just use ContainerBuilder->get(name)
-		// The reason for this is because get handles services
-		// which are initialized once and shared. Here we need
-		// separate new objects because we pass around objects
-		// that store row data in each object, which would lead
-		// to over-writing of data if we used get()
-
-		$parameterBag = $this->phpbb_container->getParameterBag();
-		$definition = $this->phpbb_container->getDefinition($object_name);
-        $arguments = $this->phpbb_container->resolveServices(
-            $parameterBag->unescapeValue($parameterBag->resolveValue($definition->getArguments()))
-        );
-		$r = new \ReflectionClass($parameterBag->resolveValue($definition->getClass()));
-
-		$object = null === $r->getConstructor() ? $r->newInstance() : $r->newInstanceArgs($arguments);
-
-		$object->set_notification_manager($this);
-
-		return $object;
+		return $this->phpbb_container->get($object_name);
 	}
 }
