@@ -26,9 +26,18 @@ phpbb.add_ajax_callback('post_delete', function() {
 // This callback removes the approve / disapprove div or link.
 phpbb.add_ajax_callback('post_visibility', function(res) {
 	var remove = (res.visible) ? $(this) : $(this).parents('.post');
+
 	$(remove).css('pointer-events', 'none').fadeOut(function() {
 		$(this).remove();
 	});
+
+	if (res.visible)
+	{
+		// Remove the "Deleted by" message from the post on restoring.
+		remove.parents('.post').find('.post_deleted_msg').css('pointer-events', 'none').fadeOut(function() {
+			$(this).remove();
+		});
+	}
 });
 
 // This removes the parent row of the link or form that fired the callback.
