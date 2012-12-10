@@ -31,6 +31,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected $lang = array();
 
 	static protected $config = array();
+	static protected $already_installed = false;
 
 	static public function setUpBeforeClass()
 	{
@@ -43,7 +44,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
 		}
 
-		self::install_board();
+		if (!self::$already_installed)
+		{
+			self::install_board();
+			self::$already_installed = true;
+		}
 	}
 
 	public function setUp()
