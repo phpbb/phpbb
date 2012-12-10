@@ -672,7 +672,7 @@ if ($submit || $preview || $refresh)
 	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
 
-	$topic_time_limit				= request_var('topic_time_limit', '');
+	$topic_time_limit				= $request->variable('topic_time_limit', '');
 	$post_data['topic_time_limit']	= ($topic_time_limit) ? (int) $user->get_timestamp_from_format('Y-m-d H:i', $topic_time_limit) : $post_data['topic_time_limit'];
 
 	if ($post_data['enable_icons'] && $auth->acl_get('f_icons', $forum_id))
@@ -742,12 +742,12 @@ if ($submit || $preview || $refresh)
 	}
 	else
 	{
-		$post_data['poll_title']		= utf8_normalize_nfc(request_var('poll_title', '', true));
-		$poll_length					= request_var('poll_length', '');
+		$post_data['poll_title']		= $request->variable('poll_title', '', true);
+		$poll_length					= $request->variable('poll_length', '');
 		$post_data['poll_length']		= ($poll_length) ? (int) $user->get_timestamp_from_format('Y-m-d H:i', $poll_length) : 0;
-		$post_data['poll_option_text']	= utf8_normalize_nfc(request_var('poll_option_text', '', true));
-		$post_data['poll_max_options']	= request_var('poll_max_options', 1);
-		$post_data['poll_vote_change']	= ($auth->acl_get('f_votechg', $forum_id) && $auth->acl_get('f_vote', $forum_id) && isset($_POST['poll_vote_change'])) ? 1 : 0;
+		$post_data['poll_option_text']	= $request->variable('poll_option_text', '', true);
+		$post_data['poll_max_options']	= $request->variable('poll_max_options', 1);
+		$post_data['poll_vote_change']	= ($auth->acl_get('f_votechg', $forum_id) && $auth->acl_get('f_vote', $forum_id) && $request->is_set_post('poll_vote_change')) ? 1 : 0;
 	}
 
 	// If replying/quoting and last post id has changed
