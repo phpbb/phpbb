@@ -2845,7 +2845,7 @@ function change_database_data(&$no_updates, $version)
 			// topic_time_limit <= 999 * 86400 seconds,we need to update it.
 			// As this timestamp was back in 1972, there can not be any
 			// collision of old and new system.
-			$sql = 'UPDATE ' . USERS_TABLE . '
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
 				SET topic_time_limit = topic_time + topic_time_limit
 				WHERE topic_time_limit > 0
 					AND topic_time_limit <= (999 * 86400)';
