@@ -822,7 +822,7 @@ class dbal
 	*/
 	function sql_report($mode, $query = '')
 	{
-		global $cache, $starttime, $phpbb_root_path, $user;
+		global $cache, $starttime, $phpbb_root_path, $phpbb_admin_path, $user;
 		global $request;
 
 		if (is_object($request) && !$request->variable('explain', false))
@@ -852,7 +852,7 @@ class dbal
 					<head>
 						<meta charset="utf-8">
 						<title>SQL Report</title>
-						<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+						<link href="' . $phpbb_admin_path . 'style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 					</head>
 					<body id="errorpage">
 					<div id="wrap">

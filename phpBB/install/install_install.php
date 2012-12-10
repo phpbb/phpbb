@@ -1813,7 +1813,7 @@ class install_install extends module
 	*/
 	function email_admin($mode, $sub)
 	{
-		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpEx;
+		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$this->page_title = $lang['STAGE_FINAL'];
 
@@ -1860,7 +1860,7 @@ class install_install extends module
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
 			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], $config['version'], append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=convert&amp;language=' . $data['language']), '../docs/README.html'),
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
-			'U_ACTION'	=> append_sid($phpbb_root_path . 'adm/index.' . $phpEx, 'i=send_statistics&amp;mode=send_statistics'),
+			'U_ACTION'	=> append_sid($phpbb_admin_path . 'index.' . $phpEx, 'i=send_statistics&amp;mode=send_statistics'),
 		));
 	}
 

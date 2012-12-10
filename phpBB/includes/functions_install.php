@@ -515,6 +515,9 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_test
 		'dbuser'		=> $data['dbuser'],
 		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
 		'table_prefix'	=> $data['table_prefix'],
+
+		'adm_relative_path'	=> 'adm/',
+
 		'acm_type'		=> 'phpbb_cache_driver_file',
 	);
 
