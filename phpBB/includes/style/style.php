@@ -106,7 +106,7 @@ class phpbb_style
 			$paths[] = $this->get_style_path($name);
 		}
 
-		return $this->set_custom_style($style_path, $paths, $paths);
+		return $this->set_custom_style($style_path, $paths, $names);
 	}
 
 	/**
