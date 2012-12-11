@@ -236,7 +236,7 @@ if ($has_global && !$ga_forum_id)
 
 	<title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
-	<link href="<?php echo $phpbb_admin_path; ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="<?php echo htmlspecialchars($phpbb_admin_path); ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 	</head>
 
@@ -286,7 +286,7 @@ header('Content-type: text/html; charset=UTF-8');
 
 <title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
-<link href="<?php echo $phpbb_admin_path; ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="<?php echo htmlspecialchars($phpbb_admin_path); ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 </head>
 

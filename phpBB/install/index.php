@@ -374,7 +374,7 @@ class module
 			'L_SELECT_LANG'			=> $lang['SELECT_LANG'],
 			'L_SKIP'				=> $lang['SKIP'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
-			'T_IMAGE_PATH'			=> $phpbb_admin_path . 'images/',
+			'T_IMAGE_PATH'			=> htmlspecialchars($phpbb_admin_path) . 'images/',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_FLOW_BEGIN'	=> ($lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
@@ -577,7 +577,7 @@ class module
 		echo '<head>';
 		echo '<meta charset="utf-8">';
 		echo '<title>' . $lang['INST_ERR_FATAL'] . '</title>';
-		echo '<link href="' . $phpbb_admin_path . 'style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
+		echo '<link href="' . htmlspecialchars($phpbb_admin_path) . 'style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
 		echo '</head>';
 		echo '<body id="errorpage">';
 		echo '<div id="wrap">';

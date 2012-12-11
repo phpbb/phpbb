@@ -852,7 +852,7 @@ class dbal
 					<head>
 						<meta charset="utf-8">
 						<title>SQL Report</title>
-						<link href="' . $phpbb_admin_path . 'style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+						<link href="' . htmlspecialchars($phpbb_admin_path) . 'style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 					</head>
 					<body id="errorpage">
 					<div id="wrap">
