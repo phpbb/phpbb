@@ -96,7 +96,7 @@ class phpbb_log implements phpbb_log_interface
 	* @param	string		$log_table		Name of the table we use to store our logs
 	* @return	null
 	*/
-	public function __construct(dbal $db, phpbb_user $user, phpbb_auth $auth, phpbb_dispatcher $phpbb_dispatcher, $phpbb_root_path, $php_ext, $log_table)
+	public function __construct($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $php_ext, $log_table)
 	{
 		$this->db = $db;
 		$this->user = $user;
