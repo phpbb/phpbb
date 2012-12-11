@@ -152,6 +152,9 @@ $lang = array_merge($lang, array(
 	'ACP_REGISTER_SETTINGS'		=> 'User registration settings',
 
 	'ACP_RESTORE'				=> 'Restore',
+	'ACP_REVISIONS'				=> 'Post Revision Tracking',
+	'ACP_REVISION_SETTINGS'		=> 'Settings',
+	'ACP_REVISIONS_PURGE'		=> 'Purge',
 
 	'ACP_FEED'					=> 'Feed management',
 	'ACP_FEED_SETTINGS'			=> 'Feed settings',
@@ -669,7 +672,11 @@ $lang = array_merge($lang, array(
 	'LOG_PRUNE_USER_DEL_DEL'	=> '<strong>Users pruned and posts deleted</strong><br />» %s',
 	'LOG_PRUNE_USER_DEL_ANON'	=> '<strong>Users pruned and posts retained</strong><br />» %s',
 
+	'LOG_PRUNED_EXCESS_POST_REVISIONS'	=> '<strong>Pruned excess post revisions</strong><br />» %s',
+	'LOG_PRUNED_OLD_POST_REVISIONS'		=> '<strong>Pruned old post revisions</strong><br />» %s',
+
 	'LOG_PURGE_CACHE'			=> '<strong>Purged cache</strong>',
+	'LOG_PURGE_REVISIONS'		=> '<strong>Purged post revisions</strong>',
 	'LOG_PURGE_SESSIONS'		=> '<strong>Purged sessions</strong>',
 
 

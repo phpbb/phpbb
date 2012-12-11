@@ -814,11 +814,13 @@ CREATE TABLE [phpbb_posts] (
 	[post_attachment] [int] DEFAULT (0) NOT NULL ,
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
+	[post_wiki] [int] DEFAULT (0) NOT NULL ,
 	[post_postcount] [int] DEFAULT (1) NOT NULL ,
 	[post_edit_time] [int] DEFAULT (0) NOT NULL ,
 	[post_edit_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[post_edit_user] [int] DEFAULT (0) NOT NULL ,
 	[post_edit_count] [int] DEFAULT (0) NOT NULL ,
+	[post_revision_count] [int] DEFAULT (0) NOT NULL ,
 	[post_edit_locked] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -849,6 +851,41 @@ CREATE  INDEX [post_username] ON [phpbb_posts]([post_username]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [tid_post_time] ON [phpbb_posts]([topic_id], [post_time]) ON [PRIMARY]
+GO
+
+
+/*
+	Table: 'phpbb_post_revisions'
+*/
+CREATE TABLE [phpbb_post_revisions] (
+	[revision_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[post_id] [int] DEFAULT (0) NOT NULL ,
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[revision_time] [int] DEFAULT (0) NOT NULL ,
+	[revision_subject] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[revision_text] [text] DEFAULT ('') NOT NULL ,
+	[revision_checksum] [varchar] (32) DEFAULT ('') NOT NULL ,
+	[bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
+	[revision_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[revision_protected] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_post_revisions] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_post_revisions] PRIMARY KEY  CLUSTERED 
+	(
+		[revision_id]
+	)  ON [PRIMARY] 
+GO
+
+CREATE  INDEX [post_id] ON [phpbb_post_revisions]([post_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [user_id] ON [phpbb_post_revisions]([user_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [time] ON [phpbb_post_revisions]([revision_time]) ON [PRIMARY]
 GO
 
 

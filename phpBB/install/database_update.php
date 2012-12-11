@@ -2402,6 +2402,20 @@ function change_database_data(&$no_updates, $version)
 				set_config('use_system_cron', 0);
 			}
 
+			if (!isset($config['track_post_revisions']))
+			{
+				set_config('track_post_revisions', 0);
+				set_config('revisions_per_post_max', 0);
+				set_config('revisions_per_wiki_post_max', 0);
+				set_config('revisions_allow_wiki', 0);
+				set_config('post_revisions_max_age', 0);
+				set_config('revision_cron_excess_frequency', 0);
+				set_config('revision_cron_age_frequency', 0);
+				set_config('excess_revisions_last_prune_time', 0);
+				set_config('old_revisions_last_prune_time', 0);
+
+			}
+
 			$sql = 'SELECT group_teampage
 				FROM ' . GROUPS_TABLE . '
 				WHERE group_teampage > 0';
@@ -2495,6 +2509,13 @@ function change_database_data(&$no_updates, $version)
 					'title'		=> 'UCP_PROFILE_AUTOLOGIN_KEYS',
 					'auth'		=> '',
 					'cat'		=> 'UCP_PROFILE',
+				),
+				'post_revisions'	=> array(
+					'base'		=> 'acp_revisions',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_REVISIONS',
+					'auth'		=> 'acl_a_revisions',
+					'cat'		=> 'ACP_REVISIONS',
 				),
 			);
 

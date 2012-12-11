@@ -56,6 +56,15 @@
 		<dd><label for="sf3"><input type="radio" name="sf" id="sf3" value="titleonly" /> {L_SEARCH_TITLE_ONLY}</label></dd>
 		<dd><label for="sf4"><input type="radio" name="sf" id="sf4" value="firstpost" /> {L_SEARCH_FIRST_POST}</label></dd>
 	</dl>
+	<!-- IF S_WIKI_SEARCH -->
+	<dl>
+		<dt><label for="sw1">{L_SEARCH_WIKI}:</label><br /><span>{L_SEARCH_WIKI_EXPLAIN}</span></dt>
+		<dd>
+			<label for="sw1"><input type="radio" name="sw" id="sw1" value="1" /> {L_YES}</label>
+			<label for="sw2"><input type="radio" name="sw" id="sw2" value="0" checked="checked" /> {L_NO}</label>
+		</dd>
+	</dl>
+	<!-- ENDIF -->
 
 	<hr class="dashed" />
 

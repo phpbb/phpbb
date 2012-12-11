@@ -57,6 +57,107 @@ ul.topiclist li.row dt a.subforum {
 	padding: 0 0 0 12px;
 }
 
+div.revisions_block {
+	display: block;
+	width: 75%;
+	margin: 0 auto;
+	margin-bottom: 30px;
+}
+
+fieldset.actions-left {
+	float: left;
+}
+
+fieldset.actions-right {
+	float: right;
+}
+
+.no-display {
+	display: none;
+}
+
+ul.revisions {
+	display: block;
+	list-style-type: none;
+	width: 100%;
+	border: 1px solid #CADCEB;
+}
+
+ul.revisions:first-child {
+	margin-top: 5px;
+}
+
+ul.revisions:last-child {
+	margin-bottom: 5px;
+}
+
+ul.revisions.even {
+	background-color: #E1EBF2;
+}
+
+ul.revisions.odd {
+	background-color: #ECF3F7;
+}
+
+ul.revisions.out_of_range {
+	opacity: 0.7;
+}
+
+ul.revisions.current {
+	background-color: #CADCEB;
+	border: 1px solid #CADCEB;
+}
+
+ul.revisions li {
+	display: inline-block;
+	padding: 10px;
+}
+
+ul.revisions li.revision_user {
+	vertical-align: middle;
+	width: 5%;
+}
+
+ul.revisions li.revision_user span {
+	vertical-align: text-top;
+}
+
+ul.revisions li.revision_date {
+	width: 15%;
+}
+
+ul.revisions li.revision_reason {
+	width: 40%;
+}
+
+ul.revisions li.revision_options {
+	text-align: right;
+	width: 15%;
+}
+
+div.revision_action_success {
+	padding: 5px;
+	border-radius: 5px;
+}
+
+dl.revision {
+	display: block;
+	width: 100%;
+	border-bottom: 1px solid #CADCEB;
+	padding: 5px;
+}
+
+dl.revision dt {
+	display: inline-block;
+	width: 20%;
+	vertical-align: top;
+}
+
+dl.revision dd {
+	display: inline-block;
+	width: 75%;
+}
+
 .forum-image {
 	float: left;
 	padding-top: 5px;
@@ -248,6 +349,16 @@ div[class].topic-actions {
 
 .postbody .content {
 	font-size: 1.3em;
+}
+
+.postbody .content ins {
+	text-decoration: none;
+	background-color: #99FF99;
+}
+
+.postbody .content del {
+	text-decoration: none;
+	background-color: #FFAAAA;
 }
 
 .search .postbody {

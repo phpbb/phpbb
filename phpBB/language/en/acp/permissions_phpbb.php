@@ -149,6 +149,9 @@ $lang = array_merge($lang, array(
 
 	'acl_f_post'		=> array('lang' => 'Can start new topics', 'cat' => 'post'),
 	'acl_f_sticky'		=> array('lang' => 'Can post stickies', 'cat' => 'post'),
+	'acl_f_revisions'	=> array('lang' => 'Can view and manage own post revisions', 'cat' => 'post'),
+	'acl_f_wiki_create'	=> array('lang' => 'Can create wiki posts', 'cat' => 'post'),
+	'acl_f_wiki_edit'	=> array('lang' => 'Can edit wiki posts', 'cat' => 'post'),
 	'acl_f_announce'	=> array('lang' => 'Can post announcements', 'cat' => 'post'),
 	'acl_f_reply'		=> array('lang' => 'Can reply to topics', 'cat' => 'post'),
 	'acl_f_edit'		=> array('lang' => 'Can edit own posts', 'cat' => 'post'),
@@ -177,6 +180,9 @@ $lang = array_merge($lang, array(
 	'acl_m_approve'		=> array('lang' => 'Can approve posts', 'cat' => 'post_actions'),
 	'acl_m_report'		=> array('lang' => 'Can close and delete reports', 'cat' => 'post_actions'),
 	'acl_m_chgposter'	=> array('lang' => 'Can change post author', 'cat' => 'post_actions'),
+	'acl_m_revisions'	=> array('lang' => 'Can view and manage post revisions', 'cat' => 'post_actions'),
+	'acl_m_delete_revisions'	=> array('lang' => 'Can delete post revisions', 'cat' => 'post_actions'),
+	'acl_m_protect_revisions'	=> array('lang' => 'Can protect post revisions', 'cat' => 'post_actions'),
 
 	'acl_m_move'	=> array('lang' => 'Can move topics', 'cat' => 'topic_actions'),
 	'acl_m_lock'	=> array('lang' => 'Can lock topics', 'cat' => 'topic_actions'),
@@ -204,6 +210,7 @@ $lang = array_merge($lang, array(
 	'acl_a_words'		=> array('lang' => 'Can alter word censors', 'cat' => 'posting'),
 	'acl_a_bbcode'		=> array('lang' => 'Can define BBCode tags', 'cat' => 'posting'),
 	'acl_a_attach'		=> array('lang' => 'Can alter attachment related settings', 'cat' => 'posting'),
+	'acl_a_revisions'	=> array('lang' => 'Can alter post revision tracking settings', 'cat' => 'posting'),
 
 	'acl_a_user'		=> array('lang' => 'Can manage users<br /><em>This also includes seeing the users browser agent within the viewonline list.</em>', 'cat' => 'user_group'),
 	'acl_a_userdel'		=> array('lang' => 'Can delete/prune users', 'cat' => 'user_group'),

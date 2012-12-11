@@ -38,6 +38,7 @@ $show_results	= ($show_results == 'posts') ? 'posts' : 'topics';
 $search_terms	= request_var('terms', 'all');
 $search_fields	= request_var('sf', 'all');
 $search_child	= request_var('sc', true);
+$search_wiki	= request_var('sw', false);
 
 $sort_days		= request_var('st', 0);
 $sort_key		= request_var('sk', 't');
@@ -538,12 +539,12 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	if ($search->get_search_query())
 	{
-		$total_match_count = $search->keyword_search($show_results, $search_fields, $search_terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page);
+		$total_match_count = $search->keyword_search($show_results, $search_fields, $search_terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page, $search_wiki);
 	}
 	else if (sizeof($author_id_ary))
 	{
 		$firstpost_only = ($search_fields === 'firstpost' || $search_fields == 'titleonly') ? true : false;
-		$total_match_count = $search->author_search($show_results, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page);
+		$total_match_count = $search->author_search($show_results, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page, $search_wiki);
 	}
 
 	// For some searches we need to print out the "no results" page directly to allow re-sorting/refining the search options.
@@ -559,6 +560,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$sql_where .= $db->sql_in_set(($show_results == 'posts') ? 'p.post_id' : 't.topic_id', $id_ary);
 		$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . ' OR f.forum_id IS NULL)' : '';
 		$sql_where .= ($show_results == 'posts') ? $m_approve_fid_sql : str_replace(array('p.post_approved', 'p.forum_id'), array('t.topic_approved', 't.forum_id'), $m_approve_fid_sql);
+		$sql_where .= $search_wiki ? ' AND p.post_wiki = 1' : '';
 	}
 
 	if ($show_results == 'posts')
@@ -604,6 +606,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($u_search_forum) ? '&amp;fid%5B%5D=' . $u_search_forum : '';
 	$u_search .= (!$search_child) ? '&amp;sc=0' : '';
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
+	$u_search .= ($search_wiki) ? '&amp;sw=1' : '';
 	$u_search .= ($return_chars != 300) ? '&amp;ch=' . $return_chars : '';
 
 	// Check if search backend supports phrase search or not
@@ -1170,6 +1173,7 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_KEY'		=> $s_sort_key,
 	'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 	'S_IN_SEARCH'			=> true,
+	'S_WIKI_SEARCH'			=> $config['revisions_allow_wiki'],
 ));
 
 // only show recent searches to search administrators

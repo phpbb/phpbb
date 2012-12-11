@@ -5550,6 +5550,44 @@ function phpbb_to_numeric($input)
 }
 
 /**
+* Get the post ID given a revision ID
+* If supplied an array, it checks each one until it finds a post ID
+*
+* @param mixed Array of revision IDs to look up
+* @return int|bool ID of the post that contains the given revision or false
+*/
+function phpbb_get_revision_post_id($revision_ids, dbal $db)
+{
+	if (!$revision_ids)
+	{
+		return false;
+	}
+	else if (!is_array($revision_ids))
+	{
+		$revision_ids = array($revision_ids);
+	}
+
+	foreach ($revision_ids as $revision_id)
+	{
+		if (!$revision_id)
+		{
+			continue;
+		}
+
+		$sql = 'SELECT post_id
+			FROM ' . POST_REVISIONS_TABLE . '
+			WHERE revision_id = ' . (int) $revision_id;
+		$result = $db->sql_query($sql);
+		$post_id = $db->sql_fetchfield('post_id') ?: 0;
+		$db->sql_freeresult($result);
+
+		return (int) $post_id;
+	}
+
+	return false;
+}
+
+/**
 * Create a Symfony Request object from phpbb_request object
 *
 * @param phpbb_request $request Request object

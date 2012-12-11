@@ -282,7 +282,9 @@ switch ($mode)
 	break;
 
 	case 'edit':
-		if ($user->data['is_registered'] && $auth->acl_gets('f_edit', 'm_edit', $forum_id))
+		if ($user->data['is_registered']
+			&& ($auth->acl_gets('f_edit', 'm_edit', $forum_id)
+				 || (!empty($post_data['post_wiki']) && $auth->acl_get('f_wiki_edit', $forum_id))))
 		{
 			$is_authed = true;
 		}
@@ -420,6 +422,25 @@ if ($mode == 'edit')
 }
 
 $orig_poll_options_size = sizeof($post_data['poll_options']);
+
+// If we are storing revisions, we need to go ahead and save the current post's version-able information
+$original_post_data = array();
+
+if ($config['track_post_revisions'] && $mode == 'edit')
+{
+	$original_post_data = array(
+		'post_id'			=> $post_data['post_id'],
+		'user_id'			=> $post_data['poster_id'],
+		'post_time'			=> $post_data['post_edit_time'] ?: $post_data['post_time'],
+		'post_subject'		=> $post_data['post_subject'],
+		'message'			=> $post_data['post_text'],
+		'post_checksum'		=> $post_data['post_checksum'],
+		'post_attachment'	=> $post_data['post_attachment'],
+		'bbcode_bitfield'	=> $post_data['bbcode_bitfield'],
+		'bbcode_uid'		=> $post_data['bbcode_uid'],
+		'post_edit_reason'	=> $post_data['post_edit_reason'],
+	);
+}
 
 $message_parser = new parse_message();
 
@@ -695,6 +716,7 @@ if ($submit || $preview || $refresh)
 	$topic_lock			= (isset($_POST['lock_topic'])) ? true : false;
 	$post_lock			= (isset($_POST['lock_post'])) ? true : false;
 	$poll_delete		= (isset($_POST['poll_delete'])) ? true : false;
+	$post_wiki			= (isset($_POST['wiki_post']));
 
 	if ($submit)
 	{
@@ -1097,9 +1119,12 @@ if ($submit || $preview || $refresh)
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
 				'filename_data'			=> $message_parser->filename_data,
+				'post_wiki'				=> $post_wiki,
 
 				'topic_approved'		=> (isset($post_data['topic_approved'])) ? $post_data['topic_approved'] : false,
 				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
+
+				'original_post_data'	=> $original_post_data,
 			);
 
 			if ($mode == 'edit')
@@ -1442,6 +1467,8 @@ $template->assign_vars(array(
 	'S_SAVE_ALLOWED'			=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $mode != 'edit') ? true : false,
 	'S_HAS_DRAFTS'				=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $post_data['drafts']) ? true : false,
 	'S_FORM_ENCTYPE'			=> $form_enctype,
+	'S_WIKI_ALLOWED'			=> $config['revisions_allow_wiki'] && ($auth->acl_gets('m_revisions', 'f_wiki_create', $forum_id) || $auth->acl_get('f_revisions', $forum_id)),
+	'S_WIKI_CHECKED'			=> !empty($post_data['post_wiki']) ? ' checked="checked"' : '',
 
 	'S_BBCODE_IMG'			=> $img_status,
 	'S_BBCODE_URL'			=> $url_status,
