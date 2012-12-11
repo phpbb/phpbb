@@ -66,11 +66,16 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 			require($this->phpbb_root_path . 'includes/functions_user' . $this->php_ext);
 		}
 
-		$error = array_merge($error, validate_data(array(
-			'url' => $url,
-		), array(
-			'url' => array('string', true, 5, 255),
-		)));
+		$validate_array = validate_data(
+			array(
+				'url' => $url,
+			),
+			array(
+				'url' => array('string', true, 5, 255),
+			)
+		);
+
+		$error = array_merge($error, $validate_array);
 
 		if (!empty($error))
 		{

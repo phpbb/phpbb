@@ -529,7 +529,7 @@ class acp_groups
 						$avatars_enabled = true;
 						$config_name = $phpbb_avatar_manager->get_driver_config_name($driver);
 						$template->set_filenames(array(
-							'avatar' => "acp_avatar_options_$config_name.html",
+							'avatar' => "acp_avatar_options_{$config_name}.html",
 						));
 
 						if ($driver->prepare_form($template, $avatar_data, $avatar_error))

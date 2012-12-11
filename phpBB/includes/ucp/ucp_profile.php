@@ -590,7 +590,7 @@ class ucp_profile
 
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', $result) . '
-										WHERE user_id = ' . $user->data['user_id'];
+										WHERE user_id = ' . (int) $user->data['user_id'];
 
 									$db->sql_query($sql);
 									
@@ -615,7 +615,7 @@ class ucp_profile
 
 								$sql = 'UPDATE ' . USERS_TABLE . '
 									SET ' . $db->sql_build_array('UPDATE', $result) . '
-									WHERE user_id = ' . $user->data['user_id'];
+									WHERE user_id = ' . (int) $user->data['user_id'];
 
 								$db->sql_query($sql);
 								

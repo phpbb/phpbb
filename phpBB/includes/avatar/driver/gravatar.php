@@ -77,13 +77,18 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 			require($this->phpbb_root_path . 'includes/functions_user' . $this->php_ext);
 		}
 
-		$error = array_merge($error, validate_data(array(
-			'email' => $row['avatar'],
-		), array(
-			'email' => array(
-				array('string', false, 6, 60),
-				array('email')),
-		)));
+		$validate_array = validate_data(
+			array(
+				'email' => $row['avatar'],
+			),
+			array(
+				'email' => array(
+					array('string', false, 6, 60),
+					array('email'))
+			)
+		);
+
+		$error = array_merge($error, $validate_array);
 
 		if (!empty($error))
 		{

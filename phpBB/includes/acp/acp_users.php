@@ -1765,7 +1765,7 @@ class acp_users
 
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', $result) . '
-										WHERE user_id = ' . $user_id;
+										WHERE user_id = ' . (int) $user_id;
 
 									$db->sql_query($sql);
 									trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
@@ -1810,7 +1810,7 @@ class acp_users
 						$avatars_enabled = true;
 						$config_name = $phpbb_avatar_manager->get_driver_config_name($driver);
 						$template->set_filenames(array(
-							'avatar' => "acp_avatar_options_$config_name.html",
+							'avatar' => "acp_avatar_options_{$config_name}.html",
 						));
 
 						if ($driver->prepare_form($template, $avatar_data, $error))
