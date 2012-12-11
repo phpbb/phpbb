@@ -91,7 +91,7 @@ class phpbb_revisions_post
 	* @param int $post_id Post ID
 	* @param dbal $dbal phpBB DBAL object
 	*/
-	public function __construct($post_id, dbal $db, $config, phpbb_auth $auth)
+	public function __construct($post_id, dbal $db, phpbb_config $config, phpbb_auth $auth)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -171,7 +171,7 @@ class phpbb_revisions_post
 	*/
 	public function get_revisions($refresh = false)
 	{
-		return ($refresh || empty($this->revisions)) ? $this->load_revisions() : $this->revisions;
+		return (false !== $refresh || empty($this->revisions)) ? $this->load_revisions() : $this->revisions;
 	}
 
 	/**
@@ -237,11 +237,11 @@ class phpbb_revisions_post
 	{
 		if ($this->revision_count && !$refresh)
 		{
-			return $this->revision_count;
+			return (int) $this->revision_count;
 		}
 		else if (sizeof($this->revisions) && !$refresh)
 		{
-			return $this->revision_count = sizeof($this->revisions);
+			return (int) $this->revision_count = sizeof($this->revisions);
 		}
 
 		$sql = 'SELECT COUNT(revision_id) as revision_count
@@ -251,7 +251,7 @@ class phpbb_revisions_post
 		$this->revision_count = (int) $this->db->sql_fetchfield('revision_count');
 		$this->db->sql_freeresult($result);
 
-		return $this->revision_count;
+		return (int) $this->revision_count;
 	}
 
 	/**

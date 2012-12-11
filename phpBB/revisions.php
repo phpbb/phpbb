@@ -351,9 +351,9 @@ $template->assign_vars(array(
 	'POST_ID'			=> $post_data['post_id'],
 	'POSTER_ID'			=> $post_data['poster_id'],
 
-	'L_VIEWING_POST_REVISION_EXPLAIN'	=> !$display_comparison ? $user->lang('VIEWING_POST_REVISION_EXPLAIN', $current->get_username() . $current->get_avatar(20, 20), $user->format_date($current->get_time())) : '',
+	'L_VIEWING_POST_REVISION_EXPLAIN'	=> !$display_comparison ? $user->lang('VIEWING_POST_REVISION_EXPLAIN', $current->get_username() . $current->get_avatar(20, 20), $this->user->format_date($current->get_time())) : '',
 
-	'U_VIEW_REVISIONS'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)),
+	'U_VIEW_REVISIONS'	=> append_sid("{$phpbb_root_path}app.$phpEx", array('p' => $post_id)),
 	'U_VIEW_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
 ));
 
