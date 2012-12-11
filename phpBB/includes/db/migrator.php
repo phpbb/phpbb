@@ -27,9 +27,6 @@ class phpbb_db_migrator
 	protected $db_tools;
 	protected $table_prefix;
 
-	protected $phpbb_root_path;
-	protected $php_ext;
-
 	protected $migrations_table;
 	protected $migration_state;
 
@@ -39,24 +36,22 @@ class phpbb_db_migrator
 	* Constructor of the database migrator
 	*
 	* @param \Symfony\Component\DependencyInjection\ContainerInterface	$container	Container supplying dependencies
+	* @param phpbb_db_migration_tool_interface[] $tools A set of tools available from migration commands
+	* @param Traversable	$migrations Traversable containing all migration class names
 	*/
-	public function __construct(\Symfony\Component\DependencyInjection\ContainerInterface $container, $migrations)
+	public function __construct(\Symfony\Component\DependencyInjection\ContainerInterface $container, $tools, $migrations)
 	{
 		$this->container = $container;
 		$this->db = $this->container->get('dbal.conn');
 		$this->db_tools = $this->container->get('dbal.tools');
-		$this->table_prefix = $this->container->getParameters('core.table_prefix');
-		$this->migrations_table = $this->container->getParameters('tables.migrations');
+		$this->table_prefix = $this->container->getParameter('core.table_prefix');
+		$this->migrations_table = $this->container->getParameter('tables.migrations');
 		$this->migrations = $migrations;
 
-		$this->phpbb_root_path = $this->container->getParameters('core.root_path');
-		$this->php_ext = $this->container->getParameters('core.php_ext');
-
-		/** @todo replace with collection_pass when merged */
-		$this->tools = array(
-			'config' => new phpbb_db_migration_tools_config,
-			'module' => new phpbb_db_migration_tools_module,
-			'permission' => new phpbb_db_migration_tools_permission,
+		$this->tools = array_map(function ($tool) {
+				return $tool->get_name();
+			},
+			$tools
 		);
 
 		$this->load_migration_state();
@@ -134,7 +129,7 @@ class phpbb_db_migrator
 			return false;
 		}
 
-		$migration = new $name($this->db, $this->db_tools, $this->table_prefix, $this->phpbb_root_path, $this->php_ext);
+		$migration = new $name($this->container);
 		$state = (isset($this->migration_state[$name])) ?
 			$this->migration_state[$name] :
 			array(
@@ -325,7 +320,7 @@ class phpbb_db_migrator
 			return true;
 		}
 
-		$migration = new $name($this->db, $this->db_tools, $this->table_prefix, $this->phpbb_root_path, $this->php_ext);
+		$migration = new $name($this->container);
 		$depends = $migration->depends_on();
 
 		foreach ($depends as $depend)

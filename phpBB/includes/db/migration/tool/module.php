@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_db_migration_tools_module
+class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interface
 {
 	/** @var phpbb_cache_service */
 	protected $cache = null;
@@ -31,6 +31,14 @@ class phpbb_db_migration_tools_module
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_name()
+	{
+		return 'module';
 	}
 
 	/**

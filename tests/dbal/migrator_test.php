@@ -26,13 +26,29 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/migrator.xml');
 	}
 
-	public function setUp()
+	public function setup()
 	{
 		parent::setup();
 
 		$this->db = $this->new_dbal();
 		$this->db_tools = new phpbb_db_tools($this->db);
-		$this->migrator = new phpbb_db_migrator($this->db, $this->db_tools, 'phpbb_', MIGRATIONS_TABLE, 'phpBB/', '.php');
+
+		$this->config = new phpbb_config_db($this->db, new phpbb_mock_cache, 'phpbb_config');
+
+		$this->container = new \Symfony\Component\DependencyInjection\Container;
+		$this->container->set('dbal.conn', $this->db);
+		$this->container->set('dbal.tools', $this->db_tools);
+		$this->container->set('config', $this->config);
+
+		$this->container->setParameter('core.table_prefix', 'phpbb_');
+		$this->container->setParameter('core.root_path', 'phpBB/');
+		$this->container->setParameter('core.php_ext', 'php');
+		$this->container->setParameter('tables.migrations', 'phpbb_migrations');
+
+		$tools = array(
+			new phpbb_db_migration_tool_config($this->config),
+		);
+		$this->migrator = new phpbb_db_migrator($this->container, $tools, array());
 	}
 
 	public function tearDown()

@@ -43,13 +43,15 @@ abstract class phpbb_db_migration
 	*/
 	public function __construct(\Symfony\Component\DependencyInjection\ContainerInterface $container)
 	{
+		$this->container = $container;
+
 		$this->config = $this->container->get('config');
 		$this->db = $this->container->get('dbal.conn');
 		$this->db_tools = $this->container->get('dbal.tools');
-		$this->table_prefix = $this->container->getParameters('core.table_prefix');
+		$this->table_prefix = $this->container->getParameter('core.table_prefix');
 
-		$this->phpbb_root_path = $this->container->getParameters('core.root_path');
-		$this->php_ext = $this->container->getParameters('core.php_ext');
+		$this->phpbb_root_path = $this->container->getParameter('core.root_path');
+		$this->php_ext = $this->container->getParameter('core.php_ext');
 
 		$this->errors = array();
 	}

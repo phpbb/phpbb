@@ -101,23 +101,24 @@ services:
         class: phpbb_db_migrator
         arguments:
             - @service_container
+            - @migrator.tool_collection
 
-    migrator.tools_collection
+    migrator.tool_collection:
         class: phpbb_di_service_collection
         arguments:
             - @service_container
 
-    migrator.tools.config:
-        class: phpbb_db_migration_tools_config
+    migrator.tool.config:
+        class: phpbb_db_migration_tool_config
         arguments:
             - @config
         tags:
             - { name: migrator:tool }
 
-    migrator.tools.module:
-        class: phpbb_db_migration_tools_module
+    migrator.tool.module:
+        class: phpbb_db_migration_tool_module
         arguments:
-            - @db
+            - @dbal.conn
             - @cache
             - @user
             - %core.root_path%
@@ -125,10 +126,10 @@ services:
         tags:
             - { name: migrator:tool }
 
-    migrator.tools.permission:
-        class: phpbb_db_migration_tools_permission
+    migrator.tool.permission:
+        class: phpbb_db_migration_tool_permission
         arguments:
-            - @db
+            - @dbal.conn
             - @cache
             - @auth
             - %core.root_path%

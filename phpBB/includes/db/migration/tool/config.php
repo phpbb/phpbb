@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_db_migration_tools_config
+class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_interface
 {
 	/** @var phpbb_config */
 	protected $config = null;
@@ -15,6 +15,14 @@ class phpbb_db_migration_tools_config
 	public function __construct(phpbb_config $config)
 	{
 		$this->config = $config;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_name()
+	{
+		return 'config';
 	}
 
 	/**

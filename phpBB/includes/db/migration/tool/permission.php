@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
+class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_interface
 {
 	/** @var phpbb_auth */
 	protected $auth = null;
@@ -31,6 +31,14 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 		$this->auth = $auth;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_name()
+	{
+		return 'permission';
 	}
 
 	/**
