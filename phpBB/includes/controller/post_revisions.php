@@ -96,7 +96,7 @@ class phpbb_controller_post_revisions
 		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
 
-		if (!self::get_view_permission($post_data))
+		if (!$this->get_view_permission($post_data))
 		{
 			return $this->helper->error($this->user->lang('ERROR_AUTH_VIEW'), 401);
 		}
@@ -207,6 +207,74 @@ class phpbb_controller_post_revisions
 	}
 
 	/**
+	* Set a specific revision to protected or unprotected
+	*
+	* This controller method is accessed directly from the paths:
+	* /post/{id}/revision/{revision_id}/protect
+	* /post/{id}/revision/{revision_id}/unprotect
+	* $mode is supplied by the route definition as either protect or unprotect
+	*
+	* @param string $mode Whether to protect or unprotect the revision
+	* @param int $id Post ID
+	* @param int $revision_id Revision ID
+	* @return Response
+	*/
+	public function protect_unprotect($mode, $id, $revision_id)
+	{
+		// Ensure that $mode is one of 'protect' or 'unprotect'
+		$mode = 'protect' == $mode || 'unprotect' == $mode ? $mode : 'unprotect';
+		$post = new phpbb_revisions_post($id, $this->db);
+		$post_data = $post->get_post_data();
+		$revisions = $post->get_revisions();
+		if (!$auth->acl_get('m_protect_revisions', $post_data['forum_id']))
+		{
+			$error = $mode = 'protect' ? 'NO_AUTH_PROTECT_REVISIONS' : 'NO_AUTH_UNPROTECT_REVISIONS';
+			$this->send_ajax_response(array(
+				'success'	=> false,
+				'message'	=> $this->user->lang($error),
+			));
+
+			return $this->helper->error($this->user->lang($error), 401);
+		}
+		else if (!isset($revisions[$revision_id]))
+		{
+			$this->send_ajax_response(array(
+				'success'	=> false,
+				'message'	=> $this->user->lang('ERROR_REVISION_NOT_FOUND'),
+			));
+
+			return $this->helper->error($this->user->lang('ERROR_REVISION_NOT_FOUND'), 404);
+		}
+
+		// If we are trying to protect a protected revision or unprotect an
+		// unprotected revision, let's go no further
+		if (($revisions[$revision_id]->is_protected() && $mode == 'protect') ||
+			(!$revisions[$revision_id]->is_protected() && $mode == 'unprotect'))
+		{
+			return $this->view($id);
+		}
+
+		switch ($mode)
+		{
+			case 'protect'
+			case 'unprotect':
+				$result = $this->$mode($revision_id);
+			break;
+		}
+
+		$post_data = $post->get_post_data(true);
+		$revisions = $post->get_revisions(true);
+		$message = $this->user->lang(sizeof($revisions) ? 'REVISION_DELETED_SUCCESS' : 'REVISION_DELETED_SUCCESS_NO_MORE');
+
+		$this->send_ajax_response(array(
+			'success'	=> true,
+			'message'	=> $message,
+		));
+
+		return $this->view($id);
+	}
+
+	/**
 	* Delete a specific revision
 	*
 	* This controller method is accessed directly from the path:
@@ -218,15 +286,40 @@ class phpbb_controller_post_revisions
 	*/
 	public function delete($id, $revision_id)
 	{
+		$post = new phpbb_revisions_post($id, $this->db);
+		$post_data = $post->get_post_data();
+		$revisions = $post->get_revisions();
 		if (!$this->auth->acl_get('m_delete_revisions', $post_data['forum_id']))
 		{
 			$this->send_ajax_response(array(
 				'success'	=> false,
-				'message'	=> $this->user->lang('ERROR_AUTH_DELETE_REVISIONS')
+				'message'	=> $this->user->lang('ERROR_AUTH_DELETE_REVISIONS'),
 			));
+
+			return $this->helper->error($this->user->lang('ERROR_AUTH_DELETE_REVISIONS'), 401);
+		}
+		else if (!isset($revisions[$revision_id]))
+		{
+			$this->send_ajax_response(array(
+				'success'	=> false,
+				'message'	=> $this->user->lang('ERROR_REVISION_NOT_FOUND'),
+			));
+
+			return $this->helper->error($this->user->lang('ERROR_REVISION_NOT_FOUND'), 404);
 		}
 
-		$result = $this->_delete();
+		$result = $this->perform_delete($revision_id);
+
+		$post_data = $post->get_post_data(true);
+		$revisions = $post->get_revisions(true);
+		$message = $this->user->lang(sizeof($revisions) ? 'REVISION_DELETED_SUCCESS' : 'REVISION_DELETED_SUCCESS_NO_MORE');
+
+		$this->send_ajax_response(array(
+			'success'	=> true,
+			'message'	=> $message,
+		));
+
+		return $this->view($id);
 	}
 
 	/**
@@ -237,7 +330,7 @@ class phpbb_controller_post_revisions
 	* @param mixed $revision_id Revision ID or array of revision IDs
 	* @return bool
 	*/
-	protected function _delete($revision_id)
+	protected function perform_delete($revision_id)
 	{
 		if (!is_array($revision_id))
 		{
@@ -247,6 +340,46 @@ class phpbb_controller_post_revisions
 		$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
 			WHERE ' . $this->db->sql_in_set('revision_id', $revision_id);
 		return (bool) $this->db->sql_query($sql);
+	}
+
+	/**
+	* Protect the specified revision
+	*
+	* Note: this does not check authorization
+	*
+	* @param mixed $revision_id Revision ID or array of revision IDs
+	*/
+	protected function protect($revision_id)
+	{
+		if (!is_array($revision_id))
+		{
+			$revision_id = array($revision_id);
+		}
+
+		$sql = 'UPDATE ' . POST_REVISIONS_TABLE . '
+			SET revision_protected = 1
+			WHERE ' . $this->db->sql_in_set('revision_id', $revision_id);
+		return (bool) $db->sql_query($sql);
+	}
+
+	/**
+	* Unprotect the specified revision
+	*
+	* Note: this does not check authorization
+	*
+	* @param mixed $revision_id Revision ID or array of revision IDs
+	*/
+	protected function unprotect($revision_id)
+	{
+		if (!is_array($revision_id))
+		{
+			$revision_id = array($revision_id);
+		}
+
+		$sql = 'UPDATE ' . POST_REVISIONS_TABLE . '
+			SET revision_protected = 0
+			WHERE ' . $this->db->sql_in_set('revision_id', $revision_id);
+		return (bool) $db->sql_query($sql);
 	}
 
 	/**
@@ -263,7 +396,7 @@ class phpbb_controller_post_revisions
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
 
-		if (!self::get_restore_permission($post_data))
+		if (!$this->get_restore_permission($post_data))
 		{
 			return $this->helper->error($this->user->lang('ERROR_AUTH_RESTORE'), 401);
 		}
@@ -284,6 +417,7 @@ class phpbb_controller_post_revisions
 			else if ($post_data['post_edit_locked'] && !$auth->acl_get('m_revisions', $post_data['forum_id']))
 			{
 				$error = 'ERROR_POST_EDIT_LOCKED';
+				// 401 is unauthorized
 				$code = 401;
 			}
 
@@ -367,7 +501,7 @@ class phpbb_controller_post_revisions
 	* @param array $post_data Array of post data
 	* @return bool
 	*/
-	static protected function get_restore_permission($post_data)
+	protected function get_restore_permission($post_data)
 	{
 		// If the post is a wiki post, the user can edit wiki posts in this
 		// forum, and the post is not edit locked
@@ -392,7 +526,7 @@ class phpbb_controller_post_revisions
 	* @param array $post_data Array of post data
 	* @return bool
 	*/
-	static protected function get_view_permission($post_data)
+	protected function get_view_permission($post_data)
 	{
 		// If the post is a wiki post and the user has wiki edit permission
 		// in the current forum

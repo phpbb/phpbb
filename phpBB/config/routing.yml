@@ -42,7 +42,7 @@ post_revision_view:
         revision_id: \d+
 
 # Delete a single revision of a post
-post_revision_view:
+post_revision_delete:
     pattern: /post/{id}/revision/{revision_id}/delete
     defaults: { _controller: post_revisions.controller:delete }
     requirements:
@@ -50,17 +50,17 @@ post_revision_view:
         revision_id: \d+
 
 # Protect a single revision of a post
-post_revision_view:
+post_revision_protect:
     pattern: /post/{id}/revision/{revision_id}/protect
-    defaults: { _controller: post_revisions.controller:protect }
+    defaults: { _controller: post_revisions.controller:protect_unprotect, mode: protect }
     requirements:
         id: \d+
         revision_id: \d+
 
 # Unprotect a single revision of a post
-post_revision_view:
+post_revision_unprotect:
     pattern: /post/{id}/revision/{revision_id}/unprotect
-    defaults: { _controller: post_revisions.controller:unprotect }
+    defaults: { _controller: post_revisions.controller:protect_unprotect, mode: unprotect }
     requirements:
         id: \d+
         revision_id: \d+
