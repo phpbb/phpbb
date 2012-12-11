@@ -300,12 +300,11 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 	*/
 	public function test_view_log_function($expected, $expected_returned, $mode, $log_count, $limit = 5, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_id ASC', $keywords = '')
 	{
-		global $cache, $db, $user, $auth, $phpbb_log, $phpbb_dispatcher;
+		global $cache, $db, $user, $auth, $phpbb_log, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$db = $this->new_dbal();
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$phpbb_log = new phpbb_log(LOGS_TABLE);
 
 		// Create auth mock
 		$auth = $this->getMock('phpbb_auth');
@@ -334,6 +333,8 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 		$user->lang = array(
 			'LOG_INSTALL_INSTALLED'		=> 'installed: %s',
 		);
+
+		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $phpEx, LOG_TABLE);
 
 		$log = array();
 		$this->assertEquals($expected_returned, view_log($mode, $log, $log_count, $limit, $offset, $forum_id, $topic_id, $user_id, $limit_days, $sort_by, $keywords));

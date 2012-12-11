@@ -142,7 +142,7 @@ class phpbb_log_function_add_log_test extends phpbb_database_test_case
 	*/
 	public function test_add_log_function($expected, $user_id, $mode, $required1, $additional1 = null, $additional2 = null, $additional3 = null)
 	{
-		global $db, $cache, $user, $phpbb_log, $phpbb_dispatcher;
+		global $db, $cache, $user, $phpbb_log, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		if ($expected)
 		{
@@ -157,7 +157,10 @@ class phpbb_log_function_add_log_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$phpbb_log = new phpbb_log(LOG_TABLE);
+		$user = $this->getMock('phpbb_user');
+		$auth = $this->getMock('phpbb_auth');
+
+		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $phpEx, LOG_TABLE);
 
 		$user->ip = 'user_ip';
 		if ($user_id)

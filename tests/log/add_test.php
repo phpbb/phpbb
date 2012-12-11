@@ -18,7 +18,16 @@ class phpbb_log_add_test extends phpbb_database_test_case
 
 	public function test_log_enabled()
 	{
-		$log = new phpbb_log(LOG_TABLE);
+		global $phpbb_root_path, $phpEx, $db, $phpbb_dispatcher;
+
+		$db = $this->new_dbal();
+		$cache = new phpbb_mock_cache;
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = $this->getMock('phpbb_user');
+		$auth = $this->getMock('phpbb_auth');
+
+		$log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $phpEx, LOG_TABLE);
+
 		$this->assertTrue($log->is_enabled(), 'Initialise failed');
 
 		$log->disable();
@@ -38,10 +47,15 @@ class phpbb_log_add_test extends phpbb_database_test_case
 
 	public function test_log_add()
 	{
-		global $db, $phpbb_dispatcher;
+		global $phpbb_root_path, $phpEx, $db, $phpbb_dispatcher;
 
 		$db = $this->new_dbal();
+		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = $this->getMock('phpbb_user');
+		$auth = $this->getMock('phpbb_auth');
+
+		$log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $phpEx, LOG_TABLE);
 
 		$mode = 'critical';
 		$user_id = ANONYMOUS;
@@ -51,7 +65,6 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$additional_data = array();
 
 		// Add an entry successful
-		$log = new phpbb_log(LOG_TABLE);
 		$this->assertEquals(1, $log->add($mode, $user_id, $log_ip, $log_operation, $log_time));
 
 		// Disable logging for all types
