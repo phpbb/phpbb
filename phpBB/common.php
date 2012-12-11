@@ -118,7 +118,7 @@ $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
-$phpbb_log = new phpbb_log(LOG_TABLE);
+$phpbb_log = $phpbb_container->get('log');
 
 // load extensions
 $phpbb_extension_manager = $phpbb_container->get('ext.manager');
