@@ -4,7 +4,7 @@
 	"description": "The subsilver2 style for phpBB 3",
 	"homepage": "https://www.phpbb.com",
 	"version": "3.1.0-dev",
-	"licence": "GPL-2.0",
+	"license": "GPL-2.0",
 	"authors": [
 		{
 			"name": "phpBB Group",
@@ -12,7 +12,6 @@
 		}
 	],
 	"require": {
-		"php": ">=5.3.3",
 		"phpbb": "3.1.0-dev"
 	},
 	"extra": {

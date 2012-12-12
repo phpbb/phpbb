@@ -4,7 +4,7 @@
 	"description": "The default prosilver style for phpBB 3",
 	"homepage": "https://www.phpbb.com",
 	"version": "3.1.0-dev",
-	"licence": "GPL-2.0",
+	"license": "GPL-2.0",
 	"authors": [
 		{
 			"name": "phpBB Group",
@@ -12,12 +12,11 @@
 		}
 	],
 	"require": {
-		"php": ">=5.3.3",
 		"phpbb": "3.1.0-dev"
 	},
 	"extra": {
 		"display-name": "prosilver",
-		"copyright": "2005 phpBB Group",
+		"copyright": "2007 phpBB Group",
 		"parent": "prosilver"
 	}
 }

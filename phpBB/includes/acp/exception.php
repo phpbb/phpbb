@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
- * Exception class for metadata
+ * General exception class for the ACP
  */
 class phpbb_acp_exception extends UnexpectedValueException
 {
