@@ -20,8 +20,4 @@ if (!defined('IN_PHPBB'))
  */
 class phpbb_acp_exception extends UnexpectedValueException
 {
-	public function __toString()
-	{
-		return $this->getMessage();
-	}
 }
