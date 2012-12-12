@@ -2,6 +2,22 @@
 
 "use strict";
 
+// This callback will mark all forum icons read
+phpbb.add_ajax_callback('mark_forums_read', function(res) {
+	var read_title = res.NO_UNREAD_POSTS;
+	var unread_title = res.UNREAD_POSTS;
+
+	$('li.row dl.forum_unread').each(function(e) {
+		$(this).removeClass('forum_unread').addClass('forum_read');
+		$(this).children('dt[title=' + unread_title + ']').attr('title', read_title);
+	});
+
+	$('li.row dl.forum_unread_subforum').each(function(e) {
+		$(this).removeClass('forum_unread_subforum').addClass('forum_read_subforum');
+		$(this).children('dt[title=' + unread_title + ']').attr('title', read_title);
+	});
+});
+
 // This callback finds the post from the delete link, and removes it.
 phpbb.add_ajax_callback('post_delete', function() {
 	var el = $(this),
