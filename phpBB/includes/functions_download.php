@@ -660,7 +660,7 @@ function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 */
 function phpbb_download_handle_pm_auth($db, $auth, $user_id, $msg_id)
 {
-	if (!$auth->acl_get('u_pm_download'))
+	if (!$auth->acl_get('u_download'))
 	{
 		send_status_line(403, 'Forbidden');
 		trigger_error('SORRY_AUTH_VIEW_ATTACH');
