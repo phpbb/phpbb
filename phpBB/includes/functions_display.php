@@ -61,14 +61,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		{
 			markread('all', false, false, request_var('mark_time', 0));
 
-			if (!$request->is_ajax())
-			{
-				trigger_error(
-					$user->lang['FORUMS_MARKED'] . '<br /><br />' .
-					sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect . '">', '</a>')
-				);
-			}
-			else
+			if ($request->is_ajax())
 			{
 				// Tell the ajax script what language vars need to be replaced
 				$data = array(
@@ -78,6 +71,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$json_response = new phpbb_json_response();
 				$json_response->send($data);
 			}
+
+			trigger_error(
+				$user->lang['FORUMS_MARKED'] . '<br /><br />' .
+				sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect . '">', '</a>')
+			);
 		}
 		else
 		{
@@ -326,11 +324,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
 
-			if (!$request->is_ajax())
-			{
-				trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
-			}
-			else
+			if ($request->is_ajax())
 			{
 				// Tell the ajax script what language vars need to be replaced
 				$data = array(
@@ -340,6 +334,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$json_response = new phpbb_json_response();
 				$json_response->send($data);
 			}
+
+			trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
 		}
 		else
 		{

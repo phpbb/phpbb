@@ -181,11 +181,7 @@ if ($mark_read == 'topics')
 	$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 	meta_refresh(3, $redirect_url);
 
-	if (!$request->is_ajax())
-	{
-		trigger_error($user->lang['TOPICS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
-	}
-	else
+	if ($request->is_ajax())
 	{
 		// Tell the ajax script what language vars need to be replaced
 		$data = array(
@@ -195,6 +191,8 @@ if ($mark_read == 'topics')
 		$json_response = new phpbb_json_response();
 		$json_response->send($data);
 	}
+
+	trigger_error($user->lang['TOPICS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
 }
 
 // Is a forum specific topic count required?
