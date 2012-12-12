@@ -2924,6 +2924,42 @@ function change_database_data(&$no_updates, $version)
 			_add_permission($auth_admin, $db, 'u_chgprofileinfo', true, 'u_sig');
 			_add_permission($auth_admin, $db, 'a_extensions', true, 'a_styles');
 
+			// Add new PM reply permission if it does not exist
+			if (empty($auth_admin->acl_options['id']['u_pm_reply']))
+			{
+				$auth_admin->acl_add_option(array('global' => array('u_pm_reply')));
+
+				// Now the tricky part, filling the permission
+				$old_id = $auth_admin->acl_options['id']['u_sendpm'];
+				$new_id = $auth_admin->acl_options['id']['u_pm_reply'];
+
+				$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
+
+				foreach ($tables as $table)
+				{
+					$sql = 'SELECT *
+						FROM ' . $table . '
+						WHERE auth_option_id = ' . $old_id;
+					$result = _sql($sql, $errored, $error_ary);
+
+					$sql_ary = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$row['auth_option_id'] = $new_id;
+						$sql_ary[] = $row;
+					}
+					$db->sql_freeresult($result);
+
+					if (sizeof($sql_ary))
+					{
+						$db->sql_multi_insert($table, $sql_ary);
+					}
+				}
+
+				// Remove any old permission entries
+				$auth_admin->acl_clear_prefetch();
+			}
+
 			// Update the auth setting for the module
 			$sql = 'UPDATE ' . MODULES_TABLE . "
 				SET module_auth = 'acl_u_chgprofileinfo'
