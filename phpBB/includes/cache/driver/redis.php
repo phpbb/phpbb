@@ -51,10 +51,9 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory
 	*
 	* There are no publicly documented constructor parameters.
 	*/
-	function __construct()
+	function __construct($phpbb_root_path, $php_ext, $cache_dir = 'cache/')
 	{
-		// Call the parent constructor
-		parent::__construct();
+		parent::__construct($phpbb_root_path, $php_ext, $cache_dir);
 
 		$this->redis = new Redis();
 
@@ -163,4 +162,3 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory
 		return false;
 	}
 }
-

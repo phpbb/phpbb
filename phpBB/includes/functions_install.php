@@ -516,6 +516,8 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_test
 		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
 		'table_prefix'	=> $data['table_prefix'],
 		'acm_type'		=> 'phpbb_cache_driver_file',
+		'acm_sql_type'	=> 'phpbb_cache_driver_file',
+		'acm_directory'	=> 'cache/',
 	);
 
 	foreach ($config_data_array as $key => $value)

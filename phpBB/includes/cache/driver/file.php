@@ -25,19 +25,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	var $var_expires = array();
 	var $is_modified = false;
 
-	var $sql_rowset = array();
-	var $sql_row_pointer = array();
-	var $cache_dir = '';
-
-	/**
-	* Set cache path
-	*/
-	function __construct($cache_dir = null)
-	{
-		global $phpbb_root_path;
-		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_root_path . 'cache/';
-	}
-
 	/**
 	* Load global cache
 	*/
@@ -54,13 +41,9 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 		$this->save();
 		unset($this->vars);
 		unset($this->var_expires);
-		unset($this->sql_rowset);
-		unset($this->sql_row_pointer);
 
 		$this->vars = array();
 		$this->var_expires = array();
-		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
 	}
 
 	/**
@@ -73,25 +56,9 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 			return;
 		}
 
-		global $phpEx;
-
 		if (!$this->_write('data_global'))
 		{
-			if (!function_exists('phpbb_is_writable'))
-			{
-				global $phpbb_root_path;
-				include($phpbb_root_path . 'includes/functions.' . $phpEx);
-			}
-
-			// Now, this occurred how often? ... phew, just tell the user then...
-			if (!phpbb_is_writable($this->cache_dir))
-			{
-				// We need to use die() here, because else we may encounter an infinite loop (the message handler calls $cache->unload())
-				die('Fatal: ' . $this->cache_dir . ' is NOT writable.');
-				exit;
-			}
-
-			die('Fatal: Not able to open ' . $this->cache_dir . 'data_global.' . $phpEx);
+			die('Fatal: Not able to open ' . $this->cache_dir . 'data_global.' . $this->php_ext);
 			exit;
 		}
 
@@ -100,11 +67,10 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 	/**
 	* Tidy cache
+	* Remove cache files beyond TTL
 	*/
 	function tidy()
 	{
-		global $phpEx;
-
 		$dir = @opendir($this->cache_dir);
 
 		if (!$dir)
@@ -116,7 +82,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 		while (($entry = readdir($dir)) !== false)
 		{
-			if (!preg_match('/^(sql_|data_(?!global))/', $entry))
+			if (!preg_match('/^(data_(?!global))/', $entry))
 			{
 				continue;
 			}
@@ -141,7 +107,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 		}
 		closedir($dir);
 
-		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
+		if (file_exists($this->cache_dir . 'data_global.' . $this->php_ext))
 		{
 			if (!sizeof($this->vars))
 			{
@@ -167,8 +133,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	{
 		if ($var_name[0] == '_')
 		{
-			global $phpEx;
-
 			if (!$this->_exists($var_name))
 			{
 				return false;
@@ -216,7 +180,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 		{
 			if (strpos($entry, 'container_') !== 0 &&
 				strpos($entry, 'url_matcher') !== 0 &&
-				strpos($entry, 'sql_') !== 0 &&
 				strpos($entry, 'data_') !== 0 &&
 				strpos($entry, 'ctpl_') !== 0 &&
 				strpos($entry, 'tpl_') !== 0)
@@ -230,13 +193,9 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 		unset($this->vars);
 		unset($this->var_expires);
-		unset($this->sql_rowset);
-		unset($this->sql_row_pointer);
 
 		$this->vars = array();
 		$this->var_expires = array();
-		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
 
 		$this->is_modified = false;
 	}
@@ -244,62 +203,8 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	/**
 	* Destroy cache data
 	*/
-	function destroy($var_name, $table = '')
+	function destroy($var_name)
 	{
-		global $phpEx;
-
-		if ($var_name == 'sql' && !empty($table))
-		{
-			if (!is_array($table))
-			{
-				$table = array($table);
-			}
-
-			$dir = @opendir($this->cache_dir);
-
-			if (!$dir)
-			{
-				return;
-			}
-
-			while (($entry = readdir($dir)) !== false)
-			{
-				if (strpos($entry, 'sql_') !== 0)
-				{
-					continue;
-				}
-
-				if (!($handle = @fopen($this->cache_dir . $entry, 'rb')))
-				{
-					continue;
-				}
-
-				// Skip the PHP header
-				fgets($handle);
-
-				// Skip expiration
-				fgets($handle);
-
-				// Grab the query, remove the LF
-				$query = substr(fgets($handle), 0, -1);
-
-				fclose($handle);
-
-				foreach ($table as $check_table)
-				{
-					// Better catch partial table names than no table names. ;)
-					if (strpos($query, $check_table) !== false)
-					{
-						$this->remove_file($this->cache_dir . $entry);
-						break;
-					}
-				}
-			}
-			closedir($dir);
-
-			return;
-		}
-
 		if (!$this->_exists($var_name))
 		{
 			return;
@@ -307,7 +212,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 		if ($var_name[0] == '_')
 		{
-			$this->remove_file($this->cache_dir . 'data' . $var_name . ".$phpEx", true);
+			$this->remove_file($this->cache_dir . 'data' . $var_name . '.' . $this->php_ext, true);
 		}
 		else if (isset($this->vars[$var_name]))
 		{
@@ -327,8 +232,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	{
 		if ($var_name[0] == '_')
 		{
-			global $phpEx;
-			return file_exists($this->cache_dir . 'data' . $var_name . ".$phpEx");
+			return file_exists($this->cache_dir . 'data' . $var_name . '.' . $this->php_ext);
 		}
 		else
 		{
@@ -347,118 +251,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	}
 
 	/**
-	* Load cached sql query
-	*/
-	function sql_load($query)
-	{
-		// Remove extra spaces and tabs
-		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-
-		if (($rowset = $this->_read('sql_' . md5($query))) === false)
-		{
-			return false;
-		}
-
-		$query_id = sizeof($this->sql_rowset);
-		$this->sql_rowset[$query_id] = $rowset;
-		$this->sql_row_pointer[$query_id] = 0;
-
-		return $query_id;
-	}
-
-	/**
-	* Save sql query
-	*/
-	function sql_save($query, $query_result, $ttl)
-	{
-		global $db;
-
-		// Remove extra spaces and tabs
-		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-
-		$query_id = sizeof($this->sql_rowset);
-		$this->sql_rowset[$query_id] = array();
-		$this->sql_row_pointer[$query_id] = 0;
-
-		while ($row = $db->sql_fetchrow($query_result))
-		{
-			$this->sql_rowset[$query_id][] = $row;
-		}
-		$db->sql_freeresult($query_result);
-
-		if ($this->_write('sql_' . md5($query), $this->sql_rowset[$query_id], $ttl + time(), $query))
-		{
-			return $query_id;
-		}
-
-		return $query_result;
-	}
-
-	/**
-	* Ceck if a given sql query exist in cache
-	*/
-	function sql_exists($query_id)
-	{
-		return isset($this->sql_rowset[$query_id]);
-	}
-
-	/**
-	* Fetch row from cache (database)
-	*/
-	function sql_fetchrow($query_id)
-	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
-		{
-			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++];
-		}
-
-		return false;
-	}
-
-	/**
-	* Fetch a field from the current row of a cached database result (database)
-	*/
-	function sql_fetchfield($query_id, $field)
-	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
-		{
-			return (isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field])) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++][$field] : false;
-		}
-
-		return false;
-	}
-
-	/**
-	* Seek a specific row in an a cached database result (database)
-	*/
-	function sql_rowseek($rownum, $query_id)
-	{
-		if ($rownum >= sizeof($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-
-		$this->sql_row_pointer[$query_id] = $rownum;
-		return true;
-	}
-
-	/**
-	* Free memory used for a cached database result (database)
-	*/
-	function sql_freeresult($query_id)
-	{
-		if (!isset($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-
-		unset($this->sql_rowset[$query_id]);
-		unset($this->sql_row_pointer[$query_id]);
-
-		return true;
-	}
-
-	/**
 	* Read cached data from a specified file
 	*
 	* @access private
@@ -467,11 +259,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	*/
 	function _read($filename)
 	{
-		global $phpEx;
-
-		$file = "{$this->cache_dir}$filename.$phpEx";
-
-		$type = substr($filename, 0, strpos($filename, '_'));
+		$file = "{$this->cache_dir}$filename." . $this->php_ext;
 
 		if (!file_exists($file))
 		{
@@ -566,12 +354,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 					{
 						break;
 					}
-
-					if ($type == 'sql')
-					{
-						// Skip the query
-						fgets($handle);
-					}
 				}
 				else if ($line == 1)
 				{
@@ -635,7 +417,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	* <code>
 	* <?php exit; ?>
 	* (expiration)
-	* (query) [SQL files only]
 	* (length of serialised data)
 	* (serialised data)
 	* </code>
@@ -644,14 +425,11 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	* @param string $filename Filename to write
 	* @param mixed $data Data to store
 	* @param int $expires Timestamp when the data expires
-	* @param string $query Query when caching SQL queries
 	* @return bool True if the file was successfully created, otherwise false
 	*/
-	function _write($filename, $data = null, $expires = 0, $query = '')
+	function _write($filename, $data = null, $expires = 0)
 	{
-		global $phpEx;
-
-		$file = "{$this->cache_dir}$filename.$phpEx";
+		$file = "{$this->cache_dir}$filename." . $this->php_ext;
 
 		$lock = new phpbb_lock_flock($file);
 		$lock->acquire();
@@ -688,10 +466,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 			{
 				fwrite($handle, "\n" . $expires . "\n");
 
-				if (strpos($filename, 'sql_') === 0)
-				{
-					fwrite($handle, $query . "\n");
-				}
 				$data = serialize($data);
 
 				fwrite($handle, strlen($data) . "\n");
@@ -699,12 +473,6 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 			}
 
 			fclose($handle);
-
-			if (!function_exists('phpbb_chmod'))
-			{
-				global $phpbb_root_path;
-				include($phpbb_root_path . 'includes/functions.' . $phpEx);
-			}
 
 			phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
 
@@ -718,25 +486,5 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 		$lock->release();
 
 		return $return_value;
-	}
-
-	/**
-	* Removes/unlinks file
-	*/
-	function remove_file($filename, $check = false)
-	{
-		if (!function_exists('phpbb_is_writable'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/functions.' . $phpEx);
-		}
-
-		if ($check && !phpbb_is_writable($this->cache_dir))
-		{
-			// E_USER_ERROR - not using language entry - intended.
-			trigger_error('Unable to remove files within ' . $this->cache_dir . '. Please check directory permissions.', E_USER_ERROR);
-		}
-
-		return @unlink($filename);
 	}
 }
