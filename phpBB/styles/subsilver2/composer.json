@@ -1,7 +1,7 @@
 {
 	"name": "phpbb/subsilver2",
 	"type": "phpbb3-style",
-	"description": "The old phpBB Style adapted for phpBB3",
+	"description": "The subsilver2 style for phpBB 3",
 	"homepage": "https://www.phpbb.com",
 	"version": "3.1.0-dev",
 	"licence": "GPL-2.0",
@@ -12,13 +12,12 @@
 		}
 	],
 	"require": {
-		"php": ">=5.3.2",
+		"php": ">=5.3.3",
 		"phpbb": "3.1.0-dev"
 	},
 	"extra": {
-		"display-name": "Subsilver2",
+		"display-name": "subsilver2",
 		"copyright": "2005 phpBB Group",
-		"parent": "subsilver2"
-		// "template_bitfield": "lNg="
+		"parent": ""
 	}
 }
