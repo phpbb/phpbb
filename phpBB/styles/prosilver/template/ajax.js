@@ -16,6 +16,43 @@ phpbb.add_ajax_callback('mark_forums_read', function(res) {
 		$(this).removeClass('forum_unread_subforum').addClass('forum_read_subforum');
 		$(this).children('dt[title=' + unread_title + ']').attr('title', read_title);
 	});
+
+	$('li.row dl.forum_unread_locked').each(function(e) {
+		$(this).removeClass('forum_unread_locked').addClass('forum_read_locked');
+		$(this).children('dt[title=' + unread_title + ']').attr('title', read_title);
+	});
+});
+
+// This callback will mark all topic icons read
+phpbb.add_ajax_callback('mark_topics_read', function(res) {
+	var i,j;
+	var read_title = res.NO_UNREAD_POSTS;
+	var unread_title = res.UNREAD_POSTS;
+	var icons_array = [
+		['global_unread', 'global_read'],
+		['announce_unread', 'announce_read'],
+		['sticky_unread', 'sticky_read'],
+		['topic_unread', 'topic_read']
+	];
+
+	var icons_state = ['', '_hot', '_hot_mine', '_locked', '_locked_mine', '_mine'];
+
+	// Make sure all icons are marked as read
+	for (i = 0; i < icons_array.length; i++)
+	{
+		for (j = 0; j < icons_state.length; j++)
+		{
+			$('li.row dl.' + icons_array[i][0] + icons_state[j]).each(function(e) {
+				$(this).removeClass(icons_array[i][0] + icons_state[j]).addClass(icons_array[i][1] + icons_state[j]);
+				$(this).children('dt[title=' + unread_title + ']').attr('title', read_title);
+			});
+		}
+	}
+
+	// Remove link to first unread post
+	$('span.icon_topic_newest').each(function(e) {
+		$(this).remove();
+	});
 });
 
 // This callback finds the post from the delete link, and removes it.
