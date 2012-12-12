@@ -714,22 +714,22 @@ class acp_styles
 				// Style is already installed
 				continue;
 			}
-			$composer_data = $this->read_style_meta($dir);
-			if ($composer_data === false)
+			$style_data = $this->read_style_meta($dir);
+			if ($style_data === false)
 			{
 				// Invalid composer.json
 				continue;
 			}
 
 			// Style should be available for installation
-			$parent = $composer_data['extra']['parent'];
+			$parent = $style_data['extra']['parent'];
 			$style = array(
 				'style_id'			=> 0,
-				'style_name'		=> $composer_data['extra']['display-name'],
-				'style_copyright'	=> $composer_data['extra']['copyright'],
+				'style_name'		=> $style_data['extra']['display-name'],
+				'style_copyright'	=> $style_data['extra']['copyright'],
 				'style_active'		=> 0,
 				'style_path'		=> $dir,
-				'bbcode_bitfield'	=> $composer_data['extra']['template_bitfield'],
+				'bbcode_bitfield'	=> $style_data['extra']['template_bitfield'],
 				'style_parent_id'	=> 0,
 				'style_parent_tree'	=> '',
 				// Extra values for styles list
@@ -1056,27 +1056,29 @@ class acp_styles
 	*/
 	protected function read_style_meta($dir)
 	{
-		if (!($file_contents = file_get_contents($this->styles_path . $dir . '/composer.json')))
+		$json_string = file_get_contents($this->styles_path . $dir . '/composer.json');
+		if (false === $json_string)
 		{
-			throw new phpbb_acp_exception('file_get_contents failed');
+			throw new phpbb_acp_exception($this->user->lang('CONFIGURATION_FILE_MISSING', $this->styles_path . $dir . '/composer.json'));
 		}
 
-		if (($composer_data = json_decode($file_contents, true)) === NULL)
+		$style_data = json_decode($json_string, true);
+		if (null === $style_data)
 		{
-			throw new phpbb_acp_exception('json_decode failed');
+			throw new phpbb_acp_exception($this->user->lang('CONFIGURATION_FILE_MALFORMED', $this->styles_path . $dir . '/composer.json'));
 		}
 
 		// Check data
-		if (!isset($composer_data['extra']['parent']) || !is_string($composer_data['extra']['parent']) || $composer_data['extra']['parent'] == $composer_data['extra']['display-name'])
+		if (!isset($style_data['extra']['parent']) || !is_string($style_data['extra']['parent']) || $style_data['extra']['parent'] == $style_data['extra']['display-name'])
 		{
-			$composer_data['extra']['parent'] = '';
+			$style_data['extra']['parent'] = '';
 		}
-		if (!isset($composer_data['extra']['template_bitfield']))
+		if (!isset($style_data['extra']['template_bitfield']))
 		{
-			$composer_data['extra']['template_bitfield'] = $this->default_bitfield();
+			$style_data['extra']['template_bitfield'] = $this->default_bitfield();
 		}
 
-		return $composer_data;
+		return $style_data;
 	}
 
 	/**
