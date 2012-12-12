@@ -2948,14 +2948,17 @@ function change_database_data(&$no_updates, $version)
 					'a_jabber',
 				));
 			$result = $db->sql_query($sql);
+			$option_ids = array();
 			while ($row = $db->sql_query($sql))
 			{
-				$auth_option_id = (int) $row['auth_option_id'];
-				foreach (array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE, ACL_OPTIONS_TABLE) as $table)
-				{
-					$db->sql_query("DELETE FROM $table WHERE auth_option_id = $auth_option_id");
-				}
+				$option_ids[] = (int) $row['auth_option_id'];
 			}
+
+			foreach (array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE, ACL_OPTIONS_TABLE) as $table)
+			{
+				$db->sql_query("DELETE FROM $table WHERE " . $db->sql_in_set('auth_option_id', $option_ids));
+			}
+
 			$db->sql_freeresult($result);
 			$cache->destroy('_acl_options');
 			$auth->acl_clear_prefetch();
