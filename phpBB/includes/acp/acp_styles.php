@@ -722,7 +722,7 @@ class acp_styles
 			}
 
 			// Style should be available for installation
-			$parent = $composer_data['parent'];
+			$parent = $composer_data['extra']['parent'];
 			$style = array(
 				'style_id'			=> 0,
 				'style_name'		=> $composer_data['extra']['display-name'],
