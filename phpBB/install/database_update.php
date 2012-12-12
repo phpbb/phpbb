@@ -2473,17 +2473,6 @@ function change_database_data(&$no_updates, $version)
 				'module_langname'	=> 'ACP_CAT_CUSTOMISE',
 			));
 
-			// Move language management to Customise
-			// First select the current language managment module ID
-			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
-				WHERE module_basename = 'language'";
-			$result = $db->sql_query($sql);
-			while($row = $db->sql_fetchrow($result))
-			{
-				$module_manager->move_module($row['module_id'], $customise_category_id);
-			}
-			$db->sql_freeresult($result);
-
 			// Install modules
 			$modules_to_install = array(
 				'position'	=> array(
@@ -2531,6 +2520,16 @@ function change_database_data(&$no_updates, $version)
 			);
 
 			_add_modules($modules_to_install);
+
+			// Move language management to Customise
+			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'language'";
+			$result = $db->sql_query($sql);
+			while($row = $db->sql_fetchrow($result))
+			{
+				$module_manager->move_module($row['module_id'], $styles_module_id);
+			}
+			$db->sql_freeresult($result);
 
 			$sql = 'DELETE FROM ' . MODULES_TABLE . "
 				WHERE (module_basename = 'styles' OR module_basename = 'acp_styles') AND (module_mode = 'imageset' OR module_mode = 'theme' OR module_mode = 'template')";
