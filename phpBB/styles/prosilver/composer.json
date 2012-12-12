@@ -18,6 +18,6 @@
 	"extra": {
 		"display-name": "prosilver",
 		"copyright": "2005 phpBB Group",
-		"parent": ""
+		"parent": "prosilver"
 	}
 }
