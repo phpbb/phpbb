@@ -2503,7 +2503,7 @@ function change_database_data(&$no_updates, $version)
 					'cat'		=> 'UCP_PROFILE',
 				),
 				// To add a category, the mode and basename must be empty
-				// The mode is taken from the this array key
+				// The mode is taken from the array key
 				'' => array(
 					'base'		=> '',
 					'class'		=> 'acp',
