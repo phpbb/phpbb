@@ -192,7 +192,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return file_get_contents(self::$config['phpbb_functional_url'] . 'install/index.php?mode=install&sub=' . $sub, false, $context);
 	}
 
-	private function recreate_database($config)
+	static private function recreate_database($config)
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
 		$db_conn_mgr->recreate_db();
