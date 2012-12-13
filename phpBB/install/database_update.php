@@ -881,6 +881,41 @@ function _add_permission(auth_admin $auth_admin, phpbb_db_driver $db, $permissio
 	return true;
 }
 
+/**
+* Remove the specified permissions
+*
+* @param array $permissions Permission names (e.g. u_sendpm)
+* @param bool $errored Whether an SQL error has occured (used by _sql())
+* @param array $error_ary Array of SQL errors (used by _sql())
+* @param dbal $db Database object
+* @param phpbb_cache_driver_interface $cache Cache object
+* @param phpbb_auth $auth Auth object
+* @return null
+*/
+function _remove_permissions(array $permissions, &$errored, &$error_ary, dbal $db, phpbb_cache_driver_interface $cache, phpbb_auth $auth)
+{
+	// Remove unnecessary permissions
+	$sql = 'SELECT auth_option_id 
+		FROM ' . ACL_OPTIONS_TABLE . '
+		WHERE ' . $db->sql_in_set('auth_option', $permissions);
+	$result = $db->sql_query($sql);
+	$option_ids = array();
+	while ($row = $db->sql_query($sql))
+	{
+		$option_ids[] = (int) $row['auth_option_id'];
+	}
+
+	foreach (array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE, ACL_OPTIONS_TABLE) as $table)
+	{
+		_sql("DELETE FROM $table
+			WHERE " . $db->sql_in_set('auth_option_id', $option_ids));
+	}
+
+	$db->sql_freeresult($result);
+	$cache->destroy('_acl_options');
+	$auth->acl_clear_prefetch();
+}
+
 /****************************************************************************
 * ADD YOUR DATABASE SCHEMA CHANGES HERE										*
 *****************************************************************************/
@@ -2933,35 +2968,17 @@ function change_database_data(&$no_updates, $version)
 
 			$no_updates = false;
 
-			// Remove unnecessary permissions
-			$sql = 'SELECT auth_option_id 
-				FROM ' . ACL_OPTIONS_TABLE . '
-				WHERE ' . $db->sql_in_set('auth_option', array(
-					'u_pm_delete',
-					'u_pm_printpm',
-					'f_print',
-					'f_subscribe',
-					'u_pm_emailpm',
-					'u_pm_forward',
-					'u_pm_download',
-					'u_savedrafts',
-					'a_jabber',
-				));
-			$result = $db->sql_query($sql);
-			$option_ids = array();
-			while ($row = $db->sql_query($sql))
-			{
-				$option_ids[] = (int) $row['auth_option_id'];
-			}
-
-			foreach (array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE, ACL_OPTIONS_TABLE) as $table)
-			{
-				$db->sql_query("DELETE FROM $table WHERE " . $db->sql_in_set('auth_option_id', $option_ids));
-			}
-
-			$db->sql_freeresult($result);
-			$cache->destroy('_acl_options');
-			$auth->acl_clear_prefetch();
+			_remove_permissions(array(
+				'u_pm_delete',
+				'u_pm_printpm',
+				'f_print',
+				'f_subscribe',
+				'u_pm_emailpm',
+				'u_pm_forward',
+				'u_pm_download',
+				'u_savedrafts',
+				'a_jabber',
+			), $errored, $error_ary, $db, $cache, $auth);
 		break;
 	}
 }
