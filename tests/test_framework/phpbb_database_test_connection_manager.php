@@ -444,7 +444,7 @@ class phpbb_database_test_connection_manager
 
 		switch ($this->config['dbms'])
 		{
-			case 'oracle':
+			case 'phpbb_db_driver_oracle':
 				// Get all of the information about the sequences
 				$sql = "SELECT t.table_name, tc.column_name, d.referenced_name as sequence_name, s.increment_by, s.min_value
 					FROM USER_TRIGGERS t
@@ -486,7 +486,7 @@ class phpbb_database_test_connection_manager
 				}
 			break;
 
-			case 'postgres':
+			case 'phpbb_db_driver_postgres':
 				// Get the sequences attached to the tables
 				$sql = 'SELECT column_name, table_name FROM information_schema.columns
 					WHERE table_name IN (' . implode(', ', $table_names) . ")

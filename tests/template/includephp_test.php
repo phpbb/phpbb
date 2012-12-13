@@ -48,7 +48,7 @@ class phpbb_template_includephp_test extends phpbb_template_template_test_case
 
 		$this->setup_engine(array('tpl_allow_php' => true));
 
-		$this->style->set_custom_style('tests', $cache_dir, '');
+		$this->style->set_custom_style('tests', $cache_dir, array(), '');
 		$cache_file = $this->template->cachepath . 'includephp_absolute.html.php';
 
 		$this->run_template('includephp_absolute.html', array(), array(), array(), "Path is absolute.\ntesting included php", $cache_file);
