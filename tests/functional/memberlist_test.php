@@ -20,5 +20,15 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		$crawler = $this->request('GET', 'memberlist.php?sid=' . $this->sid);
 		$this->assert_response_success();
 		$this->assertContains('memberlist-test-user', $crawler->text());
+
+		// restrict by first character
+		$crawler = $this->request('GET', 'memberlist.php?first_char=m&sid=' . $this->sid);
+		$this->assert_response_success();
+		$this->assertContains('memberlist-test-user', $crawler->text());
+
+		// make sure results for wrong character are not returned
+		$crawler = $this->request('GET', 'memberlist.php?first_char=a&sid=' . $this->sid);
+		$this->assert_response_success();
+		$this->assertNotContains('memberlist-test-user', $crawler->text());
 	}
 }
