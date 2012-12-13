@@ -202,6 +202,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertNotSame(false, $content);
 		self::assertContains('Welcome to Installation', $content);
 
+		// Installer uses 3.0-style dbms name
+		$data['dbms'] = str_replace('phpbb_db_driver_', '', $data['dbms']);
 		$content = self::do_request('create_table', $data);
 		self::assertNotSame(false, $content);
 		self::assertContains('The database tables used by phpBB', $content);
