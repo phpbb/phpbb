@@ -6,26 +6,30 @@
 phpbb.add_ajax_callback('mark_forums_read', function(res) {
 	var read_title = res.NO_UNREAD_POSTS;
 	var unread_title = res.UNREAD_POSTS;
+	var current_object;
 
 	$('li.row dl.forum_unread').each(function(e) {
-		$(this).removeClass('forum_unread').addClass('forum_read');
-		$(this).children('dt[title=' + unread_title + ']').attr('title', read_title);
+		current_object = $(this);
+		current_object.removeClass('forum_unread').addClass('forum_read');
+		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
 	});
 
 	$('li.row dl.forum_unread_subforum').each(function(e) {
-		$(this).removeClass('forum_unread_subforum').addClass('forum_read_subforum');
-		$(this).children('dt[title=' + unread_title + ']').attr('title', read_title);
+		current_object = $(this);
+		current_object.removeClass('forum_unread_subforum').addClass('forum_read_subforum');
+		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
 	});
 
 	$('li.row dl.forum_unread_locked').each(function(e) {
-		$(this).removeClass('forum_unread_locked').addClass('forum_read_locked');
-		$(this).children('dt[title=' + unread_title + ']').attr('title', read_title);
+		current_object = $(this);
+		current_object.removeClass('forum_unread_locked').addClass('forum_read_locked');
+		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
 	});
 });
 
 // This callback will mark all topic icons read
 phpbb.add_ajax_callback('mark_topics_read', function(res) {
-	var i,j;
+	var i,j, current_object;
 	var read_title = res.NO_UNREAD_POSTS;
 	var unread_title = res.UNREAD_POSTS;
 	var icons_array = [
@@ -42,9 +46,16 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 	{
 		for (j = 0; j < icons_state.length; j++)
 		{
+			// Only topics can be hot
+			if ((icons_state[j] == '_hot' || icons_state[j] == '_hot_mine') && icons_array[i][0] != 'topic_unread')
+			{
+				continue;
+			}
+
 			$('li.row dl.' + icons_array[i][0] + icons_state[j]).each(function(e) {
-				$(this).removeClass(icons_array[i][0] + icons_state[j]).addClass(icons_array[i][1] + icons_state[j]);
-				$(this).children('dt[title=' + unread_title + ']').attr('title', read_title);
+				current_object = $(this);
+				current_object.removeClass(icons_array[i][0] + icons_state[j]).addClass(icons_array[i][1] + icons_state[j]);
+				current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
 			});
 		}
 	}
