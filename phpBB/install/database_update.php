@@ -2899,7 +2899,7 @@ function change_database_data(&$no_updates, $version)
 				$auth_admin->acl_add_option(array('global' => array('a_extensions')));
 
 				// Now the tricky part, filling the permission
-				$old_id = $auth_admin->acl_options['id']['a_'];
+				$old_id = $auth_admin->acl_options['id']['a_styles'];
 				$new_id = $auth_admin->acl_options['id']['a_extensions'];
 
 				$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
