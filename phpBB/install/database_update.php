@@ -884,15 +884,15 @@ function _add_permission(auth_admin $auth_admin, phpbb_db_driver $db, $permissio
 /**
 * Remove the specified permissions
 *
+* @param phpbb_auth $auth Auth object
+* @param dbal $db Database object
+* @param phpbb_cache_service $cache Cache object
 * @param array $permissions Permission names (e.g. u_sendpm)
 * @param bool $errored Whether an SQL error has occured (used by _sql())
 * @param array $error_ary Array of SQL errors (used by _sql())
-* @param dbal $db Database object
-* @param phpbb_cache_service $cache Cache object
-* @param phpbb_auth $auth Auth object
 * @return null
 */
-function _remove_permissions(array $permissions, &$errored, &$error_ary, dbal $db, phpbb_cache_service $cache, phpbb_auth $auth)
+function _remove_permissions(phpbb_auth $auth, dbal $db, phpbb_cache_service $cache, array $permissions, &$errored, &$error_ary)
 {
 	// Remove unnecessary permissions
 	$sql = 'SELECT auth_option_id 
@@ -2975,7 +2975,7 @@ function change_database_data(&$no_updates, $version)
 
 			$no_updates = false;
 
-			_remove_permissions(array(
+			_remove_permissions($auth, $db, $cache, array(
 				'u_pm_delete',
 				'u_pm_printpm',
 				'f_print',
@@ -2985,7 +2985,7 @@ function change_database_data(&$no_updates, $version)
 				'u_pm_download',
 				'u_savedrafts',
 				'a_jabber',
-			), $errored, $error_ary, $db, $cache, $auth);
+			), $errored, $error_ary);
 		break;
 	}
 }
