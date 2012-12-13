@@ -372,7 +372,7 @@ class phpbb_db_driver_mssql extends phpbb_db_driver
 			FROM master.dbo.sysmessages
 			WHERE error = ' . $error['code'];
 		$result_id = @mssql_query($sql);
-
+		
 		if ($result_id)
 		{
 			$row = @mssql_fetch_assoc($result_id);
