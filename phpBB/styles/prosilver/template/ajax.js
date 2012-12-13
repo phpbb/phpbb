@@ -6,22 +6,21 @@
 phpbb.add_ajax_callback('mark_forums_read', function(res) {
 	var read_title = res.NO_UNREAD_POSTS;
 	var unread_title = res.UNREAD_POSTS;
-	var current_object;
 
 	$('li.row dl.forum_unread').each(function(e) {
-		current_object = $(this);
+		var current_object = $(this);
 		current_object.removeClass('forum_unread').addClass('forum_read');
 		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
 	});
 
 	$('li.row dl.forum_unread_subforum').each(function(e) {
-		current_object = $(this);
+		var current_object = $(this);
 		current_object.removeClass('forum_unread_subforum').addClass('forum_read_subforum');
 		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
 	});
 
 	$('li.row dl.forum_unread_locked').each(function(e) {
-		current_object = $(this);
+		var current_object = $(this);
 		current_object.removeClass('forum_unread_locked').addClass('forum_read_locked');
 		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
 	});
@@ -29,7 +28,7 @@ phpbb.add_ajax_callback('mark_forums_read', function(res) {
 
 // This callback will mark all topic icons read
 phpbb.add_ajax_callback('mark_topics_read', function(res) {
-	var i,j, current_object;
+	var i,j;
 	var read_title = res.NO_UNREAD_POSTS;
 	var unread_title = res.UNREAD_POSTS;
 	var icons_array = [
@@ -53,7 +52,7 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 			}
 
 			$('li.row dl.' + icons_array[i][0] + icons_state[j]).each(function(e) {
-				current_object = $(this);
+				var current_object = $(this);
 				current_object.removeClass(icons_array[i][0] + icons_state[j]).addClass(icons_array[i][1] + icons_state[j]);
 				current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
 			});
