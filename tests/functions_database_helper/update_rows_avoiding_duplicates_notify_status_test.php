@@ -7,7 +7,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_tricky_update.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_database_helper.php';
 
 class phpbb_update_rows_avoiding_duplicates_notify_status_test extends phpbb_database_test_case
 {

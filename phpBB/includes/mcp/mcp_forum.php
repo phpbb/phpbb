@@ -417,7 +417,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		// Update the topic watch table.
 		if (!function_exists('phpbb_update_rows_avoiding_duplicates_notify_status'))
 		{
-			include($phpbb_root_path . 'includes/functions_tricky_update.' . $phpEx);
+			include($phpbb_root_path . 'includes/functions_database_helper.' . $phpEx);
 		}
 		phpbb_update_rows_avoiding_duplicates_notify_status($db, TOPICS_WATCH_TABLE, 'topic_id', $topic_ids, $to_topic_id);
 
