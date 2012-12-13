@@ -81,7 +81,7 @@ $lang = array_merge($lang, array(
 	'ACP_DISALLOW_USERNAMES'	=> 'Disallow usernames',
 
 	'ACP_EMAIL_SETTINGS'		=> 'Email settings',
-	'ACP_EXTENSION_GROUPS'		=> 'Manage file extension groups',
+	'ACP_EXTENSION_GROUPS'		=> 'Manage attachment extension groups',
 	'ACP_EXTENSION_MANAGEMENT'	=> 'Extension management',
 	'ACP_EXTENSIONS'			=> 'Extensions',
 
@@ -122,7 +122,7 @@ $lang = array_merge($lang, array(
 	'ACP_MANAGE_ATTACHMENTS'			=> 'Manage attachments',
 	'ACP_MANAGE_ATTACHMENTS_EXPLAIN'	=> 'Here you can list and delete files attached to posts and private messages.',
 
-	'ACP_MANAGE_EXTENSIONS'		=> 'Manage file extensions',
+	'ACP_MANAGE_EXTENSIONS'		=> 'Manage attachment extensions',
 	'ACP_MANAGE_FORUMS'			=> 'Manage forums',
 	'ACP_MANAGE_RANKS'			=> 'Manage ranks',
 	'ACP_MANAGE_REASONS'		=> 'Manage report/denial reasons',
