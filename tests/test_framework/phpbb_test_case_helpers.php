@@ -104,6 +104,11 @@ class phpbb_test_case_helpers
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
 		{
+			if (!function_exists('phpbb_convert_30_dbms_to_31'))
+			{
+				require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+			}
+
 			$config = array_merge($config, array(
 				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? phpbb_convert_30_dbms_to_31($_SERVER['PHPBB_TEST_DBMS']) : '',
 				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
