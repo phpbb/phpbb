@@ -5550,6 +5550,27 @@ function phpbb_to_numeric($input)
 }
 
 /**
+* Convert 3.0 dbms to 3.1 db driver class name
+*
+* @param string $dbms dbms parameter
+* @return db driver class
+*/
+function phpbb_convert_30_dbms_to_31($dbms)
+{
+	if (class_exists($dbms))
+	{
+		return $dbms;
+	}
+
+	if (class_exists('phpbb_db_driver_' . $dbms))
+	{
+		return 'phpbb_db_driver_' . $dbms;
+	}
+
+	throw new \RuntimeException("You have specified an invalid dbms driver: $dbms");
+}
+
+/**
 * Create a Symfony Request object from phpbb_request object
 *
 * @param phpbb_request $request Request object

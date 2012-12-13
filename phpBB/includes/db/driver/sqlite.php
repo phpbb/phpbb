@@ -15,14 +15,12 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
-
 /**
 * Sqlite Database Abstraction Layer
 * Minimum Requirement: 2.8.2+
 * @package dbal
 */
-class dbal_sqlite extends dbal
+class phpbb_db_driver_sqlite extends phpbb_db_driver
 {
 	var $connect_error = '';
 

@@ -15,14 +15,12 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
-
 /**
 * MSSQL Database Abstraction Layer
 * Minimum Requirement is MSSQL 2000+
 * @package dbal
 */
-class dbal_mssql extends dbal
+class phpbb_db_driver_mssql extends phpbb_db_driver
 {
 	var $connect_error = '';
 

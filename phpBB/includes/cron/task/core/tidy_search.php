@@ -41,7 +41,7 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 	* @param dbal $db The db connection
 	* @param phpbb_user $user The user
 	*/
-	public function __construct($phpbb_root_path, $php_ext, phpbb_auth $auth, phpbb_config $config, dbal $db, phpbb_user $user)
+	public function __construct($phpbb_root_path, $php_ext, phpbb_auth $auth, phpbb_config $config, phpbb_db_driver $db, phpbb_user $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
