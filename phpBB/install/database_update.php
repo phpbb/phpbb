@@ -827,8 +827,9 @@ function _add_modules($modules_to_install)
 * @param string $copy_from Optional permission name from which to copy
 * @return bool true on success, false on failure
 */
-function _add_permission(auth_admin $auth_admin, $permission_name, $is_global = true, $copy_from = '')
+function _add_permission($permission_name, $is_global = true, $copy_from = '')
 {
+	global $db, $auth_admin;
 	// Only add a permission that don't already exist
 	if (!empty($auth_admin->acl_options['id'][$permission_name]))
 	{
@@ -2920,8 +2921,8 @@ function change_database_data(&$no_updates, $version)
 			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
 			$auth_admin = new auth_admin();
 
-			_add_permission($auth_admin, 'u_chgprofileinfo', true, 'u_sig');
-			_add_permission($auth_admin, 'a_extensions', true, 'a_styles');
+			_add_permission('u_chgprofileinfo', true, 'u_sig');
+			_add_permission('a_extensions', true, 'a_styles');
 
 			// Update the auth setting for the module
 			$sql = 'UPDATE ' . MODULES_TABLE . "
