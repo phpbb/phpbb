@@ -821,13 +821,13 @@ function _add_modules($modules_to_install)
 * Add a new permission, optionally copy permission setting from another
 *
 * @param auth_admin $auth_admin auth_admin object
-* @param dbal $db Database object
+* @param phpbb_db_driver $db Database object
 * @param string $permission_name Name of the permission to add
 * @param bool $is_global True is global, false is local
 * @param string $copy_from Optional permission name from which to copy
 * @return bool true on success, false on failure
 */
-function _add_permission(auth_admin $auth_admin, dbal $db, $permission_name, $is_global = true, $copy_from = '')
+function _add_permission(auth_admin $auth_admin, phpbb_db_driver $db, $permission_name, $is_global = true, $copy_from = '')
 {
 	// Only add a permission that don't already exist
 	if (!empty($auth_admin->acl_options['id'][$permission_name]))
