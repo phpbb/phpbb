@@ -206,12 +206,20 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertNotSame(false, $content);
 		self::assertContains('Welcome to Installation', $content);
 
-		self::do_request('create_table', $data);
+		$content = self::do_request('create_table', $data);
+		self::assertNotSame(false, $content);
+		self::assertContains('The database tables used by phpBB', $content);
+		// 3.0 or 3.1
+		self::assertContains('have been created and populated with some initial data.', $content);
 
-		self::do_request('config_file', $data);
+		$content = self::do_request('config_file', $data);
+		self::assertNotSame(false, $content);
+		self::assertContains('Configuration file', $content);
 		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], true, true));
 
-		self::do_request('final', $data);
+		$content = self::do_request('final', $data);
+		self::assertNotSame(false, $content);
+		self::assertContains('You have successfully installed', $content);
 		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
 	}
 
