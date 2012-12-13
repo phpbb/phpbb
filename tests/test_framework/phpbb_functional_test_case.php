@@ -202,12 +202,20 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertNotSame(false, $content);
 		self::assertContains('Welcome to Installation', $content);
 
-		self::do_request('create_table', $data);
+		$content = self::do_request('create_table', $data);
+		self::assertNotSame(false, $content);
+		self::assertContains('The database tables used by phpBB', $content);
+		// 3.0 or 3.1
+		self::assertContains('have been created and populated with some initial data.', $content);
 
-		self::do_request('config_file', $data);
+		$content = self::do_request('config_file', $data);
+		self::assertNotSame(false, $content);
+		self::assertContains('Configuration file', $content);
 		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], true, true));
 
-		self::do_request('final', $data);
+		$content = self::do_request('final', $data);
+		self::assertNotSame(false, $content);
+		self::assertContains('You have successfully installed', $content);
 		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
 	}
 
@@ -247,16 +255,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Required by unique_id
 		global $config;
 
-		if (!is_array($config))
-		{
-			$config = array();
-		}
-
+		$config = new phpbb_config(array());
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
 		// Required by user_add
-		global $db, $cache, $config, $phpbb_dispatcher;
+		global $db, $cache, $phpbb_dispatcher;
 		$db = $this->get_db();
 		if (!function_exists('phpbb_mock_null_cache'))
 		{
@@ -272,7 +276,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
 		}
-		$config = new phpbb_config(array());
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
