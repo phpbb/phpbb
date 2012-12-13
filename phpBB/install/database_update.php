@@ -888,27 +888,34 @@ function _add_permission(auth_admin $auth_admin, phpbb_db_driver $db, $permissio
 * @param bool $errored Whether an SQL error has occured (used by _sql())
 * @param array $error_ary Array of SQL errors (used by _sql())
 * @param dbal $db Database object
-* @param phpbb_cache_driver_interface $cache Cache object
+* @param phpbb_cache_service $cache Cache object
 * @param phpbb_auth $auth Auth object
 * @return null
 */
-function _remove_permissions(array $permissions, &$errored, &$error_ary, dbal $db, phpbb_cache_driver_interface $cache, phpbb_auth $auth)
+function _remove_permissions(array $permissions, &$errored, &$error_ary, dbal $db, phpbb_cache_service $cache, phpbb_auth $auth)
 {
 	// Remove unnecessary permissions
 	$sql = 'SELECT auth_option_id 
-		FROM ' . ACL_OPTIONS_TABLE . '
+		FROM ' . ACL_OPTIONS_TABLE. '
 		WHERE ' . $db->sql_in_set('auth_option', $permissions);
 	$result = $db->sql_query($sql);
 	$option_ids = array();
-	while ($row = $db->sql_query($sql))
+	while ($row = $db->sql_fetchrow($result))
 	{
 		$option_ids[] = (int) $row['auth_option_id'];
+	}
+
+	// If we cannot find the options, they must have already been deleted
+	// so we stop here
+	if (empty($option_ids))
+	{
+		return;
 	}
 
 	foreach (array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE, ACL_OPTIONS_TABLE) as $table)
 	{
 		_sql("DELETE FROM $table
-			WHERE " . $db->sql_in_set('auth_option_id', $option_ids));
+			WHERE " . $db->sql_in_set('auth_option_id', $option_ids), $errored, $error_ary);
 	}
 
 	$db->sql_freeresult($result);
@@ -1245,7 +1252,7 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $db_tools;
+	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $db_tools, $cache, $auth;
 
 	$update_helpers = new phpbb_update_helpers();
 
