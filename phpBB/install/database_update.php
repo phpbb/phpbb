@@ -818,6 +818,69 @@ function _add_modules($modules_to_install)
 	$_module->remove_cache_file();
 }
 
+/**
+* Add a new permission, optionally copy permission setting from another
+*
+* @param auth_admin $auth_admin auth_admin object
+* @param string $permission_name Name of the permission to add
+* @param bool $is_global True is global, false is local
+* @param string $copy_from Optional permission name from which to copy
+* @return bool true on success, false on failure
+*/
+function _add_permission(auth_admin $auth_admin, $permission_name, $is_global = true, $copy_from = '')
+{
+	// Only add a permission that don't already exist
+	if (!empty($auth_admin->acl_options['id'][$permission_name]))
+	{
+		return true;
+	}
+
+	$permission_scope = $is_global ? 'global' : 'local';
+
+	$result = $auth_admin->acl_add_option(array(
+		$permission_scope => array($permission_name),
+	));
+
+	if (!$result)
+	{
+		return $result;
+	}
+
+	// The permission has been added, now we can copy it if needed
+	if ($copy_from && isset($auth_admin->acl_options['id'][$copy_from]))
+	{
+		$old_id = $auth_admin->acl_options['id'][$copy_from];
+		$new_id = $auth_admin->acl_options['id'][$permission_name];
+
+		$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
+
+		foreach ($tables as $table)
+		{
+			$sql = 'SELECT *
+				FROM ' . $table . '
+				WHERE auth_option_id = ' . $old_id;
+			$result = _sql($sql, $errored, $error_ary);
+
+			$sql_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$row['auth_option_id'] = $new_id;
+				$sql_ary[] = $row;
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($sql_ary))
+			{
+				$db->sql_multi_insert($table, $sql_ary);
+			}
+		}
+
+		$auth_admin->acl_clear_prefetch();
+	}
+
+	return true;
+}
+
 /****************************************************************************
 * ADD YOUR DATABASE SCHEMA CHANGES HERE										*
 *****************************************************************************/
@@ -2853,81 +2916,12 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
-			// Add new permission u_chgprofileinfo and duplicate settings from u_sig
+			// Add new permissions
 			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
 			$auth_admin = new auth_admin();
 
-			// Only add the new permission if it does not already exist
-			if (empty($auth_admin->acl_options['id']['u_chgprofileinfo']))
-			{
-				$auth_admin->acl_add_option(array('global' => array('u_chgprofileinfo')));
-
-				// Now the tricky part, filling the permission
-				$old_id = $auth_admin->acl_options['id']['u_sig'];
-				$new_id = $auth_admin->acl_options['id']['u_chgprofileinfo'];
-
-				$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
-
-				foreach ($tables as $table)
-				{
-					$sql = 'SELECT *
-						FROM ' . $table . '
-						WHERE auth_option_id = ' . $old_id;
-					$result = _sql($sql, $errored, $error_ary);
-
-					$sql_ary = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$row['auth_option_id'] = $new_id;
-						$sql_ary[] = $row;
-					}
-					$db->sql_freeresult($result);
-
-					if (sizeof($sql_ary))
-					{
-						$db->sql_multi_insert($table, $sql_ary);
-					}
-				}
-
-				// Remove any old permission entries
-				$auth_admin->acl_clear_prefetch();
-			}
-
-			// Add acl_a_extensions
-			if (empty($auth_admin->acl_options['id']['a_extensions']))
-			{
-				$auth_admin->acl_add_option(array('global' => array('a_extensions')));
-
-				// Now the tricky part, filling the permission
-				$old_id = $auth_admin->acl_options['id']['a_styles'];
-				$new_id = $auth_admin->acl_options['id']['a_extensions'];
-
-				$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
-
-				foreach ($tables as $table)
-				{
-					$sql = 'SELECT *
-						FROM ' . $table . '
-						WHERE auth_option_id = ' . $old_id;
-					$result = _sql($sql, $errored, $error_ary);
-
-					$sql_ary = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$row['auth_option_id'] = $new_id;
-						$sql_ary[] = $row;
-					}
-					$db->sql_freeresult($result);
-
-					if (sizeof($sql_ary))
-					{
-						$db->sql_multi_insert($table, $sql_ary);
-					}
-				}
-
-				// Remove any old permission entries
-				$auth_admin->acl_clear_prefetch();
-			}
+			_add_permission($auth_admin, 'u_chgprofileinfo', true, 'u_sig');
+			_add_permission($auth_admin, 'a_extensions', true, 'a_styles');
 
 			// Update the auth setting for the module
 			$sql = 'UPDATE ' . MODULES_TABLE . "
