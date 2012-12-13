@@ -59,15 +59,6 @@ services:
             - @service_container
             - @ext.finder
 
-    controller.route_collection:
-        class: phpbb_controller_route_collection
-        arguments:
-            - @ext.finder
-            - @controller.provider
-
-    controller.provider:
-        class: phpbb_controller_provider
-
     cron.task_collection:
         class: phpbb_di_service_collection
         arguments:
@@ -189,6 +180,7 @@ services:
             - @user
             - @style.resource_locator
             - @template_context
+            - @ext.manager
 
     template_context:
         class: phpbb_template_context

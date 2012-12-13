@@ -134,7 +134,7 @@ class bbcode
 
 			$style_resource_locator = new phpbb_style_resource_locator();
 			$style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider());
-			$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, new phpbb_template_context());
+			$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, new phpbb_template_context(), $phpbb_extension_manager);
 			$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, $style_path_provider, $template);
 			$style->set_style();
 			$template->set_filenames(array('bbcode.html' => 'bbcode.html'));

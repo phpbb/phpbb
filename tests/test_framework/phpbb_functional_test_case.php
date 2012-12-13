@@ -34,12 +34,35 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static protected $config = array();
 	static protected $already_installed = false;
 
-	public function setUp()
+	static public function setUpBeforeClass()
 	{
+		parent::setUpBeforeClass();
+
+		self::$config = phpbb_test_case_helpers::get_test_config();
+
+		// Important: this is used both for installation and by
+		// test cases for querying the tables.
+		// Therefore table prefix must be set before a board is
+		// installed, and also before each test case is run.
+		self::$config['table_prefix'] = 'phpbb_';
+
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
-			$this->markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
+			self::markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
 		}
+
+		if (!self::$already_installed)
+		{
+			self::install_board();
+			self::$already_installed = true;
+		}
+	}
+
+	public function setUp()
+	{
+		parent::setUp();
+
+		$this->bootstrap();
 
 		$this->cookieJar = new CookieJar;
 		$this->client = new Goutte\Client(array(), null, $this->cookieJar);
@@ -73,13 +96,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->backupStaticAttributesBlacklist += array(
 			'phpbb_functional_test_case' => array('config', 'already_installed'),
 		);
-
-		if (!static::$already_installed)
-		{
-			$this->install_board();
-			$this->bootstrap();
-			static::$already_installed = true;
-		}
 	}
 
 	protected function get_db()
@@ -133,19 +149,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $this->extension_manager;
 	}
 
-	protected function install_board()
+	static protected function install_board()
 	{
 		global $phpbb_root_path, $phpEx;
 
-		self::$config = phpbb_test_case_helpers::get_test_config();
-
-		if (!isset(self::$config['phpbb_functional_url']))
-		{
-			return;
-		}
-
-		self::$config['table_prefix'] = 'phpbb_';
-		$this->recreate_database(self::$config);
+		self::recreate_database(self::$config);
 
 		if (file_exists($phpbb_root_path . "config.$phpEx"))
 		{
@@ -190,19 +198,20 @@ class phpbb_functional_test_case extends phpbb_test_case
 		));
 		// end data
 
-		$content = $this->do_request('install');
-		$this->assertContains('Welcome to Installation', $content);
+		$content = self::do_request('install');
+		self::assertNotSame(false, $content);
+		self::assertContains('Welcome to Installation', $content);
 
-		$this->do_request('create_table', $data);
+		self::do_request('create_table', $data);
 
-		$this->do_request('config_file', $data);
+		self::do_request('config_file', $data);
 		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], true, true));
 
-		$this->do_request('final', $data);
+		self::do_request('final', $data);
 		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
 	}
 
-	private function do_request($sub, $post_data = null)
+	static private function do_request($sub, $post_data = null)
 	{
 		$context = null;
 
@@ -221,13 +230,67 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return file_get_contents(self::$config['phpbb_functional_url'] . 'install/index.php?mode=install&sub=' . $sub, false, $context);
 	}
 
-	private function recreate_database($config)
+	static private function recreate_database($config)
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
 		$db_conn_mgr->recreate_db();
 	}
 
-	protected function login()
+	/**
+	* Creates a new user with limited permissions
+	*
+	* @param string $username Also doubles up as the user's password
+	* @return int ID of created user
+	*/
+	protected function create_user($username)
+	{
+		// Required by unique_id
+		global $config;
+
+		if (!is_array($config))
+		{
+			$config = array();
+		}
+
+		$config['rand_seed'] = '';
+		$config['rand_seed_last_update'] = time() + 600;
+
+		// Required by user_add
+		global $db, $cache, $config, $phpbb_dispatcher;
+		$db = $this->get_db();
+		if (!function_exists('phpbb_mock_null_cache'))
+		{
+			require_once(__DIR__ . '/../mock/null_cache.php');
+		}
+		$cache = new phpbb_mock_null_cache;
+
+		if (!function_exists('utf_clean_string'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
+		}
+		if (!function_exists('user_add'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
+		}
+		$config = new phpbb_config(array());
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+
+		$user_row = array(
+			'username' => $username,
+			'group_id' => 2,
+			'user_email' => 'nobody@example.com',
+			'user_type' => 0,
+			'user_lang' => 'en',
+			'user_timezone' => 0,
+			'user_dateformat' => '',
+			'user_password' => phpbb_hash($username),
+		);
+		return user_add($user_row);
+	}
+
+	protected function login($username = 'admin')
 	{
 		$this->add_lang('ucp');
 
@@ -235,7 +298,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
-		$login = $this->client->submit($form, array('username' => 'admin', 'password' => 'admin'));
+		$crawler = $this->client->submit($form, array('username' => $username, 'password' => $username));
+		$this->assert_response_success();
+		$this->assertContains($this->lang('LOGIN_REDIRECT'), $crawler->filter('html')->text());
 
 		$cookies = $this->cookieJar->all();
 
