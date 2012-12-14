@@ -137,6 +137,32 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 				'[email=bbcode-test@phpbb.com]Email[/email]',
 				'[email=bbcode-test@phpbb.com:]Email[/email:]',
 			),
+
+			array(
+				'PHPBB3-1401 - correct: parsed',
+				'[quote="[test]test"]test [ test[/quote]',
+				'[quote="[test]test":]test [ test[/quote:]',
+			),
+			array(
+				'PHPBB3-6117 - correct: parsed',
+				'[quote]test[/quote] test ] and [ test [quote]test[/quote]',
+				'[quote:]test[/quote:] test ] and [ test [quote:]test[/quote:]',
+			),
+			array(
+				'PHPBB3-6200 - correct: parsed',
+				'[quote="["]test[/quote]',
+				'[quote="[":]test[/quote:]',
+			),
+			array(
+				'PHPBB3-9364 - quoted: "test[/[/b]quote] test" / non-quoted: "[/quote] test" - also failed if layout distorted',
+				'[quote]test[/[/b]quote] test [/quote][/quote] test',
+				'[quote:]test[/[/b]quote] test [/quote:][/quote] test',
+			),
+			array(
+				'PHPBB3-8096 - first quote tag parsed, second quote tag unparsed',
+				'[quote="a"]a[/quote][quote="a]a[/quote]',
+				'[quote="a":]a[/quote:][quote="a]a[/quote]',
+			),
 		);
 	}
 
