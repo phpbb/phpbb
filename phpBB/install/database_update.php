@@ -890,6 +890,8 @@ function _add_permission(auth_admin $auth_admin, phpbb_db_driver $db, $permissio
 *****************************************************************************/
 function database_update_info()
 {
+	global $table_prefix;
+
 	return array(
 		// Changes from 3.0.0 to the next version
 		'3.0.0'			=> array(
