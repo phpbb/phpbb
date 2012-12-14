@@ -44,7 +44,7 @@ class phpbb_log implements phpbb_log_interface
 
 	/**
 	* Database object
-	* @var dbal
+	* @var phpbb_db_driver
 	*/
 	protected $db;
 
@@ -87,9 +87,9 @@ class phpbb_log implements phpbb_log_interface
 	/**
 	* Constructor
 	*
-	* @param	dbal		$db		Database object
-	* @param	phpbb_user	$user	User object
-	* @param	phpbb_auth	$auth	Auth object
+	* @param	phpbb_db_driver	$db		Database object
+	* @param	phpbb_user		$user	User object
+	* @param	phpbb_auth		$auth	Auth object
 	* @param	phpbb_dispatcher	$phpbb_dispatcher	Event dispatcher
 	* @param	string		$phpbb_root_path		Root path
 	* @param	string		$php_ext			PHP Extension
