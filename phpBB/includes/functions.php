@@ -1328,7 +1328,7 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
 	global $db, $user, $config;
-	global $request, $phpbb_notifications;
+	global $request, $phpbb_container;
 
 	$post_time = ($post_time === 0 || $post_time > time()) ? time() : (int) $post_time;
 
@@ -1337,6 +1337,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		if ($forum_id === false || !sizeof($forum_id))
 		{
 			// Mark all forums read (index page)
+
+			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 			// Mark all topic notifications read for this user
 			$phpbb_notifications->mark_notifications_read(array(
@@ -1400,6 +1402,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			$forum_id = array($forum_id);
 		}
+
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		$phpbb_notifications->mark_notifications_read_by_parent(array(
 			'topic',
@@ -1522,11 +1526,14 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			return;
 		}
 
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 		// Mark post notifications read for this user in this topic
 		$phpbb_notifications->mark_notifications_read(array(
 			'topic',
 			'approve_topic',
 		), $topic_id, $user->data['user_id'], $post_time);
+
 		$phpbb_notifications->mark_notifications_read_by_parent(array(
 			'quote',
 			'bookmark',
@@ -5041,7 +5048,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_notifications;
+	global $phpbb_dispatcher, $request, $phpbb_container;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5233,8 +5240,11 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	$hidden_fields_for_jumpbox = phpbb_build_hidden_fields_for_query_params($request, array('f'));
 
 	// Output the notifications
-	if ($config['load_notifications'])
+	$notifications = false;
+	if ($config['load_notifications'] && $user->data['user_id'] != ANONYMOUS && $user->data['user_type'] != USER_IGNORE)
 	{
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 		$notifications = $phpbb_notifications->load_notifications(array(
 			'all_unread'	=> true,
 			'limit'			=> 5,
@@ -5262,8 +5272,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
 		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
 
-		'UNREAD_NOTIFICATIONS_COUNT'	=> ($config['load_notifications']) ? $notifications['unread_count'] : '',
-		'NOTIFICATIONS_COUNT'			=> ($config['load_notifications']) ? $user->lang('NOTIFICATIONS_COUNT', $notifications['unread_count']) : '',
+		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
+		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $user->lang('NOTIFICATIONS_COUNT', $notifications['unread_count']) : '',
 		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
 		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'],
 

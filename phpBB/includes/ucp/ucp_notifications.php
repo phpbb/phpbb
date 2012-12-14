@@ -21,13 +21,15 @@ class ucp_notifications
 
 	public function main($id, $mode)
 	{
-		global $config, $template, $user, $request, $phpbb_notifications;
+		global $config, $template, $user, $request, $phpbb_container;
 		global $phpbb_root_path, $phpEx;
 
 		add_form_key('ucp_notification');
 
 		$start = $request->variable('start', 0);
 		$form_time = min($request->variable('form_time', 0), time());
+
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		switch ($mode)
 		{

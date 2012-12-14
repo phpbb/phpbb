@@ -128,8 +128,6 @@ $phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 $template = $phpbb_container->get('template');
 $phpbb_style = $phpbb_container->get('style');
 
-$phpbb_notifications = $phpbb_container->get('notification_manager');
-
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 $phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('phpbb_template', 'display')));
