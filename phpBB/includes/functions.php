@@ -5573,6 +5573,15 @@ function phpbb_convert_30_dbms_to_31($dbms)
 
 	if (class_exists($dbms))
 	{
+		/*
+		$reflection = new \ReflectionClass($dbms);
+   	 
+		if ($reflection->isSubclassOf('phpbb_db_driver'))
+		{
+			return $dbms;
+		}
+		*/
+
 		return $dbms;
 	}
 
