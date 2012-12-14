@@ -300,7 +300,7 @@ class phpbb_db_tools
 	/**
 	* Constructor. Set DB Object and set {@link $return_statements return_statements}.
 	*
-	* @param phpbb_dbal	$db					DBAL object
+	* @param phpbb_db_driver	$db					Database connection
 	* @param bool		$return_statements	True if only statements should be returned and no SQL being executed
 	*/
 	function phpbb_db_tools(&$db, $return_statements = false)

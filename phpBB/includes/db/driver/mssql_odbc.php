@@ -15,15 +15,22 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
-
 /**
-* MSSQL Database Abstraction Layer
-* Minimum Requirement is MSSQL 2000+
+* Unified ODBC functions
+* Unified ODBC functions support any database having ODBC driver, for example Adabas D, IBM DB2, iODBC, Solid, Sybase SQL Anywhere...
+* Here we only support MSSQL Server 2000+ because of the provided schema
+*
+* @note number of bytes returned for returning data depends on odbc.defaultlrl php.ini setting.
+* If it is limited to 4K for example only 4K of data is returned max, resulting in incomplete theme data for example.
+* @note odbc.defaultbinmode may affect UTF8 characters
+*
 * @package dbal
 */
-class dbal_mssql extends dbal
+class phpbb_db_driver_mssql_odbc extends phpbb_db_driver
 {
+	var $last_query_text = '';
+	var $connect_error = '';
+
 	/**
 	* Connect to server
 	*/
@@ -36,19 +43,46 @@ class dbal_mssql extends dbal
 		$port_delimiter = (defined('PHP_OS') && substr(PHP_OS, 0, 3) === 'WIN') ? ',' : ':';
 		$this->server = $sqlserver . (($port) ? $port_delimiter . $port : '');
 
-		@ini_set('mssql.charset', 'UTF-8');
-		@ini_set('mssql.textlimit', 2147483647);
-		@ini_set('mssql.textsize', 2147483647);
-
-		$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $sqlpassword, $new_link) : @mssql_connect($this->server, $this->user, $sqlpassword, $new_link);
-
-		if ($this->db_connect_id && $this->dbname != '')
+		$max_size = @ini_get('odbc.defaultlrl');
+		if (!empty($max_size))
 		{
-			if (!@mssql_select_db($this->dbname, $this->db_connect_id))
+			$unit = strtolower(substr($max_size, -1, 1));
+			$max_size = (int) $max_size;
+
+			if ($unit == 'k')
 			{
-				@mssql_close($this->db_connect_id);
-				return false;
+				$max_size = floor($max_size / 1024);
 			}
+			else if ($unit == 'g')
+			{
+				$max_size *= 1024;
+			}
+			else if (is_numeric($unit))
+			{
+				$max_size = floor((int) ($max_size . $unit) / 1048576);
+			}
+			$max_size = max(8, $max_size) . 'M';
+
+			@ini_set('odbc.defaultlrl', $max_size);
+		}
+
+		if ($this->persistency)
+		{
+			if (!function_exists('odbc_pconnect'))
+			{
+				$this->connect_error = 'odbc_pconnect function does not exist, is odbc extension installed?';
+				return $this->sql_error('');
+			}
+			$this->db_connect_id = @odbc_pconnect($this->server, $this->user, $sqlpassword);
+		}
+		else
+		{
+			if (!function_exists('odbc_connect'))
+			{
+				$this->connect_error = 'odbc_connect function does not exist, is odbc extension installed?';
+				return $this->sql_error('');
+			}
+			$this->db_connect_id = @odbc_connect($this->server, $this->user, $sqlpassword);
 		}
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
@@ -64,22 +98,22 @@ class dbal_mssql extends dbal
 	{
 		global $cache;
 
-		if (!$use_cache || empty($cache) || ($this->sql_server_version = $cache->get('mssql_version')) === false)
+		if (!$use_cache || empty($cache) || ($this->sql_server_version = $cache->get('mssqlodbc_version')) === false)
 		{
-			$result_id = @mssql_query("SELECT SERVERPROPERTY('productversion'), SERVERPROPERTY('productlevel'), SERVERPROPERTY('edition')", $this->db_connect_id);
+			$result_id = @odbc_exec($this->db_connect_id, "SELECT SERVERPROPERTY('productversion'), SERVERPROPERTY('productlevel'), SERVERPROPERTY('edition')");
 
 			$row = false;
 			if ($result_id)
 			{
-				$row = @mssql_fetch_assoc($result_id);
-				@mssql_free_result($result_id);
+				$row = @odbc_fetch_array($result_id);
+				@odbc_free_result($result_id);
 			}
 
 			$this->sql_server_version = ($row) ? trim(implode(' ', $row)) : 0;
 
 			if (!empty($cache) && $use_cache)
 			{
-				$cache->put('mssql_version', $this->sql_server_version);
+				$cache->put('mssqlodbc_version', $this->sql_server_version);
 			}
 		}
 
@@ -88,7 +122,7 @@ class dbal_mssql extends dbal
 			return $this->sql_server_version;
 		}
 
-		return ($this->sql_server_version) ? 'MSSQL<br />' . $this->sql_server_version : 'MSSQL';
+		return ($this->sql_server_version) ? 'MSSQL (ODBC)<br />' . $this->sql_server_version : 'MSSQL (ODBC)';
 	}
 
 	/**
@@ -108,15 +142,15 @@ class dbal_mssql extends dbal
 		switch ($status)
 		{
 			case 'begin':
-				return @mssql_query('BEGIN TRANSACTION', $this->db_connect_id);
+				return @odbc_exec($this->db_connect_id, 'BEGIN TRANSACTION');
 			break;
 
 			case 'commit':
-				return @mssql_query('COMMIT TRANSACTION', $this->db_connect_id);
+				return @odbc_exec($this->db_connect_id, 'COMMIT TRANSACTION');
 			break;
 
 			case 'rollback':
-				return @mssql_query('ROLLBACK TRANSACTION', $this->db_connect_id);
+				return @odbc_exec($this->db_connect_id, 'ROLLBACK TRANSACTION');
 			break;
 		}
 
@@ -144,12 +178,13 @@ class dbal_mssql extends dbal
 				$this->sql_report('start', $query);
 			}
 
+			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
 			if ($this->query_result === false)
 			{
-				if (($this->query_result = @mssql_query($query, $this->db_connect_id)) === false)
+				if (($this->query_result = @odbc_exec($this->db_connect_id, $query)) === false)
 				{
 					$this->sql_error($query);
 				}
@@ -219,13 +254,14 @@ class dbal_mssql extends dbal
 	*/
 	function sql_affectedrows()
 	{
-		return ($this->db_connect_id) ? @mssql_rows_affected($this->db_connect_id) : false;
+		return ($this->db_connect_id) ? @odbc_num_rows($this->query_result) : false;
 	}
 
 	/**
 	* Fetch current row
+	* @note number of bytes returned depends on odbc.defaultlrl php.ini setting. If it is limited to 4K for example only 4K of data is returned max.
 	*/
-	function sql_fetchrow($query_id = false)
+	function sql_fetchrow($query_id = false, $debug = false)
 	{
 		global $cache;
 
@@ -239,44 +275,7 @@ class dbal_mssql extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		if ($query_id === false)
-		{
-			return false;
-		}
-
-		$row = @mssql_fetch_assoc($query_id);
-
-		// I hope i am able to remove this later... hopefully only a PHP or MSSQL bug
-		if ($row)
-		{
-			foreach ($row as $key => $value)
-			{
-				$row[$key] = ($value === ' ' || $value === NULL) ? '' : $value;
-			}
-		}
-
-		return $row;
-	}
-
-	/**
-	* Seek to given row number
-	* rownum is zero-based
-	*/
-	function sql_rowseek($rownum, &$query_id)
-	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($cache->sql_exists($query_id))
-		{
-			return $cache->sql_rowseek($rownum, $query_id);
-		}
-
-		return ($query_id !== false) ? @mssql_data_seek($query_id, $rownum) : false;
+		return ($query_id !== false) ? @odbc_fetch_array($query_id) : false;
 	}
 
 	/**
@@ -284,15 +283,17 @@ class dbal_mssql extends dbal
 	*/
 	function sql_nextid()
 	{
-		$result_id = @mssql_query('SELECT SCOPE_IDENTITY()', $this->db_connect_id);
+		$result_id = @odbc_exec($this->db_connect_id, 'SELECT @@IDENTITY');
+
 		if ($result_id)
 		{
-			if ($row = @mssql_fetch_assoc($result_id))
+			if (@odbc_fetch_array($result_id))
 			{
-				@mssql_free_result($result_id);
-				return $row['computed'];
+				$id = @odbc_result($result_id, 1);
+				@odbc_free_result($result_id);
+				return $id;
 			}
-			@mssql_free_result($result_id);
+			@odbc_free_result($result_id);
 		}
 
 		return false;
@@ -315,10 +316,10 @@ class dbal_mssql extends dbal
 			return $cache->sql_freeresult($query_id);
 		}
 
-		if (isset($this->open_queries[$query_id]))
+		if (isset($this->open_queries[(int) $query_id]))
 		{
-			unset($this->open_queries[$query_id]);
-			return @mssql_free_result($query_id);
+			unset($this->open_queries[(int) $query_id]);
+			return @odbc_free_result($query_id);
 		}
 
 		return false;
@@ -350,45 +351,6 @@ class dbal_mssql extends dbal
 	}
 
 	/**
-	* return sql error array
-	* @access private
-	*/
-	function _sql_error()
-	{
-		$error = array(
-			'message'	=> @mssql_get_last_message(),
-			'code'		=> ''
-		);
-
-		// Get error code number
-		$result_id = @mssql_query('SELECT @@ERROR as code', $this->db_connect_id);
-		if ($result_id)
-		{
-			$row = @mssql_fetch_assoc($result_id);
-			$error['code'] = $row['code'];
-			@mssql_free_result($result_id);
-		}
-
-		// Get full error message if possible
-		$sql = 'SELECT CAST(description as varchar(255)) as message
-			FROM master.dbo.sysmessages
-			WHERE error = ' . $error['code'];
-		$result_id = @mssql_query($sql);
-		
-		if ($result_id)
-		{
-			$row = @mssql_fetch_assoc($result_id);
-			if (!empty($row['message']))
-			{
-				$error['message'] .= '<br />' . $row['message'];
-			}
-			@mssql_free_result($result_id);
-		}
-
-		return $error;
-	}
-
-	/**
 	* Build db-specific query data
 	* @access private
 	*/
@@ -398,12 +360,36 @@ class dbal_mssql extends dbal
 	}
 
 	/**
+	* return sql error array
+	* @access private
+	*/
+	function _sql_error()
+	{
+		if (function_exists('odbc_errormsg'))
+		{
+			$error = array(
+				'message'	=> @odbc_errormsg(),
+				'code'		=> @odbc_error(),
+			);
+		}
+		else
+		{
+			$error = array(
+				'message'	=> $this->connect_error,
+				'code'		=> '',
+			);
+		}
+
+		return $error;
+	}
+
+	/**
 	* Close sql connection
 	* @access private
 	*/
 	function _sql_close()
 	{
-		return @mssql_close($this->db_connect_id);
+		return @odbc_close($this->db_connect_id);
 	}
 
 	/**
@@ -415,35 +401,18 @@ class dbal_mssql extends dbal
 		switch ($mode)
 		{
 			case 'start':
-				$html_table = false;
-				@mssql_query('SET SHOWPLAN_TEXT ON;', $this->db_connect_id);
-				if ($result = @mssql_query($query, $this->db_connect_id))
-				{
-					@mssql_next_result($result);
-					while ($row = @mssql_fetch_row($result))
-					{
-						$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
-					}
-				}
-				@mssql_query('SET SHOWPLAN_TEXT OFF;', $this->db_connect_id);
-				@mssql_free_result($result);
-
-				if ($html_table)
-				{
-					$this->html_hold .= '</table>';
-				}
 			break;
 
 			case 'fromcache':
 				$endtime = explode(' ', microtime());
 				$endtime = $endtime[0] + $endtime[1];
 
-				$result = @mssql_query($query, $this->db_connect_id);
-				while ($void = @mssql_fetch_assoc($result))
+				$result = @odbc_exec($this->db_connect_id, $query);
+				while ($void = @odbc_fetch_array($result))
 				{
 					// Take the time spent on parsing rows into account
 				}
-				@mssql_free_result($result);
+				@odbc_free_result($result);
 
 				$splittime = explode(' ', microtime());
 				$splittime = $splittime[0] + $splittime[1];

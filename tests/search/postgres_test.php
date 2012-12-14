@@ -26,7 +26,7 @@ class phpbb_search_postgres_test extends phpbb_search_common_test_case
 		parent::setUp();
 
 		// dbal uses cache
-		$cache = new phpbb_cache_service(new phpbb_cache_driver_null);
+		$cache = new phpbb_mock_cache();
 
 		//  set config values
 		$config['fulltext_postgres_min_word_len'] = 4;

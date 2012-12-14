@@ -1118,11 +1118,8 @@ class install_install extends module
 
 		$dbms = $available_dbms[$data['dbms']]['DRIVER'];
 
-		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-
 		// Instantiate the database
-		$db = new $sql_db();
+		$db = new $dbms();
 		$db->sql_connect($data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], false, false);
 
 		// NOTE: trigger_error does not work here.
@@ -1418,11 +1415,8 @@ class install_install extends module
 
 		$dbms = $available_dbms[$data['dbms']]['DRIVER'];
 
-		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-
 		// Instantiate the database
-		$db = new $sql_db();
+		$db = new $dbms();
 		$db->sql_connect($data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], false, false);
 
 		// NOTE: trigger_error does not work here.
@@ -2095,9 +2089,10 @@ class install_install extends module
 				'ACP_PERMISSION_ROLES',
 				'ACP_PERMISSION_MASKS',
 			),
-			'ACP_CAT_STYLES'		=> array(
+			'ACP_CAT_CUSTOMISE'		=> array(
 				'ACP_STYLE_MANAGEMENT',
-				'ACP_STYLE_COMPONENTS',
+				'ACP_EXTENSIONS_MANAGEMENT',
+				'ACP_LANGUAGE',
 			),
 			'ACP_CAT_MAINTENANCE'	=> array(
 				'ACP_FORUM_LOGS',
