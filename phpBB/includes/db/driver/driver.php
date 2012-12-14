@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Database Abstraction Layer
 * @package dbal
 */
-class dbal
+class phpbb_db_driver
 {
 	var $db_connect_id;
 	var $query_result;
@@ -72,17 +72,17 @@ class dbal
 	/**
 	* Constructor
 	*/
-	function dbal()
+	function __construct()
 	{
 		$this->num_queries = array(
-			'cached'		=> 0,
-			'normal'		=> 0,
-			'total'			=> 0,
+			'cached'	=> 0,
+			'normal'	=> 0,
+			'total'		=> 0,
 		);
 
 		// Fill default sql layer based on the class being called.
 		// This can be changed by the specified layer itself later if needed.
-		$this->sql_layer = substr(get_class($this), 5);
+		$this->sql_layer = substr(get_class($this), strlen('phpbb_db_driver_'));
 
 		// Do not change this please! This variable is used to easy the use of it - and is hardcoded.
 		$this->any_char = chr(0) . '%';
@@ -1042,8 +1042,3 @@ class dbal
 		return $rows_total;
 	}
 }
-
-/**
-* This variable holds the class name to use later
-*/
-$sql_db = (!empty($dbms)) ? 'dbal_' . basename($dbms) : 'dbal';

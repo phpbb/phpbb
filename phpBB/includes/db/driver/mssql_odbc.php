@@ -15,8 +15,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
-
 /**
 * Unified ODBC functions
 * Unified ODBC functions support any database having ODBC driver, for example Adabas D, IBM DB2, iODBC, Solid, Sybase SQL Anywhere...
@@ -28,7 +26,7 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 *
 * @package dbal
 */
-class dbal_mssql_odbc extends dbal
+class phpbb_db_driver_mssql_odbc extends phpbb_db_driver
 {
 	var $last_query_text = '';
 	var $connect_error = '';
