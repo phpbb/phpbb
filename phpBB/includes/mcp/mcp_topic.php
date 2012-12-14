@@ -620,12 +620,11 @@ function merge_posts($topic_id, $to_topic_id)
 		else
 		{
 			// If the topic no longer exist, we will update the topic watch table.
-			// To not let it error out on users watching both topics, we just return on an error...
-			$db->sql_return_on_error(true);
-			$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE topic_id = ' . (int) $topic_id);
-			$db->sql_return_on_error(false);
-
-			$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id = ' . (int) $topic_id);
+			if (!function_exists('phpbb_update_rows_avoiding_duplicates_notify_status'))
+			{
+				include($phpbb_root_path . 'includes/functions_database_helper.' . $phpEx);
+			}
+			phpbb_update_rows_avoiding_duplicates_notify_status($db, TOPICS_WATCH_TABLE, 'topic_id', $topic_ids, $to_topic_id);
 		}
 
 		// Link to the new topic
