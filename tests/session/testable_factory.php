@@ -59,10 +59,10 @@ class phpbb_session_testable_factory
 	/**
 	* Retrieve the configured session class instance
 	*
-	* @param dbal $dbal The database connection to use for session data
+	* @param phpbb_db_driver $dbal The database connection to use for session data
 	* @return phpbb_mock_session_testable A session instance
 	*/
-	public function get_session(dbal $dbal)
+	public function get_session(phpbb_db_driver $dbal)
 	{
 		// set up all the global variables used by session
 		global $SID, $_SID, $db, $config, $cache, $request;

@@ -15,13 +15,11 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
-
 /**
 * Oracle Database Abstraction Layer
 * @package dbal
 */
-class dbal_oracle extends dbal
+class phpbb_db_driver_oracle extends phpbb_db_driver
 {
 	var $last_query_text = '';
 	var $connect_error = '';

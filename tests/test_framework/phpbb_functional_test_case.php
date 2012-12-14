@@ -102,14 +102,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 		// so we don't reopen an open connection
-		if (!($this->db instanceof dbal))
+		if (!($this->db instanceof phpbb_db_driver))
 		{
-			if (!class_exists('dbal_' . self::$config['dbms']))
-			{
-				include($phpbb_root_path . 'includes/db/' . self::$config['dbms'] . ".$phpEx");
-			}
-			$sql_db = 'dbal_' . self::$config['dbms'];
-			$this->db = new $sql_db();
+			$dbms = self::$config['dbms'];
+			$this->db = new $dbms();
 			$this->db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
 		}
 		return $this->db;
@@ -206,6 +202,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertNotSame(false, $content);
 		self::assertContains('Welcome to Installation', $content);
 
+		// Installer uses 3.0-style dbms name
+		$data['dbms'] = str_replace('phpbb_db_driver_', '', $data['dbms']);
 		$content = self::do_request('create_table', $data);
 		self::assertNotSame(false, $content);
 		self::assertContains('The database tables used by phpBB', $content);

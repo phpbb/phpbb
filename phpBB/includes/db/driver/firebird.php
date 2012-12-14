@@ -15,14 +15,12 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
-
 /**
 * Firebird/Interbase Database Abstraction Layer
 * Minimum Requirement is Firebird 2.1
 * @package dbal
 */
-class dbal_firebird extends dbal
+class phpbb_db_driver_firebird extends phpbb_db_driver
 {
 	var $last_query_text = '';
 	var $service_handle = false;
