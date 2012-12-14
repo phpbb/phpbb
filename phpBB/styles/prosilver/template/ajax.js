@@ -7,62 +7,92 @@ phpbb.add_ajax_callback('mark_forums_read', function(res) {
 	var read_title = res.NO_UNREAD_POSTS;
 	var unread_title = res.UNREAD_POSTS;
 
-	$('li.row dl.forum_unread').each(function(e) {
+	$('li.row').find('dl.forum_unread, dl.forum_unread_subforum, dl.forum_unread_locked').each(function() {
 		var current_object = $(this);
-		current_object.removeClass('forum_unread').addClass('forum_read');
+
+		if (current_object.hasClass('forum_unread'))
+		{
+			current_object.removeClass('forum_unread').addClass('forum_read');
+		}
+		else if (current_object.hasClass('forum_unread_subforum'))
+		{
+			current_object.removeClass('forum_unread_subforum').addClass('forum_read_subforum');
+		}
+		else
+		{
+			current_object.removeClass('forum_unread_locked').addClass('forum_read_locked');
+		}
 		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
 	});
 
-	$('li.row dl.forum_unread_subforum').each(function(e) {
-		var current_object = $(this);
-		current_object.removeClass('forum_unread_subforum').addClass('forum_read_subforum');
-		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
+	// Update mark forums read links
+	$('[data-ajax=mark_forums_read]').each(function() {
+		$(this).attr('href', res.U_MARK_FORUMS);
 	});
 
-	$('li.row dl.forum_unread_locked').each(function(e) {
-		var current_object = $(this);
-		current_object.removeClass('forum_unread_locked').addClass('forum_read_locked');
-		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
-	});
+	// Hide alert after 3 seconds
+	setTimeout(function () {
+		$('#darkenwrapper').trigger('click');
+	}, 3000);
 });
 
 // This callback will mark all topic icons read
 phpbb.add_ajax_callback('mark_topics_read', function(res) {
-	var i,j;
 	var read_title = res.NO_UNREAD_POSTS;
 	var unread_title = res.UNREAD_POSTS;
-	var icons_array = [
-		['global_unread', 'global_read'],
-		['announce_unread', 'announce_read'],
-		['sticky_unread', 'sticky_read'],
-		['topic_unread', 'topic_read']
-	];
-
+	var icons_array = {
+		'global_unread': 'global_read',
+		'announce_unread': 'announce_read',
+		'sticky_unread': 'sticky_read',
+		'topic_unread': 'topic_read'
+	};
 	var icons_state = ['', '_hot', '_hot_mine', '_locked', '_locked_mine', '_mine'];
+	var unread_class_selectors = '';
+	var class_array = {};
 
-	// Make sure all icons are marked as read
-	for (i = 0; i < icons_array.length; i++)
-	{
-		for (j = 0; j < icons_state.length; j++)
-		{
+	$.each(icons_array, function(unread_class, read_class) {
+		$.each(icons_state, function(key, value) {
 			// Only topics can be hot
-			if ((icons_state[j] == '_hot' || icons_state[j] == '_hot_mine') && icons_array[i][0] != 'topic_unread')
+			if ((value == '_hot' || value == '_hot_mine') && unread_class != 'topic_unread')
 			{
-				continue;
+				return true;
 			}
+			var current_class = {};
+			current_class[unread_class + value] = read_class + value;
+			$.extend(class_array, current_class);
 
-			$('li.row dl.' + icons_array[i][0] + icons_state[j]).each(function(e) {
-				var current_object = $(this);
-				current_object.removeClass(icons_array[i][0] + icons_state[j]).addClass(icons_array[i][1] + icons_state[j]);
-				current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
-			});
-		}
-	}
+			unread_class_selectors += '.' + unread_class + value + ',';
+		});
+	});
+
+	// Remove trailing comma
+	unread_class_selectors = unread_class_selectors.substring(0, unread_class_selectors.length - 1);
+
+	$('li.row').find(unread_class_selectors).each(function() {
+		var current_object = $(this);
+		$.each(class_array, function(unread_class, read_class) {
+			if (current_object.hasClass(unread_class))
+			{
+				current_object.removeClass(unread_class).addClass(read_class);
+			}
+		});
+		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
+	});
 
 	// Remove link to first unread post
-	$('span.icon_topic_newest').each(function(e) {
+	$('span.icon_topic_newest').each(function() {
 		$(this).remove();
 	});
+
+	// Update mark topics read links
+	$('[data-ajax=mark_topics_read]').each(function() {
+		$(this).attr('href', res.U_MARK_TOPICS);
+	});
+
+	// Hide alert after 3 seconds
+	setTimeout(function () {
+		$('#darkenwrapper').trigger('click');
+	}, 3000);
 });
 
 // This callback finds the post from the delete link, and removes it.

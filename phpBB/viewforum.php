@@ -183,10 +183,13 @@ if ($mark_read == 'topics')
 
 	if ($request->is_ajax())
 	{
-		// Tell the ajax script what language vars need to be replaced
+		// Tell the ajax script what language vars and URL need to be replaced
 		$data = array(
 			'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
-			'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS']
+			'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+			'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . "&f=$forum_id&mark=topics&mark_time=" . time()) : '',
+			'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+			'MESSAGE_TEXT'		=> $user->lang['TOPICS_MARKED']
 		);
 		$json_response = new phpbb_json_response();
 		$json_response->send($data);
