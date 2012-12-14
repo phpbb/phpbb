@@ -97,6 +97,14 @@ if (!defined('LOGIN_ATTEMPT_TABLE'))
 {
 	define('LOGIN_ATTEMPT_TABLE', $table_prefix . 'login_attempts');
 }
+if (!defined('NOTIFICATIONS_TABLE'))
+{
+	define('NOTIFICATIONS_TABLE', $table_prefix . 'notifications');
+}
+if (!defined('USER_NOTIFICATIONS_TABLE'))
+{
+	define('USER_NOTIFICATIONS_TABLE', $table_prefix . 'user_notifications');
+}
 if (!defined('EXT_TABLE'))
 {
 	define('EXT_TABLE', $table_prefix . 'ext');
@@ -890,8 +898,6 @@ function _add_permission(auth_admin $auth_admin, phpbb_db_driver $db, $permissio
 *****************************************************************************/
 function database_update_info()
 {
-	global $table_prefix;
-
 	return array(
 		// Changes from 3.0.0 to the next version
 		'3.0.0'			=> array(
@@ -1177,7 +1183,7 @@ function database_update_info()
 						'ext_name'		=> array('UNIQUE', 'ext_name'),
 					),
 				),
-				$table_prefix . 'notifications'		=> array(
+				NOTIFICATIONS_TABLE		=> array(
 					'COLUMNS'			=> array(
 						'notification_id'	=> array('UINT', NULL, 'auto_increment'),
 						'item_type'			=> array('VCHAR:255', ''),
@@ -1195,7 +1201,7 @@ function database_update_info()
 						'user'				=> array('INDEX', array('user_id', 'unread')),
 					),
 				),
-				$table_prefix . 'user_notifications'	=> array(
+				USER_NOTIFICATIONS_TABLE	=> array(
 					'COLUMNS'			=> array(
 						'item_type'			=> array('VCHAR:255', ''),
 						'item_id'			=> array('UINT', 0),
