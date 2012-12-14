@@ -7,6 +7,11 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/bbcode.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/message_parser.php';
+
 class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 {
 	public function bbcode_firstpass_data()
@@ -50,8 +55,8 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 			),
 			array(
 				'Test default bbcodes: simple quote with username',
-				'[quote="username"]quoted[/quote]',
-				'[quote="username":]quoted[/quote:]',
+				'[quote=&quot;username&quot;]quoted[/quote]',
+				'[quote=&quot;username&quot;:]quoted[/quote:]',
 			),
 			array(
 				'Test default bbcodes: simple code',
@@ -61,12 +66,12 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 			array(
 				'Test default bbcodes: simple php code',
 				'[code=php]unparsed code[/code]',
-				'[code=php:]unparsed code[/code:]',
+				'[code=php:]<span class="syntaxdefault">unparsed&nbsp;code</span>[/code:]',
 			),
 			array(
 				'Test default bbcodes: simple list',
 				'[list]no item[/list]',
-				'[list:]no item[/list:]',
+				'[list:]no item[/list:u:]',
 			),
 			array(
 				'Test default bbcodes: simple list-item only',
@@ -76,79 +81,79 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 			array(
 				'Test default bbcodes: simple list-item',
 				'[list][*]item[/list]',
-				'[list:][*:]item[/list:]',
+				'[list:][*:]item[/*:m:][/list:u:]',
 			),
 			array(
 				'Test default bbcodes: simple list-item closed',
 				'[list][*]item[/*][/list]',
-				'[list:][*:]item[/*:][/list:]',
+				'[list:][*:]item[/*:][/list:u:]',
 			),
 			array(
 				'Test default bbcodes: simple list-item numbered',
 				'[list=1][*]item[/list]',
-				'[list=1:][*:]item[/list:]',
+				'[list=1:][*:]item[/*:m:][/list:o:]',
 			),
 			array(
 				'Test default bbcodes: simple list-item alpha',
 				'[list=a][*]item[/list]',
-				'[list=a:][*:]item[/list:]',
+				'[list=a:][*:]item[/*:m:][/list:o:]',
 			),
 			array(
 				'Test default bbcodes: simple list-item roman',
 				'[list=i][*]item[/list]',
-				'[list=i:][*:]item[/list:]',
+				'[list=i:][*:]item[/*:m:][/list:o:]',
 			),
 			array(
 				'Test default bbcodes: simple list-item disc',
 				'[list=disc][*]item[/list]',
-				'[list=disc:][*:]item[/list:]',
+				'[list=disc:][*:]item[/*:m:][/list:u:]',
 			),
 			array(
 				'Test default bbcodes: simple list-item circle',
 				'[list=circle][*]item[/list]',
-				'[list=circle:][*:]item[/list:]',
+				'[list=circle:][*:]item[/*:m:][/list:u:]',
 			),
 			array(
 				'Test default bbcodes: simple list-item square',
 				'[list=square][*]item[/list]',
-				'[list=square:][*:]item[/list:]',
+				'[list=square:][*:]item[/*:m:][/list:u:]',
 			),
 			array(
 				'Test default bbcodes: simple img',
 				'[img]https://area51.phpbb.com/images/area51.png[/img]',
-				'[img:]https://area51.phpbb.com/images/area51.png[/img:]',
+				'[img:]https&#58;//area51&#46;phpbb&#46;com/images/area51&#46;png[/img:]',
 			),
 			array(
 				'Test default bbcodes: simple url',
 				'[url]https://area51.phpbb.com/[/url]',
-				'[url:]https://area51.phpbb.com/[/url:]',
+				'[url:]https&#58;//area51&#46;phpbb&#46;com/[/url:]',
 			),
 			array(
 				'Test default bbcodes: simple url with description',
 				'[url=https://area51.phpbb.com/]Area51[/url]',
-				'[url=https://area51.phpbb.com/:]Area51[/url:]',
+				'[url=https&#58;//area51&#46;phpbb&#46;com/:]Area51[/url:]',
 			),
 			array(
 				'Test default bbcodes: simple email',
 				'[email]bbcode-test@phpbb.com[/email]',
-				'[email:]bbcode-test@phpbb.com[/email:]',
+				'[email:]bbcode-test@phpbb&#46;com[/email:]',
 			),
 			array(
 				'Test default bbcodes: simple email with description',
 				'[email=bbcode-test@phpbb.com]Email[/email]',
-				'[email=bbcode-test@phpbb.com:]Email[/email:]',
+				'[email=bbcode-test@phpbb&#46;com:]Email[/email:]',
 			),
 			array(
 				'Test default bbcodes: simple attachment',
 				'[attachment=0]filename[/attachment]',
-				'[attachment=0:]filename[/attachment:]',
+				'[attachment=0:]<!-- ia0 -->filename<!-- ia0 -->[/attachment:]',
 			),
 
 			// Special cases for quote which were reported as bugs before
 			array(
 				'PHPBB3-1401 - correct: parsed',
-				'[quote="[test]test"]test [ test[/quote]',
-				'[quote="[test]test":]test [ test[/quote:]',
+				'[quote=&quot;&#91;test]test&quot;]test [ test[/quote]',
+				'[quote=&quot;&#91;test]test&quot;:]test [ test[/quote:]',
 			),
 			array(
 				'PHPBB3-6117 - correct: parsed',
@@ -157,8 +162,8 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 			),
 			array(
 				'PHPBB3-6200 - correct: parsed',
-				'[quote="["]test[/quote]',
-				'[quote="[":]test[/quote:]',
+				'[quote=&quot;[&quot;]test[/quote]',
+				'[quote=&quot;&#91;&quot;:]test[/quote:]',
 			),
 			array(
 				'PHPBB3-9364 - quoted: "test[/[/b]quote] test" / non-quoted: "[/quote] test" - also failed if layout distorted',
@@ -167,35 +172,35 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 			),
 			array(
 				'PHPBB3-8096 - first quote tag parsed, second quote tag unparsed',
-				'[quote="a"]a[/quote][quote="a]a[/quote]',
-				'[quote="a":]a[/quote:][quote="a]a[/quote]',
+				'[quote=&quot;a&quot;]a[/quote][quote=&quot;a]a[/quote]',
+				'[quote=&quot;a&quot;:]a[/quote:][quote=&quot;a]a[/quote]',
 			),
 
 			// Nesting bbcodes into quote usernames
 			array(
 				'Allow textual BBcodes in usernames',
-				'[quote="[i]test[/i]"]test[/quote]',
-				'[quote="[i:]test[/i:]":]test[/quote:]',
+				'[quote=&quot;[i]test[/i]&quot;]test[/quote]',
+				'[quote=&quot;[i:]test[/i:]&quot;:]test[/quote:]',
 			),
 			array(
 				'Allow links BBcodes in usernames',
-				'[quote="[url=http://www.phpbb.com/]test[/url]"]test[/quote]',
-				'[quote="[url=http://www.phpbb.com/:]test[/url:]":]test[/quote:]',
+				'[quote=&quot;[url=https://area51.phpbb.com/]test[/url]&quot;]test[/quote]',
+				'[quote=&quot;[url=https&#58;//area51&#46;phpbb&#46;com/:]test[/url:]&quot;:]test[/quote:]',
 			),
 			array(
-				'Disallow img BBcodes in usernames - Username displayed as [img]http://www.phpbb.com/[/img]',
-				'[quote="[img]http://www.phpbb.com/[/img]"]test[/quote]',
-				'[quote="[img]http://www.phpbb.com/[/img]":]test[/quote:]',
+				'Allow img BBcodes in usernames - Username displayed the image',
+				'[quote=&quot;[img]https://area51.phpbb.com/images/area51.png[/img]&quot;]test[/quote]',
+				'[quote=&quot;[img:]https&#58;//area51&#46;phpbb&#46;com/images/area51&#46;png[/img:]&quot;:]test[/quote:]',
 			),
 			array(
 				'Disallow flash BBcodes in usernames - Username displayed as [flash]http://www.phpbb.com/[/flash]',
-				'[quote="[flash]http://www.phpbb.com/[/flash]"]test[/quote]',
-				'[quote="[flash]http://www.phpbb.com/[/flash]":]test[/quote:]',
+				'[quote=&quot;[flash]http://www.phpbb.com/[/flash]&quot;]test[/quote]',
+				'[quote=&quot;&#91;flash]http://www.phpbb.com/&#91;/flash]&quot;:]test[/quote:]',
 			),
 			array(
 				'Disallow quote BBcodes in usernames - Username displayed as [quote]test[/quote]',
-				'[quote="[quote]test[/quote]"]test[/quote]',
-				'[quote="[quote]test[/quote]":]test[/quote:]',
+				'[quote=&quot;[quote]test[/quote]&quot;]test[/quote]',
+				'[quote=&quot;&#91;quote]test&#91;/quote]&quot;:]test[/quote:]',
 			),
 		);
 	}
