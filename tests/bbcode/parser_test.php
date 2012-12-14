@@ -39,6 +39,11 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 				'[color=red:]colored[/color:]',
 			),
 			array(
+				'Test default bbcodes: simple size',
+				'[size=75]smaller[/size]',
+				'[size=75:]smaller[/size:]',
+			),
+			array(
 				'Test default bbcodes: simple quote',
 				'[quote]quoted[/quote]',
 				'[quote:]quoted[/quote:]',
@@ -132,6 +137,11 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 				'Test default bbcodes: simple email with description',
 				'[email=bbcode-test@phpbb.com]Email[/email]',
 				'[email=bbcode-test@phpbb.com:]Email[/email:]',
+			),
+			array(
+				'Test default bbcodes: simple attachment',
+				'[attachment=0]filename[/attachment]',
+				'[attachment=0:]filename[/attachment:]',
 			),
 
 			// Special cases for quote which were reported as bugs before
