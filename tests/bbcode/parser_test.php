@@ -211,7 +211,10 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 	*/
 	public function test_bbcode_firstpass($description, $message, $expected)
 	{
-		$this->markTestIncomplete('New bbcode parser has not been backported from feature/ascraeus-experiment yet.');
+		if ($incomplete)
+		{
+			$this->markTestIncomplete('New bbcode parser has not been backported from feature/ascraeus-experiment yet.');
+		}
 
 		global $user, $request;
 		$user = new phpbb_mock_user;
