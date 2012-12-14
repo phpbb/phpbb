@@ -83,7 +83,6 @@ class install_update extends module
 
 		// Init DB
 		require($phpbb_root_path . 'config.' . $phpEx);
-		require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 
 		// Special options for conflicts/modified files
@@ -92,7 +91,9 @@ class install_update extends module
 		define('MERGE_NEW_FILE', 3);
 		define('MERGE_MOD_FILE', 4);
 
-		$db = new $sql_db();
+		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
+		$db = new $dbms();
 
 		// Connect to DB
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);

@@ -83,7 +83,6 @@ phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 phpbb_require_updated('includes/db/db_tools.' . $phpEx);
@@ -816,6 +815,70 @@ function _add_modules($modules_to_install)
 	}
 
 	$_module->remove_cache_file();
+}
+
+/**
+* Add a new permission, optionally copy permission setting from another
+*
+* @param auth_admin $auth_admin auth_admin object
+* @param phpbb_db_driver $db Database object
+* @param string $permission_name Name of the permission to add
+* @param bool $is_global True is global, false is local
+* @param string $copy_from Optional permission name from which to copy
+* @return bool true on success, false on failure
+*/
+function _add_permission(auth_admin $auth_admin, phpbb_db_driver $db, $permission_name, $is_global = true, $copy_from = '')
+{
+	// Only add a permission that don't already exist
+	if (!empty($auth_admin->acl_options['id'][$permission_name]))
+	{
+		return true;
+	}
+
+	$permission_scope = $is_global ? 'global' : 'local';
+
+	$result = $auth_admin->acl_add_option(array(
+		$permission_scope => array($permission_name),
+	));
+
+	if (!$result)
+	{
+		return $result;
+	}
+
+	// The permission has been added, now we can copy it if needed
+	if ($copy_from && isset($auth_admin->acl_options['id'][$copy_from]))
+	{
+		$old_id = $auth_admin->acl_options['id'][$copy_from];
+		$new_id = $auth_admin->acl_options['id'][$permission_name];
+
+		$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
+
+		foreach ($tables as $table)
+		{
+			$sql = 'SELECT *
+				FROM ' . $table . '
+				WHERE auth_option_id = ' . $old_id;
+			$result = _sql($sql, $errored, $error_ary);
+
+			$sql_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$row['auth_option_id'] = $new_id;
+				$sql_ary[] = $row;
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($sql_ary))
+			{
+				$db->sql_multi_insert($table, $sql_ary);
+			}
+		}
+
+		$auth_admin->acl_clear_prefetch();
+	}
+
+	return true;
 }
 
 /****************************************************************************
@@ -2492,6 +2555,12 @@ function change_database_data(&$no_updates, $version)
 				unset($next_legend);
 			}
 
+			// Rename styles module to Customise
+			$sql = 'UPDATE ' . MODULES_TABLE . "
+				SET module_langname = 'ACP_CAT_CUSTOMISE'
+				WHERE module_langname = 'ACP_CAT_STYLES'";
+			_sql($sql, $errored, $error_ary);
+
 			// Install modules
 			$modules_to_install = array(
 				'position'	=> array(
@@ -2542,10 +2611,66 @@ function change_database_data(&$no_updates, $version)
 					'title'		=> 'UCP_NOTIFICATION_LIST',
 					'auth'		=> '',
 					'cat'		=> 'UCP_MAIN',
+				// To add a category, the mode and basename must be empty
+				// The mode is taken from the array key
+				'' => array(
+					'base'		=> '',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_EXTENSION_MANAGEMENT',
+					'auth'		=> 'acl_a_extensions',
+					'cat'		=> 'ACP_CAT_CUSTOMISE',
+				),
+				'extensions'    => array(
+					'base'		=> 'acp_extensions',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_EXTENSIONS',
+					'auth'		=> 'acl_a_extensions',
+					'cat'		=> 'ACP_EXTENSION_MANAGEMENT',
 				),
 			);
 
 			_add_modules($modules_to_install);
+
+			// We need a separate array for the new language sub heading
+			// because it requires another empty key
+			$modules_to_install = array(
+				'' => array(
+					'base'	=> '',
+					'class'	=> 'acp',
+					'title'	=> 'ACP_LANGUAGE',
+					'auth'	=> 'acl_a_language',
+					'cat'	=> 'ACP_CAT_CUSTOMISE',
+				),
+			);
+
+			_add_modules($modules_to_install);
+
+			// Move language management to new location in the Customise tab
+			// First get language module id
+			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'acp_language'";
+			$result = $db->sql_query($sql);
+			$language_module_id = $db->sql_fetchfield('module_id');
+			$db->sql_freeresult($result);
+			// Next get language management module id of the one just created
+			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+				WHERE module_langname = 'ACP_LANGUAGE'";
+			$result = $db->sql_query($sql);
+			$language_management_module_id = $db->sql_fetchfield('module_id');
+			$db->sql_freeresult($result);
+
+			if (!class_exists('acp_modules'))
+			{
+				include($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
+			}
+			// acp_modules calls adm_back_link, which is undefined at this point
+			if (!function_exists('adm_back_link'))
+			{
+				include($phpbb_root_path . 'includes/functions_acp.' . $phpEx);
+			}
+			$module_manager = new acp_modules();
+			$module_manager->module_class = 'acp';
+			$module_manager->move_module($language_module_id, $language_management_module_id);
 
 			$sql = 'DELETE FROM ' . MODULES_TABLE . "
 				WHERE (module_basename = 'styles' OR module_basename = 'acp_styles') AND (module_mode = 'imageset' OR module_mode = 'theme' OR module_mode = 'template')";
@@ -2903,45 +3028,12 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
-			// Add new permission u_chgprofileinfo and duplicate settings from u_sig
+			// Add new permissions
 			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
 			$auth_admin = new auth_admin();
 
-			// Only add the new permission if it does not already exist
-			if (empty($auth_admin->acl_options['id']['u_chgprofileinfo']))
-			{
-				$auth_admin->acl_add_option(array('global' => array('u_chgprofileinfo')));
-
-				// Now the tricky part, filling the permission
-				$old_id = $auth_admin->acl_options['id']['u_sig'];
-				$new_id = $auth_admin->acl_options['id']['u_chgprofileinfo'];
-
-				$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
-
-				foreach ($tables as $table)
-				{
-					$sql = 'SELECT *
-						FROM ' . $table . '
-						WHERE auth_option_id = ' . $old_id;
-					$result = _sql($sql, $errored, $error_ary);
-
-					$sql_ary = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$row['auth_option_id'] = $new_id;
-						$sql_ary[] = $row;
-					}
-					$db->sql_freeresult($result);
-
-					if (sizeof($sql_ary))
-					{
-						$db->sql_multi_insert($table, $sql_ary);
-					}
-				}
-
-				// Remove any old permission entries
-				$auth_admin->acl_clear_prefetch();
-			}
+			_add_permission($auth_admin, $db, 'u_chgprofileinfo', true, 'u_sig');
+			_add_permission($auth_admin, $db, 'a_extensions', true, 'a_styles');
 
 			// Update the auth setting for the module
 			$sql = 'UPDATE ' . MODULES_TABLE . "

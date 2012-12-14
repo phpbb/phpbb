@@ -84,8 +84,8 @@ class phpbb_search_fulltext_sphinx
 	protected $config;
 
 	/**
-	 * DBAL object
-	 * @var dbal
+	 * Database connection
+	 * @var phpbb_db_driver
 	 */
 	protected $db;
 
