@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_user_loader
 {
-	/** @var dbal */
+	/** @var phpbb_db_driver */
 	protected $db = null;
 
 	/** @var string */
@@ -46,12 +46,12 @@ class phpbb_user_loader
 	/**
 	* User loader constructor
 	*
-	* @param dbal $db A database connection
+	* @param phpbb_db_driver $db A database connection
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
 	* @param string $users_table The name of the database table (phpbb_users)
 	*/
-	public function __construct(dbal $db, $phpbb_root_path, $php_ext, $users_table)
+	public function __construct(phpbb_db_driver $db, $phpbb_root_path, $php_ext, $users_table)
 	{
 		$this->db = $db;
 
