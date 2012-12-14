@@ -163,6 +163,32 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 				'[quote="a"]a[/quote][quote="a]a[/quote]',
 				'[quote="a":]a[/quote:][quote="a]a[/quote]',
 			),
+
+			array(
+				'Allow textual BBcodes in usernames',
+				'[quote="[i]test[/i]"]test[/quote]',
+				'[quote="[i:]test[/i:]":]test[/quote:]',
+			),
+			array(
+				'Allow links BBcodes in usernames',
+				'[quote="[url=http://www.phpbb.com/]test[/url]"]test[/quote]',
+				'[quote="[url=http://www.phpbb.com/:]test[/url:]":]test[/quote:]',
+			),
+			array(
+				'Disallow img BBcodes in usernames - Username displayed as [img]http://www.phpbb.com/[/img]',
+				'[quote="[img]http://www.phpbb.com/[/img]"]test[/quote]',
+				'[quote="[img]http://www.phpbb.com/[/img]":]test[/quote:]',
+			),
+			array(
+				'Disallow flash BBcodes in usernames - Username displayed as [flash]http://www.phpbb.com/[/flash]',
+				'[quote="[flash]http://www.phpbb.com/[/flash]"]test[/quote]',
+				'[quote="[flash]http://www.phpbb.com/[/flash]":]test[/quote:]',
+			),
+			array(
+				'parsed - Username displayed as [quote]test[/quote]',
+				'[quote="[quote]test[/quote]"]test[/quote]',
+				'[quote="[quote]test[/quote]":]test[/quote:]',
+			),
 		);
 	}
 
