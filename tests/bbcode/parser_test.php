@@ -2,14 +2,10 @@
 /**
 *
 * @package testing
-* @version $Id$
-* @copyright (c) 2008 phpBB Group
+* @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
-
-// require_once dirname(__FILE__) . '/../../phpBB/includes/bbcode/bbcode_parser_base.php';
-// require_once dirname(__FILE__) . '/../../phpBB/includes/bbcode/bbcode_parser.php';
 
 class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 {
@@ -138,6 +134,7 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 				'[email=bbcode-test@phpbb.com:]Email[/email:]',
 			),
 
+			// Special cases for quote which were reported as bugs before
 			array(
 				'PHPBB3-1401 - correct: parsed',
 				'[quote="[test]test"]test [ test[/quote]',
@@ -164,6 +161,7 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 				'[quote="a":]a[/quote:][quote="a]a[/quote]',
 			),
 
+			// Nesting bbcodes into quote usernames
 			array(
 				'Allow textual BBcodes in usernames',
 				'[quote="[i]test[/i]"]test[/quote]',
@@ -185,7 +183,7 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 				'[quote="[flash]http://www.phpbb.com/[/flash]":]test[/quote:]',
 			),
 			array(
-				'parsed - Username displayed as [quote]test[/quote]',
+				'Disallow quote BBcodes in usernames - Username displayed as [quote]test[/quote]',
 				'[quote="[quote]test[/quote]"]test[/quote]',
 				'[quote="[quote]test[/quote]":]test[/quote:]',
 			),
