@@ -17,7 +17,7 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 	public function bbcode_firstpass_data()
 	{
 		return array(
-			// Default BBCodes from in their simplest way
+			// Default bbcodes from in their simplest way
 			array(
 				'Test default bbcodes: simple bold',
 				'[b]bold[/b]',
@@ -176,31 +176,68 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 				'[quote=&quot;a&quot;:]a[/quote:][quote=&quot;a]a[/quote]',
 			),
 
+			// Simple bbcodes nesting
+			array(
+				'Allow textual bbcodes in textual bbcodes',
+				'[b]bold [i]bold + italic[/i][/b]',
+				'[b:]bold [i:]bold + italic[/i:][/b:]',
+			),
+			array(
+				'Allow textual bbcodes in url with description',
+				'[url=https://area51.phpbb.com/]Area51 [i]italic[/i][/url]',
+				'[url=https&#58;//area51&#46;phpbb&#46;com/:]Area51 [i:]italic[/i:][/url:]',
+			),
+			array(
+				'Allow url with description in textual bbcodes',
+				'[i]italic [url=https://area51.phpbb.com/]Area51[/url][/i]',
+				'[i:]italic [url=https&#58;//area51&#46;phpbb&#46;com/:]Area51[/url:][/i:]',
+			),
+
 			// Nesting bbcodes into quote usernames
 			array(
-				'Allow textual BBcodes in usernames',
+				'Allow textual bbcodes in usernames',
 				'[quote=&quot;[i]test[/i]&quot;]test[/quote]',
 				'[quote=&quot;[i:]test[/i:]&quot;:]test[/quote:]',
 			),
 			array(
-				'Allow links BBcodes in usernames',
+				'Allow links bbcodes in usernames',
 				'[quote=&quot;[url=https://area51.phpbb.com/]test[/url]&quot;]test[/quote]',
 				'[quote=&quot;[url=https&#58;//area51&#46;phpbb&#46;com/:]test[/url:]&quot;:]test[/quote:]',
 			),
 			array(
-				'Allow img BBcodes in usernames - Username displayed the image',
+				'Allow img bbcodes in usernames - Username displayed the image',
 				'[quote=&quot;[img]https://area51.phpbb.com/images/area51.png[/img]&quot;]test[/quote]',
 				'[quote=&quot;[img:]https&#58;//area51&#46;phpbb&#46;com/images/area51&#46;png[/img:]&quot;:]test[/quote:]',
 			),
 			array(
-				'Disallow flash BBcodes in usernames - Username displayed as [flash]http://www.phpbb.com/[/flash]',
+				'Disallow flash bbcodes in usernames - Username displayed as [flash]http://www.phpbb.com/[/flash]',
 				'[quote=&quot;[flash]http://www.phpbb.com/[/flash]&quot;]test[/quote]',
 				'[quote=&quot;&#91;flash]http://www.phpbb.com/&#91;/flash]&quot;:]test[/quote:]',
 			),
 			array(
-				'Disallow quote BBcodes in usernames - Username displayed as [quote]test[/quote]',
+				'Disallow quote bbcodes in usernames - Username displayed as [quote]test[/quote]',
 				'[quote=&quot;[quote]test[/quote]&quot;]test[/quote]',
 				'[quote=&quot;&#91;quote]test&#91;/quote]&quot;:]test[/quote:]',
+			),
+
+			// Do not parse bbcodes in code boxes
+			array(
+				'Do not parse textual bbcodes in code',
+				'[code]unparsed code [b]bold [i]bold + italic[/i][/b][/code]',
+				'[code:]unparsed code &#91;b&#93;bold &#91;i&#93;bold + italic&#91;/i&#93;&#91;/b&#93;[/code:]',
+			),
+			array(
+				'Do not parse quote bbcodes in code',
+				'[code]unparsed code [quote=&quot;username&quot;]quoted[/quote][/code]',
+				'[code:]unparsed code &#91;quote=&quot;username&quot;&#93;quoted&#91;/quote&#93;[/code:]',
+			),
+
+			// New user friendly mixed nesting
+			array(
+				'Textual bbcode nesting into textual bbcode',
+				'[b]bold [i]bold + italic[/b] italic[/i]',
+				'[b:]bold [i:]bold + italic[/b:] italic[/i:]',
+				'Incomplete: secondpass parses as [b:]bold [i:]bold + italic[/i:] italic[/b:]',
 			),
 		);
 	}
@@ -209,7 +246,7 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 	/**
 	* @dataProvider bbcode_firstpass_data
 	*/
-	public function test_bbcode_firstpass($description, $message, $expected)
+	public function test_bbcode_firstpass($description, $message, $expected, $incomplete = false)
 	{
 		if ($incomplete)
 		{
