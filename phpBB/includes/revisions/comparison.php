@@ -61,8 +61,8 @@ class phpbb_revisions_comparison
 	/**
 	* Constructor, initialize some class properties
 	*
-	* @param int $post_id Post ID
-	* @param dbal $dbal phpBB DBAL object
+	* @param phpbb_revisions_revision $first First revision in the comparison
+	* @param phpbb_revisions_revision $last Last revision in the comparison
 	*/
 	public function __construct(phpbb_revisions_revision $first, phpbb_revisions_revision $last)
 	{

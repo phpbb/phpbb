@@ -3136,11 +3136,11 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
 /**
  * Purge all post revisions
  *
- * @param dbal $db Database object
+ * @param phpbb_db_driver $db Database object
  *
  * @return null
  */
-function phpbb_purge_post_revisions($db)
+function phpbb_purge_post_revisions(phpbb_db_driver $db)
 {
 	// Get all post IDs of effected posts (not all posts will have revisions)
 	$post_ids = array();

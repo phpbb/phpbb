@@ -24,7 +24,7 @@ class phpbb_revisions_revision
 {
 	/**
 	* Database object
-	* @var dbal
+	* @var phpbb_db_driver
 	*/
 	private $db;
 
@@ -146,11 +146,12 @@ class phpbb_revisions_revision
 	* Constructor method
 	*
 	* @param int $revision_id ID of the revision to instantiate
+	* @param phpbb_db_driver $db Database object
 	* @param bool $autoload Whether or not to automatically load data if constructor receives ID
 	*				This is helpful if we already have the data and don't want to load it but still
 	*				wish to set the data to this instance
 	*/
-	public function __construct($revision_id, dbal $db, $autoload = true)
+	public function __construct($revision_id, phpbb_db_driver $db, $autoload = true)
 	{
 		$this->db = $db;
 

@@ -28,14 +28,14 @@ class phpbb_controller_post_revisions
 	*
 	* @param phpbb_controller_helper $helper Controller helper object
 	* @param phpbb_user $user User object
-	* @param dbal $db DBAL object
+	* @param phpbb_db_driver $db Database object
 	* @param phpbb_config $config Config object
 	* @param phpbb_auth $auth Auth object
 	* @param phpbb_request $request Request object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_controller_helper $helper, phpbb_user $user, dbal $db, phpbb_config $config, phpbb_auth $auth, phpbb_request $request, $phpbb_root_path, $php_ext)
+	public function __construct(phpbb_controller_helper $helper, phpbb_user $user, phpbb_db_driver $db, phpbb_config $config, phpbb_auth $auth, phpbb_request $request, $phpbb_root_path, $php_ext)
 	{
 		$this->helper = $helper;
 		$this->user = $user;

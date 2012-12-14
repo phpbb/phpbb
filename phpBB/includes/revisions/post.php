@@ -32,8 +32,8 @@ class phpbb_revisions_post
 	const POST_EDIT_LOCKED = 5;
 
 	/**
-	* phpBB DBAL Object
-	* @var dbal
+	* Database object
+	* @var phpbb_db_driver
 	*/
 	private $db;
 
@@ -89,9 +89,9 @@ class phpbb_revisions_post
 	* Constructor, initialize some class properties
 	*
 	* @param int $post_id Post ID
-	* @param dbal $dbal phpBB DBAL object
+	* @param phpbb_db_driver $db Database object
 	*/
-	public function __construct($post_id, dbal $db, phpbb_config $config, phpbb_auth $auth)
+	public function __construct($post_id, phpbb_db_driver $db, phpbb_config $config, phpbb_auth $auth)
 	{
 		$this->db = $db;
 		$this->config = $config;
