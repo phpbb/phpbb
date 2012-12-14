@@ -9,7 +9,7 @@
 
 class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 {
-	public function string_bbcode_data()
+	public function bbcode_firstpass_data()
 	{
 		return array(
 			// Default BBCodes from in their simplest way
@@ -192,9 +192,9 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 
 
 	/**
-	* @dataProvider string_bbcode_data
+	* @dataProvider bbcode_firstpass_data
 	*/
-	public function test_firstpass($description, $message, $expected)
+	public function test_bbcode_firstpass($description, $message, $expected)
 	{
 		$this->markTestIncomplete('New bbcode parser has not been backported from feature/ascraeus-experiment yet.');
 
