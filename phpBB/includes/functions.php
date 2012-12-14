@@ -5573,6 +5573,13 @@ function phpbb_convert_30_dbms_to_31($dbms)
 
 	if (class_exists($dbms))
 	{
+		// Additionally we could check that $dbms extends phpbb_db_driver.
+		// http://php.net/manual/en/class.reflectionclass.php
+		// Beware of possible performance issues:
+		// http://stackoverflow.com/questions/294582/php-5-reflection-api-performance
+		// We could check for interface implementation in all paths or
+		// only when we do not prepend phpbb_db_driver_.
+
 		/*
 		$reflection = new \ReflectionClass($dbms);
    	 
@@ -5584,13 +5591,6 @@ function phpbb_convert_30_dbms_to_31($dbms)
 
 		return $dbms;
 	}
-
-	// Additionally we could check that $dbms extends phpbb_db_driver.
-	// http://php.net/manual/en/class.reflectionclass.php
-	// Beware of possible performance issues:
-	// http://stackoverflow.com/questions/294582/php-5-reflection-api-performance
-	// We could check for interface implementation in all paths or
-	// only when we do not prepend phpbb_db_driver_.
 
 	throw new \RuntimeException("You have specified an invalid dbms driver: $dbms");
 }
