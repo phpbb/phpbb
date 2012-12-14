@@ -33,8 +33,7 @@ class mcp_queue
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template, $cache;
-		global $config, $phpbb_root_path, $phpEx, $action;
-		global $phpbb_notifications;
+		global $config, $phpbb_root_path, $phpEx, $action, $phpbb_container;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
@@ -78,6 +77,8 @@ class mcp_queue
 
 				$post_id = request_var('p', 0);
 				$topic_id = request_var('t', 0);
+
+				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				if ($topic_id)
 				{
@@ -456,7 +457,7 @@ function approve_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
-	global $request, $phpbb_notifications;
+	global $request, $phpbb_container;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
@@ -605,6 +606,8 @@ function approve_post($post_id_list, $id, $mode)
 		// Send out normal user notifications
 		$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
 
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 		// Handle notifications
 		foreach ($post_info as $post_id => $post_data)
 		{
@@ -722,7 +725,7 @@ function disapprove_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
-	global $request, $phpbb_notifications;
+	global $request, $phpbb_container;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
@@ -854,6 +857,8 @@ function disapprove_post($post_id_list, $id, $mode)
 				add_log('mod', $log_data['forum_id'], $log_data['topic_id'], ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED', $log_data['post_subject'], $disapprove_reason);
 			}
 		}
+
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		foreach ($post_info as $post_id => $post_data)
 		{

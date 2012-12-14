@@ -172,6 +172,8 @@ if ($submit && $reason_id)
 	$db->sql_query($sql);
 	$report_id = $db->sql_nextid();
 
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 	if ($post_id)
 	{
 		$sql = 'UPDATE ' . POSTS_TABLE . '
