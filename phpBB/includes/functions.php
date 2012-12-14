@@ -5550,22 +5550,38 @@ function phpbb_to_numeric($input)
 }
 
 /**
-* Convert 3.0 dbms to 3.1 db driver class name
+* Convert either 3.0 dbms or 3.1 db driver class name to 3.1 db driver class name.
+*
+* If $dbms is a valid 3.1 db driver class name, returns it unchanged.
+* Otherwise prepends phpbb_db_driver_ to the dbms to convert a 3.0 dbms
+* to 3.1 db driver class name.
 *
 * @param string $dbms dbms parameter
 * @return db driver class
 */
 function phpbb_convert_30_dbms_to_31($dbms)
 {
+	// Note: this check is done first because mysqli extension
+	// supplies a mysqli class, and class_exists($dbms) would return
+	// true for mysqli class.
+	// However, per the docblock any valid 3.1 driver name should be
+	// recognized by this function, and have priority over 3.0 dbms.
+	if (class_exists('phpbb_db_driver_' . $dbms))
+	{
+		return 'phpbb_db_driver_' . $dbms;
+	}
+
 	if (class_exists($dbms))
 	{
 		return $dbms;
 	}
 
-	if (class_exists('phpbb_db_driver_' . $dbms))
-	{
-		return 'phpbb_db_driver_' . $dbms;
-	}
+	// Additionally we could check that $dbms extends phpbb_db_driver.
+	// http://php.net/manual/en/class.reflectionclass.php
+	// Beware of possible performance issues:
+	// http://stackoverflow.com/questions/294582/php-5-reflection-api-performance
+	// We could check for interface implementation in all paths or
+	// only when we do not prepend phpbb_db_driver_.
 
 	throw new \RuntimeException("You have specified an invalid dbms driver: $dbms");
 }
