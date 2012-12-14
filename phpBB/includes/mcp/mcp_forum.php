@@ -414,19 +414,15 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		// Message and return links
 		$success_msg = 'POSTS_MERGED_SUCCESS';
 
-		// If the topic no longer exist, we will update the topic watch table.
-		// To not let it error out on users watching both topics, we just return on an error...
-		$db->sql_return_on_error(true);
-		$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
-		$db->sql_return_on_error(false);
-
-		$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
-
-		// If the topic no longer exist, we will update the bookmarks table.
-		if (!function_exists('phpbb_update_rows_avoiding_duplicates'))
+		if (!function_exists('phpbb_update_rows_avoiding_duplicates_notify_status'))
 		{
 			include($phpbb_root_path . 'includes/functions_database_helper.' . $phpEx);
-		}		
+		}
+
+		// Update the topic watch table.
+		phpbb_update_rows_avoiding_duplicates_notify_status($db, TOPICS_WATCH_TABLE, 'topic_id', $topic_ids, $to_topic_id);
+
+		// If the topic no longer exist, we will update the bookmarks table.
 		phpbb_update_rows_avoiding_duplicates($db, BOOKMARKS_TABLE, 'topic_id', $topic_ids, $to_topic_id);
 
 		// Link to the new topic
