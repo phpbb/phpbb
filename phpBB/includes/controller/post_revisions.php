@@ -7,8 +7,6 @@
 *
 */
 
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
 /**
 * @ignore
 */
