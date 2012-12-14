@@ -237,11 +237,10 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 				'Textual bbcode nesting into textual bbcode',
 				'[b]bold [i]bold + italic[/b] italic[/i]',
 				'[b:]bold [i:]bold + italic[/b:] italic[/i:]',
-				'Incomplete: secondpass parses as [b:]bold [i:]bold + italic[/i:] italic[/b:]',
+				'Incomplete test case: secondpass parses as [b:]bold [i:]bold + italic[/i:] italic[/b:]',
 			),
 		);
 	}
-
 
 	/**
 	* @dataProvider bbcode_firstpass_data
@@ -250,7 +249,7 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 	{
 		if ($incomplete)
 		{
-			$this->markTestIncomplete('New bbcode parser has not been backported from feature/ascraeus-experiment yet.');
+			$this->markTestIncomplete($incomplete);
 		}
 
 		global $user, $request;
