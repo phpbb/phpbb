@@ -33,7 +33,7 @@ class phpbb_notification_manager
 	/** @var phpbb_user_loader */
 	protected $user_loader = null;
 
-	/** @var dbal */
+	/** @var phpbb_db_driver */
 	protected $db = null;
 
 	/** @var phpbb_user */
@@ -51,7 +51,7 @@ class phpbb_notification_manager
 	/** @var string */
 	protected $user_notifications_table = null;
 
-	public function __construct($notification_types, $notification_methods, $phpbb_container, phpbb_user_loader $user_loader, dbal $db, $user, $phpbb_root_path, $php_ext, $notifications_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, $phpbb_container, phpbb_user_loader $user_loader, phpbb_db_driver $db, $user, $phpbb_root_path, $php_ext, $notifications_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
