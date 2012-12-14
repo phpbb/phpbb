@@ -33,8 +33,7 @@ class mcp_reports
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template, $cache;
-		global $config, $phpbb_root_path, $phpEx, $action;
-		global $phpbb_notifications;
+		global $config, $phpbb_root_path, $phpEx, $action, $phpbb_container;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
@@ -87,6 +86,8 @@ class mcp_reports
 				{
 					trigger_error('NO_REPORT');
 				}
+
+				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				$phpbb_notifications->mark_notifications_read('report_post', $post_id, $user->data['user_id']);
 
@@ -446,8 +447,7 @@ class mcp_reports
 function close_report($report_id_list, $mode, $action, $pm = false)
 {
 	global $db, $template, $user, $config, $auth;
-	global $phpEx, $phpbb_root_path;
-	global $phpbb_notifications;
+	global $phpEx, $phpbb_root_path, $phpbb_container;
 
 	$pm_where = ($pm) ? ' AND r.post_id = 0 ' : ' AND r.pm_id = 0 ';
 	$id_column = ($pm) ? 'pm_id' : 'post_id';
@@ -636,6 +636,8 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		// Notify reporters
 		if (sizeof($notify_reporters))
 		{
+			$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 			foreach ($notify_reporters as $report_id => $reporter)
 			{
 				if ($reporter['user_id'] == ANONYMOUS)
@@ -652,6 +654,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 						'closer_id'			=> $user->data['user_id'],
 						'from_user_id'		=> $post_info[$post_id]['author_id'],
 					)));
+
 					$phpbb_notifications->delete_notifications('report_pm', $post_id);
 				}
 				else
@@ -660,6 +663,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 						'reporter'			=> $reporter['user_id'],
 						'closer_id'			=> $user->data['user_id'],
 					)));
+
 					$phpbb_notifications->delete_notifications('report_post', $post_id);
 				}
 			}

@@ -1410,8 +1410,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 */
 function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true, $update_search_index = true)
 {
-	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path;
-	global $phpbb_notifications;
+	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container;
 
 	// We do not handle erasing posts here
 	if ($mode == 'delete')
@@ -2232,6 +2231,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		'post_subject'		=> $subject,
 	));
 
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 	if ($post_approval)
 	{
 		switch ($mode)
@@ -2283,6 +2284,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			case 'edit':
 			case 'edit_last_post':
 				$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
+
 				$phpbb_notifications->delete_notifications(array(
 					'quote',
 					'bookmark',

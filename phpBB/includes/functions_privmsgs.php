@@ -876,7 +876,9 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 		return;
 	}
 
-	global $db, $user, $phpbb_notifications;
+	global $db, $user, $phpbb_container;
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	$phpbb_notifications->mark_notifications_read('pm', $msg_id, $user_id);
 
@@ -983,8 +985,7 @@ function handle_mark_actions($user_id, $mark_action)
 */
 function delete_pm($user_id, $msg_ids, $folder_id)
 {
-	global $db, $user, $phpbb_root_path, $phpEx;
-	global $phpbb_notifications;
+	global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
 
 	$user_id	= (int) $user_id;
 	$folder_id	= (int) $folder_id;
@@ -1096,6 +1097,8 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		$user->data['user_unread_privmsg'] -= $num_unread;
 	}
 
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 	$phpbb_notifications->delete_notifications('pm', array_keys($delete_rows));
 
 	// Now we have to check which messages we can delete completely
@@ -1162,8 +1165,7 @@ function phpbb_delete_user_pms($user_id)
 */
 function phpbb_delete_users_pms($user_ids)
 {
-	global $db, $user, $phpbb_root_path, $phpEx;
-	global $phpbb_notifications;
+	global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
 
 	$user_id_sql = $db->sql_in_set('user_id', $user_ids);
 	$author_id_sql = $db->sql_in_set('author_id', $user_ids);
@@ -1207,6 +1209,8 @@ function phpbb_delete_users_pms($user_ids)
 	}
 
 	$db->sql_transaction('begin');
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	if (!empty($undelivered_msg))
 	{
@@ -1571,8 +1575,7 @@ function get_folder_status($folder_id, $folder)
 */
 function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 {
-	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path;
-	global $phpbb_notifications;
+	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path, $phpbb_container;
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
@@ -1876,6 +1879,8 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		'message_subject'		=> $subject,
 		'recipients'			=> $recipients,
 	));
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	if ($mode == 'edit')
 	{
