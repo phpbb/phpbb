@@ -423,17 +423,11 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
 
 		// If the topic no longer exist, we will update the bookmarks table.
-		// To not let it error out on users who bookmarked both topics, we just return on an error...
-		$db->sql_return_on_error(true);
-		$sql = 'UPDATE ' . BOOKMARKS_TABLE . '
-			SET topic_id = ' . (int) $to_topic_id . '
-			WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-		$db->sql_query($sql);
-		$db->sql_return_on_error(false);
-
-		$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-		$db->sql_query($sql);
+		if (!function_exists('phpbb_update_rows_avoiding_duplicates'))
+		{
+			include($phpbb_root_path . 'includes/functions_database_helper.' . $phpEx);
+		}		
+		phpbb_update_rows_avoiding_duplicates($db, BOOKMARKS_TABLE, 'topic_id', $topic_ids, $to_topic_id);
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');

@@ -671,17 +671,7 @@ function merge_posts($topic_id, $to_topic_id)
 			$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id = ' . (int) $topic_id);
 
 			// If the topic no longer exist, we will update the bookmarks table.
-			// To not let it error out on users who bookmarked both topics, we just return on an error...
-			$db->sql_return_on_error(true);
-			$sql = 'UPDATE ' . BOOKMARKS_TABLE . '
-				SET topic_id = ' . (int) $to_topic_id . '
-				WHERE topic_id = ' . (int) $topic_id;
-			$db->sql_query($sql);
-			$db->sql_return_on_error(false);
-
-			$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . '
-				WHERE topic_id = ' . (int) $topic_id;
-			$db->sql_query($sql);
+			phpbb_update_rows_avoiding_duplicates($db, BOOKMARKS_TABLE, 'topic_id', $topic_id, $to_topic_id);
 		}
 
 		// Link to the new topic
