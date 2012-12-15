@@ -157,15 +157,20 @@ class phpbb_avatar_manager
 		$keys = array_keys($row);
 		$values = array_values($row);
 
-		$keys = array_map(
-			function ($key)
-			{
-				return preg_replace('#^(?:user_|group_)#', '', $key);
-			},
-			$keys
-		);
+		$keys = array_map(array('phpbb_avatar_manager', 'strip_prefix'), $keys);
 
 		return array_combine($keys, $values);
+	}
+
+	/**
+	* Strip prepending user_ or group_ prefix from key
+	*
+	* @param string Array key
+	* @return string Key that has been stripped from its prefix
+	*/
+	protected static function strip_prefix($key)
+	{
+		return preg_replace('#^(?:user_|group_)#', '', $key);
 	}
 
 	/**
