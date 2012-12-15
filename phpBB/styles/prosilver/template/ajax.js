@@ -46,6 +46,7 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 	var iconsState = ['', '_hot', '_hot_mine', '_locked', '_locked_mine', '_mine'];
 	var unreadClassSelectors = '';
 	var classArray = {};
+	var classNames = [];
 
 	$.each(iconsArray, function(unreadClass, readClass) {
 		$.each(iconsState, function(key, value) {
@@ -57,12 +58,11 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 			currentClass[unreadClass + value] = readClass + value;
 			$.extend(classArray, currentClass);
 
-			unreadClassSelectors += '.' + unreadClass + value + ',';
+			classNames[classNames.length] = unreadClass;
 		});
 	});
 
-	// Remove trailing comma
-	unreadClassSelectors = unreadClassSelectors.substring(0, unreadClassSelectors.length - 1);
+	unreadClassSelectors = '.' + classNames.join(',.');
 
 	$('li.row').find(unreadClassSelectors).each(function() {
 		var currentObject = $(this);
