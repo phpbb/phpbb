@@ -22,14 +22,14 @@ phpbb.add_ajax_callback('mark_forums_read', function(res) {
 	};
 
 	$('li.row').find('dl.forum_unread, dl.forum_unread_subforum, dl.forum_unread_locked').each(function() {
-		var currentObject = $(this);
+		var $this = $(this);
 
 		$.each(iconsArray, function(unreadClass, readClass) {
-			if (currentObject.hasClass(unreadClass)) {
-				currentObject.removeClass(unreadClass).addClass(readClass);
+			if ($this.hasClass(unreadClass)) {
+				$this.removeClass(unreadClass).addClass(readClass);
 			}
 		});
-		currentObject.children('dt[title=' + unreadTitle + ']').attr('title', readTitle);
+		$this.children('dt[title=' + unreadTitle + ']').attr('title', readTitle);
 	});
 
 	// Update mark forums read links
@@ -72,13 +72,13 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 	unreadClassSelectors = '.' + classNames.join(',.');
 
 	$('li.row').find(unreadClassSelectors).each(function() {
-		var currentObject = $(this);
+		var $this = $(this);
 		$.each(classArray, function(unreadClass, readClass) {
-			if (currentObject.hasClass(unreadClass)) {
-				currentObject.removeClass(unreadClass).addClass(readClass);
+			if ($this.hasClass(unreadClass)) {
+				$this.removeClass(unreadClass).addClass(readClass);
 			}
 		});
-		currentObject.children('dt[title=' + unreadTitle + ']').attr('title', readTitle);
+		$this.children('dt[title=' + unreadTitle + ']').attr('title', readTitle);
 	});
 
 	// Remove link to first unread post
