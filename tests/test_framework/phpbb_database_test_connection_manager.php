@@ -227,7 +227,6 @@ class phpbb_database_test_connection_manager
 		switch ($this->config['dbms'])
 		{
 			case 'phpbb_db_driver_mysql':
-			case 'phpbb_db_driver_mysql4':
 			case 'phpbb_db_driver_mysqli':
 				$sql = 'SHOW TABLES';
 			break;
