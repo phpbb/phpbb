@@ -2292,13 +2292,17 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 }
 
 /**
-* Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
-* and group names must be carried through for the moderators table
+* Cache moderators. Called whenever permissions are changed
+* via admin_permissions. Changes of usernames and group names
+* must be carried through for the moderators table
+*
+* @param phpbb_db_driver $db Database connection
+* @param phpbb_cache_driver_interface Cache driver
+* @param phpbb_auth $auth Authentication object
+* @return null
 */
-function cache_moderators()
+function phpbb_cache_moderators($db, $cache, $auth)
 {
-	global $db, $cache, $auth, $phpbb_root_path, $phpEx;
-
 	// Remove cached sql results
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 

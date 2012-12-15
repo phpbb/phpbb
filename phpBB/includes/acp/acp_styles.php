@@ -137,11 +137,13 @@ class acp_styles
 	*/
 	protected function action_cache()
 	{
+		global $db, $cache, $auth;
+
 		$this->cache->purge();
 
 		// Clear permissions
 		$this->auth->acl_clear_prefetch();
-		cache_moderators();
+		phpbb_cache_moderators($db, $cache, $auth);
 
 		add_log('admin', 'LOG_PURGE_CACHE');
 
