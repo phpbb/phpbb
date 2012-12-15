@@ -6,19 +6,20 @@
 phpbb.add_ajax_callback('mark_forums_read', function(res) {
 	var readTitle = res.NO_UNREAD_POSTS;
 	var unreadTitle = res.UNREAD_POSTS;
+	var iconsArray = {
+		'forum_unread': 'forum_read',
+		'forum_unread_subforum': 'forum_read_subforum',
+		'forum_unread_locked': 'forum_read_locked'
+	};
 
 	$('li.row').find('dl.forum_unread, dl.forum_unread_subforum, dl.forum_unread_locked').each(function() {
 		var currentObject = $(this);
 
-		if (currentObject.hasClass('forum_unread')) {
-			currentObject.removeClass('forum_unread').addClass('forum_read');
-		}
-		else if (currentObject.hasClass('forum_unread_subforum')) {
-			currentObject.removeClass('forum_unread_subforum').addClass('forum_read_subforum');
-		}
-		else {
-			currentObject.removeClass('forum_unread_locked').addClass('forum_read_locked');
-		}
+		$.each(iconsArray, function(unreadClass, readClass) {
+			if (currentObject.hasClass(unreadClass)) {
+				currentObject.removeClass(unreadClass).addClass(readClass);
+			}
+		});
 		currentObject.children('dt[title=' + unreadTitle + ']').attr('title', readTitle);
 	});
 
@@ -58,7 +59,7 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 			currentClass[unreadClass + value] = readClass + value;
 			$.extend(classArray, currentClass);
 
-			classNames[classNames.length] = unreadClass;
+			classNames[classNames.length] = unreadClass + value;
 		});
 	});
 
