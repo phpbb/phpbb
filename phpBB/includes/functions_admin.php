@@ -2744,12 +2744,16 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 }
 
 /**
-* Update foes - remove moderators and administrators from foe lists...
+* Removes moderators and administrators from foe lists.
+*
+* @param phpbb_db_driver $db Database connection
+* @param phpbb_auth $auth Authentication object
+* @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
+* @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
+* @return null
 */
-function update_foes($group_id = false, $user_id = false)
+function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
 {
-	global $db, $auth;
-
 	// update foes for some user
 	if (is_array($user_id) && sizeof($user_id))
 	{
