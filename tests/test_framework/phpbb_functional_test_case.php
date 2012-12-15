@@ -299,7 +299,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 	}
 
-	public function add_lang($lang_file)
+	protected function add_lang($lang_file)
 	{
 		if (is_array($lang_file))
 		{
@@ -321,7 +321,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->lang = array_merge($this->lang, $lang);
 	}
 
-	public function lang()
+	protected function lang()
 	{
 		$args = func_get_args();
 		$key = $args[0];
@@ -349,15 +349,5 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertEquals(200, $this->client->getResponse()->getStatus());
 		$content = $this->client->getResponse()->getContent();
 		$this->assertNotContains('Fatal error:', $content);
-	}
-	
-	public function get_sid()
-	{
-		return $this->sid;
-	}
-	
-	public function get_client()
-	{
-		return $this->client;
 	}
 }
