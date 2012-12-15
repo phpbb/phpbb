@@ -2,6 +2,15 @@
 
 "use strict";
 
+/**
+* Close popup alert after a small delay
+*/
+phpbb.closeDarkenWrapper = function() {
+	setTimeout(function() {
+		$('#darkenwrapper').trigger('click');
+	}, 3000);
+}
+
 // This callback will mark all forum icons read
 phpbb.add_ajax_callback('mark_forums_read', function(res) {
 	var readTitle = res.NO_UNREAD_POSTS;
@@ -28,10 +37,7 @@ phpbb.add_ajax_callback('mark_forums_read', function(res) {
 		$(this).attr('href', res.U_MARK_FORUMS);
 	});
 
-	// Hide alert after 3 seconds
-	setTimeout(function () {
-		$('#darkenwrapper').trigger('click');
-	}, 3000);
+	phpbb.closeDarkenWrapper();
 });
 
 // This callback will mark all topic icons read
@@ -85,10 +91,7 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 		$(this).attr('href', res.U_MARK_TOPICS);
 	});
 
-	// Hide alert after 3 seconds
-	setTimeout(function () {
-		$('#darkenwrapper').trigger('click');
-	}, 3000);
+	phpbb.closeDarkenWrapper();
 });
 
 // This callback finds the post from the delete link, and removes it.
