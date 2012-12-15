@@ -615,7 +615,13 @@ function approve_post($post_id_list, $id, $mode)
 			{
 				$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
 
-				$phpbb_notifications->add_notifications('topic', $post_data);
+				$phpbb_notifications->add_notifications(array(
+					'quote',
+					'topic',
+				), $post_data);
+
+				$phpbb_notifications->mark_notifications_read('quote', $post_data['post_id'], $user->data['user_id']);
+				$phpbb_notifications->mark_notifications_read('topic', $post_data['topic_id'], $user->data['user_id']);
 
 				if ($notify_poster)
 				{
@@ -631,6 +637,12 @@ function approve_post($post_id_list, $id, $mode)
 					'bookmark',
 					'post',
 				), $post_data);
+				
+				$phpbb_notifications->mark_notifications_read(array(
+					'quote',
+					'bookmark',
+					'post',
+				),$post_data['post_id'], $user->data['user_id']);
 
 				if ($notify_poster)
 				{
