@@ -422,7 +422,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		// Update the topic watch table.
 		phpbb_update_rows_avoiding_duplicates_notify_status($db, TOPICS_WATCH_TABLE, 'topic_id', $topic_ids, $to_topic_id);
 
-		// If the topic no longer exist, we will update the bookmarks table.
+		// Update the bookmarks table.
 		phpbb_update_rows_avoiding_duplicates($db, BOOKMARKS_TABLE, 'topic_id', $topic_ids, $to_topic_id);
 
 		// Link to the new topic
