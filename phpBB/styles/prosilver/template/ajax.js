@@ -4,25 +4,22 @@
 
 // This callback will mark all forum icons read
 phpbb.add_ajax_callback('mark_forums_read', function(res) {
-	var read_title = res.NO_UNREAD_POSTS;
-	var unread_title = res.UNREAD_POSTS;
+	var readTitle = res.NO_UNREAD_POSTS;
+	var unreadTitle = res.UNREAD_POSTS;
 
 	$('li.row').find('dl.forum_unread, dl.forum_unread_subforum, dl.forum_unread_locked').each(function() {
-		var current_object = $(this);
+		var currentObject = $(this);
 
-		if (current_object.hasClass('forum_unread'))
-		{
-			current_object.removeClass('forum_unread').addClass('forum_read');
+		if (currentObject.hasClass('forum_unread')) {
+			currentObject.removeClass('forum_unread').addClass('forum_read');
 		}
-		else if (current_object.hasClass('forum_unread_subforum'))
-		{
-			current_object.removeClass('forum_unread_subforum').addClass('forum_read_subforum');
+		else if (currentObject.hasClass('forum_unread_subforum')) {
+			currentObject.removeClass('forum_unread_subforum').addClass('forum_read_subforum');
 		}
-		else
-		{
-			current_object.removeClass('forum_unread_locked').addClass('forum_read_locked');
+		else {
+			currentObject.removeClass('forum_unread_locked').addClass('forum_read_locked');
 		}
-		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
+		currentObject.children('dt[title=' + unreadTitle + ']').attr('title', readTitle);
 	});
 
 	// Update mark forums read links
@@ -38,45 +35,43 @@ phpbb.add_ajax_callback('mark_forums_read', function(res) {
 
 // This callback will mark all topic icons read
 phpbb.add_ajax_callback('mark_topics_read', function(res) {
-	var read_title = res.NO_UNREAD_POSTS;
-	var unread_title = res.UNREAD_POSTS;
-	var icons_array = {
+	var readTitle = res.NO_UNREAD_POSTS;
+	var unreadTitle = res.UNREAD_POSTS;
+	var iconsArray = {
 		'global_unread': 'global_read',
 		'announce_unread': 'announce_read',
 		'sticky_unread': 'sticky_read',
 		'topic_unread': 'topic_read'
 	};
-	var icons_state = ['', '_hot', '_hot_mine', '_locked', '_locked_mine', '_mine'];
-	var unread_class_selectors = '';
-	var class_array = {};
+	var iconsState = ['', '_hot', '_hot_mine', '_locked', '_locked_mine', '_mine'];
+	var unreadClassSelectors = '';
+	var classArray = {};
 
-	$.each(icons_array, function(unread_class, read_class) {
-		$.each(icons_state, function(key, value) {
+	$.each(iconsArray, function(unreadClass, readClass) {
+		$.each(iconsState, function(key, value) {
 			// Only topics can be hot
-			if ((value == '_hot' || value == '_hot_mine') && unread_class != 'topic_unread')
-			{
+			if ((value == '_hot' || value == '_hot_mine') && unreadClass != 'topic_unread') {
 				return true;
 			}
-			var current_class = {};
-			current_class[unread_class + value] = read_class + value;
-			$.extend(class_array, current_class);
+			var currentClass = {};
+			currentClass[unreadClass + value] = readClass + value;
+			$.extend(classArray, currentClass);
 
-			unread_class_selectors += '.' + unread_class + value + ',';
+			unreadClassSelectors += '.' + unreadClass + value + ',';
 		});
 	});
 
 	// Remove trailing comma
-	unread_class_selectors = unread_class_selectors.substring(0, unread_class_selectors.length - 1);
+	unreadClassSelectors = unreadClassSelectors.substring(0, unreadClassSelectors.length - 1);
 
-	$('li.row').find(unread_class_selectors).each(function() {
-		var current_object = $(this);
-		$.each(class_array, function(unread_class, read_class) {
-			if (current_object.hasClass(unread_class))
-			{
-				current_object.removeClass(unread_class).addClass(read_class);
+	$('li.row').find(unreadClassSelectors).each(function() {
+		var currentObject = $(this);
+		$.each(classArray, function(unreadClass, readClass) {
+			if (currentObject.hasClass(unreadClass)) {
+				currentObject.removeClass(unreadClass).addClass(readClass);
 			}
 		});
-		current_object.children('dt[title=' + unread_title + ']').attr('title', read_title);
+		currentObject.children('dt[title=' + unreadTitle + ']').attr('title', readTitle);
 	});
 
 	// Remove link to first unread post
