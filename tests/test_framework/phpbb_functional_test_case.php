@@ -323,7 +323,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* Login to the ACP
 	* You must run login() before calling this.
 	*/
-	protected function admin_login()
+	protected function admin_login($username = 'admin')
 	{
 		$this->add_lang('acp/common');
 
@@ -343,7 +343,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			if (strpos($field, 'password_') === 0)
 			{
-				$login = $this->client->submit($form, array('username' => 'admin', $field => 'admin'));
+				$crawler = $this->client->submit($form, array('username' => $username, $field => $username));
+				$this->assert_response_success();
+				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
 
 				$cookies = $this->cookieJar->all();
 
