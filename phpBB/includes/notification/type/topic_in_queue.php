@@ -113,7 +113,7 @@ class phpbb_notification_type_topic_in_queue extends phpbb_notification_type_top
 	{
 		$data = parent::create_insert_array($topic, $pre_create_data);
 
-		$this->time = $data['time'] = time();
+		$this->notification_time = $data['notification_time'] = time();
 
 		return $data;
 	}

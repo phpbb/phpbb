@@ -861,7 +861,7 @@ CREATE TABLE phpbb_notifications (
 	item_parent_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
 	unread number(1) DEFAULT '1' NOT NULL,
-	time number(11) DEFAULT '1' NOT NULL,
+	notification_time number(11) DEFAULT '1' NOT NULL,
 	data clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_notifications PRIMARY KEY (notification_id)
 )

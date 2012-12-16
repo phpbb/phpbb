@@ -168,7 +168,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 			'item_type'	   			=> $this->get_type(),
 			'item_parent_id'		=> static::get_item_parent_id($type_data),
 
-			'time'					=> time(),
+			'notification_time'					=> time(),
 			'unread'				=> true,
 
 			'data'					=> array(),
@@ -195,7 +195,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 		// Unset data unique to each row
 		unset(
-			$data['time'], // Also unsetting time, since it always tries to change the time to current (if you actually need to change the time, over-ride this function)
+			$data['notification_time'], // Also unsetting time, since it always tries to change the time to current (if you actually need to change the time, over-ride this function)
 			$data['notification_id'],
 			$data['unread'],
 			$data['user_id']
@@ -250,7 +250,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 			'FORMATTED_TITLE'	=> $this->get_title(),
 
 			'URL'				=> $this->get_url(),
-			'TIME'	   			=> $this->user->format_date($this->time),
+			'TIME'	   			=> $this->user->format_date($this->notification_time),
 
 			'UNREAD'			=> $this->unread,
 

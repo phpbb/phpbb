@@ -103,7 +103,7 @@ class phpbb_notification_type_disapprove_post extends phpbb_notification_type_ap
 
 		$data = parent::create_insert_array($post);
 
-		$this->time = $data['time'] = time();
+		$this->notification_time = $data['notification_time'] = time();
 
 		return $data;
 	}
