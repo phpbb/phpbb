@@ -342,7 +342,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		// Do not add them as a responder if they were the original poster that created the notification
 		if ($this->get_data('poster_id') == $post['poster_id'])
 		{
-			return array('data' => serialize($this->get_data(false)));
+			return array('notification_data' => serialize($this->get_data(false)));
 		}
 
 		$responders = $this->get_data('responders');
@@ -354,7 +354,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 			// Do not add them as a responder multiple times
 			if ($responder['poster_id'] == $post['poster_id'])
 			{
-				return array('data' => serialize($this->get_data(false)));
+				return array('notification_data' => serialize($this->get_data(false)));
 			}
 		}
 
@@ -365,6 +365,6 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 
 		$this->set_data('responders', $responders);
 
-		return array('data' => serialize($this->get_data(false)));
+		return array('notification_data' => serialize($this->get_data(false)));
 	}
 }
