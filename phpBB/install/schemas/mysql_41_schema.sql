@@ -445,12 +445,12 @@ CREATE TABLE phpbb_notifications (
 	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	item_parent_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	unread tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	notification_read tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	notification_time int(11) UNSIGNED DEFAULT '1' NOT NULL,
 	data text NOT NULL,
 	PRIMARY KEY (notification_id),
 	KEY item_ident (item_type, item_id),
-	KEY user (user_id, unread)
+	KEY user (user_id, notification_read)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

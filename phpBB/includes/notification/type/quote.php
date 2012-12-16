@@ -124,7 +124,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . " nt
 			WHERE n.item_type = '" . $this->get_type() . "'
 				AND n.item_parent_id = " . (int) self::get_item_parent_id($post) . '
-				AND n.unread = 1
+				AND n.notification_read = 0
 				AND nt.notification_type = n.item_type
 				AND nt.notification_type_enabled = 1';
 		$result = $this->db->sql_query($sql);

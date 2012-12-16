@@ -634,7 +634,7 @@ CREATE TABLE phpbb_notifications (
 	item_id INTEGER DEFAULT 0 NOT NULL,
 	item_parent_id INTEGER DEFAULT 0 NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
-	unread INTEGER DEFAULT 1 NOT NULL,
+	notification_read INTEGER DEFAULT 0 NOT NULL,
 	notification_time INTEGER DEFAULT 1 NOT NULL,
 	data BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
 );;
@@ -642,7 +642,7 @@ CREATE TABLE phpbb_notifications (
 ALTER TABLE phpbb_notifications ADD PRIMARY KEY (notification_id);;
 
 CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications(item_type, item_id);;
-CREATE INDEX phpbb_notifications_user ON phpbb_notifications(user_id, unread);;
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications(user_id, notification_read);;
 
 CREATE GENERATOR phpbb_notifications_gen;;
 SET GENERATOR phpbb_notifications_gen TO 0;;

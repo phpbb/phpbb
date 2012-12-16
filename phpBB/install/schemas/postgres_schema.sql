@@ -617,14 +617,14 @@ CREATE TABLE phpbb_notifications (
 	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
 	item_parent_id INT4 DEFAULT '0' NOT NULL CHECK (item_parent_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
-	unread INT2 DEFAULT '1' NOT NULL CHECK (unread >= 0),
+	notification_read INT2 DEFAULT '0' NOT NULL CHECK (notification_read >= 0),
 	notification_time INT4 DEFAULT '1' NOT NULL CHECK (notification_time >= 0),
 	data varchar(4000) DEFAULT '' NOT NULL,
 	PRIMARY KEY (notification_id)
 );
 
 CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id);
-CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, unread);
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read);
 
 /*
 	Table: 'phpbb_poll_options'
