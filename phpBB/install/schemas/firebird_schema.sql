@@ -618,6 +618,15 @@ BEGIN
 END;;
 
 
+# Table: 'phpbb_notification_types'
+CREATE TABLE phpbb_notification_types (
+	notification_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notification_type_enabled INTEGER DEFAULT 1 NOT NULL
+);;
+
+ALTER TABLE phpbb_notification_types ADD PRIMARY KEY (notification_type, notification_type_enabled);;
+
+
 # Table: 'phpbb_notifications'
 CREATE TABLE phpbb_notifications (
 	notification_id INTEGER NOT NULL,
@@ -626,7 +635,6 @@ CREATE TABLE phpbb_notifications (
 	item_parent_id INTEGER DEFAULT 0 NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
 	unread INTEGER DEFAULT 1 NOT NULL,
-	is_enabled INTEGER DEFAULT 1 NOT NULL,
 	time INTEGER DEFAULT 1 NOT NULL,
 	data BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
 );;
@@ -1243,9 +1251,6 @@ CREATE TABLE phpbb_user_notifications (
 
 ALTER TABLE phpbb_user_notifications ADD PRIMARY KEY (item_type, item_id, user_id, method);;
 
-CREATE INDEX phpbb_user_notifications_it ON phpbb_user_notifications(item_type);;
-CREATE INDEX phpbb_user_notifications_uid ON phpbb_user_notifications(user_id);;
-CREATE INDEX phpbb_user_notifications_no ON phpbb_user_notifications(notify);;
 
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
