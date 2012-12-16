@@ -64,12 +64,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 		$mark_options = array('mark_important', 'delete_marked');
 
-		// Minimise edits
-		if (!$auth->acl_get('u_pm_delete') && $key = array_search('delete_marked', $mark_options))
-		{
-			unset($mark_options[$key]);
-		}
-
 		$s_mark_options = '';
 		foreach ($mark_options as $mark_option)
 		{
@@ -166,7 +160,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 					'FOLDER_IMG_STYLE'	=> $folder_img,
 					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
-					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
 					'S_PM_UNREAD'		=> ($row['pm_unread']) ? true : false,
 					'S_PM_DELETED'		=> ($row['pm_deleted']) ? true : false,

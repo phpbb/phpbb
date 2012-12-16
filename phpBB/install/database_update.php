@@ -881,6 +881,48 @@ function _add_permission(auth_admin $auth_admin, phpbb_db_driver $db, $permissio
 	return true;
 }
 
+/**
+* Remove the specified permissions
+*
+* @param phpbb_auth $auth Auth object
+* @param phpbb_db_driver $db Database object
+* @param phpbb_cache_service $cache Cache object
+* @param array $permissions Permission names (e.g. u_sendpm)
+* @param bool $errored Whether an SQL error has occured (used by _sql())
+* @param array $error_ary Array of SQL errors (used by _sql())
+* @return null
+*/
+function _remove_permissions(phpbb_auth $auth, phpbb_db_driver $db, phpbb_cache_service $cache, array $permissions, &$errored, &$error_ary)
+{
+	// Remove unnecessary permissions
+	$sql = 'SELECT auth_option_id 
+		FROM ' . ACL_OPTIONS_TABLE. '
+		WHERE ' . $db->sql_in_set('auth_option', $permissions);
+	$result = $db->sql_query($sql);
+	$option_ids = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$option_ids[] = (int) $row['auth_option_id'];
+	}
+
+	// If we cannot find the options, they must have already been deleted
+	// so we stop here
+	if (empty($option_ids))
+	{
+		return;
+	}
+
+	foreach (array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE, ACL_OPTIONS_TABLE) as $table)
+	{
+		_sql("DELETE FROM $table
+			WHERE " . $db->sql_in_set('auth_option_id', $option_ids), $errored, $error_ary);
+	}
+
+	$db->sql_freeresult($result);
+	$cache->destroy('_acl_options');
+	$auth->acl_clear_prefetch();
+}
+
 /****************************************************************************
 * ADD YOUR DATABASE SCHEMA CHANGES HERE										*
 *****************************************************************************/
@@ -1210,7 +1252,7 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $db_tools;
+	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $db_tools, $cache, $auth;
 
 	$update_helpers = new phpbb_update_helpers();
 
@@ -2933,6 +2975,17 @@ function change_database_data(&$no_updates, $version)
 
 			$no_updates = false;
 
+			_remove_permissions($auth, $db, $cache, array(
+				'u_pm_delete',
+				'u_pm_printpm',
+				'f_print',
+				'f_subscribe',
+				'u_pm_emailpm',
+				'u_pm_forward',
+				'u_pm_download',
+				'u_savedrafts',
+				'a_jabber',
+			), $errored, $error_ary);
 		break;
 	}
 }

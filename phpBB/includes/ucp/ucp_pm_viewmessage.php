@@ -108,7 +108,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	if ($message_row['message_attachment'] && $config['allow_pm_attach'])
 	{
-		if ($auth->acl_get('u_pm_download'))
+		if ($auth->acl_get('u_download'))
 		{
 			$sql = 'SELECT *
 				FROM ' . ATTACHMENTS_TABLE . "
@@ -244,7 +244,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'U_MSN'			=> ($user_info['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $author_id) : '',
 		'U_JABBER'		=> ($user_info['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $author_id) : '',
 
-		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_DELETE'			=> "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'],
 		'U_EMAIL'			=> $user_info['email'],
 		'U_REPORT'			=> ($config['allow_pm_report']) ? append_sid("{$phpbb_root_path}report.$phpEx", "pm=" . $message_row['msg_id']) : '',
 		'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
@@ -265,8 +265,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'S_BBCODE_ALLOWED'	=> ($bbcode_status) ? 1 : 0,
 		'S_CUSTOM_FIELDS'	=> (!empty($cp_row['row'])) ? true : false,
 
-		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
-		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_PRINT_PM'		=> $config['print_pm'] ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
+		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 	);
 
 	/**

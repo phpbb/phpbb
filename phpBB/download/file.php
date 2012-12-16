@@ -234,7 +234,7 @@ else if ($download_id)
 		// We allow admins having attachment permissions to see orphan attachments...
 		$own_attachment = ($auth->acl_get('a_attach') || $attachment['poster_id'] == $user->data['user_id']) ? true : false;
 
-		if (!$own_attachment || ($attachment['in_message'] && !$auth->acl_get('u_pm_download')) || (!$attachment['in_message'] && !$auth->acl_get('u_download')))
+		if (!$own_attachment || !$auth->acl_get('u_download'))
 		{
 			send_status_line(404, 'Not Found');
 			trigger_error('ERROR_NO_ATTACHMENT');

@@ -106,7 +106,6 @@ $lang = array_merge($lang, array(
 
 	'acl_u_attach'		=> array('lang' => 'Can attach files', 'cat' => 'post'),
 	'acl_u_download'	=> array('lang' => 'Can download files', 'cat' => 'post'),
-	'acl_u_savedrafts'	=> array('lang' => 'Can save drafts', 'cat' => 'post'),
 	'acl_u_chgcensors'	=> array('lang' => 'Can disable word censors', 'cat' => 'post'),
 	'acl_u_sig'			=> array('lang' => 'Can use signature', 'cat' => 'post'),
 
@@ -115,12 +114,7 @@ $lang = array_merge($lang, array(
 	'acl_u_masspm_group'=> array('lang' => 'Can send messages to groups', 'cat' => 'pm'),
 	'acl_u_readpm'		=> array('lang' => 'Can read private messages', 'cat' => 'pm'),
 	'acl_u_pm_edit'		=> array('lang' => 'Can edit own private messages', 'cat' => 'pm'),
-	'acl_u_pm_delete'	=> array('lang' => 'Can remove private messages from own folder', 'cat' => 'pm'),
-	'acl_u_pm_forward'	=> array('lang' => 'Can forward private messages', 'cat' => 'pm'),
-	'acl_u_pm_emailpm'	=> array('lang' => 'Can email private messages', 'cat' => 'pm'),
-	'acl_u_pm_printpm'	=> array('lang' => 'Can print private messages', 'cat' => 'pm'),
 	'acl_u_pm_attach'	=> array('lang' => 'Can attach files in private messages', 'cat' => 'pm'),
-	'acl_u_pm_download'	=> array('lang' => 'Can download files in private messages', 'cat' => 'pm'),
 	'acl_u_pm_bbcode'	=> array('lang' => 'Can use BBCode in private messages', 'cat' => 'pm'),
 	'acl_u_pm_smilies'	=> array('lang' => 'Can use smilies in private messages', 'cat' => 'pm'),
 	'acl_u_pm_img'		=> array('lang' => 'Can use [img] BBCode tag in private messages', 'cat' => 'pm'),
@@ -139,8 +133,6 @@ $lang = array_merge($lang, array(
 	'acl_f_list'		=> array('lang' => 'Can see forum', 'cat' => 'actions'),
 	'acl_f_read'		=> array('lang' => 'Can read forum', 'cat' => 'actions'),	
 	'acl_f_search'		=> array('lang' => 'Can search the forum', 'cat' => 'actions'),
-	'acl_f_subscribe'	=> array('lang' => 'Can subscribe forum', 'cat' => 'actions'),
-	'acl_f_print'		=> array('lang' => 'Can print topics', 'cat' => 'actions'),	
 	'acl_f_email'		=> array('lang' => 'Can email topics', 'cat' => 'actions'),	
 	'acl_f_bump'		=> array('lang' => 'Can bump topics', 'cat' => 'actions'),
 	'acl_f_user_lock'	=> array('lang' => 'Can lock own topics', 'cat' => 'actions'),
@@ -192,7 +184,6 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'acl_a_board'		=> array('lang' => 'Can alter board settings/check for updates', 'cat' => 'settings'),
 	'acl_a_server'		=> array('lang' => 'Can alter server/communication settings', 'cat' => 'settings'),
-	'acl_a_jabber'		=> array('lang' => 'Can alter Jabber settings', 'cat' => 'settings'),
 	'acl_a_phpinfo'		=> array('lang' => 'Can view php settings', 'cat' => 'settings'),
 
 	'acl_a_forum'		=> array('lang' => 'Can manage forums', 'cat' => 'forums'),
