@@ -29,13 +29,11 @@ phpbb.add_ajax_callback('mark_forums_read', function(res) {
 				$this.removeClass(unreadClass).addClass(readClass);
 			}
 		});
-		$this.children('dt[title=' + unreadTitle + ']').attr('title', readTitle);
+		$this.children('dt[title="' + unreadTitle + '"]').attr('title', readTitle);
 	});
 
 	// Update mark forums read links
-	$('[data-ajax=mark_forums_read]').each(function() {
-		$(this).attr('href', res.U_MARK_FORUMS);
-	});
+	$('[data-ajax="mark_forums_read"]').attr('href', res.U_MARK_FORUMS);
 
 	phpbb.closeDarkenWrapper();
 });
@@ -78,18 +76,14 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 				$this.removeClass(unreadClass).addClass(readClass);
 			}
 		});
-		$this.children('dt[title=' + unreadTitle + ']').attr('title', readTitle);
+		$this.children('dt[title="' + unreadTitle + '"]').attr('title', readTitle);
 	});
 
 	// Remove link to first unread post
-	$('span.icon_topic_newest').each(function() {
-		$(this).remove();
-	});
+	$('span.icon_topic_newest').remove();
 
 	// Update mark topics read links
-	$('[data-ajax=mark_topics_read]').each(function() {
-		$(this).attr('href', res.U_MARK_TOPICS);
-	});
+	$('[data-ajax="mark_topics_read"]').attr('href', res.U_MARK_TOPICS);
 
 	phpbb.closeDarkenWrapper();
 });
