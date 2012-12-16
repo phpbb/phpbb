@@ -101,12 +101,13 @@ class phpbb_notification_type_bookmark extends phpbb_notification_type_post
 
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
 		$update_notifications = array();
-		$sql = 'SELECT *
-			FROM ' . $this->notifications_table . "
-			WHERE item_type = '" . $this->get_type() . "'
-				AND item_parent_id = " . (int) self::get_item_parent_id($post) . '
-				AND unread = 1
-				AND is_enabled = 1';
+		$sql = 'SELECT n.*
+			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . " nt
+			WHERE n.item_type = '" . $this->get_type() . "'
+				AND n.item_parent_id = " . (int) self::get_item_parent_id($post) . '
+				AND n.unread = 1
+				AND nt.notification_type = n.item_type
+				AND nt.notification_type_enabled = 1';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
