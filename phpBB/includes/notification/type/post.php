@@ -320,11 +320,11 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 
 		$this->set_data('forum_name', $post['forum_name']);
 
-		$this->time = $post['post_time'];
+		$this->notification_time = $post['post_time'];
 
 		// Topics can be "read" before they are public (while awaiting approval).
 		// Make sure that if the user has read the topic, it's marked as read in the notification
-		if (isset($pre_create_data[$this->user_id]) && $pre_create_data[$this->user_id] >= $this->time)
+		if (isset($pre_create_data[$this->user_id]) && $pre_create_data[$this->user_id] >= $this->notification_time)
 		{
 			$this->unread = false;
 		}
