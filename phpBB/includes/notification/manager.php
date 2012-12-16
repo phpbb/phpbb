@@ -226,16 +226,6 @@ class phpbb_notification_manager
 	*/
 	public function mark_notifications_read($item_type, $item_id, $user_id, $time = false)
 	{
-		if (is_array($item_type))
-		{
-			foreach ($item_type as $type)
-			{
-				$this->mark_notifications_read($type, $item_id, $user_id, $time);
-			}
-
-			return;
-		}
-
 		$time = ($time !== false) ? $time : time();
 
 		$sql = 'UPDATE ' . $this->notifications_table . "
