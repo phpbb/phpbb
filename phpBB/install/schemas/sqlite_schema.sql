@@ -434,7 +434,7 @@ CREATE TABLE phpbb_notifications (
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	notification_read INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	notification_time INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	data text(65535) NOT NULL DEFAULT ''
+	notification_data text(65535) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id);

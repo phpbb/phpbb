@@ -447,7 +447,7 @@ CREATE TABLE phpbb_notifications (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	notification_read tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	notification_time int(11) UNSIGNED DEFAULT '1' NOT NULL,
-	data blob NOT NULL,
+	notification_data blob NOT NULL,
 	PRIMARY KEY (notification_id),
 	KEY item_ident (item_type, item_id),
 	KEY user (user_id, notification_read)
