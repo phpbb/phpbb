@@ -1198,7 +1198,6 @@ function database_update_info()
 						'item_parent_id'   				=> array('UINT', 0),
 						'user_id'						=> array('UINT', 0),
 						'notification_read'				=> array('BOOL', 0),
-						'is_enabled'					=> array('BOOL', 1),
 						'notification_time'				=> array('TIMESTAMP', 1),
 						'notification_data'			   	=> array('TEXT_UNI', ''),
 					),
