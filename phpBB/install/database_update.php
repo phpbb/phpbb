@@ -1201,7 +1201,7 @@ function database_update_info()
 						'item_id'		  				=> array('UINT', 0),
 						'item_parent_id'   				=> array('UINT', 0),
 						'user_id'						=> array('UINT', 0),
-						'unread'						=> array('BOOL', 1),
+						'notification_read'				=> array('BOOL', 0),
 						'is_enabled'					=> array('BOOL', 1),
 						'notification_time'				=> array('TIMESTAMP', 1),
 						'data'			   				=> array('TEXT_UNI', ''),
@@ -1209,7 +1209,7 @@ function database_update_info()
 					'PRIMARY_KEY'		=> 'notification_id',
 					'KEYS'				=> array(
 						'item_ident'		=> array('INDEX', array('item_type', 'item_id')),
-						'user'				=> array('INDEX', array('user_id', 'unread')),
+						'user'				=> array('INDEX', array('user_id', 'notification_read')),
 					),
 				),
 				USER_NOTIFICATIONS_TABLE	=> array(
