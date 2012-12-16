@@ -841,6 +841,17 @@ END;
 
 
 /*
+	Table: 'phpbb_notification_types'
+*/
+CREATE TABLE phpbb_notification_types (
+	notification_type varchar2(255) DEFAULT '' ,
+	notification_type_enabled number(1) DEFAULT '1' NOT NULL,
+	CONSTRAINT pk_phpbb_notification_types PRIMARY KEY (notification_type, notification_type_enabled)
+)
+/
+
+
+/*
 	Table: 'phpbb_notifications'
 */
 CREATE TABLE phpbb_notifications (
@@ -850,7 +861,6 @@ CREATE TABLE phpbb_notifications (
 	item_parent_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
 	unread number(1) DEFAULT '1' NOT NULL,
-	is_enabled number(1) DEFAULT '1' NOT NULL,
 	time number(11) DEFAULT '1' NOT NULL,
 	data clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_notifications PRIMARY KEY (notification_id)
@@ -1642,12 +1652,6 @@ CREATE TABLE phpbb_user_notifications (
 )
 /
 
-CREATE INDEX phpbb_user_notifications_it ON phpbb_user_notifications (item_type)
-/
-CREATE INDEX phpbb_user_notifications_uid ON phpbb_user_notifications (user_id)
-/
-CREATE INDEX phpbb_user_notifications_no ON phpbb_user_notifications (notify)
-/
 
 /*
 	Table: 'phpbb_user_group'

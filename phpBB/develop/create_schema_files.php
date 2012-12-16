@@ -1295,6 +1295,14 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_notification_types'] = array(
+		'COLUMNS'			=> array(
+			'notification_type'			=> array('VCHAR:255', ''),
+			'notification_type_enabled'	=> array('BOOL', 1),
+		),
+		'PRIMARY_KEY'		=> array('notification_type', 'notification_type_enabled'),
+	);
+
 	$schema_data['phpbb_notifications'] = array(
 		'COLUMNS'			=> array(
 			'notification_id'	=> array('UINT', NULL, 'auto_increment'),
@@ -1303,7 +1311,6 @@ function get_schema_struct()
 			'item_parent_id'	=> array('UINT', 0),
 			'user_id'			=> array('UINT', 0),
 			'unread'			=> array('BOOL', 1),
-			'is_enabled'		=> array('BOOL', 1),
 			'time'				=> array('TIMESTAMP', 1),
 			'data'				=> array('TEXT_UNI', ''),
 		),

@@ -93,6 +93,10 @@ if (!defined('LOGIN_ATTEMPT_TABLE'))
 {
 	define('LOGIN_ATTEMPT_TABLE', $table_prefix . 'login_attempts');
 }
+if (!defined('NOTIFICATION_TYPES_TABLE'))
+{
+	define('NOTIFICATION_TYPES_TABLE', $table_prefix . 'notification_types');
+}
 if (!defined('NOTIFICATIONS_TABLE'))
 {
 	define('NOTIFICATIONS_TABLE', $table_prefix . 'notifications');
@@ -1178,6 +1182,13 @@ function database_update_info()
 					'KEYS'				=> array(
 						'ext_name'		=> array('UNIQUE', 'ext_name'),
 					),
+				),
+				NOTIFICATION_TYPES_TABLE	=> array(
+					'COLUMNS'			=> array(
+						'notification_type'			=> array('VCHAR:255', ''),
+						'notification_type_enabled'	=> array('BOOL', 1),
+					),
+					'PRIMARY_KEY'		=> array('notification_type', 'notification_type_enabled'),
 				),
 				NOTIFICATIONS_TABLE		=> array(
 					'COLUMNS'			=> array(
