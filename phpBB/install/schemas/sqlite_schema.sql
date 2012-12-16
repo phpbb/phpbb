@@ -432,13 +432,13 @@ CREATE TABLE phpbb_notifications (
 	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	item_parent_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	unread INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	notification_read INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	notification_time INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	data text(65535) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id);
-CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, unread);
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read);
 
 # Table: 'phpbb_poll_options'
 CREATE TABLE phpbb_poll_options (

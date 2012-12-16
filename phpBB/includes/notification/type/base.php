@@ -168,8 +168,8 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 			'item_type'	   			=> $this->get_type(),
 			'item_parent_id'		=> static::get_item_parent_id($type_data),
 
-			'notification_time'					=> time(),
-			'unread'				=> true,
+			'notification_time'		=> time(),
+			'notification_read'		=> false,
 
 			'data'					=> array(),
 		), $this->data);
@@ -197,7 +197,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		unset(
 			$data['notification_time'], // Also unsetting time, since it always tries to change the time to current (if you actually need to change the time, over-ride this function)
 			$data['notification_id'],
-			$data['unread'],
+			$data['notification_read'],
 			$data['user_id']
 		);
 
@@ -252,9 +252,9 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 			'URL'				=> $this->get_url(),
 			'TIME'	   			=> $this->user->format_date($this->notification_time),
 
-			'UNREAD'			=> $this->unread,
+			'UNREAD'			=> !$this->notification_read,
 
-			'U_MARK_READ'		=> ($this->unread) ? $u_mark_read : '',
+			'U_MARK_READ'		=> (!$this->notification_read) ? $u_mark_read : '',
 		);
 	}
 
@@ -402,7 +402,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	protected function mark($unread = true, $return = false)
 	{
-		$this->unread = (bool) $unread;
+		$this->notification_read = (bool) !$unread;
 
 		$where = array(
 			"item_type = '" . $this->db->sql_escape($this->item_type) . "'",
@@ -417,7 +417,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		}
 
 		$sql = 'UPDATE ' . $this->notifications_table . '
-			SET unread = ' . (int) $this->unread . '
+			SET notification_read = ' . (int) $this->notification_read . '
 			WHERE ' . $where;
 		$this->db->sql_query($sql);
 	}

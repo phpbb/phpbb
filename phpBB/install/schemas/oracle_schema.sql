@@ -860,7 +860,7 @@ CREATE TABLE phpbb_notifications (
 	item_id number(8) DEFAULT '0' NOT NULL,
 	item_parent_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
-	unread number(1) DEFAULT '1' NOT NULL,
+	notification_read number(1) DEFAULT '0' NOT NULL,
 	notification_time number(11) DEFAULT '1' NOT NULL,
 	data clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_notifications PRIMARY KEY (notification_id)
@@ -869,7 +869,7 @@ CREATE TABLE phpbb_notifications (
 
 CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id)
 /
-CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, unread)
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read)
 /
 
 CREATE SEQUENCE phpbb_notifications_seq

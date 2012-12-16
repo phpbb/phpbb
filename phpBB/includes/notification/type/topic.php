@@ -267,7 +267,7 @@ class phpbb_notification_type_topic extends phpbb_notification_type_base
 		// Make sure that if the user has read the topic, it's marked as read in the notification
 		if (isset($pre_create_data[$this->user_id]) && $pre_create_data[$this->user_id] >= $this->notification_time)
 		{
-			$this->unread = false;
+			$this->notification_read = true;
 		}
 
 		return parent::create_insert_array($post, $pre_create_data);
