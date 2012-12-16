@@ -1231,6 +1231,7 @@ function mcp_fork_topic($topic_ids)
 				}
 			}
 
+			// Copy topic subscriptions to new topic
 			$sql = 'SELECT user_id, notify_status
 				FROM ' . TOPICS_WATCH_TABLE . '
 				WHERE topic_id = ' . $topic_id;
@@ -1250,6 +1251,27 @@ function mcp_fork_topic($topic_ids)
 			if (sizeof($sql_ary))
 			{
 				$db->sql_multi_insert(TOPICS_WATCH_TABLE, $sql_ary);
+			}
+
+			// Copy bookmarks to new topic
+			$sql = 'SELECT user_id
+				FROM ' . BOOKMARKS_TABLE . '
+				WHERE topic_id = ' . $topic_id;
+			$result = $db->sql_query($sql);
+
+			$sql_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$sql_ary[] = array(
+					'topic_id'		=> (int) $new_topic_id,
+					'user_id'		=> (int) $row['user_id'],
+				);
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($sql_ary))
+			{
+				$db->sql_multi_insert(BOOKMARKS_TABLE, $sql_ary);
 			}
 		}
 
