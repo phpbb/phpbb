@@ -96,7 +96,7 @@ class phpbb_notification_manager
 		$options = array_merge(array(
 			'notification_id'	=> false,
 			'user_id'			=> $this->user->data['user_id'],
-			'order_by'			=> 'time',
+			'order_by'			=> 'notification_time',
 			'order_dir'			=> 'DESC',
 			'limit'				=> 0,
 			'start'				=> 0,
@@ -238,10 +238,9 @@ class phpbb_notification_manager
 
 		$sql = 'UPDATE ' . $this->notifications_table . "
 			SET unread = 0
-			WHERE time <= " . $time .
+			WHERE notification_time <= " . $time .
 				(($item_type !== false) ? ' AND ' . (is_array($item_type) ? $this->db->sql_in_set('item_type', $item_type) : " item_type = '" . $this->db->sql_escape($item_type) . "'") : '') .
 				(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '') .
-				(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '');
 		$this->db->sql_query($sql);
 	}
 
@@ -270,7 +269,7 @@ class phpbb_notification_manager
 		$sql = 'UPDATE ' . $this->notifications_table . "
 			SET unread = 0
 			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
-				AND time <= " . $time .
+				AND notification_time <= " . $time .
 				(($item_parent_id !== false) ? ' AND ' . (is_array($item_parent_id) ? $this->db->sql_in_set('item_parent_id', $item_parent_id) : 'item_parent_id = ' . (int) $item_parent_id) : '') .
 				(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '');
 		$this->db->sql_query($sql);
@@ -288,7 +287,7 @@ class phpbb_notification_manager
 
 		$sql = 'UPDATE ' . $this->notifications_table . "
 			SET unread = 0
-			WHERE time <= " . $time . '
+			WHERE notification_time <= " . $time . '
 				AND ' . ((is_array($notification_id)) ? $this->db->sql_in_set('notification_id', $notification_id) : 'notification_id = ' . (int) $notification_id);
 		$this->db->sql_query($sql);
 	}
@@ -793,7 +792,7 @@ class phpbb_notification_manager
 	public function prune_notifications($timestamp)
 	{
 		$sql = 'DELETE FROM ' . $this->notifications_table . '
-			WHERE time < ' . (int) $timestamp;
+			WHERE notification_time < ' . (int) $timestamp;
 		$this->db->sql_query($sql);
 	}
 
