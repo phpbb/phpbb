@@ -206,8 +206,8 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 1,
 				'user_id'	   		=> 0,
 				'notification_read'				=> 0,
-				'notification_time'	=> 1349413321,
-				'data'				=> array(),
+				'notification_time'	   			=> 1349413321,
+				'notification_data'			   	=> array(),
 			),
 			2 => array(
 				'item_type'			=> 'test',
@@ -215,8 +215,8 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'notification_read'				=> 0,
-				'notification_time'	=> 1349413322,
-				'data'				=> array(),
+				'notification_time'	   			=> 1349413322,
+				'notification_data'				=> array(),
 			),
 			3 => array(
 				'item_type'			=> 'test',
@@ -224,8 +224,8 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'notification_read'				=> 0,
-				'notification_time'	=> 1349413323,
-				'data'				=> array(),
+				'notification_time'	   			=> 1349413323,
+				'notification_data'			   	=> array(),
 			),
 			4 => array(
 				'item_type'			=> 'post',
@@ -233,8 +233,8 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'notification_read'				=> 0,
-				'notification_time'	=> 1349413324,
-				'data'				=> array(
+				'notification_time'	   			=> 1349413324,
+				'notification_data'			   	=> array(
 					'poster_id'		=> 2,
 					'topic_title'	=> 'test-title',
 					'post_subject'	=> 'Re: test-title',
@@ -248,9 +248,9 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_id'			=> 5,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
-				'notification_read'	=> 0,
-				'notification_time'	=> 1349413325,
-				'data'				=> array(
+				'notification_read'				=> 0,
+				'notification_time'	   			=> 1349413325,
+				'notification_data'			   	=> array(
 					'poster_id'		=> 2,
 					'topic_title'	=> 'test-title',
 					'post_subject'	=> 'Re: test-title',
@@ -313,7 +313,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'user_id'	   		=> 0,
 				'notification_read'	=> 0,
 				'notification_time'	=> 1349413321,
-				'data'				=> array(),
+				'notification_data'	=> array(),
 			),
 			2 => array(
 				'item_type'			=> 'test',
@@ -322,7 +322,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'user_id'	   		=> 0,
 				'notification_read'	=> 0,
 				'notification_time'	=> 1349413322,
-				'data'				=> array(),
+				'notification_data'	=> array(),
 			),
 			3 => array(
 				'item_type'			=> 'test',
@@ -331,7 +331,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'user_id'	   		=> 0,
 				'notification_read'	=> 0,
 				'notification_time'	=> 1234,
-				'data'				=> array(),
+				'notification_data'	=> array(),
 			),
 			4 => array(
 				'item_type'			=> 'post',
@@ -340,7 +340,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'user_id'	   		=> 0,
 				'notification_read'	=> 0,
 				'notification_time'	=> 1349413324,
-				'data'				=> array(
+				'notification_data'	=> array(
 					'poster_id'		=> 2,
 					'topic_title'	=> 'test-title',
 					'post_subject'	=> 'Re: test-title',
@@ -356,7 +356,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'user_id'	   		=> 0,
 				'notification_read'	=> 0,
 				'notification_time'	=> 1349413325,
-				'data'				=> array(
+				'notification_data'	=> array(
 					'poster_id'		=> 2,
 					'topic_title'	=> 'test-title2',
 					'post_subject'	=> 'Re: test-title2',

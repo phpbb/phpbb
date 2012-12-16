@@ -780,7 +780,7 @@ CREATE TABLE [phpbb_notifications] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[notification_read] [int] DEFAULT (0) NOT NULL ,
 	[notification_time] [int] DEFAULT (1) NOT NULL ,
-	[data] [varchar] (4000) DEFAULT ('') NOT NULL 
+	[notification_data] [varchar] (4000) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 

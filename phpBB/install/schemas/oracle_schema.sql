@@ -862,7 +862,7 @@ CREATE TABLE phpbb_notifications (
 	user_id number(8) DEFAULT '0' NOT NULL,
 	notification_read number(1) DEFAULT '0' NOT NULL,
 	notification_time number(11) DEFAULT '1' NOT NULL,
-	data clob DEFAULT '' ,
+	notification_data clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_notifications PRIMARY KEY (notification_id)
 )
 /

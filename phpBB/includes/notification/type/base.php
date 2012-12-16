@@ -110,7 +110,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	{
 		// The row from the database (unless this is a new notification we're going to add)
 		$this->data = $data;
-		$this->data['data'] = (isset($this->data['data'])) ? unserialize($this->data['data']) : array();
+		$this->data['notification_data'] = (isset($this->data['notification_data'])) ? unserialize($this->data['notification_data']) : array();
 	}
 
 	public function __get($name)
@@ -137,7 +137,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	protected function get_data($name)
 	{
-		return ($name === false) ? $this->data['data'] : ((isset($this->data['data'][$name])) ? $this->data['data'][$name] : null);
+		return ($name === false) ? $this->data['notification_data'] : ((isset($this->data['notification_data'][$name])) ? $this->data['notification_data'][$name] : null);
 	}
 
 	/**
@@ -148,7 +148,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	protected function set_data($name, $value)
 	{
-		$this->data['data'][$name] = $value;
+		$this->data['notification_data'][$name] = $value;
 	}
 
 	/**
@@ -171,12 +171,12 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 			'notification_time'		=> time(),
 			'notification_read'		=> false,
 
-			'data'					=> array(),
+			'notification_data'					=> array(),
 		), $this->data);
 
 		$data = $this->data;
 
-		$data['data'] = serialize($data['data']);
+		$data['notification_data'] = serialize($data['notification_data']);
 
 		return $data;
 	}

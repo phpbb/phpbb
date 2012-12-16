@@ -1200,7 +1200,7 @@ function database_update_info()
 						'notification_read'				=> array('BOOL', 0),
 						'is_enabled'					=> array('BOOL', 1),
 						'notification_time'				=> array('TIMESTAMP', 1),
-						'data'			   				=> array('TEXT_UNI', ''),
+						'notification_data'			   	=> array('TEXT_UNI', ''),
 					),
 					'PRIMARY_KEY'		=> 'notification_id',
 					'KEYS'				=> array(
