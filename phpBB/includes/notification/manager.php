@@ -724,6 +724,21 @@ class phpbb_notification_manager
 	}
 
 	/**
+	* Purge all notifications of a certain type
+	*
+	* This should be called when an extension which has notification types
+	* is purged so that all those notifications are removed
+	*
+	* @param string $item_type
+	*/
+	public function purge_notifications($item_type)
+	{
+		$sql = 'DELETE FROM ' . $this->notifications_table . "
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'";
+		$this->db->sql_query($sql);
+	}
+
+	/**
 	* Enable all notifications of a certain type
 	*
 	* This should be called when an extension which has notification types
