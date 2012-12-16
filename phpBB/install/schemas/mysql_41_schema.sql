@@ -430,6 +430,14 @@ CREATE TABLE phpbb_modules (
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
+# Table: 'phpbb_notification_types'
+CREATE TABLE phpbb_notification_types (
+	notification_type varchar(255) DEFAULT '' NOT NULL,
+	notification_type_enabled tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	PRIMARY KEY (notification_type, notification_type_enabled)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
 # Table: 'phpbb_notifications'
 CREATE TABLE phpbb_notifications (
 	notification_id mediumint(8) UNSIGNED NOT NULL auto_increment,
@@ -438,7 +446,6 @@ CREATE TABLE phpbb_notifications (
 	item_parent_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	unread tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	is_enabled tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	time int(11) UNSIGNED DEFAULT '1' NOT NULL,
 	data text NOT NULL,
 	PRIMARY KEY (notification_id),
@@ -875,10 +882,7 @@ CREATE TABLE phpbb_user_notifications (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	method varchar(255) DEFAULT '' NOT NULL,
 	notify tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	PRIMARY KEY (item_type, item_id, user_id, method),
-	KEY it (item_type),
-	KEY uid (user_id),
-	KEY no (notify)
+	PRIMARY KEY (item_type, item_id, user_id, method)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
