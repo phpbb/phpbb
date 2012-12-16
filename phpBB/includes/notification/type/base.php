@@ -71,9 +71,9 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* item_id			- ID of the item (e.g. post_id, msg_id)
 	* item_parent_id	- Parent item id (ex: for topic => forum_id, for post => topic_id, etc)
 	* user_id
-	* unread
-	* time
-	* data (special serialized field that each notification type can use to store stuff)
+	* notification_read
+	* notification_time
+	* notification_data (special serialized field that each notification type can use to store stuff)
 	*
 	* @var array $data Notification row from the database
 	* 		This must be private, all interaction should use __get(), __set(), get_data(), set_data()
