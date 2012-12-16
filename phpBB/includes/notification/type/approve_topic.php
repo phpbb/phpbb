@@ -121,7 +121,7 @@ class phpbb_notification_type_approve_topic extends phpbb_notification_type_topi
 	{
 		$data = parent::create_insert_array($post, $pre_create_data);
 
-		$this->time = $data['time'] = time();
+		$this->notification_time = $data['notification_time'] = time();
 
 		return $data;
 	}

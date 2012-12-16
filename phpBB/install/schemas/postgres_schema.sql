@@ -618,7 +618,7 @@ CREATE TABLE phpbb_notifications (
 	item_parent_id INT4 DEFAULT '0' NOT NULL CHECK (item_parent_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	unread INT2 DEFAULT '1' NOT NULL CHECK (unread >= 0),
-	time INT4 DEFAULT '1' NOT NULL CHECK (time >= 0),
+	notification_time INT4 DEFAULT '1' NOT NULL CHECK (notification_time >= 0),
 	data varchar(4000) DEFAULT '' NOT NULL,
 	PRIMARY KEY (notification_id)
 );

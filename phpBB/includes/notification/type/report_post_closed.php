@@ -148,7 +148,7 @@ class phpbb_notification_type_report_post_closed extends phpbb_notification_type
 
 		$data = parent::create_insert_array($post, $pre_create_data);
 
-		$this->time = $data['time'] = time();
+		$this->notification_time = $data['notification_time'] = time();
 
 		return $data;
 	}

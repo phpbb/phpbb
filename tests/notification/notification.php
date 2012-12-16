@@ -206,7 +206,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 1,
 				'user_id'	   		=> 0,
 				'unread'	   		=> 1,
-				'time'	   			=> 1349413321,
+				'notification_time'	=> 1349413321,
 				'data'				=> array(),
 			),
 			2 => array(
@@ -215,7 +215,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'unread'	   		=> 1,
-				'time'	   			=> 1349413322,
+				'notification_time'	=> 1349413322,
 				'data'				=> array(),
 			),
 			3 => array(
@@ -224,7 +224,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'unread'	   		=> 1,
-				'time'	   			=> 1349413323,
+				'notification_time'	=> 1349413323,
 				'data'				=> array(),
 			),
 			4 => array(
@@ -233,7 +233,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'unread'	   		=> 1,
-				'time'	   			=> 1349413324,
+				'notification_time'	=> 1349413324,
 				'data'				=> array(
 					'poster_id'		=> 2,
 					'topic_title'	=> 'test-title',
@@ -249,7 +249,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'unread'	   		=> 1,
-				'time'	   			=> 1349413325,
+				'notification_time'	=> 1349413325,
 				'data'				=> array(
 					'poster_id'		=> 2,
 					'topic_title'	=> 'test-title',
@@ -312,7 +312,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'unread'	   		=> 1,
-				'time'	   			=> 1349413321,
+				'notification_time'	=> 1349413321,
 				'data'				=> array(),
 			),
 			2 => array(
@@ -321,7 +321,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'unread'	   		=> 1,
-				'time'	   			=> 1349413322,
+				'notification_time'	=> 1349413322,
 				'data'				=> array(),
 			),
 			3 => array(
@@ -330,7 +330,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'unread'	   		=> 1,
-				'time'	   			=> 1234,
+				'notification_time'	=> 1234,
 				'data'				=> array(),
 			),
 			4 => array(
@@ -339,7 +339,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'unread'	   		=> 1,
-				'time'	   			=> 1349413324,
+				'notification_time'	=> 1349413324,
 				'data'				=> array(
 					'poster_id'		=> 2,
 					'topic_title'	=> 'test-title',
@@ -355,7 +355,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
 				'unread'	   		=> 1,
-				'time'	   			=> 1349413325,
+				'notification_time'	=> 1349413325,
 				'data'				=> array(
 					'poster_id'		=> 2,
 					'topic_title'	=> 'test-title2',
