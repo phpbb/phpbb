@@ -50,7 +50,7 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 	};
 	var iconsState = ['', '_hot', '_hot_mine', '_locked', '_locked_mine', '_mine'];
 	var unreadClassSelectors = '';
-	var classArray = {};
+	var classMap = {};
 	var classNames = [];
 
 	$.each(iconsArray, function(unreadClass, readClass) {
@@ -59,11 +59,8 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 			if ((value == '_hot' || value == '_hot_mine') && unreadClass != 'topic_unread') {
 				return true;
 			}
-			var currentClass = {};
-			currentClass[unreadClass + value] = readClass + value;
-			$.extend(classArray, currentClass);
-
-			classNames[classNames.length] = unreadClass + value;
+			classMap[unreadClass + value] = readClass + value;
+			classNames.push(unreadClass + value);
 		});
 	});
 
@@ -71,7 +68,7 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 
 	$('li.row').find(unreadClassSelectors).each(function() {
 		var $this = $(this);
-		$.each(classArray, function(unreadClass, readClass) {
+		$.each(classMap, function(unreadClass, readClass) {
 			if ($this.hasClass(unreadClass)) {
 				$this.removeClass(unreadClass).addClass(readClass);
 			}
@@ -80,7 +77,7 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 	});
 
 	// Remove link to first unread post
-	$('span.icon_topic_newest').remove();
+	$('a').has('span.icon_topic_newest').remove();
 
 	// Update mark topics read links
 	$('[data-ajax="mark_topics_read"]').attr('href', res.U_MARK_TOPICS);
