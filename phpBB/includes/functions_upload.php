@@ -70,7 +70,7 @@ class filespec
 			$this->mimetype = 'application/octetstream';
 		}
 
-		$this->extension = strtolower(filespec::get_extension($this->realname));
+		$this->extension = strtolower(self::get_extension($this->realname));
 
 		// Try to get real filesize from temporary folder (not always working) ;)
 		$this->filesize = (@filesize($this->filename)) ? @filesize($this->filename) : $this->filesize;
