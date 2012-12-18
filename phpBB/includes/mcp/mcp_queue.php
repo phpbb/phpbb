@@ -205,6 +205,33 @@ class mcp_queue
 					}
 				}
 
+				// Deleting information
+				if ($post_info['post_visibility'] == ITEM_DELETED && $post_info['post_delete_user'])
+				{
+					// User having deleted the post also being the post author?
+					if (!$post_info['post_delete_user'] || $post_info['post_delete_user'] == $post_info['poster_id'])
+					{
+						$display_username = get_username_string('full', $post_info['poster_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']);
+					}
+					else
+					{
+						$sql = 'SELECT u.user_id, u.username, u.user_colour
+							FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+							WHERE p.post_id =  ' . $post_info['post_id'] . '
+								AND p.post_delete_user = u.user_id';
+						$result = $db->sql_query($sql);
+						$post_delete_userinfo = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+						$display_username = get_username_string('full', $post_info['post_delete_user'], $post_delete_userinfo['username'], $post_delete_userinfo['user_colour']);
+					}
+
+					$l_deleted_by = $user->lang('DELETED_INFORMATION', $display_username, $user->format_date($post_info['post_delete_time'], false, true));
+				}
+				else
+				{
+					$l_deleted_by = '';
+				}
+
 				$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']);
 				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']);
 
@@ -216,6 +243,9 @@ class mcp_queue
 					'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED),
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_USER_NOTES'			=> true,
+					'S_POST_DELETED'		=> ($post_info['post_visibility'] == ITEM_DELETED),
+					'DELETED_MESSAGE'		=> $l_deleted_by,
+					'DELETE_REASON'			=> $post_info['post_delete_reason'],
 
 					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
 					'U_MCP_APPROVE'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
@@ -226,6 +256,7 @@ class mcp_queue
 					'U_VIEW_TOPIC'			=> $topic_url,
 
 					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
+
 
 					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . "&amp;start=$start\">", '</a>'),
 					'RETURN_POST'			=> sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>'),

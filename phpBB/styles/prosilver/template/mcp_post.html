@@ -100,6 +100,13 @@
 			</dl>
 		<!-- ENDIF -->
 
+		<!-- IF DELETED_MESSAGE or DELETE_REASON -->
+			<div class="notice">
+				{DELETED_MESSAGE}
+				<!-- IF DELETE_REASON --><br /><strong>{L_REASON}:</strong> <em>{DELETE_REASON}</em><!-- ENDIF -->
+			</div>
+		<!-- ENDIF -->
+
 		<!-- IF SIGNATURE -->
 			<div id="sig{POST_ID}" class="signature">{SIGNATURE}</div>
 		<!-- ENDIF -->
