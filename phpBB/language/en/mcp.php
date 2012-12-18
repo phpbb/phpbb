@@ -52,6 +52,10 @@ $lang = array_merge($lang, array(
 	'APPROVE_POST_CONFIRM'	=> 'Are you sure you want to approve this post?',
 	'APPROVE_POSTS'			=> 'Approve posts',
 	'APPROVE_POSTS_CONFIRM'	=> 'Are you sure you want to approve the selected posts?',
+	'APPROVE_TOPIC'			=> 'Approve topic',
+	'APPROVE_TOPIC_CONFIRM'	=> 'Are you sure you want to approve this topic?',
+	'APPROVE_TOPICS'		=> 'Approve topics',
+	'APPROVE_TOPICS_CONFIRM'=> 'Are you sure you want to approve the selected topics?',
 
 	'CANNOT_MOVE_SAME_FORUM'=> 'You cannot move a topic to the forum it’s already in.',
 	'CANNOT_WARN_ANONYMOUS'	=> 'You cannot warn unregistered guest users.',
