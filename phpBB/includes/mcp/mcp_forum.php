@@ -116,6 +116,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		'S_CAN_REPORT'			=> $auth->acl_get('m_report', $forum_id),
 		'S_CAN_DELETE'			=> $auth->acl_get('m_delete', $forum_id),
+		'S_CAN_RESTORE'			=> $auth->acl_get('m_approve', $forum_id),
 		'S_CAN_MERGE'			=> $auth->acl_get('m_merge', $forum_id),
 		'S_CAN_MOVE'			=> $auth->acl_get('m_move', $forum_id),
 		'S_CAN_FORK'			=> $auth->acl_get('m_', $forum_id),
@@ -224,7 +225,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_posts_unapproved'] && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
 		$topic_deleted = $row['topic_visibility'] == ITEM_DELETED;
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $url . '&amp;i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . '&amp;t=' . $row['topic_id'] : '';
-		$u_mcp_queue = (!$u_mcp_queue && $topic_deleted) ? $url . 'i=queue&amp;mode=deleted_topics&amp;t=' . $topic_id : $u_mcp_queue;
+		$u_mcp_queue = (!$u_mcp_queue && $topic_deleted) ? $url . '&amp;i=queue&amp;mode=deleted_topics&amp;t=' . $topic_id : $u_mcp_queue;
 
 		$topic_row = array(
 			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
