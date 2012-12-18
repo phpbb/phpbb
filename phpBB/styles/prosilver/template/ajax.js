@@ -11,7 +11,7 @@ phpbb.closeDarkenWrapper = function(delay) {
 	setTimeout(function() {
 		$('#darkenwrapper').trigger('click');
 	}, delay);
-}
+};
 
 // This callback will mark all forum icons read
 phpbb.add_ajax_callback('mark_forums_read', function(res) {
