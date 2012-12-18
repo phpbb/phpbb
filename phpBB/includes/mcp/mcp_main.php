@@ -786,15 +786,15 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 		$user->add_lang('posting');
 
 		$only_softdeleted = false;
-		// If there are only soft deleted topics, we display a message why the option is not available
 		if ($auth->acl_get('m_delete', $forum_id) && $auth->acl_get('m_softdelete', $forum_id))
 		{
+			// If there are only soft deleted topics, we display a message why the option is not available
 			$sql = 'SELECT topic_id
 				FROM ' . TOPICS_TABLE . '
 				WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
 					AND topic_visibility <> ' . ITEM_DELETED;
 			$result = $db->sql_query_limit($sql, 1);
-			$only_softdeleted = (bool) $db->sql_fetchfield('topic_id');
+			$only_softdeleted = !$db->sql_fetchfield('topic_id');
 			$db->sql_freeresult($result);
 		}
 
@@ -806,7 +806,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 			'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
 		));
 
-		$l_confirm = (sizeof($post_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS';
+		$l_confirm = (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS';
 		if ($only_softdeleted)
 		{
 			$l_confirm .= '_PERMANENTLY';
@@ -1023,15 +1023,15 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
 		$user->add_lang('posting');
 
 		$only_softdeleted = false;
-		// If there are only soft deleted posts, we display a message why the option is not available
 		if ($auth->acl_get('m_delete', $forum_id) && $auth->acl_get('m_softdelete', $forum_id))
 		{
+			// If there are only soft deleted posts, we display a message why the option is not available
 			$sql = 'SELECT post_id
 				FROM ' . POSTS_TABLE . '
 				WHERE ' . $db->sql_in_set('post_id', $post_ids) . '
 					AND post_visibility <> ' . ITEM_DELETED;
 			$result = $db->sql_query_limit($sql, 1);
-			$only_softdeleted = (bool) $db->sql_fetchfield('post_id');
+			$only_softdeleted = !$db->sql_fetchfield('post_id');
 			$db->sql_freeresult($result);
 		}
 
