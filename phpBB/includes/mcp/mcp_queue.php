@@ -71,9 +71,10 @@ class mcp_queue
 				{
 					if (!empty($topic_id_list))
 					{
+						$post_visibility = ($mode == 'deleted_topics') ? ITEM_DELETED : ITEM_UNAPPROVED;
 						$sql = 'SELECT post_id
 							FROM ' . POSTS_TABLE . '
-							WHERE post_visibility = ' . ITEM_UNAPPROVED . '
+							WHERE post_visibility = ' . $post_visibility . '
 								AND ' . $db->sql_in_set('topic_id', $topic_id_list);
 						$result = $db->sql_query($sql);
 
