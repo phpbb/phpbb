@@ -21,7 +21,7 @@ acp_overall_footer_after
 acp_overall_header_head_append
 ===
 * Location: adm/style/overall_header.html
-* Add assets within the head tags in the ACP
+* Add assets within the `<head>` tags in the ACP
 
 acp_simple_footer_after
 ===
@@ -31,7 +31,7 @@ acp_simple_footer_after
 acp_simple_header_head_append
 ===
 * Location: adm/style/overall_header.html
-* Add assets within the head tags in the simple header of the ACP
+* Add assets within the `<head>` tags in the simple header of the ACP
 
 acp_users_overview_options_append
 ===
@@ -74,14 +74,14 @@ overall_footer_after
 * Locations:
     + styles/prosilver/template/overall_footer.html
     + styles/subsilver2/template/overall_footer.html
-* Purpose: Add content at the end of the file, directly prior to the closing body tag
+* Purpose: Add content at the end of the file, directly prior to the `</body>` tag
 
 overall_header_head_append
 ===
 * Locations:
     + styles/prosilver/template/overall_header.html
     + styles/subsilver2/template/overall_header.html
-* Purpose: Add asset calls directly before the closing head tag
+* Purpose: Add asset calls directly before the `</head>` tag
 
 overall_header_breadcrumb_append
 ===
@@ -110,12 +110,12 @@ posting_editor_options_prepend
 simple_footer_after
 ===
 * Location: styles/prosilver/template/simple_footer.html
-* Purpose: Add content directly prior to the closing body tag of the simple footer
+* Purpose: Add content directly prior to the `</body>` tag of the simple footer
 
 ucp_pm_viewmessage_print_head_append
 ===
 * Location: styles/prosilver/template/ucp_pm_viewmessage_print.html
-* Purpose: Add asset calls directly before the closing head tag of the Print PM screen
+* Purpose: Add asset calls directly before the `</head>` tag of the Print PM screen
 
 viewtopic_topic_title_prepend
 ===
@@ -127,4 +127,4 @@ viewtopic_topic_title_prepend
 viewtopic_print_head_append
 ===
 * Location: styles/prosilver/template/viewtopic_print.html
-* Purpose: Add asset calls directly before the closing head tag of the Print Topic screen
+* Purpose: Add asset calls directly before the `</head>` tag of the Print Topic screen
