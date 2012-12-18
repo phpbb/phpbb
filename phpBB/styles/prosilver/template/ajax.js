@@ -3,12 +3,14 @@
 "use strict";
 
 /**
-* Close popup alert after a small delay
+* Close popup alert after a specified delay
+*
+* @param int Delay in ms until darkenwrapper's click event is triggered
 */
-phpbb.closeDarkenWrapper = function() {
+phpbb.closeDarkenWrapper = function(delay) {
 	setTimeout(function() {
 		$('#darkenwrapper').trigger('click');
-	}, 3000);
+	}, delay);
 }
 
 // This callback will mark all forum icons read
@@ -18,10 +20,10 @@ phpbb.add_ajax_callback('mark_forums_read', function(res) {
 	var iconsArray = {
 		'forum_unread': 'forum_read',
 		'forum_unread_subforum': 'forum_read_subforum',
-		'forum_unread_locked': 'forum_read_locked'
+		'forum_unread_locked': 'forum_read_locked',
 	};
 
-	$('li.row').find('dl.forum_unread, dl.forum_unread_subforum, dl.forum_unread_locked').each(function() {
+	$('li.row').find('dl[class*="forum_unread"]').each(function() {
 		var $this = $(this);
 
 		$.each(iconsArray, function(unreadClass, readClass) {
@@ -32,10 +34,13 @@ phpbb.add_ajax_callback('mark_forums_read', function(res) {
 		$this.children('dt[title="' + unreadTitle + '"]').attr('title', readTitle);
 	});
 
+	// Mark subforums read
+	$('a.subforum[class*="unread"]').removeClass('unread').addClass('read');
+
 	// Update mark forums read links
 	$('[data-ajax="mark_forums_read"]').attr('href', res.U_MARK_FORUMS);
 
-	phpbb.closeDarkenWrapper();
+	phpbb.closeDarkenWrapper(3000);
 });
 
 // This callback will mark all topic icons read
@@ -82,7 +87,7 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 	// Update mark topics read links
 	$('[data-ajax="mark_topics_read"]').attr('href', res.U_MARK_TOPICS);
 
-	phpbb.closeDarkenWrapper();
+	phpbb.closeDarkenWrapper(3000);
 });
 
 // This callback finds the post from the delete link, and removes it.
