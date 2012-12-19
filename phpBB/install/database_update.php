@@ -2829,7 +2829,18 @@ function change_database_data(&$no_updates, $version)
 					SET post_visibility = post_approved';
 				_sql($sql, $errored, $error_ary);
 
-				$db_tools->sql_column_remove(POSTS_TABLE, 'post_approved');
+				$changes = array(
+					'drop_columns'	=> array(
+						POSTS_TABLE		=> array('post_approved'),
+					),
+				);
+
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
+				{
+					_sql($sql, $errored, $error_ary);
+				}
 			}
 
 			if ($db_tools->sql_column_exists(TOPICS_TABLE, 'topic_approved'))
@@ -2838,7 +2849,18 @@ function change_database_data(&$no_updates, $version)
 					SET topic_visibility = topic_approved';
 				_sql($sql, $errored, $error_ary);
 
-				$db_tools->sql_column_remove(TOPICS_TABLE, 'topic_approved');
+				$changes = array(
+					'drop_columns'	=> array(
+						TOPICS_TABLE		=> array('topic_approved'),
+					),
+				);
+
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
+				{
+					_sql($sql, $errored, $error_ary);
+				}
 			}
 
 			if ($db_tools->sql_column_exists(TOPICS_TABLE, 'topic_replies'))
@@ -2889,9 +2911,19 @@ function change_database_data(&$no_updates, $version)
 					_sql($sql, $errored, $error_ary);
 				}
 
-				$db_tools->sql_column_remove(TOPICS_TABLE, 'topic_replies');
-				$db_tools->sql_column_remove(TOPICS_TABLE, 'topic_replies_real');
-				$db_tools->sql_column_remove(FORUMS_TABLE, 'forum_topics_real');
+				$changes = array(
+					'drop_columns'	=> array(
+						TOPICS_TABLE		=> array('topic_replies', 'topic_replies_real'),
+						FORUMS_TABLE		=> array('forum_topics_real'),
+					),
+				);
+
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
+				{
+					_sql($sql, $errored, $error_ary);
+				}
 			}
 
 			// Add new permissions f_restore, f_softdelete, m_restore and m_softdelete
