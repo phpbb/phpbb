@@ -2552,92 +2552,85 @@ function change_database_data(&$no_updates, $version)
 					FROM ' . TOPICS_TABLE . '
 					WHERE forum_id = 0
 						AND topic_type = ' . POST_GLOBAL;
-			}
-			else
-			{
-				$sql = 'SELECT topic_id, topic_visibility, (topic_replies + 1) AS topic_posts_approved, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
-					FROM ' . TOPICS_TABLE . '
-					WHERE forum_id = 0
-						AND topic_type = ' . POST_GLOBAL;
-			}
-			$result = $db->sql_query($sql);
-
-			$global_announcements = $update_lastpost_data = array();
-			$update_lastpost_data['forum_last_post_time'] = 0;
-			$update_forum_data = array(
-				'forum_posts'		=> 0,
-				'forum_topics'		=> 0,
-				'forum_topics_real'	=> 0,
-			);
-
-			if (!defined('ITEM_APPROVED'))
-			{
-				// Define the constant if it isn't
-				define('ITEM_APPROVED', 1);
-			}
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$global_announcements[] = (int) $row['topic_id'];
-
-				$update_forum_data['forum_posts'] += (int) $row['topic_posts'];
-				$update_forum_data['forum_topics_real']++;
-
-				// topic_approved is from 3.0, topic_visibility is from 3.1
-				if (!empty($row['topic_approved']) || (isset($row['topic_visibility']) && $row['topic_visibility'] == ITEM_APPROVED))
-				{
-					$update_forum_data['forum_topics']++;
-				}
-
-				if ($update_lastpost_data['forum_last_post_time'] < $row['topic_last_post_time'])
-				{
-					$update_lastpost_data = array(
-						'forum_last_post_id'		=> (int) $row['topic_last_post_id'],
-						'forum_last_post_subject'	=> $row['topic_last_post_subject'],
-						'forum_last_post_time'		=> (int) $row['topic_last_post_time'],
-						'forum_last_poster_id'		=> (int) $row['topic_last_poster_id'],
-						'forum_last_poster_name'	=> $row['topic_last_poster_name'],
-						'forum_last_poster_colour'	=> $row['topic_last_poster_colour'],
-					);
-				}
-			}
-			$db->sql_freeresult($result);
-
-			if (!empty($global_announcements))
-			{
-				// Update the post/topic-count for the forum and the last-post if needed
-				$ga_forum_id = request_var('ga_forum_id', 0);
-
-				$sql = 'SELECT forum_last_post_time
-					FROM ' . FORUMS_TABLE . '
-					WHERE forum_id = ' . $ga_forum_id;
 				$result = $db->sql_query($sql);
-				$lastpost = (int) $db->sql_fetchfield('forum_last_post_time');
+
+				$global_announcements = $update_lastpost_data = array();
+				$update_lastpost_data['forum_last_post_time'] = 0;
+				$update_forum_data = array(
+					'forum_posts'		=> 0,
+					'forum_topics'		=> 0,
+					'forum_topics_real'	=> 0,
+				);
+
+				if (!defined('ITEM_APPROVED'))
+				{
+					// Define the constant if it isn't
+					define('ITEM_APPROVED', 1);
+				}
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$global_announcements[] = (int) $row['topic_id'];
+
+					$update_forum_data['forum_posts'] += (int) $row['topic_posts'];
+					$update_forum_data['forum_topics_real']++;
+
+					// topic_approved is from 3.0, topic_visibility is from 3.1
+					if (!empty($row['topic_approved']) || (isset($row['topic_visibility']) && $row['topic_visibility'] == ITEM_APPROVED))
+					{
+						$update_forum_data['forum_topics']++;
+					}
+
+					if ($update_lastpost_data['forum_last_post_time'] < $row['topic_last_post_time'])
+					{
+						$update_lastpost_data = array(
+							'forum_last_post_id'		=> (int) $row['topic_last_post_id'],
+							'forum_last_post_subject'	=> $row['topic_last_post_subject'],
+							'forum_last_post_time'		=> (int) $row['topic_last_post_time'],
+							'forum_last_poster_id'		=> (int) $row['topic_last_poster_id'],
+							'forum_last_poster_name'	=> $row['topic_last_poster_name'],
+							'forum_last_poster_colour'	=> $row['topic_last_poster_colour'],
+						);
+					}
+				}
 				$db->sql_freeresult($result);
 
-				$sql_update = 'forum_posts = forum_posts + ' . $update_forum_data['forum_posts'] . ', ';
-				$sql_update .= 'forum_topics_real = forum_topics_real + ' . $update_forum_data['forum_topics_real'] . ', ';
-				$sql_update .= 'forum_topics = forum_topics + ' . $update_forum_data['forum_topics'];
-				if ($lastpost < $update_lastpost_data['forum_last_post_time'])
+				if (!empty($global_announcements))
 				{
-					$sql_update .= ', ' . $db->sql_build_array('UPDATE', $update_lastpost_data);
-				}
+					// Update the post/topic-count for the forum and the last-post if needed
+					$ga_forum_id = request_var('ga_forum_id', 0);
 
-				$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET ' . $sql_update . '
-					WHERE forum_id = ' . $ga_forum_id;
-				_sql($sql, $errored, $error_ary);
+					$sql = 'SELECT forum_last_post_time
+						FROM ' . FORUMS_TABLE . '
+						WHERE forum_id = ' . $ga_forum_id;
+					$result = $db->sql_query($sql);
+					$lastpost = (int) $db->sql_fetchfield('forum_last_post_time');
+					$db->sql_freeresult($result);
 
-				// Update some forum_ids
-				$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
-				foreach ($table_ary as $table)
-				{
-					$sql = "UPDATE $table
-						SET forum_id = $ga_forum_id
-						WHERE " . $db->sql_in_set('topic_id', $global_announcements);
+					$sql_update = 'forum_posts = forum_posts + ' . $update_forum_data['forum_posts'] . ', ';
+					$sql_update .= 'forum_topics_real = forum_topics_real + ' . $update_forum_data['forum_topics_real'] . ', ';
+					$sql_update .= 'forum_topics = forum_topics + ' . $update_forum_data['forum_topics'];
+					if ($lastpost < $update_lastpost_data['forum_last_post_time'])
+					{
+						$sql_update .= ', ' . $db->sql_build_array('UPDATE', $update_lastpost_data);
+					}
+
+					$sql = 'UPDATE ' . FORUMS_TABLE . '
+						SET ' . $sql_update . '
+						WHERE forum_id = ' . $ga_forum_id;
 					_sql($sql, $errored, $error_ary);
+
+					// Update some forum_ids
+					$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
+					foreach ($table_ary as $table)
+					{
+						$sql = "UPDATE $table
+							SET forum_id = $ga_forum_id
+							WHERE " . $db->sql_in_set('topic_id', $global_announcements);
+						_sql($sql, $errored, $error_ary);
+					}
+					unset($table_ary);
 				}
-				unset($table_ary);
 			}
 
 			// Allow custom profile fields in pm templates
