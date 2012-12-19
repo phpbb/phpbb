@@ -13,6 +13,7 @@ var keymap = {
 
 var dark = $('#darkenwrapper');
 var loading_alert = $('#loadingalert');
+var phpbbAlertTimer = 0;
 
 
 /**
@@ -30,7 +31,7 @@ phpbb.loading_alert = function() {
 		loading_alert.show();
 		dark.fadeIn(phpbb.alert_time, function() {
 			// Wait five seconds and display an error if nothing has been returned by then.
-			setTimeout(function() {
+			phpbbAlertTimer = setTimeout(function() {
 				if (loading_alert.is(':visible'))
 				{
 					phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
@@ -40,6 +41,16 @@ phpbb.loading_alert = function() {
 	}
 
 	return loading_alert;
+}
+
+/**
+ * Clear loading alert timeout
+*/
+phpbb.clearLoadingTimeout = function() {
+	if (phpbbAlertTimer != 0) {
+		clearTimeout(phpbbAlertTimer);
+		phpbbAlertTimer = 0;
+	}
 }
 
 /**
@@ -271,6 +282,8 @@ phpbb.ajaxify = function(options) {
 		{
 			var alert;
 
+			phpbb.clearLoadingTimeout();
+
 			// Is a confirmation required?
 			if (typeof res.S_CONFIRM_ACTION === 'undefined')
 			{
@@ -341,6 +354,7 @@ phpbb.ajaxify = function(options) {
 		{
 			var alert;
 
+			phpbb.clearLoadingTimeout();
 			alert = phpbb.alert(dark.attr('data-ajax-error-title'), dark.attr('data-ajax-error-text'));
 		}
 
