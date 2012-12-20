@@ -19,7 +19,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$this->add_lang('acp/permissions');
 
 		// Permissions tab
-		// XXX hardcoded ids
+		// XXX hardcoded id
 		$crawler = $this->request('GET', 'adm/index.php?i=16&sid=' . $this->sid);
 		$this->assert_response_success();
 		// these language strings are html
@@ -38,6 +38,17 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$this->assert_response_success();
 		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 
+		// XXX globals for phpbb_auth, refactor it later
+		global $db, $cache;
+		$db = $this->get_db();
+		$cache = new phpbb_mock_null_cache;
+
+		$auth = new phpbb_auth;
+		// XXX hardcoded id
+		$user_data = $auth->obtain_user_data(2);
+		$auth->acl($user_data);
+		$this->assertEquals(1, $auth->acl_get('u_hideonline'));
+
 		// Set u_hideonline to never
 		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
 		// initially it should be a yes
@@ -49,5 +60,12 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$crawler = $this->client->submit($form);
 		$this->assert_response_success();
 		$this->assertContains($this->lang('AUTH_UPDATED'), $crawler->text());
+
+		// check acl again
+		$auth = new phpbb_auth;
+		// XXX hardcoded id
+		$user_data = $auth->obtain_user_data(2);
+		$auth->acl($user_data);
+		$this->assertEquals(0, $auth->acl_get('u_hideonline'));
 	}
 }
