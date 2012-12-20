@@ -2477,6 +2477,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 * via admin_permissions. Changes of usernames and group names
 * must be carried through for the moderators table
 *
+* @deprecated 3.1
 * @return null
 */
 function cache_moderators()
@@ -2879,6 +2880,7 @@ function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
 /**
 * Removes moderators and administrators from foe lists.
 *
+* @deprecated 3.1
 * @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
 * @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
 * @return null
