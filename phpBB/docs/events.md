@@ -3,15 +3,15 @@ acp_forums_normal_settings_append
 * Location: adm/style/acp_forums.html
 * Purpose: Add settings to forums
 
-acp_main_notice_after
-===
-* Location: adm/style/acp_main.html
-* Purpose: Add notices or other blocks in the ACP below other configuration notices
-
 acp_main_actions_append
 ===
 * Location: adm/style/acp_main.html
 * Purpose: Add actions to the ACP main page below the cache purge action
+
+acp_main_notice_after
+===
+* Location: adm/style/acp_main.html
+* Purpose: Add notices or other blocks in the ACP below other configuration notices
 
 acp_overall_footer_after
 ===
