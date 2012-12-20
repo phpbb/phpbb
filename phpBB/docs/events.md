@@ -38,9 +38,11 @@ acp_users_overview_options_append
 * Location: adm/style/acp_users.html
 * Purpose: Add options and settings on user overview page
 
-forumlist_body_last_post_prepend
+forumlist_body_last_post_title_prepend
 ====
-* Location: styles/prosilver/template/forumlist_body.html
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+    + styles/subsilver2/template/forumlist_body.html
 * Purpose: Add content before the post title of the latest post in a forum on the forum list.
 
 index_body_stat_blocks_before
