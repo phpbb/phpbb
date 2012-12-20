@@ -2,6 +2,94 @@
 
 "use strict";
 
+/**
+* Close popup alert after a specified delay
+*
+* @param int Delay in ms until darkenwrapper's click event is triggered
+*/
+phpbb.closeDarkenWrapper = function(delay) {
+	setTimeout(function() {
+		$('#darkenwrapper').trigger('click');
+	}, delay);
+};
+
+// This callback will mark all forum icons read
+phpbb.add_ajax_callback('mark_forums_read', function(res) {
+	var readTitle = res.NO_UNREAD_POSTS;
+	var unreadTitle = res.UNREAD_POSTS;
+	var iconsArray = {
+		'forum_unread': 'forum_read',
+		'forum_unread_subforum': 'forum_read_subforum',
+		'forum_unread_locked': 'forum_read_locked',
+	};
+
+	$('li.row').find('dl[class*="forum_unread"]').each(function() {
+		var $this = $(this);
+
+		$.each(iconsArray, function(unreadClass, readClass) {
+			if ($this.hasClass(unreadClass)) {
+				$this.removeClass(unreadClass).addClass(readClass);
+			}
+		});
+		$this.children('dt[title="' + unreadTitle + '"]').attr('title', readTitle);
+	});
+
+	// Mark subforums read
+	$('a.subforum[class*="unread"]').removeClass('unread').addClass('read');
+
+	// Update mark forums read links
+	$('[data-ajax="mark_forums_read"]').attr('href', res.U_MARK_FORUMS);
+
+	phpbb.closeDarkenWrapper(3000);
+});
+
+// This callback will mark all topic icons read
+phpbb.add_ajax_callback('mark_topics_read', function(res) {
+	var readTitle = res.NO_UNREAD_POSTS;
+	var unreadTitle = res.UNREAD_POSTS;
+	var iconsArray = {
+		'global_unread': 'global_read',
+		'announce_unread': 'announce_read',
+		'sticky_unread': 'sticky_read',
+		'topic_unread': 'topic_read'
+	};
+	var iconsState = ['', '_hot', '_hot_mine', '_locked', '_locked_mine', '_mine'];
+	var unreadClassSelectors = '';
+	var classMap = {};
+	var classNames = [];
+
+	$.each(iconsArray, function(unreadClass, readClass) {
+		$.each(iconsState, function(key, value) {
+			// Only topics can be hot
+			if ((value == '_hot' || value == '_hot_mine') && unreadClass != 'topic_unread') {
+				return true;
+			}
+			classMap[unreadClass + value] = readClass + value;
+			classNames.push(unreadClass + value);
+		});
+	});
+
+	unreadClassSelectors = '.' + classNames.join(',.');
+
+	$('li.row').find(unreadClassSelectors).each(function() {
+		var $this = $(this);
+		$.each(classMap, function(unreadClass, readClass) {
+			if ($this.hasClass(unreadClass)) {
+				$this.removeClass(unreadClass).addClass(readClass);
+			}
+		});
+		$this.children('dt[title="' + unreadTitle + '"]').attr('title', readTitle);
+	});
+
+	// Remove link to first unread post
+	$('a').has('span.icon_topic_newest').remove();
+
+	// Update mark topics read links
+	$('[data-ajax="mark_topics_read"]').attr('href', res.U_MARK_TOPICS);
+
+	phpbb.closeDarkenWrapper(3000);
+});
+
 // This callback finds the post from the delete link, and removes it.
 phpbb.add_ajax_callback('post_delete', function() {
 	var el = $(this),
