@@ -66,19 +66,70 @@ class mcp_queue
 			break;
 
 			case 'delete':
-			case 'disapprove':
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-
 				$post_id_list = $request->variable('post_id_list', array(0));
 				$topic_id_list = $request->variable('topic_id_list', array(0));
 
 				if (!empty($post_id_list))
 				{
-					self::disapprove_posts($post_id_list, 'queue', $mode);
+					if (!function_exists('mcp_delete_post'))
+					{
+						global $phpbb_root_path, $phpEx;
+						include($phpbb_root_path . 'includes/mcp/mcp_main.' . $phpEx);
+					}
+					mcp_delete_post($post_id_list, false, '', $action);
 				}
 				else if (!empty($topic_id_list))
 				{
-					self::disapprove_topics($action, $topic_id_list, 'queue', $mode);
+					if (!function_exists('mcp_delete_topic'))
+					{
+						global $phpbb_root_path, $phpEx;
+						include($phpbb_root_path . 'includes/mcp/mcp_main.' . $phpEx);
+					}
+					mcp_delete_topic($topic_id_list, false, '', $action);
+				}
+				else
+				{
+					trigger_error('NO_POST_SELECTED');
+				}
+			break;
+
+			case 'disapprove':
+				$post_id_list = $request->variable('post_id_list', array(0));
+				$topic_id_list = $request->variable('topic_id_list', array(0));
+
+				if (!empty($topic_id_list) && $mode == 'deleted_topics')
+				{
+					if (!function_exists('mcp_delete_topics'))
+					{
+						global $phpbb_root_path, $phpEx;
+						include($phpbb_root_path . 'includes/mcp/mcp_main.' . $phpEx);
+					}
+					mcp_delete_topic($topic_id_list, false, '', 'disapprove');
+					return;
+				}
+
+				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+
+				if (!empty($topic_id_list))
+				{
+					$post_visibility = ($mode == 'deleted_topics') ? ITEM_DELETED : ITEM_UNAPPROVED;
+					$sql = 'SELECT post_id
+						FROM ' . POSTS_TABLE . '
+						WHERE post_visibility = ' . $post_visibility . '
+							AND ' . $db->sql_in_set('topic_id', $topic_id_list);
+					$result = $db->sql_query($sql);
+
+					$post_id_list = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$post_id_list[] = (int) $row['post_id'];
+					}
+					$db->sql_freeresult($result);
+				}
+
+				if (!empty($post_id_list))
+				{
+					self::disapprove_posts($post_id_list, 'queue', $mode);
 				}
 				else
 				{
@@ -893,7 +944,7 @@ class mcp_queue
 			'redirect'		=> $redirect)
 		);
 
-		$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
+		$notify_poster = $request->is_set('notify_poster');
 		$disapprove_reason = '';
 
 		if ($reason_id)

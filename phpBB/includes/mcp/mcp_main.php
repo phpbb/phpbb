@@ -724,7 +724,7 @@ function mcp_restore_topic($topic_ids)
 /**
 * Delete Topics
 */
-function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = '')
+function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_topic')
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
 
@@ -739,7 +739,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 	$s_hidden_fields = array(
 		'topic_id_list'	=> $topic_ids,
 		'f'				=> $forum_id,
-		'action'		=> 'delete_topic',
+		'action'		=> $action,
 		'redirect'		=> $redirect,
 	);
 	$success_msg = '';
@@ -852,7 +852,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 /**
 * Delete Posts
 */
-function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
+function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_post')
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
 
@@ -867,7 +867,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '')
 	$s_hidden_fields = array(
 		'post_id_list'	=> $post_ids,
 		'f'				=> $forum_id,
-		'action'		=> 'delete_post',
+		'action'		=> $action,
 		'redirect'		=> $redirect,
 	);
 	$success_msg = '';
