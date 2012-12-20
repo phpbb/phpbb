@@ -98,7 +98,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 
 		if (!$ignore_acl && $auth->acl_gets(array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel'), $row['forum_id']))
 		{
-			if ($only_acl_post && !$auth->acl_get('f_post', $row['forum_id']) || (!$auth->acl_get('m_approve', $row['forum_id']) && !$auth->acl_get('f_noapprove', $row['forum_id'])))
+			if ($only_acl_post && !$auth->acl_get('f_post', $row['forum_id']) || !$auth->acl_get('f_noapprove', $row['forum_id']))
 			{
 				$disabled = true;
 			}
