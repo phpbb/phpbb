@@ -2926,14 +2926,14 @@ function change_database_data(&$no_updates, $version)
 				}
 			}
 
-			// Add new permissions f_restore, f_softdelete, m_restore and m_softdelete
+			// Add new permissions f_softdelete and m_softdelete
 			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
 			$auth_admin = new auth_admin();
 
 			// Only add the new permission if it does not already exist
-			if (empty($auth_admin->acl_options['id']['f_restore']))
+			if (empty($auth_admin->acl_options['id']['f_softdelete']))
 			{
-				$auth_admin->acl_add_option(array('local' => array('f_restore', 'f_softdelete', 'm_restore', 'm_softdelete')));
+				$auth_admin->acl_add_option(array('local' => array('f_softdelete', 'm_softdelete')));
 
 				// Remove any old permission entries
 				$auth_admin->acl_clear_prefetch();
