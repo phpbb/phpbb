@@ -241,6 +241,7 @@
 			<dt><label for="topics_per_page">{L_FORUM_TOPICS_PAGE}{L_COLON}</label><br /><span>{L_FORUM_TOPICS_PAGE_EXPLAIN}</span></dt>
 			<dd><input type="text" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" size="4" maxlength="4" /></dd>
 		</dl>
+		<!-- EVENT acp_forums_normal_settings_append -->
 		</fieldset>
 
 		<fieldset>
@@ -454,12 +455,12 @@
 				<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
 					<!-- IF forums.S_FIRST_ROW && not forums.S_LAST_ROW -->
 						<span class="up">{ICON_MOVE_UP_DISABLED}</span>
-						<span class="down"><a href="{forums.U_MOVE_DOWN}" data-ajax="forum_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
+						<span class="down"><a href="{forums.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
 					<!-- ELSEIF not forums.S_FIRST_ROW && not forums.S_LAST_ROW -->
-						<span class="up"><a href="{forums.U_MOVE_UP}" data-ajax="forum_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
-						<span class="down"><a href="{forums.U_MOVE_DOWN}" data-ajax="forum_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
+						<span class="up"><a href="{forums.U_MOVE_UP}" data-ajax="row_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
+						<span class="down"><a href="{forums.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
 					<!-- ELSEIF forums.S_LAST_ROW && not forums.S_FIRST_ROW -->
-						<span class="up"><a href="{forums.U_MOVE_UP}" data-ajax="forum_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
+						<span class="up"><a href="{forums.U_MOVE_UP}" data-ajax="row_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
 						<span class="down">{ICON_MOVE_DOWN_DISABLED}</span>
 					<!-- ELSE -->
 						<span class="up">{ICON_MOVE_UP_DISABLED}</span>

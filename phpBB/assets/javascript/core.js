@@ -342,12 +342,6 @@ phpbb.ajaxify = function(options) {
 			var alert;
 
 			alert = phpbb.alert(dark.attr('data-ajax-error-title'), dark.attr('data-ajax-error-text'));
-
-			setTimeout(function () {
-				dark.fadeOut(phpbb.alert_time, function() {
-					alert.hide();
-				});
-			}, 5000);
 		}
 
 		// If the element is a form, POST must be used and some extra data must

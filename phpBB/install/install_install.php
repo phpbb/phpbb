@@ -271,14 +271,6 @@ class install_install extends module
 			'S_LEGEND'		=> false,
 		));
 
-/**
-*		Better not enabling and adding to the loaded extensions due to the specific requirements needed
-		if (!@extension_loaded('mbstring'))
-		{
-			can_load_dll('mbstring');
-		}
-*/
-
 		$passed['mbstring'] = true;
 		if (@extension_loaded('mbstring'))
 		{
@@ -382,17 +374,14 @@ class install_install extends module
 		{
 			if (!@extension_loaded($dll))
 			{
-				if (!can_load_dll($dll))
-				{
-					$template->assign_block_vars('checks', array(
-						'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
-						'RESULT'	=> '<strong style="color:red">' . $lang['UNAVAILABLE'] . '</strong>',
+				$template->assign_block_vars('checks', array(
+					'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
+					'RESULT'	=> '<strong style="color:red">' . $lang['UNAVAILABLE'] . '</strong>',
 
-						'S_EXPLAIN'	=> false,
-						'S_LEGEND'	=> false,
-					));
-					continue;
-				}
+					'S_EXPLAIN'	=> false,
+					'S_LEGEND'	=> false,
+				));
+				continue;
 			}
 
 			$template->assign_block_vars('checks', array(
@@ -873,22 +862,7 @@ class install_install extends module
 		$written = false;
 
 		// Create a list of any PHP modules we wish to have loaded
-		$load_extensions = array();
 		$available_dbms = get_available_dbms($data['dbms']);
-		$check_exts = array_merge(array($available_dbms[$data['dbms']]['MODULE']), $this->php_dlls_other);
-
-		foreach ($check_exts as $dll)
-		{
-			if (!@extension_loaded($dll))
-			{
-				if (!can_load_dll($dll))
-				{
-					continue;
-				}
-
-				$load_extensions[] = $dll . '.' . PHP_SHLIB_SUFFIX;
-			}
-		}
 
 		// Create a lock file to indicate that there is an install in progress
 		$fp = @fopen($phpbb_root_path . 'cache/install_lock', 'wb');
@@ -902,7 +876,7 @@ class install_install extends module
 		@chmod($phpbb_root_path . 'cache/install_lock', 0777);
 
 		// Time to convert the data provided into a config file
-		$config_data = phpbb_create_config_file_data($data, $available_dbms[$data['dbms']]['DRIVER'], $load_extensions);
+		$config_data = phpbb_create_config_file_data($data, $available_dbms[$data['dbms']]['DRIVER']);
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
 		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx)) || phpbb_is_writable($phpbb_root_path))
@@ -1144,11 +1118,8 @@ class install_install extends module
 
 		$dbms = $available_dbms[$data['dbms']]['DRIVER'];
 
-		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-
 		// Instantiate the database
-		$db = new $sql_db();
+		$db = new $dbms();
 		$db->sql_connect($data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], false, false);
 
 		// NOTE: trigger_error does not work here.
@@ -1368,7 +1339,7 @@ class install_install extends module
 				WHERE config_name = 'dbms_version'",
 		);
 
-		if (@extension_loaded('gd') || can_load_dll('gd'))
+		if (@extension_loaded('gd'))
 		{
 			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
 				SET config_value = 'phpbb_captcha_gd'
@@ -1444,11 +1415,8 @@ class install_install extends module
 
 		$dbms = $available_dbms[$data['dbms']]['DRIVER'];
 
-		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-
 		// Instantiate the database
-		$db = new $sql_db();
+		$db = new $dbms();
 		$db->sql_connect($data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], false, false);
 
 		// NOTE: trigger_error does not work here.
@@ -1504,8 +1472,14 @@ class install_install extends module
 
 			foreach ($this->module_categories[$module_class] as $cat_name => $subs)
 			{
+				$basename = '';
+				// Check if this sub-category has a basename. If it has, use it.
+				if (isset($this->module_categories_basenames[$cat_name]))
+				{
+					$basename = $this->module_categories_basenames[$cat_name];
+				}
 				$module_data = array(
-					'module_basename'	=> '',
+					'module_basename'	=> $basename,
 					'module_enabled'	=> 1,
 					'module_display'	=> 1,
 					'parent_id'			=> 0,
@@ -1533,8 +1507,14 @@ class install_install extends module
 				{
 					foreach ($subs as $level2_name)
 					{
+						$basename = '';
+						// Check if this sub-category has a basename. If it has, use it.
+						if (isset($this->module_categories_basenames[$level2_name]))
+						{
+							$basename = $this->module_categories_basenames[$level2_name];
+						}
 						$module_data = array(
-							'module_basename'	=> '',
+							'module_basename'	=> $basename,
 							'module_enabled'	=> 1,
 							'module_display'	=> 1,
 							'parent_id'			=> (int) $categories[$cat_name]['id'],
@@ -1798,6 +1778,7 @@ class install_install extends module
 				'user_timezone'			=> 'UTC',
 				'user_dateformat'		=> $lang['default_dateformat'],
 				'user_allow_massemail'	=> 0,
+				'user_allow_pm'			=> 0,
 			);
 
 			$user_id = user_add($user_row);
@@ -2108,9 +2089,10 @@ class install_install extends module
 				'ACP_PERMISSION_ROLES',
 				'ACP_PERMISSION_MASKS',
 			),
-			'ACP_CAT_STYLES'		=> array(
+			'ACP_CAT_CUSTOMISE'		=> array(
 				'ACP_STYLE_MANAGEMENT',
-				'ACP_STYLE_COMPONENTS',
+				'ACP_EXTENSIONS_MANAGEMENT',
+				'ACP_LANGUAGE',
 			),
 			'ACP_CAT_MAINTENANCE'	=> array(
 				'ACP_FORUM_LOGS',
@@ -2140,6 +2122,9 @@ class install_install extends module
 			'UCP_USERGROUPS'	=> null,
 			'UCP_ZEBRA'			=> null,
 		),
+	);
+	var $module_categories_basenames = array(
+		'UCP_PM' => 'ucp_pm',
 	);
 
 	var $module_extras = array(

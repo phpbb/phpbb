@@ -19,7 +19,8 @@ class phpbb_fileupload_test extends phpbb_test_case
 	{
 		// Global $config required by unique_id
 		// Global $user required by several functions dealing with translations
-		global $config, $user;
+		// Global $request required by form_upload, local_upload and is_valid
+		global $config, $user, $request;
 
 		if (!is_array($config))
 		{
@@ -31,6 +32,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
+
+		$request = new phpbb_mock_request();
+
 		$this->path = __DIR__ . '/fixture/';
 	}
 

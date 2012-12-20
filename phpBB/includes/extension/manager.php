@@ -34,7 +34,7 @@ class phpbb_extension_manager
 	/**
 	* Creates a manager and loads information from database
 	*
-	* @param dbal $db A database connection
+	* @param phpbb_db_driver $db A database connection
 	* @param phpbb_config $config phpbb_config
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
@@ -42,7 +42,7 @@ class phpbb_extension_manager
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(dbal $db, phpbb_config $config, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
@@ -195,7 +195,7 @@ class phpbb_extension_manager
 
 		if ($this->cache)
 		{
-			$this->cache->destroy($this->cache_name);
+			$this->cache->purge();
 		}
 
 		return !$active;
@@ -252,7 +252,7 @@ class phpbb_extension_manager
 
 			if ($this->cache)
 			{
-				$this->cache->destroy($this->cache_name);
+				$this->cache->purge();
 			}
 
 			return true;
@@ -272,7 +272,7 @@ class phpbb_extension_manager
 
 		if ($this->cache)
 		{
-			$this->cache->destroy($this->cache_name);
+			$this->cache->purge();
 		}
 
 		return false;
@@ -335,7 +335,7 @@ class phpbb_extension_manager
 
 			if ($this->cache)
 			{
-				$this->cache->destroy($this->cache_name);
+				$this->cache->purge();
 			}
 
 			return true;
@@ -349,7 +349,7 @@ class phpbb_extension_manager
 
 		if ($this->cache)
 		{
-			$this->cache->destroy($this->cache_name);
+			$this->cache->purge();
 		}
 
 		return false;

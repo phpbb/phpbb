@@ -162,8 +162,8 @@ class phpbb_user extends phpbb_session
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
 
-		// Do not suppress error if in DEBUG_EXTRA mode
-		$include_result = (defined('DEBUG_EXTRA')) ? (include $this->lang_path . $this->lang_name . "/common.$phpEx") : (@include $this->lang_path . $this->lang_name . "/common.$phpEx");
+		// Do not suppress error if in DEBUG mode
+		$include_result = (defined('DEBUG')) ? (include $this->lang_path . $this->lang_name . "/common.$phpEx") : (@include $this->lang_path . $this->lang_name . "/common.$phpEx");
 
 		if ($include_result === false)
 		{
@@ -252,7 +252,7 @@ class phpbb_user extends phpbb_session
 
 		// Disable board if the install/ directory is still present
 		// For the brave development army we do not care about this, else we need to comment out this everytime we develop locally
-		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
+		if (!defined('DEBUG') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
 		{
 			// Adjust the message slightly according to the permissions
 			if ($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))
@@ -618,8 +618,8 @@ class phpbb_user extends phpbb_session
 				return;
 			}
 
-			// Do not suppress error if in DEBUG_EXTRA mode
-			$include_result = (defined('DEBUG_EXTRA')) ? (include $language_filename) : (@include $language_filename);
+			// Do not suppress error if in DEBUG mode
+			$include_result = (defined('DEBUG')) ? (include $language_filename) : (@include $language_filename);
 
 			if ($include_result === false)
 			{

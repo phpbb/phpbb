@@ -1750,8 +1750,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// This variable indicates if the user is able to post or put into the queue
 	$post_visibility = ITEM_APPROVED;
 
-	// Check the permissions for post approval. Moderators are not affected.
-	if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
+	// Check the permissions for post approval.
+	// Moderators must go through post approval like ordinary users.
+	if (!$auth->acl_get('f_noapprove', $data['forum_id']))
 	{
 		// Post not approved, but in queue
 		$post_visibility = ITEM_UNAPPROVED;

@@ -186,6 +186,8 @@ $lang = array_merge($lang, array(
 	'ERR_CONNECTING_SERVER'				=> 'Error connecting to the server.',
 	'ERR_JAB_AUTH'						=> 'Could not authorise on Jabber server.',
 	'ERR_JAB_CONNECT'					=> 'Could not connect to Jabber server.',
+	'ERR_TEMPLATE_EVENT_LOCATION'		=> 'The specified template event location <em>[%s]</em> is improperly formatted.',
+	'ERR_TEMPLATE_COMPILATION'		=> 'The file could not be compiled: %s',
 	'ERR_UNABLE_TO_LOGIN'				=> 'The specified username or password is incorrect.',
 	'ERR_UNWATCHING'					=> 'An error occured while trying to unsubscribe.',
 	'ERR_WATCHING'						=> 'An error occured while trying to subscribe.',
@@ -343,7 +345,7 @@ $lang = array_merge($lang, array(
 	'LOGIN_EXPLAIN_VIEWONLINE'			=> 'In order to view the online list you have to be registered and logged in.',
 	'LOGOUT'							=> 'Logout',
 	'LOGOUT_USER'						=> 'Logout [ %s ]',
-	'LOG_ME_IN'							=> 'Log me on automatically each visit',
+	'LOG_ME_IN'							=> 'Remember me',
 
 	'MARK'					=> 'Mark',
 	'MARK_ALL'				=> 'Mark all',
@@ -609,9 +611,11 @@ $lang = array_merge($lang, array(
 	'SUBJECT'					=> 'Subject',
 	'SUBMIT'					=> 'Submit',
 
+	'TB'				=> 'TB',
 	'TERMS_USE'			=> 'Terms of use',
 	'TEST_CONNECTION'	=> 'Test connection',
 	'THE_TEAM'			=> 'The team',
+	'TIB'				=> 'TiB',
 	'TIME'				=> 'Time',
 	'TIMEOUT_PROCESSING_REQ'			=> 'Request timed out.',
 

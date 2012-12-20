@@ -39,7 +39,7 @@ interface phpbb_template_locator
 	* Sets the template filenames for handles. $filename_array
 	* should be a hash of handle => filename pairs.
 	*
-	* @param array $filname_array Should be a hash of handle => filename pairs.
+	* @param array $filename_array Should be a hash of handle => filename pairs.
 	*/
 	public function set_filenames(array $filename_array);
 
@@ -66,7 +66,7 @@ interface phpbb_template_locator
 	* returns actually exists, it is faster than get_source_file_for_handle.
 	*
 	* Use get_source_file_for_handle to obtain the actual path that is
-	* guaranteed to exist (which might come from the parent style 
+	* guaranteed to exist (which might come from the parent style
 	* directory if primary style has parent styles).
 	*
 	* This function will trigger an error if the handle was never
@@ -99,12 +99,54 @@ interface phpbb_template_locator
 	public function get_source_file_for_handle($handle, $find_all = false);
 
 	/**
-	* Locates source file path, accounting for styles tree and verifying that
-	* the path exists.
+	* Obtains a complete filesystem path for a file in a style.
 	*
-	* Unlike previous functions, this function works without template handle
-	* and it can search for more than one file. If more than one file name is
-	* specified, it will return location of file that it finds first.
+	* This function traverses the style tree (selected style and
+	* its parents in order, if inheritance is being used) and finds
+	* the first file on the filesystem matching specified relative path,
+	* or the first of the specified paths if more than one path is given.
+	*
+	* This function can be used to determine filesystem path of any
+	* file under any style, with the consequence being that complete
+	* relative to the style directory path must be provided as an argument.
+	*
+	* In particular, this function can be used to locate templates
+	* and javascript files.
+	*
+	* For locating templates get_first_template_location should be used
+	* as it prepends the configured template path to the template basename.
+	*
+	* Note: "selected style" is whatever style the style resource locator
+	* is configured for.
+	*
+	* The return value then will be a path, relative to the current
+	* directory or absolute, to the first existing file in the selected
+	* style or its closest parent.
+	*
+	* If the selected style does not have the file being searched,
+	* (and if inheritance is involved, none of the parents have it either),
+	* false will be returned.
+	*
+	* Multiple files can be specified, in which case the first file in
+	* the list that can be found on the filesystem is returned.
+	*
+	* If multiple files are specified and inheritance is involved,
+	* first each of the specified files is checked in the selected style,
+	* then each of the specified files is checked in the immediate parent,
+	* etc.
+	*
+	* Specifying true for $return_default will cause the function to
+	* return the first path which was checked for existence in the event
+	* that the template file was not found, instead of false.
+	* This is always a path in the selected style itself, not any of its
+	* parents.
+	*
+	* If $return_full_path is false, then instead of returning a usable
+	* path (when the file is found) the file's path relative to the style
+	* directory will be returned. This is the same path as was given to
+	* the function as a parameter. This can be used to check which of the
+	* files specified in $files exists. Naturally this requires passing
+	* more than one file in $files.
 	*
 	* @param array $files List of files to locate.
 	* @param bool $return_default Determines what to return if file does not

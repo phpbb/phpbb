@@ -30,6 +30,7 @@ interface phpbb_request_interface
 	const REQUEST = 2;
 	const COOKIE = 3;
 	const SERVER = 4;
+	const FILES = 5;
 	/**#@-*/
 
 	/**

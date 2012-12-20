@@ -150,7 +150,7 @@ if ($config['gzip_compress'])
 }
 
 // IF debug extra is enabled and admin want to "explain" the page we need to set other headers...
-if (defined('DEBUG_EXTRA') && request_var('explain', 0) && $auth->acl_get('a_'))
+if (defined('DEBUG') && request_var('explain', 0) && $auth->acl_get('a_'))
 {
 	header('Content-type: text/html; charset=UTF-8');
 	header('Cache-Control: private, no-cache="set-cookie"');
@@ -553,12 +553,6 @@ class phpbb_feed_base
 		if (!isset($forum_ids))
 		{
 			$forum_ids = array_flip($this->get_moderator_approve_forums());
-		}
-
-		if (!$forum_id)
-		{
-			// Global announcement, your a moderator in any forum than it's okay.
-			return (!empty($forum_ids)) ? true : false;
 		}
 
 		return (isset($forum_ids[$forum_id])) ? true : false;

@@ -702,17 +702,6 @@ class bbcode_firstpass extends bbcode
 	{
 		global $config, $user;
 
-		/**
-		* If you change this code, make sure the cases described within the following reports are still working:
-		* #3572 - [quote="[test]test"]test [ test[/quote] - (correct: parsed)
-		* #14667 - [quote]test[/quote] test ] and [ test [quote]test[/quote] (correct: parsed)
-		* #14770 - [quote="["]test[/quote] (correct: parsed)
-		* [quote="[i]test[/i]"]test[/quote] (correct: parsed)
-		* [quote="[quote]test[/quote]"]test[/quote] (correct: parsed - Username displayed as [quote]test[/quote])
-		* #20735 - [quote]test[/[/b]quote] test [/quote][/quote] test - (correct: quoted: "test[/[/b]quote] test" / non-quoted: "[/quote] test" - also failed if layout distorted)
-		* #40565 - [quote="a"]a[/quote][quote="a]a[/quote] (correct: first quote tag parsed, second quote tag unparsed)
-		*/
-
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
 
 		if (!$in)
@@ -1363,13 +1352,14 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
 	{
-		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db;
+		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db, $request;
 
 		$error = array();
 
 		$num_attachments = sizeof($this->attachment_data);
 		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
-		$upload_file = (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none' && trim($_FILES[$form_name]['name'])) ? true : false;
+		$upload = $request->file($form_name);
+		$upload_file = (!empty($upload) && $upload['name'] !== 'none' && trim($upload['name']));
 
 		$add_file		= (isset($_POST['add_file'])) ? true : false;
 		$delete_file	= (isset($_POST['delete_file'])) ? true : false;

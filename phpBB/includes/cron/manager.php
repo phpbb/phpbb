@@ -54,7 +54,7 @@ class phpbb_cron_manager
 	*
 	* @param array|Traversable $tasks		Array of instances of phpbb_cron_task
 	*
-	* @return void
+	* @return null
 	*/
 	public function load_tasks($tasks)
 	{

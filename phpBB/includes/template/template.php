@@ -75,10 +75,21 @@ class phpbb_template
 	private $locator;
 
 	/**
-	* Location of templates directory within style directories
-	* @var string
+	* Extension manager.
+	*
+	* @var phpbb_extension_manager
 	*/
-	public $template_path = 'template/';
+	private $extension_manager;
+
+	/**
+	* Name of the style that the template being compiled and/or rendered
+	* belongs to, and its parents, in inheritance tree order.
+	*
+	* Used to invoke style-specific template events.
+	*
+	* @var array
+	*/
+	private $style_names;
 
 	/**
 	* Constructor.
@@ -87,28 +98,41 @@ class phpbb_template
 	* @param user $user current user
 	* @param phpbb_template_locator $locator template locator
 	* @param phpbb_template_context $context template context
+	* @param phpbb_extension_manager $extension_manager extension manager, if null then template events will not be invoked
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_locator $locator, phpbb_template_context $context)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_locator $locator, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
 		$this->locator = $locator;
-		$this->template_path = $this->locator->template_path;
 		$this->context = $context;
+		$this->extension_manager = $extension_manager;
 	}
 
 	/**
 	* Sets the template filenames for handles.
 	*
-	* @param array $filname_array Should be a hash of handle => filename pairs.
+	* @param array $filename_array Should be a hash of handle => filename pairs.
 	*/
 	public function set_filenames(array $filename_array)
 	{
 		$this->locator->set_filenames($filename_array);
 
 		return true;
+	}
+
+	/**
+	* Sets the style names corresponding to style hierarchy being compiled
+	* and/or rendered.
+	*
+	* @param array $style_names List of style names in inheritance tree order
+	* @return null
+	*/
+	public function set_style_names(array $style_names)
+	{
+		$this->style_names = $style_names;
 	}
 
 	/**
@@ -250,7 +274,7 @@ class phpbb_template
 	* If template cache is writable the compiled php code will be stored
 	* on filesystem and template will not be subsequently recompiled.
 	* If template cache is not writable template source will be recompiled
-	* every time it is needed. DEBUG_EXTRA define and load_tplcompile
+	* every time it is needed. DEBUG define and load_tplcompile
 	* configuration setting may be used to force templates to be always
 	* recompiled.
 	*
@@ -268,7 +292,7 @@ class phpbb_template
 	{
 		$output_file = $this->_compiled_file_for_handle($handle);
 
-		$recompile = defined('DEBUG_EXTRA') ||
+		$recompile = defined('DEBUG') ||
 			!file_exists($output_file) ||
 			@filesize($output_file) === 0;
 
@@ -289,7 +313,7 @@ class phpbb_template
 			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
-		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->locator, $this->phpbb_root_path);
+		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->style_names, $this->locator, $this->phpbb_root_path, $this->extension_manager, $this->user);
 
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
@@ -459,74 +483,6 @@ class phpbb_template
 	}
 
 	/**
-	* Obtains filesystem path for a template file.
-	*
-	* The simplest use is specifying a single template file as a string
-	* in the first argument. This template file should be a basename
-	* of a template file in the selected style, or its parent styles
-	* if template inheritance is being utilized.
-	*
-	* Note: "selected style" is whatever style the style resource locator
-	* is configured for.
-	*
-	* The return value then will be a path, relative to the current
-	* directory or absolute, to the template file in the selected style
-	* or its closest parent.
-	*
-	* If the selected style does not have the template file being searched,
-	* (and if inheritance is involved, none of the parents have it either),
-	* false will be returned.
-	*
-	* Specifying true for $return_default will cause the function to
-	* return the first path which was checked for existence in the event
-	* that the template file was not found, instead of false.
-	* This is the path in the selected style itself, not any of its
-	* parents.
-	*
-	* $files can be given an array of templates instead of a single
-	* template. When given an array, the function will try to resolve
-	* each template in the array to a path, and will return the first
-	* path that exists, or false if none exist.
-	*
-	* If $return_full_path is false, then instead of returning a usable
-	* path (when the template is found) only the template's basename
-	* will be returned. This can be used to check which of the templates
-	* specified in $files exists, provided different file names are
-	* used for different templates.
-	*
-	* @param string or array $files List of templates to locate. If there is only
-	*				one template, $files can be a string to make code easier to read.
-	* @param bool $return_default Determines what to return if template does not
-	*				exist. If true, function will return location where template is
-	*				supposed to be. If false, function will return false.
-	* @param bool $return_full_path If true, function will return full path
-	*				to template. If false, function will return template file name.
-	*				This parameter can be used to check which one of set of template
-	*				files is available.
-	* @return string or boolean Source template path if template exists or $return_default is
-	*				true. False if template does not exist and $return_default is false
-	*/
-	public function locate($files, $return_default = false, $return_full_path = true)
-	{
-		// add template path prefix
-		$templates = array();
-		if (is_string($files))
-		{
-			$templates[] = $this->template_path . $files;
-		}
-		else
-		{
-			foreach ($files as $file)
-			{
-				$templates[] = $this->template_path . $file;
-			}
-		}
-
-		// use resource locator to find files
-		return $this->locator->get_first_file_location($templates, $return_default, $return_full_path);
-	}
-
-	/**
 	* Include JS file
 	*
 	* @param string $file file name
@@ -538,7 +494,11 @@ class phpbb_template
 		// Locate file
 		if ($locate)
 		{
-			$file = $this->locator->get_first_file_location(array($file), true, true);
+			$located = $this->locator->get_first_file_location(array($file), false, true);
+			if ($located)
+			{
+				$file = $located;
+			}
 		}
 		else if ($relative)
 		{

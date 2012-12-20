@@ -66,8 +66,8 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	protected $config;
 
 	/**
-	 * DBAL object
-	 * @var dbal
+	 * Database connection
+	 * @var phpbb_db_driver
 	 */
 	protected $db;
 
@@ -119,6 +119,14 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			{
 				$this->tsearch_usable = true;
 			}
+		}
+
+		/**
+		 * Load the UTF tools
+		 */
+		if (!function_exists('utf8_strlen'))
+		{
+			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 		}
 
 		$error = false;
