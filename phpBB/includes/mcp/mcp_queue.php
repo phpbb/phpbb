@@ -45,55 +45,44 @@ class mcp_queue
 		switch ($action)
 		{
 			case 'approve':
-			case 'disapprove':
 			case 'restore':
 				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 				$post_id_list = $request->variable('post_id_list', array(0));
 				$topic_id_list = $request->variable('topic_id_list', array(0));
 
-				if ($action != 'disapprove')
+				if (!empty($post_id_list))
 				{
-					if (!empty($post_id_list))
-					{
-						self::approve_posts($action, $post_id_list, 'queue', $mode);
-					}
-					else if (!empty($topic_id_list))
-					{
-						self::approve_topics($action, $topic_id_list, 'queue', $mode);
-					}
-					else
-					{
-						trigger_error('NO_POST_SELECTED');
-					}
+					self::approve_posts($action, $post_id_list, 'queue', $mode);
+				}
+				else if (!empty($topic_id_list))
+				{
+					self::approve_topics($action, $topic_id_list, 'queue', $mode);
 				}
 				else
 				{
-					if (!empty($topic_id_list))
-					{
-						$post_visibility = ($mode == 'deleted_topics') ? ITEM_DELETED : ITEM_UNAPPROVED;
-						$sql = 'SELECT post_id
-							FROM ' . POSTS_TABLE . '
-							WHERE post_visibility = ' . $post_visibility . '
-								AND ' . $db->sql_in_set('topic_id', $topic_id_list);
-						$result = $db->sql_query($sql);
+					trigger_error('NO_POST_SELECTED');
+				}
+			break;
 
-						$post_id_list = array();
-						while ($row = $db->sql_fetchrow($result))
-						{
-							$post_id_list[] = (int) $row['post_id'];
-						}
-						$db->sql_freeresult($result);
-					}
+			case 'delete':
+			case 'disapprove':
+				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
-					if (!empty($post_id_list))
-					{
-						self::disapprove_posts($post_id_list, 'queue', $mode);
-					}
-					else
-					{
-						trigger_error('NO_POST_SELECTED');
-					}
+				$post_id_list = $request->variable('post_id_list', array(0));
+				$topic_id_list = $request->variable('topic_id_list', array(0));
+
+				if (!empty($post_id_list))
+				{
+					self::disapprove_posts($post_id_list, 'queue', $mode);
+				}
+				else if (!empty($topic_id_list))
+				{
+					self::disapprove_topics($action, $topic_id_list, 'queue', $mode);
+				}
+				else
+				{
+					trigger_error('NO_POST_SELECTED');
 				}
 			break;
 		}
@@ -523,7 +512,7 @@ class mcp_queue
 	* @param $post_id_list	array	IDs of the posts to approve/restore
 	* @param $id			mixed	Category of the current active module
 	* @param $mode			string	Active module
-	* @return void
+	* @return null
 	*/
 	static public function approve_posts($action, $post_id_list, $id, $mode)
 	{
@@ -716,7 +705,7 @@ class mcp_queue
 	* @param $topic_id_list	array	IDs of the topics to approve/restore
 	* @param $id			mixed	Category of the current active module
 	* @param $mode			string	Active module
-	* @return void
+	* @return null
 	*/
 	static public function approve_topics($action, $topic_id_list, $id, $mode)
 	{
@@ -876,10 +865,10 @@ class mcp_queue
 	/**
 	* Disapprove Post
 	*
-	* @param $post_id_list	array	IDs of the posts to approve/restore
+	* @param $post_id_list	array	IDs of the posts to disapprove/delete
 	* @param $id			mixed	Category of the current active module
 	* @param $mode			string	Active module
-	* @return void
+	* @return null
 	*/
 	static public function disapprove_posts($post_id_list, $id, $mode)
 	{
