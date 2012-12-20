@@ -50,17 +50,17 @@ index_body_stat_blocks_before
     + styles/subsilver2/template/index_body.html
 * Purpose: Add new statistic blocks above the Who Is Online and Board Statistics blocks
 
-overall_footer_breadcrumb_append
-===
-* Location: styles/prosilver/template/overall_footer.html
-* Purpose: Add links to the list of breadcrumbs in the footer
-
-overall_footer_copyright_prepend
+overall_footer_after
 ===
 * Locations:
     + styles/prosilver/template/overall_footer.html
     + styles/subsilver2/template/overall_footer.html
-* Purpose: Add content before the copyright line
+* Purpose: Add content at the end of the file, directly prior to the `</body>` tag
+
+overall_footer_breadcrumb_append
+===
+* Location: styles/prosilver/template/overall_footer.html
+* Purpose: Add links to the list of breadcrumbs in the footer
 
 overall_footer_copyright_append
 ===
@@ -69,19 +69,12 @@ overall_footer_copyright_append
     + styles/subsilver2/template/overall_footer.html
 * Purpose: Add content after the copyright line (no new line by default), before the ACP link
 
-overall_footer_after
+overall_footer_copyright_prepend
 ===
 * Locations:
     + styles/prosilver/template/overall_footer.html
     + styles/subsilver2/template/overall_footer.html
-* Purpose: Add content at the end of the file, directly prior to the `</body>` tag
-
-overall_header_head_append
-===
-* Locations:
-    + styles/prosilver/template/overall_header.html
-    + styles/subsilver2/template/overall_header.html
-* Purpose: Add asset calls directly before the `</head>` tag
+* Purpose: Add content before the copyright line
 
 overall_header_breadcrumb_append
 ===
@@ -90,15 +83,22 @@ overall_header_breadcrumb_append
     + styles/subsilver2/template/breadcrumbs.html
 * Purpose: Add links to the list of breadcrumbs in the header
 
-overall_header_navigation_prepend
+overall_header_head_append
 ===
-* Location: styles/prosilver/template/overall_header.html
-* Purpose: Add links before the navigation links in the header
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
+* Purpose: Add asset calls directly before the `</head>` tag
 
 overall_header_navigation_append
 ===
 * Location: styles/prosilver/template/overall_header.html
 * Purpose: Add links after the navigation links in the header
+
+overall_header_navigation_prepend
+===
+* Location: styles/prosilver/template/overall_header.html
+* Purpose: Add links before the navigation links in the header
 
 posting_editor_options_prepend
 ===
@@ -117,14 +117,14 @@ ucp_pm_viewmessage_print_head_append
 * Location: styles/prosilver/template/ucp_pm_viewmessage_print.html
 * Purpose: Add asset calls directly before the `</head>` tag of the Print PM screen
 
+viewtopic_print_head_append
+===
+* Location: styles/prosilver/template/viewtopic_print.html
+* Purpose: Add asset calls directly before the `</head>` tag of the Print Topic screen
+
 viewtopic_topic_title_prepend
 ===
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
 * Purpose: Add content directly before the topic title link on the View topic screen
-
-viewtopic_print_head_append
-===
-* Location: styles/prosilver/template/viewtopic_print.html
-* Purpose: Add asset calls directly before the `</head>` tag of the Print Topic screen
