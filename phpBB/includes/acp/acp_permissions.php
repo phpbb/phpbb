@@ -952,12 +952,7 @@ class acp_permissions
 
 		if ($user_id != $user->data['user_id'])
 		{
-			$sql = 'SELECT user_id, username, user_permissions, user_type
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $user_id;
-			$result = $db->sql_query($sql);
-			$userdata = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$userdata = $auth->obtain_user_data($user_id);
 		}
 		else
 		{
