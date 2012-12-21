@@ -258,15 +258,12 @@ exit_handler();
 	* 				has permission to read all the topics without exceptions
 	*
 	*/
-	function get_unlimited_reading_forums($readable_forum_ids = false)
+	function get_unlimited_reading_forums(array $readable_forum_ids = false)
 	{
 		global $auth;
 		static $forum_ids;
 
-		if (!$readable_forum_ids)
-		{
-			$readable_forum_ids = $this->get_readable_forums();
-		}
+		$readable_forum_ids ?: $this->get_readable_forums();
 		if (!isset($forum_ids))
 		{
 			$forum_ids = array_keys($auth->acl_getf('f_read_other', true));
@@ -284,8 +281,8 @@ exit_handler();
 				AND (' . $db->sql_in_set('forum_id', $unlimited_access_forums, false, true) . '
 					OR topic_poster = ' . (int) $user->data['user_id'] . '
 					)
-	var $unlimited_read = false;
 	// Whether or not the user is able to read all forums
+	private $unlimited_read = false;
 		// Make sure we can read all topics this forum else
 		// Only users with f_read_other and the topic starter can view the
 		// topic.
