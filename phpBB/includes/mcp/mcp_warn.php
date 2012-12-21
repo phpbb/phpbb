@@ -219,7 +219,8 @@ class mcp_warn
 			trigger_error('CANNOT_WARN_SELF');
 		}
 
-		if (!$auth->acl_get('f_read_other', $user_row['forum_id'])){
+		if (!$auth->acl_get('f_read_other', $user_row['forum_id']))
+		{
 			$sql = 'SELECT topic_poster
 				FROM ' . TOPICS_TABLE . '
 				WHERE topic_id = ' . $user_row['topic_id'];
