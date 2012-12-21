@@ -258,7 +258,7 @@ exit_handler();
 	* 				has permission to read all the topics without exceptions
 	*
 	*/
-	function get_unlimited_reading_forums(array $readable_forum_ids = false)
+	function get_unlimited_reading_forums(array $readable_forum_ids = NULL)
 	{
 		global $auth;
 		static $forum_ids;
