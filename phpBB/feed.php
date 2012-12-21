@@ -240,15 +240,22 @@ exit_handler();
 
 
 	/**
-	* This calculates which forums is the current user able to read all the topics given a list of forums that the user is able to read some topics (permission f_read)
-	* this takes f_read_other in account.
-	* Note: If readable_forum_ids contains a forum_id that the user is unable to see (does not have f_read permission), the result is undefined
+	* This calculates which forums is the current user able to read all the
+	* topics given a list of forums that the user is able to read some topics
+	* (permission f_read) this takes f_read_other in account.
+	* Note: If readable_forum_ids contains a forum_id that the user is unable
+	* to see (does not have f_read permission), the result is undefined
 	*
-	* @param	array	$readable_forum_ids		A list of forums that you know the user is able to read but you don't know if the user can read all the topics in that forum.
-	*											Use false if you don't have such information
-	*											Defaults to false
+	* @param array $readable_forum_ids	A list of forums in which the user has
+	* 									the f_read permission but may or may
+	* 									not also have the f_read_other
+	* 									permission
+	*									Use false if you don't have such
+	*									information
+	*									Defaults to false
 	*
-	* @return	array	An array with the forum_id's of the forums where the user has permission to read all the topics without exceptions
+	* @return array An array with the forum_id's of the forums where the user
+	* 				has permission to read all the topics without exceptions
 	*
 	*/
 	function get_unlimited_reading_forums($readable_forum_ids = false)
@@ -277,10 +284,11 @@ exit_handler();
 				AND (' . $db->sql_in_set('forum_id', $unlimited_access_forums, false, true) . '
 					OR topic_poster = ' . (int) $user->data['user_id'] . '
 					)
-	// The user is able to read all forums
 	var $unlimited_read = false;
+	// Whether or not the user is able to read all forums
 		// Make sure we can read all topics this forum else
-		// You'll need to be the topic starter to see it all
+		// Only users with f_read_other and the topic starter can view the
+		// topic.
 		$this->unlimited_read = $auth->acl_get('f_read_other', $this->forum_id);
 
 		global $auth, $db, $user;
