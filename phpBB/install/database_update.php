@@ -1017,7 +1017,7 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $db_tools, $errored, $error_ary, $config, $phpbb_root_path, $phpEx;
+	global $db, $db_tools, $errored, $error_ary, $config, $table_prefix, $phpbb_root_path, $phpEx;
 
 	switch ($version)
 	{
@@ -1973,11 +1973,24 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
-			global $table_prefix;
-
-			// Recover from potentially broken Q&A CAPTCHA table on firebird
-			// Q&A CAPTCHA was uninstallable, so it's safe to remove these
-			// without data loss
+			/*
+			* Due to a bug, vanilla phpbb could not create captcha tables
+			* in 3.0.8 on firebird. It was possible for board administrators
+			* to adjust the code to work. If code was manually adjusted by
+			* board administrators, index names would not be the same as
+			* what 3.0.9 and newer expect. This code fragment drops captcha
+			* tables, destroying all entered Q&A captcha configuration, such
+			* that when Q&A is configured next the respective tables will be
+			* created with correct index names.
+			*
+			* If you wish to preserve your Q&A captcha configuration, you can
+			* manually rename indexes to the currently expected name:
+			* 	phpbb_captcha_questions_lang_iso	=> phpbb_captcha_questions_lang
+			* 	phpbb_captcha_answers_question_id	=> phpbb_captcha_answers_qid
+			*
+			* Again, this needs to be done only if a board was manually modified
+			* to fix broken captcha code.
+			*
 			if ($db_tools->sql_layer == 'firebird')
 			{
 				$changes = array(
@@ -1994,6 +2007,7 @@ function change_database_data(&$no_updates, $version)
 					_sql($sql, $errored, $error_ary);
 				}
 			}
+			*/
 
 			$no_updates = false;
 		break;
