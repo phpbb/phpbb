@@ -920,7 +920,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
 	*/
-	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
+	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
 		// No author? No posts
 		if (!sizeof($author_ary))
@@ -1106,13 +1106,13 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 		if (!$total_results && $is_mysql)
 		{
 			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
-			$sql = str_replace('SELECT ' . $select, 'SELECT DISTINCT SQL_CALC_FOUND_ROWS p.post_id', $sql);
+			$sql_calc = str_replace('SELECT ' . $select, 'SELECT DISTINCT SQL_CALC_FOUND_ROWS p.post_id', $sql);
 
-			$this->db->sql_query($sql);
+			$this->db->sql_query($sql_calc);
 			$this->db->sql_freeresult($result);
 
-			$sql = 'SELECT FOUND_ROWS() as total_results';
-			$result = $this->db->sql_query($sql);
+			$sql_count = 'SELECT FOUND_ROWS() as total_results';
+			$result = $this->db->sql_query($sql_count);
 			$total_results = (int) $this->db->sql_fetchfield('total_results');
 			$this->db->sql_freeresult($result);
 
@@ -1120,6 +1120,19 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 			{
 				return false;
 			}
+		}
+
+		if ($start >= $total_results)
+		{
+			$start = floor(($total_results - 1) / $per_page) * $per_page;
+
+			$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$id_ary[] = (int) $row[$field];
+			}
+			$this->db->sql_freeresult($result);
 		}
 
 		if (sizeof($id_ary))
