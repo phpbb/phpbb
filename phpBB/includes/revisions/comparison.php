@@ -134,7 +134,6 @@ class phpbb_revisions_comparison
 	* @var bool $full_mode When false, revisions are listed without comparison
 	*						or management options
 	* @return null
-	*
 	*/
 	public function output_template_block(phpbb_revisions_post $post, phpbb_template $template, phpbb_user $user, phpbb_auth $auth, phpbb_request $request, $can_revert, $phpbb_root_path, $phpEx, $full_mode = true)
 	{
@@ -210,8 +209,8 @@ class phpbb_revisions_comparison
 
 		$l_first_revision = $this->first->get_id() ? $user->lang('REVISION') . ' ' . $this->first->get_id() : $user->lang('CURRENT_REVISION');
 		$l_last_revision = $last_id ? $user->lang('REVISION') . ' ' . $last_id : $user->lang('CURRENT_REVISION');
-		$u_first_revision = append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$first_id";
-		$u_last_revision = append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$last_id";
+		$u_first_revision = append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$first_id"));
+		$u_last_revision = append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$last_id"));
 
 		$template->assign_vars(array(
 			'S_DISPLAY_COMPARISON'	=> $full_mode,

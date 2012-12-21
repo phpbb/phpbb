@@ -30,10 +30,11 @@ class phpbb_controller_post_revisions
 	* @param phpbb_config $config Config object
 	* @param phpbb_auth $auth Auth object
 	* @param phpbb_request $request Request object
+	* @param phpbb_template $template Template object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_controller_helper $helper, phpbb_user $user, phpbb_db_driver $db, phpbb_config $config, phpbb_auth $auth, phpbb_request $request, $phpbb_root_path, $php_ext)
+	public function __construct(phpbb_controller_helper $helper, phpbb_user $user, phpbb_db_driver $db, phpbb_config $config, phpbb_auth $auth, phpbb_request $request, phpbb_template $template, $phpbb_root_path, $php_ext)
 	{
 		$this->helper = $helper;
 		$this->user = $user;
@@ -41,10 +42,16 @@ class phpbb_controller_post_revisions
 		$this->config = $config;
 		$this->auth = $auth;
 		$this->request = $request;
+		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
 		$this->user->add_lang('revisions');
+
+		if (!function_exists('get_user_avatar'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
+		}
 	}
 
 	/**
@@ -171,7 +178,7 @@ class phpbb_controller_post_revisions
 		$to_revision = $to ? new phpbb_revisions_revision($to, $this->db) : $post->get_current_revision();
 
 		$comparison = new phpbb_revisions_comparison($from_revision, $to_revision);
-		$comparison->ouput_template_block($post, $this->template, $this->user, $this->auth, $this->request, $can_revert, $this->phpbb_root_path, $this->php_ext);
+		$comparison->output_template_block($post, $this->template, $this->user, $this->auth, $this->request, $this->get_restore_permission($post_data), $this->phpbb_root_path, $this->php_ext);
 
 		$this->template->assign_vars(array(
 			'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
@@ -182,7 +189,7 @@ class phpbb_controller_post_revisions
 
 			'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
 
-			'POST_DATE'			=> $user->format_date($post_data['post_time']),
+			'POST_DATE'			=> $this->user->format_date($post_data['post_time']),
 			'POST_SUBJECT'		=> $comparison->get_subject_diff_rendered(),
 			'CURRENT_SUBJECT' 	=> $current->get_subject(),
 			'MESSAGE'			=> $comparison->get_text_diff_rendered(),
@@ -192,13 +199,13 @@ class phpbb_controller_post_revisions
 			'POSTER_POSTS'		=> $post_data['user_posts'],
 			'POSTER_LOCATION'	=> $post_data['user_from'],
 
-			'POST_IMG'			=> $user->img('icon_post_target', 'POST'),
+			'POST_IMG'			=> $this->user->img('icon_post_target', 'POST'),
 
 			'POST_ID'			=> $post_data['post_id'],
 			'POSTER_ID'			=> $post_data['poster_id'],
 
-			'U_VIEW_REVISIONS'	=> append_sid("{$this->phpbb_root_path}app.{$this->php_ext}", array('controller' => "post/$post_id/revisions")),
-			'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
+			'U_VIEW_REVISIONS'	=> append_sid("{$this->phpbb_root_path}app.{$this->php_ext}", array('controller' => "post/{$post_data['post_id']}/revisions")),
+			'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
 		));
 
 		return $this->helper->render('revisions_body.html', $this->user->lang('REVISIONS_COMPARE_TITLE'));
@@ -216,7 +223,8 @@ class phpbb_controller_post_revisions
 	*/
 	public function view_revision_as_post($id, $revision_id)
 	{
-		$post = new phpbb_revisions_post($id, $this->db);
+		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
+		$post_data = $post->get_post_data();
 		$revision = !$revision_id ? $post->get_current_revision() : new phpbb_revisions_revision($revision_id, $this->db);
 
 		$this->template->assign_vars(array(
@@ -242,13 +250,13 @@ class phpbb_controller_post_revisions
 			'POST_ID'			=> $post_data['post_id'],
 			'POSTER_ID'			=> $post_data['poster_id'],
 
-			'L_VIEWING_POST_REVISION_EXPLAIN'	=> $user->lang('VIEWING_POST_REVISION_EXPLAIN',
+			'L_VIEWING_POST_REVISION_EXPLAIN'	=> $this->user->lang('VIEWING_POST_REVISION_EXPLAIN',
 				$revision->get_username() . $revision->get_avatar(20, 20),
-				$user->format_date($revision->get_time())
+				$this->user->format_date($revision->get_time())
 			),
 
-			'U_VIEW_REVISIONS'	=> $this->url("post/$post_id/revisions"),
-			'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
+			'U_VIEW_REVISIONS'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+			'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
 		));
 
 		return $this->helper->render('revisions_view_body.html', $this->user->lang('REVISIONS_COMPARE_TITLE'));
@@ -368,7 +376,8 @@ class phpbb_controller_post_revisions
 	/**
 	* Helper method for deleting a revision
 	*
-	* This does NOT check authorization.
+	* This does NOT check authorization, but should not be called without
+	* checking for m_revisions_delete
 	*
 	* @param mixed $revision_id Revision ID or array of revision IDs
 	* @return bool
@@ -468,7 +477,7 @@ class phpbb_controller_post_revisions
 			{
 				$this->send_ajax_response(array(
 					'success' => false,
-					'message' => $user->lang($error),
+					'message' => $this->user->lang($error),
 				));
 
 				return $this->helper->error($this->user->lang($error), $code);
@@ -496,7 +505,7 @@ class phpbb_controller_post_revisions
 
 				$this->send_ajax_response(array(
 					'success' => false,
-					'message' => $user->lang($error),
+					'message' => $this->user->lang($error),
 				));
 
 				return $this->helper->error($this->user->lang($error), $code);

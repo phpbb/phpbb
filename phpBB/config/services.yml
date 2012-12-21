@@ -275,5 +275,6 @@ services:
             - @config
             - @auth
             - @request
+            - @template
             - %core.root_path%
             - %core.php_ext%
