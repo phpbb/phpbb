@@ -1017,7 +1017,7 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx;
+	global $db, $db_tools, $errored, $error_ary, $config, $phpbb_root_path, $phpEx;
 
 	switch ($version)
 	{
@@ -1331,8 +1331,6 @@ function change_database_data(&$no_updates, $version)
 					ACL_OPTIONS_TABLE		=> array('auth_option'),
 				),
 			);
-
-			global $db_tools;
 
 			$statements = $db_tools->perform_schema_changes($changes);
 
@@ -1975,24 +1973,25 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
-			global $db_tools, $table_prefix;
+			global $table_prefix;
 
 			// Recover from potentially broken Q&A CAPTCHA table on firebird
 			// Q&A CAPTCHA was uninstallable, so it's safe to remove these
 			// without data loss
 			if ($db_tools->sql_layer == 'firebird')
 			{
-				$tables = array(
-					$table_prefix . 'captcha_questions',
-					$table_prefix . 'captcha_answers',
-					$table_prefix . 'qa_confirm',
+				$changes = array(
+					'drop_tables'	=> array(
+						$table_prefix . 'captcha_questions',
+						$table_prefix . 'captcha_answers',
+						$table_prefix . 'qa_confirm',
+					),
 				);
-				foreach ($tables as $table)
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
 				{
-					if ($db_tools->sql_table_exists($table))
-					{
-						$db_tools->sql_table_drop($table);
-					}
+					_sql($sql, $errored, $error_ary);
 				}
 			}
 
