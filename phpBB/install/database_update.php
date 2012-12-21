@@ -2885,7 +2885,11 @@ function change_database_data(&$no_updates, $version)
 				set_config('board_timezone', $update_helpers->convert_phpbb30_timezone($config['board_timezone'], $config['board_dst']));
 
 				// After we have calculated the timezones we can delete user_dst column from user table.
-				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
+				$statements = $db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
+				foreach ($statements as $sql)
+				{
+					_sql($sql, $errored, $error_ary);
+				}
 			}
 
 			if (!isset($config['site_home_url']))
