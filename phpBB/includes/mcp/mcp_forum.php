@@ -156,7 +156,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	$limit_access_check = '';
-	if (!$auth->acl_get('f_read_other', $forum_id)
+	if (!$auth->acl_get('f_read_other', $forum_id))
 	{
 		$limit_access_check =	' AND (t.topic_poster = ' . (int) $user->data['user_id'] . ' OR
 									(t.topic_type <> ' . POST_NORMAL . ' AND t.topic_type <> ' . POST_STICKY . ')
