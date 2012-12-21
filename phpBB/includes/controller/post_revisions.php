@@ -107,6 +107,53 @@ class phpbb_controller_post_revisions
 			return $this->helper->error($this->user->lang('ERROR_NO_POST_REVISIONS', 404));
 		}
 
+		if (isset($_POST['delete']) || isset($_POST['protect']) || isset($_POST['unprotect']))
+		{
+			$action = isset($_POST['delete']) ? 'delete' : (isset($_POST['protect']) ? 'protect' : 'unprotect');
+			$action_permission = 'delete' == $action ? 'm_delete_revisions' : 'm_protect_revisions';
+			if (!$this->auth->acl_get($action_permission, $post_data['forum_id']))
+			{
+				// Get the localised word describing each of the actions
+				$action_lang = strtolower($this->user->lang(strtoupper($action)));
+				$this->send_ajax_response(array(
+					'success'	=> false,
+					'message'	=> $this->user->lang($error),
+				));
+
+				return $this->helper->error($this->user->lang('ERROR_AUTH_ACTION', $action_lang), 401);
+			}
+
+			// Because we use a variable method below, we need to use the
+			// correct method name
+			if ('delete' === $action)
+			{
+				$action = 'perform_delete';
+			}
+
+			$action_ids = $this->request->variable($action . '_ids[]', array(0));
+			$result = (bool) $this->$action($action_ids);
+			// Default to failure; this will be replaced upon success
+			$result_lang = $this->user->lang('REVISION_' . strtoupper($action) . '_FAIL');
+
+			if ($result)
+			{
+				$post_data = $post->get_post_data(true);
+				$revisions = $post->get_revisions(true);
+				$result_lang = $this->user->lang('REVISION_' . strtoupper($action) . 'ED_SUCCESS');
+				if ('perform_delete' === $action)
+				{
+					// If after deleting the revision(s) we don't have any
+					// more revisions, say so in the result message
+					$result_lang .= (0 === sizeof($revisions)) ? '_NO_MORE' : '';
+				}
+			}
+
+			$this->send_ajax_response(array(
+				'success'	 => $result,
+				'message'	=> $result_lang,
+			));
+		}
+
 		// If $from is empty, the earliest available revision is used
 		if (!$from)
 		{
@@ -114,7 +161,7 @@ class phpbb_controller_post_revisions
 				FROM ' . POST_REVISIONS_TABLE . '
 				WHERE post_id = ' . (int) $id . '
 				ORDER BY revision_id ASC';
-			$result = $this->db->sql_query($sql);
+			$result = $this->db->sql_query_limit($sql, 1);
 			$from = (int) $this->db->sql_fetchfield('revision_id');
 			$this->db->sql_freeresult($result);
 		}
@@ -195,9 +242,12 @@ class phpbb_controller_post_revisions
 			'POST_ID'			=> $post_data['post_id'],
 			'POSTER_ID'			=> $post_data['poster_id'],
 
-			'L_VIEWING_POST_REVISION_EXPLAIN'	=> !$display_comparison ? $user->lang('VIEWING_POST_REVISION_EXPLAIN', $current->get_username() . $current->get_avatar(20, 20), $user->format_date($current->get_time())) : '',
+			'L_VIEWING_POST_REVISION_EXPLAIN'	=> $user->lang('VIEWING_POST_REVISION_EXPLAIN',
+				$revision->get_username() . $revision->get_avatar(20, 20),
+				$user->format_date($revision->get_time())
+			),
 
-			'U_VIEW_REVISIONS'	=> append_sid("{$this->phpbb_root_path}app.{$this->php_ext}", array('controller' => "post/$post_id/revisions")),
+			'U_VIEW_REVISIONS'	=> $this->url("post/$post_id/revisions"),
 			'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
 		));
 
@@ -205,7 +255,8 @@ class phpbb_controller_post_revisions
 	}
 
 	/**
-	* Set a specific revision to protected or unprotected
+	* Display the page on which to set a specific revision to protected or
+	* unprotected
 	*
 	* This controller method is accessed directly from the paths:
 	* /post/{id}/revision/{revision_id}/protect
@@ -220,13 +271,13 @@ class phpbb_controller_post_revisions
 	public function protect_unprotect($mode, $id, $revision_id)
 	{
 		// Ensure that $mode is one of 'protect' or 'unprotect'
-		$mode = 'protect' == $mode || 'unprotect' == $mode ? $mode : 'unprotect';
+		$mode = in_array($mode, array('protect', 'unprotect')) ? $mode : 'unprotect';
 		$post = new phpbb_revisions_post($id, $this->db);
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
 		if (!$auth->acl_get('m_protect_revisions', $post_data['forum_id']))
 		{
-			$error = $mode = 'protect' ? 'NO_AUTH_PROTECT_REVISIONS' : 'NO_AUTH_UNPROTECT_REVISIONS';
+			$error = ($mode == 'protect') ? 'NO_AUTH_PROTECT_REVISIONS' : 'NO_AUTH_UNPROTECT_REVISIONS';
 			$this->send_ajax_response(array(
 				'success'	=> false,
 				'message'	=> $this->user->lang($error),
@@ -252,13 +303,7 @@ class phpbb_controller_post_revisions
 			return $this->view($id);
 		}
 
-		switch ($mode)
-		{
-			case 'protect'
-			case 'unprotect':
-				$result = $this->$mode($revision_id);
-			break;
-		}
+		$result = $this->$mode($revision_id);
 
 		$post_data = $post->get_post_data(true);
 		$revisions = $post->get_revisions(true);
@@ -273,7 +318,7 @@ class phpbb_controller_post_revisions
 	}
 
 	/**
-	* Delete a specific revision
+	* Display the page on which to delete a specific revision
 	*
 	* This controller method is accessed directly from the path:
 	* /post/{id}/revision/{revision_id}/delete
@@ -381,7 +426,7 @@ class phpbb_controller_post_revisions
 	}
 
 	/**
-	* Restore a post to a given revision
+	* Display the page on which to restore a post to a given revision
 	*
 	* This controller method is accessed directly from the path:
 	* /post/{id}/restore/{to}
@@ -506,11 +551,13 @@ class phpbb_controller_post_revisions
 		$can_restore_wiki = $post_data['post_wiki']
 			&& $this->auth->acl_getf('f_wiki_edit', $post_data['forum_id'])
 			&& !$post_data['post_edit_locked'];
+
 		// If the user is the original poster, and the user can manage his own
 		// posts' revisions in this forum, and the post is not edit locked
 		$can_restore_own = $this->user->data['user_id'] == $post_data['poster_id']
 			&& $this->auth->acl_getf('f_revisions', $post_data['forum_id'])
 			&& !$post_data['post_edit_locked'];
+
 		// If either of the above is true, or if the user has moderator
 		// permissions for managing revisions
 		return $can_restore_own ||
@@ -529,10 +576,12 @@ class phpbb_controller_post_revisions
 		// If the post is a wiki post and the user has wiki edit permission
 		// in the current forum
 		$can_view_wiki_revisions = $post_data['post_wiki'] && $this->auth->acl_getf('f_wiki_edit', $post_data['forum_id']);
+
 		// If the user is the original poster, and the user can manage his own
 		// posts' revisions in this forum
 		$can_view_own_revisions = $this->user->data['user_id'] == $post_data['poster_id'] &&
 			$this->auth->acl_getf('f_revisions', $post_data['forum_id']);
+
 		// If either of the above is true, or if the user has moderator
 		// permissions for managing revisions
 		return $this->auth->acl_get('m_revisions') ||

@@ -41,7 +41,7 @@ $lang = array_merge($lang, array(
 	'COMPARE_SELECTED'	=> 'Compare selected',
 	'CURRENT_REVISION'	=> 'Current Revision',
 
-	'ERROR_AUTH_DELETE_REVISIONS'		=> 'You do not have permission to delete revisions for this post.',
+	'ERROR_AUTH_ACTION'					=> 'You do not have permission to %s revisions for this post.',
 	'ERROR_AUTH_RESTORE'				=> 'You do not have permission to restore this post to another revision.',
 	'ERROR_AUTH_VIEW_REVISIONS'			=> 'You do not have permission to view the revisions for this post.',
 	'ERROR_NO_POST_REVISIONS'			=> 'The specified post ID has no associated revisions.',
@@ -79,16 +79,58 @@ $lang = array_merge($lang, array(
 		1		=> '<span id="compare_summary">1</span> revision',
 		2		=> '<span id="compare_summary">%1$s</span> revisions',
 	),
-	'REVISION_DELETE'					=> 'Delete revision',
-	'REVISION_DELETE_CONFIRM'			=> 'Are you sure you wish to delete the selected revision? This cannot be undone.',
-	'REVISION_DELETED_SUCCESS'			=> 'The selected revision has been deleted.',
-	'REVISION_DELETED_SUCCESS_NO_MORE'	=> 'The selected revision has been deleted. There are no more revisions to display.',	
-	'REVISION_PROTECT'					=> 'Protect revision',
-	'REVISION_PROTECT_CONFIRM'			=> 'Are you sure you wish to mark the selected revision as protected? This revision will not be deleted in automatic pruning tasks.',
-	'REVISION_PROTECTED_SUCCESS'		=> 'The selected revision has been marked as protected.',
-	'REVISION_UNPROTECT'				=> 'Unprotect revision',
-	'REVISION_UNPROTECT_CONFIRM'		=> 'Are you sure you wish to mark the selected revision as unprotected? This revision will may be deleted in automatic pruning tasks.',
-	'REVISION_UNPROTECTED_SUCCESS'		=> 'The selected revision has been marked as unprotected.',
+	'REVISION_DELETE'					=> array(
+		1 => 'Delete revision',
+		2 => 'Delete revisions',
+	),
+	'REVISION_DELETE_CONFIRM'			=> array(
+		1 => 'Are you sure you wish to delete the selected revision? This cannot be undone.',
+		2 => 'Are you sure you wish to delete the selected revisions? This cannot be undone.',
+	),
+	'REVISION_DELETED_SUCCESS'			=> array(
+		1 => 'The selected revision has been deleted.',
+		2 => 'The selected revisions have been deleted.',
+	),
+	'REVISION_DELETED_SUCCESS_NO_MORE'	=> array(
+		1 => 'The selected revision has been deleted. There are no more revisions to display.',
+		2 => 'The selected revisions have been deletd. There are no more revisions to display.',
+	),
+	'REVISION_DELETE_FAIL'				=> array(
+		1 => 'The selected revision could not be deleted.',
+		2 => 'The selected revisions could not be deleted.',
+	),
+	'REVISION_PROTECT'					=> array(
+		1 => 'Protect revision',
+		2 => 'Protect revisions',
+	),
+	'REVISION_PROTECT_CONFIRM'			=> array(
+		1 => 'Are you sure you wish to mark the selected revision as protected? This revision will not be deleted in automatic pruning tasks.',
+		2 => 'Are you sure you wish to mark the selected revisions as protected? These revisions will not be deleted in automatic pruning tasks.',
+	),
+	'REVISION_PROTECTED_SUCCESS'		=> array(
+		1 => 'The selected revision has been marked as protected.',
+		2 => 'The selected revisions have been marked as protected.',
+	),
+	'REVISION_PROTECT_FAIL'				=> array(
+		1 => 'The selected revision could not be marked as protected.',
+		2 => 'The selected revisions could not be marked as protected.',
+	),
+	'REVISION_UNPROTECT'				=> array(
+		1 => 'Unprotect revision',
+		2 => 'Unprotect revisions',
+	),
+	'REVISION_UNPROTECT_CONFIRM'		=> array(
+		1 => 'Are you sure you wish to mark the selected revision as unprotected? This revision may be deleted in automatic pruning tasks.',
+		2 => 'Are you sure you wish to mark the selected revisions as unprotected? These revisions may be deleted in automatic pruning tasks.',
+	),
+	'REVISION_UNPROTECTED_SUCCESS'		=> array(
+		1 => 'The selected revision has been marked as unprotected.',
+		2 => 'The selected revisions have been marked as unprotected.',
+	),
+	'REVISION_UNPROTECT_FAIL'			=> array(
+		1 => 'The selected revision could not be marked as unprotected.',
+		2 => 'The selected revisions could not be marked as unprotected.',
+	),
 	'REVISION_DELETIONS'				=> array(
 		1 =>'1 deletion',
 		2 => '%1$s deletions',
