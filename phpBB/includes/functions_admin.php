@@ -2486,7 +2486,6 @@ function cache_moderators()
 	return phpbb_cache_moderators($db, $cache, $auth);
 }
 
-
 /**
 * View log
 * If $log_count is set to false, we will skip counting all entries in the database.
