@@ -2294,7 +2294,7 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 /**
 * Cache moderators. Called whenever permissions are changed
 * via admin_permissions. Changes of usernames and group names
-* must be carried through for the moderators table
+* must be carried through for the moderators table.
 *
 * @param phpbb_db_driver $db Database connection
 * @param phpbb_cache_driver_interface Cache driver
@@ -2475,7 +2475,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 /**
 * Cache moderators. Called whenever permissions are changed
 * via admin_permissions. Changes of usernames and group names
-* must be carried through for the moderators table
+* must be carried through for the moderators table.
 *
 * @deprecated 3.1
 * @return null
