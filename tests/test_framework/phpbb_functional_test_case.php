@@ -424,4 +424,20 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$content = $this->client->getResponse()->getContent();
 		$this->assertNotContains('Fatal error:', $content);
 	}
+
+	public function assert_filter($crawler, $expr, $msg = null)
+	{
+		$nodes = $crawler->filter($expr);
+		if ($msg)
+		{
+			$msg .= "\n";
+		}
+		else
+		{
+			$msg = '';
+		}
+		$msg .= "`$expr` not found in DOM.";
+		$this->assertGreaterThan(0, count($nodes), $msg);
+		return $nodes;
+	}
 }
