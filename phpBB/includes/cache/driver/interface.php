@@ -85,6 +85,7 @@ interface phpbb_cache_driver_interface
 	* result to persistent storage. In other words, there is no need
 	* to call save() afterwards.
 	*
+	* @param phpbb_db_driver $db	Database connection
 	* @param string $query			SQL query, should be used for generating storage key
 	* @param mixed $query_result	The result from dbal::sql_query, to be passed to
 	* 								dbal::sql_fetchrow to get all rows and store them
@@ -95,7 +96,7 @@ interface phpbb_cache_driver_interface
 	* 								representing the query should be returned. Otherwise
 	* 								the original $query_result should be returned.
 	*/
-	public function sql_save($query, $query_result, $ttl);
+	public function sql_save(phpbb_db_driver $db, $query, $query_result, $ttl);
 
 	/**
 	* Check if result for a given SQL query exists in cache.
