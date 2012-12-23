@@ -162,9 +162,18 @@
 			command="git archive ${revision} | tar -xf - -C ../${dir}"
 			checkreturn="true" />
 
-		<exec dir="${dir}"
-			command="php ../composer.phar install"
-			passthru="true" />
+		<!--
+			Make sure composer is available before calling it.
+			Older versions of the tree didn't use it.
+		-->
+		<if>
+			<available file='${dir}/../composer.phar' type='file' />
+			<then>
+				<exec dir="${dir}"
+					command="php ../composer.phar install"
+					passthru="true" />
+			</then>
+		</if>
 
 		<delete file="${dir}/config.php" />
 		<delete dir="${dir}/develop" />
