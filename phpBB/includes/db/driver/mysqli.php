@@ -201,7 +201,7 @@ class phpbb_db_driver_mysqli extends phpbb_db_driver
 
 				if ($cache_ttl)
 				{
-					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
+					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
 			}
 			else if (defined('DEBUG'))
