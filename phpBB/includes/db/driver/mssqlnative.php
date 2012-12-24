@@ -19,8 +19,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
-
 /**
  * Prior to version 1.1 the SQL Server Native PHP driver didn't support sqlsrv_num_rows, or cursor based seeking so we recall all rows into an array
  * and maintain our own cursor index into that array.
@@ -193,7 +191,7 @@ class result_mssqlnative
 /**
 * @package dbal
 */
-class dbal_mssqlnative extends dbal
+class phpbb_db_driver_mssqlnative extends phpbb_db_driver
 {
 	var $m_insert_id = NULL;
 	var $last_query_text = '';
@@ -339,7 +337,7 @@ class dbal_mssqlnative extends dbal
 				if ($cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
+					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{

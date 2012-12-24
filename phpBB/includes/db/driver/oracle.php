@@ -15,13 +15,11 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
-
 /**
 * Oracle Database Abstraction Layer
 * @package dbal
 */
-class dbal_oracle extends dbal
+class phpbb_db_driver_oracle extends phpbb_db_driver
 {
 	var $last_query_text = '';
 	var $connect_error = '';
@@ -448,7 +446,7 @@ class dbal_oracle extends dbal
 				if ($cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$this->query_result = $cache->sql_save($query, $this->query_result, $cache_ttl);
+					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{

@@ -2,7 +2,7 @@
 /phpunit.xml
 /phpBB/cache/*.html
 /phpBB/cache/*.php
-/phpBB/cache/queue.php.lock
+/phpBB/cache/*.lock
 /phpBB/composer.phar
 /phpBB/config.php
 /phpBB/config_dev.php

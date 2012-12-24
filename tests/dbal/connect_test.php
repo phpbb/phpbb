@@ -22,9 +22,7 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 
 		$config = $this->get_database_config();
 
-		require_once dirname(__FILE__) . '/../../phpBB/includes/db/' . $config['dbms'] . '.php';
-		$dbal = 'dbal_' . $config['dbms'];
-		$db = new $dbal();
+		$db = new $config['dbms']();
 
 		// Failure to connect results in a trigger_error call in dbal.
 		// phpunit converts triggered errors to exceptions.
