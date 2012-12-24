@@ -2887,7 +2887,7 @@ function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
 function update_foes($group_id = false, $user_id = false)
 {
 	global $db, $auth;
-	phpbb_update_foes($db, $auth, $group_id, $user_id);
+	return phpbb_update_foes($db, $auth, $group_id, $user_id);
 }
 
 /**
