@@ -21,16 +21,24 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cache_service
 {
-	private $driver;
+	protected $driver;
+	protected $config;
+	protected $db;
+	protected $phpbb_root_path;
+	protected $php_ext;
 
 	/**
 	* Creates a cache service around a cache driver
 	*
 	* @param phpbb_cache_driver_interface $driver The cache driver
 	*/
-	public function __construct(phpbb_cache_driver_interface $driver = null)
+	public function __construct(phpbb_cache_driver_interface $driver, phpbb_config $config, phpbb_db_driver $db, $phpbb_root_path, $php_ext)
 	{
 		$this->set_driver($driver);
+		$this->config = $config;
+		$this->db = $db;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -64,21 +72,19 @@ class phpbb_cache_service
 	*/
 	function obtain_word_list()
 	{
-		global $db;
-
 		if (($censors = $this->driver->get('_word_censors')) === false)
 		{
 			$sql = 'SELECT word, replacement
 				FROM ' . WORDS_TABLE;
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
 			$censors = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$censors['match'][] = get_censor_preg_expression($row['word']);
 				$censors['replace'][] = $row['replacement'];
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_word_censors', $censors);
 		}
@@ -93,23 +99,21 @@ class phpbb_cache_service
 	{
 		if (($icons = $this->driver->get('_icons')) === false)
 		{
-			global $db;
-
 			// Topic icons
 			$sql = 'SELECT *
 				FROM ' . ICONS_TABLE . '
 				ORDER BY icons_order';
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
 			$icons = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$icons[$row['icons_id']]['img'] = $row['icons_url'];
 				$icons[$row['icons_id']]['width'] = (int) $row['icons_width'];
 				$icons[$row['icons_id']]['height'] = (int) $row['icons_height'];
 				$icons[$row['icons_id']]['display'] = (bool) $row['display_on_posting'];
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_icons', $icons);
 		}
@@ -124,15 +128,13 @@ class phpbb_cache_service
 	{
 		if (($ranks = $this->driver->get('_ranks')) === false)
 		{
-			global $db;
-
 			$sql = 'SELECT *
 				FROM ' . RANKS_TABLE . '
 				ORDER BY rank_min DESC';
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
 			$ranks = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				if ($row['rank_special'])
 				{
@@ -150,7 +152,7 @@ class phpbb_cache_service
 					);
 				}
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_ranks', $ranks);
 		}
@@ -169,8 +171,6 @@ class phpbb_cache_service
 	{
 		if (($extensions = $this->driver->get('_extensions')) === false)
 		{
-			global $db;
-
 			$extensions = array(
 				'_allowed_post'	=> array(),
 				'_allowed_pm'	=> array(),
@@ -181,9 +181,9 @@ class phpbb_cache_service
 				FROM ' . EXTENSIONS_TABLE . ' e, ' . EXTENSION_GROUPS_TABLE . ' g
 				WHERE e.group_id = g.group_id
 					AND (g.allow_group = 1 OR g.allow_in_pm = 1)';
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$extension = strtolower(trim($row['extension']));
 
@@ -210,7 +210,7 @@ class phpbb_cache_service
 					$extensions['_allowed_pm'][$extension] = 0;
 				}
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_extensions', $extensions);
 		}
@@ -275,9 +275,7 @@ class phpbb_cache_service
 	{
 		if (($bots = $this->driver->get('_bots')) === false)
 		{
-			global $db;
-
-			switch ($db->sql_layer)
+			switch ($this->db->sql_layer)
 			{
 				case 'mssql':
 				case 'mssql_odbc':
@@ -303,14 +301,14 @@ class phpbb_cache_service
 					ORDER BY LENGTH(bot_agent) DESC';
 				break;
 			}
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
 			$bots = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$bots[] = $row;
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_bots', $bots);
 		}
@@ -323,8 +321,6 @@ class phpbb_cache_service
 	*/
 	function obtain_cfg_items($style)
 	{
-		global $config, $phpbb_root_path;
-
 		$parsed_array = $this->driver->get('_cfg_' . $style['style_path']);
 
 		if ($parsed_array === false)
@@ -332,14 +328,14 @@ class phpbb_cache_service
 			$parsed_array = array();
 		}
 
-		$filename = $phpbb_root_path . 'styles/' . $style['style_path'] . '/style.cfg';
+		$filename = $this->phpbb_root_path . 'styles/' . $style['style_path'] . '/style.cfg';
 
 		if (!file_exists($filename))
 		{
 			return $parsed_array;
 		}
 
-		if (!isset($parsed_array['filetime']) || (($config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
+		if (!isset($parsed_array['filetime']) || (($this->config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
 		{
 			// Re-parse cfg file
 			$parsed_array = parse_cfg_file($filename);
@@ -358,18 +354,16 @@ class phpbb_cache_service
 	{
 		if (($usernames = $this->driver->get('_disallowed_usernames')) === false)
 		{
-			global $db;
-
 			$sql = 'SELECT disallow_username
 				FROM ' . DISALLOW_TABLE;
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
 			$usernames = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$usernames[] = str_replace('%', '.*?', preg_quote(utf8_clean_string($row['disallow_username']), '#'));
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			$this->driver->put('_disallowed_usernames', $usernames);
 		}
@@ -382,22 +376,20 @@ class phpbb_cache_service
 	*/
 	function obtain_hooks()
 	{
-		global $phpbb_root_path, $phpEx;
-
 		if (($hook_files = $this->driver->get('_hooks')) === false)
 		{
 			$hook_files = array();
 
 			// Now search for hooks...
-			$dh = @opendir($phpbb_root_path . 'includes/hooks/');
+			$dh = @opendir($this->phpbb_root_path . 'includes/hooks/');
 
 			if ($dh)
 			{
 				while (($file = readdir($dh)) !== false)
 				{
-					if (strpos($file, 'hook_') === 0 && substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx)
+					if (strpos($file, 'hook_') === 0 && substr($file, -(strlen($this->php_ext) + 1)) === '.' . $this->php_ext)
 					{
-						$hook_files[] = substr($file, 0, -(strlen($phpEx) + 1));
+						$hook_files[] = substr($file, 0, -(strlen($this->php_ext) + 1));
 					}
 				}
 				closedir($dh);
