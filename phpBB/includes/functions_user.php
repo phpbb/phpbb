@@ -2842,7 +2842,7 @@ function avatar_remove_db($avatar_name)
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $db, $cache, $auth, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	if (!$group_name)
 	{
@@ -2913,12 +2913,12 @@ function group_delete($group_id, $group_name = false)
 	extract($phpbb_dispatcher->trigger_event('core.delete_group_after', compact($vars)));
 
 	// Re-cache moderators
-	if (!function_exists('cache_moderators'))
+	if (!function_exists('phpbb_cache_moderators'))
 	{
 		include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 	}
 
-	cache_moderators();
+	phpbb_cache_moderators($db, $cache, $auth);
 
 	add_log('admin', 'LOG_GROUP_DELETE', $group_name);
 
@@ -3678,7 +3678,7 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 */
 function group_update_listings($group_id)
 {
-	global $auth;
+	global $db, $cache, $auth;
 
 	$hold_ary = $auth->acl_group_raw_data($group_id, array('a_', 'm_'));
 
@@ -3720,22 +3720,22 @@ function group_update_listings($group_id)
 
 	if ($mod_permissions)
 	{
-		if (!function_exists('cache_moderators'))
+		if (!function_exists('phpbb_cache_moderators'))
 		{
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
-		cache_moderators();
+		phpbb_cache_moderators($db, $cache, $auth);
 	}
 
 	if ($mod_permissions || $admin_permissions)
 	{
-		if (!function_exists('update_foes'))
+		if (!function_exists('phpbb_update_foes'))
 		{
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
-		update_foes(array($group_id));
+		phpbb_update_foes($db, $auth, array($group_id));
 	}
 }
 
