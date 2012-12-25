@@ -1046,7 +1046,11 @@ input.disabled {
 
 #notification_list {
 	background-color: #FFFFFF;
-	border-color: #00608F;
+	border-color: #B9B9B9;
+}
+
+#notification_list ul li {
+	border-bottom-color: #B9B9B9;
 }
 
 #notification_list ul li:hover {
@@ -1055,5 +1059,26 @@ input.disabled {
 }
 
 #notification_list > .header, .notification_list > .footer {
-	border-color: #00608F;
+	border-color: #B9B9B9;
+	border-bottom-color: #B9B9B9;
+	color: #000000;
 }
+
+#notification_list > .header {
+	background: #F1F8FF;
+	background: -moz-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F1F8FF), color-stop(100%, #CADCEB));
+	background: -webkit-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
+	background: -o-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
+	background: -ms-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
+	background: linear-gradient(to bottom, #F1F8FF 0%, #CADCEB 100%);
+}
+
+.notification_list .pointer {	
+	border-bottom-color: #ADADAD;
+}
+
+.notification_list .pointer_inner {
+	border-bottom-color: #F1F8FF;
+}
+
