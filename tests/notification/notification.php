@@ -20,7 +20,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $phpbb_root_path, $db, $phpEx;
+		global $phpbb_root_path, $phpEx;
 
 		if (!function_exists('set_var'))
 		{
@@ -29,7 +29,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 
 		include_once(__DIR__ . '/ext/test/notification/type/test.' . $phpEx);
 
-		$db = $this->db = $this->new_dbal();
+		$this->db = $this->new_dbal();
 		$this->config = new phpbb_config(array(
 			'allow_privmsg'			=> true,
 			'allow_bookmarks'		=> true,
@@ -125,10 +125,8 @@ class phpbb_notification_test extends phpbb_database_test_case
 
 	public function test_notifications()
 	{
-		global $db;
-
 		// Used to test post notifications later
-		$db->sql_query('INSERT INTO ' . TOPICS_WATCH_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+		$this->db->sql_query('INSERT INTO ' . TOPICS_WATCH_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 			'topic_id'			=> 2,
 			'notify_status'		=> NOTIFY_YES,
 			'user_id'			=> 0,
@@ -171,7 +169,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 			'forum_name'	=> 'Your first forum',
 		));
 
-		$db->sql_query('INSERT INTO ' . BOOKMARKS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+		$this->db->sql_query('INSERT INTO ' . BOOKMARKS_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 			'topic_id'			=> 2,
 			'user_id'			=> 0,
 		)));
