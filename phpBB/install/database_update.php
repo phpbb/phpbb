@@ -93,6 +93,18 @@ if (!defined('LOGIN_ATTEMPT_TABLE'))
 {
 	define('LOGIN_ATTEMPT_TABLE', $table_prefix . 'login_attempts');
 }
+if (!defined('NOTIFICATION_TYPES_TABLE'))
+{
+	define('NOTIFICATION_TYPES_TABLE', $table_prefix . 'notification_types');
+}
+if (!defined('NOTIFICATIONS_TABLE'))
+{
+	define('NOTIFICATIONS_TABLE', $table_prefix . 'notifications');
+}
+if (!defined('USER_NOTIFICATIONS_TABLE'))
+{
+	define('USER_NOTIFICATIONS_TABLE', $table_prefix . 'user_notifications');
+}
 if (!defined('EXT_TABLE'))
 {
 	define('EXT_TABLE', $table_prefix . 'ext');
@@ -1169,6 +1181,45 @@ function database_update_info()
 					),
 					'KEYS'				=> array(
 						'ext_name'		=> array('UNIQUE', 'ext_name'),
+					),
+				),
+				NOTIFICATION_TYPES_TABLE	=> array(
+					'COLUMNS'			=> array(
+						'notification_type'			=> array('VCHAR:255', ''),
+						'notification_type_enabled'	=> array('BOOL', 1),
+					),
+					'PRIMARY_KEY'		=> array('notification_type', 'notification_type_enabled'),
+				),
+				NOTIFICATIONS_TABLE		=> array(
+					'COLUMNS'			=> array(
+						'notification_id'  				=> array('UINT', NULL, 'auto_increment'),
+						'item_type'			   			=> array('VCHAR:255', ''),
+						'item_id'		  				=> array('UINT', 0),
+						'item_parent_id'   				=> array('UINT', 0),
+						'user_id'						=> array('UINT', 0),
+						'notification_read'				=> array('BOOL', 0),
+						'notification_time'				=> array('TIMESTAMP', 1),
+						'notification_data'			   	=> array('TEXT_UNI', ''),
+					),
+					'PRIMARY_KEY'		=> 'notification_id',
+					'KEYS'				=> array(
+						'item_ident'		=> array('INDEX', array('item_type', 'item_id')),
+						'user'				=> array('INDEX', array('user_id', 'notification_read')),
+					),
+				),
+				USER_NOTIFICATIONS_TABLE	=> array(
+					'COLUMNS'			=> array(
+						'item_type'			=> array('VCHAR:255', ''),
+						'item_id'			=> array('UINT', 0),
+						'user_id'			=> array('UINT', 0),
+						'method'			=> array('VCHAR:255', ''),
+						'notify'			=> array('BOOL', 1),
+					),
+					'PRIMARY_KEY'		=> array(
+						'item_type',
+						'item_id',
+						'user_id',
+						'method',
 					),
 				),
 			),
@@ -2594,6 +2645,20 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> 'acl_a_extensions',
 					'cat'		=> 'ACP_EXTENSION_MANAGEMENT',
 				),
+				'notification_options'	=> array(
+					'base'		=> 'ucp_notifications',
+					'class'		=> 'ucp',
+					'title'		=> 'UCP_NOTIFICATION_OPTIONS',
+					'auth'		=> '',
+					'cat'		=> 'UCP_PREFS',
+				),
+				'notification_list'	=> array(
+					'base'		=> 'ucp_notifications',
+					'class'		=> 'ucp',
+					'title'		=> 'UCP_NOTIFICATION_LIST',
+					'auth'		=> '',
+					'cat'		=> 'UCP_MAIN',
+				),
 			);
 
 			_add_modules($modules_to_install);
@@ -2947,6 +3012,72 @@ function change_database_data(&$no_updates, $version)
 					AND module_basename = 'ucp_profile'
 					AND module_mode = 'profile_info'";
 			_sql($sql, $errored, $error_ary);
+
+			if (!isset($config['load_notifications']))
+			{
+				$config->set('load_notifications', 1);
+
+				// Convert notifications
+				$convert_notifications = array(
+					array(
+						'check'			=> ($config['allow_topic_notify']),
+						'item_type'		=> 'post',
+					),
+					array(
+						'check'			=> ($config['allow_forum_notify']),
+						'item_type'		=> 'topic',
+					),
+					array(
+						'check'			=> ($config['allow_bookmarks']),
+						'item_type'		=> 'bookmark',
+					),
+					array(
+						'check'			=> ($config['allow_privmsg']),
+						'item_type'		=> 'pm',
+					),
+				);
+
+				foreach ($convert_notifications as $convert_data)
+				{
+					if ($convert_data['check'])
+					{
+						$sql = 'SELECT user_id, user_notify_type
+							FROM ' . USERS_TABLE . '
+								WHERE user_notify = 1';
+						$result = $db->sql_query($sql);
+						while ($row = $db->sql_fetchrow($result))
+						{
+							_sql('INSERT INTO ' . $table_prefix . 'user_notifications ' . $db->sql_build_array('INSERT', array(
+								'item_type'		=> $convert_data['item_type'],
+								'item_id'		=> 0,
+								'user_id'		=> $row['user_id'],
+								'method'		=> '',
+							)), $errored, $error_ary);
+
+							if ($row['user_notify_type'] == NOTIFY_EMAIL || $row['user_notify_type'] == NOTIFY_BOTH)
+							{
+								_sql('INSERT INTO ' . $table_prefix . 'user_notifications ' . $db->sql_build_array('INSERT', array(
+									'item_type'		=> $convert_data['item_type'],
+									'item_id'		=> 0,
+									'user_id'		=> $row['user_id'],
+									'method'		=> 'email',
+								)), $errored, $error_ary);
+							}
+
+							if ($row['user_notify_type'] == NOTIFY_IM || $row['user_notify_type'] == NOTIFY_BOTH)
+							{
+								_sql('INSERT INTO ' . $table_prefix . 'user_notifications ' . $db->sql_build_array('INSERT', array(
+									'item_type'		=> $convert_data['item_type'],
+									'item_id'		=> 0,
+									'user_id'		=> $row['user_id'],
+									'method'		=> 'jabber',
+								)), $errored, $error_ary);
+							}
+						}
+						$db->sql_freeresult($result);
+					}
+				}
+			}
 
 			$no_updates = false;
 

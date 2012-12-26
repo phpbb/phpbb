@@ -24,6 +24,30 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('viewforum');
 
+// Mark notifications read
+if (($mark_notification = $request->variable('mark_notification', 0)))
+{
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+	$notification = $phpbb_notifications->load_notifications(array(
+		'notification_id'	=> $mark_notification
+	));
+
+	if (isset($notification['notifications'][$mark_notification]))
+	{
+		$notification = $notification['notifications'][$mark_notification];
+
+		$notification->mark_read();
+
+		if (($redirect = $request->variable('redirect', '')))
+		{
+			redirect(append_sid($phpbb_root_path . $redirect));
+		}
+
+		redirect($notification->get_url());
+	}
+}
+
 display_forums('', $config['load_moderators']);
 
 $order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';

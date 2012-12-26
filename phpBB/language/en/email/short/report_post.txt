@@ -1,0 +1,17 @@
+Subject: Topic reply notification - "{TOPIC_TITLE}"
+
+Hello {USERNAME},
+
+You are receiving this notification because the post "{POST_SUBJECT}" at "{SITENAME}" was reported.
+
+If you want to view the report, click the following link:
+{U_VIEW_REPORT}
+
+If you want to view the post, click the following link:
+{U_VIEW_POST}
+
+If you no longer wish to receive updates about replies to bookmarks, please update your notification settings here:
+
+{U_NOTIFICATION_SETTINGS}
+
+{EMAIL_SIG}
