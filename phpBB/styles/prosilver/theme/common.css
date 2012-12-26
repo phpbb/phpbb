@@ -679,8 +679,8 @@ p.rules a {
 	width: 330px;
 	z-index: 1;
 	border: 1px solid;
-	border-radius: 4px;
-	box-shadow: 4px 4px 5px;
+	box-shadow: 3px 3px 5px darkgray;
+	margin-top: 8px;
 }
 
 #notification_list ul {
@@ -690,7 +690,7 @@ p.rules a {
 }
 
 #notification_list ul li {
-	width: ;
+	width: 310px;
 	padding: 10px;
 	margin: 0;
 	float: left;
@@ -700,24 +700,20 @@ p.rules a {
 	clear: both;
 }
 
-#notification_list ul li {
-	width: 310px;
-}
-
-#notification_list ul li:last-child {
-	border-bottom: 0px;
-}
-
 #notification_list > .header {
-	padding: 0 5px;
+	padding: 0 10px;
+	font-family: Arial, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 11px;
 	font-weight: bold;
+	text-shadow: 1px 1px 1px white;
+	text-transform: uppercase;	
+	line-height: 30px;
 	border-bottom: 1px solid;
 }
 
 #notification_list > .footer {
 	text-align: center;
 	font-size: 1.2em;
-	border-top: 1px solid;
 }
 
 #notification_list ul li a, .notification_list dt > a, #notification_list > .footer > a {
@@ -743,4 +739,28 @@ p.rules a {
 
 .notification_list ul.topiclist dt {
 	width: 88%;
+}
+
+.notification_list .pointer, .notification_list .pointer_inner {
+	position: absolute; 
+	width: 0; 
+	height: 0; 
+	border-top-width: 0;
+	border-bottom: 10px solid;
+	border-left: 10px dashed transparent;
+	border-right: 10px dashed transparent;
+	display: block;
+	background: transparent;
+}
+
+.notification_list .pointer {	
+	right: auto;
+	left: 10px;
+	top: -11px;
+}
+
+.notification_list .pointer_inner {
+	top: auto;
+	bottom: -11px;
+	left: -10px;
 }
