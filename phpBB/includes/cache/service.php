@@ -21,16 +21,49 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cache_service
 {
+	/**
+	* Cache driver.
+	*
+	* @var phpbb_cache_driver_interface
+	*/
 	protected $driver;
+
+	/**
+	* The config.
+	*
+	* @var phpbb_config
+	*/
 	protected $config;
+
+	/**
+	* Database connection.
+	*
+	* @var phpbb_db_driver
+	*/
 	protected $db;
+
+	/**
+	* Root path.
+	*
+	* @var string
+	*/
 	protected $phpbb_root_path;
+
+	/**
+	* PHP extension.
+	*
+	* @var string
+	*/
 	protected $php_ext;
 
 	/**
 	* Creates a cache service around a cache driver
 	*
 	* @param phpbb_cache_driver_interface $driver The cache driver
+	* @param phpbb_config $config The config
+	* @param phpbb_db_driver $db Database connection
+	* @param string $phpbb_root_path Root path
+	* @param string $php_ext PHP extension
 	*/
 	public function __construct(phpbb_cache_driver_interface $driver, phpbb_config $config, phpbb_db_driver $db, $phpbb_root_path, $php_ext)
 	{
