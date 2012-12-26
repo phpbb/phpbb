@@ -17,8 +17,8 @@ PHP extensions
 Unit tests use several PHP extensions that board code does not use. Currently
 the following PHP extensions must be installed and enabled to run unit tests:
 
-- ctype (also a phpunit dependency)
-- dom (phpunit dependency)
+- ctype (also a PHPUnit dependency)
+- dom (PHPUnit dependency)
 
 Some of the functionality in phpBB and/or the test suite uses additional
 PHP extensions. If these extensions are not loaded, respective tests
@@ -61,7 +61,7 @@ to use in the environment as follows:
     $ PHPBB_TEST_CONFIG=tests/test_config.php phpunit
 
 Alternatively you can specify parameters in the environment, so e.g. the
-following will run phpunit with the same parameters as in the shown
+following will run PHPUnit with the same parameters as in the shown
 test_config.php file:
 
     $ PHPBB_TEST_DBMS='mysqli' PHPBB_TEST_DBHOST='localhost' \
