@@ -128,13 +128,8 @@ class phpbb_notification_manager
 			$sql = 'SELECT COUNT(n.notification_id) AS unread_count
 				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
 				WHERE n.user_id = ' . (int) $options['user_id'] . '
-<<<<<<< HEAD
-					AND n.unread = 1
-					AND nt.notification_type = n.item_type
-=======
 					AND n.notification_read = 0
-					AND nt.notification_type = n.notification_type
->>>>>>> 5cedca0... [ticket/11103] unread -> notification_read
+					AND nt.notification_type = n.item_type
 					AND nt.notification_type_enabled = 1';
 			$result = $this->db->sql_query($sql);
 			$unread_count = (int) $this->db->sql_fetchfield('unread_count', $result);
