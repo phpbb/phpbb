@@ -208,7 +208,7 @@ class phpbb_notification_type_topic extends phpbb_notification_type_base
 	*/
 	public function users_to_query()
 	{
-		return array($this->data['poster_id']);
+		return array($this->get_data('poster_id'));
 	}
 
 	/**
