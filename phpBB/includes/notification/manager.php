@@ -240,7 +240,7 @@ class phpbb_notification_manager
 			SET notification_read = 1
 			WHERE notification_time <= " . $time .
 				(($item_type !== false) ? ' AND ' . (is_array($item_type) ? $this->db->sql_in_set('item_type', $item_type) : " item_type = '" . $this->db->sql_escape($item_type) . "'") : '') .
-				(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '') .
+				(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '');
 		$this->db->sql_query($sql);
 	}
 
@@ -269,8 +269,6 @@ class phpbb_notification_manager
 		$sql = 'UPDATE ' . $this->notifications_table . "
 			SET notification_read = 1
 			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
-			SET notification_read = 1
-			WHERE notification_type = '" . $this->db->sql_escape($notification_type) . "'
 				AND notification_time <= " . $time .
 				(($item_parent_id !== false) ? ' AND ' . (is_array($item_parent_id) ? $this->db->sql_in_set('item_parent_id', $item_parent_id) : 'item_parent_id = ' . (int) $item_parent_id) : '') .
 				(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '');
