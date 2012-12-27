@@ -111,6 +111,10 @@ class phpbb_avatar_manager
 	/**
 	* Get a list of all avatar drivers
 	*
+	* As this function will only be called in the ACP avatar settings page, it
+	* doesn't make much sense to cache the list of all avatar drivers like the
+	* list of the enabled drivers.
+	*
 	* @return array Array containing a list of all avatar drivers
 	*/
 	public function get_all_drivers()
