@@ -24,7 +24,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	/**
 	* The URL for the gravatar service
 	*/
-	const GRAVATAR_URL = 'https://secure.gravatar.com/avatar/';
+	const GRAVATAR_URL = '//secure.gravatar.com/avatar/';
 
 	/**
 	* @inheritdoc
