@@ -130,7 +130,7 @@ class phpbb_notification_type_report_pm_closed extends phpbb_notification_type_p
 	*/
 	public function users_to_query()
 	{
-		return array($this->data['closer_id']);
+		return array($this->get_data('closer_id'));
 	}
 
 	/**

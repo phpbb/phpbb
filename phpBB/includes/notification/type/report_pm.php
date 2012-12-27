@@ -205,7 +205,7 @@ class phpbb_notification_type_report_pm extends phpbb_notification_type_pm
 	*/
 	public function users_to_query()
 	{
-		return array($this->data['reporter_id']);
+		return array($this->get_data('reporter_id'));
 	}
 
 	/**

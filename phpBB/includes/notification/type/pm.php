@@ -161,7 +161,7 @@ class phpbb_notification_type_pm extends phpbb_notification_type_base
 	*/
 	public function users_to_query()
 	{
-		return array($this->data['from_user_id']);
+		return array($this->get_data('from_user_id'));
 	}
 
 	/**

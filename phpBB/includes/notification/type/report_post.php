@@ -172,7 +172,7 @@ class phpbb_notification_type_report_post extends phpbb_notification_type_post_i
 	*/
 	public function users_to_query()
 	{
-		return array($this->data['reporter_id']);
+		return array($this->get_data('reporter_id'));
 	}
 
 	/**
