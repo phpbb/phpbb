@@ -31,6 +31,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
             ->method('get_name')
             ->will($this->returnValue('avatar.driver.foobar'));
 		$avatar_drivers = array($this->avatar_foobar);
+				$config['allow_avatar_' . get_class($this->avatar_foobar)] = true;
 
 		// Set up avatar manager
 		$this->manager = new phpbb_avatar_manager($config, $avatar_drivers, $this->phpbb_container);
@@ -45,14 +46,24 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 		$this->assertNull($driver);
 
 		$driver = $this->manager->get_driver('avatar.driver.foobar');
+		$this->assertEquals('avatar.driver.foobar', $driver);
+
+		$driver = $this->manager->get_driver('avatar.driver.foo_wrong');
 		$this->assertNull($driver);
 	}
 
-	public function test_get_valid_drivers()
+	public function test_get_all_drivers()
 	{
-		$valid_drivers = $this->manager->get_all_drivers();
-		$this->assertArrayHasKey('avatar.driver.foobar', $valid_drivers);
-		$this->assertEquals('avatar.driver.foobar', $valid_drivers['avatar.driver.foobar']);
+		$drivers = $this->manager->get_all_drivers();
+		$this->assertArrayHasKey('avatar.driver.foobar', $drivers);
+		$this->assertEquals('avatar.driver.foobar', $drivers['avatar.driver.foobar']);
+	}
+
+	public function test_get_enabled_drivers()
+	{
+		$drivers = $this->manager->get_enabled_drivers();
+		$this->assertArrayHasKey('avatar.driver.foobar', $drivers);
+		$this->assertEquals('avatar.driver.foobar', $drivers['avatar.driver.foobar']);
 	}
 
 	public function test_get_avatar_settings()
