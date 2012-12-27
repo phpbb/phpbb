@@ -66,33 +66,18 @@ class phpbb_controller_post_revisions
 	}
 
 	/**
-	* View the revisions a post. By default this compares the current revision
-	* to the earliest available revision (usually the original post)
-	*
-	* This controller method is called directly from the path:
-	* /post/{id}/revisions
-	*
-	* @param int $id Post ID
-	* @return Response
-	*/
-	public function view($id)
-	{
-		return $this->compare($id);
-	}
-
-	/**
 	* Compare two revisions
 	*
-	* This controller method is called directly from the paths:
+	* This controller method is accessed directly from the routes:
 	* /post/{id}/revisions/{from}...{to}
 	* /post/{id}/revisions/{to}
-	* It is also called indirectly by the path:
 	* /post/{id}/revisions
-	* Which supplies it with the revision IDs.
 	*
 	* @param int $id Post ID
 	* @param int $from Starting point in the comparison (a revision ID)
+	*					0 = oldest available revision
 	* @param int $to Ending point in the comparison (a revision ID)
+	*					0 = current post revision
 	* @return Response
 	*/
 	public function compare($id, $from = 0, $to = 0)
@@ -103,16 +88,17 @@ class phpbb_controller_post_revisions
 
 		if (!$this->get_view_permission($post_data))
 		{
+			// 401 is the Unauthorized status code
 			return $this->helper->error($this->user->lang('ERROR_AUTH_VIEW'), 401);
 		}
 
 		$revisions = $post->get_revisions();
-		$current = $post->get_current_revision();
-
-		if (0 === $post->get_revision_count())
+		if (!sizeof($revisions))
 		{
 			return $this->helper->error($this->user->lang('ERROR_NO_POST_REVISIONS', 404));
 		}
+
+		$current = $post->get_current_revision();
 
 		if (isset($_POST['delete']) || isset($_POST['protect']) || isset($_POST['unprotect']))
 		{
@@ -130,35 +116,33 @@ class phpbb_controller_post_revisions
 				return $this->helper->error($this->user->lang('ERROR_AUTH_ACTION', $action_lang), 401);
 			}
 
-			// Because we use a variable method below, we need to use the
-			// correct method name
-			if ('delete' === $action)
-			{
-				$action = 'perform_delete';
-			}
-
 			$action_ids = $this->request->variable($action . '_ids[]', array(0));
 			$result = (bool) $this->$action($action_ids);
-			// Default to failure; this will be replaced upon success
-			$result_lang = $this->user->lang('REVISION_' . strtoupper($action) . '_FAIL');
+
+			// Default to failure; this will be replaced upon success in the
+			// following 'if' block
+			$l_result = $this->user->lang('REVISION_' . strtoupper($action) . '_FAIL');
 
 			if ($result)
 			{
 				$post_data = $post->get_post_data(true);
 				$revisions = $post->get_revisions(true);
-				$result_lang = $this->user->lang('REVISION_' . strtoupper($action) . 'ED_SUCCESS');
-				if ('perform_delete' === $action)
-				{
-					// If after deleting the revision(s) we don't have any
-					// more revisions, say so in the result message
-					$result_lang .= (0 === sizeof($revisions)) ? '_NO_MORE' : '';
-				}
+				$success_message = 'REVISION_' . strtoupper($action) . 'ED_SUCCESS' .
+					// If we have deleted a revision and we have no more
+					// make sure to let the user know that as well
+					('delete' === $action && !sizeof($revisions) ? '_NO_MORE' : '');
+				$l_result = $this->user->lang($success_message);
 			}
 
 			$this->send_ajax_response(array(
-				'success'	 => $result,
-				'message'	=> $result_lang,
+				'success'	=> $result,
+				'message'	=> $l_result,
 			));
+
+			if (!sizeof($revisions))
+			{
+				return $this->helper->error($this->user->lang('ERROR_NO_POST_REVISIONS', 404));
+			}
 		}
 
 		// If $from is empty, the earliest available revision is used
@@ -172,8 +156,8 @@ class phpbb_controller_post_revisions
 			$from = (int) $this->db->sql_fetchfield('revision_id');
 			$this->db->sql_freeresult($result);
 		}
-
 		$from_revision = new phpbb_revisions_revision($from, $this->db);
+
 		// If $to is empty, the current post is used
 		$to_revision = $to ? new phpbb_revisions_revision($to, $this->db) : $post->get_current_revision();
 
@@ -215,6 +199,7 @@ class phpbb_controller_post_revisions
 	* View a given revision ID as if it were the current post on the viewtopic
 	* page
 	*
+	* This controller method is accessed directly from the route:
 	* /post/{id}/revision/{revision_id}
 	*
 	* @param int $id Post ID
@@ -266,7 +251,7 @@ class phpbb_controller_post_revisions
 	* Display the page on which to set a specific revision to protected or
 	* unprotected
 	*
-	* This controller method is accessed directly from the paths:
+	* This controller method is accessed directly from the routes:
 	* /post/{id}/revision/{revision_id}/protect
 	* /post/{id}/revision/{revision_id}/unprotect
 	* $mode is supplied by the route definition as either protect or unprotect
@@ -283,7 +268,7 @@ class phpbb_controller_post_revisions
 		$post = new phpbb_revisions_post($id, $this->db);
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
-		if (!$auth->acl_get('m_protect_revisions', $post_data['forum_id']))
+		if (!$this->auth->acl_get('m_protect_revisions', $post_data['forum_id']))
 		{
 			$error = ($mode == 'protect') ? 'NO_AUTH_PROTECT_REVISIONS' : 'NO_AUTH_UNPROTECT_REVISIONS';
 			$this->send_ajax_response(array(
@@ -335,7 +320,7 @@ class phpbb_controller_post_revisions
 	* @param int $revision_id Revision ID
 	* @return Response
 	*/
-	public function delete($id, $revision_id)
+	public function delete_revision($id, $revision_id)
 	{
 		$post = new phpbb_revisions_post($id, $this->db);
 		$post_data = $post->get_post_data();
@@ -359,7 +344,7 @@ class phpbb_controller_post_revisions
 			return $this->helper->error($this->user->lang('ERROR_REVISION_NOT_FOUND'), 404);
 		}
 
-		$result = $this->perform_delete($revision_id);
+		$result = $this->delete($revision_id);
 
 		$post_data = $post->get_post_data(true);
 		$revisions = $post->get_revisions(true);
@@ -382,7 +367,7 @@ class phpbb_controller_post_revisions
 	* @param mixed $revision_id Revision ID or array of revision IDs
 	* @return bool
 	*/
-	protected function perform_delete($revision_id)
+	protected function delete($revision_id)
 	{
 		if (!is_array($revision_id))
 		{
@@ -411,7 +396,7 @@ class phpbb_controller_post_revisions
 		$sql = 'UPDATE ' . POST_REVISIONS_TABLE . '
 			SET revision_protected = 1
 			WHERE ' . $this->db->sql_in_set('revision_id', $revision_id);
-		return (bool) $db->sql_query($sql);
+		return (bool) $this->db->sql_query($sql);
 	}
 
 	/**
@@ -431,7 +416,7 @@ class phpbb_controller_post_revisions
 		$sql = 'UPDATE ' . POST_REVISIONS_TABLE . '
 			SET revision_protected = 0
 			WHERE ' . $this->db->sql_in_set('revision_id', $revision_id);
-		return (bool) $db->sql_query($sql);
+		return (bool) $this->db->sql_query($sql);
 	}
 
 	/**
@@ -466,7 +451,7 @@ class phpbb_controller_post_revisions
 				$error = 'ERROR_REVISION_NOT_FOUND';
 				$code = 404;
 			}
-			else if ($post_data['post_edit_locked'] && !$auth->acl_get('m_revisions', $post_data['forum_id']))
+			else if ($post_data['post_edit_locked'] && !$this->auth->acl_get('m_revisions', $post_data['forum_id']))
 			{
 				$error = 'ERROR_POST_EDIT_LOCKED';
 				// 401 is unauthorized
@@ -515,7 +500,7 @@ class phpbb_controller_post_revisions
 			$post_data = $post->get_post_data(true);
 			$revisions = $post->get_revisions(true);
 
-			$template->assign_vars(array(
+			$this->template->assign_vars(array(
 				'L_REVISIONS_ACTION_SUCCESS'	=> $this->user->lang('POST_REVERTED_SUCCESS'),
 			));
 

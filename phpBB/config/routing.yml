@@ -11,7 +11,7 @@
 # View a post's revisions
 post_revisions_view:
     pattern: /post/{id}/revisions
-    defaults: { _controller: post_revisions.controller:view }
+    defaults: { _controller: post_revisions.controller:compare }
     requirements:
         # match one or more integer characters
         id: \d+
@@ -44,7 +44,7 @@ post_revision_view:
 # Delete a single revision of a post
 post_revision_delete:
     pattern: /post/{id}/revision/{revision_id}/delete
-    defaults: { _controller: post_revisions.controller:delete }
+    defaults: { _controller: post_revisions.controller:delete_revision }
     requirements:
         id: \d+
         revision_id: \d+
