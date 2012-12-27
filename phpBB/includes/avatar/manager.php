@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_avatar_manager
 {
 	protected $config;
-	protected static $valid_drivers = false;
+	static protected $enabled_drivers = false;
 	protected $avatar_drivers;
 	protected $container;
 
@@ -47,18 +47,18 @@ class phpbb_avatar_manager
 	* Get the driver object specified by the avatar type
 	*
 	* @param string $avatar_type Avatar type; by default an avatar's service container name
-	* @param bool $load_valid Load only valid avatars
+	* @param bool $load_enabled Load only enabled avatars
 	*
 	* @return object Avatar driver object
 	*/
-	public function get_driver($avatar_type, $load_valid = true)
+	public function get_driver($avatar_type, $load_enabled = true)
 	{
-		if (self::$valid_drivers === false)
+		if (self::$enabled_drivers === false)
 		{
-			$this->load_valid_drivers();
+			$this->load_enabled_drivers();
 		}
 
-		$avatar_drivers = ($load_valid) ? self::$valid_drivers : $this->get_all_drivers();
+		$avatar_drivers = ($load_enabled) ? self::$enabled_drivers : $this->get_all_drivers();
 
 		// Legacy stuff...
 		switch ($avatar_type)
@@ -89,22 +89,22 @@ class phpbb_avatar_manager
 	}
 
 	/**
-	* Load the list of valid drivers
-	* This is executed once and fills self::$valid_drivers
+	* Load the list of enabled drivers
+	* This is executed once and fills self::$enabled_drivers
 	*/
-	protected function load_valid_drivers()
+	protected function load_enabled_drivers()
 	{
 		if (!empty($this->avatar_drivers))
 		{
-			self::$valid_drivers = array();
+			self::$enabled_drivers = array();
 			foreach ($this->avatar_drivers as $driver)
 			{
 				if ($this->is_enabled($driver))
 				{
-					self::$valid_drivers[$driver->get_name()] = $driver->get_name();
+					self::$enabled_drivers[$driver->get_name()] = $driver->get_name();
 				}
 			}
-			asort(self::$valid_drivers);
+			asort(self::$enabled_drivers);
 		}
 	}
 
@@ -130,18 +130,18 @@ class phpbb_avatar_manager
 	}
 
 	/**
-	* Get a list of valid avatar drivers
+	* Get a list of enabled avatar drivers
 	*
-	* @return array Array containing a list of the valid avatar drivers
+	* @return array Array containing a list of the enabled avatar drivers
 	*/
-	public function get_valid_drivers()
+	public function get_enabled_drivers()
 	{
-		if (self::$valid_drivers === false)
+		if (self::$enabled_drivers === false)
 		{
-			$this->load_valid_drivers();
+			$this->load_enabled_drivers();
 		}
 
-		return self::$valid_drivers;
+		return self::$enabled_drivers;
 	}
 
 	/**
@@ -152,7 +152,7 @@ class phpbb_avatar_manager
 	* @return array User data or group data with keys that have been
 	*        stripped from the preceding "user_" or "group_"
 	*/
-	public static function clean_row($row)
+	static public function clean_row($row)
 	{
 		$keys = array_keys($row);
 		$values = array_values($row);
@@ -168,7 +168,7 @@ class phpbb_avatar_manager
 	* @param string Array key
 	* @return string Key that has been stripped from its prefix
 	*/
-	protected static function strip_prefix($key)
+	static protected function strip_prefix($key)
 	{
 		return preg_replace('#^(?:user_|group_)#', '', $key);
 	}
@@ -181,7 +181,7 @@ class phpbb_avatar_manager
 	*
 	* @return string Cleaned driver name
 	*/
-	public static function clean_driver_name($name)
+	static public function clean_driver_name($name)
 	{
 		return str_replace('_', '.', $name);
 	}
@@ -194,7 +194,7 @@ class phpbb_avatar_manager
 	*
 	* @return string Prepared driver name
 	*/
-	public static function prepare_driver_name($name)
+	static public function prepare_driver_name($name)
 	{
 		return str_replace('.', '_', $name);
 	}

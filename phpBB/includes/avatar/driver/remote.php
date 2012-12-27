@@ -117,7 +117,7 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 
 		if (!class_exists('fileupload'))
 		{
-			include_once($this->phpbb_root_path . 'includes/functions_upload' . $this->php_ext);
+			include($this->phpbb_root_path . 'includes/functions_upload' . $this->php_ext);
 		}
 
 		$types = fileupload::image_types();

@@ -290,7 +290,7 @@ class acp_groups
 				if ($config['allow_avatar'])
 				{
 					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
-					$avatar_drivers = $phpbb_avatar_manager->get_valid_drivers();
+					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the group_ prefix
 					$avatar_data = phpbb_avatar_manager::clean_row($group_row);
