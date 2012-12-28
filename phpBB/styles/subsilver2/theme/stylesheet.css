@@ -1156,7 +1156,7 @@ a.imageset {
 }
 
 #notification_list .notification_title {
-	width: 240px;
+	padding: 5px;
 }
 
 #notification_list .header {

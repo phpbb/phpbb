@@ -727,11 +727,6 @@ p.rules a {
 	margin-right: 5px;
 }
 
-#notification_list ul li div {
-	width: 240px;
-	float: left;
-}
-
 .notification_list ul li p {
 	margin: 0;
 	word-wrap: break-word;
