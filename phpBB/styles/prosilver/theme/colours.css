@@ -1060,7 +1060,6 @@ input.disabled {
 
 #notification_list > .header, .notification_list > .footer {
 	border-color: #B9B9B9;
-	border-bottom-color: #B9B9B9;
 	color: #000000;
 }
 
@@ -1074,8 +1073,8 @@ input.disabled {
 	background: linear-gradient(to bottom, #F1F8FF 0%, #CADCEB 100%);
 }
 
-.notification_list .pointer {	
-	border-bottom-color: #ADADAD;
+.notification_list .pointer {
+	border-bottom-color: #B9B9B9;
 }
 
 .notification_list .pointer_inner {
