@@ -742,9 +742,9 @@ p.rules a {
 }
 
 .notification_list .pointer, .notification_list .pointer_inner {
-	position: absolute; 
-	width: 0; 
-	height: 0; 
+	position: absolute;
+	width: 0;
+	height: 0;
 	border-top-width: 0;
 	border-bottom: 10px solid;
 	border-left: 10px dashed transparent;
@@ -753,7 +753,7 @@ p.rules a {
 	background: transparent;
 }
 
-.notification_list .pointer {	
+.notification_list .pointer {
 	right: auto;
 	left: 10px;
 	top: -11px;
