@@ -167,15 +167,21 @@
 			checkreturn="true" />
 
 		<!--
-			Make sure composer is available before calling it.
-			Older versions of the tree didn't use it.
+			If composer.phar exists in this version of the tree, also export
+			it into ${dir}, install dependencies, then delete it again.
 		-->
+		<exec dir="."
+			command="git ls-tree ${revision} composer.phar"
+			outputProperty='composer-ls-tree-output' />
 		<if>
-			<available file='${dir}/../composer.phar' type='file' />
+			<not><equals arg1="${composer-ls-tree-output}" arg2="" trim="true" /></not>
 			<then>
+				<exec dir="."
+					command="git archive ${revision} composer.phar | tar -xf - -C ${dir}" />
 				<exec dir="${dir}"
-					command="php ../composer.phar install"
+					command="php composer.phar install"
 					passthru="true" />
+				<delete file="${dir}/composer.phar" />
 			</then>
 		</if>
 
