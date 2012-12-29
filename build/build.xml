@@ -43,6 +43,11 @@
 		<delete dir="build/save" />
 	</target>
 
+	<!--
+		This target basically just runs composer in the phpBB tree to ensure
+		all dependencies are loaded. Additional development dependencies are
+		loaded because testing framework may depend on them.
+	-->
 	<target name="composer">
 		<exec dir="./phpBB/"
 			command="php ../composer.phar install --dev"
