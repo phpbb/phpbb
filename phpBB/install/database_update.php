@@ -73,6 +73,10 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 	die("Please read: <a href='../docs/INSTALL.html'>INSTALL.html</a> before attempting to update.");
 }
 
+// In case $phpbb_adm_relative_path is not set (in case of an update), use the default.
+$phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relative_path : 'adm/';
+$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
+
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 
@@ -231,7 +235,7 @@ if ($has_global && !$ga_forum_id)
 
 	<title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
-	<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="<?php echo htmlspecialchars($phpbb_admin_path); ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 	</head>
 
@@ -281,7 +285,7 @@ header('Content-type: text/html; charset=UTF-8');
 
 <title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
-<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="<?php echo htmlspecialchars($phpbb_admin_path); ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 </head>
 

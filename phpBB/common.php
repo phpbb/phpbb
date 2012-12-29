@@ -63,6 +63,10 @@ if (!defined('PHPBB_INSTALLED'))
 	exit;
 }
 
+// In case $phpbb_adm_relative_path is not set (in case of an update), use the default.
+$phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relative_path : 'adm/';
+$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
+
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 
