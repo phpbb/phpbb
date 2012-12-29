@@ -206,6 +206,7 @@
 		<delete dir="${dir}/files" />
 		<delete dir="${dir}/install" />
 		<delete dir="${dir}/store" />
+		<delete dir="${dir}/vendor" />
 	</target>
 
 </project>
