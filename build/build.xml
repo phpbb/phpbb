@@ -11,7 +11,7 @@
 	<property name="versions" value="${oldversions}, ${newversion}" />
 
 	<!-- These are the main targets which you will probably want to use -->
-	<target name="package" depends="clean,prepare,composer,create-package" />
+	<target name="package" depends="clean,prepare,create-package" />
 	<target name="all" depends="clean,prepare,composer,test,docs,create-package" />
 	<target name="build" depends="clean,prepare,composer,test,docs" />
 
