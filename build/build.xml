@@ -49,7 +49,7 @@
 		loaded because testing framework may depend on them.
 	-->
 	<target name="composer">
-		<exec dir="./phpBB/"
+		<exec dir="phpBB"
 			command="php ../composer.phar install --dev"
 			passthru="true" />
 	</target>
