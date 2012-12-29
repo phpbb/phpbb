@@ -45,7 +45,7 @@
 
 	<target name="composer">
 		<exec dir="./phpBB/"
-			command="php ../composer.phar install"
+			command="php ../composer.phar install --dev"
 			passthru="true" />
 	</target>
 
