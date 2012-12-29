@@ -43,7 +43,7 @@
 		<delete dir="build/save" />
 	</target>
 
-	<target name="composer" depends="clean,prepare">
+	<target name="composer">
 		<exec dir="./phpBB/"
 			command="php ../composer.phar install"
 			passthru="true" />
