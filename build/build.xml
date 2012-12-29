@@ -11,8 +11,7 @@
 	<property name="versions" value="${oldversions}, ${newversion}" />
 
 	<!-- These are the main targets which you will probably want to use -->
-	<target name="package" depends="clean,prepare,create-package" />
-	<target name="all" depends="clean,prepare,composer,test,docs,create-package" />
+	<target name="all" depends="clean,prepare,composer,test,docs,package" />
 	<target name="build" depends="clean,prepare,composer,test,docs" />
 
 	<target name="prepare">
@@ -127,7 +126,7 @@
 
 	</target>
 
-	<target name="create-package" depends="prepare-new-version,old-version-diffs">
+	<target name="package" depends="clean,prepare,prepare-new-version,old-version-diffs">
 		<exec dir="build" command="php -f package.php '${versions}' > logs/package.log" escape="false" />
 		<exec dir="build" command="php -f build_diff.php '${prevversion}' '${newversion}' > logs/build_diff.log" escape="false" />
 
