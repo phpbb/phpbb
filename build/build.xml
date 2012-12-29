@@ -50,6 +50,7 @@
 	<target name="composer">
 		<exec dir="phpBB"
 			command="php ../composer.phar install --dev"
+			checkreturn="true"
 			passthru="true" />
 	</target>
 
