@@ -172,14 +172,17 @@
 		-->
 		<exec dir="."
 			command="git ls-tree ${revision} composer.phar"
+			checkreturn="true"
 			outputProperty='composer-ls-tree-output' />
 		<if>
 			<not><equals arg1="${composer-ls-tree-output}" arg2="" trim="true" /></not>
 			<then>
 				<exec dir="."
-					command="git archive ${revision} composer.phar | tar -xf - -C ${dir}" />
+					command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
+					checkreturn="true" />
 				<exec dir="${dir}"
 					command="php composer.phar install"
+					checkreturn="true"
 					passthru="true" />
 				<delete file="${dir}/composer.phar" />
 			</then>
