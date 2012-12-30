@@ -32,6 +32,8 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
 		),
+		// Note: php 5.5 alpha 2 deprecated mysql.
+		// Keep mysqli before mysql in this list.
 		'mysqli'	=> array(
 			'LABEL'			=> 'MySQL with MySQLi Extension',
 			'SCHEMA'		=> 'mysql_41',
