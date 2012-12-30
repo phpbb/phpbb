@@ -477,10 +477,13 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		}
 
 		$this->db->sql_transaction('begin');
+
+		$sql_from = "FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p";
+		$sql_where = "WHERE (" . implode(' OR ', $tmp_sql_match) . ")
+			$sql_where_options";
 		$sql = "SELECT $sql_select
-			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
-			WHERE (" . implode(' OR ', $tmp_sql_match) . ")
-			$sql_where_options
+			$sql_from
+			$sql_where
 			ORDER BY $sql_sort";
 		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
@@ -501,9 +504,8 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		if (!$result_count)
 		{
 			$sql_count = "SELECT COUNT(*) as result_count
-				FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
-				WHERE (" . implode(' OR ', $tmp_sql_match) . ")
-				$sql_where_options";
+				$sql_from
+				$sql_where";
 			$result = $this->db->sql_query($sql_count);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 			$this->db->sql_freeresult($result);
