@@ -187,3 +187,11 @@ services:
 
     user:
         class: phpbb_user
+
+    user_loader:
+        class: phpbb_user_loader
+        arguments:
+            - @dbal.conn
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.users%
