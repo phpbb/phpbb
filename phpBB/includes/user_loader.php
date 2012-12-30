@@ -25,16 +25,16 @@ if (!defined('IN_PHPBB'))
 class phpbb_user_loader
 {
 	/** @var phpbb_db_driver */
-	protected $db = null;
+	protected $db;
 
 	/** @var string */
-	protected $phpbb_root_path = null;
+	protected $phpbb_root_path;
 
 	/** @var string */
-	protected $php_ext = null;
+	protected $php_ext;
 
 	/** @var string */
-	protected $users_table = null;
+	protected $users_table;
 
 	/**
 	* Users loaded from the DB
@@ -135,9 +135,9 @@ class phpbb_user_loader
 		{
 			return $this->users[$user_id];
 		}
-		// Query them if we must (if ANONYMOUS is sent as the user_id and we have not loaded Anonymous yet, we must load Anonymous as a last resort)
 		else if ($query || $user_id == ANONYMOUS)
 		{
+			// Query them if we must (if ANONYMOUS is sent as the user_id and we have not loaded Anonymous yet, we must load Anonymous as a last resort)
 			$this->load_users(array($user_id));
 
 			return $this->get_user($user_id);
@@ -165,7 +165,8 @@ class phpbb_user_loader
 	*/
 	public function get_username($user_id, $mode, $guest_username = false, $custom_profile_url = false, $query = false)
 	{
-		if (!($user = $this->get_user($user_id, $query)))
+		$user = $this->get_user($user_id, $query);
+		if (!$user)
 		{
 			return '';
 		}
@@ -184,7 +185,8 @@ class phpbb_user_loader
 	*/
 	public function get_avatar($user_id, $query = false)
 	{
-		if (!($user = $this->get_user($user_id, $query)))
+		$user = $this->get_user($user_id, $query);
+		if (!$user)
 		{
 			return '';
 		}
@@ -208,7 +210,8 @@ class phpbb_user_loader
 	*/
 	public function get_rank($user_id, $query = false)
 	{
-		if (!($user = $this->get_user($user_id, $query)))
+		$user = $this->get_user($user_id, $query);
+		if (!$user)
 		{
 			return '';
 		}
