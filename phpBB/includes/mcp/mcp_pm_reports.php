@@ -123,6 +123,7 @@ class mcp_pm_reports
 
 				$message = bbcode_nl2br($message);
 				$message = smiley_text($message);
+				$report['report_text'] = make_clickable(bbcode_nl2br($report['report_text']));
 
 				if ($pm_info['message_attachment'] && $auth->acl_get('u_pm_download'))
 				{
