@@ -81,39 +81,7 @@ class phpbb_user_loader
 
 		if (!empty($user_ids))
 		{
-			$sql_array = array(
-				'SELECT'	=> implode(', ', array(
-					'u.user_id',
-					'u.user_type',
-					'u.username',
-					'u.username_clean',
-					'u.user_email',
-					'u.user_posts',
-					'u.user_lang',
-					'u.user_rank',
-					'u.user_colour',
-					'u.user_avatar',
-					'u.user_avatar_type',
-					'u.user_avatar_width',
-					'u.user_avatar_height',
-				)),
-				'FROM'		=> array(
-					$this->users_table	=> 'u',
-				),
-				'WHERE'		=> $this->db->sql_in_set('u.user_id', $user_ids),
-			);
-
-			/**
-			* Alter what is loaded by the user loader
-			*
-			* @event core.user_loader.load_users
-			* @var array sql_array SQL array to be sent to sql_build_array
-			* @since 3.1-A1
-			*/
-			$vars = array($sql_array);
-			extract($phpbb_dispatcher->trigger_event('core.user_loader.load_users', compact($vars)));
-
-			$sql = $this->db->sql_build_query('SELECT', $sql_array);
+			$sql = $this->build_query($this->db->sql_in_set('u.user_id', $user_ids));
 			$result = $this->db->sql_query($sql);
 
 			while ($row = $this->db->sql_fetchrow($result))
@@ -144,40 +112,7 @@ class phpbb_user_loader
 	*/
 	public function load_user_by_username($username)
 	{
-		$sql_array = array(
-			'SELECT'	=> implode(', ', array(
-				'u.user_id',
-				'u.user_type',
-				'u.username',
-				'u.username_clean',
-				'u.user_email',
-				'u.user_posts',
-				'u.user_lang',
-				'u.user_rank',
-				'u.user_colour',
-				'u.user_avatar',
-				'u.user_avatar_type',
-				'u.user_avatar_width',
-				'u.user_avatar_height',
-			)),
-			'FROM'		=> array(
-				$this->users_table	=> 'u',
-			),
-			'WHERE'		=> "username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'",
-		);
-
-		/**
-		* Alter what is loaded by the user loader when load_user_by_username is called
-		*
-		* @event core.user_loader.load_users
-		* @var string username Username requested
-		* @var array sql_array SQL array to be sent to sql_build_array
-		* @since 3.1-A1
-		*/
-		$vars = array($username, $sql_array);
-		extract($phpbb_dispatcher->trigger_event('core.user_loader.load_user_by_username', compact($vars)));
-
-		$sql = $this->db->sql_build_query('SELECT', $sql_array);
+		$sql = $this->build_query("username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'");
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -333,5 +268,47 @@ class phpbb_user_loader
 	public function flush()
 	{
 		$this->users = array();
+	}
+
+	/**
+	* Build a user selection query
+	*
+	* @param string $where Where statement
+	*/
+	protected function build_query($where)
+	{
+		$sql_array = array(
+			'SELECT'	=> implode(', ', array(
+				'u.user_id',
+				'u.user_type',
+				'u.username',
+				'u.username_clean',
+				'u.user_email',
+				'u.user_posts',
+				'u.user_lang',
+				'u.user_rank',
+				'u.user_colour',
+				'u.user_avatar',
+				'u.user_avatar_type',
+				'u.user_avatar_width',
+				'u.user_avatar_height',
+			)),
+			'FROM'		=> array(
+				$this->users_table	=> 'u',
+			),
+			'WHERE'		=> $where,
+		);
+
+		/**
+		* Alter what is loaded by the user loader
+		*
+		* @event core.user_loader.build_query
+		* @var array sql_array SQL array to be sent to sql_build_array
+		* @since 3.1-A1
+		*/
+		$vars = array($username, $sql_array);
+		extract($phpbb_dispatcher->trigger_event('core.user_loader.build_query', compact($vars)));
+
+		return $this->db->sql_build_query('SELECT', $sql_array);
 	}
 }
