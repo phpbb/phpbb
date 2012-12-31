@@ -64,9 +64,10 @@ abstract class phpbb_cache_common_test_case extends phpbb_database_test_case
 
 	public function test_cache_sql()
 	{
-		global $db, $cache;
+		global $db, $cache, $phpbb_root_path, $phpEx;
+		$config = new phpbb_config(array());
 		$db = $this->new_dbal();
-		$cache = new phpbb_cache_service($this->driver);
+		$cache = new phpbb_cache_service($this->driver, $config, $db, $phpbb_root_path, $phpEx);
 
 		$sql = "SELECT * FROM phpbb_config
 			WHERE config_name = 'foo'";
