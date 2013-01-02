@@ -133,7 +133,7 @@ if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
 	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
-	$phpbb_hook_finder = new phpbb_hook_finder($phpbb_root_path, $phpEx, $phpbb_container->get('cache.driver'));
+	$phpbb_hook_finder = $phpbb_container->get('hook_finder');
 	foreach ($phpbb_hook_finder->find() as $hook)
 	{
 		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
