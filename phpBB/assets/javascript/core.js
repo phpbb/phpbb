@@ -438,7 +438,10 @@ phpbb.timezone_switch_date = function(keep_selection) {
 	}
 
 	if (typeof keep_selection !== 'undefined' && !keep_selection) {
-		$('#timezone > option:first').attr('selected', true);
+		var timezoneOptions = $('#timezone > optgroup option');
+		if (timezoneOptions.filter(':selected').length <= 0) {
+			timezoneOptions.filter(':first').attr('selected', true);
+		}
 	}
 }
 
