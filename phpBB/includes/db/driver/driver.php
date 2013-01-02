@@ -206,7 +206,7 @@ class phpbb_db_driver
 			$query_id = $this->query_result;
 		}
 
-		if ($cache->sql_exists($query_id))
+		if ($cache && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
@@ -256,7 +256,7 @@ class phpbb_db_driver
 				$this->sql_rowseek($rownum, $query_id);
 			}
 
-			if (!is_object($query_id) && $cache->sql_exists($query_id))
+			if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
 			{
 				return $cache->sql_fetchfield($query_id, $field);
 			}

@@ -127,6 +127,13 @@ services:
             - @dispatcher
             - @controller.resolver
 
+    hook_finder:
+        class: phpbb_hook_finder
+        arguments:
+            - %core.root_path%
+            - .%core.php_ext%
+            - @cache.driver
+
     kernel_request_subscriber:
         class: phpbb_event_kernel_request_subscriber
         arguments:

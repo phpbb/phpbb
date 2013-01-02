@@ -52,12 +52,13 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $language, $phpbb_root_path, $cache;
+		global $lang, $template, $language, $phpbb_root_path, $phpEx;
+		global $phpbb_container, $cache;
 
 		switch ($sub)
 		{
 			case 'intro':
-				$cache->purge();
+				$phpbb_container->get('cache.driver')->purge();
 
 				$this->page_title = $lang['SUB_INTRO'];
 
@@ -101,6 +102,12 @@ class install_install extends module
 			break;
 
 			case 'final':
+				// Create a normal container now
+				$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+
+				// Sets the global $cache variable
+				$cache = $phpbb_container->get('cache');
+
 				$this->build_search_index($mode, $sub);
 				$this->add_modules($mode, $sub);
 				$this->add_language($mode, $sub);
