@@ -87,18 +87,7 @@ $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_pat
 $phpbb_class_loader_ext->register();
 
 // Set up container
-$phpbb_container = phpbb_create_dumped_container_unless_debug(
-	array(
-		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
-		new phpbb_di_extension_core($phpbb_root_path),
-	),
-	array(
-		new phpbb_di_pass_collection_pass(),
-		new phpbb_di_pass_kernel_pass(),
-	),
-	$phpbb_root_path,
-	$phpEx
-);
+$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));

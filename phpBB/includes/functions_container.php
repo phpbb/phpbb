@@ -135,6 +135,22 @@ function phpbb_create_dumped_container_unless_debug(array $extensions, array $pa
 	return $container_factory($extensions, $passes, $phpbb_root_path, $php_ext);
 }
 
+function phpbb_create_default_container($phpbb_root_path, $php_ext)
+{
+	return phpbb_create_dumped_container_unless_debug(
+		array(
+			new phpbb_di_extension_config($phpbb_root_path . 'config.' . $php_ext),
+			new phpbb_di_extension_core($phpbb_root_path),
+		),
+		array(
+			new phpbb_di_pass_collection_pass(),
+			new phpbb_di_pass_kernel_pass(),
+		),
+		$phpbb_root_path,
+		$php_ext
+	);
+}
+
 function phpbb_container_filename($phpbb_root_path, $php_ext)
 {
 	$filename = str_replace(array('/', '.'), array('slash', 'dot'), $phpbb_root_path);
