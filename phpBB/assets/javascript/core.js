@@ -13,7 +13,7 @@ var keymap = {
 
 var dark = $('#darkenwrapper');
 var loading_alert = $('#loadingalert');
-var phpbbAlertTimer = 0;
+var phpbbAlertTimer = null;
 
 
 /**
@@ -47,9 +47,9 @@ phpbb.loading_alert = function() {
  * Clear loading alert timeout
 */
 phpbb.clearLoadingTimeout = function() {
-	if (phpbbAlertTimer != 0) {
+	if (phpbbAlertTimer != null) {
 		clearTimeout(phpbbAlertTimer);
-		phpbbAlertTimer = 0;
+		phpbbAlertTimer = null;
 	}
 }
 
