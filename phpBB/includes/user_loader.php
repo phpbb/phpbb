@@ -27,6 +27,9 @@ class phpbb_user_loader
 	/** @var phpbb_db_driver */
 	protected $db;
 
+	/** @var phpbb_dispatcher */
+	protected $phpbb_dispatcher;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -51,9 +54,10 @@ class phpbb_user_loader
 	* @param string $php_ext php file extension
 	* @param string $users_table The name of the database table (phpbb_users)
 	*/
-	public function __construct(phpbb_db_driver $db, $phpbb_root_path, $php_ext, $users_table)
+	public function __construct(phpbb_db_driver $db, $phpbb_dispatcher, $phpbb_root_path, $php_ext, $users_table)
 	{
 		$this->db = $db;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -67,26 +71,40 @@ class phpbb_user_loader
 	* Loads all users by user_id that are not in the current user cache
 	* Always loads the anonymous user as a fall-back if any user requested does not exist
 	*
-	* @param array $user_ids
+	* @param array $user_ids Array of user ids to query
+	* @param array $additional_columns Array of any additional columns that could be needed
+	* 			These columns will ONLY be loaded for the specified user_ids sent. Any users
+	* 			you may need this column for must be sent in the call which lists the additional
+	* 			columns, the column will not be available for other users.
 	*/
-	public function load_users(array $user_ids)
+	public function load_users(array $user_ids, array $additional_columns = array())
 	{
 		$user_ids[] = ANONYMOUS;
 
 		// Load the users
 		$user_ids = array_unique($user_ids);
 
-		// Do not load users we already have in $this->users
-		$user_ids = array_diff($user_ids, array_keys($this->users));
+		// Do not load users we already have in $this->users unless we need additional columns
+		if (empty($additional_columns))
+		{
+			$user_ids = array_diff($user_ids, array_keys($this->users));
+		}
 
 		if (!empty($user_ids))
 		{
-			$sql = $this->build_query($this->db->sql_in_set('u.user_id', $user_ids));
+			$sql = $this->build_query($this->db->sql_in_set('u.user_id', $user_ids), $additional_columns);
 			$result = $this->db->sql_query($sql);
 
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$this->users[$row['user_id']] = $row;
+				if (isset($this->users[$row['user_id']]))
+				{
+					$this->users[$row['user_id']] = array_merge($this->users[$row['user_id']], $row);
+				}
+				else
+				{
+					$this->users[$row['user_id']] = $row;
+				}
 			}
 			$this->db->sql_freeresult($result);
 		}
@@ -108,18 +126,30 @@ class phpbb_user_loader
 	* Returns the user id so you may use get_user() from the returned value
 	*
 	* @param string $username Raw username to load (will be cleaned)
+	* @param array $additional_columns Array of any additional columns that could be needed
+	* 			These columns will ONLY be loaded for the specified user_ids sent. Any users
+	* 			you may need this column for must be sent in the call which lists the additional
+	* 			columns, the column will not be available for other users.
 	* @return int User ID for the username
 	*/
-	public function load_user_by_username($username)
+	public function load_user_by_username($username, array $additional_columns = array())
 	{
-		$sql = $this->build_query("username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'");
+		$where = "username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'";
+		$sql = $this->build_query($where, $additional_columns);
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
 		if ($row)
 		{
-			$this->users[$row['user_id']] = $row;
+			if (isset($this->users[$row['user_id']]))
+			{
+				$this->users[$row['user_id']] = array_merge($this->users[$row['user_id']], $row);
+			}
+			else
+			{
+				$this->users[$row['user_id']] = $row;
+			}
 
 			return $row['user_id'];
 		}
@@ -274,25 +304,25 @@ class phpbb_user_loader
 	* Build a user selection query
 	*
 	* @param string $where Where statement
+	* @param array $additional_columns Array of any additional columns to load
 	*/
-	protected function build_query($where)
+	protected function build_query($where, array $additional_columns = array())
 	{
 		$sql_array = array(
-			'SELECT'	=> implode(', ', array(
+			'SELECT'	=> array(
 				'u.user_id',
 				'u.user_type',
 				'u.username',
 				'u.username_clean',
 				'u.user_email',
 				'u.user_posts',
-				'u.user_lang',
 				'u.user_rank',
 				'u.user_colour',
 				'u.user_avatar',
 				'u.user_avatar_type',
 				'u.user_avatar_width',
 				'u.user_avatar_height',
-			)),
+			),
 			'FROM'		=> array(
 				$this->users_table	=> 'u',
 			),
@@ -303,11 +333,14 @@ class phpbb_user_loader
 		* Alter what is loaded by the user loader
 		*
 		* @event core.user_loader.build_query
-		* @var array sql_array SQL array to be sent to sql_build_array
+		* @var array sql_array SQL array to be sent to sql_build_array.
+		* 			Please note that SELECT is an array, not a string (will be imploded)
 		* @since 3.1-A1
 		*/
-		$vars = array($username, $sql_array);
-		extract($phpbb_dispatcher->trigger_event('core.user_loader.build_query', compact($vars)));
+		$vars = array('sql_array');
+		extract($this->phpbb_dispatcher->trigger_event('core.user_loader.build_query', compact($vars)));
+
+		$sql_array['SELECT'] = implode(', ', array_merge($sql_array['SELECT'], $additional_columns));
 
 		return $this->db->sql_build_query('SELECT', $sql_array);
 	}
