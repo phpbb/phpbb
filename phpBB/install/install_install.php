@@ -105,7 +105,7 @@ class install_install extends module
 				// Create a normal container now
 				$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 
-				// Writes into global $cache
+				// Sets the global $cache variable
 				$cache = $phpbb_container->get('cache');
 
 				$this->build_search_index($mode, $sub);
