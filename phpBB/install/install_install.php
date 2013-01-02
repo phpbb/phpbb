@@ -52,8 +52,8 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $language, $phpbb_root_path;
-		global $phpbb_container;
+		global $lang, $template, $language, $phpbb_root_path, $phpEx;
+		global $phpbb_container, $cache;
 
 		switch ($sub)
 		{
@@ -102,6 +102,23 @@ class install_install extends module
 			break;
 
 			case 'final':
+				// Create a normal container now
+				$phpbb_container = phpbb_create_dumped_container_unless_debug(
+					array(
+						new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
+						new phpbb_di_extension_core($phpbb_root_path),
+					),
+					array(
+						new phpbb_di_pass_collection_pass(),
+						new phpbb_di_pass_kernel_pass(),
+					),
+					$phpbb_root_path,
+					$phpEx
+				);
+
+				// Writes into global $cache
+				$cache = $phpbb_container->get('cache');
+
 				$this->build_search_index($mode, $sub);
 				$this->add_modules($mode, $sub);
 				$this->add_language($mode, $sub);

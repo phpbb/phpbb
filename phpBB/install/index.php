@@ -101,9 +101,6 @@ $phpbb_container = phpbb_create_install_container($phpbb_root_path, $phpEx);
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
-// set up caching
-$cache = $phpbb_container->get('cache');
-
 $phpbb_dispatcher = $phpbb_container->get('dispatcher');
 $request	= $phpbb_container->get('request');
 
