@@ -187,7 +187,7 @@ include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
 $inline_update = (request_var('type', 0)) ? true : false;
 
 // To let set_config() calls succeed, we need to make the config array available globally
-$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
+$config = new phpbb_config_db($db, $phpbb_container->get('cache.driver'), CONFIG_TABLE);
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
@@ -574,7 +574,7 @@ else
 add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 
 // Now we purge the session table as well as all cache files
-$cache->purge();
+$phpbb_container->get('cache.driver')->purge();
 
 _print_footer();
 
