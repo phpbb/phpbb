@@ -3463,7 +3463,7 @@ function group_validate_groupname($group_id, $group_name)
 */
 function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {
-	global $cache, $db, $phpbb_dispatcher;
+	global $phpbb_container, $db, $phpbb_dispatcher;
 
 	if (empty($user_id_ary))
 	{
@@ -3579,7 +3579,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	}
 
 	// Because some tables/caches use usercolour-specific data we need to purge this here.
-	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+	$phpbb_container->get('cache.driver')->destroy('sql', MODERATOR_CACHE_TABLE);
 }
 
 /**

@@ -403,34 +403,4 @@ class phpbb_cache_service
 
 		return $usernames;
 	}
-
-	/**
-	* Obtain hooks...
-	*/
-	function obtain_hooks()
-	{
-		if (($hook_files = $this->driver->get('_hooks')) === false)
-		{
-			$hook_files = array();
-
-			// Now search for hooks...
-			$dh = @opendir($this->phpbb_root_path . 'includes/hooks/');
-
-			if ($dh)
-			{
-				while (($file = readdir($dh)) !== false)
-				{
-					if (strpos($file, 'hook_') === 0 && substr($file, -(strlen($this->php_ext) + 1)) === '.' . $this->php_ext)
-					{
-						$hook_files[] = substr($file, 0, -(strlen($this->php_ext) + 1));
-					}
-				}
-				closedir($dh);
-			}
-
-			$this->driver->put('_hooks', $hook_files);
-		}
-
-		return $hook_files;
-	}
 }

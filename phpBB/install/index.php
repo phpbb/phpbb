@@ -101,9 +101,6 @@ $phpbb_container = phpbb_create_install_container($phpbb_root_path, $phpEx);
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
-// set up caching
-$cache = $phpbb_container->get('cache');
-
 $phpbb_dispatcher = $phpbb_container->get('dispatcher');
 $request	= $phpbb_container->get('request');
 
@@ -199,7 +196,8 @@ if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
 	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
-	foreach ($cache->obtain_hooks() as $hook)
+	$phpbb_hook_finder = $phpbb_container->get('hook_finder');
+	foreach ($phpbb_hook_finder->find() as $hook)
 	{
 		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 	}

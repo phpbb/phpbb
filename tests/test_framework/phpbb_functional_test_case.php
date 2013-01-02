@@ -262,13 +262,21 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$config['rand_seed_last_update'] = time() + 600;
 
 		// Required by user_add
-		global $db, $cache, $phpbb_dispatcher;
+		global $db, $cache, $phpbb_dispatcher, $phpbb_container;
 		$db = $this->get_db();
 		if (!function_exists('phpbb_mock_null_cache'))
 		{
 			require_once(__DIR__ . '/../mock/null_cache.php');
 		}
 		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new phpbb_cache_driver_null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
 
 		if (!function_exists('utf_clean_string'))
 		{
