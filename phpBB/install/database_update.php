@@ -73,6 +73,10 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 	die("Please read: <a href='../docs/INSTALL.html'>INSTALL.html</a> before attempting to update.");
 }
 
+// In case $phpbb_adm_relative_path is not set (in case of an update), use the default.
+$phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relative_path : 'adm/';
+$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
+
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 
@@ -105,18 +109,7 @@ $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_pat
 $phpbb_class_loader_ext->register();
 
 // Set up container
-$phpbb_container = phpbb_create_dumped_container_unless_debug(
-	array(
-		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
-		new phpbb_di_extension_core($phpbb_root_path),
-	),
-	array(
-		new phpbb_di_pass_collection_pass(),
-		new phpbb_di_pass_kernel_pass(),
-	),
-	$phpbb_root_path,
-	$phpEx
-);
+$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
@@ -140,7 +133,8 @@ if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
 	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
-	foreach ($cache->obtain_hooks() as $hook)
+	$phpbb_hook_finder = $phpbb_container->get('hook_finder');
+	foreach ($phpbb_hook_finder->find() as $hook)
 	{
 		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 	}
@@ -193,7 +187,7 @@ include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
 $inline_update = (request_var('type', 0)) ? true : false;
 
 // To let set_config() calls succeed, we need to make the config array available globally
-$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
+$config = new phpbb_config_db($db, $phpbb_container->get('cache.driver'), CONFIG_TABLE);
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
@@ -231,7 +225,7 @@ if ($has_global && !$ga_forum_id)
 
 	<title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
-	<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="<?php echo htmlspecialchars($phpbb_admin_path); ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 	</head>
 
@@ -281,7 +275,7 @@ header('Content-type: text/html; charset=UTF-8');
 
 <title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
-<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="<?php echo htmlspecialchars($phpbb_admin_path); ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 </head>
 
@@ -580,7 +574,7 @@ else
 add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 
 // Now we purge the session table as well as all cache files
-$cache->purge();
+$phpbb_container->get('cache.driver')->purge();
 
 _print_footer();
 

@@ -32,6 +32,8 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
 		),
+		// Note: php 5.5 alpha 2 deprecated mysql.
+		// Keep mysqli before mysql in this list.
 		'mysqli'	=> array(
 			'LABEL'			=> 'MySQL with MySQLi Extension',
 			'SCHEMA'		=> 'mysql_41',
@@ -508,6 +510,9 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_test
 		'dbuser'		=> $data['dbuser'],
 		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
 		'table_prefix'	=> $data['table_prefix'],
+
+		'adm_relative_path'	=> 'adm/',
+
 		'acm_type'		=> 'phpbb_cache_driver_file',
 	);
 

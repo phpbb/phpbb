@@ -216,7 +216,7 @@ while ($row = $db->sql_fetchrow($result))
 			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
 		break;
 
-		case 'adm/index':
+		case $phpbb_adm_relative_path . 'index':
 			$location = $user->lang['ACP'];
 			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
 		break;

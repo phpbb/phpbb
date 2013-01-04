@@ -154,7 +154,7 @@ class phpbb_db_driver_firebird extends phpbb_db_driver
 			}
 
 			$this->last_query_text = $query;
-			$this->query_result = ($cache_ttl) ? $cache->sql_load($query) : false;
+			$this->query_result = ($cache && $cache_ttl) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
 			if ($this->query_result === false)
@@ -267,7 +267,7 @@ class phpbb_db_driver_firebird extends phpbb_db_driver
 					}
 				}
 
-				if ($cache_ttl)
+				if ($cache && $cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
@@ -330,7 +330,7 @@ class phpbb_db_driver_firebird extends phpbb_db_driver
 			$query_id = $this->query_result;
 		}
 
-		if ($cache->sql_exists($query_id))
+		if ($cache && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -396,7 +396,7 @@ class phpbb_db_driver_firebird extends phpbb_db_driver
 			$query_id = $this->query_result;
 		}
 
-		if ($cache->sql_exists($query_id))
+		if ($cache && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_freeresult($query_id);
 		}
