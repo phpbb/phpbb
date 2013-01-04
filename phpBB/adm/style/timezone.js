@@ -1,11 +1,11 @@
 (function($) { // Avoid conflicts with other libraries
 
 $('#tz_date').change(function() {
-	phpbb.timezone_switch_date(false);
+	phpbb.timezoneSwitchDate(false);
 });
 
 $(document).ready(
-	phpbb.timezone_enable_date_selection
+	phpbb.timezoneEnableDateSelection
 );
 
 })(jQuery); // Avoid conflicts with other libraries

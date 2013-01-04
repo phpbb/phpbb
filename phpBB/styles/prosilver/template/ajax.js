@@ -14,7 +14,7 @@ phpbb.closeDarkenWrapper = function(delay) {
 };
 
 // This callback will mark all forum icons read
-phpbb.add_ajax_callback('mark_forums_read', function(res) {
+phpbb.addAjaxCallback('mark_forums_read', function(res) {
 	var readTitle = res.NO_UNREAD_POSTS;
 	var unreadTitle = res.UNREAD_POSTS;
 	var iconsArray = {
@@ -44,7 +44,7 @@ phpbb.add_ajax_callback('mark_forums_read', function(res) {
 });
 
 // This callback will mark all topic icons read
-phpbb.add_ajax_callback('mark_topics_read', function(res) {
+phpbb.addAjaxCallback('mark_topics_read', function(res) {
 	var readTitle = res.NO_UNREAD_POSTS;
 	var unreadTitle = res.UNREAD_POSTS;
 	var iconsArray = {
@@ -91,7 +91,7 @@ phpbb.add_ajax_callback('mark_topics_read', function(res) {
 });
 
 // This callback finds the post from the delete link, and removes it.
-phpbb.add_ajax_callback('post_delete', function() {
+phpbb.addAjaxCallback('post_delete', function() {
 	var el = $(this),
 		postId;
 
@@ -110,7 +110,7 @@ phpbb.add_ajax_callback('post_delete', function() {
 });
 
 // This callback removes the approve / disapprove div or link.
-phpbb.add_ajax_callback('post_approve', function(res) {
+phpbb.addAjaxCallback('post_approve', function(res) {
 	var remove = (res.approved) ? $(this) : $(this).parents('.post');
 	$(remove).css('pointer-events', 'none').fadeOut(function() {
 		$(this).remove();
@@ -118,12 +118,12 @@ phpbb.add_ajax_callback('post_approve', function(res) {
 });
 
 // This removes the parent row of the link or form that fired the callback.
-phpbb.add_ajax_callback('row_delete', function() {
+phpbb.addAjaxCallback('row_delete', function() {
 	$(this).parents('tr').remove();
 });
 
 // This handles friend / foe additions removals.
-phpbb.add_ajax_callback('zebra', function(res) {
+phpbb.addAjaxCallback('zebra', function(res) {
 	var zebra;
 
 	if (res.success) {
