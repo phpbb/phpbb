@@ -550,7 +550,7 @@ class ucp_profile
 			break;
 
 			case 'avatar':
-				if (!function_exists('get_user_avatar'))
+				if (!function_exists('phpbb_get_user_avatar'))
 				{
 					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 				}
@@ -672,7 +672,7 @@ class ucp_profile
 					}
 				}
 				
-				$avatar = get_user_avatar($user->data, 'USER_AVATAR', true);
+				$avatar = phpbb_get_user_avatar($user->data, 'USER_AVATAR', true);
 
 				$template->assign_vars(array(
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',

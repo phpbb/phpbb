@@ -548,7 +548,7 @@ class acp_groups
 					}
 				}
 				
-				$avatar = get_group_avatar($group_row, 'GROUP_AVATAR', true);
+				$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
 				
 				/*
 				* Merge any avatar errors into the primary error array

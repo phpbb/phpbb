@@ -1844,7 +1844,7 @@ class acp_users
 					}
 				}
 
-				$avatar = get_user_avatar($user_row, 'USER_AVATAR', true);
+				$avatar = phpbb_get_user_avatar($user_row, 'USER_AVATAR', true);
 
 				$template->assign_vars(array(
 					'S_AVATAR'	=> true,

@@ -438,7 +438,7 @@ class ucp_groups
 					$group_name = $group_row['group_name'];
 					$group_type = $group_row['group_type'];
 
-					$avatar = get_group_avatar($group_row, 'GROUP_AVATAR', true);
+					$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
 
 					$template->assign_vars(array(
 						'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,

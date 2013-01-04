@@ -1347,10 +1347,10 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 *
 * @return string Avatar html
 */
-function get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false)
+function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false)
 {
 	$row = phpbb_avatar_manager::clean_row($user_row);
-	return get_avatar($row, $alt, $ignore_config);
+	return phpbb_get_avatar($row, $alt, $ignore_config);
 }
 
 /**
@@ -1362,10 +1362,10 @@ function get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false
 *
 * @return string Avatar html
 */
-function get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
+function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
 {
 	$row = phpbb_avatar_manager::clean_row($user_row);
-	return get_avatar($row, $alt, $ignore_config);
+	return phpbb_get_avatar($row, $alt, $ignore_config);
 }
 
 /**
@@ -1377,7 +1377,7 @@ function get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = fal
 *
 * @return string Avatar html
 */
-function get_avatar($row, $alt, $ignore_config = false)
+function phpbb_get_avatar($row, $alt, $ignore_config = false)
 {
 	global $user, $config, $cache, $phpbb_root_path, $phpEx;
 	global $request;

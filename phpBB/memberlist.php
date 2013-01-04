@@ -549,7 +549,7 @@ switch ($mode)
 			$member['user_sig'] = smiley_text($member['user_sig']);
 		}
 
-		$poster_avatar = get_user_avatar($member);
+		$poster_avatar = phpbb_get_user_avatar($member);
 
 		// We need to check if the modules 'zebra' ('friends' & 'foes' mode),  'notes' ('user_notes' mode) and  'warn' ('warn_user' mode) are accessible to decide if we can display appropriate links
 		$zebra_enabled = $friends_enabled = $foes_enabled = $user_notes_enabled = $warn_user_enabled = false;
@@ -1234,7 +1234,7 @@ switch ($mode)
 				break;
 			}
 
-			$avatar_img = get_group_avatar($group_row);
+			$avatar_img = phpbb_get_group_avatar($group_row);
 
 			// ... same for group rank
 			$rank_title = $rank_img = $rank_img_src = '';
@@ -1727,7 +1727,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 		'A_USERNAME'		=> addslashes(get_username_string('username', $user_id, $username, $data['user_colour'])),
 
-		'AVATAR_IMG'		=> get_user_avatar($data),
+		'AVATAR_IMG'		=> phpbb_get_user_avatar($data),
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $rank_img,
