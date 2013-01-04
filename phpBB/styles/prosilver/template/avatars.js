@@ -2,14 +2,14 @@
 
 "use strict";
 
-function avatar_hide() {
+function avatarHide() {
     $('#avatar_options > div').hide();
 
     var selected = $('#avatar_driver').val();
     $('#avatar_option_' + selected).show();
 }
 
-avatar_hide();
-$('#avatar_driver').bind('change', avatar_hide);
+avatarHide();
+$('#avatar_driver').bind('change', avatarHide);
 
 })(jQuery); // Avoid conflicts with other libraries
