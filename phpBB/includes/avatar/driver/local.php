@@ -120,6 +120,13 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 		$category = $this->request->variable('avatar_local_cat', '');
 
 		$file = $this->request->variable('avatar_local_file', '');
+
+		if (empty($category) || empty($file))
+		{
+			$error[] = 'NO_AVATAR_SELECTED';
+			return false;
+		}
+
 		if (!isset($avatar_list[$category][urldecode($file)]))
 		{
 			$error[] = 'AVATAR_URL_NOT_FOUND';

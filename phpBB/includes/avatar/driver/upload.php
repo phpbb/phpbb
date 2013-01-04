@@ -75,9 +75,14 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 		{
 			$file = $upload->form_upload('avatar_upload_file');
 		}
-		else
+		elseif (!empty($this->config['allow_avatar_remote_upload']) && !empty($url))
 		{
 			$file = $upload->remote_upload($url);
+		}
+		else
+		{
+			$error[] = 'NO_AVATAR_SELECTED';
+			return false;
 		}
 
 		$prefix = $this->config['avatar_salt'] . '_';
