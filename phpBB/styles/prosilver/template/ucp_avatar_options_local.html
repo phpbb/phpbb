@@ -1,3 +1,4 @@
+<!-- IF .avatar_local_cats -->
 <label for="category">{L_AVATAR_CATEGORY}{L_COLON} <select name="avatar_local_cat" id="category">
 <option value="">{L_NO_AVATAR_CATEGORY}</option>
 <!-- BEGIN avatar_local_cats -->
@@ -14,3 +15,6 @@
 <!-- END avatar_local_col -->
 <!-- END avatar_local_row -->
 </div>
+<!-- ELSE -->
+<p><strong>{L_NO_AVATARS}</strong></p>
+<!-- ENDIF -->

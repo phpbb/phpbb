@@ -1,4 +1,5 @@
 <table class="tablebg" width="100%" cellspacing="1">
+	<!-- IF .avatar_local_cats -->
 	<tr> 
 		<td class="cat" colspan="2" align="center" valign="middle"><span class="genmed">{L_AVATAR_CATEGORY}{L_COLON} </span><select name="avatar_local_cat" id="category">
 			<option value="">{L_NO_AVATAR_CATEGORY}</option>
@@ -30,4 +31,9 @@
 			</table>
 		</td>
 	</tr>
+	<!-- ELSE -->
+	<tr>
+		<td class="row1" colspan="2"><strong>{L_NO_AVATARS}</strong></td>
+	</tr>
+	<!-- ENDIF -->
 </table>
