@@ -20,7 +20,7 @@ phpbb.addAjaxCallback('mark_forums_read', function(res) {
 	var iconsArray = {
 		'forum_unread': 'forum_read',
 		'forum_unread_subforum': 'forum_read_subforum',
-		'forum_unread_locked': 'forum_read_locked',
+		'forum_unread_locked': 'forum_read_locked'
 	};
 
 	$('li.row').find('dl[class*="forum_unread"]').each(function() {
