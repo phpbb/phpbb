@@ -1,0 +1,44 @@
+services:
+    notification.type_collection:
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: notification.type }
+
+    notification.method_collection:
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: notification.method }
+
+    notification.method.email:
+        class: phpbb_notification_method_email
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: notification.method }
+
+    notification.method.jabber:
+        class: phpbb_notification_method_jabber
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: notification.method }
