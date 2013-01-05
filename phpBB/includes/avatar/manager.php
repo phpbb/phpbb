@@ -20,9 +20,25 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_avatar_manager
 {
+	/**
+	* phpBB configuration
+	*/
 	protected $config;
+
+	/**
+	* Array that contains a list of enabled drivers
+	*/
 	static protected $enabled_drivers = false;
+
+	/**
+	* Array that contains all available avatar drivers which are passed via the
+	* service container
+	*/
 	protected $avatar_drivers;
+
+	/**
+	* Service container object
+	*/
 	protected $container;
 
 	/**
