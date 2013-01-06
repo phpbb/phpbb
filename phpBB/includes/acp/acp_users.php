@@ -1831,18 +1831,7 @@ class acp_users
 				}
 
 				// Replace "error" strings with their real, localised form
-				foreach ($error as $key => $lang)
-				{
-					if (is_array($lang))
-					{
-						$lang_key = array_shift($lang);
-						$error[$key] = vsprintf($user->lang($lang_key), $lang);
-					}
-					else
-					{
-						$error[$key] = $user->lang($lang);
-					}
-				}
+				$error = $phpbb_avatar_manager->localize_errors($user, $error);
 
 				$avatar = phpbb_get_user_avatar($user_row, 'USER_AVATAR', true);
 

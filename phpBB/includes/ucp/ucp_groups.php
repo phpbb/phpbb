@@ -674,19 +674,7 @@ class ucp_groups
 						}
 
 						// Merge any avatars errors into the primary error array
-						// Drivers use lang constants, so we need to map to the actual strings
-						foreach ($avatar_error as $lang)
-						{
-							if (is_array($lang))
-							{
-								$key = array_shift($lang);
-								$error[] = vsprintf($user->lang($key), $lang);
-							}
-							else
-							{
-								$error[] = $user->lang("$lang");
-							}
-						}
+						$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
 
 						$template->assign_vars(array(
 							'S_EDIT'			=> true,

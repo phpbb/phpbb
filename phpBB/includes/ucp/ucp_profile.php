@@ -659,19 +659,8 @@ class ucp_profile
 				}
 
 				// Replace "error" strings with their real, localised form
-				foreach ($error as $key => $lang)
-				{
-					if (is_array($lang))
-					{
-						$key = array_shift($lang);
-						$error[$key] = vsprintf($user->lang($key), $lang);
-					}
-					else
-					{
-						$error[$key] = $user->lang("$lang");
-					}
-				}
-				
+				$error = $phpbb_avatar_manager->localize_errors($user, $error);
+
 				$avatar = phpbb_get_user_avatar($user->data, 'USER_AVATAR', true);
 
 				$template->assign_vars(array(

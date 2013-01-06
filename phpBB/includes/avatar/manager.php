@@ -44,11 +44,7 @@ class phpbb_avatar_manager
 	/**
 	* Construct an avatar manager object
 	*
-	* @param string $phpbb_root_path Path to the phpBB root
-	* @param string $phpEx PHP file extension
 	* @param phpbb_config $config phpBB configuration
-	* @param phpbb_request $request Request object
-	* @param phpbb_cache_driver_interface $cache Cache driver
 	* @param array $avatar_drivers Avatar drivers passed via the service container
 	* @param object $container Container object
 	*/
@@ -259,5 +255,34 @@ class phpbb_avatar_manager
 	public function get_driver_config_name($driver)
 	{
 		return preg_replace('#^phpbb_avatar_driver_#', '', get_class($driver));
+	}
+
+	/**
+	* Replace "error" strings with their real, localized form
+	*
+	* @param phpbb_user phpBB User object
+	* @param array	$error Array containing error strings
+	*        Key values can either be a string with a language key or an array
+	*        that will be passed to vsprintf() with the language key in the
+	*        first array key.
+	*
+	* @return array Array containing the localized error strings
+	*/
+	public function localize_errors(phpbb_user $user, $error)
+	{
+		foreach ($error as $key => $lang)
+		{
+			if (is_array($lang))
+			{
+				$lang_key = array_shift($lang);
+				$error[$key] = vsprintf($user->lang($lang_key), $lang);
+			}
+			else
+			{
+				$error[$key] = $user->lang("$lang");
+			}
+		}
+
+		return $error;
 	}
 }

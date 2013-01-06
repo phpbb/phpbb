@@ -550,22 +550,8 @@ class acp_groups
 				
 				$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
 				
-				/*
-				* Merge any avatar errors into the primary error array
-				* Drivers use language constants, so we need to map to the actual strings
-				*/
-				foreach ($avatar_error as $lang)
-				{
-					if (is_array($lang))
-					{
-						$key = array_shift($lang);
-						$error[] = vsprintf($user->lang($key), $lang);
-					}
-					else
-					{
-						$error[] = $user->lang("$lang");
-					}
-				}
+				// Merge any avatar errors into the primary error array
+				$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
 
 				$back_link = request_var('back_link', '');
 
