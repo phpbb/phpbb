@@ -59,7 +59,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	{
 		return array(
 			array(
-				array('dimension', 20, 15),
+				array('dimension', 5, 15),
 				'number_key_name',
 				array('config_key_name_width' => 10, 'config_key_name_height' => 20),
 				'config_key_name',
