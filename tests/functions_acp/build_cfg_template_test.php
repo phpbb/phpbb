@@ -49,6 +49,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		global $user, $phpbb_dispatcher;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -84,6 +85,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		global $user, $phpbb_dispatcher;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -111,6 +113,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		global $user, $phpbb_dispatcher;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -162,6 +165,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		global $user, $phpbb_dispatcher;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
@@ -189,6 +193,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		global $user, $phpbb_dispatcher;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
