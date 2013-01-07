@@ -36,11 +36,11 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form($template, $row, &$error)
+	public function prepare_form($request, $template, $row, &$error)
 	{
 		$template->assign_vars(array(
-			'AVATAR_REMOTE_WIDTH' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_width']) ? $row['avatar_width'] : $this->request->variable('avatar_remote_width', 0),
-			'AVATAR_REMOTE_HEIGHT' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_height']) ? $row['avatar_height'] : $this->request->variable('avatar_remote_width', 0),
+			'AVATAR_REMOTE_WIDTH' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_width']) ? $row['avatar_width'] : $request->variable('avatar_remote_width', 0),
+			'AVATAR_REMOTE_HEIGHT' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_height']) ? $row['avatar_height'] : $request->variable('avatar_remote_width', 0),
 			'AVATAR_REMOTE_URL' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar']) ? $row['avatar'] : '',
 		));
 
@@ -50,11 +50,11 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function process_form($template, $row, &$error)
+	public function process_form($request, $template, $row, &$error)
 	{
-		$url = $this->request->variable('avatar_remote_url', '');
-		$width = $this->request->variable('avatar_remote_width', 0);
-		$height = $this->request->variable('avatar_remote_height', 0);
+		$url = $request->variable('avatar_remote_url', '');
+		$width = $request->variable('avatar_remote_width', 0);
+		$height = $request->variable('avatar_remote_height', 0);
 
 		if (!preg_match('#^(http|https|ftp)://#i', $url))
 		{

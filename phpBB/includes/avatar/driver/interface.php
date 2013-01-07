@@ -50,6 +50,7 @@ interface phpbb_avatar_driver_interface
 	/**
 	* Prepare form for changing the settings of this avatar
 	*
+	* @param phpbb_request $request Request object
 	* @param phpbb_template	$template Template object
 	* @param array	$row User data or group data that has been cleaned with 
 	*        phpbb_avatar_manager::clean_row
@@ -60,7 +61,7 @@ interface phpbb_avatar_driver_interface
 	*
 	* @return bool True if form has been successfully prepared
 	*/
-	public function prepare_form($template, $row, &$error);
+	public function prepare_form($request, $template, $row, &$error);
 
 	/**
 	* Prepare form for changing the acp settings of this avatar
@@ -74,6 +75,7 @@ interface phpbb_avatar_driver_interface
 	/**
 	* Process form data
 	*
+	* @param phpbb_request $request Request object
 	* @param phpbb_template	$template Template object
 	* @param array	$row User data or group data that has been cleaned with 
 	*        phpbb_avatar_manager::clean_row
@@ -85,7 +87,7 @@ interface phpbb_avatar_driver_interface
 	* @return array Array containing the avatar data as follows:
 	*        ['avatar'], ['avatar_width'], ['avatar_height']
 	*/
-	public function process_form($template, $row, &$error);
+	public function process_form($request, $template, $row, &$error);
 
 	/**
 	* Delete avatar

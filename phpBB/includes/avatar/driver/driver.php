@@ -34,12 +34,6 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	protected $config;
 
 	/**
-	* Request object
-	* @var phpbb_request
-	*/
-	protected $request;
-
-	/**
 	* Current $phpbb_root_path
 	* @var string
 	*/
@@ -66,10 +60,9 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	* @param string $php_ext PHP file extension
 	* @param phpbb_cache_driver_interface $cache Cache driver
 	*/
-	public function __construct(phpbb_config $config, phpbb_request $request, $phpbb_root_path, $php_ext, phpbb_cache_driver_interface $cache = null)
+	public function __construct(phpbb_config $config, $phpbb_root_path, $php_ext, phpbb_cache_driver_interface $cache = null)
 	{
 		$this->config = $config;
-		$this->request = $request;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->cache = $cache;

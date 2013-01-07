@@ -36,10 +36,10 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form($template, $row, &$error)
+	public function prepare_form($request, $template, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list();
-		$category = $this->request->variable('avatar_local_cat', '');
+		$category = $request->variable('avatar_local_cat', '');
 
 		foreach ($avatar_list as $cat => $null)
 		{
@@ -114,12 +114,12 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function process_form($template, $row, &$error)
+	public function process_form($request, $template, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list();
-		$category = $this->request->variable('avatar_local_cat', '');
+		$category = $request->variable('avatar_local_cat', '');
 
-		$file = $this->request->variable('avatar_local_file', '');
+		$file = $request->variable('avatar_local_file', '');
 
 		if (empty($category) || empty($file))
 		{

@@ -36,7 +36,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form($template, $row, &$error)
+	public function prepare_form($request, $template, $row, &$error)
 	{
 		if (!$this->can_upload())
 		{
@@ -54,7 +54,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function process_form($template, $row, &$error)
+	public function process_form($request, $template, $row, &$error)
 	{
 		if (!$this->can_upload())
 		{
@@ -68,8 +68,8 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 
 		$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $this->config['avatar_filesize'], $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], (isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
 
-		$url = $this->request->variable('avatar_upload_url', '');
-		$upload_file = $this->request->file('avatar_upload_file');
+		$url = $request->variable('avatar_upload_url', '');
+		$upload_file = $request->file('avatar_upload_file');
 
 		if (!empty($upload_file['name']))
 		{
