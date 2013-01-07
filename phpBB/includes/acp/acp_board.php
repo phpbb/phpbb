@@ -140,7 +140,7 @@ class acp_board
 					)
 				);
 
-				if (sizeof($avatar_vars))
+				if (!empty($avatar_vars))
 				{
 					$display_vars['vars'] += $avatar_vars;
 				}

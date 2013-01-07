@@ -1837,7 +1837,7 @@ class acp_users
 
 				$template->assign_vars(array(
 					'S_AVATAR'	=> true,
-					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
+					'ERROR'			=> (!empty($error)) ? implode('<br />', $error) : '',
 					'AVATAR'		=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
