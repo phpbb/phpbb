@@ -12,7 +12,7 @@
 					<!-- IF not revision.IS_CURRENT_POST -->
 						<a href="{revision.U_PROTECT}" id="link_protect"<!-- IF not revision.S_PROTECT --> class="no-display"<!-- ENDIF --> data-ajax="revisions.protect">({L_PROTECT})</a>
 						<a href="{revision.U_UNPROTECT}" id="link_unprotect"<!-- IF not revision.S_UNPROTECT --> class="no-display"<!-- ENDIF --> data-ajax="revisions.unprotect">({L_UNPROTECT})</a>
-						<a href="{revision.U_REVERT_TO}" id="link_revert"<!-- IF not revision.U_REVERT_TO --> class="no-display"<!-- ENDIF -->>({L_REVERT})</a>
+						<a href="{revision.U_RESTORE}" id="link_restore"<!-- IF not revision.U_RESTORE --> class="no-display"<!-- ENDIF -->>({L_RESTORE})</a>
 						<a href="{revision.U_DELETE}" id="link_delete"<!-- IF not revision.U_DELETE --> class="no-display"<!-- ENDIF --> data-ajax="revisions.delete" data-refresh="true">{revision.DELETE_IMG}</a>
 					<!-- ELSE -->
 						<strong>{L_CURRENT_REVISION}</strong>

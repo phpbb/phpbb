@@ -126,7 +126,7 @@ class phpbb_revisions_comparison
 	* @var phpbb_user $user User object
 	* @var phpbb_auth $auth Auth object
 	* @var phpbb_request $request Request object
-	* @var bool $can_revert Whether or not the user has permission to revert
+	* @var bool $can_restore Whether or not the user has permission to restore
 	*						this post to another revision
 	* @var string $phpbb_root_path Relative path to phpBB root
 	* @var string $phpEx PHP Extension
@@ -135,7 +135,7 @@ class phpbb_revisions_comparison
 	*						or management options
 	* @return null
 	*/
-	public function output_template_block(phpbb_revisions_post $post, phpbb_template $template, phpbb_user $user, phpbb_auth $auth, phpbb_request $request, $can_revert, $phpbb_root_path, $phpEx, $full_mode = true)
+	public function output_template_block(phpbb_revisions_post $post, phpbb_template $template, phpbb_user $user, phpbb_auth $auth, phpbb_request $request, $can_restore, $phpbb_root_path, $phpEx, $full_mode = true)
 	{
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
@@ -173,7 +173,7 @@ class phpbb_revisions_comparison
 				'FIRST_IN_COMPARE'	=> $revision->get_id() == $first_id,
 				'LAST_IN_COMPARE'	=> $revision->get_id() == $last_id,
 
-				'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/restore/$this_revision_id")) : '',
+				'U_RESTORE'			=> $can_restore ? append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/restore/$this_revision_id")) : '',
 				'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$this_revision_id")),
 				'U_DELETE'			=> $auth->acl_get('m_delete_revisions') ? append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$this_revision_id/delete")) : '',
 				'U_PROTECT'			=> append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$this_revision_id/protect")),
