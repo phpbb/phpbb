@@ -142,6 +142,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 
 	/**
 	* Get a list of avatars that are locally available
+	* Results get cached for 24 hours (86400 seconds)
 	*
 	* @return array Array containing the locally available avatars
 	*/
@@ -149,7 +150,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	{
 		$avatar_list = ($this->cache == null) ? false : $this->cache->get('avatar_local_list');
 
-		if (!$avatar_list)
+		if ($avatar_list === false)
 		{
 			$avatar_list = array();
 			$path = $this->phpbb_root_path . $this->config['avatar_gallery_path'];
@@ -185,7 +186,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 
 			if ($this->cache != null)
 			{
-				$this->cache->put('avatar_local_list', $avatar_list);
+				$this->cache->put('avatar_local_list', $avatar_list, 86400);
 			}
 		}
 
