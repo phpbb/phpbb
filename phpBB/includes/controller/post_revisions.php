@@ -68,6 +68,8 @@ class phpbb_controller_post_revisions
 	/**
 	* Compare two revisions
 	*
+	* Defaults to comparison between oldest available revision & current post
+	*
 	* This controller method is accessed directly from the routes:
 	* /post/{id}/revisions/{from}...{to}
 	* /post/{id}/revisions/{to}
@@ -75,23 +77,27 @@ class phpbb_controller_post_revisions
 	*
 	* @param int $id Post ID
 	* @param int $from Starting point in the comparison (a revision ID)
-	*					0 = oldest available revision
 	* @param int $to Ending point in the comparison (a revision ID)
-	*					0 = current post revision
 	* @return Response
 	*/
-	public function compare($id, $from = 0, $to = 0)
+	public function compare($id, $from = false, $to = false)
 	{
-		// Ensure that the given post has revisions
+		// Changing the comparison range uses POST instead of changing the URL
+		// So if we need to, we overwrite the revision ids
+		$from = $this->request->is_set_post('first') ? $this->request->variable('first', 0) : $from;
+		$to = $this->request->is_set_post('first') ? $this->request->variable('last', 0) : $to;
+
 		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
 
+		// Ensure that the user can view revisions for this post
 		if (!$this->get_view_permission($post_data))
 		{
 			// 401 is the Unauthorized status code
 			return $this->helper->error($this->user->lang('ERROR_AUTH_VIEW'), 401);
 		}
 
+		// Ensure that the given post has revisions
 		$revisions = $post->get_revisions();
 		if (!sizeof($revisions))
 		{
@@ -116,7 +122,7 @@ class phpbb_controller_post_revisions
 				return $this->helper->error($this->user->lang('ERROR_AUTH_ACTION', $action_lang), 401);
 			}
 
-			$action_ids = $this->request->variable($action . '_ids[]', array(0));
+			$action_ids = $this->request->variable($action . '_ids', array(0));
 			$result = (bool) $this->$action($action_ids);
 
 			// Default to failure; this will be replaced upon success in the
@@ -127,10 +133,10 @@ class phpbb_controller_post_revisions
 			{
 				$post_data = $post->get_post_data(true);
 				$revisions = $post->get_revisions(true);
-				$success_message = 'REVISION_' . strtoupper($action) . 'ED_SUCCESS' .
+				$success_message = 'REVISION_' . strtoupper($action) . 'ED_SUCCESS';
 					// If we have deleted a revision and we have no more
 					// make sure to let the user know that as well
-					('delete' === $action && !sizeof($revisions) ? '_NO_MORE' : '');
+				$success_message .= 'delete' === $action && !sizeof($revisions) ? '_NO_MORE' : '';
 				$l_result = $this->user->lang($success_message);
 			}
 
@@ -145,21 +151,24 @@ class phpbb_controller_post_revisions
 			}
 		}
 
-		// If $from is empty, the earliest available revision is used
-		if (!$from)
-		{
-			$sql = 'SELECT revision_id
-				FROM ' . POST_REVISIONS_TABLE . '
-				WHERE post_id = ' . (int) $id . '
-				ORDER BY revision_id ASC';
-			$result = $this->db->sql_query_limit($sql, 1);
-			$from = (int) $this->db->sql_fetchfield('revision_id');
-			$this->db->sql_freeresult($result);
-		}
-		$from_revision = new phpbb_revisions_revision($from, $this->db);
+		// revisions/1...2	= revision 1 compared to revision 2
+		// revisions/0...2	= current post compared to revision 2
+		// revisions/2...0	= revision 2 compared to current post
+		// revisions/2	= earliest available revision compared to revision 2
 
-		// If $to is empty, the current post is used
-		$to_revision = $to ? new phpbb_revisions_revision($to, $this->db) : $post->get_current_revision();
+		// 0 = current revision
+
+		
+		if ($from === 0)
+		{
+			$from_revision = $post->get_current_revision();
+		}
+		else if ($from === false)
+		{
+			$from_revision = current($revisions);
+		}
+		$from_revision = !$from ? $from_revision : $revisions[$from];
+		$to_revision = $to ? $revisions[$to] : $post->get_current_revision();
 
 		$comparison = new phpbb_revisions_comparison($from_revision, $to_revision);
 		$comparison->output_template_block($post, $this->template, $this->user, $this->auth, $this->request, $this->get_restore_permission($post_data), $this->phpbb_root_path, $this->php_ext);
@@ -263,11 +272,12 @@ class phpbb_controller_post_revisions
 	*/
 	public function protect_unprotect($mode, $id, $revision_id)
 	{
-		// Ensure that $mode is one of 'protect' or 'unprotect'
+		// Ensure that $mode is one of 'protect' or 'unprotect' (default)
 		$mode = in_array($mode, array('protect', 'unprotect')) ? $mode : 'unprotect';
 		$post = new phpbb_revisions_post($id, $this->db);
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
+
 		if (!$this->auth->acl_get('m_protect_revisions', $post_data['forum_id']))
 		{
 			$error = ($mode == 'protect') ? 'NO_AUTH_PROTECT_REVISIONS' : 'NO_AUTH_UNPROTECT_REVISIONS';
@@ -293,7 +303,7 @@ class phpbb_controller_post_revisions
 		if (($revisions[$revision_id]->is_protected() && $mode == 'protect') ||
 			(!$revisions[$revision_id]->is_protected() && $mode == 'unprotect'))
 		{
-			return $this->view($id);
+			return $this->compare($id);
 		}
 
 		$result = $this->$mode($revision_id);
@@ -307,7 +317,7 @@ class phpbb_controller_post_revisions
 			'message'	=> $message,
 		));
 
-		return $this->view($id);
+		return $this->compare($id);
 	}
 
 	/**
@@ -355,7 +365,7 @@ class phpbb_controller_post_revisions
 			'message'	=> $message,
 		));
 
-		return $this->view($id);
+		return $this->compare($id);
 	}
 
 	/**
@@ -512,7 +522,7 @@ class phpbb_controller_post_revisions
 				));
 			}
 
-			return $this->view($id);
+			return $this->compare($id);
 		}
 		else
 		{
