@@ -121,7 +121,7 @@ class acp_board
 					* might have.
 					*/
 					$avatar_vars += $phpbb_avatar_manager->get_avatar_settings($driver);
-					$avatar_vars += $driver->prepare_form_acp();
+					$avatar_vars += $driver->prepare_form_acp($user);
 				}
 
 				$display_vars = array(

@@ -104,7 +104,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form_acp()
+	public function prepare_form_acp($user)
 	{
 		return array(
 			'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),

@@ -69,11 +69,13 @@ interface phpbb_avatar_driver_interface
 	/**
 	* Prepare form for changing the acp settings of this avatar
 	*
+	* @param phpbb_user $user phpBB user object
+	*
 	* @return array Array of configuration options as consumed by acp_board.
 	*        The setting for enabling/disabling the avatar will be handled by
 	*        the avatar manager.
 	*/
-	public function prepare_form_acp();
+	public function prepare_form_acp($user);
 
 	/**
 	* Process form data

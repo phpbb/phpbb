@@ -79,7 +79,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form_acp()
+	public function prepare_form_acp($user)
 	{
 		return array();
 	}

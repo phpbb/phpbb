@@ -122,10 +122,8 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form_acp()
+	public function prepare_form_acp($user)
 	{
-		global $user;
-
 		return array(
 			'allow_avatar_remote_upload'=> array('lang' => 'ALLOW_REMOTE_UPLOAD', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 			'avatar_filesize'		=> array('lang' => 'MAX_FILESIZE',			'validate' => 'int:0',	'type' => 'text:4:10', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
