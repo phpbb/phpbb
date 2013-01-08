@@ -133,10 +133,12 @@ class phpbb_controller_post_revisions
 			{
 				$post_data = $post->get_post_data(true);
 				$revisions = $post->get_revisions(true);
+
 				$success_message = 'REVISION_' . strtoupper($action) . 'ED_SUCCESS';
-					// If we have deleted a revision and we have no more
-					// make sure to let the user know that as well
+				// If we have deleted a revision and we have no more
+				// make sure to let the user know that as well
 				$success_message .= 'delete' === $action && !sizeof($revisions) ? '_NO_MORE' : '';
+
 				$l_result = $this->user->lang($success_message);
 			}
 
