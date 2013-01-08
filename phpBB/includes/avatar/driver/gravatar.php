@@ -41,7 +41,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function get_custom_html($row, $alt = '')
+	public function get_custom_html($user, $row, $alt = '')
 	{
 		return '<img src="' . $this->get_gravatar_url($row) . '" ' .
 			($row['avatar_width'] ? ('width="' . $row['avatar_width'] . '" ') : '') .

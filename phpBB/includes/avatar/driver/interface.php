@@ -41,11 +41,14 @@ interface phpbb_avatar_driver_interface
 	/**
 	* Returns custom html if it is needed for displaying this avatar
 	*
+	* @param phpbb_user $user phpBB user object
+	* @param array	$row User data or group data that has been cleaned with 
+	*        phpbb_avatar_manager::clean_row
 	* @param string $alt Alternate text for avatar image
 	*
 	* @return string HTML
 	*/
-	public function get_custom_html($row, $alt = '');
+	public function get_custom_html($user, $row, $alt = '');
 
 	/**
 	* Prepare form for changing the settings of this avatar

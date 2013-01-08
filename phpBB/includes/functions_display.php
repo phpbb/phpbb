@@ -1400,7 +1400,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false)
 
 	if ($driver)
 	{
-		$html = $driver->get_custom_html($row, $ignore_config, $alt);
+		$html = $driver->get_custom_html($user, $row, $alt);
 		if (!empty($html))
 		{
 			return $html;

@@ -71,7 +71,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	/**
 	* @inheritdoc
 	*/
-	public function get_custom_html($row, $alt = '')
+	public function get_custom_html($user, $row, $alt = '')
 	{
 		return '';
 	}
