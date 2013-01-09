@@ -43,13 +43,27 @@ class phpbb_db_migrator
 	/** @var string */
 	protected $migrations_table;
 
-	/** @var array State of all migrations (SELECT * FROM migrations table) */
-	protected $migration_state;
+	/**
+	* State of all migrations
+	*
+	* (SELECT * FROM migrations table)
+	*
+	* @var array
+	*/
+	protected $migration_state = array();
 
-	/** @var array Array of all migrations available to be run */
+	/**
+	* Array of all migrations available to be run
+	*
+	* @var array
+	*/
 	protected $migrations = array();
 
-	/** @var array 'name' and 'class' of the last migration run */
+	/**
+	* 'name' and 'class' of the last migration run
+	*
+	* @var array
+	*/
 	public $last_run_migration = false;
 
 	/**
@@ -83,11 +97,12 @@ class phpbb_db_migrator
 	*/
 	public function load_migration_state()
 	{
+		$this->migration_state = array();
+
 		$sql = "SELECT *
 			FROM " . $this->migrations_table;
 		$result = $this->db->sql_query($sql);
 
-		$this->migration_state = array();
 		while ($migration = $this->db->sql_fetchrow($result))
 		{
 			$this->migration_state[$migration['migration_name']] = $migration;
@@ -137,8 +152,9 @@ class phpbb_db_migrator
 				$added_classes = array_diff(get_declared_classes(), $declared_classes);
 
 				if (
-					// The phpbb_db_migrations class may not have been loaded until now, so make sure to ignore it.
+					// If two classes have been added and phpbb_db_migration is one of them, we've only added one real migration
 					!(sizeof($added_classes) == 2 && in_array('phpbb_db_migration', $added_classes)) &&
+					// Otherwise there should only be one class added
 					sizeof($added_classes) != 1
 				)
 				{

@@ -366,7 +366,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 		switch ($type)
 		{
-			case 'role' :
+			case 'role':
 				$sql = 'SELECT role_id
 					FROM ' . ACL_ROLES_TABLE . "
 					WHERE role_name = '" . $this->db->sql_escape($name) . "'";
@@ -389,7 +389,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 				$this->db->sql_freeresult($result);
 			break;
 
-			case 'group' :
+			case 'group':
 				$sql = 'SELECT group_id
 					FROM ' . GROUPS_TABLE . "
 					WHERE group_name = '" . $this->db->sql_escape($name) . "'";
@@ -435,7 +435,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 		$sql_ary = array();
 		switch ($type)
 		{
-			case 'role' :
+			case 'role':
 				foreach ($new_auth as $auth_option_id)
 				{
 					if (!isset($current_auth[$auth_option_id]))
@@ -451,7 +451,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 				$this->db->sql_multi_insert(ACL_ROLES_DATA_TABLE, $sql_ary);
 			break;
 
-			case 'group' :
+			case 'group':
 				foreach ($new_auth as $auth_option_id)
 				{
 					if (!isset($current_auth[$auth_option_id]))
@@ -508,7 +508,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 		switch ($type)
 		{
-			case 'role' :
+			case 'role':
 				$sql = 'SELECT role_id
 					FROM ' . ACL_ROLES_TABLE . "
 					WHERE role_name = '" . $this->db->sql_escape($name) . "'";
@@ -525,7 +525,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 				$this->db->sql_query($sql);
 			break;
 
-			case 'group' :
+			case 'group':
 				$sql = 'SELECT group_id
 					FROM ' . GROUPS_TABLE . "
 					WHERE group_name = '" . $this->db->sql_escape($name) . "'";
