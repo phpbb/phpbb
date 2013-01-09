@@ -19,21 +19,9 @@ class phpbb_dbal_migration_dummy extends phpbb_db_migration
 		return array(
 			'add_columns' => array(
 				'phpbb_config' => array(
-					'extra_column' => array('UINT', 0),
+					'extra_column' => array('UINT', 1),
 				),
 			),
 		);
-	}
-
-	function update_data()
-	{
-		return array(
-			array('if', array(true, array('custom', array(array($this, 'set_extra_column'))))),
-		);
-	}
-
-	public function set_extra_column()
-	{
-		$this->sql_query('UPDATE phpbb_config SET extra_column = 1');
 	}
 }

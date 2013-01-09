@@ -364,6 +364,12 @@ class phpbb_db_migrator
 	protected function run_step($step, $last_result = false)
 	{
 		$callable_and_parameters = $this->get_callable_from_step($step, $last_result);
+
+		if ($callable_and_parameters === false)
+		{
+			return;
+		}
+
 		$callable = $callable_and_parameters[0];
 		$parameters = $callable_and_parameters[1];
 
@@ -377,7 +383,7 @@ class phpbb_db_migrator
 	* @param mixed $last_result Result to pass to the callable (only for 'custom' method)
 	* @return array Array with parameters for call_user_func_array(), 0 is the callable, 1 is parameters
 	*/
-	public function get_callable_from_step($step, $last_result = false)
+	protected function get_callable_from_step($step, $last_result = false)
 	{
 		$type = $step[0];
 		$parameters = $step[1];
@@ -406,6 +412,12 @@ class phpbb_db_migrator
 				}
 
 				$condition = $parameters[0];
+
+				if (!$condition)
+				{
+					return false;
+				}
+
 				$step = $parameters[1];
 
 				$callable_and_parameters = $this->get_callable_from_step($step);
@@ -413,10 +425,8 @@ class phpbb_db_migrator
 				$sub_parameters = $callable_and_parameters[1];
 
 				return array(
-					function ($condition) use ($callable, $sub_parameters) {
-						return call_user_func_array($callable, $sub_parameters);
-					},
-					array($condition),
+					$callable,
+					$sub_parameters,
 				);
 			break;
 			case 'custom':

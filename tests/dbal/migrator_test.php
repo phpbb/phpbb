@@ -14,6 +14,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
 
 require_once dirname(__FILE__) . '/migration/dummy.php';
 require_once dirname(__FILE__) . '/migration/unfulfillable.php';
+require_once dirname(__FILE__) . '/migration/if.php';
 
 class phpbb_dbal_migrator_test extends phpbb_database_test_case
 {
@@ -39,12 +40,6 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			new phpbb_db_migration_tool_config($this->config),
 		);
 		$this->migrator = new phpbb_db_migrator($this->config, $this->db, $this->db_tools, 'phpbb_migrations', dirname(__FILE__) . '/../../phpBB/', 'php', 'phpbb_', $tools);
-	}
-
-	public function tearDown()
-	{
-		// cleanup
-		$this->db_tools->sql_column_remove('phpbb_config', 'extra_column');
 	}
 
 	public function test_update()
@@ -85,6 +80,9 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 					AND migration_end_time <= " . (time() + 1),
 			'End time set correctly'
 		);
+
+		// cleanup
+		$this->db_tools->sql_column_remove('phpbb_config', 'extra_column');
 	}
 
 	public function test_unfulfillable()
@@ -103,5 +101,30 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			"SELECT extra_column FROM phpbb_config WHERE config_name = 'foo'",
 			'Dummy migration was run, even though an unfulfillable migration was found.'
 		);
+	}
+
+	public function test_if()
+	{
+		$this->migrator->set_migrations(array('phpbb_dbal_migration_if'));
+
+		// Don't like this, but I'm not sure there is any other way to do this
+		global $migrator_test_if_true_failed, $migrator_test_if_false_failed;
+		$migrator_test_if_true_failed = true;
+		$migrator_test_if_false_failed = false;
+
+		while (!$this->migrator->finished())
+		{
+			$this->migrator->update();
+		}
+
+		if ($migrator_test_if_true_failed)
+		{
+			$this->fail('True test failed');
+		}
+
+		if ($migrator_test_if_false_failed)
+		{
+			$this->fail('False test failed');
+		}
 	}
 }
