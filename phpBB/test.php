@@ -101,6 +101,7 @@ if (!$db_tools->sql_table_exists(MIGRATIONS_TABLE))
 $migrator = $phpbb_container->get('migrator');
 $migrator->load_migrations($phpbb_root_path . 'includes/db/migration/data/');
 
+// What is a safe limit of execution time? Half the max execution time should be safe.
 $safe_time_limit = (ini_get('max_execution_time') / 2);
 
 while (!$migrator->finished())
