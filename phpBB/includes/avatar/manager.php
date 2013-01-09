@@ -22,22 +22,26 @@ class phpbb_avatar_manager
 {
 	/**
 	* phpBB configuration
+	* @var phpbb_config
 	*/
 	protected $config;
 
 	/**
 	* Array that contains a list of enabled drivers
+	* @var array
 	*/
 	static protected $enabled_drivers = false;
 
 	/**
 	* Array that contains all available avatar drivers which are passed via the
 	* service container
+	* @var array
 	*/
 	protected $avatar_drivers;
 
 	/**
 	* Service container object
+	* @var object
 	*/
 	protected $container;
 
