@@ -208,11 +208,11 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 					);
 
 					// Run the "manual" way with the data we've collected.
-					$result .= ((isset($data['spacer'])) ? $data['spacer'] : '<br />') . $this->add($class, $parent, $new_module);
+					$this->add($class, $parent, $new_module);
 				}
 			}
 
-			return $result;
+			return;
 		}
 
 		// The "manual" way

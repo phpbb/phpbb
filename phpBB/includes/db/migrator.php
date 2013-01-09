@@ -251,11 +251,11 @@ class phpbb_db_migrator
 		}
 		else
 		{
-			$state = $this->process_data_step($migration);
+			$result = $this->process_data_step($migration, $state['migration_data_state']);
 
-			$state['migration_data_state'] = $state;
-			$state['migration_data_done'] = ($state === true);
-			$state['migration_end_time'] = ($state === true) ? time() : 0;
+			$state['migration_data_state'] = ($result === true) ? '' : $result;
+			$state['migration_data_done'] = ($result === true);
+			$state['migration_end_time'] = ($result === true) ? time() : 0;
 		}
 
 		$sql = 'UPDATE ' . $this->migrations_table . '
@@ -284,27 +284,50 @@ class phpbb_db_migrator
 	* Process the data step of the migration
 	*
 	* @param phpbb_db_migration $migration
-	* @return mixed migration status or bool true if everything completed successfully
+	* @param bool|string $state Current state of the migration
+	* @return bool|string migration state. True if completed, serialized array if not finished
 	*/
-	protected function process_data_step($migration)
+	protected function process_data_step($migration, $state)
 	{
+		$state = ($state) ? unserialize($state) : false;
+
 		$steps = $migration->update_data();
 
 		foreach ($steps as $step)
 		{
+			$last_result = false;
+			if ($state)
+			{
+				// Continue until we reach the step that matches the last step called
+				if ($state['step'] != $step)
+				{
+					continue;
+				}
+
+				// We send the result from last time to the callable function
+				$last_result = $state['result'];
+
+				// Set state to false since we reached the point we were at
+				$state = false;
+			}
+
 			try
 			{
 				// Result will be null or true if everything completed correctly
-				$result = $this->run_step($step);
+				$result = $this->run_step($step, $last_result);
 				if ($result !== null && $result !== true)
 				{
-					return $result;
+					return serialize(array(
+						'result'	=> $result,
+						'step'		=> $step,
+					));
 				}
 			}
 			catch (phpbb_db_migration_exception $e)
 			{
 				// We should try rolling back here
 
+				var_dump($step);
 				echo $e;
 				die();
 			}
@@ -318,12 +341,13 @@ class phpbb_db_migrator
 	*
 	* An exception should be thrown if an error occurs
 	*
-	* @param mixed $step
+	* @param mixed $step Data step from migration
+	* @param mixed $last_result Result to pass to the callable (only for 'custom' method)
 	* @return null
 	*/
-	protected function run_step($step)
+	protected function run_step($step, $last_result = false)
 	{
-		$callable_and_parameters = $this->get_callable_from_step($step);
+		$callable_and_parameters = $this->get_callable_from_step($step, $last_result);
 		$callable = $callable_and_parameters[0];
 		$parameters = $callable_and_parameters[1];
 
@@ -334,9 +358,10 @@ class phpbb_db_migrator
 	* Get a callable statement from a data step
 	*
 	* @param mixed $step Data step from migration
+	* @param mixed $last_result Result to pass to the callable (only for 'custom' method)
 	* @return array Array with parameters for call_user_func_array(), 0 is the callable, 1 is parameters
 	*/
-	public function get_callable_from_step($step)
+	public function get_callable_from_step($step, $last_result = false)
 	{
 		$type = $step[0];
 		$parameters = $step[1];
@@ -375,7 +400,7 @@ class phpbb_db_migrator
 					function ($condition) use ($callable, $sub_parameters) {
 						return call_user_func_array($callable, $sub_parameters);
 					},
-					array($condition)
+					array($condition),
 				);
 			break;
 			case 'custom':
@@ -384,7 +409,10 @@ class phpbb_db_migrator
 					throw new phpbb_db_migration_exception('MIGRATION_INVALID_DATA_CUSTOM_NOT_CALLABLE', $step);
 				}
 
-				return array($parameters[0], array());
+				return array(
+					$parameters[0],
+					array($last_result),
+				);
 			break;
 
 			default:
