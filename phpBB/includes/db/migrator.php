@@ -139,6 +139,11 @@ class phpbb_db_migrator
 	*/
 	public function load_migrations($path, $check_fulfillable = true)
 	{
+		if (!is_dir($path))
+		{
+			throw new phpbb_db_migration_exception('DIRECTORY INVALID', $path);
+		}
+
 		$handle = opendir($path);
 		while (($file = readdir($handle)) !== false)
 		{
