@@ -119,7 +119,7 @@ class captcha
 		$new_line = '';
 
 		$end = strlen($scanline) - ceil($width/2);
-		for ($i = floor($width/2); $i < $end; $i++)
+		for ($i = (int) floor($width / 2); $i < $end; $i++)
 		{
 			$pixel = ord($scanline{$i});
 
