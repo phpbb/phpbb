@@ -31,7 +31,7 @@ class phpbb_db_migration_data_style_update_p1 extends phpbb_db_migration
 		// Get list of valid 3.1 styles
 		$available_styles = array('prosilver');
 
-		$iterator = new DirectoryIterator($phpbb_root_path . 'styles');
+		$iterator = new DirectoryIterator($this->phpbb_root_path . 'styles');
 		$skip_dirs = array('.', '..', 'prosilver');
 		foreach ($iterator as $fileinfo)
 		{
@@ -91,9 +91,67 @@ class phpbb_db_migration_data_style_update_p1 extends phpbb_db_migration
 					'style_parent_id'	=> 0,
 					'style_parent_tree'	=> '',
 				);
-				$this->sql_query('UPDATE ' . STYLES_TABLE . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE style_id = ' . $style_row['style_id'], $errored, $error_ary);
+				$this->sql_query('UPDATE ' . STYLES_TABLE . '
+					SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
+					WHERE style_id = ' . $style_row['style_id']);
 				$valid_styles[] = (int) $style_row['style_id'];
 			}
+		}
+
+		// Remove old entries from styles table
+		if (!sizeof($valid_styles))
+		{
+			// No valid styles: remove everything and add prosilver
+			$this->sql_query('DELETE FROM ' . STYLES_TABLE, $errored, $error_ary);
+
+			$sql_ary = array(
+				'style_name'		=> 'prosilver',
+				'style_copyright'	=> '&copy; phpBB Group',
+				'style_active'		=> 1,
+				'style_path'		=> 'prosilver',
+				'bbcode_bitfield'	=> 'kNg=',
+				'style_parent_id'	=> 0,
+				'style_parent_tree'	=> '',
+
+				// Will be removed in the next step
+				'imageset_id'		=> 0,
+				'template_id'		=> 0,
+				'theme_id'			=> 0,
+			);
+
+			$sql = 'INSERT INTO ' . STYLES_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+			$this->sql_query($sql);
+
+			$sql = 'SELECT style_id
+				FROM ' . $table . "
+				WHERE style_name = 'prosilver'";
+			$result = $this->sql_query($sql);
+			$default_style = $this->db->sql_fetchfield($result);
+			$this->db->sql_freeresult($result);
+
+			set_config('default_style', $default_style);
+
+			$sql = 'UPDATE ' . USERS_TABLE . ' SET user_style = 0';
+			$this->sql_query($sql);
+		}
+		else
+		{
+			// There are valid styles in styles table. Remove styles that are outdated
+			$this->sql_query('DELETE FROM ' . STYLES_TABLE . '
+				WHERE ' . $this->db->sql_in_set('style_id', $valid_styles, true));
+
+			// Change default style
+			if (!in_array($this->config['default_style'], $valid_styles))
+			{
+				$this->sql_query('UPDATE ' . CONFIG_TABLE . "
+					SET config_value = '" . $valid_styles[0] . "'
+					WHERE config_name = 'default_style'");
+			}
+
+			// Reset styles for users
+			$this->sql_query('UPDATE ' . USERS_TABLE . '
+				SET user_style = 0
+				WHERE ' . $this->db->sql_in_set('user_style', $valid_styles, true));
 		}
 	}
 }

@@ -39,10 +39,11 @@ class phpbb_db_migration_data_extensions extends phpbb_db_migration
 				'acp',
 				'ACP_GENERAL_TASKS',
 				array(
-					'module_basename'	=> 'extensions',
+					'module_basename'	=> 'acp_extensions',
 					'modes'				=> array('main'),
 				),
 			)),
+			array('permission.add', array('a_extensions', true, 'a_styles')),
 		);
 	}
 }

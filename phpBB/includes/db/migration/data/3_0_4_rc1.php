@@ -69,7 +69,7 @@ class phpbb_db_migration_data_3_0_4_rc1 extends phpbb_db_migration
 		// Update the Custom Profile Fields based on previous settings to the new format
 		$sql = 'SELECT field_id, field_required, field_show_on_reg, field_hide
 				FROM ' . PROFILE_FIELDS_TABLE;
-		$result = $this->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -101,5 +101,7 @@ class phpbb_db_migration_data_3_0_4_rc1 extends phpbb_db_migration
 
 			$this->sql_query('UPDATE ' . $this->table_prefix . 'profile_fields SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE field_id = ' . $row['field_id'], $errored, $error_ary);
 		}
+
+		$this->db->sql_freeresult($result);
 	}
 }

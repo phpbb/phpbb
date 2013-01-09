@@ -35,7 +35,7 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 				$this->table_prefix . 'reports' => array(
 					'pm_id' => array('UINT', 0),
 				),
-				$this->table_prefix . 'fields'			=> array(
+				$this->table_prefix . 'profile_fields'	=> array(
 					'field_show_on_vt' => array('BOOL', 0),
 				),
 				$this->table_prefix . 'forums' => array(
@@ -89,19 +89,19 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 			array('config.add', array('allow_avatar', 0)),
 			array('if', array(
 				($this->config['allow_avatar_upload'] || $this->config['allow_avatar_local'] || $this->config['allow_avatar_remote']),
-				array('config.add', array('allow_avatar', 1)),
+				array('config.update', array('allow_avatar', 1)),
 			)),
 			array('config.add', array('allow_avatar_remote_upload', 0)),
 			array('if', array(
 				($this->config['allow_avatar_remote'] && $this->config['allow_avatar_upload']),
-				array('config.add', array('allow_avatar_remote_upload', 1)),
+				array('config.update', array('allow_avatar_remote_upload', 1)),
 			)),
 
 			array('module.add', array(
 				'acp',
 				'ACP_BOARD_CONFIGURATION',
 				array(
-					'module_basename'	=> 'board',
+					'module_basename'	=> 'acp_board',
 					'modes'				=> array('feed'),
 				),
 			)),
@@ -109,7 +109,7 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 				'acp',
 				'ACP_CAT_USERS',
 				array(
-					'module_basename'	=> 'users',
+					'module_basename'	=> 'acp_users',
 					'modes'				=> array('warnings'),
 				),
 			)),
@@ -117,7 +117,7 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 				'acp',
 				'ACP_SERVER_CONFIGURATION',
 				array(
-					'module_basename'	=> 'send_statistics',
+					'module_basename'	=> 'acp_send_statistics',
 					'modes'				=> array('send_statistics'),
 				),
 			)),
@@ -125,7 +125,7 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 				'acp',
 				'ACP_FORUM_BASED_PERMISSIONS',
 				array(
-					'module_basename'	=> 'permissions',
+					'module_basename'	=> 'acp_permissions',
 					'modes'				=> array('setting_forum_copy'),
 				),
 			)),
@@ -133,24 +133,8 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 				'mcp',
 				'MCP_REPORTS',
 				array(
-					'module_basename'	=> 'pm_reports',
-					'modes'				=> array('pm_reports'),
-				),
-			)),
-			array('module.add', array(
-				'mcp',
-				'MCP_REPORTS',
-				array(
-					'module_basename'	=> 'pm_reports',
-					'modes'				=> array('pm_reports_closed'),
-				),
-			)),
-			array('module.add', array(
-				'mcp',
-				'MCP_REPORTS',
-				array(
-					'module_basename'	=> 'pm_reports',
-					'modes'				=> array('pm_report_details'),
+					'module_basename'	=> 'mcp_pm_reports',
+					'modes'				=> array('pm_reports','pm_reports_closed','pm_report_details'),
 				),
 			)),
 			array('custom', array(array(&$this, 'add_newly_registered_group'))),
@@ -209,17 +193,14 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 			$this->sql_query($sql);
 			$u_role = $this->db->sql_nextid();
 
-			if (!$errored)
-			{
-				// Now add the correct data to the roles...
-				// The standard role says that new users are not able to send a PM, Mass PM, are not able to PM groups
-				$sql = 'INSERT INTO ' . ACL_ROLES_DATA_TABLE . " (role_id, auth_option_id, auth_setting) SELECT $u_role, auth_option_id, 0 FROM " . ACL_OPTIONS_TABLE . " WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_sendpm', 'u_masspm', 'u_masspm_group')";
-				$this->sql_query($sql);
+			// Now add the correct data to the roles...
+			// The standard role says that new users are not able to send a PM, Mass PM, are not able to PM groups
+			$sql = 'INSERT INTO ' . ACL_ROLES_DATA_TABLE . " (role_id, auth_option_id, auth_setting) SELECT $u_role, auth_option_id, 0 FROM " . ACL_OPTIONS_TABLE . " WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_sendpm', 'u_masspm', 'u_masspm_group')";
+			$this->sql_query($sql);
 
-				// Add user role to group
-				$sql = 'INSERT INTO ' . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES ($group_id, 0, 0, $u_role, 0)";
-				$this->sql_query($sql);
-			}
+			// Add user role to group
+			$sql = 'INSERT INTO ' . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES ($group_id, 0, 0, $u_role, 0)";
+			$this->sql_query($sql);
 		}
 
 		// Insert new forum role
@@ -246,11 +227,8 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 			$this->sql_query($sql);
 			$f_role = $this->db->sql_nextid();
 
-			if (!$errored)
-			{
-				$sql = 'INSERT INTO ' . ACL_ROLES_DATA_TABLE . " (role_id, auth_option_id, auth_setting) SELECT $f_role, auth_option_id, 0 FROM " . ACL_OPTIONS_TABLE . " WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_noapprove')";
-				$this->sql_query($sql);
-			}
+			$sql = 'INSERT INTO ' . ACL_ROLES_DATA_TABLE . " (role_id, auth_option_id, auth_setting) SELECT $f_role, auth_option_id, 0 FROM " . ACL_OPTIONS_TABLE . " WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_noapprove')";
+			$this->sql_query($sql);
 		}
 
 		// Set every members user_new column to 0 (old users) only if there is no one yet (this makes sure we do not execute this more than once)
@@ -294,7 +272,7 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 		}
 
 		// Clear permissions...
-		include_once($this->phpbb_root_path . 'includes/acp/auth.' . $this->phpEx);
+		include_once($this->phpbb_root_path . 'includes/acp/auth.' . $this->php_ext);
 		$auth_admin = new auth_admin();
 		$auth_admin->acl_clear_prefetch();
 	}

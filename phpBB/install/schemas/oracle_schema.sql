@@ -781,21 +781,6 @@ CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id)
 /
 
 /*
-	Table: 'phpbb_migrations'
-*/
-CREATE TABLE phpbb_migrations (
-	migration_name varchar2(255) DEFAULT '' ,
-	migration_schema_done number(1) DEFAULT '0' NOT NULL,
-	migration_data_done number(1) DEFAULT '0' NOT NULL,
-	migration_data_state clob DEFAULT '' ,
-	migration_start_time number(11) DEFAULT '0' NOT NULL,
-	migration_end_time number(11) DEFAULT '0' NOT NULL,
-	CONSTRAINT u_phpbb_migration_name UNIQUE (migration_name)
-)
-/
-
-
-/*
 	Table: 'phpbb_moderator_cache'
 */
 CREATE TABLE phpbb_moderator_cache (
@@ -812,6 +797,21 @@ CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache (display_on
 /
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id)
 /
+
+/*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE phpbb_migrations (
+	migration_name varchar2(255) DEFAULT '' ,
+	migration_schema_done number(1) DEFAULT '0' NOT NULL,
+	migration_data_done number(1) DEFAULT '0' NOT NULL,
+	migration_data_state clob DEFAULT '' ,
+	migration_start_time number(11) DEFAULT '0' NOT NULL,
+	migration_end_time number(11) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_migrations PRIMARY KEY (migration_name)
+)
+/
+
 
 /*
 	Table: 'phpbb_modules'
@@ -1231,8 +1231,8 @@ CREATE TABLE phpbb_reports (
 	report_time number(11) DEFAULT '0' NOT NULL,
 	report_text clob DEFAULT '' ,
 	reported_post_text clob DEFAULT '' ,
-	reported_post_bitfield varchar2(255) DEFAULT '' ,
 	reported_post_uid varchar2(8) DEFAULT '' ,
+	reported_post_bitfield varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_reports PRIMARY KEY (report_id)
 )
 /

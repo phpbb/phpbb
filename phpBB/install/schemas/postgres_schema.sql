@@ -558,20 +558,6 @@ CREATE INDEX phpbb_login_attempts_att_time ON phpbb_login_attempts (attempt_time
 CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id);
 
 /*
-	Table: 'phpbb_migrations'
-*/
-CREATE TABLE phpbb_migrations (
-	migration_name varchar(255) DEFAULT '' NOT NULL,
-	migration_schema_done INT2 DEFAULT '0' NOT NULL CHECK (migration_schema_done >= 0),
-	migration_data_done INT2 DEFAULT '0' NOT NULL CHECK (migration_data_done >= 0),
-	migration_data_state varchar(8000) DEFAULT '' NOT NULL,
-	migration_start_time INT4 DEFAULT '0' NOT NULL CHECK (migration_start_time >= 0),
-	migration_end_time INT4 DEFAULT '0' NOT NULL CHECK (migration_end_time >= 0)
-);
-
-CREATE UNIQUE INDEX phpbb_migrations_migration_name ON phpbb_migrations (migration_name);
-
-/*
 	Table: 'phpbb_moderator_cache'
 */
 CREATE TABLE phpbb_moderator_cache (
@@ -585,6 +571,20 @@ CREATE TABLE phpbb_moderator_cache (
 
 CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache (display_on_index);
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id);
+
+/*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE phpbb_migrations (
+	migration_name varchar(255) DEFAULT '' NOT NULL,
+	migration_schema_done INT2 DEFAULT '0' NOT NULL CHECK (migration_schema_done >= 0),
+	migration_data_done INT2 DEFAULT '0' NOT NULL CHECK (migration_data_done >= 0),
+	migration_data_state varchar(8000) DEFAULT '' NOT NULL,
+	migration_start_time INT4 DEFAULT '0' NOT NULL CHECK (migration_start_time >= 0),
+	migration_end_time INT4 DEFAULT '0' NOT NULL CHECK (migration_end_time >= 0),
+	PRIMARY KEY (migration_name)
+);
+
 
 /*
 	Table: 'phpbb_modules'
@@ -869,8 +869,8 @@ CREATE TABLE phpbb_reports (
 	report_time INT4 DEFAULT '0' NOT NULL CHECK (report_time >= 0),
 	report_text TEXT DEFAULT '' NOT NULL,
 	reported_post_text TEXT DEFAULT '' NOT NULL,
-	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
 	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id)
 );
 

@@ -80,7 +80,7 @@ class phpbb_db_migration_data_3_0_11_rc1 extends phpbb_db_migration
 		{
 			$delete_pms[] = (int) $row['msg_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if (!empty($delete_pms))
 		{

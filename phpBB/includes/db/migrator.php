@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_db_migrator
 {
-	protected $container;
+	protected $config;
 	protected $db;
 	protected $db_tools;
 	protected $table_prefix;
@@ -33,31 +33,31 @@ class phpbb_db_migrator
 	protected $migrations_table;
 	protected $migration_state;
 
-	protected $migrations;
+	protected $migrations = array();
+
+	/** @var string Name of the last migration run */
+	public $last_run_migration = false;
 
 	/**
 	* Constructor of the database migrator
-	*
-	* @param \Symfony\Component\DependencyInjection\ContainerInterface	$container	Container supplying dependencies
 	*/
-	public function __construct(\Symfony\Component\DependencyInjection\ContainerInterface $container, $migrations)
+	public function __construct($config, phpbb_db_driver $db, $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools)
 	{
-		$this->container = $container;
-		$this->db = $this->container->get('dbal.conn');
-		$this->db_tools = $this->container->get('dbal.tools');
-		$this->table_prefix = $this->container->getParameters('core.table_prefix');
-		$this->migrations_table = $this->container->getParameters('tables.migrations');
-		$this->migrations = $migrations;
+		$this->config = $config;
+		$this->db = $db;
+		$this->db_tools = $db_tools;
 
-		$this->phpbb_root_path = $this->container->getParameters('core.root_path');
-		$this->php_ext = $this->container->getParameters('core.php_ext');
+		$this->migrations_table = $migrations_table;
 
-		/** @todo replace with collection_pass when merged */
-		$this->tools = array(
-			'config' => new phpbb_db_migration_tools_config,
-			'module' => new phpbb_db_migration_tools_module,
-			'permission' => new phpbb_db_migration_tools_permission,
-		);
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+
+		$this->table_prefix = $table_prefix;
+
+		foreach ($tools as $tool)
+		{
+			$this->tools[$tool->get_name()] = $tool;
+		}
 
 		$this->load_migration_state();
 	}
@@ -94,12 +94,43 @@ class phpbb_db_migrator
 	}
 
 	/**
+	* Load migration data files from a directory
+	*
+	* @param string $path
+	* @return array Array of migrations with names
+	*/
+	public function load_migrations($path)
+	{
+		$handle = opendir($path);
+		while (($file = readdir($handle)) !== false)
+		{
+			if (strpos($file, '_') !== 0 && strrpos($file, '.' . $this->php_ext) === (strlen($file) - strlen($this->php_ext) - 1))
+			{
+				$name = 'phpbb_db_migration_data_' . substr($file, 0, -(strlen($this->php_ext) + 1));
+
+				if (!in_array($name, $this->migrations))
+				{
+					$this->migrations[] = $name;
+				}
+			}
+		}
+
+		foreach ($this->migrations as $name)
+		{
+			if ($this->unfulfillable($name))
+			{
+				throw new phpbb_db_migration_exception('MIGRATION NOT FULFILLABLE', $name);
+			}
+		}
+
+		return $this->migrations;
+	}
+
+	/**
 	* Runs a single update step from the next migration to be applied.
 	*
 	* The update step can either be a schema or a (partial) data update. To
 	* check if update() needs to be called again use the finished() method.
-	*
-	* @return null
 	*/
 	public function update()
 	{
@@ -134,7 +165,8 @@ class phpbb_db_migrator
 			return false;
 		}
 
-		$migration = new $name($this->db, $this->db_tools, $this->table_prefix, $this->phpbb_root_path, $this->php_ext);
+		$migration = $this->get_migration($name);
+
 		$state = (isset($this->migration_state[$name])) ?
 			$this->migration_state[$name] :
 			array(
@@ -156,6 +188,11 @@ class phpbb_db_migrator
 				return $this->try_apply($depend);
 			}
 		}
+
+		$this->last_run_migration = array(
+			'name'	=> $name,
+			'class'	=> $migration,
+		);
 
 		if (!isset($this->migration_state[$name]))
 		{
@@ -187,20 +224,20 @@ class phpbb_db_migrator
 
 	protected function process_data_step($migration)
 	{
-		$continue = false;
+		//$continue = false;
 		$steps = $migration->update_data();
 
 		foreach ($steps as $step)
 		{
 			$continue = $this->run_step($step);
 
-			if (!$continue)
+			/*if ($continue === false)
 			{
 				return false;
-			}
+			}*/
 		}
 
-		return $continue;
+		//return $continue;
 	}
 
 	protected function run_step($step)
@@ -211,13 +248,12 @@ class phpbb_db_migrator
 			$callable = $callable_and_parameters[0];
 			$parameters = $callable_and_parameters[1];
 
-			call_user_func_array($callable, $parameters);
-
-			return false;
+			return call_user_func_array($callable, $parameters);
 		}
 		catch (phpbb_db_migration_exception $e)
 		{
-			echo $e;die();
+			echo $e;
+			die();
 		}
 	}
 
@@ -325,7 +361,7 @@ class phpbb_db_migrator
 			return true;
 		}
 
-		$migration = new $name($this->db, $this->db_tools, $this->table_prefix, $this->phpbb_root_path, $this->php_ext);
+		$migration = $this->get_migration($name);
 		$depends = $migration->depends_on();
 
 		foreach ($depends as $depend)
@@ -373,5 +409,16 @@ class phpbb_db_migrator
 	protected function apply_schema_changes($schema_changes)
 	{
 		$this->db_tools->perform_schema_changes($schema_changes);
+	}
+
+	/**
+	* Helper to get a migration
+	*
+	* @param string $name Name of the migration
+	* @return phpbb_db_migration
+	*/
+	protected function get_migration($name)
+	{
+		return new $name($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix);
 	}
 }

@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_db_migration_data_extensions extends phpbb_db_migration
+class phpbb_db_migration_data_3_1_0_dev extends phpbb_db_migration
 {
 	public function depends_on()
 	{
@@ -78,6 +78,8 @@ class phpbb_db_migration_data_extensions extends phpbb_db_migration
 			array('config.add', array('site_home_url', '')),
 			array('config.add', array('site_home_text', '')),
 
+			array('permission.add', array('u_chgprofileinfo', true, 'u_sig')),
+
 			array('module.add', array(
 				'acp',
 				'ACP_GROUPS',
@@ -103,7 +105,7 @@ class phpbb_db_migration_data_extensions extends phpbb_db_migration
 				),
 			)),
 			array('module.add', array(
-				'acp',
+				'ucp',
 				'UCP_PROFILE',
 				array(
 					'module_basename'	=> 'ucp_profile',
@@ -113,18 +115,102 @@ class phpbb_db_migration_data_extensions extends phpbb_db_migration
 
 			array('module.remove', array(
 				'acp',
-				'ACP_CAT_STYLES',
-				array(
-					'module_basename'	=> 'styles',
-					'modes'				=> array('imageset', 'theme', 'template'),
-				),
+				false,
+				'ACP_TEMPLATES',
+			)),
+			array('module.remove', array(
+				'acp',
+				false,
+				'ACP_THEMES',
+			)),
+			array('module.remove', array(
+				'acp',
+				false,
+				'ACP_IMAGESETS',
 			)),
 
 			array('custom', array(array($this, 'rename_module_basenames'))),
+			array('custom', array(array($this, 'rename_styles_module'))),
 			array('custom', array(array($this, 'add_group_teampage'))),
 			array('custom', array(array($this, 'update_group_legend'))),
 			array('custom', array(array($this, 'localise_global_announcements'))),
+			array('custom', array(array($this, 'update_ucp_pm_basename'))),
+			array('custom', array(array($this, 'update_ucp_profile_auth'))),
+			array('custom', array(array($this, 'move_customise_modules'))),
+
+			array('config.update', array('version', '3.1.0-dev')),
 		);
+	}
+
+	public function move_customise_modules()
+	{
+		// Move language management to new location in the Customise tab
+		// First get language module id
+		$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+			WHERE module_basename = 'acp_language'";
+		$result = $this->db->sql_query($sql);
+		$language_module_id = $this->db->sql_fetchfield('module_id');
+		$this->db->sql_freeresult($result);
+		// Next get language management module id of the one just created
+		$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+			WHERE module_langname = 'ACP_LANGUAGE'";
+		$result = $this->db->sql_query($sql);
+		$language_management_module_id = $this->db->sql_fetchfield('module_id');
+		$this->db->sql_freeresult($result);
+
+		if (!class_exists('acp_modules'))
+		{
+			include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
+		}
+		// acp_modules calls adm_back_link, which is undefined at this point
+		if (!function_exists('adm_back_link'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_acp.' . $this->php_ext);
+		}
+		$module_manager = new acp_modules();
+		$module_manager->module_class = 'acp';
+		$module_manager->move_module($language_module_id, $language_management_module_id);
+	}
+
+	public function update_ucp_pm_basename()
+	{
+		$sql = 'SELECT module_id, module_basename
+			FROM ' . MODULES_TABLE . "
+			WHERE module_basename <> 'ucp_pm' AND
+				module_langname='UCP_PM'";
+		$result = $this->db->sql_query_limit($sql, 1);
+
+		if ($row = $this->db->sql_fetchrow($result))
+		{
+			// This update is still not applied. Applying it
+
+			$sql = 'UPDATE ' . MODULES_TABLE . "
+				SET module_basename = 'ucp_pm'
+				WHERE  module_id = " . (int) $row['module_id'];
+
+			$this->sql_query($sql);
+		}
+		$this->db->sql_freeresult($result);
+	}
+
+	public function update_ucp_profile_auth()
+	{
+		// Update the auth setting for the module
+		$sql = 'UPDATE ' . MODULES_TABLE . "
+			SET module_auth = 'acl_u_chgprofileinfo'
+			WHERE module_class = 'ucp'
+				AND module_basename = 'ucp_profile'
+				AND module_mode = 'profile_info'";
+		$this->sql_query($sql);
+	}
+
+	public function rename_styles_module()
+	{
+		// Rename styles module to Customise
+		$sql = 'UPDATE ' . MODULES_TABLE . "
+			SET module_langname = 'ACP_CAT_CUSTOMISE'
+			WHERE module_langname = 'ACP_CAT_STYLES'";
+		$this->sql_query($sql);
 	}
 
 	public function rename_module_basenames()

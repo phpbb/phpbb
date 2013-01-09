@@ -1,0 +1,49 @@
+services:
+    migrator:
+        class: phpbb_db_migrator
+        arguments:
+            - @config
+            - @dbal.conn
+            - @dbal.tools
+            - %tables.migrations%
+            - %core.root_path%
+            - %core.php_ext%
+            - %core.table_prefix%
+            - @migrator.tool_collection
+
+    migrator.tool_collection:
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: migrator.tool }
+
+    migrator.tool.config:
+        class: phpbb_db_migration_tool_config
+        arguments:
+            - @config
+        tags:
+            - { name: migrator.tool }
+
+    migrator.tool.module:
+        class: phpbb_db_migration_tool_module
+        arguments:
+            - @dbal.conn
+            - @cache
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.modules%
+        tags:
+            - { name: migrator.tool }
+
+    migrator.tool.permission:
+        class: phpbb_db_migration_tool_permission
+        arguments:
+            - @dbal.conn
+            - @cache
+            - @auth
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: migrator.tool }

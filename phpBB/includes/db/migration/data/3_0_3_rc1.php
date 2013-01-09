@@ -36,12 +36,12 @@ class phpbb_db_migration_data_3_0_3_rc1 extends phpbb_db_migration
 			array('config.add', array('queue_trigger_posts', '3')),
 			array('config.add', array('pm_max_recipients', '0')),
 			array('custom', array(array(&$this, 'set_group_default_max_recipients'))),
-			array('config.add', array('dbms_version', '')),
-			array('permission.add', array('u_masspm_group', phpbb_auth::IS_GLOBAL),
+			array('config.add', array('dbms_version', $this->db->sql_server_info(true))),
+			array('permission.add', array('u_masspm_group', true, 'u_masspm')),
 			array('custom', array(array(&$this, 'correct_acp_email_permissions'))),
 
 			array('config.update', array('version', '3.0.3-rc1')),
-		));
+		);
 	}
 
 	function correct_acp_email_permissions()

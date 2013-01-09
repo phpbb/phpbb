@@ -51,7 +51,10 @@ class phpbb_db_migration_data_timezone extends phpbb_db_migration
 		$this->db->sql_freeresult($result);
 
 		// Update board default timezone
-		set_config('board_timezone', $this->convert_phpbb30_timezone($config['board_timezone'], $config['board_dst']));
+		$sql = 'UPDATE ' . CONFIG_TABLE . "
+			SET config_value = '" . $this->convert_phpbb30_timezone($this->config['board_timezone'], $this->config['board_dst']) . "'
+			WHERE config_name = 'board_timezone'";
+		$this->sql_query($sql);
 
 		// After we have calculated the timezones we can delete user_dst column from user table.
 		$this->db_tools->sql_column_remove(USERS_TABLE, 'user_dst');

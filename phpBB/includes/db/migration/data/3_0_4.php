@@ -30,7 +30,7 @@ class phpbb_db_migration_data_3_0_4 extends phpbb_db_migration
 
 	function rename_log_delete_topic()
 	{
-		if ($db->sql_layer == 'oracle')
+		if ($this->db->sql_layer == 'oracle')
 		{
 			// log_operation is CLOB - but we can change this later
 			$sql = 'UPDATE ' . $this->table_prefix . "log

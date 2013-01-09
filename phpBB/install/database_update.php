@@ -1521,8 +1521,6 @@ function change_database_data(&$no_updates, $version)
 				),
 			);
 
-			global $db_tools;
-
 			$statements = $db_tools->perform_schema_changes($changes);
 
 			foreach ($statements as $sql)
@@ -2164,26 +2162,41 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
-			global $db_tools, $table_prefix;
-
-			// Recover from potentially broken Q&A CAPTCHA table on firebird
-			// Q&A CAPTCHA was uninstallable, so it's safe to remove these
-			// without data loss
+			/*
+			* Due to a bug, vanilla phpbb could not create captcha tables
+			* in 3.0.8 on firebird. It was possible for board administrators
+			* to adjust the code to work. If code was manually adjusted by
+			* board administrators, index names would not be the same as
+			* what 3.0.9 and newer expect. This code fragment drops captcha
+			* tables, destroying all entered Q&A captcha configuration, such
+			* that when Q&A is configured next the respective tables will be
+			* created with correct index names.
+			*
+			* If you wish to preserve your Q&A captcha configuration, you can
+			* manually rename indexes to the currently expected name:
+			* 	phpbb_captcha_questions_lang_iso	=> phpbb_captcha_questions_lang
+			* 	phpbb_captcha_answers_question_id	=> phpbb_captcha_answers_qid
+			*
+			* Again, this needs to be done only if a board was manually modified
+			* to fix broken captcha code.
+			*
 			if ($db_tools->sql_layer == 'firebird')
 			{
-				$tables = array(
-					$table_prefix . 'captcha_questions',
-					$table_prefix . 'captcha_answers',
-					$table_prefix . 'qa_confirm',
+				$changes = array(
+					'drop_tables'	=> array(
+						$table_prefix . 'captcha_questions',
+						$table_prefix . 'captcha_answers',
+						$table_prefix . 'qa_confirm',
+					),
 				);
-				foreach ($tables as $table)
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
 				{
-					if ($db_tools->sql_table_exists($table))
-					{
-						$db_tools->sql_table_drop($table);
-					}
+					_sql($sql, $errored, $error_ary);
 				}
 			}
+			*/
 
 			$no_updates = false;
 		break;
@@ -2358,6 +2371,26 @@ function change_database_data(&$no_updates, $version)
 						_sql($sql, $errored, $error_ary);
 					}
 				}
+			}
+
+			// Disable receiving pms for bots
+			$sql = 'SELECT user_id
+				FROM ' . BOTS_TABLE;
+			$result = $db->sql_query($sql);
+
+			$bot_user_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$bot_user_ids[] = (int) $row['user_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (!empty($bot_user_ids))
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_allow_pm = 0
+					WHERE ' . $db->sql_in_set('user_id', $bot_user_ids);
+				_sql($sql, $errored, $error_ary);
 			}
 
 			$no_updates = false;

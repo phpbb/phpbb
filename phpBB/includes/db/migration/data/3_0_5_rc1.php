@@ -32,7 +32,7 @@ class phpbb_db_migration_data_3_0_5_rc1 extends phpbb_db_migration
 		return array(
 			array('config.add', array('captcha_gd_wave', 0)),
 			array('config.add', array('captcha_gd_3d_noise', 1)),
-			array('config.add', array('captcha_gd_refresh', 1)),
+			array('config.add', array('captcha_gd_fonts', 1)),
 			array('config.add', array('confirm_refresh', 1)),
 			array('config.add', array('max_num_search_keywords', 10)),
 			array('config.remove', array('search_indexing_state')),
@@ -47,7 +47,7 @@ class phpbb_db_migration_data_3_0_5_rc1 extends phpbb_db_migration
 		$sql = 'SELECT user_id, user_password
 				FROM ' . $this->table_prefix . 'users
 				WHERE user_pass_convert = 1';
-		$result = $this->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -60,7 +60,7 @@ class phpbb_db_migration_data_3_0_5_rc1 extends phpbb_db_migration
 				$this->sql_query('UPDATE ' . $this->table_prefix . 'users SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . $row['user_id']);
 			}
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 	}
 
 	function update_ichiro_bot()
@@ -99,7 +99,7 @@ class phpbb_db_migration_data_3_0_5_rc1 extends phpbb_db_migration
 					WHERE auth_option = '" . $db->sql_escape($option) . "'
 					ORDER BY auth_option_id DESC";
 				// sql_query_limit not possible here, due to bug in postgresql layer
-				$result = $this->sql_query($sql);
+				$result = $this->db->sql_query($sql);
 
 				// Skip first row, this is our original auth option we want to preserve
 				$row = $this->db->sql_fetchrow($result);

@@ -36,20 +36,20 @@ abstract class phpbb_db_migration
 
 	protected $errors;
 
+	private $queries = array();
+
 	/**
 	* Migration constructor
-	*
-	* @param \Symfony\Component\DependencyInjection\ContainerInterface	$container	Container supplying dependencies
 	*/
-	public function __construct(\Symfony\Component\DependencyInjection\ContainerInterface $container)
+	public function __construct($config, phpbb_db_driver $db, $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
 	{
-		$this->config = $this->container->get('config');
-		$this->db = $this->container->get('dbal.conn');
-		$this->db_tools = $this->container->get('dbal.tools');
-		$this->table_prefix = $this->container->getParameters('core.table_prefix');
+		$this->config = $config;
+		$this->db = $db;
+		$this->db_tools = $db_tools;
+		$this->table_prefix = $table_prefix;
 
-		$this->phpbb_root_path = $this->container->getParameters('core.root_path');
-		$this->php_ext = $this->container->getParameters('core.php_ext');
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 
 		$this->errors = array();
 	}
@@ -88,10 +88,7 @@ abstract class phpbb_db_migration
 	*/
 	protected function sql_query($sql)
 	{
-		if (defined('DEBUG'))
-		{
-			echo "<br />\n{$sql}\n<br />";
-		}
+		$this->queries[] = $sql;
 
 		$this->db->sql_return_on_error(true);
 
@@ -118,5 +115,15 @@ abstract class phpbb_db_migration
 		$this->db->sql_return_on_error(false);
 
 		return $result;
+	}
+
+	/**
+	* Get the list of queries run
+	*
+	* @return array
+	*/
+	public function get_queries()
+	{
+		return $this->queries;
 	}
 }

@@ -1,6 +1,7 @@
 imports:
     - { resource: tables.yml }
     - { resource: cron_tasks.yml }
+    - { resource: migrator.yml }
 
 services:
     auth:
@@ -161,45 +162,6 @@ services:
         class: phpbb_event_kernel_terminate_subscriber
         tags:
             - { name: kernel.event_subscriber }
-
-    migrator:
-        class: phpbb_db_migrator
-        arguments:
-            - @service_container
-
-    migrator.tools_collection
-        class: phpbb_di_service_collection
-        arguments:
-            - @service_container
-
-    migrator.tools.config:
-        class: phpbb_db_migration_tools_config
-        arguments:
-            - @config
-        tags:
-            - { name: migrator:tool }
-
-    migrator.tools.module:
-        class: phpbb_db_migration_tools_module
-        arguments:
-            - @db
-            - @cache
-            - @user
-            - %core.root_path%
-            - %core.php_ext%
-        tags:
-            - { name: migrator:tool }
-
-    migrator.tools.permission:
-        class: phpbb_db_migration_tools_permission
-        arguments:
-            - @db
-            - @cache
-            - @auth
-            - %core.root_path%
-            - %core.php_ext%
-        tags:
-            - { name: migrator:tool }
 
     request:
         class: phpbb_request

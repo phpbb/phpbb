@@ -30,7 +30,7 @@ class phpbb_db_migration_data_3_0_8_rc1 extends phpbb_db_migration
 				'acp',
 				'ACP_MESSAGES',
 				array(
-					'module_basename'	=> 'board',
+					'module_basename'	=> 'acp_board',
 					'modes'				=> array('post'),
 				),
 			)),
@@ -60,9 +60,9 @@ class phpbb_db_migration_data_3_0_8_rc1 extends phpbb_db_migration
 			// On an already updated board, they can also already be in language/.../acp/attachments.php
 			// in the board root.
 			$lang_files = array(
-				"{$this->phpbb_root_path}install/update/new/language/$lang_dir/acp/attachments.$this->phpEx",
-				"{$this->phpbb_root_path}language/$lang_dir/install.$this->phpEx",
-				"{$this->phpbb_root_path}language/$lang_dir/acp/attachments.$this->phpEx",
+				"{$this->phpbb_root_path}install/update/new/language/$lang_dir/acp/attachments.{$this->php_ext}",
+				"{$this->phpbb_root_path}language/$lang_dir/install.{$this->php_ext}",
+				"{$this->phpbb_root_path}language/$lang_dir/acp/attachments.{$this->php_ext}",
 			);
 
 			foreach ($lang_files as $lang_file)
@@ -140,7 +140,7 @@ class phpbb_db_migration_data_3_0_8_rc1 extends phpbb_db_migration
 
 			if (!function_exists('user_add'))
 			{
-				include($this->phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
+				include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
 			}
 
 			$user_row = array(

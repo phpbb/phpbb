@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
+class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_interface
 {
 	/** @var phpbb_auth */
 	protected $auth = null;
@@ -24,13 +24,21 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 	/** @var string */
 	protected $php_ext = null;
 
-	public function __construct(dbal $db, phpbb_cache_driver_interface $cache, phpbb_auth $auth, $phpbb_root_path, $php_ext)
+	public function __construct(phpbb_db_driver $db, $cache, phpbb_auth $auth, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->auth = $auth;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_name()
+	{
+		return 'permission';
 	}
 
 	/**
@@ -81,7 +89,7 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 	*
 	* @return result
 	*/
-	public function add($auth_option, $global = true)
+	public function add($auth_option, $global = true, $copy_from = false)
 	{
 		if ($this->exists($auth_option, $global))
 		{
@@ -105,8 +113,8 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 				'is_local'	=> 1,
 			);
 			$sql = 'UPDATE ' . ACL_OPTIONS_TABLE . '
-				SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE auth_option = \'' . $this->db->sql_escape($auth_option) . "'";
+				SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . "
+				WHERE auth_option = '" . $this->db->sql_escape($auth_option) . "'";
 			$this->db->sql_query($sql);
 		}
 		else
@@ -119,6 +127,38 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 			{
 				$auth_admin->acl_add_option(array('local' => array($auth_option)));
 			}
+		}
+
+		// The permission has been added, now we can copy it if needed
+		if ($copy_from && isset($auth_admin->acl_options['id'][$copy_from]))
+		{
+			$old_id = $auth_admin->acl_options['id'][$copy_from];
+			$new_id = $auth_admin->acl_options['id'][$auth_option];
+
+			$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
+
+			foreach ($tables as $table)
+			{
+				$sql = 'SELECT *
+					FROM ' . $table . '
+					WHERE auth_option_id = ' . $old_id;
+				$result = $this->db->sql_query($sql);
+
+				$sql_ary = array();
+				while ($row = $this->db->sql_fetchrow($result))
+				{
+					$row['auth_option_id'] = $new_id;
+					$sql_ary[] = $row;
+				}
+				$this->db->sql_freeresult($result);
+
+				if (sizeof($sql_ary))
+				{
+					$this->db->sql_multi_insert($table, $sql_ary);
+				}
+			}
+
+			$auth_admin->acl_clear_prefetch();
 		}
 
 		return false;
@@ -149,7 +189,8 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 		{
 			$type_sql = ' AND is_local = 1';
 		}
-		$sql = 'SELECT auth_option_id, is_global, is_local FROM ' . ACL_OPTIONS_TABLE . "
+		$sql = 'SELECT auth_option_id, is_global, is_local
+			FROM ' . ACL_OPTIONS_TABLE . "
 			WHERE auth_option = '" . $this->db->sql_escape($auth_option) . "'" .
 				$type_sql;
 		$result = $this->db->sql_query($sql);
@@ -190,8 +231,9 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 	*/
 	public function role_add($role_name, $role_type = '', $role_description = '')
 	{
-		$sql = 'SELECT role_id FROM ' . ACL_ROLES_TABLE . '
-			WHERE role_name = \'' . $this->db->sql_escape($role_name) . '\'';
+		$sql = 'SELECT role_id
+			FROM ' . ACL_ROLES_TABLE . "
+			WHERE role_name = '" . $this->db->sql_escape($role_name) . "'";
 		$this->db->sql_query($sql);
 		$role_id = $this->db->sql_fetchfield('role_id');
 
@@ -200,8 +242,9 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 			throw new phpbb_db_migration_exception('ROLE_ALREADY_EXISTS', $old_role_name);
 		}
 
-		$sql = 'SELECT MAX(role_order) AS max FROM ' . ACL_ROLES_TABLE . '
-			WHERE role_type = \'' . $this->db->sql_escape($role_type) . '\'';
+		$sql = 'SELECT MAX(role_order) AS max
+			FROM ' . ACL_ROLES_TABLE . "
+			WHERE role_type = '" . $this->db->sql_escape($role_type) . "'";
 		$this->db->sql_query($sql);
 		$role_order = $this->db->sql_fetchfield('max');
 		$role_order = (!$role_order) ? 1 : $role_order + 1;
@@ -227,8 +270,9 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 	*/
 	public function role_update($old_role_name, $new_role_name = '')
 	{
-		$sql = 'SELECT role_id FROM ' . ACL_ROLES_TABLE . '
-			WHERE role_name = \'' . $this->db->sql_escape($old_role_name) . '\'';
+		$sql = 'SELECT role_id
+			FROM ' . ACL_ROLES_TABLE . "
+			WHERE role_name = '" . $this->db->sql_escape($old_role_name) . "'";
 		$this->db->sql_query($sql);
 		$role_id = $this->db->sql_fetchfield('role_id');
 
@@ -237,9 +281,9 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 			throw new phpbb_db_migration_exception('ROLE_NOT_EXISTS', $old_role_name);
 		}
 
-		$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
-			SET role_name = \'' . $this->db->sql_escape($new_role_name) . '\'
-			WHERE role_name = \'' . $this->db->sql_escape($old_role_name) . '\'';
+		$sql = 'UPDATE ' . ACL_ROLES_TABLE . "
+			SET role_name = '" . $this->db->sql_escape($new_role_name) . "'
+			WHERE role_name = '" . $this->db->sql_escape($old_role_name) . "'";
 		$this->db->sql_query($sql);
 
 		return false;
@@ -252,8 +296,9 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 	*/
 	public function role_remove($role_name)
 	{
-		$sql = 'SELECT role_id FROM ' . ACL_ROLES_TABLE . '
-			WHERE role_name = \'' . $this->db->sql_escape($role_name) . '\'';
+		$sql = 'SELECT role_id
+			FROM ' . ACL_ROLES_TABLE . "
+			WHERE role_name = '" . $this->db->sql_escape($role_name) . "'";
 		$this->db->sql_query($sql);
 		$role_id = $this->db->sql_fetchfield('role_id');
 
@@ -293,7 +338,8 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 		}
 
 		$new_auth = array();
-		$sql = 'SELECT auth_option_id FROM ' . ACL_OPTIONS_TABLE . '
+		$sql = 'SELECT auth_option_id
+			FROM ' . ACL_OPTIONS_TABLE . '
 			WHERE ' . $this->db->sql_in_set('auth_option', $auth_option);
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -314,8 +360,9 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 		switch ($type)
 		{
 			case 'role' :
-				$sql = 'SELECT role_id FROM ' . ACL_ROLES_TABLE . '
-					WHERE role_name = \'' . $this->db->sql_escape($name) . '\'';
+				$sql = 'SELECT role_id
+					FROM ' . ACL_ROLES_TABLE . "
+					WHERE role_name = '" . $this->db->sql_escape($name) . "'";
 				$this->db->sql_query($sql);
 				$role_id = $this->db->sql_fetchfield('role_id');
 
@@ -324,7 +371,8 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 					throw new phpbb_db_migration_exception('ROLE_NOT_EXIST', $name);
 				}
 
-				$sql = 'SELECT auth_option_id, auth_setting FROM ' . ACL_ROLES_DATA_TABLE . '
+				$sql = 'SELECT auth_option_id, auth_setting
+					FROM ' . ACL_ROLES_DATA_TABLE . '
 					WHERE role_id = ' . $role_id;
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
@@ -335,7 +383,9 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 			break;
 
 			case 'group' :
-				$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . ' WHERE group_name = \'' . $this->db->sql_escape($name) . '\'';
+				$sql = 'SELECT group_id
+					FROM ' . GROUPS_TABLE . "
+					WHERE group_name = '" . $this->db->sql_escape($name) . "'";
 				$this->db->sql_query($sql);
 				$group_id = $this->db->sql_fetchfield('group_id');
 
@@ -345,7 +395,8 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 				}
 
 				// If the group has a role set for them we will add the requested permissions to that role.
-				$sql = 'SELECT auth_role_id FROM ' . ACL_GROUPS_TABLE . '
+				$sql = 'SELECT auth_role_id
+					FROM ' . ACL_GROUPS_TABLE . '
 					WHERE group_id = ' . $group_id . '
 						AND auth_role_id <> 0
 						AND forum_id = 0';
@@ -353,7 +404,8 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 				$role_id = $this->db->sql_fetchfield('auth_role_id');
 				if ($role_id)
 				{
-					$sql = 'SELECT role_name FROM ' . ACL_ROLES_TABLE . '
+					$sql = 'SELECT role_name
+						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;
 					$this->db->sql_query($sql);
 					$role_name = $this->db->sql_fetchfield('role_name');
@@ -361,7 +413,8 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 					return $this->set($role_name, $auth_option, 'role', $has_permission);
 				}
 
-				$sql = 'SELECT auth_option_id, auth_setting FROM ' . ACL_GROUPS_TABLE . '
+				$sql = 'SELECT auth_option_id, auth_setting
+					FROM ' . ACL_GROUPS_TABLE . '
 					WHERE group_id = ' . $group_id;
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
@@ -430,7 +483,8 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 		}
 
 		$to_remove = array();
-		$sql = 'SELECT auth_option_id FROM ' . ACL_OPTIONS_TABLE . '
+		$sql = 'SELECT auth_option_id
+			FROM ' . ACL_OPTIONS_TABLE . '
 			WHERE ' . $this->db->sql_in_set('auth_option', $auth_option);
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -449,8 +503,9 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 		switch ($type)
 		{
 			case 'role' :
-				$sql = 'SELECT role_id FROM ' . ACL_ROLES_TABLE . '
-					WHERE role_name = \'' . $this->db->sql_escape($name) . '\'';
+				$sql = 'SELECT role_id
+					FROM ' . ACL_ROLES_TABLE . "
+					WHERE role_name = '" . $this->db->sql_escape($name) . "'";
 				$this->db->sql_query($sql);
 				$role_id = $this->db->sql_fetchfield('role_id');
 
@@ -465,8 +520,9 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 			break;
 
 			case 'group' :
-				$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . '
-					WHERE group_name = \'' . $this->db->sql_escape($name) . '\'';
+				$sql = 'SELECT group_id
+					FROM ' . GROUPS_TABLE . "
+					WHERE group_name = '" . $this->db->sql_escape($name) . "'";
 				$this->db->sql_query($sql);
 				$group_id = $this->db->sql_fetchfield('group_id');
 
@@ -476,14 +532,16 @@ class phpbb_db_migration_tools_permission extends phpbb_db_migration_tools_base
 				}
 
 				// If the group has a role set for them we will remove the requested permissions from that role.
-				$sql = 'SELECT auth_role_id FROM ' . ACL_GROUPS_TABLE . '
+				$sql = 'SELECT auth_role_id
+					FROM ' . ACL_GROUPS_TABLE . '
 					WHERE group_id = ' . $group_id . '
 						AND auth_role_id <> 0';
 				$this->db->sql_query($sql);
 				$role_id = $this->db->sql_fetchfield('auth_role_id');
 				if ($role_id)
 				{
-					$sql = 'SELECT role_name FROM ' . ACL_ROLES_TABLE . '
+					$sql = 'SELECT role_name
+						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;
 					$this->db->sql_query($sql);
 					$role_name = $this->db->sql_fetchfield('role_name');

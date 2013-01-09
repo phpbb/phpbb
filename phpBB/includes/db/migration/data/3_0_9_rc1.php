@@ -44,7 +44,7 @@ class phpbb_db_migration_data_3_0_9_rc1 extends phpbb_db_migration
 				),
 			),
 			'change_columns' => array(
-				$this->table_prefix . 'bbcode' => array(
+				$this->table_prefix . 'bbcodes' => array(
 					'bbcode_id' => array('USINT', 0),
 				),
 			),

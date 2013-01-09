@@ -1258,7 +1258,7 @@ function get_schema_struct()
 		),
 	);
 
-	$schema_data['phpbb_migrations'] = array(
+	$schema_data['phpbb_moderator_cache'] = array(
 		'COLUMNS'		=> array(
 			'forum_id'				=> array('UINT', 0),
 			'user_id'				=> array('UINT', 0),
@@ -1273,7 +1273,7 @@ function get_schema_struct()
 		),
 	);
 
-	$schema_data['phpbb_moderator_cache'] = array(
+	$schema_data['phpbb_migrations'] = array(
 		'COLUMNS'		=> array(
 			'migration_name'			=> array('VCHAR', ''),
 			'migration_schema_done'		=> array('BOOL', 0),

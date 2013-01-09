@@ -9,7 +9,7 @@
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/db/migrator.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/migration.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/db/migration/migration.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
 
 require_once dirname(__FILE__) . '/migration/dummy.php';
@@ -28,11 +28,17 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 	public function setUp()
 	{
-		parent::setup();
+		parent::setUp();
 
 		$this->db = $this->new_dbal();
 		$this->db_tools = new phpbb_db_tools($this->db);
-		$this->migrator = new phpbb_db_migrator($this->db, $this->db_tools, 'phpbb_', MIGRATIONS_TABLE, 'phpBB/', '.php');
+
+		$this->config = new phpbb_config_db($this->db, new phpbb_mock_cache, 'phpbb_config');
+
+		$tools = array(
+			new phpbb_db_migration_tool_config($this->config),
+		);
+		$this->migrator = new phpbb_db_migrator($this->config, $this->db, $this->db_tools, 'phpbb_migrations', dirname(__FILE__) . '/../../phpBB/', 'php', 'phpbb_', $tools);
 	}
 
 	public function tearDown()

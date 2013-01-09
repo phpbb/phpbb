@@ -697,23 +697,6 @@ GO
 
 
 /*
-	Table: 'phpbb_migrations'
-*/
-CREATE TABLE [phpbb_migrations] (
-	[migration_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[migration_schema_done] [int] DEFAULT (0) NOT NULL ,
-	[migration_data_done] [int] DEFAULT (0) NOT NULL ,
-	[migration_data_state] [varchar] (8000) DEFAULT ('') NOT NULL ,
-	[migration_start_time] [int] DEFAULT (0) NOT NULL ,
-	[migration_end_time] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE  UNIQUE  INDEX [migration_name] ON [phpbb_migrations]([migration_name]) ON [PRIMARY]
-GO
-
-
-/*
 	Table: 'phpbb_moderator_cache'
 */
 CREATE TABLE [phpbb_moderator_cache] (
@@ -730,6 +713,27 @@ CREATE  INDEX [disp_idx] ON [phpbb_moderator_cache]([display_on_index]) ON [PRIM
 GO
 
 CREATE  INDEX [forum_id] ON [phpbb_moderator_cache]([forum_id]) ON [PRIMARY]
+GO
+
+
+/*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE [phpbb_migrations] (
+	[migration_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[migration_schema_done] [int] DEFAULT (0) NOT NULL ,
+	[migration_data_done] [int] DEFAULT (0) NOT NULL ,
+	[migration_data_state] [varchar] (8000) DEFAULT ('') NOT NULL ,
+	[migration_start_time] [int] DEFAULT (0) NOT NULL ,
+	[migration_end_time] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_migrations] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_migrations] PRIMARY KEY  CLUSTERED 
+	(
+		[migration_name]
+	)  ON [PRIMARY] 
 GO
 
 
@@ -1128,8 +1132,8 @@ CREATE TABLE [phpbb_reports] (
 	[report_time] [int] DEFAULT (0) NOT NULL ,
 	[report_text] [text] DEFAULT ('') NOT NULL ,
 	[reported_post_text] [text] DEFAULT ('') NOT NULL ,
-	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[reported_post_uid] [varchar] (8) DEFAULT ('') NOT NULL 
+	[reported_post_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
+	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

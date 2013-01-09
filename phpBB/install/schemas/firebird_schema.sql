@@ -573,18 +573,6 @@ CREATE INDEX phpbb_login_attempts_att_for ON phpbb_login_attempts(attempt_forwar
 CREATE INDEX phpbb_login_attempts_att_time ON phpbb_login_attempts(attempt_time);;
 CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts(user_id);;
 
-# Table: 'phpbb_migrations'
-CREATE TABLE phpbb_migrations (
-	migration_name VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	migration_schema_done INTEGER DEFAULT 0 NOT NULL,
-	migration_data_done INTEGER DEFAULT 0 NOT NULL,
-	migration_data_state BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL,
-	migration_start_time INTEGER DEFAULT 0 NOT NULL,
-	migration_end_time INTEGER DEFAULT 0 NOT NULL
-);;
-
-CREATE UNIQUE INDEX phpbb_migrations_migration_name ON phpbb_migrations(migration_name);;
-
 # Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (
 	forum_id INTEGER DEFAULT 0 NOT NULL,
@@ -597,6 +585,19 @@ CREATE TABLE phpbb_moderator_cache (
 
 CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache(display_on_index);;
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache(forum_id);;
+
+# Table: 'phpbb_migrations'
+CREATE TABLE phpbb_migrations (
+	migration_name VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	migration_schema_done INTEGER DEFAULT 0 NOT NULL,
+	migration_data_done INTEGER DEFAULT 0 NOT NULL,
+	migration_data_state BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL,
+	migration_start_time INTEGER DEFAULT 0 NOT NULL,
+	migration_end_time INTEGER DEFAULT 0 NOT NULL
+);;
+
+ALTER TABLE phpbb_migrations ADD PRIMARY KEY (migration_name);;
+
 
 # Table: 'phpbb_modules'
 CREATE TABLE phpbb_modules (
@@ -924,8 +925,8 @@ CREATE TABLE phpbb_reports (
 	report_time INTEGER DEFAULT 0 NOT NULL,
 	report_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
 	reported_post_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
-	reported_post_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	reported_post_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL
+	reported_post_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	reported_post_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_reports ADD PRIMARY KEY (report_id);;

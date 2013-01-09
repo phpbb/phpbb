@@ -385,18 +385,6 @@ CREATE INDEX phpbb_login_attempts_att_for ON phpbb_login_attempts (attempt_forwa
 CREATE INDEX phpbb_login_attempts_att_time ON phpbb_login_attempts (attempt_time);
 CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id);
 
-# Table: 'phpbb_migrations'
-CREATE TABLE phpbb_migrations (
-	migration_name varchar(255) NOT NULL DEFAULT '',
-	migration_schema_done INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	migration_data_done INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	migration_data_state text(65535) NOT NULL DEFAULT '',
-	migration_start_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	migration_end_time INTEGER UNSIGNED NOT NULL DEFAULT '0'
-);
-
-CREATE UNIQUE INDEX phpbb_migrations_migration_name ON phpbb_migrations (migration_name);
-
 # Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (
 	forum_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -409,6 +397,18 @@ CREATE TABLE phpbb_moderator_cache (
 
 CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache (display_on_index);
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id);
+
+# Table: 'phpbb_migrations'
+CREATE TABLE phpbb_migrations (
+	migration_name varchar(255) NOT NULL DEFAULT '',
+	migration_schema_done INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	migration_data_done INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	migration_data_state text(65535) NOT NULL DEFAULT '',
+	migration_start_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	migration_end_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	PRIMARY KEY (migration_name)
+);
+
 
 # Table: 'phpbb_modules'
 CREATE TABLE phpbb_modules (
@@ -642,8 +642,8 @@ CREATE TABLE phpbb_reports (
 	report_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_text mediumtext(16777215) NOT NULL DEFAULT '',
 	reported_post_text mediumtext(16777215) NOT NULL DEFAULT '',
-	reported_post_bitfield varchar(255) NOT NULL DEFAULT '',
-	reported_post_uid varchar(8) NOT NULL DEFAULT ''
+	reported_post_uid varchar(8) NOT NULL DEFAULT '',
+	reported_post_bitfield varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);

@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_db_migration_tools_module
+class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interface
 {
 	/** @var phpbb_cache_service */
 	protected $cache = null;
@@ -24,13 +24,25 @@ class phpbb_db_migration_tools_module
 	/** @var string */
 	protected $php_ext = null;
 
-	public function __construct(dbal $db, phpbb_cache_driver_interface $cache, $user, $phpbb_root_path, $php_ext)
+	/** @var string */
+	protected $modules_table = null;
+
+	public function __construct(phpbb_db_driver $db, $cache, $user, $phpbb_root_path, $php_ext, $modules_table)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->modules_table = $modules_table;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_name()
+	{
+		return 'module';
 	}
 
 	/**
@@ -63,7 +75,8 @@ class phpbb_db_migration_tools_module
 
 			if (!is_numeric($parent))
 			{
-				$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+				$sql = 'SELECT module_id
+					FROM ' . $this->modules_table . "
 					WHERE module_langname = '" . $this->db->sql_escape($parent) . "'
 						AND module_class = '$class'";
 				$result = $this->db->sql_query($sql);
@@ -83,7 +96,8 @@ class phpbb_db_migration_tools_module
 			}
 		}
 
-		$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+		$sql = 'SELECT module_id
+			FROM ' . $this->modules_table . "
 			WHERE module_class = '$class'
 				$parent_sql
 				AND " . ((is_numeric($module)) ? 'module_id = ' . (int) $module : "module_langname = '$module'");
@@ -149,15 +163,15 @@ class phpbb_db_migration_tools_module
 			$basename = (isset($data['module_basename'])) ? $data['module_basename'] : '';
 			$basename = str_replace(array('/', '\\'), '', $basename);
 			$class = str_replace(array('/', '\\'), '', $class);
-			$info_file = "$class/info/{$class}_$basename.{$this->php_ext}";
+			$info_file = "$class/info/$basename.{$this->php_ext}";
 
 			// The manual and automatic ways both failed...
 			if (!file_exists((($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path) . $info_file))
 			{
-				throw new phpbb_db_migration_exception('MODULE_ADD', $class, $info_file);
+				throw new phpbb_db_migration_exception('MODULE_INFO_FILE_NOT_EXIST', $class, $info_file);
 			}
 
-			$classname = "{$class}_{$basename}_info";
+			$classname = "{$basename}_info";
 
 			if (!class_exists($classname))
 			{
@@ -198,7 +212,8 @@ class phpbb_db_migration_tools_module
 
 		if (!is_numeric($parent))
 		{
-			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+			$sql = 'SELECT module_id
+				FROM ' . $this->modules_table . "
 				WHERE module_langname = '" . $this->db->sql_escape($parent) . "'
 					AND module_class = '$class'";
 			$result = $this->db->sql_query($sql);
@@ -254,40 +269,46 @@ class phpbb_db_migration_tools_module
 			// Move the module if requested above/below an existing one
 			if (isset($data['before']) && $data['before'])
 			{
-				$sql = 'SELECT left_id FROM ' . MODULES_TABLE . '
+				$sql = 'SELECT left_id
+					FROM ' . $this->modules_table . '
 					WHERE module_class = \'' . $class . '\'
 						AND parent_id = ' . (int) $parent . '
 						AND module_langname = \'' . $this->db->sql_escape($data['before']) . '\'';
 				$this->db->sql_query($sql);
 				$to_left = $this->db->sql_fetchfield('left_id');
 
-				$sql = 'UPDATE ' . MODULES_TABLE . " SET left_id = left_id + 2, right_id = right_id + 2
+				$sql = 'UPDATE ' . $this->modules_table . "
+					SET left_id = left_id + 2, right_id = right_id + 2
 					WHERE module_class = '$class'
 						AND left_id >= $to_left
 						AND left_id < {$module_data['left_id']}";
 				$this->db->sql_query($sql);
 
-				$sql = 'UPDATE ' . MODULES_TABLE . " SET left_id = $to_left, right_id = " . ($to_left + 1) . "
+				$sql = 'UPDATE ' . $this->modules_table . "
+					SET left_id = $to_left, right_id = " . ($to_left + 1) . "
 					WHERE module_class = '$class'
 						AND module_id = {$module_data['module_id']}";
 				$this->db->sql_query($sql);
 			}
 			else if (isset($data['after']) && $data['after'])
 			{
-				$sql = 'SELECT right_id FROM ' . MODULES_TABLE . '
+				$sql = 'SELECT right_id
+					FROM ' . $this->modules_table . '
 					WHERE module_class = \'' . $class . '\'
 						AND parent_id = ' . (int) $parent . '
 						AND module_langname = \'' . $this->db->sql_escape($data['after']) . '\'';
 				$this->db->sql_query($sql);
 				$to_right = $this->db->sql_fetchfield('right_id');
 
-				$sql = 'UPDATE ' . MODULES_TABLE . " SET left_id = left_id + 2, right_id = right_id + 2
+				$sql = 'UPDATE ' . $this->modules_table . "
+					SET left_id = left_id + 2, right_id = right_id + 2
 					WHERE module_class = '$class'
 						AND left_id >= $to_right
 						AND left_id < {$module_data['left_id']}";
 				$this->db->sql_query($sql);
 
-				$sql = 'UPDATE ' . MODULES_TABLE . ' SET left_id = ' . ($to_right + 1) . ', right_id = ' . ($to_right + 2) . "
+				$sql = 'UPDATE ' . $this->modules_table . '
+					SET left_id = ' . ($to_right + 1) . ', right_id = ' . ($to_right + 2) . "
 					WHERE module_class = '$class'
 						AND module_id = {$module_data['module_id']}";
 				$this->db->sql_query($sql);
@@ -330,14 +351,14 @@ class phpbb_db_migration_tools_module
 			// Automatic method
 			$basename = str_replace(array('/', '\\'), '', $module['module_basename']);
 			$class = str_replace(array('/', '\\'), '', $class);
-			$info_file = "$class/info/{$class}_$basename.{$this->php_ext}";
+			$info_file = "$class/info/$basename.{$this->php_ext}";
 
 			if (!file_exists((($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path) . $info_file))
 			{
 				throw new phpbb_db_migration_exception('MODULE_NOT_EXIST', $info_file);
 			}
 
-			$classname = "{$class}_{$basename}_info";
+			$classname = "{$basename}_info";
 
 			if (!class_exists($classname))
 			{
@@ -374,7 +395,8 @@ class phpbb_db_migration_tools_module
 
 				if (!is_numeric($parent))
 				{
-					$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+					$sql = 'SELECT module_id
+						FROM ' . $this->modules_table . "
 						WHERE module_langname = '" . $this->db->sql_escape($parent) . "'
 							AND module_class = '$class'";
 					$result = $this->db->sql_query($sql);
@@ -394,7 +416,8 @@ class phpbb_db_migration_tools_module
 			if (!is_numeric($module))
 			{
 				$module = $this->db->sql_escape($module);
-				$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+				$sql = 'SELECT module_id
+					FROM ' . $this->modules_table . "
 					WHERE module_langname = '$module'
 						AND module_class = '$class'
 					$parent_sql";
@@ -410,7 +433,8 @@ class phpbb_db_migration_tools_module
 			else
 			{
 				$module = (int) $module;
-				$sql = 'SELECT module_langname FROM ' . MODULES_TABLE . "
+				$sql = 'SELECT module_langname
+					FROM ' . $this->modules_table . "
 					WHERE module_id = $module
 						AND module_class = '$class'
 					$parent_sql";
@@ -439,7 +463,7 @@ class phpbb_db_migration_tools_module
 				}
 			}
 
-			$cache->destroy("_modules_$class");
+			$this->cache->destroy("_modules_$class");
 
 			return false;
 		}

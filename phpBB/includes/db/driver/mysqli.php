@@ -24,6 +24,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_db_driver_mysqli extends phpbb_db_driver
 {
 	var $multi_insert = true;
+
 	var $connect_error = '';
 
 	/**

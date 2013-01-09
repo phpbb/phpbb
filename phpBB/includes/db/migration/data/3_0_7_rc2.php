@@ -59,7 +59,7 @@ class phpbb_db_migration_data_3_0_7_rc2 extends phpbb_db_migration
 				$this->sql_query($sql);
 			}
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if ($i < $limit)
 		{
