@@ -7,6 +7,11 @@
 *
 */
 
+/**
+* Migration tool interface
+*
+* @package db
+*/
 interface phpbb_db_migration_tool_interface
 {
 	/**

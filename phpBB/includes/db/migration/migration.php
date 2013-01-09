@@ -26,22 +26,41 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_db_migration
 {
+	/** @var phpbb_config */
 	protected $config;
+
+	/** @var phpbb_db_driver */
 	protected $db;
+
+	/** @var phpbb_db_tools */
 	protected $db_tools;
+
+	/** @var string */
 	protected $table_prefix;
 
+	/** @var string */
 	protected $phpbb_root_path;
+
+	/** @var string */
 	protected $php_ext;
 
+	/** @var array Errors, if any occured */
 	protected $errors;
 
-	private $queries = array();
+	/** @var array List of queries executed through $this->sql_query() */
+	protected $queries = array();
 
 	/**
-	* Migration constructor
+	* Constructor
+	*
+	* @param phpbb_config $config
+	* @param phpbb_db_driver $db
+	* @param phpbb_db_tools $db_tools
+	* @param string $phpbb_root_path
+	* @param string $php_ext
+	* @param string $table_prefix
 	*/
-	public function __construct($config, phpbb_db_driver $db, $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
+	public function __construct(phpbb_config $config, phpbb_db_driver $db, phpbb_db_tools $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -55,7 +74,7 @@ abstract class phpbb_db_migration
 	}
 
 	/**
-	* Defines other migrationsto be applied first (abstract method)
+	* Defines other migrations to be applied first (abstract method)
 	*
 	* @return array An array of migration class names
 	*/
@@ -67,7 +86,7 @@ abstract class phpbb_db_migration
 	/**
 	* Updates the database schema by providing a set of change instructions
 	*
-	* @return array
+	* @return array Array of schema changes (compatible with db_tools->perform_schema_changes())
 	*/
 	public function update_schema()
 	{
@@ -77,14 +96,18 @@ abstract class phpbb_db_migration
 	/**
 	* Updates data by returning a list of instructions to be executed
 	*
-	* @return array
+	* @return array Array of data update instructions
 	*/
 	public function update_data()
 	{
+		return array();
 	}
 
 	/**
 	* Wrapper for running queries to generate user feedback on updates
+	*
+	* @param string $sql SQL query to run on the database
+	* @return mixed Query result from db->sql_query()
 	*/
 	protected function sql_query($sql)
 	{

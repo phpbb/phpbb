@@ -22,8 +22,15 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_db_migration_exception extends \Exception
 {
+	/** @var array Extra parameters sent to exception to aid in debugging */
 	protected $parameters;
 
+	/**
+	* Throw an exception.
+	*
+	* First argument is the error message.
+	* Additional arguments will be output with the error message.
+	*/
 	public function __construct()
 	{
 		$parameters = func_get_args();
@@ -33,6 +40,9 @@ class phpbb_db_migration_exception extends \Exception
 		$this->parameters = $parameters;
 	}
 
+	/**
+	* Output the error as a string
+	*/
 	public function __toString()
 	{
 		return $this->message . ': ' . var_export($this->parameters, true);
