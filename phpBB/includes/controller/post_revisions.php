@@ -441,7 +441,7 @@ class phpbb_controller_post_revisions
 	*/
 	public function restore($id, $to)
 	{
-		$post = new phpbb_revisions_post($id, $this->db);
+		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
 
