@@ -23,6 +23,8 @@ class phpbb_db_migration_data_3_0_10_rc1 extends phpbb_db_migration
 	{
 		return array(
 			array('config.add', array('email_max_chunk_size', 50)),
+
+			array('config.update', array('version', '3.0.10-rc1')),
 		);
 	}
 }

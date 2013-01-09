@@ -7,20 +7,14 @@
 *
 */
 
-class phpbb_db_migration_tools_config extends phpbb_db_migration_tools_base
+class phpbb_db_migration_tools_config
 {
-	/**
-	* Config Exists
-	*
-	* This function is to check to see if a config variable exists or if it does not.
-	*
-	* @param string $config_name The name of the config setting you wish to check for.
-	*
-	* @return bool true/false if config exists
-	*/
-	public function exists($config_name)
+	/** @var phpbb_config */
+	protected $config = null;
+
+	public function __construct(phpbb_config $config)
 	{
-		return (bool) $this->config->offsetExists($config_name);
+		$this->config = $config;
 	}
 
 	/**
@@ -34,7 +28,7 @@ class phpbb_db_migration_tools_config extends phpbb_db_migration_tools_base
 	*/
 	public function add($config_name, $config_value = '', $is_dynamic = false)
 	{
-		if ($this->config_exists($config_name))
+		if (isset($this->config[$config_name]))
 		{
 			throw new phpbb_db_migration_exception('CONFIG_ALREADY_EXISTS', $config_name);
 		}
@@ -54,7 +48,7 @@ class phpbb_db_migration_tools_config extends phpbb_db_migration_tools_base
 	*/
 	public function update($config_name, $config_value = '')
 	{
-		if (!$this->config_exists($config_name))
+		if (!isset($this->config[$config_name]))
 		{
 			throw new phpbb_db_migration_exception('CONFIG_NOT_EXIST', $config_name);
 		}
@@ -75,7 +69,7 @@ class phpbb_db_migration_tools_config extends phpbb_db_migration_tools_base
 	*/
 	public function update_if_equals($compare, $config_name, $config_value = '')
 	{
-		if (!$this->config_exists($config_name))
+		if (!isset($this->config[$config_name]))
 		{
 			throw new phpbb_db_migration_exception('CONFIG_NOT_EXIST', $config_name);
 		}
@@ -94,7 +88,7 @@ class phpbb_db_migration_tools_config extends phpbb_db_migration_tools_base
 	*/
 	public function remove($config_name)
 	{
-		if (!$this->config_exists($config_name))
+		if (!isset($this->config[$config_name]))
 		{
 			throw new phpbb_db_migration_exception('CONFIG_NOT_EXIST', $config_name);
 		}

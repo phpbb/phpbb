@@ -23,6 +23,8 @@ class phpbb_db_migration_data_3_0_6_rc3 extends phpbb_db_migration
 	{
 		return array(
 			array('custom', array(array(&$this, 'update_cp_fields'))),
+
+			array('config.update', array('version', '3.0.6-rc3')),
 		);
 	}
 

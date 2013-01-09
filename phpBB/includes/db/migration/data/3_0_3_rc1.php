@@ -39,6 +39,8 @@ class phpbb_db_migration_data_3_0_3_rc1 extends phpbb_db_migration
 			array('config.add', array('dbms_version', '')),
 			array('permission.add', array('u_masspm_group', phpbb_auth::IS_GLOBAL),
 			array('custom', array(array(&$this, 'correct_acp_email_permissions'))),
+
+			array('config.update', array('version', '3.0.3-rc1')),
 		));
 	}
 

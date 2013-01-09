@@ -346,6 +346,16 @@ class phpbb_db_tools
 	}
 
 	/**
+	* Setter for {@link $return_statements return_statements}.
+	*
+	* @param bool $return_statements True if SQL should not be executed but returned as strings
+	*/
+	public function set_return_statements($return_statements)
+	{
+		$this->return_statements = $return_statements;
+	}
+
+	/**
 	* Gets a list of tables in the database.
 	*
 	* @return array		Array of table names  (all lower case)

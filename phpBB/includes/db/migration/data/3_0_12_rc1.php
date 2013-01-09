@@ -7,6 +7,9 @@
 *
 */
 
+/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 **/
+
+/*
 class phpbb_db_migration_data_3_0_12_rc1 extends phpbb_db_migration
 {
 	function depends_on()
@@ -16,11 +19,14 @@ class phpbb_db_migration_data_3_0_12_rc1 extends phpbb_db_migration
 
 	function update_schema()
 	{
-		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 */
 		return array();
 	}
 
 	function update_data()
 	{
+		return array(
+			array('config.update', array('version', '3.0.12-rc1')),
+		);
 	}
 }
+*/

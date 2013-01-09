@@ -11,7 +11,7 @@ class phpbb_db_migration_data_3_0_3 extends phpbb_db_migration
 {
 	function depends_on()
 	{
-		return array('phpbb_db_migration_data_3_0_2_rc2');
+		return array('phpbb_db_migration_data_3_0_3_rc1');
 	}
 
 	function update_schema()
@@ -21,5 +21,8 @@ class phpbb_db_migration_data_3_0_3 extends phpbb_db_migration
 
 	function update_data()
 	{
+		return array(
+			array('config.update', array('version', '3.0.3')),
+		);
 	}
 }

@@ -7,8 +7,32 @@
 *
 */
 
-class phpbb_db_migration_tools_module extends phpbb_db_migration_tools_base
+class phpbb_db_migration_tools_module
 {
+	/** @var phpbb_cache_service */
+	protected $cache = null;
+
+	/** @var dbal */
+	protected $db = null;
+
+	/** @var phpbb_user */
+	protected $user = null;
+
+	/** @var string */
+	protected $phpbb_root_path = null;
+
+	/** @var string */
+	protected $php_ext = null;
+
+	public function __construct(dbal $db, phpbb_cache_driver_interface $cache, $user, $phpbb_root_path, $php_ext)
+	{
+		$this->db = $db;
+		$this->cache = $cache;
+		$this->user = $user;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+	}
+
 	/**
 	* Module Exists
 	*
@@ -117,11 +141,15 @@ class phpbb_db_migration_tools_module extends phpbb_db_migration_tools_base
 
 		if (!isset($data['module_langname']))
 		{
+			/**
+			* @TODO does not work with 3.1 modules yet, but must continue for old 3.0 versions for
+			* upgrades from a 3.0.x version to 3.1
+			*/
 			// The "automatic" way
 			$basename = (isset($data['module_basename'])) ? $data['module_basename'] : '';
 			$basename = str_replace(array('/', '\\'), '', $basename);
 			$class = str_replace(array('/', '\\'), '', $class);
-			$info_file = "$class/info/{$class}_$basename.$this->phpEx";
+			$info_file = "$class/info/{$class}_$basename.{$this->php_ext}";
 
 			// The manual and automatic ways both failed...
 			if (!file_exists((($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path) . $info_file))
@@ -196,7 +224,7 @@ class phpbb_db_migration_tools_module extends phpbb_db_migration_tools_base
 
 		if (!class_exists('acp_modules'))
 		{
-			include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->phpEx);
+			include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
 			$this->user->add_lang('acp/modules');
 		}
 		$acp_modules = new acp_modules();
@@ -302,7 +330,7 @@ class phpbb_db_migration_tools_module extends phpbb_db_migration_tools_base
 			// Automatic method
 			$basename = str_replace(array('/', '\\'), '', $module['module_basename']);
 			$class = str_replace(array('/', '\\'), '', $class);
-			$info_file = "$class/info/{$class}_$basename.$this->phpEx";
+			$info_file = "$class/info/{$class}_$basename.{$this->php_ext}";
 
 			if (!file_exists((($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path) . $info_file))
 			{
@@ -396,7 +424,7 @@ class phpbb_db_migration_tools_module extends phpbb_db_migration_tools_base
 
 			if (!class_exists('acp_modules'))
 			{
-				include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->phpEx);
+				include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
 				$this->user->add_lang('acp/modules');
 			}
 			$acp_modules = new acp_modules();

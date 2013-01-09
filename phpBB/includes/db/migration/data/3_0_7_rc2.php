@@ -23,6 +23,8 @@ class phpbb_db_migration_data_3_0_7_rc2 extends phpbb_db_migration
 	{
 		return array(
 			array('custom', array(array(&$this, 'update_email_hash'))),
+
+			array('config.update', array('version', '3.0.7-rc2')),
 		);
 	}
 

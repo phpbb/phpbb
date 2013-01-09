@@ -94,6 +94,12 @@ services:
         calls:
             - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
 
+    dbal.tools:
+        file: %core.root_path%includes/db/db_tools.%core.php_ext%
+        class: phpbb_db_tools
+        arguments:
+            - @dbal.conn
+
     event.subscriber_loader:
         class: phpbb_event_extension_subscriber_loader
         arguments:
@@ -155,6 +161,45 @@ services:
         class: phpbb_event_kernel_terminate_subscriber
         tags:
             - { name: kernel.event_subscriber }
+
+    migrator:
+        class: phpbb_db_migrator
+        arguments:
+            - @service_container
+
+    migrator.tools_collection
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+
+    migrator.tools.config:
+        class: phpbb_db_migration_tools_config
+        arguments:
+            - @config
+        tags:
+            - { name: migrator:tool }
+
+    migrator.tools.module:
+        class: phpbb_db_migration_tools_module
+        arguments:
+            - @db
+            - @cache
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: migrator:tool }
+
+    migrator.tools.permission:
+        class: phpbb_db_migration_tools_permission
+        arguments:
+            - @db
+            - @cache
+            - @auth
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: migrator:tool }
 
     request:
         class: phpbb_request

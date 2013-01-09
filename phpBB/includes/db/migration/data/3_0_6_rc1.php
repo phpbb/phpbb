@@ -155,6 +155,8 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 			)),
 			array('custom', array(array(&$this, 'add_newly_registered_group'))),
 			array('custom', array(array(&$this, 'set_user_options_default'))),
+
+			array('config.update', array('version', '3.0.6-rc1')),
 		);
 	}
 

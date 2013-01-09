@@ -26,6 +26,7 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_db_migration
 {
+	protected $config;
 	protected $db;
 	protected $db_tools;
 	protected $table_prefix;
@@ -38,20 +39,17 @@ class phpbb_db_migration
 	/**
 	* Migration constructor
 	*
-	* @param dbal			$db			Connected database abstraction instance
-	* @param phpbb_db_tools	$db_tools	Instance of db schema manipulation tools
-	* @param string			$table_prefix The prefix for all table names
-	* @param string			$phpbb_root_path
-	* @param string			$php_ext
+	* @param \Symfony\Component\DependencyInjection\ContainerInterface	$container	Container supplying dependencies
 	*/
-	public function phpbb_db_migration($db, $db_tools, $table_prefix, $phpbb_root_path, $php_ext)
+	public function phpbb_db_migration(\Symfony\Component\DependencyInjection\ContainerInterface $container)
 	{
-		$this->db = $db;
-		$this->db_tools = $db_tools;
-		$this->table_prefix = $table_prefix;
+		$this->config = $this->container->get('config');
+		$this->db = $this->container->get('dbal.conn');
+		$this->db_tools = $this->container->get('dbal.tools');
+		$this->table_prefix = $this->container->getParameters('core.table_prefix');
 
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
+		$this->phpbb_root_path = $this->container->getParameters('core.root_path');
+		$this->php_ext = $this->container->getParameters('core.php_ext');
 
 		$this->errors = array();
 	}
