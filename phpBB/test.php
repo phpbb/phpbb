@@ -7,6 +7,8 @@
 *
 */
 
+$update_start_time = time();
+
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -41,18 +43,6 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 // Setup class loader first
 $phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
 $phpbb_class_loader->register();
-
-/*$phpbb_container = phpbb_create_container(
-	array(
-		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
-		new phpbb_di_extension_core($phpbb_root_path),
-	),
-	array(
-		new phpbb_di_pass_collection_pass(),
-		new phpbb_di_pass_kernel_pass(),
-	),
-	$phpbb_root_path, $phpEx);
-$phpbb_container->compile();*/
 
 // Set up container
 $container_extensions = array(
@@ -111,11 +101,27 @@ if (!$db_tools->sql_table_exists(MIGRATIONS_TABLE))
 $migrator = $phpbb_container->get('migrator');
 $migrator->load_migrations($phpbb_root_path . 'includes/db/migration/data/');
 
+$safe_time_limit = (ini_get('max_execution_time') / 2);
+
 while (!$migrator->finished())
 {
 	$migrator->update();
 
 	echo $migrator->last_run_migration['name'] . '<br />';
+
+	// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
+	if ((time() - $update_start_time) >= $safe_time_limit)
+	{
+		//echo '<meta http-equiv="refresh" content="0;url=' . str_replace('&', '&amp;', append_sid($phpbb_root_path . 'test.' . $phpEx)) . '" />';
+		echo 'Update not yet completed.<br />';
+		echo '<a href="' . append_sid($phpbb_root_path . 'test.' . $phpEx) . '">Continue</a>';
+
+		garbage_collection();
+		exit_handler();
+	}
 }
 
 echo 'Finished';
+
+garbage_collection();
+exit_handler();
