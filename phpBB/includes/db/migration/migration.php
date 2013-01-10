@@ -94,11 +94,34 @@ abstract class phpbb_db_migration
 	}
 
 	/**
+	* Reverts the database schema by providing a set of change instructions
+	*
+	* @return array Array of schema changes (compatible with db_tools->perform_schema_changes())
+	*/
+	public function revert_schema()
+	{
+		return array();
+	}
+
+	/**
 	* Updates data by returning a list of instructions to be executed
 	*
 	* @return array Array of data update instructions
 	*/
 	public function update_data()
+	{
+		return array();
+	}
+
+	/**
+	* Reverts data by returning a list of instructions to be executed
+	*
+	* @return array Array of data instructions that will be performed on revert
+	* 	NOTE: calls to tools (such as config.add) are automatically reverted when
+	* 		possible, so you should not attempt to revert those, this is mostly for
+	* 		otherwise unrevertable calls (custom functions for example)
+	*/
+	public function revert_data()
 	{
 		return array();
 	}

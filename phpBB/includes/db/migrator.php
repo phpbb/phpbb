@@ -290,6 +290,91 @@ class phpbb_db_migrator
 	}
 
 	/**
+	* Runs a single revert step from the last migration installed
+	*
+	* The revert step can either be a schema or a (partial) data revert. To
+	* check if revert() needs to be called again use the migration_installed() method.
+	*
+	* @param string $migration String migration name to revert (including any that depend on this migration)
+	* @return null
+	*/
+	public function revert($migration)
+	{
+		if (!isset($this->migration_state[$name]))
+		{
+			// Not installed
+			return;
+		}
+
+		// Iterate through all installed migrations and make sure any dependencies are removed first
+		foreach ($this->migration_state as $name => $state)
+		{
+			$migration_class = $this->get_migration($name);
+
+			if (in_array($migration, $migration_class->depends_on()))
+			{
+				$this->revert($name);
+			}
+		}
+
+		$this->try_revert($migration);
+	}
+
+	/**
+	* Attempts to apply a step of the given migration or one of its dependencies
+	*
+	* @param	string	The class name of the migration
+	* @return	bool	Whether any update step was successfully run
+	*/
+	protected function try_revert($name)
+	{
+		if (!class_exists($name))
+		{
+			return false;
+		}
+
+		$migration = $this->get_migration($name);
+
+		$state = $this->migration_state[$name];
+
+		$this->last_run_migration = array(
+			'name'	=> $name,
+			'class'	=> $migration,
+		);
+
+		// Left off here
+
+		if (!isset($this->migration_state[$name]))
+		{
+			$state['migration_start_time'] = time();
+			$this->insert_migration($name, $state);
+		}
+
+		if (!$state['migration_schema_done'])
+		{
+			$this->apply_schema_changes($migration->update_schema());
+			$state['migration_schema_done'] = true;
+		}
+		else
+		{
+			$result = $this->process_data_step($migration, $state['migration_data_state']);
+
+			$state['migration_data_state'] = ($result === true) ? '' : $result;
+			$state['migration_data_done'] = ($result === true);
+			$state['migration_end_time'] = ($result === true) ? time() : 0;
+		}
+
+		$sql = 'UPDATE ' . $this->migrations_table . '
+			SET ' . $this->db->sql_build_array('UPDATE', $state) . "
+			WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
+		$this->db->sql_query($sql);
+
+		$this->migration_state[$name] = $state;
+
+		return true;
+	}
+
+	/**
 	* Apply schema changes from a migration
 	*
 	* Just calls db_tools->perform_schema_changes
@@ -359,6 +444,7 @@ class phpbb_db_migrator
 					}
 				}
 
+				/** TODO Revert Schema **/
 				var_dump($step);
 				echo $e;
 				die();
@@ -565,6 +651,20 @@ class phpbb_db_migrator
 		}
 
 		return true;
+	}
+
+	/**
+	* Checks whether a migration is installed
+	*
+	* @param string $migration String migration name to check if it is installed
+	* @return bool Whether the migrations have been applied
+	*/
+	public function migration_installed($migration)
+	{
+		if (isset($this->migration_state[$migration]))
+		{
+			return true;
+		}
 	}
 
 	/**
