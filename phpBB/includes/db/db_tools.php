@@ -685,6 +685,8 @@ class phpbb_db_tools
 	* Handle passed database update array.
 	* Expected structure...
 	* Key being one of the following
+	*	drop_tables: Drop tables
+	*	add_tables: Add tables
 	*	change_columns: Column changes (only type, not name)
 	*	add_columns: Add columns to a table
 	*	drop_keys: Dropping keys
