@@ -929,7 +929,6 @@ CREATE TABLE phpbb_users (
 	user_icq varbinary(15) DEFAULT '' NOT NULL,
 	user_aim blob NOT NULL,
 	user_yim blob NOT NULL,
-	user_msnm blob NOT NULL,
 	user_jabber blob NOT NULL,
 	user_website blob NOT NULL,
 	user_occ blob NOT NULL,
