@@ -252,6 +252,11 @@ phpbb.ajaxify = function(options) {
 			return;
 		}
 
+		function errorHandler() {
+			phpbb.clearLoadingTimeout();
+			phpbb.alert(dark.attr('data-ajax-error-title'), dark.attr('data-ajax-error-text'));
+		}
+
 		/**
 		 * This is a private function used to handle the callbacks, refreshes
 		 * and alert. It calls the callback, refreshes the page if necessary, and
@@ -318,13 +323,6 @@ phpbb.ajaxify = function(options) {
 					}
 				}, false);
 			}
-		}
-
-		function errorHandler() {
-			var alert;
-
-			phpbb.clearLoadingTimeout();
-			alert = phpbb.alert(dark.attr('data-ajax-error-title'), dark.attr('data-ajax-error-text'));
 		}
 
 		// If the element is a form, POST must be used and some extra data must
@@ -440,12 +438,11 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 	// The offset returned here is in minutes and negated.
 	// http://www.w3schools.com/jsref/jsref_getTimezoneOffset.asp
 	var offset = (new Date()).getTimezoneOffset();
+	var sign = '-';
 
 	if (offset < 0) {
-		var sign = '+';
+		sign = '+';
 		offset = -offset;
-	} else {
-		var sign = '-';
 	}
 
 	var minutes = offset % 60;
@@ -466,8 +463,9 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 	var prefix = 'GMT' + sign + hours + ':' + minutes;
 	var prefixLength = prefix.length;
 	var selectorOptions = $('#tz_date > option');
+	var i;
 
-	for (var i = 0; i < selectorOptions.length; ++i) {
+	for (i = 0; i < selectorOptions.length; ++i) {
 		var option = selectorOptions[i];
 
 		if (option.value.substring(0, prefixLength) == prefix) {
