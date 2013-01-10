@@ -16,6 +16,8 @@ require_once dirname(__FILE__) . '/migration/dummy.php';
 require_once dirname(__FILE__) . '/migration/unfulfillable.php';
 require_once dirname(__FILE__) . '/migration/if.php';
 require_once dirname(__FILE__) . '/migration/recall.php';
+require_once dirname(__FILE__) . '/migration/revert.php';
+require_once dirname(__FILE__) . '/migration/revert_with_dependency.php';
 
 class phpbb_dbal_migrator_test extends phpbb_database_test_case
 {
@@ -102,6 +104,8 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			"SELECT extra_column FROM phpbb_config WHERE config_name = 'foo'",
 			'Dummy migration was run, even though an unfulfillable migration was found.'
 		);
+
+		$this->db_tools->sql_column_remove('phpbb_config', 'extra_column');
 	}
 
 	public function test_if()
@@ -149,5 +153,55 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		}
 
 		$this->assertSame(10, $migrator_test_call_input);
+	}
+
+	public function test_revert()
+	{
+		// Make sure there are no other migrations in the db, this could cause issues
+		$this->db->sql_query("DELETE FROM phpbb_migrations");
+		$this->migrator->load_migration_state();
+
+		$this->migrator->set_migrations(array('phpbb_dbal_migration_revert', 'phpbb_dbal_migration_revert_with_dependency'));
+
+		$this->assertFalse($this->migrator->migration_installed('phpbb_dbal_migration_revert'));
+		$this->assertFalse($this->migrator->migration_installed('phpbb_dbal_migration_revert_with_dependency'));
+
+		// Install the migration first
+		while (!$this->migrator->finished())
+		{
+			$this->migrator->update();
+		}
+
+		$this->assertTrue($this->migrator->migration_installed('phpbb_dbal_migration_revert'));
+		$this->assertTrue($this->migrator->migration_installed('phpbb_dbal_migration_revert_with_dependency'));
+
+		$this->assertSqlResultEquals(
+			array(array('bar_column' => '1')),
+			"SELECT bar_column FROM phpbb_config WHERE config_name = 'foo'",
+			'Installing revert migration failed to create bar_column.'
+		);
+
+		$this->assertTrue(isset($this->config['foobartest']));
+
+		while ($this->migrator->migration_installed('phpbb_dbal_migration_revert'))
+		{
+			$this->migrator->revert('phpbb_dbal_migration_revert');
+		}
+
+		$this->assertFalse($this->migrator->migration_installed('phpbb_dbal_migration_revert'));
+		$this->assertFalse($this->migrator->migration_installed('phpbb_dbal_migration_revert_with_dependency'));
+
+		$this->assertFalse(isset($this->config['foobartest']));
+
+		try
+		{
+			// Should cause an error
+			$this->assertSqlResultEquals(
+				false,
+				"SELECT bar_column FROM phpbb_config WHERE config_name = 'foo'",
+				'Revert did not remove bar_column.'
+			);
+		}
+		catch (Exception $e) {}
 	}
 }
