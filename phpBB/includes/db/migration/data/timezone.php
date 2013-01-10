@@ -1,16 +1,65 @@
 <?php
 /**
 *
-* @package phpBB3
+* @package migration
 * @copyright (c) 2012 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License v2
+*
 */
 
-/**
-* phpBB Update Helpers
-*/
-class phpbb_update_helpers
+class phpbb_db_migration_data_timezone extends phpbb_db_migration
 {
+	public function depends_on()
+	{
+		return array('phpbb_db_migration_data_3_0_11');
+	}
+
+	public function update_schema()
+	{
+		return array(
+			'change_columns'	=> array(
+				USERS_TABLE			=> array(
+					'user_timezone'		=> array('VCHAR:100', ''),
+				),
+			),
+		);
+	}
+
+	public function update_data()
+	{
+		return array(
+			array('custom', array(array($this, 'update_timezones'))),
+		);
+	}
+
+	public function update_timezones()
+	{
+		// Update user timezones
+		$sql = 'SELECT user_dst, user_timezone
+			FROM ' . USERS_TABLE . '
+			GROUP BY user_timezone, user_dst';
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_timezone = '" . $this->db->sql_escape($this->convert_phpbb30_timezone($row['user_timezone'], $row['user_dst'])) . "'
+				WHERE user_timezone = '" . $this->db->sql_escape($row['user_timezone']) . "'
+					AND user_dst = " . (int) $row['user_dst'];
+			$this->sql_query($sql);
+		}
+		$this->db->sql_freeresult($result);
+
+		// Update board default timezone
+		$sql = 'UPDATE ' . CONFIG_TABLE . "
+			SET config_value = '" . $this->convert_phpbb30_timezone($this->config['board_timezone'], $this->config['board_dst']) . "'
+			WHERE config_name = 'board_timezone'";
+		$this->sql_query($sql);
+
+		// After we have calculated the timezones we can delete user_dst column from user table.
+		$this->db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
+	}
+
 	/**
 	* Determine the new timezone for a given phpBB 3.0 timezone and
 	* "Daylight Saving Time" option
@@ -19,7 +68,7 @@ class phpbb_update_helpers
 	*	@param	$dst		int		Users daylight saving time
 	*	@return		string		Users new php Timezone which is used since 3.1
 	*/
-	function convert_phpbb30_timezone($timezone, $dst)
+	public function convert_phpbb30_timezone($timezone, $dst)
 	{
 		$offset = $timezone + $dst;
 
