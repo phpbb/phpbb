@@ -21,26 +21,6 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-if (!function_exists('phpbb_require_updated'))
-{
-	function phpbb_require_updated($path, $optional = false)
-	{
-		global $phpbb_root_path;
-
-		$new_path = $phpbb_root_path . 'install/update/new/' . $path;
-		$old_path = $phpbb_root_path . $path;
-
-		if (file_exists($new_path))
-		{
-			require($new_path);
-		}
-		else if (!$optional || file_exists($old_path))
-		{
-			require($old_path);
-		}
-	}
-}
-
 phpbb_require_updated('includes/startup.' . $phpEx);
 
 include($phpbb_root_path . 'config.' . $phpEx);
@@ -200,7 +180,7 @@ while (!$migrator->finished())
 	{
 		echo $e;
 
-		end_update($cache);
+		phpbb_end_update($cache);
 	}
 
 	echo $migrator->last_run_migration['name'] . '<br />';
@@ -209,10 +189,10 @@ while (!$migrator->finished())
 	if ((time() - $update_start_time) >= $safe_time_limit)
 	{
 		//echo '<meta http-equiv="refresh" content="0;url=' . str_replace('&', '&amp;', append_sid($phpbb_root_path . 'test.' . $phpEx)) . '" />';
-		echo 'Update not yet completed.<br />';
-		echo '<a href="' . append_sid($phpbb_root_path . 'test.' . $phpEx) . '">Continue</a>';
+		echo $lang['DATABASE_UPDATE_NOT_COMPLETED'] . '<br />';
+		echo '<a href="' . append_sid($phpbb_root_path . 'test.' . $phpEx) . '">' . $lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
 
-		end_update($cache);
+		phpbb_end_update($cache);
 	}
 }
 
@@ -221,11 +201,31 @@ if ($orig_version != $config['version'])
 	add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $config['version']);
 }
 
-echo 'Finished';
+echo $lang['DATABASE_UPDATE_COMPLETE'];
 
-end_update($cache);
+phpbb_end_update($cache);
 
-function end_update($cache)
+if (!function_exists('phpbb_require_updated'))
+{
+	function phpbb_require_updated($path, $optional = false)
+	{
+		global $phpbb_root_path;
+
+		$new_path = $phpbb_root_path . 'install/update/new/' . $path;
+		$old_path = $phpbb_root_path . $path;
+
+		if (file_exists($new_path))
+		{
+			require($new_path);
+		}
+		else if (!$optional || file_exists($old_path))
+		{
+			require($old_path);
+		}
+	}
+}
+
+function phpbb_end_update($cache)
 {
 	$cache->purge();
 
