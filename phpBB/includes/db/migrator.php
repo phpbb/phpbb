@@ -272,7 +272,7 @@ class phpbb_db_migrator
 		}
 		else
 		{
-			$result = $this->process_data_step($migration, $state['migration_data_state']);
+			$result = $this->process_data_step($migration->update_data(), $state['migration_data_state']);
 
 			$state['migration_data_state'] = ($result === true) ? '' : $result;
 			$state['migration_data_done'] = ($result === true);
@@ -300,7 +300,7 @@ class phpbb_db_migrator
 	*/
 	public function revert($migration)
 	{
-		if (!isset($this->migration_state[$name]))
+		if (!isset($this->migration_state[$migration]))
 		{
 			// Not installed
 			return;
@@ -342,34 +342,39 @@ class phpbb_db_migrator
 			'class'	=> $migration,
 		);
 
-		// Left off here
-
-		if (!isset($this->migration_state[$name]))
+		if ($state['migration_data_done'])
 		{
-			$state['migration_start_time'] = time();
-			$this->insert_migration($name, $state);
-		}
+			if ($state['migration_data_state'] !== 'revert_data')
+			{
+				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state'], true);
 
-		if (!$state['migration_schema_done'])
-		{
-			$this->apply_schema_changes($migration->update_schema());
-			$state['migration_schema_done'] = true;
+				$state['migration_data_state'] = ($result === true) ? 'revert_data' : $result;
+			}
+			else
+			{
+				$result = $this->process_data_step($migration->revert_data(), $state['migration_data_state'], false);
+
+				$state['migration_data_state'] = ($result === true) ? '' : $result;
+				$state['migration_data_done'] = ($result === true) ? false : true;
+			}
+
+			$sql = 'UPDATE ' . $this->migrations_table . '
+				SET ' . $this->db->sql_build_array('UPDATE', $state) . "
+				WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
+			$this->db->sql_query($sql);
+
+			$this->migration_state[$name] = $state;
 		}
 		else
 		{
-			$result = $this->process_data_step($migration, $state['migration_data_state']);
+			$this->apply_schema_changes($migration->revert_schema());
 
-			$state['migration_data_state'] = ($result === true) ? '' : $result;
-			$state['migration_data_done'] = ($result === true);
-			$state['migration_end_time'] = ($result === true) ? time() : 0;
+			$sql = 'DELETE FROM ' . $this->migrations_table . "
+				WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
+			$this->db->sql_query($sql);
+
+			unset($this->migration_state[$name]);
 		}
-
-		$sql = 'UPDATE ' . $this->migrations_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $state) . "
-			WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
-		$this->db->sql_query($sql);
-
-		$this->migration_state[$name] = $state;
 
 		return true;
 	}
@@ -389,23 +394,22 @@ class phpbb_db_migrator
 	/**
 	* Process the data step of the migration
 	*
-	* @param phpbb_db_migration $migration
+	* @param array $steps The steps to run
 	* @param bool|string $state Current state of the migration
+	* @param bool $revert true to revert a data step
 	* @return bool|string migration state. True if completed, serialized array if not finished
 	*/
-	protected function process_data_step($migration, $state)
+	protected function process_data_step($steps, $state, $revert = false)
 	{
 		$state = ($state) ? unserialize($state) : false;
 
-		$steps = $migration->update_data();
-
-		foreach ($steps as $step)
+		foreach ($steps as $step_identifier => $step)
 		{
 			$last_result = false;
 			if ($state)
 			{
 				// Continue until we reach the step that matches the last step called
-				if ($state['step'] != $step)
+				if ($state['step'] != $step_identifier)
 				{
 					continue;
 				}
@@ -420,12 +424,12 @@ class phpbb_db_migrator
 			try
 			{
 				// Result will be null or true if everything completed correctly
-				$result = $this->run_step($step, $last_result);
+				$result = $this->run_step($step, $last_result, $revert);
 				if ($result !== null && $result !== true)
 				{
 					return serialize(array(
 						'result'	=> $result,
-						'step'		=> $step,
+						'step'		=> $step_identifier,
 					));
 				}
 			}
@@ -435,7 +439,7 @@ class phpbb_db_migrator
 				foreach ($steps as $reverse_step)
 				{
 					// Reverse the step that was run
-					$result = $this->run_step($step, false, true);
+					$result = $this->run_step($step, false, !$revert);
 
 					// If we've reached the current step we can break because we reversed everything that was run
 					if ($reverse_step === $step)
@@ -557,9 +561,11 @@ class phpbb_db_migrator
 				// Attempt to reverse operations
 				if ($reverse)
 				{
+					array_unshift($parameters, $method);
+
 					return array(
 						array($this->tools[$class], 'reverse'),
-						array_unshift($parameters, $method),
+						$parameters,
 					);
 				}
 
@@ -665,6 +671,8 @@ class phpbb_db_migrator
 		{
 			return true;
 		}
+
+		return false;
 	}
 
 	/**
