@@ -1276,6 +1276,7 @@ function get_schema_struct()
 	$schema_data['phpbb_migrations'] = array(
 		'COLUMNS'		=> array(
 			'migration_name'			=> array('VCHAR', ''),
+			'migration_depends_on'		=> array('TEXT', ''),
 			'migration_schema_done'		=> array('BOOL', 0),
 			'migration_data_done'		=> array('BOOL', 0),
 			'migration_data_state'		=> array('TEXT', ''),

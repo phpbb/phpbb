@@ -2,6 +2,7 @@
 <dataset>
 	<table name="phpbb_migrations">
 		<column>migration_name</column>
+		<column>migration_depends_on</column>
 		<column>migration_schema_done</column>
 		<column>migration_data_done</column>
 		<column>migration_data_state</column>
@@ -9,6 +10,7 @@
 		<column>migration_end_time</column>
 		<row>
 			<value>installed_migration</value>
+			<value></value>
 			<value>1</value>
 			<value>1</value>
 			<value></value>

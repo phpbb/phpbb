@@ -721,6 +721,7 @@ GO
 */
 CREATE TABLE [phpbb_migrations] (
 	[migration_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[migration_depends_on] [varchar] (8000) DEFAULT ('') NOT NULL ,
 	[migration_schema_done] [int] DEFAULT (0) NOT NULL ,
 	[migration_data_done] [int] DEFAULT (0) NOT NULL ,
 	[migration_data_state] [varchar] (8000) DEFAULT ('') NOT NULL ,

@@ -88,6 +88,7 @@ if (!$db_tools->sql_table_exists(MIGRATIONS_TABLE))
 	$db_tools->sql_create_table(MIGRATIONS_TABLE, array(
 		'COLUMNS'		=> array(
 			'migration_name'			=> array('VCHAR', ''),
+			'migration_depends_on'		=> array('TEXT', ''),
 			'migration_schema_done'		=> array('BOOL', 0),
 			'migration_data_done'		=> array('BOOL', 0),
 			'migration_data_state'		=> array('TEXT', ''),
@@ -106,7 +107,17 @@ $safe_time_limit = (ini_get('max_execution_time') / 2);
 
 while (!$migrator->finished())
 {
-	$migrator->update();
+	try
+	{
+		$migrator->update();
+	}
+	catch (phpbb_db_migration_exception $e)
+	{
+		echo $e;
+
+		garbage_collection();
+		exit_handler();
+	}
 
 	echo $migrator->last_run_migration['name'] . '<br />';
 

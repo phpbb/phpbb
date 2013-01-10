@@ -413,6 +413,7 @@ CREATE TABLE phpbb_moderator_cache (
 # Table: 'phpbb_migrations'
 CREATE TABLE phpbb_migrations (
 	migration_name varchar(255) DEFAULT '' NOT NULL,
+	migration_depends_on text NOT NULL,
 	migration_schema_done tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	migration_data_done tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	migration_data_state text NOT NULL,

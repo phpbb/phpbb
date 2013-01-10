@@ -803,6 +803,7 @@ CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id)
 */
 CREATE TABLE phpbb_migrations (
 	migration_name varchar2(255) DEFAULT '' ,
+	migration_depends_on clob DEFAULT '' ,
 	migration_schema_done number(1) DEFAULT '0' NOT NULL,
 	migration_data_done number(1) DEFAULT '0' NOT NULL,
 	migration_data_state clob DEFAULT '' ,

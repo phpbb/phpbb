@@ -106,6 +106,8 @@ class phpbb_db_migrator
 		while ($migration = $this->db->sql_fetchrow($result))
 		{
 			$this->migration_state[$migration['migration_name']] = $migration;
+
+			$this->migration_state[$migration['migration_name']]['migration_depends_on'] = unserialize($migration['migration_depends_on']);
 		}
 
 		$this->db->sql_freeresult($result);
@@ -235,16 +237,15 @@ class phpbb_db_migrator
 		$state = (isset($this->migration_state[$name])) ?
 			$this->migration_state[$name] :
 			array(
+				'migration_depends_on'	=> $migration->depends_on(),
 				'migration_schema_done' => false,
-				'migration_data_done' => false,
-				'migration_data_state' => '',
-				'migration_start_time' => 0,
-				'migration_end_time' => 0,
+				'migration_data_done'	=> false,
+				'migration_data_state'	=> '',
+				'migration_start_time'	=> 0,
+				'migration_end_time'	=> 0,
 			);
 
-		$depends = $migration->depends_on();
-
-		foreach ($depends as $depend)
+		foreach ($state['migration_depends_on'] as $depend)
 		{
 			if (!isset($this->migration_state[$depend]) ||
 				!$this->migration_state[$depend]['migration_schema_done'] ||
@@ -272,15 +273,28 @@ class phpbb_db_migrator
 		}
 		else
 		{
-			$result = $this->process_data_step($migration->update_data(), $state['migration_data_state']);
+			try
+			{
+				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state']);
 
-			$state['migration_data_state'] = ($result === true) ? '' : $result;
-			$state['migration_data_done'] = ($result === true);
-			$state['migration_end_time'] = ($result === true) ? time() : 0;
+				$state['migration_data_state'] = ($result === true) ? '' : $result;
+				$state['migration_data_done'] = ($result === true);
+				$state['migration_end_time'] = ($result === true) ? time() : 0;
+			}
+			catch (phpbb_db_migration_exception $e)
+			{
+				// Revert the schema changes
+				$this->revert($name);
+
+				// Rethrow exception
+				throw $e;
+			}
 		}
 
+		$insert = $state;
+		$insert['migration_depends_on'] = serialize($state['migration_depends_on']);
 		$sql = 'UPDATE ' . $this->migrations_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $state) . "
+			SET ' . $this->db->sql_build_array('UPDATE', $insert) . "
 			WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
 		$this->db->sql_query($sql);
 
@@ -292,8 +306,9 @@ class phpbb_db_migrator
 	/**
 	* Runs a single revert step from the last migration installed
 	*
+	* YOU MUST ADD/SET ALL MIGRATIONS THAT COULD BE DEPENDENT ON THE MIGRATION TO REVERT TO BEFORE CALLING THIS METHOD!
 	* The revert step can either be a schema or a (partial) data revert. To
-	* check if revert() needs to be called again use the migration_installed() method.
+	* check if revert() needs to be called again use the migration_state() method.
 	*
 	* @param string $migration String migration name to revert (including any that depend on this migration)
 	* @return null
@@ -306,12 +321,9 @@ class phpbb_db_migrator
 			return;
 		}
 
-		// Iterate through all installed migrations and make sure any dependencies are removed first
 		foreach ($this->migration_state as $name => $state)
 		{
-			$migration_class = $this->get_migration($name);
-
-			if (in_array($migration, $migration_class->depends_on()))
+			if (!empty($state['migration_depends_on']) && in_array($migration, $state['migration_depends_on']))
 			{
 				$this->revert($name);
 			}
@@ -358,8 +370,10 @@ class phpbb_db_migrator
 				$state['migration_data_done'] = ($result === true) ? false : true;
 			}
 
+			$insert = $state;
+			$insert['migration_depends_on'] = serialize($state['migration_depends_on']);
 			$sql = 'UPDATE ' . $this->migrations_table . '
-				SET ' . $this->db->sql_build_array('UPDATE', $state) . "
+				SET ' . $this->db->sql_build_array('UPDATE', $insert) . "
 				WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
 			$this->db->sql_query($sql);
 
@@ -436,22 +450,20 @@ class phpbb_db_migrator
 			catch (phpbb_db_migration_exception $e)
 			{
 				// We should try rolling back here
-				foreach ($steps as $reverse_step)
+				foreach ($steps as $reverse_step_identifier => $reverse_step)
 				{
-					// Reverse the step that was run
-					$result = $this->run_step($step, false, !$revert);
-
 					// If we've reached the current step we can break because we reversed everything that was run
-					if ($reverse_step === $step)
+					if ($reverse_step_identifier == $step_identifier)
 					{
 						break;
 					}
+
+					// Reverse the step that was run
+					$result = $this->run_step($reverse_step, false, !$revert);
 				}
 
-				/** TODO Revert Schema **/
-				var_dump($step);
-				echo $e;
-				die();
+				// rethrow the exception
+				throw $e;
 			}
 		}
 
@@ -588,6 +600,7 @@ class phpbb_db_migrator
 	{
 		$migration_row = $state;
 		$migration_row['migration_name'] = $name;
+		$migration_row['migration_depends_on'] = serialize($state['migration_depends_on']);
 
 		$sql = 'INSERT INTO ' . $this->migrations_table . '
 			' . $this->db->sql_build_array('INSERT', $migration_row);
@@ -660,19 +673,19 @@ class phpbb_db_migrator
 	}
 
 	/**
-	* Checks whether a migration is installed
+	* Gets a migration state (whether it is installed and to what extent)
 	*
 	* @param string $migration String migration name to check if it is installed
-	* @return bool Whether the migrations have been applied
+	* @return bool|array False if the migration has not at all been installed, array
 	*/
-	public function migration_installed($migration)
+	public function migration_state($migration)
 	{
-		if (isset($this->migration_state[$migration]))
+		if (!isset($this->migration_state[$migration]))
 		{
-			return true;
+			return false;
 		}
 
-		return false;
+		return $this->migration_state[$migration];
 	}
 
 	/**

@@ -401,6 +401,7 @@ CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id);
 # Table: 'phpbb_migrations'
 CREATE TABLE phpbb_migrations (
 	migration_name varchar(255) NOT NULL DEFAULT '',
+	migration_depends_on text(65535) NOT NULL DEFAULT '',
 	migration_schema_done INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	migration_data_done INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	migration_data_state text(65535) NOT NULL DEFAULT '',

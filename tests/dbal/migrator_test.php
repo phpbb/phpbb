@@ -18,6 +18,7 @@ require_once dirname(__FILE__) . '/migration/if.php';
 require_once dirname(__FILE__) . '/migration/recall.php';
 require_once dirname(__FILE__) . '/migration/revert.php';
 require_once dirname(__FILE__) . '/migration/revert_with_dependency.php';
+require_once dirname(__FILE__) . '/migration/fail.php';
 
 class phpbb_dbal_migrator_test extends phpbb_database_test_case
 {
@@ -163,8 +164,8 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->migrator->set_migrations(array('phpbb_dbal_migration_revert', 'phpbb_dbal_migration_revert_with_dependency'));
 
-		$this->assertFalse($this->migrator->migration_installed('phpbb_dbal_migration_revert'));
-		$this->assertFalse($this->migrator->migration_installed('phpbb_dbal_migration_revert_with_dependency'));
+		$this->assertFalse($this->migrator->migration_state('phpbb_dbal_migration_revert'));
+		$this->assertFalse($this->migrator->migration_state('phpbb_dbal_migration_revert_with_dependency'));
 
 		// Install the migration first
 		while (!$this->migrator->finished())
@@ -172,8 +173,8 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$this->migrator->update();
 		}
 
-		$this->assertTrue($this->migrator->migration_installed('phpbb_dbal_migration_revert'));
-		$this->assertTrue($this->migrator->migration_installed('phpbb_dbal_migration_revert_with_dependency'));
+		$this->assertTrue($this->migrator->migration_state('phpbb_dbal_migration_revert') !== false);
+		$this->assertTrue($this->migrator->migration_state('phpbb_dbal_migration_revert_with_dependency') !== false);
 
 		$this->assertSqlResultEquals(
 			array(array('bar_column' => '1')),
@@ -183,25 +184,53 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->assertTrue(isset($this->config['foobartest']));
 
-		while ($this->migrator->migration_installed('phpbb_dbal_migration_revert'))
+		while ($this->migrator->migration_state('phpbb_dbal_migration_revert') !== false)
 		{
 			$this->migrator->revert('phpbb_dbal_migration_revert');
 		}
 
-		$this->assertFalse($this->migrator->migration_installed('phpbb_dbal_migration_revert'));
-		$this->assertFalse($this->migrator->migration_installed('phpbb_dbal_migration_revert_with_dependency'));
+		$this->assertFalse($this->migrator->migration_state('phpbb_dbal_migration_revert'));
+		$this->assertFalse($this->migrator->migration_state('phpbb_dbal_migration_revert_with_dependency'));
 
 		$this->assertFalse(isset($this->config['foobartest']));
 
+		$sql = 'SELECT * FROM phpbb_config';
+		$result = $this->db->sql_query_limit($sql, 1);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (isset($row['bar_column']))
+		{
+			$this->fail('Revert did not remove test_column.');
+		}
+	}
+
+	public function test_fail()
+	{
+		$this->migrator->set_migrations(array('phpbb_dbal_migration_fail'));
+
+		$this->assertFalse(isset($this->config['foobar3']));
+
 		try
 		{
-			// Should cause an error
-			$this->assertSqlResultEquals(
-				false,
-				"SELECT bar_column FROM phpbb_config WHERE config_name = 'foo'",
-				'Revert did not remove bar_column.'
-			);
+			while (!$this->migrator->finished())
+			{
+				$this->migrator->update();
+			}
 		}
-		catch (Exception $e) {}
+		catch (phpbb_db_migration_exception $e) {}
+
+		// Failure should have caused an automatic roll-back, so this should not exist.
+		$this->assertFalse(isset($this->config['foobar3']));
+
+		$sql = 'SELECT * FROM phpbb_config';
+		$result = $this->db->sql_query_limit($sql, 1);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (isset($row['test_column']))
+		{
+			$this->fail('Revert did not remove test_column.');
+		}
 	}
 }
