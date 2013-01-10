@@ -26,7 +26,9 @@ class phpbb_db_migration_data_3_0_1_rc1 extends phpbb_db_migration
 				),
 			),
 			'drop_keys' => array(
-				$this->table_prefix . 'groups' => array('group_legend'),
+				$this->table_prefix . 'groups' => array(
+					'group_legend',
+				),
 			),
 			'add_index' => array(
 				$this->table_prefix . 'sessions' => array(
@@ -52,12 +54,16 @@ class phpbb_db_migration_data_3_0_1_rc1 extends phpbb_db_migration
 			),
 			'add_index' => array(
 				$this->table_prefix . 'groups' => array(
-					'group_legend' => 'group_legend',
+					'group_legend' => array('group_legend'),
 				),
 			),
 			'drop_keys' => array(
-				$this->table_prefix . 'sessions' => array('session_forum_id'),
-				$this->table_prefix . 'groups' => array('group_legend_name'),
+				$this->table_prefix . 'sessions' => array(
+					'session_forum_id',
+				),
+				$this->table_prefix . 'groups' => array(
+					'group_legend_name',
+				),
 			),
 		);
 	}

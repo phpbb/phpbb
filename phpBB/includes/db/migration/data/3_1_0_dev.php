@@ -15,7 +15,7 @@ class phpbb_db_migration_data_3_1_0_dev extends phpbb_db_migration
 			'phpbb_db_migration_data_3_0_11',
 			'phpbb_db_migration_data_extensions',
 			'phpbb_db_migration_data_style_update_p2',
-			'phpbb_db_migration_data_timezone',
+			'phpbb_db_migration_data_timezone_p2',
 		);
 	}
 
@@ -23,27 +23,52 @@ class phpbb_db_migration_data_3_1_0_dev extends phpbb_db_migration
 	{
 		return array(
 			'add_columns'		=> array(
-				GROUPS_TABLE		=> array(
+				$this->table_prefix . 'groups'		=> array(
 					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
 				),
-				PROFILE_FIELDS_TABLE	=> array(
+				$this->table_prefix . 'profile_fields'	=> array(
 					'field_show_on_pm'		=> array('BOOL', 0),
 				),
-				STYLES_TABLE		=> array(
+				$this->table_prefix . 'styles'		=> array(
 					'style_path'			=> array('VCHAR:100', ''),
 					'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
 					'style_parent_id'		=> array('UINT:4', 0),
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
-				REPORTS_TABLE		=> array(
+				$this->table_prefix . 'reports'		=> array(
 					'reported_post_text'		=> array('MTEXT_UNI', ''),
 					'reported_post_uid'			=> array('VCHAR:8', ''),
 					'reported_post_bitfield'	=> array('VCHAR:255', ''),
 				),
 			),
 			'change_columns'	=> array(
-				GROUPS_TABLE		=> array(
+				$this->table_prefix . 'groups'		=> array(
 					'group_legend'		=> array('UINT', 0),
+				),
+			),
+		);
+	}
+
+	public function revert_schema()
+	{
+		return array(
+			'drop_columns'		=> array(
+				$this->table_prefix . 'groups'		=> array(
+					'group_teampage',
+				),
+				$this->table_prefix . 'profile_fields'	=> array(
+					'field_show_on_pm',
+				),
+				$this->table_prefix . 'styles'		=> array(
+					'style_path',
+					'bbcode_bitfield',
+					'style_parent_id',
+					'style_parent_tree',
+				),
+				$this->table_prefix . 'reports'		=> array(
+					'reported_post_text',
+					'reported_post_uid',
+					'reported_post_bitfield',
 				),
 			),
 		);

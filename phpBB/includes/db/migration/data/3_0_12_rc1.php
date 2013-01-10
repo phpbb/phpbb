@@ -16,11 +16,6 @@ class phpbb_db_migration_data_3_0_12_rc1 extends phpbb_db_migration
 		return array('phpbb_db_migration_data_3_0_11');
 	}
 
-	public function update_schema()
-	{
-		return array();
-	}
-
 	public function update_data()
 	{
 		return array(

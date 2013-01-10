@@ -18,7 +18,7 @@ class phpbb_db_migration_data_extensions extends phpbb_db_migration
 	{
 		return array(
 			'add_tables'		=> array(
-				EXT_TABLE				=> array(
+				$this->table_prefix . 'ext'	=> array(
 					'COLUMNS'			=> array(
 						'ext_name'		=> array('VCHAR', ''),
 						'ext_active'	=> array('BOOL', 0),
@@ -28,6 +28,15 @@ class phpbb_db_migration_data_extensions extends phpbb_db_migration
 						'ext_name'		=> array('UNIQUE', 'ext_name'),
 					),
 				),
+			),
+		);
+	}
+
+	public function revert_schema()
+	{
+		return array(
+			'drop_tables'		=> array(
+				$this->table_prefix . 'ext',
 			),
 		);
 	}

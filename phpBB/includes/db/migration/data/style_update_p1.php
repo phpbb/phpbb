@@ -14,11 +14,6 @@ class phpbb_db_migration_data_style_update_p1 extends phpbb_db_migration
 		return array('phpbb_db_migration_data_3_0_11');
 	}
 
-	public function update_schema()
-	{
-		return array();
-	}
-
 	public function update_data()
 	{
 		return array(
@@ -47,10 +42,10 @@ class phpbb_db_migration_data_style_update_p1 extends phpbb_db_migration
 		}
 
 		// Get all installed styles
-		if ($this->db_tools->sql_table_exists(STYLES_IMAGESET_TABLE))
+		if ($this->db_tools->sql_table_exists($this->table_prefix . 'styles_imageset'))
 		{
 			$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_id, i.imageset_path
-				FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . " i
+				FROM ' . STYLES_TABLE . ' s, ' . $this->table_prefix . 'styles_template t, ' . $this->table_prefix . 'styles_theme c, ' . $this->table_prefix . "styles_imageset i
 				WHERE t.template_id = s.template_id
 					AND c.theme_id = s.theme_id
 					AND i.imageset_id = s.imageset_id";
@@ -58,7 +53,7 @@ class phpbb_db_migration_data_style_update_p1 extends phpbb_db_migration
 		else
 		{
 			$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_id
-				FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . " c
+				FROM ' . STYLES_TABLE . ' s, ' . $this->table_prefix . 'styles_template t, ' . $this->table_prefix . "stles_theme c
 				WHERE t.template_id = s.template_id
 					AND c.theme_id = s.theme_id";
 		}

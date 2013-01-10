@@ -18,10 +18,10 @@ class phpbb_db_migration_data_3_0_5_rc1part2 extends phpbb_db_migration
 	{
 		return array(
 			'drop_keys'			=> array(
-				ACL_OPTIONS_TABLE		=> array('auth_option'),
+				$this->table_prefix . 'acl_options'		=> array('auth_option'),
 			),
 			'add_unique_index'	=> array(
-				ACL_OPTIONS_TABLE		=> array(
+				$this->table_prefix . 'acl_options'		=> array(
 					'auth_option'		=> array('auth_option'),
 				),
 			),

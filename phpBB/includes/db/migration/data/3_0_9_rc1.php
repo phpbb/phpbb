@@ -51,6 +51,15 @@ class phpbb_db_migration_data_3_0_9_rc1 extends phpbb_db_migration
 		);
 	}
 
+	function revert_schema()
+	{
+		return array(
+			'drop_tables' => array(
+				$this->table_prefix . 'login_attempts',
+			),
+		);
+	}
+
 	function update_data()
 	{
 		return array(

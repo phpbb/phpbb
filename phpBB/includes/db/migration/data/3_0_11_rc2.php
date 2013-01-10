@@ -25,6 +25,17 @@ class phpbb_db_migration_data_3_0_11_rc2 extends phpbb_db_migration
 		);
 	}
 
+	function revert_schema()
+	{
+		return array(
+			'drop_columns' => array(
+				$this->table_prefix . 'profile_fields' => array(
+					'field_show_novalue',
+				),
+			),
+		);
+	}
+
 	function update_data()
 	{
 		return array(

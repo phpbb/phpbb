@@ -36,11 +36,31 @@ class phpbb_db_migration_data_3_0_2_rc2 extends phpbb_db_migration
 				),
 			),
 			'drop_keys' => array(
-				$this->table_prefix . 'sessions' => array('session_forum_id'),
+				$this->table_prefix . 'sessions' => array(
+					'session_forum_id',
+				),
 			),
 			'add_index' => array(
 				$this->table_prefix . 'sessions' => array(
 					'session_fid' => array('session_forum_id'),
+				),
+			),
+		);
+	}
+
+	function revert_schema()
+	{
+		return array(
+			'add_index' => array(
+				$this->table_prefix . 'sessions' => array(
+					'session_forum_id' => array(
+						'session_forum_id',
+					),
+				),
+			),
+			'drop_keys' => array(
+				$this->table_prefix . 'sessions' => array(
+					'session_fid',
 				),
 			),
 		);

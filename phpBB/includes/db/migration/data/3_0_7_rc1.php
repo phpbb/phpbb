@@ -18,11 +18,29 @@ class phpbb_db_migration_data_3_0_7_rc1 extends phpbb_db_migration
 	{
 		return array(
 			'drop_keys' => array(
-				$this->table_prefix . 'log' => array('log_time'),
+				$this->table_prefix . 'log' => array(
+					'log_time',
+				),
 			),
 			'add_index' => array(
 				$this->table_prefix . 'topics_track' => array(
 					'topic_id' => array('topic_id'),
+				),
+			),
+		);
+	}
+
+	function revert_schema()
+	{
+		return array(
+			'add_index' => array(
+				$this->table_prefix . 'log' => array(
+					'log_time'	=> array('log_time'),
+				),
+			),
+			'drop_keys' => array(
+				$this->table_prefix . 'topics_track' => array(
+					'topic_id',
 				),
 			),
 		);

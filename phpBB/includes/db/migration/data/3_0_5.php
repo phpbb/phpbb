@@ -14,11 +14,6 @@ class phpbb_db_migration_data_3_0_5 extends phpbb_db_migration
 		return array('phpbb_db_migration_data_3_0_5_rc1part2');
 	}
 
-	function update_schema()
-	{
-		return array();
-	}
-
 	function update_data()
 	{
 		return array(

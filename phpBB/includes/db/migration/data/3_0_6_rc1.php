@@ -59,6 +59,46 @@ class phpbb_db_migration_data_3_0_6_rc1 extends phpbb_db_migration
 		);
 	}
 
+	function revert_schema()
+	{
+		return array(
+			'drop_columns' => array(
+				$this->table_prefix . 'confirm' => array(
+					'attempts',
+				),
+				$this->table_prefix . 'users' => array(
+					'user_new',
+					'user_reminded',
+					'user_reminded_time',
+				),
+				$this->table_prefix . 'groups' => array(
+					'group_skip_auth',
+				),
+				$this->table_prefix . 'privmsgs' => array(
+					'message_reported',
+				),
+				$this->table_prefix . 'reports' => array(
+					'pm_id',
+				),
+				$this->table_prefix . 'profile_fields'	=> array(
+					'field_show_on_vt',
+				),
+				$this->table_prefix . 'forums' => array(
+					'forum_options',
+				),
+			),
+			'drop_keys' => array(
+				$this->table_prefix . 'reports' => array(
+					'post_id',
+					'pm_id',
+				),
+				$this->table_prefix . 'posts' => array(
+					'post_username',
+				),
+			),
+		);
+	}
+
 	function update_data()
 	{
 		return array(

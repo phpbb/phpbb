@@ -29,6 +29,21 @@ class phpbb_db_migration_data_3_0_3_rc1 extends phpbb_db_migration
 		);
 	}
 
+	function revert_schema()
+	{
+		return array(
+			'drop_columns' => array(
+				$this->table_prefix . 'styles_template' => array(
+					'template_inherits_id',
+					'template_inherit_path',
+				),
+				$this->table_prefix . 'groups' => array(
+					'group_max_recipients',
+				),
+			),
+		);
+	}
+
 	function update_data()
 	{
 		return array(

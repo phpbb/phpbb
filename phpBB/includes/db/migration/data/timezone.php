@@ -18,7 +18,7 @@ class phpbb_db_migration_data_timezone extends phpbb_db_migration
 	{
 		return array(
 			'change_columns'	=> array(
-				USERS_TABLE			=> array(
+				$this->table_prefix . 'users'			=> array(
 					'user_timezone'		=> array('VCHAR:100', ''),
 				),
 			),
@@ -36,13 +36,13 @@ class phpbb_db_migration_data_timezone extends phpbb_db_migration
 	{
 		// Update user timezones
 		$sql = 'SELECT user_dst, user_timezone
-			FROM ' . USERS_TABLE . '
+			FROM ' . $this->table_prefix . 'users
 			GROUP BY user_timezone, user_dst';
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$sql = 'UPDATE ' . USERS_TABLE . "
+			$sql = 'UPDATE ' . $this->table_prefix . "users
 				SET user_timezone = '" . $this->db->sql_escape($this->convert_phpbb30_timezone($row['user_timezone'], $row['user_dst'])) . "'
 				WHERE user_timezone = '" . $this->db->sql_escape($row['user_timezone']) . "'
 					AND user_dst = " . (int) $row['user_dst'];
@@ -51,13 +51,10 @@ class phpbb_db_migration_data_timezone extends phpbb_db_migration
 		$this->db->sql_freeresult($result);
 
 		// Update board default timezone
-		$sql = 'UPDATE ' . CONFIG_TABLE . "
+		$sql = 'UPDATE ' . $this->table_prefix . "config
 			SET config_value = '" . $this->convert_phpbb30_timezone($this->config['board_timezone'], $this->config['board_dst']) . "'
 			WHERE config_name = 'board_timezone'";
 		$this->sql_query($sql);
-
-		// After we have calculated the timezones we can delete user_dst column from user table.
-		$this->db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
 	}
 
 	/**
