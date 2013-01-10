@@ -26,7 +26,7 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 		parent::setup();
 
 		$db = $this->db = $this->new_dbal();
-		$cache = $this->cache = new phpbb_cache_service(new phpbb_cache_driver_null());
+		$cache = $this->cache = new phpbb_cache_service(new phpbb_cache_driver_null(), new phpbb_config(array()), $this->db, $phpbb_root_path, $phpEx);
 		$this->auth = new phpbb_auth();
 
 		$this->tool = new phpbb_db_migration_tool_permission($this->db, $this->cache, $this->auth, $phpbb_root_path, $phpEx);
@@ -132,5 +132,28 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 			$this->fail('Did not throw exception on duplicate');
 		}
 		catch (Exception $e) {}
+	}
+
+	public function test_reverse()
+	{
+		try
+		{
+			$this->tool->reverse('remove', 'global_test', true);
+		}
+		catch (Exception $e)
+		{
+			$this->fail($e);
+		}
+		$this->assertTrue($this->tool->exists('global_test', true));
+
+		try
+		{
+			$this->tool->reverse('add', 'global_test', true);
+		}
+		catch (Exception $e)
+		{
+			$this->fail($e);
+		}
+		$this->assertFalse($this->tool->exists('global_test', true));
 	}
 }

@@ -29,10 +29,10 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		$skip_add_log = true;
 
 		$db = $this->db = $this->new_dbal();
-		$this->cache = new phpbb_cache_service(new phpbb_cache_driver_null());
+		$this->cache = new phpbb_cache_service(new phpbb_cache_driver_null(), new phpbb_config(array()), $this->db, $phpbb_root_path, $phpEx);
 		$user = $this->user = new phpbb_user();
 
-		$this->tool = new phpbb_db_migration_tool_module($this->db, $this->cache, $this->user, $phpbb_root_path, $phpEx);
+		$this->tool = new phpbb_db_migration_tool_module($this->db, $this->cache, $this->user, $phpbb_root_path, $phpEx, 'phpbb_modules');
 	}
 
 	public function exists_data()
@@ -99,7 +99,7 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 
 		try
 		{
-			$this->tool->add('acp', ACP_NEW_CAT, array(
+			$this->tool->add('acp', 'ACP_NEW_CAT', array(
 				'module_basename'	=> 'acp_new_module',
 				'module_langname'	=> 'ACP_NEW_MODULE',
 				'module_mode'		=> 'test',
@@ -124,5 +124,27 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 			$this->fail($e);
 		}
 		$this->assertEquals(false, $this->tool->exists('acp', 'ACP_CAT', 'ACP_MODULE'));
+	}
+
+	public function test_reverse()
+	{
+		try
+		{
+			$this->tool->add('acp', 0, 'ACP_NEW_CAT');
+		}
+		catch (Exception $e)
+		{
+			$this->fail($e);
+		}
+
+		try
+		{
+			$this->tool->reverse('add', 'acp', 0, 'ACP_NEW_CAT');
+		}
+		catch (Exception $e)
+		{
+			$this->fail($e);
+		}
+		$this->assertFalse($this->tool->exists('acp', 0, 'ACP_NEW_CAT'));
 	}
 }

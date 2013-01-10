@@ -563,4 +563,59 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 		$this->auth->acl_clear_prefetch();
 	}
+
+	/**
+	* Reverse an original install action
+	*
+	* First argument is the original call to the class (e.g. add, remove)
+	* After the first argument, send the original arguments to the function in the original call
+	*
+	* @return null
+	*/
+	public function reverse()
+	{
+		$arguments = func_get_args();
+		$original_call = array_shift($arguments);
+
+		$call = false;
+		switch ($original_call)
+		{
+			case 'add':
+				$call = 'remove';
+			break;
+
+			case 'remove':
+				$call = 'add';
+			break;
+
+			case 'permission_set':
+				$call = 'permission_unset';
+			break;
+
+			case 'permission_unset':
+				$call = 'permission_set';
+			break;
+
+			case 'role_add':
+				$call = 'role_remove';
+			break;
+
+			case 'role_remove':
+				$call = 'role_add';
+			break;
+
+			case 'role_update':
+				// Set to the original value if the current value is what we compared to originally
+				$arguments = array(
+					$arguments[1],
+					$arguments[0],
+				);
+			break;
+		}
+
+		if ($call)
+		{
+			return call_user_func_array(array(&$this, $call), $arguments);
+		}
+	}
 }

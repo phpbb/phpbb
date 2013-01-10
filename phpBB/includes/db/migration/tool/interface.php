@@ -20,4 +20,14 @@ interface phpbb_db_migration_tool_interface
 	* @return string short name
 	*/
 	public function get_name();
+
+	/**
+	* Reverse an original install action
+	*
+	* First argument is the original call to the class (e.g. add, remove)
+	* After the first argument, send the original arguments to the function in the original call
+	*
+	* @return null
+	*/
+	public function reverse();
 }

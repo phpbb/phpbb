@@ -103,4 +103,46 @@ class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_interfac
 
 		$this->config->delete($config_name);
 	}
+
+	/**
+	* Reverse an original install action
+	*
+	* First argument is the original call to the class (e.g. add, remove)
+	* After the first argument, send the original arguments to the function in the original call
+	*
+	* @return null
+	*/
+	public function reverse()
+	{
+		$arguments = func_get_args();
+		$original_call = array_shift($arguments);
+
+		$call = false;
+		switch ($original_call)
+		{
+			case 'add':
+				$call = 'remove';
+			break;
+
+			case 'remove':
+				$call = 'add';
+			break;
+
+			case 'update_if_equals':
+				$call = 'update_if_equals';
+
+				// Set to the original value if the current value is what we compared to originally
+				$arguments = array(
+					$arguments[2],
+					$arguments[1],
+					$arguments[0],
+				);
+			break;
+		}
+
+		if ($call)
+		{
+			return call_user_func_array(array(&$this, $call), $arguments);
+		}
+	}
 }

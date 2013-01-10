@@ -471,4 +471,35 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 			$this->cache->destroy("_modules_$class");
 		}
 	}
+
+	/**
+	* Reverse an original install action
+	*
+	* First argument is the original call to the class (e.g. add, remove)
+	* After the first argument, send the original arguments to the function in the original call
+	*
+	* @return null
+	*/
+	public function reverse()
+	{
+		$arguments = func_get_args();
+		$original_call = array_shift($arguments);
+
+		$call = false;
+		switch ($original_call)
+		{
+			case 'add':
+				$call = 'remove';
+			break;
+
+			case 'remove':
+				$call = 'add';
+			break;
+		}
+
+		if ($call)
+		{
+			return call_user_func_array(array(&$this, $call), $arguments);
+		}
+	}
 }

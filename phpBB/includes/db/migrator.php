@@ -347,6 +347,17 @@ class phpbb_db_migrator
 			catch (phpbb_db_migration_exception $e)
 			{
 				// We should try rolling back here
+				foreach ($steps as $reverse_step)
+				{
+					// Reverse the step that was run
+					$result = $this->run_step($step, false, true);
+
+					// If we've reached the current step we can break because we reversed everything that was run
+					if ($reverse_step === $step)
+					{
+						break;
+					}
+				}
 
 				var_dump($step);
 				echo $e;
@@ -364,11 +375,12 @@ class phpbb_db_migrator
 	*
 	* @param mixed $step Data step from migration
 	* @param mixed $last_result Result to pass to the callable (only for 'custom' method)
+	* @param bool $reverse False to install, True to attempt uninstallation by reversing the call
 	* @return null
 	*/
-	protected function run_step($step, $last_result = false)
+	protected function run_step($step, $last_result = false, $reverse = false)
 	{
-		$callable_and_parameters = $this->get_callable_from_step($step, $last_result);
+		$callable_and_parameters = $this->get_callable_from_step($step, $last_result, $reverse);
 
 		if ($callable_and_parameters === false)
 		{
@@ -386,9 +398,10 @@ class phpbb_db_migrator
 	*
 	* @param mixed $step Data step from migration
 	* @param mixed $last_result Result to pass to the callable (only for 'custom' method)
+	* @param bool $reverse False to install, True to attempt uninstallation by reversing the call
 	* @return array Array with parameters for call_user_func_array(), 0 is the callable, 1 is parameters
 	*/
-	protected function get_callable_from_step($step, $last_result = false)
+	protected function get_callable_from_step($step, $last_result = false, $reverse = false)
 	{
 		$type = $step[0];
 		$parameters = $step[1];
@@ -425,14 +438,7 @@ class phpbb_db_migrator
 
 				$step = $parameters[1];
 
-				$callable_and_parameters = $this->get_callable_from_step($step);
-				$callable = $callable_and_parameters[0];
-				$sub_parameters = $callable_and_parameters[1];
-
-				return array(
-					$callable,
-					$sub_parameters,
-				);
+				return $this->get_callable_from_step($step);
 			break;
 			case 'custom':
 				if (!is_callable($parameters[0]))
@@ -460,6 +466,15 @@ class phpbb_db_migrator
 				if (!method_exists(get_class($this->tools[$class]), $method))
 				{
 					throw new phpbb_db_migration_exception('MIGRATION_INVALID_DATA_UNDEFINED_METHOD', $step);
+				}
+
+				// Attempt to reverse operations
+				if ($reverse)
+				{
+					return array(
+						array($this->tools[$class], 'reverse'),
+						array_unshift($parameters, $method),
+					);
 				}
 
 				return array(
