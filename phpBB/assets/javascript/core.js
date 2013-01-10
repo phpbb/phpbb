@@ -522,7 +522,7 @@ phpbb.addAjaxCallback('alt_text', function() {
 	altText = el.attr('data-alt-text');
 	el.attr('data-alt-text', el.text());
 	el.attr('title', altText);
-	eel.text(altText);
+	el.text(altText);
 });
 
 /**
