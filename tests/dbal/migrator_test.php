@@ -15,6 +15,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
 require_once dirname(__FILE__) . '/migration/dummy.php';
 require_once dirname(__FILE__) . '/migration/unfulfillable.php';
 require_once dirname(__FILE__) . '/migration/if.php';
+require_once dirname(__FILE__) . '/migration/recall.php';
 
 class phpbb_dbal_migrator_test extends phpbb_database_test_case
 {
@@ -126,5 +127,27 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		{
 			$this->fail('False test failed');
 		}
+	}
+
+	public function test_recall()
+	{
+		$this->migrator->set_migrations(array('phpbb_dbal_migration_recall'));
+
+		global $migrator_test_call_input;
+
+		// Run the schema first
+		$this->migrator->update();
+
+		$i = 0;
+		while (!$this->migrator->finished())
+		{
+			$this->migrator->update();
+
+			$this->assertSame($i, $migrator_test_call_input);
+
+			$i++;
+		}
+
+		$this->assertSame(10, $migrator_test_call_input);
 	}
 }
