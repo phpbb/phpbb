@@ -69,6 +69,40 @@ function login_db($username, $password, $ip = '', $browser = '', $forwarded_for 
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
+	// Limit login attempts per IP address or per user to ONE attempt every second
+	// This is to prevent bruteforce attacks that can overcome the captcha
+	$sql = 'SELECT COUNT(*) AS attempts
+		FROM ' . LOGIN_ATTEMPT_TABLE . '
+		WHERE attempt_time > ' . (time() - 1) . '
+			 AND (';
+	$and_array = array();
+	if ($forwarded_for)
+	{
+		$and_array[] = "attempt_forwarded_for = '" . $db->sql_escape($forwarded_for) . "'";
+	}
+	if ($ip)
+	{
+		$and_array[] = "attempt_ip = '" . $db->sql_escape($ip) . "'";
+	}
+	if ($row)
+	{
+		$and_array[] = 'user_id = ' . (int) $row['user_id'];
+	}
+	$sql .= implode(' OR ', $and_array) . ')';
+
+	$result = $db->sql_query($sql);
+	$attempts = (int) $db->sql_fetchfield('attempts');
+	$db->sql_freeresult($result);
+
+	if ($attempts > 1)
+	{
+		return array(
+			'status'		=> LOGIN_ERROR_ATTEMPTS,
+			'error_msg'		=> 'LOGIN_ERROR_ATTEMPTS',
+			'user_row'		=> array('user_id' => ANONYMOUS),
+		);
+	}
+
 	if (($ip && !$config['ip_login_limit_use_forwarded']) ||
 		($forwarded_for && $config['ip_login_limit_use_forwarded']))
 	{
