@@ -78,7 +78,7 @@ abstract class phpbb_db_migration
 	*
 	* @return array An array of migration class names
 	*/
-	public function depends_on()
+	static public function depends_on()
 	{
 		return array();
 	}
