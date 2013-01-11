@@ -410,6 +410,19 @@ CREATE TABLE phpbb_moderator_cache (
 );
 
 
+# Table: 'phpbb_migrations'
+CREATE TABLE phpbb_migrations (
+	migration_name varbinary(255) DEFAULT '' NOT NULL,
+	migration_depends_on blob NOT NULL,
+	migration_schema_done tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_data_done tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_data_state blob NOT NULL,
+	migration_start_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_end_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (migration_name)
+);
+
+
 # Table: 'phpbb_modules'
 CREATE TABLE phpbb_modules (
 	module_id mediumint(8) UNSIGNED NOT NULL auto_increment,
