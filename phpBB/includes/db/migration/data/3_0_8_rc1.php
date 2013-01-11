@@ -9,12 +9,12 @@
 
 class phpbb_db_migration_data_3_0_8_rc1 extends phpbb_db_migration
 {
-	function depends_on()
+	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_3_0_7_pl1');
 	}
 
-	function update_data()
+	public function update_data()
 	{
 		return array(
 			array('custom', array(array(&$this, 'update_file_extension_group_names'))),
@@ -37,7 +37,7 @@ class phpbb_db_migration_data_3_0_8_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function update_file_extension_group_names()
+	public function update_file_extension_group_names()
 	{
 		// Update file extension group names to use language strings.
 		$sql = 'SELECT lang_dir
@@ -93,7 +93,7 @@ class phpbb_db_migration_data_3_0_8_rc1 extends phpbb_db_migration
 		$this->db->sql_freeresult($result);
 	}
 
-	function update_module_auth()
+	public function update_module_auth()
 	{
 		$sql = 'UPDATE ' . MODULES_TABLE . '
 			SET module_auth = \'cfg_allow_avatar && (cfg_allow_avatar_local || cfg_allow_avatar_remote || cfg_allow_avatar_upload || cfg_allow_avatar_remote_upload)\'
@@ -103,7 +103,7 @@ class phpbb_db_migration_data_3_0_8_rc1 extends phpbb_db_migration
 		$this->sql_query($sql);
 	}
 
-	function update_bots()
+	public function update_bots()
 	{
 		$bot_name = 'Bing [Bot]';
 		$bot_name_clean = utf8_clean_string($bot_name);
@@ -167,7 +167,7 @@ class phpbb_db_migration_data_3_0_8_rc1 extends phpbb_db_migration
 		}
 	}
 
-	function delete_orphan_shadow_topics()
+	public function delete_orphan_shadow_topics()
 	{
 		// Delete shadow topics pointing to not existing topics
 		$batch_size = 500;

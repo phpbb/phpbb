@@ -9,12 +9,12 @@
 
 class phpbb_db_migration_data_3_0_7_rc1 extends phpbb_db_migration
 {
-	function depends_on()
+	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_3_0_6');
 	}
 
-	function update_schema()
+	public function update_schema()
 	{
 		return array(
 			'drop_keys' => array(
@@ -30,7 +30,7 @@ class phpbb_db_migration_data_3_0_7_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function revert_schema()
+	public function revert_schema()
 	{
 		return array(
 			'add_index' => array(
@@ -46,7 +46,7 @@ class phpbb_db_migration_data_3_0_7_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function update_data()
+	public function update_data()
 	{
 		return array(
 			array('config.add', array('feed_overall', 1)),
@@ -61,7 +61,7 @@ class phpbb_db_migration_data_3_0_7_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function delete_text_templates()
+	public function delete_text_templates()
 	{
 		// Delete all text-templates from the template_data
 		$sql = 'DELETE FROM ' . STYLES_TEMPLATE_DATA_TABLE . '

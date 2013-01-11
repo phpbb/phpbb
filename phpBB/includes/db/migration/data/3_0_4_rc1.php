@@ -9,12 +9,12 @@
 
 class phpbb_db_migration_data_3_0_4_rc1 extends phpbb_db_migration
 {
-	function depends_on()
+	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_3_0_3');
 	}
 
-	function update_schema()
+	public function update_schema()
 	{
 		return array(
 			'add_columns' => array(
@@ -55,7 +55,7 @@ class phpbb_db_migration_data_3_0_4_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function revert_schema()
+	public function revert_schema()
 	{
 		return array(
 			'drop_columns' => array(
@@ -66,7 +66,7 @@ class phpbb_db_migration_data_3_0_4_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function update_data()
+	public function update_data()
 	{
 		return array(
 			array('custom', array(array(&$this, 'update_custom_profile_fields'))),
@@ -75,7 +75,7 @@ class phpbb_db_migration_data_3_0_4_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function update_custom_profile_fields()
+	public function update_custom_profile_fields()
 	{
 		// Update the Custom Profile Fields based on previous settings to the new format
 		$sql = 'SELECT field_id, field_required, field_show_on_reg, field_hide

@@ -9,12 +9,12 @@
 
 class phpbb_db_migration_data_3_0_5_rc1 extends phpbb_db_migration
 {
-	function depends_on()
+	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_3_0_4');
 	}
 
-	function update_schema()
+	public function update_schema()
 	{
 		return array(
 			'change_columns' => array(
@@ -25,7 +25,7 @@ class phpbb_db_migration_data_3_0_5_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function update_data()
+	public function update_data()
 	{
 		$search_indexing_state = $this->config['search_indexing_state'];
 
@@ -42,7 +42,7 @@ class phpbb_db_migration_data_3_0_5_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function hash_old_passwords()
+	public function hash_old_passwords()
 	{
 		$sql = 'SELECT user_id, user_password
 				FROM ' . $this->table_prefix . 'users
@@ -63,7 +63,7 @@ class phpbb_db_migration_data_3_0_5_rc1 extends phpbb_db_migration
 		$this->db->sql_freeresult($result);
 	}
 
-	function update_ichiro_bot()
+	public function update_ichiro_bot()
 	{
 		// Adjust bot entry
 		$sql = 'UPDATE ' . $this->table_prefix . "bots
@@ -72,7 +72,7 @@ class phpbb_db_migration_data_3_0_5_rc1 extends phpbb_db_migration
 		$this->sql_query($sql);
 	}
 
-	function remove_duplicate_auth_options()
+	public function remove_duplicate_auth_options()
 	{
 		// Before we are able to add a unique key to auth_option, we need to remove duplicate entries
 		$sql = 'SELECT auth_option

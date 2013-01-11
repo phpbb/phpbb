@@ -9,12 +9,12 @@
 
 class phpbb_db_migration_data_3_0_6_rc3 extends phpbb_db_migration
 {
-	function depends_on()
+	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_3_0_6_rc2');
 	}
 
-	function update_data()
+	public function update_data()
 	{
 		return array(
 			array('custom', array(array(&$this, 'update_cp_fields'))),
@@ -23,7 +23,7 @@ class phpbb_db_migration_data_3_0_6_rc3 extends phpbb_db_migration
 		);
 	}
 
-	function update_cp_fields()
+	public function update_cp_fields()
 	{
 		// Update the Custom Profile Fields based on previous settings to the new format
 		$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . '

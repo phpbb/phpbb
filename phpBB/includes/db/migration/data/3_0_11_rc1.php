@@ -9,12 +9,12 @@
 
 class phpbb_db_migration_data_3_0_11_rc1 extends phpbb_db_migration
 {
-	function depends_on()
+	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_3_0_10');
 	}
 
-	function update_data()
+	public function update_data()
 	{
 		return array(
 			array('custom', array(array(&$this, 'cleanup_deactivated_styles'))),
@@ -24,7 +24,7 @@ class phpbb_db_migration_data_3_0_11_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function cleanup_deactivated_styles()
+	public function cleanup_deactivated_styles()
 	{
 		// Updates users having current style a deactivated one
 		$sql = 'SELECT style_id
@@ -48,7 +48,7 @@ class phpbb_db_migration_data_3_0_11_rc1 extends phpbb_db_migration
 		}
 	}
 
-	function delete_orphan_private_messages()
+	public function delete_orphan_private_messages()
 	{
 		// Delete orphan private messages
 		$batch_size = 500;

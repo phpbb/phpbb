@@ -9,12 +9,7 @@
 
 class phpbb_db_migration_data_3_0_1_rc1 extends phpbb_db_migration
 {
-	function depends_on()
-	{
-		return array();
-	}
-
-	function update_schema()
+	public function update_schema()
 	{
 		return array(
 			'add_columns' => array(
@@ -41,7 +36,7 @@ class phpbb_db_migration_data_3_0_1_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function revert_schema()
+	public function revert_schema()
 	{
 		return array(
 			'drop_columns' => array(
@@ -68,7 +63,7 @@ class phpbb_db_migration_data_3_0_1_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function update_data()
+	public function update_data()
 	{
 		return array(
 			array('custom', array(array(&$this, 'fix_unset_last_view_time'))),
@@ -78,7 +73,7 @@ class phpbb_db_migration_data_3_0_1_rc1 extends phpbb_db_migration
 		);
 	}
 
-	function fix_unset_last_view_time()
+	public function fix_unset_last_view_time()
 	{
 		$sql = 'UPDATE ' . $this->table_prefix . "topics
 			SET topic_last_view_time = topic_last_post_time
@@ -86,7 +81,7 @@ class phpbb_db_migration_data_3_0_1_rc1 extends phpbb_db_migration
 		$this->sql_query($sql);
 	}
 
-	function reset_smiley_size()
+	public function reset_smiley_size()
 	{
 		// Update smiley sizes
 		$smileys = array('icon_e_surprised.gif', 'icon_eek.gif', 'icon_cool.gif', 'icon_lol.gif', 'icon_mad.gif', 'icon_razz.gif', 'icon_redface.gif', 'icon_cry.gif', 'icon_evil.gif', 'icon_twisted.gif', 'icon_rolleyes.gif', 'icon_exclaim.gif', 'icon_question.gif', 'icon_idea.gif', 'icon_arrow.gif', 'icon_neutral.gif', 'icon_mrgreen.gif', 'icon_e_ugeek.gif');

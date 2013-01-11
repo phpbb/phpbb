@@ -9,7 +9,7 @@
 
 class phpbb_db_migration_data_timezone_p2 extends phpbb_db_migration
 {
-	public function depends_on()
+	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_timezone');
 	}

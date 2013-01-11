@@ -11,7 +11,7 @@
 
 class phpbb_db_migration_data_3_0_12_rc1 extends phpbb_db_migration
 {
-	public function depends_on()
+ 	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_3_0_11');
 	}

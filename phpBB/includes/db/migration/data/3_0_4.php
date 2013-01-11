@@ -9,12 +9,12 @@
 
 class phpbb_db_migration_data_3_0_4 extends phpbb_db_migration
 {
-	function depends_on()
+	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_3_0_4_rc1');
 	}
 
-	function update_data()
+	public function update_data()
 	{
 		return array(
 			array('custom', array(array(&$this, 'rename_log_delete_topic'))),
@@ -23,7 +23,7 @@ class phpbb_db_migration_data_3_0_4 extends phpbb_db_migration
 		);
 	}
 
-	function rename_log_delete_topic()
+	public function rename_log_delete_topic()
 	{
 		if ($this->db->sql_layer == 'oracle')
 		{

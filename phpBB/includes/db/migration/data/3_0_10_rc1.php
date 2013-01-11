@@ -9,12 +9,12 @@
 
 class phpbb_db_migration_data_3_0_10_rc1 extends phpbb_db_migration
 {
-	function depends_on()
+	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_3_0_9');
 	}
 
-	function update_data()
+	public function update_data()
 	{
 		return array(
 			array('config.add', array('email_max_chunk_size', 50)),

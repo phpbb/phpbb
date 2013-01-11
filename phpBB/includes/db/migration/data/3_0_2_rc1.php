@@ -9,12 +9,12 @@
 
 class phpbb_db_migration_data_3_0_2_rc1 extends phpbb_db_migration
 {
-	function depends_on()
+	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_3_0_1');
 	}
 
-	function update_data()
+	public function update_data()
 	{
 		return array(
 			array('config.add', array('referer_validation', '1')),
