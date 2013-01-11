@@ -66,16 +66,16 @@ class phpbb_db_migration_install
 
 	public function install(phpbb_db_driver $db, phpbb_db_tools $db_tools, $table_prefix, $version)
 	{
-		$this->create_table($db_tools);
+		$this->create_table($db_tools, $table_prefix);
 
 		$this->guess_installed_migrations($db, $table_prefix, $version);
 	}
 
-	protected function create_table(phpbb_db_tools $db_tools)
+	protected function create_table(phpbb_db_tools $db_tools, $table_prefix)
 	{
-		if (!$db_tools->sql_table_exists(MIGRATIONS_TABLE))
+		if (!$db_tools->sql_table_exists($table_prefix . 'migrations'))
 		{
-			$db_tools->sql_create_table(MIGRATIONS_TABLE, array(
+			$db_tools->sql_create_table($table_prefix . 'migrations', array(
 				'COLUMNS'		=> array(
 					'migration_name'			=> array('VCHAR', ''),
 					'migration_depends_on'		=> array('TEXT', ''),
@@ -100,7 +100,7 @@ class phpbb_db_migration_install
 		$installed = array();
 		foreach ($this->version_to_migration as $compare => $migration_list)
 		{
-			if (version_compare($version, $compare, '<='))
+			if (version_compare($version, $compare, '>='))
 			{
 				// The migration should have effectively been installed already
 				if (!is_array($migration_list))
@@ -110,18 +110,27 @@ class phpbb_db_migration_install
 
 				foreach ($migration_list as $migration_name)
 				{
-					$sql_ary = array(
-						'migration_name'			=> $migration_name,
-						'migration_depends_on'		=> $migration_name::depends_on(),
-						'migration_schema_done'		=> 1,
-						'migration_data_done'		=> 1,
-						'migration_data_state'		=> '',
-						'migration_start_time'		=> 0,
-						'migration_end_time'		=> 0,
-					);
-					$sql = 'INSERT INTO ' . $table_prefix . 'migrations ' .
-						$db->sql_build_array('INSERT', $sql_ary);
-					$db->sql_query($sql);
+					$sql = 'SELECT 1 FROM ' . $table_prefix . "migrations
+						WHERE migration_name = '" . $db->sql_escape($migration_name) . "'";
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					if (!$row)
+					{
+						$sql_ary = array(
+							'migration_name'			=> $migration_name,
+							'migration_depends_on'		=> serialize($migration_name::depends_on()),
+							'migration_schema_done'		=> 1,
+							'migration_data_done'		=> 1,
+							'migration_data_state'		=> '',
+							'migration_start_time'		=> 0,
+							'migration_end_time'		=> 0,
+						);
+						$sql = 'INSERT INTO ' . $table_prefix . 'migrations ' .
+							$db->sql_build_array('INSERT', $sql_ary);
+						$db->sql_query($sql);
+					}
 				}
 			}
 		}

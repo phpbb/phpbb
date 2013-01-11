@@ -21,6 +21,52 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
+if (!function_exists('phpbb_require_updated'))
+{
+	function phpbb_require_updated($path, $optional = false)
+	{
+		global $phpbb_root_path;
+
+		$new_path = $phpbb_root_path . 'install/update/new/' . $path;
+		$old_path = $phpbb_root_path . $path;
+
+		if (file_exists($new_path))
+		{
+			require($new_path);
+		}
+		else if (!$optional || file_exists($old_path))
+		{
+			require($old_path);
+		}
+	}
+}
+
+function phpbb_end_update($cache)
+{
+	$cache->purge();
+
+?>
+								</p>
+							</div>
+						</div>
+					<span class="corners-bottom"><span></span></span>
+				</div>
+			</div>
+		</div>
+
+		<div id="page-footer">
+			Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
+		</div>
+	</div>
+</body>
+</html>
+
+<?php
+
+	garbage_collection();
+	exit_handler();
+}
+
 phpbb_require_updated('includes/startup.' . $phpEx);
 
 include($phpbb_root_path . 'config.' . $phpEx);
@@ -149,7 +195,7 @@ header('Content-type: text/html; charset=UTF-8');
 
 // Make sure migrations have been installed. If not, install migrations and guess what migrations have been installed
 $db_tools = $phpbb_container->get('dbal.tools');
-if (!$db_tools->sql_table_exists(MIGRATIONS_TABLE))
+if (!$db_tools->sql_table_exists($table_prefix . 'migrations'))
 {
 	$migrations_installer = new phpbb_db_migration_install();
 	$migrations_installer->install($db, $db_tools, $table_prefix, $config['version']);
@@ -196,49 +242,3 @@ if ($orig_version != $config['version'])
 echo $lang['DATABASE_UPDATE_COMPLETE'];
 
 phpbb_end_update($cache);
-
-if (!function_exists('phpbb_require_updated'))
-{
-	function phpbb_require_updated($path, $optional = false)
-	{
-		global $phpbb_root_path;
-
-		$new_path = $phpbb_root_path . 'install/update/new/' . $path;
-		$old_path = $phpbb_root_path . $path;
-
-		if (file_exists($new_path))
-		{
-			require($new_path);
-		}
-		else if (!$optional || file_exists($old_path))
-		{
-			require($old_path);
-		}
-	}
-}
-
-function phpbb_end_update($cache)
-{
-	$cache->purge();
-
-?>
-								</p>
-							</div>
-						</div>
-					<span class="corners-bottom"><span></span></span>
-				</div>
-			</div>
-		</div>
-
-		<div id="page-footer">
-			Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
-		</div>
-	</div>
-</body>
-</html>
-
-<?php
-
-	garbage_collection();
-	exit_handler();
-}
