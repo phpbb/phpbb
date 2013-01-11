@@ -26,6 +26,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->extension_manager = new phpbb_extension_manager(
+			new phpbb_mock_container_builder(),
 			$this->new_dbal(),
 			new phpbb_config(array()),
 			'phpbb_ext',
@@ -90,6 +91,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	public function test_enabled_no_cache()
 	{
 		$extension_manager = new phpbb_extension_manager(
+			new phpbb_mock_container_builder(),
 			$this->new_dbal(),
 			new phpbb_config(array()),
 			'phpbb_ext',

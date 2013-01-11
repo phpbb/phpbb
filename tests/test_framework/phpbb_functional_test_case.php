@@ -137,6 +137,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		if (!$this->extension_manager)
 		{
 			$this->extension_manager = new phpbb_extension_manager(
+				new phpbb_mock_container_builder(),
 				$this->get_db(),
 				new phpbb_config(array()),
 				self::$config['table_prefix'] . 'ext',

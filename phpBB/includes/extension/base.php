@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
 * A base class for extensions without custom enable/disable/purge code.
 *
@@ -22,6 +24,19 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_extension_base implements phpbb_extension_interface
 {
+	/** @var ContainerInterface */
+	protected $container;
+
+	/**
+	* Constructor
+	*
+	* @param ContainerInterface $container Container object
+	*/
+	public function __construct(ContainerInterface $container)
+	{
+		$this->container = $container;
+	}
+
 	/**
 	* Single enable step that does nothing
 	*

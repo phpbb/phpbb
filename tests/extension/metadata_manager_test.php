@@ -48,6 +48,7 @@ class metadata_manager_test extends phpbb_database_test_case
 		);
 
 		$this->extension_manager = new phpbb_extension_manager(
+			new phpbb_mock_container_builder(),
 			$this->db,
 			$this->config,
 			'phpbb_ext',

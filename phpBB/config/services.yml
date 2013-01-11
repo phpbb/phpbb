@@ -112,6 +112,7 @@ services:
     ext.manager:
         class: phpbb_extension_manager
         arguments:
+            - @service_container
             - @dbal.conn
             - @config
             - %tables.ext%

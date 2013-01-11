@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
 * The extension manager provides means to activate/deactivate extensions.
 *
@@ -22,6 +24,9 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_extension_manager
 {
+	/** @var ContainerInterface */
+	protected $container;
+
 	protected $db;
 	protected $config;
 	protected $cache;
@@ -34,6 +39,7 @@ class phpbb_extension_manager
 	/**
 	* Creates a manager and loads information from database
 	*
+	* @param ContainerInterface $container A container
 	* @param phpbb_db_driver $db A database connection
 	* @param phpbb_config $config phpbb_config
 	* @param string $extension_table The name of the table holding extensions
@@ -42,8 +48,9 @@ class phpbb_extension_manager
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
 	{
+		$this->container = $container;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
 		$this->config = $config;
@@ -126,11 +133,11 @@ class phpbb_extension_manager
 
 		if (class_exists($extension_class_name))
 		{
-			return new $extension_class_name;
+			return new $extension_class_name($this->container);
 		}
 		else
 		{
-			return new phpbb_extension_base;
+			return new phpbb_extension_base($this->container);
 		}
 	}
 
