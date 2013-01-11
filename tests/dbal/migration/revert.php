@@ -9,11 +9,6 @@
 
 class phpbb_dbal_migration_revert extends phpbb_db_migration
 {
-	function depends_on()
-	{
-		return array();
-	}
-
 	function update_schema()
 	{
 		return array(
