@@ -77,6 +77,11 @@ class phpbb_test_case_helpers
 		{
 			include($test_config);
 
+			if (!function_exists('phpbb_convert_30_dbms_to_31'))
+			{
+				require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+			}
+
 			$config = array_merge($config, array(
 				'dbms'		=> phpbb_convert_30_dbms_to_31($dbms),
 				'dbhost'	=> $dbhost,
