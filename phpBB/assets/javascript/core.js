@@ -57,7 +57,7 @@ phpbb.clearLoadingTimeout = function() {
  * @param string title Title of the message, eg "Information" (HTML).
  * @param string msg Message to display (HTML).
  * @param bool fadedark Remove the dark background when done? Defaults
- * 	to yes.
+ * to yes.
  *
  * @returns object Returns the div created.
  */
@@ -121,9 +121,9 @@ phpbb.alert = function(title, msg, fadedark) {
  *
  * @param string msg Message to display (HTML).
  * @param function callback Callback. Bool param, whether the user pressed
- * 	yes or no (or whatever their language is).
+ *     yes or no (or whatever their language is).
  * @param bool fadedark Remove the dark background when done? Defaults
- * 	to yes.
+ *     to yes.
  *
  * @returns object Returns the div created.
  */
@@ -232,10 +232,10 @@ phpbb.parseQuerystring = function(string) {
  *
  * @param object options Options.
  * @param bool/function refresh If we are sent back a refresh, should it be
- * 	acted upon? This can either be true / false / a function.
+ *     acted upon? This can either be true / false / a function.
  * @param function callback Callback to call on completion of event. Has
- * 	three parameters: the element that the event was evoked from, the JSON
- * 	that was returned and (if it is a form) the form action.
+ *     three parameters: the element that the event was evoked from, the JSON
+ *     that was returned and (if it is a form) the form action.
  */
 phpbb.ajaxify = function(options) {
 	var elements = $(options.selector),

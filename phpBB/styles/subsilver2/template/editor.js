@@ -179,11 +179,10 @@ function insert_text(text, spaces, popup)
 	{
 		textarea.value = textarea.value + text;
 	}
-	if (!popup) 
+	if (!popup)
 	{
 		textarea.focus();
-	} 	
-
+	}
 }
 
 /**
