@@ -84,6 +84,21 @@ abstract class phpbb_db_migration
 	}
 
 	/**
+	* Allows you to check if the migration is effectively installed (entirely optionall)
+	*
+	* This is checked when a migration is installed. If true is returned, the migration will be set as
+	* installed without performing the database changes.
+	* This function is intended to help moving to migrations from a previous database updater, where some
+	* migrations may have been installed already even though they are not yet listed in the migrations table.
+	*
+	* @return bool True if this migration is installed, False if this migration is not installed (checked on install)
+	*/
+	public function effectively_installed()
+	{
+		return false;
+	}
+
+	/**
 	* Updates the database schema by providing a set of change instructions
 	*
 	* @return array Array of schema changes (compatible with db_tools->perform_schema_changes())

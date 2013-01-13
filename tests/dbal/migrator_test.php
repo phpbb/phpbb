@@ -19,6 +19,7 @@ require_once dirname(__FILE__) . '/migration/recall.php';
 require_once dirname(__FILE__) . '/migration/revert.php';
 require_once dirname(__FILE__) . '/migration/revert_with_dependency.php';
 require_once dirname(__FILE__) . '/migration/fail.php';
+require_once dirname(__FILE__) . '/migration/installed.php';
 
 class phpbb_dbal_migrator_test extends phpbb_database_test_case
 {
@@ -231,6 +232,26 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		if (isset($row['test_column']))
 		{
 			$this->fail('Revert did not remove test_column.');
+		}
+	}
+
+	public function test_installed()
+	{
+		$this->migrator->set_migrations(array('phpbb_dbal_migration_installed'));
+
+		global $migrator_test_installed_failed;
+		$migrator_test_installed_failed = false;
+
+		while (!$this->migrator->finished())
+		{
+			$this->migrator->update();
+		}
+
+		$this->assertTrue($this->migrator->migration_state('phpbb_dbal_migration_installed') !== false);
+
+		if ($migrator_test_installed_failed)
+		{
+			$this->fail('Installed test failed');
 		}
 	}
 }
