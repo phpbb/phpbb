@@ -332,7 +332,7 @@ class phpbb_db_migrator
 			$this->apply_schema_changes($migration->update_schema());
 			$state['migration_schema_done'] = true;
 		}
-		else
+		else if (!$state['migration_data_done'])
 		{
 			try
 			{
