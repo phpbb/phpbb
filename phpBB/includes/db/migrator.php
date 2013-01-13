@@ -127,7 +127,6 @@ class phpbb_db_migrator
 	/**
 	* Load migration data files from a directory
 	*
-	* This does not loop through sub-directories.
 	* Migration data files loaded with this function MUST contain
 	* 	ONLY ONE class in them (or an exception will be thrown).
 	*
@@ -137,9 +136,10 @@ class phpbb_db_migrator
 	* 	If FALSE, we will not check. You SHOULD check at least once
 	* 	to prevent errors (if including multiple directories, check
 	* 	with the last call to prevent throwing errors unnecessarily).
-	* @return array Array of migrations with names
+	* @param bool $recursive Set to true to also load data files from subdirectories
+	* @return array Array of migration names
 	*/
-	public function load_migrations($path, $check_fulfillable = true)
+	public function load_migrations($path, $check_fulfillable = true, $recursive = true)
 	{
 		if (!is_dir($path))
 		{
@@ -149,6 +149,17 @@ class phpbb_db_migrator
 		$handle = opendir($path);
 		while (($file = readdir($handle)) !== false)
 		{
+			if ($file == '.' || $file == '..')
+			{
+				continue;
+			}
+
+			// Recursion through subdirectories
+			if (is_dir($path . $file) && $recursive)
+			{
+				$this->load_migrations($path . $file . '/', $check_fulfillable, $recursive);
+			}
+
 			if (strpos($file, '_') !== 0 && strrpos($file, '.' . $this->php_ext) === (strlen($file) - strlen($this->php_ext) - 1))
 			{
 				// We try to find what class existed by comparing the classes declared before and after including the file.
