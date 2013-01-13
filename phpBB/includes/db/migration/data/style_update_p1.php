@@ -9,6 +9,11 @@
 
 class phpbb_db_migration_data_style_update_p1 extends phpbb_db_migration
 {
+	public function effectively_installed()
+	{
+		return !$this->db_tools->sql_table_exists($this->table_prefix . 'styles_imageset');
+	}
+
 	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_3_0_11');

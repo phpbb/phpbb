@@ -193,13 +193,22 @@ header('Content-type: text/html; charset=UTF-8');
 
 // End startup code
 
-// Make sure migrations have been installed. If not, install migrations and guess what migrations have been installed
+// Make sure migrations have been installed.
 $db_tools = $phpbb_container->get('dbal.tools');
 if (!$db_tools->sql_table_exists($table_prefix . 'migrations'))
 {
-	$migrations_installer = new phpbb_db_migration_install();
-	$migrations_installer->install($db, $db_tools, $table_prefix, $config['version']);
-	unset($migrations_installer);
+	$db_tools->sql_create_table($table_prefix . 'migrations', array(
+		'COLUMNS'		=> array(
+			'migration_name'			=> array('VCHAR', ''),
+			'migration_depends_on'		=> array('TEXT', ''),
+			'migration_schema_done'		=> array('BOOL', 0),
+			'migration_data_done'		=> array('BOOL', 0),
+			'migration_data_state'		=> array('TEXT', ''),
+			'migration_start_time'		=> array('TIMESTAMP', 0),
+			'migration_end_time'		=> array('TIMESTAMP', 0),
+		),
+		'PRIMARY_KEY'	=> 'migration_name',
+	));
 }
 
 $migrator = $phpbb_container->get('migrator');

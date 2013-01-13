@@ -9,6 +9,11 @@
 
 class phpbb_db_migration_data_3_1_0_dev extends phpbb_db_migration
 {
+	public function effectively_installed()
+	{
+		return version_compare($this->config['version'], '3.1.0-dev', '>=');
+	}
+
 	static public function depends_on()
 	{
 		return array(
