@@ -114,6 +114,7 @@ class install_install extends module
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
 				$this->disable_avatars_if_unwritable();
+				$this->populate_migrations($phpbb_container, $phpbb_root_path);
 
 				// Remove the lock file
 				@unlink($phpbb_root_path . 'cache/install_lock');
@@ -1878,6 +1879,12 @@ class install_install extends module
 			set_config('allow_avatar', 0);
 			set_config('allow_avatar_upload', 0);
 		}
+	}
+
+	function populate_migrations($container, $phpbb_root_path)
+	{
+		$migrator = $container->get('migrator');
+		$migrator->populate_migrations_from_directory($phpbb_root_path . 'includes/db/migration/data/');
 	}
 
 	/**
