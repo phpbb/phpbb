@@ -125,6 +125,42 @@ class phpbb_db_migrator
 	}
 
 	/**
+	* This function adds all migrations in a specified directory to the migrations table
+	*
+	* THIS SHOULD NOT GENERALLY BE USED! THIS IS FOR THE PHPBB INSTALLER.
+	* THIS WILL THROW ERRORS IF MIGRATIONS ALREADY EXIST IN THE TABLE, DO NOT CALL MORE THAN ONCE!
+	*
+	* @param string $path Path to migration data files
+	* @param bool $recursive Set to true to also load data files from subdirectories
+	* @return null
+	*/
+	public function populate_migrations_from_directory($path, $recursive = true)
+	{
+		$existing_migrations = $this->migrations;
+
+		$this->migrations = array();
+		$this->load_migrations($path, true, $recursive);
+
+		foreach ($this->migrations as $name)
+		{
+			if ($this->migration_state($name) === false)
+			{
+				$state = array(
+					'migration_depends_on'	=> $name::depends_on(),
+					'migration_schema_done' => true,
+					'migration_data_done'	=> true,
+					'migration_data_state'	=> '',
+					'migration_start_time'	=> time(),
+					'migration_end_time'	=> time(),
+				);
+				$this->insert_migration($name, $state);
+			}
+		}
+
+		$this->migrations = $existing_migrations;
+	}
+
+	/**
 	* Load migration data files from a directory
 	*
 	* Migration data files loaded with this function MUST contain
