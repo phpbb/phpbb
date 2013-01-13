@@ -62,6 +62,7 @@ class phpbb_db_migration_data_3_0_7_rc2 extends phpbb_db_migration
 			return;
 		}
 
+		// Return the next start, will be sent to $start when this function is called again
 		return $start + $limit;
 	}
 }

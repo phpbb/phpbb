@@ -83,6 +83,7 @@ class phpbb_db_migration_data_3_0_11_rc1 extends phpbb_db_migration
 				WHERE ' . $this->db->sql_in_set('msg_id', $delete_pms);
 			$this->sql_query($sql);
 
+			// Return false to have the Migrator call this function again
 			return false;
 		}
 	}
