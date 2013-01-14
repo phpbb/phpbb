@@ -21,6 +21,7 @@ class phpbb_db_migration_data_3_1_0_dev extends phpbb_db_migration
 			'phpbb_db_migration_data_extensions',
 			'phpbb_db_migration_data_style_update_p2',
 			'phpbb_db_migration_data_timezone_p2',
+			'phpbb_db_migration_data_reported_posts_display',
 		);
 	}
 
