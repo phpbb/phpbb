@@ -913,7 +913,10 @@ CREATE TABLE phpbb_reports (
 	report_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
 	reported_post_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
 	reported_post_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	reported_post_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL
+	reported_post_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	reported_post_enable_magic_url INTEGER DEFAULT 1 NOT NULL,
+	reported_post_enable_smilies INTEGER DEFAULT 1 NOT NULL,
+	reported_post_enable_bbcode INTEGER DEFAULT 1 NOT NULL
 );;
 
 ALTER TABLE phpbb_reports ADD PRIMARY KEY (report_id);;

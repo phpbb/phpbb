@@ -1112,7 +1112,10 @@ CREATE TABLE [phpbb_reports] (
 	[report_text] [text] DEFAULT ('') NOT NULL ,
 	[reported_post_text] [text] DEFAULT ('') NOT NULL ,
 	[reported_post_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
-	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL 
+	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[reported_post_enable_magic_url] [int] DEFAULT (1) NOT NULL ,
+	[reported_post_enable_smilies] [int] DEFAULT (1) NOT NULL ,
+	[reported_post_enable_bbcode] [int] DEFAULT (1) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
