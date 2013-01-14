@@ -14,6 +14,11 @@ class phpbb_db_migration_data_310_reported_posts_display extends phpbb_db_migrat
 		return $this->db_tools->sql_column_exists($this->table_prefix . 'reports', 'reported_post_enable_bbcode');
 	}
 
+	static public function depends_on()
+	{
+		return array('phpbb_db_migration_data_30x_3_0_11');
+	}
+
 	public function update_schema()
 	{
 		return array(

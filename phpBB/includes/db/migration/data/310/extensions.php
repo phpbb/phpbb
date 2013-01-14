@@ -16,7 +16,7 @@ class phpbb_db_migration_data_310_extensions extends phpbb_db_migration
 
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_30x_11');
+		return array('phpbb_db_migration_data_30x_3_0_11');
 	}
 
 	public function update_schema()

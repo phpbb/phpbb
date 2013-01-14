@@ -17,7 +17,6 @@ class phpbb_db_migration_data_310_dev extends phpbb_db_migration
 	static public function depends_on()
 	{
 		return array(
-			'phpbb_db_migration_data_30x_11',
 			'phpbb_db_migration_data_310_extensions',
 			'phpbb_db_migration_data_310_style_update_p2',
 			'phpbb_db_migration_data_310_timezone_p2',
