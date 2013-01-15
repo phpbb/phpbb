@@ -196,7 +196,25 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
 				array('loop'),
 				'',
-			),/* no top level nested loops
+			),
+			/* Currently fail on develop:
+			http://tracker.phpbb.com/browse/PHPBB3-11323
+			array(
+				'include_define_variable.html',
+				array('VARIABLE' => 'variable.html'),
+				array(),
+				array(),
+				'variable.html',
+			),
+			array(
+				'include_loop_define.html',
+				array('VARIABLE' => 'value'),
+				array('loop' => array(array('NESTED_FILE' => 'variable.html'))),
+				array(),
+				'value',
+			),
+			*/
+			/* no top level nested loops
 			array(
 				'loop_vars.html',
 				array(),

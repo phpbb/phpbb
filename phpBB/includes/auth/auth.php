@@ -103,6 +103,26 @@ class phpbb_auth
 	}
 
 	/**
+	* Retrieves data wanted by acl function from the database for the
+	* specified user.
+	*
+	* @param int $user_id User ID
+	* @return array User attributes
+	*/
+	public function obtain_user_data($user_id)
+	{
+		global $db;
+
+		$sql = 'SELECT user_id, username, user_permissions, user_type
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . $user_id;
+		$result = $db->sql_query($sql);
+		$user_data = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		return $user_data;
+	}
+
+	/**
 	* Fill ACL array with relevant bitstrings from user_permissions column
 	* @access private
 	*/
@@ -191,7 +211,7 @@ class phpbb_auth
 
 	/**
 	* Get forums with the specified permission setting
-	* if the option is prefixed with !, then the result becomes nagated
+	* if the option is prefixed with !, then the result becomes negated
 	*
 	* @param bool $clean set to true if only values needs to be returned which are set/unset
 	*/

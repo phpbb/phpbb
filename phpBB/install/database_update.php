@@ -73,6 +73,10 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 	die("Please read: <a href='../docs/INSTALL.html'>INSTALL.html</a> before attempting to update.");
 }
 
+// In case $phpbb_adm_relative_path is not set (in case of an update), use the default.
+$phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relative_path : 'adm/';
+$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
+
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 
@@ -117,18 +121,7 @@ $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_pat
 $phpbb_class_loader_ext->register();
 
 // Set up container
-$phpbb_container = phpbb_create_dumped_container_unless_debug(
-	array(
-		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
-		new phpbb_di_extension_core($phpbb_root_path),
-	),
-	array(
-		new phpbb_di_pass_collection_pass(),
-		new phpbb_di_pass_kernel_pass(),
-	),
-	$phpbb_root_path,
-	$phpEx
-);
+$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
@@ -152,7 +145,8 @@ if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
 	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
-	foreach ($cache->obtain_hooks() as $hook)
+	$phpbb_hook_finder = $phpbb_container->get('hook_finder');
+	foreach ($phpbb_hook_finder->find() as $hook)
 	{
 		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 	}
@@ -205,7 +199,7 @@ include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
 $inline_update = (request_var('type', 0)) ? true : false;
 
 // To let set_config() calls succeed, we need to make the config array available globally
-$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
+$config = new phpbb_config_db($db, $phpbb_container->get('cache.driver'), CONFIG_TABLE);
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
@@ -243,7 +237,7 @@ if ($has_global && !$ga_forum_id)
 
 	<title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
-	<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="<?php echo htmlspecialchars($phpbb_admin_path); ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 	</head>
 
@@ -293,7 +287,7 @@ header('Content-type: text/html; charset=UTF-8');
 
 <title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
-<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="<?php echo htmlspecialchars($phpbb_admin_path); ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 </head>
 
@@ -592,7 +586,7 @@ else
 add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 
 // Now we purge the session table as well as all cache files
-$cache->purge();
+$phpbb_container->get('cache.driver')->purge();
 
 _print_footer();
 
@@ -1237,9 +1231,12 @@ function database_update_info()
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
 				REPORTS_TABLE		=> array(
-					'reported_post_text'		=> array('MTEXT_UNI', ''),
-					'reported_post_uid'			=> array('VCHAR:8', ''),
-					'reported_post_bitfield'	=> array('VCHAR:255', ''),
+					'reported_post_text'				=> array('MTEXT_UNI', ''),
+					'reported_post_uid'					=> array('VCHAR:8', ''),
+					'reported_post_bitfield'			=> array('VCHAR:255', ''),
+					'reported_post_enable_bbcode'		=> array('BOOL', 1),
+					'reported_post_enable_smilies'		=> array('BOOL', 1),
+					'reported_post_enable_magic_url'	=> array('BOOL', 1),
 				),
 			),
 			'change_columns'	=> array(
@@ -1261,7 +1258,7 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $db_tools;
+	global $db, $db_tools, $errored, $error_ary, $config, $table_prefix, $phpbb_root_path, $phpEx;
 
 	$update_helpers = new phpbb_update_helpers();
 
@@ -1577,8 +1574,6 @@ function change_database_data(&$no_updates, $version)
 					ACL_OPTIONS_TABLE		=> array('auth_option'),
 				),
 			);
-
-			global $db_tools;
 
 			$statements = $db_tools->perform_schema_changes($changes);
 
@@ -2221,26 +2216,41 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
-			global $db_tools, $table_prefix;
-
-			// Recover from potentially broken Q&A CAPTCHA table on firebird
-			// Q&A CAPTCHA was uninstallable, so it's safe to remove these
-			// without data loss
+			/*
+			* Due to a bug, vanilla phpbb could not create captcha tables
+			* in 3.0.8 on firebird. It was possible for board administrators
+			* to adjust the code to work. If code was manually adjusted by
+			* board administrators, index names would not be the same as
+			* what 3.0.9 and newer expect. This code fragment drops captcha
+			* tables, destroying all entered Q&A captcha configuration, such
+			* that when Q&A is configured next the respective tables will be
+			* created with correct index names.
+			*
+			* If you wish to preserve your Q&A captcha configuration, you can
+			* manually rename indexes to the currently expected name:
+			* 	phpbb_captcha_questions_lang_iso	=> phpbb_captcha_questions_lang
+			* 	phpbb_captcha_answers_question_id	=> phpbb_captcha_answers_qid
+			*
+			* Again, this needs to be done only if a board was manually modified
+			* to fix broken captcha code.
+			*
 			if ($db_tools->sql_layer == 'firebird')
 			{
-				$tables = array(
-					$table_prefix . 'captcha_questions',
-					$table_prefix . 'captcha_answers',
-					$table_prefix . 'qa_confirm',
+				$changes = array(
+					'drop_tables'	=> array(
+						$table_prefix . 'captcha_questions',
+						$table_prefix . 'captcha_answers',
+						$table_prefix . 'qa_confirm',
+					),
 				);
-				foreach ($tables as $table)
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
 				{
-					if ($db_tools->sql_table_exists($table))
-					{
-						$db_tools->sql_table_drop($table);
-					}
+					_sql($sql, $errored, $error_ary);
 				}
 			}
+			*/
 
 			$no_updates = false;
 		break;
@@ -2950,7 +2960,11 @@ function change_database_data(&$no_updates, $version)
 				set_config('board_timezone', $update_helpers->convert_phpbb30_timezone($config['board_timezone'], $config['board_dst']));
 
 				// After we have calculated the timezones we can delete user_dst column from user table.
-				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
+				$statements = $db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
+				foreach ($statements as $sql)
+				{
+					_sql($sql, $errored, $error_ary);
+				}
 			}
 
 			if (!isset($config['site_home_url']))
@@ -3046,6 +3060,7 @@ function change_database_data(&$no_updates, $version)
 				_sql($sql, $errored, $error_ary);
 			}
 			$db->sql_freeresult($result);
+			
 
 			// Add new permissions
 			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);

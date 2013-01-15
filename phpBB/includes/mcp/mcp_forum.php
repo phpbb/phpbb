@@ -430,12 +430,16 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		// Message and return links
 		$success_msg = 'POSTS_MERGED_SUCCESS';
 
-		// Update the topic watch table.
 		if (!function_exists('phpbb_update_rows_avoiding_duplicates_notify_status'))
 		{
 			include($phpbb_root_path . 'includes/functions_database_helper.' . $phpEx);
 		}
+
+		// Update the topic watch table.
 		phpbb_update_rows_avoiding_duplicates_notify_status($db, TOPICS_WATCH_TABLE, 'topic_id', $topic_ids, $to_topic_id);
+
+		// Update the bookmarks table.
+		phpbb_update_rows_avoiding_duplicates($db, BOOKMARKS_TABLE, 'topic_id', $topic_ids, $to_topic_id);
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');

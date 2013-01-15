@@ -28,7 +28,7 @@
 <!-- IF S_HAS_SUBFORUM -->
 <!-- IF not S_IS_BOT and U_MARK_FORUMS -->
 <ul class="linklist">
-	<li class="rightside"><a href="{U_MARK_FORUMS}">{L_MARK_SUBFORUMS_READ}</a></li>
+	<li class="rightside"><a href="{U_MARK_FORUMS}" data-ajax="mark_forums_read" data-overlay="false">{L_MARK_SUBFORUMS_READ}</a></li>
 </ul>
 <!-- ENDIF -->
 	<!-- INCLUDE forumlist_body.html -->
@@ -57,7 +57,7 @@
 
 	<!-- IF .pagination or TOTAL_POSTS or TOTAL_TOPICS -->
 		<div class="pagination">
-			<!-- IF not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}" accesskey="m" data-ajax="true">{L_MARK_TOPICS_READ}</a> &bull; <!-- ENDIF -->
+			<!-- IF not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}" accesskey="m" data-ajax="mark_topics_read" data-overlay="false">{L_MARK_TOPICS_READ}</a> &bull; <!-- ENDIF -->
 			<!-- IF TOTAL_TOPICS -->{TOTAL_TOPICS} &bull; <!-- ENDIF -->
 			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
@@ -211,7 +211,7 @@
 
 		<!-- IF PAGE_NUMBER or TOTAL_POSTS or TOTAL_TOPICS -->
 		<div class="pagination">
-			<!-- IF TOTAL_TOPICS and not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}">{L_MARK_TOPICS_READ}</a> &bull;  <!-- ENDIF -->
+			<!-- IF TOTAL_TOPICS and not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}" data-ajax="mark_topics_read" data-overlay="false">{L_MARK_TOPICS_READ}</a> &bull;  <!-- ENDIF -->
 			<!-- IF TOTAL_POSTS and not NEWEST_USER --> {TOTAL_POSTS}<!-- ELSEIF TOTAL_TOPICS and not NEWEST_USER --> {TOTAL_TOPICS} &bull; <!-- ENDIF -->
 			<!-- IF TOTAL_USERS -->{TOTAL_USERS} &bull; <!-- ENDIF -->
 			<!-- IF .pagination -->
