@@ -319,7 +319,7 @@ phpbb.ajaxify = function(options) {
 			}
 			else
 			{
-				// If confirmation is required, display a diologue to the user.
+				// If confirmation is required, display a dialog to the user.
 				phpbb.confirm(res.MESSAGE_BODY, function(del) {
 					if (del)
 					{
