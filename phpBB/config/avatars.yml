@@ -3,7 +3,6 @@ services:
         class: phpbb_avatar_driver_gravatar
         arguments:
             - @config
-            - @request
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
@@ -16,7 +15,6 @@ services:
         class: phpbb_avatar_driver_local
         arguments:
             - @config
-            - @request
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
@@ -29,7 +27,6 @@ services:
         class: phpbb_avatar_driver_remote
         arguments:
             - @config
-            - @request
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
@@ -42,7 +39,6 @@ services:
         class: phpbb_avatar_driver_upload
         arguments:
             - @config
-            - @request
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
