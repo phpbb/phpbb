@@ -498,9 +498,9 @@ $('#notification_list_button').click(function(e) {
 	e.preventDefault();
 });
 $('#phpbb').click(function(e) {
-    var target = e.target;
+    var target = $(e.target);
 
-    if (!$(target).is('#notification_list') && !$(target).is('#notification_list_button') && !$(target).parents().is('#notification_list')) {
+    if (!target.is('#notification_list') && !target.is('#notification_list_button') && !target.parents().is('#notification_list')) {
         $('#notification_list').hide();
     }
 });
