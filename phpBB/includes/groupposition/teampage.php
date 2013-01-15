@@ -88,6 +88,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	*/
 	public function get_group_value($group_id)
 	{
+		// The join is required to ensure that the group itself exists
 		$sql = 'SELECT g.group_id, t.teampage_position
 			FROM ' . GROUPS_TABLE . ' g
 			LEFT JOIN ' . TEAMPAGE_TABLE . ' t
@@ -114,6 +115,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	*/
 	public function get_group_values($group_id)
 	{
+		// The join is required to ensure that the group itself exists
 		$sql = 'SELECT *
 			FROM ' . GROUPS_TABLE . ' g
 			LEFT JOIN ' . TEAMPAGE_TABLE . ' t
