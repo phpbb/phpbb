@@ -67,11 +67,11 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	* @param phpbb_user_loader $user_loader
 	* @param phpbb_db_driver $db
 	* @param phpbb_cache_driver_interface $cache
-	* @param mixed $user
+	* @param phpbb_user $user
 	* @param phpbb_auth $auth
 	* @param phpbb_config $config
-	* @param mixed $phpbb_root_path
-	* @param mixed $php_ext
+	* @param string $phpbb_root_path
+	* @param string $php_ext
 	* @return phpbb_notification_method_base
 	*/
 	public function __construct(phpbb_user_loader $user_loader, phpbb_db_driver $db, phpbb_cache_driver_interface $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
