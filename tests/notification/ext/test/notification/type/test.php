@@ -39,7 +39,7 @@ class phpbb_notification_type_test extends phpbb_notification_type_base
 
 	public function create_insert_array($post, $pre_create_data = array())
 	{
-		$this->time = $post['post_time'];
+		$this->notification_time = $post['post_time'];
 
 		return parent::create_insert_array($post, $pre_create_data);
 	}
@@ -51,7 +51,7 @@ class phpbb_notification_type_test extends phpbb_notification_type_base
 		// Unset data unique to each row
 		unset(
 			$data['notification_id'],
-			$data['unread'],
+			$data['notification_read'],
 			$data['user_id']
 		);
 

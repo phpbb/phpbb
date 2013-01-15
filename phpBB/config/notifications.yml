@@ -25,8 +25,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -42,8 +45,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -59,8 +65,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -76,8 +85,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -93,8 +105,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -110,8 +125,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -127,8 +145,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -144,8 +165,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -161,8 +185,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -178,8 +205,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -195,8 +225,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -212,8 +245,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -229,8 +265,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -246,8 +285,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -263,8 +305,11 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.type }
 
@@ -280,6 +325,8 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.method }
 
@@ -295,5 +342,7 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+        calls:
+            - [set_notification_manager, [@notification_manager]]
         tags:
             - { name: notification.method }

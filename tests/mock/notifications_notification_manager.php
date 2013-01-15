@@ -44,7 +44,7 @@ class phpbb_mock_notifications_notification_manager extends phpbb_notification_m
 	{
 		$item_type = 'phpbb_notification_type_' . $item_type;
 
-		$item = new $item_type($this->user_loader, $this->db, $this->cache, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notifications_table, $this->user_notifications_table);
+		$item = new $item_type($this->user_loader, $this->db, $this->cache, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, $this->notifications_table, $this->user_notifications_table);
 
 		$item->set_notification_manager($this);
 
@@ -60,7 +60,7 @@ class phpbb_mock_notifications_notification_manager extends phpbb_notification_m
 	{
 		$method_name = 'phpbb_notification_method_' . $method_name;
 
-		$method = new $method_name($this->user_loader, $this->db, $this->cache, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notifications_table, $this->user_notifications_table);
+		$method = new $method_name($this->user_loader, $this->db, $this->cache, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, $this->notifications_table, $this->user_notifications_table);
 
 		$method->set_notification_manager($this);
 

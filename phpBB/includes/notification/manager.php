@@ -22,38 +22,54 @@ if (!defined('IN_PHPBB'))
 class phpbb_notification_manager
 {
 	/** @var array */
-	protected $notification_types = null;
+	protected $notification_types;
 
 	/** @var array */
-	protected $notification_methods = null;
+	protected $notification_methods;
 
 	/** @var ContainerBuilder */
-	protected $phpbb_container = null;
+	protected $phpbb_container;
 
 	/** @var phpbb_user_loader */
-	protected $user_loader = null;
+	protected $user_loader;
 
 	/** @var phpbb_db_driver */
-	protected $db = null;
+	protected $db;
 
 	/** @var phpbb_user */
-	protected $user = null;
+	protected $user;
 
 	/** @var string */
-	protected $phpbb_root_path = null;
+	protected $phpbb_root_path;
 
 	/** @var string */
-	protected $php_ext = null;
+	protected $php_ext;
 
 	/** @var string */
-	protected $notification_types_table = null;
+	protected $notification_types_table;
 
 	/** @var string */
-	protected $notifications_table = null;
+	protected $notifications_table;
 
 	/** @var string */
-	protected $user_notifications_table = null;
+	protected $user_notifications_table;
 
+	/**
+	* Notification Constructor
+	* 
+	* @param array $notification_types
+	* @param array $notification_methods
+	* @param ContainerBuilder $phpbb_container
+	* @param phpbb_user_loader $user_loader
+	* @param phpbb_db_driver $db
+	* @param phpbb_user $user
+	* @param string $phpbb_root_path
+	* @param string $php_ext
+	* @param string $notification_types_table
+	* @param string $notifications_table
+	* @param string $user_notifications_table
+	* @return phpbb_notification_manager
+	*/
 	public function __construct($notification_types, $notification_methods, $phpbb_container, phpbb_user_loader $user_loader, phpbb_db_driver $db, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
@@ -78,7 +94,7 @@ class phpbb_notification_manager
 	* @param array $options Optional options to control what notifications are loaded
 	*				notification_id		Notification id to load (or array of notification ids)
 	*				user_id				User id to load notifications for (Default: $user->data['user_id'])
-	*				order_by			Order by (Default: time)
+	*				order_by			Order by (Default: notification_time)
 	*				order_dir			Order direction (Default: DESC)
 	* 				limit				Number of notifications to load (Default: 5)
 	* 				start				Notifications offset (Default: 0)

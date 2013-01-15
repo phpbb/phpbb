@@ -22,37 +22,37 @@ if (!defined('IN_PHPBB'))
 abstract class phpbb_notification_method_base implements phpbb_notification_method_interface
 {
 	/** @var phpbb_notification_manager */
-	protected $notification_manager = null;
+	protected $notification_manager;
 
 	/** @var phpbb_user_loader */
-	protected $user_loader = null;
+	protected $user_loader;
 
 	/** @var phpbb_db_driver */
-	protected $db = null;
+	protected $db;
 
 	/** @var phpbb_cache_service */
-	protected $cache = null;
+	protected $cache;
 
 	/** @var phpbb_template */
-	protected $template = null;
+	protected $template;
 
 	/** @var phpbb_extension_manager */
-	protected $extension_manager = null;
+	protected $extension_manager;
 
 	/** @var phpbb_user */
-	protected $user = null;
+	protected $user;
 
 	/** @var phpbb_auth */
-	protected $auth = null;
+	protected $auth;
 
 	/** @var phpbb_config */
-	protected $config = null;
+	protected $config;
 
 	/** @var string */
-	protected $phpbb_root_path = null;
+	protected $phpbb_root_path;
 
 	/** @var string */
-	protected $php_ext = null;
+	protected $php_ext;
 
 	/**
 	* Queue of messages to be sent
@@ -61,6 +61,19 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	*/
 	protected $queue = array();
 
+	/**
+	* Notification Method Base Constructor
+	* 
+	* @param phpbb_user_loader $user_loader
+	* @param phpbb_db_driver $db
+	* @param phpbb_cache_driver_interface $cache
+	* @param mixed $user
+	* @param phpbb_auth $auth
+	* @param phpbb_config $config
+	* @param mixed $phpbb_root_path
+	* @param mixed $php_ext
+	* @return phpbb_notification_method_base
+	*/
 	public function __construct(phpbb_user_loader $user_loader, phpbb_db_driver $db, phpbb_cache_driver_interface $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->user_loader = $user_loader;
@@ -73,6 +86,11 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 		$this->php_ext = $php_ext;
 	}
 
+	/**
+	* Set notification manager (required)
+	* 
+	* @param phpbb_notification_manager $notification_manager
+	*/
 	public function set_notification_manager(phpbb_notification_manager $notification_manager)
 	{
 		$this->notification_manager = $notification_manager;

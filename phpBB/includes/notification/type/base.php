@@ -22,40 +22,43 @@ if (!defined('IN_PHPBB'))
 abstract class phpbb_notification_type_base implements phpbb_notification_type_interface
 {
 	/** @var phpbb_notification_manager */
-	protected $notification_manager = null;
+	protected $notification_manager;
 
 	/** @var phpbb_user_loader */
-	protected $user_loader = null;
+	protected $user_loader;
 
 	/** @var phpbb_db_driver */
-	protected $db = null;
+	protected $db;
 
 	/** @var phpbb_cache_service */
-	protected $cache = null;
+	protected $cache;
 
 	/** @var phpbb_template */
-	protected $template = null;
+	protected $template;
 
 	/** @var phpbb_user */
-	protected $user = null;
+	protected $user;
 
 	/** @var phpbb_auth */
-	protected $auth = null;
+	protected $auth;
 
 	/** @var phpbb_config */
-	protected $config = null;
+	protected $config;
 
 	/** @var string */
-	protected $phpbb_root_path = null;
+	protected $phpbb_root_path;
 
 	/** @var string */
-	protected $php_ext = null;
+	protected $php_ext;
 
 	/** @var string */
-	protected $notifications_table = null;
+	protected $notification_types_table;
 
 	/** @var string */
-	protected $user_notifications_table = null;
+	protected $notifications_table;
+
+	/** @var string */
+	protected $user_notifications_table;
 
 	/**
 	* Notification option data (for outputting to the user)
@@ -80,7 +83,23 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*/
 	private $data = array();
 
-	public function __construct(phpbb_user_loader $user_loader, phpbb_db_driver $db, phpbb_cache_driver_interface $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext, $notifications_table, $user_notifications_table)
+	/**
+	* Notification Type Base Constructor
+	* 
+	* @param phpbb_user_loader $user_loader
+	* @param phpbb_db_driver $db
+	* @param phpbb_cache_driver_interface $cache
+	* @param phpbb_user $user
+	* @param phpbb_auth $auth
+	* @param phpbb_config $config
+	* @param string $phpbb_root_path
+	* @param string $php_ext
+	* @param string $notification_types_table
+	* @param string $notifications_table
+	* @param string $user_notifications_table
+	* @return phpbb_notification_type_base
+	*/
+	public function __construct(phpbb_user_loader $user_loader, phpbb_db_driver $db, phpbb_cache_driver_interface $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;
@@ -92,10 +111,16 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
+		$this->notification_types_table = $notification_types_table;
 		$this->notifications_table = $notifications_table;
 		$this->user_notifications_table = $user_notifications_table;
 	}
 
+	/**
+	* Set notification manager (required)
+	* 
+	* @param phpbb_notification_manager $notification_manager
+	*/
 	public function set_notification_manager(phpbb_notification_manager $notification_manager)
 	{
 		$this->notification_manager = $notification_manager;
@@ -113,16 +138,38 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		$this->data['notification_data'] = (isset($this->data['notification_data'])) ? unserialize($this->data['notification_data']) : array();
 	}
 
+	/**
+	* Magic method to get data from this notification
+	* 
+	* @param mixed $name
+	* @return mixed
+	*/
 	public function __get($name)
 	{
 		return (!isset($this->data[$name])) ? null : $this->data[$name];
 	}
 
+
+	/**
+	* Magic method to set data on this notification
+	* 
+	* @param mixed $name
+	* @return mixed
+	*/
 	public function __set($name, $value)
 	{
 		$this->data[$name] = $value;
 	}
 
+
+	/**
+	* Magic method to get a string of this notification
+	* 
+	* Primarily for testing
+	* 
+	* @param string $name
+	* @return mixed
+	*/
 	public function __toString()
 	{
 		return (!empty($this->data)) ? var_export($this->data, true) : $this->get_type();
@@ -132,7 +179,6 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* Get special data (only important for the classes that extend this)
 	*
 	* @param string $name Name of the variable to get
-	*
 	* @return mixed
 	*/
 	protected function get_data($name)
@@ -157,7 +203,6 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*
 	* @param array $type_data Data unique to this notification type
 	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
 	* @return array Array of data ready to be inserted into the database
 	*/
 	public function create_insert_array($type_data, $pre_create_data = array())
@@ -186,7 +231,6 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* (The service handles insertion)
 	*
 	* @param array $type_data Data unique to this notification type
-	*
 	* @return array Array of data ready to be updated in the database
 	*/
 	public function create_update_array($type_data)
@@ -208,7 +252,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* Mark this item read
 	*
 	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
-	* @return string
+	* @return string|null If $return is False, nothing will be returned, else the sql code to update this item
 	*/
 	public function mark_read($return = false)
 	{
@@ -219,7 +263,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* Mark this item unread
 	*
 	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
-	* @return string
+	* @return string|null If $return is False, nothing will be returned, else the sql code to update this item
 	*/
 	public function mark_unread($return = false)
 	{
@@ -228,6 +272,8 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Prepare to output the notification to the template
+	* 
+	* @return array Template variables
 	*/
 	public function prepare_for_display()
 	{
@@ -274,6 +320,8 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Get the user's avatar (fall back)
+	* 
+	* @return string
 	*/
 	public function get_avatar()
 	{
@@ -282,6 +330,8 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Get the special items to load (fall back)
+	* 
+	* @return array
 	*/
 	public function get_load_special()
 	{
@@ -298,6 +348,8 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Is available (fall back)
+	* 
+	* @return bool
 	*/
 	public function is_available()
 	{
@@ -306,6 +358,8 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Pre create insert array function (fall back)
+	* 
+	* @return array
 	*/
 	public function pre_create_insert_array($type_data, $notify_users)
 	{
@@ -398,7 +452,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*
 	* @param bool $unread Unread (True/False) (Default: False)
 	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
-	* @return string
+	* @return string|null If $return is False, nothing will be returned, else the sql code to update this item
 	*/
 	protected function mark($unread = true, $return = false)
 	{

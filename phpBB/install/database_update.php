@@ -101,6 +101,10 @@ if (!defined('NOTIFICATION_TYPES_TABLE'))
 {
 	define('NOTIFICATION_TYPES_TABLE', $table_prefix . 'notification_types');
 }
+if (!defined('NOTIFICATIONS_TYPES_TABLE'))
+{
+	define('NOTIFICATIONS_TYPES_TABLE', $table_prefix . 'notifications_types');
+}
 if (!defined('NOTIFICATIONS_TABLE'))
 {
 	define('NOTIFICATIONS_TABLE', $table_prefix . 'notifications');

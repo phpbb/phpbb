@@ -6,7 +6,7 @@
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
-//calls: [ [set_notification_manager, [@notification_manager]] ]
+
 class phpbb_notification_test extends phpbb_database_test_case
 {
 	protected $notifications, $db, $container, $user, $config, $auth, $cache;
@@ -52,6 +52,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 			$this->user,
 			$phpbb_root_path,
 			$phpEx,
+			'phpbb_notification_types',
 			'phpbb_notifications',
 			'phpbb_user_notifications'
 		);
@@ -91,7 +92,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		return new $type($this->user_loader, $this->db, $this->cache, $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notifications', 'phpbb_user_notifications');
+		return new $type($this->user_loader, $this->db, $this->cache, $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_notifications', 'phpbb_user_notifications');
 	}
 
 	public function test_get_subscription_types()
