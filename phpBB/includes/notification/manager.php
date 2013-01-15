@@ -841,6 +841,13 @@ class phpbb_notification_manager
 	*/
 	protected function load_object($object_name)
 	{
-		return $this->phpbb_container->get($object_name);
+		$object = $this->phpbb_container->get($object_name);
+		
+		if (method_exists($object, 'set_notification_manager'))
+		{
+			$object->set_notification_manager($this);
+		}
+		
+		return $object;
 	}
 }
