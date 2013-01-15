@@ -46,3 +46,10 @@ services:
             - [set_name, [avatar.driver.upload]]
         tags:
             - { name: avatar.driver }
+
+    avatar.driver_collection:
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: avatar.driver }

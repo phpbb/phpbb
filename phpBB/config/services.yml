@@ -7,13 +7,6 @@ services:
     auth:
         class: phpbb_auth
 
-    avatar.driver_collection:
-        class: phpbb_di_service_collection
-        arguments:
-            - @service_container
-        tags:
-            - { name: service_collection, tag: avatar.driver }
-
     avatar.manager:
         class: phpbb_avatar_manager
         arguments:
