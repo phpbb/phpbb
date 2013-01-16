@@ -1695,8 +1695,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// The variable name should be $post_approved, because it indicates if the post is approved or not
 	$post_approval = 1;
 
-	// Check the permissions for post approval. Moderators are not affected.
-	if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
+	// Check the permissions for post approval.
+	// Moderators must go through post approval like ordinary users.
+	if (!$auth->acl_get('f_noapprove', $data['forum_id']))
 	{
 		// Post not approved, but in queue
 		$post_approval = 0;

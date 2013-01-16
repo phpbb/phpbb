@@ -476,10 +476,14 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			$tmp_sql_match[] = "to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', " . $sql_match_column . ") @@ to_tsquery ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', '" . $this->db->sql_escape($this->tsearch_query) . "')";
 		}
 
+		$this->db->sql_transaction('begin');
+
+		$sql_from = "FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p";
+		$sql_where = "WHERE (" . implode(' OR ', $tmp_sql_match) . ")
+			$sql_where_options";
 		$sql = "SELECT $sql_select
-			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
-			WHERE (" . implode(' OR ', $tmp_sql_match) . ")
-			$sql_where_options
+			$sql_from
+			$sql_where
 			ORDER BY $sql_sort";
 		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
@@ -499,13 +503,20 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count)
 		{
-			$result_count = sizeof ($id_ary);
+			$sql_count = "SELECT COUNT(*) as result_count
+				$sql_from
+				$sql_where";
+			$result = $this->db->sql_query($sql_count);
+			$result_count = (int) $this->db->sql_fetchfield('result_count');
+			$this->db->sql_freeresult($result);
 
 			if (!$result_count)
 			{
 				return false;
 			}
 		}
+
+		$this->db->sql_transaction('commit');
 
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
 		$this->save_ids($search_key, implode(' ', $this->split_words), $author_ary, $result_count, $id_ary, $start, $sort_dir);
@@ -647,6 +658,8 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			$field = 'topic_id';
 		}
 
+		$this->db->sql_transaction('begin');
+
 		// Only read one block of posts from the db and then cache it
 		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
@@ -659,13 +672,43 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		// retrieve the total result count if needed
 		if (!$result_count)
 		{
-			$result_count = sizeof ($id_ary);
+			if ($type == 'posts')
+			{
+				$sql_count = "SELECT COUNT(*) as result_count
+					FROM " . $sql_sort_table . POSTS_TABLE . ' p' . (($firstpost_only) ? ', ' . TOPICS_TABLE . ' t ' : ' ') . "
+					WHERE $sql_author
+						$sql_topic_id
+						$sql_firstpost
+						$m_approve_fid_sql
+						$sql_fora
+						$sql_sort_join
+						$sql_time";
+			}
+			else
+			{
+				$sql_count = "SELECT COUNT(*) as result_count
+					FROM " . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+					WHERE $sql_author
+						$sql_topic_id
+						$sql_firstpost
+						$m_approve_fid_sql
+						$sql_fora
+						AND t.topic_id = p.topic_id
+						$sql_sort_join
+						$sql_time
+					GROUP BY t.topic_id, $sort_by_sql[$sort_key]";
+			}
+
+			$result = $this->db->sql_query($sql_count);
+			$result_count = (int) $this->db->sql_fetchfield('result_count');
 
 			if (!$result_count)
 			{
 				return false;
 			}
 		}
+
+		$this->db->sql_transaction('commit');
 
 		if (sizeof($id_ary))
 		{

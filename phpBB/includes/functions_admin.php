@@ -2292,13 +2292,17 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 }
 
 /**
-* Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
-* and group names must be carried through for the moderators table
+* Cache moderators. Called whenever permissions are changed
+* via admin_permissions. Changes of usernames and group names
+* must be carried through for the moderators table.
+*
+* @param phpbb_db_driver $db Database connection
+* @param phpbb_cache_driver_interface Cache driver
+* @param phpbb_auth $auth Authentication object
+* @return null
 */
-function cache_moderators()
+function phpbb_cache_moderators($db, $cache, $auth)
 {
-	global $db, $cache, $auth, $phpbb_root_path, $phpEx;
-
 	// Remove cached sql results
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
@@ -2469,6 +2473,20 @@ function cache_moderators()
 }
 
 /**
+* Cache moderators. Called whenever permissions are changed
+* via admin_permissions. Changes of usernames and group names
+* must be carried through for the moderators table.
+*
+* @deprecated 3.1
+* @return null
+*/
+function cache_moderators()
+{
+	global $db, $cache, $auth;
+	return phpbb_cache_moderators($db, $cache, $auth);
+}
+
+/**
 * View log
 *
 * @param	string	$mode			The mode defines which log_type is used and in which log the entry is displayed.
@@ -2499,12 +2517,16 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 }
 
 /**
-* Update foes - remove moderators and administrators from foe lists...
+* Removes moderators and administrators from foe lists.
+*
+* @param phpbb_db_driver $db Database connection
+* @param phpbb_auth $auth Authentication object
+* @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
+* @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
+* @return null
 */
-function update_foes($group_id = false, $user_id = false)
+function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
 {
-	global $db, $auth;
-
 	// update foes for some user
 	if (is_array($user_id) && sizeof($user_id))
 	{
@@ -2611,6 +2633,20 @@ function update_foes($group_id = false, $user_id = false)
 		$db->sql_query($sql);
 	}
 	unset($perms);
+}
+
+/**
+* Removes moderators and administrators from foe lists.
+*
+* @deprecated 3.1
+* @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
+* @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
+* @return null
+*/
+function update_foes($group_id = false, $user_id = false)
+{
+	global $db, $auth;
+	return phpbb_update_foes($db, $auth, $group_id, $user_id);
 }
 
 /**

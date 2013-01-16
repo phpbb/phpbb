@@ -3,14 +3,19 @@
 
 <div id="wrapfooter">
 	<!-- IF U_ACP --><span class="gensmall">[ <a href="{U_ACP}">{L_ACP}</a> ]</span><br /><br /><!-- ENDIF -->
-	<span class="copyright">{CREDIT_LINE}
+	<span class="copyright">
+	<!-- EVENT overall_footer_copyright_prepend -->
+	{CREDIT_LINE}
 	<!-- IF TRANSLATION_INFO --><br />{TRANSLATION_INFO}<!-- ENDIF -->
+	<!-- EVENT overall_footer_copyright_append -->
 	<!-- IF DEBUG_OUTPUT --><br /><bdo dir="ltr">[ {DEBUG_OUTPUT} ]</bdo><!-- ENDIF --></span>
 </div>
 
 <script type="text/javascript" src="{T_JQUERY_LINK}"></script>
 <!-- IF S_JQUERY_FALLBACK --><script type="text/javascript">window.jQuery || document.write(unescape('%3Cscript src="{T_ASSETS_PATH}/javascript/jquery.js?assets_version={T_ASSETS_VERSION}" type="text/javascript"%3E%3C/script%3E'));</script><!-- ENDIF -->
+<script type="text/javascript" src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
 {SCRIPTS}
 
+<!-- EVENT overall_footer_after -->
 </body>
 </html>

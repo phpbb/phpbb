@@ -855,8 +855,11 @@ CREATE TABLE phpbb_reports (
 	report_time INT4 DEFAULT '0' NOT NULL CHECK (report_time >= 0),
 	report_text TEXT DEFAULT '' NOT NULL,
 	reported_post_text TEXT DEFAULT '' NOT NULL,
-	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
 	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
+	reported_post_enable_magic_url INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_magic_url >= 0),
+	reported_post_enable_smilies INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_smilies >= 0),
+	reported_post_enable_bbcode INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_bbcode >= 0),
 	PRIMARY KEY (report_id)
 );
 
@@ -1179,7 +1182,6 @@ CREATE TABLE phpbb_users (
 	user_icq varchar(15) DEFAULT '' NOT NULL,
 	user_aim varchar(255) DEFAULT '' NOT NULL,
 	user_yim varchar(255) DEFAULT '' NOT NULL,
-	user_msnm varchar(255) DEFAULT '' NOT NULL,
 	user_jabber varchar(255) DEFAULT '' NOT NULL,
 	user_website varchar(200) DEFAULT '' NOT NULL,
 	user_occ varchar(4000) DEFAULT '' NOT NULL,

@@ -287,13 +287,6 @@ switch ($mode)
 				$s_action = '';
 			break;
 
-			case 'msnm':
-				$lang = 'MSNM';
-				$sql_field = 'user_msnm';
-				$s_select = 'S_SEND_MSNM';
-				$s_action = '';
-			break;
-
 			case 'jabber':
 				$lang = 'JABBER';
 				$sql_field = 'user_jabber';
@@ -640,7 +633,6 @@ switch ($mode)
 			'WWW_IMG'		=> $user->img('icon_contact_www', $user->lang['WWW']),
 			'ICQ_IMG'		=> $user->img('icon_contact_icq', $user->lang['ICQ']),
 			'AIM_IMG'		=> $user->img('icon_contact_aim', $user->lang['AIM']),
-			'MSN_IMG'		=> $user->img('icon_contact_msnm', $user->lang['MSNM']),
 			'YIM_IMG'		=> $user->img('icon_contact_yahoo', $user->lang['YIM']),
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
@@ -649,7 +641,7 @@ switch ($mode)
 			'S_GROUP_OPTIONS'	=> $group_options,
 			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && sizeof($profile_fields['row'])) ? true : false,
 
-			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
+			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_USER_BAN'			=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_MCP_QUEUE'			=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
 
@@ -984,8 +976,8 @@ switch ($mode)
 		$template_html = 'memberlist_body.html';
 
 		// Sorting
-		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER']);
-		$sort_key_sql = array('a' => 'u.username_clean', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
+		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER']);
+		$sort_key_sql = array('a' => 'u.username_clean', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
 
 		if ($auth->acl_get('a_user'))
 		{
@@ -1028,19 +1020,18 @@ switch ($mode)
 		$select_single 	= request_var('select_single', false);
 
 		// Search URL parameters, if any of these are in the URL we do a search
-		$search_params = array('username', 'email', 'icq', 'aim', 'yahoo', 'msn', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
+		$search_params = array('username', 'email', 'icq', 'aim', 'yahoo', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
 
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
-		if (($mode == 'searchuser' || sizeof(array_intersect($request->variable_names(phpbb_request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
+		if ((($mode == '' || $mode == 'searchuser') || sizeof(array_intersect($request->variable_names(phpbb_request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$username	= request_var('username', '', true);
 			$email		= strtolower(request_var('email', ''));
 			$icq		= request_var('icq', '');
 			$aim		= request_var('aim', '');
 			$yahoo		= request_var('yahoo', '');
-			$msn		= request_var('msn', '');
 			$jabber		= request_var('jabber', '');
 			$search_group_id	= request_var('search_group_id', 0);
 
@@ -1084,7 +1075,6 @@ switch ($mode)
 			$sql_where .= ($icq) ? ' AND u.user_icq ' . $db->sql_like_expression(str_replace('*', $db->any_char, $icq)) . ' ' : '';
 			$sql_where .= ($aim) ? ' AND u.user_aim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $aim)) . ' ' : '';
 			$sql_where .= ($yahoo) ? ' AND u.user_yim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $yahoo)) . ' ' : '';
-			$sql_where .= ($msn) ? ' AND u.user_msnm ' . $db->sql_like_expression(str_replace('*', $db->any_char, $msn)) . ' ' : '';
 			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->any_char, $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
@@ -1317,7 +1307,6 @@ switch ($mode)
 			'icq'			=> array('icq', ''),
 			'aim'			=> array('aim', ''),
 			'yahoo'			=> array('yahoo', ''),
-			'msn'			=> array('msn', ''),
 			'jabber'		=> array('jabber', ''),
 			'search_group_id'	=> array('search_group_id', 0),
 			'joined_select'	=> array('joined_select', 'lt'),
@@ -1388,7 +1377,7 @@ switch ($mode)
 		}
 
 		// Some search user specific data
-		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
+		if (($mode == '' || $mode == 'searchuser') && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$group_selected = request_var('search_group_id', 0);
 			$s_group_select = '<option value="0"' . ((!$group_selected) ? ' selected="selected"' : '') . '>&nbsp;</option>';
@@ -1449,7 +1438,6 @@ switch ($mode)
 				'ICQ'		=> $icq,
 				'AIM'		=> $aim,
 				'YAHOO'		=> $yahoo,
-				'MSNM'		=> $msn,
 				'JABBER'	=> $jabber,
 				'JOINED'	=> implode('-', $joined),
 				'ACTIVE'	=> implode('-', $active),
@@ -1459,7 +1447,7 @@ switch ($mode)
 				'S_IP_SEARCH_ALLOWED'	=> ($auth->acl_getf_global('m_info')) ? true : false,
 				'S_EMAIL_SEARCH_ALLOWED'=> ($auth->acl_get('a_user')) ? true : false,
 				'S_IN_SEARCH_POPUP'		=> ($form && $field) ? true : false,
-				'S_SEARCH_USER'			=> true,
+				'S_SEARCH_USER'			=> ($mode == 'searchuser' || ($mode == '' && $submit)),
 				'S_FORM_NAME'			=> $form,
 				'S_FIELD_NAME'			=> $field,
 				'S_SELECT_SINGLE'		=> $select_single,
@@ -1605,13 +1593,12 @@ switch ($mode)
 			'WWW_IMG'		=> $user->img('icon_contact_www', $user->lang['WWW']),
 			'ICQ_IMG'		=> $user->img('icon_contact_icq', $user->lang['ICQ']),
 			'AIM_IMG'		=> $user->img('icon_contact_aim', $user->lang['AIM']),
-			'MSN_IMG'		=> $user->img('icon_contact_msnm', $user->lang['MSNM']),
 			'YIM_IMG'		=> $user->img('icon_contact_yahoo', $user->lang['YIM']),
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
 			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser' . (($start) ? "&amp;start=$start" : '') . (!empty($params) ? '&amp;' . implode('&amp;', $params) : '')) : '',
-			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser') ? $u_hide_find_member : '',
+			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser' || ($mode == '' && $submit)) ? $u_hide_find_member : '',
 			'U_SORT_USERNAME'		=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_FROM'			=> $sort_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_JOINED'			=> $sort_url . '&amp;sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'),
@@ -1621,7 +1608,6 @@ switch ($mode)
 			'U_SORT_LOCATION'		=> $sort_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_ICQ'			=> $sort_url . '&amp;sk=g&amp;sd=' . (($sort_key == 'g' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_AIM'			=> $sort_url . '&amp;sk=h&amp;sd=' . (($sort_key == 'h' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_MSN'			=> $sort_url . '&amp;sk=i&amp;sd=' . (($sort_key == 'i' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_YIM'			=> $sort_url . '&amp;sk=j&amp;sd=' . (($sort_key == 'j' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_ACTIVE'			=> ($auth->acl_get('u_viewonline')) ? $sort_url . '&amp;sk=l&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a') : '',
 			'U_SORT_RANK'			=> $sort_url . '&amp;sk=m&amp;sd=' . (($sort_key == 'm' && $sort_dir == 'a') ? 'd' : 'a'),
@@ -1748,14 +1734,12 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/' . urlencode($data['user_icq']) . '/' : '',
 		'U_AIM'			=> ($data['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
 		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($data['user_yim']) . '&amp;.src=pg' : '',
-		'U_MSN'			=> ($data['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $user_id) : '',
 		'U_JABBER'		=> ($data['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',
 		'LOCATION'		=> ($data['user_from']) ? $data['user_from'] : '',
 
 		'USER_ICQ'			=> $data['user_icq'],
 		'USER_AIM'			=> $data['user_aim'],
 		'USER_YIM'			=> $data['user_yim'],
-		'USER_MSN'			=> $data['user_msnm'],
 		'USER_JABBER'		=> $data['user_jabber'],
 		'USER_JABBER_IMG'	=> ($data['user_jabber']) ? $user->img('icon_contact_jabber', $data['user_jabber']) : '',
 

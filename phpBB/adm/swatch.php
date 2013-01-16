@@ -21,8 +21,6 @@ $user->session_begin(false);
 $auth->acl($user->data);
 $user->setup();
 
-$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : './';
-
 // Set custom template for admin area
 $phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
 

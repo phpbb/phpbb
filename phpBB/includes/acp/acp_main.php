@@ -24,7 +24,7 @@ class acp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $request;
+		global $config, $db, $cache, $user, $auth, $template, $request;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		// Show restore permissions notice
@@ -129,7 +129,7 @@ class acp_main
 						set_config('record_online_users', 1, true);
 						set_config('record_online_date', time(), true);
 						add_log('admin', 'LOG_RESET_ONLINE');
-						
+
 						if ($request->is_ajax())
 						{
 							trigger_error('RESET_ONLINE_SUCCESS');
@@ -184,7 +184,7 @@ class acp_main
 						update_last_username();
 
 						add_log('admin', 'LOG_RESYNC_STATS');
-						
+
 						if ($request->is_ajax())
 						{
 							trigger_error('RESYNC_STATS_SUCCESS');
@@ -251,7 +251,7 @@ class acp_main
 						}
 
 						add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
-						
+
 						if ($request->is_ajax())
 						{
 							trigger_error('RESYNC_POSTCOUNTS_SUCCESS');
@@ -266,7 +266,7 @@ class acp_main
 
 						set_config('board_startdate', time() - 1);
 						add_log('admin', 'LOG_RESET_DATE');
-						
+
 						if ($request->is_ajax())
 						{
 							trigger_error('RESET_DATE_SUCCESS');
@@ -346,7 +346,7 @@ class acp_main
 						}
 
 						add_log('admin', 'LOG_RESYNC_POST_MARKING');
-						
+
 						if ($request->is_ajax())
 						{
 							trigger_error('RESYNC_POST_MARKING_SUCCESS');
@@ -359,10 +359,10 @@ class acp_main
 
 						// Clear permissions
 						$auth->acl_clear_prefetch();
-						cache_moderators();
+						phpbb_cache_moderators($db, $cache, $auth);
 
 						add_log('admin', 'LOG_PURGE_CACHE');
-						
+
 						if ($request->is_ajax())
 						{
 							trigger_error('PURGE_CACHE_SUCCESS');
@@ -413,7 +413,7 @@ class acp_main
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_PURGE_SESSIONS');
-						
+
 						if ($request->is_ajax())
 						{
 							trigger_error('PURGE_SESSIONS_SUCCESS');

@@ -630,8 +630,11 @@ CREATE TABLE phpbb_reports (
 	report_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_text mediumtext(16777215) NOT NULL DEFAULT '',
 	reported_post_text mediumtext(16777215) NOT NULL DEFAULT '',
+	reported_post_uid varchar(8) NOT NULL DEFAULT '',
 	reported_post_bitfield varchar(255) NOT NULL DEFAULT '',
-	reported_post_uid varchar(8) NOT NULL DEFAULT ''
+	reported_post_enable_magic_url INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	reported_post_enable_smilies INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	reported_post_enable_bbcode INTEGER UNSIGNED NOT NULL DEFAULT '1'
 );
 
 CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);
@@ -903,7 +906,6 @@ CREATE TABLE phpbb_users (
 	user_icq varchar(15) NOT NULL DEFAULT '',
 	user_aim varchar(255) NOT NULL DEFAULT '',
 	user_yim varchar(255) NOT NULL DEFAULT '',
-	user_msnm varchar(255) NOT NULL DEFAULT '',
 	user_jabber varchar(255) NOT NULL DEFAULT '',
 	user_website varchar(200) NOT NULL DEFAULT '',
 	user_occ text(65535) NOT NULL DEFAULT '',

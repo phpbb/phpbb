@@ -14,40 +14,74 @@
 .buttons div {
 	float: left;
 	margin: 0 5px 0 0;
-	background-position: 0 100%;
 }
 
 /* Rolloff state */
 .buttons div a {
-	display: block;
-	width: 100%;
-	height: 100%;
-	background-position: 0 0;
+	display: inline-block;
+	line-height: 17.5px;
+	height: 18px;
+	font-size: 13px;
+	white-space: nowrap;
+	border: 1px solid #c7c3bf;
+	border-radius: 4px;
+	background: #fff none 0 0 repeat-x;
+	background-image: -moz-linear-gradient(top, #fff, #e9e9e9);
+	background-image: -webkit-linear-gradient(top, #fff, #e9e9e9);
+	background-image: -o-linear-gradient(top, #fff, #e9e9e9);
+	background-image: linear-gradient(to bottom, #fff, #e9e9e9);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff', EndColorStr='#e9e9e9')";
+	box-shadow: 0 0 0 1px #fff inset;
+	-webkit-box-shadow: 0 0 0 1px #fff inset;
+	padding: 2px 22px 2px 8px;
+	font-family: Verdana, Arial, Helvetica;
+	color: #bc2a4d !important;
 	position: relative;
-	overflow: hidden;
+	text-decoration: none !important;
+	outline-style: none !important;
+	vertical-align: bottom;
+	*padding-right: 8px;
 }
 
-/* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
-/*.buttons div span		{ display: none; }*/
-/*.buttons div a:hover	{ background-image: none; }*/
-.buttons div span			{ position: absolute; width: 100%; height: 100%; cursor: pointer;}
-.buttons div a:hover span	{ background-position: 0 100%; }
+.buttons div span { display: none; }
 
+.buttons div a:hover {
+	border-color: #0a8ed0;
+	background-image: -moz-linear-gradient(top, #e9e9e9, #fff);
+	background-image: -webkit-linear-gradient(top, #e9e9e9, #fff);
+	background-image: -o-linear-gradient(top, #e9e9e9, #fff);
+	background-image: linear-gradient(to bottom, #e9e9e9, #fff);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#e9e9e9', EndColorStr='#ffffff')";
+	text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, -1px -1px 0 rgba(188, 42, 77, 0.2);
+}
+
+.buttons div a:after {
+	content: '';
+	display: block;
+	position: absolute;
+	top: 50%;
+	right: 6px;
+	width: 12px;
+	height: 12px;
+	margin-top: -6px;
+	background: url("images/buttons.png") 0px 0 no-repeat;
+}
+
+.buttons div a:hover:after {
+	background-position: 0 -20px;
+}
 /* Big button images */
-.reply-icon span	{ background: transparent none 0 0 no-repeat; }
-.post-icon span		{ background: transparent none 0 0 no-repeat; }
-.locked-icon span	{ background: transparent none 0 0 no-repeat; }
-.pmreply-icon span	{ background: none 0 0 no-repeat; }
-.newpm-icon span 	{ background: none 0 0 no-repeat; }
-.forwardpm-icon span 	{ background: none 0 0 no-repeat; }
+.buttons div.reply-icon a:after, .buttons div.pmreply-icon a:after { background-position: -20px 0; }
+.buttons div.reply-icon a:hover:after, .buttons div.pmreply-icon a:hover:after	{ background-position: -20px -20px; }
 
-/* Set big button dimensions */
-.buttons div.reply-icon		{ width: 96px; height: 25px; }
-.buttons div.post-icon		{ width: 96px; height: 25px; }
-.buttons div.locked-icon	{ width: 88px; height: 25px; }
-.buttons div.pmreply-icon	{ width: 96px; height: 25px; }
-.buttons div.newpm-icon		{ width: 84px; height: 25px; }
-.buttons div.forwardpm-icon	{ width: 96px; height: 25px; }
+.buttons div.post-icon a:after, .buttons div.newpm-icon a:after	{ background-position: 0 0; }
+.buttons div.post-icon a:hover:after, .buttons div.newpm-icon a:hover:after	{ background-position: 0 -20px; }
+
+.buttons div.locked-icon a:after	{ background-position: -60px 0; }
+.buttons div.locked-icon a:hover:after	{ background-position: -60px -20px; }
+
+.buttons div.forwardpm-icon a:after	{ background-position: -40px 0; }
+.buttons div.forwardpm-icon a:hover:after	{ background-position: -40px -20px; }
 
 /* Sub-header (navigation bar)
 --------------------------------------------- */
@@ -122,7 +156,6 @@ ul.profile-icons li a:hover { background: none; }
 .aim-icon, .aim-icon a			{ background: none top left no-repeat; }
 .yahoo-icon, .yahoo-icon a		{ background: none top left no-repeat; }
 .web-icon, .web-icon a			{ background: none top left no-repeat; }
-.msnm-icon, .msnm-icon a			{ background: none top left no-repeat; }
 .icq-icon, .icq-icon a			{ background: none top left no-repeat; }
 .jabber-icon, .jabber-icon a		{ background: none top left no-repeat; }
 .pm-icon, .pm-icon a				{ background: none top left no-repeat; }
@@ -140,7 +173,6 @@ ul.profile-icons li.email-icon		{ width: 20px; height: 20px; }
 ul.profile-icons li.aim-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.yahoo-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.web-icon	{ width: 20px; height: 20px; }
-ul.profile-icons li.msnm-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.icq-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.jabber-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.pm-icon		{ width: 28px; height: 20px; }
