@@ -1193,6 +1193,11 @@ function database_update_info()
 					'user_timezone'		=> array('VCHAR:100', ''),
 				),
 			),
+			'drop_columns'		=> array(
+				USERS_TABLE			=> array(
+					'user_msnm',
+				),
+			),
 		),
 	);
 }
