@@ -215,7 +215,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 			array(
 				// Array of datasets that should be in $log after running the function
 				'expected'			=> array(5, 7),
-				// Offset that will be returned form the function
+				// Offset that will be returned from the function
 				'expected_returned'	=> 0,
 				// view_log parameters (see includes/functions_admin.php for docblock)
 				// $log is ommited!

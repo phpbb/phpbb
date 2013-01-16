@@ -23,19 +23,21 @@ if (!defined('IN_PHPBB'))
 class phpbb_log implements phpbb_log_interface
 {
 	/**
-	* Keeps the status of the log system. Is the log enabled or disabled?
+	* An array with the disabled log types. Logs of such types will not be
+	* added when add_log() is called.
+	* @var array
 	*/
-	protected $disabled_logs;
+	protected $disabled_types;
 
 	/**
 	* Keeps the total log count of the last call to get_logs()
 	*/
-	protected $logs_total;
+	protected $entry_count;
 
 	/**
 	* Keeps the offset of the last valid page of the last call to get_logs()
 	*/
-	protected $logs_offset;
+	protected $last_page_offset;
 
 	/**
 	* The table we use to store our logs.
@@ -111,7 +113,8 @@ class phpbb_log implements phpbb_log_interface
 	}
 
 	/**
-	* Set phpbb_admin_path and is_in_admin in order to return administrative user profile links in get_logs()
+	* Set phpbb_admin_path and is_in_admin in order to return administrative
+	* user profile links in get_logs()
 	*
 	* @param	string	$phpbb_admin_path	Full path from current file to admin root
 	* @param	bool	$is_in_admin		Are we called from within the acp?
@@ -137,26 +140,22 @@ class phpbb_log implements phpbb_log_interface
 	/**
 	* This function returns the state of the log system.
 	*
-	* @param	string	$type	The log type we want to check. Empty to get global log status.
-	*
-	* @return	bool	True if log for the type is enabled
+	* {@inheritDoc}
 	*/
 	public function is_enabled($type = '')
 	{
 		if ($type == '' || $type == 'all')
 		{
-			return !isset($this->disabled_logs['all']);
+			return !isset($this->disabled_types['all']);
 		}
-		return !isset($this->disabled_logs[$type]) && !isset($this->disabled_logs['all']);
+		return !isset($this->disabled_types[$type]) && !isset($this->disabled_types['all']);
 	}
 
 	/**
-	* This function allows disable the log system. When add_log is called, the log will not be added to the database.
+	* This function allows disabling the log system. When add_log is called
+	* and the type is disabled, the log will not be added to the database.
 	*
-	* @param	mixed	$type	The log type we want to enable. Empty to disable all logs.
-	*							Can also be an array of types
-	*
-	* @return	null
+	* {@inheritDoc}
 	*/
 	public function disable($type = '')
 	{
@@ -169,20 +168,18 @@ class phpbb_log implements phpbb_log_interface
 			return;
 		}
 
-		if ($type == '' || $type == 'all')
+		// Empty string is an equivalent for all types.
+		if ($type == '')
 		{
-			$this->disabled_logs['all'] = true;
-			return;
+			$type = 'all';
 		}
-		$this->disabled_logs[$type] = true;
+		$this->disabled_types[$type] = true;
 	}
 
 	/**
-	* This function allows re-enable the log system.
+	* This function allows re-enabling the log system.
 	*
-	* @param	mixed	$type	The log type we want to enable. Empty to enable all logs.
-	*
-	* @return	null
+	* {@inheritDoc}
 	*/
 	public function enable($type = '')
 	{
@@ -197,10 +194,10 @@ class phpbb_log implements phpbb_log_interface
 
 		if ($type == '' || $type == 'all')
 		{
-			$this->disabled_logs = array();
+			$this->disabled_types = array();
 			return;
 		}
-		unset($this->disabled_logs[$type]);
+		unset($this->disabled_types[$type]);
 	}
 
 	/**
@@ -269,7 +266,7 @@ class phpbb_log implements phpbb_log_interface
 		}
 
 		/**
-		* Allow to modify log data before we add them to the database
+		* Allows to modify log data before we add it to the database
 		*
 		* NOTE: if sql_ary does not contain a log_type value, the entry will
 		* not be stored in the database. So ensure to set it, if needed.
@@ -307,8 +304,8 @@ class phpbb_log implements phpbb_log_interface
 	*/
 	public function get_logs($mode, $count_logs = true, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $log_time = 0, $sort_by = 'l.log_time DESC', $keywords = '')
 	{
-		$this->logs_total = 0;
-		$this->logs_offset = $offset;
+		$this->entry_count = 0;
+		$this->last_page_offset = $offset;
 
 		$topic_id_list = $reportee_id_list = array();
 
@@ -389,7 +386,7 @@ class phpbb_log implements phpbb_log_interface
 
 		if ($log_type === false)
 		{
-			$this->logs_offset = 0;
+			$this->last_page_offset = 0;
 			return array();
 		}
 
@@ -410,20 +407,20 @@ class phpbb_log implements phpbb_log_interface
 					$sql_keywords
 					$sql_additional";
 			$result = $this->db->sql_query($sql);
-			$this->logs_total = (int) $this->db->sql_fetchfield('total_entries');
+			$this->entry_count = (int) $this->db->sql_fetchfield('total_entries');
 			$this->db->sql_freeresult($result);
 
-			if ($this->logs_total == 0)
+			if ($this->entry_count == 0)
 			{
 				// Save the queries, because there are no logs to display
-				$this->logs_offset = 0;
+				$this->last_page_offset = 0;
 				return array();
 			}
 
 			// Return the user to the last page that is valid
-			while ($this->logs_offset >= $this->logs_total)
+			while ($this->last_page_offset >= $this->entry_count)
 			{
-				$this->logs_offset = max(0, $this->logs_offset - $limit);
+				$this->last_page_offset = max(0, $this->last_page_offset - $limit);
 			}
 		}
 
@@ -435,7 +432,7 @@ class phpbb_log implements phpbb_log_interface
 				$sql_keywords
 				$sql_additional
 			ORDER BY $sort_by";
-		$result = $this->db->sql_query_limit($sql, $limit, $this->logs_offset);
+		$result = $this->db->sql_query_limit($sql, $limit, $this->last_page_offset);
 
 		$i = 0;
 		$log = array();
@@ -487,7 +484,7 @@ class phpbb_log implements phpbb_log_interface
 
 			if (!empty($row['log_data']))
 			{
-				$log_data_ary = @unserialize($row['log_data']);
+				$log_data_ary = unserialize($row['log_data']);
 				$log_data_ary = ($log_data_ary !== false) ? $log_data_ary : array();
 
 				if (isset($this->user->lang[$row['log_operation']]))
@@ -571,13 +568,13 @@ class phpbb_log implements phpbb_log_interface
 	}
 
 	/**
-	* Generates a sql condition out of the specified keywords
+	* Generates a sql condition for the specified keywords
 	*
 	* @param	string	$keywords	The keywords the user specified to search for
 	*
 	* @return	string		Returns the SQL condition searching for the keywords
 	*/
-	private function generate_sql_keyword($keywords)
+	protected function generate_sql_keyword($keywords)
 	{
 		// Use no preg_quote for $keywords because this would lead to sole backslashes being added
 		// We also use an OR connection here for spaces and the | string. Currently, regex is not supported for searching (but may come later).
@@ -630,7 +627,7 @@ class phpbb_log implements phpbb_log_interface
 	*							),
 	*						),
 	*/
-	private function get_topic_auth($topic_ids)
+	protected function get_topic_auth(array $topic_ids)
 	{
 		$forum_auth = array('f_read' => array(), 'm_' => array());
 		$topic_ids = array_unique($topic_ids);
@@ -667,7 +664,7 @@ class phpbb_log implements phpbb_log_interface
 	*
 	* @return	array		Returns an array with the reportee data
 	*/
-	private function get_reportee_data($reportee_ids)
+	protected function get_reportee_data(array $reportee_ids)
 	{
 		$reportee_ids = array_unique($reportee_ids);
 		$reportee_data_list = array();
@@ -689,20 +686,20 @@ class phpbb_log implements phpbb_log_interface
 	/**
 	* Get total log count
 	*
-	* @return	int			Returns the number of matching logs from the last call to get_logs()
+	* {@inheritDoc}
 	*/
 	public function get_log_count()
 	{
-		return ($this->logs_total) ? $this->logs_total : 0;
+		return ($this->entry_count) ? $this->entry_count : 0;
 	}
 
 	/**
 	* Get offset of the last valid log page
 	*
-	* @return	int			Returns the offset of the last valid page from the last call to get_logs()
+	* {@inheritDoc}
 	*/
 	public function get_valid_offset()
 	{
-		return ($this->logs_offset) ? $this->logs_offset : 0;
+		return ($this->last_page_offset) ? $this->last_page_offset : 0;
 	}
 }
