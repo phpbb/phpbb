@@ -94,35 +94,40 @@ class phpbb_log implements phpbb_log_interface
 	* @param	phpbb_auth		$auth	Auth object
 	* @param	phpbb_dispatcher	$phpbb_dispatcher	Event dispatcher
 	* @param	string		$phpbb_root_path		Root path
+	* @param	string		$relative_admin_path	Relative admin root path
 	* @param	string		$php_ext			PHP Extension
 	* @param	string		$log_table		Name of the table we use to store our logs
 	* @return	null
 	*/
-	public function __construct($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $php_ext, $log_table)
+	public function __construct($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $relative_admin_path, $php_ext, $log_table)
 	{
 		$this->db = $db;
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->dispatcher = $phpbb_dispatcher;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_admin_path = $this->phpbb_root_path . $relative_admin_path;
 		$this->php_ext = $php_ext;
 		$this->log_table = $log_table;
 
+		/*
+		* IN_ADMIN is set after the session was created,
+		* so we need to take ADMIN_START into account aswell, otherwise
+		* it will not work for the phpbb_log object we create in common.php
+		*/
+		$this->set_is_admin((defined('ADMIN_START') && ADMIN_START) || (defined('IN_ADMIN') && IN_ADMIN));
 		$this->enable();
-		$this->set_admin_path('', false);
 	}
 
 	/**
-	* Set phpbb_admin_path and is_in_admin in order to return administrative
-	* user profile links in get_logs()
+	* Set is_in_admin in order to return administrative user profile links
+	* in get_logs()
 	*
-	* @param	string	$phpbb_admin_path	Full path from current file to admin root
 	* @param	bool	$is_in_admin		Are we called from within the acp?
 	* @return	null
 	*/
-	public function set_admin_path($phpbb_admin_path, $is_in_admin)
+	public function set_is_admin($is_in_admin)
 	{
-		$this->phpbb_admin_path = $phpbb_admin_path;
 		$this->is_in_admin = (bool) $is_in_admin;
 	}
 

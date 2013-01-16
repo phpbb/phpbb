@@ -164,6 +164,7 @@ services:
             - @auth
             - @dispatcher
             - %core.root_path%
+            - %core.adm_relative_path%
             - %core.php_ext%
             - %tables.log%
 
