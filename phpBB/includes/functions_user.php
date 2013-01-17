@@ -3525,25 +3525,31 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	}
 
 	// Before we update the user attributes, we will update the avatar for users that don't have a custom avatar
+	$avatar_options = array('user_avatar', 'user_avatar_type', 'user_avatar_height', 'user_avatar_width');
+
 	if (isset($sql_ary['user_avatar']))
 	{
+		$avatar_sql_ary = array();
+		foreach ($avatar_options as $avatar_option)
+		{
+			if (isset($sql_ary[$avatar_option]))
+			{
+				$avatar_sql_ary[$avatar_option] = $sql_ary[$avatar_option];
+				}
+			}
+
 		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET ' . $db->sql_build_array('UPDATE', array(
-				'user_avatar'      => $sql_ary['user_avatar'],
-				'user_avatar_type'    => $sql_ary['user_avatar_type'],
-				'user_avatar_height'  => $sql_ary['user_avatar_height'],
-				'user_avatar_width'    => $sql_ary['user_avatar_width'],
-			)) . "
+			SSET ' . $db->sql_build_array('UPDATE', $avatar_sql_ary) . "
 			WHERE user_avatar = ''
 				AND " . $db->sql_in_set('user_id', $user_id_ary);
 		$db->sql_query($sql);
-
-		unset($sql_ary['user_avatar']);
 	}
 
-	unset($sql_ary['user_avatar_type']);
-	unset($sql_ary['user_avatar_height']);
-	unset($sql_ary['user_avatar_width']);
+	// Remove the avatar options, as we already updated them
+	foreach ($avatar_options as $avatar_option)
+	{
+		unset($sql_ary[$avatar_option]);
+	}
 
 	if (!empty($sql_ary))
 	{
