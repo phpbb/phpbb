@@ -2698,12 +2698,12 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			}
 			$db->sql_freeresult($result);
 
-			if (isset($sql_ary['group_avatar']) && !$sql_ary['group_avatar'])
+			if (isset($sql_ary['group_avatar']))
 			{
 				remove_default_avatar($group_id, $user_ary);
 			}
 
-			if (isset($sql_ary['group_rank']) && !$sql_ary['group_rank'])
+			if (isset($sql_ary['group_rank']))
 			{
 				remove_default_rank($group_id, $user_ary);
 			}
