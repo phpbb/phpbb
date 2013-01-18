@@ -85,7 +85,7 @@ class phpbb_controller_post_revisions
 		// Changing the comparison range uses POST instead of changing the URL
 		// So if we need to, we overwrite the revision ids
 		$from = $this->request->is_set_post('first') ? $this->request->variable('first', 0) : $from;
-		$to = $this->request->is_set_post('first') ? $this->request->variable('last', 0) : $to;
+		$to = $this->request->is_set_post('last') ? $this->request->variable('last', 0) : $to;
 
 		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
@@ -122,7 +122,7 @@ class phpbb_controller_post_revisions
 				return $this->helper->error($this->user->lang('ERROR_AUTH_ACTION', $action_lang), 401);
 			}
 
-			$action_ids = $this->request->variable($action . '_ids', array(0));
+			$action_ids = $this->request->variable('revision_ids', array(0));
 			$result = (bool) $this->$action($action_ids);
 
 			// Default to failure; this will be replaced upon success in the
