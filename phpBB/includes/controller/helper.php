@@ -85,17 +85,14 @@ class phpbb_controller_helper
 	}
 
 	/**
-	* Easily generate a URL
+	* Generate a URL
 	*
-	* @param array $url_parts Each array element is a 'folder'
-	* 		i.e. array('my', 'ext') maps to ./app.php/my/ext
-	* @param mixed $query The Query string, passed directly into the second
-	*		argument of append_sid()
-	* @return string A URL that has already been run through append_sid()
+	* @param string $route The route to travel
+	* @return string The URL already passed through append_sid()
 	*/
-	public function url(array $url_parts, $query = '')
+	protected function url($route)
 	{
-		return append_sid($this->phpbb_root_path . implode('/', $url_parts), $query);
+		return append_sid($this->phpbb_root_path . 'app.' . $this->php_ext, array('controller' => $route));
 	}
 
 	/**
