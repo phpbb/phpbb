@@ -451,7 +451,6 @@ class phpbb_revisions_post
 			'post_subject'			=> $new_revision->get_subject(),
 			'post_text'				=> $new_revision->get_text(),
 			'post_checksum'			=> $new_revision->get_checksum(),
-			'post_attachment'		=> $new_revision->get_attachment(),
 			'bbcode_bitfield'		=> $new_revision->get_bitfield(),
 			'bbcode_uid'			=> $new_revision->get_uid(),
 			'post_edit_reason'		=> $new_revision->get_reason(),
