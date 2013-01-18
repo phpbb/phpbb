@@ -5630,7 +5630,6 @@ function phpbb_to_numeric($input)
 }
 
 /**
-<<<<<<< HEAD
 * Convert either 3.0 dbms or 3.1 db driver class name to 3.1 db driver class name.
 *
 * If $dbms is a valid 3.1 db driver class name, returns it unchanged.

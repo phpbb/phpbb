@@ -199,7 +199,7 @@ class phpbb_controller_post_revisions
 			'POST_ID'			=> $post_data['post_id'],
 			'POSTER_ID'			=> $post_data['poster_id'],
 
-			'U_VIEW_REVISIONS'	=> append_sid("{$this->phpbb_root_path}app.{$this->php_ext}", array('controller' => "post/{$post_data['post_id']}/revisions")),
+			'U_VIEW_REVISIONS'	=> $this->url("post/{$post_data['post_id']}/revisions"),
 			'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
 		));
 
@@ -312,9 +312,10 @@ class phpbb_controller_post_revisions
 
 		$post_data = $post->get_post_data(true);
 		$revisions = $post->get_revisions(true);
-		$message = $this->user->lang(sizeof($revisions) ? 'REVISION_DELETED_SUCCESS' : 'REVISION_DELETED_SUCCESS_NO_MORE');
+		$message = $this->user->lang($mode == 'protect' ? 'REVISION_PROTECTED_SUCCESS' : 'REVISION_UNPROTECTED_SUCCESS');
 
 		$this->send_ajax_response(array(
+			'revision_id' => $revision_id,
 			'success'	=> true,
 			'message'	=> $message,
 		));
@@ -450,7 +451,7 @@ class phpbb_controller_post_revisions
 			return $this->helper->error($this->user->lang('ERROR_AUTH_RESTORE'), 401);
 		}
 
-		if ($this->request->is_set_post('submit'))
+		if ($this->request->is_set_post('confirm'))
 		{
 			$error = '';
 			$code = 500;
@@ -480,11 +481,11 @@ class phpbb_controller_post_revisions
 				return $this->helper->error($this->user->lang($error), $code);
 			}
 
-			$revert_result = $post->revert($revert_id);
+			$restore_result = $post->revert($to);
 
-			if ($revert_result !== phpbb_revisions_post::REVISION_REVERT_SUCCESS)
+			if ($restore_result !== phpbb_revisions_post::REVISION_REVERT_SUCCESS)
 			{
-				switch ($revert_result)
+				switch ($restore_result)
 				{
 					default:
 					case phpbb_revisions_post::REVISION_NOT_FOUND:
@@ -513,14 +514,14 @@ class phpbb_controller_post_revisions
 			$revisions = $post->get_revisions(true);
 
 			$this->template->assign_vars(array(
-				'L_REVISIONS_ACTION_SUCCESS'	=> $this->user->lang('POST_REVERTED_SUCCESS'),
+				'L_REVISIONS_ACTION_SUCCESS'	=> $this->user->lang('POST_RESTORED_SUCCESS'),
 			));
 
 			if ($this->request->is_ajax())
 			{
 				$this->send_ajax_response(array(
 					'success' => true,
-					'message' => $this->user->lang('POST_REVERTED_SUCCESS'),
+					'message' => $this->user->lang('POST_RESTORED_SUCCESS'),
 				));
 			}
 
@@ -537,6 +538,36 @@ class phpbb_controller_post_revisions
 					'id'	=> $id,
 					'to'	=> $to,
 				)),
+			));
+
+			// Compare current post to the revision to which we are going to
+			// restore it
+			$comparison = new phpbb_revisions_comparison($post->get_current_revision(), $revisions[$to]);
+			$this->template->assign_vars(array(
+				'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+				'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+				
+				'RANK_TITLE'		=> $post_data['rank_title'],
+				'RANK_IMG'			=> $post_data['rank_image'],
+
+				'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
+
+				'POST_DATE'			=> $this->user->format_date($post_data['post_time']),
+				'POST_SUBJECT'		=> $comparison->get_subject_diff_rendered(),
+				'MESSAGE'			=> $comparison->get_text_diff_rendered(),
+				'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
+
+				'POSTER_JOINED'		=> $this->user->format_date($post_data['user_regdate']),
+				'POSTER_POSTS'		=> $post_data['user_posts'],
+				'POSTER_LOCATION'	=> $post_data['user_from'],
+
+				'POST_IMG'			=> $this->user->img('icon_post_target', 'POST'),
+
+				'POST_ID'			=> $post_data['post_id'],
+				'POSTER_ID'			=> $post_data['poster_id'],
+
+				'U_VIEW_REVISIONS'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+				'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
 			));
 
 			return $this->helper->render('revisions_revert_body.html', $this->user->lang('REVISIONS_REVERT_TITLE'));
