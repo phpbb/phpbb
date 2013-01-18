@@ -1,0 +1,22 @@
+{
+	"name": "phpbb/subsilver2",
+	"type": "phpbb3-style",
+	"description": "The subsilver2 style for phpBB 3",
+	"homepage": "https://www.phpbb.com",
+	"version": "3.1.0-dev",
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "phpBB Group",
+			"homepage": "https://www.phpbb.com"
+		}
+	],
+	"require": {
+		"phpbb": "3.1.0-dev"
+	},
+	"extra": {
+		"display-name": "subsilver2",
+		"copyright": "2005 phpBB Group",
+		"parent": "subsilver2"
+	}
+}

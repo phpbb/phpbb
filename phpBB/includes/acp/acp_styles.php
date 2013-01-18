@@ -716,22 +716,22 @@ class acp_styles
 				// Style is already installed
 				continue;
 			}
-			$cfg = $this->read_style_cfg($dir);
-			if ($cfg === false)
+			$style_data = $this->read_style_meta($dir);
+			if ($style_data === false)
 			{
-				// Invalid style.cfg
+				// Invalid composer.json
 				continue;
 			}
 
 			// Style should be available for installation
-			$parent = $cfg['parent'];
+			$parent = $style_data['extra']['parent'];
 			$style = array(
 				'style_id'			=> 0,
-				'style_name'		=> $cfg['name'],
-				'style_copyright'	=> $cfg['copyright'],
+				'style_name'		=> $style_data['extra']['display-name'],
+				'style_copyright'	=> $style_data['extra']['copyright'],
 				'style_active'		=> 0,
 				'style_path'		=> $dir,
-				'bbcode_bitfield'	=> $cfg['template_bitfield'],
+				'bbcode_bitfield'	=> $style_data['extra']['template_bitfield'],
 				'style_parent_id'	=> 0,
 				'style_parent_tree'	=> '',
 				// Extra values for styles list
@@ -1023,7 +1023,7 @@ class acp_styles
 					continue;
 				}
 
-				if (file_exists("{$dir}/style.cfg"))
+				if (file_exists("{$dir}/composer.json"))
 				{
 					$styles[] = $file;
 				}
@@ -1051,36 +1051,36 @@ class acp_styles
 	}
 
 	/**
-	* Read style configuration file
+	* Read style metadata file
 	*
 	* @param string $dir style directory
 	* @return array|bool Style data, false on error
 	*/
-	protected function read_style_cfg($dir)
+	protected function read_style_meta($dir)
 	{
-		static $required = array('name', 'phpbb_version', 'copyright');
-		$cfg = parse_cfg_file($this->styles_path . $dir . '/style.cfg');
-
-		// Check if it is a valid file
-		foreach ($required as $key)
+		$json_string = file_get_contents($this->styles_path . $dir . '/composer.json');
+		if (false === $json_string)
 		{
-			if (!isset($cfg[$key]))
-			{
-				return false;
-			}
+			throw new phpbb_acp_exception($this->user->lang('CONFIGURATION_FILE_MISSING', $this->styles_path . $dir . '/composer.json'));
+		}
+
+		$style_data = json_decode($json_string, true);
+		if (null === $style_data)
+		{
+			throw new phpbb_acp_exception($this->user->lang('CONFIGURATION_FILE_MALFORMED', $this->styles_path . $dir . '/composer.json'));
 		}
 
 		// Check data
-		if (!isset($cfg['parent']) || !is_string($cfg['parent']) || $cfg['parent'] == $cfg['name'])
+		if (!isset($style_data['extra']['parent']) || !is_string($style_data['extra']['parent']) || $style_data['extra']['parent'] == $style_data['extra']['display-name'])
 		{
-			$cfg['parent'] = '';
+			$style_data['extra']['parent'] = '';
 		}
-		if (!isset($cfg['template_bitfield']))
+		if (!isset($style_data['extra']['template_bitfield']))
 		{
-			$cfg['template_bitfield'] = $this->default_bitfield();
+			$style_data['extra']['template_bitfield'] = $this->default_bitfield();
 		}
 
-		return $cfg;
+		return $style_data;
 	}
 
 	/**
