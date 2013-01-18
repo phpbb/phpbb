@@ -276,7 +276,7 @@ class phpbb_controller_post_revisions
 	{
 		// Ensure that $mode is one of 'protect' or 'unprotect' (default)
 		$mode = in_array($mode, array('protect', 'unprotect')) ? $mode : 'unprotect';
-		$post = new phpbb_revisions_post($id, $this->db);
+		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
 
@@ -334,7 +334,7 @@ class phpbb_controller_post_revisions
 	*/
 	public function delete_revision($id, $revision_id)
 	{
-		$post = new phpbb_revisions_post($id, $this->db);
+		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
 		if (!$this->auth->acl_get('m_delete_revisions', $post_data['forum_id']))
