@@ -459,16 +459,6 @@ class phpbb_revisions_revision
 	}
 
 	/**
-	* Returns the revision attachment
-	*
-	* @return bool Whether or not this revision has an attachment
-	*/
-	public function get_attachment()
-	{
-		return (bool) $this->attachment;
-	}
-
-	/**
 	* Sets the ID of the revision
 	*
 	* @param int $revision_id Revision ID
