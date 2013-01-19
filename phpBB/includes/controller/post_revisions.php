@@ -106,6 +106,8 @@ class phpbb_controller_post_revisions
 
 		$current = $post->get_current_revision();
 
+		// This allows an action to be applied to multiple revisions
+		// @todo implement on interface and test
 		if (isset($_POST['delete']) || isset($_POST['protect']) || isset($_POST['unprotect']))
 		{
 			$action = isset($_POST['delete']) ? 'delete' : (isset($_POST['protect']) ? 'protect' : 'unprotect');
@@ -481,9 +483,9 @@ class phpbb_controller_post_revisions
 				return $this->helper->error($this->user->lang($error), $code);
 			}
 
-			$restore_result = $post->revert($to);
+			$restore_result = $post->restore($to);
 
-			if ($restore_result !== phpbb_revisions_post::REVISION_REVERT_SUCCESS)
+			if ($restore_result !== phpbb_revisions_post::REVISION_RESTORE_SUCCESS)
 			{
 				switch ($restore_result)
 				{
@@ -533,7 +535,6 @@ class phpbb_controller_post_revisions
 
 			$this->template->assign_vars(array(
 				'U_ACTION'			=> $this->url("post/$id/restore/$to"),
-				'VIEWING_REVERT'	=> true,
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(array(
 					'id'	=> $id,
 					'to'	=> $to,
@@ -570,7 +571,7 @@ class phpbb_controller_post_revisions
 				'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
 			));
 
-			return $this->helper->render('revisions_revert_body.html', $this->user->lang('REVISIONS_REVERT_TITLE'));
+			return $this->helper->render('revisions_restore_body.html', $this->user->lang('REVISIONS_RESTORE_TITLE'));
 		}
 	}
 
