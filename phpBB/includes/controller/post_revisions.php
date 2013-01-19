@@ -374,7 +374,7 @@ class phpbb_controller_post_revisions
 	}
 
 	/**
-	* Helper method for deleting a revision
+	* Helper method for deleting one or more post revisions
 	*
 	* This does NOT check authorization, but should not be called without
 	* checking for m_revisions_delete
@@ -388,10 +388,44 @@ class phpbb_controller_post_revisions
 		{
 			$revision_id = array($revision_id);
 		}
-		
+
+		// First we need to get the post IDs for the revisions so we can
+		// update the revision count on the posts table
+		$sql = 'SELECT post_id
+			FROM ' . POST_REVISIONS_TABLE . '
+			WHERE ' . $this->db->sql_in_set('revision_id', $revision_id);
+		$result = $this->db->sql_query($sql);
+		$post_ids = array();
+		while($row = $this->db->sql_fetchrow($result))
+		{
+			// Determine the number of revisions being deleted from the post
+			if (!isset($post_ids[$row['post_id']]))
+			{
+				$post_ids[$row['post_id']] = 1;
+			}
+			else
+			{
+				$post_ids[$row['post_id']] += 1;
+			}
+		}
+		$this->db->sql_freeresult($result);
+
 		$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
 			WHERE ' . $this->db->sql_in_set('revision_id', $revision_id);
-		return (bool) $this->db->sql_query($sql);
+		$return = (bool) $this->db->sql_query($sql);
+
+		if ($return === true)
+		{
+			foreach ($post_ids as $post_id => $deleted_revisions_count)
+			{
+				$sql = 'UPDATE ' . POSTS_TABLE . '
+					SET post_edit_count = post_edit_count - ' . (int) $deleted_revisions_count . '
+					WHERE post_id = ' . (int) $post_id;
+				$result = $this->db->sql_query($sql);
+			}
+		}
+
+		return $return;
 	}
 
 	/**

@@ -1561,8 +1561,11 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	
 		$revisions_post = new phpbb_revisions_post($row['post_id'], $db, $config, $auth);
 		$revisions = $revisions_post->get_revisions();
-		$comparison = new phpbb_revisions_comparison(current($revisions), $revisions_post->get_current_revision());
-		$comparison->output_template_block($revisions_post, $template, $user, $auth, $request, true, $phpbb_root_path, $phpEx, false);
+		if (sizeof($revisions))
+		{
+			$comparison = new phpbb_revisions_comparison(current($revisions), $revisions_post->get_current_revision());
+			$comparison->output_template_block($revisions_post, $template, $user, $auth, $request, true, $phpbb_root_path, $phpEx, false);
+		}
 	}
 
 	//
