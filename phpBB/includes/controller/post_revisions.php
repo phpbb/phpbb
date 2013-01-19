@@ -189,7 +189,9 @@ class phpbb_controller_post_revisions
 			'POST_DATE'			=> $this->user->format_date($post_data['post_time']),
 			'POST_SUBJECT'		=> $comparison->get_subject_diff_rendered(),
 			'CURRENT_SUBJECT' 	=> $current->get_subject(),
-			'MESSAGE'			=> $comparison->get_text_diff_rendered(),
+			// The str_replace() is done because when a new line is deleted,
+			// it is displayed as the string '\n' in the diff.
+			'MESSAGE'			=> str_replace('\n', '<br />', $comparison->get_text_diff_rendered()),
 			'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
 
 			'POSTER_JOINED'		=> $this->user->format_date($post_data['user_regdate']),
