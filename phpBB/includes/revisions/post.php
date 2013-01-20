@@ -25,7 +25,7 @@ class phpbb_revisions_post
 	/**
 	* Error message constants
 	*/
-	const REVISION_REVERT_SUCCESS = 1;
+	const REVISION_RESTORE_SUCCESS = 1;
 	const REVISION_NOT_FOUND = 2;
 	const REVISION_INSERT_FAIL = 3;
 	const REVISION_POST_UPDATE_FAIL = 4;
@@ -404,12 +404,12 @@ class phpbb_revisions_post
 	}
 
 	/**
-	* Revert the post to a different revision. The revision must be linked to this object's post id
+	* Restore the post to a different revision. The revision must be linked to this object's post id
 	*
 	* @param int $new_revision_id ID of the revision to switch to
 	* @return int Numerical error code based on error (see constants.php for number values)
 	*/
-	public function revert($new_revision_id)
+	public function restore($new_revision_id)
 	{
 		if (!$this->post_id || empty($this->revisions) || empty($this->revisions[$new_revision_id]))
 		{
@@ -419,9 +419,9 @@ class phpbb_revisions_post
 		$this->db->sql_transaction('begin');
 
 		// We need to create a new revision with the current post information.
-		// We do this even when revision tracking is off; otherwise, the current
-		// version of the post will be lost when reverting because it is not already
-		// stored as a revision, but as the post itself
+		// We do this even when revision tracking is off; otherwise, the
+		// current version of the post will be lost when restoring because it
+		// is not already stored as a revision, but as the post itself
 		$sql_insert_ary = array(
 			'post_id'				=> $this->post_data['post_id'],
 			'user_id'				=> $this->post_data['poster_id'],
@@ -467,6 +467,6 @@ class phpbb_revisions_post
 
 		$this->db->sql_transaction('commit');
 
-		return self::REVISION_REVERT_SUCCESS;
+		return self::REVISION_RESTORE_SUCCESS;
 	}
 }
