@@ -3539,7 +3539,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 			}
 
 		$sql = 'UPDATE ' . USERS_TABLE . '
-			SSET ' . $db->sql_build_array('UPDATE', $avatar_sql_ary) . "
+			SET ' . $db->sql_build_array('UPDATE', $avatar_sql_ary) . "
 			WHERE user_avatar = ''
 				AND " . $db->sql_in_set('user_id', $user_id_ary);
 		$db->sql_query($sql);
