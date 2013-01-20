@@ -125,7 +125,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 	*/
 	public function test_group_user_attributes($description, $user_id, $group_id, $group_row, $expected)
 	{
-		global $auth, $cache, $db, $phpbb_dispatcher, $user;
+		global $auth, $cache, $db, $phpbb_dispatcher, $user, $phpbb_container;
 
 		$user->ip = '';
 		$cache = new phpbb_mock_cache;
@@ -134,6 +134,13 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 		$auth = $this->getMock('phpbb_auth');
 		$auth->expects($this->any())
 			->method('acl_clear_prefetch');
+		$cache_driver = new phpbb_cache_driver_null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
 
 		group_user_attributes('default', $group_id, array($user_id), false, 'group_name', $group_row);
 
