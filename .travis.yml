@@ -24,6 +24,7 @@ before_script:
   - cd phpBB
   - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then php ../composer.phar install --dev; fi"
   - cd ..
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then travis/setup-webserver.sh; fi"
 
 script:
   - phpunit --configuration travis/phpunit-$DB-travis.xml

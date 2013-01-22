@@ -35,5 +35,6 @@
 		<server name="PHPBB_TEST_DBUSER" value="root" />
 		<server name="PHPBB_TEST_DBPASSWD" value="" />
 		<server name="PHPBB_TEST_TABLE_PREFIX" value="phpbb_"/>
+		<server name="PHPBB_FUNCTIONAL_URL" value="http://localhost/" />
 	</php>
 </phpunit>
