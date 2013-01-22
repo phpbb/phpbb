@@ -22,7 +22,10 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_db_migration_exception extends \Exception
 {
-	/** @var array Extra parameters sent to exception to aid in debugging */
+	/**
+	* Extra parameters sent to exception to aid in debugging
+	* @var array
+	*/
 	protected $parameters;
 
 	/**
@@ -42,6 +45,8 @@ class phpbb_db_migration_exception extends \Exception
 
 	/**
 	* Output the error as a string
+	*
+	* @return string
 	*/
 	public function __toString()
 	{

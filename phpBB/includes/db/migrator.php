@@ -394,7 +394,7 @@ class phpbb_db_migrator
 	}
 
 	/**
-	* Attempts to apply a step of the given migration or one of its dependencies
+	* Attempts to revert a step of the given migration or one of its dependencies
 	*
 	* @param	string	The class name of the migration
 	* @return	bool	Whether any update step was successfully run
@@ -559,12 +559,12 @@ class phpbb_db_migrator
 	/**
 	* Get a callable statement from a data step
 	*
-	* @param mixed $step Data step from migration
+	* @param array $step Data step from migration
 	* @param mixed $last_result Result to pass to the callable (only for 'custom' method)
 	* @param bool $reverse False to install, True to attempt uninstallation by reversing the call
 	* @return array Array with parameters for call_user_func_array(), 0 is the callable, 1 is parameters
 	*/
-	protected function get_callable_from_step($step, $last_result = false, $reverse = false)
+	protected function get_callable_from_step(array $step, $last_result = false, $reverse = false)
 	{
 		$type = $step[0];
 		$parameters = $step[1];
