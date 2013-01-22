@@ -3512,16 +3512,9 @@ function parse_cfg_file($filename, $lines = false)
 */
 function add_log()
 {
-	global $phpbb_log;
+	global $phpbb_log, $user;
 
 	$args = func_get_args();
-	$log = (isset($args[0])) ? $args[0] : false;
-
-	if ($log === false)
-	{
-		return false;
-	}
-
 	$mode = array_shift($args);
 
 	// This looks kind of dirty, but add_log has some additional data before the log_operation
@@ -3539,10 +3532,9 @@ function add_log()
 			$additional_data['reportee_id'] = array_shift($args);
 		break;
 	}
+
 	$log_operation = array_shift($args);
 	$additional_data = array_merge($additional_data, $args);
-
-	global $user;
 
 	$user_id = (empty($user->data)) ? ANONYMOUS : $user->data['user_id'];
 	$user_ip = (empty($user->ip)) ? '' : $user->ip;
