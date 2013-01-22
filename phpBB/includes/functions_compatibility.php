@@ -17,7 +17,8 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Get user avatar
-*
+* Added in phpBB 3.1.0-A1
+* 
 * @param string $avatar Users assigned avatar name
 * @param int $avatar_type Type of avatar
 * @param string $avatar_width Width of users avatar
