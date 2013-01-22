@@ -408,10 +408,10 @@ class phpbb_log implements phpbb_log_interface
 		if ($count_logs)
 		{
 			$sql = 'SELECT COUNT(l.log_id) AS total_entries
-				FROM ' . LOG_TABLE . ' l, ' . USERS_TABLE . " u
-				WHERE l.log_type = $log_type
+				FROM ' . LOG_TABLE . ' l, ' . USERS_TABLE . ' u
+				WHERE l.log_type = ' . (int) $log_type . '
 					AND l.user_id = u.user_id
-					AND l.log_time >= $log_time
+					AND l.log_time >= ' . (int) $log_time . "
 					$sql_keywords
 					$sql_additional";
 			$result = $this->db->sql_query($sql);
@@ -433,10 +433,10 @@ class phpbb_log implements phpbb_log_interface
 		}
 
 		$sql = 'SELECT l.*, u.username, u.username_clean, u.user_colour
-			FROM ' . LOG_TABLE . ' l, ' . USERS_TABLE . " u
-			WHERE l.log_type = $log_type
+			FROM ' . LOG_TABLE . ' l, ' . USERS_TABLE . ' u
+			WHERE l.log_type = ' . (int) $log_type . '
 				AND u.user_id = l.user_id
-				" . (($log_time) ? "AND l.log_time >= $log_time" : '') . "
+				' . (($log_time) ? 'AND l.log_time >= ' . (int) $log_time : '') . "
 				$sql_keywords
 				$sql_additional
 			ORDER BY $sort_by";
