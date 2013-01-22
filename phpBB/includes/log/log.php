@@ -23,6 +23,13 @@ if (!defined('IN_PHPBB'))
 class phpbb_log implements phpbb_log_interface
 {
 	/**
+	* If set, administrative user profile links will be returned and messages
+	* will not be censored.
+	* @var bool
+	*/
+	protected $is_in_admin;
+
+	/**
 	* An array with the disabled log types. Logs of such types will not be
 	* added when add_log() is called.
 	* @var array
@@ -114,7 +121,7 @@ class phpbb_log implements phpbb_log_interface
 		$this->log_table = $log_table;
 
 		/*
-		* IN_ADMIN is set after the session was created,
+		* IN_ADMIN is set after the session is created,
 		* so we need to take ADMIN_START into account as well, otherwise
 		* it will not work for the phpbb_log object we create in common.php
 		*/
@@ -132,6 +139,16 @@ class phpbb_log implements phpbb_log_interface
 	public function set_is_admin($is_in_admin)
 	{
 		$this->is_in_admin = (bool) $is_in_admin;
+	}
+
+	/**
+	* Returns the is_in_admin option
+	*
+	* @return	bool
+	*/
+	public function get_is_admin()
+	{
+		return $this->is_in_admin;
 	}
 
 	/**
@@ -317,7 +334,7 @@ class phpbb_log implements phpbb_log_interface
 
 		$topic_id_list = $reportee_id_list = array();
 
-		$profile_url = ($this->is_in_admin && $this->phpbb_admin_path) ? append_sid("{$this->phpbb_admin_path}index.{$this->php_ext}", 'i=users&amp;mode=overview') : append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=viewprofile');
+		$profile_url = ($this->get_is_admin() && $this->phpbb_admin_path) ? append_sid("{$this->phpbb_admin_path}index.{$this->php_ext}", 'i=users&amp;mode=overview') : append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=viewprofile');
 
 		switch ($mode)
 		{
@@ -509,7 +526,7 @@ class phpbb_log implements phpbb_log_interface
 					$log[$i]['action'] = vsprintf($log[$i]['action'], $log_data_ary);
 
 					// If within the admin panel we do not censor text out
-					if ($this->is_in_admin)
+					if ($this->get_is_admin())
 					{
 						$log[$i]['action'] = bbcode_nl2br($log[$i]['action']);
 					}
