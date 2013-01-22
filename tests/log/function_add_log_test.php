@@ -160,7 +160,7 @@ class phpbb_log_function_add_log_test extends phpbb_database_test_case
 		$user = $this->getMock('phpbb_user');
 		$auth = $this->getMock('phpbb_auth');
 
-		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $phpEx, LOG_TABLE);
+		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$user->ip = 'user_ip';
 		if ($user_id)

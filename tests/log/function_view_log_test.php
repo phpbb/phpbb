@@ -334,7 +334,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 			'LOG_INSTALL_INSTALLED'		=> 'installed: %s',
 		);
 
-		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $phpEx, LOG_TABLE);
+		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$log = array();
 		$this->assertEquals($expected_returned, view_log($mode, $log, $log_count, $limit, $offset, $forum_id, $topic_id, $user_id, $limit_days, $sort_by, $keywords));

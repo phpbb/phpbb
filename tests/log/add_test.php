@@ -26,7 +26,7 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$user = $this->getMock('phpbb_user');
 		$auth = $this->getMock('phpbb_auth');
 
-		$log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $phpEx, LOG_TABLE);
+		$log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$this->assertTrue($log->is_enabled(), 'Initialise failed');
 
@@ -55,7 +55,7 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$user = $this->getMock('phpbb_user');
 		$auth = $this->getMock('phpbb_auth');
 
-		$log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $phpEx, LOG_TABLE);
+		$log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$mode = 'critical';
 		$user_id = ANONYMOUS;
