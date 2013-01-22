@@ -46,7 +46,7 @@ server {
 		include			fastcgi_params;
 	}
 }
-" | sudo tee $NGINX_CONF
+" | sudo tee $NGINX_CONF > /dev/null
 
 # Start daemons
 sudo $PHP_FPM_BIN --fpm-config "$DIR/php-fpm.conf"
