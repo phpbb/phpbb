@@ -90,6 +90,11 @@ class phpbb_controller_post_revisions
 		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
 
+		if (!sizeof($post_data))
+		{
+			return $this->helper->error($this->user->lang('ERROR_NO_POST_REVISIONS'), 404);
+		}
+
 		// Ensure that the user can view revisions for this post
 		if (!$this->get_view_permission($post_data))
 		{
@@ -97,13 +102,7 @@ class phpbb_controller_post_revisions
 			return $this->helper->error($this->user->lang('ERROR_AUTH_VIEW'), 401);
 		}
 
-		// Ensure that the given post has revisions
 		$revisions = $post->get_revisions();
-		if (!sizeof($revisions))
-		{
-			return $this->helper->error($this->user->lang('ERROR_NO_POST_REVISIONS', 404));
-		}
-
 		$current = $post->get_current_revision();
 
 		// This allows an action to be applied to multiple revisions
@@ -136,23 +135,13 @@ class phpbb_controller_post_revisions
 				$post_data = $post->get_post_data(true);
 				$revisions = $post->get_revisions(true);
 
-				$success_message = 'REVISION_' . strtoupper($action) . 'ED_SUCCESS';
-				// If we have deleted a revision and we have no more
-				// make sure to let the user know that as well
-				$success_message .= 'delete' === $action && !sizeof($revisions) ? '_NO_MORE' : '';
-
-				$l_result = $this->user->lang($success_message);
+				$l_result = $this->user->lang('REVISION_' . strtoupper($action) . 'ED_SUCCESS');
 			}
 
 			$this->send_ajax_response(array(
 				'success'	=> $result,
 				'message'	=> $l_result,
 			));
-
-			if (!sizeof($revisions))
-			{
-				return $this->helper->error($this->user->lang('ERROR_NO_POST_REVISIONS', 404));
-			}
 		}
 
 		// revisions/1...2	= revision 1 compared to revision 2
@@ -162,8 +151,7 @@ class phpbb_controller_post_revisions
 
 		// 0 = current revision
 
-		
-		if ($from === 0)
+		if (!sizeof($revisions) || $from === 0)
 		{
 			$from_revision = $post->get_current_revision();
 		}
@@ -205,6 +193,8 @@ class phpbb_controller_post_revisions
 
 			'U_VIEW_REVISIONS'	=> $this->url("post/{$post_data['post_id']}/revisions"),
 			'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
+
+			'REVISION_COUNT'	=> sizeof($revisions),
 		));
 
 		return $this->helper->render('revisions_body.html', $this->user->lang('REVISIONS_COMPARE_TITLE'));
@@ -363,13 +353,9 @@ class phpbb_controller_post_revisions
 
 		$result = $this->delete($revision_id);
 
-		$post_data = $post->get_post_data(true);
-		$revisions = $post->get_revisions(true);
-		$message = $this->user->lang(sizeof($revisions) ? 'REVISION_DELETED_SUCCESS' : 'REVISION_DELETED_SUCCESS_NO_MORE');
-
 		$this->send_ajax_response(array(
 			'success'	=> true,
-			'message'	=> $message,
+			'message'	=> $this->user->lang('REVISION_DELETED_SUCCESS'),
 		));
 
 		return $this->compare($id);
@@ -620,6 +606,13 @@ class phpbb_controller_post_revisions
 	*/
 	protected function get_restore_permission($post_data)
 	{
+		// If the post data does not contain the information we need, we
+		// return false
+		if (empty($post_data) || !isset($post_data['post_wiki']) || !isset($post_data['post_edit_locked']) || !isset($post_data['forum_id']))
+		{
+			return false;
+		}
+
 		// If the post is a wiki post, the user can edit wiki posts in this
 		// forum, and the post is not edit locked
 		$can_restore_wiki = $post_data['post_wiki']
@@ -647,6 +640,13 @@ class phpbb_controller_post_revisions
 	*/
 	protected function get_view_permission($post_data)
 	{
+		// If the post data does not contain the information we need, we
+		// return false
+		if (empty($post_data) || !isset($post_data['post_wiki']) || !isset($post_data['forum_id']))
+		{
+			return false;
+		}
+
 		// If the post is a wiki post and the user has wiki edit permission
 		// in the current forum
 		$can_view_wiki_revisions = $post_data['post_wiki'] && $this->auth->acl_getf('f_wiki_edit', $post_data['forum_id']);

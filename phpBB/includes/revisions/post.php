@@ -152,9 +152,15 @@ class phpbb_revisions_post
 
 		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql);
-		$this->post_data = $this->db->sql_fetchrow($result);
+		$post_data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
+		if (!$post_data)
+		{
+			return array();
+		}
+
+		$this->post_data = $post_data;
 		$this->post_data['user_sig_options'] = ($this->post_data['enable_bbcode'] ? OPTION_FLAG_BBCODE : 0) +
 										($this->post_data['enable_smilies'] ? OPTION_FLAG_SMILIES : 0) +
 										($this->post_data['enable_magic_url'] ? OPTION_FLAG_LINKS : 0);

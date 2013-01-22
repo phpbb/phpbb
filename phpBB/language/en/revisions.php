@@ -39,12 +39,12 @@ $lang = array_merge($lang, array(
 
 	'COMPARING'			=> 'Comparing',
 	'COMPARE_SELECTED'	=> 'Compare selected',
-	'CURRENT_REVISION'	=> 'Current Revision',
+	'CURRENT_REVISION'	=> 'Current Post',
 
 	'ERROR_AUTH_ACTION'					=> 'You do not have permission to %s revisions for this post.',
 	'ERROR_AUTH_RESTORE'				=> 'You do not have permission to restore this post to another revision.',
-	'ERROR_AUTH_VIEW_REVISIONS'			=> 'You do not have permission to view the revisions for this post.',
-	'ERROR_NO_POST_REVISIONS'			=> 'The specified post ID has no associated revisions.',
+	'ERROR_AUTH_VIEW'					=> 'You do not have permission to view the revisions for this post.',
+	'ERROR_NO_POST_REVISIONS'			=> 'The specified post ID does not exist.',
 	'ERROR_POST_EDIT_LOCKED'			=> 'This post is locked from editing; only an authorized user can restore it to another revision.',
 	'ERROR_REVISION_INSERT_FAIL'		=> 'An error occurred when attempting to insert a new revisions.',
 	'ERROR_REVISION_NOT_FOUND'			=> 'The specified revision could not be found.',
