@@ -249,9 +249,16 @@
 
 			<!-- IF S_TOPIC_TYPE_ANNOUNCE or S_TOPIC_TYPE_STICKY -->
 			<dl>
-				<dt><label for="topic_time_limit">{L_STICK_TOPIC_FOR}{L_COLON}</label></dt>
-				<dd><label for="topic_time_limit"><input type="text" name="topic_time_limit" id="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" class="inputbox autowidth" /> {L_DAYS}</label></dd>
-				<dd>{L_STICK_TOPIC_FOR_EXPLAIN}</dd>
+				<dt><label for="topic_time_limit">{L_STICK_TOPIC_UNTIL}{L_COLON}</label></dt>
+				<dd>
+					<label for="topic_time_limit">
+						<!-- DEFINE $DATETIME_INPUTBOX_NAME = 'topic_time_limit' -->
+						<!-- DEFINE $DATETIME_INPUTBOX_VALUE = TOPIC_TIME_LIMIT -->
+						<!-- DEFINE $DATETIME_INPUTBOX_TIME = true -->
+						<!-- INCLUDE datetime_inputbox.html -->
+					</label>
+				</dd>
+				<dd>{L_STICK_TOPIC_UNTIL_EXPLAIN}</dd>
 			</dl>
 			<!-- ENDIF -->
 

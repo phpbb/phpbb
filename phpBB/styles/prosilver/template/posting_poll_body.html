@@ -30,9 +30,16 @@
 			<dd>{L_POLL_MAX_OPTIONS_EXPLAIN}</dd>
 		</dl>
 		<dl>
-			<dt><label for="poll_length">{L_POLL_FOR}{L_COLON}</label></dt>
-			<dd><label for="poll_length"><input type="text" name="poll_length" id="poll_length" size="3" maxlength="3" value="{POLL_LENGTH}" class="inputbox autowidth" /> {L_DAYS}</label></dd>
-			<dd>{L_POLL_FOR_EXPLAIN}</dd>
+			<dt><label for="poll_length">{L_POLL_UNTIL}{L_COLON}</label></dt>
+			<dd>
+				<label for="poll_length">
+					<!-- DEFINE $DATETIME_INPUTBOX_NAME = 'poll_length' -->
+					<!-- DEFINE $DATETIME_INPUTBOX_VALUE = POLL_LENGTH -->
+					<!-- DEFINE $DATETIME_INPUTBOX_TIME = true -->
+					<!-- INCLUDE datetime_inputbox.html -->
+				</label>
+			</dd>
+			<dd>{L_POLL_UNTIL_EXPLAIN}</dd>
 		</dl>
 
 		<!-- IF S_POLL_VOTE_CHANGE -->

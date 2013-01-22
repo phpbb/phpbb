@@ -147,6 +147,8 @@ $lang = array_merge($lang, array(
 	'COOKIES_DELETED'		=> 'All board cookies successfully deleted.',
 	'CURRENT_TIME'			=> 'It is currently %s',
 
+	'DATE_INPUT_EXPLAIN'	=> '(YYYY-MM-DD)',			// You must not change the order of the groups
+	'DATETIME_INPUT_EXPLAIN'=> '(YYYY-MM-DD hh:mm)',	// You must not change the order of the groups
 	'DAY'					=> 'Day',
 	'DAYS'					=> 'Days',
 	'DELETE'				=> 'Delete',
@@ -779,7 +781,6 @@ $lang = array_merge($lang, array(
 	'WROTE'						=> 'wrote',
 
 	'YEAR'				=> 'Year',
-	'YEAR_MONTH_DAY'	=> '(YYYY-MM-DD)',
 	'YES'				=> 'Yes',
 	'YIM'				=> 'YIM',
 	'YOU_LAST_VISIT'	=> 'Last visit was: %s',
