@@ -32,7 +32,7 @@ pm = static
 pm.max_children = 2
 
 php_admin_value[memory_limit] = 128M
-" | sudo tee $PHP_FPM_CONF
+" > $PHP_FPM_CONF
 
 # nginx configuration
 echo "
