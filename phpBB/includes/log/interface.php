@@ -56,24 +56,24 @@ interface phpbb_log_interface
 	/**
 	* Adds a log entry to the database
 	*
-	* @param	string	$mode				The mode defines which log_type is used and in which log the entry is displayed.
+	* @param	string	$mode				The mode defines which log_type is used and from which log the entry is retrieved
 	* @param	int		$user_id			User ID of the user
 	* @param	string	$log_ip				IP address of the user
 	* @param	string	$log_operation		Name of the operation
-	* @param	int		$log_time			Timestamp when the log entry was added.
+	* @param	int		$log_time			Timestamp when the log entry was added, if empty time() will be used
 	* @param	array	$additional_data	More arguments can be added, depending on the log_type
 	*
 	* @return	int|bool		Returns the log_id, if the entry was added to the database, false otherwise.
 	*/
-	public function add($mode, $user_id, $log_ip, $log_operation, $log_time, $additional_data);
+	public function add($mode, $user_id, $log_ip, $log_operation, $log_time = false, $additional_data = array());
 
 	/**
 	* Grab the logs from the database
 	*
-	* @param	string	$mode			The mode defines which log_type is used and in which log the entry is displayed.
+	* @param	string	$mode			The mode defines which log_type is used and ifrom which log the entry is retrieved
 	* @param	bool	$count_logs		Shall we count all matching log entries?
 	* @param	int		$limit			Limit the number of entries that are returned
-	* @param	int		$offset			Offset when fetching the log entries, f.e. on paginations
+	* @param	int		$offset			Offset when fetching the log entries, f.e. when paginating
 	* @param	mixed	$forum_id		Restrict the log entries to the given forum_id (can also be an array of forum_ids)
 	* @param	int		$topic_id		Restrict the log entries to the given topic_id
 	* @param	int		$user_id		Restrict the log entries to the given user_id

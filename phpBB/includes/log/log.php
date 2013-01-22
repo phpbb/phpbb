@@ -31,16 +31,19 @@ class phpbb_log implements phpbb_log_interface
 
 	/**
 	* Keeps the total log count of the last call to get_logs()
+	* @var int
 	*/
 	protected $entry_count;
 
 	/**
 	* Keeps the offset of the last valid page of the last call to get_logs()
+	* @var int
 	*/
 	protected $last_page_offset;
 
 	/**
 	* The table we use to store our logs.
+	* @var string
 	*/
 	protected $log_table;
 
@@ -112,7 +115,7 @@ class phpbb_log implements phpbb_log_interface
 
 		/*
 		* IN_ADMIN is set after the session was created,
-		* so we need to take ADMIN_START into account aswell, otherwise
+		* so we need to take ADMIN_START into account as well, otherwise
 		* it will not work for the phpbb_log object we create in common.php
 		*/
 		$this->set_is_admin((defined('ADMIN_START') && ADMIN_START) || (defined('IN_ADMIN') && IN_ADMIN));

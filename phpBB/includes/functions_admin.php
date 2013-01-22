@@ -2489,12 +2489,12 @@ function cache_moderators()
 /**
 * View log
 *
-* @param	string	$mode			The mode defines which log_type is used and in which log the entry is displayed.
+* @param	string	$mode			The mode defines which log_type is used and from which log the entry is retrieved
 * @param	array	&$log			The result array with the logs
 * @param	mixed	&$log_count		If $log_count is set to false, we will skip counting all entries in the database.
 *									Otherwise an integer with the number of total matching entries is returned.
 * @param	int		$limit			Limit the number of entries that are returned
-* @param	int		$offset			Offset when fetching the log entries, f.e. on paginations
+* @param	int		$offset			Offset when fetching the log entries, f.e. when paginating
 * @param	mixed	$forum_id		Restrict the log entries to the given forum_id (can also be an array of forum_ids)
 * @param	int		$topic_id		Restrict the log entries to the given topic_id
 * @param	int		$user_id		Restrict the log entries to the given user_id
