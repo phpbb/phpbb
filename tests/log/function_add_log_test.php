@@ -35,9 +35,9 @@ class phpbb_log_function_add_log_test extends phpbb_database_test_case
 					'forum_id'		=> 56,
 					'topic_id'		=> 78,
 				),
-				// user_id		Can also be false, than ANONYMOUS is used
+				// user_id		Can also be false, then ANONYMOUS is used
 				false,
-				// log_mode		Used to determinate the log_type
+				// log_mode		Used to determine the log_type
 				'mod',
 				// Followed by some additional arguments
 				// forum_id, topic_id and reportee_id are specified before log_operation

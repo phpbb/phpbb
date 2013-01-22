@@ -497,8 +497,10 @@ class phpbb_log implements phpbb_log_interface
 
 				if (isset($this->user->lang[$row['log_operation']]))
 				{
-					// Check if there are more occurrences of % than arguments, if there are we fill out the arguments array
-					// It doesn't matter if we add more arguments than placeholders
+					// Check if there are more occurrences of % than
+					// arguments, if there are we fill out the arguments
+					// array. It doesn't matter if we add more arguments than
+					// placeholders.
 					if ((substr_count($log[$i]['action'], '%') - sizeof($log_data_ary)) > 0)
 					{
 						$log_data_ary = array_merge($log_data_ary, array_fill(0, substr_count($log[$i]['action'], '%') - sizeof($log_data_ary), ''));
@@ -507,7 +509,7 @@ class phpbb_log implements phpbb_log_interface
 					$log[$i]['action'] = vsprintf($log[$i]['action'], $log_data_ary);
 
 					// If within the admin panel we do not censor text out
-					if (defined('IN_ADMIN'))
+					if ($this->is_in_admin)
 					{
 						$log[$i]['action'] = bbcode_nl2br($log[$i]['action']);
 					}
@@ -584,8 +586,10 @@ class phpbb_log implements phpbb_log_interface
 	*/
 	protected function generate_sql_keyword($keywords)
 	{
-		// Use no preg_quote for $keywords because this would lead to sole backslashes being added
-		// We also use an OR connection here for spaces and the | string. Currently, regex is not supported for searching (but may come later).
+		// Use no preg_quote for $keywords because this would lead to sole
+		// backslashes being added. We also use an OR connection here for
+		// spaces and the | string. Currently, regex is not supported for
+		// searching (but may come later).
 		$keywords = preg_split('#[\s|]+#u', utf8_strtolower($keywords), 0, PREG_SPLIT_NO_EMPTY);
 		$sql_keywords = '';
 
