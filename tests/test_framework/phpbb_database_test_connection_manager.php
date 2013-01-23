@@ -421,8 +421,15 @@ class phpbb_database_test_connection_manager
 			break;
 
 			case 'postgres':
-				// Note: sequences do not need to be dropped
-				// here because they are dropped with tables.
+				$sql = 'SELECT sequence_name
+					FROM information_schema.sequences';
+				$result = $this->pdo->query($sql);
+
+				while ($row = $result->fetch(PDO::FETCH_NUM))
+				{
+					$queries[] = 'DROP SEQUENCE ' . current($row);
+				}
+
 				$queries[] = 'DROP TYPE IF EXISTS varchar_ci CASCADE';
 			break;
 		}
