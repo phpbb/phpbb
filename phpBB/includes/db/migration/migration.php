@@ -74,7 +74,7 @@ abstract class phpbb_db_migration
 	}
 
 	/**
-	* Defines other migrations to be applied first (abstract method)
+	* Defines other migrations to be applied first
 	*
 	* @return array An array of migration class names
 	*/
@@ -84,7 +84,7 @@ abstract class phpbb_db_migration
 	}
 
 	/**
-	* Allows you to check if the migration is effectively installed (entirely optionall)
+	* Allows you to check if the migration is effectively installed (entirely optional)
 	*
 	* This is checked when a migration is installed. If true is returned, the migration will be set as
 	* installed without performing the database changes.
