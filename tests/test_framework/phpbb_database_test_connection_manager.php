@@ -204,6 +204,17 @@ class phpbb_database_test_connection_manager
 				}
 				catch (PDOException $e)
 				{
+					if ($this->config['dbms'] == 'postgres')
+					{
+						// On postgres, connect(false)
+						// connects to the postgres
+						// database, not to configured
+						// test database.
+						// Reconnect to the test database
+						// for table drops.
+						$this->connect();
+					}
+
 					// try to delete all tables if dropping the database was not possible.
 					foreach ($this->get_tables() as $table)
 					{
