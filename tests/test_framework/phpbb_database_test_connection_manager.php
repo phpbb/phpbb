@@ -419,6 +419,12 @@ class phpbb_database_test_connection_manager
 					$queries[] = 'DROP SEQUENCE ' . current($row);
 				}
 			break;
+
+			case 'postgres':
+				// Note: sequences do not need to be dropped
+				// here because they are dropped with tables.
+				$queries[] = 'DROP TYPE IF EXISTS varchar_ci CASCADE';
+			break;
 		}
 
 		foreach ($queries as $query)
