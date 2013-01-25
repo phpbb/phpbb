@@ -29,6 +29,11 @@ class ucp_remind
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $template;
 
+		if (!$config['allow_forgot_password'])
+		{
+			trigger_error('UCP_FORGOT_PASSWORD_DISABLE');
+		}
+
 		$username	= request_var('username', '', true);
 		$email		= strtolower(request_var('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
