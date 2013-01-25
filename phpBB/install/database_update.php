@@ -2184,6 +2184,12 @@ function change_database_data(&$no_updates, $version)
 				}
 			}
 
+			// Add ability to disable "forgot password" option
+			if (!isset($config['allow_forgot_password']))
+			{
+				set_config('allow_forgot_password', '1');
+			}
+
 			// Disable receiving pms for bots
 			$sql = 'SELECT user_id
 				FROM ' . BOTS_TABLE;
