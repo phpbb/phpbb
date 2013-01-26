@@ -521,7 +521,7 @@ $lang = array_merge($lang, array(
 	'UCP_USERGROUPS_MEMBER'		=> 'Edit memberships',
 	'UCP_USERGROUPS_MANAGE'		=> 'Manage groups',
 
-	'UCP_FORGOT_PASSWORD_DISABLE'	=> 'The administrator has disabled the password reset ability. If you need help accessing your account, please contact the %sBoard Administrator%s',
+	'UCP_FORGOT_PASSWORD_DISABLED'	=> 'The administrator has disabled the password reset ability. If you need help accessing your account, please contact the %sBoard Administrator%s',
 	'UCP_REGISTER_DISABLE'			=> 'Creating a new account is currently not possible.',
 	'UCP_REMIND'					=> 'Send password',
 	'UCP_RESEND'					=> 'Send activation email',

@@ -31,7 +31,7 @@ class ucp_remind
 
 		if (!$config['allow_password_reset'])
 		{
-			trigger_error($user->lang('UCP_FORGOT_PASSWORD_DISABLE', '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'));
+			trigger_error($user->lang('UCP_FORGOT_PASSWORD_DISABLED', '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'));
 		}
 
 		$username	= request_var('username', '', true);
