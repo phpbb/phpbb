@@ -84,7 +84,7 @@ class phpbb_db_migration_data_310_dev extends phpbb_db_migration
 		return array(
 			array('config.update', array('search_type', 'phpbb_search_' . $this->config['search_type'])),
 
-			array('config.add', array('allow_forgot_password', 1)),
+			array('config.add', array('allow_password_reset', 1)),
 
 			array('config.add', array('fulltext_postgres_ts_name', 'simple')),
 			array('config.add', array('fulltext_postgres_min_word_len', 4)),

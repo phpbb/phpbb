@@ -29,7 +29,7 @@ class ucp_remind
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $template;
 
-		if (!$config['allow_forgot_password'])
+		if (!$config['allow_password_reset'])
 		{
 			trigger_error($user->lang('UCP_FORGOT_PASSWORD_DISABLE', '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'));
 		}
