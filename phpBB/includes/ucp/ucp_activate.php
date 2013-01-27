@@ -51,7 +51,7 @@ class ucp_activate
 			trigger_error('ALREADY_ACTIVATED');
 		}
 
-		if (($user_row['user_inactive_reason'] ==  INACTIVE_MANUAL) || $user_row['user_actkey'] != $key)
+		if ($user_row['user_inactive_reason'] == INACTIVE_MANUAL || $user_row['user_actkey'] !== $key)
 		{
 			trigger_error('WRONG_ACTIVATION');
 		}
