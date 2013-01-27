@@ -1671,7 +1671,7 @@ class acp_attachments
 		$value = $filesize['value'];
 
 		// size="8" and maxlength="15" attributes as a fallback for browsers that do not support type="number" yet.
-		return '<input type="number" id="' . $key . '" size="8" maxlength="15" min="0" max="999999999999999" name="config[' . $key . ']" value="' . $value . '" /> <select name="' . $key . '">' . size_select_options($size_var) . '</select>';
+		return '<input type="number" id="' . $key . '" size="8" maxlength="15" min="0" name="config[' . $key . ']" value="' . $value . '" /> <select name="' . $key . '">' . size_select_options($size_var) . '</select>';
 	}
 
 	/**
