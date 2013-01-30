@@ -2868,7 +2868,6 @@ function send_status_line($code, $message)
 	else
 	{
 		$version = phpbb_request_http_version();
-
 		header("$version $code $message", true, $code);
 	}
 }
@@ -5583,7 +5582,7 @@ function phpbb_convert_30_dbms_to_31($dbms)
 
 		/*
 		$reflection = new \ReflectionClass($dbms);
-
+   	 
 		if ($reflection->isSubclassOf('phpbb_db_driver'))
 		{
 			return $dbms;
