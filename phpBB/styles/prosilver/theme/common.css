@@ -680,6 +680,7 @@ p.rules a {
 	z-index: 1;
 	border: 1px solid;
 	box-shadow: 3px 3px 5px darkgray;
+	border-radius: 5px;
 	margin-top: 8px;
 }
 
@@ -709,6 +710,7 @@ p.rules a {
 	text-transform: uppercase;	
 	line-height: 30px;
 	border-bottom: 1px solid;
+	border-radius: 5px 5px 0 0;
 }
 
 #notification_list > .footer {
@@ -744,8 +746,8 @@ p.rules a {
 	border-bottom: 10px solid;
 	border-left: 10px dashed transparent;
 	border-right: 10px dashed transparent;
+	-webkit-transform: rotate(360deg); /* better anti-aliasing in webkit */
 	display: block;
-	background: transparent;
 }
 
 .notification_list .pointer {
