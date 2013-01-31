@@ -1213,12 +1213,6 @@ function database_update_info()
 						'method'			=> array('VCHAR:255', ''),
 						'notify'			=> array('BOOL', 1),
 					),
-					'PRIMARY_KEY'		=> array(
-						'item_type',
-						'item_id',
-						'user_id',
-						'method',
-					),
 				),
 			),
 			'add_columns'		=> array(

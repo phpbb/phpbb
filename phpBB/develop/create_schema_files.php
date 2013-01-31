@@ -1790,12 +1790,6 @@ function get_schema_struct()
 			'method'			=> array('VCHAR:255', ''),
 			'notify'			=> array('BOOL', 1),
 		),
-		'PRIMARY_KEY'		=> array(
-			'item_type',
-			'item_id',
-			'user_id',
-			'method',
-		),
 	);
 
 	$schema_data['phpbb_user_group'] = array(

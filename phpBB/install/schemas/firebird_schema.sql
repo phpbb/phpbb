@@ -1252,8 +1252,6 @@ CREATE TABLE phpbb_user_notifications (
 	notify INTEGER DEFAULT 1 NOT NULL
 );;
 
-ALTER TABLE phpbb_user_notifications ADD PRIMARY KEY (item_type, item_id, user_id, method);;
-
 
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (

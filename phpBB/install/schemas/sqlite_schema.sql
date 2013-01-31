@@ -857,8 +857,7 @@ CREATE TABLE phpbb_user_notifications (
 	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	method varchar(255) NOT NULL DEFAULT '',
-	notify INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	PRIMARY KEY (item_type, item_id, user_id, method)
+	notify INTEGER UNSIGNED NOT NULL DEFAULT '1'
 );
 
 

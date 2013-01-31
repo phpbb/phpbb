@@ -1538,16 +1538,6 @@ CREATE TABLE [phpbb_user_notifications] (
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_user_notifications] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_user_notifications] PRIMARY KEY  CLUSTERED 
-	(
-		[item_type],
-		[item_id],
-		[user_id],
-		[method]
-	)  ON [PRIMARY] 
-GO
-
 
 /*
 	Table: 'phpbb_user_group'

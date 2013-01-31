@@ -1136,8 +1136,7 @@ CREATE TABLE phpbb_user_notifications (
 	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	method varchar(255) DEFAULT '' NOT NULL,
-	notify INT2 DEFAULT '1' NOT NULL CHECK (notify >= 0),
-	PRIMARY KEY (item_type, item_id, user_id, method)
+	notify INT2 DEFAULT '1' NOT NULL CHECK (notify >= 0)
 );
 
 

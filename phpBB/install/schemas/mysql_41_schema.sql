@@ -884,8 +884,7 @@ CREATE TABLE phpbb_user_notifications (
 	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	method varchar(255) DEFAULT '' NOT NULL,
-	notify tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	PRIMARY KEY (item_type, item_id, user_id, method)
+	notify tinyint(1) UNSIGNED DEFAULT '1' NOT NULL
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
