@@ -173,6 +173,12 @@ class phpbb_extension_manager
 
 		$old_state = (isset($this->extensions[$name]['ext_state'])) ? unserialize($this->extensions[$name]['ext_state']) : false;
 
+		// Returns false if not completed
+		if (!$this->handle_migrations($name, 'enable'))
+		{
+			return true;
+		}
+
 		$extension = $this->get_extension($name);
 		$state = $extension->enable_step($old_state);
 
@@ -323,6 +329,12 @@ class phpbb_extension_manager
 		}
 
 		$old_state = unserialize($this->extensions[$name]['ext_state']);
+
+		// Returns false if not completed
+		if (!$this->handle_migrations($name, 'purge'))
+		{
+			return true;
+		}
 
 		$extension = $this->get_extension($name);
 		$state = $extension->purge_step($old_state);
@@ -496,5 +508,55 @@ class phpbb_extension_manager
 	public function get_finder()
 	{
 		return new phpbb_extension_finder($this, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
+	}
+
+	/**
+	* Handle installing/reverting migrations
+	*
+	* @param string $extension_name Name of the extension
+	* @param string $mode enable or purge
+	* @return bool True if completed, False if not completed
+	*/
+	protected function handle_migrations($extension_name, $mode)
+	{
+		$migrator = $this->container->get('migrator');
+		$migrations_path = $this->get_extension_path($extension_name) . 'migrations';
+		if (file_exists($migrations_path) && is_dir($migrations_path))
+		{
+			$migrator->load_migrations($migrations_path);
+		}
+
+		// What is a safe limit of execution time? Half the max execution time should be safe.
+		$safe_time_limit = (ini_get('max_execution_time') / 2);
+		$start_time = time();
+
+		if ($mode == 'enable')
+		{
+			while (!$migrator->finished())
+			{
+				$migrator->update();
+
+				// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
+				if ((time() - $start_time) >= $safe_time_limit)
+				{
+					return false;
+				}
+			}
+		}
+		else if ($mode == 'purge')
+		{
+			while ($migrator->migration_state() !== false)
+			{
+				$migrator->revert();
+
+				// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
+				if ((time() - $start_time) >= $safe_time_limit)
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }
