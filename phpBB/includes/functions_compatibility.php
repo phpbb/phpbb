@@ -17,8 +17,9 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Get user avatar
-* Compatibility function added: phpBB 3.1.0-A1
-* 
+*
+* @deprecated 3.1.0-a1 (To be removed: 3.3.0)
+*
 * @param string $avatar Users assigned avatar name
 * @param int $avatar_type Type of avatar
 * @param string $avatar_width Width of users avatar
@@ -30,8 +31,6 @@ if (!defined('IN_PHPBB'))
 */
 function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR', $ignore_config = false)
 {
-	global $phpbb_root_path, $phpEx;
-
 	// map arguments to new function phpbb_get_avatar()
 	$row = array(
 		'avatar'		=> $avatar,
@@ -42,6 +41,8 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 
 	if (!function_exists('phpbb_get_avatar'))
 	{
+		global $phpbb_root_path, $phpEx;
+
 		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	}
 
