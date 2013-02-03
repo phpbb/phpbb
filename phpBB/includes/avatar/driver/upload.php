@@ -1,9 +1,9 @@
 <?php
 /**
 *
-* @package avatar
+* @package phpBB3
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Handles avatars uploaded to the board
-* @package avatars
+* @package phpBB3
 */
 class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 {

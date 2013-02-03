@@ -1,9 +1,9 @@
 <?php
 /**
 *
-* @package avatar
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @package phpBB3
+* @copyright (c) 2012 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Handles avatars hosted at gravatar.com
-* @package avatars
+* @package phpBB3
 */
 class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 {
