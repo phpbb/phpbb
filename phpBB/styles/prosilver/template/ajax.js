@@ -37,14 +37,24 @@ phpbb.addAjaxCallback('mark_forums_read', function(res) {
 	// Mark subforums read
 	$('a.subforum[class*="unread"]').removeClass('unread').addClass('read');
 
+	// Mark topics read if we are watching a category and showing active topics
+	if ($('#active_topics').length) {
+		phpbb.ajaxCallbacks['mark_topics_read'].call(this, res, false);
+	}
+
 	// Update mark forums read links
 	$('[data-ajax="mark_forums_read"]').attr('href', res.U_MARK_FORUMS);
 
 	phpbb.closeDarkenWrapper(3000);
 });
 
-// This callback will mark all topic icons read
-phpbb.addAjaxCallback('mark_topics_read', function(res) {
+/** 
+* This callback will mark all topic icons read
+*
+* @param update_topic_links bool Wether "Mark topics read" links should be
+*     updated. Defaults to true.
+*/
+phpbb.addAjaxCallback('mark_topics_read', function(res, update_topic_links = true) {
 	var readTitle = res.NO_UNREAD_POSTS;
 	var unreadTitle = res.UNREAD_POSTS;
 	var iconsArray = {
@@ -85,7 +95,9 @@ phpbb.addAjaxCallback('mark_topics_read', function(res) {
 	$('a').has('span.icon_topic_newest').remove();
 
 	// Update mark topics read links
-	$('[data-ajax="mark_topics_read"]').attr('href', res.U_MARK_TOPICS);
+	if (update_topic_links) {
+		$('[data-ajax="mark_topics_read"]').attr('href', res.U_MARK_TOPICS);
+	}
 
 	phpbb.closeDarkenWrapper(3000);
 });
