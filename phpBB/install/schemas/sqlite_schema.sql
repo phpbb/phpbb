@@ -906,6 +906,7 @@ CREATE TABLE phpbb_users (
 	user_icq varchar(15) NOT NULL DEFAULT '',
 	user_aim varchar(255) NOT NULL DEFAULT '',
 	user_yim varchar(255) NOT NULL DEFAULT '',
+	user_msnm varchar(255) NOT NULL DEFAULT '',
 	user_jabber varchar(255) NOT NULL DEFAULT '',
 	user_website varchar(200) NOT NULL DEFAULT '',
 	user_occ text(65535) NOT NULL DEFAULT '',

@@ -1836,6 +1836,7 @@ function get_schema_struct()
 			'user_icq'					=> array('VCHAR:15', ''),
 			'user_aim'					=> array('VCHAR_UNI', ''),
 			'user_yim'					=> array('VCHAR_UNI', ''),
+			'user_msnm'					=> array('VCHAR_UNI', ''),
 			'user_jabber'				=> array('VCHAR_UNI', ''),
 			'user_website'				=> array('VCHAR_UNI:200', ''),
 			'user_occ'					=> array('TEXT_UNI', ''),
