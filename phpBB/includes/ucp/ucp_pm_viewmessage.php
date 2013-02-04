@@ -241,6 +241,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'U_ICQ'			=> ($user_info['user_icq']) ? 'http://www.icq.com/people/' . urlencode($user_info['user_icq']) . '/' : '',
 		'U_AIM'			=> ($user_info['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $author_id) : '',
 		'U_YIM'			=> ($user_info['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($user_info['user_yim']) . '&amp;.src=pg' : '',
+		'U_MSN'			=> ($user_info['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $author_id) : '',
 		'U_JABBER'		=> ($user_info['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $author_id) : '',
 
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',

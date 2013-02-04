@@ -455,6 +455,7 @@ $lang = array_merge($lang, array(
 	'UCP_MAIN_FRONT'			=> 'Front page',
 	'UCP_MAIN_SUBSCRIBED'		=> 'Manage subscriptions',
 
+	'UCP_MSNM'					=> 'Windows Live Messenger',
 	'UCP_NO_ATTACHMENTS'		=> 'You have posted no files.',
 
 	'UCP_PREFS'					=> 'Board preferences',

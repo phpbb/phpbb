@@ -705,6 +705,7 @@ a.sendemail {
 .aim-icon, .aim-icon a			{ background-image: url("./images/icon_contact_aim.gif"); }
 .yahoo-icon, .yahoo-icon a		{ background-image: url("./images/icon_contact_yahoo.gif"); }
 .web-icon, .web-icon a			{ background-image: url("./images/icon_contact_www.gif"); }
+.msnm-icon, .msnm-icon a			{ background-image: url("./images/icon_contact_msnm.gif"); }
 .icq-icon, .icq-icon a			{ background-image: url("./images/icon_contact_icq.gif"); }
 .jabber-icon, .jabber-icon a		{ background-image: url("./images/icon_contact_jabber.gif"); }
 .pm-icon, .pm-icon a				{ background-image: url("./en/icon_contact_pm.gif"); }
