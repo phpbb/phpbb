@@ -66,8 +66,10 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 	* Check if a module exists
 	*
 	* @param string $class The module class(acp|mcp|ucp)
-	* @param int|string|bool $parent The parent module_id|module_langname (0 for no parent).  Use false to ignore the parent check and check class wide.
-	* @param int|string $module The module_id|module_langname you would like to check for to see if it exists
+	* @param int|string|bool $parent The parent module_id|module_langname (0 for no parent).
+	*		Use false to ignore the parent check and check class wide.
+	* @param int|string $module The module_id|module_langname you would like to
+	* 		check for to see if it exists
 	* @return bool true/false if module exists
 	*/
 	public function exists($class, $parent, $module)
@@ -131,10 +133,14 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 	*
 	* @param string $class The module class(acp|mcp|ucp)
 	* @param int|string $parent The parent module_id|module_langname (0 for no parent)
-	* @param array $data an array of the data on the new module.  This can be setup in two different ways.
-	*	1. The "manual" way.  For inserting a category or one at a time.  It will be merged with the base array shown a bit below,
-	*		but at the least requires 'module_langname' to be sent, and, if you want to create a module (instead of just a category) you must send module_basename and module_mode.
-	* 		array(
+	* @param array $data an array of the data on the new module.
+	* 	This can be setup in two different ways.
+	*	1. The "manual" way.  For inserting a category or one at a time.
+	*		It will be merged with the base array shown a bit below,
+	*			but at the least requires 'module_langname' to be sent, and,
+	*			if you want to create a module (instead of just a category) you must
+	*			send module_basename and module_mode.
+	*		array(
 	*			'module_enabled'	=> 1,
 	*			'module_display'	=> 1,
 	*	   		'module_basename'	=> '',
@@ -144,14 +150,19 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 	*	   		'module_mode'		=> '',
 	*	   		'module_auth'		=> '',
 	*		)
-	*	2. The "automatic" way.  For inserting multiple at a time based on the specs in the info file for the module(s).  For this to work the modules must be correctly setup in the info file.
-	*		An example follows (this would insert the settings, log, and flag modes from the includes/acp/info/acp_asacp.php file):
+	*	2. The "automatic" way.  For inserting multiple at a time based on the
+	*			specs in the info file for the module(s).  For this to work the
+	*			modules must be correctly setup in the info file.
+	*		An example follows (this would insert the settings, log, and flag
+	*			modes from the includes/acp/info/acp_asacp.php file):
 	* 		array(
 	* 			'module_basename'	=> 'asacp',
 	* 			'modes'				=> array('settings', 'log', 'flag'),
 	* 		)
-	* 		Optionally you may not send 'modes' and it will insert all of the modules in that info file.
-	* @param string|bool $include_path If you would like to use a custom include path, specify that here
+	* 		Optionally you may not send 'modes' and it will insert all of the
+	* 			modules in that info file.
+	* @param string|bool $include_path If you would like to use a custom include
+	* 	path, specify that here
 	* @return null
 	*/
 	public function add($class, $parent = 0, $data = array(), $include_path = false)
@@ -334,9 +345,11 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 	* Remove a module
 	*
 	* @param string $class The module class(acp|mcp|ucp)
-	* @param int|string|bool $parent The parent module_id|module_langname (0 for no parent).  Use false to ignore the parent check and check class wide.
+	* @param int|string|bool $parent The parent module_id|module_langname(0 for no parent).
+	* 	Use false to ignore the parent check and check class wide.
 	* @param int|string $module The module id|module_langname
-	* @param string|bool $include_path If you would like to use a custom include path, specify that here
+	* @param string|bool $include_path If you would like to use a custom include path,
+	* 	specify that here
 	* @return null
 	*/
 	public function remove($class, $parent = 0, $module = '', $include_path = false)
@@ -473,12 +486,7 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 	}
 
 	/**
-	* Reverse an original install action
-	*
-	* First argument is the original call to the class (e.g. add, remove)
-	* After the first argument, send the original arguments to the function in the original call
-	*
-	* @return null
+	* {@inheritdoc}
 	*/
 	public function reverse()
 	{

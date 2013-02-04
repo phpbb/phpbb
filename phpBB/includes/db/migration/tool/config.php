@@ -38,12 +38,14 @@ class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_interfac
 	/**
 	* Add a config setting.
 	*
-	* @param string $config_name The name of the config setting you would like to add
+	* @param string $config_name The name of the config setting
+	* 	you would like to add
 	* @param mixed $config_value The value of the config setting
-	* @param bool $is_dynamic True if it is dynamic (changes very often) and should not be stored in the cache, false if not.
+	* @param bool $is_dynamic True if it is dynamic (changes very often)
+	* 	and should not be stored in the cache, false if not.
 	* @return null
 	*/
-	public function add($config_name, $config_value = '', $is_dynamic = false)
+	public function add($config_name, $config_value, $is_dynamic = false)
 	{
 		if (isset($this->config[$config_name]))
 		{
@@ -56,11 +58,12 @@ class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_interfac
 	/**
 	* Update an existing config setting.
 	*
-	* @param string $config_name The name of the config setting you would like to update
+	* @param string $config_name The name of the config setting you would
+	* 	like to update
 	* @param mixed $config_value The value of the config setting
 	* @return null
 	*/
-	public function update($config_name, $config_value = '')
+	public function update($config_name, $config_value)
 	{
 		if (!isset($this->config[$config_name]))
 		{
@@ -71,14 +74,17 @@ class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_interfac
 	}
 
 	/**
-	* Update a config setting if the first argument equal to the current config value
+	* Update a config setting if the first argument equal to the
+	* current config value
 	*
-	* @param bool $compare If equal to the current config value, will be updated to the new config value, otherwise not
-	* @param string $config_name The name of the config setting you would like to update
+	* @param string $compare If equal to the current config value, will be
+	* 	updated to the new config value, otherwise not
+	* @param string $config_name The name of the config setting you would
+	* 	like to update
 	* @param mixed $config_value The value of the config setting
 	* @return null
 	*/
-	public function update_if_equals($compare, $config_name, $config_value = '')
+	public function update_if_equals($compare, $config_name, $config_value)
 	{
 		if (!isset($this->config[$config_name]))
 		{
@@ -91,7 +97,8 @@ class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_interfac
 	/**
 	* Remove an existing config setting.
 	*
-	* @param string $config_name The name of the config setting you would like to remove
+	* @param string $config_name The name of the config setting you would
+	* 	like to remove
 	* @return null
 	*/
 	public function remove($config_name)
@@ -105,12 +112,7 @@ class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_interfac
 	}
 
 	/**
-	* Reverse an original install action
-	*
-	* First argument is the original call to the class (e.g. add, remove)
-	* After the first argument, send the original arguments to the function in the original call
-	*
-	* @return null
+	* {@inheritdoc}
 	*/
 	public function reverse()
 	{

@@ -61,7 +61,8 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	* Check if a permission (auth) setting exists
 	*
 	* @param string $auth_option The name of the permission (auth) option
-	* @param bool $global True for checking a global permission setting, False for a local permission setting
+	* @param bool $global True for checking a global permission setting,
+	* 	False for a local permission setting
 	* @return bool true if it exists, false if not
 	*/
 	public function exists($auth_option, $global = true)
@@ -98,7 +99,8 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	* Add a permission (auth) option
 	*
 	* @param string $auth_option The name of the permission (auth) option
-	* @param bool $global True for checking a global permission setting, False for a local permission setting
+	* @param bool $global True for checking a global permission setting,
+	* 	False for a local permission setting
 	* @return null
 	*/
 	public function add($auth_option, $global = true, $copy_from = false)
@@ -180,7 +182,8 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	* Remove a permission (auth) option
 	*
 	* @param string $auth_option The name of the permission (auth) option
-	* @param bool $global True for checking a global permission setting, False for a local permission setting
+	* @param bool $global True for checking a global permission setting,
+	* 	False for a local permission setting
 	* @return null
 	*/
 	public function remove($auth_option, $global = true)
@@ -239,7 +242,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	* @param sting $role_type The type (u_, m_, a_)
 	* @return null
 	*/
-	public function role_add($role_name, $role_type = '', $role_description = '')
+	public function role_add($role_name, $role_type, $role_description = '')
 	{
 		$sql = 'SELECT role_id
 			FROM ' . ACL_ROLES_TABLE . "
@@ -277,7 +280,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	* @param string $new_role_name The new role name
 	* @return null
 	*/
-	public function role_update($old_role_name, $new_role_name = '')
+	public function role_update($old_role_name, $new_role_name)
 	{
 		$sql = 'SELECT role_id
 			FROM ' . ACL_ROLES_TABLE . "
@@ -332,12 +335,14 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	* Allows you to set permissions for a certain group/role
 	*
 	* @param string $name The name of the role/group
-	* @param string|array $auth_option The auth_option or array of auth_options you would like to set
+	* @param string|array $auth_option The auth_option or array of
+	* 	auth_options you would like to set
 	* @param string $type The type (role|group)
-	* @param bool $has_permission True if you want to give them permission, false if you want to deny them permission
+	* @param bool $has_permission True if you want to give them permission,
+	* 	false if you want to deny them permission
 	* @return null
 	*/
-	public function permission_set($name, $auth_option = array(), $type = 'role', $has_permission = true)
+	public function permission_set($name, $auth_option, $type = 'role', $has_permission = true)
 	{
 		if (!is_array($auth_option))
 		{
@@ -477,11 +482,12 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	* Allows you to unset (remove) permissions for a certain group/role
 	*
 	* @param string $name The name of the role/group
-	* @param string|array $auth_option The auth_option or array of auth_options you would like to set
+	* @param string|array $auth_option The auth_option or array of
+	* 	auth_options you would like to set
 	* @param string $type The type (role|group)
 	* @return null
 	*/
-	public function permission_unset($name, $auth_option = array(), $type = 'role')
+	public function permission_unset($name, $auth_option, $type = 'role')
 	{
 		if (!is_array($auth_option))
 		{
@@ -565,12 +571,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	}
 
 	/**
-	* Reverse an original install action
-	*
-	* First argument is the original call to the class (e.g. add, remove)
-	* After the first argument, send the original arguments to the function in the original call
-	*
-	* @return null
+	* {@inheritdoc}
 	*/
 	public function reverse()
 	{
