@@ -266,6 +266,7 @@ class ucp_profile
 				$data = array(
 					'icq'			=> request_var('icq', $user->data['user_icq']),
 					'aim'			=> request_var('aim', $user->data['user_aim']),
+					'msn'			=> request_var('msn', $user->data['user_msnm']),
 					'yim'			=> request_var('yim', $user->data['user_yim']),
 					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user->data['user_jabber'], true)),
 					'website'		=> request_var('website', $user->data['user_website']),
@@ -298,6 +299,7 @@ class ucp_profile
 							array('string', true, 3, 15),
 							array('match', true, '#^[0-9]+$#i')),
 						'aim'			=> array('string', true, 3, 255),
+						'msn'			=> array('string', true, 5, 255),
 						'jabber'		=> array(
 							array('string', true, 5, 255),
 							array('jabber')),
@@ -349,6 +351,7 @@ class ucp_profile
 						$sql_ary = array(
 							'user_icq'		=> $data['icq'],
 							'user_aim'		=> $data['aim'],
+							'user_msnm'		=> $data['msn'],
 							'user_yim'		=> $data['yim'],
 							'user_jabber'	=> $data['jabber'],
 							'user_website'	=> $data['website'],
@@ -420,6 +423,7 @@ class ucp_profile
 					'ICQ'		=> $data['icq'],
 					'YIM'		=> $data['yim'],
 					'AIM'		=> $data['aim'],
+					'MSN'		=> $data['msn'],
 					'JABBER'	=> $data['jabber'],
 					'WEBSITE'	=> $data['website'],
 					'LOCATION'	=> $data['location'],

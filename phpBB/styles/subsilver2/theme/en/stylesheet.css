@@ -19,6 +19,11 @@
 	padding-left: 72px;
 	padding-top: 20px;
 }
+.imageset.icon_contact_msnm {
+	background-image: url("./icon_contact_msnm.gif");
+	padding-left: 72px;
+	padding-top: 20px;
+}
 .imageset.icon_contact_pm {
 	background-image: url("./icon_contact_pm.gif");
 	padding-left: 72px;

@@ -1568,6 +1568,7 @@ CREATE TABLE [phpbb_users] (
 	[user_icq] [varchar] (15) DEFAULT ('') NOT NULL ,
 	[user_aim] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_yim] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[user_msnm] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_jabber] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_website] [varchar] (200) DEFAULT ('') NOT NULL ,
 	[user_occ] [varchar] (4000) DEFAULT ('') NOT NULL ,

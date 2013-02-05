@@ -1680,6 +1680,7 @@ CREATE TABLE phpbb_users (
 	user_icq varchar2(15) DEFAULT '' ,
 	user_aim varchar2(765) DEFAULT '' ,
 	user_yim varchar2(765) DEFAULT '' ,
+	user_msnm varchar2(765) DEFAULT '' ,
 	user_jabber varchar2(765) DEFAULT '' ,
 	user_website varchar2(600) DEFAULT '' ,
 	user_occ clob DEFAULT '' ,
