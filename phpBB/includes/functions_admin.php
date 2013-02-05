@@ -896,6 +896,60 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 }
 
 /**
+* Remove users votes from polls
+*
+* @param dbal		$db			Database object
+* @param array		$user_ids	IDs of the users we want to delete the votes of
+* @param boolean	$delete_all	Shall we delete all votes, or just the ones, where the poll did not end yet.
+* @return null
+*/
+function phpbb_delete_user_poll_votes($db, $user_ids, $delete_all = false)
+{
+	if (!$delete_all)
+	{
+		$sql = 'SELECT v.poll_option_id, v.topic_id
+			FROM ' . POLL_VOTES_TABLE . ' v, ' . TOPICS_TABLE . ' t
+			WHERE ' . $db->sql_in_set('v.vote_user_id', $user_ids) . '
+				AND v.topic_id = t.topic_id
+				AND (t.poll_length = 0
+					OR t.poll_start + t.poll_length > ' . time() . ')';
+		$result = $db->sql_query($sql);
+	}
+	else
+	{
+		$sql = 'SELECT poll_option_id, topic_id
+			FROM ' . POLL_VOTES_TABLE . '
+			WHERE ' . $db->sql_in_set('vote_user_id', $user_ids);
+		$result = $db->sql_query($sql);
+	}
+
+	$voted_poll_topics = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$voted_poll_topics[(int) $row['topic_id']][] = (int) $row['poll_option_id'];
+	}
+	$db->sql_freeresult($result);
+
+	// poll_option_id does not have autoincrement, so we need to use topic_id and poll_option_id
+	foreach ($voted_poll_topics as $topic_id => $voted_options)
+	{
+		$sql_voted_options = $db->sql_in_set('poll_option_id', $voted_options);
+
+		$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
+			SET poll_option_total = poll_option_total - 1
+			WHERE topic_id = ' . $topic_id . '
+				AND ' . $sql_voted_options;
+		$db->sql_query($sql);
+
+		$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . '
+			WHERE ' . $db->sql_in_set('vote_user_id', $user_ids) . '
+				AND topic_id = ' . $topic_id . '
+				AND ' . $sql_voted_options;
+		$db->sql_query($sql);
+	}
+}
+
+/**
 * Delete Attachments
 *
 * @param string $mode can be: post|message|topic|attach|user

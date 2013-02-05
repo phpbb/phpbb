@@ -61,9 +61,9 @@
 <fieldset>
 	<legend>{L_OPTIONS}</legend>
 <dl>
-	<dt><label for="deleteposts">{L_DELETE_USER_POSTS}{L_COLON}</label><br /><span>{L_DELETE_USER_POSTS_EXPLAIN}</span></dt>
-	<dd><label><input type="radio" class="radio" name="deleteposts" value="1" /> {L_YES}</label>
-		<label><input type="radio" class="radio" id="deleteposts" name="deleteposts" value="0" checked="checked" /> {L_NO}</label></dd>
+	<dt><label>{L_PRUNE_DELETE_USERS}{L_COLON}</label><br /><span>{L_PRUNE_DELETE_USERS_EXPLAIN}</span></dt>
+	<dd><label><input type="checkbox" class="checkbox" name="delete_content[]" value="posts" /> {L_DELETE_POSTS}</label></dd>
+	<dd><label><input type="checkbox" class="checkbox" name="delete_content[]" value="votes" /> {L_DELETE_VOTES}</label></dd>
 </dl>
 <dl>
 	<dt><label for="deactivate">{L_DEACTIVATE_DELETE}{L_COLON}</label><br /><span>{L_DEACTIVATE_DELETE_EXPLAIN}</span></dt>

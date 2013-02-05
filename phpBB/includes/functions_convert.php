@@ -2158,7 +2158,7 @@ function remove_invalid_users()
 			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 		}
 
-		user_delete('remove', $row['user_id']);
+		user_delete(array('posts', 'votes'), $row['user_id']);
 	}
 }
 

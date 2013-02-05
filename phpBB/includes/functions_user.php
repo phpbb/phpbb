@@ -350,9 +350,11 @@ function user_add($user_row, $cp_data = false)
 
 /**
 * Remove User
-* @param $mode Either 'retain' or 'remove'
+* @param array	$delete_contents	Content we delete while deleting the users
+* @param array	$user_ids			User IDs we are going to delete
+* @param bool	$retain_username	Shall we retain the username or update it to guest?
 */
-function user_delete($mode, $user_ids, $retain_username = true)
+function user_delete($delete_contents, $user_ids, $retain_username = true)
 {
 	global $cache, $config, $db, $user, $auth, $phpbb_dispatcher;
 	global $phpbb_root_path, $phpEx;
@@ -386,12 +388,12 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	* Event before a user is deleted
 	*
 	* @event core.delete_user_before
-	* @var	string	mode			Mode of deletion (retain/delete posts)
-	* @var	int		user_id			ID of the deleted user
-	* @var	mixed	post_username	Guest username that is being used or false
+	* @var array	$delete_contents	Content we delete while deleting the users
+	* @var array	$user_ids			User IDs we are going to delete
+	* @var bool		$retain_username	Shall we retain the username or update it to guest?
 	* @since 3.1-A1
 	*/
-	$vars = array('mode', 'user_id', 'post_username');
+	$vars = array('mode', 'user_ids', 'retain_username');
 	extract($phpbb_dispatcher->trigger_event('core.delete_user_before', compact($vars)));
 
 	// Before we begin, we will remove the reports the user issued.
@@ -471,56 +473,49 @@ function user_delete($mode, $user_ids, $retain_username = true)
 			--$num_users_delta;
 		}
 
-		switch ($mode)
+		if (!in_array('posts', $delete_contents))
 		{
-			case 'retain':
-				if ($retain_username === false)
+			if ($retain_username === false)
+			{
+				$post_username = $user->lang['GUEST'];
+			}
+			else
+			{
+				$post_username = $user_row['username'];
+			}
+
+			// If the user is inactive and newly registered
+			// we assume no posts from the user, and save
+			// the queries
+			if ($user_row['user_type'] != USER_INACTIVE || $user_row['user_inactive_reason'] != INACTIVE_REGISTER || $user_row['user_posts'])
+			{
+				// When we delete these users and retain the posts, we must assign all the data to the guest user
+				$sql = 'UPDATE ' . FORUMS_TABLE . '
+					SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
+					WHERE forum_last_poster_id = $user_id";
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . POSTS_TABLE . '
+					SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
+					WHERE poster_id = $user_id";
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
+					WHERE topic_poster = $user_id";
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
+					WHERE topic_last_poster_id = $user_id";
+				$db->sql_query($sql);
+
+				// Since we change every post by this author, we need to count this amount towards the anonymous user
+				if ($user_row['user_posts'])
 				{
-					$post_username = $user->lang['GUEST'];
+					$added_guest_posts += $user_row['user_posts'];
 				}
-				else
-				{
-					$post_username = $user_row['username'];
-				}
-
-				// If the user is inactive and newly registered
-				// we assume no posts from the user, and save
-				// the queries
-				if ($user_row['user_type'] != USER_INACTIVE || $user_row['user_inactive_reason'] != INACTIVE_REGISTER || $user_row['user_posts'])
-				{
-					// When we delete these users and retain the posts, we must assign all the data to the guest user
-					$sql = 'UPDATE ' . FORUMS_TABLE . '
-						SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
-						WHERE forum_last_poster_id = $user_id";
-					$db->sql_query($sql);
-
-					$sql = 'UPDATE ' . POSTS_TABLE . '
-						SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
-						WHERE poster_id = $user_id";
-					$db->sql_query($sql);
-
-					$sql = 'UPDATE ' . TOPICS_TABLE . '
-						SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
-						WHERE topic_poster = $user_id";
-					$db->sql_query($sql);
-
-					$sql = 'UPDATE ' . TOPICS_TABLE . '
-						SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
-						WHERE topic_last_poster_id = $user_id";
-					$db->sql_query($sql);
-
-					// Since we change every post by this author, we need to count this amount towards the anonymous user
-
-					if ($user_row['user_posts'])
-					{
-						$added_guest_posts += $user_row['user_posts'];
-					}
-				}
-			break;
-
-			case 'remove':
-				// there is nothing variant specific to deleting posts
-			break;
+			}
 		}
 	}
 
@@ -532,7 +527,18 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	// Now do the invariant tasks
 	// all queries performed in one call of this function are in a single transaction
 	// so this is kosher
-	if ($mode == 'retain')
+	if (in_array('posts', $delete_contents))
+	{
+		if (!function_exists('delete_posts'))
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
+
+		// Delete posts, attachments, etc.
+		// delete_posts can handle any number of IDs in its second argument
+		delete_posts('poster_id', $user_ids);
+	}
+	else
 	{
 		// Assign more data to the Anonymous user
 		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
@@ -550,16 +556,24 @@ function user_delete($mode, $user_ids, $retain_username = true)
 			WHERE user_id = ' . ANONYMOUS;
 		$db->sql_query($sql);
 	}
-	else if ($mode == 'remove')
+
+	if (in_array('votes', $delete_contents))
 	{
-		if (!function_exists('delete_posts'))
+		if (!function_exists('phpbb_delete_user_poll_votes'))
 		{
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
 
-		// Delete posts, attachments, etc.
-		// delete_posts can handle any number of IDs in its second argument
-		delete_posts('poster_id', $user_ids);
+		// Delete votes on open polls
+		phpbb_delete_user_poll_votes($db, $user_ids);
+	}
+	else
+	{
+		// Assign votes to the Anonymous user
+		$sql = 'UPDATE ' . POLL_VOTES_TABLE . '
+			SET vote_user_id = ' . ANONYMOUS . '
+			WHERE ' . $db->sql_in_set('vote_user_id', $user_ids);
+		$db->sql_query($sql);
 	}
 
 	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE, DRAFTS_TABLE, BOOKMARKS_TABLE, SESSIONS_KEYS_TABLE, PRIVMSGS_FOLDER_TABLE, PRIVMSGS_RULES_TABLE);
@@ -614,12 +628,12 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	* Event after a user is deleted
 	*
 	* @event core.delete_user_after
-	* @var	string	mode			Mode of deletion (retain/delete posts)
-	* @var	int		user_id			ID of the deleted user
-	* @var	mixed	post_username	Guest username that is being used or false
+	* @var array	$delete_contents	Content we delete while deleting the users
+	* @var array	$user_ids			User IDs we are going to delete
+	* @var bool		$retain_username	Shall we retain the username or update it to guest?
 	* @since 3.1-A1
 	*/
-	$vars = array('mode', 'user_id', 'post_username');
+	$vars = array('delete_contents', 'user_ids', 'retain_username');
 	extract($phpbb_dispatcher->trigger_event('core.delete_user_after', compact($vars)));
 
 	// Reset newest user info if appropriate

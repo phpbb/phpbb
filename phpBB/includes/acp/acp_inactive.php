@@ -155,7 +155,7 @@ class acp_inactive
 								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
-							user_delete('retain', $mark, true);
+							user_delete(array(), $mark, true);
 
 							add_log('admin', 'LOG_INACTIVE_' . strtoupper($action), implode(', ', $user_affected));
 

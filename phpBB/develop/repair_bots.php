@@ -79,7 +79,7 @@ $bot_ids = array();
 user_get_id_name($bot_ids, array_keys($bots), USER_IGNORE);
 foreach($bot_ids as $bot)
 {
-	user_delete('remove', $bot);
+	user_delete(array('posts', 'votes'), $bot);
 }
 // Done
 add_bots($bots);

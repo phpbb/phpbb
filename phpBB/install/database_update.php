@@ -2364,7 +2364,7 @@ function change_database_data(&$no_updates, $version)
 							WHERE user_id = $bot_user_id";
 						_sql($sql, $errored, $error_ary);
 
-						user_delete('remove', $bot_user_id);
+						user_delete(array('posts', 'votes'), $bot_user_id);
 					}
 					else
 					{
