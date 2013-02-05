@@ -187,6 +187,7 @@ $lang = array_merge($lang, array(
 	'ELLIPSIS'							=>	'…',
 	'EMAIL'								=> 'Email', // Short form for EMAIL_ADDRESS
 	'EMAIL_ADDRESS'						=> 'Email address',
+	'EMAIL_INVALID'						=> 'The email address you entered is invalid.',
 	'EMAIL_SMTP_ERROR_RESPONSE'			=> 'Ran into problems sending email at <strong>Line %1$s</strong>. Response: %2$s.',
 	'EMPTY_SUBJECT'						=> 'You must specify a subject when posting a new topic.',
 	'EMPTY_MESSAGE_SUBJECT'				=> 'You must specify a subject when composing a new message.',

@@ -442,7 +442,14 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					}
 				}
 			break;
-
+			
+			case 'email':
+				if (!preg_match('/^' . get_preg_expression('email') . '$/i', $cfg_array[$config_name])) 
+				{
+					$error[] = $user->lang['EMAIL_INVALID'];	
+				}
+			break;
+			
 			// Absolute path
 			case 'script_path':
 				if (!$cfg_array[$config_name])
