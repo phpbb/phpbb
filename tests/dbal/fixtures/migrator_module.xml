@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_modules">
+		<column>module_id</column>
+		<column>module_enabled</column>
+		<column>module_display</column>
+		<column>module_basename</column>
+		<column>module_class</column>
+		<column>parent_id</column>
+		<column>left_id</column>
+		<column>right_id</column>
+		<column>module_langname</column>
+		<column>module_mode</column>
+		<column>module_auth</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+			<value>acp</value>
+			<value>0</value>
+			<value>1</value>
+			<value>4</value>
+			<value>ACP_CAT</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>1</value>
+			<value>acp_test</value>
+			<value>acp</value>
+			<value>1</value>
+			<value>2</value>
+			<value>3</value>
+			<value>ACP_MODULE</value>
+			<value>test</value>
+			<value></value>
+		</row>
+	</table>
+</dataset>
