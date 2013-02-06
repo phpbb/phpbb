@@ -520,7 +520,7 @@ class phpbb_extension_manager
 	protected function handle_migrations($extension_name, $mode)
 	{
 		$migrator = $this->container->get('migrator');
-		$migrations_path = $this->get_extension_path($extension_name) . 'migrations';
+		$migrations_path = $this->phpbb_root_path . $this->get_extension_path($extension_name) . 'migrations/';
 		if (file_exists($migrations_path) && is_dir($migrations_path))
 		{
 			$migrator->load_migrations($migrations_path);
