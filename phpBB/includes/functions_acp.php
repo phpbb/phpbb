@@ -258,25 +258,27 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		break;
 
 		case 'number':
-			$min = (int) $tpl_type[1];
-			$max = $maxlength = (int) $tpl_type[2];
-
-			// $tpl_type[3] is not always present
-			if (!isset($tpl_type[3]) || (isset($tpl_type[3]) && $tpl_type[3] != 'true'))
+			$min = $max = $maxlength = '';
+			$min = ( isset($tpl_type[1]) ) ? (int) $tpl_type[1] : false;
+			if ( isset($tpl_type[2]) )
 			{
-				$max = str_repeat('9', $max);
+				$max = (int) $tpl_type[2];
+				$maxlength = strlen( (string) $max );
 			}
 
-			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (($maxlength) ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="' . $name . '" value="' . $new[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
+			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (( $maxlength != '' ) ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="' . $name . '" value="' . $new[$config_key] . '" />';
 		break;
 
 		case 'dimension':
+			$min = $max = $maxlength = '';
 			$min = (int) $tpl_type[1];
-			$max = $maxlength = (int) $tpl_type[2];
+			if ( isset($tpl_type[2]) )
+			{
+				$max = (int) $tpl_type[2];
+				$maxlength = strlen( (string) $max );
+			}
 
-			$max = str_repeat('9', $max);
-
-			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (($maxlength) ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="config[' . $config_key . '_width]" value="' . $new[$config_key . '_width'] . '" /> x <input type="number" maxlength="' . (($maxlength) ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="config[' . $config_key . '_height]" value="' . $new[$config_key . '_height'] . '" />';
+			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (($maxlength != '') ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="config[' . $config_key . '_width]" value="' . $new[$config_key . '_width'] . '" /> x <input type="number" maxlength="' . (($maxlength != '') ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="config[' . $config_key . '_height]" value="' . $new[$config_key . '_height'] . '" />';
 		break;
 
 		case 'textarea':
