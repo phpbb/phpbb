@@ -1180,9 +1180,12 @@ function database_update_info()
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
 				REPORTS_TABLE		=> array(
-					'reported_post_text'		=> array('MTEXT_UNI', ''),
-					'reported_post_uid'			=> array('VCHAR:8', ''),
-					'reported_post_bitfield'	=> array('VCHAR:255', ''),
+					'reported_post_text'				=> array('MTEXT_UNI', ''),
+					'reported_post_uid'					=> array('VCHAR:8', ''),
+					'reported_post_bitfield'			=> array('VCHAR:255', ''),
+					'reported_post_enable_bbcode'		=> array('BOOL', 1),
+					'reported_post_enable_smilies'		=> array('BOOL', 1),
+					'reported_post_enable_magic_url'	=> array('BOOL', 1),
 				),
 			),
 			'change_columns'	=> array(
@@ -2961,6 +2964,7 @@ function change_database_data(&$no_updates, $version)
 				_sql($sql, $errored, $error_ary);
 			}
 			$db->sql_freeresult($result);
+			
 
 			// Add new permissions
 			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);

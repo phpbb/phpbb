@@ -649,20 +649,39 @@ fieldset.polls dd div {
 Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
 
-/* Big button images */
-.reply-icon span	{ background-image: url("./en/button_topic_reply.gif"); }
-.post-icon span		{ background-image: url("./en/button_topic_new.gif"); }
-.locked-icon span	{ background-image: url("./en/button_topic_locked.gif"); }
-.pmreply-icon span	{ background-image: url("./en/button_pm_reply.gif") ;}
-.newpm-icon span 	{ background-image: url("./en/button_pm_new.gif") ;}
-.forwardpm-icon span	{ background-image: url("./en/button_pm_forward.gif") ;}
-
 a.print {
 	background-image: url("./images/icon_print.gif");
 }
 
 a.sendemail {
 	background-image: url("./images/icon_sendemail.gif");
+}
+
+.buttons div a {
+	border-color: #C7C3BF;
+	background-color: #FFFFFF;
+	background-image: -moz-linear-gradient(top, #FFFFFF, #E9E9E9);
+	background-image: -webkit-linear-gradient(top, #FFFFFF, #E9E9E9);
+	background-image: -o-linear-gradient(top, #FFFFFF, #E9E9E9);
+	background-image: linear-gradient(to bottom, #FFFFFF, #E9E9E9);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='#E9E9E9')";
+	box-shadow: 0 0 0 1px #FFFFFF inset;
+	-webkit-box-shadow: 0 0 0 1px #FFFFFF inset;
+	color: #BC2A4D !important;
+}
+
+.buttons div a:hover {
+	border-color: #0a8ed0;
+	background-image: -moz-linear-gradient(top, #E9E9E9, #FFFFFF);
+	background-image: -webkit-linear-gradient(top, #E9E9E9, #FFFFFF);
+	background-image: -o-linear-gradient(top, #E9E9E9, #FFFFFF);
+	background-image: linear-gradient(to bottom, #E9E9E9, #FFFFFF);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#E9E9E9', EndColorStr='#FFFFFF')";
+	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
+}
+
+.buttons div a:after {
+	background-image: url("images/buttons.png");
 }
 
 /* Icon images
