@@ -162,7 +162,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 				$image = $file_info->getFilename();
 
 				// Match all images in the gallery folder
-				if (preg_match('#^[^&\'"<>]+\.(?:'. self::REGEX_ALLOWED_EXT . ')$#i', $image) && is_file($file_path . '/' . $image))
+				if (preg_match('#^[^&\'"<>]+\.(?:' . implode('|', $this->allowed_extensions) . ')$#i', $image) && is_file($file_path . '/' . $image))
 				{
 					if (function_exists('getimagesize'))
 					{

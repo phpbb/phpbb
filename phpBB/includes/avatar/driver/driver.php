@@ -54,7 +54,12 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	/**
 	* Regex for allowed avatar image extensions
 	*/
-	const REGEX_ALLOWED_EXT = 'gif|jpg|jpeg|png';
+	protected $allowed_extensions = array(
+		'gif',
+		'jpg',
+		'jpeg',
+		'png',
+	);
 
 	/**
 	* Construct a driver object

@@ -66,7 +66,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 			include($this->phpbb_root_path . 'includes/functions_upload' . $this->php_ext);
 		}
 
-		$upload = new fileupload('AVATAR_', explode('|', self::REGEX_ALLOWED_EXT), $this->config['avatar_filesize'], $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], (isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
+		$upload = new fileupload('AVATAR_', $this->allowed_extensions, $this->config['avatar_filesize'], $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], (isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
 
 		$url = $request->variable('avatar_upload_url', '');
 		$upload_file = $request->file('avatar_upload_file');

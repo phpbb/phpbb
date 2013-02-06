@@ -84,7 +84,7 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 
 		// Check if this url looks alright
 		// This isn't perfect, but it's what phpBB 3.0 did, and might as well make sure everything is compatible
-		if (!preg_match('#^(http|https|ftp)://(?:(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}|(?:\d{1,3}\.){3,5}\d{1,3}):?([0-9]*?).*?\.('. self::REGEX_ALLOWED_EXT . ')$#i', $url))
+		if (!preg_match('#^(http|https|ftp)://(?:(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}|(?:\d{1,3}\.){3,5}\d{1,3}):?([0-9]*?).*?\.('. implode('|', $this->allowed_extensions) . ')$#i', $url))
 		{
 			$error[] = 'AVATAR_URL_INVALID';
 			return false;
