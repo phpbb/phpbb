@@ -64,7 +64,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name_width' => 10, 'config_key_name_height' => 20),
 				'config_key_name',
 				array(),
-				'<input id="number_key_name" type="number" size="20" maxlength="15" max="999999999999999" name="config[config_key_name_width]" value="10" /> x <input type="text" size="20" maxlength="255" name="config[config_key_name_height]" value="20" />',
+				'<input id="number_key_name" type="number" maxlength="2" min="5" max="15" name="config[config_key_name_width]" value="10" /> x <input type="number" maxlength="2" min="5" max="15" name="config[config_key_name_height]" value="20" />',
 			),
 			array(
 				array('dimension', 0, 15),
@@ -72,7 +72,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name_width' => 10, 'config_key_name_height' => 20),
 				'config_key_name',
 				array(),
-				'<input id="number_key_name" type="number" maxlength="15" max="999999999999999" name="config[config_key_name_width]" value="10" /> x <input type="text" maxlength="255" name="config[config_key_name_height]" value="20" />',
+				'<input id="number_key_name" type="number" maxlength="2" min="0" max="15" name="config[config_key_name_width]" value="10" /> x <input type="number" maxlength="2" min="0" max="15" name="config[config_key_name_height]" value="20" />',
 			),
 		);
 	}
@@ -81,6 +81,42 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	* @dataProvider build_cfg_template_dimension_data
 	*/
 	public function test_build_cfg_template_dimension($tpl_type, $key, $new, $config_key, $vars, $expected)
+	{
+		global $user, $phpbb_dispatcher;
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = new phpbb_mock_user();
+		$user->lang = new phpbb_mock_lang();
+
+		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+	}
+
+	public function build_cfg_template_number_data()
+	{
+		return array(
+			array(
+				array('number', 5, 15),
+				'number_key_name',
+				array('config_key_name' => 10),
+				'config_key_name',
+				array(),
+				'<input id="number_key_name" type="number" maxlength="2" min="5" max="15" name="config[config_key_name]" value="10" />',
+			),
+			array(
+				array('number', -1, 9999),
+				'number_key_name',
+				array('config_key_name' => 10),
+				'config_key_name',
+				array(),
+				'<input id="number_key_name" type="number" maxlength="4" min="-1" max="9999" name="config[config_key_name]" value="10" />',
+			),
+		);
+	}
+
+	/**
+	* @dataProvider build_cfg_template_number_data
+	*/
+	public function test_build_cfg_template_number($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
 		global $user, $phpbb_dispatcher;
 
