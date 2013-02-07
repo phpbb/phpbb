@@ -344,7 +344,7 @@ function send_avatar_to_browser($file, $browser)
 		$image_data = @getimagesize($file_path);
 		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
 			
-		if (strpos(strtolower($browser), 'msie') !== false && !is_greater_ie7($user->browser))
+		if (strpos(strtolower($browser), 'msie') !== false && !is_greater_ie7($browser))
 		{
 			header('Content-Disposition: attachment; ' . header_filename($file));
 
@@ -680,7 +680,7 @@ function set_modified_headers($stamp, $browser)
 	// let's see if we have to send the file at all
 	$last_load 	=  isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) : false;
 		
-	if ((strpos(strtolower($browser), 'msie 6.0') === false) && (!is_greater_ie7($user->browser)))
+	if ((strpos(strtolower($browser), 'msie 6.0') === false) && (!is_greater_ie7($browser)))
 	{
 		if ($last_load !== false && $last_load >= $stamp)
 		{
