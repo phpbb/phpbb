@@ -457,6 +457,7 @@ class ucp_register
 			'S_LANG_OPTIONS'	=> language_select($data['lang']),
 			'S_TZ_OPTIONS'			=> $timezone_selects['tz_select'],
 			'S_TZ_DATE_OPTIONS'		=> $timezone_selects['tz_dates'],
+			'S_TZ_PRESELECT'	=> (!$submit),
 			'S_CONFIRM_REFRESH'	=> ($config['enable_confirm'] && $config['confirm_refresh']) ? true : false,
 			'S_REGISTRATION'	=> true,
 			'S_COPPA'			=> $coppa,
