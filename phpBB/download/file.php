@@ -709,6 +709,10 @@ function file_gc()
 	exit;
 }
 
+/**
+* Check if the browser is internet explorer version 7+
+* @returns true if ie7+
+*/
 function phpbb_is_greater_ie7($browser)
 {
 	return (bool) preg_match('/msie (\d{2,3}|[89]+).[0-9.]*;/', strtolower($browser));
