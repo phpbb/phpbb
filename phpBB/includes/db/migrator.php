@@ -681,12 +681,12 @@ class phpbb_db_migrator
 	{
 		if (isset($this->migration_state[$name]))
 		{
-			return $name;
+			return false;
 		}
 
 		if (!class_exists($name))
 		{
-			return true;
+			return $name;
 		}
 
 		$migration = $this->get_migration($name);
