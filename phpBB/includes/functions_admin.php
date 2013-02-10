@@ -3263,38 +3263,25 @@ function tidy_database()
 */
 function add_permission_language()
 {
-	global $user, $phpEx;
+	global $user, $phpEx, $phpbb_extension_manager;
 
 	// First of all, our own file. We need to include it as the first file because it presets all relevant variables.
 	$user->add_lang('acp/permissions_phpbb');
 
-	$files_to_add = array();
+	// add permission language files from extensions
+	$finder = $phpbb_extension_manager->get_finder();
 
-	// Now search in acp and mods folder for permissions_ files.
-	foreach (array('acp/', 'mods/') as $path)
+	$lang_files = $finder
+		->prefix('permissions_')
+		->suffix(".$phpEx")
+		->extension_directory('/language/' . $user->lang_name)
+		->core_path('language/' . $user->lang_name . '/mods/')
+		->find();
+
+	foreach ($lang_files as $lang_file => $ext_name)
 	{
-		$dh = @opendir($user->lang_path . $user->lang_name . '/' . $path);
-
-		if ($dh)
-		{
-			while (($file = readdir($dh)) !== false)
-			{
-				if ($file !== 'permissions_phpbb.' . $phpEx && strpos($file, 'permissions_') === 0 && substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx)
-				{
-					$files_to_add[] = $path . substr($file, 0, -(strlen($phpEx) + 1));
-				}
-			}
-			closedir($dh);
-		}
+		$user->add_lang_ext($ext_name, $lang_file);
 	}
-
-	if (!sizeof($files_to_add))
-	{
-		return false;
-	}
-
-	$user->add_lang($files_to_add);
-	return true;
 }
 
 /**
