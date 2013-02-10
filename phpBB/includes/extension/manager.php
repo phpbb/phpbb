@@ -29,6 +29,7 @@ class phpbb_extension_manager
 
 	protected $db;
 	protected $config;
+	protected $migrator;
 	protected $cache;
 	protected $php_ext;
 	protected $extensions;
@@ -48,12 +49,13 @@ class phpbb_extension_manager
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, phpbb_db_migrator $migrator, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->container = $container;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
 		$this->config = $config;
+		$this->migrator = $migrator;
 		$this->cache = $cache;
 		$this->php_ext = $php_ext;
 		$this->extension_table = $extension_table;
@@ -519,11 +521,10 @@ class phpbb_extension_manager
 	*/
 	protected function handle_migrations($extension_name, $mode)
 	{
-		$migrator = $this->container->get('migrator');
 		$migrations_path = $this->phpbb_root_path . $this->get_extension_path($extension_name) . 'migrations/';
 		if (file_exists($migrations_path) && is_dir($migrations_path))
 		{
-			$migrator->load_migrations($migrations_path);
+			$this->migrator->load_migrations($migrations_path);
 		}
 
 		// What is a safe limit of execution time? Half the max execution time should be safe.
@@ -532,9 +533,9 @@ class phpbb_extension_manager
 
 		if ($mode == 'enable')
 		{
-			while (!$migrator->finished())
+			while (!$this->migrator->finished())
 			{
-				$migrator->update();
+				$this->migrator->update();
 
 				// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 				if ((time() - $start_time) >= $safe_time_limit)
@@ -545,9 +546,9 @@ class phpbb_extension_manager
 		}
 		else if ($mode == 'purge')
 		{
-			while ($migrator->migration_state() !== false)
+			while ($this->migrator->migration_state() !== false)
 			{
-				$migrator->revert();
+				$this->migrator->revert();
 
 				// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 				if ((time() - $start_time) >= $safe_time_limit)
