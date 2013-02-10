@@ -522,10 +522,12 @@ class phpbb_extension_manager
 	protected function handle_migrations($extension_name, $mode)
 	{
 		$migrations_path = $this->phpbb_root_path . $this->get_extension_path($extension_name) . 'migrations/';
-		if (file_exists($migrations_path) && is_dir($migrations_path))
+		if (!file_exists($migrations_path) || !is_dir($migrations_path))
 		{
-			$this->migrator->load_migrations($migrations_path);
+			return true;
 		}
+
+		$migrations = $this->migrator->load_migrations($migrations_path);
 
 		// What is a safe limit of execution time? Half the max execution time should be safe.
 		$safe_time_limit = (ini_get('max_execution_time') / 2);
@@ -546,14 +548,17 @@ class phpbb_extension_manager
 		}
 		else if ($mode == 'purge')
 		{
-			while ($this->migrator->migration_state() !== false)
+			foreach ($migrations as $migration)
 			{
-				$this->migrator->revert();
-
-				// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
-				if ((time() - $start_time) >= $safe_time_limit)
+				while ($this->migrator->migration_state($migration) !== false)
 				{
-					return false;
+					$this->migrator->revert($migration);
+
+					// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
+					if ((time() - $start_time) >= $safe_time_limit)
+					{
+						return false;
+					}
 				}
 			}
 		}
