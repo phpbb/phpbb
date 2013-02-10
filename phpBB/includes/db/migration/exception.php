@@ -52,4 +52,14 @@ class phpbb_db_migration_exception extends \Exception
 	{
 		return $this->message . ': ' . var_export($this->parameters, true);
 	}
+
+	/**
+	* Get the parameters
+	*
+	* @return array
+	*/
+	public function getParameters()
+	{
+		return $this->parameters;
+	}
 }
