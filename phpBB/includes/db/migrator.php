@@ -228,9 +228,10 @@ class phpbb_db_migrator
 		{
 			foreach ($this->migrations as $name)
 			{
-				if ($this->unfulfillable($name))
+				$unfulfillable = $this->unfulfillable($name);
+				if ($unfulfillable !== false)
 				{
-					throw new phpbb_db_migration_exception('MIGRATION NOT FULFILLABLE', $name);
+					throw new phpbb_db_migration_exception('MIGRATION_NOT_FULFILLABLE', $name, $unfulfillable);
 				}
 			}
 		}
@@ -674,13 +675,13 @@ class phpbb_db_migrator
 	* Checks if a migration's dependencies can even theoretically be satisfied.
 	*
 	* @param string	$name The class name of the migration
-	* @return bool Whether the migration cannot be fulfilled
+	* @return bool|string False if fulfillable, string of missing migration name if unfulfillable
 	*/
 	public function unfulfillable($name)
 	{
 		if (isset($this->migration_state[$name]))
 		{
-			return false;
+			return $name;
 		}
 
 		if (!class_exists($name))
@@ -693,9 +694,10 @@ class phpbb_db_migrator
 
 		foreach ($depends as $depend)
 		{
-			if ($this->unfulfillable($depend))
+			$unfulfillable = $this->unfulfillable($depend);
+			if ($unfulfillable !== false)
 			{
-				return true;
+				return $unfulfillable;
 			}
 		}
 
@@ -715,7 +717,7 @@ class phpbb_db_migrator
 			{
 				// skip unfulfillable migrations, but fulfillables mean we
 				// are not finished yet
-				if ($this->unfulfillable($name))
+				if ($this->unfulfillable($name) !== false)
 				{
 					continue;
 				}
