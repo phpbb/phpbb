@@ -1009,6 +1009,23 @@ fieldset.quick-login input.inputbox {
 	color: #0F4987;
 }
 
+/* File upload field styles
+---------------------------------------- */
+.fileuploadbox {
+	background-color: #FFFFFF; 
+	border-color: #B4BAC0;
+	color: #333333;
+}
+
+.fileuploadbox:hover {
+	border-color: #11A3EA;
+}
+
+.fileuploadbox:focus {
+	border-color: #11A3EA;
+	color: #0F4987;
+}
+
 /* Form button styles
 ---------------------------------------- */
 
