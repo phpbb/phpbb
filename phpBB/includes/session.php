@@ -325,7 +325,7 @@ class session
 		// if no session id is set, redirect to index.php
 		if (defined('NEED_SID') && (!isset($_GET['sid']) || $this->session_id !== $_GET['sid']))
 		{
-			send_status_line(401, 'Not authorized');
+			send_status_line(401, 'Unauthorized');
 			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 		}
 
