@@ -46,9 +46,9 @@ class ucp_profile
 				$data = array(
 					'username'			=> utf8_normalize_nfc(request_var('username', $user->data['username'], true)),
 					'email'				=> strtolower(request_var('email', $user->data['user_email'])),
-					'new_password'		=> request_var('new_password', '', true),
-					'cur_password'		=> request_var('cur_password', '', true),
-					'password_confirm'	=> request_var('password_confirm', '', true),
+					'new_password'		=> $request->variable('new_password', '', true),
+					'cur_password'		=> $request->variable('cur_password', '', true),
+					'password_confirm'	=> $request->variable('password_confirm', '', true),
 				);
 
 				add_form_key('ucp_reg_details');
@@ -251,6 +251,11 @@ class ucp_profile
 			break;
 
 			case 'profile_info':
+				// Do not display profile information panel if not authed to do so
+				if (!$auth->acl_get('u_chgprofileinfo'))
+				{
+					trigger_error('NO_AUTH_PROFILEINFO');
+				}
 
 				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 

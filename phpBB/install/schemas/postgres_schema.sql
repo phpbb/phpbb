@@ -573,6 +573,21 @@ CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache (display_on
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id);
 
 /*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE phpbb_migrations (
+	migration_name varchar(255) DEFAULT '' NOT NULL,
+	migration_depends_on varchar(8000) DEFAULT '' NOT NULL,
+	migration_schema_done INT2 DEFAULT '0' NOT NULL CHECK (migration_schema_done >= 0),
+	migration_data_done INT2 DEFAULT '0' NOT NULL CHECK (migration_data_done >= 0),
+	migration_data_state varchar(8000) DEFAULT '' NOT NULL,
+	migration_start_time INT4 DEFAULT '0' NOT NULL CHECK (migration_start_time >= 0),
+	migration_end_time INT4 DEFAULT '0' NOT NULL CHECK (migration_end_time >= 0),
+	PRIMARY KEY (migration_name)
+);
+
+
+/*
 	Table: 'phpbb_modules'
 */
 CREATE SEQUENCE phpbb_modules_seq;
@@ -774,6 +789,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value varchar(255) DEFAULT '' NOT NULL,
 	field_validation varchar(20) DEFAULT '' NOT NULL,
 	field_required INT2 DEFAULT '0' NOT NULL CHECK (field_required >= 0),
+	field_show_novalue INT2 DEFAULT '0' NOT NULL CHECK (field_show_novalue >= 0),
 	field_show_on_reg INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_reg >= 0),
 	field_show_on_pm INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_pm >= 0),
 	field_show_on_vt INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_vt >= 0),
@@ -854,6 +870,11 @@ CREATE TABLE phpbb_reports (
 	report_time INT4 DEFAULT '0' NOT NULL CHECK (report_time >= 0),
 	report_text TEXT DEFAULT '' NOT NULL,
 	reported_post_text TEXT DEFAULT '' NOT NULL,
+	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
+	reported_post_enable_magic_url INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_magic_url >= 0),
+	reported_post_enable_smilies INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_smilies >= 0),
+	reported_post_enable_bbcode INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_bbcode >= 0),
 	PRIMARY KEY (report_id)
 );
 
@@ -1140,8 +1161,7 @@ CREATE TABLE phpbb_users (
 	user_inactive_time INT4 DEFAULT '0' NOT NULL CHECK (user_inactive_time >= 0),
 	user_posts INT4 DEFAULT '0' NOT NULL CHECK (user_posts >= 0),
 	user_lang varchar(30) DEFAULT '' NOT NULL,
-	user_timezone decimal(5,2) DEFAULT '0' NOT NULL,
-	user_dst INT2 DEFAULT '0' NOT NULL CHECK (user_dst >= 0),
+	user_timezone varchar(100) DEFAULT 'UTC' NOT NULL,
 	user_dateformat varchar(30) DEFAULT 'd M Y H:i' NOT NULL,
 	user_style INT4 DEFAULT '0' NOT NULL CHECK (user_style >= 0),
 	user_rank INT4 DEFAULT '0' NOT NULL CHECK (user_rank >= 0),

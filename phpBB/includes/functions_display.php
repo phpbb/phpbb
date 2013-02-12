@@ -22,7 +22,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 {
 	global $db, $auth, $user, $template;
 	global $phpbb_root_path, $phpEx, $config;
-	global $request;
+	global $request, $phpbb_dispatcher;
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
@@ -54,12 +54,26 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	// Handle marking everything read
 	if ($mark_read == 'all')
 	{
-		$redirect = build_url(array('mark', 'hash'));
+		$redirect = build_url(array('mark', 'hash', 'mark_time'));
 		meta_refresh(3, $redirect);
 
 		if (check_link_hash(request_var('hash', ''), 'global'))
 		{
-			markread('all');
+			markread('all', false, false, request_var('mark_time', 0));
+
+			if ($request->is_ajax())
+			{
+				// Tell the ajax script what language vars and URL need to be replaced
+				$data = array(
+					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
+					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&mark=forums&mark_time=' . time()) : '',
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
+				);
+				$json_response = new phpbb_json_response();
+				$json_response->send($data);
+			}
 
 			trigger_error(
 				$user->lang['FORUMS_MARKED'] . '<br /><br />' .
@@ -119,6 +133,16 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'ORDER_BY'	=> 'f.left_id',
 	);
 
+	/**
+	* Event to modify the SQL query before the forum data is queried
+	*
+	* @event core.display_forums_modify_sql
+	* @var	array	sql_ary		The SQL array to get the data of the forums
+	* @since 3.1-A1
+	*/
+	$vars = array('sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_sql', compact($vars)));
+
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
@@ -127,6 +151,19 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		/**
+		* Event to modify the data set of a forum
+		*
+		* This event is triggered once per forum
+		*
+		* @event core.display_forums_modify_row
+		* @var	int		branch_root_id	Last top-level forum
+		* @var	array	row				The data of the forum
+		* @since 3.1-A1
+		*/
+		$vars = array('branch_root_id', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_row', compact($vars)));
+
 		$forum_id = $row['forum_id'];
 
 		// Mark forums read?
@@ -260,19 +297,49 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
 			}
 		}
+
+		/**
+		* Event to modify the forum rows data set
+		*
+		* This event is triggered once per forum
+		*
+		* @event core.display_forums_modify_forum_rows
+		* @var	array	forum_rows		Data array of all forums we display
+		* @var	array	subforums		Data array of all subforums we display
+		* @var	int		branch_root_id	Current top-level forum
+		* @var	int		parent_id		Current parent forum
+		* @var	array	row				The data of the forum
+		* @since 3.1-A1
+		*/
+		$vars = array('forum_rows', 'subforums', 'branch_root_id', 'parent_id', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_forum_rows', compact($vars)));
 	}
 	$db->sql_freeresult($result);
 
 	// Handle marking posts
 	if ($mark_read == 'forums')
 	{
-		$redirect = build_url(array('mark', 'hash'));
+		$redirect = build_url(array('mark', 'hash', 'mark_time'));
 		$token = request_var('hash', '');
 		if (check_link_hash($token, 'global'))
 		{
-			markread('topics', $forum_ids);
+			markread('topics', $forum_ids, false, request_var('mark_time', 0));
 			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
+
+			if ($request->is_ajax())
+			{
+				// Tell the ajax script what language vars and URL need to be replaced
+				$data = array(
+					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
+					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&f=' . $root_data['forum_id'] . '&mark=forums&mark_time=' . time()) : '',
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
+				);
+				$json_response = new phpbb_json_response();
+				$json_response->send($data);
+			}
 
 			trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
 		}
@@ -411,7 +478,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		if ($display_moderators && !empty($forum_moderators[$forum_id]))
 		{
 			$l_moderator = (sizeof($forum_moderators[$forum_id]) == 1) ? $user->lang['MODERATOR'] : $user->lang['MODERATORS'];
-			$moderators_list = implode(', ', $forum_moderators[$forum_id]);
+			$moderators_list = implode($user->lang['COMMA_SEPARATOR'], $forum_moderators[$forum_id]);
 		}
 
 		$l_post_click_count = ($row['forum_type'] == FORUM_LINK) ? 'CLICKS' : 'POSTS';
@@ -422,7 +489,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		{
 			$s_subforums_list[] = '<a href="' . $subforum['link'] . '" class="subforum ' . (($subforum['unread']) ? 'unread' : 'read') . '" title="' . (($subforum['unread']) ? $user->lang['UNREAD_POSTS'] : $user->lang['NO_UNREAD_POSTS']) . '">' . $subforum['name'] . '</a>';
 		}
-		$s_subforums_list = (string) implode(', ', $s_subforums_list);
+		$s_subforums_list = (string) implode($user->lang['COMMA_SEPARATOR'], $s_subforums_list);
 		$catless = ($row['parent_id'] == $root_data['forum_id']) ? true : false;
 
 		if ($row['forum_type'] != FORUM_LINK)
@@ -443,7 +510,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 		}
 
-		$template->assign_block_vars('forumrow', array(
+		$forum_row = array(
 			'S_IS_CAT'			=> false,
 			'S_NO_CAT'			=> $catless && !$last_catless,
 			'S_IS_LINK'			=> ($row['forum_type'] == FORUM_LINK) ? true : false,
@@ -480,8 +547,23 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'U_UNAPPROVED_TOPICS'	=> ($row['forum_id_unapproved_topics']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_topics&amp;f=' . $row['forum_id_unapproved_topics']) : '',
 			'U_VIEWFORUM'		=> $u_viewforum,
 			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
-			'U_LAST_POST'		=> $last_post_url)
+			'U_LAST_POST'		=> $last_post_url,
 		);
+
+		/**
+		* Modify the template data block of the forum
+		*
+		* This event is triggered once per forum
+		*
+		* @event core.display_forums_modify_template_vars
+		* @var	array	forum_row		Template data of the forum
+		* @var	array	row				The data of the forum
+		* @since 3.1-A1
+		*/
+		$vars = array('forum_row', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_template_vars', compact($vars)));
+
+		$template->assign_block_vars('forumrow', $forum_row);
 
 		// Assign subforums loop for style authors
 		foreach ($subforums_list as $subforum)
@@ -497,7 +579,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	}
 
 	$template->assign_vars(array(
-		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums') : '',
+		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums&amp;mark_time=' . time()) : '',
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
 		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
@@ -637,48 +719,6 @@ function get_forum_parents(&$forum_data)
 	}
 
 	return $forum_parents;
-}
-
-/**
-* Generate topic pagination
-*/
-function topic_generate_pagination($replies, $url)
-{
-	global $config, $user;
-
-	// Make sure $per_page is a valid value
-	$per_page = ($config['posts_per_page'] <= 0) ? 1 : $config['posts_per_page'];
-
-	if (($replies + 1) > $per_page)
-	{
-		$total_pages = ceil(($replies + 1) / $per_page);
-		$pagination = '';
-
-		$times = 1;
-		for ($j = 0; $j < $replies + 1; $j += $per_page)
-		{
-			$pagination .= '<a href="' . $url . ($j == 0 ? '' : '&amp;start=' . $j) . '">' . $times . '</a>';
-			if ($times == 1 && $total_pages > 5)
-			{
-				$pagination .= '<span class="page-dots"> ... </span>';
-
-				// Display the last three pages
-				$times = $total_pages - 3;
-				$j += ($total_pages - 4) * $per_page;
-			}
-			else if ($times < $total_pages)
-			{
-				$pagination .= '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
-			}
-			$times++;
-		}
-	}
-	else
-	{
-		$pagination = '';
-	}
-
-	return $pagination;
 }
 
 /**
@@ -872,7 +912,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 */
 function display_custom_bbcodes()
 {
-	global $db, $template, $user;
+	global $db, $template, $user, $phpbb_dispatcher;
 
 	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
 	$num_predefined_bbcodes = 22;
@@ -892,17 +932,40 @@ function display_custom_bbcodes()
 			$row['bbcode_helpline'] = $user->lang[strtoupper($row['bbcode_helpline'])];
 		}
 
-		$template->assign_block_vars('custom_tags', array(
+		$custom_tags = array(
 			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
 			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
 			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'],
 			'A_BBCODE_HELPLINE'	=> str_replace(array('&amp;', '&quot;', "'", '&lt;', '&gt;'), array('&', '"', "\'", '<', '>'), $row['bbcode_helpline']),
-		));
+		);
+
+		/**
+		* Modify the template data block of a bbcode
+		*
+		* This event is triggered once per bbcode
+		*
+		* @event core.display_custom_bbcodes_modify_row
+		* @var	array	custom_tags		Template data of the bbcode
+		* @var	array	row				The data of the bbcode
+		* @since 3.1-A1
+		*/
+		$vars = array('custom_tags', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_custom_bbcodes_modify_row', compact($vars)));
+
+		$template->assign_block_vars('custom_tags', $custom_tags);
 
 		$i++;
 	}
 	$db->sql_freeresult($result);
+
+	/**
+	* Display custom bbcodes
+	*
+	* @event core.display_custom_bbcodes
+	* @since 3.1-A1
+	*/
+	$phpbb_dispatcher->dispatch('core.display_custom_bbcodes');
 }
 
 /**
@@ -1290,6 +1353,31 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR', $ignore_config = false)
 {
 	global $user, $config, $phpbb_root_path, $phpEx;
+	global $phpbb_dispatcher;
+
+	$overwrite_avatar = '';
+
+	/**
+	* Overwrite users avatar
+	*
+	* @event core.display_custom_bbcodes_modify_row
+	* @var	string	avatar			Users assigned avatar name
+	* @var	int		avatar_type		Type of avatar
+	* @var	string	avatar_width	Width of users avatar
+	* @var	string	avatar_height	Height of users avatar
+	* @var	string	alt				Language string for alt tag within image
+	*								Can be a language key or text
+	* @var	bool	ignore_config	Ignores config and force displaying avatar
+	* @var	string	overwrite_avatar	If set, this string will be the avatar
+	* @since 3.1-A1
+	*/
+	$vars = array('avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'alt', 'ignore_config', 'overwrite_avatar');
+	extract($phpbb_dispatcher->trigger_event('core.user_get_avatar', compact($vars)));
+
+	if ($overwrite_avatar)
+	{
+		return $overwrite_avatar;
+	}
 
 	if (empty($avatar) || !$avatar_type || (!$config['allow_avatar'] && !$ignore_config))
 	{
@@ -1326,4 +1414,40 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 
 	$avatar_img .= $avatar;
 	return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $avatar_width . '" height="' . $avatar_height . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+}
+
+/**
+* Generate a list of archive types available for compressing attachments
+*
+* @param string $param_key Either topic_id or post_id
+* @param string $param_val The value of the topic or post id
+* @param string $phpbb_root_path The root path of the phpBB installation
+* @param string $phpEx The PHP extension
+*
+* @return array Array containing the link and the type of compression
+*/
+function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $phpEx)
+{
+	if (!class_exists('compress'))
+	{
+		require $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
+	}
+
+	$methods = compress::methods();
+	$links = array();
+
+	foreach ($methods as $method)
+	{
+		$exploded = explode('.', $method);
+		$type = array_pop($exploded);
+		$params = array('archive' => $method);
+		$params[$param_key] = $param_val;
+
+		$links[] = array(
+			'LINK' => append_sid("{$phpbb_root_path}download/file.$phpEx", $params),
+			'TYPE' => $type,
+		);
+	}
+
+	return $links;
 }

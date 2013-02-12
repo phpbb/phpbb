@@ -20,7 +20,7 @@
 </tr>
 <!-- IF S_CHECK_DEFINED -->
 	<tr>
-		<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><b class="gen">{L_IF}:</b></td>
+		<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><b class="gen">{L_IF}{L_COLON}</b></td>
 		<td class="row2" align="center" valign="top"><!-- IF S_CHECK_SELECT --><select name="check_option">{S_CHECK_OPTIONS}</select><!-- ELSE --><b class="gen">{CHECK_CURRENT}</b><input type="hidden" name="check_option" value="{CHECK_OPTION}" /><!-- ENDIF --></td>
 		<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_CHECK_SELECT --><input type="submit" name="next" value="{L_NEXT_STEP}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 	</tr>
@@ -98,11 +98,11 @@
 		<th colspan="2">{L_RENAME_FOLDER}</th>
 	</tr>
 	<tr>
-		<td class="row1" width="200"><b class="gen">{L_RENAME_FOLDER}: </b></td>
+		<td class="row1" width="200"><b class="gen">{L_RENAME_FOLDER}{L_COLON} </b></td>
 		<td class="row1"><select name="rename_folder_id">{S_FOLDER_OPTIONS}</select></td>
 	</tr>
 	<tr>
-		<td class="row1" width="200"><b class="gen">{L_NEW_FOLDER_NAME}: </b></td>
+		<td class="row1" width="200"><b class="gen">{L_NEW_FOLDER_NAME}{L_COLON} </b></td>
 		<td class="row1"><input type="text" class="post" name="new_folder_name" size="30" maxlength="30" /></td>
 	</tr>
 	<tr>
@@ -124,7 +124,7 @@
 	</tr>
 <!-- ELSE -->
 	<tr>
-		<td class="row1" width="200"><b class="gen">{L_ADD_FOLDER}: </b></td>
+		<td class="row1" width="200"><b class="gen">{L_ADD_FOLDER}{L_COLON} </b></td>
 		<td class="row1"><input type="text" class="post" name="foldername" size="30" maxlength="30" /></td>
 	</tr>
 	<tr>
@@ -142,7 +142,7 @@
 		<th colspan="3">{L_REMOVE_FOLDER}</th>
 	</tr>
 	<tr>
-		<td class="row1" width="200"><b class="gen">{L_REMOVE_FOLDER}: </b></td>
+		<td class="row1" width="200"><b class="gen">{L_REMOVE_FOLDER}{L_COLON} </b></td>
 		<td class="row1"><select name="remove_folder_id">{S_FOLDER_OPTIONS}</select></td>
 		<td class="row1"><b class="genmed">{L_AND}</b></td>
 	</tr>
@@ -168,19 +168,19 @@
 	<th colspan="2">{L_FOLDER_OPTIONS}</th>
 </tr>
 <tr>
-	<td class="row1" width="200"><span><b class="genmed">{L_IF_FOLDER_FULL}: </b></span></td>
+	<td class="row1" width="200"><span><b class="genmed">{L_IF_FOLDER_FULL}{L_COLON} </b></span></td>
 	<td class="row1"><input type="radio" class="radio" name="full_action" value="1"{S_DELETE_CHECKED} />&nbsp;<span class="genmed">{L_DELETE_OLDEST_MESSAGES}</span></td>
 </tr>
 <tr>
 	<td class="row1" width="200">&nbsp;</td>
-	<td class="row1"><input type="radio" class="radio" name="full_action" value="2"{S_MOVE_CHECKED} />&nbsp;<span class="genmed">{L_MOVE_TO_FOLDER}: </span><select name="full_move_to">{S_FULL_FOLDER_OPTIONS}</select></td>
+	<td class="row1"><input type="radio" class="radio" name="full_action" value="2"{S_MOVE_CHECKED} />&nbsp;<span class="genmed">{L_MOVE_TO_FOLDER}{L_COLON} </span><select name="full_move_to">{S_FULL_FOLDER_OPTIONS}</select></td>
 </tr>
 <tr>
 	<td class="row1" width="200">&nbsp;</td>
 	<td class="row1"><input type="radio" class="radio" name="full_action" value="3"{S_HOLD_CHECKED} />&nbsp;<span class="genmed">{L_HOLD_NEW_MESSAGES}</span></td>
 </tr>
 <tr>
-	<td class="row2" width="200"><b class="genmed">{L_DEFAULT_ACTION}: </b><br /><span class="gensmall">{L_DEFAULT_ACTION_EXPLAIN}</span></td>
+	<td class="row2" width="200"><b class="genmed">{L_DEFAULT_ACTION}{L_COLON} </b><br /><span class="gensmall">{L_DEFAULT_ACTION_EXPLAIN}</span></td>
 	<td class="row2"><span class="genmed">{DEFAULT_ACTION}</span></td>
 </tr>
 <tr>

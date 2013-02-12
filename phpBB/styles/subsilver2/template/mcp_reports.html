@@ -7,7 +7,7 @@
 	<th colspan="5" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
 </tr>
 <tr>
-	<td colspan="5" class="cat" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}<!-- IF not S_PM -->&nbsp;<span class="gensmall">{L_FORUM}</span> <select name="f">{S_FORUM_OPTIONS}</select> &nbsp; <!-- IF TOPIC_ID --><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <b>{L_ONLY_TOPIC}</b> &nbsp; <!-- ENDIF --><!-- ENDIF --><input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
+	<td colspan="5" class="cat" align="center"><span class="gensmall">{L_DISPLAY_POSTS}{L_COLON}</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}<!-- IF not S_PM -->&nbsp;<span class="gensmall">{L_FORUM}</span> <select name="f">{S_FORUM_OPTIONS}</select> &nbsp; <!-- IF TOPIC_ID --><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <b>{L_ONLY_TOPIC}</b> &nbsp; <!-- ENDIF --><!-- ENDIF --><input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
 </tr>
 <tr> 
 	<!-- IF S_PM -->
@@ -26,12 +26,12 @@
 	<!-- IF postrow.S_ROW_ is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<!-- IF S_PM -->
 		<td style="padding: 4px;"><p class="topictitle">{postrow.ATTACH_ICON_IMG} <a href="{postrow.U_VIEW_DETAILS}">{postrow.PM_SUBJECT}</a></p>
-			<span class="gensmall">{L_PM_FROM}: {postrow.PM_AUTHOR_FULL}</span></td>
+			<span class="gensmall">{L_PM_FROM}{L_COLON} {postrow.PM_AUTHOR_FULL}</span></td>
 		<td style="padding: 4px;" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><span class="gen">{postrow.RECIPIENTS}</span><br />
-			<span class="gensmall">{L_SENT_AT}: {postrow.PM_TIME}</span></td>
+			<span class="gensmall">{L_SENT_AT}{L_COLON} {postrow.PM_TIME}</span></td>
 		<!-- ELSE -->
 		<td style="padding: 4px;"><p class="topictitle">{postrow.ATTACH_ICON_IMG} <a href="{postrow.U_VIEWPOST}">{postrow.POST_SUBJECT}</a></p>
-			<span class="gensmall"><!-- IF postrow.U_VIEWFORUM -->{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF --></span></td>
+			<span class="gensmall"><!-- IF postrow.U_VIEWFORUM -->{L_FORUM}{L_COLON} <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF --></span></td>
 		<td style="padding: 4px;" align="{S_CONTENT_FLOW_BEGIN}" valign="top" nowrap="nowrap"><span class="gen">{postrow.POST_AUTHOR_FULL}</span><br />
 			<span class="gensmall">{postrow.POST_TIME}</span></td>
 		<!-- ENDIF -->

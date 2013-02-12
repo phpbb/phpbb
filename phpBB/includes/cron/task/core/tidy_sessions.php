@@ -22,15 +22,29 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_tidy_sessions extends phpbb_cron_task_base
 {
+	protected $config;
+	protected $user;
+
+	/**
+	* Constructor.
+	*
+	* @param phpbb_config $config The config
+	* @param phpbb_user $user The user
+	*/
+	public function __construct(phpbb_config $config, phpbb_user $user)
+	{
+		$this->config = $config;
+		$this->user = $user;
+	}
+
 	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run()
 	{
-		global $user;
-		$user->session_gc();
+		$this->user->session_gc();
 	}
 
 	/**
@@ -44,7 +58,6 @@ class phpbb_cron_task_core_tidy_sessions extends phpbb_cron_task_base
 	*/
 	public function should_run()
 	{
-		global $config;
-		return $config['session_last_gc'] < time() - $config['session_gc'];
+		return $this->config['session_last_gc'] < time() - $this->config['session_gc'];
 	}
 }

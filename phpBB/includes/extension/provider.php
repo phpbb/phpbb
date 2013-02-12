@@ -16,7 +16,15 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Provides a set of items found in extensions
+* Provides a set of items found in extensions.
+*
+* This abstract class is essentially a wrapper around item-specific
+* finding logic. It handles storing the extension manager via constructor
+* for the finding logic to use to find the items, and provides an
+* iterator interface over the items found by the finding logic.
+*
+* Items could be anything, for example template paths or cron task names.
+* Derived classes completely define what the items are.
 *
 * @package extension
 */
@@ -45,7 +53,7 @@ abstract class phpbb_extension_provider implements IteratorAggregate
 	}
 
 	/**
-	* Finds template paths using the extension manager.
+	* Finds items using the extension manager.
 	*
 	* @return array     List of task names
 	*/

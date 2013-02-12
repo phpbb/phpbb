@@ -30,7 +30,7 @@ class phpbb_cache_driver_eaccelerator extends phpbb_cache_driver_memory
 	/**
 	* Purge cache data
 	*
-	* @return void
+	* @return null
 	*/
 	function purge()
 	{
@@ -47,7 +47,7 @@ class phpbb_cache_driver_eaccelerator extends phpbb_cache_driver_memory
 	/**
 	 * Perform cache garbage collection
 	 *
-	 * @return void
+	 * @return null
 	 */
 	function tidy()
 	{

@@ -22,9 +22,16 @@ if (!defined('IN_PHPBB'))
 interface phpbb_cron_task
 {
 	/**
+	* Returns the name of the task.
+	*
+	* @return string		Name of wrapped task.
+	*/
+	public function get_name();
+
+	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run();
 

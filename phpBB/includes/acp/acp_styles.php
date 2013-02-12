@@ -36,7 +36,7 @@ class acp_styles
 	protected $cache;
 	protected $auth;
 	protected $phpbb_root_path;
-	protected $phpEx;
+	protected $php_ext;
 
 	public function main($id, $mode)
 	{
@@ -50,12 +50,12 @@ class acp_styles
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $phpEx;
 
 		$this->default_style = $config['default_style'];
 		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . '/';
 
-		$this->u_base_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$id}");
+		$this->u_base_action = append_sid("{$phpbb_admin_path}index.{$this->php_ext}", "i={$id}");
 		$this->s_hidden_fields = array(
 			'mode'		=> $mode,
 		);
@@ -137,11 +137,13 @@ class acp_styles
 	*/
 	protected function action_cache()
 	{
+		global $db, $cache, $auth;
+
 		$this->cache->purge();
 
 		// Clear permissions
 		$this->auth->acl_clear_prefetch();
-		cache_moderators();
+		phpbb_cache_moderators($db, $cache, $auth);
 
 		add_log('admin', 'LOG_PURGE_CACHE');
 
@@ -939,7 +941,7 @@ class acp_styles
 
 			// Preview
 			$actions[] = array(
-				'U_ACTION'	=> append_sid($this->phpbb_root_path . 'index.' . $this->phpEx, 'style=' . $style['style_id']),
+				'U_ACTION'	=> append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'style=' . $style['style_id']),
 				'L_ACTION'	=> $this->user->lang['PREVIEW']
 			);
 		}

@@ -18,6 +18,8 @@
 
 <!-- INCLUDE breadcrumbs.html -->
 
+<!-- EVENT index_body_stat_blocks_before -->
+
 <!-- IF S_DISPLAY_ONLINE_LIST -->
 	<br clear="all" />
 
@@ -50,7 +52,7 @@
 	</tr>
 	<tr>
 		<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_BIRTHDAYS}" /></td>
-		<td class="row1" width="100%"><p class="genmed"><!-- IF .birthdays -->{L_CONGRATULATIONS}: <b><!-- BEGIN birthdays -->{birthdays.USERNAME}<!-- IF birthdays.AGE !== '' --> ({birthdays.AGE})<!-- ENDIF --><!-- IF not birthdays.S_LAST_ROW -->, <!-- ENDIF --><!-- END birthdays --></b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p></td>
+		<td class="row1" width="100%"><p class="genmed"><!-- IF .birthdays -->{L_CONGRATULATIONS}{L_COLON} <b><!-- BEGIN birthdays -->{birthdays.USERNAME}<!-- IF birthdays.AGE !== '' --> ({birthdays.AGE})<!-- ENDIF --><!-- IF not birthdays.S_LAST_ROW -->, <!-- ENDIF --><!-- END birthdays --></b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p></td>
 	</tr>
 	</table>
 <!-- ENDIF -->
@@ -77,7 +79,7 @@
 		<td class="cat"><h4><a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></h4></td>
 	</tr>
 	<tr>
-		<td class="row1" align="center"><span class="genmed">{L_USERNAME}:</span> <input class="post" type="text" name="username" size="10" />&nbsp; <span class="genmed">{L_PASSWORD}:</span> <input class="post" type="password" name="password" size="10" />&nbsp; <!-- IF S_AUTOLOGIN_ENABLED --> <span class="gensmall">{L_LOG_ME_IN}</span> <input type="checkbox" class="radio" name="autologin" /><!-- ENDIF -->&nbsp; <input type="submit" class="btnmain" name="login" value="{L_LOGIN}" /></td>
+		<td class="row1" align="center"><span class="genmed">{L_USERNAME}{L_COLON}</span> <input class="post" type="text" name="username" size="10" />&nbsp; <span class="genmed">{L_PASSWORD}{L_COLON}</span> <input class="post" type="password" name="password" size="10" />&nbsp; <!-- IF S_AUTOLOGIN_ENABLED --> <span class="gensmall">{L_LOG_ME_IN}</span> <input type="checkbox" class="radio" name="autologin" /><!-- ENDIF -->&nbsp; <input type="submit" class="btnmain" name="login" value="{L_LOGIN}" /></td>
 	</tr>
 	</table>
 	{S_LOGIN_REDIRECT}

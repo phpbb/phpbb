@@ -36,28 +36,45 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	static public function setUpBeforeClass()
 	{
-		if (!extension_loaded('phar'))
+		parent::setUpBeforeClass();
+
+		self::$config = phpbb_test_case_helpers::get_test_config();
+
+		// Important: this is used both for installation and by
+		// test cases for querying the tables.
+		// Therefore table prefix must be set before a board is
+		// installed, and also before each test case is run.
+		self::$config['table_prefix'] = 'phpbb_';
+
+		if (!isset(self::$config['phpbb_functional_url']))
 		{
-			self::markTestSkipped('phar extension is not loaded');
+			self::markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
 		}
 
-		require_once 'phar://' . __DIR__ . '/../../vendor/goutte.phar';
+		if (!self::$already_installed)
+		{
+			self::install_board();
+			self::$already_installed = true;
+		}
 	}
 
 	public function setUp()
 	{
-		if (!isset(self::$config['phpbb_functional_url']))
-		{
-			$this->markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
-		}
+		parent::setUp();
+
+		$this->bootstrap();
 
 		$this->cookieJar = new CookieJar;
-		$this->client = new Goutte\Client(array(), array(), null, $this->cookieJar);
+		$this->client = new Goutte\Client(array(), null, $this->cookieJar);
+		// Reset the curl handle because it is 0 at this point and not a valid
+		// resource
+		$this->client->getClient()->getCurlMulti()->reset(true);
 		$this->root_url = self::$config['phpbb_functional_url'];
 		// Clear the language array so that things
 		// that were added in other tests are gone
 		$this->lang = array();
 		$this->add_lang('common');
+		$this->purge_cache();
 	}
 
 	public function request($method, $path)
@@ -79,27 +96,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->backupStaticAttributesBlacklist += array(
 			'phpbb_functional_test_case' => array('config', 'already_installed'),
 		);
-
-		if (!static::$already_installed)
-		{
-			$this->install_board();
-			$this->bootstrap();
-			static::$already_installed = true;
-		}
 	}
 
 	protected function get_db()
 	{
 		global $phpbb_root_path, $phpEx;
 		// so we don't reopen an open connection
-		if (!($this->db instanceof dbal))
+		if (!($this->db instanceof phpbb_db_driver))
 		{
-			if (!class_exists('dbal_' . self::$config['dbms']))
-			{
-				include($phpbb_root_path . 'includes/db/' . self::$config['dbms'] . ".$phpEx");
-			}
-			$sql_db = 'dbal_' . self::$config['dbms'];
-			$this->db = new $sql_db();
+			$dbms = self::$config['dbms'];
+			$this->db = new $dbms();
 			$this->db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
 		}
 		return $this->db;
@@ -132,6 +138,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			$this->extension_manager = new phpbb_extension_manager(
 				$this->get_db(),
+				new phpbb_config(array()),
 				self::$config['table_prefix'] . 'ext',
 				$phpbb_root_path,
 				".$phpEx",
@@ -142,19 +149,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $this->extension_manager;
 	}
 
-	protected function install_board()
+	static protected function install_board()
 	{
 		global $phpbb_root_path, $phpEx;
 
-		self::$config = phpbb_test_case_helpers::get_test_config();
-
-		if (!isset(self::$config['phpbb_functional_url']))
-		{
-			return;
-		}
-
-		self::$config['table_prefix'] = 'phpbb_';
-		$this->recreate_database(self::$config);
+		self::recreate_database(self::$config);
 
 		if (file_exists($phpbb_root_path . "config.$phpEx"))
 		{
@@ -199,21 +198,30 @@ class phpbb_functional_test_case extends phpbb_test_case
 		));
 		// end data
 
-		$content = $this->do_request('install');
-		$this->assertContains('Welcome to Installation', $content);
+		$content = self::do_request('install');
+		self::assertNotSame(false, $content);
+		self::assertContains('Welcome to Installation', $content);
 
-		$this->do_request('create_table', $data);
+		// Installer uses 3.0-style dbms name
+		$data['dbms'] = str_replace('phpbb_db_driver_', '', $data['dbms']);
+		$content = self::do_request('create_table', $data);
+		self::assertNotSame(false, $content);
+		self::assertContains('The database tables used by phpBB', $content);
+		// 3.0 or 3.1
+		self::assertContains('have been created and populated with some initial data.', $content);
 
-		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], array(), true));
+		$content = self::do_request('config_file', $data);
+		self::assertNotSame(false, $content);
+		self::assertContains('Configuration file', $content);
+		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], true, true));
 
-		$this->do_request('config_file', $data);
-
+		$content = self::do_request('final', $data);
+		self::assertNotSame(false, $content);
+		self::assertContains('You have successfully installed', $content);
 		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
-
-		$this->do_request('final', $data);
 	}
 
-	private function do_request($sub, $post_data = null)
+	static private function do_request($sub, $post_data = null)
 	{
 		$context = null;
 
@@ -232,13 +240,70 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return file_get_contents(self::$config['phpbb_functional_url'] . 'install/index.php?mode=install&sub=' . $sub, false, $context);
 	}
 
-	private function recreate_database($config)
+	static private function recreate_database($config)
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
 		$db_conn_mgr->recreate_db();
 	}
 
-	protected function login()
+	/**
+	* Creates a new user with limited permissions
+	*
+	* @param string $username Also doubles up as the user's password
+	* @return int ID of created user
+	*/
+	protected function create_user($username)
+	{
+		// Required by unique_id
+		global $config;
+
+		$config = new phpbb_config(array());
+		$config['rand_seed'] = '';
+		$config['rand_seed_last_update'] = time() + 600;
+
+		// Required by user_add
+		global $db, $cache, $phpbb_dispatcher, $phpbb_container;
+		$db = $this->get_db();
+		if (!function_exists('phpbb_mock_null_cache'))
+		{
+			require_once(__DIR__ . '/../mock/null_cache.php');
+		}
+		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new phpbb_cache_driver_null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
+
+		if (!function_exists('utf_clean_string'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
+		}
+		if (!function_exists('user_add'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
+		}
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+
+		$user_row = array(
+			'username' => $username,
+			'group_id' => 2,
+			'user_email' => 'nobody@example.com',
+			'user_type' => 0,
+			'user_lang' => 'en',
+			'user_timezone' => 0,
+			'user_dateformat' => '',
+			'user_password' => phpbb_hash($username),
+		);
+		return user_add($user_row);
+	}
+
+	protected function login($username = 'admin')
 	{
 		$this->add_lang('ucp');
 
@@ -246,16 +311,62 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
-		$login = $this->client->submit($form, array('username' => 'admin', 'password' => 'admin'));
+		$crawler = $this->client->submit($form, array('username' => $username, 'password' => $username));
+		$this->assert_response_success();
+		$this->assertContains($this->lang('LOGIN_REDIRECT'), $crawler->filter('html')->text());
 
 		$cookies = $this->cookieJar->all();
 
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-		foreach ($cookies as $key => $cookie);
+		foreach ($cookies as $cookie);
 		{
-			if (substr($key, -4) == '_sid')
+			if (substr($cookie->getName(), -4) == '_sid')
 			{
 				$this->sid = $cookie->getValue();
+			}
+		}
+	}
+
+	/**
+	* Login to the ACP
+	* You must run login() before calling this.
+	*/
+	protected function admin_login($username = 'admin')
+	{
+		$this->add_lang('acp/common');
+
+		// Requires login first!
+		if (empty($this->sid))
+		{
+			$this->fail('$this->sid is empty. Make sure you call login() before admin_login()');
+			return;
+		}
+
+		$crawler = $this->request('GET', 'adm/index.php?sid=' . $this->sid);
+		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
+
+		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
+
+		foreach ($form->getValues() as $field => $value)
+		{
+			if (strpos($field, 'password_') === 0)
+			{
+				$crawler = $this->client->submit($form, array('username' => $username, $field => $username));
+				$this->assert_response_success();
+				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
+
+				$cookies = $this->cookieJar->all();
+
+				// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
+				foreach ($cookies as $cookie);
+				{
+					if (substr($cookie->getName(), -4) == '_sid')
+					{
+						$this->sid = $cookie->getValue();
+					}
+				}
+
+				break;
 			}
 		}
 	}
@@ -295,5 +406,48 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$args[0] = $this->lang[$key];
 
 		return call_user_func_array('sprintf', $args);
+	}
+
+	/**
+	 * assertContains for language strings
+	 *
+	 * @param string $needle Search string
+	 * @param string $haystack Search this
+	 * @param string $message Optional failure message
+	 */
+	public function assertContainsLang($needle, $haystack, $message = null)
+	{
+		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+	}
+
+	/**
+	* Heuristic function to check that the response is success.
+	*
+	* When php decides to die with a fatal error, it still sends 200 OK
+	* status code. This assertion tries to catch that.
+	*
+	* @return null
+	*/
+	public function assert_response_success()
+	{
+		$this->assertEquals(200, $this->client->getResponse()->getStatus());
+		$content = $this->client->getResponse()->getContent();
+		$this->assertNotContains('Fatal error:', $content);
+	}
+
+	public function assert_filter($crawler, $expr, $msg = null)
+	{
+		$nodes = $crawler->filter($expr);
+		if ($msg)
+		{
+			$msg .= "\n";
+		}
+		else
+		{
+			$msg = '';
+		}
+		$msg .= "`$expr` not found in DOM.";
+		$this->assertGreaterThan(0, count($nodes), $msg);
+		return $nodes;
 	}
 }

@@ -10,7 +10,7 @@
 <script type="text/javascript">
 // <![CDATA[
 
-	var jump_page = '{LA_JUMP_PAGE}:';
+	var jump_page = '{LA_JUMP_PAGE}{L_COLON}';
 	var on_page = '{ON_PAGE}';
 	var per_page = '{PER_PAGE}';
 	var base_url = '{A_BASE_URL}';
@@ -26,7 +26,7 @@
 	{
 		for (var i = 0; i < onload_functions.length; i++)
 		{
-			eval(onload_functions[i]);
+			onload_functions[i]();
 		}
 	}
 
@@ -34,7 +34,7 @@
 	{
 		for (var i = 0; i < onunload_functions.length; i++)
 		{
-			eval(onunload_functions[i]);
+			onunload_functions[i]();
 		}
 	}
 

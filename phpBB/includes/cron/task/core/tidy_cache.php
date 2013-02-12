@@ -22,15 +22,29 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_tidy_cache extends phpbb_cron_task_base
 {
+	protected $config;
+	protected $cache;
+
+	/**
+	* Constructor.
+	*
+	* @param phpbb_config $config The config
+	* @param phpbb_cache_driver_interface $cache The cache driver
+	*/
+	public function __construct(phpbb_config $config, phpbb_cache_driver_interface $cache)
+	{
+		$this->config = $config;
+		$this->cache = $cache;
+	}
+
 	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run()
 	{
-		global $cache;
-		$cache->tidy();
+		$this->cache->tidy();
 	}
 
 	/**
@@ -43,8 +57,7 @@ class phpbb_cron_task_core_tidy_cache extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		global $cache;
-		return method_exists($cache, 'tidy');
+		return true;
 	}
 
 	/**
@@ -58,7 +71,6 @@ class phpbb_cron_task_core_tidy_cache extends phpbb_cron_task_base
 	*/
 	public function should_run()
 	{
-		global $config;
-		return $config['cache_last_gc'] < time() - $config['cache_gc'];
+		return $this->config['cache_last_gc'] < time() - $this->config['cache_gc'];
 	}
 }

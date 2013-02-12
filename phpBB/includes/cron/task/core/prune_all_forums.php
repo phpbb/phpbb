@@ -26,26 +26,45 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_prune_all_forums extends phpbb_cron_task_base
 {
+	protected $phpbb_root_path;
+	protected $php_ext;
+	protected $config;
+	protected $db;
+
+	/**
+	* Constructor.
+	*
+	* @param string $phpbb_root_path The root path
+	* @param string $php_ext The PHP extension
+	* @param phpbb_config $config The config
+	* @param phpbb_db_driver $db The db connection
+	*/
+	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config, phpbb_db_driver $db)
+	{
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+		$this->config = $config;
+		$this->db = $db;
+	}
+
 	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run()
 	{
-		global $phpbb_root_path, $phpEx, $db;
-
 		if (!function_exists('auto_prune'))
 		{
-			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+			include($this->phpbb_root_path . 'includes/functions_admin.' . $this->php_ext);
 		}
 
 		$sql = 'SELECT forum_id, prune_next, enable_prune, prune_days, prune_viewed, forum_flags, prune_freq
 			FROM ' . FORUMS_TABLE . "
-			WHERE enable_prune = 1 
+			WHERE enable_prune = 1
 				AND prune_next < " . time();
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if ($row['prune_days'])
 			{
@@ -57,7 +76,7 @@ class phpbb_cron_task_core_prune_all_forums extends phpbb_cron_task_base
 				auto_prune($row['forum_id'], 'viewed', $row['forum_flags'], $row['prune_viewed'], $row['prune_freq']);
 			}
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 	}
 
 	/**
@@ -69,7 +88,6 @@ class phpbb_cron_task_core_prune_all_forums extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		global $config;
-		return (bool) $config['use_system_cron'];
+		return (bool) $this->config['use_system_cron'];
 	}
 }

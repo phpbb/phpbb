@@ -22,6 +22,7 @@ function adm_page_header($page_title)
 {
 	global $config, $db, $user, $template;
 	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
+	global $phpbb_dispatcher;
 
 	if (defined('HEADER_INC'))
 	{
@@ -29,6 +30,26 @@ function adm_page_header($page_title)
 	}
 
 	define('HEADER_INC', true);
+
+	// A listener can set this variable to `true` when it overrides this function
+	$adm_page_header_override = false;
+
+	/**
+	* Execute code and/or overwrite adm_page_header()
+	*
+	* @event core.adm_page_header
+	* @var	string	page_title			Page title
+	* @var	bool	adm_page_header_override	Shall we return instead of
+	*									running the rest of adm_page_header()
+	* @since 3.1-A1
+	*/
+	$vars = array('page_title', 'adm_page_header_override');
+	extract($phpbb_dispatcher->trigger_event('core.adm_page_header', compact($vars)));
+
+	if ($adm_page_header_override)
+	{
+		return;
+	}
 
 	// gzip_compression
 	if ($config['gzip_compress'])
@@ -61,16 +82,16 @@ function adm_page_header($page_title)
 		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
 
-		'ICON_MOVE_UP'				=> '<img src="' . $phpbb_admin_path . 'images/icon_up.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
-		'ICON_MOVE_UP_DISABLED'		=> '<img src="' . $phpbb_admin_path . 'images/icon_up_disabled.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
-		'ICON_MOVE_DOWN'			=> '<img src="' . $phpbb_admin_path . 'images/icon_down.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
-		'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . $phpbb_admin_path . 'images/icon_down_disabled.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
-		'ICON_EDIT'					=> '<img src="' . $phpbb_admin_path . 'images/icon_edit.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
-		'ICON_EDIT_DISABLED'		=> '<img src="' . $phpbb_admin_path . 'images/icon_edit_disabled.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
-		'ICON_DELETE'				=> '<img src="' . $phpbb_admin_path . 'images/icon_delete.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
-		'ICON_DELETE_DISABLED'		=> '<img src="' . $phpbb_admin_path . 'images/icon_delete_disabled.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
-		'ICON_SYNC'					=> '<img src="' . $phpbb_admin_path . 'images/icon_sync.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
-		'ICON_SYNC_DISABLED'		=> '<img src="' . $phpbb_admin_path . 'images/icon_sync_disabled.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
+		'ICON_MOVE_UP'				=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_up.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
+		'ICON_MOVE_UP_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_up_disabled.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
+		'ICON_MOVE_DOWN'			=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_down.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
+		'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_down_disabled.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
+		'ICON_EDIT'					=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_edit.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
+		'ICON_EDIT_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_edit_disabled.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
+		'ICON_DELETE'				=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_delete.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
+		'ICON_DELETE_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_delete_disabled.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
+		'ICON_SYNC'					=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_sync.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
+		'ICON_SYNC_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_sync_disabled.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
 
 		'S_USER_LANG'			=> $user->lang['USER_LANG'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
@@ -96,7 +117,27 @@ function adm_page_footer($copyright_html = true)
 {
 	global $db, $config, $template, $user, $auth, $cache;
 	global $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-	global $request;
+	global $request, $phpbb_dispatcher;
+
+	// A listener can set this variable to `true` when it overrides this function
+	$adm_page_footer_override = false;
+
+	/**
+	* Execute code and/or overwrite adm_page_footer()
+	*
+	* @event core.adm_page_footer
+	* @var	bool	copyright_html			Shall we display the copyright?
+	* @var	bool	adm_page_footer_override	Shall we return instead of
+	*									running the rest of adm_page_footer()
+	* @since 3.1-A1
+	*/
+	$vars = array('copyright_html', 'adm_page_footer_override');
+	extract($phpbb_dispatcher->trigger_event('core.adm_page_footer', compact($vars)));
+
+	if ($adm_page_footer_override)
+	{
+		return;
+	}
 
 	// Output page creation time
 	if (defined('DEBUG'))
@@ -104,14 +145,14 @@ function adm_page_footer($copyright_html = true)
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-		if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG_EXTRA') && method_exists($db, 'sql_report'))
+		if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG') && method_exists($db, 'sql_report'))
 		{
 			$db->sql_report('display');
 		}
 
 		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . (($config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
 
-		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
+		if ($auth->acl_get('a_') && defined('DEBUG'))
 		{
 			if (function_exists('memory_get_peak_usage'))
 			{
@@ -131,7 +172,7 @@ function adm_page_footer($copyright_html = true)
 		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
-		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
+		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
 		'T_JQUERY_LINK'		=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$phpbb_root_path}assets/javascript/jquery.js",
 		'S_JQUERY_FALLBACK'	=> ($config['load_jquery_cdn']) ? true : false,
 		'VERSION'			=> $config['version'])
@@ -193,7 +234,7 @@ function h_radio($name, $input_ary, $input_default = false, $id = false, $key = 
 */
 function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 {
-	global $user, $module;
+	global $user, $module, $phpbb_dispatcher;
 
 	$tpl = '';
 	$name = 'config[' . $config_key . ']';
@@ -305,6 +346,24 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		$tpl .= $vars['append'];
 	}
 
+	/**
+	* Overwrite the html code we display for the config value
+	*
+	* @event core.build_config_template
+	* @var	array	tpl_type	Config type array:
+	*						0 => data type
+	*						1 [optional] => string: size, int: minimum
+	*						2 [optional] => string: max. length, int: maximum
+	* @var	string	key			Should be used for the id attribute in html
+	* @var	array	new			Array with the config values we display
+	* @var	string	name		Should be used for the name attribute
+	* @var	array	vars		Array with the options for the config
+	* @var	string	tpl			The resulting html code we display
+	* @since 3.1-A1
+	*/
+	$vars = array('tpl_type', 'key', 'new', 'name', 'vars', 'tpl');
+	extract($phpbb_dispatcher->trigger_event('core.build_config_template', compact($vars)));
+
 	return $tpl;
 }
 
@@ -314,7 +373,8 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 */
 function validate_config_vars($config_vars, &$cfg_array, &$error)
 {
-	global $phpbb_root_path, $user;
+	global $phpbb_root_path, $user, $phpbb_dispatcher;
+
 	$type	= 0;
 	$min	= 1;
 	$max	= 2;
@@ -488,6 +548,24 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					}
 				}
 
+			break;
+
+			default:
+				/**
+				* Validate a config value
+				*
+				* @event core.validate_config_variable
+				* @var	array	cfg_array	Array with config values
+				* @var	string	config_name	Name of the config we validate
+				* @var	array	config_definition	Array with the options for
+				*									this config
+				* @var	array	error		Array of errors, the errors should
+				*							be strings only, language keys are
+				*							not replaced afterwards
+				* @since 3.1-A1
+				*/
+				$vars = array('cfg_array', 'config_name', 'config_definition', 'error');
+				extract($phpbb_dispatcher->trigger_event('core.validate_config_variable', compact($vars)));
 			break;
 		}
 	}

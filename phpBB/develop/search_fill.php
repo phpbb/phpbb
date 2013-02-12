@@ -40,7 +40,7 @@ if (!class_exists($search_type))
 }
 
 $error = false;
-$search = new $search_type($error);
+$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 if ($error)
 {

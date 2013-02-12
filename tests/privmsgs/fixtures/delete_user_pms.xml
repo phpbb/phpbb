@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_new_privmsg</column>
+		<column>user_unread_privmsg</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<column>user_occ</column>
+		<column>user_interests</column>
+		<row>
+			<value>2</value>
+			<value>sender</value>
+			<value>sender</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>pm in inbox</value>
+			<value>pm in inbox</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>pm in no box</value>
+			<value>pm in no box</value>
+			<value>2</value>
+			<value>2</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>no pms</value>
+			<value>no pms</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_privmsgs">
+		<column>msg_id</column>
+		<column>root_level</column>
+		<column>author_id</column>
+		<column>message_subject</column>
+		<column>message_text</column>
+		<column>to_address</column>
+		<column>bcc_address</column>
+		<row>
+			<value>1</value>
+			<value>0</value>
+			<value>2</value>
+			<value>#1</value>
+			<value>
+				2 - outbox
+				3 - inbox
+				4 - nobox
+			</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>0</value>
+			<value>2</value>
+			<value>#2</value>
+			<value>
+				2 - outbox
+				4 - nobox
+			</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>0</value>
+			<value>2</value>
+			<value>#3</value>
+			<value>
+				2 - outbox
+			</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>0</value>
+			<value>2</value>
+			<value>#4</value>
+			<value>
+				3 - nobox
+			</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>0</value>
+			<value>2</value>
+			<value>#5</value>
+			<value>
+				2 - outbox
+				3 - nobox
+				4 - nobox
+			</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_privmsgs_to">
+		<column>msg_id</column>
+		<column>user_id</column>
+		<column>author_id</column>
+		<column>pm_new</column>
+		<column>pm_unread</column>
+		<column>folder_id</column>
+		<row>
+			<value>1</value>
+			<value>2</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-2</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>3</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>4</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-3</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>2</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-2</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>4</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-3</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>2</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-2</value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>3</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-3</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>2</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-2</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>3</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-3</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>4</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-3</value>
+		</row>
+	</table>
+</dataset>

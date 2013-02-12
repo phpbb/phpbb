@@ -26,6 +26,7 @@ class acp_groups
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $request;
 
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
@@ -323,7 +324,8 @@ class acp_groups
 						$submit_ary['founder_manage'] = isset($_REQUEST['group_founder_manage']) ? 1 : 0;
 					}
 
-					if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
+					$uploadfile = $request->file('uploadfile');
+					if (!empty($uploadfile['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
 					{
 						// Avatar stuff
 						$var_ary = array(
@@ -337,7 +339,7 @@ class acp_groups
 						{
 							$data['user_id'] = "g$group_id";
 
-							if ((!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl']) && $can_upload)
+							if ((!empty($uploadfile['tmp_name']) || $data['uploadurl']) && $can_upload)
 							{
 								list($submit_ary['avatar_type'], $submit_ary['avatar'], $submit_ary['avatar_width'], $submit_ary['avatar_height']) = avatar_upload($data, $error);
 							}
@@ -437,7 +439,7 @@ class acp_groups
 
 						foreach ($test_variables as $test => $type)
 						{
-							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || in_array($test, $set_attributes)))
+							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || isset($group_attributes['group_avatar']) && strpos($test, 'avatar') === 0 || in_array($test, $set_attributes)))
 							{
 								settype($submit_ary[$test], $type);
 								$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
@@ -682,13 +684,15 @@ class acp_groups
 					$s_action_options .= '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
 				}
 
+				$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total_members, $config['topics_per_page'], $start);
+
 				$template->assign_vars(array(
 					'S_LIST'			=> true,
 					'S_GROUP_SPECIAL'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? true : false,
 					'S_ACTION_OPTIONS'	=> $s_action_options,
 
-					'S_ON_PAGE'		=> on_page($total_members, $config['topics_per_page'], $start),
-					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start, true),
+					'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $total_members, $config['topics_per_page'], $start),
 					'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
 
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",

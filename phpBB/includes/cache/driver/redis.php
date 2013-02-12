@@ -39,13 +39,39 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory
 
 	var $redis;
 
+	/**
+	* Creates a redis cache driver.
+	*
+	* The following global constants affect operation:
+	*
+	* PHPBB_ACM_REDIS_HOST
+	* PHPBB_ACM_REDIS_PORT
+	* PHPBB_ACM_REDIS_PASSWORD
+	* PHPBB_ACM_REDIS_DB
+	*
+	* There are no publicly documented constructor parameters.
+	*/
 	function __construct()
 	{
 		// Call the parent constructor
 		parent::__construct();
 
 		$this->redis = new Redis();
-		$this->redis->connect(PHPBB_ACM_REDIS_HOST, PHPBB_ACM_REDIS_PORT);
+
+		$args = func_get_args();
+		if (!empty($args))
+		{
+			$ok = call_user_func_array(array($this->redis, 'connect'), $args);
+		}
+		else
+		{
+			$ok = $this->redis->connect(PHPBB_ACM_REDIS_HOST, PHPBB_ACM_REDIS_PORT);
+		}
+
+		if (!$ok)
+		{
+			trigger_error('Could not connect to redis server');
+		}
 
 		if (defined('PHPBB_ACM_REDIS_PASSWORD'))
 		{
@@ -74,7 +100,7 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory
 	/**
 	* Unload the cache resources
 	*
-	* @return void
+	* @return null
 	*/
 	function unload()
 	{
@@ -86,7 +112,7 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory
 	/**
 	* Purge cache data
 	*
-	* @return void
+	* @return null
 	*/
 	function purge()
 	{

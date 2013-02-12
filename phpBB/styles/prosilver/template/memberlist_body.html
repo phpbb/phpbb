@@ -3,13 +3,11 @@
 	<!-- INCLUDE memberlist_search.html -->
 	<form method="post" id="results" action="{S_MODE_ACTION}" onsubmit="insert_marked(this.user); return false">
 
-<!-- ELSEIF S_SEARCH_USER -->
-	<!-- INCLUDE overall_header.html -->	
-	<!-- INCLUDE memberlist_search.html -->
-	<form method="post" action="{S_MODE_ACTION}">
-
 <!-- ELSE -->
 	<!-- INCLUDE overall_header.html -->
+	<div class="panel" id="memberlist_search"<!-- IF not S_SEARCH_USER --> style="display: none;"<!-- ENDIF -->>
+	<!-- INCLUDE memberlist_search.html -->
+	</div>
 	<form method="post" action="{S_MODE_ACTION}">
 
 <!-- ENDIF -->
@@ -25,24 +23,28 @@
 		</p>
 
 	<!-- ELSE -->
-		<h2 class="solo">{PAGE_TITLE}<!-- IF SEARCH_WORDS -->: <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
+		<h2 class="solo">{PAGE_TITLE}<!-- IF SEARCH_WORDS -->{L_COLON} <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
 
 		<div class="panel">
 			<div class="inner">
 
 			<ul class="linklist">
 				<li>
-
-				<!-- IF U_FIND_MEMBER and not S_SEARCH_USER --><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a> &bull; <!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_IN_SEARCH_POPUP --><a href="{U_HIDE_FIND_MEMBER}">{L_HIDE_MEMBER_SEARCH}</a> &bull; <!-- ENDIF -->
+				<!-- IF U_FIND_MEMBER and not S_SEARCH_USER --><a href="{U_FIND_MEMBER}" id="member_search" data-alt-text="{LA_HIDE_MEMBER_SEARCH}">{L_FIND_USERNAME}</a> &bull; <!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_IN_SEARCH_POPUP --><a href="{U_HIDE_FIND_MEMBER}" id="member_search" data-alt-text="{LA_FIND_USERNAME}">{L_HIDE_MEMBER_SEARCH}</a> &bull; <!-- ENDIF -->
 				<strong style="font-size: 0.95em;">
 				<!-- BEGIN first_char -->
-					<a href="{first_char.U_SORT}">{first_char.DESC}</a>&nbsp; 
+					<a href="{first_char.U_SORT}">{first_char.DESC}</a>&nbsp;
 				<!-- END first_char -->
 				</strong>
 				</li>
 				<li class="rightside pagination">
-					{TOTAL_USERS} &bull; 
-					<!-- IF PAGINATION --><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE -->{PAGE_NUMBER}<!-- ENDIF -->
+					{TOTAL_USERS}
+					<!-- IF .pagination -->
+						&bull;
+						<!-- INCLUDE pagination.html -->
+					<!-- ELSE -->
+						{PAGE_NUMBER}
+					<!-- ENDIF -->
 				</li>
 			</ul>
 
@@ -109,7 +111,7 @@
 	<tr class="<!-- IF memberrow.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 		<td><!-- IF memberrow.RANK_IMG --><span class="rank-img">{memberrow.RANK_IMG}</span><!-- ELSE --><span class="rank-img">{memberrow.RANK_TITLE}</span><!-- ENDIF --><!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE --><input type="checkbox" name="user" value="{memberrow.USERNAME}" /> <!-- ENDIF -->{memberrow.USERNAME_FULL}<!-- IF S_SELECT_SINGLE --><br />[&nbsp;<a href="#" onclick="insert_single('{memberrow.A_USERNAME}'); return false;">{L_SELECT}</a>&nbsp;]<!-- ENDIF --></td>
 		<td class="posts"><!-- IF memberrow.POSTS and S_DISPLAY_SEARCH --><a href="{memberrow.U_SEARCH_USER}" title="{L_SEARCH_USER_POSTS}">{memberrow.POSTS}</a><!-- ELSE -->{memberrow.POSTS}<!-- ENDIF --></td>
-		<td class="info"><!-- IF memberrow.U_WWW or memberrow.LOCATION --><!-- IF memberrow.U_WWW --><div><a href="{memberrow.U_WWW}" title="{L_VISIT_WEBSITE}: {memberrow.U_WWW}">{memberrow.U_SHORT_WWW}</a></div><!-- ENDIF --><!-- IF memberrow.LOCATION --><div>{memberrow.LOCATION}</div><!-- ENDIF --><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+		<td class="info"><!-- IF memberrow.U_WWW or memberrow.LOCATION --><!-- IF memberrow.U_WWW --><div><a href="{memberrow.U_WWW}" title="{L_VISIT_WEBSITE}{L_COLON} {memberrow.U_WWW}">{memberrow.U_SHORT_WWW}</a></div><!-- ENDIF --><!-- IF memberrow.LOCATION --><div>{memberrow.LOCATION}</div><!-- ENDIF --><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 		<td>{memberrow.JOINED}</td>
 		<!-- IF S_VIEWONLINE --><td>{memberrow.VISITED}&nbsp;</td><!-- ENDIF -->
 	</tr>
@@ -138,9 +140,9 @@
 
 <!-- IF S_IN_SEARCH_POPUP and not S_SEARCH_USER -->
 <fieldset class="display-options">
-	<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
-	<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box {S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
-	<label for="sk">{L_SELECT_SORT_METHOD}: <select name="sk" id="sk">{S_MODE_SELECT}</select></label> 
+	<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
+	<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
+	<label for="sk">{L_SELECT_SORT_METHOD}{L_COLON} <select name="sk" id="sk">{S_MODE_SELECT}</select></label>
 	<label for="sd">{L_ORDER} <select name="sd" id="sd">{S_ORDER_SELECT}</select> <input type="submit" name="sort" value="{L_SUBMIT}" class="button2" /></label>
 </fieldset>
 <!-- ENDIF -->
@@ -150,7 +152,14 @@
 <hr />
 
 <ul class="linklist">
-	<li class="rightside pagination">{TOTAL_USERS} &bull; <!-- IF PAGINATION --><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE -->{PAGE_NUMBER}<!-- ENDIF --></li>
+	<li class="rightside pagination">{TOTAL_USERS}
+		<!-- IF .pagination -->
+			&bull;
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			{PAGE_NUMBER}
+		<!-- ENDIF -->
+	</li>
 </ul>
 
 <!-- IF S_IN_SEARCH_POPUP -->

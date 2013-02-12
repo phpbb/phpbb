@@ -398,6 +398,19 @@ CREATE TABLE phpbb_moderator_cache (
 CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache (display_on_index);
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id);
 
+# Table: 'phpbb_migrations'
+CREATE TABLE phpbb_migrations (
+	migration_name varchar(255) NOT NULL DEFAULT '',
+	migration_depends_on text(65535) NOT NULL DEFAULT '',
+	migration_schema_done INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	migration_data_done INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	migration_data_state text(65535) NOT NULL DEFAULT '',
+	migration_start_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	migration_end_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	PRIMARY KEY (migration_name)
+);
+
+
 # Table: 'phpbb_modules'
 CREATE TABLE phpbb_modules (
 	module_id INTEGER PRIMARY KEY NOT NULL ,
@@ -565,6 +578,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value varchar(255) NOT NULL DEFAULT '',
 	field_validation varchar(20) NOT NULL DEFAULT '',
 	field_required INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	field_show_novalue INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_reg INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_pm INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_vt INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -628,7 +642,12 @@ CREATE TABLE phpbb_reports (
 	report_closed INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_text mediumtext(16777215) NOT NULL DEFAULT '',
-	reported_post_text mediumtext(16777215) NOT NULL DEFAULT ''
+	reported_post_text mediumtext(16777215) NOT NULL DEFAULT '',
+	reported_post_uid varchar(8) NOT NULL DEFAULT '',
+	reported_post_bitfield varchar(255) NOT NULL DEFAULT '',
+	reported_post_enable_magic_url INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	reported_post_enable_smilies INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	reported_post_enable_bbcode INTEGER UNSIGNED NOT NULL DEFAULT '1'
 );
 
 CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);
@@ -864,8 +883,7 @@ CREATE TABLE phpbb_users (
 	user_inactive_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_posts INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_lang varchar(30) NOT NULL DEFAULT '',
-	user_timezone decimal(5,2) NOT NULL DEFAULT '0',
-	user_dst INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_timezone varchar(100) NOT NULL DEFAULT 'UTC',
 	user_dateformat varchar(30) NOT NULL DEFAULT 'd M Y H:i',
 	user_style INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_rank INTEGER UNSIGNED NOT NULL DEFAULT '0',

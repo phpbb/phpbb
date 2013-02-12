@@ -7,9 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/cache.php';
-require_once dirname(__FILE__) . '/../mock/extension_manager.php';
-
 class phpbb_extension_finder_test extends phpbb_test_case
 {
 	protected $extension_manager;

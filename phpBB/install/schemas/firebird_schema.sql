@@ -586,6 +586,20 @@ CREATE TABLE phpbb_moderator_cache (
 CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache(display_on_index);;
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache(forum_id);;
 
+# Table: 'phpbb_migrations'
+CREATE TABLE phpbb_migrations (
+	migration_name VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	migration_depends_on BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL,
+	migration_schema_done INTEGER DEFAULT 0 NOT NULL,
+	migration_data_done INTEGER DEFAULT 0 NOT NULL,
+	migration_data_state BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL,
+	migration_start_time INTEGER DEFAULT 0 NOT NULL,
+	migration_end_time INTEGER DEFAULT 0 NOT NULL
+);;
+
+ALTER TABLE phpbb_migrations ADD PRIMARY KEY (migration_name);;
+
+
 # Table: 'phpbb_modules'
 CREATE TABLE phpbb_modules (
 	module_id INTEGER NOT NULL,
@@ -818,6 +832,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	field_validation VARCHAR(20) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	field_required INTEGER DEFAULT 0 NOT NULL,
+	field_show_novalue INTEGER DEFAULT 0 NOT NULL,
 	field_show_on_reg INTEGER DEFAULT 0 NOT NULL,
 	field_show_on_pm INTEGER DEFAULT 0 NOT NULL,
 	field_show_on_vt INTEGER DEFAULT 0 NOT NULL,
@@ -910,7 +925,12 @@ CREATE TABLE phpbb_reports (
 	report_closed INTEGER DEFAULT 0 NOT NULL,
 	report_time INTEGER DEFAULT 0 NOT NULL,
 	report_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
-	reported_post_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
+	reported_post_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
+	reported_post_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	reported_post_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	reported_post_enable_magic_url INTEGER DEFAULT 1 NOT NULL,
+	reported_post_enable_smilies INTEGER DEFAULT 1 NOT NULL,
+	reported_post_enable_bbcode INTEGER DEFAULT 1 NOT NULL
 );;
 
 ALTER TABLE phpbb_reports ADD PRIMARY KEY (report_id);;
@@ -1242,8 +1262,7 @@ CREATE TABLE phpbb_users (
 	user_inactive_time INTEGER DEFAULT 0 NOT NULL,
 	user_posts INTEGER DEFAULT 0 NOT NULL,
 	user_lang VARCHAR(30) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_timezone DOUBLE PRECISION DEFAULT 0 NOT NULL,
-	user_dst INTEGER DEFAULT 0 NOT NULL,
+	user_timezone VARCHAR(100) CHARACTER SET NONE DEFAULT 'UTC' NOT NULL,
 	user_dateformat VARCHAR(30) CHARACTER SET UTF8 DEFAULT 'd M Y H:i' NOT NULL COLLATE UNICODE,
 	user_style INTEGER DEFAULT 0 NOT NULL,
 	user_rank INTEGER DEFAULT 0 NOT NULL,

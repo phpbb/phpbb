@@ -39,7 +39,7 @@ function popup(url, width, height, name)
 
 function jumpto()
 {
-	var page = prompt('{LA_JUMP_PAGE}:', '{ON_PAGE}');
+	var page = prompt('{LA_JUMP_PAGE}{L_COLON}', '{ON_PAGE}');
 	var per_page = '{PER_PAGE}';
 	var base_url = '{A_BASE_URL}';
 
@@ -71,11 +71,7 @@ function find_username(url)
 */
 function marklist(id, name, state)
 {
-	var parent = document.getElementById(id);
-	if (!parent)
-	{
-		eval('parent = document.' + id);
-	}
+	var parent = document.getElementById(id) || document[id];
 
 	if (!parent)
 	{
@@ -83,7 +79,7 @@ function marklist(id, name, state)
 	}
 
 	var rb = parent.getElementsByTagName('input');
-	
+
 	for (var r = 0; r < rb.length; r++)
 	{
 		if (rb[r].name.substr(0, name.length) == name)
@@ -133,6 +129,9 @@ function marklist(id, name, state)
 
 // ]]>
 </script>
+
+<!-- EVENT overall_header_head_append -->
+
 </head>
 <body class="{S_CONTENT_DIRECTION}">
 
@@ -143,7 +142,7 @@ function marklist(id, name, state)
 	<div id="logodesc">
 		<table width="100%" cellspacing="0">
 		<tr>
-			<td><a href="{U_INDEX}" class="imageset">{SITE_LOGO_IMG}</a></td>
+			<td><a href="<!-- IF U_SITE_HOME -->{U_SITE_HOME}<!-- ELSE -->{U_INDEX}<!-- ENDIF -->" class="imageset">{SITE_LOGO_IMG}</a></td>
 			<td width="100%" align="center"><h1>{SITENAME}</h1><span class="gen">{SITE_DESCRIPTION}</span></td>
 		</tr>
 		</table>
@@ -199,6 +198,8 @@ function marklist(id, name, state)
 
 	<br style="clear: both;" />
 
+	<!-- DEFINE $S_MICRODATA = 1 -->
 	<!-- INCLUDE breadcrumbs.html -->
+	<!-- DEFINE $S_MICRODATA = 0 -->
 
 	<br />

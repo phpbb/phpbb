@@ -3,7 +3,7 @@
 	Style name:			subsilver2
 	Based on style:		subSilver (the default phpBB 2.0.x style)
 	Original author:	Tom Beddard ( http://www.subblue.com/ )
-	Modified by:		phpBB Group ( http://www.phpbb.com/ )
+	Modified by:		phpBB Group ( https://www.phpbb.com/ )
     --------------------------------------------------------------
 */
 
@@ -420,6 +420,15 @@ a.topictitle {
 a.topictitle:visited {
 	color: #5493B4;
 	text-decoration: none;
+}
+
+a.lastsubject {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a.lastsubject:hover {
+	text-decoration: underline;
 }
 
 th a,

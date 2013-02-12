@@ -9,7 +9,7 @@
 
 <script type="text/javascript">
 // <![CDATA[
-var jump_page = '{LA_JUMP_PAGE}:';
+var jump_page = '{LA_JUMP_PAGE}{L_COLON}';
 var on_page = '{ON_PAGE}';
 var per_page = '{PER_PAGE}';
 var base_url = '{A_BASE_URL}';
@@ -62,11 +62,7 @@ function dE(n, s, type)
 */
 function marklist(id, name, state)
 {
-	var parent = document.getElementById(id);
-	if (!parent)
-	{
-		eval('parent = document.' + id);
-	}
+	var parent = document.getElementById(id) || document[id];
 
 	if (!parent)
 	{
@@ -159,6 +155,7 @@ function switch_menu()
 
 // ]]>
 </script>
+<!-- EVENT acp_overall_header_head_append -->
 </head>
 
 <body class="{S_CONTENT_DIRECTION}">

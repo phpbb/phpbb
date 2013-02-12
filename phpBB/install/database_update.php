@@ -7,6 +7,10 @@
 *
 */
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 define('UPDATES_TO_VERSION', '3.1.0-dev');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
@@ -59,8 +63,6 @@ $updates_to_version = UPDATES_TO_VERSION;
 $debug_from_version = DEBUG_FROM_VERSION;
 $oldest_from_version = OLDEST_FROM_VERSION;
 
-error_reporting(E_ALL);
-
 @set_time_limit(0);
 
 // Include essential scripts
@@ -71,27 +73,20 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 	die("Please read: <a href='../docs/INSTALL.html'>INSTALL.html</a> before attempting to update.");
 }
 
-// Load Extensions
-if (!empty($load_extensions) && function_exists('dl'))
-{
-	$load_extensions = explode(',', $load_extensions);
-
-	foreach ($load_extensions as $extension)
-	{
-		@dl(trim($extension));
-	}
-}
+// In case $phpbb_adm_relative_path is not set (in case of an update), use the default.
+$phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relative_path : 'adm/';
+$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
 
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 phpbb_require_updated('includes/db/db_tools.' . $phpEx);
@@ -107,21 +102,27 @@ if (!defined('EXT_TABLE'))
 	define('EXT_TABLE', $table_prefix . 'ext');
 }
 
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
-$phpbb_class_loader_ext->register();
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
+// Setup class loader first
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
 $phpbb_class_loader->register();
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+$phpbb_class_loader_ext->register();
+
+// Set up container
+$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+
+$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
+$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
 // set up caching
-$cache_factory = new phpbb_cache_factory($acm_type);
-$cache = $cache_factory->get_service();
-$phpbb_class_loader_ext->set_cache($cache->get_driver());
-$phpbb_class_loader->set_cache($cache->get_driver());
+$cache = $phpbb_container->get('cache');
 
-$phpbb_dispatcher = new phpbb_event_dispatcher();
-$request = new phpbb_request();
-$user = new phpbb_user();
-$db = new $sql_db();
+// Instantiate some basic classes
+$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+$request	= $phpbb_container->get('request');
+$user		= $phpbb_container->get('user');
+$auth		= $phpbb_container->get('auth');
+$db			= $phpbb_container->get('dbal.conn');
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
@@ -132,7 +133,8 @@ if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
 	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
-	foreach ($cache->obtain_hooks() as $hook)
+	$phpbb_hook_finder = $phpbb_container->get('hook_finder');
+	foreach ($phpbb_hook_finder->find() as $hook)
 	{
 		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 	}
@@ -185,7 +187,7 @@ include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
 $inline_update = (request_var('type', 0)) ? true : false;
 
 // To let set_config() calls succeed, we need to make the config array available globally
-$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
+$config = new phpbb_config_db($db, $phpbb_container->get('cache.driver'), CONFIG_TABLE);
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
@@ -223,7 +225,7 @@ if ($has_global && !$ga_forum_id)
 
 	<title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
-	<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="<?php echo htmlspecialchars($phpbb_admin_path); ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 	</head>
 
@@ -273,7 +275,7 @@ header('Content-type: text/html; charset=UTF-8');
 
 <title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
-<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="<?php echo htmlspecialchars($phpbb_admin_path); ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 </head>
 
@@ -572,7 +574,7 @@ else
 add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 
 // Now we purge the session table as well as all cache files
-$cache->purge();
+$phpbb_container->get('cache.driver')->purge();
 
 _print_footer();
 
@@ -597,7 +599,7 @@ function _print_footer()
 	</div>
 
 	<div id="page-footer">
-		Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
+		Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
 	</div>
 </div>
 
@@ -613,7 +615,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 {
 	global $db;
 
-	if (defined('DEBUG_EXTRA'))
+	if (defined('DEBUG'))
 	{
 		echo "<br />\n{$sql}\n<br />";
 	}
@@ -683,12 +685,12 @@ function _write_result($no_updates, $errored, $error_ary)
 
 function _add_modules($modules_to_install)
 {
-	global $phpbb_root_path, $phpEx, $db, $phpbb_extension_manager;
+	global $phpbb_root_path, $phpEx, $db, $phpbb_extension_manager, $config;
 
 	// modules require an extension manager
 	if (empty($phpbb_extension_manager))
 	{
-		$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+		$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx");
 	}
 
 	include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
@@ -807,6 +809,70 @@ function _add_modules($modules_to_install)
 	}
 
 	$_module->remove_cache_file();
+}
+
+/**
+* Add a new permission, optionally copy permission setting from another
+*
+* @param auth_admin $auth_admin auth_admin object
+* @param phpbb_db_driver $db Database object
+* @param string $permission_name Name of the permission to add
+* @param bool $is_global True is global, false is local
+* @param string $copy_from Optional permission name from which to copy
+* @return bool true on success, false on failure
+*/
+function _add_permission(auth_admin $auth_admin, phpbb_db_driver $db, $permission_name, $is_global = true, $copy_from = '')
+{
+	// Only add a permission that don't already exist
+	if (!empty($auth_admin->acl_options['id'][$permission_name]))
+	{
+		return true;
+	}
+
+	$permission_scope = $is_global ? 'global' : 'local';
+
+	$result = $auth_admin->acl_add_option(array(
+		$permission_scope => array($permission_name),
+	));
+
+	if (!$result)
+	{
+		return $result;
+	}
+
+	// The permission has been added, now we can copy it if needed
+	if ($copy_from && isset($auth_admin->acl_options['id'][$copy_from]))
+	{
+		$old_id = $auth_admin->acl_options['id'][$copy_from];
+		$new_id = $auth_admin->acl_options['id'][$permission_name];
+
+		$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
+
+		foreach ($tables as $table)
+		{
+			$sql = 'SELECT *
+				FROM ' . $table . '
+				WHERE auth_option_id = ' . $old_id;
+			$result = _sql($sql, $errored, $error_ary);
+
+			$sql_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$row['auth_option_id'] = $new_id;
+				$sql_ary[] = $row;
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($sql_ary))
+			{
+				$db->sql_multi_insert($table, $sql_ary);
+			}
+		}
+
+		$auth_admin->acl_clear_prefetch();
+	}
+
+	return true;
 }
 
 /****************************************************************************
@@ -1071,6 +1137,18 @@ function database_update_info()
 		'3.0.10-RC3'	=> array(),
 		// No changes from 3.0.10 to 3.0.11-RC1
 		'3.0.10'		=> array(),
+		// Changes from 3.0.11-RC1 to 3.0.11-RC2
+		'3.0.11-RC1'	=> array(
+			'add_columns'		=> array(
+				PROFILE_FIELDS_TABLE			=> array(
+					'field_show_novalue'		=> array('BOOL', 0),
+				),
+			),
+		),
+		// No changes from 3.0.11-RC2 to 3.0.11
+		'3.0.11-RC2'	=> array(),
+		// No changes from 3.0.11 to 3.0.12-RC1
+		'3.0.11'		=> array(),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 */
 
@@ -1102,12 +1180,20 @@ function database_update_info()
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
 				REPORTS_TABLE		=> array(
-					'reported_post_text'	=> array('MTEXT_UNI', ''),
+					'reported_post_text'				=> array('MTEXT_UNI', ''),
+					'reported_post_uid'					=> array('VCHAR:8', ''),
+					'reported_post_bitfield'			=> array('VCHAR:255', ''),
+					'reported_post_enable_bbcode'		=> array('BOOL', 1),
+					'reported_post_enable_smilies'		=> array('BOOL', 1),
+					'reported_post_enable_magic_url'	=> array('BOOL', 1),
 				),
 			),
 			'change_columns'	=> array(
 				GROUPS_TABLE		=> array(
 					'group_legend'		=> array('UINT', 0),
+				),
+				USERS_TABLE			=> array(
+					'user_timezone'		=> array('VCHAR:100', ''),
 				),
 			),
 		),
@@ -1121,7 +1207,9 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $db_tools;
+	global $db, $db_tools, $errored, $error_ary, $config, $table_prefix, $phpbb_root_path, $phpEx;
+
+	$update_helpers = new phpbb_update_helpers();
 
 	switch ($version)
 	{
@@ -1435,8 +1523,6 @@ function change_database_data(&$no_updates, $version)
 					ACL_OPTIONS_TABLE		=> array('auth_option'),
 				),
 			);
-
-			global $db_tools;
 
 			$statements = $db_tools->perform_schema_changes($changes);
 
@@ -1968,7 +2054,7 @@ function change_database_data(&$no_updates, $version)
 					'user_email'			=> '',
 					'user_lang'				=> $config['default_lang'],
 					'user_style'			=> $config['default_style'],
-					'user_timezone'			=> 0,
+					'user_timezone'			=> 'UTC',
 					'user_dateformat'		=> $config['default_dateformat'],
 					'user_allow_massemail'	=> 0,
 				);
@@ -2079,26 +2165,41 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
-			global $db_tools, $table_prefix;
-
-			// Recover from potentially broken Q&A CAPTCHA table on firebird
-			// Q&A CAPTCHA was uninstallable, so it's safe to remove these
-			// without data loss
+			/*
+			* Due to a bug, vanilla phpbb could not create captcha tables
+			* in 3.0.8 on firebird. It was possible for board administrators
+			* to adjust the code to work. If code was manually adjusted by
+			* board administrators, index names would not be the same as
+			* what 3.0.9 and newer expect. This code fragment drops captcha
+			* tables, destroying all entered Q&A captcha configuration, such
+			* that when Q&A is configured next the respective tables will be
+			* created with correct index names.
+			*
+			* If you wish to preserve your Q&A captcha configuration, you can
+			* manually rename indexes to the currently expected name:
+			* 	phpbb_captcha_questions_lang_iso	=> phpbb_captcha_questions_lang
+			* 	phpbb_captcha_answers_question_id	=> phpbb_captcha_answers_qid
+			*
+			* Again, this needs to be done only if a board was manually modified
+			* to fix broken captcha code.
+			*
 			if ($db_tools->sql_layer == 'firebird')
 			{
-				$tables = array(
-					$table_prefix . 'captcha_questions',
-					$table_prefix . 'captcha_answers',
-					$table_prefix . 'qa_confirm',
+				$changes = array(
+					'drop_tables'	=> array(
+						$table_prefix . 'captcha_questions',
+						$table_prefix . 'captcha_answers',
+						$table_prefix . 'qa_confirm',
+					),
 				);
-				foreach ($tables as $table)
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
 				{
-					if ($db_tools->sql_table_exists($table))
-					{
-						$db_tools->sql_table_drop($table);
-					}
+					_sql($sql, $errored, $error_ary);
 				}
 			}
+			*/
 
 			$no_updates = false;
 		break;
@@ -2205,6 +2306,99 @@ function change_database_data(&$no_updates, $version)
 			$no_updates = false;
 		break;
 
+		// No changes from 3.0.11-RC1 to 3.0.11-RC2
+		case '3.0.11-RC1':
+		break;
+
+		// No changes from 3.0.11-RC2 to 3.0.11
+		case '3.0.11-RC2':
+		break;
+
+		// Changes from 3.0.11 to 3.0.12-RC1
+		case '3.0.11':
+			$sql = 'UPDATE ' . MODULES_TABLE . '
+				SET module_auth = \'acl_u_sig\'
+				WHERE module_class = \'ucp\'
+					AND module_basename = \'profile\'
+					AND module_mode = \'signature\'';
+			_sql($sql, $errored, $error_ary);
+
+			// Update bots
+			if (!function_exists('user_delete'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
+
+			$bots_updates = array(
+				// Bot Deletions
+				'NG-Search [Bot]'		=> false,
+				'Nutch/CVS [Bot]'		=> false,
+				'OmniExplorer [Bot]'	=> false,
+				'Seekport [Bot]'		=> false,
+				'Synoo [Bot]'			=> false,
+				'WiseNut [Bot]'			=> false,
+
+				// Bot Updates
+				// Bot name to bot user agent map
+				'Baidu [Spider]'	=> 'Baiduspider',
+				'Exabot [Bot]'		=> 'Exabot',
+				'Voyager [Bot]'		=> 'voyager/',
+				'W3C [Validator]'	=> 'W3C_Validator',
+			);
+
+			foreach ($bots_updates as $bot_name => $bot_agent)
+			{
+				$sql = 'SELECT user_id
+					FROM ' . USERS_TABLE . '
+					WHERE user_type = ' . USER_IGNORE . "
+						AND username_clean = '" . $db->sql_escape(utf8_clean_string($bot_name)) . "'";
+				$result = $db->sql_query($sql);
+				$bot_user_id = (int) $db->sql_fetchfield('user_id');
+				$db->sql_freeresult($result);
+
+				if ($bot_user_id)
+				{
+					if ($bot_agent === false)
+					{
+						$sql = 'DELETE FROM ' . BOTS_TABLE . "
+							WHERE user_id = $bot_user_id";
+						_sql($sql, $errored, $error_ary);
+
+						user_delete('remove', $bot_user_id);
+					}
+					else
+					{
+						$sql = 'UPDATE ' . BOTS_TABLE . "
+							SET bot_agent = '" .  $db->sql_escape($bot_agent) . "'
+							WHERE user_id = $bot_user_id";
+						_sql($sql, $errored, $error_ary);
+					}
+				}
+			}
+
+			// Disable receiving pms for bots
+			$sql = 'SELECT user_id
+				FROM ' . BOTS_TABLE;
+			$result = $db->sql_query($sql);
+
+			$bot_user_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$bot_user_ids[] = (int) $row['user_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (!empty($bot_user_ids))
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_allow_pm = 0
+					WHERE ' . $db->sql_in_set('user_id', $bot_user_ids);
+				_sql($sql, $errored, $error_ary);
+			}
+
+			$no_updates = false;
+		break;
+
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
 
@@ -2258,6 +2452,16 @@ function change_database_data(&$no_updates, $version)
 			if (!isset($config['fulltext_postgres_max_word_len']))
 			{
 				set_config('fulltext_postgres_max_word_len', 254);
+			}
+
+			if (!isset($config['fulltext_sphinx_stopwords']))
+			{
+				set_config('fulltext_sphinx_stopwords', 0);
+			}
+
+			if (!isset($config['fulltext_sphinx_indexer_mem_limit']))
+			{
+				set_config('fulltext_sphinx_indexer_mem_limit', 512);
 			}
 
 			if (!isset($config['load_jquery_cdn']))
@@ -2328,6 +2532,12 @@ function change_database_data(&$no_updates, $version)
 				unset($next_legend);
 			}
 
+			// Rename styles module to Customise
+			$sql = 'UPDATE ' . MODULES_TABLE . "
+				SET module_langname = 'ACP_CAT_CUSTOMISE'
+				WHERE module_langname = 'ACP_CAT_STYLES'";
+			_sql($sql, $errored, $error_ary);
+
 			// Install modules
 			$modules_to_install = array(
 				'position'	=> array(
@@ -2365,9 +2575,66 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> '',
 					'cat'		=> 'UCP_PROFILE',
 				),
+				// To add a category, the mode and basename must be empty
+				// The mode is taken from the array key
+				'' => array(
+					'base'		=> '',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_EXTENSION_MANAGEMENT',
+					'auth'		=> 'acl_a_extensions',
+					'cat'		=> 'ACP_CAT_CUSTOMISE',
+				),
+				'extensions'    => array(
+					'base'		=> 'acp_extensions',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_EXTENSIONS',
+					'auth'		=> 'acl_a_extensions',
+					'cat'		=> 'ACP_EXTENSION_MANAGEMENT',
+				),
 			);
 
 			_add_modules($modules_to_install);
+
+			// We need a separate array for the new language sub heading
+			// because it requires another empty key
+			$modules_to_install = array(
+				'' => array(
+					'base'	=> '',
+					'class'	=> 'acp',
+					'title'	=> 'ACP_LANGUAGE',
+					'auth'	=> 'acl_a_language',
+					'cat'	=> 'ACP_CAT_CUSTOMISE',
+				),
+			);
+
+			_add_modules($modules_to_install);
+
+			// Move language management to new location in the Customise tab
+			// First get language module id
+			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'acp_language'";
+			$result = $db->sql_query($sql);
+			$language_module_id = $db->sql_fetchfield('module_id');
+			$db->sql_freeresult($result);
+			// Next get language management module id of the one just created
+			$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
+				WHERE module_langname = 'ACP_LANGUAGE'";
+			$result = $db->sql_query($sql);
+			$language_management_module_id = $db->sql_fetchfield('module_id');
+			$db->sql_freeresult($result);
+
+			if (!class_exists('acp_modules'))
+			{
+				include($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
+			}
+			// acp_modules calls adm_back_link, which is undefined at this point
+			if (!function_exists('adm_back_link'))
+			{
+				include($phpbb_root_path . 'includes/functions_acp.' . $phpEx);
+			}
+			$module_manager = new acp_modules();
+			$module_manager->module_class = 'acp';
+			$module_manager->move_module($language_module_id, $language_management_module_id);
 
 			$sql = 'DELETE FROM ' . MODULES_TABLE . "
 				WHERE (module_basename = 'styles' OR module_basename = 'acp_styles') AND (module_mode = 'imageset' OR module_mode = 'theme' OR module_mode = 'template')";
@@ -2596,16 +2863,90 @@ function change_database_data(&$no_updates, $version)
 
 			// Create config value for displaying last subject on forum list
 			if (!isset($config['display_last_subject']))
-			{			
+			{
 				$config->set('display_last_subject', '1');
 			}
-			
-			$no_updates = false;
 
 			if (!isset($config['assets_version']))
 			{
 				$config->set('assets_version', '1');
 			}
+
+			// If the column exists, we did not yet update the users timezone
+			if ($db_tools->sql_column_exists(USERS_TABLE, 'user_dst'))
+			{
+				// Update user timezones
+				$sql = 'SELECT user_dst, user_timezone
+					FROM ' . USERS_TABLE . '
+					GROUP BY user_timezone, user_dst';
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$sql = 'UPDATE ' . USERS_TABLE . "
+						SET user_timezone = '" . $db->sql_escape($update_helpers->convert_phpbb30_timezone($row['user_timezone'], $row['user_dst'])) . "'
+						WHERE user_timezone = '" . $db->sql_escape($row['user_timezone']) . "'
+							AND user_dst = " . (int) $row['user_dst'];
+					_sql($sql, $errored, $error_ary);
+				}
+				$db->sql_freeresult($result);
+
+				// Update board default timezone
+				set_config('board_timezone', $update_helpers->convert_phpbb30_timezone($config['board_timezone'], $config['board_dst']));
+
+				// After we have calculated the timezones we can delete user_dst column from user table.
+				$statements = $db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
+				foreach ($statements as $sql)
+				{
+					_sql($sql, $errored, $error_ary);
+				}
+			}
+
+			if (!isset($config['site_home_url']))
+			{
+				$config->set('site_home_url', '');
+				$config->set('site_home_text', '');
+			}
+
+			// PHPBB3-10601: Make inbox default. Add basename to ucp's pm category
+
+			// Get the category wanted while checking, at the same time, if this has already been applied
+			$sql = 'SELECT module_id, module_basename
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename <> 'ucp_pm' AND
+						module_langname='UCP_PM'
+						";
+			$result = $db->sql_query_limit($sql, 1);
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				// This update is still not applied. Applying it
+
+				$sql = 'UPDATE ' . MODULES_TABLE . "
+					SET module_basename = 'ucp_pm'
+					WHERE  module_id = " . (int) $row['module_id'];
+
+				_sql($sql, $errored, $error_ary);
+			}
+			$db->sql_freeresult($result);
+			
+
+			// Add new permissions
+			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+			$auth_admin = new auth_admin();
+
+			_add_permission($auth_admin, $db, 'u_chgprofileinfo', true, 'u_sig');
+			_add_permission($auth_admin, $db, 'a_extensions', true, 'a_styles');
+
+			// Update the auth setting for the module
+			$sql = 'UPDATE ' . MODULES_TABLE . "
+				SET module_auth = 'acl_u_chgprofileinfo'
+				WHERE module_class = 'ucp'
+					AND module_basename = 'ucp_profile'
+					AND module_mode = 'profile_info'";
+			_sql($sql, $errored, $error_ary);
+
+			$no_updates = false;
 
 		break;
 	}

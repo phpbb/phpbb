@@ -25,7 +25,7 @@ class ucp_groups
 
 	function main($id, $mode)
 	{
-		global $config, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx, $phpbb_admin_path;
 		global $db, $user, $auth, $cache, $template;
 		global $request;
 
@@ -438,7 +438,7 @@ class ucp_groups
 					$group_name = $group_row['group_name'];
 					$group_type = $group_row['group_type'];
 
-					$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . $phpbb_root_path . 'adm/images/no_avatar.gif" alt="" />';
+					$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
 
 					$template->assign_vars(array(
 						'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
@@ -513,7 +513,8 @@ class ucp_groups
 							$data['height']		= request_var('height', '');
 							$delete				= request_var('delete', '');
 
-							if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
+							$uploadfile = $request->file('uploadfile');
+							if (!empty($uploadfile['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
 							{
 								// Avatar stuff
 								$var_ary = array(
@@ -527,7 +528,7 @@ class ucp_groups
 								{
 									$data['user_id'] = "g$group_id";
 
-									if ((!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl']) && $can_upload)
+									if ((!empty($uploadfile['tmp_name']) || $data['uploadurl']) && $can_upload)
 									{
 										list($submit_ary['avatar_type'], $submit_ary['avatar'], $submit_ary['avatar_width'], $submit_ary['avatar_height']) = avatar_upload($data, $error);
 									}
@@ -617,7 +618,7 @@ class ucp_groups
 
 								foreach ($test_variables as $test => $type)
 								{
-									if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test]))
+									if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || isset($group_attributes['group_avatar']) && strpos($test, 'avatar') === 0))
 									{
 										settype($submit_ary[$test], $type);
 										$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
@@ -729,7 +730,7 @@ class ucp_groups
 							'GROUP_CLOSED'		=> $type_closed,
 							'GROUP_HIDDEN'		=> $type_hidden,
 
-							'U_SWATCH'			=> append_sid("{$phpbb_root_path}adm/swatch.$phpEx", 'form=ucp&amp;name=group_colour'),
+							'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=ucp&amp;name=group_colour'),
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;action=$action&amp;g=$group_id",
 							'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 						));
@@ -844,11 +845,13 @@ class ucp_groups
 							$s_action_options .= '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
 						}
 
+						$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
+						phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total_members, $config['topics_per_page'], $start);
+
 						$template->assign_vars(array(
 							'S_LIST'			=> true,
 							'S_ACTION_OPTIONS'	=> $s_action_options,
-							'S_ON_PAGE'			=> on_page($total_members, $config['topics_per_page'], $start),
-							'PAGINATION'		=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start),
+							'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $total_members, $config['topics_per_page'], $start),
 
 							'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;g=$group_id",
@@ -1067,7 +1070,8 @@ class ucp_groups
 								'mode'		=> $mode,
 								'action'	=> $action
 							);
-							confirm_box(false, $user->lang('GROUP_CONFIRM_ADD_USERS', sizeof($name_ary), implode(', ', $name_ary)), build_hidden_fields($s_hidden_fields));
+
+							confirm_box(false, $user->lang('GROUP_CONFIRM_ADD_USERS', sizeof($name_ary), implode($user->lang['COMMA_SEPARATOR'], $name_ary)), build_hidden_fields($s_hidden_fields));
 						}
 
 						trigger_error($user->lang['NO_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));

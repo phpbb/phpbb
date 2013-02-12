@@ -410,6 +410,19 @@ CREATE TABLE phpbb_moderator_cache (
 );
 
 
+# Table: 'phpbb_migrations'
+CREATE TABLE phpbb_migrations (
+	migration_name varbinary(255) DEFAULT '' NOT NULL,
+	migration_depends_on blob NOT NULL,
+	migration_schema_done tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_data_done tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_data_state blob NOT NULL,
+	migration_start_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_end_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (migration_name)
+);
+
+
 # Table: 'phpbb_modules'
 CREATE TABLE phpbb_modules (
 	module_id mediumint(8) UNSIGNED NOT NULL auto_increment,
@@ -582,6 +595,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value blob NOT NULL,
 	field_validation varbinary(60) DEFAULT '' NOT NULL,
 	field_required tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	field_show_novalue tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_reg tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_pm tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_vt tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -648,6 +662,11 @@ CREATE TABLE phpbb_reports (
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumblob NOT NULL,
 	reported_post_text mediumblob NOT NULL,
+	reported_post_uid varbinary(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varbinary(255) DEFAULT '' NOT NULL,
+	reported_post_enable_magic_url tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	reported_post_enable_smilies tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	reported_post_enable_bbcode tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (report_id),
 	KEY post_id (post_id),
 	KEY pm_id (pm_id)
@@ -890,8 +909,7 @@ CREATE TABLE phpbb_users (
 	user_inactive_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_lang varbinary(30) DEFAULT '' NOT NULL,
-	user_timezone decimal(5,2) DEFAULT '0' NOT NULL,
-	user_dst tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	user_timezone varbinary(100) DEFAULT 'UTC' NOT NULL,
 	user_dateformat varbinary(90) DEFAULT 'd M Y H:i' NOT NULL,
 	user_style mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_rank mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,

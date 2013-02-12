@@ -25,7 +25,7 @@ class phpbb_extension_finder
 	protected $extension_manager;
 	protected $phpbb_root_path;
 	protected $cache;
-	protected $phpEx;
+	protected $php_ext;
 
 	/**
 	* The cache variable name used to store $this->cached_queries in $this->cache.
@@ -56,16 +56,16 @@ class phpbb_extension_finder
 	*            extensions and their locations
 	* @param string $phpbb_root_path Path to the phpbb root directory
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
-	* @param string $phpEx php file extension
+	* @param string $php_ext php file extension
 	* @param string $cache_name The name of the cache variable, defaults to
 	*                           _ext_finder
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, $phpbb_root_path = '', phpbb_cache_driver_interface $cache = null, $phpEx = '.php', $cache_name = '_ext_finder')
+	public function __construct(phpbb_extension_manager $extension_manager, $phpbb_root_path = '', phpbb_cache_driver_interface $cache = null, $php_ext = '.php', $cache_name = '_ext_finder')
 	{
 		$this->extension_manager = $extension_manager;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->cache = $cache;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 		$this->cache_name = $cache_name;
 
 		$this->query = array(
@@ -251,8 +251,8 @@ class phpbb_extension_finder
 	*/
 	public function get_classes($cache = true)
 	{
-		$this->query['extension_suffix'] .= $this->phpEx;
-		$this->query['core_suffix'] .= $this->phpEx;
+		$this->query['extension_suffix'] .= $this->php_ext;
+		$this->query['core_suffix'] .= $this->php_ext;
 
 		$files = $this->find($cache, false);
 
@@ -261,7 +261,7 @@ class phpbb_extension_finder
 		{
 			$file = preg_replace('#^includes/#', '', $file);
 
-			$classes[] = 'phpbb_' . str_replace('/', '_', substr($file, 0, -strlen($this->phpEx)));
+			$classes[] = 'phpbb_' . str_replace('/', '_', substr($file, 0, -strlen($this->php_ext)));
 		}
 		return $classes;
 	}

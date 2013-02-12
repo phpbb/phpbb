@@ -1,12 +1,12 @@
 <!-- INCLUDE overall_header.html -->
 <!-- IF U_MCP --><p>[&nbsp;<a href="{U_MCP}">{L_MCP}</a>&nbsp;]</p><!-- ENDIF -->
-<h2><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
+<h2><!-- EVENT viewtopic_topic_title_prepend --><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
 <!-- NOTE: remove the style="display: none" when you want to have the forum description on the topic body -->
 <!-- IF FORUM_DESC --><div style="display: none !important;">{FORUM_DESC}<br /></div><!-- ENDIF -->
 
 <!-- IF MODERATORS -->
 <p>
-	<strong><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->:</strong> {MODERATORS}
+	<strong><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->{L_COLON}</strong> {MODERATORS}
 </p>
 <!-- ENDIF -->
 
@@ -29,7 +29,7 @@
 
 	<div class="buttons">
 	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
-		<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->"><a href="{U_POST_REPLY_TOPIC}" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->"><span></span><!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED_SHORT}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF --></a></div>
+		<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->"><a href="{U_POST_REPLY_TOPIC}" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->"><span></span><!-- IF S_IS_LOCKED -->{L_BUTTON_TOPIC_LOCKED}<!-- ELSE -->{L_BUTTON_POST_REPLY}<!-- ENDIF --></a></div>
 	<!-- ENDIF -->
 	</div>
 
@@ -45,10 +45,14 @@
 		</div>
 	<!-- ENDIF -->
 
-	<!-- IF PAGINATION or TOTAL_POSTS -->
+	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
-			<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS}
-			<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+			<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS} &bull;
+			<!-- IF .pagination -->
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE -->
+				{PAGE_NUMBER}
+			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
 
@@ -78,7 +82,7 @@
 			<!-- IF S_DISPLAY_RESULTS -->
 				<dl>
 					<dt>&nbsp;</dt>
-					<dd class="resultbar">{L_TOTAL_VOTES} : {TOTAL_VOTES}</dd>
+					<dd class="resultbar">{L_TOTAL_VOTES}{L_COLON} {TOTAL_VOTES}</dd>
 				</dl>
 			<!-- ENDIF -->
 
@@ -153,7 +157,19 @@
 
 			<!-- IF postrow.S_HAS_ATTACHMENTS -->
 				<dl class="attachbox">
-					<dt>{L_ATTACHMENTS}</dt>
+					<dt>
+						{L_ATTACHMENTS}
+						<!-- IF postrow.S_MULTIPLE_ATTACHMENTS -->
+							<div class="dl_links">
+								<strong>{L_DOWNLOAD_ALL}{L_COLON}</strong>
+								<ul>
+								<!-- BEGIN dl_method -->
+									<li>[ <a href="{postrow.dl_method.LINK}">{postrow.dl_method.TYPE}</a> ]</li>
+								<!-- END dl_method -->
+								</ul>
+							</div>
+						<!-- ENDIF -->
+					</dt>
 					<!-- BEGIN attachment -->
 						<dd>{postrow.attachment.DISPLAY_ATTACHMENT}</dd>
 					<!-- END attachment -->
@@ -163,7 +179,7 @@
 			<!-- IF postrow.S_DISPLAY_NOTICE --><div class="rules">{L_DOWNLOAD_NOTICE}</div><!-- ENDIF -->
 			<!-- IF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
 				<div class="notice">{postrow.EDITED_MESSAGE}
-					<!-- IF postrow.EDIT_REASON --><br /><strong>{L_REASON}:</strong> <em>{postrow.EDIT_REASON}</em><!-- ENDIF -->
+					<!-- IF postrow.EDIT_REASON --><br /><strong>{L_REASON}{L_COLON}</strong> <em>{postrow.EDIT_REASON}</em><!-- ENDIF -->
 				</div>
 			<!-- ENDIF -->
 
@@ -186,17 +202,17 @@
 
 		<dd>&nbsp;</dd>
 
-		<!-- IF postrow.POSTER_POSTS != '' --><dd><strong>{L_POSTS}:</strong> {postrow.POSTER_POSTS}</dd><!-- ENDIF -->
-		<!-- IF postrow.POSTER_JOINED --><dd><strong>{L_JOINED}:</strong> {postrow.POSTER_JOINED}</dd><!-- ENDIF -->
-		<!-- IF postrow.POSTER_FROM --><dd><strong>{L_LOCATION}:</strong> {postrow.POSTER_FROM}</dd><!-- ENDIF -->
+		<!-- IF postrow.POSTER_POSTS != '' --><dd><strong>{L_POSTS}{L_COLON}</strong> {postrow.POSTER_POSTS}</dd><!-- ENDIF -->
+		<!-- IF postrow.POSTER_JOINED --><dd><strong>{L_JOINED}{L_COLON}</strong> {postrow.POSTER_JOINED}</dd><!-- ENDIF -->
+		<!-- IF postrow.POSTER_FROM --><dd><strong>{L_LOCATION}{L_COLON}</strong> {postrow.POSTER_FROM}</dd><!-- ENDIF -->
 
 		<!-- IF postrow.S_PROFILE_FIELD1 -->
 			<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
-			<dd><strong>{postrow.PROFILE_FIELD1_NAME}:</strong> {postrow.PROFILE_FIELD1_VALUE}</dd>
+			<dd><strong>{postrow.PROFILE_FIELD1_NAME}{L_COLON}</strong> {postrow.PROFILE_FIELD1_VALUE}</dd>
 		<!-- ENDIF -->
 
 		<!-- BEGIN custom_fields -->
-			<dd><strong>{postrow.custom_fields.PROFILE_FIELD_NAME}:</strong> {postrow.custom_fields.PROFILE_FIELD_VALUE}</dd>
+			<dd><strong>{postrow.custom_fields.PROFILE_FIELD_NAME}{L_COLON}</strong> {postrow.custom_fields.PROFILE_FIELD_VALUE}</dd>
 		<!-- END custom_fields -->
 
 		<!-- IF not S_IS_BOT -->
@@ -205,7 +221,7 @@
 				<ul class="profile-icons">
 					<!-- IF postrow.U_PM --><li class="pm-icon"><a href="{postrow.U_PM}" title="{L_PRIVATE_MESSAGE}"><span>{L_PRIVATE_MESSAGE}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_EMAIL --><li class="email-icon"><a href="{postrow.U_EMAIL}" title="{L_SEND_EMAIL_USER} {postrow.POST_AUTHOR}"><span>{L_SEND_EMAIL_USER} {postrow.POST_AUTHOR}</span></a></li><!-- ENDIF -->
-					<!-- IF postrow.U_WWW --><li class="web-icon"><a href="{postrow.U_WWW}" title="{L_VISIT_WEBSITE}: {postrow.U_WWW}"><span>{L_WEBSITE}</span></a></li><!-- ENDIF -->
+					<!-- IF postrow.U_WWW --><li class="web-icon"><a href="{postrow.U_WWW}" title="{L_VISIT_WEBSITE}{L_COLON} {postrow.U_WWW}"><span>{L_WEBSITE}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_MSN --><li class="msnm-icon"><a href="{postrow.U_MSN}" onclick="popup(this.href, 550, 320); return false;" title="{L_MSNM}"><span>{L_MSNM}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_ICQ --><li class="icq-icon"><a href="{postrow.U_ICQ}" onclick="popup(this.href, 550, 320); return false;" title="{L_ICQ}"><span>{L_ICQ}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_YIM --><li class="yahoo-icon"><a href="{postrow.U_YIM}" onclick="popup(this.href, 780, 550); return false;" title="{L_YIM}"><span>{L_YIM}</span></a></li><!-- ENDIF -->
@@ -229,14 +245,14 @@
 <!-- IF S_QUICK_REPLY -->
 	<!-- INCLUDE quickreply_editor.html -->
 <!-- ENDIF -->
-<!-- IF S_NUM_POSTS > 1 or PREVIOUS_PAGE -->
+<!-- IF S_NUM_POSTS > 1 or PREVIOUS_PAGE or NEXT_PAGE -->
 	<form id="viewtopic" method="post" action="{S_TOPIC_ACTION}">
 
 	<fieldset class="display-options" style="margin-top: 0; ">
-		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
-		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box {S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
+		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
+		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
 		<!-- IF not S_IS_BOT -->
-		<label>{L_DISPLAY_POSTS}: {S_SELECT_SORT_DAYS}</label>
+		<label>{L_DISPLAY_POSTS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label> <label>{S_SELECT_SORT_DIR} <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
 		<!-- ENDIF -->
 	</fieldset>
@@ -248,14 +264,39 @@
 <div class="topic-actions">
 	<div class="buttons">
 	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
-		<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->"><a href="{U_POST_REPLY_TOPIC}" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->"><span></span><!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED_SHORT}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF --></a></div>
+		<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->"><a href="{U_POST_REPLY_TOPIC}" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->"><span></span><!-- IF S_IS_LOCKED -->{L_BUTTON_TOPIC_LOCKED}<!-- ELSE -->{L_BUTTON_POST_REPLY}<!-- ENDIF --></a></div>
 	<!-- ENDIF -->
 	</div>
 
-	<!-- IF PAGINATION or TOTAL_POSTS -->
+	<!-- IF S_HAS_ATTACHMENTS -->
+		<div class="dl_links">
+			<strong>{L_DOWNLOAD_ALL_ATTACHMENTS}{L_COLON}</strong>
+			<ul>
+			<!-- BEGIN dl_method -->
+				<li>[ <a href="{dl_method.LINK}">{dl_method.TYPE}</a> ]</li>
+			<!-- END dl_method -->
+			</ul>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
-			{TOTAL_POSTS}
-			<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+			{TOTAL_POSTS} &bull;
+			<!-- IF .pagination -->
+				<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull;
+				<ul>
+				<!-- BEGIN pagination -->
+					<!-- IF pagination.S_IS_PREV -->
+					<!-- ELSEIF pagination.S_IS_CURRENT --><li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+					<!-- ELSEIF pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+					<!-- ELSEIF pagination.S_IS_NEXT -->
+					<!-- ELSE --><li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
+					<!-- ENDIF -->
+				<!-- END pagination -->
+				</ul>
+			<!-- ELSE -->
+				{PAGE_NUMBER}
+			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
 </div>
@@ -265,7 +306,7 @@
 <!-- IF .quickmod -->
 	<form method="post" action="{S_MOD_ACTION}" id="quickmodform">
 	<fieldset class="quickmod">
-		<label for="quick-mod-select">{L_QUICK_MOD}:</label>
+		<label for="quick-mod-select">{L_QUICK_MOD}{L_COLON}</label>
 		<select name="action" id="quick-mod-select">
 			<!-- BEGIN quickmod -->
 			<option value="{quickmod.VALUE}">{quickmod.TITLE}</option>

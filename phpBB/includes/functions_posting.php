@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 */
 function generate_smilies($mode, $forum_id)
 {
-	global $db, $user, $config, $template;
+	global $db, $user, $config, $template, $phpbb_dispatcher;
 	global $phpEx, $phpbb_root_path;
 
 	$start = request_var('start', 0);
@@ -61,10 +61,7 @@ function generate_smilies($mode, $forum_id)
 			'body' => 'posting_smilies.html')
 		);
 
-		$template->assign_var('PAGINATION',
-			generate_pagination(append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id),
-				$smiley_count, $config['smilies_per_page'], $start, true)
-		);
+		generate_pagination(append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id), $smiley_count, $config['smilies_per_page'], $start);	
 	}
 
 	$display_link = false;
@@ -125,6 +122,18 @@ function generate_smilies($mode, $forum_id)
 			);
 		}
 	}
+
+	/**
+	* This event is called after the smilies are populated
+	*
+	* @event core.generate_smilies_after
+	* @var	string	mode			Mode of the smilies: window|inline
+	* @var	int		forum_id		The forum ID we are currently in
+	* @var	bool	display_link	Shall we display the "more smilies" link?
+	* @since 3.1-A1
+	*/
+	$vars = array('mode', 'forum_id', 'display_link');
+	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_after', compact($vars)));
 
 	if ($mode == 'inline' && $display_link)
 	{
@@ -287,13 +296,15 @@ function posting_gen_topic_icons($mode, $icon_id)
 
 	if (sizeof($icons))
 	{
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+
 		foreach ($icons as $id => $data)
 		{
 			if ($data['display'])
 			{
 				$template->assign_block_vars('topic_icon', array(
 					'ICON_ID'		=> $id,
-					'ICON_IMG'		=> $phpbb_root_path . $config['icons_path'] . '/' . $data['img'],
+					'ICON_IMG'		=> $root_path . $config['icons_path'] . '/' . $data['img'],
 					'ICON_WIDTH'	=> $data['width'],
 					'ICON_HEIGHT'	=> $data['height'],
 
@@ -1167,7 +1178,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 /**
 * User Notification
 */
-function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id)
+function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id, $author_name = '')
 {
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
 
@@ -1338,6 +1349,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 					'USERNAME'		=> htmlspecialchars_decode($addr['name']),
 					'TOPIC_TITLE'	=> htmlspecialchars_decode($topic_title),
 					'FORUM_NAME'	=> htmlspecialchars_decode($forum_name),
+					'AUTHOR_NAME'	=> htmlspecialchars_decode($author_name),
 
 					'U_FORUM'				=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id",
 					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id",
@@ -1683,8 +1695,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// The variable name should be $post_approved, because it indicates if the post is approved or not
 	$post_approval = 1;
 
-	// Check the permissions for post approval. Moderators are not affected.
-	if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
+	// Check the permissions for post approval.
+	// Moderators must go through post approval like ordinary users.
+	if (!$auth->acl_get('f_noapprove', $data['forum_id']))
 	{
 		// Post not approved, but in queue
 		$post_approval = 0;
@@ -2373,7 +2386,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 
 		$error = false;
-		$search = new $search_type($error);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		if ($error)
 		{
@@ -2443,7 +2456,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// Send Notifications
 	if (($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_approval)
 	{
-		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
+		$username = ($username) ? $username : $user->data['username'];
+		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id'], $username);
 	}
 
 	$params = $add_anchor = '';

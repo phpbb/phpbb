@@ -76,6 +76,8 @@
 		</div>
 	<!-- ENDIF -->
 
+	<!-- EVENT acp_main_notice_after -->
+
 	<table cellspacing="1">
 		<caption>{L_FORUM_STATS}</caption>
 		<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
@@ -89,56 +91,56 @@
 	</thead>
 	<tbody>
 	<tr>
-		<td>{L_NUMBER_POSTS}: </td>
+		<td>{L_NUMBER_POSTS}{L_COLON} </td>
 		<td><strong>{TOTAL_POSTS}</strong></td>
-		<td>{L_POSTS_PER_DAY}: </td>
+		<td>{L_POSTS_PER_DAY}{L_COLON} </td>
 		<td><strong>{POSTS_PER_DAY}</strong></td>
 	</tr>
 	<tr>
-		<td>{L_NUMBER_TOPICS}: </td>
+		<td>{L_NUMBER_TOPICS}{L_COLON} </td>
 		<td><strong>{TOTAL_TOPICS}</strong></td>
-		<td>{L_TOPICS_PER_DAY}: </td>
+		<td>{L_TOPICS_PER_DAY}{L_COLON} </td>
 		<td><strong>{TOPICS_PER_DAY}</strong></td>
 	</tr>
 	<tr>
-		<td>{L_NUMBER_USERS}: </td>
+		<td>{L_NUMBER_USERS}{L_COLON} </td>
 		<td><strong>{TOTAL_USERS}</strong></td>
-		<td>{L_USERS_PER_DAY}: </td>
+		<td>{L_USERS_PER_DAY}{L_COLON} </td>
 		<td><strong>{USERS_PER_DAY}</strong></td>
 	</tr>
 	<tr>
-		<td>{L_NUMBER_FILES}: </td>
+		<td>{L_NUMBER_FILES}{L_COLON} </td>
 		<td><strong>{TOTAL_FILES}</strong></td>
-		<td>{L_FILES_PER_DAY}: </td>
+		<td>{L_FILES_PER_DAY}{L_COLON} </td>
 		<td><strong>{FILES_PER_DAY}</strong></td>
 	</tr>
 
 
 	<tr>
-		<td>{L_BOARD_STARTED}: </td>
+		<td>{L_BOARD_STARTED}{L_COLON} </td>
 		<td><strong>{START_DATE}</strong></td>
-		<td>{L_AVATAR_DIR_SIZE}: </td>
+		<td>{L_AVATAR_DIR_SIZE}{L_COLON} </td>
 		<td><strong>{AVATAR_DIR_SIZE}</strong></td>
 	</tr>
 	<tr>
-		<td>{L_DATABASE_SIZE}: </td>
+		<td>{L_DATABASE_SIZE}{L_COLON} </td>
 		<td><strong>{DBSIZE}</strong></td>
-		<td>{L_UPLOAD_DIR_SIZE}: </td>
+		<td>{L_UPLOAD_DIR_SIZE}{L_COLON} </td>
 		<td><strong>{UPLOAD_DIR_SIZE}</strong></td>
 	</tr>
 	<tr>
-		<td>{L_DATABASE_SERVER_INFO}: </td>
+		<td>{L_DATABASE_SERVER_INFO}{L_COLON} </td>
 		<td><strong>{DATABASE_INFO}</strong></td>
-		<td>{L_GZIP_COMPRESSION}: </td>
+		<td>{L_GZIP_COMPRESSION}{L_COLON} </td>
 		<td><strong>{GZIP_COMPRESSION}</strong></td>
 	</tr>
 	<tr>
-		<td>{L_BOARD_VERSION}: </td>
+		<td>{L_BOARD_VERSION}{L_COLON} </td>
 		<td>
 			<strong><a href="{U_VERSIONCHECK}" <!-- IF S_VERSION_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF --> title="{L_MORE_INFORMATION}">{BOARD_VERSION}</a></strong> [&nbsp;<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
 		</td>
 	<!-- IF S_TOTAL_ORPHAN -->
-		<td>{L_NUMBER_ORPHAN}: </td>
+		<td>{L_NUMBER_ORPHAN}{L_COLON} </td>
 		<td><strong>{TOTAL_ORPHAN}</strong></td>
 	<!-- ELSE -->
 		<td>&nbsp;</td>
@@ -202,6 +204,8 @@
 					<dd><input type="hidden" name="action" value="purge_cache" /><input class="button2" type="submit" id="action_purge_cache" name="action_purge_cache" value="{L_RUN}" /></dd>
 				</dl>
 			</form>
+
+			<!-- EVENT acp_main_actions_append -->
   		</fieldset>
 	<!-- ENDIF -->
 
@@ -261,7 +265,7 @@
 
 				<td style="vertical-align: top;">
 					{inactive.USERNAME_FULL}
-					<!-- IF inactive.POSTS --><br />{L_POSTS}: <strong>{inactive.POSTS}</strong> [<a href="{inactive.U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a>]<!-- ENDIF -->
+					<!-- IF inactive.POSTS --><br />{L_POSTS}{L_COLON} <strong>{inactive.POSTS}</strong> [<a href="{inactive.U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a>]<!-- ENDIF -->
 				</td>
 				<td style="vertical-align: top;">{inactive.JOINED}</td>
 				<td style="vertical-align: top;">{inactive.INACTIVE_DATE}</td>

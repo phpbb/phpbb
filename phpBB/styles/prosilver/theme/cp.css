@@ -260,8 +260,9 @@ ul.cplist {
 
 /* Friends list */
 .cp-mini {
-	padding: 0 5px;
 	margin: 10px 15px 10px 5px;
+	padding: 5px 10px;
+	border-radius: 7px;
 }
 
 dl.mini dt {
@@ -284,20 +285,6 @@ dl.mini dd {
 ----------------------------------------*/
 #pm-menu {
 	line-height: 2.5em;
-}
-
-/* PM panel adjustments */
-.reply-all a.left {
-	background-position: 3px 60%;
-}
-
-.reply-all a.left:hover {
-	background-position: 0px 60%;
-}
-
-.reply-all {
-	font-size: 11px;
-	padding-top: 5px;
 }
 
 /* Defined rules list for PM options */

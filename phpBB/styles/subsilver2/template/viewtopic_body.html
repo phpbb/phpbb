@@ -15,10 +15,10 @@
 <!-- ENDIF -->
 
 <div id="pageheader">
-	<h2><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
+	<h2><!-- EVENT viewtopic_topic_title_prepend --><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
 
 <!-- IF MODERATORS -->
-	<p class="moderators"><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->: {MODERATORS}</p>
+	<p class="moderators"><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->{L_COLON} {MODERATORS}</p>
 <!-- ENDIF -->
 <!-- IF U_MCP -->
 	<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
@@ -109,7 +109,7 @@
 		<!-- ENDIF -->
 		<!-- IF S_DISPLAY_RESULTS -->
 			<tr>
-				<td class="gensmall" colspan="4" align="center"><b>{L_TOTAL_VOTES} : {TOTAL_VOTES}</b></td>
+				<td class="gensmall" colspan="4" align="center"><b>{L_TOTAL_VOTES}{L_COLON} {TOTAL_VOTES}</b></td>
 			</tr>
 		<!-- ELSE -->
 			<tr>
@@ -150,7 +150,7 @@
 				<!-- IF postrow.POST_ICON_IMG -->
 					<td><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="" title="" /></td>
 				<!-- ENDIF -->
-					<td class="gensmall" width="100%"><div style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<b>{L_POST_SUBJECT}:</b> <a href="#p{postrow.POST_ID}">{postrow.POST_SUBJECT}</a></div><div style="float: {S_CONTENT_FLOW_END};"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}" class="imageset">{postrow.MINI_POST_IMG}</a><!-- ENDIF --><b>{L_POSTED}:</b> {postrow.POST_DATE}&nbsp;</div></td>
+					<td class="gensmall" width="100%"><div style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<b>{L_POST_SUBJECT}{L_COLON}</b> <a href="#p{postrow.POST_ID}">{postrow.POST_SUBJECT}</a></div><div style="float: {S_CONTENT_FLOW_END};"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}" class="imageset">{postrow.MINI_POST_IMG}</a><!-- ENDIF --><b>{L_POSTED}{L_COLON}</b> {postrow.POST_DATE}&nbsp;</div></td>
 				</tr>
 				</table>
 			</td>
@@ -188,17 +188,17 @@
 				</table>
 
 				<span class="postdetails">
-					<!-- IF postrow.POSTER_JOINED --><br /><b>{L_JOINED}:</b> {postrow.POSTER_JOINED}<!-- ENDIF -->
-					<!-- IF postrow.POSTER_POSTS != '' --><br /><b>{L_POSTS}:</b> {postrow.POSTER_POSTS}<!-- ENDIF -->
-					<!-- IF postrow.POSTER_FROM --><br /><b>{L_LOCATION}:</b> {postrow.POSTER_FROM}<!-- ENDIF -->
+					<!-- IF postrow.POSTER_JOINED --><br /><b>{L_JOINED}{L_COLON}</b> {postrow.POSTER_JOINED}<!-- ENDIF -->
+					<!-- IF postrow.POSTER_POSTS != '' --><br /><b>{L_POSTS}{L_COLON}</b> {postrow.POSTER_POSTS}<!-- ENDIF -->
+					<!-- IF postrow.POSTER_FROM --><br /><b>{L_LOCATION}{L_COLON}</b> {postrow.POSTER_FROM}<!-- ENDIF -->
 
 					<!-- IF postrow.S_PROFILE_FIELD1 -->
 						<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
-						<br /><b>{postrow.PROFILE_FIELD1_NAME}:</b> {postrow.PROFILE_FIELD1_VALUE}
+						<br /><b>{postrow.PROFILE_FIELD1_NAME}{L_COLON}</b> {postrow.PROFILE_FIELD1_VALUE}
 					<!-- ENDIF -->
 
 					<!-- BEGIN custom_fields -->
-						<br /><b>{postrow.custom_fields.PROFILE_FIELD_NAME}:</b> {postrow.custom_fields.PROFILE_FIELD_VALUE}
+						<br /><b>{postrow.custom_fields.PROFILE_FIELD_NAME}{L_COLON}</b> {postrow.custom_fields.PROFILE_FIELD_VALUE}
 					<!-- END custom_fields -->
 				</span>
 
@@ -224,7 +224,7 @@
 
 						<table class="tablebg" width="100%" cellspacing="1">
 						<tr>
-							<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+							<td class="row3"><b class="genmed">{L_ATTACHMENTS}{L_COLON} </b></td>
 						</tr>
 						<!-- BEGIN attachment -->
 							<tr>
@@ -268,9 +268,9 @@
 						<tr valign="middle">
 							<td class="gensmall" align="{S_CONTENT_FLOW_END}">
 							<!-- IF not S_IS_BOT -->
-								<!-- IF postrow.U_REPORT --><a href="{postrow.U_REPORT}" class="imageset">{REPORT_IMG}</a> <!-- ENDIF --> 
-								<!-- IF postrow.U_INFO --><a href="{postrow.U_INFO}" class="imageset">{INFO_IMG}</a> <!-- ENDIF --> 
-								<!-- IF postrow.U_WARN --><a href="{postrow.U_WARN}" class="imageset">{WARN_IMG}</a> <!-- ENDIF --> 
+								<!-- IF postrow.U_REPORT --><a href="{postrow.U_REPORT}" class="imageset">{REPORT_IMG}</a> <!-- ENDIF -->
+								<!-- IF postrow.U_INFO --><a href="{postrow.U_INFO}" class="imageset">{INFO_IMG}</a> <!-- ENDIF -->
+								<!-- IF postrow.U_WARN --><a href="{postrow.U_WARN}" class="imageset">{WARN_IMG}</a> <!-- ENDIF -->
 								<!-- IF postrow.U_DELETE --><a href="{postrow.U_DELETE}" class="imageset">{DELETE_IMG}</a> <!-- ENDIF -->
 							<!-- ENDIF -->
 							</td>
@@ -298,7 +298,7 @@
 	<!-- IF not S_IS_BOT -->
 	<table width="100%" cellspacing="1" class="tablebg">
 	<tr align="center">
-		<td class="cat"><form name="viewtopic" method="post" action="{S_TOPIC_ACTION}"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /></form></td>
+		<td class="cat"><form name="viewtopic" method="post" action="{S_TOPIC_ACTION}"><span class="gensmall">{L_DISPLAY_POSTS}{L_COLON}</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /></form></td>
 	</tr>
 	</table>
 	<!-- ENDIF -->
@@ -350,7 +350,7 @@
 	<td width="40%" valign="top" nowrap="nowrap" align="{S_CONTENT_FLOW_BEGIN}">
 	<!-- IF .quickmod -->
 		<form method="post" action="{S_MOD_ACTION}">
-			<span class="gensmall">{L_QUICK_MOD}:</span>
+			<span class="gensmall">{L_QUICK_MOD}{L_COLON}</span>
 			<select name="action" id="quick-mod-select">
 				<!-- BEGIN quickmod -->
 				<option value="{quickmod.VALUE}">{quickmod.TITLE}</option>

@@ -69,17 +69,16 @@ class ucp_main
 				// Get cleaned up list... return only those forums having the f_read permission
 				$forum_ary = $auth->acl_getf('f_read', true);
 				$forum_ary = array_unique(array_keys($forum_ary));
-
-				$sql = "SELECT t.* $sql_select
-					FROM $sql_from
-					WHERE t.topic_type = " . POST_GLOBAL . '
-						AND ' . $db->sql_in_set('t.forum_id', $forum_ary) . '
-					ORDER BY t.topic_last_post_time DESC';
-
 				$topic_list = $rowset = array();
+
 				// If the user can't see any forums, he can't read any posts because fid of 0 is invalid
 				if (!empty($forum_ary))
 				{
+					$sql = "SELECT t.* $sql_select
+						FROM $sql_from
+						WHERE t.topic_type = " . POST_GLOBAL . '
+							AND ' . $db->sql_in_set('t.forum_id', $forum_ary) . '
+						ORDER BY t.topic_last_post_time DESC';
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))
@@ -670,9 +669,10 @@ class ucp_main
 
 		if ($topics_count)
 		{
+			phpbb_generate_template_pagination($template, $this->u_action, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
+
 			$template->assign_vars(array(
-				'PAGINATION'	=> generate_pagination($this->u_action, $topics_count, $config['topics_per_page'], $start),
-				'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
+				'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $this->u_action, $topics_count, $config['topics_per_page'], $start),
 				'TOTAL_TOPICS'	=> $user->lang('VIEW_FORUM_TOPICS', (int) $topics_count),
 			));
 		}
@@ -813,7 +813,6 @@ class ucp_main
 
 				'S_DELETED_TOPIC'	=> (!$row['topic_id']) ? true : false,
 
-				'PAGINATION'		=> topic_generate_pagination($replies, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . "&amp;t=$topic_id")),
 				'REPLIES'			=> $replies,
 				'VIEWS'				=> $row['topic_views'],
 				'TOPIC_TITLE'		=> censor_text($row['topic_title']),
@@ -837,6 +836,8 @@ class ucp_main
 				'U_VIEW_TOPIC'			=> $view_topic_url,
 				'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 			));
+
+			phpbb_generate_template_pagination($template, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . "&amp;t=$topic_id"), 'topicrow.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
 		}
 	}
 }

@@ -24,6 +24,8 @@ if (!defined('IN_PHPBB'))
 include($phpbb_root_path . 'config.' . $phpEx);
 unset($dbpasswd);
 
+$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
 /**
 * $convertor_data provides some basic information about this convertor which is
 * used on the initial list of convertors and to populate the default settings
@@ -32,7 +34,7 @@ $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
 	'phpbb_version'	=> '3.1.0-dev',
-	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
+	'author'		=> '<a href="https://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
 	'dbport'		=> $dbport,

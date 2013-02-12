@@ -39,7 +39,7 @@ function do_cron($cron_lock, $run_tasks)
 
 	foreach ($run_tasks as $task)
 	{
-		if (defined('DEBUG_EXTRA') && $config['use_system_cron'])
+		if (defined('DEBUG') && $config['use_system_cron'])
 		{
 			echo "[phpBB cron] Running task '{$task->get_name()}'\n";
 		}
@@ -57,11 +57,11 @@ function do_cron($cron_lock, $run_tasks)
 //
 // Attempt to alleviate the problem by doing setup outside of the lock as much as possible.
 //
-// If DEBUG_EXTRA is defined and cron lock cannot be obtained, a message will be printed.
+// If DEBUG is defined and cron lock cannot be obtained, a message will be printed.
 
 if ($config['use_system_cron'])
 {
-	$cron = new phpbb_cron_manager(new phpbb_cron_task_provider($phpbb_extension_manager), $cache->get_driver());
+	$cron = $phpbb_container->get('cron.manager');
 }
 else
 {
@@ -71,7 +71,7 @@ else
 	output_image();
 }
 
-$cron_lock = new phpbb_lock_db('cron_lock', $config, $db);
+$cron_lock = $phpbb_container->get('cron.lock_db');
 if ($cron_lock->acquire())
 {
 	if ($config['use_system_cron'])
@@ -100,7 +100,7 @@ if ($cron_lock->acquire())
 }
 else
 {
-	if (defined('DEBUG_EXTRA'))
+	if (defined('DEBUG'))
 	{
 		echo "Could not obtain cron lock.\n";
 	}

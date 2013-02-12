@@ -12,8 +12,25 @@
 	<!-- IF .user -->
 		<ul class="linklist">
 			<li class="rightside pagination">
-				<!-- IF TOTAL_USERS -->{TOTAL_USERS} <!-- ENDIF -->
-				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+				<!-- IF TOTAL_USERS -->{TOTAL_USERS} &bull;  <!-- ENDIF -->
+				<!-- IF .pagination --> 
+					<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull;
+					<ul>
+					<!-- BEGIN pagination -->
+						<!-- IF pagination.S_IS_PREV -->
+						<!-- ELSEIF pagination.S_IS_CURRENT -->
+						<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+						<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
+						<li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+						<!-- ELSEIF pagination.S_IS_NEXT -->
+						<!-- ELSE -->
+						<li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
+						<!-- ENDIF -->
+					<!-- END pagination -->
+					</ul>
+				<!-- ELSE --> 
+					{PAGE_NUMBER}
+				<!-- ENDIF -->
 			</li>
 		</ul>
 		
@@ -40,7 +57,7 @@
 		</table>
 
 		<fieldset class="display-options">
-			<label>{L_DISPLAY_POSTS}: {S_SELECT_SORT_DAYS}</label>
+			<label>{L_DISPLAY_POSTS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label>
 			<input type="submit" name="sort" value="{L_GO}" class="button2" />
 		</fieldset>
@@ -48,8 +65,12 @@
 
 		<ul class="linklist">
 			<li class="rightside pagination">
-				<!-- IF TOTAL_USERS -->{TOTAL_USERS} <!-- ENDIF -->
-				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+				<!-- IF TOTAL_USERS -->{TOTAL_USERS} &bull;  <!-- ENDIF -->
+				<!-- IF .pagination --> 
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE --> 
+					{PAGE_NUMBER}
+				<!-- ENDIF -->
 			</li>
 		</ul>
 	<!-- ELSE -->

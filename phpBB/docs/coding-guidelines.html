@@ -72,6 +72,7 @@
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#templates">General Templating</a></li>
 		<li><a href="#stylestree">Styles Tree</a></li>
+		<li><a href="#template-events">Template Events</a></li>
 	</ol></li>
 	<li><a href="#charsets">Character Sets and Encodings</a></li>
 	<li><a href="#translation">Translation (<abbr title="Internationalisation">i18n</abbr>/<abbr title="Localisation">L10n</abbr>) Guidelines</a>
@@ -740,7 +741,7 @@ static private function f()
 	<a name="sql"></a><h3>2.iii. SQL/SQL Layout</h3>
 
 	<h4>Common SQL Guidelines: </h4>
-	<p>All SQL should be cross-DB compatible, if DB specific SQL is used alternatives must be provided which work on all supported DB's (MySQL3/4/5, MSSQL (7.0 and 2000), PostgreSQL (7.0+), Firebird, SQLite, Oracle8, ODBC (generalised if possible)).</p>
+	<p>All SQL should be cross-DB compatible, if DB specific SQL is used alternatives must be provided which work on all supported DB's (MySQL3/4/5, MSSQL (7.0 and 2000), PostgreSQL (8.3+), Firebird, SQLite, Oracle8, ODBC (generalised if possible)).</p>
 	<p>All SQL commands should utilise the DataBase Abstraction Layer (DBAL)</p>
 
 	<h4>SQL code layout:</h4>
@@ -1678,6 +1679,57 @@ version = 3.1.0
 parent = prosilver
 		</pre></div>
 
+		<a name="template-events"></a><h3>4.iii. Template Events</h3>
+		<p>Template events must follow this format: <code>&lt;!-- EVENT event_name --&gt;</code></p>
+		<p>Using the above example, files named <code>event_name.html</code> located within extensions will be injected into the location of the event.</p>
+
+		<h4>Template event naming guidelines:</h4>
+		<ul>
+			<li>An event name must be all lowercase, with each word separated by an underscore.</li>
+			<li>An event name must briefly describe the location and purpose of the event.</li>
+			<li>An event name must end with one of the following suffixes:</li>
+			<ul>
+				<li><code>_prepend</code> - This event adds an item to the beginning of a block of related items, or adds to the beginning of individual items in a block.</li>
+				<li><code>_append</code> - This event adds an item to the end of a block of related items, or adds to the end of individual items in a block.</li>
+				<li><code>_before</code> - This event adds content directly before the specified block</li>
+				<li><code>_after</code> - This event adds content directly after the specified block</li>
+			</ul>
+		</ul>
+
+		<h4>Template event documentation</h4>
+		<p>Events must be documented in <code>phpBB/docs/events.md</code> in alphabetical order based on the event name. The format is as follows:</p>
+
+		<ul><li>An event found in only one template file:
+		<div class="codebox"><pre>event_name
+===
+* Location: styles/&lt;style_name&gt;/template/filename.html
+* Purpose: A brief description of what this event should be used for.
+This may span multiple lines.
+</pre></div></li>
+		<li>An event found in multiple template files:
+		<div class="codebox"><pre>event_name
+===
+* Locations:
+    + first/file/path.html
+    + second/file/path.html
+* Purpose: Same as above.
+</pre></div>
+		<li>An event that is found multiple times in a file should have the number of instances in parenthesis next to the filename.
+		<div class="codebox"><pre>event_name
+===
+* Locations:
+    + first/file/path.html (2)
+    + second/file/path.html
+* Purpose: Same as above.
+</pre></div></li>
+		<li>An actual example event documentation:
+		<div class="codebox"><pre>forumlist_body_last_post_title_prepend
+====
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+    + styles/subsilver2/template/forumlist_body.html
+* Purpose: Add content before the post title of the latest post in a forum on the forum list.</pre></div></ul><br />
+
 		</div>
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
@@ -2382,7 +2434,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<div class="codebox"><pre>
 	...
-'FOO_BAR'	=&gt;	'PHP version &lt; 5.3.2.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &lt; 5.3.3.&lt;br /&gt;
 	Visit &quot;Downloads&quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>
@@ -2391,7 +2443,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<div class="codebox"><pre>
 	...
-'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.3.2.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.3.3.&lt;br /&gt;
 	Visit &amp;quot;Downloads&amp;quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>
@@ -2400,7 +2452,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<div class="codebox"><pre>
 	...
-'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.3.2.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.3.3.&lt;br /&gt;
 	Visit &ldquo;Downloads&rdquo; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>

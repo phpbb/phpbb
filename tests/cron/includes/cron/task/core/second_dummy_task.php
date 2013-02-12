@@ -9,7 +9,12 @@
 
 class phpbb_cron_task_core_second_dummy_task extends phpbb_cron_task_base
 {
-	public static $was_run = 0;
+	static public $was_run = 0;
+
+	public function get_name()
+	{
+		return get_class($this);
+	}
 
 	public function run()
 	{

@@ -1,8 +1,9 @@
 <!-- Note: no longer in use... -->
 
-<form name="jumpbox" method="post" action="{S_JUMPBOX_ACTION}">
+<form name="jumpbox" method="get" action="{S_JUMPBOX_ACTION}">
 
-	<span class="gensmall">{L_JUMP_TO}:</span>&nbsp;<select name="f" onChange="if(this.options[this.selectedIndex].value != -1 && this.options[this.selectedIndex].value != document.jumpbox.current_f.value){ document.forms['jumpbox'].submit() }">
+	{HIDDEN_FIELDS_FOR_JUMPBOX}
+	<span class="gensmall">{L_JUMP_TO}{L_COLON}</span>&nbsp;<select name="f" onChange="if(this.options[this.selectedIndex].value != -1 && this.options[this.selectedIndex].value != document.jumpbox.current_f.value){ document.forms['jumpbox'].submit() }">
 
 <!-- IF S_ENABLE_SELECT_ALL -->
 	<option value="0">{L_ALL_FORUMS}</option>

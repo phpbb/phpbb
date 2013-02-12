@@ -44,26 +44,26 @@
 <fieldset>
 	<legend>{L_TITLE}</legend>
 <dl>
-	<dt><label for="ban">{L_BAN_CELL}:</label></dt>
+	<dt><label for="ban">{L_BAN_CELL}{L_COLON}</label></dt>
 	<dd><textarea name="ban" cols="40" rows="3" id="ban"></textarea></dd>
 	<!-- IF S_USERNAME_BAN --><dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd><!-- ENDIF -->
 </dl>
 <dl>
-	<dt><label for="banlength">{L_BAN_LENGTH}:</label></dt>
+	<dt><label for="banlength">{L_BAN_LENGTH}{L_COLON}</label></dt>
 	<dd><label for="banlength"><select name="banlength" id="banlength" onchange="if(this.value==-1){document.getElementById('banlengthother').style.display = 'block';}else{document.getElementById('banlengthother').style.display='none';}">{S_BAN_END_OPTIONS}</select></label></dd>
 	<dd id="banlengthother" style="display: none;"><label><input type="text" name="banlengthother" class="inputbox" /><br /><span>{L_YEAR_MONTH_DAY}</span></label></dd>
 </dl>
 <dl>
-	<dt><label for="banexclude">{L_BAN_EXCLUDE}:</label><br /><span>{L_BAN_EXCLUDE_EXPLAIN}</span></dt>
+	<dt><label for="banexclude">{L_BAN_EXCLUDE}{L_COLON}</label><br /><span>{L_BAN_EXCLUDE_EXPLAIN}</span></dt>
 	<dd><label><input type="radio" name="banexclude" value="1" class="radio" /> {L_YES}</label>
 		<label><input type="radio" name="banexclude" id="banexclude" value="0" checked="checked" class="radio" /> {L_NO}</label></dd>
 </dl>
 <dl>
-	<dt><label for="banreason">{L_BAN_REASON}:</label></dt>
+	<dt><label for="banreason">{L_BAN_REASON}{L_COLON}</label></dt>
 	<dd><input name="banreason" type="text" class="text medium" maxlength="255" id="banreason" /></dd>
 </dl>
 <dl>
-	<dt><label for="bangivereason">{L_BAN_GIVE_REASON}:</label></dt>
+	<dt><label for="bangivereason">{L_BAN_GIVE_REASON}{L_COLON}</label></dt>
 	<dd><input name="bangivereason" type="text" class="text medium" maxlength="255" id="bangivereason" /></dd>
 </dl>
 
@@ -88,19 +88,19 @@
 
 <!-- IF S_BANNED_OPTIONS -->
 	<dl>
-		<dt><label for="unban">{L_BAN_CELL}:</label></dt>
+		<dt><label for="unban">{L_BAN_CELL}{L_COLON}</label></dt>
 		<dd><select id="unban" name="unban[]" multiple="multiple" size="10" style="width: 50%" onchange="if (this.selectedIndex > -1) display_details(this.options[this.selectedIndex].value); else display_details(-1);">{BANNED_OPTIONS}</select></dd>
 	</dl>
 	<dl>
-		<dt><label for="unbanlength">{L_BAN_LENGTH}:</label></dt>
+		<dt><label for="unbanlength">{L_BAN_LENGTH}{L_COLON}</label></dt>
 		<dd><input style="border: 0;" type="text" class="text full" readonly="readonly" name="unbanlength" id="unbanlength" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="unbanreason">{L_BAN_REASON}:</label></dt>
+		<dt><label for="unbanreason">{L_BAN_REASON}{L_COLON}</label></dt>
 		<dd><textarea style="border: 0;" class="text full" readonly="readonly" name="unbanreason" id="unbanreason" rows="5" cols="80">&nbsp;</textarea></dd>
 	</dl>
 	<dl>
-		<dt><label for="unbangivereason">{L_BAN_GIVE_REASON}:</label></dt>
+		<dt><label for="unbangivereason">{L_BAN_GIVE_REASON}{L_COLON}</label></dt>
 		<dd><textarea style="border: 0;" class="text full" readonly="readonly" name="unbangivereason" id="unbangivereason" rows="5" cols="80">&nbsp;</textarea></dd>
 	</dl>
 

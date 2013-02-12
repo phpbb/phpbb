@@ -24,6 +24,11 @@ class compress
 	var $fp = 0;
 
 	/**
+	* @var array
+	*/
+	protected $filelist = array();
+
+	/**
 	* Add file to archive
 	*/
 	function add_file($src, $src_rm_prefix = '', $src_add_prefix = '', $skip_files = '')
@@ -123,9 +128,41 @@ class compress
 	}
 
 	/**
-	* Return available methods
+	* Checks if a file by that name as already been added and, if it has,
+	* returns a new, unique name.
+	*
+	* @param string $name The filename
+	* @return string A unique filename
 	*/
-	function methods()
+	protected function unique_filename($name)
+	{
+		if (isset($this->filelist[$name]))
+		{
+			$start = $name;
+			$ext = '';
+			$this->filelist[$name]++;
+
+			// Separate the extension off the end of the filename to preserve it
+			$pos = strrpos($name, '.');
+			if ($pos !== false)
+			{
+				$start = substr($name, 0, $pos);
+				$ext = substr($name, $pos);
+			}
+
+			return $start . '_' . $this->filelist[$name] . $ext;
+		}
+
+		$this->filelist[$name] = 0;
+		return $name;
+	}
+
+	/**
+	* Return available methods
+	*
+	* @return array Array of strings of available compression methods (.tar, .tar.gz, .zip, etc.)
+	*/
+	static public function methods()
 	{
 		$methods = array('.tar');
 		$available_methods = array('.tar.gz' => 'zlib', '.tar.bz2' => 'bz2', '.zip' => 'zlib');
@@ -361,6 +398,7 @@ class compress_zip extends compress
 	function data($name, $data, $is_dir = false, $stat)
 	{
 		$name = str_replace('\\', '/', $name);
+		$name = $this->unique_filename($name);
 
 		$hexdtime = pack('V', $this->unix_to_dos_time($stat[9]));
 
@@ -633,6 +671,7 @@ class compress_tar extends compress
 	*/
 	function data($name, $data, $is_dir = false, $stat)
 	{
+		$name = $this->unique_filename($name);
 		$this->wrote = true;
 		$fzwrite = 	($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && @extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 

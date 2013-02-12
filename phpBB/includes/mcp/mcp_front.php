@@ -251,7 +251,7 @@ function mcp_front_view($id, $mode, $action)
 
 				'ORDER_BY'	=> 'p.message_time DESC',
 			);
-			$sql_ary = $db->sql_build_query('SELECT', $sql_ary);
+			$sql = $db->sql_build_query('SELECT', $sql_ary);
 			$result = $db->sql_query_limit($sql, 5);
 
 			$pm_by_id = $pm_list = array();

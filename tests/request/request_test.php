@@ -21,6 +21,13 @@ class phpbb_request_test extends phpbb_test_case
 		$_COOKIE['test'] = 3;
 		$_REQUEST['test'] = 3;
 		$_GET['unset'] = '';
+		$_FILES['test'] = array(
+			'name' => 'file',
+			'tmp_name' => 'tmp',
+			'size' => 256,
+			'type' => 'application/octet-stream',
+			'error' => UPLOAD_ERR_OK,
+		);
 
 		$_SERVER['HTTP_HOST'] = 'example.com';
 		$_SERVER['HTTP_ACCEPT'] = 'application/json';
@@ -42,6 +49,7 @@ class phpbb_request_test extends phpbb_test_case
 		$this->assertEquals(2, $_GET['test'], 'Checking $_GET after enable_super_globals');
 		$this->assertEquals(3, $_COOKIE['test'], 'Checking $_COOKIE after enable_super_globals');
 		$this->assertEquals(3, $_REQUEST['test'], 'Checking $_REQUEST after enable_super_globals');
+		$this->assertEquals(256, $_FILES['test']['size']);
 
 		$_POST['x'] = 2;
 		$this->assertEquals($_POST, $GLOBALS['_POST'], 'Checking whether $_POST can still be accessed via $GLOBALS[\'_POST\']');
@@ -83,6 +91,23 @@ class phpbb_request_test extends phpbb_test_case
 			);
 
 		$this->request->header('SOMEVAR');
+	}
+
+	public function test_file()
+	{
+		$file = $this->request->file('test');
+		$this->assertEquals('file', $file['name']);
+		$this->assertEquals('tmp', $file['tmp_name']);
+		$this->assertEquals(256, $file['size']);
+		$this->assertEquals('application/octet-stream', $file['type']);
+		$this->assertEquals(UPLOAD_ERR_OK, $file['error']);
+	}
+
+	public function test_file_not_exists()
+	{
+		$file = $this->request->file('404');
+		$this->assertTrue(is_array($file));
+		$this->assertTrue(empty($file));
 	}
 
 	/**

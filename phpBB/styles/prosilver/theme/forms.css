@@ -32,6 +32,11 @@ option {
 	padding-right: 1em;
 }
 
+select optgroup option {
+	padding-right: 1em;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+}
+
 textarea {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	width: 60%;

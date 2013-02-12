@@ -31,8 +31,8 @@
 						{L_POSTED} {L_POST_BY_AUTHOR} {unapproved.AUTHOR_FULL} &raquo; {unapproved.POST_TIME}
 					</dt>
 					<dd class="moderation"><span>
-						{L_TOPIC}: <a href="{unapproved.U_TOPIC}">{unapproved.TOPIC_TITLE}</a> [<a href="{unapproved.U_MCP_TOPIC}">{L_MODERATE}</a>]<br />
-						{L_FORUM}: <!-- IF unapproved.U_FORUM --><a href="{unapproved.U_FORUM}">{unapproved.FORUM_NAME}</a><!-- ELSE -->{unapproved.FORUM_NAME}<!-- ENDIF --><!-- IF unapproved.U_MCP_FORUM --> [<a href="{unapproved.U_MCP_FORUM}">{L_MODERATE}</a>]<!-- ENDIF --></span>
+						{L_TOPIC}{L_COLON} <a href="{unapproved.U_TOPIC}">{unapproved.TOPIC_TITLE}</a> [<a href="{unapproved.U_MCP_TOPIC}">{L_MODERATE}</a>]<br />
+						{L_FORUM}{L_COLON} <!-- IF unapproved.U_FORUM --><a href="{unapproved.U_FORUM}">{unapproved.FORUM_NAME}</a><!-- ELSE -->{unapproved.FORUM_NAME}<!-- ENDIF --><!-- IF unapproved.U_MCP_FORUM --> [<a href="{unapproved.U_MCP_FORUM}">{L_MODERATE}</a>]<!-- ENDIF --></span>
 					</dd>
 
 			 		<dd class="mark"><input type="checkbox" name="post_id_list[]" value="{unapproved.POST_ID}" /></dd>
@@ -84,7 +84,7 @@
 					</dt>
 					<dd class="moderation">
 						<span>{L_REPORTED} {L_POST_BY_AUTHOR} {report.REPORTER_FULL} {L_REPORTED_ON_DATE} {report.REPORT_TIME}<br />
-						{L_FORUM}: <a href="{report.U_FORUM}">{report.FORUM_NAME}</a></span>
+						{L_FORUM}{L_COLON} <a href="{report.U_FORUM}">{report.FORUM_NAME}</a></span>
 					</dd>
 				</dl>
 			</li>

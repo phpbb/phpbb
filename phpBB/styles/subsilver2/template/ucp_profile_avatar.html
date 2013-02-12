@@ -10,7 +10,7 @@
 	</tr>
 <!-- ENDIF -->
 <tr> 
-	<td class="row1" width="35%"><b class="genmed">{L_CURRENT_IMAGE}: </b><br /><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
+	<td class="row1" width="35%"><b class="genmed">{L_CURRENT_IMAGE}{L_COLON} </b><br /><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
 	<td class="row2" align="center"><br />
 		<!-- IF AVATAR -->{AVATAR}<br /><br /><input type="checkbox" class="radio" name="delete" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span>
 		<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" />
@@ -23,29 +23,29 @@
 <!-- ENDIF -->
 <!-- IF S_UPLOAD_AVATAR_FILE -->
 	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_UPLOAD_AVATAR_FILE}: </b></td>
+		<td class="row1" width="35%"><b class="genmed">{L_UPLOAD_AVATAR_FILE}{L_COLON} </b></td>
 		<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" /><input class="post" type="file" name="uploadfile" /></td>
 	</tr>
 <!-- ENDIF -->
 <!-- IF S_UPLOAD_AVATAR_URL -->
 	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_UPLOAD_AVATAR_URL}: </b><br /><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
+		<td class="row1" width="35%"><b class="genmed">{L_UPLOAD_AVATAR_URL}{L_COLON} </b><br /><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
 		<td class="row2"><input class="post" type="text" name="uploadurl" size="40" value="{AVATAR_URL}" /></td>
 	</tr>
 <!-- ENDIF -->
 <!-- IF S_LINK_AVATAR -->
 	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_LINK_REMOTE_AVATAR}: </b><br /><span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
+		<td class="row1" width="35%"><b class="genmed">{L_LINK_REMOTE_AVATAR}{L_COLON} </b><br /><span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
 		<td class="row2"><input class="post" type="text" name="remotelink" size="40" value="{AVATAR_REMOTE}" /></td>
 	</tr>
 	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_LINK_REMOTE_SIZE}: </b><br /><span class="gensmall">{L_LINK_REMOTE_SIZE_EXPLAIN}</span></td>
+		<td class="row1" width="35%"><b class="genmed">{L_LINK_REMOTE_SIZE}{L_COLON} </b><br /><span class="gensmall">{L_LINK_REMOTE_SIZE_EXPLAIN}</span></td>
 		<td class="row2"><input class="post" type="text" name="width" size="3" value="{AVATAR_WIDTH}" /> <span class="gen">{L_PIXEL} &times; </span> <input class="post" type="text" name="height" size="3" value="{AVATAR_HEIGHT}" /> <span class="gen">{L_PIXEL}</span></td>
 	</tr>
 <!-- ENDIF -->
 <!-- IF S_DISPLAY_GALLERY -->
 	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_AVATAR_GALLERY}: </b></td>
+		<td class="row1" width="35%"><b class="genmed">{L_AVATAR_GALLERY}{L_COLON} </b></td>
 		<td class="row2"><strong><a href="{U_GALLERY}">{L_DISPLAY_GALLERY}</a></strong></td>
 	</tr>
 <!-- ENDIF -->
@@ -55,7 +55,7 @@
 		<th colspan="2">{L_AVATAR_GALLERY}</th>
 	</tr>
 	<tr> 
-		<td class="cat" colspan="2" align="center" valign="middle"><span class="genmed">{L_AVATAR_CATEGORY}: </span><select name="category">{S_CAT_OPTIONS}</select>&nbsp; <input class="btnlite" tabindex="0" type="submit" value="{L_GO}" name="display_gallery" /></td>
+		<td class="cat" colspan="2" align="center" valign="middle"><span class="genmed">{L_AVATAR_CATEGORY}{L_COLON} </span><select name="category">{S_CAT_OPTIONS}</select>&nbsp; <input class="btnlite" tabindex="0" type="submit" value="{L_GO}" name="display_gallery" /></td>
 	</tr>
 	<tr> 
 		<td class="row1" colspan="2" align="center">

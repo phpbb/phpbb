@@ -46,7 +46,7 @@ interface phpbb_cron_task_parametrized extends phpbb_cron_task
 	*
 	* @param phpbb_request_interface $request Request object.
 	*
-	* @return void
+	* @return null
 	*/
 	public function parse_parameters(phpbb_request_interface $request);
 }

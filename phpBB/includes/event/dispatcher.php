@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
 
 /**
 * Extension of the Symfony2 EventDispatcher
@@ -31,7 +31,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 *     extract($phpbb_dispatcher->trigger_event('core.index', compact($vars)));
 *
 */
-class phpbb_event_dispatcher extends EventDispatcher
+class phpbb_event_dispatcher extends ContainerAwareEventDispatcher
 {
 	public function trigger_event($eventName, $data = array())
 	{

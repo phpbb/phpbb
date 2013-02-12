@@ -255,7 +255,11 @@
 	<!-- END items -->
 	</tbody>
 	</table>
-	<div>{PAGINATION}</div>
+	<div class="pagination">
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->	
+	<!-- ENDIF -->
+	</div>
 	<p class="quick">
 		<input class="button2" name="add" type="submit" value="{L_ICON_ADD}" />&nbsp; &nbsp;<input class="button2" type="submit" name="edit" value="{L_ICON_EDIT}" />
 	</p>

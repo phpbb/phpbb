@@ -39,29 +39,17 @@ class phpbb_captcha_gd_wave extends phpbb_default_captcha
 		}
 	}
 
-	public static function get_instance()
+	static public function get_instance()
 	{
 		return new phpbb_captcha_gd_wave();
 	}
 
-	function is_available()
+	static public function is_available()
 	{
-		global $phpbb_root_path, $phpEx;
-
-		if (@extension_loaded('gd'))
-		{
-			return true;
-		}
-
-		if (!function_exists('can_load_dll'))
-		{
-			include($phpbb_root_path . 'includes/functions_install.' . $phpEx);
-		}
-
-		return can_load_dll('gd');
+		return @extension_loaded('gd');
 	}
 
-	function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_GD_3D';
 	}

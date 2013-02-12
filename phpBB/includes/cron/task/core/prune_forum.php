@@ -26,44 +26,57 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements phpbb_cron_task_parametrized
 {
-	private $forum_data;
+	protected $phpbb_root_path;
+	protected $php_ext;
+	protected $config;
+	protected $db;
 
 	/**
-	* Constructor.
-	*
 	* If $forum_data is given, it is assumed to contain necessary information
 	* about a single forum that is to be pruned.
 	*
 	* If $forum_data is not given, forum id will be retrieved via request_var
 	* and a database query will be performed to load the necessary information
 	* about the forum.
+	*/
+	protected $forum_data;
+
+	/**
+	* Constructor.
+	*
+	* @param string $phpbb_root_path The root path
+	* @param string $php_ext The PHP extension
+	* @param phpbb_config $config The config
+	* @param phpbb_db_driver $db The db connection
+	*/
+	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config, phpbb_db_driver $db)
+	{
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+		$this->config = $config;
+		$this->db = $db;
+	}
+
+	/**
+	* Manually set forum data.
 	*
 	* @param array $forum_data Information about a forum to be pruned.
 	*/
-	public function __construct($forum_data = null)
+	public function set_forum_data($forum_data)
 	{
-		global $db;
-		if ($forum_data)
-		{
-			$this->forum_data = $forum_data;
-		}
-		else
-		{
-			$this->forum_data = null;
-		}
+		$this->forum_data = $forum_data;
 	}
 
 	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run()
 	{
-		global $phpbb_root_path, $phpEx;
 		if (!function_exists('auto_prune'))
 		{
-			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+			include($this->phpbb_root_path . 'includes/functions_admin.' . $this->php_ext);
 		}
 
 		if ($this->forum_data['prune_days'])
@@ -90,8 +103,7 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	*/
 	public function is_runnable()
 	{
-		global $config;
-		return !$config['use_system_cron'] && $this->forum_data;
+		return !$this->config['use_system_cron'] && $this->forum_data;
 	}
 
 	/**
@@ -126,12 +138,10 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	*
 	* @param phpbb_request_interface $request Request object.
 	*
-	* @return void
+	* @return null
 	*/
 	public function parse_parameters(phpbb_request_interface $request)
 	{
-		global $db;
-
 		$this->forum_data = null;
 		if ($request->is_set('f'))
 		{
@@ -140,9 +150,9 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 			$sql = 'SELECT forum_id, prune_next, enable_prune, prune_days, prune_viewed, forum_flags, prune_freq
 				FROM ' . FORUMS_TABLE . "
 				WHERE forum_id = $forum_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
 
 			if ($row)
 			{

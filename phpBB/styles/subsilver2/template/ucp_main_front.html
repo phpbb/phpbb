@@ -38,26 +38,26 @@
 	<td class="row1" colspan="3">
 		<table width="100%" cellspacing="1" cellpadding="4">
 		<tr> 
-			<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_JOINED}: </b></td>
+			<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_JOINED}{L_COLON} </b></td>
 			<td width="100%"><b class="gen">{JOINED}</b></td>
 		</tr>
 		<tr> 
-			<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_TOTAL_POSTS}: </b></td>
+			<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_TOTAL_POSTS}{L_COLON} </b></td>
 			<td><!-- IF POSTS_PCT --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<!-- IF S_DISPLAY_SEARCH --><br /><a href="{U_SEARCH_SELF}">{L_SEARCH_YOUR_POSTS}</a><!-- ENDIF --></span><!-- ELSE --><b class="gen">{POSTS}<b><!-- ENDIF --></td>
 		</tr>
 		<!-- IF S_SHOW_ACTIVITY -->
 			<tr>
-				<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_ACTIVE_IN_FORUM}: </b></td>
+				<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_ACTIVE_IN_FORUM}{L_COLON} </b></td>
 				<td><!-- IF ACTIVE_FORUM != '' --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 			</tr>
 			<tr>
-				<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_ACTIVE_IN_TOPIC}: </b></td>
+				<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_ACTIVE_IN_TOPIC}{L_COLON} </b></td>
 				<td><!-- IF ACTIVE_TOPIC != '' --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="genmed">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 			</tr>
 		<!-- ENDIF -->
 		<!-- IF WARNINGS -->
 			<tr>
-				<td align="{S_CONTENT_FLOW_END}" valign="middle" nowrap="nowrap"><b class="genmed">{L_YOUR_WARNINGS}: </b></td>
+				<td align="{S_CONTENT_FLOW_END}" valign="middle" nowrap="nowrap"><b class="genmed">{L_YOUR_WARNINGS}{L_COLON} </b></td>
 				<td class="genmed">{WARNING_IMG} [ <b>{WARNINGS}</b> ]</td>
 			</tr>
 		<!-- ENDIF -->

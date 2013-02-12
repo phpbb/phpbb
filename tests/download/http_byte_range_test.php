@@ -8,7 +8,6 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_download.php';
-require_once dirname(__FILE__) . '/../mock/request.php';
 
 class phpbb_download_http_byte_range_test extends phpbb_test_case
 {

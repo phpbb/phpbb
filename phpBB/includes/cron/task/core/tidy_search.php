@@ -24,26 +24,51 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 {
+	protected $phpbb_root_path;
+	protected $php_ext;
+	protected $auth;
+	protected $config;
+	protected $db;
+	protected $user;
+
+	/**
+	* Constructor.
+	*
+	* @param string $phpbb_root_path The root path
+	* @param string $php_ext The PHP extension
+	* @param phpbb_auth $auth The auth
+	* @param phpbb_config $config The config
+	* @param phpbb_db_driver $db The db connection
+	* @param phpbb_user $user The user
+	*/
+	public function __construct($phpbb_root_path, $php_ext, phpbb_auth $auth, phpbb_config $config, phpbb_db_driver $db, phpbb_user $user)
+	{
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+		$this->auth = $auth;
+		$this->config = $config;
+		$this->db = $db;
+		$this->user = $user;
+	}
+
 	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run()
 	{
-		global $phpbb_root_path, $phpEx, $config, $error;
-
 		// Select the search method
-		$search_type = basename($config['search_type']);
+		$search_type = basename($this->config['search_type']);
 
 		if (!class_exists($search_type))
 		{
-			include("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+			include($this->phpbb_root_path . "includes/search/$search_type." . $this->php_ext);
 		}
 
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;
-		$search = new $search_type($error);
+		$search = new $search_type($error, $this->phpbb_root_path, $this->php_ext, $this->auth, $this->config, $this->db, $this->user);
 
 		if (!$error)
 		{
@@ -62,12 +87,10 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		global $phpbb_root_path, $phpEx, $config;
-
 		// Select the search method
-		$search_type = basename($config['search_type']);
+		$search_type = basename($this->config['search_type']);
 
-		return file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx);
+		return file_exists($this->phpbb_root_path . 'includes/search/' . $search_type . '.' . $this->php_ext);
 	}
 
 	/**
@@ -81,7 +104,6 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 	*/
 	public function should_run()
 	{
-		global $config;
-		return $config['search_last_gc'] < time() - $config['search_gc'];
+		return $this->config['search_last_gc'] < time() - $this->config['search_gc'];
 	}
 }

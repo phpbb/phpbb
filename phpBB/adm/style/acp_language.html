@@ -13,7 +13,7 @@
 	<fieldset>
 		<legend>{L_DOWNLOAD_AS}</legend>
 	<dl>
-		<dt><label for="use_method">{L_DOWNLOAD_AS}:</label></dt>
+		<dt><label for="use_method">{L_DOWNLOAD_AS}{L_COLON}</label></dt>
 		<dd>{RADIO_BUTTONS}</dd>
 	</dl>
 
@@ -35,19 +35,19 @@
 	<fieldset>
 		<legend>{LANG_LOCAL_NAME}</legend>
 	<dl>
-		<dt><label for="lang_english_name">{L_LANG_ENGLISH_NAME}:</label></dt>
+		<dt><label for="lang_english_name">{L_LANG_ENGLISH_NAME}{L_COLON}</label></dt>
 		<dd><input type="text" id="lang_english_name" name="lang_english_name" value="{LANG_ENGLISH_NAME}" maxlength="100" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="lang_local_name">{L_LANG_LOCAL_NAME}:</label></dt>
+		<dt><label for="lang_local_name">{L_LANG_LOCAL_NAME}{L_COLON}</label></dt>
 		<dd><input type="text" id="lang_local_name" name="lang_local_name" value="{LANG_LOCAL_NAME}" maxlength="255" /></dd>
 	</dl>
 	<dl>
-		<dt><label>{L_LANG_ISO_CODE}:</label></dt>
+		<dt><label>{L_LANG_ISO_CODE}{L_COLON}</label></dt>
 		<dd><strong>{LANG_ISO}</strong></dd>
 	</dl>
 	<dl>
-		<dt><label for="lang_author">{L_LANG_AUTHOR}:</label></dt>
+		<dt><label for="lang_author">{L_LANG_AUTHOR}{L_COLON}</label></dt>
 		<dd><input type="text" id="lang_author" name="lang_author" value="{LANG_AUTHOR}" maxlength="255" /></dd>
 	</dl>
 
@@ -147,7 +147,7 @@
 	</tr>
 	<tr>
 		<td class="row3" style="text-align: right;">	
-		<!-- IF ALLOW_UPLOAD -->&nbsp;&nbsp;{L_UPLOAD_METHOD}:&nbsp;<!-- BEGIN buttons--><input type="radio" class="radio"<!-- IF buttons.S_FIRST_ROW --> id="method" checked="checked"<!-- ENDIF --> value="{buttons.VALUE}" name="method" />&nbsp;{buttons.VALUE}&nbsp;<!-- END buttons --><input type="submit" name="upload_file" class="button2" value="{L_SUBMIT_AND_UPLOAD}" /><!-- ENDIF --></td>
+		<!-- IF ALLOW_UPLOAD -->&nbsp;&nbsp;{L_UPLOAD_METHOD}{L_COLON}&nbsp;<!-- BEGIN buttons--><input type="radio" class="radio"<!-- IF buttons.S_FIRST_ROW --> id="method" checked="checked"<!-- ENDIF --> value="{buttons.VALUE}" name="method" />&nbsp;{buttons.VALUE}&nbsp;<!-- END buttons --><input type="submit" name="upload_file" class="button2" value="{L_SUBMIT_AND_UPLOAD}" /><!-- ENDIF --></td>
 	</tr>
 	</thead>
 	<tbody>
@@ -186,12 +186,12 @@
 	<fieldset>
 		<legend>{L_UPLOAD_SETTINGS}</legend>
 	<dl>
-		<dt><label>{L_UPLOAD_METHOD}:</label></dt>
+		<dt><label>{L_UPLOAD_METHOD}{L_COLON}</label></dt>
 		<dd><strong>{NAME}</strong></dd>
 	</dl>
 	<!-- BEGIN data -->
 	<dl>
-		<dt><label for="{data.DATA}">{data.NAME}:</label><br /><span>{data.EXPLAIN}</span></dt>
+		<dt><label for="{data.DATA}">{data.NAME}{L_COLON}</label><br /><span>{data.EXPLAIN}</span></dt>
 		<dd><input type="<!-- IF data.DATA == 'password' -->password<!-- ELSE -->text<!-- ENDIF -->" id="{data.DATA}" name="{data.DATA}" value="{data.DEFAULT}" /></dd>
 	</dl>
 	<!-- END data -->

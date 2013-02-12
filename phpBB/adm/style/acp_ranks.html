@@ -25,22 +25,22 @@
 	<fieldset>
 		<legend>{L_ACP_RANKS}</legend>
 	<dl>
-		<dt><label for="title">{L_RANK_TITLE}:</label></dt>
+		<dt><label for="title">{L_RANK_TITLE}{L_COLON}</label></dt>
 		<dd><input name="title" type="text" id="title" value="{RANK_TITLE}" maxlength="255" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="rank_image">{L_RANK_IMAGE}:</label></dt>
+		<dt><label for="rank_image">{L_RANK_IMAGE}{L_COLON}</label></dt>
 		<dd><select name="rank_image" id="rank_image" onchange="update_image(this.options[selectedIndex].value);">{S_FILENAME_LIST}</select></dd>
 		<dd><img src="{RANK_IMAGE}" id="image" alt="" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="special_rank">{L_RANK_SPECIAL}:</label></dt>
+		<dt><label for="special_rank">{L_RANK_SPECIAL}{L_COLON}</label></dt>
 		<dd><label><input onclick="dE('posts', -1)" type="radio" class="radio" name="special_rank" value="1" id="special_rank"<!-- IF S_SPECIAL_RANK --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 			<label><input onclick="dE('posts', 1)" type="radio" class="radio" name="special_rank" value="0"<!-- IF not S_SPECIAL_RANK --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
 	<!-- IF S_SPECIAL_RANK --><div id="posts" style="display: none;"><!-- ELSE --><div id="posts"><!-- ENDIF -->
 	<dl>
-		<dt><label for="min_posts">{L_RANK_MINIMUM}:</label></dt>
+		<dt><label for="min_posts">{L_RANK_MINIMUM}{L_COLON}</label></dt>
 		<dd><input name="min_posts" type="text" id="min_posts" maxlength="10" value="{MIN_POSTS}" /></dd>
 	</dl>
 	</div>

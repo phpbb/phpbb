@@ -62,7 +62,7 @@ class phpbb_template_template_locate_test extends phpbb_template_template_test_c
 		$this->setup_engine();
 
 		// Locate template
-		$result = $this->template->locate($files, $return_default, $return_full_path);
+		$result = $this->style_resource_locator->get_first_template_location($files, $return_default, $return_full_path);
 		$this->assertSame($expected, $result);
 	}
 }

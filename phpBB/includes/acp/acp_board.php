@@ -53,12 +53,13 @@ class acp_board
 						'legend1'				=> 'ACP_BOARD_SETTINGS',
 						'sitename'				=> array('lang' => 'SITE_NAME',				'validate' => 'string',	'type' => 'text:40:255', 'explain' => false),
 						'site_desc'				=> array('lang' => 'SITE_DESC',				'validate' => 'string',	'type' => 'text:40:255', 'explain' => false),
+						'site_home_url'			=> array('lang' => 'SITE_HOME_URL',			'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
+						'site_home_text'		=> array('lang' => 'SITE_HOME_TEXT',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
 						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'validate' => 'bool',	'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
 						'board_disable_msg'		=> false,
 						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'validate' => 'lang',	'type' => 'select', 'function' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
 						'default_dateformat'	=> array('lang' => 'DEFAULT_DATE_FORMAT',	'validate' => 'string',	'type' => 'custom', 'method' => 'dateformat_select', 'explain' => true),
-						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'validate' => 'string',	'type' => 'select', 'function' => 'tz_select', 'params' => array('{CONFIG_VALUE}', 1), 'explain' => true),
-						'board_dst'				=> array('lang' => 'SYSTEM_DST',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'validate' => 'timezone',	'type' => 'custom', 'method' => 'timezone_select', 'explain' => true),
 						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'validate' => 'int',	'type' => 'select', 'function' => 'style_select', 'params' => array('{CONFIG_VALUE}', false), 'explain' => false),
 						'override_user_style'	=> array('lang' => 'OVERRIDE_STYLE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
@@ -897,6 +898,18 @@ class acp_board
 			'<br /><br /><input class="button2" type="submit" id="' . $key . '_enable" name="' . $key . '_enable" value="' . $user->lang['ALLOW_QUICK_REPLY_BUTTON'] . '" />';
 	}
 
+	/**
+	* Select guest timezone
+	*/
+	function timezone_select($value, $key)
+	{
+		global $user;
+
+		$timezone_select = phpbb_timezone_select($user, $value, true);
+		$timezone_select['tz_select'];
+
+		return '<select name="config[' . $key . ']" id="' . $key . '">' . $timezone_select['tz_select'] . '</select>';
+	}
 
 	/**
 	* Select default dateformat
@@ -907,10 +920,14 @@ class acp_board
 
 		// Let the format_date function operate with the acp values
 		$old_tz = $user->timezone;
-		$old_dst = $user->dst;
-
-		$user->timezone = $config['board_timezone'] * 3600;
-		$user->dst = $config['board_dst'] * 3600;
+		try
+		{
+			$user->timezone = new DateTimeZone($config['board_timezone']);
+		}
+		catch (Exception $e)
+		{
+			// If the board timezone is invalid, we just use the users timezone.
+		}
 
 		$dateformat_options = '';
 
@@ -930,7 +947,6 @@ class acp_board
 
 		// Reset users date options
 		$user->timezone = $old_tz;
-		$user->dst = $old_dst;
 
 		return "<select name=\"dateoptions\" id=\"dateoptions\" onchange=\"if (this.value == 'custom') { document.getElementById('" . addslashes($key) . "').value = '" . addslashes($value) . "'; } else { document.getElementById('" . addslashes($key) . "').value = this.value; }\">$dateformat_options</select>
 		<input type=\"text\" name=\"config[$key]\" id=\"$key\" value=\"$value\" maxlength=\"30\" />";

@@ -433,7 +433,7 @@ function set_modified_headers($stamp, $browser)
 *
 * @param bool $exit		Whether to die or not.
 *
-* @return void
+* @return null
 */
 function file_gc($exit = true)
 {
@@ -591,4 +591,133 @@ function phpbb_parse_range_request($request_array, $filesize)
 			'bytes_total'		=> $filesize,
 		);
 	}
+}
+
+/**
+* Increments the download count of all provided attachments
+*
+* @param phpbb_db_driver $db The database object
+* @param array|int $ids The attach_id of each attachment
+*
+* @return null
+*/
+function phpbb_increment_downloads($db, $ids)
+{
+	if (!is_array($ids))
+	{
+		$ids = array($ids);
+	}
+
+	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+		SET download_count = download_count + 1
+		WHERE ' . $db->sql_in_set('attach_id', $ids);
+	$db->sql_query($sql);
+}
+
+/**
+* Handles authentication when downloading attachments from a post or topic
+*
+* @param phpbb_db_driver $db The database object
+* @param phpbb_auth $auth The authentication object
+* @param int $topic_id The id of the topic that we are downloading from
+*
+* @return null
+*/
+function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
+{
+	$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
+		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
+		WHERE t.topic_id = " . (int) $topic_id . "
+			AND t.forum_id = f.forum_id";
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
+	{
+		if ($row && $row['forum_password'])
+		{
+			// Do something else ... ?
+			login_forum_box($row);
+		}
+	}
+	else
+	{
+		send_status_line(403, 'Forbidden');
+		trigger_error('SORRY_AUTH_VIEW_ATTACH');
+	}
+}
+
+/**
+* Handles authentication when downloading attachments from PMs
+*
+* @param phpbb_db_driver $db The database object
+* @param phpbb_auth $auth The authentication object
+* @param int $user_id The user id
+* @param int $msg_id The id of the PM that we are downloading from
+*
+* @return null
+*/
+function phpbb_download_handle_pm_auth($db, $auth, $user_id, $msg_id)
+{
+	if (!$auth->acl_get('u_pm_download'))
+	{
+		send_status_line(403, 'Forbidden');
+		trigger_error('SORRY_AUTH_VIEW_ATTACH');
+	}
+
+	$allowed = phpbb_download_check_pm_auth($db, $user_id, $msg_id);
+
+	if (!$allowed)
+	{
+		send_status_line(403, 'Forbidden');
+		trigger_error('ERROR_NO_ATTACHMENT');
+	}
+}
+
+/**
+* Checks whether a user can download from a particular PM
+*
+* @param phpbb_db_driver $db The database object
+* @param int $user_id The user id
+* @param int $msg_id The id of the PM that we are downloading from
+*
+* @return bool Whether the user is allowed to download from that PM or not
+*/
+function phpbb_download_check_pm_auth($db, $user_id, $msg_id)
+{
+	// Check if the attachment is within the users scope...
+	$sql = 'SELECT msg_id
+		FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE msg_id = ' . (int) $msg_id . '
+			AND (
+				user_id = ' . (int) $user_id . '
+				OR author_id = ' . (int) $user_id . '
+			)';
+	$result = $db->sql_query_limit($sql, 1);
+	$allowed = (bool) $db->sql_fetchfield('msg_id');
+	$db->sql_freeresult($result);
+
+	return $allowed;
+}
+
+/**
+* Cleans a filename of any characters that could potentially cause a problem on
+* a user's filesystem.
+*
+* @param string $filename The filename to clean
+*
+* @return string The cleaned filename
+*/
+function phpbb_download_clean_filename($filename)
+{
+	$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
+
+	// rawurlencode to convert any potentially 'bad' characters that we missed
+	$filename = rawurlencode(str_replace($bad_chars, '_', $filename));
+
+	// Turn the %xx entities created by rawurlencode to _
+	$filename = preg_replace("/%(\w{2})/", '_', $filename);
+
+	return $filename;
 }

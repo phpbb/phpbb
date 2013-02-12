@@ -37,9 +37,8 @@ function insert_single(user)
 }
 // ]]>
 </script>
-<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/forum_fn.js"></script>
 <!-- ENDIF -->
-
+<!-- INCLUDEJS template/forum_fn.js -->
 <h2 class="solo">{L_FIND_USERNAME}</h2>
 
 <form method="post" action="{S_MODE_ACTION}" id="search_memberlist">
@@ -50,60 +49,60 @@ function insert_single(user)
 
 	<fieldset class="fields1 column1">
 	<dl>
-		<dt><label for="username">{L_USERNAME}:</label></dt>
+		<dt><label for="username">{L_USERNAME}{L_COLON}</label></dt>
 		<dd><input type="text" name="username" id="username" value="{USERNAME}" class="inputbox" /></dd>
 	</dl>
 <!-- IF S_EMAIL_SEARCH_ALLOWED -->
 	<dl>
-		<dt><label for="email">{L_EMAIL}:</label></dt>
+		<dt><label for="email">{L_EMAIL}{L_COLON}</label></dt>
 		<dd><input type="text" name="email" id="email" value="{EMAIL}" class="inputbox" /></dd>
 	</dl>
 <!-- ENDIF -->
 	<dl>
-		<dt><label for="icq">{L_ICQ}:</label></dt>
+		<dt><label for="icq">{L_ICQ}{L_COLON}</label></dt>
 		<dd><input type="text" name="icq" id="icq" value="{ICQ}" class="inputbox" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="aim">{L_AIM}:</label></dt>
+		<dt><label for="aim">{L_AIM}{L_COLON}</label></dt>
 		<dd><input type="text" name="aim" id="aim" value="{AIM}" class="inputbox" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="yahoo">{L_YIM}:</label></dt>
+		<dt><label for="yahoo">{L_YIM}{L_COLON}</label></dt>
 		<dd><input type="text" name="yahoo" id="yahoo" value="{YAHOO}" class="inputbox" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="msn">{L_MSNM}:</label></dt>
+		<dt><label for="msn">{L_MSNM}{L_COLON}</label></dt>
 		<dd><input type="text" name="msn" id="msn" value="{MSNM}" class="inputbox" /></dd>
 	</dl>
 	</fieldset>
 
 	<fieldset class="fields1 column2">
 	<dl>
-		<dt><label for="joined">{L_JOINED}:</label></dt>
+		<dt><label for="joined">{L_JOINED}{L_COLON}</label></dt>
 		<dd><select name="joined_select">{S_JOINED_TIME_OPTIONS}</select> <input class="inputbox medium" type="text" name="joined" id="joined" value="{JOINED}" /></dd>
 	</dl>
 <!-- IF S_VIEWONLINE -->
 	<dl>
-		<dt><label for="active">{L_LAST_ACTIVE}:</label></dt>
+		<dt><label for="active">{L_LAST_ACTIVE}{L_COLON}</label></dt>
 		<dd><select name="active_select">{S_ACTIVE_TIME_OPTIONS}</select> <input class="inputbox medium" type="text" name="active" id="active" value="{ACTIVE}" /></dd>
 	</dl>
 <!-- ENDIF -->
 	<dl>
-		<dt><label for="count">{L_POSTS}:</label></dt>
+		<dt><label for="count">{L_POSTS}{L_COLON}</label></dt>
 		<dd><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="inputbox medium" type="text" name="count" id="count" value="{COUNT}" /></dd>
 	</dl>
 <!-- IF S_IP_SEARCH_ALLOWED -->
 	<dl>
-		<dt><label for="ip">{L_POST_IP}:</label></dt>
+		<dt><label for="ip">{L_POST_IP}{L_COLON}</label></dt>
 		<dd><input class="inputbox medium" type="text" name="ip" id="ip" value="{IP}" /></dd>
 	</dl>
 <!-- ENDIF -->
 	<dl>
-		<dt><label for="search_group_id">{L_GROUP}:</label></dt>
+		<dt><label for="search_group_id">{L_GROUP}{L_COLON}</label></dt>
 		<dd><select name="search_group_id" id="search_group_id">{S_GROUP_SELECT}</select></dd>
 	</dl>
 	<dl>
-		<dt><label for="sk" class="label3">{L_SORT_BY}:</label></dt>
+		<dt><label for="sk" class="label3">{L_SORT_BY}{L_COLON}</label></dt>
 		<dd><select name="sk" id="sk">{S_SORT_OPTIONS}</select> <select name="sd">{S_ORDER_SELECT}</select></dd>
 	</dl>
 	</fieldset>

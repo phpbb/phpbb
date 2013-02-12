@@ -7,7 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/lang.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_built_select_test extends phpbb_test_case

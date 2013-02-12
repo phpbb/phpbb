@@ -44,6 +44,41 @@ $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var
 $error = $post_data = array();
 $current_time = time();
 
+/**
+* This event allows you to alter the above parameters, such as submit and mode
+* 
+* Note: $refresh must be true to retain previously submitted form data.
+*
+* Note: The template class will not work properly until $user->setup() is
+* called, and it has not been called yet. Extensions requiring template
+* assignments should use an event that comes later in this file.
+*
+* @event core.modify_posting_parameters
+* @var	int		post_id		ID of the post
+* @var	int		topic_id	ID of the topic
+* @var	int		forum_id	ID of the forum
+* @var	int		draft_id	ID of the draft
+* @var	int		lastclick	Timestamp of when the form was last loaded
+* @var	bool	submit		Whether or not the form has been submitted
+* @var	bool	preview		Whether or not the post is being previewed
+* @var	bool	save		Whether or not a draft is being saved
+* @var	bool	load		Whether or not a draft is being loaded
+* @var	bool	delete		Whether or not the post is being deleted
+* @var	bool	cancel		Whether or not to cancel the form (returns to
+*							viewtopic or viewforum depending on if the user
+*							is posting a new topic or editing a post)
+* @var	bool	refresh		Whether or not to retain previously submitted data
+* @var	string	mode		What action to take if the form has been sumitted
+*							post|reply|quote|edit|delete|bump|smilies|popup
+* @var	array	error		Any error strings; a non-empty array aborts
+*							form submission.
+*							NOTE: Should be actual language strings, NOT
+*							language keys.
+* @since 3.1-A1
+*/
+$vars = array('post_id', 'topic_id', 'forum_id', 'draft_id', 'lastclick', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error');
+extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compact($vars)));
+
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
@@ -1081,8 +1116,9 @@ if ($submit || $preview || $refresh)
 				$captcha->reset();
 			}
 
-			// Check the permissions for post approval. Moderators are not affected.
-			if ((!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
+			// Check the permissions for post approval.
+			// Moderators must go through post approval like ordinary users.
+			if ((!$auth->acl_get('f_noapprove', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
 			{
 				meta_refresh(10, $redirect_url);
 				$message = ($mode == 'edit') ? $user->lang['POST_EDITED_MOD'] : $user->lang['POST_STORED_MOD'];
@@ -1362,7 +1398,7 @@ $template->assign_vars(array(
 	'FORUM_NAME'			=> $post_data['forum_name'],
 	'FORUM_DESC'			=> ($post_data['forum_desc']) ? generate_text_for_display($post_data['forum_desc'], $post_data['forum_desc_uid'], $post_data['forum_desc_bitfield'], $post_data['forum_desc_options']) : '',
 	'TOPIC_TITLE'			=> censor_text($post_data['topic_title']),
-	'MODERATORS'			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
+	'MODERATORS'			=> (sizeof($moderators)) ? implode($user->lang['COMMA_SEPARATOR'], $moderators[$forum_id]) : '',
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? $post_data['username'] : '',
 	'SUBJECT'				=> $post_data['post_subject'],
 	'MESSAGE'				=> $post_data['post_text'],
@@ -1376,7 +1412,7 @@ $template->assign_vars(array(
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
-	'EDIT_REASON'			=> $post_data['post_edit_reason'],
+	'EDIT_REASON'			=> $request->variable('edit_reason', ''),
 	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
 	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
 	'U_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup"),
@@ -1416,6 +1452,14 @@ $template->assign_vars(array(
 	'S_POST_ACTION'			=> $s_action,
 	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 );
+
+/**
+* This event allows you to modify template variables for the posting screen
+*
+* @event core.posting_modify_template_vars
+* @since 3.1-A1
+*/
+$phpbb_dispatcher->trigger_event('core.posting_modify_template_vars');
 
 // Build custom bbcodes array
 display_custom_bbcodes();

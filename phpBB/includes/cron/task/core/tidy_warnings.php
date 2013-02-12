@@ -24,17 +24,34 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_tidy_warnings extends phpbb_cron_task_base
 {
+	protected $phpbb_root_path;
+	protected $php_ext;
+	protected $config;
+
+	/**
+	* Constructor.
+	*
+	* @param string $phpbb_root_path The root path
+	* @param string $php_ext The PHP extension
+	* @param phpbb_config $config The config
+	*/
+	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config)
+	{
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+		$this->config = $config;
+	}
+
 	/**
 	* Runs this cron task.
 	*
-	* @return void
+	* @return null
 	*/
 	public function run()
 	{
-		global $phpbb_root_path, $phpEx;
 		if (!function_exists('tidy_warnings'))
 		{
-			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+			include($this->phpbb_root_path . 'includes/functions_admin.' . $this->php_ext);
 		}
 		tidy_warnings();
 	}
@@ -48,8 +65,7 @@ class phpbb_cron_task_core_tidy_warnings extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		global $config;
-		return (bool) $config['warnings_expire_days'];
+		return (bool) $this->config['warnings_expire_days'];
 	}
 
 	/**
@@ -63,7 +79,6 @@ class phpbb_cron_task_core_tidy_warnings extends phpbb_cron_task_base
 	*/
 	public function should_run()
 	{
-		global $config;
-		return $config['warnings_last_gc'] < time() - $config['warnings_gc'];
+		return $this->config['warnings_last_gc'] < time() - $this->config['warnings_gc'];
 	}
 }

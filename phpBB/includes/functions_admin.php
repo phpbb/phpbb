@@ -723,7 +723,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 */
 function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true, $call_delete_topics = true)
 {
-	global $db, $config, $phpbb_root_path, $phpEx;
+	global $db, $config, $phpbb_root_path, $phpEx, $auth, $user;
 
 	if ($where_type === 'range')
 	{
@@ -855,7 +855,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	$error = false;
-	$search = new $search_type($error);
+	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 	if ($error)
 	{
@@ -2292,28 +2292,17 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 }
 
 /**
-* remove_comments will strip the sql comment lines out of an uploaded sql file
-* specifically for mssql and postgres type files in the install....
+* Cache moderators. Called whenever permissions are changed
+* via admin_permissions. Changes of usernames and group names
+* must be carried through for the moderators table.
 *
-* @deprecated		Use phpbb_remove_comments() instead.
+* @param phpbb_db_driver $db Database connection
+* @param phpbb_cache_driver_interface Cache driver
+* @param phpbb_auth $auth Authentication object
+* @return null
 */
-function remove_comments(&$output)
+function phpbb_cache_moderators($db, $cache, $auth)
 {
-	// Remove /* */ comments (http://ostermiller.org/findcomment.html)
-	$output = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $output);
-
-	// Return by reference and value.
-	return $output;
-}
-
-/**
-* Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
-* and group names must be carried through for the moderators table
-*/
-function cache_moderators()
-{
-	global $db, $cache, $auth, $phpbb_root_path, $phpEx;
-
 	// Remove cached sql results
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
@@ -2481,6 +2470,20 @@ function cache_moderators()
 	}
 
 	$db->sql_multi_insert(MODERATOR_CACHE_TABLE, $sql_ary);
+}
+
+/**
+* Cache moderators. Called whenever permissions are changed
+* via admin_permissions. Changes of usernames and group names
+* must be carried through for the moderators table.
+*
+* @deprecated 3.1
+* @return null
+*/
+function cache_moderators()
+{
+	global $db, $cache, $auth;
+	return phpbb_cache_moderators($db, $cache, $auth);
 }
 
 /**
@@ -2755,12 +2758,16 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 }
 
 /**
-* Update foes - remove moderators and administrators from foe lists...
+* Removes moderators and administrators from foe lists.
+*
+* @param phpbb_db_driver $db Database connection
+* @param phpbb_auth $auth Authentication object
+* @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
+* @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
+* @return null
 */
-function update_foes($group_id = false, $user_id = false)
+function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
 {
-	global $db, $auth;
-
 	// update foes for some user
 	if (is_array($user_id) && sizeof($user_id))
 	{
@@ -2867,6 +2874,20 @@ function update_foes($group_id = false, $user_id = false)
 		$db->sql_query($sql);
 	}
 	unset($perms);
+}
+
+/**
+* Removes moderators and administrators from foe lists.
+*
+* @deprecated 3.1
+* @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
+* @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
+* @return null
+*/
+function update_foes($group_id = false, $user_id = false)
+{
+	global $db, $auth;
+	return phpbb_update_foes($db, $auth, $group_id, $user_id);
 }
 
 /**
@@ -3323,7 +3344,7 @@ function obtain_latest_version_info($force_update = false, $warn_fail = false, $
  * @param int		$flag			The binary flag which is OR-ed with the current column value
  * @param string	$sql_more		This string is attached to the sql query generated to update the table.
  *
- * @return void
+ * @return null
  */
 function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more = '')
 {

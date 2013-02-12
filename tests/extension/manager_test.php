@@ -7,7 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/cache.php';
 require_once dirname(__FILE__) . '/ext/bar/ext.php';
 require_once dirname(__FILE__) . '/ext/foo/ext.php';
 require_once dirname(__FILE__) . '/ext/vendor/moo/ext.php';
@@ -28,6 +27,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 		$this->extension_manager = new phpbb_extension_manager(
 			$this->new_dbal(),
+			new phpbb_config(array()),
 			'phpbb_ext',
 			dirname(__FILE__) . '/',
 			'.php',
@@ -91,6 +91,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	{
 		$extension_manager = new phpbb_extension_manager(
 			$this->new_dbal(),
+			new phpbb_config(array()),
 			'phpbb_ext',
 			dirname(__FILE__) . '/',
 			'.php'

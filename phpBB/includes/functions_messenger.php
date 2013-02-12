@@ -210,7 +210,7 @@ class messenger
 		{
 			$style_resource_locator = new phpbb_style_resource_locator();
 			$style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider());
-			$tpl = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator);
+			$tpl = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, new phpbb_template_context(), $phpbb_extension_manager);
 			$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, $style_path_provider, $tpl);
 
 			$this->tpl_msg[$template_lang . $template_file] = $tpl;
@@ -231,7 +231,7 @@ class messenger
 				}
 			}
 
-			$style->set_custom_style($template_lang . '_email', array($template_path, $fallback_template_path), '');
+			$style->set_custom_style($template_lang . '_email', array($template_path, $fallback_template_path), array(), '');
 
 			$tpl->set_filenames(array(
 				'body'		=> $template_file . '.txt',
@@ -651,64 +651,6 @@ class queue
 	}
 
 	/**
-	* Obtains exclusive lock on queue cache file.
-	* Returns resource representing the lock
-	*/
-	function lock()
-	{
-		// For systems that can't have two processes opening
-		// one file for writing simultaneously
-		if (file_exists($this->cache_file . '.lock'))
-		{
-			$mode = 'rb';
-		}
-		else
-		{
-			$mode = 'wb';
-		}
-
-		$lock_fp = @fopen($this->cache_file . '.lock', $mode);
-
-		if ($mode == 'wb')
-		{
-			if (!$lock_fp)
-			{
-				// Two processes may attempt to create lock file at the same time.
-				// Have the losing process try opening the lock file again for reading
-				// on the assumption that the winning process created it
-				$mode = 'rb';
-				$lock_fp = @fopen($this->cache_file . '.lock', $mode);
-			}
-			else
-			{
-				// Only need to set mode when the lock file is written
-				@chmod($this->cache_file . '.lock', 0666);
-			}
-		}
-
-		if ($lock_fp)
-		{
-			@flock($lock_fp, LOCK_EX);
-		}
-
-		return $lock_fp;
-	}
-
-	/**
-	* Releases lock on queue cache file, using resource obtained from lock()
-	*/
-	function unlock($lock_fp)
-	{
-		// lock() will return null if opening lock file, and thus locking, failed.
-		// Accept null values here so that client code does not need to check them
-		if ($lock_fp)
-		{
-			@flock($lock_fp, LOCK_UN);
-			fclose($lock_fp);
-		}
-	}
-
-	/**
 	* Process queue
 	* Using lock file
 	*/
@@ -716,15 +658,23 @@ class queue
 	{
 		global $db, $config, $phpEx, $phpbb_root_path, $user;
 
-		$lock_fp = $this->lock();
+		$lock = new phpbb_lock_flock($this->cache_file);
+		$lock->acquire();
 
-		set_config('last_queue_run', time(), true);
-
-		if (!file_exists($this->cache_file) || filemtime($this->cache_file) > time() - $config['queue_interval'])
+		// avoid races, check file existence once
+		$have_cache_file = file_exists($this->cache_file);
+		if (!$have_cache_file || $config['last_queue_run'] > time() - $config['queue_interval'])
 		{
-			$this->unlock($lock_fp);
+			if (!$have_cache_file)
+			{
+				set_config('last_queue_run', time(), true);
+			}
+
+			$lock->release();
 			return;
 		}
+
+		set_config('last_queue_run', time(), true);
 
 		include($this->cache_file);
 
@@ -789,7 +739,7 @@ class queue
 				break;
 
 				default:
-					$this->unlock($lock_fp);
+					$lock->release();
 					return;
 			}
 
@@ -865,7 +815,7 @@ class queue
 			}
 		}
 
-		$this->unlock($lock_fp);
+		$lock->release();
 	}
 
 	/**
@@ -878,7 +828,8 @@ class queue
 			return;
 		}
 
-		$lock_fp = $this->lock();
+		$lock = new phpbb_lock_flock($this->cache_file);
+		$lock->acquire();
 
 		if (file_exists($this->cache_file))
 		{
@@ -905,7 +856,7 @@ class queue
 			phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
 		}
 
-		$this->unlock($lock_fp);
+		$lock->release();
 	}
 }
 

@@ -88,6 +88,37 @@ class phpbb_template_filter extends php_user_filter
 	private $phpbb_root_path;
 
 	/**
+	* Name of the style that the template being compiled and/or rendered
+	* belongs to, and its parents, in inheritance tree order.
+	*
+	* Used to invoke style-specific template events.
+	*
+	* @var array
+	*/
+	private $style_names;
+
+	/**
+	* Extension manager.
+	*
+	* @var phpbb_extension_manager
+	*/
+	private $extension_manager;
+
+	/**
+	* Current user
+	*
+	* @var phpbb_user
+	*/
+	private $user;
+
+	/**
+	* Template compiler.
+	*
+	* @var phpbb_template_compile
+	*/
+	private $template_compile;
+
+	/**
 	* Stream filter
 	*
 	* Is invoked for evey chunk of the stream, allowing us
@@ -138,8 +169,10 @@ class phpbb_template_filter extends php_user_filter
 	/**
 	* Initializer, called on creation.
 	*
-	* Get the allow_php option, root directory and locator from params,
+	* Get the allow_php option, style_names, root directory and locator from params,
 	* which are passed to stream_filter_append.
+	*
+	* @return boolean Returns true
 	*/
 	public function onCreate()
 	{
@@ -148,6 +181,13 @@ class phpbb_template_filter extends php_user_filter
 		$this->allow_php = $this->params['allow_php'];
 		$this->locator = $this->params['locator'];
 		$this->phpbb_root_path = $this->params['phpbb_root_path'];
+		$this->style_names = $this->params['style_names'];
+		$this->extension_manager = $this->params['extension_manager'];
+		if (isset($this->params['user']))
+		{
+			$this->user = $this->params['user'];
+		}
+		$this->template_compile = $this->params['template_compile'];
 		return true;
 	}
 
@@ -209,7 +249,7 @@ class phpbb_template_filter extends php_user_filter
 
 		*/
 
-		$data = preg_replace('~(?<!^)(<\?php(?:(?<!\?>).)+(?<!/\*\*/)\?>)$~m', "$1\n", $data);
+		$data = preg_replace('~(?<!^)(<\?php.+(?<!/\*\*/)\?>)$~m', "$1\n", $data);
 		$data = str_replace('/**/?>', "?>\n", $data);
 		$data = str_replace('?><?php', '', $data);
 		return $data;
@@ -229,7 +269,9 @@ class phpbb_template_filter extends php_user_filter
 	}
 
 	/**
-	* Callback for replacing matched tokens with PHP code
+	* Callback for replacing matched tokens with compiled template code.
+	*
+	* Compiled template code is an HTML stream with embedded PHP.
 	*
 	* @param array $matches Regular expression matches
 	* @return string compiled template code
@@ -317,6 +359,10 @@ class phpbb_template_filter extends php_user_filter
 				return '<!-- ENDPHP -->';
 			break;
 
+			case 'EVENT':
+				return '<?php ' . $this->compile_tag_event($matches[2]) . '?>';
+			break;
+
 			default:
 				return $matches[0];
 			break;
@@ -359,6 +405,43 @@ class phpbb_template_filter extends php_user_filter
 		}
 
 		return $text_blocks;
+	}
+
+	/**
+	* Parse paths of the form {FOO}/a/{BAR}/b
+	*
+	* Note: this method assumes at least one variable in the path, this should
+	* be checked before this method is called.
+	*
+	* @param string $path The path to parse
+	* @param string $include_type The type of template function to call
+	* @return string An appropriately formatted string to include in the
+	* 	template or an empty string if an expression like S_FIRST_ROW was
+	* 	incorrectly used
+	*/
+	private function parse_dynamic_path($path, $include_type)
+	{
+		$matches = array();
+		$replace = array();
+		$is_expr = true;
+
+		preg_match_all('#\{((?:' . self::REGEX_NS . '\.)*)(\$)?(' . self::REGEX_VAR . ')\}#', $path, $matches);
+		foreach ($matches[0] as $var_str)
+		{
+			$tmp_is_expr = false;
+			$var = $this->get_varref($var_str, $tmp_is_expr);
+			$is_expr = $is_expr && $tmp_is_expr;
+			$replace[] = "' . $var . '";
+		}
+
+		if (!$is_expr)
+		{
+			return " \$_template->$include_type('" . str_replace($matches[0], $replace, $path) . "', true);";
+		}
+		else
+		{
+			return '';
+		}
 	}
 
 	/**
@@ -774,15 +857,9 @@ class phpbb_template_filter extends php_user_filter
 	private function compile_tag_include($tag_args)
 	{
 		// Process dynamic includes
-		if ($tag_args[0] == '{')
+		if (strpos($tag_args, '{') !== false)
 		{
-			$var = $this->get_varref($tag_args, $is_expr);
-
-			// Make sure someone didn't try to include S_FIRST_ROW or similar
-			if (!$is_expr)
-			{
-				return "if (isset($var)) { \$_template->_tpl_include($var); }";
-			}
+			return $this->parse_dynamic_path($tag_args, '_tpl_include');
 		}
 
 		return "\$_template->_tpl_include('$tag_args');";
@@ -796,7 +873,103 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function compile_tag_include_php($tag_args)
 	{
+		if (strpos($tag_args, '{') !== false)
+		{
+			return $this->parse_dynamic_path($tag_args, '_php_include');
+		}
+
 		return "\$_template->_php_include('$tag_args');";
+	}
+
+	/**
+	* Compile EVENT tag.
+	*
+	* $tag_args should be a single string identifying the event.
+	* The event name can contain letters, numbers and underscores only.
+	* If an invalid event name is specified, an E_USER_ERROR will be
+	* triggered.
+	*
+	* Event tags are only functional when the template engine has
+	* an instance of the extension manager. Extension manager would
+	* be called upon to find all extensions listening for the specified
+	* event, and to obtain additional template fragments. All such
+	* template fragments will be compiled and included in the generated
+	* compiled template code for the current template being compiled.
+	*
+	* The above means that whenever an extension is enabled or disabled,
+	* template cache should be cleared in order to update the compiled
+	* template code for the active set of template event listeners.
+	*
+	* This also means that extensions cannot return different template
+	* fragments at different times. Once templates are compiled, changing
+	* such template fragments would have no effect.
+	*
+	* @param string $tag_args EVENT tag arguments, as a string - for EVENT this is the event name
+	* @return string compiled template code
+	*/
+	private function compile_tag_event($tag_args)
+	{
+		if (!preg_match('/^\w+$/', $tag_args))
+		{
+			// The event location is improperly formatted,
+			if ($this->user)
+			{
+				trigger_error($this->user->lang('ERR_TEMPLATE_EVENT_LOCATION', $tag_args), E_USER_ERROR);
+			}
+			else
+			{
+				trigger_error(sprintf('The specified template event location <em>[%s]</em> is improperly formatted.', $tag_args), E_USER_ERROR);
+			}
+		}
+		$location = $tag_args;
+
+		if ($this->extension_manager)
+		{
+			$finder = $this->extension_manager->get_finder();
+
+			$files = $finder
+				->extension_prefix($location)
+				->extension_suffix('.html')
+				->extension_directory("/styles/all/template")
+				->get_files();
+
+			foreach ($this->style_names as $style_name)
+			{
+				$more_files = $finder
+					->extension_prefix($location)
+					->extension_suffix('.html')
+					->extension_directory("/styles/" . $style_name . "/template")
+					->get_files();
+				if (!empty($more_files))
+				{
+					$files = array_merge($files, $more_files);
+					break;
+				}
+			}
+
+			$all_compiled = '';
+			foreach ($files as $file)
+			{
+				$compiled = $this->template_compile->compile_file($file);
+
+				if ($compiled === false)
+				{
+					if ($this->user)
+					{
+						trigger_error($this->user->lang('ERR_TEMPLATE_COMPILATION', phpbb_filter_root_path($file)), E_USER_ERROR);
+					}
+					else
+					{
+						trigger_error(sprintf('The file could not be compiled: %s', phpbb_filter_root_path($file)), E_USER_ERROR);
+					}
+				}
+
+				$all_compiled .= $compiled;
+			}
+			// Need spaces inside php tags as php cannot grok
+			// < ?php? > sans the spaces
+			return ' ?' . '>' . $all_compiled . '<?php ';
+		}
 	}
 
 	/**
@@ -883,14 +1056,9 @@ class phpbb_template_filter extends php_user_filter
 	private function compile_tag_include_js($tag_args)
 	{
 		// Process dynamic includes
-		if ($tag_args[0] == '{')
+		if (strpos($tag_args, '{') !== false)
 		{
-			$var = $this->get_varref($tag_args, $is_expr);
-			if (!$is_expr)
-			{
-				return " \$_template->_js_include($var, true);";
-			}
-			return '';
+			return $this->parse_dynamic_path($tag_args, '_js_include');
 		}
 
 		// Locate file

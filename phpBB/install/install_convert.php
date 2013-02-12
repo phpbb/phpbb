@@ -121,10 +121,11 @@ class install_convert extends module
 
 				require($phpbb_root_path . 'config.' . $phpEx);
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
-				require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-				$db = new $sql_db();
+				$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
+				$db = new $dbms();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 				unset($dbpasswd);
 
@@ -209,10 +210,11 @@ class install_convert extends module
 
 				require($phpbb_root_path . 'config.' . $phpEx);
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
-				require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-				$db = new $sql_db();
+				$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
+				$db = new $dbms();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 				unset($dbpasswd);
 
@@ -332,10 +334,11 @@ class install_convert extends module
 
 		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
-		require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-		$db = new $sql_db();
+		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
+		$db = new $dbms();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 		unset($dbpasswd);
 
@@ -425,8 +428,7 @@ class install_convert extends module
 
 				if ($src_dbms != $dbms || $src_dbhost != $dbhost || $src_dbport != $dbport || $src_dbname != $dbname || $src_dbuser != $dbuser)
 				{
-					$sql_db = 'dbal_' . $src_dbms;
-					$src_db = new $sql_db();
+					$src_db = new $src_dbms();
 					$src_db->sql_connect($src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd), $src_dbname, $src_dbport, false, true);
 					$same_db = false;
 				}
@@ -569,16 +571,17 @@ class install_convert extends module
 	*/
 	function convert_data($sub)
 	{
-		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache;
+		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache, $auth;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
 		global $request;
 
 		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
-		require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-		$db = new $sql_db();
+		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
+		$db = new $dbms();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 		unset($dbpasswd);
 
@@ -639,12 +642,8 @@ class install_convert extends module
 		$src_db = $same_db = null;
 		if ($convert->src_dbms != $dbms || $convert->src_dbhost != $dbhost || $convert->src_dbport != $dbport || $convert->src_dbname != $dbname || $convert->src_dbuser != $dbuser)
 		{
-			if ($convert->src_dbms != $dbms)
-			{
-				require($phpbb_root_path . 'includes/db/' . $convert->src_dbms . '.' . $phpEx);
-			}
-			$sql_db = 'dbal_' . $convert->src_dbms;
-			$src_db = new $sql_db();
+			$dbms = $convert->src_dbms;
+			$src_db = new $dbms();
 			$src_db->sql_connect($convert->src_dbhost, $convert->src_dbuser, htmlspecialchars_decode($convert->src_dbpasswd), $convert->src_dbname, $convert->src_dbport, false, true);
 			$same_db = false;
 		}
@@ -750,7 +749,7 @@ class install_convert extends module
 		}
 
 		$error = false;
-		$convert->fulltext_search = new $search_type($error);
+		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		if ($error)
 		{
@@ -933,7 +932,7 @@ class install_convert extends module
 				}
 				else if (sizeof($missing_tables))
 				{
-					$this->p_master->error(sprintf($user->lang['TABLES_MISSING'], implode(', ', $missing_tables)) . '<br /><br />' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
+					$this->p_master->error(sprintf($user->lang['TABLES_MISSING'], implode($user->lang['COMMA_SEPARATOR'], $missing_tables)) . '<br /><br />' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
 				}
 
 				$url = $this->save_convert_progress('&amp;confirm=1');
@@ -1196,7 +1195,7 @@ class install_convert extends module
 
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> "skip_rows = $skip_rows",
-					'RESULT'	=> $rows . ((defined('DEBUG_EXTRA') && function_exists('memory_get_usage')) ? ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] : ''),
+					'RESULT'	=> $rows . ((defined('DEBUG') && function_exists('memory_get_usage')) ? ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] : ''),
 				));
 
 				$mtime = explode(' ', microtime());
@@ -1380,7 +1379,7 @@ class install_convert extends module
 			}
 
 			// When we reach this point, either the current table has been processed or we're running out of time.
-			if (still_on_time() && $counting < $convert->batch_size/* && !defined('DEBUG_EXTRA')*/)
+			if (still_on_time() && $counting < $convert->batch_size/* && !defined('DEBUG')*/)
 			{
 				$skip_rows = 0;
 				$current_table++;
@@ -1469,7 +1468,7 @@ class install_convert extends module
 			sync('topic', 'range', 'topic_id BETWEEN ' . $sync_batch . ' AND ' . $end, true, true);
 
 			$template->assign_block_vars('checks', array(
-				'TITLE'		=> sprintf($user->lang['SYNC_TOPIC_ID'], $sync_batch, ($sync_batch + $batch_size)) . ((defined('DEBUG_EXTRA') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] . ']' : ''),
+				'TITLE'		=> sprintf($user->lang['SYNC_TOPIC_ID'], $sync_batch, ($sync_batch + $batch_size)) . ((defined('DEBUG') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] . ']' : ''),
 				'RESULT'	=> $user->lang['DONE'],
 			));
 
@@ -1539,6 +1538,7 @@ class install_convert extends module
 	function finish_conversion()
 	{
 		global $db, $phpbb_root_path, $phpEx, $convert, $config, $language, $user, $template;
+		global $cache, $auth;
 
 		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . "
 			WHERE config_name = 'convert_progress'
@@ -1548,7 +1548,7 @@ class install_convert extends module
 		$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 
 		@unlink($phpbb_root_path . 'cache/data_global.' . $phpEx);
-		cache_moderators();
+		phpbb_cache_moderators($db, $cache, $auth);
 
 		// And finally, add a note to the log
 		add_log('admin', 'LOG_INSTALL_CONVERTED', $convert->convertor_data['forum_name'], $config['version']);
@@ -1757,7 +1757,7 @@ class install_convert extends module
 		global $convert;
 
 		// Can we use IGNORE with this DBMS?
-		$sql_ignore = (strpos($db->sql_layer, 'mysql') === 0 && !defined('DEBUG_EXTRA')) ? 'IGNORE ' : '';
+		$sql_ignore = (strpos($db->sql_layer, 'mysql') === 0 && !defined('DEBUG')) ? 'IGNORE ' : '';
 		$insert_query = 'INSERT ' . $sql_ignore . 'INTO ' . $schema['target'] . ' (';
 
 		$aliases = array();

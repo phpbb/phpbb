@@ -353,7 +353,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$message_attachment = 0;
 		$message_text = $message_subject = '';
 
-		if ($to_user_id && $action == 'post')
+		if ($to_user_id && $to_user_id != ANONYMOUS && $action == 'post')
 		{
 			$address_list['u'][$to_user_id] = 'to';
 		}
@@ -749,7 +749,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$return_box_lang = ($action === 'post' || $action === 'edit') ? 'PM_OUTBOX' : 'PM_INBOX';
 
 
-			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_PRIVATE_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>');
+			$save_message = ($action === 'edit') ? $user->lang['MESSAGE_EDITED'] : $user->lang['MESSAGE_STORED'];
+			$message = $save_message . '<br /><br />' . $user->lang('VIEW_PRIVATE_MESSAGE', '<a href="' . $return_message_url . '">', '</a>');
 
 			$last_click_type = 'CLICK_RETURN_FOLDER';
 			if ($folder_url)
@@ -837,11 +838,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$post_id = request_var('p', 0);
 			if ($config['allow_post_links'])
 			{
-				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}: {$message_subject}[/url]\n\n";
+				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}[/url]\n\n";
 			}
 			else
 			{
-				$message_link = $user->lang['SUBJECT'] . ': ' . $message_subject . " (" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id})\n\n";
+				$message_link = $user->lang['SUBJECT'] . $user->lang['COLON'] . ' ' . $message_subject . " (" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id})\n\n";
 			}
 		}
 		else
@@ -874,7 +875,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$forward_text[] = sprintf($user->lang['FWD_SUBJECT'], censor_text($message_subject));
 		$forward_text[] = sprintf($user->lang['FWD_DATE'], $user->format_date($message_time, false, true));
 		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username_text);
-		$forward_text[] = sprintf($user->lang['FWD_TO'], implode(', ', $fwd_to_field['to']));
+		$forward_text[] = sprintf($user->lang['FWD_TO'], implode($user->lang['COMMA_SEPARATOR'], $fwd_to_field['to']));
 
 		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=&quot;{$quote_username}&quot;]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
 		$message_subject = ((!preg_match('/^Fwd:/', $message_subject)) ? 'Fwd: ' : '') . censor_text($message_subject);

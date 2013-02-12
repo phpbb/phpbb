@@ -483,6 +483,7 @@ dl.details dd {
 	overflow: hidden;
 }
 
+
 /* Pagination
 ---------------------------------------- */
 .pagination {
@@ -493,42 +494,41 @@ dl.details dd {
 	float: right;
 }
 
-.pagination span.page-sep {
-	display: none;
-}
-
 li.pagination {
 	margin-top: 0;
 }
 
-.pagination strong, .pagination b {
-	font-weight: normal;
+.pagination img {
+	vertical-align: middle;
 }
 
-.pagination span strong {
-	padding: 0 2px;
-	margin: 0 2px;
-	font-weight: normal;
-	border: 1px solid transparent;
-	font-size: 0.9em;
+.pagination ul {
+	display: inline-block;
+	*display: inline; /* IE7 inline-block hack */
+	*zoom: 1;
+	margin-left: 0;
+	margin-bottom: 0;
 }
 
-.pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active {
+li.pagination ul {
+	margin-top: -2px;
+	vertical-align: middle;
+}
+
+.pagination ul li, dl .pagination ul li, dl.icon .pagination ul li {
+	display: inline;
+	padding: 0;
+	font-size: 100%;
+	line-height: normal;
+}
+
+.pagination li a, .pagnation li span, li .pagination li a, li .pagnation li span, .pagination li.active span, .pagination li.ellipsis span {
 	font-weight: normal;
 	text-decoration: none;
-	margin: 0 2px;
 	padding: 0 2px;
 	border: 1px solid transparent;
 	font-size: 0.9em;
 	line-height: 1.5em;
-}
-
-.pagination span a:hover {
-	text-decoration: none;
-}
-
-.pagination img {
-	vertical-align: middle;
 }
 
 /* Pagination in viewforum for multipage topics */
@@ -537,7 +537,7 @@ li.pagination {
 	float: right;
 	width: auto;
 	margin-top: 0;
-	padding: 1px 0 1px 15px;
+	padding: 1px 0 1px 8px;
 	font-size: 0.9em;
 	background: none 0 50% no-repeat;
 }
@@ -623,9 +623,10 @@ li.pagination {
 }
 
 div.rules {
-	padding: 0 10px;
 	margin: 10px 0;
 	font-size: 1.1em;
+	padding: 5px 10px;
+	border-radius: 7px;
 }
 
 div.rules ul, div.rules ol {

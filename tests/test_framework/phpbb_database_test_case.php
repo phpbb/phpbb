@@ -13,6 +13,8 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	protected $test_case_helpers;
 
+	protected $fixture_xml_data;
+
 	public function __construct($name = NULL, array $data = array(), $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
@@ -26,6 +28,44 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 			'phpbb_database_test_case' => array('already_connected'),
 		);
+	}
+
+	protected function setUp()
+	{
+		parent::setUp();
+
+		// Resynchronise tables if a fixture was loaded
+		if (isset($this->fixture_xml_data))
+		{
+			$config = $this->get_database_config();
+			$manager = $this->create_connection_manager($config);
+			$manager->connect();
+			$manager->post_setup_synchronisation($this->fixture_xml_data);
+		}
+	}
+
+	public function createXMLDataSet($path)
+	{
+		$db_config = $this->get_database_config();
+
+		// Firebird requires table and column names to be uppercase
+		if ($db_config['dbms'] == 'phpbb_db_driver_firebird')
+		{
+			$xml_data = file_get_contents($path);
+			$xml_data = preg_replace_callback('/(?:(<table name="))([a-z_]+)(?:(">))/', 'phpbb_database_test_case::to_upper', $xml_data);
+			$xml_data = preg_replace_callback('/(?:(<column>))([a-z_]+)(?:(<\/column>))/', 'phpbb_database_test_case::to_upper', $xml_data);
+
+			$new_fixture = tmpfile();
+			fwrite($new_fixture, $xml_data);
+			fseek($new_fixture, 0);
+
+			$meta_data = stream_get_meta_data($new_fixture);
+			$path = $meta_data['uri'];
+		}
+
+		$this->fixture_xml_data = parent::createXMLDataSet($path);
+
+		return $this->fixture_xml_data;
 	}
 
 	public function get_test_case_helpers()
@@ -78,9 +118,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 		$config = $this->get_database_config();
 
-		require_once dirname(__FILE__) . '/../../phpBB/includes/db/' . $config['dbms'] . '.php';
-		$dbal = 'dbal_' . $config['dbms'];
-		$db = new $dbal();
+		$db = new $config['dbms']();
 		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
 
 		return $db;
@@ -105,5 +143,34 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	protected function create_connection_manager($config)
 	{
 		return new phpbb_database_test_connection_manager($config);
+	}
+
+	/**
+	* Converts a match in the middle of a string to uppercase.
+	* This is necessary for transforming the fixture information for Firebird tests
+	*
+	* @param $matches The array of matches from a regular expression
+	*
+	* @return string The string with the specified match converted to uppercase
+	*/
+	static public function to_upper($matches)
+	{
+		return $matches[1] . strtoupper($matches[2]) . $matches[3];
+	}
+
+	public function assert_array_content_equals($one, $two)
+	{
+		// http://stackoverflow.com/questions/3838288/phpunit-assert-two-arrays-are-equal-but-order-of-elements-not-important
+		// but one array_diff is not enough!
+		if (sizeof(array_diff($one, $two)) || sizeof(array_diff($two, $one)))
+		{
+			// get a nice error message
+			$this->assertEquals($one, $two);
+		}
+		else
+		{
+			// increase assertion count
+			$this->assertTrue(true);
+		}
 	}
 }

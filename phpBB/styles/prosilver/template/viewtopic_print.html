@@ -9,8 +9,8 @@
 <title>{SITENAME} &bull; {PAGE_TITLE}</title>
 
 <link href="{T_THEME_PATH}/print.css" rel="stylesheet" type="text/css" />
+<!-- EVENT viewtopic_print_head_append -->
 </head>
-
 <body id="phpbb">
 <div id="wrap">
 	<a id="top" accesskey="t"></a>
@@ -28,7 +28,7 @@
 		<!-- BEGIN postrow -->
 			<div class="post">
 				<h3>{postrow.POST_SUBJECT}</h3>
-				<div class="date">{postrow.MINI_POST_IMG}{L_POSTED}: <strong>{postrow.POST_DATE}</strong></div>
+				<div class="date">{postrow.MINI_POST_IMG}{L_POSTED}{L_COLON} <strong>{postrow.POST_DATE}</strong></div>
 				<div class="author">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR}</strong></div>
 				<div class="content">{postrow.MESSAGE}</div>
 			</div>
@@ -38,7 +38,7 @@
 
 	<div id="page-footer">
 		<div class="page-number">{S_TIMEZONE}<br />{PAGE_NUMBER}</div>
-		<div class="copyright">Powered by phpBB&reg; Forum Software &copy; phpBB Group<br />http://www.phpbb.com/</div>
+		<div class="copyright">Powered by phpBB&reg; Forum Software &copy; phpBB Group<br />https://www.phpbb.com/</div>
 	</div>
 </div>
 

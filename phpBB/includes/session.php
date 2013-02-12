@@ -474,7 +474,7 @@ class phpbb_session
 				else
 				{
 					// Added logging temporarly to help debug bugs...
-					if (defined('DEBUG_EXTRA') && $this->data['user_id'] != ANONYMOUS)
+					if (defined('DEBUG') && $this->data['user_id'] != ANONYMOUS)
 					{
 						if ($referer_valid)
 						{

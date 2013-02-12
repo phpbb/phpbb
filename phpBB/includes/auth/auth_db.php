@@ -41,6 +41,10 @@ function login_db($username, $password, $ip = '', $browser = '', $forwarded_for 
 	global $db, $config;
 	global $request;
 
+	// Auth plugins get the password untrimmed.
+	// For compatibility we trim() here.
+	$password = trim($password);
+
 	// do not allow empty password
 	if (!$password)
 	{

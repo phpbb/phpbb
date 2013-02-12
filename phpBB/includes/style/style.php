@@ -38,7 +38,7 @@ class phpbb_style
 	* PHP file extension
 	* @var string
 	*/
-	private $phpEx;
+	private $php_ext;
 
 	/**
 	* phpBB config instance
@@ -73,10 +73,10 @@ class phpbb_style
 	* @param phpbb_style_path_provider $provider style path provider
 	* @param phpbb_template $template template
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider, phpbb_template $template)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider, phpbb_template $template)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
 		$this->locator = $locator;
@@ -91,16 +91,22 @@ class phpbb_style
 	{
 		$style_path = $this->user->style['style_path'];
 		$style_dirs = ($this->user->style['style_parent_id']) ? array_reverse(explode('/', $this->user->style['style_parent_tree'])) : array();
-		$paths = array($this->get_style_path($style_path));
+
+		$names = array($style_path);
 		foreach ($style_dirs as $dir)
 		{
-			$paths[] = $this->get_style_path($dir);
+			$names[] = $dir;
+		}
+		// Add 'all' path, used as last fallback path by events and extensions
+		//$names[] = 'all';
+
+		$paths = array();
+		foreach ($names as $name)
+		{
+			$paths[] = $this->get_style_path($name);
 		}
 
-		// Add 'all' path, used as last fallback path by hooks and extensions
-		$paths[] = $this->get_style_path('all');
-
-		return $this->set_custom_style($style_path, $paths);
+		return $this->set_custom_style($style_path, $paths, $names);
 	}
 
 	/**
@@ -110,26 +116,37 @@ class phpbb_style
 	*
 	* @param string $name Name of style, used for cache prefix. Examples: "admin", "prosilver"
 	* @param array or string $paths Array of style paths, relative to current root directory
-	* @param string $template_path Path to templates, relative to style directory. False if path should not be changed.
+	* @param array $names Array of names of templates in inheritance tree order, used by extensions. If empty, $name will be used.
+	* @param string $template_path Path to templates, relative to style directory. False if path should be set to default (templates/).
 	*/
-	public function set_custom_style($name, $paths, $template_path = false)
+	public function set_custom_style($name, $paths, $names = array(), $template_path = false)
 	{
 		if (is_string($paths))
 		{
 			$paths = array($paths);
 		}
 
+		if (empty($names))
+		{
+			$names = array($name);
+		}
+		$this->names = $names;
+
 		$this->provider->set_styles($paths);
 		$this->locator->set_paths($this->provider);
 
-		$this->template->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $name) . '_';
-
-		$this->template->context = new phpbb_template_context();
+		$this->template->set_style_names($names);
 
 		if ($template_path !== false)
 		{
-			$this->template->template_path = $this->locator->template_path = $template_path;
+			$this->locator->set_template_path($template_path);
 		}
+		else
+		{
+			$this->locator->set_default_template_path();
+		}
+
+		$this->template->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $name) . '_';
 
 		return true;
 	}

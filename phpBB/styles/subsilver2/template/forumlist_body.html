@@ -19,13 +19,13 @@
 			<td class="row1" width="50" align="center">{forumrow.FORUM_FOLDER_IMG}</td>
 			<td class="row1">
 				<!-- IF forumrow.FORUM_IMAGE -->
-					<div style="float: {S_CONTENT_FLOW_BEGIN}; margin-{S_CONTENT_FLOW_END}: 5px;">{forumrow.FORUM_IMAGE}</div>
+					<div style="float: {S_CONTENT_FLOW_BEGIN}; margin-{S_CONTENT_FLOW_END}{L_COLON} 5px;">{forumrow.FORUM_IMAGE}</div>
 				<!-- ENDIF -->
 				<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a>
 				<p class="forumdesc">{forumrow.FORUM_DESC}</p>
 			</td>
 			<!-- IF forumrow.CLICKS -->
-				<td class="row2" colspan="3" align="center"><span class="genmed">{L_REDIRECTS}: {forumrow.CLICKS}</span></td>
+				<td class="row2" colspan="3" align="center"><span class="genmed">{L_REDIRECTS}{L_COLON} {forumrow.CLICKS}</span></td>
 			<!-- ELSE -->
 				<td class="row2" colspan="3" align="center">&nbsp;</td>
 			<!-- ENDIF -->
@@ -41,12 +41,12 @@
 			<td class="row1" width="50" align="center">{forumrow.FORUM_FOLDER_IMG}</td>
 			<td class="row1" width="100%">
 				<!-- IF forumrow.FORUM_IMAGE -->
-					<div style="float: {S_CONTENT_FLOW_BEGIN}; margin-{S_CONTENT_FLOW_END}: 5px;">{forumrow.FORUM_IMAGE}</div>
+					<div style="float: {S_CONTENT_FLOW_BEGIN}; margin-{S_CONTENT_FLOW_END}{L_COLON} 5px;">{forumrow.FORUM_IMAGE}</div>
 				<!-- ENDIF -->
 				<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a>
 				<p class="forumdesc">{forumrow.FORUM_DESC}</p>
 				<!-- IF forumrow.MODERATORS -->
-					<p class="forumdesc"><strong>{forumrow.L_MODERATOR_STR}:</strong> {forumrow.MODERATORS}</p>
+					<p class="forumdesc"><strong>{forumrow.L_MODERATOR_STR}{L_COLON}</strong> {forumrow.MODERATORS}</p>
 				<!-- ENDIF -->
 				<!-- IF .forumrow.subforum and forumrow.S_LIST_SUBFORUMS -->
 					<p class="forumdesc"><strong>{forumrow.L_SUBFORUM_STR}</strong>
@@ -61,7 +61,8 @@
 			<td class="row2" align="center" nowrap="nowrap">
 				<!-- IF forumrow.LAST_POST_TIME -->
 					<!-- IF forumrow.S_DISPLAY_SUBJECT -->
-						<p class="topicdetails"><a href="{forumrow.U_LAST_POST}" title="{forumrow.LAST_POST_SUBJECT}">{forumrow.LAST_POST_SUBJECT_TRUNCATED}</a></p>
+						<!-- EVENT forumlist_body_last_post_title_prepend -->
+						<p class="topicdetails"><a href="{forumrow.U_LAST_POST}" title="{forumrow.LAST_POST_SUBJECT}" class="lastsubject">{forumrow.LAST_POST_SUBJECT_TRUNCATED}</a></p>
 					<!-- ENDIF -->
 					<p class="topicdetails"><!-- IF forumrow.U_UNAPPROVED_TOPICS --><a href="{forumrow.U_UNAPPROVED_TOPICS}" class="imageset">{UNAPPROVED_IMG}</a>&nbsp;<!-- ENDIF -->{forumrow.LAST_POST_TIME}</p>
 					<p class="topicdetails">{forumrow.LAST_POSTER_FULL}
