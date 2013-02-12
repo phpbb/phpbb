@@ -25,14 +25,22 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
+		$config = new phpbb_config(array());
+		$db = $this->new_dbal();
+		$db_tools = new phpbb_db_tools($db);
+		$phpbb_root_path = __DIR__ . './../../phpBB/';
+		$php_ext = 'php';
+		$table_prefix = 'phpbb_';
+
 		$this->extension_manager = new phpbb_extension_manager(
 			new phpbb_mock_container_builder(),
-			$this->new_dbal(),
-			new phpbb_config(array()),
+			$db,
+			$config,
+			new phpbb_db_migrator($config, $db, $db_tools, 'phpbb_migrations', $phpbb_root_path, $php_ext, $table_prefix, array()),
 			'phpbb_ext',
 			dirname(__FILE__) . '/',
-			'.php',
-			new phpbb_mock_cache
+			'.' . $php_ext,
+			new phpbb_mock_cache()
 		);
 	}
 
