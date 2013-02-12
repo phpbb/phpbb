@@ -190,6 +190,21 @@ $('#quick-mod-select').change(function () {
 	$('#quickmodform').submit();
 });
 
-
+/**
+* Toggle the member search panel in memberlist.php.
+*
+* If user returns to search page after viewing results the search panel is automatically displayed.
+* In any case the link will toggle the display status of the search panel and link text will be
+* appropriately changed based on the status of the search panel.
+*/
+$('#member_search').click(function () {
+	$('#memberlist_search').slideToggle('fast');
+	phpbb.ajax_callbacks['alt_text'].call(this);
+	// Focus on the username textbox if it's available and displayed
+	if ($('#memberlist_search').is(':visible')) {
+		$('#username').focus();
+	}
+	return false;
+});
 
 })(jQuery); // Avoid conflicts with other libraries

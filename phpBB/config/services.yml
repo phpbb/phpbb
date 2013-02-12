@@ -2,6 +2,7 @@ imports:
     - { resource: tables.yml }
     - { resource: cron_tasks.yml }
     - { resource: notifications.yml }
+    - { resource: migrator.yml }
 
 services:
     auth:
@@ -94,6 +95,12 @@ services:
         class: %dbal.driver.class%
         calls:
             - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
+
+    dbal.tools:
+        file: %core.root_path%includes/db/db_tools.%core.php_ext%
+        class: phpbb_db_tools
+        arguments:
+            - @dbal.conn
 
     event.subscriber_loader:
         class: phpbb_event_extension_subscriber_loader
