@@ -403,8 +403,9 @@ $lang = array_merge($lang, array(
 	'NOT_WATCHING_TOPIC'		=> 'You are no longer subscribed to this topic.',
 	'NOTIFICATIONS'				=> 'Notifications',
 	'NOTIFICATIONS_COUNT'		=> array(
-		1	=> '%d Notification',
-		2	=> '%d Notifications',
+		0	=> '%d Notifications',
+		1	=> '<strong>%d</strong> Notification',
+		2	=> '<strong>%d</strong> Notifications',
 	),
 	'NOTIFICATION_BOOKMARK'				=> '%1$s replied to the topic "%2$s" you have bookmarked.',
 	'NOTIFICATION_PM'					=> '%1$s sent you a Private Message "%2$s".',
