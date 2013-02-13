@@ -1414,14 +1414,14 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 /**
 * Delete Post
 */
-function delete_post($forum_id, $topic_id, $post_id, &$data)
+function delete_post($forum_id, $topic_id, $post_id, &$data, $delete_topic)
 {
 	global $db, $user, $auth;
 	global $config, $phpEx, $phpbb_root_path;
 
 	// Specify our post mode
 	$post_mode = 'delete';
-	if (($data['topic_first_post_id'] === $data['topic_last_post_id']) && $data['topic_replies_real'] == 0)
+	if ((($data['topic_first_post_id'] === $data['topic_last_post_id']) && $data['topic_replies_real'] == 0) || ($delete_topic))
 	{
 		$post_mode = 'delete_topic';
 	}

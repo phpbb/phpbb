@@ -127,10 +127,10 @@ phpbb.alert = function(title, msg, fadedark) {
  *
  * @returns object Returns the div created.
  */
-phpbb.confirm = function(msg, callback, fadedark) {
+phpbb.confirm = function(msg, opt, callback, fadedark) {
 	var div = $('#phpbb_confirm');
 	div.find('.alert_text').html(msg);
-
+	div.find('.alert_text').append(opt);
 	div.bind('click', function(e) {
 		e.stopPropagation();
 	});
@@ -276,6 +276,12 @@ phpbb.ajaxify = function(options) {
 				} else {
 					dark.fadeOut(phpbb.alertTime);
 				}
+				
+				//Checking weather optional field is defined
+				//If not assigning a default value
+				if (typeof res.OPTIONAL_FIELD === 'undefined') {
+					res.OPTIONAL_FIELD == '';
+				}
 
 				if (typeof phpbb.ajaxCallbacks[callback] === 'function') {
 					phpbb.ajaxCallbacks[callback].call(that, res);
@@ -304,10 +310,13 @@ phpbb.ajaxify = function(options) {
 				}
 			} else {
 				// If confirmation is required, display a diologue to the user.
-				phpbb.confirm(res.MESSAGE_TEXT, function(del) {
+				phpbb.confirm(res.MESSAGE_TEXT, res.OPTIONAL_FIELD, function(del) {
 					if (del) {
 						phpbb.loadingAlert();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
+						if($(':checkbox').is(':checked')){
+							data += '&option=' + res.YES_VALUE;
+						}
 						$.ajax({
 							url: res.S_CONFIRM_ACTION,
 							type: 'POST',

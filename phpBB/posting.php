@@ -1540,7 +1540,7 @@ function upload_popup($forum_style = 0)
 */
 function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 {
-	global $user, $db, $auth, $config;
+	global $user, $db, $auth, $config, $request;
 	global $phpbb_root_path, $phpEx;
 
 	// If moderator removing post or user itself removing post, present a confirmation screen
@@ -1551,6 +1551,8 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			'f'		=> $forum_id,
 			'mode'	=> 'delete')
 		);
+		
+		$option = ($user->lang['YES'] === $request->variable('option', '', true, phpbb_request_interface::POST));
 
 		if (confirm_box(true))
 		{
@@ -1567,7 +1569,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				'post_postcount'		=> $post_data['post_postcount']
 			);
 
-			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data);
+			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data, $option);
 			$post_username = ($post_data['poster_id'] == ANONYMOUS && !empty($post_data['post_username'])) ? $post_data['post_username'] : $post_data['username'];
 
 			if ($next_post_id === false)
@@ -1575,7 +1577,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_TOPIC', $post_data['topic_title'], $post_username);
 
 				$meta_info = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
-				$message = $user->lang['POST_DELETED'];
+				$message = (($option) ? $user->lang['POST_AND_TOPIC_DELETED'] : $user->lang['POST_DELETED']);
 			}
 			else
 			{
@@ -1588,6 +1590,11 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			meta_refresh(3, $meta_info);
 			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 			trigger_error($message);
+		}
+		else if(($post_data['topic_first_post_id'] == $post_id) && ($post_data['topic_first_post_id'] != $post_data['topic_last_post_id']))
+		{
+			$option = '<br />'.'<input type="checkbox" name="delTopic" value="delTopic">'.$user->lang['DELETE_ENTIRE_TOPIC'].'<br />';
+			confirm_box(false, 'DELETE_TOP_POST', $s_hidden_fields, 'confirm_body.html', '', $option);
 		}
 		else
 		{
