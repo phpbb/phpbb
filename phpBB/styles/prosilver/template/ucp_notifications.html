@@ -118,13 +118,15 @@
 	</div>
 </div>
 
-
-<fieldset class="submit-buttons">
+<!-- IF .notifications -->
+<fieldset class="display-actions">
 	<input type="hidden" name="form_time" value="{FORM_TIME}" />
-	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
-	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+	{S_HIDDEN_FIELDS}
+	<input type="submit" name="submit" value="{L_MARK_READ}" class="button1" />
+	<div><a href="#" onclick="$('#ucp input:checkbox').attr('checked', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="$('#ucp input:checkbox').attr('checked', false); return false;">{L_UNMARK_ALL}</a></div>
 	{S_FORM_TOKEN}
 </fieldset>
+<!-- ENDIF -->
 
 </form>
 
