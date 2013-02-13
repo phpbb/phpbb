@@ -1160,6 +1160,7 @@ CREATE TABLE phpbb_users (
 	user_inactive_reason INT2 DEFAULT '0' NOT NULL,
 	user_inactive_time INT4 DEFAULT '0' NOT NULL CHECK (user_inactive_time >= 0),
 	user_posts INT4 DEFAULT '0' NOT NULL CHECK (user_posts >= 0),
+	user_topics INT4 DEFAULT '0' NOT NULL CHECK (user_topics >= 0),
 	user_lang varchar(30) DEFAULT '' NOT NULL,
 	user_timezone varchar(100) DEFAULT 'UTC' NOT NULL,
 	user_dateformat varchar(30) DEFAULT 'd M Y H:i' NOT NULL,

@@ -585,6 +585,7 @@ $lang = array_merge($lang, array(
 	'SEARCH_UNANSWERED'			=> 'View unanswered posts',
 	'SEARCH_UNREAD'				=> 'View unread posts',
 	'SEARCH_USER_POSTS'			=> 'Search user’s posts',
+	'SEARCH_USER_TOPICS'			=> 'Search user’s topics',
 	'SECONDS'					=> 'Seconds',
 	'SELECT'					=> 'Select',
 	'SELECT_ALL_CODE'			=> 'Select all',
@@ -691,6 +692,8 @@ $lang = array_merge($lang, array(
 		1	=> '%d private message in total',
 		2	=> '%d private messages in total',
 	),
+	'TOPIC_DAY'		=> '%.2f topics per day',
+	'TOPIC_PCT'		=> '%.2f%% of all topics',
 	'TOTAL_POSTS'		=> 'Total posts',
 	'TOTAL_POSTS_COUNT'	=> array(
 		2	=> 'Total posts <strong>%d</strong>',
@@ -702,6 +705,7 @@ $lang = array_merge($lang, array(
 	'TOTAL_USERS'		=> array(
 		2	=> 'Total members <strong>%d</strong>',
 	),
+	'TOTAL_USER_TOPICS'  => 'Total topics',
 	'TRACKED_PHP_ERROR'	=> 'Tracked PHP errors: %s',
 
 	'UNABLE_GET_IMAGE_SIZE'	=> 'It was not possible to determine the dimensions of the image.',

@@ -623,11 +623,26 @@ switch ($mode)
 			$member['posts_in_queue'] = 0;
 		}
 
+		// Give the number of topics a user has along with percentage of all topics, and topics per day.
+		$sql = 'SELECT COUNT(topic_id) as topics
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_poster = ' . $user_id . '
+				AND topic_approved = 1';
+		$result = $db->sql_query($sql);
+		$topics = (int) $db->sql_fetchfield('topics');
+		$db->sql_freeresult($result);
+		$topics_per_day = $topics / $memberdays;
+		$topic_percentage = ($config['num_topics']) ? min(100, ($topics / $config['num_topics']) * 100) : 0;
+
 		$template->assign_vars(array(
 			'L_POSTS_IN_QUEUE'	=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
 
 			'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
 			'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
+
+			'TOPICS'			=> $topics,
+			'TOPICS_DAY'		=> $user->lang('TOPIC_DAY', $topics_per_day),
+			'TOPICS_PCT'		=> $user->lang('TOPIC_PCT', $topic_percentage),
 
 			'OCCUPATION'	=> (!empty($member['user_occ'])) ? censor_text($member['user_occ']) : '',
 			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',
@@ -1719,6 +1734,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'JOINED'		=> $user->format_date($data['user_regdate']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
+		'TOPICS'		=> ($data['user_topics']) ? $data['user_topics'] : 0,
 		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
 		'USERNAME_FULL'		=> get_username_string('full', $user_id, $username, $data['user_colour']),
@@ -1739,6 +1755,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'S_WARNINGS'	=> ($auth->acl_getf_global('m_') || $auth->acl_get('m_warn')) ? true : false,
 
 		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sr=posts") : '',
+		'U_SEARCH_USER_TOPICS'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sf=firstpost&amp;sr=topics") : '',
 		'U_NOTES'		=> ($user_notes_enabled && $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, $user->session_id) : '',
 		'U_WARN'		=> ($warn_user_enabled && $auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',
 		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($data['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',

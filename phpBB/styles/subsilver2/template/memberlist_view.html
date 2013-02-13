@@ -86,6 +86,12 @@
 				<!-- IF POSTS_IN_QUEUE and U_MCP_QUEUE --><br />[<a href="{U_MCP_QUEUE}">{L_POSTS_IN_QUEUE}</a>]<!-- ELSEIF POSTS_IN_QUEUE --><br />[{L_POSTS_IN_QUEUE}]<!-- ENDIF -->
 				<!-- IF S_DISPLAY_SEARCH --><br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a><!-- ENDIF --></span></td>
 			</tr>
+			<tr>
+			    <td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_TOTAL_USER_TOPICS}</td>
+			    <td><b class="gen">{TOPICS}</b>
+				<!-- IF POSTS_PCT --><br />[{TOPICS_PCT} / {TOPICS_DAY}]<!-- ENDIF -->
+				<!-- IF S_DISPLAY_SEARCH --><br /><span class="genmed"><a href="{U_SEARCH_USER_TOPICS}">{L_SEARCH_USER_TOPICS}</a></span><!-- ENDIF --></td>
+			</tr>
 			<!-- IF S_SHOW_ACTIVITY -->
 				<tr>
 					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_ACTIVE_IN_FORUM}{L_COLON} </td>

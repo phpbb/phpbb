@@ -1187,6 +1187,9 @@ function database_update_info()
 					'reported_post_enable_smilies'		=> array('BOOL', 1),
 					'reported_post_enable_magic_url'	=> array('BOOL', 1),
 				),
+				USERS_TABLE			=> array(
+					'user_topics'	=> array('UINT:8', ''),
+				),
 			),
 			'change_columns'	=> array(
 				GROUPS_TABLE		=> array(
