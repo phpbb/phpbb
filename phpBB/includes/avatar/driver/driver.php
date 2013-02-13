@@ -52,7 +52,12 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	protected $cache;
 
 	/**
-	* Regex for allowed avatar image extensions
+	* Array of allowed avatar image extensions
+	* Array is used for setting the allowed extensions in the fileupload class
+	* and as a base for a regex of allowed extensions, which will be formed by
+	* imploding the array with a "|".
+	*
+	* @var array
 	*/
 	protected $allowed_extensions = array(
 		'gif',
