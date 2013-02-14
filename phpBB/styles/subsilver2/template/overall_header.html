@@ -175,7 +175,7 @@ function marklist(id, name, state)
 												<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
 													{notifications.FORMATTED_TITLE}
 												<!-- IF notifications.URL --></a><!-- ENDIF -->
-													<br />{notifications.TIME}
+													<br />» {notifications.TIME}
 												<!-- IF not notifications.URL and notifications.UNREAD -->
 													<br /><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a>
 												<!-- ENDIF -->

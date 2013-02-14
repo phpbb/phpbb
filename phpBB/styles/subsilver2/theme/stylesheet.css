@@ -1147,6 +1147,7 @@ a.imageset {
 	position: absolute;
 	width: 310px;
 	z-index: 1;
+	box-shadow: 3px 3px 5px darkgray;
 }
 
 #notification_list .notification_scroll {
