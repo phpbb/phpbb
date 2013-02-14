@@ -1596,7 +1596,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			{				
 				$sql_data[POST_REVISIONS_TABLE]['sql'] = array(
 					'post_id'				=> $data['original_post_data']['post_id'],
-					'user_id'				=> $data['original_post_data']['user_id'],
+					// We need to store the user ID of the user who is
+					// responsible for the content just prior to this edit;
+					// i.e. the previous current post.
+					'user_id'				=> $data['original_post_data']['post_edit_user'] ?: $data['original_post_data']['user_id'],
 					'revision_time'			=> $data['original_post_data']['post_time'],
 					'revision_subject'		=> $data['original_post_data']['post_subject'],
 					'revision_text'			=> $data['original_post_data']['message'],

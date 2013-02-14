@@ -378,6 +378,27 @@ class phpbb_revisions_post
 			return false;
 		}
 
+		// The current revision may have been edited by a different user
+		// than the one who originally posted the post. We need to get
+		// that user's username and user colour so that the right name
+		// shows up next to the current revision
+		$username = $this->post_data['username'];
+		$user_colour = $this->post_data['user_colour'];
+
+		// So if the original poster is not the same person as the last editor
+		// we need to grab the correct username and colour
+		if ($this->post_data['poster_id'] !== $this->post_data['post_edit_user'])
+		{
+			$sql = 'SELECT username, user_colour
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $this->post_data['post_edit_user'];
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$username = $row['username'];
+			$user_colour = $row['user_colour'];
+			$this->db->sql_freeresult($result);
+		}
+
 		$current = new phpbb_revisions_revision(0, $this->db, false);
 		$current->set_data(array(
 			'revision_subject'		=> $this->post_data['post_subject'],
@@ -385,9 +406,9 @@ class phpbb_revisions_post
 			'revision_checksum'		=> $this->post_data['post_checksum'],
 			'post_id'				=> $this->post_data['post_id'],
 			'poster_id'				=> $this->post_data['poster_id'],
-			'user_id'				=> $this->post_data['poster_id'],
-			'username'				=> $this->post_data['username'],
-			'user_colour'			=> $this->post_data['user_colour'],
+			'user_id'				=> $this->post_data['post_edit_user'],
+			'username'				=> $username,
+			'user_colour'			=> $user_colour,
 			'forum_id'				=> $this->post_data['forum_id'],
 			'enable_bbcode'			=> $this->post_data['enable_bbcode'],
 			'enable_smilies'		=> $this->post_data['enable_smilies'],
