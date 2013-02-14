@@ -1,4 +1,15 @@
-<div class="revisions_block">
+<div class="revisions_block forumbg">
+	<ul class="revisionlist">
+		<li class="header">
+			<dl>
+				<dd>{L_COMPARE}</dd>
+				<dd class="revisionview">{L_REVISION}</dd>
+				<dd class="revisionuser">{L_USERNAME}</dd>
+				<dd class="revisiondate">{L_REVISION} {L_TIME}</dd>
+				<dd class="revisionreason">{L_REASON}</dd>
+			</dl>
+		</li>
+	</ul>
 	<form name="revision_list" action="{U_VIEW_REVISIONS}" method="post" data-ajax="revisions.compare" />
 		<!-- BEGIN revision -->
 		<ul class="revisions<!-- IF revision.S_ROW_COUNT is odd --> odd<!-- ELSE --> even<!-- ENDIF --><!-- IF not revision.IN_RANGE and S_DISPLAY_COMPARISON --> out_of_range<!-- ENDIF --><!-- IF revision.CURRENT_REVISION --> current<!-- ENDIF -->" id="r{revision.ID}">

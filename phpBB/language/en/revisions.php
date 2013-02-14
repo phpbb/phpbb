@@ -37,6 +37,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'BY'			=> 'by',
 
+	'COMPARE'			=> 'Compare',
 	'COMPARING'			=> 'Comparing',
 	'COMPARE_SELECTED'	=> 'Compare selected',
 	'CURRENT_REVISION'	=> 'Current Post',

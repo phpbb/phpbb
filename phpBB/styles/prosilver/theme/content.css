@@ -57,6 +57,51 @@ ul.topiclist li.row dt a.subforum {
 	padding: 0 0 0 12px;
 }
 
+ul.revisionlist li {
+	display: block;
+	list-style-type: none;
+	margin: 0;
+}
+
+ul.revisionlist dl {
+	position: relative;
+}
+
+ul.revisionlist li.row dl {
+	padding: 2px 0;
+}
+
+ul.revisionlist dt {
+	display: block;
+	float: left;
+	font-size: 1.1em;
+	padding-left: 5px;
+	padding-right: 5px;
+	text-align: center;
+	line-height: 2.2em;
+}
+
+ul.revisionlist dd {
+	display: block;
+	float: left;
+	border-left: 1px solid transparent;
+	padding: 5px;
+}
+
+dd.revisionview, dd.revisionuser {
+	width: 6%;
+	text-align: center;
+	line-height: 2.2em;
+	font-size: 1.2em;
+}
+
+dd.revisiondate {
+	width: 17%;
+	text-align: center;
+	line-height: 2.2em;
+	font-size: 1.2em;
+}
+
 div.revisions_block {
 	display: block;
 	width: 75%;

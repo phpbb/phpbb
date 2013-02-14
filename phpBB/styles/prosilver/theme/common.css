@@ -478,7 +478,7 @@ dl.details dd {
 	width: 65%;
 }
 
-.clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, dl.polls {
+.clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, ul.revisionlist dl, dl.polls {
 	height: 1%;
 	overflow: hidden;
 }
