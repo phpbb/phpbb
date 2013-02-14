@@ -1,5 +1,6 @@
-<div class="revisions_block forumbg">
+<div<!-- IF S_COMPARISON --> class="revisions_block forumbg"<!-- ENDIF -->>
 	<ul class="revisionlist">
+		<!-- IF S_COMPARISON -->
 		<li class="header">
 			<dl>
 				<dd>{L_COMPARE}</dd>
@@ -9,6 +10,7 @@
 				<dd class="revisionreason">{L_REASON}</dd>
 			</dl>
 		</li>
+		<!-- ENDIF -->
 	</ul>
 	<form name="revision_list" action="{U_VIEW_REVISIONS}" method="post" data-ajax="revisions.compare" />
 		<!-- BEGIN revision -->
