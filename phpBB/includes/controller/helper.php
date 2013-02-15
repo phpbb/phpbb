@@ -90,7 +90,7 @@ class phpbb_controller_helper
 	* @param string $route The route to travel
 	* @return string The URL already passed through append_sid()
 	*/
-	protected function url($route)
+	public function url($route)
 	{
 		return append_sid($this->phpbb_root_path . 'app.' . $this->php_ext, array('controller' => $route));
 	}
