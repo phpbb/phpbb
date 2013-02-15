@@ -1167,6 +1167,12 @@ a.imageset {
 	border-bottom: 0;
 }
 
+#notification_list > .header > .header_settings {
+	float: right;
+	font-weight: normal;
+	text-transform: none;
+}
+
 #notification_list .footer {
 	width: 300px;
 	text-align: center;
