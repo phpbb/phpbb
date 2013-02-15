@@ -40,6 +40,12 @@ class phpbb_controller_test extends phpbb_test_case
 		$this->assertEquals(2, sizeof($routes));
 	}
 
+	public function test_controller_url_helper()
+	{
+		$helper = new phpbb_controller_helper;
+		$this->assertEquals($helper->url('foo/bar'),'./app.php?controller=foo/bar');
+	}
+
 	public function test_controller_resolver()
 	{
 		$container = new ContainerBuilder();
