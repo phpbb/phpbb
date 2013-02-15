@@ -55,9 +55,11 @@
 			<td valign="top">
 				<table width="100%" cellspacing="5">
 				<tr>
+					<!-- IF S_COMPARISON-->
 					<td class="revision_compare">
 						<input type="radio" name="first" value="{revision.ID}"<!-- IF revision.FIRST_IN_COMPARE --> checked="checked"<!-- ENDIF --> /> <input type="radio" name="last" value="{revision.ID}"<!-- IF revision.LAST_IN_COMPARE --> checked="checked"<!-- ENDIF --> />
 					</td>
+					<!-- ENDIF -->
 					<td class="revision_id">
 						<a href="{revision.U_REVISION_VIEW}">#{revision.NUMBER} ({L_VIEW})</a>
 					</td>

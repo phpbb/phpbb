@@ -2,7 +2,7 @@
 	<ul class="revisionlist">
 		<li class="header">
 			<dl>
-				<dd>{L_COMPARE}</dd>
+				<!-- IF S_COMPARISON --><dd>{L_COMPARE}</dd><!-- ENDIF -->
 				<dd class="revisionview">{L_REVISION}</dd>
 				<dd class="revisionuser">{L_USERNAME}</dd>
 				<dd class="revisiondate">{L_REVISION} {L_TIME}</dd>
@@ -13,7 +13,9 @@
 	<form name="revision_list" action="{U_VIEW_REVISIONS}" method="post" data-ajax="revisions.compare" />
 		<!-- BEGIN revision -->
 		<ul class="revisions<!-- IF revision.S_ROW_COUNT is odd --> odd<!-- ELSE --> even<!-- ENDIF --><!-- IF not revision.IN_RANGE and S_DISPLAY_COMPARISON --> out_of_range<!-- ENDIF --><!-- IF revision.CURRENT_REVISION --> current<!-- ENDIF -->" id="r{revision.ID}">
-			<li class="revision_compare"><!-- IF S_DISPLAY_COMPARISON --><input type="radio" name="first" value="{revision.ID}"<!-- IF revision.FIRST_IN_COMPARE --> checked="checked"<!-- ENDIF --><!-- IF REVISION_COUNT eq 0 --> disabled="disabled"<!-- ENDIF --> /> <input type="radio" name="last" value="{revision.ID}"<!-- IF revision.LAST_IN_COMPARE --> checked="checked"<!-- ENDIF --><!-- IF REVISION_COUNT eq 0 --> disabled="disabled"<!-- ENDIF --> /><!-- ENDIF --></li>
+			<!-- IF S_DISPLAY_COMPARISON -->
+			<li class="revision_compare"><input type="radio" name="first" value="{revision.ID}"<!-- IF revision.FIRST_IN_COMPARE --> checked="checked"<!-- ENDIF --><!-- IF REVISION_COUNT eq 0 --> disabled="disabled"<!-- ENDIF --> /> <input type="radio" name="last" value="{revision.ID}"<!-- IF revision.LAST_IN_COMPARE --> checked="checked"<!-- ENDIF --><!-- IF REVISION_COUNT eq 0 --> disabled="disabled"<!-- ENDIF --> /></li>
+			<!-- ENDIF -->
 			<li class="revision_id"><a href="{revision.U_REVISION_VIEW}">#{revision.NUMBER} ({L_VIEW})</a></li>
 			<li class="revsion_user">{revision.USER_AVATAR} <span>{revision.USERNAME}</span></li>
 			<li class="revision_date">{revision.DATE}</li>
