@@ -1,0 +1,18 @@
+#
+# Service definitions for core controllers, imported by services.yml
+#
+
+services:
+	# Post Revisions controller
+    post_revisions.controller:
+        class: phpbb_controller_post_revisions
+        arguments:
+            - @controller.helper
+            - @user
+            - @dbal.conn
+            - @config
+            - @auth
+            - @request
+            - @template
+            - %core.root_path%
+            - %core.php_ext%

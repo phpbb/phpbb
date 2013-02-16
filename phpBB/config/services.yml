@@ -4,6 +4,7 @@ imports:
     - { resource: notifications.yml }
     - { resource: migrator.yml }
     - { resource: avatars.yml }
+    - { resource: controller_services.yml }
 
 services:
     auth:
@@ -264,17 +265,3 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.users%
-
-#### Controller Services ####
-    post_revisions.controller:
-        class: phpbb_controller_post_revisions
-        arguments:
-            - @controller.helper
-            - @user
-            - @dbal.conn
-            - @config
-            - @auth
-            - @request
-            - @template
-            - %core.root_path%
-            - %core.php_ext%
