@@ -183,7 +183,6 @@ $lang = array_merge($lang, array(
 	'POST_CONFIRMATION'			=> 'Confirmation of post',
 	'POST_CONFIRM_EXPLAIN'		=> 'To prevent automated posts the board requires you to enter a confirmation code. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.',
 	'POST_DELETED'				=> 'This message has been deleted successfully.',
-	'POST_AND_TOPIC_DELETED'	=> 'This message has been deleted successfully along with its topic.',
 	'POST_EDITED'				=> 'This message has been edited successfully.',
 	'POST_EDITED_MOD'			=> 'This message has been edited successfully, but it will need to be approved by a moderator before it is publicly viewable.',
 	'POST_GLOBAL'				=> 'Global',

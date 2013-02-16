@@ -127,10 +127,9 @@ phpbb.alert = function(title, msg, fadedark) {
  *
  * @returns object Returns the div created.
  */
-phpbb.confirm = function(msg, opt, callback, fadedark) {
+phpbb.confirm = function(msg, callback, fadedark) {
 	var div = $('#phpbb_confirm');
-	div.find('.alert_text').html(msg);
-	div.find('.alert_text').append(opt);
+	div.find('.alert_text').prepend(msg);
 	div.bind('click', function(e) {
 		e.stopPropagation();
 	});
@@ -200,6 +199,12 @@ phpbb.confirm = function(msg, opt, callback, fadedark) {
 
 	return div;
 };
+
+
+phpbb.addOption = function(field_content, callback, fadedark) {
+	div.find('.alert_text').html(field_content);
+	callback();
+}
 
 /**
  * Turn a querystring into an array.
@@ -279,9 +284,6 @@ phpbb.ajaxify = function(options) {
 				
 				//Checking weather optional field is defined
 				//If not assigning a default value
-				if (typeof res.OPTIONAL_FIELD === 'undefined') {
-					res.OPTIONAL_FIELD == '';
-				}
 
 				if (typeof phpbb.ajaxCallbacks[callback] === 'function') {
 					phpbb.ajaxCallbacks[callback].call(that, res);
@@ -308,25 +310,37 @@ phpbb.ajaxify = function(options) {
 						});
 					}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 				}
-			} else {
-				// If confirmation is required, display a diologue to the user.
-				phpbb.confirm(res.MESSAGE_TEXT, res.OPTIONAL_FIELD, function(del) {
-					if (del) {
-						phpbb.loadingAlert();
-						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
-						if($(':checkbox').is(':checked')){
-							data += '&option=' + res.YES_VALUE;
+				else if (typeof res.OPTIONAL_FIELD !== 'undefined') {
+					// If confirmation is required, display a diologue to the user.
+					phpbb.addOption(res.OPTIONAL_FIELD, function() {
+							data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
+							$.ajax({
+								url: res.S_CONFIRM_ACTION,
+								type: 'POST',
+								data: data,
+								success: returnHandler,
+								error: errorHandler
+							});
+					});
+				} else {
+					// If confirmation is required, display a diologue to the user.
+					phpbb.confirm(res.MESSAGE_TEXT, function(del) {
+						if (del) {
+							phpbb.loadingAlert();
+							data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
+							if($(':checkbox').is(':checked')){
+								data += '&option=' + res.YES_VALUE;
+							}
+							$.ajax({
+								url: res.S_CONFIRM_ACTION,
+								type: 'POST',
+								data: data + '&confirm=' + res.YES_VALUE,
+								success: returnHandler,
+								error: errorHandler
+							});
 						}
-						$.ajax({
-							url: res.S_CONFIRM_ACTION,
-							type: 'POST',
-							data: data + '&confirm=' + res.YES_VALUE,
-							success: returnHandler,
-							error: errorHandler
-						});
-					}
-				}, false);
-			}
+					}, false);
+				}
 		}
 
 		function errorHandler() {
@@ -378,7 +392,7 @@ phpbb.ajaxify = function(options) {
 		});
 
 		event.preventDefault();
-	});
+	}
 
 	if (isForm) {
 		elements.find('input:submit').click(function () {
@@ -390,7 +404,7 @@ phpbb.ajaxify = function(options) {
 	}
 
 	return this;
-};
+});
 
 /**
 * Hide the optgroups that are not the selected timezone

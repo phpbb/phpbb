@@ -1552,7 +1552,9 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			'mode'	=> 'delete')
 		);
 		
+		
 		$option = ($user->lang['YES'] === $request->variable('option', '', true, phpbb_request_interface::POST));
+		$optional_feild_added = ($user->lang['YES'] === $request->variable('optional_feild_added', '', true, phpbb_request_interface::POST));
 
 		if (confirm_box(true))
 		{
@@ -1577,7 +1579,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_TOPIC', $post_data['topic_title'], $post_username);
 
 				$meta_info = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
-				$message = (($option) ? $user->lang['POST_AND_TOPIC_DELETED'] : $user->lang['POST_DELETED']);
+				$message = (($option) ? $user->lang['TOPIC_DELETED_SUCCESS'] : $user->lang['POST_DELETED']);
 			}
 			else
 			{
@@ -1591,10 +1593,19 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 			trigger_error($message);
 		}
-		else if(($post_data['topic_first_post_id'] == $post_id) && ($post_data['topic_first_post_id'] != $post_data['topic_last_post_id']))
+		else if(($post_data['topic_first_post_id'] == $post_id) && ($post_data['topic_first_post_id'] != $post_data['topic_last_post_id']) && (!$optional_feild_added))
 		{
-			$option = '<br />'.'<input type="checkbox" name="delTopic" value="delTopic">'.$user->lang['DELETE_ENTIRE_TOPIC'].'<br />';
-			confirm_box(false, 'DELETE_TOP_POST', $s_hidden_fields, 'confirm_body.html', '', $option);
+			if ($request->is_ajax())
+			{
+				$u_action = ($u_action) ? $phpbb_root_path . $u_action : $phpbb_root_path . str_replace('&', '&amp;', $user->page['page']);
+				$optional_field = '<br />'.'<input type="checkbox" name="delTopic" value="delTopic">'.$user->lang['DELETE_ENTIRE_TOPIC'].'<br />';
+				$json_response = new phpbb_json_response;
+				$json_response->send(array(
+				    'S_CONFIRM_ACTION'  => $u_action,
+					'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+					'OPTIONAL_FIELD'	=> $optional_field
+				));
+			}
 		}
 		else
 		{

@@ -3009,7 +3009,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 * @param string $html_body Template used for confirm box
 * @param string $u_action Custom form action
 */
-function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '', $option_field = '')
+function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
 	global $user, $template, $db, $request;
 	global $phpEx, $phpbb_root_path, $request;
@@ -3102,8 +3102,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 
 			'YES_VALUE'			=> $user->lang['YES'],
 			'S_CONFIRM_ACTION'	=> str_replace('&amp;', '&', $u_action), //inefficient, rewrite whole function
-			'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields,
-			'OPTIONAL_FIELD'	=> $option_field
+			'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields
 		));
 	}
 
