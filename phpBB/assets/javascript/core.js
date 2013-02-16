@@ -129,7 +129,7 @@ phpbb.alert = function(title, msg, fadedark) {
  */
 phpbb.confirm = function(msg, callback, fadedark) {
 	var div = $('#phpbb_confirm');
-	div.find('.alert_text').html(msg);
+	div.find('.alert_text').prepend(msg);
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
@@ -200,6 +200,15 @@ phpbb.confirm = function(msg, callback, fadedark) {
 
 	return div;
 };
+
+
+phpbb.addOption = function(field_content, callback) {
+	var div = $('#phpbb_confirm');
+	div.find('.alert_text').html(field_content);
+	callback();
+}
+
+
 
 /**
  * Turn a querystring into an array.
@@ -302,12 +311,28 @@ phpbb.ajaxify = function(options) {
 						});
 					}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 				}
-			} else {
+			} else if(typeof res.OPTIONAL_FIELD !== 'undefined'){
+				// If confirmation is required, display a diologue to the user.
+				phpbb.addOption(res.OPTIONAL_FIELD, function() {
+					data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
+					data += '&optional_feild_added=' + res.YES_VALUE;
+					$.ajax({
+						url: res.S_CONFIRM_ACTION,
+						type: 'POST',
+						data: data,
+						success: returnHandler,
+						error: errorHandler
+					});
+			});
+			}else{
 				// If confirmation is required, display a diologue to the user.
 				phpbb.confirm(res.MESSAGE_TEXT, function(del) {
 					if (del) {
 						phpbb.loadingAlert();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
+						if($(':checkbox').is(':checked')){
+							data += '&option=' + res.YES_VALUE;
+						}
 						$.ajax({
 							url: res.S_CONFIRM_ACTION,
 							type: 'POST',
