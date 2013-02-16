@@ -114,7 +114,7 @@ class acp_extensions
 				}
 				catch (phpbb_db_migration_exception $e)
 				{
-					$template->assign_var('MIGRATOR_ERROR', $user->lang($e->getMessage(), $e->getParameters()));
+					$template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($user));
 				}
 
 				$this->tpl_name = 'acp_ext_enable';
@@ -174,7 +174,7 @@ class acp_extensions
 				}
 				catch (phpbb_db_migration_exception $e)
 				{
-					$template->assign_var('MIGRATOR_ERROR', $user->lang($e->getMessage(), $e->getParameters()));
+					$template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($user));
 				}
 
 				$this->tpl_name = 'acp_ext_purge';
