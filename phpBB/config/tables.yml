@@ -8,3 +8,4 @@ parameters:
     tables.users: %core.table_prefix%users
     tables.migrations: %core.table_prefix%migrations
     tables.modules: %core.table_prefix%modules
+    tables.post_revisions: %core.table_prefix%post_revisions
