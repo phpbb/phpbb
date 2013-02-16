@@ -73,7 +73,7 @@ $lang = array_merge($lang, array(
 	'RESTORING_POST'					=> 'Restoring Post',
 	'REVISION'							=> 'Revision',
 	'REVISION_ADDITIONS'				=> array(
-		1		=>'1 addition',
+		1		=> '1 addition',
 		2		=> '%1$s additions',
 	),
 	'REVISION_COUNT'					=> array(
@@ -133,7 +133,7 @@ $lang = array_merge($lang, array(
 		2 => 'The selected revisions could not be marked as unprotected.',
 	),
 	'REVISION_DELETIONS'				=> array(
-		1 =>'1 deletion',
+		1 => '1 deletion',
 		2 => '%1$s deletions',
 	),
 	'REVISION_USER_COUNT'				=> array(
