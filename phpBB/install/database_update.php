@@ -902,6 +902,9 @@ function database_update_info()
 				GROUPS_TABLE			=> array(
 					'group_legend_name'		=> array('group_legend', 'group_name'),
 				),
+				TOPICS_TABLE			=> array(
+					'last_post_id'		=> array('topic_last_post_id'),
+				),
 			),
 		),
 		// No changes from 3.0.1-RC1 to 3.0.1
