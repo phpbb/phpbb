@@ -92,7 +92,7 @@ class phpbb_controller_helper
 	*/
 	public function url($route)
 	{
-		return append_sid($this->phpbb_root_path . 'app.' . $this->php_ext, array('controller' => $route));
+		return append_sid($this->phpbb_root_path . 'app' . $this->php_ext, array('controller' => $route));
 	}
 
 	/**
