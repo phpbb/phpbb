@@ -42,6 +42,9 @@ class phpbb_controller_test extends phpbb_test_case
 
 	public function test_controller_url_helper()
 	{
+		global $phpbb_dispatcher;
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$helper = new phpbb_controller_helper;
 		$this->assertEquals($helper->url('foo/bar'),'./app.php?controller=foo/bar');
 	}
