@@ -834,6 +834,7 @@ CREATE TABLE phpbb_topics (
 	KEY fid_time_moved (forum_id, topic_last_post_time, topic_moved_id)
 );
 
+CREATE INDEX phpbb_topic_last_post_id ON phpbb_topics (topic_last_post_id);
 
 # Table: 'phpbb_topics_track'
 CREATE TABLE phpbb_topics_track (

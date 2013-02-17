@@ -1537,6 +1537,8 @@ CREATE TABLE phpbb_topics (
 
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics (forum_id)
 /
+CREATE INDEX phpbb_topic_last_post_id ON phpbb_topics (topic_last_post_id)
+/
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type)
 /
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics (topic_last_post_time)
