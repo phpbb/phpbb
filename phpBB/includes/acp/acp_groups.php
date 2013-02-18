@@ -126,6 +126,10 @@ class acp_groups
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
+				else if (!$name_ary)
+				{
+					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+				}
 
 				if (confirm_box(true))
 				{
