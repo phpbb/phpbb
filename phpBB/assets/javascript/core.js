@@ -203,8 +203,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 
 
 phpbb.addOption = function(field_content, callback) {
-	var div = $('#phpbb_confirm');
-	div.find('.alert_text').html(field_content);
+	$('#phpbb_confirm').find('.alert_text').html(field_content);
 	callback();
 }
 
