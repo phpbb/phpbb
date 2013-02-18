@@ -454,7 +454,7 @@ class phpbb_search_fulltext_sphinx
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
 	*/
-	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
+	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
 		// No keywords? No posts.
 		if (!strlen($this->search_query) && !sizeof($author_ary))
@@ -609,6 +609,25 @@ class phpbb_search_fulltext_sphinx
 			}
 		}
 
+		$result_count = $result['total_found'];
+
+		if ($start >= $result_count)
+		{
+			$start = floor(($result_count - 1) / $per_page) * $per_page;
+
+			$this->sphinx->SetLimits((int) $start, (int) $per_page, SPHINX_MAX_MATCHES);
+			$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
+
+			// Could be connection to localhost:9312 failed (errno=111,
+			// msg=Connection refused) during rotate, retry if so
+			$retries = SPHINX_CONNECT_RETRIES;
+			while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
+			{
+				usleep(SPHINX_CONNECT_WAIT_TIME);
+				$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
+			}
+		}
+
 		$id_ary = array();
 		if (isset($result['matches']))
 		{
@@ -628,8 +647,6 @@ class phpbb_search_fulltext_sphinx
 		{
 			return false;
 		}
-
-		$result_count = $result['total_found'];
 
 		$id_ary = array_slice($id_ary, 0, (int) $per_page);
 
