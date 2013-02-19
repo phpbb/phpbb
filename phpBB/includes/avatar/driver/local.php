@@ -36,7 +36,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form($request, $template, $row, &$error)
+	public function prepare_form($request, $template, $user, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list();
 		$category = $request->variable('avatar_local_cat', '');
@@ -114,7 +114,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function process_form($request, $template, $row, &$error)
+	public function process_form($request, $template, $user, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list();
 		$category = $request->variable('avatar_local_cat', '');

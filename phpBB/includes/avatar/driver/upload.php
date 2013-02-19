@@ -36,7 +36,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form($request, $template, $row, &$error)
+	public function prepare_form($request, $template, $user, $row, &$error)
 	{
 		if (!$this->can_upload())
 		{
@@ -54,7 +54,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function process_form($request, $template, $row, &$error)
+	public function process_form($request, $template, $user, $row, &$error)
 	{
 		if (!$this->can_upload())
 		{

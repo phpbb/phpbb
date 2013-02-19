@@ -1751,7 +1751,7 @@ class acp_users
 							if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
 							{
 								$driver = $phpbb_avatar_manager->get_driver($driver_name);
-								$result = $driver->process_form($request, $template, $avatar_data, $error);
+								$result = $driver->process_form($request, $template, $user, $avatar_data, $error);
 
 								if ($result && empty($error))
 								{
@@ -1813,7 +1813,7 @@ class acp_users
 							'avatar' => "acp_avatar_options_{$config_name}.html",
 						));
 
-						if ($driver->prepare_form($request, $template, $avatar_data, $error))
+						if ($driver->prepare_form($request, $template, $user, $avatar_data, $error))
 						{
 							$driver_name = $phpbb_avatar_manager->prepare_driver_name($current_driver);
 							$driver_upper = strtoupper($driver_name);

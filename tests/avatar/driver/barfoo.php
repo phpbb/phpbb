@@ -7,12 +7,12 @@ class phpbb_avatar_driver_barfoo extends phpbb_avatar_driver
 		return array();
 	}
 
-	public function prepare_form($request, $template, $row, &$error)
+	public function prepare_form($request, $template, $user, $row, &$error)
 	{
 		return false;
 	}
 
-	public function process_form($request, $template, $row, &$error)
+	public function process_form($request, $template, $user, $row, &$error)
 	{
 		return false;
 	}

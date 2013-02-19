@@ -526,7 +526,7 @@ class ucp_groups
 								if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
 								{
 									$driver = $phpbb_avatar_manager->get_driver($driver_name);
-									$result = $driver->process_form($request, $template, $avatar_data, $avatar_error);
+									$result = $driver->process_form($request, $template, $user, $avatar_data, $avatar_error);
 
 									if ($result && empty($avatar_error))
 									{
@@ -657,7 +657,7 @@ class ucp_groups
 									'avatar' => $driver->get_template_name(),
 								));
 
-								if ($driver->prepare_form($request, $template, $avatar_data, $avatar_error))
+								if ($driver->prepare_form($request, $template, $user, $avatar_data, $avatar_error))
 								{
 									$driver_name = $phpbb_avatar_manager->prepare_driver_name($current_driver);
 									$driver_upper = strtoupper($driver_name);

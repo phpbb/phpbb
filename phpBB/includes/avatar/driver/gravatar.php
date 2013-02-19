@@ -52,7 +52,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form($request, $template, $row, &$error)
+	public function prepare_form($request, $template, $user, $row, &$error)
 	{
 		$template->assign_vars(array(
 			'AVATAR_GRAVATAR_WIDTH' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_width']) ? $row['avatar_width'] : $request->variable('avatar_gravatar_width', 0),
@@ -66,7 +66,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function process_form($request, $template, $row, &$error)
+	public function process_form($request, $template, $user, $row, &$error)
 	{
 		$row['avatar'] = $request->variable('avatar_gravatar_email', '');
 		$row['avatar_width'] = $request->variable('avatar_gravatar_width', 0);

@@ -36,7 +36,7 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form($request, $template, $row, &$error)
+	public function prepare_form($request, $template, $user, $row, &$error)
 	{
 		$template->assign_vars(array(
 			'AVATAR_REMOTE_WIDTH' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_width']) ? $row['avatar_width'] : $request->variable('avatar_remote_width', 0),
@@ -50,7 +50,7 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function process_form($request, $template, $row, &$error)
+	public function process_form($request, $template, $user, $row, &$error)
 	{
 		$url = $request->variable('avatar_remote_url', '');
 		$width = $request->variable('avatar_remote_width', 0);
