@@ -37,7 +37,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 			'height' => $row['avatar_height'],
 		);
 	}
-	
+
 	/**
 	* @inheritdoc
 	*/
@@ -126,7 +126,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 			$error[] = 'AVATAR_NO_SIZE';
 			return false;
 		}
-		
+
 		if ($this->config['avatar_max_width'] || $this->config['avatar_max_height'])
 		{
 			if ($row['avatar_width'] > $this->config['avatar_max_width'] || $row['avatar_height'] > $this->config['avatar_max_height'])

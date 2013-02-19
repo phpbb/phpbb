@@ -329,7 +329,7 @@ class acp_groups
 					{
 						$submit_ary['founder_manage'] = isset($_REQUEST['group_founder_manage']) ? 1 : 0;
 					}
-					
+
 					if ($config['allow_avatar'])
 					{
 						// Handle avatar
@@ -343,7 +343,6 @@ class acp_groups
 							if ($result && empty($avatar_error))
 							{
 								$result['avatar_type'] = $driver_name;
-								
 								$submit_ary = array_merge($submit_ary, $result);
 							}
 						}
@@ -547,9 +546,9 @@ class acp_groups
 						}
 					}
 				}
-				
+
 				$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
-				
+
 				// Merge any avatar errors into the primary error array
 				$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
 

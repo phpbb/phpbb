@@ -50,7 +50,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 					'SELECTED' => ($cat == $category),
 				));
 			}
-			
+
 			if ($cat != $category)
 			{
 				unset($avatar_list[$cat]);

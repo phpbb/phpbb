@@ -1786,7 +1786,7 @@ class acp_users
 									'user_avatar_width' => 0,
 									'user_avatar_height' => 0,
 								);
-								
+
 								$sql = 'UPDATE ' . USERS_TABLE . '
 									SET ' . $db->sql_build_array('UPDATE', $result) . '
 									WHERE user_id = ' . (int) $user_id;
@@ -1843,7 +1843,7 @@ class acp_users
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
-					
+
 					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
 				));
 

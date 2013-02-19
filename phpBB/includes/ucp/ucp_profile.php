@@ -593,7 +593,7 @@ class ucp_profile
 										WHERE user_id = ' . (int) $user->data['user_id'];
 
 									$db->sql_query($sql);
-									
+
 									meta_refresh(3, $this->u_action);
 									$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 									trigger_error($message);
@@ -618,7 +618,7 @@ class ucp_profile
 									WHERE user_id = ' . (int) $user->data['user_id'];
 
 								$db->sql_query($sql);
-								
+
 								meta_refresh(3, $this->u_action);
 								$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 								trigger_error($message);
@@ -670,7 +670,7 @@ class ucp_profile
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 
 					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
-					
+
 					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
 				));
 

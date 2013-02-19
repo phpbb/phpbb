@@ -31,7 +31,7 @@ interface phpbb_avatar_driver_interface
 	/**
 	* Get the avatar url and dimensions
 	*
-	* @param array	$row User data or group data that has been cleaned with 
+	* @param array	$row User data or group data that has been cleaned with
 	*        phpbb_avatar_manager::clean_row
 	* @return array Avatar data, must have keys src, width and height, e.g.
 	*        ['src' => '', 'width' => 0, 'height' => 0]
@@ -42,7 +42,7 @@ interface phpbb_avatar_driver_interface
 	* Returns custom html if it is needed for displaying this avatar
 	*
 	* @param phpbb_user $user phpBB user object
-	* @param array	$row User data or group data that has been cleaned with 
+	* @param array	$row User data or group data that has been cleaned with
 	*        phpbb_avatar_manager::clean_row
 	* @param string $alt Alternate text for avatar image
 	*
@@ -56,7 +56,7 @@ interface phpbb_avatar_driver_interface
 	* @param phpbb_request $request Request object
 	* @param phpbb_template	$template Template object
 	* @param phpbb_user $user User object
-	* @param array	$row User data or group data that has been cleaned with 
+	* @param array	$row User data or group data that has been cleaned with
 	*        phpbb_avatar_manager::clean_row
 	* @param array	&$error Reference to an error array that is filled by this
 	*        function. Key values can either be a string with a language key or
@@ -84,7 +84,7 @@ interface phpbb_avatar_driver_interface
 	* @param phpbb_request $request Request object
 	* @param phpbb_template	$template Template object
 	* @param phpbb_user $user User object
-	* @param array	$row User data or group data that has been cleaned with 
+	* @param array	$row User data or group data that has been cleaned with
 	*        phpbb_avatar_manager::clean_row
 	* @param array	&$error Reference to an error array that is filled by this
 	*        function. Key values can either be a string with a language key or
@@ -99,7 +99,7 @@ interface phpbb_avatar_driver_interface
 	/**
 	* Delete avatar
 	*
-	* @param array $row User data or group data that has been cleaned with 
+	* @param array $row User data or group data that has been cleaned with
 	*        phpbb_avatar_manager::clean_row
 	*
 	* @return bool True if avatar has been deleted or there is no need to delete,
