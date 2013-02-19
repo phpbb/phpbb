@@ -1533,11 +1533,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				);
 
 				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
-
-				if ($config['track_post_revisions'])
-				{
-					$sql_data[POSTS_TABLE]['stat'][] = 'post_revision_count = post_revision_count + 1';
-				}
 			}
 			else if (!$data['post_edit_reason'] && $mode == 'edit' && $auth->acl_get('m_edit', $data['forum_id']))
 			{
@@ -1593,7 +1588,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				&& !empty($data['original_post_data'])
 				&& (($data['poster_id'] == $user->data['user_id'] && !$data['post_edit_locked'])
 				|| $auth->acl_getf('m_edit', $data['forum_id'])))
-			{				
+			{
 				$sql_data[POST_REVISIONS_TABLE]['sql'] = array(
 					'post_id'				=> $data['original_post_data']['post_id'],
 					// We need to store the user ID of the user who is
@@ -1608,6 +1603,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					'bbcode_uid'			=> $data['original_post_data']['bbcode_uid'],
 					'revision_reason'		=> $data['original_post_data']['post_edit_reason'],
 				);
+
+				$sql_data[POSTS_TABLE]['sql'] = array_merge($sql_data[POSTS_TABLE]['sql'], array(
+					'post_revision_count'			=> $data['original_post_data']['post_revision_count']++,
+				));
 			}
 
 		break;

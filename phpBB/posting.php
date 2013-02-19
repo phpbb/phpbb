@@ -429,17 +429,18 @@ $original_post_data = array();
 if ($config['track_post_revisions'] && $mode == 'edit')
 {
 	$original_post_data = array(
-		'post_id'			=> $post_data['post_id'],
-		'user_id'			=> $post_data['poster_id'],
-		'post_time'			=> $post_data['post_edit_time'] ?: $post_data['post_time'],
-		'post_subject'		=> $post_data['post_subject'],
-		'message'			=> $post_data['post_text'],
-		'post_checksum'		=> $post_data['post_checksum'],
-		'post_attachment'	=> $post_data['post_attachment'],
-		'bbcode_bitfield'	=> $post_data['bbcode_bitfield'],
-		'bbcode_uid'		=> $post_data['bbcode_uid'],
-		'post_edit_reason'	=> $post_data['post_edit_reason'],
-		'post_edit_user'	=> $post_data['post_edit_user'],
+		'post_id'				=> $post_data['post_id'],
+		'user_id'				=> $post_data['poster_id'],
+		'post_time'				=> $post_data['post_edit_time'] ?: $post_data['post_time'],
+		'post_subject'			=> $post_data['post_subject'],
+		'message'				=> $post_data['post_text'],
+		'post_checksum'			=> $post_data['post_checksum'],
+		'post_attachment'		=> $post_data['post_attachment'],
+		'bbcode_bitfield'		=> $post_data['bbcode_bitfield'],
+		'bbcode_uid'			=> $post_data['bbcode_uid'],
+		'post_edit_reason'		=> $post_data['post_edit_reason'],
+		'post_edit_user'		=> $post_data['post_edit_user'],
+		'post_revision_count'	=> $post_data['post_revision_count']
 	);
 }
 
