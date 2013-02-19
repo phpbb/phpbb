@@ -830,10 +830,11 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function compile_tag_define($tag_args, $op)
 	{
+		$add_quote = true;
 		$match = array();
-		preg_match('#^((?:' . self::REGEX_NS . '\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*)(?: = (.*?))?$#', $tag_args, $match);
+		preg_match('#^((?:' . self::REGEX_NS . '\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*)(?: = (\'?)([^\']*)(\'?))?$#', $tag_args, $match);
 
-		if (empty($match[2]) || (!isset($match[3]) && $op))
+		if (empty($match[2]) || (!isset($match[4]) && $op))
 		{
 			return '';
 		}
@@ -843,7 +844,12 @@ class phpbb_template_filter extends php_user_filter
 			return 'unset(' . (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ');';
 		}
 
-		$parsed_statement = implode(' ', $this->compile_expression($match[3]));
+		if ($match[3] && $match[5] && substr($match[4], 0, 1) == '{' && substr($match[4], -1, 1) == '}')
+		{
+			$match[4] = substr($match[4], 1, -1);
+			$add_quote = false;
+		}
+		$parsed_statement = ($add_quote) ? "'" . implode(' ', $this->compile_expression($match[4])) . "'" : implode(' ', $this->compile_expression($match[4]));
 
 		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ' = ' . $parsed_statement . ';';
 	}
