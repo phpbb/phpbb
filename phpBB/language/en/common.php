@@ -358,6 +358,7 @@ $lang = array_merge($lang, array(
 	'LOGOUT_USER'						=> 'Logout [ %s ]',
 	'LOG_ME_IN'							=> 'Remember me',
 
+	'MAIN'					=> 'Main',
 	'MARK'					=> 'Mark',
 	'MARK_ALL'				=> 'Mark all',
 	'MARK_FORUMS_READ'		=> 'Mark forums read',

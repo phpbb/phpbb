@@ -38,7 +38,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	*/
 	public function prepare_form($request, $template, $user, $row, &$error)
 	{
-		$avatar_list = $this->get_avatar_list();
+		$avatar_list = $this->get_avatar_list($user);
 		$category = $request->variable('avatar_local_cat', '');
 
 		foreach ($avatar_list as $cat => $null)
@@ -116,7 +116,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	*/
 	public function process_form($request, $template, $user, $row, &$error)
 	{
-		$avatar_list = $this->get_avatar_list();
+		$avatar_list = $this->get_avatar_list($user);
 		$category = $request->variable('avatar_local_cat', '');
 
 		$file = $request->variable('avatar_local_file', '');
@@ -134,7 +134,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 		}
 
 		return array(
-			'avatar' => $category . '/' . $file,
+			'avatar' => ($category != $user->lang['MAIN']) ? $category . '/' . $file : $file,
 			'avatar_width' => $avatar_list[$category][urldecode($file)]['width'],
 			'avatar_height' => $avatar_list[$category][urldecode($file)]['height'],
 		);
@@ -144,9 +144,11 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	* Get a list of avatars that are locally available
 	* Results get cached for 24 hours (86400 seconds)
 	*
+	* @param phpbb_user $user User object
+	*
 	* @return array Array containing the locally available avatars
 	*/
-	protected function get_avatar_list()
+	protected function get_avatar_list($user)
 	{
 		$avatar_list = ($this->cache == null) ? false : $this->cache->get('avatar_local_list');
 
@@ -172,9 +174,9 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 					{
 						$dims = array(0, 0);
 					}
-					$cat = str_replace("$path/", '', $file_path);
+					$cat = ($path == $file_path) ? $user->lang['MAIN'] : str_replace("$path/", '', $file_path);
 					$avatar_list[$cat][$image] = array(
-						'file'      => rawurlencode($cat) . '/' . rawurlencode($image),
+						'file'      => ($cat != $user->lang['MAIN']) ? rawurlencode($cat) . '/' . rawurlencode($image) : rawurlencode($image),
 						'filename'  => rawurlencode($image),
 						'name'      => ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $image))),
 						'width'     => $dims[0],
