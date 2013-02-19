@@ -54,7 +54,7 @@ phpbb.addAjaxCallback('mark_forums_read', function(res) {
 * @param update_topic_links bool Wether "Mark topics read" links should be
 *     updated. Defaults to true.
 */
-phpbb.addAjaxCallback('mark_topics_read', function(res, update_topic_links = true) {
+phpbb.addAjaxCallback('mark_topics_read', function(res, update_topic_links) {
 	var readTitle = res.NO_UNREAD_POSTS;
 	var unreadTitle = res.UNREAD_POSTS;
 	var iconsArray = {
@@ -67,6 +67,10 @@ phpbb.addAjaxCallback('mark_topics_read', function(res, update_topic_links = tru
 	var unreadClassSelectors = '';
 	var classMap = {};
 	var classNames = [];
+
+	if (typeof update_topic_links === 'undefined') {
+		update_topic_links = true;
+	}
 
 	$.each(iconsArray, function(unreadClass, readClass) {
 		$.each(iconsState, function(key, value) {
