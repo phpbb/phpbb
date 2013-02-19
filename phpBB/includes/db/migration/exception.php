@@ -52,4 +52,28 @@ class phpbb_db_migration_exception extends \Exception
 	{
 		return $this->message . ': ' . var_export($this->parameters, true);
 	}
+
+	/**
+	* Get the parameters
+	*
+	* @return array
+	*/
+	public function getParameters()
+	{
+		return $this->parameters;
+	}
+
+	/**
+	* Get localised message (with $user->lang()) 
+	* 
+	* @param phpbb_user $user
+	* @return string
+	*/
+	public function getLocalisedMessage(phpbb_user $user)
+	{
+		$parameters = $this->getParameters();
+		array_unshift($parameters, $this->getMessage());
+
+		return call_user_func_array(array($user, 'lang'), $parameters);
+	}
 }
