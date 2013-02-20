@@ -111,6 +111,7 @@ $lang = array_merge($lang, array(
 	'acl_u_sig'			=> array('lang' => 'Can use signature', 'cat' => 'post'),
 
 	'acl_u_sendpm'		=> array('lang' => 'Can send private messages', 'cat' => 'pm'),
+	'acl_u_pm_reply'	=> array('lang' => 'Can reply to private messages (ignored if user can send private messages)', 'cat' => 'pm'),
 	'acl_u_masspm'		=> array('lang' => 'Can send messages to multiple users', 'cat' => 'pm'),
 	'acl_u_masspm_group'=> array('lang' => 'Can send messages to groups', 'cat' => 'pm'),
 	'acl_u_readpm'		=> array('lang' => 'Can read private messages', 'cat' => 'pm'),

@@ -322,6 +322,7 @@ $lang = array_merge($lang, array(
 	'NO_AUTH_READ_HOLD_MESSAGE'		=> 'You are not authorised to read private messages that are on hold.',
 	'NO_AUTH_READ_MESSAGE'			=> 'You are not authorised to read private messages.',
 	'NO_AUTH_READ_REMOVED_MESSAGE'	=> 'You are not able to read this message because it was removed by the author.',
+	'NO_AUTH_REPLY_MESSAGE'			=> 'You are not authorised to reply to private messages.',
 	'NO_AUTH_SEND_MESSAGE'			=> 'You are not authorised to send private messages.',
 	'NO_AUTH_SIGNATURE'				=> 'You are not authorised to define a signature.',
 

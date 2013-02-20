@@ -2937,6 +2937,7 @@ function change_database_data(&$no_updates, $version)
 
 			_add_permission($auth_admin, $db, 'u_chgprofileinfo', true, 'u_sig');
 			_add_permission($auth_admin, $db, 'a_extensions', true, 'a_styles');
+			_add_permission($auth_admin, $db, 'u_pm_reply', true, 'u_sendpm');
 
 			// Update the auth setting for the module
 			$sql = 'UPDATE ' . MODULES_TABLE . "

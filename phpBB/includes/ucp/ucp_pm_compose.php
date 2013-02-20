@@ -151,9 +151,14 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				trigger_error('NO_MESSAGE');
 			}
 
-			if (!$auth->acl_get('u_sendpm'))
+			if ($action != 'reply' && !$auth->acl_get('u_sendpm'))
 			{
 				trigger_error('NO_AUTH_SEND_MESSAGE');
+			}
+			// users can reply if they have either u_pm_reply OR u_sendpm.
+			else if (!($auth->acl_get('u_pm_reply') || $auth->acl_get('u_sendpm')))
+			{
+				trigger_error('NO_AUTH_REPLY_MESSAGE');
 			}
 
 			if ($action == 'quotepost')
