@@ -120,7 +120,7 @@ class acp_groups
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				else if (empty($mark_ary))
+				else if (empty($mark_ary) && $request->is_set_post('default'))
 				{
 					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
@@ -128,7 +128,45 @@ class acp_groups
 				if (confirm_box(true))
 				{
 					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
-					group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
+					
+				if (!sizeof($mark_ary))
+					{
+						$start = 0;
+
+						do
+						{
+							$sql = 'SELECT user_id
+								FROM ' . USER_GROUP_TABLE . "
+								WHERE group_id = $group_id
+								ORDER BY user_id";
+							$result = $db->sql_query_limit($sql, 200, $start);
+
+							$mark_ary = array();
+							if ($row = $db->sql_fetchrow($result))
+							{
+								do
+								{
+									$mark_ary[] = $row['user_id'];
+								}
+								while ($row = $db->sql_fetchrow($result));
+
+								group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
+
+								$start = (sizeof($mark_ary) < 200) ? 0 : $start + 200;
+							}
+							else
+							{
+								$start = 0;
+							}
+							$db->sql_freeresult($result);
+						}
+						while ($start);
+					}
+					else
+					{
+						group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
+					}
+					
 					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 				else
