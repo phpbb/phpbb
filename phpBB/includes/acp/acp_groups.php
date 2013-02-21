@@ -179,7 +179,7 @@ class acp_groups
 			break;
 
 			case 'deleteusers':
-				if (!$name_ary)
+				if (empty($mark_ary))
 				{
 					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
