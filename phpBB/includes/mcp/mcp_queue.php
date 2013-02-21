@@ -929,7 +929,7 @@ function disapprove_post($post_id_list, $id, $mode)
 
 			unset($lang_reasons);
 		}
-		unset($post_data, $disapprove_reason, $email_disapprove_reason, $disapprove_reason_lang);
+		unset($post_info, $disapprove_reason, $email_disapprove_reason, $disapprove_reason_lang);
 
 		$messenger->save_queue();
 
