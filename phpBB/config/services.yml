@@ -112,8 +112,10 @@ services:
     ext.manager:
         class: phpbb_extension_manager
         arguments:
+            - @service_container
             - @dbal.conn
             - @config
+            - @migrator
             - %tables.ext%
             - %core.root_path%
             - .%core.php_ext%
