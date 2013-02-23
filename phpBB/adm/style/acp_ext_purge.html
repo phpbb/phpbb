@@ -7,7 +7,13 @@
 	<p>{L_EXTENSIONS_EXPLAIN}</p>
 	<p>{L_PURGE_EXPLAIN}</p>
 
-	<!-- IF PRE -->
+	<!-- IF MIGRATOR_ERROR -->
+	<div class="errorbox">
+		<p><strong>{L_MIGRATION_EXCEPTION_ERROR}</strong></p>
+		<p>{MIGRATOR_ERROR}</p>
+		<p><a href="{U_RETURN}">{L_RETURN}</a></p>
+	</div>
+	<!-- ELSEIF PRE -->
 	<div class="errorbox">
 		<p>{L_PURGE_CONFIRM}</p>
 	</div>

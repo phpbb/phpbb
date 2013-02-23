@@ -49,7 +49,7 @@ class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_interfac
 	{
 		if (isset($this->config[$config_name]))
 		{
-			throw new phpbb_db_migration_exception('CONFIG_ALREADY_EXISTS', $config_name);
+			throw new phpbb_db_migration_exception('CONFIG_ALREADY_EXIST', $config_name);
 		}
 
 		$this->config->set($config_name, $config_value, !$is_dynamic);
