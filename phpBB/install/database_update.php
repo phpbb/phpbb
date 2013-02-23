@@ -133,9 +133,7 @@ set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 $orig_version = $config['version'];
 
-include($phpbb_root_path . 'language/' . $config['default_lang'] . '/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $config['default_lang'] . '/acp/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $config['default_lang'] . '/install.' . $phpEx);
+$user->add_lang(array('common', 'acp/common', 'install', 'migrator'));
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
@@ -157,11 +155,11 @@ else
 header('Content-type: text/html; charset=UTF-8');
 ?>
 <!DOCTYPE html>
-<html dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>">
+<html dir="<?php echo $user->lang['DIRECTION']; ?>" lang="<?php echo $user->lang['USER_LANG']; ?>">
 <head>
 <meta charset="utf-8">
 
-<title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
+<title><?php echo $user->lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
 <link href="<?php echo htmlspecialchars($phpbb_admin_path); ?>style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
@@ -178,12 +176,12 @@ header('Content-type: text/html; charset=UTF-8');
 						<div id="content">
 							<div id="main" class="install-body">
 
-								<h1><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></h1>
+								<h1><?php echo $user->lang['UPDATING_TO_LATEST_STABLE']; ?></h1>
 
 								<br />
 
-								<p><?php echo $lang['DATABASE_TYPE']; ?> :: <strong><?php echo $db->sql_layer; ?></strong><br />
-								<?php echo $lang['PREVIOUS_VERSION']; ?> :: <strong><?php echo $config['version']; ?></strong><br />
+								<p><?php echo $user->lang['DATABASE_TYPE']; ?> :: <strong><?php echo $db->sql_layer; ?></strong><br />
+								<?php echo $user->lang['PREVIOUS_VERSION']; ?> :: <strong><?php echo $config['version']; ?></strong><br />
 
 <?php
 
@@ -225,7 +223,7 @@ while (!$migrator->finished())
 	}
 	catch (phpbb_db_migration_exception $e)
 	{
-		echo $e;
+		echo $e->getLocalisedMessage($user);
 
 		phpbb_end_update($cache);
 	}
@@ -236,8 +234,8 @@ while (!$migrator->finished())
 	if ((time() - $update_start_time) >= $safe_time_limit)
 	{
 		//echo '<meta http-equiv="refresh" content="0;url=' . str_replace('&', '&amp;', append_sid($phpbb_root_path . 'test.' . $phpEx)) . '" />';
-		echo $lang['DATABASE_UPDATE_NOT_COMPLETED'] . '<br />';
-		echo '<a href="' . append_sid($phpbb_root_path . 'test.' . $phpEx) . '">' . $lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
+		echo $user->lang['DATABASE_UPDATE_NOT_COMPLETED'] . '<br />';
+		echo '<a href="' . append_sid($phpbb_root_path . 'test.' . $phpEx) . '">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
 
 		phpbb_end_update($cache);
 	}
@@ -248,6 +246,6 @@ if ($orig_version != $config['version'])
 	add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $config['version']);
 }
 
-echo $lang['DATABASE_UPDATE_COMPLETE'];
+echo $user->lang['DATABASE_UPDATE_COMPLETE'];
 
 phpbb_end_update($cache);
