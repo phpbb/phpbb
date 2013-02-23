@@ -2098,7 +2098,7 @@ class install_install extends module
 			),
 			'ACP_CAT_CUSTOMISE'		=> array(
 				'ACP_STYLE_MANAGEMENT',
-				'ACP_EXTENSIONS_MANAGEMENT',
+				'ACP_EXTENSION_MANAGEMENT',
 				'ACP_LANGUAGE',
 			),
 			'ACP_CAT_MAINTENANCE'	=> array(
