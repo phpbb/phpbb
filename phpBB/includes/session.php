@@ -2156,7 +2156,8 @@ class user extends session
 				'is_short'		=> strpos($format, '|'),
 				'format_short'	=> substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1),
 				'format_long'	=> str_replace('|', '', $format),
-				'lang'			=> $this->lang['datetime'],
+				// Filter out values that are not strings (e.g. arrays) for strtr().
+				'lang'			=> array_filter($this->lang['datetime'], 'is_string'),
 			);
 
 			// Short representation of month in format? Some languages use different terms for the long and short format of May
