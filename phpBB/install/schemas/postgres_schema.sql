@@ -1258,3 +1258,4 @@ CREATE TABLE phpbb_zebra (
 
 
 COMMIT;
+
