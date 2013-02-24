@@ -390,6 +390,28 @@ class messenger
 	}
 
 	/**
+	* Generates a valid message id to be used in emails
+	*
+	* @return string message id
+	*/
+	function generate_message_id()
+	{
+		global $config;
+
+		$domain = 'phpbb.generated';
+		if ($config['server_name'])
+		{
+			$domain = $config['server_name'];
+		}
+		else if (!empty($_SERVER['SERVER_NAME']))
+		{
+			$domain = $_SERVER['SERVER_NAME'];
+		}
+
+		return md5(unique_id(time())) . '@' . $domain;
+	}
+
+	/**
 	* Return email header
 	*/
 	function build_header($to, $cc, $bcc)
@@ -415,7 +437,7 @@ class messenger
 		$headers[] = 'Return-Path: <' . $config['board_email'] . '>';
 		$headers[] = 'Sender: <' . $config['board_email'] . '>';
 		$headers[] = 'MIME-Version: 1.0';
-		$headers[] = 'Message-ID: <' . md5(unique_id(time())) . '@' . $config['server_name'] . '>';
+		$headers[] = 'Message-ID: <' . $this->generate_message_id() . '>';
 		$headers[] = 'Date: ' . date('r', time());
 		$headers[] = 'Content-Type: text/plain; charset=UTF-8'; // format=flowed
 		$headers[] = 'Content-Transfer-Encoding: 8bit'; // 7bit
