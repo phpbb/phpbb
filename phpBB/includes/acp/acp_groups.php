@@ -143,7 +143,7 @@ class acp_groups
 				}
 
 				break;
-			case 'defaultbylink':
+			case 'set_default_on_all':
 					if (confirm_box(true))
 					{
 						$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
@@ -701,7 +701,7 @@ class acp_groups
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
 					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'),
-					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=defaultbylink&amp;g=$group_id",
+					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=set_default_on_all&amp;g=$group_id",
 				));
 
 				// Grab the members
