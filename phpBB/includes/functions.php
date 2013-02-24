@@ -139,6 +139,9 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 /**
 * Sets a configuration option's value.
 *
+* Please note that this function does not update the is_dynamic value for
+* an already existing config option.
+*
 * @param string $config_name   The configuration option's name
 * @param string $config_value  New configuration value
 * @param bool   $is_dynamic    Whether this variable should be cached (false) or
