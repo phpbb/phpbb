@@ -37,7 +37,7 @@ class acp_extensions
 		$this->template = $template;
 		$this->user = $user;
 
-		$user->add_lang(array('install', 'acp/extensions'));
+		$user->add_lang(array('install', 'acp/extensions', 'migrator'));
 
 		$this->page_title = 'ACP_EXTENSIONS';
 
@@ -103,11 +103,18 @@ class acp_extensions
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action));
 				}
 
-				if ($phpbb_extension_manager->enable_step($ext_name))
+				try
 				{
-					$template->assign_var('S_NEXT_STEP', true);
+					if ($phpbb_extension_manager->enable_step($ext_name))
+					{
+						$template->assign_var('S_NEXT_STEP', true);
 
-					meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name));
+						meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name));
+					}
+				}
+				catch (phpbb_db_migration_exception $e)
+				{
+					$template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($user));
 				}
 
 				$this->tpl_name = 'acp_ext_enable';
@@ -156,11 +163,18 @@ class acp_extensions
 			break;
 
 			case 'purge':
-				if ($phpbb_extension_manager->purge_step($ext_name))
+				try
 				{
-					$template->assign_var('S_NEXT_STEP', true);
+					if ($phpbb_extension_manager->purge_step($ext_name))
+					{
+						$template->assign_var('S_NEXT_STEP', true);
 
-					meta_refresh(0, $this->u_action . '&amp;action=purge&amp;ext_name=' . urlencode($ext_name));
+						meta_refresh(0, $this->u_action . '&amp;action=purge&amp;ext_name=' . urlencode($ext_name));
+					}
+				}
+				catch (phpbb_db_migration_exception $e)
+				{
+					$template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($user));
 				}
 
 				$this->tpl_name = 'acp_ext_purge';
