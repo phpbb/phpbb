@@ -1727,6 +1727,7 @@ function get_schema_struct()
 			'forum_id'			=> array('INDEX', 'forum_id'),
 			'forum_id_type'		=> array('INDEX', array('forum_id', 'topic_type')),
 			'last_post_time'	=> array('INDEX', 'topic_last_post_time'),
+			'last_post_id'	    => array('INDEX', 'topic_last_post_id'),
 			'topic_approved'	=> array('INDEX', 'topic_approved'),
 			'forum_appr_last'	=> array('INDEX', array('forum_id', 'topic_approved', 'topic_last_post_id')),
 			'fid_time_moved'	=> array('INDEX', array('forum_id', 'topic_last_post_time', 'topic_moved_id')),
