@@ -34,12 +34,12 @@ class phpbb_extension_metadata_manager
 	/**
 	* Creates the metadata manager
 	*
-	* @param dbal $db A database connection
+	* @param phpbb_db_driver $db A database connection
 	* @param string $extension_manager An instance of the phpbb extension manager
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $phpEx php file extension
 	*/
-	public function __construct($ext_name, dbal $db, phpbb_extension_manager $extension_manager, $phpbb_root_path, $phpEx = '.php', phpbb_template $template, phpbb_config $config)
+	public function __construct($ext_name, phpbb_db_driver $db, phpbb_extension_manager $extension_manager, $phpbb_root_path, $phpEx = '.php', phpbb_template $template, phpbb_config $config)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;

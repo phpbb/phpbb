@@ -143,7 +143,7 @@ class phpbb_datetime extends DateTime
 				'is_short'		=> strpos($format, self::RELATIVE_WRAPPER) !== false,
 				'format_short'	=> substr($format, 0, strpos($format, self::RELATIVE_WRAPPER)) . self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER . substr(strrchr($format, self::RELATIVE_WRAPPER), 1),
 				'format_long'	=> str_replace(self::RELATIVE_WRAPPER, '', $format),
-				'lang'			=> $user->lang['datetime'],
+				'lang'			=> array_filter($user->lang['datetime'], 'is_string'),
 			);
 
 			// Short representation of month in format? Some languages use different terms for the long and short format of May

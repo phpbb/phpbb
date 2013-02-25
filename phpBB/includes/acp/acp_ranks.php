@@ -71,7 +71,7 @@ class acp_ranks
 					'rank_min'			=> $min_posts,
 					'rank_image'		=> htmlspecialchars_decode($rank_image)
 				);
-				
+
 				if ($rank_id)
 				{
 					$sql = 'UPDATE ' . RANKS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE rank_id = $rank_id";
@@ -122,7 +122,7 @@ class acp_ranks
 					$cache->destroy('_ranks');
 
 					add_log('admin', 'LOG_RANK_REMOVED', $rank_title);
-					
+
 					if ($request->is_ajax())
 					{
 						$json_response = new phpbb_json_response;
@@ -151,7 +151,7 @@ class acp_ranks
 			case 'add':
 
 				$data = $ranks = $existing_imgs = array();
-				
+
 				$sql = 'SELECT *
 					FROM ' . RANKS_TABLE . '
 					ORDER BY rank_min ASC, rank_special ASC';
@@ -209,17 +209,17 @@ class acp_ranks
 
 					'RANK_TITLE'		=> (isset($ranks['rank_title'])) ? $ranks['rank_title'] : '',
 					'S_FILENAME_LIST'	=> $filename_list,
-					'RANK_IMAGE'		=> ($edit_img) ? $phpbb_root_path . $config['ranks_path'] . '/' . $edit_img : $phpbb_admin_path . 'images/spacer.gif',
+					'RANK_IMAGE'		=> ($edit_img) ? $phpbb_root_path . $config['ranks_path'] . '/' . $edit_img : htmlspecialchars($phpbb_admin_path) . 'images/spacer.gif',
 					'S_SPECIAL_RANK'	=> (isset($ranks['rank_special']) && $ranks['rank_special']) ? true : false,
 					'MIN_POSTS'			=> (isset($ranks['rank_min']) && !$ranks['rank_special']) ? $ranks['rank_min'] : 0)
 				);
-						
+
 
 				return;
 
 			break;
 		}
-	
+
 		$template->assign_vars(array(
 			'U_ACTION'		=> $this->u_action)
 		);
@@ -241,7 +241,7 @@ class acp_ranks
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;id=' . $row['rank_id'],
 				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;id=' . $row['rank_id'])
-			);	
+			);
 		}
 		$db->sql_freeresult($result);
 

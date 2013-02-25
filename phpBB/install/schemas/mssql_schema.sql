@@ -716,6 +716,28 @@ GO
 
 
 /*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE [phpbb_migrations] (
+	[migration_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[migration_depends_on] [varchar] (8000) DEFAULT ('') NOT NULL ,
+	[migration_schema_done] [int] DEFAULT (0) NOT NULL ,
+	[migration_data_done] [int] DEFAULT (0) NOT NULL ,
+	[migration_data_state] [varchar] (8000) DEFAULT ('') NOT NULL ,
+	[migration_start_time] [int] DEFAULT (0) NOT NULL ,
+	[migration_end_time] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_migrations] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_migrations] PRIMARY KEY  CLUSTERED 
+	(
+		[migration_name]
+	)  ON [PRIMARY] 
+GO
+
+
+/*
 	Table: 'phpbb_modules'
 */
 CREATE TABLE [phpbb_modules] (
@@ -1111,7 +1133,10 @@ CREATE TABLE [phpbb_reports] (
 	[report_text] [text] DEFAULT ('') NOT NULL ,
 	[reported_post_text] [text] DEFAULT ('') NOT NULL ,
 	[reported_post_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
-	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL 
+	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[reported_post_enable_magic_url] [int] DEFAULT (1) NOT NULL ,
+	[reported_post_enable_smilies] [int] DEFAULT (1) NOT NULL ,
+	[reported_post_enable_bbcode] [int] DEFAULT (1) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

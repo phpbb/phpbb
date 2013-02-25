@@ -1353,7 +1353,7 @@ if (sizeof($attach_list))
 }
 
 $template->assign_vars(array(
-	'S_HAS_ATTACHMENTS' => !empty($attachments),
+	'S_HAS_ATTACHMENTS' => $topic_data['topic_attachment'],
 ));
 
 $methods = phpbb_gen_download_links('topic_id', $topic_id, $phpbb_root_path, $phpEx);

@@ -2,11 +2,11 @@
 
 "use strict";
 
-var img_templates = {
+var imgTemplates = {
 	up: $('.template-up-img'),
-	up_disabled: $('.template-up-img-disabled'),
+	upDisabled: $('.template-up-img-disabled'),
 	down: $('.template-down-img'),
-	down_disabled: $('.template-down-img-disabled')
+	downDisabled: $('.template-down-img-disabled')
 };
 
 /**
@@ -15,20 +15,19 @@ var img_templates = {
  * an item is moved up. It moves the row up or down, and deactivates /
  * activates any up / down icons that require it (the ones at the top or bottom).
  */
-phpbb.add_ajax_callback('row_down', function() {
+phpbb.addAjaxCallback('row_down', function() {
 	var el = $(this),
 		tr = el.parents('tr'),
-		tr_swap = tr.next();
+		trSwap = tr.next();
 
 	/*
 	* If the element was the first one, we have to:
 	* - Add the up-link to the row we moved
 	* - Remove the up-link on the next row
 	*/
-	if (tr.is(':first-child'))
-	{
-		var up_img = img_templates.up.clone().attr('href', tr.attr('data-up'));
-		tr.find('.up').html(up_img);
+	if (tr.is(':first-child')) {
+		var upImg = imgTemplates.up.clone().attr('href', tr.attr('data-up'));
+		tr.find('.up').html(upImg);
 
 		phpbb.ajaxify({
 			selector: tr.find('.up').children('a'),
@@ -36,45 +35,43 @@ phpbb.add_ajax_callback('row_down', function() {
 			overlay: false
 		});
 
-		tr_swap.find('.up').html(img_templates.up_disabled.clone());
+		trSwap.find('.up').html(imgTemplates.upDisabled.clone());
 	}
 
-	tr.insertAfter(tr_swap);
+	tr.insertAfter(trSwap);
 
 	/*
 	* As well as:
 	* - Remove the down-link on the moved row, if it is now the last row
 	* - Add the down-link to the next row, if it was the last row
 	*/
-	if (tr.is(':last-child'))
-	{
-		tr.find('.down').html(img_templates.down_disabled.clone());
+	if (tr.is(':last-child')) {
+		tr.find('.down').html(imgTemplates.downDisabled.clone());
 
-		var down_img = img_templates.down.clone().attr('href', tr_swap.attr('data-down'));
-		tr_swap.find('.down').html(down_img);
+		var downImg = imgTemplates.down.clone().attr('href', trSwap.attr('data-down'));
+		trSwap.find('.down').html(downImg);
 
 		phpbb.ajaxify({
-			selector: tr_swap.find('.down').children('a'),
+			selector: trSwap.find('.down').children('a'),
 			callback: 'row_down',
 			overlay: false
 		});
 	}
 });
 
-phpbb.add_ajax_callback('row_up', function() {
+phpbb.addAjaxCallback('row_up', function() {
 	var el = $(this),
 		tr = el.parents('tr'),
-		tr_swap = tr.prev();
+		trSwap = tr.prev();
 
 	/*
 	* If the element was the last one, we have to:
 	* - Add the down-link to the row we moved
 	* - Remove the down-link on the next row
 	*/
-	if (tr.is(':last-child'))
-	{
-		var down_img = img_templates.down.clone().attr('href', tr.attr('data-down'));
-		tr.find('.down').html(down_img);
+	if (tr.is(':last-child')) {
+		var downImg = imgTemplates.down.clone().attr('href', tr.attr('data-down'));
+		tr.find('.down').html(downImg);
 
 		phpbb.ajaxify({
 			selector: tr.find('.down').children('a'),
@@ -82,25 +79,24 @@ phpbb.add_ajax_callback('row_up', function() {
 			overlay: false
 		});
 
-		tr_swap.find('.down').html(img_templates.down_disabled.clone());
+		trSwap.find('.down').html(imgTemplates.downDisabled.clone());
 	}
 
-	tr.insertBefore(tr_swap);
+	tr.insertBefore(trSwap);
 
 	/*
 	* As well as:
 	* - Remove the up-link on the moved row, if it is now the first row
 	* - Add the up-link to the previous row, if it was the first row
 	*/
-	if (tr.is(':first-child'))
-	{
-		tr.find('.up').html(img_templates.up_disabled.clone());
+	if (tr.is(':first-child')) {
+		tr.find('.up').html(imgTemplates.upDisabled.clone());
 
-		var up_img = img_templates.up.clone().attr('href', tr_swap.attr('data-up'));
-		tr_swap.find('.up').html(up_img);
+		var upImg = imgTemplates.up.clone().attr('href', trSwap.attr('data-up'));
+		trSwap.find('.up').html(upImg);
 
 		phpbb.ajaxify({
-			selector: tr_swap.find('.up').children('a'),
+			selector: trSwap.find('.up').children('a'),
 			callback: 'row_up',
 			overlay: false
 		});
@@ -112,29 +108,26 @@ phpbb.add_ajax_callback('row_up', function() {
  * It does this by replacing the text, and replacing all instances of "activate"
  * in the href with "deactivate", and vice versa.
  */
-phpbb.add_ajax_callback('activate_deactivate', function(res) {
+phpbb.addAjaxCallback('activate_deactivate', function(res) {
 	var el = $(this),
-		new_href = el.attr('href');
+		newHref = el.attr('href');
 
 	el.text(res.text);
 
-	if (new_href.indexOf('deactivate') !== -1)
-	{
-		new_href = new_href.replace('deactivate', 'activate')
-	}
-	else
-	{
-		new_href = new_href.replace('activate', 'deactivate')
+	if (newHref.indexOf('deactivate') !== -1) {
+		newHref = newHref.replace('deactivate', 'activate')
+	} else {
+		newHref = newHref.replace('activate', 'deactivate')
 	}
 
-	el.attr('href', new_href);
+	el.attr('href', newHref);
 });
 
 /**
  * The removes the parent row of the link or form that triggered the callback,
  * and is good for stuff like the removal of forums.
  */
-phpbb.add_ajax_callback('row_delete', function() {
+phpbb.addAjaxCallback('row_delete', function() {
 	$(this).parents('tr').remove();
 });
 
@@ -145,8 +138,7 @@ $('[data-ajax]').each(function() {
 		ajax = $this.attr('data-ajax'),
 		fn;
 
-	if (ajax !== 'false')
-	{
+	if (ajax !== 'false') {
 		fn = (ajax !== 'true') ? ajax : null;
 		phpbb.ajaxify({
 			selector: this,

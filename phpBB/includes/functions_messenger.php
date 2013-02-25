@@ -210,7 +210,7 @@ class messenger
 		{
 			$style_resource_locator = new phpbb_style_resource_locator();
 			$style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider());
-			$tpl = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, new phpbb_template_context());
+			$tpl = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, new phpbb_template_context(), $phpbb_extension_manager);
 			$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, $style_path_provider, $tpl);
 
 			$this->tpl_msg[$template_lang . $template_file] = $tpl;
@@ -231,7 +231,7 @@ class messenger
 				}
 			}
 
-			$style->set_custom_style($template_lang . '_email', array($template_path, $fallback_template_path), '');
+			$style->set_custom_style($template_lang . '_email', array($template_path, $fallback_template_path), array(), '');
 
 			$tpl->set_filenames(array(
 				'body'		=> $template_file . '.txt',
@@ -393,6 +393,28 @@ class messenger
 	}
 
 	/**
+	* Generates a valid message id to be used in emails
+	*
+	* @return string message id
+	*/
+	function generate_message_id()
+	{
+		global $config;
+
+		$domain = 'phpbb.generated';
+		if ($config['server_name'])
+		{
+			$domain = $config['server_name'];
+		}
+		else if (!empty($_SERVER['SERVER_NAME']))
+		{
+			$domain = $_SERVER['SERVER_NAME'];
+		}
+
+		return md5(unique_id(time())) . '@' . $domain;
+	}
+
+	/**
 	* Return email header
 	*/
 	function build_header($to, $cc, $bcc)
@@ -418,7 +440,7 @@ class messenger
 		$headers[] = 'Return-Path: <' . $config['board_email'] . '>';
 		$headers[] = 'Sender: <' . $config['board_email'] . '>';
 		$headers[] = 'MIME-Version: 1.0';
-		$headers[] = 'Message-ID: <' . md5(unique_id(time())) . '@' . $config['server_name'] . '>';
+		$headers[] = 'Message-ID: <' . $this->generate_message_id() . '>';
 		$headers[] = 'Date: ' . date('r', time());
 		$headers[] = 'Content-Type: text/plain; charset=UTF-8'; // format=flowed
 		$headers[] = 'Content-Transfer-Encoding: 8bit'; // 7bit

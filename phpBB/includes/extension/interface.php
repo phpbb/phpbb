@@ -45,7 +45,9 @@ interface phpbb_extension_interface
 	*
 	* @param	mixed	$old_state	The return value of the previous call
 	*								of this method, or false on the first call
-	* @return null
+	* @return	mixed				Returns false after last step, otherwise
+	*								temporary state which is passed as an
+	*								argument to the next step
 	*/
 	public function disable_step($old_state);
 

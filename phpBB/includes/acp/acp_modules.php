@@ -740,15 +740,15 @@ class acp_modules
 	*/
 	function remove_cache_file()
 	{
-		global $cache;
+		global $phpbb_container;
 
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$p_class = str_replace(array('.', '/', '\\'), '', basename($this->module_class));
 
-		$cache->destroy('_modules_' . $p_class);
+		$phpbb_container->get('cache.driver')->destroy('_modules_' . $p_class);
 
 		// Additionally remove sql cache
-		$cache->destroy('sql', MODULES_TABLE);
+		$phpbb_container->get('cache.driver')->destroy('sql', MODULES_TABLE);
 	}
 
 	/**

@@ -251,6 +251,11 @@ class ucp_profile
 			break;
 
 			case 'profile_info':
+				// Do not display profile information panel if not authed to do so
+				if (!$auth->acl_get('u_chgprofileinfo'))
+				{
+					trigger_error('NO_AUTH_PROFILEINFO');
+				}
 
 				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 

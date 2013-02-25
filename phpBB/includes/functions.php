@@ -97,7 +97,18 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 }
 
 /**
-* Set config value. Creates missing config entry.
+* Sets a configuration option's value.
+*
+* Please note that this function does not update the is_dynamic value for
+* an already existing config option.
+*
+* @param string $config_name   The configuration option's name
+* @param string $config_value  New configuration value
+* @param bool   $is_dynamic    Whether this variable should be cached (false) or
+*                              if it changes too frequently (true) to be
+*                              efficiently cached.
+*
+* @return null
 *
 * @deprecated
 */
@@ -119,7 +130,15 @@ function set_config($config_name, $config_value, $is_dynamic = false, phpbb_conf
 }
 
 /**
-* Set dynamic config value with arithmetic operation.
+* Increments an integer config value directly in the database.
+*
+* @param string $config_name   The configuration option's name
+* @param int    $increment     Amount to increment by
+* @param bool   $is_dynamic    Whether this variable should be cached (false) or
+*                              if it changes too frequently (true) to be
+*                              efficiently cached.
+*
+* @return null
 *
 * @deprecated
 */
@@ -4894,12 +4913,107 @@ function phpbb_http_login($param)
 }
 
 /**
+* Escapes and quotes a string for use as an HTML/XML attribute value.
+*
+* This is a port of Python xml.sax.saxutils quoteattr.
+*
+* The function will attempt to choose a quote character in such a way as to
+* avoid escaping quotes in the string. If this is not possible the string will
+* be wrapped in double quotes and double quotes will be escaped.
+*
+* @param string $data The string to be escaped
+* @param array $entities Associative array of additional entities to be escaped
+* @return string Escaped and quoted string
+*/
+function phpbb_quoteattr($data, $entities = null)
+{
+	$data = str_replace('&', '&amp;', $data);
+	$data = str_replace('>', '&gt;', $data);
+	$data = str_replace('<', '&lt;', $data);
+
+	$data = str_replace("\n", '&#10;', $data);
+	$data = str_replace("\r", '&#13;', $data);
+	$data = str_replace("\t", '&#9;', $data);
+
+	if (!empty($entities))
+	{
+		$data = str_replace(array_keys($entities), array_values($entities), $data);
+	}
+
+	if (strpos($data, '"') !== false)
+	{
+		if (strpos($data, "'") !== false)
+		{
+			$data = '"' . str_replace('"', '&quot;', $data) . '"';
+		}
+		else
+		{
+			$data = "'" . $data . "'";
+		}
+	}
+	else
+	{
+		$data = '"' . $data . '"';
+	}
+
+	return $data;
+}
+
+/**
+* Converts query string (GET) parameters in request into hidden fields.
+*
+* Useful for forwarding GET parameters when submitting forms with GET method.
+*
+* It is possible to omit some of the GET parameters, which is useful if
+* they are specified in the form being submitted.
+*
+* sid is always omitted.
+*
+* @param phpbb_request $request Request object
+* @param array $exclude A list of variable names that should not be forwarded
+* @return string HTML with hidden fields
+*/
+function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
+{
+	$names = $request->variable_names(phpbb_request_interface::GET);
+	$hidden = '';
+	foreach ($names as $name)
+	{
+		// Sessions are dealt with elsewhere, omit sid always
+		if ($name == 'sid')
+		{
+			continue;
+		}
+
+		// Omit any additional parameters requested
+		if (!empty($exclude) && in_array($name, $exclude))
+		{
+			continue;
+		}
+
+		$escaped_name = phpbb_quoteattr($name);
+
+		// Note: we might retrieve the variable from POST or cookies
+		// here. To avoid exposing cookies, skip variables that are
+		// overwritten somewhere other than GET entirely.
+		$value = $request->variable($name, '', true);
+		$get_value = $request->variable($name, '', true, phpbb_request_interface::GET);
+		if ($value === $get_value)
+		{
+			$escaped_value = phpbb_quoteattr($value);
+			$hidden .= "<input type='hidden' name=$escaped_name value=$escaped_value />";
+		}
+	}
+	return $hidden;
+}
+
+/**
 * Generate page header
 */
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher;
+	global $phpbb_dispatcher, $request;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5088,6 +5202,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		$timezone_name = $user->lang['timezones'][$timezone_name];
 	}
 
+	$hidden_fields_for_jumpbox = phpbb_build_hidden_fields_for_query_params($request, array('f'));
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -5102,6 +5218,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'RECORD_USERS'					=> $l_online_record,
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
+		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
@@ -5241,7 +5358,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
-	global $request, $phpbb_dispatcher;
+	global $request, $phpbb_dispatcher, $phpbb_admin_path;
 
 	// A listener can set this variable to `true` when it overrides this function
 	$page_footer_override = false;
@@ -5297,7 +5414,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
 
-		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", false, true, $user->session_id) : '')
+		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id) : '')
 	);
 
 	// Call cron-type script
@@ -5449,6 +5566,52 @@ function phpbb_pcre_utf8_support()
 function phpbb_to_numeric($input)
 {
 	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
+}
+
+/**
+* Convert either 3.0 dbms or 3.1 db driver class name to 3.1 db driver class name.
+*
+* If $dbms is a valid 3.1 db driver class name, returns it unchanged.
+* Otherwise prepends phpbb_db_driver_ to the dbms to convert a 3.0 dbms
+* to 3.1 db driver class name.
+*
+* @param string $dbms dbms parameter
+* @return db driver class
+*/
+function phpbb_convert_30_dbms_to_31($dbms)
+{
+	// Note: this check is done first because mysqli extension
+	// supplies a mysqli class, and class_exists($dbms) would return
+	// true for mysqli class.
+	// However, per the docblock any valid 3.1 driver name should be
+	// recognized by this function, and have priority over 3.0 dbms.
+	if (class_exists('phpbb_db_driver_' . $dbms))
+	{
+		return 'phpbb_db_driver_' . $dbms;
+	}
+
+	if (class_exists($dbms))
+	{
+		// Additionally we could check that $dbms extends phpbb_db_driver.
+		// http://php.net/manual/en/class.reflectionclass.php
+		// Beware of possible performance issues:
+		// http://stackoverflow.com/questions/294582/php-5-reflection-api-performance
+		// We could check for interface implementation in all paths or
+		// only when we do not prepend phpbb_db_driver_.
+
+		/*
+		$reflection = new \ReflectionClass($dbms);
+
+		if ($reflection->isSubclassOf('phpbb_db_driver'))
+		{
+			return $dbms;
+		}
+		*/
+
+		return $dbms;
+	}
+
+	throw new \RuntimeException("You have specified an invalid dbms driver: $dbms");
 }
 
 /**

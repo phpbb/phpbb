@@ -72,7 +72,7 @@ class install_update extends module
 	function main($mode, $sub)
 	{
 		global $phpbb_style, $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
-		global $request;
+		global $request, $phpbb_admin_path, $phpbb_adm_relative_path;
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
@@ -83,7 +83,6 @@ class install_update extends module
 
 		// Init DB
 		require($phpbb_root_path . 'config.' . $phpEx);
-		require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 
 		// Special options for conflicts/modified files
@@ -92,7 +91,9 @@ class install_update extends module
 		define('MERGE_NEW_FILE', 3);
 		define('MERGE_MOD_FILE', 4);
 
-		$db = new $sql_db();
+		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
+		$db = new $dbms();
 
 		// Connect to DB
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
@@ -131,7 +132,7 @@ class install_update extends module
 		}
 
 		// Set custom template again. ;)
-		$phpbb_style->set_custom_style('admin', '../adm/style', '');
+		$phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
 
 		$template->assign_vars(array(
 			'S_USER_LANG'			=> $user->lang['USER_LANG'],
@@ -216,7 +217,7 @@ class install_update extends module
 		if ($this->test_update === false)
 		{
 			// Got the updater template itself updated? If so, we are able to directly use it - but only if all three files are present
-			if (in_array('adm/style/install_update.html', $this->update_info['files']))
+			if (in_array($phpbb_adm_relative_path . 'style/install_update.html', $this->update_info['files']))
 			{
 				$this->tpl_name = '../../install/update/new/adm/style/install_update';
 			}
@@ -493,6 +494,7 @@ class install_update extends module
 				$template->assign_vars(array(
 					'S_FILE_CHECK'			=> true,
 					'S_ALL_UP_TO_DATE'		=> $all_up_to_date,
+					'L_ALL_FILES_UP_TO_DATE'	=> $user->lang('ALL_FILES_UP_TO_DATE', append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'), append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . $phpbb_adm_relative_path . 'index.php%3Fi=send_statistics%26mode=send_statistics')),
 					'S_VERSION_UP_TO_DATE'	=> $up_to_date,
 					'U_ACTION'				=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check"),
 					'U_UPDATE_ACTION'		=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_files"),
@@ -1077,12 +1079,12 @@ class install_update extends module
 	*/
 	function show_diff(&$update_list)
 	{
-		global $phpbb_root_path, $template, $user;
+		global $phpbb_root_path, $template, $user, $phpbb_adm_relative_path;
 
 		$this->tpl_name = 'install_update_diff';
 
 		// Got the diff template itself updated? If so, we are able to directly use it
-		if (in_array('adm/style/install_update_diff.html', $this->update_info['files']))
+		if (in_array($phpbb_adm_relative_path . 'style/install_update_diff.html', $this->update_info['files']))
 		{
 			$this->tpl_name = '../../install/update/new/adm/style/install_update_diff';
 		}

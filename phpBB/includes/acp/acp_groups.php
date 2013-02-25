@@ -128,13 +128,34 @@ class acp_groups
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
+				else if (empty($mark_ary))
+				{
+					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+				}
 
 				if (confirm_box(true))
 				{
 					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+					group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);	
+					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+				}
+				else
+				{
+					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						'mark'		=> $mark_ary,
+						'g'			=> $group_id,
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'action'	=> $action))
+					);
+				}
 
-					if (!sizeof($mark_ary))
+				break;
+			case 'set_default_on_all':
+					if (confirm_box(true))
 					{
+						$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+							
 						$start = 0;
 
 						do
@@ -165,28 +186,25 @@ class acp_groups
 							$db->sql_freeresult($result);
 						}
 						while ($start);
+							
+						trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 					}
 					else
 					{
-						group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
+						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+							'mark'		=> $mark_ary,
+							'g'			=> $group_id,
+							'i'			=> $id,
+							'mode'		=> $mode,
+							'action'	=> $action))
+						);
 					}
-
-					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
-				}
-				else
-				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
-						'mark'		=> $mark_ary,
-						'g'			=> $group_id,
-						'i'			=> $id,
-						'mode'		=> $mode,
-						'action'	=> $action))
-					);
-				}
-
 			break;
-
 			case 'deleteusers':
+				if (empty($mark_ary))
+				{
+					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+				}
 			case 'delete':
 				if (!$group_id)
 				{
@@ -441,7 +459,7 @@ class acp_groups
 
 						foreach ($test_variables as $test => $type)
 						{
-							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || in_array($test, $set_attributes)))
+							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || isset($group_attributes['group_avatar']) && strpos($test, 'avatar') === 0 || in_array($test, $set_attributes)))
 							{
 								settype($submit_ary[$test], $type);
 								$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
@@ -700,7 +718,7 @@ class acp_groups
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
 					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'),
-					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id",
+					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=set_default_on_all&amp;g=$group_id",
 				));
 
 				// Grab the members

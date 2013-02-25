@@ -42,7 +42,6 @@ if (!$auth->acl_get('a_'))
 
 // We define the admin variables now, because the user is now able to use the admin related features...
 define('IN_ADMIN', true);
-$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : './';
 
 // Some oft used variables
 $safe_mode		= (@ini_get('safe_mode') == '1' || strtolower(@ini_get('safe_mode')) === 'on') ? true : false;
@@ -52,7 +51,7 @@ $mode			= request_var('mode', '');
 
 // Set custom style for admin area
 $phpbb_style->set_ext_dir_prefix('adm/');
-$phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', '');
+$phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
 $template->assign_var('T_ASSETS_PATH', $phpbb_root_path . 'assets');
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
 

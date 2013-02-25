@@ -91,16 +91,22 @@ class phpbb_style
 	{
 		$style_path = $this->user->style['style_path'];
 		$style_dirs = ($this->user->style['style_parent_id']) ? array_reverse(explode('/', $this->user->style['style_parent_tree'])) : array();
-		$paths = array($this->get_style_path($style_path));
+
+		$names = array($style_path);
 		foreach ($style_dirs as $dir)
 		{
-			$paths[] = $this->get_style_path($dir);
+			$names[] = $dir;
+		}
+		// Add 'all' path, used as last fallback path by events and extensions
+		//$names[] = 'all';
+
+		$paths = array();
+		foreach ($names as $name)
+		{
+			$paths[] = $this->get_style_path($name);
 		}
 
-		// Add 'all' path, used as last fallback path by hooks and extensions
-		$paths[] = $this->get_style_path('all');
-
-		return $this->set_custom_style($style_path, $paths);
+		return $this->set_custom_style($style_path, $paths, $names);
 	}
 
 	/**
@@ -110,17 +116,26 @@ class phpbb_style
 	*
 	* @param string $name Name of style, used for cache prefix. Examples: "admin", "prosilver"
 	* @param array or string $paths Array of style paths, relative to current root directory
+	* @param array $names Array of names of templates in inheritance tree order, used by extensions. If empty, $name will be used.
 	* @param string $template_path Path to templates, relative to style directory. False if path should be set to default (templates/).
 	*/
-	public function set_custom_style($name, $paths, $template_path = false)
+	public function set_custom_style($name, $paths, $names = array(), $template_path = false)
 	{
 		if (is_string($paths))
 		{
 			$paths = array($paths);
 		}
 
+		if (empty($names))
+		{
+			$names = array($name);
+		}
+		$this->names = $names;
+
 		$this->provider->set_styles($paths);
 		$this->locator->set_paths($this->provider);
+
+		$this->template->set_style_names($names);
 
 		if ($template_path !== false)
 		{

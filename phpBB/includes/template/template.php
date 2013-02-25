@@ -75,14 +75,32 @@ class phpbb_template
 	private $locator;
 
 	/**
+	* Extension manager.
+	*
+	* @var phpbb_extension_manager
+	*/
+	private $extension_manager;
+
+	/**
+	* Name of the style that the template being compiled and/or rendered
+	* belongs to, and its parents, in inheritance tree order.
+	*
+	* Used to invoke style-specific template events.
+	*
+	* @var array
+	*/
+	private $style_names;
+
+	/**
 	* Constructor.
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
 	* @param phpbb_template_locator $locator template locator
 	* @param phpbb_template_context $context template context
+	* @param phpbb_extension_manager $extension_manager extension manager, if null then template events will not be invoked
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_locator $locator, phpbb_template_context $context)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_locator $locator, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -90,18 +108,31 @@ class phpbb_template
 		$this->user = $user;
 		$this->locator = $locator;
 		$this->context = $context;
+		$this->extension_manager = $extension_manager;
 	}
 
 	/**
 	* Sets the template filenames for handles.
 	*
-	* @param array $filname_array Should be a hash of handle => filename pairs.
+	* @param array $filename_array Should be a hash of handle => filename pairs.
 	*/
 	public function set_filenames(array $filename_array)
 	{
 		$this->locator->set_filenames($filename_array);
 
 		return true;
+	}
+
+	/**
+	* Sets the style names corresponding to style hierarchy being compiled
+	* and/or rendered.
+	*
+	* @param array $style_names List of style names in inheritance tree order
+	* @return null
+	*/
+	public function set_style_names(array $style_names)
+	{
+		$this->style_names = $style_names;
 	}
 
 	/**
@@ -282,7 +313,7 @@ class phpbb_template
 			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
-		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->locator, $this->phpbb_root_path);
+		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->style_names, $this->locator, $this->phpbb_root_path, $this->extension_manager, $this->user);
 
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{

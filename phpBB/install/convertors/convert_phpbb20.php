@@ -24,6 +24,8 @@ if (!defined('IN_PHPBB'))
 include($phpbb_root_path . 'config.' . $phpEx);
 unset($dbpasswd);
 
+$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
 /**
 * $convertor_data provides some basic information about this convertor which is
 * used on the initial list of convertors and to populate the default settings

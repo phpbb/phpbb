@@ -43,7 +43,7 @@ class phpbb_di_service_collection extends ArrayObject
 	public function add($name)
 	{
 		$task = $this->container->get($name);
-		$task->set_name($name);
+
 		$this->offsetSet($name, $task);
 	}
 }

@@ -260,6 +260,8 @@ class phpbb_questionnaire_phpbb_data_provider
 		include("{$phpbb_root_path}config.$phpEx");
 		unset($dbhost, $dbport, $dbname, $dbuser, $dbpasswd); // Just a precaution
 
+		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
 		// Only send certain config vars
 		$config_vars = array(
 			'active_sessions' => true,

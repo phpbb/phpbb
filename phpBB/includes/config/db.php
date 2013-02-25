@@ -29,7 +29,7 @@ class phpbb_config_db extends phpbb_config
 
 	/**
 	* Database connection
-	* @var dbal
+	* @var phpbb_db_driver
 	*/
 	protected $db;
 
@@ -42,11 +42,11 @@ class phpbb_config_db extends phpbb_config
 	/**
 	* Creates a configuration container with a default set of values
 	*
-	* @param dbal                         $db    Database connection
+	* @param phpbb_db_driver              $db    Database connection
 	* @param phpbb_cache_driver_interface $cache Cache instance
 	* @param string                       $table Configuration table name
 	*/
-	public function __construct(dbal $db, phpbb_cache_driver_interface $cache, $table)
+	public function __construct(phpbb_db_driver $db, phpbb_cache_driver_interface $cache, $table)
 	{
 		$this->db = $db;
 		$this->cache = $cache;

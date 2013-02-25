@@ -3,13 +3,11 @@
 	<!-- INCLUDE memberlist_search.html -->
 	<form method="post" id="results" action="{S_MODE_ACTION}" onsubmit="insert_marked(this.user); return false">
 
-<!-- ELSEIF S_SEARCH_USER -->
-	<!-- INCLUDE overall_header.html -->
-	<!-- INCLUDE memberlist_search.html -->
-	<form method="post" action="{S_MODE_ACTION}">
-
 <!-- ELSE -->
 	<!-- INCLUDE overall_header.html -->
+	<div class="panel" id="memberlist_search"<!-- IF not S_SEARCH_USER --> style="display: none;"<!-- ENDIF -->>
+	<!-- INCLUDE memberlist_search.html -->
+	</div>
 	<form method="post" action="{S_MODE_ACTION}">
 
 <!-- ENDIF -->
@@ -32,8 +30,7 @@
 
 			<ul class="linklist">
 				<li>
-
-				<!-- IF U_FIND_MEMBER and not S_SEARCH_USER --><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a> &bull; <!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_IN_SEARCH_POPUP --><a href="{U_HIDE_FIND_MEMBER}">{L_HIDE_MEMBER_SEARCH}</a> &bull; <!-- ENDIF -->
+				<!-- IF U_FIND_MEMBER and not S_SEARCH_USER --><a href="{U_FIND_MEMBER}" id="member_search" data-alt-text="{LA_HIDE_MEMBER_SEARCH}">{L_FIND_USERNAME}</a> &bull; <!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_IN_SEARCH_POPUP --><a href="{U_HIDE_FIND_MEMBER}" id="member_search" data-alt-text="{LA_FIND_USERNAME}">{L_HIDE_MEMBER_SEARCH}</a> &bull; <!-- ENDIF -->
 				<strong style="font-size: 0.95em;">
 				<!-- BEGIN first_char -->
 					<a href="{first_char.U_SORT}">{first_char.DESC}</a>&nbsp;

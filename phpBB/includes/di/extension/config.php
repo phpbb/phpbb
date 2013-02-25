@@ -42,9 +42,10 @@ class phpbb_di_extension_config extends Extension
 	{
 		require($this->config_file);
 
+		$container->setParameter('core.adm_relative_path', (isset($phpbb_adm_relative_path) ? $phpbb_adm_relative_path : 'adm/'));
 		$container->setParameter('core.table_prefix', $table_prefix);
-		$container->setParameter('cache.driver.class', $this->fix_acm_type($acm_type));
-		$container->setParameter('dbal.driver.class', 'dbal_'.$dbms);
+		$container->setParameter('cache.driver.class', $this->convert_30_acm_type($acm_type));
+		$container->setParameter('dbal.driver.class', phpbb_convert_30_dbms_to_31($dbms));
 		$container->setParameter('dbal.dbhost', $dbhost);
 		$container->setParameter('dbal.dbuser', $dbuser);
 		$container->setParameter('dbal.dbpasswd', $dbpasswd);
@@ -66,12 +67,12 @@ class phpbb_di_extension_config extends Extension
 	}
 
 	/**
-	* Convert old (3.0) values to 3.1 class names
+	* Convert 3.0 ACM type to 3.1 cache driver class name
 	*
-	* @param style $acm_type ACM type
-	* @return ACM type class
+	* @param string $acm_type ACM type
+	* @return cache driver class
 	*/
-	protected function fix_acm_type($acm_type)
+	protected function convert_30_acm_type($acm_type)
 	{
 		if (preg_match('#^[a-z]+$#', $acm_type))
 		{

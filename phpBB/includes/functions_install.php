@@ -28,16 +28,18 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'firebird',
 			'MODULE'		=> 'interbase',
 			'DELIM'			=> ';;',
-			'DRIVER'		=> 'firebird',
+			'DRIVER'		=> 'phpbb_db_driver_firebird',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
 		),
+		// Note: php 5.5 alpha 2 deprecated mysql.
+		// Keep mysqli before mysql in this list.
 		'mysqli'	=> array(
 			'LABEL'			=> 'MySQL with MySQLi Extension',
 			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
 			'DELIM'			=> ';',
-			'DRIVER'		=> 'mysqli',
+			'DRIVER'		=> 'phpbb_db_driver_mysqli',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
@@ -46,7 +48,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mysql',
 			'MODULE'		=> 'mysql',
 			'DELIM'			=> ';',
-			'DRIVER'		=> 'mysql',
+			'DRIVER'		=> 'phpbb_db_driver_mysql',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
@@ -55,7 +57,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'mssql',
 			'DELIM'			=> 'GO',
-			'DRIVER'		=> 'mssql',
+			'DRIVER'		=> 'phpbb_db_driver_mssql',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
@@ -64,7 +66,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc',
 			'DELIM'			=> 'GO',
-			'DRIVER'		=> 'mssql_odbc',
+			'DRIVER'		=> 'phpbb_db_driver_mssql_odbc',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
@@ -73,7 +75,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'sqlsrv',
 			'DELIM'			=> 'GO',
-			'DRIVER'		=> 'mssqlnative',
+			'DRIVER'		=> 'phpbb_db_driver_mssqlnative',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
 		),
@@ -82,7 +84,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'oracle',
 			'MODULE'		=> 'oci8',
 			'DELIM'			=> '/',
-			'DRIVER'		=> 'oracle',
+			'DRIVER'		=> 'phpbb_db_driver_oracle',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
 		),
@@ -91,7 +93,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql',
 			'DELIM'			=> ';',
-			'DRIVER'		=> 'postgres',
+			'DRIVER'		=> 'phpbb_db_driver_postgres',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
@@ -100,7 +102,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite',
 			'DELIM'			=> ';',
-			'DRIVER'		=> 'sqlite',
+			'DRIVER'		=> 'phpbb_db_driver_sqlite',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
 		),
@@ -205,26 +207,19 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 	$dbms = $dbms_details['DRIVER'];
 
-	if ($load_dbal)
-	{
-		// Include the DB layer
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-	}
-
 	// Instantiate it and set return on error true
-	$sql_db = 'dbal_' . $dbms;
-	$db = new $sql_db();
+	$db = new $dbms();
 	$db->sql_return_on_error(true);
 
 	// Check that we actually have a database name before going any further.....
-	if ($dbms_details['DRIVER'] != 'sqlite' && $dbms_details['DRIVER'] != 'oracle' && $dbname === '')
+	if ($dbms_details['DRIVER'] != 'phpbb_db_driver_sqlite' && $dbms_details['DRIVER'] != 'phpbb_db_driver_oracle' && $dbname === '')
 	{
 		$error[] = $lang['INST_ERR_DB_NO_NAME'];
 		return false;
 	}
 
 	// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
-	if ($dbms_details['DRIVER'] == 'sqlite' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
+	if ($dbms_details['DRIVER'] == 'phpbb_db_driver_sqlite' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
 	{
 		$error[] = $lang['INST_ERR_DB_FORUM_PATH'];
 		return false;
@@ -233,8 +228,8 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 	// Check the prefix length to ensure that index names are not too long and does not contain invalid characters
 	switch ($dbms_details['DRIVER'])
 	{
-		case 'mysql':
-		case 'mysqli':
+		case 'phpbb_db_driver_mysql':
+		case 'phpbb_db_driver_mysqli':
 			if (strspn($table_prefix, '-./\\') !== 0)
 			{
 				$error[] = $lang['INST_ERR_PREFIX_INVALID'];
@@ -243,22 +238,22 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 		// no break;
 
-		case 'postgres':
+		case 'phpbb_db_driver_postgres':
 			$prefix_length = 36;
 		break;
 
-		case 'mssql':
-		case 'mssql_odbc':
-		case 'mssqlnative':
+		case 'phpbb_db_driver_mssql':
+		case 'phpbb_db_driver_mssql_odbc':
+		case 'phpbb_db_driver_mssqlnative':
 			$prefix_length = 90;
 		break;
 
-		case 'sqlite':
+		case 'phpbb_db_driver_sqlite':
 			$prefix_length = 200;
 		break;
 
-		case 'firebird':
-		case 'oracle':
+		case 'phpbb_db_driver_firebird':
+		case 'phpbb_db_driver_oracle':
 			$prefix_length = 6;
 		break;
 	}
@@ -296,21 +291,21 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 		// Make sure that the user has selected a sensible DBAL for the DBMS actually installed
 		switch ($dbms_details['DRIVER'])
 		{
-			case 'mysqli':
+			case 'phpbb_db_driver_mysqli':
 				if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
 				{
 					$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
 				}
 			break;
 
-			case 'sqlite':
+			case 'phpbb_db_driver_sqlite':
 				if (version_compare(sqlite_libversion(), '2.8.2', '<'))
 				{
 					$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
 				}
 			break;
 
-			case 'firebird':
+			case 'phpbb_db_driver_firebird':
 				// check the version of FB, use some hackery if we can't get access to the server info
 				if ($db->service_handle !== false && function_exists('ibase_server_info'))
 				{
@@ -391,7 +386,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 				}
 			break;
 
-			case 'oracle':
+			case 'phpbb_db_driver_oracle':
 				if ($unicode_check)
 				{
 					$sql = "SELECT *
@@ -413,7 +408,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 				}
 			break;
 
-			case 'postgres':
+			case 'phpbb_db_driver_postgres':
 				if ($unicode_check)
 				{
 					$sql = "SHOW server_encoding;";
@@ -515,6 +510,9 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_test
 		'dbuser'		=> $data['dbuser'],
 		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
 		'table_prefix'	=> $data['table_prefix'],
+
+		'adm_relative_path'	=> 'adm/',
+
 		'acm_type'		=> 'phpbb_cache_driver_file',
 	);
 

@@ -1,6 +1,7 @@
 imports:
     - { resource: tables.yml }
     - { resource: cron_tasks.yml }
+    - { resource: migrator.yml }
 
 services:
     auth:
@@ -10,6 +11,10 @@ services:
         class: phpbb_cache_service
         arguments:
              - @cache.driver
+             - @config
+             - @dbal.conn
+             - %core.root_path%
+             - %core.php_ext%
 
     cache.driver:
         class: %cache.driver.class%
@@ -59,15 +64,6 @@ services:
             - @service_container
             - @ext.finder
 
-    controller.route_collection:
-        class: phpbb_controller_route_collection
-        arguments:
-            - @ext.finder
-            - @controller.provider
-
-    controller.provider:
-        class: phpbb_controller_provider
-
     cron.task_collection:
         class: phpbb_di_service_collection
         arguments:
@@ -99,6 +95,12 @@ services:
         calls:
             - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
 
+    dbal.tools:
+        file: %core.root_path%includes/db/db_tools.%core.php_ext%
+        class: phpbb_db_tools
+        arguments:
+            - @dbal.conn
+
     event.subscriber_loader:
         class: phpbb_event_extension_subscriber_loader
         arguments:
@@ -110,8 +112,10 @@ services:
     ext.manager:
         class: phpbb_extension_manager
         arguments:
+            - @service_container
             - @dbal.conn
             - @config
+            - @migrator
             - %tables.ext%
             - %core.root_path%
             - .%core.php_ext%
@@ -126,13 +130,6 @@ services:
             - .%core.php_ext%
             - _ext_finder
 
-    http_kernel:
-        class: Symfony\Component\HttpKernel\HttpKernel
-        arguments:
-            - @dispatcher
-            - @controller.resolver
-
-
     groupposition.legend:
         class: phpbb_groupposition_legend
         arguments:
@@ -144,6 +141,19 @@ services:
         arguments:
             - @dbal.conn
             - @user
+            - @cache.driver
+
+    http_kernel:
+        class: Symfony\Component\HttpKernel\HttpKernel
+        arguments:
+            - @dispatcher
+            - @controller.resolver
+
+    hook_finder:
+        class: phpbb_hook_finder
+        arguments:
+            - %core.root_path%
+            - .%core.php_ext%
             - @cache.driver
 
     kernel_request_subscriber:
@@ -203,6 +213,7 @@ services:
             - @user
             - @style.resource_locator
             - @template_context
+            - @ext.manager
 
     template_context:
         class: phpbb_template_context

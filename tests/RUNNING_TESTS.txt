@@ -17,7 +17,27 @@ PHP extensions
 Unit tests use several PHP extensions that board code does not use. Currently
 the following PHP extensions must be installed and enabled to run unit tests:
 
-- ctype
+- ctype (also a PHPUnit dependency)
+- dom (PHPUnit dependency)
+- json (also a phpBB dependency)
+
+Some of the functionality in phpBB and/or the test suite uses additional
+PHP extensions. If these extensions are not loaded, respective tests
+will be skipped:
+
+- apc (APC cache driver)
+- bz2 (compress tests)
+- interbase, pdo_firebird (Firebird database driver)
+- mysql, pdo_mysql (MySQL database driver)
+- mysqli, pdo_mysql (MySQLi database driver)
+- pcntl (flock class)
+- pdo (any database tests)
+- pgsql, pdo_pgsql (PostgreSQL database driver)
+- redis (https://github.com/nicolasff/phpredis, Redis cache driver)
+- simplexml (any database tests)
+- sqlite, pdo_sqlite (SQLite database driver, requires SQLite 2.x support
+  in pdo_sqlite)
+- zlib (compress tests)
 
 Database Tests
 --------------
@@ -30,7 +50,7 @@ example for mysqli can be found below. More information on configuration
 options can be found on the wiki (see below).
 
     <?php
-    $dbms = 'mysqli';
+    $dbms = 'phpbb_db_driver_mysqli';
     $dbhost = 'localhost';
     $dbport = '';
     $dbname = 'database';
@@ -44,7 +64,7 @@ to use in the environment as follows:
     $ PHPBB_TEST_CONFIG=tests/test_config.php phpunit
 
 Alternatively you can specify parameters in the environment, so e.g. the
-following will run phpunit with the same parameters as in the shown
+following will run PHPUnit with the same parameters as in the shown
 test_config.php file:
 
     $ PHPBB_TEST_DBMS='mysqli' PHPBB_TEST_DBHOST='localhost' \

@@ -54,7 +54,7 @@ class phpbb_test_case_helpers
 		if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
 		{
 			$config = array_merge($config, array(
-				'dbms'		=> 'sqlite',
+				'dbms'		=> 'phpbb_db_driver_sqlite',
 				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite2', // filename
 				'dbport'	=> '',
 				'dbname'	=> '',
@@ -77,8 +77,13 @@ class phpbb_test_case_helpers
 		{
 			include($test_config);
 
+			if (!function_exists('phpbb_convert_30_dbms_to_31'))
+			{
+				require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+			}
+
 			$config = array_merge($config, array(
-				'dbms'		=> $dbms,
+				'dbms'		=> phpbb_convert_30_dbms_to_31($dbms),
 				'dbhost'	=> $dbhost,
 				'dbport'	=> $dbport,
 				'dbname'	=> $dbname,
@@ -104,8 +109,13 @@ class phpbb_test_case_helpers
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
 		{
+			if (!function_exists('phpbb_convert_30_dbms_to_31'))
+			{
+				require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+			}
+
 			$config = array_merge($config, array(
-				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? $_SERVER['PHPBB_TEST_DBMS'] : '',
+				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? phpbb_convert_30_dbms_to_31($_SERVER['PHPBB_TEST_DBMS']) : '',
 				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
 				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
 				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
