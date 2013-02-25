@@ -265,93 +265,133 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 	public function move_data()
 	{
 		return array(
-			array(1, 1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(2, 1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(5, 1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(6, 1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 6, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 7, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-			)),
-			array(1, -1, array(
-				array('teampage_position' => 1, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 2, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 3, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(2, -1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(5, -1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(6, -1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
+			array(
+				1,
+				1,
+				false,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				2,
+				1,
+				false,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				5,
+				1,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				6,
+				1,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 6, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 7, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+				),
+			),
+			array(
+				1,
+				-1,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 2, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 3, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				2,
+				-1,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				5,
+				-1,
+				false,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				6,
+				-1,
+				false,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
 		);
 	}
 
 	/**
 	* @dataProvider move_data
 	*/
-	public function test_move($group_id, $move_delta, $expected)
+	public function test_move($group_id, $move_delta, $excepted_moved, $expected)
 	{
 		global $cache;
 
@@ -361,7 +401,7 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 		$user->lang = array();
 
 		$test_class = new phpbb_groupposition_teampage($db, $user, $cache);
-		$test_class->move($group_id, $move_delta);
+		$this->assertEquals($excepted_moved, $test_class->move($group_id, $move_delta));
 
 		$result = $db->sql_query('SELECT teampage_position, group_id, teampage_parent, teampage_name
 			FROM ' . TEAMPAGE_TABLE . '
@@ -373,93 +413,133 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 	public function move_teampage_data()
 	{
 		return array(
-			array(1, 1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(2, 1, array(
-				array('teampage_position' => 1, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 2, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 3, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(5, 1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(6, 1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(1, -1, array(
-				array('teampage_position' => 1, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 2, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 3, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(2, -1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
-			array(5, -1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 6, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 7, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-			)),
-			array(6, -1, array(
-				array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
-				array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
-				array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
-				array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
-				array('teampage_position' => 6, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 7, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
-				array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
-			)),
+			array(
+				1,
+				1,
+				false,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				2,
+				1,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 2, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 3, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				5,
+				1,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				6,
+				1,
+				false,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				1,
+				-1,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 2, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 3, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				2,
+				-1,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				5,
+				-1,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 6, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 7, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+				),
+			),
+			array(
+				6,
+				-1,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 3, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 4, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 6, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 7, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
 		);
 	}
 
 	/**
 	* @dataProvider move_teampage_data
 	*/
-	public function test_move_teampage($teampage_id, $move_delta, $expected)
+	public function test_move_teampage($teampage_id, $move_delta, $excepted_moved, $expected)
 	{
 		global $cache;
 
@@ -469,7 +549,7 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 		$user->lang = array();
 
 		$test_class = new phpbb_groupposition_teampage($db, $user, $cache);
-		$test_class->move_teampage($teampage_id, $move_delta);
+		$this->assertEquals($excepted_moved, $test_class->move_teampage($teampage_id, $move_delta));
 
 		$result = $db->sql_query('SELECT teampage_position, group_id, teampage_parent, teampage_name
 			FROM ' . TEAMPAGE_TABLE . '

@@ -168,7 +168,7 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 	*/
 	public function move_up($group_id)
 	{
-		$this->move($group_id, 1);
+		return $this->move($group_id, 1);
 	}
 
 	/**
@@ -178,7 +178,7 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 	*/
 	public function move_down($group_id)
 	{
-		$this->move($group_id, -1);
+		return $this->move($group_id, -1);
 	}
 
 	/**
@@ -188,9 +188,10 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 	*/
 	public function move($group_id, $delta)
 	{
-		if (!is_int($delta) || !$delta)
+		$delta = (int) $delta;
+		if (!$delta)
 		{
-			return;
+			return false;
 		}
 
 		$move_up = ($delta > 0) ? true : false;
@@ -221,10 +222,16 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 					SET group_legend = group_legend ' . (($move_up) ? ' - ' : ' + ') . $delta . '
 					WHERE group_id = ' . (int) $group_id;
 				$this->db->sql_query($sql);
+
+				$this->db->sql_transaction('commit');
+
+				return true;
 			}
 
 			$this->db->sql_transaction('commit');
 		}
+
+		return false;
 	}
 
 	/**

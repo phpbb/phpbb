@@ -359,18 +359,18 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	*/
 	public function move_up($group_id)
 	{
-		$this->move($group_id, 1);
+		return $this->move($group_id, 1);
 	}
 
 	/**
 	* Moves an item up by teampage_id
 	*
 	* @param	int		$group_id	group_id of the group to be moved
-	* @return	null
+	* @return	bool		True if the group was moved successfully
 	*/
 	public function move_up_teampage($teampage_id)
 	{
-		$this->move_teampage($teampage_id, 1);
+		return $this->move_teampage($teampage_id, 1);
 	}
 
 	/**
@@ -380,18 +380,18 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	*/
 	public function move_down($group_id)
 	{
-		$this->move($group_id, -1);
+		return $this->move($group_id, -1);
 	}
 
 	/**
 	* Movesan item down by teampage_id
 	*
 	* @param	int		$group_id	group_id of the group to be moved
-	* @return	null
+	* @return	bool		True if the group was moved successfully
 	*/
 	public function move_down_teampage($teampage_id)
 	{
-		$this->move_teampage($teampage_id, -1);
+		return $this->move_teampage($teampage_id, -1);
 	}
 
 	/**
@@ -401,9 +401,10 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	*/
 	public function move($group_id, $delta)
 	{
-		if (!is_int($delta) || !$delta)
+		$delta = (int) $delta;
+		if (!$delta)
 		{
-			return;
+			return false;
 		}
 
 		$move_up = ($delta > 0) ? true : false;
@@ -463,12 +464,18 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 					SET teampage_position = teampage_position ' . (($move_up) ? ' - ' : ' + ') . abs($delta) . '
 					WHERE group_id = ' . (int) $group_id;
 				$this->db->sql_query($sql);
+
+				$this->db->sql_transaction('commit');
+				$this->cache->destroy('sql', TEAMPAGE_TABLE);
+
+				return true;
 			}
 
 			$this->db->sql_transaction('commit');
 		}
 
 		$this->cache->destroy('sql', TEAMPAGE_TABLE);
+		return false;
 	}
 
 	/**
@@ -478,13 +485,14 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	* @param	int		$delta		number of steps:
 	*								- positive = move up
 	*								- negative = move down
-	* @return	null
+	* @return	bool		True if the group was moved successfully
 	*/
 	public function move_teampage($teampage_id, $delta)
 	{
-		if (!is_int($delta) || !$delta)
+		$delta = (int) $delta;
+		if (!$delta)
 		{
-			return;
+			return false;
 		}
 
 		$move_up = ($delta > 0) ? true : false;
@@ -559,12 +567,18 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 					WHERE teampage_id = ' . (int) $teampage_id . '
 						OR teampage_parent = ' . (int) $teampage_id;
 				$this->db->sql_query($sql);
+
+				$this->db->sql_transaction('commit');
+				$this->cache->destroy('sql', TEAMPAGE_TABLE);
+
+				return true;
 			}
 
 			$this->db->sql_transaction('commit');
 		}
 
 		$this->cache->destroy('sql', TEAMPAGE_TABLE);
+		return false;
 	}
 
 	/**

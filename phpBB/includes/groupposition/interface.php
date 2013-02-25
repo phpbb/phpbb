@@ -59,7 +59,7 @@ interface phpbb_groupposition_interface
 	* Moves a group up by group_id
 	*
 	* @param	int		$group_id	group_id of the group to be moved
-	* @return	null
+	* @return	bool		True if the group was moved successfully
 	*/
 	public function move_up($group_id);
 
@@ -67,7 +67,7 @@ interface phpbb_groupposition_interface
 	* Moves a group down by group_id
 	*
 	* @param	int		$group_id	group_id of the group to be moved
-	* @return	null
+	* @return	bool		True if the group was moved successfully
 	*/
 	public function move_down($group_id);
 
@@ -78,7 +78,7 @@ interface phpbb_groupposition_interface
 	* @param	int		$delta		number of steps:
 	*								- positive = move up
 	*								- negative = move down
-	* @return	null
+	* @return	bool		True if the group was moved successfully
 	*/
 	public function move($group_id, $delta);
 }
