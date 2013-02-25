@@ -36,35 +36,35 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 
 	/**
 	* Database object
-	* @var dbal
+	* @var phpbb_db_driver
 	*/
-	private $db = null;
+	protected $db;
 
 	/**
 	* User object
 	* @var phpbb_user
 	*/
-	private $user = null;
+	protected $user;
 
 	/**
 	* Cache object
 	* @var phpbb_cache_driver_interface
 	*/
-	private $cache = null;
+	protected $cache;
 
 	/**
 	* URI for the adm_back_link when there was an error.
 	*/
-	private $adm_back_link = '';
+	protected $adm_back_link = '';
 
 	/**
 	* Constructor
 	*
-	* @param dbal							$db		Database object
+	* @param phpbb_db_driver				$db		Database object
 	* @param phpbb_user						$user	User object
 	* @param phpbb_cache_driver_interface	$cache	Cache object
 	*/
-	public function __construct(dbal $db, phpbb_user $user, phpbb_cache_driver_interface $cache)
+	public function __construct(phpbb_db_driver $db, phpbb_user $user, phpbb_cache_driver_interface $cache)
 	{
 		$this->db = $db;
 		$this->user = $user;
