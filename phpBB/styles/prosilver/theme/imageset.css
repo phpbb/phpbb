@@ -280,6 +280,11 @@ span.imageset {
 	padding-left: 20px;
 	padding-top: 20px;
 }
+.imageset.icon_contact_msnm {
+	background-image: url("./images/icon_contact_msnm.gif");
+	padding-left: 20px;
+	padding-top: 20px;
+}
 .imageset.icon_contact_www {
 	background-image: url("./images/icon_contact_www.gif");
 	padding-left: 20px;

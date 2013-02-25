@@ -799,6 +799,22 @@ CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id)
 /
 
 /*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE phpbb_migrations (
+	migration_name varchar2(255) DEFAULT '' ,
+	migration_depends_on clob DEFAULT '' ,
+	migration_schema_done number(1) DEFAULT '0' NOT NULL,
+	migration_data_done number(1) DEFAULT '0' NOT NULL,
+	migration_data_state clob DEFAULT '' ,
+	migration_start_time number(11) DEFAULT '0' NOT NULL,
+	migration_end_time number(11) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_migrations PRIMARY KEY (migration_name)
+)
+/
+
+
+/*
 	Table: 'phpbb_modules'
 */
 CREATE TABLE phpbb_modules (
@@ -1680,6 +1696,7 @@ CREATE TABLE phpbb_users (
 	user_icq varchar2(15) DEFAULT '' ,
 	user_aim varchar2(765) DEFAULT '' ,
 	user_yim varchar2(765) DEFAULT '' ,
+	user_msnm varchar2(765) DEFAULT '' ,
 	user_jabber varchar2(765) DEFAULT '' ,
 	user_website varchar2(600) DEFAULT '' ,
 	user_occ clob DEFAULT '' ,

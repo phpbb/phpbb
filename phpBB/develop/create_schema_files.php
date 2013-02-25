@@ -1273,6 +1273,19 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_migrations'] = array(
+		'COLUMNS'		=> array(
+			'migration_name'			=> array('VCHAR', ''),
+			'migration_depends_on'		=> array('TEXT', ''),
+			'migration_schema_done'		=> array('BOOL', 0),
+			'migration_data_done'		=> array('BOOL', 0),
+			'migration_data_state'		=> array('TEXT', ''),
+			'migration_start_time'		=> array('TIMESTAMP', 0),
+			'migration_end_time'		=> array('TIMESTAMP', 0),
+		),
+		'PRIMARY_KEY'	=> 'migration_name',
+	);
+
 	$schema_data['phpbb_modules'] = array(
 		'COLUMNS'		=> array(
 			'module_id'				=> array('UINT', NULL, 'auto_increment'),
@@ -1836,6 +1849,7 @@ function get_schema_struct()
 			'user_icq'					=> array('VCHAR:15', ''),
 			'user_aim'					=> array('VCHAR_UNI', ''),
 			'user_yim'					=> array('VCHAR_UNI', ''),
+			'user_msnm'					=> array('VCHAR_UNI', ''),
 			'user_jabber'				=> array('VCHAR_UNI', ''),
 			'user_website'				=> array('VCHAR_UNI:200', ''),
 			'user_occ'					=> array('TEXT_UNI', ''),

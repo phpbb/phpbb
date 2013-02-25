@@ -2,3 +2,5 @@ parameters:
     tables.config: %core.table_prefix%config
     tables.ext: %core.table_prefix%ext
     tables.log: %core.table_prefix%log
+    tables.migrations: %core.table_prefix%migrations
+    tables.modules: %core.table_prefix%modules

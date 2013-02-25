@@ -717,6 +717,28 @@ GO
 
 
 /*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE [phpbb_migrations] (
+	[migration_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[migration_depends_on] [varchar] (8000) DEFAULT ('') NOT NULL ,
+	[migration_schema_done] [int] DEFAULT (0) NOT NULL ,
+	[migration_data_done] [int] DEFAULT (0) NOT NULL ,
+	[migration_data_state] [varchar] (8000) DEFAULT ('') NOT NULL ,
+	[migration_start_time] [int] DEFAULT (0) NOT NULL ,
+	[migration_end_time] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_migrations] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_migrations] PRIMARY KEY  CLUSTERED 
+	(
+		[migration_name]
+	)  ON [PRIMARY] 
+GO
+
+
+/*
 	Table: 'phpbb_modules'
 */
 CREATE TABLE [phpbb_modules] (
@@ -1568,6 +1590,7 @@ CREATE TABLE [phpbb_users] (
 	[user_icq] [varchar] (15) DEFAULT ('') NOT NULL ,
 	[user_aim] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_yim] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[user_msnm] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_jabber] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_website] [varchar] (200) DEFAULT ('') NOT NULL ,
 	[user_occ] [varchar] (4000) DEFAULT ('') NOT NULL ,

@@ -303,7 +303,7 @@ class phpbb_db_tools
 	* @param phpbb_db_driver	$db					Database connection
 	* @param bool		$return_statements	True if only statements should be returned and no SQL being executed
 	*/
-	function phpbb_db_tools(&$db, $return_statements = false)
+	function phpbb_db_tools(phpbb_db_driver $db, $return_statements = false)
 	{
 		$this->db = $db;
 		$this->return_statements = $return_statements;
@@ -343,6 +343,17 @@ class phpbb_db_tools
 				$this->sql_layer = $this->db->sql_layer;
 			break;
 		}
+	}
+
+	/**
+	* Setter for {@link $return_statements return_statements}.
+	*
+	* @param bool $return_statements True if SQL should not be executed but returned as strings
+	* @return null
+	*/
+	public function set_return_statements($return_statements)
+	{
+		$this->return_statements = $return_statements;
 	}
 
 	/**
@@ -674,6 +685,8 @@ class phpbb_db_tools
 	* Handle passed database update array.
 	* Expected structure...
 	* Key being one of the following
+	*	drop_tables: Drop tables
+	*	add_tables: Add tables
 	*	change_columns: Column changes (only type, not name)
 	*	add_columns: Add columns to a table
 	*	drop_keys: Dropping keys
