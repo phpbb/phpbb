@@ -829,7 +829,7 @@ class acp_groups
 			// Invalid mode
 			trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
-		else if ($field)
+		else if ($field && in_array($field, array('legend', 'teampage')))
 		{
 
 			$group_position = $phpbb_container->get('groupposition.' . $field);
