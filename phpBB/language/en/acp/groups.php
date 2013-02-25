@@ -36,14 +36,13 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ACP_GROUPS_MANAGE_EXPLAIN'		=> 'From this panel you can administer all your usergroups. You can delete, create and edit existing groups. Furthermore, you may choose group leaders, toggle open/hidden/closed group status and set the group name and description.',
-	'ADD_CATEGORY'					=> 'Add category',
+	'ADD_GROUP_CATEGORY'			=> 'Add category',
 	'ADD_USERS'						=> 'Add users',
 	'ADD_USERS_EXPLAIN'				=> 'Here you can add new users to the group. You may select whether this group becomes the new default for the selected users. Additionally you can define them as group leaders. Please enter each username on a separate line.',
 
 	'COPY_PERMISSIONS'				=> 'Copy permissions from',
 	'COPY_PERMISSIONS_EXPLAIN'		=> 'Once created, the group will have the same permissions as the one you select here.',
 	'CREATE_GROUP'					=> 'Create new group',
-	'CATEGORY_NAME'					=> 'Category name',
 
 	'GROUPS_NO_MEMBERS'				=> 'This group has no members',
 	'GROUPS_NO_MODS'				=> 'No group leaders defined',
@@ -52,6 +51,7 @@ $lang = array_merge($lang, array(
 	'GROUP_APPROVED'				=> 'Approved members',
 	'GROUP_AVATAR'					=> 'Group avatar',
 	'GROUP_AVATAR_EXPLAIN'			=> 'This image will be displayed in the Group Control Panel.',
+	'GROUP_CATEGORY_NAME'			=> 'Category name',
 	'GROUP_CLOSED'					=> 'Closed',
 	'GROUP_COLOR'					=> 'Group colour',
 	'GROUP_COLOR_EXPLAIN'			=> 'Defines the colour members’ usernames will appear in, leave blank for user default.',

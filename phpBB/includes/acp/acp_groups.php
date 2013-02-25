@@ -916,7 +916,7 @@ class acp_groups
 			{
 				$template->assign_block_vars('legend', array(
 					'GROUP_NAME'	=> $group_name,
-					'GROUP_COLOUR'	=> ($row['group_colour']) ? ' style="color: #' . $row['group_colour'] . '"' : '',
+					'GROUP_COLOUR'	=> ($row['group_colour']) ? '#' . $row['group_colour'] : '',
 					'GROUP_TYPE'	=> $user->lang[phpbb_groupposition_legend::group_type_language($row['group_type'])],
 
 					'U_MOVE_DOWN'	=> "{$this->u_action}&amp;field=legend&amp;action=move_down&amp;g=" . $row['group_id'],
@@ -926,7 +926,11 @@ class acp_groups
 			}
 			else
 			{
-				$s_group_select_legend .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . (int) $row['group_id'] . '">' . $group_name . '</option>';
+				$template->assign_block_vars('add_legend', array(
+					'GROUP_ID'		=> (int) $row['group_id'],
+					'GROUP_NAME'	=> $group_name,
+					'GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL),
+				));
 			}
 		}
 		$db->sql_freeresult($result);
@@ -966,7 +970,7 @@ class acp_groups
 
 			$template->assign_block_vars('teampage', array(
 				'GROUP_NAME'	=> $group_name,
-				'GROUP_COLOUR'	=> ($row['group_colour']) ? ' style="color: #' . $row['group_colour'] . '"' : '',
+				'GROUP_COLOUR'	=> ($row['group_colour']) ? '#' . $row['group_colour'] : '',
 				'GROUP_TYPE'	=> $group_type,
 
 				'U_CATEGORY'	=> (!$row['group_id']) ? "{$this->u_action}&amp;c=" . $row['teampage_id'] : '',
@@ -989,7 +993,11 @@ class acp_groups
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
-			$s_group_select_teampage .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . (int) $row['group_id'] . '">' . $group_name . '</option>';
+			$template->assign_block_vars('add_teampage', array(
+				'GROUP_ID'		=> (int) $row['group_id'],
+				'GROUP_NAME'	=> $group_name,
+				'GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL),
+			));
 		}
 		$db->sql_freeresult($result);
 
@@ -999,8 +1007,6 @@ class acp_groups
 			'U_ACTION_TEAMPAGE'			=> $this->u_action . '&amp;field=teampage' . $category_url_param,
 			'U_ACTION_TEAMPAGE_CAT'		=> $this->u_action . '&amp;field=teampage_cat',
 
-			'S_GROUP_SELECT_LEGEND'		=> $s_group_select_legend,
-			'S_GROUP_SELECT_TEAMPAGE'	=> $s_group_select_teampage,
 			'S_TEAMPAGE_CATEGORY'		=> $category_id,
 			'DISPLAY_FORUMS'			=> ($config['teampage_forums']) ? true : false,
 			'DISPLAY_MEMBERSHIPS'		=> $config['teampage_memberships'],
