@@ -3508,7 +3508,18 @@ function parse_cfg_file($filename, $lines = false)
 }
 
 /**
-* Add log event
+* Add log entry
+*
+* @param	string	$mode				The mode defines which log_type is used and from which log the entry is retrieved
+* @param	int		$forum_id			Mode 'mod' ONLY: forum id of the related item, NOT INCLUDED otherwise
+* @param	int		$topic_id			Mode 'mod' ONLY: topic id of the related item, NOT INCLUDED otherwise
+* @param	int		$reportee_id		Mode 'user' ONLY: user id of the reportee, NOT INCLUDED otherwise
+* @param	string	$log_operation		Name of the operation
+* @param	array	$additional_data	More arguments can be added, depending on the log_type
+*
+* @return	int|bool		Returns the log_id, if the entry was added to the database, false otherwise.
+*
+* @deprecated	Use $phpbb_log->add() instead
 */
 function add_log()
 {
