@@ -55,23 +55,31 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	public function add_group_data()
 	{
 		return array(
-			array(1, array(
-				array('group_id' => 1, 'group_legend' => 3),
-				array('group_id' => 2, 'group_legend' => 1),
-				array('group_id' => 3, 'group_legend' => 2),
-			)),
-			array(2, array(
-				array('group_id' => 1, 'group_legend' => 0),
-				array('group_id' => 2, 'group_legend' => 1),
-				array('group_id' => 3, 'group_legend' => 2),
-			)),
+			array(
+				1,
+				true,
+				array(
+					array('group_id' => 1, 'group_legend' => 3),
+					array('group_id' => 2, 'group_legend' => 1),
+					array('group_id' => 3, 'group_legend' => 2),
+				),
+			),
+			array(
+				2,
+				false,
+				array(
+					array('group_id' => 1, 'group_legend' => 0),
+					array('group_id' => 2, 'group_legend' => 1),
+					array('group_id' => 3, 'group_legend' => 2),
+				),
+			),
 		);
 	}
 
 	/**
 	* @dataProvider add_group_data
 	*/
-	public function test_add_group($group_id, $expected)
+	public function test_add_group($group_id, $expected_added, $expected)
 	{
 		global $cache;
 
@@ -81,7 +89,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$user->lang = array();
 
 		$test_class = new phpbb_groupposition_legend($db, $user);
-		$test_class->add_group($group_id);
+		$this->assertEquals($expected_added, $test_class->add_group($group_id));
 
 		$result = $db->sql_query('SELECT group_id, group_legend
 			FROM ' . GROUPS_TABLE . '
@@ -93,43 +101,73 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	public function delete_group_data()
 	{
 		return array(
-			array(1, false, array(
-				array('group_id' => 1, 'group_legend' => 0),
-				array('group_id' => 2, 'group_legend' => 1),
-				array('group_id' => 3, 'group_legend' =>2),
-			)),
-			array(2, false, array(
-				array('group_id' => 1, 'group_legend' => 0),
-				array('group_id' => 2, 'group_legend' => 0),
-				array('group_id' => 3, 'group_legend' => 1),
-			)),
-			array(3, false, array(
-				array('group_id' => 1, 'group_legend' => 0),
-				array('group_id' => 2, 'group_legend' => 1),
-				array('group_id' => 3, 'group_legend' => 0),
-			)),
-			array(1, true, array(
-				array('group_id' => 1, 'group_legend' => 0),
-				array('group_id' => 2, 'group_legend' => 1),
-				array('group_id' => 3, 'group_legend' => 2),
-			)),
-			array(2, true, array(
-				array('group_id' => 1, 'group_legend' => 0),
-				array('group_id' => 2, 'group_legend' => 1),
-				array('group_id' => 3, 'group_legend' => 1),
-			)),
-			array(3, true, array(
-				array('group_id' => 1, 'group_legend' => 0),
-				array('group_id' => 2, 'group_legend' => 1),
-				array('group_id' => 3, 'group_legend' => 2),
-			)),
+			array(
+				1,
+				false,
+				false,
+				array(
+					array('group_id' => 1, 'group_legend' => 0),
+					array('group_id' => 2, 'group_legend' => 1),
+					array('group_id' => 3, 'group_legend' => 2),
+				),
+			),
+			array(
+				2,
+				false,
+				true,
+				array(
+					array('group_id' => 1, 'group_legend' => 0),
+					array('group_id' => 2, 'group_legend' => 0),
+					array('group_id' => 3, 'group_legend' => 1),
+				),
+			),
+			array(
+				3,
+				false,
+				true,
+				array(
+					array('group_id' => 1, 'group_legend' => 0),
+					array('group_id' => 2, 'group_legend' => 1),
+					array('group_id' => 3, 'group_legend' => 0),
+				),
+			),
+			array(
+				1,
+				true,
+				false,
+				array(
+					array('group_id' => 1, 'group_legend' => 0),
+					array('group_id' => 2, 'group_legend' => 1),
+					array('group_id' => 3, 'group_legend' => 2),
+				),
+			),
+			array(
+				2,
+				true,
+				true,
+				array(
+					array('group_id' => 1, 'group_legend' => 0),
+					array('group_id' => 2, 'group_legend' => 1),
+					array('group_id' => 3, 'group_legend' => 1),
+				),
+			),
+			array(
+				3,
+				true,
+				true,
+				array(
+					array('group_id' => 1, 'group_legend' => 0),
+					array('group_id' => 2, 'group_legend' => 1),
+					array('group_id' => 3, 'group_legend' => 2),
+				),
+			),
 		);
 	}
 
 	/**
 	* @dataProvider delete_group_data
 	*/
-	public function test_delete_group($group_id, $skip_group, $expected)
+	public function test_delete_group($group_id, $skip_group, $expected_deleted, $expected)
 	{
 		global $cache;
 
@@ -139,7 +177,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$user->lang = array();
 
 		$test_class = new phpbb_groupposition_legend($db, $user);
-		$test_class->delete_group($group_id, $skip_group);
+		$this->assertEquals($expected_deleted, $test_class->delete_group($group_id, $skip_group));
 
 		$result = $db->sql_query('SELECT group_id, group_legend
 			FROM ' . GROUPS_TABLE . '

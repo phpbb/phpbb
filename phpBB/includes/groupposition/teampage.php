@@ -207,7 +207,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	*/
 	public function add_group($group_id)
 	{
-		$this->add_group_teampage($group_id, self::NO_PARENT);
+		return $this->add_group_teampage($group_id, self::NO_PARENT);
 	}
 
 	/**
@@ -215,7 +215,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	*
 	* @param	int		$group_id	group_id of the group to be added
 	* @param	int		$parent_id	Teampage ID of the parent item
-	* @return	null
+	* @return	bool		True if the group was added successfully
 	*/
 	public function add_group_teampage($group_id, $parent_id)
 	{
@@ -266,22 +266,26 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 
 			$sql = 'INSERT INTO ' . TEAMPAGE_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 			$this->db->sql_query($sql);
+
+			$this->cache->destroy('sql', TEAMPAGE_TABLE);
+			return true;
 		}
 
 		$this->cache->destroy('sql', TEAMPAGE_TABLE);
+		return false;
 	}
 
 	/**
 	* Adds a new category
 	*
 	* @param	string	$category_name	Name of the category to be added
-	* @return	null
+	* @return	bool		True if the category was added successfully
 	*/
 	public function add_category_teampage($category_name)
 	{
 		if ($category_name === '')
 		{
-			return;
+			return false;
 		}
 
 		$num_entries = $this->get_group_count();
@@ -297,6 +301,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 		$this->db->sql_query($sql);
 
 		$this->cache->destroy('sql', TEAMPAGE_TABLE);
+		return true;
 	}
 
 	/**
@@ -318,9 +323,13 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 			$sql = 'DELETE FROM ' . TEAMPAGE_TABLE . '
 				WHERE group_id = ' . $group_id;
 			$this->db->sql_query($sql);
+
+			$this->cache->destroy('sql', TEAMPAGE_TABLE);
+			return true;
 		}
 
 		$this->cache->destroy('sql', TEAMPAGE_TABLE);
+		return false;
 	}
 
 	/**
@@ -328,7 +337,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	*
 	* @param	int		$teampage_id	teampage_id of the item to be deleted
 	* @param	bool	$skip_group		Skip setting the group to GROUP_DISABLED, to save the query, when you need to update it anyway.
-	* @return	null
+	* @return	bool		True if the item was deleted successfully
 	*/
 	public function delete_teampage($teampage_id, $skip_group = false)
 	{
@@ -347,9 +356,13 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 				SET teampage_position = teampage_position - ' . $delta . '
 				WHERE teampage_position > ' . $current_value;
 			$this->db->sql_query($sql);
+
+			$this->cache->destroy('sql', TEAMPAGE_TABLE);
+			return true;
 		}
 
 		$this->cache->destroy('sql', TEAMPAGE_TABLE);
+		return false;
 	}
 
 	/**

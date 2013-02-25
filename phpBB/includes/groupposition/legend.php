@@ -128,7 +128,10 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 				WHERE group_legend = ' . self::GROUP_DISABLED . '
 					AND group_id = ' . (int) $group_id;
 			$this->db->sql_query($sql);
+			return true;
 		}
+
+		return false;
 	}
 
 	/**
@@ -158,7 +161,11 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 			}
 
 			$this->db->sql_transaction('commit');
+
+			return true;
 		}
+
+		return false;
 	}
 
 	/**

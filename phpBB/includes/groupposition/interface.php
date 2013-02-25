@@ -42,7 +42,7 @@ interface phpbb_groupposition_interface
 	* Addes a group by group_id
 	*
 	* @param	int		$group_id	group_id of the group to be added
-	* @return	null
+	* @return	bool		True if the group was added successfully
 	*/
 	public function add_group($group_id);
 
@@ -51,7 +51,7 @@ interface phpbb_groupposition_interface
 	*
 	* @param	int		$group_id		group_id of the group to be deleted
 	* @param	bool	$skip_group		Skip setting the value for this group, to save the query, when you need to update it anyway.
-	* @return	null
+	* @return	bool		True if the group was deleted successfully
 	*/
 	public function delete_group($group_id, $skip_group = false);
 
