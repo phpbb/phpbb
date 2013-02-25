@@ -21,7 +21,6 @@ class phpbb_db_migration_data_310_dev extends phpbb_db_migration
 			'phpbb_db_migration_data_310_style_update_p2',
 			'phpbb_db_migration_data_310_timezone_p2',
 			'phpbb_db_migration_data_310_reported_posts_display',
-			'phpbb_db_migration_data_310_remove_msnm',
 		);
 	}
 

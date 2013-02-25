@@ -134,19 +134,20 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		if (!$this->extension_manager)
-		{
-			$this->extension_manager = new phpbb_extension_manager(
-				$this->get_db(),
-				new phpbb_config(array()),
-				self::$config['table_prefix'] . 'ext',
-				$phpbb_root_path,
-				".$phpEx",
-				$this->get_cache_driver()
-			);
-		}
+		$config = new phpbb_config(array());
+		$db = $this->get_db();
+		$db_tools = new phpbb_db_tools($db);
 
-		return $this->extension_manager;
+		return new phpbb_extension_manager(
+			new phpbb_mock_container_builder(),
+			$db,
+			$config,
+			new phpbb_db_migrator($config, $db, $db_tools, self::$config['table_prefix'] . 'migrations', $phpbb_root_path, $php_ext, self::$config['table_prefix'], array()),
+			self::$config['table_prefix'] . 'ext',
+			dirname(__FILE__) . '/',
+			'.' . $php_ext,
+			$this->get_cache_driver()
+		);
 	}
 
 	static protected function install_board()
