@@ -99,18 +99,26 @@ class phpbb_db_migrator
 	{
 		$this->migration_state = array();
 
+		// prevent errors in case the table does not exist yet
+		$this->db->sql_return_on_error(true);
+
 		$sql = "SELECT *
 			FROM " . $this->migrations_table;
 		$result = $this->db->sql_query($sql);
 
-		while ($migration = $this->db->sql_fetchrow($result))
+		if (!$this->db->sql_error_triggered)
 		{
-			$this->migration_state[$migration['migration_name']] = $migration;
+			while ($migration = $this->db->sql_fetchrow($result))
+			{
+				$this->migration_state[$migration['migration_name']] = $migration;
 
-			$this->migration_state[$migration['migration_name']]['migration_depends_on'] = unserialize($migration['migration_depends_on']);
+				$this->migration_state[$migration['migration_name']]['migration_depends_on'] = unserialize($migration['migration_depends_on']);
+			}
 		}
 
 		$this->db->sql_freeresult($result);
+
+		$this->db->sql_return_on_error(false);
 	}
 
 	/**
