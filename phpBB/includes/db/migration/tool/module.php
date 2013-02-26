@@ -183,16 +183,26 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 			$basename = str_replace(array('/', '\\'), '', $basename);
 			$class = str_replace(array('/', '\\'), '', $class);
 
-			$include_path = ($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path;
-			$info_file = "$class/info/$basename.{$this->php_ext}";
-
-			// The manual and automatic ways both failed...
-			if (!file_exists($include_path . $info_file))
+			if (strpos($basename, 'phpbb_ext') !== false)
 			{
-				throw new phpbb_db_migration_exception('MODULE_INFO_FILE_NOT_EXIST', $class, $info_file);
-			}
+				global $phpbb_container;
 
-			$classname = "{$basename}_info";
+				$loader = $phpbb_container->get('class_loader.ext');
+				$path = $loader->resolve_path($basename);
+
+				$path = preg_replace('/module(?!.*module)/', 'info', $path);
+				$classname = preg_replace('/module(?!.*module)/', 'info', $basename);				
+				
+				$chunks = explode('/', $path);
+				$info_file = array_pop($chunks);				
+				$include_path = join('/', $chunks) . '/';
+			}
+			else
+			{
+				$include_path = ($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path;
+				$info_file = "$class/info/$basename.{$this->php_ext}";
+				$classname = "{$basename}_info";
+			}
 
 			if (!class_exists($classname))
 			{
@@ -373,15 +383,31 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 			$basename = str_replace(array('/', '\\'), '', $module['module_basename']);
 			$class = str_replace(array('/', '\\'), '', $class);
 
-			$include_path = ($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path;
-			$info_file = "$class/info/$basename.{$this->php_ext}";
+			if (strpos($basename, 'phpbb_ext') !== false)
+			{
+				global $phpbb_container;
+				$loader = $phpbb_container->get('class_loader.ext');
+
+				$path = $loader->resolve_path($basename);
+
+				$path = preg_replace('/module(?!.*module)/', 'info', $path);
+				$classname = preg_replace('/module(?!.*module)/', 'info', $basename);				
+				
+				$chunks = explode('/', $path);
+				$info_file = array_pop($chunks);				
+				$include_path = join('/', $chunks) . '/';
+			}
+			else
+			{
+				$include_path = ($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path;
+				$info_file = "$class/info/$basename.{$this->php_ext}";
+				$classname = "{$basename}_info";
+			}
 
 			if (!file_exists($include_path . $info_file))
 			{
 				throw new phpbb_db_migration_exception('MODULE_NOT_EXIST', $info_file);
 			}
-
-			$classname = "{$basename}_info";
 
 			if (!class_exists($classname))
 			{
