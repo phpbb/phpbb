@@ -164,7 +164,7 @@
 	<!-- IF not S_TEAMPAGE_CATEGORY -->
 	<form id="teampage_add_category" method="post" action="{U_ACTION_TEAMPAGE}">
 		<fieldset class="quick">
-			<input class="inputbox autowidth" type="text" name="category_name" placeholder="{L_GROUP_CATEGORY_NAME}" />
+			<input class="inputbox autowidth" type="text" maxlength="255" name="category_name" placeholder="{L_GROUP_CATEGORY_NAME}" />
 			<input class="button2" type="submit" name="submit" value="{L_ADD_GROUP_CATEGORY}" />
 			<input type="hidden" name="action" value="add_category" />
 			{S_FORM_TOKEN}
