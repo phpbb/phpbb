@@ -72,14 +72,14 @@ class phpbb_db_migration_data_310_revisions extends phpbb_db_migration
 	public function update_data()
 	{
 		return array(
-			// @todo add permissions
-			// @todo determine best place for the revisions settings
-			// Currently they're in their own module
-			array('module.add', array(
-				'acp',
-				'ACP_CAT_POSTING',
-				'ACP_REVISIONS'
-			)),
+			array('permission.add', array('f_revisions', false)),
+			array('permission.add', array('f_wiki_create', false)),
+			array('permission.add', array('f_wiki_edit', false)),
+			array('permission.add', array('m_revisions', false)),
+			array('permission.add', array('m_delete_revisions', false)),
+			array('permission.add', array('m_protect_revisions', false)),
+			array('permission.add', array('a_revisions', true, 'a_attach')),
+
 			array('config.add', array('track_post_revisions', '1')),
 			array('config.add', array('post_revisions_max_age', '0')),
 			array('config.add', array('revisions_per_post_max', '0')),
