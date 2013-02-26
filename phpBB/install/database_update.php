@@ -1165,18 +1165,11 @@ function database_update_info()
 						'ext_name'		=> array('UNIQUE', 'ext_name'),
 					),
 				),
-				TEAMPAGE_TABLE				=> array(
-					'COLUMNS'			=> array(
-						'teampage_id'		=> array('UINT', NULL, 'auto_increment'),
-						'group_id'			=> array('UINT', 0),
-						'teampage_name'		=> array('VCHAR_UNI:255', ''),
-						'teampage_position'	=> array('UINT', 0),
-						'teampage_parent'	=> array('UINT', 0),
-					),
-					'PRIMARY_KEY'	=> 'teampage_id',
-				),
 			),
 			'add_columns'		=> array(
+				GROUPS_TABLE		=> array(
+					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
+				),
 				PROFILE_FIELDS_TABLE	=> array(
 					'field_show_on_pm'		=> array('BOOL', 0),
 				),
@@ -2482,39 +2475,26 @@ function change_database_data(&$no_updates, $version)
 				set_config('use_system_cron', 0);
 			}
 
-			$sql = 'SELECT teampage_id
-				FROM ' . TEAMPAGE_TABLE;
+			$sql = 'SELECT group_teampage
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_teampage > 0';
 			$result = $db->sql_query_limit($sql, 1);
-			$added_groups_teampage = (bool) $db->sql_fetchfield('teampage_id');
+			$added_groups_teampage = (bool) $db->sql_fetchfield('group_teampage');
 			$db->sql_freeresult($result);
 
 			if (!$added_groups_teampage)
 			{
-				$sql = 'SELECT *
-					FROM ' . GROUPS_TABLE . '
+				$sql = 'UPDATE ' . GROUPS_TABLE . '
+					SET group_teampage = 1
 					WHERE group_type = ' . GROUP_SPECIAL . "
-						AND (group_name = 'ADMINISTRATORS'
-							OR group_name = 'GLOBAL_MODERATORS')
-					ORDER BY group_name ASC";
-				$result = $db->sql_query($sql);
+						AND group_name = 'ADMINISTRATORS'";
+				_sql($sql, $errored, $error_ary);
 
-				$teampage_entries = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$teampage_entries[] = array(
-						'group_id'			=> (int) $row['group_id'],
-						'teampage_name'		=> '',
-						'teampage_position'	=> sizeof($teampage_entries) + 1,
-						'teampage_parent'	=> 0,
-					);
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($teampage_entries))
-				{
-					$db->sql_multi_insert(TEAMPAGE_TABLE, $teampage_entries);
-				}
-				unset($teampage_entries);
+				$sql = 'UPDATE ' . GROUPS_TABLE . '
+					SET group_teampage = 2
+					WHERE group_type = ' . GROUP_SPECIAL . "
+						AND group_name = 'GLOBAL_MODERATORS'";
+				_sql($sql, $errored, $error_ary);
 			}
 
 			if (!isset($config['legend_sort_groupname']))
