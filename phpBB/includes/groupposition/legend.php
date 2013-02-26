@@ -43,11 +43,6 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 	protected $user;
 
 	/**
-	* URI for the adm_back_link when there was an error.
-	*/
-	protected $adm_back_link = '';
-
-	/**
 	* Constructor
 	*
 	* @param phpbb_db_driver	$db		Database object
@@ -57,16 +52,6 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 	{
 		$this->db = $db;
 		$this->user = $user;
-	}
-
-	/**
-	* Set the back link for error messages
-	*
-	* @param string		$adm_back_link	Return URL to use after an error occured
-	*/
-	public function set_admin_back_link($adm_back_link)
-	{
-		$this->adm_back_link = $adm_back_link;
 	}
 
 	/**
@@ -86,7 +71,7 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 		if ($current_value === false)
 		{
 			// Group not found.
-			$this->error('NO_GROUP');
+			throw new phpbb_groupposition_exception('NO_GROUP');
 		}
 
 		return (int) $current_value;
@@ -239,16 +224,6 @@ class phpbb_groupposition_legend implements phpbb_groupposition_interface
 		}
 
 		return false;
-	}
-
-	/**
-	* Error
-	*
-	* {@inheritDoc}
-	*/
-	private function error($message)
-	{
-		trigger_error($this->user->lang[$message] . (($this->adm_back_link) ? adm_back_link($this->adm_back_link) : ''), E_USER_WARNING);
 	}
 
 	/**
