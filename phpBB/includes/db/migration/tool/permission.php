@@ -107,7 +107,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	{
 		if ($this->exists($auth_option, $global))
 		{
-			throw new phpbb_db_migration_exception('PERMISSION_ALREADY_EXISTS', $auth_option);
+			throw new phpbb_db_migration_exception('PERMISSION_ALREADY_EXIST', $auth_option);
 		}
 
 		// We've added permissions, so set to true to notify the user.
@@ -252,7 +252,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 		if ($role_id)
 		{
-			throw new phpbb_db_migration_exception('ROLE_ALREADY_EXISTS', $old_role_name);
+			return;
 		}
 
 		$sql = 'SELECT MAX(role_order) AS max_role_order
@@ -290,7 +290,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 		if (!$role_id)
 		{
-			throw new phpbb_db_migration_exception('ROLE_NOT_EXISTS', $old_role_name);
+			throw new phpbb_db_migration_exception('ROLE_NOT_EXIST', $old_role_name);
 		}
 
 		$sql = 'UPDATE ' . ACL_ROLES_TABLE . "
