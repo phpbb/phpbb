@@ -268,6 +268,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 			'#(\+|\-)(?:\+|\-)+#',
 			'#\(\|#',
 			'#\|\)#',
+			'#([\p{L}|0-9])-([\p{L}|0-9])#',
 		);
 		$replace = array(
 			' ',
@@ -275,6 +276,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 			'$1',
 			'(',
 			')',
+			'$1 $2',
 		);
 
 		$keywords = preg_replace($match, $replace, $keywords);
