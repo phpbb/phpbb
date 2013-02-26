@@ -18,15 +18,16 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	public function get_group_value_data()
 	{
 		return array(
-			array(1, 0),
-			array(3, 2),
+			array(1, 0, ''),
+			array(3, 2, ''),
+			array(4, 0, 'phpbb_groupposition_exception'),
 		);
 	}
 
 	/**
 	* @dataProvider get_group_value_data
 	*/
-	public function test_get_group_value($group_id, $expected)
+	public function test_get_group_value($group_id, $expected, $throws_exception)
 	{
 		global $cache;
 
@@ -34,6 +35,11 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$user = new phpbb_user;
 		$user->lang = array();
+
+		if ($throws_exception)
+		{
+			$this->setExpectedException($throws_exception);
+		}
 
 		$test_class = new phpbb_groupposition_legend($db, $user);
 		$this->assertEquals($expected, $test_class->get_group_value($group_id));

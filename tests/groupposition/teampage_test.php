@@ -20,15 +20,16 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 	public function get_group_value_data()
 	{
 		return array(
-			array(2, 3),
-			array(6, 8),
+			array(2, 3, ''),
+			array(6, 8, ''),
+			array(10, 0, 'phpbb_groupposition_exception'),
 		);
 	}
 
 	/**
 	* @dataProvider get_group_value_data
 	*/
-	public function test_get_group_value($group_id, $expected)
+	public function test_get_group_value($group_id, $expected, $throws_exception)
 	{
 		global $cache;
 
@@ -36,6 +37,11 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$user = new phpbb_user;
 		$user->lang = array();
+
+		if ($throws_exception)
+		{
+			$this->setExpectedException($throws_exception);
+		}
 
 		$test_class = new phpbb_groupposition_teampage($db, $user, $cache);
 		$this->assertEquals($expected, $test_class->get_group_value($group_id));
