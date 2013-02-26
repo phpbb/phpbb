@@ -851,53 +851,66 @@ class acp_groups
 		{
 
 			$group_position = $phpbb_container->get('groupposition.' . $field);
-			$group_position->set_admin_back_link($this->u_action);
 		}
 
 		if ($field == 'teampage')
 		{
-			switch ($action)
+			try
 			{
-				case 'add':
-					$group_position->add_group_teampage($group_id, $category_id);
-				break;
+				switch ($action)
+				{
+					case 'add':
+						$group_position->add_group_teampage($group_id, $category_id);
+					break;
 
-				case 'add_category':
-					$group_position->add_category_teampage($request->variable('category_name', '', true));
-				break;
+					case 'add_category':
+						$group_position->add_category_teampage($request->variable('category_name', '', true));
+					break;
 
-				case 'delete':
-					$group_position->delete_teampage($teampage_id);
-				break;
+					case 'delete':
+						$group_position->delete_teampage($teampage_id);
+					break;
 
-				case 'move_up':
-					$group_position->move_up_teampage($teampage_id);
-				break;
+					case 'move_up':
+						$group_position->move_up_teampage($teampage_id);
+					break;
 
-				case 'move_down':
-					$group_position->move_down_teampage($teampage_id);
-				break;
+					case 'move_down':
+						$group_position->move_down_teampage($teampage_id);
+					break;
+				}
+			}
+			catch (phpbb_groupposition_exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()) . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 		else if ($field == 'legend')
 		{
-			switch ($action)
+			try
 			{
-				case 'add':
-					$group_position->add_group($group_id);
-				break;
+				switch ($action)
+				{
+					case 'add':
+						$group_position->add_group($group_id);
+					break;
 
-				case 'delete':
-					$group_position->delete_group($group_id);
-				break;
+					case 'delete':
+						$group_position->delete_group($group_id);
+					break;
 
-				case 'move_up':
-					$group_position->move_up($group_id);
-				break;
+					case 'move_up':
+						$group_position->move_up($group_id);
+					break;
 
-				case 'move_down':
-					$group_position->move_down($group_id);
-				break;
+					case 'move_down':
+						$group_position->move_down($group_id);
+					break;
+				}
+			}
+			catch (phpbb_groupposition_exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()) . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 		else
