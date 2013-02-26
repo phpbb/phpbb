@@ -3,7 +3,7 @@
 #
 
 services:
-	# Post Revisions controller
+    # Post Revisions controller
     post_revisions.controller:
         class: phpbb_controller_post_revisions
         arguments:
