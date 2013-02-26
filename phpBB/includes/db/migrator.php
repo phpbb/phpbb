@@ -114,9 +114,9 @@ class phpbb_db_migrator
 
 				$this->migration_state[$migration['migration_name']]['migration_depends_on'] = unserialize($migration['migration_depends_on']);
 			}
-
-			$this->db->sql_freeresult($result);
 		}
+
+		$this->db->sql_freeresult($result);
 
 		$this->db->sql_return_on_error(false);
 	}
