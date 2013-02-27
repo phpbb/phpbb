@@ -1173,30 +1173,11 @@ function database_update_info()
 				),
 			),
 			'add_columns'		=> array(
-				FORUMS_TABLE		=> array(
-					'forum_posts_approved'		=> array('UINT', 0),
-					'forum_posts_unapproved'	=> array('UINT', 0),
-					'forum_posts_softdeleted'	=> array('UINT', 0),
-					'forum_topics_approved'		=> array('UINT', 0),
-					'forum_topics_unapproved'	=> array('UINT', 0),
-					'forum_topics_softdeleted'	=> array('UINT', 0),
-				),
 				GROUPS_TABLE		=> array(
 					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
 				),
-				POSTS_TABLE			=> array(
-					'post_visibility'		=> array('TINT:3', 0),
-					'post_delete_time'		=> array('TIMESTAMP', 0),
-					'post_delete_reason'	=> array('STEXT_UNI', ''),
-					'post_delete_user'		=> array('UINT', 0),
-				),
 				PROFILE_FIELDS_TABLE	=> array(
 					'field_show_on_pm'		=> array('BOOL', 0),
-				),
-				REPORTS_TABLE		=> array(
-					'reported_post_text'	=> array('MTEXT_UNI', ''),
-					'reported_post_uid'			=> array('VCHAR:8', ''),
-					'reported_post_bitfield'	=> array('VCHAR:255', ''),
 				),
 				STYLES_TABLE		=> array(
 					'style_path'			=> array('VCHAR:100', ''),
@@ -1204,14 +1185,10 @@ function database_update_info()
 					'style_parent_id'		=> array('UINT:4', 0),
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
-				TOPICS_TABLE		=> array(
-					'topic_visibility'		=> array('TINT:3', 0),
-					'topic_delete_time'		=> array('TIMESTAMP', 0),
-					'topic_delete_reason'	=> array('STEXT_UNI', ''),
-					'topic_delete_user'		=> array('UINT', 0),
-					'topic_posts_approved'		=> array('UINT', 0),
-					'topic_posts_unapproved'	=> array('UINT', 0),
-					'topic_posts_softdeleted'	=> array('UINT', 0),
+				REPORTS_TABLE		=> array(
+					'reported_post_text'	=> array('MTEXT_UNI', ''),
+					'reported_post_uid'			=> array('VCHAR:8', ''),
+					'reported_post_bitfield'	=> array('VCHAR:255', ''),
 				),
 			),
 			'change_columns'	=> array(
@@ -1220,18 +1197,6 @@ function database_update_info()
 				),
 				USERS_TABLE			=> array(
 					'user_timezone'		=> array('VCHAR:100', ''),
-				),
-			),
-			'drop_keys'		=> array(
-				TOPICS_TABLE			=> array('forum_appr_last'),
-			),
-			'add_index'		=> array(
-				POSTS_TABLE		=> array(
-					'post_visibility'		=> array('post_visibility'),
-				),
-				TOPICS_TABLE		=> array(
-					'topic_visibility'		=> array('topic_visibility'),
-					'forum_appr_last'		=> array('forum_id', 'topic_visibility', 'topic_last_post_id'),
 				),
 			),
 		),
@@ -1365,28 +1330,11 @@ function change_database_data(&$no_updates, $version)
 
 			do
 			{
-				if ($db_tools->sql_column_exists(POSTS_TABLE, 'post_approved'))
-				{
-					$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
-						FROM ' . POSTS_TABLE . '
-						WHERE post_id BETWEEN ' . ($start + 1) . ' AND ' . ($start + $step) . '
-							AND post_postcount = 1 AND post_approved = 1
-						GROUP BY poster_id';
-				}
-				else
-				{
-					if (!defined('ITEM_APPROVED'))
-					{
-						// Define the constant if it isn't
-						define('ITEM_APPROVED', 1);
-					}
-
-					$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
-						FROM ' . POSTS_TABLE . '
-						WHERE post_id BETWEEN ' . ($start + 1) . ' AND ' . ($start + $step) . '
-							AND post_postcount = 1 AND post_visibility = ' . ITEM_APPROVED . '
-						GROUP BY poster_id';
-				}
+				$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
+					FROM ' . POSTS_TABLE . '
+					WHERE post_id BETWEEN ' . ($start + 1) . ' AND ' . ($start + $step) . '
+						AND post_postcount = 1 AND post_approved = 1
+					GROUP BY poster_id';
 				$result = _sql($sql, $errored, $error_ary);
 
 				if ($row = $db->sql_fetchrow($result))
@@ -2683,91 +2631,80 @@ function change_database_data(&$no_updates, $version)
 			_sql($sql, $errored, $error_ary);
 
 			// Localise Global Announcements
-			if ($db_tools->sql_column_exists(TOPICS_TABLE, 'topic_approved'))
+			$sql = 'SELECT topic_id, topic_approved, (topic_replies + 1) AS topic_posts, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
+				FROM ' . TOPICS_TABLE . '
+				WHERE forum_id = 0
+					AND topic_type = ' . POST_GLOBAL;
+			$result = $db->sql_query($sql);
+
+			$global_announcements = $update_lastpost_data = array();
+			$update_lastpost_data['forum_last_post_time'] = 0;
+			$update_forum_data = array(
+				'forum_posts'		=> 0,
+				'forum_topics'		=> 0,
+				'forum_topics_real'	=> 0,
+			);
+
+			while ($row = $db->sql_fetchrow($result))
 			{
-				$sql = 'SELECT topic_id, topic_approved, (topic_replies + 1) AS topic_posts_approved, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour
-					FROM ' . TOPICS_TABLE . '
-					WHERE forum_id = 0
-						AND topic_type = ' . POST_GLOBAL;
+				$global_announcements[] = (int) $row['topic_id'];
+
+				$update_forum_data['forum_posts'] += (int) $row['topic_posts'];
+				$update_forum_data['forum_topics_real']++;
+				if ($row['topic_approved'])
+				{
+					$update_forum_data['forum_topics']++;
+				}
+
+				if ($update_lastpost_data['forum_last_post_time'] < $row['topic_last_post_time'])
+				{
+					$update_lastpost_data = array(
+						'forum_last_post_id'		=> (int) $row['topic_last_post_id'],
+						'forum_last_post_subject'	=> $row['topic_last_post_subject'],
+						'forum_last_post_time'		=> (int) $row['topic_last_post_time'],
+						'forum_last_poster_id'		=> (int) $row['topic_last_poster_id'],
+						'forum_last_poster_name'	=> $row['topic_last_poster_name'],
+						'forum_last_poster_colour'	=> $row['topic_last_poster_colour'],
+					);
+				}
+			}
+			$db->sql_freeresult($result);
+
+			if (!empty($global_announcements))
+			{
+				// Update the post/topic-count for the forum and the last-post if needed
+				$ga_forum_id = request_var('ga_forum_id', 0);
+
+				$sql = 'SELECT forum_last_post_time
+					FROM ' . FORUMS_TABLE . '
+					WHERE forum_id = ' . $ga_forum_id;
 				$result = $db->sql_query($sql);
-
-				$global_announcements = $update_lastpost_data = array();
-				$update_lastpost_data['forum_last_post_time'] = 0;
-				$update_forum_data = array(
-					'forum_posts'		=> 0,
-					'forum_topics'		=> 0,
-					'forum_topics_real'	=> 0,
-				);
-
-				if (!defined('ITEM_APPROVED'))
-				{
-					// Define the constant if it isn't
-					define('ITEM_APPROVED', 1);
-				}
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$global_announcements[] = (int) $row['topic_id'];
-
-					$update_forum_data['forum_posts'] += (int) $row['topic_posts'];
-					$update_forum_data['forum_topics_real']++;
-
-					// topic_approved is from 3.0, topic_visibility is from 3.1
-					if (!empty($row['topic_approved']) || (isset($row['topic_visibility']) && $row['topic_visibility'] == ITEM_APPROVED))
-					{
-						$update_forum_data['forum_topics']++;
-					}
-
-					if ($update_lastpost_data['forum_last_post_time'] < $row['topic_last_post_time'])
-					{
-						$update_lastpost_data = array(
-							'forum_last_post_id'		=> (int) $row['topic_last_post_id'],
-							'forum_last_post_subject'	=> $row['topic_last_post_subject'],
-							'forum_last_post_time'		=> (int) $row['topic_last_post_time'],
-							'forum_last_poster_id'		=> (int) $row['topic_last_poster_id'],
-							'forum_last_poster_name'	=> $row['topic_last_poster_name'],
-							'forum_last_poster_colour'	=> $row['topic_last_poster_colour'],
-						);
-					}
-				}
+				$lastpost = (int) $db->sql_fetchfield('forum_last_post_time');
 				$db->sql_freeresult($result);
 
-				if (!empty($global_announcements))
+				$sql_update = 'forum_posts = forum_posts + ' . $update_forum_data['forum_posts'] . ', ';
+				$sql_update .= 'forum_topics_real = forum_topics_real + ' . $update_forum_data['forum_topics_real'] . ', ';
+				$sql_update .= 'forum_topics = forum_topics + ' . $update_forum_data['forum_topics'];
+				if ($lastpost < $update_lastpost_data['forum_last_post_time'])
 				{
-					// Update the post/topic-count for the forum and the last-post if needed
-					$ga_forum_id = request_var('ga_forum_id', 0);
-
-					$sql = 'SELECT forum_last_post_time
-						FROM ' . FORUMS_TABLE . '
-						WHERE forum_id = ' . $ga_forum_id;
-					$result = $db->sql_query($sql);
-					$lastpost = (int) $db->sql_fetchfield('forum_last_post_time');
-					$db->sql_freeresult($result);
-
-					$sql_update = 'forum_posts = forum_posts + ' . $update_forum_data['forum_posts'] . ', ';
-					$sql_update .= 'forum_topics_real = forum_topics_real + ' . $update_forum_data['forum_topics_real'] . ', ';
-					$sql_update .= 'forum_topics = forum_topics + ' . $update_forum_data['forum_topics'];
-					if ($lastpost < $update_lastpost_data['forum_last_post_time'])
-					{
-						$sql_update .= ', ' . $db->sql_build_array('UPDATE', $update_lastpost_data);
-					}
-
-					$sql = 'UPDATE ' . FORUMS_TABLE . '
-						SET ' . $sql_update . '
-						WHERE forum_id = ' . $ga_forum_id;
-					_sql($sql, $errored, $error_ary);
-
-					// Update some forum_ids
-					$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
-					foreach ($table_ary as $table)
-					{
-						$sql = "UPDATE $table
-							SET forum_id = $ga_forum_id
-							WHERE " . $db->sql_in_set('topic_id', $global_announcements);
-						_sql($sql, $errored, $error_ary);
-					}
-					unset($table_ary);
+					$sql_update .= ', ' . $db->sql_build_array('UPDATE', $update_lastpost_data);
 				}
+
+				$sql = 'UPDATE ' . FORUMS_TABLE . '
+					SET ' . $sql_update . '
+					WHERE forum_id = ' . $ga_forum_id;
+				_sql($sql, $errored, $error_ary);
+
+				// Update some forum_ids
+				$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
+				foreach ($table_ary as $table)
+				{
+					$sql = "UPDATE $table
+						SET forum_id = $ga_forum_id
+						WHERE " . $db->sql_in_set('topic_id', $global_announcements);
+					_sql($sql, $errored, $error_ary);
+				}
+				unset($table_ary);
 			}
 
 			// Allow custom profile fields in pm templates
@@ -2994,124 +2931,8 @@ function change_database_data(&$no_updates, $version)
 					AND module_mode = 'profile_info'";
 			_sql($sql, $errored, $error_ary);
 
-			// If the column exists, we did not  update the new columns yet
-			if ($db_tools->sql_column_exists(POSTS_TABLE, 'post_approved'))
-			{
-				$sql = 'UPDATE ' . POSTS_TABLE . '
-					SET post_visibility = post_approved';
-				_sql($sql, $errored, $error_ary);
-
-				$changes = array(
-					'drop_columns'	=> array(
-						POSTS_TABLE		=> array('post_approved'),
-					),
-				);
-
-				$statements = $db_tools->perform_schema_changes($changes);
-
-				foreach ($statements as $sql)
-				{
-					_sql($sql, $errored, $error_ary);
-				}
-			}
-
-			if ($db_tools->sql_column_exists(TOPICS_TABLE, 'topic_approved'))
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_visibility = topic_approved';
-				_sql($sql, $errored, $error_ary);
-
-				$changes = array(
-					'drop_columns'	=> array(
-						TOPICS_TABLE		=> array('topic_approved'),
-					),
-				);
-
-				$statements = $db_tools->perform_schema_changes($changes);
-
-				foreach ($statements as $sql)
-				{
-					_sql($sql, $errored, $error_ary);
-				}
-			}
-
-			if ($db_tools->sql_column_exists(TOPICS_TABLE, 'topic_replies'))
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_posts_approved = topic_replies + 1,
-						topic_posts_unapproved = topic_replies_real - topic_replies
-					WHERE topic_visibility = ' . ITEM_APPROVED;
-				_sql($sql, $errored, $error_ary);
-
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_posts_approved = 0,
-						topic_posts_unapproved = (topic_replies_real - topic_replies) + 1
-					WHERE topic_visibility = ' . ITEM_UNAPPROVED;
-				_sql($sql, $errored, $error_ary);
-
-				$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS sum_topics, SUM(topic_posts) AS sum_posts, SUM(topic_posts_unapproved) AS sum_posts_unapproved
-					FROM ' . TOPICS_TABLE . '
-					GROUP BY forum_id, topic_visibility';
-				$result = $db->sql_query($sql);
-
-				$update_forums = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$forum_id = (int) $row['forum_id'];
-					if (!isset($update_forums[$forum_id]))
-					{
-						$update_forums[$forum_id] = array(
-							'forum_posts_approved'		=> 0,
-							'forum_posts_unapproved'	=> 0,
-							'forum_topics_approved'		=> 0,
-							'forum_topics_unapproved'	=> 0,
-						);
-					}
-
-					$update_forums[$forum_id]['forum_posts_approved'] += (int) $row['sum_posts'];
-					$update_forums[$forum_id]['forum_posts_unapproved'] += (int) $row['sum_posts_unapproved'];
-
-					$update_forums[$forum_id][(($row['topic_visibility'] == ITEM_APPROVED) ? 'forum_topics_approved' : 'forum_topics_unapproved')] += (int) $row['sum_topics'];
-				}
-				$db->sql_freeresult($result);
-
-				foreach ($update_forums as $forum_id => $forum_data)
-				{
-					$sql = 'UPDATE ' . FORUMS_TABLE . '
-						SET ' . $db->sql_build_array('UPDATE', $forum_data) . '
-						WHERE forum_id = ' . $forum_id;
-					_sql($sql, $errored, $error_ary);
-				}
-
-				$changes = array(
-					'drop_columns'	=> array(
-						TOPICS_TABLE		=> array('topic_replies', 'topic_replies_real'),
-						FORUMS_TABLE		=> array('forum_topics_real'),
-					),
-				);
-
-				$statements = $db_tools->perform_schema_changes($changes);
-
-				foreach ($statements as $sql)
-				{
-					_sql($sql, $errored, $error_ary);
-				}
-			}
-
-			// Add new permissions f_softdelete and m_softdelete
-			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
-			$auth_admin = new auth_admin();
-
-			// Only add the new permission if it does not already exist
-			if (empty($auth_admin->acl_options['id']['f_softdelete']))
-			{
-				$auth_admin->acl_add_option(array('local' => array('f_softdelete', 'm_softdelete')));
-
-				// Remove any old permission entries
-				$auth_admin->acl_clear_prefetch();
-			}
-
 			$no_updates = false;
+
 		break;
 	}
 }
