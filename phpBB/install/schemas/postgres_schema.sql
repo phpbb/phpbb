@@ -861,8 +861,8 @@ CREATE TABLE phpbb_reports (
 	report_time INT4 DEFAULT '0' NOT NULL CHECK (report_time >= 0),
 	report_text TEXT DEFAULT '' NOT NULL,
 	reported_post_text TEXT DEFAULT '' NOT NULL,
-	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
 	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
+	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id)
 );
 

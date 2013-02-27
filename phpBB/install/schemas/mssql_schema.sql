@@ -1117,8 +1117,8 @@ CREATE TABLE [phpbb_reports] (
 	[report_time] [int] DEFAULT (0) NOT NULL ,
 	[report_text] [text] DEFAULT ('') NOT NULL ,
 	[reported_post_text] [text] DEFAULT ('') NOT NULL ,
-	[reported_post_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
-	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL 
+	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[reported_post_uid] [varchar] (8) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

@@ -655,8 +655,8 @@ CREATE TABLE phpbb_reports (
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumblob NOT NULL,
 	reported_post_text mediumblob NOT NULL,
-	reported_post_uid varbinary(8) DEFAULT '' NOT NULL,
 	reported_post_bitfield varbinary(255) DEFAULT '' NOT NULL,
+	reported_post_uid varbinary(8) DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id),
 	KEY post_id (post_id),
 	KEY pm_id (pm_id)

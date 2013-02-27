@@ -655,8 +655,8 @@ CREATE TABLE phpbb_reports (
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumtext NOT NULL,
 	reported_post_text mediumtext NOT NULL,
-	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
 	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
+	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id),
 	KEY post_id (post_id),
 	KEY pm_id (pm_id)

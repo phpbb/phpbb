@@ -1222,8 +1222,8 @@ CREATE TABLE phpbb_reports (
 	report_time number(11) DEFAULT '0' NOT NULL,
 	report_text clob DEFAULT '' ,
 	reported_post_text clob DEFAULT '' ,
-	reported_post_uid varchar2(8) DEFAULT '' ,
 	reported_post_bitfield varchar2(255) DEFAULT '' ,
+	reported_post_uid varchar2(8) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_reports PRIMARY KEY (report_id)
 )
 /
