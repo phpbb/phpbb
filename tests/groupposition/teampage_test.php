@@ -435,6 +435,21 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
 				),
 			),
+			array(
+				6,
+				3,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 3, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 4, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 6, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 7, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
+				),
+			),
 		);
 	}
 
@@ -581,6 +596,21 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 					array('teampage_position' => 6, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
 					array('teampage_position' => 7, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
 					array('teampage_position' => 8, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+				),
+			),
+			array(
+				8,
+				3,
+				true,
+				array(
+					array('teampage_position' => 1, 'group_id' => 6, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 2, 'group_id' => 1, 'teampage_parent' => 0, 'teampage_name' => ''),
+					array('teampage_position' => 3, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category - 2 children'),
+					array('teampage_position' => 4, 'group_id' => 2, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 5, 'group_id' => 3, 'teampage_parent' => 2, 'teampage_name' => ''),
+					array('teampage_position' => 6, 'group_id' => 0, 'teampage_parent' => 0, 'teampage_name' => 'category2 - 2 children'),
+					array('teampage_position' => 7, 'group_id' => 4, 'teampage_parent' => 5, 'teampage_name' => ''),
+					array('teampage_position' => 8, 'group_id' => 5, 'teampage_parent' => 5, 'teampage_name' => ''),
 				),
 			),
 		);
