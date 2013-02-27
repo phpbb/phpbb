@@ -183,25 +183,13 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 			$basename = str_replace(array('/', '\\'), '', $basename);
 			$class = str_replace(array('/', '\\'), '', $class);
 
-			$include_path = ($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path;
-			$info_file = "$class/info/$basename.{$this->php_ext}";
-
-			// The manual and automatic ways both failed...
-			if (!file_exists($include_path . $info_file))
+			if (!class_exists('acp_modules'))
 			{
-				throw new phpbb_db_migration_exception('MODULE_INFO_FILE_NOT_EXIST', $class, $info_file);
+				include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
 			}
-
-			$classname = "{$basename}_info";
-
-			if (!class_exists($classname))
-			{
-				include($include_path . $info_file);
-			}
-
-			$info = new $classname;
-			$module = $info->module();
-			unset($info);
+			$acp_modules = new acp_modules();
+			$module = $acp_modules->get_module_infos($basename, $class);
+			unset($acp_modules);
 
 			$result = '';
 			foreach ($module['modes'] as $mode => $module_info)
@@ -373,30 +361,19 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 			$basename = str_replace(array('/', '\\'), '', $module['module_basename']);
 			$class = str_replace(array('/', '\\'), '', $class);
 
-			$include_path = ($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path;
-			$info_file = "$class/info/$basename.{$this->php_ext}";
-
-			if (!file_exists($include_path . $info_file))
+			if (!class_exists('acp_modules'))
 			{
-				throw new phpbb_db_migration_exception('MODULE_NOT_EXIST', $info_file);
+				include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
 			}
-
-			$classname = "{$basename}_info";
-
-			if (!class_exists($classname))
-			{
-				include($include_path . $info_file);
-			}
-
-			$info = new $classname;
-			$module_info = $info->module();
-			unset($info);
+			$acp_modules = new acp_modules();
+			$module_info = $acp_modules->get_module_infos($basename, $class);
+			unset($acp_modules);
 
 			foreach ($module_info['modes'] as $mode => $info)
 			{
 				if (!isset($module['modes']) || in_array($mode, $module['modes']))
 				{
-					$this->remove($class, $parent, $info['title']) . '<br />';
+					$this->remove($class, $parent, $info['title']);
 				}
 			}
 		}
