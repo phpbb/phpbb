@@ -2,7 +2,7 @@
 * Hide and show all checkboxes
 * status = true (show boxes), false (hide boxes)
 */
-function display_checkboxes(status) 
+function display_checkboxes(status)
 {
 	var form = document.getElementById('set-permissions');
 	var cb = document.getElementsByTagName('input');
@@ -21,7 +21,7 @@ function display_checkboxes(status)
 	
 	for (var i = 0; i < cb.length; i++ )
 	{
-		if (cb[i].className == 'permissions-checkbox')
+		if (cb[i].className === 'permissions-checkbox')
 		{
 			cb[i].style.display = display;
 		}
@@ -51,7 +51,7 @@ function toggle_opacity(block_id) {
 	var cb = document.getElementById('checkbox' + block_id);
 	var fs = document.getElementById('perm' + block_id);
 	
-	if (cb.checked) 
+	if (cb.checked)
 	{
 		set_opacity(fs, 5);
 	} 
@@ -78,13 +78,13 @@ function reset_opacity(status, except_id) {
 	
 	for (var i = 0; i < fs.length; i++ )
 	{
-		if (fs[i].className != 'quick')
+		if (fs[i].className !== 'quick')
 		{
 			set_opacity(fs[i], opacity);
 		}
 	}
 
-	if (typeof(except_id) != 'undefined')
+	if (typeof(except_id) !== 'undefined')
 	{
 		set_opacity(document.getElementById('perm' + except_id), 10);
 	}
@@ -99,11 +99,11 @@ function reset_opacity(status, except_id) {
 * index = offset for the row of inputs (0 == first row, 1 == second, 2 == third),
 * rb = array of radiobuttons
 */
-function get_radio_status(index, rb) 
+function get_radio_status(index, rb)
 {
 	for (var i = index; i < rb.length; i = i + 3 )
 	{
-		if (rb[i].checked != true)
+		if (rb[i].checked !== true)
 		{
 			if (i > index)
 			{
@@ -130,7 +130,7 @@ function set_colours(id, init, quick)
 	var table = document.getElementById('table' + id);
 	var tab = document.getElementById('tab' + id);
 
-	if (typeof(quick) != 'undefined') 
+	if (typeof(quick) !== 'undefined')
 	{
 		tab.className = 'permissions-preset-' + quick + ' activetab';
 		return;
@@ -141,25 +141,25 @@ function set_colours(id, init, quick)
 
 	var status = get_radio_status(0, rb);
 
-	if (status == 1)
+	if (status === 1)
 	{
 		colour = 'yes';
 	}
-	else if (status == 0) 
+	else if (status === 0)
 	{
 		// We move on to No
 		status = get_radio_status(1, rb);
 
-		if (status == 1)
+		if (status === 1)
 		{
 			colour = 'no';
 		}
-		else if (status == 0) 
+		else if (status === 0)
 		{
 			// We move on to Never
 			status = get_radio_status(2, rb);
 
-			if (status == 1)
+			if (status === 1)
 			{
 				colour = 'never';
 			}
@@ -188,7 +188,7 @@ function init_colours(block_id)
 
 	for (var i = 0; i < panels.length; i++)
 	{
-		if(panels[i].className == 'permissions-panel')
+		if(panels[i].className === 'permissions-panel')
 		{
 			set_colours(panels[i].id.replace(/options/, ''), true);
 		}
@@ -212,7 +212,7 @@ function swap_options(pmask, fmask, cat, adv, view)
 	var new_tab = document.getElementById('tab' + id);
 	var adv_block = document.getElementById('advanced' + pmask + fmask);
 
-	if (adv_block.style.display == 'block' && adv == true)
+	if (adv_block.style.display === 'block' && adv === true)
 	{
 		dE('advanced' + pmask + fmask, -1);
 		reset_opacity(1);
@@ -221,19 +221,19 @@ function swap_options(pmask, fmask, cat, adv, view)
 	}
 
 	// no need to set anything if we are clicking on the same tab again
-	if (new_tab == old_tab && !adv)
+	if (new_tab === old_tab && !adv)
 	{
 		return;
 	}
 
 	// init colours
-	if (adv && (pmask + fmask) != (active_pmask + active_fmask))
+	if (adv && (pmask + fmask) !== (active_pmask + active_fmask))
 	{
 		init_colours(pmask + fmask);
 		display_checkboxes(true);
 		reset_opacity(1);
 	} 
-	else if (adv) 
+	else if (adv)
 	{
 		//Checkbox might have been clicked, but we need full visibility
 		display_checkboxes(true);
@@ -244,7 +244,7 @@ function swap_options(pmask, fmask, cat, adv, view)
 	old_tab.className = old_tab.className.replace(/\ activetab/g, '');
 	new_tab.className = new_tab.className + ' activetab';
 
-	if (id == active_option && adv != true)
+	if (id === active_option && adv !== true)
 	{
 		return;
 	}
@@ -256,7 +256,7 @@ function swap_options(pmask, fmask, cat, adv, view)
 	{
 		dE('checkbox' + pmask + fmask, -1);	
 		
-		if ((pmask + fmask) != (active_pmask + active_fmask))
+		if ((pmask + fmask) !== (active_pmask + active_fmask))
 		{
 			document.getElementById('checkbox' + active_pmask + active_fmask).style.display = 'inline';
 		}
@@ -295,7 +295,7 @@ function mark_options(id, s)
 
 	for (var r = 0; r < rb.length; r++)
 	{
-		if (rb[r].id.substr(rb[r].id.length-1) == s)
+		if (rb[r].id.substr(rb[r].id.length-1) === s)
 		{
 			rb[r].checked = true;
 		}
@@ -315,7 +315,7 @@ function mark_one_option(id, field_name, s)
 
 	for (var r = 0; r < rb.length; r++)
 	{
-		if (rb[r].id.substr(rb[r].id.length-field_name.length-3, field_name.length) == field_name && rb[r].id.substr(rb[r].id.length-1) == s)
+		if (rb[r].id.substr(rb[r].id.length-field_name.length-3, field_name.length) === field_name && rb[r].id.substr(rb[r].id.length-1) === s)
 		{
 			rb[r].checked = true;
 		}
@@ -354,6 +354,6 @@ function set_role_settings(role_id, target_id)
 
 	for (var r in settings)
 	{
-		mark_one_option(target_id, r, (settings[r] == 1) ? 'y' : 'n');
+		mark_one_option(target_id, r, (settings[r] === 1) ? 'y' : 'n');
 	}
 }

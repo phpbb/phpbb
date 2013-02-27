@@ -33,7 +33,7 @@ function enable_tooltips_link(id, headline, sub_id)
 
 	document.getElementsByTagName('body')[0].appendChild(hold);
 
-	if (id == null)
+	if (id === null)
 	{
 		links = document.getElementsByTagName('a');
 	}
@@ -46,7 +46,7 @@ function enable_tooltips_link(id, headline, sub_id)
 	{
 		if (sub_id)
 		{
-			if (links[i].id.substr(0, sub_id.length) == sub_id)
+			if (links[i].id.substr(0, sub_id.length) === sub_id)
 			{
 				prepare(links[i]);
 			}
@@ -81,7 +81,7 @@ function enable_tooltips_select(id, headline, sub_id)
 
 	document.getElementsByTagName('body')[0].appendChild(hold);
 
-	if (id == null)
+	if (id === null)
 	{
 		links = document.getElementsByTagName('option');
 	}
@@ -94,7 +94,7 @@ function enable_tooltips_select(id, headline, sub_id)
 	{
 		if (sub_id)
 		{
-			if (links[i].parentNode.id.substr(0, sub_id.length) == sub_id)
+			if (links[i].parentNode.id.substr(0, sub_id.length) === sub_id)
 			{
 				prepare(links[i]);
 			}
@@ -117,7 +117,7 @@ function prepare(element)
 
 	text = element.getAttribute('title');
 
-	if (text == null || text.length == 0)
+	if (text === null || text.length === 0)
 	{
 		return;
 	}
@@ -139,7 +139,7 @@ function prepare(element)
 	element.onmouseover = show_tooltip;
 	element.onmouseout = hide_tooltip;
 
-	if (tooltip_mode == 'link')
+	if (tooltip_mode === 'link')
 	{
 		element.onmousemove = locate;
 	}
@@ -200,7 +200,7 @@ function locate(e)
 
 	if (e.offsetParent)
 	{
-		for (var posx = 0, posy = 0; e.offsetParent; e = e.offsetParent)
+		for (posx = 0, posy = 0; e.offsetParent; e = e.offsetParent)
 		{
 			posx += e.offsetLeft;
 			posy += e.offsetTop;
@@ -212,7 +212,7 @@ function locate(e)
 		posy = e.offsetTop;
 	}
 
-	if (tooltip_mode == 'link')
+	if (tooltip_mode === 'link')
 	{
 		document.getElementById('_tooltip_container').style.top=(posy+20) + 'px';
 		document.getElementById('_tooltip_container').style.left=(posx-20) + 'px';

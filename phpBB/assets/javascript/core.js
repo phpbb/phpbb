@@ -353,7 +353,7 @@ phpbb.ajaxify = function(options) {
 			return;
 		}
 
-		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') == 'true'))
+		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') === 'true'))
 		{
 			phpbb.loadingAlert();
 		}
@@ -387,7 +387,7 @@ phpbb.ajaxify = function(options) {
 * @param	bool	keepSelection		Shall we keep the value selected, or shall the user be forced to repick one.
 */
 phpbb.timezoneSwitchDate = function(keepSelection) {
-	if ($('#timezone_copy').length == 0) {
+	if ($('#timezone_copy').length === 0) {
 		// We make a backup of the original dropdown, so we can remove optgroups
 		// instead of setting display to none, because IE and chrome will not
 		// hide options inside of optgroups and selects via css
@@ -397,17 +397,17 @@ phpbb.timezoneSwitchDate = function(keepSelection) {
 		$('#timezone').replaceWith($('#timezone_copy').clone().attr('id', 'timezone').css('display', 'block').attr('name', 'tz'));
 	}
 
-	if ($('#tz_date').val() != '') {
+	if ($('#tz_date').val() !== '') {
 		$('#timezone > optgroup').remove(":not([label='" + $('#tz_date').val() + "'])");
 	}
 
-	if ($('#tz_date').val() == $('#tz_select_date_suggest').attr('data-suggested-tz')) {
+	if ($('#tz_date').val() === $('#tz_select_date_suggest').attr('data-suggested-tz')) {
 		$('#tz_select_date_suggest').css('display', 'none');
 	} else {
 		$('#tz_select_date_suggest').css('display', 'inline');
 	}
 
-	if ($("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option").size() == 1) {
+	if ($("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option").size() === 1) {
 		// If there is only one timezone for the selected date, we just select that automatically.
 		$("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option:first").attr('selected', true);
 		keepSelection = true;
@@ -468,8 +468,8 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 	for (i = 0; i < selectorOptions.length; ++i) {
 		var option = selectorOptions[i];
 
-		if (option.value.substring(0, prefixLength) == prefix) {
-			if ($('#tz_date').val() != option.value && !forceSelector) {
+		if (option.value.substring(0, prefixLength) === prefix) {
+			if ($('#tz_date').val() !== option.value && !forceSelector) {
 				// We do not select the option for the user, but notify him,
 				// that we would suggest a different setting.
 				phpbb.timezoneSwitchDate(true);
