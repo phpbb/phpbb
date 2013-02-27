@@ -189,7 +189,13 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 			}
 			$acp_modules = new acp_modules();
 			$module = $acp_modules->get_module_infos($basename, $class);
+			$module = $module[$basename];
 			unset($acp_modules);
+
+			if (empty($module))
+			{
+				throw new phpbb_db_migration_exception('MODULE_INFO_FILE_NOT_EXIST', $class, $basename);
+			}
 
 			$result = '';
 			foreach ($module['modes'] as $mode => $module_info)
@@ -367,7 +373,13 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 			}
 			$acp_modules = new acp_modules();
 			$module_info = $acp_modules->get_module_infos($basename, $class);
+			$module_info = $module_info[$basename];
 			unset($acp_modules);
+
+			if (empty($module_info))
+			{
+				throw new phpbb_db_migration_exception('MODULE_INFO_FILE_NOT_EXIST', $class, $basename);
+			}
 
 			foreach ($module_info['modes'] as $mode => $info)
 			{
