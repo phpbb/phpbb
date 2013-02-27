@@ -173,7 +173,6 @@ $lang = array_merge($lang, array(
 
 	'EDIT_DRAFT_EXPLAIN'		=> 'Here you are able to edit your draft. Drafts do not contain attachment and poll information.',
 	'EMAIL_BANNED_EMAIL'		=> 'The email address you entered is not allowed to be used.',
-	'EMAIL_INVALID_EMAIL'		=> 'The email address you entered is invalid.',
 	'EMAIL_REMIND'				=> 'This must be the email address associated with your account. If you have not changed this via your user control panel then it is the email address you registered your account with.',
 	'EMAIL_TAKEN_EMAIL'			=> 'The entered email address is already in use.',
 	'EMPTY_DRAFT'				=> 'You must enter a message to submit your changes.',

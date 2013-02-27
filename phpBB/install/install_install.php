@@ -114,6 +114,7 @@ class install_install extends module
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
 				$this->disable_avatars_if_unwritable();
+				$this->populate_migrations($phpbb_container->get('migrator'), $phpbb_root_path);
 
 				// Remove the lock file
 				@unlink($phpbb_root_path . 'cache/install_lock');
@@ -1456,12 +1457,12 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config;
+		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config, $phpbb_container;
 
 		// modules require an extension manager
 		if (empty($phpbb_extension_manager))
 		{
-			$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+			$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 		}
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
@@ -1881,6 +1882,21 @@ class install_install extends module
 	}
 
 	/**
+	* Populate migrations for the installation
+	*
+	* This "installs" all migrations from (root path)/includes/db/migrations/data.
+	* "installs" means it adds all migrations to the migrations table, but does not
+	* perform any of the actions in the migrations.
+	*
+	* @param phpbb_db_migrator $migrator
+	* @param string $phpbb_root_path
+	*/
+	function populate_migrations($migrator, $phpbb_root_path)
+	{
+		$migrator->populate_migrations_from_directory($phpbb_root_path . 'includes/db/migration/data/');
+	}
+
+	/**
 	* Generate a list of available mail server authentication methods
 	*/
 	function mail_auth_select($selected_method)
@@ -2098,7 +2114,7 @@ class install_install extends module
 			),
 			'ACP_CAT_CUSTOMISE'		=> array(
 				'ACP_STYLE_MANAGEMENT',
-				'ACP_EXTENSIONS_MANAGEMENT',
+				'ACP_EXTENSION_MANAGEMENT',
 				'ACP_LANGUAGE',
 			),
 			'ACP_CAT_MAINTENANCE'	=> array(

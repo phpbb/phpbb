@@ -1273,6 +1273,19 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_migrations'] = array(
+		'COLUMNS'		=> array(
+			'migration_name'			=> array('VCHAR', ''),
+			'migration_depends_on'		=> array('TEXT', ''),
+			'migration_schema_done'		=> array('BOOL', 0),
+			'migration_data_done'		=> array('BOOL', 0),
+			'migration_data_state'		=> array('TEXT', ''),
+			'migration_start_time'		=> array('TIMESTAMP', 0),
+			'migration_end_time'		=> array('TIMESTAMP', 0),
+		),
+		'PRIMARY_KEY'	=> 'migration_name',
+	);
+
 	$schema_data['phpbb_modules'] = array(
 		'COLUMNS'		=> array(
 			'module_id'				=> array('UINT', NULL, 'auto_increment'),
@@ -1520,18 +1533,21 @@ function get_schema_struct()
 
 	$schema_data['phpbb_reports'] = array(
 		'COLUMNS'		=> array(
-			'report_id'					=> array('UINT', NULL, 'auto_increment'),
-			'reason_id'					=> array('USINT', 0),
-			'post_id'					=> array('UINT', 0),
-			'pm_id'						=> array('UINT', 0),
-			'user_id'					=> array('UINT', 0),
-			'user_notify'				=> array('BOOL', 0),
-			'report_closed'				=> array('BOOL', 0),
-			'report_time'				=> array('TIMESTAMP', 0),
-			'report_text'				=> array('MTEXT_UNI', ''),
-			'reported_post_text'		=> array('MTEXT_UNI', ''),
-			'reported_post_uid'			=> array('VCHAR:8', ''),
-			'reported_post_bitfield'	=> array('VCHAR:255', ''),
+			'report_id'							=> array('UINT', NULL, 'auto_increment'),
+			'reason_id'							=> array('USINT', 0),
+			'post_id'							=> array('UINT', 0),
+			'pm_id'								=> array('UINT', 0),
+			'user_id'							=> array('UINT', 0),
+			'user_notify'						=> array('BOOL', 0),
+			'report_closed'						=> array('BOOL', 0),
+			'report_time'						=> array('TIMESTAMP', 0),
+			'report_text'						=> array('MTEXT_UNI', ''),
+			'reported_post_text'				=> array('MTEXT_UNI', ''),
+			'reported_post_uid'					=> array('VCHAR:8', ''),
+			'reported_post_bitfield'			=> array('VCHAR:255', ''),
+			'reported_post_enable_magic_url'	=> array('BOOL', 1),
+			'reported_post_enable_smilies'		=> array('BOOL', 1),
+			'reported_post_enable_bbcode'		=> array('BOOL', 1)
 		),
 		'PRIMARY_KEY'	=> 'report_id',
 		'KEYS'			=> array(
