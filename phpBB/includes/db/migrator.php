@@ -434,7 +434,7 @@ class phpbb_db_migrator
 			}
 			else
 			{
-				$result = $this->process_data_step($migration->revert_data(), $state['migration_data_state'], false);
+				$result = $this->process_data_step($migration->revert_data(), '', false);
 
 				$state['migration_data_state'] = ($result === true) ? '' : $result;
 				$state['migration_data_done'] = ($result === true) ? false : true;
