@@ -290,7 +290,7 @@ $lang = array_merge($lang, array(
 
 	'NOTIFICATIONS_MARK_ALL_READ'						=> 'Mark all notifications read',
 	'NOTIFICATIONS_MARK_ALL_READ_CONFIRM'				=> 'Are you sure you want to mark all notifications read?',
-	'NOTIFICATIONS_MARK_ALL_READ_SUCCESS'				=> 'All notifications have been marked read successfully.',
+	'NOTIFICATIONS_MARK_ALL_READ_SUCCESS'				=> 'All notifications have been marked read.',
 	'NOTIFICATION_GROUP_MISCELLANEOUS'					=> 'Miscellaneous Notifications',
 	'NOTIFICATION_GROUP_MODERATION'						=> 'Moderation Notifications',
 	'NOTIFICATION_GROUP_POSTING'						=> 'Posting Notifications',
@@ -301,10 +301,10 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TYPE_IN_MODERATION_QUEUE'				=> 'A post or topic needs approval',
 	'NOTIFICATION_TYPE_MODERATION_QUEUE'   				=> 'Your topics/posts are approved or disapproved by a moderator',
 	'NOTIFICATION_TYPE_PM'								=> 'Someone sends you a private message',
-	'NOTIFICATION_TYPE_POST'							=> 'Someone replies to a topic you are subscribed to',
+	'NOTIFICATION_TYPE_POST'							=> 'Someone replies to a topic to which you are subscribed',
 	'NOTIFICATION_TYPE_QUOTE'							=> 'Someone quotes you in a post',
 	'NOTIFICATION_TYPE_REPORT'							=> 'Someone reports a post',
-	'NOTIFICATION_TYPE_TOPIC'				   			=> 'Someone creates a topic in a forum you are subscribed to',
+	'NOTIFICATION_TYPE_TOPIC'				   			=> 'Someone creates a topic in a forum to which you are subscribed',
 
 	'NOTIFY_METHOD'					=> 'Notification method',
 	'NOTIFY_METHOD_BOTH'			=> 'Both',
