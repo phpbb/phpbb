@@ -734,10 +734,6 @@ p.rules a {
 	word-wrap: break-word;
 }
 
-.notification_list ul li p.notification_time {
-	padding-top: 8px;
-}
-
 .notification_list ul.topiclist dt {
 	width: 88%;
 }
