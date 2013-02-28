@@ -316,20 +316,20 @@ class phpbb_db_migrator
 			'class'	=> $migration,
 		);
 
-		if ($migration->effectively_installed())
+		if (!isset($this->migration_state[$name]))
 		{
-			$state = array(
-				'migration_depends_on'	=> $migration->depends_on(),
-				'migration_schema_done' => true,
-				'migration_data_done'	=> true,
-				'migration_data_state'	=> '',
-				'migration_start_time'	=> 0,
-				'migration_end_time'	=> 0,
-			);
-		}
-		else
-		{
-			if (!isset($this->migration_state[$name]))
+			if ($migration->effectively_installed())
+			{
+				$state = array(
+					'migration_depends_on'	=> $migration->depends_on(),
+					'migration_schema_done' => true,
+					'migration_data_done'	=> true,
+					'migration_data_state'	=> '',
+					'migration_start_time'	=> 0,
+					'migration_end_time'	=> 0,
+				);
+			}
+			else
 			{
 				$state['migration_start_time'] = time();
 			}
