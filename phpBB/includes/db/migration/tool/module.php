@@ -178,30 +178,12 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 
 		if (!isset($data['module_langname']))
 		{
-			// The "automatic" way
+			// Automatic method
 			$basename = (isset($data['module_basename'])) ? $data['module_basename'] : '';
 			$basename = str_replace(array('/', '\\'), '', $basename);
 			$class = str_replace(array('/', '\\'), '', $class);
 
-			$include_path = ($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path;
-			$info_file = "$class/info/$basename.{$this->php_ext}";
-
-			// The manual and automatic ways both failed...
-			if (!file_exists($include_path . $info_file))
-			{
-				throw new phpbb_db_migration_exception('MODULE_INFO_FILE_NOT_EXIST', $class, $info_file);
-			}
-
-			$classname = "{$basename}_info";
-
-			if (!class_exists($classname))
-			{
-				include($include_path . $info_file);
-			}
-
-			$info = new $classname;
-			$module = $info->module();
-			unset($info);
+			$module = $this->get_module_info($class, $basename, $include_path);
 
 			$result = '';
 			foreach ($module['modes'] as $mode => $module_info)
@@ -368,29 +350,12 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 			{
 				throw new phpbb_db_migration_exception('MODULE_NOT_EXIST');
 			}
-
+			
 			// Automatic method
 			$basename = str_replace(array('/', '\\'), '', $module['module_basename']);
 			$class = str_replace(array('/', '\\'), '', $class);
 
-			$include_path = ($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path;
-			$info_file = "$class/info/$basename.{$this->php_ext}";
-
-			if (!file_exists($include_path . $info_file))
-			{
-				throw new phpbb_db_migration_exception('MODULE_NOT_EXIST', $info_file);
-			}
-
-			$classname = "{$basename}_info";
-
-			if (!class_exists($classname))
-			{
-				include($include_path . $info_file);
-			}
-
-			$info = new $classname;
-			$module_info = $info->module();
-			unset($info);
+			$module_info = $this->get_module_info($class, $basename, $include_path);
 
 			foreach ($module_info['modes'] as $mode => $info)
 			{
@@ -509,5 +474,63 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 		{
 			return call_user_func_array(array(&$this, $call), $arguments);
 		}
+	}
+
+	/**
+	* Get Module Info
+	*
+	* gets module info data from module info file 
+	*
+	* @param string $class The module class(acp|mcp|ucp)
+	* @param string $basename The base module class name Ex:
+	* 	- the basename for acp_test will be 'test'
+	* 	- the basename for phpbb_ext_my_example_acp_test_module in the my/exameple extension will be phpbb_ext_my_example_acp_test_module.
+	* @param string|bool $include_path If you would like to use a custom include path,
+	* @return array
+	*/
+	public function get_module_info($class, $basename, $include_path)
+	{
+		if (!$basename)
+		{
+			return array();
+		}
+
+		// We determine if module is provided by an extension or not
+		// Module base names from extensions will usually be something like phpbb_ext_my_extension_acp_test_module.
+		if (strpos($basename, 'phpbb_ext') !== false)
+		{
+			global $phpbb_container;
+
+			// use autoloader class to get module path from basename
+			$loader = $phpbb_container->get('class_loader.ext');
+			$include_path = $loader->resolve_path($basename);
+
+			// replace the last 'module' in path string with 'info' since info file/class is in form 
+			// test_info.php or phpbb_ext_my_extension_acp_test_info respectively
+			$include_path = preg_replace('/module(?!.*module)/', 'info', $include_path);
+			$classname = preg_replace('/module(?!.*module)/', 'info', $basename);
+		}
+		else
+		{
+			$include_path = ($include_path === false) ? $this->phpbb_root_path . 'includes/' : $include_path;
+			$include_path .= "$class/info/$basename.{$this->php_ext}";
+			$classname = "{$basename}_info";
+		}
+
+		if (!file_exists($include_path))
+		{
+			throw new phpbb_db_migration_exception('MODULE_NOT_EXIST', $include_path);
+		}
+
+		if (!class_exists($classname))
+		{
+			include($include_path);
+		}
+
+		$info = new $classname;
+		$data = $info->module();
+		unset($info);
+
+		return $data;
 	}
 }
