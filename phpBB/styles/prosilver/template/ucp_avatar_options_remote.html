@@ -1,3 +1,17 @@
+<script type="text/javascript">
+// <![CDATA[
+
+onload_functions.push(function() {
+	$('#avatar_remote_url').bind('keyup', function () {
+		$('#avatar_remote_width').val('');
+		$('#avatar_remote_height').val('');
+		$('#avatar_remote_url').unbind('keyup');
+	});
+});
+
+// ]]>
+</script>
+
 <dl>
 	<dt><label for="avatar_remote_url">{L_LINK_REMOTE_AVATAR}{L_COLON}</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></dt>
 	<dd><input type="text" name="avatar_remote_url" id="avatar_remote_url" value="{AVATAR_REMOTE_URL}" class="inputbox" /></dd>
