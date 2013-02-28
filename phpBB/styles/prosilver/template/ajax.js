@@ -177,6 +177,8 @@ $('#qr_full_editor').click(function() {
 	});
 });
 
+
+
 /**
  * This AJAXifies the quick-mod tools. The reason it cannot be a standard
  * callback / data attribute is that it requires filtering - some of the options
