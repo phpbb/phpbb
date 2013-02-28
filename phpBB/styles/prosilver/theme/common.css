@@ -9,8 +9,8 @@ b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
 	margin: 0;
@@ -21,7 +21,7 @@ time, mark, audio, video {
 	vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
+article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
@@ -164,7 +164,7 @@ ul ul, ol ul {
 
 ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	list-style-type: square;
-} 
+}
 
 
 /* Main blocks
@@ -672,3 +672,111 @@ p.rules a {
 .smilies {
 	vertical-align: text-bottom;
 }
+
+#notification_list {
+	display: none;
+	position: absolute;
+	width: 330px;
+	z-index: 1;
+	border: 1px solid;
+	box-shadow: 3px 3px 5px darkgray;
+	border-radius: 5px;
+	margin-top: 8px;
+}
+
+#notification_list ul {
+	max-height: 350px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+#notification_list ul li {
+	width: 310px;
+	padding: 10px;
+	margin: 0;
+	float: left;
+	border-bottom: 1px solid;
+	list-style-type: none;
+	font-size: 0.95em;
+	clear: both;
+}
+
+#notification_list > .header {
+	padding: 0 10px;
+	font-family: Arial, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	text-shadow: 1px 1px 1px white;
+	text-transform: uppercase;	
+	line-height: 30px;
+	border-bottom: 1px solid;
+	border-radius: 5px 5px 0 0;
+}
+
+#notification_list > .header > .header_settings {
+	float: right;
+	font-weight: normal;
+	text-transform: none;
+}
+
+#notification_list > .footer {
+	text-align: center;
+	font-size: 1.2em;
+}
+
+#notification_list ul li a, .notification_list dt > a, #notification_list > .footer > a {
+	display: block;
+}
+
+.notification_list ul li img {
+	float: left;
+	max-width: 50px;
+	max-height: 50px;
+	margin-right: 5px;
+}
+
+.notification_list ul li p {
+	margin: 0;
+	word-wrap: break-word;
+}
+
+.notification_list ul.topiclist dt {
+	width: 88%;
+}
+
+.notification_list .pointer, .notification_list .pointer_inner {
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-top-width: 0;
+	border-bottom: 10px solid;
+	border-left: 10px dashed transparent;
+	border-right: 10px dashed transparent;
+	-webkit-transform: rotate(360deg); /* better anti-aliasing in webkit */
+	display: block;
+}
+
+.notification_list .pointer {
+	right: auto;
+	left: 10px;
+	top: -11px;
+}
+
+.notification_list .pointer_inner {
+	top: auto;
+	bottom: -11px;
+	left: -10px;
+}
+
+.notification_list div.notifications {
+	padding: 5px;
+}
+
+.notification_list p.notifications_title {
+	font-weight: bold;
+}
+
+.notification_list p.notifications_time {
+	font-size: 11px;
+}
+
