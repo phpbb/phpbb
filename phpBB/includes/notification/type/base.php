@@ -154,7 +154,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* Magic method to set data on this notification
 	* 
 	* @param mixed $name
-	* @return mixed
+	* @return null
 	*/
 	public function __set($name, $value)
 	{
@@ -191,6 +191,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	*
 	* @param string $name Name of the variable to set
 	* @param mixed $value Value to set to the variable
+	* @return mixed
 	*/
 	protected function set_data($name, $value)
 	{

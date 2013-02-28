@@ -170,6 +170,8 @@ class phpbb_notification_type_topic extends phpbb_notification_type_base
 	*/
 	public function get_email_template_variables()
 	{
+		$board_url = generate_board_url();
+
 		if ($this->get_data('post_username'))
 		{
 			$username = $this->get_data('post_username');
@@ -184,10 +186,10 @@ class phpbb_notification_type_topic extends phpbb_notification_type_base
 			'FORUM_NAME'				=> htmlspecialchars_decode($this->get_data('forum_name')),
 			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
 
-			'U_TOPIC'					=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->item_parent_id}&t={$this->item_id}",
-			'U_VIEW_TOPIC'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->item_parent_id}&t={$this->item_id}",
-			'U_FORUM'					=> generate_board_url() . "/viewforum.{$this->php_ext}?f={$this->item_parent_id}",
-			'U_STOP_WATCHING_FORUM'		=> generate_board_url() . "/viewforum.{$this->php_ext}?uid={$this->user_id}&f={$this->item_parent_id}&unwatch=forum",
+			'U_TOPIC'					=> "{$board_url}/viewtopic.{$this->php_ext}?f={$this->item_parent_id}&t={$this->item_id}",
+			'U_VIEW_TOPIC'				=> "{$board_url}/viewtopic.{$this->php_ext}?f={$this->item_parent_id}&t={$this->item_id}",
+			'U_FORUM'					=> "{$board_url}/viewforum.{$this->php_ext}?f={$this->item_parent_id}",
+			'U_STOP_WATCHING_FORUM'		=> "{$board_url}/viewforum.{$this->php_ext}?uid={$this->user_id}&f={$this->item_parent_id}&unwatch=forum",
 		);
 	}
 
