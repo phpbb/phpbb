@@ -332,7 +332,6 @@ class phpbb_db_migrator
 			if (!isset($this->migration_state[$name]))
 			{
 				$state['migration_start_time'] = time();
-				$this->insert_migration($name, $state);
 			}
 		}
 
@@ -361,14 +360,7 @@ class phpbb_db_migrator
 			}
 		}
 
-		$insert = $state;
-		$insert['migration_depends_on'] = serialize($state['migration_depends_on']);
-		$sql = 'UPDATE ' . $this->migrations_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $insert) . "
-			WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
-		$this->db->sql_query($sql);
-
-		$this->migration_state[$name] = $state;
+		$this->insert_migration($name, $state);
 
 		return true;
 	}
@@ -440,14 +432,7 @@ class phpbb_db_migrator
 				$state['migration_data_done'] = ($result === true) ? false : true;
 			}
 
-			$insert = $state;
-			$insert['migration_depends_on'] = serialize($state['migration_depends_on']);
-			$sql = 'UPDATE ' . $this->migrations_table . '
-				SET ' . $this->db->sql_build_array('UPDATE', $insert) . "
-				WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
-			$this->db->sql_query($sql);
-
-			$this->migration_state[$name] = $state;
+			$this->insert_migration($name, $state);
 		}
 		else
 		{
@@ -660,7 +645,7 @@ class phpbb_db_migrator
 	}
 
 	/**
-	* Insert migration row into the database
+	* Insert/Update migration row into the database
 	*
 	* @param string $name Name of the migration
 	* @param array $state
@@ -669,12 +654,22 @@ class phpbb_db_migrator
 	protected function insert_migration($name, $state)
 	{
 		$migration_row = $state;
-		$migration_row['migration_name'] = $name;
 		$migration_row['migration_depends_on'] = serialize($state['migration_depends_on']);
 
-		$sql = 'INSERT INTO ' . $this->migrations_table . '
-			' . $this->db->sql_build_array('INSERT', $migration_row);
-		$this->db->sql_query($sql);
+		if (isset($this->migration_state[$name]))
+		{
+			$sql = 'UPDATE ' . $this->migrations_table . '
+				SET ' . $this->db->sql_build_array('UPDATE', $migration_row) . "
+				WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
+			$this->db->sql_query($sql);
+		}
+		else
+		{
+			$migration_row['migration_name'] = $name;
+			$sql = 'INSERT INTO ' . $this->migrations_table . '
+				' . $this->db->sql_build_array('INSERT', $migration_row);
+			$this->db->sql_query($sql);
+		}
 
 		$this->migration_state[$name] = $state;
 	}
