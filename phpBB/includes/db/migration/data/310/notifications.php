@@ -11,7 +11,7 @@ class phpbb_db_migration_data_310_notifications extends phpbb_db_migration
 {
 	public function effectively_installed()
 	{
-		return false;//!$this->db_tools->sql_table_exists($this->table_prefix . 'notifications');
+		return $this->db_tools->sql_table_exists($this->table_prefix . 'notifications');
 	}
 
 	static public function depends_on()
