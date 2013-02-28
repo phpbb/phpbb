@@ -767,3 +767,16 @@ p.rules a {
 	bottom: -11px;
 	left: -10px;
 }
+
+.notification_list div.notifications {
+	padding: 5px;
+}
+
+.notification_list p.notifications_title {
+	font-weight: bold;
+}
+
+.notification_list p.notifications_time {
+	font-size: 11px;
+}
+

@@ -83,9 +83,9 @@
 								<dt>
 									<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
 										{notification_list.AVATAR}
-										<div>
-											<p>{notification_list.FORMATTED_TITLE}</p>
-											<p>{notification_list.TIME}</p>
+										<div class="notifications">
+											<p class="notifications_title">{notification_list.FORMATTED_TITLE}</p>
+											<p class="notifications_time">&raquo; {notification_list.TIME}</p>
 
 											<!-- IF not notification_list.URL and notification_list.U_MARK_READ -->
 												<p><a href="{notification_list.U_MARK_READ}">{L_MARK_READ}</a></p>

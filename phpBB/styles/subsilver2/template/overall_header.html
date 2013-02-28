@@ -153,7 +153,7 @@ function marklist(id, name, state)
 		<tr>
 			<td class="genmed">
 				<!-- IF S_NOTIFICATIONS_DISPLAY -->
-					[ <a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" title="{NOTIFICATIONS_COUNT}">{NOTIFICATIONS_COUNT}</a> ] &bull;
+					[ <a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a> ] &bull;
 					<div id="notification_list" class="notification_list">
 						<div class="row1 header">
 							{L_NOTIFICATIONS}
@@ -176,7 +176,7 @@ function marklist(id, name, state)
 												<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
 													{notifications.FORMATTED_TITLE}
 												<!-- IF notifications.URL --></a><!-- ENDIF -->
-													<br />{notifications.TIME}
+													<br />&raquo; {notifications.TIME}
 												<!-- IF not notifications.URL and notifications.UNREAD -->
 													<br /><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a>
 												<!-- ENDIF -->
