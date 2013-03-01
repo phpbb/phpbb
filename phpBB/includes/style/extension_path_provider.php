@@ -92,7 +92,7 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 					if ($path && !phpbb_is_absolute($path))
 					{
 						$result = $finder->directory('/' . $this->ext_dir_prefix . $path)
-							->get_directories(true, true);
+							->get_directories(true, false, true);
 						foreach ($result as $ext => $ext_path)
 						{
 							$directories[$ext][] = $ext_path;
