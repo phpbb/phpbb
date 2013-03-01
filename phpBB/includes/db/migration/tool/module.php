@@ -183,19 +183,7 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 			$basename = str_replace(array('/', '\\'), '', $basename);
 			$class = str_replace(array('/', '\\'), '', $class);
 
-			if (!class_exists('acp_modules'))
-			{
-				include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
-			}
-			$acp_modules = new acp_modules();
-			$module = $acp_modules->get_module_infos($basename, $class);
-			$module = $module[$basename];
-			unset($acp_modules);
-
-			if (empty($module))
-			{
-				throw new phpbb_db_migration_exception('MODULE_INFO_FILE_NOT_EXIST', $class, $basename);
-			}
+			$module = $this->get_module_info($class, $basename);
 
 			$result = '';
 			foreach ($module['modes'] as $mode => $module_info)
@@ -367,19 +355,7 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 			$basename = str_replace(array('/', '\\'), '', $module['module_basename']);
 			$class = str_replace(array('/', '\\'), '', $class);
 
-			if (!class_exists('acp_modules'))
-			{
-				include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
-			}
-			$acp_modules = new acp_modules();
-			$module_info = $acp_modules->get_module_infos($basename, $class);
-			$module_info = $module_info[$basename];
-			unset($acp_modules);
-
-			if (empty($module_info))
-			{
-				throw new phpbb_db_migration_exception('MODULE_INFO_FILE_NOT_EXIST', $class, $basename);
-			}
+			$module_info = $this->get_module_info($class, $basename);
 
 			foreach ($module_info['modes'] as $mode => $info)
 			{
@@ -498,5 +474,29 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 		{
 			return call_user_func_array(array(&$this, $call), $arguments);
 		}
+	}
+
+	/**
+	* Wrapper for acp_modules::get_module_infos()
+	*
+	* @param string $class Module Class
+	* @param string $basename Module Basename
+	* @return array Module Information
+	*/
+	protected function get_module_info($class, $basename)
+	{
+		if (!class_exists('acp_modules'))
+		{
+			include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
+		}
+		$acp_modules = new acp_modules();
+		$module = $acp_modules->get_module_infos($basename, $class, true);
+
+		if (empty($module));
+		{
+			throw new phpbb_db_migration_exception('MODULE_INFO_FILE_NOT_EXIST', $class, $basename);
+		}
+
+		return array_pop($module);
 	}
 }

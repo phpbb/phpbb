@@ -535,8 +535,14 @@ class acp_modules
 
 	/**
 	* Get available module information from module files
+	*
+	* @param string $module
+	* @param bool|string $module_class
+	* @param bool $use_all_available Use all available instead of just all
+	* 						enabled extensions
+	* @return array
 	*/
-	function get_module_infos($module = '', $module_class = false)
+	function get_module_infos($module = '', $module_class = false, $use_all_available = false)
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -556,7 +562,7 @@ class acp_modules
 				->extension_directory("/$module_class")
 				->core_path("includes/$module_class/info/")
 				->core_prefix($module_class . '_')
-				->get_classes();
+				->get_classes(true, $use_all_available);
 
 			foreach ($modules as $module)
 			{
