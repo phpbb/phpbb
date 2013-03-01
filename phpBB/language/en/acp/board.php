@@ -189,6 +189,7 @@ $lang = array_merge($lang, array(
 	'SMILIES_PER_PAGE'				=> 'Smilies per page',
 	'TOPICS_PER_PAGE'				=> 'Topics per page',
 
+	'POST_REVISION_TRACKING'					=> 'Post Revision Tracking',
 	'REVISION_HISTORY'							=> 'Track post revision history',
 	'REVISION_HISTORY_EXPLAIN'					=> 'Each time a post is edited, an a copy of the old post is saved. Authorized users can view post revision history and can change between revisions.',
 	'REVISION_MAX_AGE'							=> 'Maximum revision age',

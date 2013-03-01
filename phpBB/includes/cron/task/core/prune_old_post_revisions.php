@@ -61,9 +61,13 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 	{
 		$affected_posts = $prune_revision_ids = array();
 
+		// The max age stored in the database is in days; we want seconds
+		// We multiple the number of days by the number of seconds in a day
+		$max_age = $this->config['post_revisions_max_age'] * 86400;
+
 		$sql = 'SELECT revision_id, post_id
 			FROM ' . POST_REVISIONS_TABLE . '
-			WHERE revision_time < ' . (time() - $this->config['post_revisions_max_age']) . '
+			WHERE revision_time < ' . (time() - $max_age) . '
 				AND revision_protected = 0';
 		do
 		{
@@ -104,7 +108,10 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		return $this->config['track_post_revisions'] && $this->config['post_revisions_max_age'];
+		// The max age stored in the database is in days; we want seconds
+		// We multiple the number of days by the number of seconds in a day
+		$max_age = $this->config['post_revisions_max_age'] * 86400;
+		return $this->config['track_post_revisions'] && $max_age;
 	}
 
 	/**
@@ -114,6 +121,9 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 	*/
 	public function should_run()
 	{
-		return $this->config['old_revisions_last_prune_time'] < (time() - $this->config['revision_cron_age_frequency']);
+		// Both config values below are stored as # of days; we want seconds
+		$last_prune_time = $this->config['old_revisions_last_prune_time'] * 86400;
+		$frequency = $this->config['revision_cron_age_frequency'] * 86400;
+		return $last_prune_time < (time() - $frequency);
 	}
 }

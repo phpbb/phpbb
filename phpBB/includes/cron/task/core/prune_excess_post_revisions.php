@@ -138,6 +138,9 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 	*/
 	public function should_run()
 	{
-		return $this->config['excess_revisions_last_prune_time'] < (time() - $this->config['revision_cron_excess_frequency']);
+		// Both config values below are stored as # of days; we want seconds
+		$last_prune_time = $this->config['excess_revisions_last_prune_time'] * 86400;
+		$frequency = $this->config['revision_cron_excess_frequency'] * 86400;
+		return $last_prune_time < (time() - $frequency);
 	}
 }
