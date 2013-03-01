@@ -492,7 +492,7 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 		$acp_modules = new acp_modules();
 		$module = $acp_modules->get_module_infos($basename, $class, true);
 
-		if (empty($module));
+		if (empty($module))
 		{
 			throw new phpbb_db_migration_exception('MODULE_INFO_FILE_NOT_EXIST', $class, $basename);
 		}
