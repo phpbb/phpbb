@@ -82,7 +82,7 @@ class phpbb_db_migration_data_310_teampage extends phpbb_db_migration
 			$result = $this->db->sql_query($sql);
 
 			$teampage_entries = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$teampage_entries[] = array(
 					'group_id'			=> (int) $row['group_id'],
@@ -91,7 +91,7 @@ class phpbb_db_migration_data_310_teampage extends phpbb_db_migration
 					'teampage_parent'	=> 0,
 				);
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
 			if (sizeof($teampage_entries))
 			{
