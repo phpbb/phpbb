@@ -2106,7 +2106,6 @@ class install_install extends module
 			'ACP_CAT_POSTING'		=> array(
 				'ACP_MESSAGES',
 				'ACP_ATTACHMENTS',
-				'ACP_REVISIONS',
 			),
 			'ACP_CAT_USERGROUP'		=> array(
 				'ACP_CAT_USERS',

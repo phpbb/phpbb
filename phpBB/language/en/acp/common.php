@@ -155,9 +155,6 @@ $lang = array_merge($lang, array(
 	'ACP_REGISTER_SETTINGS'		=> 'User registration settings',
 
 	'ACP_RESTORE'				=> 'Restore',
-	'ACP_REVISIONS'				=> 'Post Revision Tracking',
-	'ACP_REVISION_SETTINGS'		=> 'Settings',
-	'ACP_REVISIONS_PURGE'		=> 'Purge',
 
 	'ACP_FEED'					=> 'Feed management',
 	'ACP_FEED_SETTINGS'			=> 'Feed settings',
