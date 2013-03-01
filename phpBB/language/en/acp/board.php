@@ -188,6 +188,21 @@ $lang = array_merge($lang, array(
 	'SMILIES_LIMIT_EXPLAIN'			=> 'Maximum number of smilies in a post. Set to 0 for unlimited smilies.',
 	'SMILIES_PER_PAGE'				=> 'Smilies per page',
 	'TOPICS_PER_PAGE'				=> 'Topics per page',
+
+	'REVISION_HISTORY'							=> 'Track post revision history',
+	'REVISION_HISTORY_EXPLAIN'					=> 'Each time a post is edited, an a copy of the old post is saved. Authorized users can view post revision history and can change between revisions.',
+	'REVISION_MAX_AGE'							=> 'Maximum revision age',
+	'REVISION_MAX_AGE_EXPLAIN'					=> 'Set to 0 for unlimited revision age. Revisions older than the specified age will be removed automatically.',
+	'REVISION_LIMIT'							=> 'Maximum revisions to save per post',
+	'REVISION_LIMIT_EXPLAIN'					=> 'Set to 0 for unlimited revisions per post. Once revision threshold is reached, the oldest revision will be removed to make room for the new one. <strong>Protected revisions do not count toward the total number of allowed revisions.</strong>',
+	'REVISION_WIKI_ALLOW'						=> 'Allow wiki posts',
+	'REVISION_WIKI_ALLOW_EXPLAIN'				=> 'If enabled, authorized users can make their posts freely editable for other authorized users.',
+	'REVISION_WIKI_LIMIT'						=> 'Maximum revisions to save per wiki post',
+	'REVISION_WIKI_LIMIT_EXPLAIN'				=> 'Set to 0 for unlimited revisions per wiki post. Once revision threshold is reached, the oldest revision will be removed to make room for the new one.',
+	'REVISION_CRON_AGE_FREQUENCY'				=> 'Old revision pruning frequency',
+	'REVISION_CRON_AGE_FREQUENCY_EXPLAIN'		=> 'Number of days that cron should wait before running again.',
+	'REVISION_CRON_EXCESS_FREQUENCY'			=> 'Excess revision pruning frequency',
+	'REVISION_CRON_EXCESS_FREQUENCY_EXPLAIN'	=> 'Number of days that cron should wait before running again.',
 ));
 
 // Signature Settings
