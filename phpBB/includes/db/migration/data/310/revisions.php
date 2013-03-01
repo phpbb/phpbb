@@ -80,7 +80,7 @@ class phpbb_db_migration_data_310_revisions extends phpbb_db_migration
 			array('permission.add', array('m_protect_revisions', false)),
 			array('permission.add', array('a_revisions', true, 'a_attach')),
 
-			array('config.add', array('track_post_revisions', '1')),
+			array('config.add', array('track_post_revisions', '0')),
 			array('config.add', array('post_revisions_max_age', '0')),
 			array('config.add', array('revisions_per_post_max', '0')),
 			array('config.add', array('revisions_per_wiki_post_max', '0')),
