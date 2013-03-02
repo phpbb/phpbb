@@ -1605,7 +1605,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				);
 
 				$sql_data[POSTS_TABLE]['sql'] = array_merge($sql_data[POSTS_TABLE]['sql'], array(
-					'post_revision_count'			=> $data['original_post_data']['post_revision_count']++,
+					'post_revision_count'			=> ++$data['original_post_data']['post_revision_count'],
 				));
 			}
 
