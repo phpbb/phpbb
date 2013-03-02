@@ -49,13 +49,12 @@ class phpbb_extension_manager
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, phpbb_db_migrator $migrator, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->container = $container;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
 		$this->config = $config;
-		$this->migrator = $migrator;
 		$this->cache = $cache;
 		$this->php_ext = $php_ext;
 		$this->extension_table = $extension_table;
@@ -67,6 +66,14 @@ class phpbb_extension_manager
 		{
 			$this->load_extensions();
 		}
+	}
+
+	/**
+	* Set migrator (get around circular reference)
+	*/
+	public function set_migrator(phpbb_db_migrator $migrator)
+	{
+		$this->migrator = $migrator;
 	}
 
 	/**

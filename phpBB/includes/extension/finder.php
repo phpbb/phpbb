@@ -258,6 +258,17 @@ class phpbb_extension_finder
 
 		$files = $this->find($cache, false, $use_all_available);
 
+		return $this->get_classes_from_files($files);
+	}
+
+	/**
+	* Get class names from a list of files
+	*
+	* @param array $files Array of files (from find())
+	* @return array Array of class names
+	*/
+	public function get_classes_from_files($files)
+	{
 		$classes = array();
 		foreach ($files as $file => $ext_name)
 		{
@@ -339,16 +350,6 @@ class phpbb_extension_finder
 	*/
 	public function find($cache = true, $is_dir = false, $use_all_available = false)
 	{
-		$this->query['is_dir'] = $is_dir;
-		$query = md5(serialize($this->query));
-
-		if (!defined('DEBUG') && $cache && isset($this->cached_queries[$query]))
-		{
-			return $this->cached_queries[$query];
-		}
-
-		$files = array();
-
 		if ($use_all_available)
 		{
 			$extensions = $this->extension_manager->all_available();
@@ -362,6 +363,39 @@ class phpbb_extension_finder
 		{
 			$extensions['/'] = $this->phpbb_root_path . $this->query['core_path'];
 		}
+
+		$files = array();
+		$file_list = $this->find_from_paths($extensions, $cache, $is_dir);
+
+		foreach ($file_list as $file)
+		{
+			$files[$file['named_path']] = $file['ext_name'];
+		}
+
+		return $files;
+	}
+
+	/**
+	* Finds all file system entries matching the configured options from
+	* an array of paths
+	*
+	* @param array $extensions Array of extensions (name => full relative path)
+	* @param bool $cache Whether the result should be cached
+	* @param bool $is_dir Directories will be returned when true, only files
+	*                     otherwise
+	* @return array An array of paths to found items
+	*/
+	public function find_from_paths($extensions, $cache = true, $is_dir = false)
+	{
+		$this->query['is_dir'] = $is_dir;
+		$query = md5(serialize($this->query) . serialize($extensions));
+
+		if (!defined('DEBUG') && $cache && isset($this->cached_queries[$query]))
+		{
+			return $this->cached_queries[$query];
+		}
+
+		$files = array();
 
 		foreach ($extensions as $name => $path)
 		{
@@ -436,7 +470,12 @@ class phpbb_extension_finder
 						(!$prefix || substr($filename, 0, strlen($prefix)) === $prefix) &&
 						(!$directory || preg_match($directory_pattern, $relative_path)))
 					{
-						$files[str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . substr($relative_path, 1))] = $ext_name;
+						$files[] = array(
+							'named_path'	=> str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . substr($relative_path, 1)),
+							'ext_name'		=> $ext_name,
+							'path'			=> str_replace(array(DIRECTORY_SEPARATOR, $this->phpbb_root_path), array('/', ''), $file_info->getPath()) . '/',
+							'filename'		=> $filename,
+						);
 					}
 				}
 			}
