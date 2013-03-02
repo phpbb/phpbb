@@ -151,7 +151,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$config,
 			$db,
 			$db_tools,
-			$manager,
 			self::$config['table_prefix'] . 'migrations',
 			$phpbb_root_path,
 			$php_ext,
@@ -159,6 +158,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			array()
 		);
 		$extension_manager->set_migrator($migrator);
+		$migrator->set_extension_manager($extension_manager);
 
 		return $extension_manager;
 	}

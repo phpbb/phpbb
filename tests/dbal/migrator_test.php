@@ -58,12 +58,13 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$this->config,
 			$this->db,
 			$this->db_tools,
-			$this->extension_manager,
 			'phpbb_migrations',
 			dirname(__FILE__) . '/../../phpBB/',
 			'php',
-			'phpbb_', $tools
+			'phpbb_',
+			$tools
 		);
+		$this->migrator->set_extension_manager($this->extension_manager);
 	}
 
 	public function test_update()

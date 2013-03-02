@@ -110,7 +110,6 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$config,
 			$db,
 			$db_tools,
-			$manager,
 			'phpbb_migrations',
 			$phpbb_root_path,
 			$php_ext,
@@ -118,6 +117,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			array()
 		);
 		$manager->set_migrator($migrator);
+		$migrator->set_extension_manager($manager);
 
 		return $manager;
 	}
