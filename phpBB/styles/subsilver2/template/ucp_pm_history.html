@@ -37,7 +37,7 @@
 					<td valign="top">
 						<table width="100%" cellspacing="0" cellpadding="2">
 						<tr>
-							<td><div class="postbody">{history_row.MESSAGE}</div><div id="message_{history_row.MSG_ID}" style="display: none;">{history_row.DECODED_MESSAGE}</div></td>
+							<td><div class="postbody"><!-- IF history_row.MESSAGE -->{history_row.MESSAGE}<!-- ELSE --><span class="error">{L_MESSAGE_REMOVED_FROM_OUTBOX}</span><!-- ENDIF --></div><div id="message_{history_row.MSG_ID}" style="display: none;">{history_row.DECODED_MESSAGE}</div></td>
 						</tr>
 						</table>
 					</td>
