@@ -5,6 +5,7 @@ services:
             - @config
             - @dbal.conn
             - @dbal.tools
+            - @ext.manager
             - %tables.migrations%
             - %core.root_path%
             - %core.php_ext%

@@ -31,6 +31,9 @@ class phpbb_db_migrator
 	/** @var phpbb_db_tools */
 	protected $db_tools;
 
+	/** @var phpbb_extension_manager */
+	protected $extension_manager;
+
 	/** @var string */
 	protected $table_prefix;
 
@@ -69,11 +72,12 @@ class phpbb_db_migrator
 	/**
 	* Constructor of the database migrator
 	*/
-	public function __construct(phpbb_config $config, phpbb_db_driver $db, phpbb_db_tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools)
+	public function __construct(phpbb_config $config, phpbb_db_driver $db, phpbb_db_tools $db_tools, phpbb_extension_manager $extension_manager, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->db_tools = $db_tools;
+		$this->extension_manager = $extension_manager;
 
 		$this->migrations_table = $migrations_table;
 
@@ -180,55 +184,26 @@ class phpbb_db_migrator
 	* 	If FALSE, we will not check. You SHOULD check at least once
 	* 	to prevent errors (if including multiple directories, check
 	* 	with the last call to prevent throwing errors unnecessarily).
-	* @param bool $recursive Set to true to also load data files from subdirectories
 	* @return array Array of migration names
 	*/
-	public function load_migrations($path, $check_fulfillable = true, $recursive = true)
+	public function load_migrations($path, $check_fulfillable = true)
 	{
 		if (!is_dir($path))
 		{
 			throw new phpbb_db_migration_exception('DIRECTORY INVALID', $path);
 		}
 
-		$handle = opendir($path);
-		while (($file = readdir($handle)) !== false)
+		$finder = $this->extension_manager->get_finder();
+		$migration_files = $finder
+			->extension_directory("/")
+			->find_from_paths(array('/' => $path));
+		foreach ($migration_files as $migration)
 		{
-			if ($file == '.' || $file == '..')
+			$migration_name = $migration['path'] . $migration['filename'];
+
+			if (!in_array($migration_name, $this->migrations))
 			{
-				continue;
-			}
-
-			// Recursion through subdirectories
-			if (is_dir($path . $file) && $recursive)
-			{
-				$this->load_migrations($path . $file . '/', $check_fulfillable, $recursive);
-			}
-
-			if (strpos($file, '_') !== 0 && strrpos($file, '.' . $this->php_ext) === (strlen($file) - strlen($this->php_ext) - 1))
-			{
-				// We try to find what class existed by comparing the classes declared before and after including the file.
-				$declared_classes = get_declared_classes();
-
-				include ($path . $file);
-
-				$added_classes = array_diff(get_declared_classes(), $declared_classes);
-
-				if (
-					// If two classes have been added and phpbb_db_migration is one of them, we've only added one real migration
-					!(sizeof($added_classes) == 2 && in_array('phpbb_db_migration', $added_classes)) &&
-					// Otherwise there should only be one class added
-					sizeof($added_classes) != 1
-				)
-				{
-					throw new phpbb_db_migration_exception('MIGRATION DATA FILE INVALID', $path . $file);
-				}
-
-				$name = array_pop($added_classes);
-
-				if (!in_array($name, $this->migrations))
-				{
-					$this->migrations[] = $name;
-				}
+				$this->migrations[] = $migration_name;
 			}
 		}
 
