@@ -193,17 +193,23 @@ class phpbb_db_migrator
 			throw new phpbb_db_migration_exception('DIRECTORY INVALID', $path);
 		}
 
+		$migrations = array();
+
 		$finder = $this->extension_manager->get_finder();
-		$migration_files = $finder
+		$files = $finder
 			->extension_directory("/")
 			->find_from_paths(array('/' => $path));
-		foreach ($migration_files as $migration)
+		foreach ($files as $file)
 		{
-			$migration_name = $migration['path'] . $migration['filename'];
+			$migrations[$file['path'] . $file['filename']] = '';
+		}
+		$migrations = $finder->get_classes_from_files($migrations);
 
-			if (!in_array($migration_name, $this->migrations))
+		foreach ($migrations as $migration)
+		{
+			if (!in_array($migration, $this->migrations))
 			{
-				$this->migrations[] = $migration_name;
+				$this->migrations[] = $migration;
 			}
 		}
 
