@@ -209,9 +209,6 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 		}
 
 		// The "manual" way
-		$module_log_name = ((isset($this->user->lang[$data['module_langname']])) ? $this->user->lang[$data['module_langname']] : $data['module_langname']);
-		add_log('admin', 'LOG_MODULE_ADD', $module_log_name);
-
 		if (!is_numeric($parent))
 		{
 			$sql = 'SELECT module_id
@@ -267,6 +264,8 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 		else
 		{
 			// Success
+			$module_log_name = ((isset($this->user->lang[$data['module_langname']])) ? $this->user->lang[$data['module_langname']] : $data['module_langname']);
+			add_log('admin', 'LOG_MODULE_ADD', $module_log_name);
 
 			// Move the module if requested above/below an existing one
 			if (isset($data['before']) && $data['before'])
