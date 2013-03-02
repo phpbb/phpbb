@@ -475,7 +475,6 @@ class phpbb_extension_finder
 							'ext_name'		=> $ext_name,
 							'path'			=> str_replace(array(DIRECTORY_SEPARATOR, $this->phpbb_root_path), array('/', ''), $file_info->getPath()) . '/',
 							'filename'		=> $filename,
-							'file_info'		=> $file_info,
 						);
 					}
 				}

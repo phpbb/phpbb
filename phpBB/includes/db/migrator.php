@@ -72,12 +72,11 @@ class phpbb_db_migrator
 	/**
 	* Constructor of the database migrator
 	*/
-	public function __construct(phpbb_config $config, phpbb_db_driver $db, phpbb_db_tools $db_tools, phpbb_extension_manager $extension_manager, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools)
+	public function __construct(phpbb_config $config, phpbb_db_driver $db, phpbb_db_tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->db_tools = $db_tools;
-		$this->extension_manager = $extension_manager;
 
 		$this->migrations_table = $migrations_table;
 
@@ -92,6 +91,16 @@ class phpbb_db_migrator
 		}
 
 		$this->load_migration_state();
+	}
+
+	/**
+	* Set Extension Manager (required)
+	*
+	* Not in constructor to prevent circular reference error
+	*/
+	public function set_extension_manager(phpbb_extension_manager $extension_manager)
+	{
+		$this->extension_manager = $extension_manager;
 	}
 
 	/**
