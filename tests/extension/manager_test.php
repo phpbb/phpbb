@@ -25,14 +25,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		$this->extension_manager = new phpbb_extension_manager(
-			$this->new_dbal(),
-			new phpbb_config(array()),
-			'phpbb_ext',
-			dirname(__FILE__) . '/',
-			'.php',
-			new phpbb_mock_cache
-		);
+		$this->extension_manager = $this->create_extension_manager();
 	}
 
 	public function test_available()
@@ -89,15 +82,43 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 	public function test_enabled_no_cache()
 	{
-		$extension_manager = new phpbb_extension_manager(
-			$this->new_dbal(),
-			new phpbb_config(array()),
-			'phpbb_ext',
-			dirname(__FILE__) . '/',
-			'.php'
-		);
+		$extension_manager = $this->create_extension_manager(false);
 
 		$this->assertEquals(array('foo'), array_keys($extension_manager->all_enabled()));
 	}
 
+	protected function create_extension_manager($with_cache = true)
+	{
+
+		$config = new phpbb_config(array());
+		$db = $this->new_dbal();
+		$db_tools = new phpbb_db_tools($db);
+		$phpbb_root_path = __DIR__ . './../../phpBB/';
+		$php_ext = 'php';
+		$table_prefix = 'phpbb_';
+
+		$manager = new phpbb_extension_manager(
+			new phpbb_mock_container_builder(),
+			$db,
+			$config,
+			'phpbb_ext',
+			dirname(__FILE__) . '/',
+			'.' . $php_ext,
+			($with_cache) ? new phpbb_mock_cache() : null
+		);
+		$migrator = new phpbb_db_migrator(
+			$config,
+			$db,
+			$db_tools,
+			'phpbb_migrations',
+			$phpbb_root_path,
+			$php_ext,
+			$table_prefix,
+			array()
+		);
+		$manager->set_migrator($migrator);
+		$migrator->set_extension_manager($manager);
+
+		return $manager;
+	}
 }

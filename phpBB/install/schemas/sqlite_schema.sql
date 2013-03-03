@@ -430,6 +430,29 @@ CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules (left_id, right_id);
 CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules (module_enabled);
 CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id);
 
+# Table: 'phpbb_notification_types'
+CREATE TABLE phpbb_notification_types (
+	notification_type varchar(255) NOT NULL DEFAULT '',
+	notification_type_enabled INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	PRIMARY KEY (notification_type, notification_type_enabled)
+);
+
+
+# Table: 'phpbb_notifications'
+CREATE TABLE phpbb_notifications (
+	notification_id INTEGER PRIMARY KEY NOT NULL ,
+	item_type varchar(255) NOT NULL DEFAULT '',
+	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	item_parent_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	notification_read INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	notification_time INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	notification_data text(65535) NOT NULL DEFAULT ''
+);
+
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id);
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read);
+
 # Table: 'phpbb_poll_options'
 CREATE TABLE phpbb_poll_options (
 	poll_option_id tinyint(4) NOT NULL DEFAULT '0',
@@ -840,6 +863,16 @@ CREATE TABLE phpbb_topics_watch (
 CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch (topic_id);
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch (user_id);
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status);
+
+# Table: 'phpbb_user_notifications'
+CREATE TABLE phpbb_user_notifications (
+	item_type varchar(255) NOT NULL DEFAULT '',
+	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	method varchar(255) NOT NULL DEFAULT '',
+	notify INTEGER UNSIGNED NOT NULL DEFAULT '1'
+);
+
 
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (

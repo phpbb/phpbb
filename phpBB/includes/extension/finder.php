@@ -247,15 +247,28 @@ class phpbb_extension_finder
 	* phpBB naming rules an incorrect class name will be returned.
 	*
 	* @param bool $cache Whether the result should be cached
+	* @param bool $use_all_available Use all available instead of just all
+	* 						enabled extensions
 	* @return array An array of found class names
 	*/
-	public function get_classes($cache = true)
+	public function get_classes($cache = true, $use_all_available = false)
 	{
 		$this->query['extension_suffix'] .= $this->php_ext;
 		$this->query['core_suffix'] .= $this->php_ext;
 
-		$files = $this->find($cache, false);
+		$files = $this->find($cache, false, $use_all_available);
 
+		return $this->get_classes_from_files($files);
+	}
+
+	/**
+	* Get class names from a list of files
+	*
+	* @param array $files Array of files (from find())
+	* @return array Array of class names
+	*/
+	public function get_classes_from_files($files)
+	{
 		$classes = array();
 		foreach ($files as $file => $ext_name)
 		{
@@ -270,23 +283,27 @@ class phpbb_extension_finder
 	* Finds all directories matching the configured options
 	*
 	* @param bool $cache Whether the result should be cached
+	* @param bool $use_all_available Use all available instead of just all
+	* 						enabled extensions
 	* @param bool $extension_keys Whether the result should have extension name as array key
 	* @return array An array of paths to found directories
 	*/
-	public function get_directories($cache = true, $extension_keys = false)
+	public function get_directories($cache = true, $use_all_available = false, $extension_keys = false)
 	{
-		return $this->find_with_root_path($cache, true, $extension_keys);
+		return $this->find_with_root_path($cache, true, $use_all_available, $extension_keys);
 	}
 
 	/**
 	* Finds all files matching the configured options.
 	*
 	* @param bool $cache Whether the result should be cached
+	* @param bool $use_all_available Use all available instead of just all
+	* 						enabled extensions
 	* @return array An array of paths to found files
 	*/
-	public function get_files($cache = true)
+	public function get_files($cache = true, $use_all_available = false)
 	{
-		return $this->find_with_root_path($cache, false);
+		return $this->find_with_root_path($cache, false, $use_all_available);
 	}
 
 	/**
@@ -295,13 +312,15 @@ class phpbb_extension_finder
 	* @param bool $cache Whether the result should be cached
 	* @param bool $is_dir Directories will be returned when true, only files
 	*                     otherwise
+	* @param bool $use_all_available Use all available instead of just all
+	* 						enabled extensions
 	* @param bool $extension_keys If true, result will be associative array
 	*					with extension name as key
 	* @return array An array of paths to found items
 	*/
-	protected function find_with_root_path($cache = true, $is_dir = false, $extension_keys = false)
+	protected function find_with_root_path($cache = true, $is_dir = false, $use_all_available = false, $extension_keys = false)
 	{
-		$items = $this->find($cache, $is_dir);
+		$items = $this->find($cache, $is_dir, $use_all_available);
 
 		$result = array();
 		foreach ($items as $item => $ext_name)
@@ -325,12 +344,51 @@ class phpbb_extension_finder
 	* @param bool $cache Whether the result should be cached
 	* @param bool $is_dir Directories will be returned when true, only files
 	*                     otherwise
+	* @param bool $use_all_available Use all available instead of just all
+	* 						enabled extensions
 	* @return array An array of paths to found items
 	*/
-	public function find($cache = true, $is_dir = false)
+	public function find($cache = true, $is_dir = false, $use_all_available = false)
+	{
+		if ($use_all_available)
+		{
+			$extensions = $this->extension_manager->all_available();
+		}
+		else
+		{
+			$extensions = $this->extension_manager->all_enabled();
+		}
+
+		if ($this->query['core_path'])
+		{
+			$extensions['/'] = $this->phpbb_root_path . $this->query['core_path'];
+		}
+
+		$files = array();
+		$file_list = $this->find_from_paths($extensions, $cache, $is_dir);
+
+		foreach ($file_list as $file)
+		{
+			$files[$file['named_path']] = $file['ext_name'];
+		}
+
+		return $files;
+	}
+
+	/**
+	* Finds all file system entries matching the configured options from
+	* an array of paths
+	*
+	* @param array $extensions Array of extensions (name => full relative path)
+	* @param bool $cache Whether the result should be cached
+	* @param bool $is_dir Directories will be returned when true, only files
+	*                     otherwise
+	* @return array An array of paths to found items
+	*/
+	public function find_from_paths($extensions, $cache = true, $is_dir = false)
 	{
 		$this->query['is_dir'] = $is_dir;
-		$query = md5(serialize($this->query));
+		$query = md5(serialize($this->query) . serialize($extensions));
 
 		if (!defined('DEBUG') && $cache && isset($this->cached_queries[$query]))
 		{
@@ -338,13 +396,6 @@ class phpbb_extension_finder
 		}
 
 		$files = array();
-
-		$extensions = $this->extension_manager->all_enabled();
-
-		if ($this->query['core_path'])
-		{
-			$extensions['/'] = $this->phpbb_root_path . $this->query['core_path'];
-		}
 
 		foreach ($extensions as $name => $path)
 		{
@@ -419,7 +470,12 @@ class phpbb_extension_finder
 						(!$prefix || substr($filename, 0, strlen($prefix)) === $prefix) &&
 						(!$directory || preg_match($directory_pattern, $relative_path)))
 					{
-						$files[str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . substr($relative_path, 1))] = $ext_name;
+						$files[] = array(
+							'named_path'	=> str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . substr($relative_path, 1)),
+							'ext_name'		=> $ext_name,
+							'path'			=> str_replace(array(DIRECTORY_SEPARATOR, $this->phpbb_root_path), array('/', ''), $file_info->getPath()) . '/',
+							'filename'		=> $filename,
+						);
 					}
 				}
 			}

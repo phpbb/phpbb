@@ -492,6 +492,19 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 	}
 };
 
+// Toggle notification list
+$('#notification_list_button').click(function(e) {
+	$('#notification_list').toggle();
+	e.preventDefault();
+});
+$('#phpbb').click(function(e) {
+    var target = $(e.target);
+
+    if (!target.is('#notification_list') && !target.is('#notification_list_button') && !target.parents().is('#notification_list')) {
+        $('#notification_list').hide();
+    }
+});
+
 phpbb.ajaxCallbacks = {};
 
 /**

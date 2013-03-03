@@ -632,6 +632,43 @@ BEGIN
 END;;
 
 
+# Table: 'phpbb_notification_types'
+CREATE TABLE phpbb_notification_types (
+	notification_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notification_type_enabled INTEGER DEFAULT 1 NOT NULL
+);;
+
+ALTER TABLE phpbb_notification_types ADD PRIMARY KEY (notification_type, notification_type_enabled);;
+
+
+# Table: 'phpbb_notifications'
+CREATE TABLE phpbb_notifications (
+	notification_id INTEGER NOT NULL,
+	item_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	item_id INTEGER DEFAULT 0 NOT NULL,
+	item_parent_id INTEGER DEFAULT 0 NOT NULL,
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	notification_read INTEGER DEFAULT 0 NOT NULL,
+	notification_time INTEGER DEFAULT 1 NOT NULL,
+	notification_data BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
+);;
+
+ALTER TABLE phpbb_notifications ADD PRIMARY KEY (notification_id);;
+
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications(item_type, item_id);;
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications(user_id, notification_read);;
+
+CREATE GENERATOR phpbb_notifications_gen;;
+SET GENERATOR phpbb_notifications_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_notifications FOR phpbb_notifications
+BEFORE INSERT
+AS
+BEGIN
+	NEW.notification_id = GEN_ID(phpbb_notifications_gen, 1);
+END;;
+
+
 # Table: 'phpbb_poll_options'
 CREATE TABLE phpbb_poll_options (
 	poll_option_id INTEGER DEFAULT 0 NOT NULL,
@@ -1219,6 +1256,16 @@ CREATE TABLE phpbb_topics_watch (
 CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch(topic_id);;
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch(user_id);;
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch(notify_status);;
+
+# Table: 'phpbb_user_notifications'
+CREATE TABLE phpbb_user_notifications (
+	item_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	item_id INTEGER DEFAULT 0 NOT NULL,
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	method VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notify INTEGER DEFAULT 1 NOT NULL
+);;
+
 
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (

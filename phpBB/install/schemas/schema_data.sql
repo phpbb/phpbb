@@ -176,6 +176,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_cdn', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jumpbox', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_notifications', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_guests', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_time', '5');
@@ -770,5 +771,11 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'mpg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'mp3');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogm');
+
+# User Notification Options (for first user)
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_post', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_post', 0, 2, 'phpbb_notification_method_email');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_topic', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_topic', 0, 2, 'phpbb_notification_method_email');
 
 # POSTGRES COMMIT #

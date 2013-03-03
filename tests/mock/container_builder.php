@@ -11,6 +11,9 @@ use Symfony\Component\DependencyInjection\ScopeInterface;
 
 class phpbb_mock_container_builder implements ContainerInterface
 {
+	protected $services = array();
+	protected $parameters = array();
+
 	/**
 	* Sets a service.
 	*
@@ -22,6 +25,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 	*/
 	public function set($id, $service, $scope = self::SCOPE_CONTAINER)
 	{
+		$this->services[$id] = $service;
 	}
 
 	/**
@@ -42,6 +46,12 @@ class phpbb_mock_container_builder implements ContainerInterface
 	*/
 	public function get($id, $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE)
 	{
+		if ($this->has($id))
+		{
+			return $this->services[$id];
+		}
+
+		throw new Exception('Could not find service: ' . $id);
 	}
 
 	/**
@@ -55,6 +65,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 	*/
 	public function has($id)
 	{
+		return isset($this->services[$id]);
 	}
 
 	/**
@@ -70,6 +81,12 @@ class phpbb_mock_container_builder implements ContainerInterface
 	*/
 	public function getParameter($name)
 	{
+		if ($this->hasParameter($name))
+		{
+			return $this->parameters[$name];
+		}
+
+		throw new Exception('Could not find parameter: ' . $name);
 	}
 
 	/**
@@ -83,6 +100,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 	*/
 	public function hasParameter($name)
 	{
+		return isset($this->parameters[$name]);
 	}
 
 	/**
@@ -95,6 +113,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 	*/
 	public function setParameter($name, $value)
 	{
+		$this->parameters[$name] = $value;
 	}
 
 	/**
