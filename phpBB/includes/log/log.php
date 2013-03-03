@@ -177,8 +177,11 @@ class phpbb_log implements phpbb_log_interface
 	}
 
 	/**
-	* This function allows disabling the log system. When add_log is called
-	* and the type is disabled, the log will not be added to the database.
+	* Disable log
+	*
+	* This function allows disabling the log system or parts of it, for this
+	* page call. When add_log is called and the type is disabled,
+	* the log will not be added to the database.
 	*
 	* {@inheritDoc}
 	*/
@@ -202,6 +205,8 @@ class phpbb_log implements phpbb_log_interface
 	}
 
 	/**
+	* Enable log
+	*
 	* This function allows re-enabling the log system.
 	*
 	* {@inheritDoc}

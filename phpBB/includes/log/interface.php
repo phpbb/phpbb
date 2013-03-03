@@ -33,8 +33,11 @@ interface phpbb_log_interface
 	public function is_enabled($type = '');
 
 	/**
-	* This function allows disabling the log system. When add_log is called
-	* and the type is disabled, the log will not be added to the database.
+	* Disable log
+	*
+	* This function allows disabling the log system or parts of it, for this
+	* page call. When add_log is called and the type is disabled,
+	* the log will not be added to the database.
 	*
 	* @param	mixed	$type	The log type we want to disable. Empty to
 	*						disable all logs. Can also be an array of types.
@@ -44,6 +47,8 @@ interface phpbb_log_interface
 	public function disable($type = '');
 
 	/**
+	* Enable log
+	*
 	* This function allows re-enabling the log system.
 	*
 	* @param	mixed	$type	The log type we want to enable. Empty to
