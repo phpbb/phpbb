@@ -1,6 +1,8 @@
 imports:
     - { resource: tables.yml }
     - { resource: cron_tasks.yml }
+    - { resource: notifications.yml }
+    - { resource: migrator.yml }
 
 services:
     auth:
@@ -10,6 +12,10 @@ services:
         class: phpbb_cache_service
         arguments:
              - @cache.driver
+             - @config
+             - @dbal.conn
+             - %core.root_path%
+             - %core.php_ext%
 
     cache.driver:
         class: %cache.driver.class%
@@ -90,6 +96,12 @@ services:
         calls:
             - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
 
+    dbal.tools:
+        file: %core.root_path%includes/db/db_tools.%core.php_ext%
+        class: phpbb_db_tools
+        arguments:
+            - @dbal.conn
+
     event.subscriber_loader:
         class: phpbb_event_extension_subscriber_loader
         arguments:
@@ -101,12 +113,15 @@ services:
     ext.manager:
         class: phpbb_extension_manager
         arguments:
+            - @service_container
             - @dbal.conn
             - @config
             - %tables.ext%
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
+        calls:
+            - [set_migrator, [@migrator]]
 
     ext.finder:
         class: phpbb_extension_finder
@@ -122,6 +137,13 @@ services:
         arguments:
             - @dispatcher
             - @controller.resolver
+
+    hook_finder:
+        class: phpbb_hook_finder
+        arguments:
+            - %core.root_path%
+            - .%core.php_ext%
+            - @cache.driver
 
     kernel_request_subscriber:
         class: phpbb_event_kernel_request_subscriber
@@ -144,6 +166,21 @@ services:
         class: phpbb_event_kernel_terminate_subscriber
         tags:
             - { name: kernel.event_subscriber }
+
+    notification_manager:
+        class: phpbb_notification_manager
+        arguments:
+            - @notification.type_collection
+            - @notification.method_collection
+            - @service_container
+            - @user_loader
+            - @dbal.conn
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
 
     request:
         class: phpbb_request
@@ -187,3 +224,11 @@ services:
 
     user:
         class: phpbb_user
+
+    user_loader:
+        class: phpbb_user_loader
+        arguments:
+            - @dbal.conn
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.users%

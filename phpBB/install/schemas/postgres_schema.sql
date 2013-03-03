@@ -576,6 +576,21 @@ CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache (display_on
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id);
 
 /*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE phpbb_migrations (
+	migration_name varchar(255) DEFAULT '' NOT NULL,
+	migration_depends_on varchar(8000) DEFAULT '' NOT NULL,
+	migration_schema_done INT2 DEFAULT '0' NOT NULL CHECK (migration_schema_done >= 0),
+	migration_data_done INT2 DEFAULT '0' NOT NULL CHECK (migration_data_done >= 0),
+	migration_data_state varchar(8000) DEFAULT '' NOT NULL,
+	migration_start_time INT4 DEFAULT '0' NOT NULL CHECK (migration_start_time >= 0),
+	migration_end_time INT4 DEFAULT '0' NOT NULL CHECK (migration_end_time >= 0),
+	PRIMARY KEY (migration_name)
+);
+
+
+/*
 	Table: 'phpbb_modules'
 */
 CREATE SEQUENCE phpbb_modules_seq;
@@ -598,6 +613,36 @@ CREATE TABLE phpbb_modules (
 CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules (left_id, right_id);
 CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules (module_enabled);
 CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id);
+
+/*
+	Table: 'phpbb_notification_types'
+*/
+CREATE TABLE phpbb_notification_types (
+	notification_type varchar(255) DEFAULT '' NOT NULL,
+	notification_type_enabled INT2 DEFAULT '1' NOT NULL CHECK (notification_type_enabled >= 0),
+	PRIMARY KEY (notification_type, notification_type_enabled)
+);
+
+
+/*
+	Table: 'phpbb_notifications'
+*/
+CREATE SEQUENCE phpbb_notifications_seq;
+
+CREATE TABLE phpbb_notifications (
+	notification_id INT4 DEFAULT nextval('phpbb_notifications_seq'),
+	item_type varchar(255) DEFAULT '' NOT NULL,
+	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
+	item_parent_id INT4 DEFAULT '0' NOT NULL CHECK (item_parent_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	notification_read INT2 DEFAULT '0' NOT NULL CHECK (notification_read >= 0),
+	notification_time INT4 DEFAULT '1' NOT NULL CHECK (notification_time >= 0),
+	notification_data varchar(4000) DEFAULT '' NOT NULL,
+	PRIMARY KEY (notification_id)
+);
+
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id);
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read);
 
 /*
 	Table: 'phpbb_poll_options'
@@ -861,8 +906,11 @@ CREATE TABLE phpbb_reports (
 	report_time INT4 DEFAULT '0' NOT NULL CHECK (report_time >= 0),
 	report_text TEXT DEFAULT '' NOT NULL,
 	reported_post_text TEXT DEFAULT '' NOT NULL,
-	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
 	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
+	reported_post_enable_magic_url INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_magic_url >= 0),
+	reported_post_enable_smilies INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_smilies >= 0),
+	reported_post_enable_bbcode INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_bbcode >= 0),
 	PRIMARY KEY (report_id)
 );
 
@@ -1104,6 +1152,18 @@ CREATE TABLE phpbb_topics_watch (
 CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch (topic_id);
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch (user_id);
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status);
+
+/*
+	Table: 'phpbb_user_notifications'
+*/
+CREATE TABLE phpbb_user_notifications (
+	item_type varchar(255) DEFAULT '' NOT NULL,
+	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	method varchar(255) DEFAULT '' NOT NULL,
+	notify INT2 DEFAULT '1' NOT NULL CHECK (notify >= 0)
+);
+
 
 /*
 	Table: 'phpbb_user_group'

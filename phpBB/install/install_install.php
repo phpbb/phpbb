@@ -52,12 +52,13 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $language, $phpbb_root_path, $cache;
+		global $lang, $template, $language, $phpbb_root_path, $phpEx;
+		global $phpbb_container, $cache;
 
 		switch ($sub)
 		{
 			case 'intro':
-				$cache->purge();
+				$phpbb_container->get('cache.driver')->purge();
 
 				$this->page_title = $lang['SUB_INTRO'];
 
@@ -101,12 +102,19 @@ class install_install extends module
 			break;
 
 			case 'final':
+				// Create a normal container now
+				$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+
+				// Sets the global $cache variable
+				$cache = $phpbb_container->get('cache');
+
 				$this->build_search_index($mode, $sub);
 				$this->add_modules($mode, $sub);
 				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
 				$this->disable_avatars_if_unwritable();
+				$this->populate_migrations($phpbb_container->get('migrator'), $phpbb_root_path);
 
 				// Remove the lock file
 				@unlink($phpbb_root_path . 'cache/install_lock');
@@ -1449,12 +1457,12 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config;
+		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config, $phpbb_container;
 
 		// modules require an extension manager
 		if (empty($phpbb_extension_manager))
 		{
-			$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+			$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 		}
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
@@ -1807,7 +1815,7 @@ class install_install extends module
 	*/
 	function email_admin($mode, $sub)
 	{
-		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpEx;
+		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$this->page_title = $lang['STAGE_FINAL'];
 
@@ -1854,7 +1862,7 @@ class install_install extends module
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
 			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], $config['version'], append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=convert&amp;language=' . $data['language']), '../docs/README.html'),
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
-			'U_ACTION'	=> append_sid($phpbb_root_path . 'adm/index.' . $phpEx, 'i=send_statistics&amp;mode=send_statistics'),
+			'U_ACTION'	=> append_sid($phpbb_admin_path . 'index.' . $phpEx, 'i=send_statistics&amp;mode=send_statistics'),
 		));
 	}
 
@@ -1871,6 +1879,21 @@ class install_install extends module
 			set_config('allow_avatar', 0);
 			set_config('allow_avatar_upload', 0);
 		}
+	}
+
+	/**
+	* Populate migrations for the installation
+	*
+	* This "installs" all migrations from (root path)/includes/db/migrations/data.
+	* "installs" means it adds all migrations to the migrations table, but does not
+	* perform any of the actions in the migrations.
+	*
+	* @param phpbb_db_migrator $migrator
+	* @param string $phpbb_root_path
+	*/
+	function populate_migrations($migrator, $phpbb_root_path)
+	{
+		$migrator->populate_migrations_from_directory($phpbb_root_path . 'includes/db/migration/data/');
 	}
 
 	/**
@@ -2091,7 +2114,7 @@ class install_install extends module
 			),
 			'ACP_CAT_CUSTOMISE'		=> array(
 				'ACP_STYLE_MANAGEMENT',
-				'ACP_EXTENSIONS_MANAGEMENT',
+				'ACP_EXTENSION_MANAGEMENT',
 				'ACP_LANGUAGE',
 			),
 			'ACP_CAT_MAINTENANCE'	=> array(

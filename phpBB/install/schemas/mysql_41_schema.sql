@@ -413,6 +413,19 @@ CREATE TABLE phpbb_moderator_cache (
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
+# Table: 'phpbb_migrations'
+CREATE TABLE phpbb_migrations (
+	migration_name varchar(255) DEFAULT '' NOT NULL,
+	migration_depends_on text NOT NULL,
+	migration_schema_done tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_data_done tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_data_state text NOT NULL,
+	migration_start_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_end_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (migration_name)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
 # Table: 'phpbb_modules'
 CREATE TABLE phpbb_modules (
 	module_id mediumint(8) UNSIGNED NOT NULL auto_increment,
@@ -430,6 +443,30 @@ CREATE TABLE phpbb_modules (
 	KEY left_right_id (left_id, right_id),
 	KEY module_enabled (module_enabled),
 	KEY class_left_id (module_class, left_id)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
+# Table: 'phpbb_notification_types'
+CREATE TABLE phpbb_notification_types (
+	notification_type varchar(255) DEFAULT '' NOT NULL,
+	notification_type_enabled tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	PRIMARY KEY (notification_type, notification_type_enabled)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
+# Table: 'phpbb_notifications'
+CREATE TABLE phpbb_notifications (
+	notification_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	item_type varchar(255) DEFAULT '' NOT NULL,
+	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	item_parent_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	notification_read tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	notification_time int(11) UNSIGNED DEFAULT '1' NOT NULL,
+	notification_data text NOT NULL,
+	PRIMARY KEY (notification_id),
+	KEY item_ident (item_type, item_id),
+	KEY user (user_id, notification_read)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -655,8 +692,11 @@ CREATE TABLE phpbb_reports (
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumtext NOT NULL,
 	reported_post_text mediumtext NOT NULL,
-	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
 	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
+	reported_post_enable_magic_url tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	reported_post_enable_smilies tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	reported_post_enable_bbcode tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (report_id),
 	KEY post_id (post_id),
 	KEY pm_id (pm_id)
@@ -858,6 +898,16 @@ CREATE TABLE phpbb_topics_watch (
 	KEY topic_id (topic_id),
 	KEY user_id (user_id),
 	KEY notify_stat (notify_status)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
+# Table: 'phpbb_user_notifications'
+CREATE TABLE phpbb_user_notifications (
+	item_type varchar(255) DEFAULT '' NOT NULL,
+	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	method varchar(255) DEFAULT '' NOT NULL,
+	notify tinyint(1) UNSIGNED DEFAULT '1' NOT NULL
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

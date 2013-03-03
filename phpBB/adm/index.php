@@ -42,7 +42,6 @@ if (!$auth->acl_get('a_'))
 
 // We define the admin variables now, because the user is now able to use the admin related features...
 define('IN_ADMIN', true);
-$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : './';
 
 // Some oft used variables
 $safe_mode		= (@ini_get('safe_mode') == '1' || strtolower(@ini_get('safe_mode')) === 'on') ? true : false;

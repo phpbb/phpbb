@@ -186,6 +186,16 @@ class phpbb_database_test_connection_manager
 				$this->purge_extras();
 			break;
 
+			case 'phpbb_db_driver_postgres':
+				$this->connect();
+				// Drop all of the tables
+				foreach ($this->get_tables() as $table)
+				{
+					$this->pdo->exec('DROP TABLE ' . $table . ' CASCADE');
+				}
+				$this->purge_extras();
+			break;
+
 			default:
 				$this->connect(false);
 
@@ -417,6 +427,19 @@ class phpbb_database_test_connection_manager
 				{
 					$queries[] = 'DROP SEQUENCE ' . current($row);
 				}
+			break;
+
+			case 'phpbb_db_driver_postgres':
+				$sql = 'SELECT sequence_name
+					FROM information_schema.sequences';
+				$result = $this->pdo->query($sql);
+
+				while ($row = $result->fetch(PDO::FETCH_NUM))
+				{
+					$queries[] = 'DROP SEQUENCE ' . current($row);
+				}
+
+				$queries[] = 'DROP TYPE IF EXISTS varchar_ci CASCADE';
 			break;
 		}
 

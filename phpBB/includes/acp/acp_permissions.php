@@ -656,7 +656,7 @@ class acp_permissions
 	*/
 	function set_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
 	{
-		global $user, $auth;
+		global $db, $cache, $user, $auth;
 		global $request;
 
 		$psubmit = request_var('psubmit', array(0 => array(0 => 0)));
@@ -726,13 +726,13 @@ class acp_permissions
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')
 		{
-			cache_moderators();
+			phpbb_cache_moderators($db, $cache, $auth);
 		}
 
 		// Remove users who are now moderators or admins from everyones foes list
 		if ($permission_type == 'm_' || $permission_type == 'a_')
 		{
-			update_foes($group_id, $user_id);
+			phpbb_update_foes($db, $auth, $group_id, $user_id);
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_id, $forum_id);
@@ -745,7 +745,7 @@ class acp_permissions
 	*/
 	function set_all_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
 	{
-		global $user, $auth;
+		global $db, $cache, $user, $auth;
 		global $request;
 
 		// User or group to be set?
@@ -794,13 +794,13 @@ class acp_permissions
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')
 		{
-			cache_moderators();
+			phpbb_cache_moderators($db, $cache, $auth);
 		}
 
 		// Remove users who are now moderators or admins from everyones foes list
 		if ($permission_type == 'm_' || $permission_type == 'a_')
 		{
-			update_foes($group_id, $user_id);
+			phpbb_update_foes($db, $auth, $group_id, $user_id);
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_ids, $forum_ids);
@@ -858,7 +858,7 @@ class acp_permissions
 	*/
 	function remove_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id, &$forum_id)
 	{
-		global $user, $db, $auth;
+		global $user, $db, $cache, $auth;
 
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
@@ -874,7 +874,7 @@ class acp_permissions
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')
 		{
-			cache_moderators();
+			phpbb_cache_moderators($db, $cache, $auth);
 		}
 
 		$this->log_action($mode, 'del', $permission_type, $ug_type, (($ug_type == 'user') ? $user_id : $group_id), (sizeof($forum_id) ? $forum_id : array(0 => 0)));
@@ -952,12 +952,7 @@ class acp_permissions
 
 		if ($user_id != $user->data['user_id'])
 		{
-			$sql = 'SELECT user_id, username, user_permissions, user_type
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $user_id;
-			$result = $db->sql_query($sql);
-			$userdata = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$userdata = $auth->obtain_user_data($user_id);
 		}
 		else
 		{
@@ -1172,7 +1167,7 @@ class acp_permissions
 	*/
 	function copy_forum_permissions()
 	{
-		global $auth, $cache, $template, $user;
+		global $db, $auth, $cache, $template, $user;
 
 		$user->add_lang('acp/forums');
 
@@ -1187,7 +1182,7 @@ class acp_permissions
 			{
 				if (copy_forum_permissions($src, $dest))
 				{
-					cache_moderators();
+					phpbb_cache_moderators($db, $cache, $auth);
 
 					$auth->acl_clear_prefetch();
 					$cache->destroy('sql', FORUMS_TABLE);

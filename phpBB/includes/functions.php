@@ -97,7 +97,18 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 }
 
 /**
-* Set config value. Creates missing config entry.
+* Sets a configuration option's value.
+*
+* Please note that this function does not update the is_dynamic value for
+* an already existing config option.
+*
+* @param string $config_name   The configuration option's name
+* @param string $config_value  New configuration value
+* @param bool   $is_dynamic    Whether this variable should be cached (false) or
+*                              if it changes too frequently (true) to be
+*                              efficiently cached.
+*
+* @return null
 *
 * @deprecated
 */
@@ -119,7 +130,15 @@ function set_config($config_name, $config_value, $is_dynamic = false, phpbb_conf
 }
 
 /**
-* Set dynamic config value with arithmetic operation.
+* Increments an integer config value directly in the database.
+*
+* @param string $config_name   The configuration option's name
+* @param int    $increment     Amount to increment by
+* @param bool   $is_dynamic    Whether this variable should be cached (false) or
+*                              if it changes too frequently (true) to be
+*                              efficiently cached.
+*
+* @return null
 *
 * @deprecated
 */
@@ -1328,7 +1347,7 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
 	global $db, $user, $config;
-	global $request;
+	global $request, $phpbb_container;
 
 	$post_time = ($post_time === 0 || $post_time > time()) ? time() : (int) $post_time;
 
@@ -1336,6 +1355,20 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 	{
 		if ($forum_id === false || !sizeof($forum_id))
 		{
+			// Mark all forums read (index page)
+
+			$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+			// Mark all topic notifications read for this user
+			$phpbb_notifications->mark_notifications_read(array(
+				'topic',
+				'quote',
+				'bookmark',
+				'post',
+				'approve_topic',
+				'approve_post',
+			), false, $user->data['user_id'], $post_time);
+
 			if ($config['load_db_lastread'] && $user->data['is_registered'])
 			{
 				// Mark all forums read (index page)
@@ -1389,6 +1422,32 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			$forum_id = array($forum_id);
 		}
+
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+		$phpbb_notifications->mark_notifications_read_by_parent(array(
+			'topic',
+			'approve_topic',
+		), $forum_id, $user->data['user_id'], $post_time);
+
+		// Mark all post/quote notifications read for this user in this forum
+		$topic_ids = array();
+		$sql = 'SELECT topic_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $forum_id);
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$topic_ids[] = $row['topic_id'];
+		}
+		$db->sql_freeresult($result);
+
+		$phpbb_notifications->mark_notifications_read_by_parent(array(
+			'quote',
+			'bookmark',
+			'post',
+			'approve_post',
+		), $topic_ids, $user->data['user_id'], $post_time);
 
 		// Add 0 to forums array to mark global announcements correctly
 		// $forum_id[] = 0;
@@ -1486,6 +1545,21 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			return;
 		}
+
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+		// Mark post notifications read for this user in this topic
+		$phpbb_notifications->mark_notifications_read(array(
+			'topic',
+			'approve_topic',
+		), $topic_id, $user->data['user_id'], $post_time);
+
+		$phpbb_notifications->mark_notifications_read_by_parent(array(
+			'quote',
+			'bookmark',
+			'post',
+			'approve_post',
+		), $topic_id, $user->data['user_id'], $post_time);
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{
@@ -4995,7 +5069,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request;
+	global $phpbb_dispatcher, $request, $phpbb_container;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5184,7 +5258,25 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		$timezone_name = $user->lang['timezones'][$timezone_name];
 	}
 
+	// Output the notifications
+	$notifications = false;
+	if ($config['load_notifications'] && $user->data['user_id'] != ANONYMOUS && $user->data['user_type'] != USER_IGNORE)
+	{
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+		$notifications = $phpbb_notifications->load_notifications(array(
+			'all_unread'	=> true,
+			'limit'			=> 5,
+		));
+
+		foreach ($notifications['notifications'] as $notification)
+		{
+			$template->assign_block_vars('notifications', $notification->prepare_for_display());
+		}
+	}
+
 	$hidden_fields_for_jumpbox = phpbb_build_hidden_fields_for_query_params($request, array('f'));
+
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
@@ -5201,6 +5293,12 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
 		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
+
+		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
+		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $user->lang('NOTIFICATIONS_COUNT', $notifications['unread_count']) : '',
+		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
+		'U_NOTIFICATION_SETTINGS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_options'),
+		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'],
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
@@ -5340,7 +5438,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
-	global $request, $phpbb_dispatcher;
+	global $request, $phpbb_dispatcher, $phpbb_admin_path;
 
 	// A listener can set this variable to `true` when it overrides this function
 	$page_footer_override = false;
@@ -5396,7 +5494,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
 
-		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", false, true, $user->session_id) : '')
+		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id) : '')
 	);
 
 	// Call cron-type script
@@ -5583,7 +5681,7 @@ function phpbb_convert_30_dbms_to_31($dbms)
 
 		/*
 		$reflection = new \ReflectionClass($dbms);
-   	 
+
 		if ($reflection->isSubclassOf('phpbb_db_driver'))
 		{
 			return $dbms;

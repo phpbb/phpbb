@@ -2698,12 +2698,12 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			}
 			$db->sql_freeresult($result);
 
-			if (isset($sql_ary['group_avatar']) && !$sql_ary['group_avatar'])
+			if (isset($sql_ary['group_avatar']))
 			{
 				remove_default_avatar($group_id, $user_ary);
 			}
 
-			if (isset($sql_ary['group_rank']) && !$sql_ary['group_rank'])
+			if (isset($sql_ary['group_rank']))
 			{
 				remove_default_rank($group_id, $user_ary);
 			}
@@ -2842,7 +2842,7 @@ function avatar_remove_db($avatar_name)
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $db, $cache, $auth, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	if (!$group_name)
 	{
@@ -2913,12 +2913,12 @@ function group_delete($group_id, $group_name = false)
 	extract($phpbb_dispatcher->trigger_event('core.delete_group_after', compact($vars)));
 
 	// Re-cache moderators
-	if (!function_exists('cache_moderators'))
+	if (!function_exists('phpbb_cache_moderators'))
 	{
 		include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 	}
 
-	cache_moderators();
+	phpbb_cache_moderators($db, $cache, $auth);
 
 	add_log('admin', 'LOG_GROUP_DELETE', $group_name);
 
@@ -3208,8 +3208,8 @@ function remove_default_avatar($group_id, $user_ids)
 			user_avatar_width = 0,
 			user_avatar_height = 0
 		WHERE group_id = " . (int) $group_id . "
-		AND user_avatar = '" . $db->sql_escape($row['group_avatar']) . "'
-		AND " . $db->sql_in_set('user_id', $user_ids);
+			AND user_avatar = '" . $db->sql_escape($row['group_avatar']) . "'
+			AND " . $db->sql_in_set('user_id', $user_ids);
 
 	$db->sql_query($sql);
 }
@@ -3246,9 +3246,9 @@ function remove_default_rank($group_id, $user_ids)
 	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_rank = 0
 		WHERE group_id = ' . (int)$group_id . '
-		AND user_rank <> 0
-		AND user_rank = ' . (int)$row['group_rank'] . '
-		AND ' . $db->sql_in_set('user_id', $user_ids);
+			AND user_rank <> 0
+			AND user_rank = ' . (int)$row['group_rank'] . '
+			AND ' . $db->sql_in_set('user_id', $user_ids);
 	$db->sql_query($sql);
 }
 
@@ -3277,7 +3277,8 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 		case 'demote':
 		case 'promote':
 
-			$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . "
+			$sql = 'SELECT user_id
+				FROM ' . USER_GROUP_TABLE . "
 				WHERE group_id = $group_id
 					AND user_pending = 1
 					AND " . $db->sql_in_set('user_id', $user_id_ary);
@@ -3375,7 +3376,8 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 				return 'NO_USERS';
 			}
 
-			$sql = 'SELECT user_id, group_id FROM ' . USERS_TABLE . '
+			$sql = 'SELECT user_id, group_id
+				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_id', $user_id_ary, false, true);
 			$result = $db->sql_query($sql);
 
@@ -3463,7 +3465,7 @@ function group_validate_groupname($group_id, $group_name)
 */
 function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {
-	global $cache, $db, $phpbb_dispatcher;
+	global $phpbb_container, $db, $phpbb_dispatcher;
 
 	if (empty($user_id_ary))
 	{
@@ -3509,45 +3511,69 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 		}
 	}
 
-	// Before we update the user attributes, we will make a list of those having now the group avatar assigned
+	$updated_sql_ary = $sql_ary;
+
+	// Before we update the user attributes, we will update the rank for users that don't have a custom rank
+	if (isset($sql_ary['user_rank']))
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', array('user_rank' => $sql_ary['user_rank'])) . '
+			WHERE user_rank = 0
+				AND ' . $db->sql_in_set('user_id', $user_id_ary);
+		$db->sql_query($sql);
+		unset($sql_ary['user_rank']);
+	}
+
+	// Before we update the user attributes, we will update the avatar for users that don't have a custom avatar
+	$avatar_options = array('user_avatar', 'user_avatar_type', 'user_avatar_height', 'user_avatar_width');
+
 	if (isset($sql_ary['user_avatar']))
 	{
-		// Ok, get the original avatar data from users having an uploaded one (we need to remove these from the filesystem)
-		$sql = 'SELECT user_id, group_id, user_avatar
-			FROM ' . USERS_TABLE . '
-			WHERE ' . $db->sql_in_set('user_id', $user_id_ary) . '
-				AND user_avatar_type = ' . AVATAR_UPLOAD;
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
+		$avatar_sql_ary = array();
+		foreach ($avatar_options as $avatar_option)
 		{
-			avatar_delete('user', $row);
-		}
-		$db->sql_freeresult($result);
-	}
-	else
-	{
-		unset($sql_ary['user_avatar_type']);
-		unset($sql_ary['user_avatar_height']);
-		unset($sql_ary['user_avatar_width']);
+			if (isset($sql_ary[$avatar_option]))
+			{
+				$avatar_sql_ary[$avatar_option] = $sql_ary[$avatar_option];
+				}
+			}
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $avatar_sql_ary) . "
+			WHERE user_avatar = ''
+				AND " . $db->sql_in_set('user_id', $user_id_ary);
+		$db->sql_query($sql);
 	}
 
-	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-		WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
-	$db->sql_query($sql);
+	// Remove the avatar options, as we already updated them
+	foreach ($avatar_options as $avatar_option)
+	{
+		unset($sql_ary[$avatar_option]);
+	}
+
+	if (!empty($sql_ary))
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+			WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
+		$db->sql_query($sql);
+	}
 
 	if (isset($sql_ary['user_colour']))
 	{
 		// Update any cached colour information for these users
-		$sql = 'UPDATE ' . FORUMS_TABLE . " SET forum_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+		$sql = 'UPDATE ' . FORUMS_TABLE . "
+			SET forum_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
 			WHERE " . $db->sql_in_set('forum_last_poster_id', $user_id_ary);
 		$db->sql_query($sql);
 
-		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_first_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+		$sql = 'UPDATE ' . TOPICS_TABLE . "
+			SET topic_first_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
 			WHERE " . $db->sql_in_set('topic_poster', $user_id_ary);
 		$db->sql_query($sql);
 
-		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+		$sql = 'UPDATE ' . TOPICS_TABLE . "
+			SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
 			WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
 		$db->sql_query($sql);
 
@@ -3558,6 +3584,9 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 			set_config('newest_user_colour', $sql_ary['user_colour'], true);
 		}
 	}
+
+	// Make all values available for the event
+	$sql_ary = $updated_sql_ary;
 
 	/**
 	* Event when the default group is set for an array of users
@@ -3579,7 +3608,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	}
 
 	// Because some tables/caches use usercolour-specific data we need to purge this here.
-	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+	$phpbb_container->get('cache.driver')->destroy('sql', MODERATOR_CACHE_TABLE);
 }
 
 /**
@@ -3678,7 +3707,7 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 */
 function group_update_listings($group_id)
 {
-	global $auth;
+	global $db, $cache, $auth;
 
 	$hold_ary = $auth->acl_group_raw_data($group_id, array('a_', 'm_'));
 
@@ -3720,22 +3749,22 @@ function group_update_listings($group_id)
 
 	if ($mod_permissions)
 	{
-		if (!function_exists('cache_moderators'))
+		if (!function_exists('phpbb_cache_moderators'))
 		{
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
-		cache_moderators();
+		phpbb_cache_moderators($db, $cache, $auth);
 	}
 
 	if ($mod_permissions || $admin_permissions)
 	{
-		if (!function_exists('update_foes'))
+		if (!function_exists('phpbb_update_foes'))
 		{
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
-		update_foes(array($group_id));
+		phpbb_update_foes($db, $auth, array($group_id));
 	}
 }
 

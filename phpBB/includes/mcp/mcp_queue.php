@@ -33,7 +33,7 @@ class mcp_queue
 	public function main($id, $mode)
 	{
 		global $auth, $db, $user, $template, $cache, $request;
-		global $config, $phpbb_root_path, $phpEx, $action;
+		global $config, $phpbb_root_path, $phpEx, $action, $phpbb_container;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
@@ -149,18 +149,24 @@ class mcp_queue
 				$post_id = request_var('p', 0);
 				$topic_id = request_var('t', 0);
 
+				$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 				if ($topic_id)
 				{
 					$topic_info = get_topic_data(array($topic_id), 'm_approve');
 					if (isset($topic_info[$topic_id]['topic_first_post_id']))
 					{
 						$post_id = (int) $topic_info[$topic_id]['topic_first_post_id'];
+
+						$phpbb_notifications->mark_notifications_read('topic_in_queue', $topic_id, $user->data['user_id']);
 					}
 					else
 					{
 						$topic_id = 0;
 					}
 				}
+
+				$phpbb_notifications->mark_notifications_read('post_in_queue', $post_id, $user->data['user_id']);
 
 				$post_info = get_post_data(array($post_id), 'm_approve', true);
 
@@ -567,8 +573,8 @@ class mcp_queue
 	*/
 	static public function approve_posts($action, $post_id_list, $id, $mode)
 	{
-		global $db, $template, $user, $config;
-		global $phpEx, $phpbb_root_path, $request;
+		global $db, $template, $user, $config, $request, $phpbb_container;
+		global $phpEx, $phpbb_root_path;
 
 		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{

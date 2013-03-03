@@ -105,6 +105,15 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 	return $container;
 }
 
+/**
+* Create a compiled and dumped ContainerBuilder object
+*
+* @param array $extensions Array of Container extension objects
+* @param array $passes Array of Compiler Pass objects
+* @param string $phpbb_root_path Root path
+* @param string $php_ext PHP Extension
+* @return ContainerBuilder object (compiled)
+*/
 function phpbb_create_dumped_container(array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
 	// Check for our cached container; if it exists, use it
@@ -129,12 +138,60 @@ function phpbb_create_dumped_container(array $extensions, array $passes, $phpbb_
 	return $container;
 }
 
+/**
+* Create an environment-specific ContainerBuilder object
+*
+* If debug is enabled, the container is re-compiled every time.
+* This ensures that the latest changes will always be reflected
+* during development.
+*
+* Otherwise it will get the existing dumped container and use
+* that one instead.
+*
+* @param array $extensions Array of Container extension objects
+* @param array $passes Array of Compiler Pass objects
+* @param string $phpbb_root_path Root path
+* @param string $php_ext PHP Extension
+* @return ContainerBuilder object (compiled)
+*/
 function phpbb_create_dumped_container_unless_debug(array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
 	$container_factory = defined('DEBUG') ? 'phpbb_create_compiled_container' : 'phpbb_create_dumped_container';
 	return $container_factory($extensions, $passes, $phpbb_root_path, $php_ext);
 }
 
+/**
+* Create a default ContainerBuilder object
+*
+* Contains the default configuration of the phpBB container.
+*
+* @param array $extensions Array of Container extension objects
+* @param array $passes Array of Compiler Pass objects
+* @return ContainerBuilder object (compiled)
+*/
+function phpbb_create_default_container($phpbb_root_path, $php_ext)
+{
+	return phpbb_create_dumped_container_unless_debug(
+		array(
+			new phpbb_di_extension_config($phpbb_root_path . 'config.' . $php_ext),
+			new phpbb_di_extension_core($phpbb_root_path),
+		),
+		array(
+			new phpbb_di_pass_collection_pass(),
+			new phpbb_di_pass_kernel_pass(),
+		),
+		$phpbb_root_path,
+		$php_ext
+	);
+}
+
+/**
+* Get the filename under which the dumped container will be stored.
+*
+* @param string $phpbb_root_path Root path
+* @param string $php_ext PHP Extension
+* @return Path for dumped container
+*/
 function phpbb_container_filename($phpbb_root_path, $php_ext)
 {
 	$filename = str_replace(array('/', '.'), array('slash', 'dot'), $phpbb_root_path);
