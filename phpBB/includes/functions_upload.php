@@ -153,6 +153,40 @@ class filespec
 	{
 		return (strpos($this->mimetype, 'image/') === 0);
 	}
+	
+    /**
+	* Check if file has an allowed extension for a given extension group
+	*
+	* @return true if the extension belongs to the given group
+	*/
+	function is_allowed_extension($extension_group, $extension)
+	{
+		global $db;
+			$sql_array = array(
+		    'SELECT'    => '*',
+		
+		    'FROM'      => array(
+		        EXTENSION_GROUPS_TABLE  => 'eg',
+		    ),
+		
+		    'LEFT_JOIN' => array(
+		        array(
+		            'FROM'  => array(EXTENSIONS_TABLE => 'e'),
+		            'ON'    => 'e.group_id = eg.group_id',
+		        )
+		    ),
+		    'WHERE' => 'eg.group_name = "'.$extension_group.'" AND e.extension = "'.$extension.'"'
+		);
+		
+		
+		$sql = $db->sql_build_query('SELECT', $sql_array);
+		
+		$result = $db->sql_query($sql);
+		if(count($result) == 1){
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	* Check if the file got correctly uploaded
