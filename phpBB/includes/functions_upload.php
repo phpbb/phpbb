@@ -153,7 +153,7 @@ class filespec
 	{
 		return (strpos($this->mimetype, 'image/') === 0);
 	}
-	
+
 	/**
 	* Check if the file got correctly uploaded
 	*
