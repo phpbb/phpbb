@@ -43,18 +43,20 @@ class phpbb_extension_manager
 	* @param ContainerInterface $container A container
 	* @param phpbb_db_driver $db A database connection
 	* @param phpbb_config $config phpbb_config
+	* @param phpbb_db_migrator $migrator
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, phpbb_db_migrator $migrator, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->container = $container;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
 		$this->config = $config;
+		$this->migrator = $migrator;
 		$this->cache = $cache;
 		$this->php_ext = $php_ext;
 		$this->extension_table = $extension_table;
@@ -66,14 +68,6 @@ class phpbb_extension_manager
 		{
 			$this->load_extensions();
 		}
-	}
-
-	/**
-	* Set migrator (get around circular reference)
-	*/
-	public function set_migrator(phpbb_db_migrator $migrator)
-	{
-		$this->migrator = $migrator;
 	}
 
 	/**
@@ -528,13 +522,27 @@ class phpbb_extension_manager
 	*/
 	protected function handle_migrations($extension_name, $mode)
 	{
-		$migrations_path = $this->phpbb_root_path . $this->get_extension_path($extension_name) . 'migrations/';
-		if (!file_exists($migrations_path) || !is_dir($migrations_path))
+		$extensions = array(
+			$extension_name => $this->phpbb_root_path . $this->get_extension_path($extension_name),
+		);
+
+		$finder = $this->get_finder();
+		$migrations = array();
+		$file_list = $finder
+			->extension_directory('/migrations')
+			->find_from_paths($extensions);
+
+		if (empty($file_list))
 		{
 			return true;
 		}
 
-		$migrations = $this->migrator->load_migrations($migrations_path);
+		foreach ($file_list as $file)
+		{
+			$migrations[$file['named_path']] = $file['ext_name'];
+		}
+		$migrations = $finder->get_classes_from_files($migrations);
+		$this->migrator->set_migrations($migrations);
 
 		// What is a safe limit of execution time? Half the max execution time should be safe.
 		$safe_time_limit = (ini_get('max_execution_time') / 2);
