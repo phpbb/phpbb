@@ -63,7 +63,9 @@ class phpbb_db_migrator
 	protected $migrations = array();
 
 	/**
-	* 'name' and 'class' of the last migration run
+	* 'name,' 'class,' and 'state' of the last migration run
+	*
+	* 'effectively_installed' set and set to true if the migration was effectively_installed
 	*
 	* @var array
 	*/
@@ -304,6 +306,7 @@ class phpbb_db_migrator
 		$this->last_run_migration = array(
 			'name'	=> $name,
 			'class'	=> $migration,
+			'state'	=> $state,
 		);
 
 		if (!isset($this->migration_state[$name]))
@@ -318,6 +321,8 @@ class phpbb_db_migrator
 					'migration_start_time'	=> 0,
 					'migration_end_time'	=> 0,
 				);
+
+				$this->last_run_migration['effectively_installed'] = true;
 			}
 			else
 			{
@@ -662,6 +667,8 @@ class phpbb_db_migrator
 		}
 
 		$this->migration_state[$name] = $state;
+
+		$this->last_run_migration['state'] = $state;
 	}
 
 	/**
