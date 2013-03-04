@@ -1178,7 +1178,6 @@ function get_schema_struct()
 			'group_message_limit'	=> array('UINT', 0),
 			'group_max_recipients'	=> array('UINT', 0),
 			'group_legend'			=> array('UINT', 0),
-			'group_teampage'		=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'group_id',
 		'KEYS'			=> array(
@@ -1709,6 +1708,17 @@ function get_schema_struct()
 		'KEYS'			=> array(
 			'style_name'		=> array('UNIQUE', 'style_name'),
 		),
+	);
+
+	$schema_data['phpbb_teampage'] = array(
+		'COLUMNS'		=> array(
+			'teampage_id'		=> array('UINT', NULL, 'auto_increment'),
+			'group_id'			=> array('UINT', 0),
+			'teampage_name'		=> array('VCHAR_UNI:255', ''),
+			'teampage_position'	=> array('UINT', 0),
+			'teampage_parent'	=> array('UINT', 0),
+		),
+		'PRIMARY_KEY'	=> 'teampage_id',
 	);
 
 	$schema_data['phpbb_topics'] = array(

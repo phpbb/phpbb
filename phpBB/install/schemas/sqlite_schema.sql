@@ -318,8 +318,7 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_message_limit INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_max_recipients INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	group_teampage INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_groups_group_legend_name ON phpbb_groups (group_legend, group_name);
@@ -786,6 +785,16 @@ CREATE TABLE phpbb_styles (
 );
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
+
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id INTEGER PRIMARY KEY NOT NULL ,
+	group_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	teampage_name varchar(255) NOT NULL DEFAULT '',
+	teampage_position INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	teampage_parent INTEGER UNSIGNED NOT NULL DEFAULT '0'
+);
+
 
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (

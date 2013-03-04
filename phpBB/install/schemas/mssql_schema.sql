@@ -562,8 +562,7 @@ CREATE TABLE [phpbb_groups] (
 	[group_receive_pm] [int] DEFAULT (0) NOT NULL ,
 	[group_message_limit] [int] DEFAULT (0) NOT NULL ,
 	[group_max_recipients] [int] DEFAULT (0) NOT NULL ,
-	[group_legend] [int] DEFAULT (0) NOT NULL ,
-	[group_teampage] [int] DEFAULT (0) NOT NULL 
+	[group_legend] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1413,6 +1412,26 @@ ALTER TABLE [phpbb_styles] WITH NOCHECK ADD
 GO
 
 CREATE  UNIQUE  INDEX [style_name] ON [phpbb_styles]([style_name]) ON [PRIMARY]
+GO
+
+
+/*
+	Table: 'phpbb_teampage'
+*/
+CREATE TABLE [phpbb_teampage] (
+	[teampage_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[group_id] [int] DEFAULT (0) NOT NULL ,
+	[teampage_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[teampage_position] [int] DEFAULT (0) NOT NULL ,
+	[teampage_parent] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_teampage] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_teampage] PRIMARY KEY  CLUSTERED 
+	(
+		[teampage_id]
+	)  ON [PRIMARY] 
 GO
 
 
