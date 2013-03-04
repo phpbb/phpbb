@@ -344,7 +344,7 @@ function send_avatar_to_browser($file, $browser)
 		$image_data = @getimagesize($file_path);
 		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
 			
-		if (strpos(strtolower($browser), 'msie') !== false && !phpbb_is_greater_ie7($browser))
+		if (!phpbb_is_greater_ie7($browser))
 		{
 			header('Content-Disposition: attachment; ' . header_filename($file));
 
@@ -491,7 +491,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 	else
 	{
-		if (empty($user->browser) || (!phpbb_is_greater_ie7($user->browser) && (strpos(strtolower($user->browser), 'msie') !== false)))
+		if (empty($user->browser) || !phpbb_is_greater_ie7($user->browser))
 		{
 			header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
 			if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie 6.0') !== false))
