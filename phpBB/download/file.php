@@ -88,6 +88,8 @@ if (isset($_GET['avatar']))
 	// worst-case default
 	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
 
+	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+
 	$filename = request_var('avatar', '');
 	$avatar_group = false;
 	$exit = false;
