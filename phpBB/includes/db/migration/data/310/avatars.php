@@ -11,15 +11,7 @@ class phpbb_db_migration_data_310_avatars extends phpbb_db_migration
 {
 	public function effectively_installed()
 	{
-		$sql = 'SELECT module_auth
-				FROM ' . MODULES_TABLE . "
-				WHERE module_class = 'ucp'
-					AND module_basename = 'ucp_profile'
-					AND module_mode = 'avatar'";
-		$result = $this->db->sql_query($sql);
-		$module_auth = $this->db->sql_fetchfield('module_auth');
-		$this->db->sql_freeresult($result);
-		return ($module_auth == 'cfg_allow_avatar');
+		return isset($this->config['allow_avatar_gravatar']);
 	}
 
 	static public function depends_on()
@@ -59,6 +51,17 @@ class phpbb_db_migration_data_310_avatars extends phpbb_db_migration
 	{
 		return array(
 			array('config.add', array('allow_avatar_gravatar', 0)),
+			array('custom', array(array($this, 'update_module_auth'))),
 		);
+	}
+
+	public function update_module_auth()
+	{
+		$sql = 'UPDATE ' . $this->table_prefix . "modules
+			SET module_auth = 'cfg_allow_avatar'
+			WHERE module_class = 'ucp'
+				AND module_basename = 'ucp_profile'
+				AND module_mode = 'avatar'";
+		$this->db->sql_query($sql);
 	}
 }
