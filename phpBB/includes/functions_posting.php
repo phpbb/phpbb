@@ -429,15 +429,16 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		return $filedata;
 	}
 
-	$cat_id = (isset($extensions[$file->get('extension')]['display_cat'])) ? $extensions[$file->get('extension')]['display_cat'] : ATTACHMENT_CATEGORY_NONE;
+	// Whether the uploaded file is in the image category
+	$is_image = (isset($extensions[$file->get('extension')]['display_cat'])) ? $extensions[$file->get('extension')]['display_cat'] == ATTACHMENT_CATEGORY_IMAGE : false;
 
 	// Do we have to create a thumbnail?
-	$filedata['thumbnail'] = ($cat_id == ATTACHMENT_CATEGORY_IMAGE && $config['img_create_thumbnail']) ? 1 : 0;
+	$filedata['thumbnail'] = ($is_image && $config['img_create_thumbnail']) ? 1 : 0;
 
 	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id))
 	{
 		// Check Image Size, if it is an image
-		if ($cat_id == ATTACHMENT_CATEGORY_IMAGE)
+		if ($is_image)
 		{
 			$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);
 		}
@@ -457,10 +458,9 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 	$file->clean_filename('unique', $user->data['user_id'] . '_');
 
-	// Are we uploading an image *and* this image being within the image category? Only then perform additional image checks.
-	$no_image = ($cat_id == ATTACHMENT_CATEGORY_IMAGE) ? false : true;
-
-	$file->move_file($config['upload_path'], false, $no_image);
+	// Are we uploading an image *and* this image being within the image category?
+	// Only then perform additional image checks.
+	$file->move_file($config['upload_path'], false, !$is_image);
 
 	if (sizeof($file->error))
 	{
@@ -472,7 +472,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	}
 
 	// Make sure the image category only holds valid images...
-	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && !$file->is_image())
+	if ($is_image && !$file->is_image())
 	{
 		$file->remove();
 
