@@ -454,8 +454,7 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm INTEGER DEFAULT 0 NOT NULL,
 	group_message_limit INTEGER DEFAULT 0 NOT NULL,
 	group_max_recipients INTEGER DEFAULT 0 NOT NULL,
-	group_legend INTEGER DEFAULT 0 NOT NULL,
-	group_teampage INTEGER DEFAULT 0 NOT NULL
+	group_legend INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_groups ADD PRIMARY KEY (group_id);;
@@ -1162,6 +1161,29 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.style_id = GEN_ID(phpbb_styles_gen, 1);
+END;;
+
+
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id INTEGER NOT NULL,
+	group_id INTEGER DEFAULT 0 NOT NULL,
+	teampage_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	teampage_position INTEGER DEFAULT 0 NOT NULL,
+	teampage_parent INTEGER DEFAULT 0 NOT NULL
+);;
+
+ALTER TABLE phpbb_teampage ADD PRIMARY KEY (teampage_id);;
+
+
+CREATE GENERATOR phpbb_teampage_gen;;
+SET GENERATOR phpbb_teampage_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_teampage FOR phpbb_teampage
+BEFORE INSERT
+AS
+BEGIN
+	NEW.teampage_id = GEN_ID(phpbb_teampage_gen, 1);
 END;;
 
 

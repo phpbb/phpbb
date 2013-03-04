@@ -71,21 +71,28 @@ switch ($mode)
 		$page_title = $user->lang['THE_TEAM'];
 		$template_html = 'memberlist_leaders.html';
 
+		$sql = 'SELECT *
+			FROM ' . TEAMPAGE_TABLE . '
+			ORDER BY teampage_position ASC';
+		$result = $db->sql_query($sql, 3600);
+		$teampage_data = $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
 		$sql_ary = array(
-			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour, g.group_type, g.group_teampage, ug.user_id as ug_user_id',
+			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id, t.teampage_id',
 
 			'FROM'		=> array(GROUPS_TABLE => 'g'),
 
 			'LEFT_JOIN'	=> array(
 				array(
+					'FROM'	=> array(TEAMPAGE_TABLE => 't'),
+					'ON'	=> 't.group_id = g.group_id',
+				),
+				array(
 					'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
 					'ON'	=> 'ug.group_id = g.group_id AND ug.user_pending = 0 AND ug.user_id = ' . (int) $user->data['user_id'],
 				),
 			),
-
-			'WHERE'		=> '',
-
-			'ORDER_BY'	=> 'g.group_teampage ASC',
 		);
 
 		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
@@ -104,7 +111,7 @@ switch ($mode)
 				$row['u_group'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']);
 			}
 
-			if ($row['group_teampage'])
+			if ($row['teampage_id'])
 			{
 				// Only put groups into the array we want to display.
 				// We are fetching all groups, to ensure we got all data for default groups.
@@ -204,10 +211,26 @@ switch ($mode)
 			}
 		}
 
-		foreach ($groups_ary as $group_id => $group_data)
+		$parent_team = 0;
+		foreach ($teampage_data as $team_data)
 		{
-			if ($group_data['group_teampage'])
+			// If this team entry has no group, it's a category
+			if (!$team_data['group_id'])
 			{
+				$template->assign_block_vars('group', array(
+					'GROUP_NAME'  => $team_data['teampage_name'],
+				));
+
+				$parent_team = (int) $team_data['teampage_id'];
+				continue;
+			}
+
+			$group_data = $groups_ary[(int) $team_data['group_id']];
+			$group_id = (int) $team_data['group_id'];
+
+			if (!$team_data['teampage_parent'])
+			{
+				// If the group does not have a parent category, we display the groupname as category
 				$template->assign_block_vars('group', array(
 					'GROUP_NAME'	=> $group_data['group_name'],
 					'GROUP_COLOR'	=> $group_data['group_colour'],
@@ -223,7 +246,7 @@ switch ($mode)
 					if (isset($user_ary[$user_id]))
 					{
 						$row = $user_ary[$user_id];
-						if ($config['teampage_memberships'] == 1 && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['group_teampage'])
+						if ($config['teampage_memberships'] == 1 && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['teampage_id'])
 						{
 							// Display users in their primary group, instead of the first group, when it is displayed on the teampage.
 							continue;

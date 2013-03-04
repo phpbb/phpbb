@@ -61,9 +61,11 @@ class acp_groups
 		// Grab basic data for group, if group_id is set and exists
 		if ($group_id)
 		{
-			$sql = 'SELECT *
-				FROM ' . GROUPS_TABLE . "
-				WHERE group_id = $group_id";
+			$sql = 'SELECT g.*, t.teampage_position AS group_teampage
+				FROM ' . GROUPS_TABLE . ' g
+				LEFT JOIN ' . TEAMPAGE_TABLE . ' t
+					ON (t.group_id = g.group_id)
+				WHERE g.group_id = ' . $group_id;
 			$result = $db->sql_query($sql);
 			$group_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -514,7 +516,7 @@ class acp_groups
 								}
 							}
 
-							$cache->destroy('sql', GROUPS_TABLE);
+							$cache->destroy('sql', array(GROUPS_TABLE, TEAMPAGE_TABLE));
 
 							$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 							trigger_error($user->lang[$message] . adm_back_link($this->u_action));
@@ -829,56 +831,112 @@ class acp_groups
 
 	public function manage_position()
 	{
-		global $config, $db, $template, $user;
+		global $config, $db, $template, $user, $request, $phpbb_container;
 
 		$this->tpl_name = 'acp_groups_position';
 		$this->page_title = 'ACP_GROUPS_POSITION';
 
-		$field = request_var('field', '');
-		$action = request_var('action', '');
-		$group_id = request_var('g', 0);
+		$field = $request->variable('field', '');
+		$action = $request->variable('action', '');
+		$group_id = $request->variable('g', 0);
+		$teampage_id = $request->variable('t', 0);
+		$category_id = $request->variable('c', 0);
 
 		if ($field && !in_array($field, array('legend', 'teampage')))
 		{
 			// Invalid mode
 			trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
-		else if ($field)
+		else if ($field && in_array($field, array('legend', 'teampage')))
 		{
-			$group_position = new phpbb_group_positions($db, $field, $this->u_action);
+
+			$group_position = $phpbb_container->get('groupposition.' . $field);
 		}
 
-		switch ($action)
+		if ($field == 'teampage')
 		{
-			case 'set_config_legend':
-				set_config('legend_sort_groupname', request_var('legend_sort_groupname', 0));
-			break;
+			try
+			{
+				switch ($action)
+				{
+					case 'add':
+						$group_position->add_group_teampage($group_id, $category_id);
+					break;
 
-			case 'set_config_teampage':
-				set_config('teampage_forums', request_var('teampage_forums', 0));
-				set_config('teampage_memberships', request_var('teampage_memberships', 0));
-			break;
+					case 'add_category':
+						$group_position->add_category_teampage($request->variable('category_name', '', true));
+					break;
 
-			case 'add':
-				$group_position->add_group($group_id);
-			break;
+					case 'delete':
+						$group_position->delete_teampage($teampage_id);
+					break;
 
-			case 'delete':
-				$group_position->delete_group($group_id);
-			break;
+					case 'move_up':
+						$group_position->move_up_teampage($teampage_id);
+					break;
 
-			case 'move_up':
-				$group_position->move_up($group_id);
-			break;
+					case 'move_down':
+						$group_position->move_down_teampage($teampage_id);
+					break;
+				}
+			}
+			catch (phpbb_groupposition_exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()) . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+		}
+		else if ($field == 'legend')
+		{
+			try
+			{
+				switch ($action)
+				{
+					case 'add':
+						$group_position->add_group($group_id);
+					break;
 
-			case 'move_down':
-				$group_position->move_down($group_id);
-			break;
+					case 'delete':
+						$group_position->delete_group($group_id);
+					break;
+
+					case 'move_up':
+						$group_position->move_up($group_id);
+					break;
+
+					case 'move_down':
+						$group_position->move_down($group_id);
+					break;
+				}
+			}
+			catch (phpbb_groupposition_exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()) . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+		}
+		else
+		{
+			switch ($action)
+			{
+				case 'set_config_teampage':
+					$config->set('teampage_forums', $request->variable('teampage_forums', 0));
+					$config->set('teampage_memberships', $request->variable('teampage_memberships', 0));
+				break;
+
+				case 'set_config_legend':
+					$config->set('legend_sort_groupname', $request->variable('legend_sort_groupname', 0));
+				break;
+			}
+		}
+
+		if (($action == 'move_up' || $action == 'move_down') && $request->is_ajax())
+		{
+			$json_response = new phpbb_json_response;
+			$json_response->send(array('success' => true));
 		}
 
 		$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
 			FROM ' . GROUPS_TABLE . '
-			ORDER BY group_legend, group_name ASC';
+			ORDER BY group_legend ASC, group_type DESC, group_name ASC';
 		$result = $db->sql_query($sql);
 
 		$s_group_select_legend = '';
@@ -888,57 +946,99 @@ class acp_groups
 			if ($row['group_legend'])
 			{
 				$template->assign_block_vars('legend', array(
-					'GROUP_NAME' => $group_name,
-					'GROUP_COLOUR' => ($row['group_colour']) ? ' style="color: #' . $row['group_colour'] . '"' : '',
-					'GROUP_TYPE' => $user->lang[phpbb_group_positions::group_type_language($row['group_type'])],
+					'GROUP_NAME'	=> $group_name,
+					'GROUP_COLOUR'	=> ($row['group_colour']) ? '#' . $row['group_colour'] : '',
+					'GROUP_TYPE'	=> $user->lang[phpbb_groupposition_legend::group_type_language($row['group_type'])],
 
-					'U_MOVE_DOWN' => "{$this->u_action}&amp;field=legend&amp;action=move_down&amp;g=" . $row['group_id'],
-					'U_MOVE_UP' => "{$this->u_action}&amp;field=legend&amp;action=move_up&amp;g=" . $row['group_id'],
-					'U_DELETE' => "{$this->u_action}&amp;field=legend&amp;action=delete&amp;g=" . $row['group_id'],
+					'U_MOVE_DOWN'	=> "{$this->u_action}&amp;field=legend&amp;action=move_down&amp;g=" . $row['group_id'],
+					'U_MOVE_UP'		=> "{$this->u_action}&amp;field=legend&amp;action=move_up&amp;g=" . $row['group_id'],
+					'U_DELETE'		=> "{$this->u_action}&amp;field=legend&amp;action=delete&amp;g=" . $row['group_id'],
 				));
 			}
 			else
 			{
-				$s_group_select_legend .= '<option value="' . (int) $row['group_id'] . '">' . $group_name . '</option>';
+				$template->assign_block_vars('add_legend', array(
+					'GROUP_ID'		=> (int) $row['group_id'],
+					'GROUP_NAME'	=> $group_name,
+					'GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL),
+				));
 			}
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT group_id, group_name, group_colour, group_type, group_teampage
-			FROM ' . GROUPS_TABLE . '
-			ORDER BY group_teampage, group_name ASC';
+		$category_url_param = (($category_id) ? '&amp;c=' . $category_id : '');
+
+		$sql = 'SELECT t.*, g.group_name, g.group_colour, g.group_type
+			FROM ' . TEAMPAGE_TABLE . ' t
+			LEFT JOIN ' . GROUPS_TABLE . ' g
+				ON (t.group_id = g.group_id)
+			WHERE t.teampage_parent = ' . $category_id . '
+				OR t.teampage_id = ' . $category_id . '
+			ORDER BY t.teampage_position ASC';
+		$result = $db->sql_query($sql);
+
+		$category_data = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['teampage_id'] == $category_id)
+			{
+				$template->assign_vars(array(
+					'CURRENT_CATEGORY_NAME'		=> $row['teampage_name'],
+				));
+				continue;
+			}
+
+			if ($row['group_id'])
+			{
+				$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+				$group_type = $user->lang[phpbb_groupposition_teampage::group_type_language($row['group_type'])];
+			}
+			else
+			{
+				$group_name = $row['teampage_name'];
+				$group_type = '';
+			}
+
+			$template->assign_block_vars('teampage', array(
+				'GROUP_NAME'	=> $group_name,
+				'GROUP_COLOUR'	=> ($row['group_colour']) ? '#' . $row['group_colour'] : '',
+				'GROUP_TYPE'	=> $group_type,
+
+				'U_CATEGORY'	=> (!$row['group_id']) ? "{$this->u_action}&amp;c=" . $row['teampage_id'] : '',
+				'U_MOVE_DOWN'	=> "{$this->u_action}&amp;field=teampage&amp;action=move_down{$category_url_param}&amp;t=" . $row['teampage_id'],
+				'U_MOVE_UP'		=> "{$this->u_action}&amp;field=teampage&amp;action=move_up{$category_url_param}&amp;t=" . $row['teampage_id'],
+				'U_DELETE'		=> "{$this->u_action}&amp;field=teampage&amp;action=delete{$category_url_param}&amp;t=" . $row['teampage_id'],
+			));
+		}
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
+			FROM ' . GROUPS_TABLE . ' g
+			LEFT JOIN ' . TEAMPAGE_TABLE . ' t
+				ON (t.group_id = g.group_id)
+			WHERE t.teampage_id IS NULL
+			ORDER BY g.group_type DESC, g.group_name ASC';
 		$result = $db->sql_query($sql);
 
 		$s_group_select_teampage = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
-			if ($row['group_teampage'])
-			{
-				$template->assign_block_vars('teampage', array(
-					'GROUP_NAME' => $group_name,
-					'GROUP_COLOUR' => ($row['group_colour']) ? ' style="color: #' . $row['group_colour'] . '"' : '',
-					'GROUP_TYPE' => $user->lang[phpbb_group_positions::group_type_language($row['group_type'])],
-
-					'U_MOVE_DOWN' => "{$this->u_action}&amp;field=teampage&amp;action=move_down&amp;g=" . $row['group_id'],
-					'U_MOVE_UP' => "{$this->u_action}&amp;field=teampage&amp;action=move_up&amp;g=" . $row['group_id'],
-					'U_DELETE' => "{$this->u_action}&amp;field=teampage&amp;action=delete&amp;g=" . $row['group_id'],
-				));
-			}
-			else
-			{
-				$s_group_select_teampage .= '<option value="' . (int) $row['group_id'] . '">' . $group_name . '</option>';
-			}
+			$template->assign_block_vars('add_teampage', array(
+				'GROUP_ID'		=> (int) $row['group_id'],
+				'GROUP_NAME'	=> $group_name,
+				'GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL),
+			));
 		}
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'U_ACTION' => $this->u_action,
-			'U_ACTION_LEGEND' => $this->u_action . '&amp;field=legend',
-			'U_ACTION_TEAMPAGE' => $this->u_action . '&amp;field=teampage',
+			'U_ACTION'					=> $this->u_action,
+			'U_ACTION_LEGEND'			=> $this->u_action . '&amp;field=legend',
+			'U_ACTION_TEAMPAGE'			=> $this->u_action . '&amp;field=teampage' . $category_url_param,
+			'U_ACTION_TEAMPAGE_CAT'		=> $this->u_action . '&amp;field=teampage_cat',
 
-			'S_GROUP_SELECT_LEGEND'		=> $s_group_select_legend,
-			'S_GROUP_SELECT_TEAMPAGE'	=> $s_group_select_teampage,
+			'S_TEAMPAGE_CATEGORY'		=> $category_id,
 			'DISPLAY_FORUMS'			=> ($config['teampage_forums']) ? true : false,
 			'DISPLAY_MEMBERSHIPS'		=> $config['teampage_memberships'],
 			'LEGEND_SORT_GROUPNAME'		=> ($config['legend_sort_groupname']) ? true : false,

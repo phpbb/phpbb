@@ -327,7 +327,6 @@ CREATE TABLE phpbb_groups (
 	group_message_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_max_recipients mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_legend mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	group_teampage mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (group_id),
 	KEY group_legend_name (group_legend, group_name(255))
 );
@@ -810,6 +809,17 @@ CREATE TABLE phpbb_styles (
 	style_parent_tree blob NOT NULL,
 	PRIMARY KEY (style_id),
 	UNIQUE style_name (style_name(255))
+);
+
+
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	teampage_name blob NOT NULL,
+	teampage_position mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	teampage_parent mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (teampage_id)
 );
 
 

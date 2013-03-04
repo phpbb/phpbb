@@ -620,7 +620,6 @@ CREATE TABLE phpbb_groups (
 	group_message_limit number(8) DEFAULT '0' NOT NULL,
 	group_max_recipients number(8) DEFAULT '0' NOT NULL,
 	group_legend number(8) DEFAULT '0' NOT NULL,
-	group_teampage number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_groups PRIMARY KEY (group_id)
 )
 /
@@ -1536,6 +1535,36 @@ FOR EACH ROW WHEN (
 BEGIN
 	SELECT phpbb_styles_seq.nextval
 	INTO :new.style_id
+	FROM dual;
+END;
+/
+
+
+/*
+	Table: 'phpbb_teampage'
+*/
+CREATE TABLE phpbb_teampage (
+	teampage_id number(8) NOT NULL,
+	group_id number(8) DEFAULT '0' NOT NULL,
+	teampage_name varchar2(765) DEFAULT '' ,
+	teampage_position number(8) DEFAULT '0' NOT NULL,
+	teampage_parent number(8) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_teampage PRIMARY KEY (teampage_id)
+)
+/
+
+
+CREATE SEQUENCE phpbb_teampage_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_teampage
+BEFORE INSERT ON phpbb_teampage
+FOR EACH ROW WHEN (
+	new.teampage_id IS NULL OR new.teampage_id = 0
+)
+BEGIN
+	SELECT phpbb_teampage_seq.nextval
+	INTO :new.teampage_id
 	FROM dual;
 END;
 /
