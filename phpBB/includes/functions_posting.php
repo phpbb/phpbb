@@ -403,14 +403,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		$upload->set_disallowed_content(explode('|', $config['mime_triggers']));
 	}
 
-	if (!$local)
-	{
-		$filedata['post_attach'] = ($upload->is_valid($form_name)) ? true : false;
-	}
-	else
-	{
-		$filedata['post_attach'] = true;
-	}
+	$filedata['post_attach'] = $local || $upload->is_valid($form_name);
 
 	if (!$filedata['post_attach'])
 	{
