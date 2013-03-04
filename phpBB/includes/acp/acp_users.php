@@ -33,6 +33,7 @@ class acp_users
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
 		global $phpbb_dispatcher, $request;
+		global $phpbb_container;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -456,7 +457,7 @@ class acp_users
 
 							$sql_ary = array(
 								'user_avatar'			=> '',
-								'user_avatar_type'		=> 0,
+								'user_avatar_type'		=> '',
 								'user_avatar_width'		=> 0,
 								'user_avatar_height'	=> 0,
 							);
@@ -467,9 +468,11 @@ class acp_users
 							$db->sql_query($sql);
 
 							// Delete old avatar if present
-							if ($user_row['user_avatar'] && $user_row['user_avatar_type'] != AVATAR_GALLERY)
+							$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+							$driver = $phpbb_avatar_manager->get_driver($user_row['user_avatar_type']);
+							if ($driver)
 							{
-								avatar_delete('user', $user_row);
+								$driver->delete($user_row);
 							}
 
 							add_log('admin', 'LOG_USER_DEL_AVATAR', $user_row['username']);
@@ -1728,65 +1731,120 @@ class acp_users
 			case 'avatar':
 
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+				$avatars_enabled = false;
 
-				if ($submit)
+				if ($config['allow_avatar'])
 				{
+					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
-					if (!check_form_key($form_name))
+					// This is normalised data, without the user_ prefix
+					$avatar_data = phpbb_avatar_manager::clean_row($user_row);
+
+					if ($submit)
 					{
+						if (check_form_key($form_name))
+						{
+							$driver_name = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
+
+							if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
+							{
+								$driver = $phpbb_avatar_manager->get_driver($driver_name);
+								$result = $driver->process_form($request, $template, $user, $avatar_data, $error);
+
+								if ($result && empty($error))
+								{
+									// Success! Lets save the result in the database
+									$result = array(
+										'user_avatar_type' => $driver_name,
+										'user_avatar' => $result['avatar'],
+										'user_avatar_width' => $result['avatar_width'],
+										'user_avatar_height' => $result['avatar_height'],
+									);
+
+									$sql = 'UPDATE ' . USERS_TABLE . '
+										SET ' . $db->sql_build_array('UPDATE', $result) . '
+										WHERE user_id = ' . (int) $user_id;
+
+									$db->sql_query($sql);
+									trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								}
+							}
+							else
+							{
+								$driver = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']);
+								if ($driver)
+								{
+									$driver->delete($avatar_data);
+								}
+
+								// Removing the avatar
+								$result = array(
+									'user_avatar' => '',
+									'user_avatar_type' => '',
+									'user_avatar_width' => 0,
+									'user_avatar_height' => 0,
+								);
+
+								$sql = 'UPDATE ' . USERS_TABLE . '
+									SET ' . $db->sql_build_array('UPDATE', $result) . '
+									WHERE user_id = ' . (int) $user_id;
+
+								$db->sql_query($sql);
+								trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
+						}
+						else
+						{
 							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						}
 					}
 
-					if (avatar_process_user($error, $user_row, $can_upload))
+					$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $user_row['user_avatar_type']));
+
+					foreach ($avatar_drivers as $current_driver)
 					{
-						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_row['user_id']));
+						$driver = $phpbb_avatar_manager->get_driver($current_driver);
+
+						$avatars_enabled = true;
+						$config_name = $phpbb_avatar_manager->get_driver_config_name($driver);
+						$template->set_filenames(array(
+							'avatar' => "acp_avatar_options_{$config_name}.html",
+						));
+
+						if ($driver->prepare_form($request, $template, $user, $avatar_data, $error))
+						{
+							$driver_name = $phpbb_avatar_manager->prepare_driver_name($current_driver);
+							$driver_upper = strtoupper($driver_name);
+
+							$template->assign_block_vars('avatar_drivers', array(
+								'L_TITLE' => $user->lang($driver_upper . '_TITLE'),
+								'L_EXPLAIN' => $user->lang($driver_upper . '_EXPLAIN'),
+
+								'DRIVER' => $driver_name,
+								'SELECTED' => $current_driver == $selected_driver,
+								'OUTPUT' => $template->assign_display('avatar'),
+							));
+						}
 					}
-
-					// Replace "error" strings with their real, localised form
-					$error = array_map(array($user, 'lang'), $error);
 				}
 
-				if (!$config['allow_avatar'] && $user_row['user_avatar_type'])
-				{
-					$error[] = $user->lang['USER_AVATAR_NOT_ALLOWED'];
-				}
-				else if ((($user_row['user_avatar_type'] == AVATAR_UPLOAD) && !$config['allow_avatar_upload']) ||
-				 (($user_row['user_avatar_type'] == AVATAR_REMOTE) && !$config['allow_avatar_remote']) ||
-				 (($user_row['user_avatar_type'] == AVATAR_GALLERY) && !$config['allow_avatar_local']))
-				{
-					$error[] = $user->lang['USER_AVATAR_TYPE_NOT_ALLOWED'];
-				}
+				// Replace "error" strings with their real, localised form
+				$error = $phpbb_avatar_manager->localize_errors($user, $error);
 
-				// Generate users avatar
-				$avatar_img = ($user_row['user_avatar']) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height'], 'USER_AVATAR', true) : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
-
-				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
-				$avatar_select = basename(request_var('avatar_select', ''));
-				$category = basename(request_var('category', ''));
-
-				if ($config['allow_avatar_local'] && $display_gallery)
-				{
-					avatar_gallery($category, $avatar_select, 4);
-				}
+				$avatar = phpbb_get_user_avatar($user_row, 'USER_AVATAR', true);
 
 				$template->assign_vars(array(
-					'S_AVATAR'			=> true,
-					'S_CAN_UPLOAD'		=> $can_upload,
-					'S_UPLOAD_FILE'		=> ($config['allow_avatar'] && $can_upload && $config['allow_avatar_upload']) ? true : false,
-					'S_REMOTE_UPLOAD'	=> ($config['allow_avatar'] && $can_upload && $config['allow_avatar_remote_upload']) ? true : false,
-					'S_ALLOW_REMOTE'	=> ($config['allow_avatar'] && $config['allow_avatar_remote']) ? true : false,
-					'S_DISPLAY_GALLERY'	=> ($config['allow_avatar'] && $config['allow_avatar_local'] && !$display_gallery) ? true : false,
-					'S_IN_GALLERY'		=> ($config['allow_avatar'] && $config['allow_avatar_local'] && $display_gallery) ? true : false,
+					'S_AVATAR'	=> true,
+					'ERROR'			=> (!empty($error)) ? implode('<br />', $error) : '',
+					'AVATAR'		=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
 
-					'AVATAR_IMAGE'			=> $avatar_img,
-					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
-					'USER_AVATAR_WIDTH'		=> $user_row['user_avatar_width'],
-					'USER_AVATAR_HEIGHT'	=> $user_row['user_avatar_height'],
+					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 
-					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
+					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
+
+					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
 				));
 
 			break;

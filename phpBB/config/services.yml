@@ -3,10 +3,18 @@ imports:
     - { resource: cron_tasks.yml }
     - { resource: notifications.yml }
     - { resource: migrator.yml }
+    - { resource: avatars.yml }
 
 services:
     auth:
         class: phpbb_auth
+
+    avatar.manager:
+        class: phpbb_avatar_manager
+        arguments:
+            - @config
+            - @avatar.driver_collection
+            - @service_container
 
     cache:
         class: phpbb_cache_service
