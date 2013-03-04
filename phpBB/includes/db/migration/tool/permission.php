@@ -107,7 +107,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	{
 		if ($this->exists($auth_option, $global))
 		{
-			throw new phpbb_db_migration_exception('PERMISSION_ALREADY_EXIST', $auth_option);
+			return;
 		}
 
 		// We've added permissions, so set to true to notify the user.
@@ -190,7 +190,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	{
 		if (!$this->exists($auth_option, $global))
 		{
-			throw new phpbb_db_migration_exception('PERMISSION_NOT_EXIST', $auth_option);
+			return;
 		}
 
 		if ($global)
@@ -315,7 +315,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 		if (!$role_id)
 		{
-			throw new phpbb_db_migration_exception('ROLE_NOT_EXIST', $role_name);
+			return;
 		}
 
 		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
