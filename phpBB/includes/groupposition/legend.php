@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB3
-* @copyright (c) 2011 phpBB Group
+* @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -16,13 +16,14 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Group Position class, containing all functions to manage the groups in the teampage and legend.
+* Legend group position class
 *
-* group_teampage/group_legend is an ascending list 1, 2, ..., n for groups which are displayed. 1 is the first group, n the last.
+* group_legend is an ascending list 1, 2, ..., n for groups which are displayed. 1 is the first group, n the last.
 * If the value is 0 (self::GROUP_DISABLED) the group is not displayed.
+*
 * @package phpBB3
 */
-class phpbb_group_positions
+class phpbb_groupposition_legend implements phpbb_groupposition_interface
 {
 	/**
 	* Group is not displayed
@@ -30,81 +31,73 @@ class phpbb_group_positions
 	const GROUP_DISABLED = 0;
 
 	/**
-	* phpbb-database object
+	* Database object
+	* @var phpbb_db_driver
 	*/
-	public $db = null;
+	protected $db;
 
 	/**
-	* Name of the field we want to handle: either 'teampage' or 'legend'
+	* User object
+	* @var phpbb_user
 	*/
-	private $field = '';
-
-	/**
-	* URI for the adm_back_link when there was an error.
-	*/
-	private $adm_back_link = '';
+	protected $user;
 
 	/**
 	* Constructor
+	*
+	* @param phpbb_db_driver	$db		Database object
+	* @param phpbb_user			$user	User object
 	*/
-	public function __construct ($db, $field, $adm_back_link = '')
+	public function __construct(phpbb_db_driver $db, phpbb_user $user)
 	{
-		$this->adm_back_link = $adm_back_link;
-
-		if (!in_array($field, array('teampage', 'legend')))
-		{
-			$this->error('NO_MODE');
-		}
-
 		$this->db = $db;
-		$this->field = $field;
+		$this->user = $user;
 	}
 
 	/**
-	* Returns the group_{$this->field} for a given group, if the group exists.
-	* @param	int		$group_id	group_id of the group to be selected
-	* @return	int					position of the group
+	* Returns the group_legend for a given group, if the group exists.
+	*
+	* {@inheritDoc}
 	*/
 	public function get_group_value($group_id)
 	{
-		$sql = 'SELECT group_' . $this->field . '
+		$sql = 'SELECT group_legend
 			FROM ' . GROUPS_TABLE . '
 			WHERE group_id = ' . (int) $group_id;
 		$result = $this->db->sql_query($sql);
-		$current_value = $this->db->sql_fetchfield('group_' . $this->field);
+		$current_value = $this->db->sql_fetchfield('group_legend');
 		$this->db->sql_freeresult($result);
 
 		if ($current_value === false)
 		{
 			// Group not found.
-			$this->error('NO_GROUP');
+			throw new phpbb_groupposition_exception('NO_GROUP');
 		}
 
 		return (int) $current_value;
 	}
 
 	/**
-	* Get number of groups, displayed on the teampage/legend
+	* Get number of groups, displayed on the legend
 	*
-	* @return	int		value of the last group displayed
+	* {@inheritDoc}
 	*/
 	public function get_group_count()
 	{
-		$sql = 'SELECT group_' . $this->field . '
+		$sql = 'SELECT group_legend
 			FROM ' . GROUPS_TABLE . '
-			ORDER BY group_' . $this->field . ' DESC';
+			ORDER BY group_legend DESC';
 		$result = $this->db->sql_query_limit($sql, 1);
-		$group_count = (int) $this->db->sql_fetchfield('group_' . $this->field);
+		$group_count = (int) $this->db->sql_fetchfield('group_legend');
 		$this->db->sql_freeresult($result);
 
 		return $group_count;
 	}
 
 	/**
-	* Addes a group by group_id
+	* Adds a group by group_id
 	*
-	* @param	int		$group_id	group_id of the group to be added
-	* @return	null
+	* {@inheritDoc}
 	*/
 	public function add_group($group_id)
 	{
@@ -116,19 +109,20 @@ class phpbb_group_positions
 			$next_value = 1 + $this->get_group_count();
 
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $this->field . ' = ' . $next_value . '
-				WHERE group_' . $this->field . ' = ' . self::GROUP_DISABLED . '
+				SET group_legend = ' . $next_value . '
+				WHERE group_legend = ' . self::GROUP_DISABLED . '
 					AND group_id = ' . (int) $group_id;
 			$this->db->sql_query($sql);
+			return true;
 		}
+
+		return false;
 	}
 
 	/**
 	* Deletes a group by setting the field to self::GROUP_DISABLED and closing the gap in the list.
 	*
-	* @param	int		$group_id		group_id of the group to be deleted
-	* @param	bool	$skip_group		Skip setting the group to GROUP_DISABLED, to save the query, when you need to update it anyway.
-	* @return	null
+	* {@inheritDoc}
 	*/
 	public function delete_group($group_id, $skip_group = false)
 	{
@@ -139,58 +133,57 @@ class phpbb_group_positions
 			$this->db->sql_transaction('begin');
 
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $this->field . ' = group_' . $this->field . ' - 1
-				WHERE group_' . $this->field . ' > ' . $current_value;
+				SET group_legend = group_legend - 1
+				WHERE group_legend > ' . $current_value;
 			$this->db->sql_query($sql);
 
 			if (!$skip_group)
 			{
 				$sql = 'UPDATE ' . GROUPS_TABLE . '
-					SET group_' . $this->field . ' = ' . self::GROUP_DISABLED . '
+					SET group_legend = ' . self::GROUP_DISABLED . '
 					WHERE group_id = ' . (int) $group_id;
 				$this->db->sql_query($sql);
 			}
 
 			$this->db->sql_transaction('commit');
+
+			return true;
 		}
+
+		return false;
 	}
 
 	/**
 	* Moves a group up by group_id
 	*
-	* @param	int		$group_id	group_id of the group to be moved
-	* @return	null
+	* {@inheritDoc}
 	*/
 	public function move_up($group_id)
 	{
-		$this->move($group_id, 1);
+		return $this->move($group_id, 1);
 	}
 
 	/**
 	* Moves a group down by group_id
 	*
-	* @param	int		$group_id	group_id of the group to be moved
-	* @return	null
+	* {@inheritDoc}
 	*/
 	public function move_down($group_id)
 	{
-		$this->move($group_id, -1);
+		return $this->move($group_id, -1);
 	}
 
 	/**
 	* Moves a group up/down
 	*
-	* @param	int		$group_id	group_id of the group to be moved
-	* @param	int		$delta		number of steps:
-	*								- positive = move up
-	*								- negative = move down
-	* @return	null
+	* {@inheritDoc}
 	*/
 	public function move($group_id, $delta)
 	{
-		if (!is_int($delta) || !$delta)
+		$delta = (int) $delta;
+		if (!$delta)
 		{
-			return;
+			return false;
 		}
 
 		$move_up = ($delta > 0) ? true : false;
@@ -203,10 +196,10 @@ class phpbb_group_positions
 			// First we move all groups between our current value and the target value up/down 1,
 			// so we have a gap for our group to move.
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $this->field . ' = group_' . $this->field . (($move_up) ? ' + 1' : ' - 1') . '
-				WHERE group_' . $this->field . ' > ' . self::GROUP_DISABLED . '
-					AND group_' . $this->field . (($move_up) ? ' >= ' : ' <= ') . ($current_value - $delta) . '
-					AND group_' . $this->field . (($move_up) ? ' < ' : ' > ') . $current_value;
+				SET group_legend = group_legend' . (($move_up) ? ' + 1' : ' - 1') . '
+				WHERE group_legend > ' . self::GROUP_DISABLED . '
+					AND group_legend' . (($move_up) ? ' >= ' : ' <= ') . ($current_value - $delta) . '
+					AND group_legend' . (($move_up) ? ' < ' : ' > ') . $current_value;
 			$this->db->sql_query($sql);
 
 			// Because there might be fewer groups above/below the group than we wanted to move,
@@ -218,20 +211,26 @@ class phpbb_group_positions
 				// And now finally, when we moved some other groups and built a gap,
 				// we can move the desired group to it.
 				$sql = 'UPDATE ' . GROUPS_TABLE . '
-					SET group_' . $this->field . ' = group_' . $this->field . (($move_up) ? ' - ' : ' + ') . $delta . '
+					SET group_legend = group_legend ' . (($move_up) ? ' - ' : ' + ') . $delta . '
 					WHERE group_id = ' . (int) $group_id;
 				$this->db->sql_query($sql);
+
+				$this->db->sql_transaction('commit');
+
+				return true;
 			}
 
 			$this->db->sql_transaction('commit');
 		}
+
+		return false;
 	}
 
 	/**
 	* Get group type language var
 	*
 	* @param	int		$group_type	group_type from the groups-table
-	* @return	string				name of the language variable for the given group-type.
+	* @return	string		name of the language variable for the given group-type.
 	*/
 	static public function group_type_language($group_type)
 	{
@@ -248,14 +247,5 @@ class phpbb_group_positions
 			case GROUP_FREE:
 				return 'GROUP_OPEN';
 		}
-	}
-
-	/**
-	* Error
-	*/
-	public function error($message)
-	{
-		global $user;
-		trigger_error($user->lang[$message] . (($this->adm_back_link) ? adm_back_link($this->adm_back_link) : ''), E_USER_WARNING);
 	}
 }

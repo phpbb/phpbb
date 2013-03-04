@@ -610,7 +610,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varchar2(8) DEFAULT '' ,
 	group_display number(1) DEFAULT '0' NOT NULL,
 	group_avatar varchar2(255) DEFAULT '' ,
-	group_avatar_type number(2) DEFAULT '0' NOT NULL,
+	group_avatar_type varchar2(255) DEFAULT '' ,
 	group_avatar_width number(4) DEFAULT '0' NOT NULL,
 	group_avatar_height number(4) DEFAULT '0' NOT NULL,
 	group_rank number(8) DEFAULT '0' NOT NULL,
@@ -620,7 +620,6 @@ CREATE TABLE phpbb_groups (
 	group_message_limit number(8) DEFAULT '0' NOT NULL,
 	group_max_recipients number(8) DEFAULT '0' NOT NULL,
 	group_legend number(8) DEFAULT '0' NOT NULL,
-	group_teampage number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_groups PRIMARY KEY (group_id)
 )
 /
@@ -1542,6 +1541,36 @@ END;
 
 
 /*
+	Table: 'phpbb_teampage'
+*/
+CREATE TABLE phpbb_teampage (
+	teampage_id number(8) NOT NULL,
+	group_id number(8) DEFAULT '0' NOT NULL,
+	teampage_name varchar2(765) DEFAULT '' ,
+	teampage_position number(8) DEFAULT '0' NOT NULL,
+	teampage_parent number(8) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_teampage PRIMARY KEY (teampage_id)
+)
+/
+
+
+CREATE SEQUENCE phpbb_teampage_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_teampage
+BEFORE INSERT ON phpbb_teampage
+FOR EACH ROW WHEN (
+	new.teampage_id IS NULL OR new.teampage_id = 0
+)
+BEGIN
+	SELECT phpbb_teampage_seq.nextval
+	INTO :new.teampage_id
+	FROM dual;
+END;
+/
+
+
+/*
 	Table: 'phpbb_topics'
 */
 CREATE TABLE phpbb_topics (
@@ -1747,7 +1776,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail number(1) DEFAULT '1' NOT NULL,
 	user_options number(11) DEFAULT '230271' NOT NULL,
 	user_avatar varchar2(255) DEFAULT '' ,
-	user_avatar_type number(2) DEFAULT '0' NOT NULL,
+	user_avatar_type varchar2(255) DEFAULT '' ,
 	user_avatar_width number(4) DEFAULT '0' NOT NULL,
 	user_avatar_height number(4) DEFAULT '0' NOT NULL,
 	user_sig clob DEFAULT '' ,

@@ -553,7 +553,7 @@ CREATE TABLE [phpbb_groups] (
 	[group_desc_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[group_display] [int] DEFAULT (0) NOT NULL ,
 	[group_avatar] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[group_avatar_type] [int] DEFAULT (0) NOT NULL ,
+	[group_avatar_type] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[group_avatar_width] [int] DEFAULT (0) NOT NULL ,
 	[group_avatar_height] [int] DEFAULT (0) NOT NULL ,
 	[group_rank] [int] DEFAULT (0) NOT NULL ,
@@ -562,8 +562,7 @@ CREATE TABLE [phpbb_groups] (
 	[group_receive_pm] [int] DEFAULT (0) NOT NULL ,
 	[group_message_limit] [int] DEFAULT (0) NOT NULL ,
 	[group_max_recipients] [int] DEFAULT (0) NOT NULL ,
-	[group_legend] [int] DEFAULT (0) NOT NULL ,
-	[group_teampage] [int] DEFAULT (0) NOT NULL 
+	[group_legend] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1417,6 +1416,26 @@ GO
 
 
 /*
+	Table: 'phpbb_teampage'
+*/
+CREATE TABLE [phpbb_teampage] (
+	[teampage_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[group_id] [int] DEFAULT (0) NOT NULL ,
+	[teampage_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[teampage_position] [int] DEFAULT (0) NOT NULL ,
+	[teampage_parent] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_teampage] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_teampage] PRIMARY KEY  CLUSTERED 
+	(
+		[teampage_id]
+	)  ON [PRIMARY] 
+GO
+
+
+/*
 	Table: 'phpbb_topics'
 */
 CREATE TABLE [phpbb_topics] (
@@ -1640,7 +1659,7 @@ CREATE TABLE [phpbb_users] (
 	[user_allow_massemail] [int] DEFAULT (1) NOT NULL ,
 	[user_options] [int] DEFAULT (230271) NOT NULL ,
 	[user_avatar] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[user_avatar_type] [int] DEFAULT (0) NOT NULL ,
+	[user_avatar_type] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_avatar_width] [int] DEFAULT (0) NOT NULL ,
 	[user_avatar_height] [int] DEFAULT (0) NOT NULL ,
 	[user_sig] [text] DEFAULT ('') NOT NULL ,

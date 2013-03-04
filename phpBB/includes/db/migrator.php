@@ -245,7 +245,7 @@ class phpbb_db_migrator
 			}
 		}
 
-		$this->insert_migration($name, $state);
+		$this->set_migration_state($name, $state);
 
 		return true;
 	}
@@ -317,7 +317,7 @@ class phpbb_db_migrator
 				$state['migration_data_done'] = ($result === true) ? false : true;
 			}
 
-			$this->insert_migration($name, $state);
+			$this->set_migration_state($name, $state);
 		}
 		else
 		{
@@ -536,7 +536,7 @@ class phpbb_db_migrator
 	* @param array $state
 	* @return null
 	*/
-	protected function insert_migration($name, $state)
+	protected function set_migration_state($name, $state)
 	{
 		$migration_row = $state;
 		$migration_row['migration_depends_on'] = serialize($state['migration_depends_on']);
@@ -673,7 +673,7 @@ class phpbb_db_migrator
 					'migration_start_time'	=> time(),
 					'migration_end_time'	=> time(),
 				);
-				$this->insert_migration($name, $state);
+				$this->set_migration_state($name, $state);
 			}
 		}
 	}

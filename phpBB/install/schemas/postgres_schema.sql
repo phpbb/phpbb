@@ -463,7 +463,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varchar(8) DEFAULT '' NOT NULL,
 	group_display INT2 DEFAULT '0' NOT NULL CHECK (group_display >= 0),
 	group_avatar varchar(255) DEFAULT '' NOT NULL,
-	group_avatar_type INT2 DEFAULT '0' NOT NULL,
+	group_avatar_type varchar(255) DEFAULT '' NOT NULL,
 	group_avatar_width INT2 DEFAULT '0' NOT NULL CHECK (group_avatar_width >= 0),
 	group_avatar_height INT2 DEFAULT '0' NOT NULL CHECK (group_avatar_height >= 0),
 	group_rank INT4 DEFAULT '0' NOT NULL CHECK (group_rank >= 0),
@@ -473,7 +473,6 @@ CREATE TABLE phpbb_groups (
 	group_message_limit INT4 DEFAULT '0' NOT NULL CHECK (group_message_limit >= 0),
 	group_max_recipients INT4 DEFAULT '0' NOT NULL CHECK (group_max_recipients >= 0),
 	group_legend INT4 DEFAULT '0' NOT NULL CHECK (group_legend >= 0),
-	group_teampage INT4 DEFAULT '0' NOT NULL CHECK (group_teampage >= 0),
 	PRIMARY KEY (group_id)
 );
 
@@ -1056,6 +1055,21 @@ CREATE TABLE phpbb_styles (
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
 
 /*
+	Table: 'phpbb_teampage'
+*/
+CREATE SEQUENCE phpbb_teampage_seq;
+
+CREATE TABLE phpbb_teampage (
+	teampage_id INT4 DEFAULT nextval('phpbb_teampage_seq'),
+	group_id INT4 DEFAULT '0' NOT NULL CHECK (group_id >= 0),
+	teampage_name varchar(255) DEFAULT '' NOT NULL,
+	teampage_position INT4 DEFAULT '0' NOT NULL CHECK (teampage_position >= 0),
+	teampage_parent INT4 DEFAULT '0' NOT NULL CHECK (teampage_parent >= 0),
+	PRIMARY KEY (teampage_id)
+);
+
+
+/*
 	Table: 'phpbb_topics'
 */
 CREATE SEQUENCE phpbb_topics_seq;
@@ -1229,7 +1243,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail INT2 DEFAULT '1' NOT NULL CHECK (user_allow_massemail >= 0),
 	user_options INT4 DEFAULT '230271' NOT NULL CHECK (user_options >= 0),
 	user_avatar varchar(255) DEFAULT '' NOT NULL,
-	user_avatar_type INT2 DEFAULT '0' NOT NULL,
+	user_avatar_type varchar(255) DEFAULT '' NOT NULL,
 	user_avatar_width INT2 DEFAULT '0' NOT NULL CHECK (user_avatar_width >= 0),
 	user_avatar_height INT2 DEFAULT '0' NOT NULL CHECK (user_avatar_height >= 0),
 	user_sig TEXT DEFAULT '' NOT NULL,
