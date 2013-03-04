@@ -124,12 +124,11 @@ services:
             - @service_container
             - @dbal.conn
             - @config
+            - @migrator
             - %tables.ext%
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
-        calls:
-            - [set_migrator, [@migrator]]
 
     ext.finder:
         class: phpbb_extension_finder
