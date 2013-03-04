@@ -600,11 +600,11 @@ class acp_modules
 
 			if (!class_exists($info_class))
 			{
-				if (file_exists($directory . $module . '.' . $phpEx))
+				$info_class = $module . '_info';
+				if (!class_exists($info_class) && file_exists($directory . $module . '.' . $phpEx))
 				{
 					include($directory . $module . '.' . $phpEx);
 				}
-				$info_class = $module . '_info';
 			}
 
 			// Get module title tag
