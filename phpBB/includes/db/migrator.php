@@ -29,7 +29,7 @@ class phpbb_db_migrator
 	protected $db;
 
 	/** @var phpbb_db_tools */
-	protected $db_tools
+	protected $db_tools;
 
 	/** @var string */
 	protected $table_prefix;
