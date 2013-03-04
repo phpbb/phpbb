@@ -123,6 +123,7 @@ $request	= $phpbb_container->get('request');
 $user		= $phpbb_container->get('user');
 $auth		= $phpbb_container->get('auth');
 $db			= $phpbb_container->get('dbal.conn');
+$phpbb_log	= $phpbb_container->get('log');
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function

@@ -67,6 +67,7 @@ if (isset($_GET['avatar']))
 	$phpbb_dispatcher = $phpbb_container->get('dispatcher');
 	$request	= $phpbb_container->get('request');
 	$db			= $phpbb_container->get('dbal.conn');
+	$phpbb_log	= $phpbb_container->get('log');
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
