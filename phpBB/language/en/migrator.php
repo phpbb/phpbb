@@ -40,8 +40,11 @@ $lang = array_merge($lang, array(
 
 	'GROUP_NOT_EXIST'					=> 'The group "%s" unexpectedly does not exist.',
 
+	'MIGRATION_DATA_DONE'				=> 'Installed Data: %s',
+	'MIGRATION_EFFECTIVELY_INSTALLED'	=> 'Migration already effectively installed (skipped): %s',
 	'MIGRATION_EXCEPTION_ERROR'			=> 'Something went wrong during the request and an exception was thrown. The changes made before the error occurred were reversed to the best of our abilities, but you should check the board for errors.',
 	'MIGRATION_NOT_FULFILLABLE'			=> 'The migration "%1$s" is not fulfillable, missing migration "%2$s".',
+	'MIGRATION_SCHEMA_DONE'				=> 'Installed Schema: %s',
 
 	'MODULE_ALREADY_EXIST'				=> 'The module "%s" unexpectedly already exists.',
 	'MODULE_ERROR'						=> 'An error occured while creating a module: %s',
