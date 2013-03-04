@@ -114,7 +114,7 @@ class install_install extends module
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
 				$this->disable_avatars_if_unwritable();
-				$this->populate_migrations($phpbb_container->get('migrator'), $phpbb_root_path);
+				$this->populate_migrations($phpbb_container->get('ext.manager'), $phpbb_container->get('migrator'));
 
 				// Remove the lock file
 				@unlink($phpbb_root_path . 'cache/install_lock');
@@ -1888,12 +1888,17 @@ class install_install extends module
 	* "installs" means it adds all migrations to the migrations table, but does not
 	* perform any of the actions in the migrations.
 	*
+	* @param phpbb_extension_manager $extension_manager
 	* @param phpbb_db_migrator $migrator
-	* @param string $phpbb_root_path
 	*/
-	function populate_migrations($migrator, $phpbb_root_path)
+	function populate_migrations($extension_manager, $migrator)
 	{
-		$migrator->populate_migrations_from_directory($phpbb_root_path . 'includes/db/migration/data/');
+		$finder = $extension_manager->get_finder();
+
+		$migrations = $finder
+			->core_path('includes/db/migration/data/')
+			->get_classes();
+		$migrator->populate_migrations($migrations);
 	}
 
 	/**

@@ -210,7 +210,13 @@ if (!$db_tools->sql_table_exists($table_prefix . 'migrations'))
 }
 
 $migrator = $phpbb_container->get('migrator');
-$migrator->load_migrations($phpbb_root_path . 'includes/db/migration/data/');
+$extension_manager = $phpbb_container->get('ext.manager');
+$finder = $extension_manager->get_finder();
+
+$migrations = $finder
+	->core_path('includes/db/migration/data/')
+	->get_classes();
+$migrator->set_migrations($migrations);
 
 // What is a safe limit of execution time? Half the max execution time should be safe.
 $safe_time_limit = (ini_get('max_execution_time') / 2);
