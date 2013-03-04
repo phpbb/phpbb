@@ -1,6 +1,7 @@
 imports:
     - { resource: tables.yml }
     - { resource: cron_tasks.yml }
+    - { resource: notifications.yml }
     - { resource: migrator.yml }
 
 services:
@@ -115,11 +116,12 @@ services:
             - @service_container
             - @dbal.conn
             - @config
-            - @migrator
             - %tables.ext%
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
+        calls:
+            - [set_migrator, [@migrator]]
 
     ext.finder:
         class: phpbb_extension_finder
@@ -177,6 +179,21 @@ services:
             - %core.php_ext%
             - %tables.log%
 
+    notification_manager:
+        class: phpbb_notification_manager
+        arguments:
+            - @notification.type_collection
+            - @notification.method_collection
+            - @service_container
+            - @user_loader
+            - @dbal.conn
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
+
     request:
         class: phpbb_request
 
@@ -219,3 +236,11 @@ services:
 
     user:
         class: phpbb_user
+
+    user_loader:
+        class: phpbb_user_loader
+        arguments:
+            - @dbal.conn
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.users%

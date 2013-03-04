@@ -857,6 +857,54 @@ END;
 
 
 /*
+	Table: 'phpbb_notification_types'
+*/
+CREATE TABLE phpbb_notification_types (
+	notification_type varchar2(255) DEFAULT '' ,
+	notification_type_enabled number(1) DEFAULT '1' NOT NULL,
+	CONSTRAINT pk_phpbb_notification_types PRIMARY KEY (notification_type, notification_type_enabled)
+)
+/
+
+
+/*
+	Table: 'phpbb_notifications'
+*/
+CREATE TABLE phpbb_notifications (
+	notification_id number(8) NOT NULL,
+	item_type varchar2(255) DEFAULT '' ,
+	item_id number(8) DEFAULT '0' NOT NULL,
+	item_parent_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(8) DEFAULT '0' NOT NULL,
+	notification_read number(1) DEFAULT '0' NOT NULL,
+	notification_time number(11) DEFAULT '1' NOT NULL,
+	notification_data clob DEFAULT '' ,
+	CONSTRAINT pk_phpbb_notifications PRIMARY KEY (notification_id)
+)
+/
+
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id)
+/
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read)
+/
+
+CREATE SEQUENCE phpbb_notifications_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_notifications
+BEFORE INSERT ON phpbb_notifications
+FOR EACH ROW WHEN (
+	new.notification_id IS NULL OR new.notification_id = 0
+)
+BEGIN
+	SELECT phpbb_notifications_seq.nextval
+	INTO :new.notification_id
+	FROM dual;
+END;
+/
+
+
+/*
 	Table: 'phpbb_poll_options'
 */
 CREATE TABLE phpbb_poll_options (
@@ -1609,6 +1657,19 @@ CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch (user_id)
 /
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status)
 /
+
+/*
+	Table: 'phpbb_user_notifications'
+*/
+CREATE TABLE phpbb_user_notifications (
+	item_type varchar2(255) DEFAULT '' ,
+	item_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(8) DEFAULT '0' NOT NULL,
+	method varchar2(255) DEFAULT '' ,
+	notify number(1) DEFAULT '1' NOT NULL
+)
+/
+
 
 /*
 	Table: 'phpbb_user_group'
