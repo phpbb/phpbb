@@ -236,7 +236,7 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 
 		if ($this->exists($class, $parent, $data['module_langname']))
 		{
-			throw new phpbb_db_migration_exception('MODULE_ALREADY_EXIST', $data['module_langname']);
+			return;
 		}
 
 		if (!class_exists('acp_modules'))
@@ -369,7 +369,7 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 		{
 			if (!$this->exists($class, $parent, $module))
 			{
-				throw new phpbb_db_migration_exception('MODULE_NOT_EXIST', ((isset($this->user->lang[$module])) ? $this->user->lang[$module] : $module));
+				return;
 			}
 
 			$parent_sql = '';
@@ -442,7 +442,7 @@ class phpbb_db_migration_tool_module implements phpbb_db_migration_tool_interfac
 				$result = $acp_modules->delete_module($module_id);
 				if (!empty($result))
 				{
-					throw new phpbb_db_migration_exception('MODULE_NOT_REMOVABLE', $module_id, $result);
+					return;
 				}
 			}
 
