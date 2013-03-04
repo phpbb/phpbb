@@ -434,15 +434,15 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	// Do we have to create a thumbnail?
 	$filedata['thumbnail'] = ($cat_id == ATTACHMENT_CATEGORY_IMAGE && $config['img_create_thumbnail']) ? 1 : 0;
 
-	// Check Image Size, if it is an image
-	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id) && $cat_id == ATTACHMENT_CATEGORY_IMAGE)
-	{
-		$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);
-	}
-
-	// Admins and mods are allowed to exceed the allowed filesize
 	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id))
 	{
+		// Check Image Size, if it is an image
+		if ($cat_id == ATTACHMENT_CATEGORY_IMAGE)
+		{
+			$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);
+		}
+
+		// Admins and mods are allowed to exceed the allowed filesize
 		if (!empty($extensions[$file->get('extension')]['max_filesize']))
 		{
 			$allowed_filesize = $extensions[$file->get('extension')]['max_filesize'];
