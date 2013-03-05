@@ -64,9 +64,9 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 	*/
 	public function is_available()
 	{
-		$m_approve = $this->auth->acl_getf($this->permission, true);
+		$has_permission = $this->auth->acl_getf($this->permission, true);
 
-		return (!empty($m_approve));
+		return (!empty($has_permission));
 	}
 
 	/**
@@ -90,9 +90,19 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 			return array();
 		}
 
-		$auth_approve[$post['forum_id']] = array_unique(array_merge($auth_approve[$post['forum_id']], $auth_approve[0]));
+		$has_permission = array();
 
-		return $this->check_user_notification_options($auth_approve[$post['forum_id']][$this->permission], array_merge($options, array(
+		if (isset($auth_approve[$post['forum_id']][$this->permission]))
+		{
+			$has_permission = $auth_approve[$post['forum_id']][$this->permission];
+		}
+
+		if (isset($auth_approve[0][$this->permission]))
+		{
+			$has_permission = array_unique(array_merge($has_permission, $auth_approve[0][$this->permission]));
+		}
+
+		return $this->check_user_notification_options($has_permission, array_merge($options, array(
 			'item_type'		=> self::$notification_option['id'],
 		)));
 	}
