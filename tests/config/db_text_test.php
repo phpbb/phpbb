@@ -64,48 +64,48 @@ class phpbb_config_db_text_test extends phpbb_database_test_case
 		$this->assertSame('string-de-ding', $this->config_text->get('meh'));
 	}
 
-	public function test_get_all_empty()
+	public function test_get_array_empty()
 	{
-		$this->assertEmpty($this->config_text->get_all(array('key1', 'key2')));
+		$this->assertEmpty($this->config_text->get_array(array('key1', 'key2')));
 	}
 
-	public function test_get_all_subset()
+	public function test_get_array_subset()
 	{
 		$expected = array(
 			'bar' => '42',
 			'foo' => '23',
 		);
 
-		$actual = $this->config_text->get_all(array_keys($expected));
+		$actual = $this->config_text->get_array(array_keys($expected));
 		ksort($actual);
 
 		$this->assertSame($expected, $actual);
 	}
 
-	public function test_set_all_get_all_subset()
+	public function test_set_array_get_array_subset()
 	{
-		$set_all_param = array(
+		$set_array_param = array(
 			// New entry
 			'baby' => 'phpBB',
 			// Entry update
 			'bar' => '64',
 		);
 
-		$this->config_text->set_all($set_all_param);
+		$this->config_text->set_array($set_array_param);
 
-		$expected = array_merge($set_all_param, array(
+		$expected = array_merge($set_array_param, array(
 			'foo' => '23',
 		));
 
-		$actual = $this->config_text->get_all(array_keys($expected));
+		$actual = $this->config_text->get_array(array_keys($expected));
 		ksort($actual);
 
 		$this->assertSame($expected, $actual);
 	}
 
-	public function test_delete_all_get_remaining()
+	public function test_delete_array_get_remaining()
 	{
-		$this->config_text->delete_all(array('foo', 'bar'));
+		$this->config_text->delete_array(array('foo', 'bar'));
 
 		$this->assertNull($this->config_text->get('bar'));
 		$this->assertNull($this->config_text->get('foo'));

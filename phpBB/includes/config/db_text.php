@@ -56,7 +56,7 @@ class phpbb_config_db_text
 	*/
 	public function set($key, $value)
 	{
-		$this->set_all(array($key => $value));
+		$this->set_array(array($key => $value));
 	}
 
 	/**
@@ -69,7 +69,7 @@ class phpbb_config_db_text
 	*/
 	public function get($key)
 	{
-		$map = $this->get_all(array($key));
+		$map = $this->get_array(array($key));
 
 		return isset($map[$key]) ? $map[$key] : null;
 	}
@@ -83,7 +83,7 @@ class phpbb_config_db_text
 	*/
 	public function delete($key)
 	{
-		$this->delete_all(array($key));
+		$this->delete_array(array($key));
 	}
 
 	/**
@@ -95,7 +95,7 @@ class phpbb_config_db_text
 	*
 	* @return null
 	*/
-	public function set_all(array $map)
+	public function set_array(array $map)
 	{
 		$this->db->sql_transaction('begin');
 
@@ -129,7 +129,7 @@ class phpbb_config_db_text
 	*
 	* @return array            Map from configuration names to values
 	*/
-	public function get_all(array $keys)
+	public function get_array(array $keys)
 	{
 		$sql = 'SELECT *
 			FROM ' . $this->table . '
@@ -153,7 +153,7 @@ class phpbb_config_db_text
 	*
 	* @return null
 	*/
-	public function delete_all(array $keys)
+	public function delete_array(array $keys)
 	{
 		$sql = 'DELETE
 			FROM ' . $this->table . '
