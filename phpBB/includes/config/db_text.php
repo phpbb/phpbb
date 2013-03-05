@@ -75,7 +75,7 @@ class phpbb_config_db_text
 	}
 
 	/**
-	* Removes a configuration option
+	* Removes the configuration option with the name $key.
 	*
 	* @param string $key       The configuration option's name
 	*
@@ -87,7 +87,9 @@ class phpbb_config_db_text
 	}
 
 	/**
-	* Sets a configuration option's value
+	* Mass set configuration options: Receives an associative array,
+	* treats array keys as configuration option names and associated
+	* array values as their configuration option values.
 	*
 	* @param array $map        Map from configuration names to values
 	*
@@ -118,7 +120,10 @@ class phpbb_config_db_text
 	}
 
 	/**
-	* Gets a set of configuration options as a key => value map.
+	* Mass get configuration options: Receives a set of configuration
+	* option names and returns the result as a key => value map where
+	* array keys are configuration option names and array values are
+	* associated config option values.
 	*
 	* @param array $keys       Set of configuration option names
 	*
@@ -142,7 +147,7 @@ class phpbb_config_db_text
 	}
 
 	/**
-	* Removes multiple configuration options
+	* Mass delete configuration options.
 	*
 	* @param array $keys       Set of configuration option names
 	*
