@@ -422,7 +422,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 					$this->db->sql_query($sql);
 					$role_name = $this->db->sql_fetchfield('role_name');
 
-					return $this->set($role_name, $auth_option, 'role', $has_permission);
+					return $this->permission_set($role_name, $auth_option, 'role', $has_permission);
 				}
 
 				$sql = 'SELECT auth_option_id, auth_setting
