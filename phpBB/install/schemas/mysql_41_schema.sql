@@ -160,7 +160,7 @@ CREATE TABLE phpbb_config (
 # Table: 'phpbb_config_text'
 CREATE TABLE phpbb_config_text (
 	config_name varchar(255) DEFAULT '' NOT NULL,
-	config_value text NOT NULL,
+	config_value mediumtext NOT NULL,
 	PRIMARY KEY (config_name)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 

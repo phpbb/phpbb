@@ -157,7 +157,7 @@ CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic);
 # Table: 'phpbb_config_text'
 CREATE TABLE phpbb_config_text (
 	config_name varchar(255) NOT NULL DEFAULT '',
-	config_value text(65535) NOT NULL DEFAULT '',
+	config_value mediumtext(16777215) NOT NULL DEFAULT '',
 	PRIMARY KEY (config_name)
 );
 

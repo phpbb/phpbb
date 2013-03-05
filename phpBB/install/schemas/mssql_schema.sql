@@ -298,8 +298,8 @@ GO
 */
 CREATE TABLE [phpbb_config_text] (
 	[config_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[config_value] [varchar] (8000) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
+	[config_value] [text] DEFAULT ('') NOT NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_config_text] WITH NOCHECK ADD 
