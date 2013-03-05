@@ -310,8 +310,10 @@ function user_add($user_row, $cp_data = false)
 
 		if ($add_group_id)
 		{
-			// Because these actions only fill the log unneccessarily we skip the add_log() entry with a little hack. :/
-			$GLOBALS['skip_add_log'] = true;
+			global $phpbb_log;
+
+			// Because these actions only fill the log unneccessarily we skip the add_log() entry.
+			$phpbb_log->disable('admin');
 
 			// Add user to "newly registered users" group and set to default group if admin specified so.
 			if ($config['new_member_group_default'])
@@ -324,7 +326,7 @@ function user_add($user_row, $cp_data = false)
 				group_user_add($add_group_id, $user_id);
 			}
 
-			unset($GLOBALS['skip_add_log']);
+			$phpbb_log->enable('admin');
 		}
 	}
 

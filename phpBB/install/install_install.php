@@ -53,7 +53,7 @@ class install_install extends module
 	function main($mode, $sub)
 	{
 		global $lang, $template, $language, $phpbb_root_path, $phpEx;
-		global $phpbb_container, $cache;
+		global $phpbb_container, $cache, $phpbb_log;
 
 		switch ($sub)
 		{
@@ -105,8 +105,9 @@ class install_install extends module
 				// Create a normal container now
 				$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 
-				// Sets the global $cache variable
+				// Sets the global variables
 				$cache = $phpbb_container->get('cache');
+				$phpbb_log = $phpbb_container->get('log');
 
 				$this->build_search_index($mode, $sub);
 				$this->add_modules($mode, $sub);

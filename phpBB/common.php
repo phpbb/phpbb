@@ -111,6 +111,8 @@ $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
+$phpbb_log = $phpbb_container->get('log');
+
 // load extensions
 $phpbb_extension_manager = $phpbb_container->get('ext.manager');
 $phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
