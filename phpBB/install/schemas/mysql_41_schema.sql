@@ -157,6 +157,14 @@ CREATE TABLE phpbb_config (
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
+# Table: 'phpbb_config_text'
+CREATE TABLE phpbb_config_text (
+	config_name varchar(255) DEFAULT '' NOT NULL,
+	config_value text NOT NULL,
+	PRIMARY KEY (config_name)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
 	confirm_id char(32) DEFAULT '' NOT NULL,

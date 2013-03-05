@@ -154,6 +154,14 @@ CREATE TABLE phpbb_config (
 
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic);
 
+# Table: 'phpbb_config_text'
+CREATE TABLE phpbb_config_text (
+	config_name varchar(255) NOT NULL DEFAULT '',
+	config_value text(65535) NOT NULL DEFAULT '',
+	PRIMARY KEY (config_name)
+);
+
+
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
 	confirm_id char(32) NOT NULL DEFAULT '',
