@@ -53,13 +53,20 @@ class phpbb_notification_type_topic_in_queue extends phpbb_notification_type_top
 	);
 
 	/**
+	* Permission to check for (in find_users_for_notification)
+	*
+	* @var string Permission name
+	*/
+	protected $permission = 'm_approve';
+
+	/**
 	* Is available
 	*/
 	public function is_available()
 	{
-		$m_approve = $this->auth->acl_getf('m_approve', true);
+		$has_permission = $this->auth->acl_getf($this->permission, true);
 
-		return (!empty($m_approve));
+		return (!empty($has_permission));
 	}
 
 	/**
@@ -83,9 +90,19 @@ class phpbb_notification_type_topic_in_queue extends phpbb_notification_type_top
 			return array();
 		}
 
-		$auth_approve[$topic['forum_id']] = array_unique(array_merge($auth_approve[$topic['forum_id']], $auth_approve[0]));
+		$has_permission = array();
 
-		return $this->check_user_notification_options($auth_approve[$topic['forum_id']]['m_approve'], array_merge($options, array(
+		if (isset($auth_approve[$topic['forum_id']][$this->permission]))
+		{
+			$has_permission = $auth_approve[$topic['forum_id']][$this->permission];
+		}
+
+		if (isset($auth_approve[0][$this->permission]))
+		{
+			$has_permission = array_unique(array_merge($has_permission, $auth_approve[0][$this->permission]));
+		}
+
+		return $this->check_user_notification_options($has_permission, array_merge($options, array(
 			'item_type'		=> self::$notification_option['id'],
 		)));
 	}
