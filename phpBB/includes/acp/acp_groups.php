@@ -148,12 +148,12 @@ class acp_groups
 					);
 				}
 			break;
-				
+
 			case 'set_default_on_all':
 				if (confirm_box(true))
 				{
 					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
-						
+
 					$start = 0;
 
 					do
@@ -184,7 +184,7 @@ class acp_groups
 						$db->sql_freeresult($result);
 					}
 					while ($start);
-						
+
 					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 				else
@@ -198,7 +198,7 @@ class acp_groups
 					);
 				}
 			break;
-			
+
 			case 'deleteusers':
 			case 'delete':
 				if (!$group_id)
