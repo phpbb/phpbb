@@ -650,45 +650,38 @@ class mcp_queue
 			// Only send out the mails, when the posts are being approved
 			if ($action == 'approve')
 			{
-				$messenger = new messenger();
+				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-				// Notify Poster?
-				if ($notify_poster)
+				// Send out normal user notifications
+				$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
+
+				// Handle notifications
+				foreach ($post_info as $post_id => $post_data)
 				{
-					foreach ($post_info as $post_id => $post_data)
+					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
+
+					$phpbb_notifications->add_notifications(array(
+						'quote',
+						'bookmark',
+						'post',
+					), $post_data);
+
+					$phpbb_notifications->mark_notifications_read(array(
+						'quote',
+						'bookmark',
+						'post',
+					), $post_data['post_id'], $user->data['user_id']);
+
+					// Notify Poster?
+					if ($notify_poster)
 					{
 						if ($post_data['poster_id'] == ANONYMOUS)
 						{
 							continue;
 						}
 
-						$messenger->template('post_approved', $post_data['user_lang']);
-
-						$messenger->to($post_data['user_email'], $post_data['username']);
-						$messenger->im($post_data['user_jabber'], $post_data['username']);
-
-						$messenger->assign_vars(array(
-							'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
-							'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
-							'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])),
-
-							'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&e=0",
-							'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
-						);
-
-						$messenger->send($post_data['user_notify_type']);
+						$phpbb_notifications->add_notifications('approve_post', $post_data);
 					}
-				}
-
-				$messenger->save_queue();
-
-				// Send out normal user notifications
-				$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
-				foreach ($post_info as $post_id => $post_data)
-				{
-					// Topic Notifications
-					user_notification('reply', $post_data['post_subject'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
 				}
 			}
 		}
@@ -818,41 +811,27 @@ class mcp_queue
 			// Only send out the mails, when the posts are being approved
 			if ($action == 'approve')
 			{
-				$messenger = new messenger();
-
-				// Notify Poster?
-				if ($notify_poster)
-				{
-					foreach ($topic_info as $topic_id => $topic_data)
-					{
-						if ($topic_data['topic_poster'] == ANONYMOUS)
-						{
-							continue;
-						}
-
-						$messenger->template('topic_approved', $topic_data['user_lang']);
-						$messenger->to($topic_data['user_email'], $topic_data['username']);
-						$messenger->im($topic_data['user_jabber'], $topic_data['username']);
-
-						$messenger->assign_vars(array(
-							'USERNAME'		=> htmlspecialchars_decode($topic_data['username']),
-							'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($topic_data['topic_title'])),
-							'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f={$topic_data['forum_id']}&t={$topic_data['topic_id']}&e=0",
-						));
-
-						$messenger->send($topic_data['user_notify_type']);
-					}
-				}
-
-				$messenger->save_queue();
-
 				// Send out normal user notifications
 				$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
 
+				// Handle notifications
+				$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 				foreach ($topic_info as $topic_id => $topic_data)
 				{
-					// Forum Notifications
-					user_notification('post', $topic_data['topic_title'], $topic_data['topic_title'], $topic_data['forum_name'], $topic_data['forum_id'], $topic_data['topic_id'], 0);
+					$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
+					$phpbb_notifications->add_notifications(array(
+						'quote',
+						'topic',
+					), $post_data);
+
+					$phpbb_notifications->mark_notifications_read('quote', $post_data['post_id'], $user->data['user_id']);
+					$phpbb_notifications->mark_notifications_read('topic', $post_data['topic_id'], $user->data['user_id']);
+
+					if ($notify_poster)
+					{
+						$phpbb_notifications->add_notifications('approve_topic', $post_data);
+					}
 				}
 			}
 		}
@@ -1068,20 +1047,33 @@ class mcp_queue
 				}
 			}
 
-			$messenger = new messenger();
+			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-			// Notify Poster?
-			if ($notify_poster)
+			$lang_reasons = array();
+
+			foreach ($post_info as $post_id => $post_data)
 			{
-				$lang_reasons = array();
+				$disapprove_all_posts_in_topic = $topic_information[$topic_id]['topic_posts_approved'] == 0 &&
+					$topic_information[$topic_id]['topic_posts_softdeleted'] == 0 &&
+					$topic_information[$topic_id]['topic_posts_unapproved'] == $topic_posts_unapproved[$topic_id];
 
-				foreach ($post_info as $post_id => $post_data)
+				$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
+
+				// Do we disapprove the whole topic? Remove potential notifications
+				if ($disapprove_all_posts_in_topic)
+				{
+					$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
+				}
+
+				// Notify Poster?
+				if ($notify_poster)
 				{
 					if ($post_data['poster_id'] == ANONYMOUS)
 					{
 						continue;
 					}
 
+					$post_data['disapprove_reason'] = '';
 					if (isset($disapprove_reason_lang))
 					{
 						// Okay we need to get the reason from the posters language
@@ -1107,32 +1099,27 @@ class mcp_queue
 							}
 						}
 
-						$email_disapprove_reason = $lang_reasons[$post_data['user_lang']];
-						$email_disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
+						$post_data['disapprove_reason'] = $lang_reasons[$post_data['user_lang']];
+						$post_data['disapprove_reason'] .= ($reason) ? "\n\n" . $reason : '';
 					}
 
-					$email_template = ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id']) ? 'topic_disapproved' : 'post_disapproved';
 
-					$messenger->template($email_template, $post_data['user_lang']);
-
-					$messenger->to($post_data['user_email'], $post_data['username']);
-					$messenger->im($post_data['user_jabber'], $post_data['username']);
-
-					$messenger->assign_vars(array(
-						'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
-						'REASON'		=> htmlspecialchars_decode($email_disapprove_reason),
-						'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
-						'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])))
-					);
-
-					$messenger->send($post_data['user_notify_type']);
+					if ($disapprove_all_posts_in_topic && $topic_information[$topic_id]['topic_posts_unapproved'] == 1)
+					{
+						// If there is only 1 post when disapproving the topic,
+						// we send the user a "disapprove topic" notification...
+						$phpbb_notifications->add_notifications('disapprove_topic', $post_data);
+					}
+					else
+					{
+						// ... otherwise there are multiple unapproved posts and
+						// all of them are disapproved as posts.
+						$phpbb_notifications->add_notifications('disapprove_post', $post_data);
+					}
 				}
-
-				unset($lang_reasons);
 			}
-			unset($post_info, $disapprove_reason, $email_disapprove_reason, $disapprove_reason_lang);
 
-			$messenger->save_queue();
+			unset($lang_reasons,$post_info, $disapprove_reason, $email_disapprove_reason, $disapprove_reason_lang);
 
 			if ($num_disapproved_topics)
 			{
