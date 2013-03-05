@@ -141,57 +141,58 @@ class acp_groups
 						'action'	=> $action))
 					);
 				}
-
-				break;
-			case 'set_default_on_all':
-					if (confirm_box(true))
-					{
-						$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
-							
-						$start = 0;
-
-						do
-						{
-							$sql = 'SELECT user_id
-								FROM ' . USER_GROUP_TABLE . "
-								WHERE group_id = $group_id
-								ORDER BY user_id";
-							$result = $db->sql_query_limit($sql, 200, $start);
-
-							$mark_ary = array();
-							if ($row = $db->sql_fetchrow($result))
-							{
-								do
-								{
-									$mark_ary[] = $row['user_id'];
-								}
-								while ($row = $db->sql_fetchrow($result));
-
-								group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
-
-								$start = (sizeof($mark_ary) < 200) ? 0 : $start + 200;
-							}
-							else
-							{
-								$start = 0;
-							}
-							$db->sql_freeresult($result);
-						}
-						while ($start);
-							
-						trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
-					}
-					else
-					{
-						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
-							'mark'		=> $mark_ary,
-							'g'			=> $group_id,
-							'i'			=> $id,
-							'mode'		=> $mode,
-							'action'	=> $action))
-						);
-					}
 			break;
+				
+			case 'set_default_on_all':
+				if (confirm_box(true))
+				{
+					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+						
+					$start = 0;
+
+					do
+					{
+						$sql = 'SELECT user_id
+							FROM ' . USER_GROUP_TABLE . "
+							WHERE group_id = $group_id
+							ORDER BY user_id";
+						$result = $db->sql_query_limit($sql, 200, $start);
+
+						$mark_ary = array();
+						if ($row = $db->sql_fetchrow($result))
+						{
+							do
+							{
+								$mark_ary[] = $row['user_id'];
+							}
+							while ($row = $db->sql_fetchrow($result));
+
+							group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
+
+							$start = (sizeof($mark_ary) < 200) ? 0 : $start + 200;
+						}
+						else
+						{
+							$start = 0;
+						}
+						$db->sql_freeresult($result);
+					}
+					while ($start);
+						
+					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+				}
+				else
+				{
+					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						'mark'		=> $mark_ary,
+						'g'			=> $group_id,
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'action'	=> $action))
+					);
+				}
+			break;
+			
 			case 'deleteusers':
 				if (empty($mark_ary))
 				{
