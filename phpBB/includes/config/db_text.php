@@ -43,7 +43,7 @@ class phpbb_config_db_text
 	public function __construct(phpbb_db_driver $db, $table)
 	{
 		$this->db = $db;
-		$this->table = $table;
+		$this->table = $this->db->sql_escape($table);
 	}
 
 	/**
