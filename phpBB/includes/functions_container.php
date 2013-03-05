@@ -57,6 +57,7 @@ function phpbb_create_install_container($phpbb_root_path, $php_ext)
 	$container = phpbb_create_container(array($core), $phpbb_root_path, $php_ext);
 
 	$container->setParameter('core.root_path', $phpbb_root_path);
+	$container->setParameter('core.adm_relative_path', $phpbb_adm_relative_path);
 	$container->setParameter('core.php_ext', $php_ext);
 	$container->setParameter('core.table_prefix', '');
 

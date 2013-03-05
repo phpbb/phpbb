@@ -138,15 +138,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$db = $this->get_db();
 		$db_tools = new phpbb_db_tools($db);
 
-		$extension_manager = new phpbb_extension_manager(
-			new phpbb_mock_container_builder(),
-			$db,
-			$config,
-			self::$config['table_prefix'] . 'ext',
-			dirname(__FILE__) . '/',
-			'.' . $php_ext,
-			$this->get_cache_driver()
-		);
 		$migrator = new phpbb_db_migrator(
 			$config,
 			$db,
@@ -157,8 +148,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::$config['table_prefix'],
 			array()
 		);
-		$extension_manager->set_migrator($migrator);
-		$migrator->set_extension_manager($extension_manager);
+		$extension_manager = new phpbb_extension_manager(
+			new phpbb_mock_container_builder(),
+			$db,
+			$config,
+			$migrator,
+			self::$config['table_prefix'] . 'ext',
+			dirname(__FILE__) . '/',
+			'.' . $php_ext,
+			$this->get_cache_driver()
+		);
 
 		return $extension_manager;
 	}

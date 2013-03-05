@@ -320,7 +320,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varbinary(8) DEFAULT '' NOT NULL,
 	group_display tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_avatar varbinary(255) DEFAULT '' NOT NULL,
-	group_avatar_type tinyint(2) DEFAULT '0' NOT NULL,
+	group_avatar_type varbinary(255) DEFAULT '' NOT NULL,
 	group_avatar_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	group_avatar_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	group_rank mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -330,7 +330,6 @@ CREATE TABLE phpbb_groups (
 	group_message_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_max_recipients mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_legend mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	group_teampage mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (group_id),
 	KEY group_legend_name (group_legend, group_name(255))
 );
@@ -819,6 +818,17 @@ CREATE TABLE phpbb_styles (
 );
 
 
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	teampage_name blob NOT NULL,
+	teampage_position mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	teampage_parent mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (teampage_id)
+);
+
+
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
 	topic_id mediumint(8) UNSIGNED NOT NULL auto_increment,
@@ -979,7 +989,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_options int(11) UNSIGNED DEFAULT '230271' NOT NULL,
 	user_avatar varbinary(255) DEFAULT '' NOT NULL,
-	user_avatar_type tinyint(2) DEFAULT '0' NOT NULL,
+	user_avatar_type varbinary(255) DEFAULT '' NOT NULL,
 	user_avatar_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	user_avatar_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	user_sig mediumblob NOT NULL,

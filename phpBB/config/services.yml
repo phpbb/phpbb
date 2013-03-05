@@ -3,10 +3,18 @@ imports:
     - { resource: cron_tasks.yml }
     - { resource: notifications.yml }
     - { resource: migrator.yml }
+    - { resource: avatars.yml }
 
 services:
     auth:
         class: phpbb_auth
+
+    avatar.manager:
+        class: phpbb_avatar_manager
+        arguments:
+            - @config
+            - @avatar.driver_collection
+            - @service_container
 
     cache:
         class: phpbb_cache_service
@@ -116,12 +124,11 @@ services:
             - @service_container
             - @dbal.conn
             - @config
+            - @migrator
             - %tables.ext%
             - %core.root_path%
             - .%core.php_ext%
             - @cache.driver
-        calls:
-            - [set_migrator, [@migrator]]
 
     ext.finder:
         class: phpbb_extension_finder
@@ -131,6 +138,19 @@ services:
             - @cache.driver
             - .%core.php_ext%
             - _ext_finder
+
+    groupposition.legend:
+        class: phpbb_groupposition_legend
+        arguments:
+            - @dbal.conn
+            - @user
+
+    groupposition.teampage:
+        class: phpbb_groupposition_teampage
+        arguments:
+            - @dbal.conn
+            - @user
+            - @cache.driver
 
     http_kernel:
         class: Symfony\Component\HttpKernel\HttpKernel
@@ -166,6 +186,18 @@ services:
         class: phpbb_event_kernel_terminate_subscriber
         tags:
             - { name: kernel.event_subscriber }
+
+    log:
+        class: phpbb_log
+        arguments:
+            - @dbal.conn
+            - @user
+            - @auth
+            - @dispatcher
+            - %core.root_path%
+            - %core.adm_relative_path%
+            - %core.php_ext%
+            - %tables.log%
 
     notification_manager:
         class: phpbb_notification_manager

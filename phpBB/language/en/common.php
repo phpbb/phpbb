@@ -359,6 +359,7 @@ $lang = array_merge($lang, array(
 	'LOGOUT_USER'						=> 'Logout [ %s ]',
 	'LOG_ME_IN'							=> 'Remember me',
 
+	'MAIN'					=> 'Main',
 	'MARK'					=> 'Mark',
 	'MARK_ALL'				=> 'Mark all',
 	'MARK_FORUMS_READ'		=> 'Mark forums read',
@@ -430,6 +431,8 @@ $lang = array_merge($lang, array(
 	'NO_AUTH_ADMIN'				=> 'Access to the Administration Control Panel is not allowed as you do not have administrative permissions.',
 	'NO_AUTH_ADMIN_USER_DIFFER'	=> 'You are not able to re-authenticate as a different user.',
 	'NO_AUTH_OPERATION'			=> 'You do not have the necessary permissions to complete this operation.',
+	'NO_AVATARS'				=> 'No avatars currently available',
+	'NO_AVATAR_SELECTED'		=> 'You have not selected any avatar.',
 	'NO_CONNECT_TO_SMTP_HOST'	=> 'Could not connect to smtp host : %1$s : %2$s',
 	'NO_BIRTHDAYS'				=> 'No birthdays today',
 	'NO_EMAIL_MESSAGE'			=> 'Email message was blank.',

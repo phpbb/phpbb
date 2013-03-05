@@ -312,7 +312,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varchar(8) NOT NULL DEFAULT '',
 	group_display INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_avatar varchar(255) NOT NULL DEFAULT '',
-	group_avatar_type tinyint(2) NOT NULL DEFAULT '0',
+	group_avatar_type varchar(255) NOT NULL DEFAULT '',
 	group_avatar_width INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_avatar_height INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_rank INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -321,8 +321,7 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_message_limit INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_max_recipients INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	group_teampage INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_groups_group_legend_name ON phpbb_groups (group_legend, group_name);
@@ -793,6 +792,16 @@ CREATE TABLE phpbb_styles (
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
 
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id INTEGER PRIMARY KEY NOT NULL ,
+	group_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	teampage_name varchar(255) NOT NULL DEFAULT '',
+	teampage_position INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	teampage_parent INTEGER UNSIGNED NOT NULL DEFAULT '0'
+);
+
+
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
 	topic_id INTEGER PRIMARY KEY NOT NULL ,
@@ -952,7 +961,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_options INTEGER UNSIGNED NOT NULL DEFAULT '230271',
 	user_avatar varchar(255) NOT NULL DEFAULT '',
-	user_avatar_type tinyint(2) NOT NULL DEFAULT '0',
+	user_avatar_type varchar(255) NOT NULL DEFAULT '',
 	user_avatar_width INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_avatar_height INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_sig mediumtext(16777215) NOT NULL DEFAULT '',

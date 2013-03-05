@@ -3583,69 +3583,49 @@ function parse_cfg_file($filename, $lines = false)
 }
 
 /**
-* Add log event
+* Add log entry
+*
+* @param	string	$mode				The mode defines which log_type is used and from which log the entry is retrieved
+* @param	int		$forum_id			Mode 'mod' ONLY: forum id of the related item, NOT INCLUDED otherwise
+* @param	int		$topic_id			Mode 'mod' ONLY: topic id of the related item, NOT INCLUDED otherwise
+* @param	int		$reportee_id		Mode 'user' ONLY: user id of the reportee, NOT INCLUDED otherwise
+* @param	string	$log_operation		Name of the operation
+* @param	array	$additional_data	More arguments can be added, depending on the log_type
+*
+* @return	int|bool		Returns the log_id, if the entry was added to the database, false otherwise.
+*
+* @deprecated	Use $phpbb_log->add() instead
 */
 function add_log()
 {
-	global $db, $user;
-
-	// In phpBB 3.1.x i want to have logging in a class to be able to control it
-	// For now, we need a quite hakish approach to circumvent logging for some actions
-	// @todo implement cleanly
-	if (!empty($GLOBALS['skip_add_log']))
-	{
-		return false;
-	}
+	global $phpbb_log, $user;
 
 	$args = func_get_args();
+	$mode = array_shift($args);
 
-	$mode			= array_shift($args);
-	$reportee_id	= ($mode == 'user') ? intval(array_shift($args)) : '';
-	$forum_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
-	$topic_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
-	$action			= array_shift($args);
-	$data			= (!sizeof($args)) ? '' : serialize($args);
-
-	$sql_ary = array(
-		'user_id'		=> (empty($user->data)) ? ANONYMOUS : $user->data['user_id'],
-		'log_ip'		=> $user->ip,
-		'log_time'		=> time(),
-		'log_operation'	=> $action,
-		'log_data'		=> $data,
-	);
-
+	// This looks kind of dirty, but add_log has some additional data before the log_operation
+	$additional_data = array();
 	switch ($mode)
 	{
 		case 'admin':
-			$sql_ary['log_type'] = LOG_ADMIN;
-		break;
-
-		case 'mod':
-			$sql_ary += array(
-				'log_type'	=> LOG_MOD,
-				'forum_id'	=> $forum_id,
-				'topic_id'	=> $topic_id
-			);
-		break;
-
-		case 'user':
-			$sql_ary += array(
-				'log_type'		=> LOG_USERS,
-				'reportee_id'	=> $reportee_id
-			);
-		break;
-
 		case 'critical':
-			$sql_ary['log_type'] = LOG_CRITICAL;
 		break;
-
-		default:
-			return false;
+		case 'mod':
+			$additional_data['forum_id'] = array_shift($args);
+			$additional_data['topic_id'] = array_shift($args);
+		break;
+		case 'user':
+			$additional_data['reportee_id'] = array_shift($args);
+		break;
 	}
 
-	$db->sql_query('INSERT INTO ' . LOG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+	$log_operation = array_shift($args);
+	$additional_data = array_merge($additional_data, $args);
 
-	return $db->sql_nextid();
+	$user_id = (empty($user->data)) ? ANONYMOUS : $user->data['user_id'];
+	$user_ip = (empty($user->ip)) ? '' : $user->ip;
+
+	return $phpbb_log->add($mode, $user_id, $user_ip, $log_operation, time(), $additional_data);
 }
 
 /**

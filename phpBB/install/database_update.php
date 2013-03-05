@@ -123,6 +123,7 @@ $request	= $phpbb_container->get('request');
 $user		= $phpbb_container->get('user');
 $auth		= $phpbb_container->get('auth');
 $db			= $phpbb_container->get('dbal.conn');
+$phpbb_log	= $phpbb_container->get('log');
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
@@ -210,7 +211,13 @@ if (!$db_tools->sql_table_exists($table_prefix . 'migrations'))
 }
 
 $migrator = $phpbb_container->get('migrator');
-$migrator->load_migrations($phpbb_root_path . 'includes/db/migration/data/');
+$extension_manager = $phpbb_container->get('ext.manager');
+$finder = $extension_manager->get_finder();
+
+$migrations = $finder
+	->core_path('includes/db/migration/data/')
+	->get_classes();
+$migrator->set_migrations($migrations);
 
 // What is a safe limit of execution time? Half the max execution time should be safe.
 $safe_time_limit = (ini_get('max_execution_time') / 2);
@@ -228,7 +235,28 @@ while (!$migrator->finished())
 		phpbb_end_update($cache);
 	}
 
-	echo $migrator->last_run_migration['name'] . '<br />';
+	$state = array_merge(array(
+			'migration_schema_done' => false,
+			'migration_data_done'	=> false,
+		),
+		$migrator->last_run_migration['state']
+	);
+
+	if (isset($migrator->last_run_migration['effectively_installed']) && $migrator->last_run_migration['effectively_installed'])
+	{
+		echo $user->lang('MIGRATION_EFFECTIVELY_INSTALLED', $migrator->last_run_migration['name']) . '<br />';
+	}
+	else
+	{
+		if ($state['migration_data_done'])
+		{
+			echo $user->lang('MIGRATION_DATA_DONE', $migrator->last_run_migration['name']) . '<br />';
+		}
+		else if ($state['migration_schema_done'])
+		{
+			echo $user->lang('MIGRATION_SCHEMA_DONE', $migrator->last_run_migration['name']) . '<br />';
+		}
+	}
 
 	// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 	if ((time() - $update_start_time) >= $safe_time_limit)

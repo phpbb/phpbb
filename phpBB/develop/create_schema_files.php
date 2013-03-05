@@ -1171,7 +1171,7 @@ function get_schema_struct()
 			'group_desc_uid'		=> array('VCHAR:8', ''),
 			'group_display'			=> array('BOOL', 0),
 			'group_avatar'			=> array('VCHAR', ''),
-			'group_avatar_type'		=> array('TINT:2', 0),
+			'group_avatar_type'		=> array('VCHAR:255', ''),
 			'group_avatar_width'	=> array('USINT', 0),
 			'group_avatar_height'	=> array('USINT', 0),
 			'group_rank'			=> array('UINT', 0),
@@ -1181,7 +1181,6 @@ function get_schema_struct()
 			'group_message_limit'	=> array('UINT', 0),
 			'group_max_recipients'	=> array('UINT', 0),
 			'group_legend'			=> array('UINT', 0),
-			'group_teampage'		=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'group_id',
 		'KEYS'			=> array(
@@ -1717,6 +1716,17 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_teampage'] = array(
+		'COLUMNS'		=> array(
+			'teampage_id'		=> array('UINT', NULL, 'auto_increment'),
+			'group_id'			=> array('UINT', 0),
+			'teampage_name'		=> array('VCHAR_UNI:255', ''),
+			'teampage_position'	=> array('UINT', 0),
+			'teampage_parent'	=> array('UINT', 0),
+		),
+		'PRIMARY_KEY'	=> 'teampage_id',
+	);
+
 	$schema_data['phpbb_topics'] = array(
 		'COLUMNS'		=> array(
 			'topic_id'					=> array('UINT', NULL, 'auto_increment'),
@@ -1885,7 +1895,7 @@ function get_schema_struct()
 			'user_allow_massemail'		=> array('BOOL', 1),
 			'user_options'				=> array('UINT:11', 230271),
 			'user_avatar'				=> array('VCHAR', ''),
-			'user_avatar_type'			=> array('TINT:2', 0),
+			'user_avatar_type'			=> array('VCHAR:255', ''),
 			'user_avatar_width'			=> array('USINT', 0),
 			'user_avatar_height'		=> array('USINT', 0),
 			'user_sig'					=> array('MTEXT_UNI', ''),
