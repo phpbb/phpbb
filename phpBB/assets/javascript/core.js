@@ -201,13 +201,10 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	return div;
 };
 
-
 phpbb.addOption = function(field_content, callback) {
 	$('#phpbb_confirm').find('.alert_text').html(field_content);
 	callback();
 }
-
-
 
 /**
  * Turn a querystring into an array.

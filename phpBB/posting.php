@@ -1552,10 +1552,10 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			'f'		=> $forum_id,
 			'mode'	=> 'delete')
 		);
-		
+
 		//Confirmation varible to delete topic with its posts
 		$del_topic_with_posts = ($user->lang['YES'] === $request->variable('option', '', true, phpbb_request_interface::POST));
-		
+
 		//Confirmation variable to added optional field to confirm box layout in order to delete topic 
 		$optional_feild_added = ($user->lang['YES'] === $request->variable('optional_feild_added', '', true, phpbb_request_interface::POST));
 
@@ -1574,14 +1574,14 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				'post_postcount'		=> $post_data['post_postcount']
 			);
 			
-			if($del_topic_with_posts){
+			if($del_topic_with_posts)
+			{
 				delete_topics('topic_id', array($topic_id), true);
-			}else{
+			}else
+			{
 				$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data);
 			}
 
-
-			
 			$post_username = ($post_data['poster_id'] == ANONYMOUS && !empty($post_data['post_username'])) ? $post_data['post_username'] : $post_data['username'];
 
 			if (($next_post_id === false) || $del_topic_with_posts)
@@ -1611,10 +1611,10 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				$optional_field_html = '<br />'.'<input type="checkbox" name="delTopic" value="delTopic">'.$user->lang['DELETE_ENTIRE_TOPIC'].'<br />';
 				$json_response = new phpbb_json_response;
 				$json_response->send(array(
-				    'S_CONFIRM_ACTION'  => $u_action,
+					'S_CONFIRM_ACTION'  => $u_action,
 					'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 					'OPTIONAL_FIELD'	=> $optional_field_html,
-				    'YES_VALUE'			=> $user->lang['YES']
+					'YES_VALUE'			=> $user->lang['YES']
 				));
 			}
 		}
