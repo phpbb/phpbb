@@ -187,6 +187,18 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    log:
+        class: phpbb_log
+        arguments:
+            - @dbal.conn
+            - @user
+            - @auth
+            - @dispatcher
+            - %core.root_path%
+            - %core.adm_relative_path%
+            - %core.php_ext%
+            - %tables.log%
+
     notification_manager:
         class: phpbb_notification_manager
         arguments:

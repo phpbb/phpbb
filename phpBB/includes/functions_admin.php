@@ -2506,273 +2506,32 @@ function cache_moderators()
 
 /**
 * View log
-* If $log_count is set to false, we will skip counting all entries in the database.
+*
+* @param	string	$mode			The mode defines which log_type is used and from which log the entry is retrieved
+* @param	array	&$log			The result array with the logs
+* @param	mixed	&$log_count		If $log_count is set to false, we will skip counting all entries in the database.
+*									Otherwise an integer with the number of total matching entries is returned.
+* @param	int		$limit			Limit the number of entries that are returned
+* @param	int		$offset			Offset when fetching the log entries, f.e. when paginating
+* @param	mixed	$forum_id		Restrict the log entries to the given forum_id (can also be an array of forum_ids)
+* @param	int		$topic_id		Restrict the log entries to the given topic_id
+* @param	int		$user_id		Restrict the log entries to the given user_id
+* @param	int		$log_time		Only get log entries newer than the given timestamp
+* @param	string	$sort_by		SQL order option, e.g. 'l.log_time DESC'
+* @param	string	$keywords		Will only return log entries that have the keywords in log_operation or log_data
+*
+* @return	int				Returns the offset of the last valid page, if the specified offset was invalid (too high)
 */
 function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC', $keywords = '')
 {
-	global $db, $user, $auth, $phpEx, $phpbb_root_path, $phpbb_admin_path;
+	global $phpbb_log;
 
-	$topic_id_list = $reportee_id_list = $is_auth = $is_mod = array();
+	$count_logs = ($log_count !== false);
 
-	$profile_url = (defined('IN_ADMIN')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview') : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile');
+	$log = $phpbb_log->get_logs($mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $limit_days, $sort_by, $keywords);
+	$log_count = $phpbb_log->get_log_count();
 
-	switch ($mode)
-	{
-		case 'admin':
-			$log_type = LOG_ADMIN;
-			$sql_forum = '';
-		break;
-
-		case 'mod':
-			$log_type = LOG_MOD;
-			$sql_forum = '';
-
-			if ($topic_id)
-			{
-				$sql_forum = 'AND l.topic_id = ' . (int) $topic_id;
-			}
-			else if (is_array($forum_id))
-			{
-				$sql_forum = 'AND ' . $db->sql_in_set('l.forum_id', array_map('intval', $forum_id));
-			}
-			else if ($forum_id)
-			{
-				$sql_forum = 'AND l.forum_id = ' . (int) $forum_id;
-			}
-		break;
-
-		case 'user':
-			$log_type = LOG_USERS;
-			$sql_forum = 'AND l.reportee_id = ' . (int) $user_id;
-		break;
-
-		case 'users':
-			$log_type = LOG_USERS;
-			$sql_forum = '';
-		break;
-
-		case 'critical':
-			$log_type = LOG_CRITICAL;
-			$sql_forum = '';
-		break;
-
-		default:
-			return;
-	}
-
-	// Use no preg_quote for $keywords because this would lead to sole backslashes being added
-	// We also use an OR connection here for spaces and the | string. Currently, regex is not supported for searching (but may come later).
-	$keywords = preg_split('#[\s|]+#u', utf8_strtolower($keywords), 0, PREG_SPLIT_NO_EMPTY);
-	$sql_keywords = '';
-
-	if (!empty($keywords))
-	{
-		$keywords_pattern = array();
-
-		// Build pattern and keywords...
-		for ($i = 0, $num_keywords = sizeof($keywords); $i < $num_keywords; $i++)
-		{
-			$keywords_pattern[] = preg_quote($keywords[$i], '#');
-			$keywords[$i] = $db->sql_like_expression($db->any_char . $keywords[$i] . $db->any_char);
-		}
-
-		$keywords_pattern = '#' . implode('|', $keywords_pattern) . '#ui';
-
-		$operations = array();
-		foreach ($user->lang as $key => $value)
-		{
-			if (substr($key, 0, 4) == 'LOG_' && preg_match($keywords_pattern, $value))
-			{
-				$operations[] = $key;
-			}
-		}
-
-		$sql_keywords = 'AND (';
-		if (!empty($operations))
-		{
-			$sql_keywords .= $db->sql_in_set('l.log_operation', $operations) . ' OR ';
-		}
-		$sql_lower = $db->sql_lower_text('l.log_data');
-		$sql_keywords .= "$sql_lower " . implode(" OR $sql_lower ", $keywords) . ')';
-	}
-
-	if ($log_count !== false)
-	{
-		$sql = 'SELECT COUNT(l.log_id) AS total_entries
-			FROM ' . LOG_TABLE . ' l, ' . USERS_TABLE . " u
-			WHERE l.log_type = $log_type
-				AND l.user_id = u.user_id
-				AND l.log_time >= $limit_days
-				$sql_keywords
-				$sql_forum";
-		$result = $db->sql_query($sql);
-		$log_count = (int) $db->sql_fetchfield('total_entries');
-		$db->sql_freeresult($result);
-	}
-
-	// $log_count may be false here if false was passed in for it,
-	// because in this case we did not run the COUNT() query above.
-	// If we ran the COUNT() query and it returned zero rows, return;
-	// otherwise query for logs below.
-	if ($log_count === 0)
-	{
-		// Save the queries, because there are no logs to display
-		return 0;
-	}
-
-	if ($offset >= $log_count)
-	{
-		$offset = ($offset - $limit < 0) ? 0 : $offset - $limit;
-	}
-
-	$sql = "SELECT l.*, u.username, u.username_clean, u.user_colour
-		FROM " . LOG_TABLE . " l, " . USERS_TABLE . " u
-		WHERE l.log_type = $log_type
-			AND u.user_id = l.user_id
-			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') . "
-			$sql_keywords
-			$sql_forum
-		ORDER BY $sort_by";
-	$result = $db->sql_query_limit($sql, $limit, $offset);
-
-	$i = 0;
-	$log = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if ($row['topic_id'])
-		{
-			$topic_id_list[] = $row['topic_id'];
-		}
-
-		if ($row['reportee_id'])
-		{
-			$reportee_id_list[] = $row['reportee_id'];
-		}
-
-		$log[$i] = array(
-			'id'				=> $row['log_id'],
-
-			'reportee_id'			=> $row['reportee_id'],
-			'reportee_username'		=> '',
-			'reportee_username_full'=> '',
-
-			'user_id'			=> $row['user_id'],
-			'username'			=> $row['username'],
-			'username_full'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, $profile_url),
-
-			'ip'				=> $row['log_ip'],
-			'time'				=> $row['log_time'],
-			'forum_id'			=> $row['forum_id'],
-			'topic_id'			=> $row['topic_id'],
-
-			'viewforum'			=> ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : false,
-			'action'			=> (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
-		);
-
-		if (!empty($row['log_data']))
-		{
-			$log_data_ary = @unserialize($row['log_data']);
-			$log_data_ary = ($log_data_ary === false) ? array() : $log_data_ary;
-
-			if (isset($user->lang[$row['log_operation']]))
-			{
-				// Check if there are more occurrences of % than arguments, if there are we fill out the arguments array
-				// It doesn't matter if we add more arguments than placeholders
-				if ((substr_count($log[$i]['action'], '%') - sizeof($log_data_ary)) > 0)
-				{
-					$log_data_ary = array_merge($log_data_ary, array_fill(0, substr_count($log[$i]['action'], '%') - sizeof($log_data_ary), ''));
-				}
-
-				$log[$i]['action'] = vsprintf($log[$i]['action'], $log_data_ary);
-
-				// If within the admin panel we do not censor text out
-				if (defined('IN_ADMIN'))
-				{
-					$log[$i]['action'] = bbcode_nl2br($log[$i]['action']);
-				}
-				else
-				{
-					$log[$i]['action'] = bbcode_nl2br(censor_text($log[$i]['action']));
-				}
-			}
-			else if (!empty($log_data_ary))
-			{
-				$log[$i]['action'] .= '<br />' . implode('', $log_data_ary);
-			}
-
-			/* Apply make_clickable... has to be seen if it is for good. :/
-			// Seems to be not for the moment, reconsider later...
-			$log[$i]['action'] = make_clickable($log[$i]['action']);
-			*/
-		}
-
-		$i++;
-	}
-	$db->sql_freeresult($result);
-
-	if (sizeof($topic_id_list))
-	{
-		$topic_id_list = array_unique($topic_id_list);
-
-		// This query is not really needed if move_topics() updates the forum_id field,
-		// although it's also used to determine if the topic still exists in the database
-		$sql = 'SELECT topic_id, forum_id
-			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', array_map('intval', $topic_id_list));
-		$result = $db->sql_query($sql);
-
-		$default_forum_id = 0;
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if ($auth->acl_get('f_read', $row['forum_id']))
-			{
-				$is_auth[$row['topic_id']] = $row['forum_id'];
-			}
-
-			if ($auth->acl_gets('a_', 'm_', $row['forum_id']))
-			{
-				$is_mod[$row['topic_id']] = $row['forum_id'];
-			}
-		}
-		$db->sql_freeresult($result);
-
-		foreach ($log as $key => $row)
-		{
-			$log[$key]['viewtopic'] = (isset($is_auth[$row['topic_id']])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $is_auth[$row['topic_id']] . '&amp;t=' . $row['topic_id']) : false;
-			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $user->session_id) : false;
-		}
-	}
-
-	if (sizeof($reportee_id_list))
-	{
-		$reportee_id_list = array_unique($reportee_id_list);
-		$reportee_names_list = array();
-
-		$sql = 'SELECT user_id, username, user_colour
-			FROM ' . USERS_TABLE . '
-			WHERE ' . $db->sql_in_set('user_id', $reportee_id_list);
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$reportee_names_list[$row['user_id']] = $row;
-		}
-		$db->sql_freeresult($result);
-
-		foreach ($log as $key => $row)
-		{
-			if (!isset($reportee_names_list[$row['reportee_id']]))
-			{
-				continue;
-			}
-
-			$log[$key]['reportee_username'] = $reportee_names_list[$row['reportee_id']]['username'];
-			$log[$key]['reportee_username_full'] = get_username_string('full', $row['reportee_id'], $reportee_names_list[$row['reportee_id']]['username'], $reportee_names_list[$row['reportee_id']]['user_colour'], false, $profile_url);
-		}
-	}
-
-	return $offset;
+	return $phpbb_log->get_valid_offset();
 }
 
 /**
