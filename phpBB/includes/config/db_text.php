@@ -136,6 +136,7 @@ class phpbb_config_db_text
 		{
 			$map[$row['config_name']] = $row['config_value'];
 		}
+		$this->db->sql_freeresult($result);
 
 		return $map;
 	}
