@@ -1582,12 +1582,16 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// 1) We are tracking post revisions AND
 			// 2) We have some original post data to save AND
 			// 3) One of the following is true:
-			// 3.1) The current user is the original poster AND the post is not locked from editing
+			// 3.1) The current user is the original poster AND the post is
+			// not locked from editing
 			// 3.2) The current user is a moderator in the current forum
+			// 3.3) The current post is a wiki post AND the current user can
+			// edit wiki posts
 			if ($config['track_post_revisions']
 				&& !empty($data['original_post_data'])
 				&& (($data['poster_id'] == $user->data['user_id'] && !$data['post_edit_locked'])
-				|| $auth->acl_getf('m_edit', $data['forum_id'])))
+				|| $auth->acl_getf('m_edit', $data['forum_id'])
+				|| ($data['post_wiki'] && $auth->acl_getf('f_wiki_edit', $data['forum_id']))))
 			{
 				$sql_data[POST_REVISIONS_TABLE]['sql'] = array(
 					'post_id'				=> $data['original_post_data']['post_id'],
