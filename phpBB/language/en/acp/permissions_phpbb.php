@@ -153,7 +153,7 @@ $lang = array_merge($lang, array(
 	'acl_f_reply'		=> array('lang' => 'Can reply to topics', 'cat' => 'post'),
 	'acl_f_edit'		=> array('lang' => 'Can edit own posts', 'cat' => 'post'),
 	'acl_f_delete'		=> array('lang' => 'Can permanently delete own posts', 'cat' => 'post'),
-	'acl_f_softdelete'  => array('lang' => 'Can delete own posts', 'cat' => 'actions'),
+	'acl_f_softdelete'  => array('lang' => 'Can delete own posts', 'cat' => 'post'),
 	'acl_f_ignoreflood' => array('lang' => 'Can ignore flood limit', 'cat' => 'post'),
 	'acl_f_postcount'	=> array('lang' => 'Increment post counter<br /><em>Please note that this setting only affects new posts.</em>', 'cat' => 'post'),
 	'acl_f_noapprove'	=> array('lang' => 'Can post without approval', 'cat' => 'post'),	
