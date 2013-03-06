@@ -14,13 +14,13 @@ phpbb.closeDarkenWrapper = function(delay) {
 };
 
 // This callback will mark all forum icons read
-phpbb.add_ajax_callback('mark_forums_read', function(res) {
+phpbb.addAjaxCallback('mark_forums_read', function(res) {
 	var readTitle = res.NO_UNREAD_POSTS;
 	var unreadTitle = res.UNREAD_POSTS;
 	var iconsArray = {
 		'forum_unread': 'forum_read',
 		'forum_unread_subforum': 'forum_read_subforum',
-		'forum_unread_locked': 'forum_read_locked',
+		'forum_unread_locked': 'forum_read_locked'
 	};
 
 	$('li.row').find('dl[class*="forum_unread"]').each(function() {
@@ -107,16 +107,14 @@ phpbb.addAjaxCallback('mark_topics_read', function(res, update_topic_links) {
 });
 
 // This callback finds the post from the delete link, and removes it.
-phpbb.add_ajax_callback('post_delete', function() {
+phpbb.addAjaxCallback('post_delete', function() {
 	var el = $(this),
-		post_id;
+		postId;
 
-	if (el.attr('data-refresh') === undefined)
-	{
-		post_id = el[0].href.split('&p=')[1];
-		var post = el.parents('#p' + post_id).css('pointer-events', 'none');
-		if (post.hasClass('bg1') || post.hasClass('bg2'))
-		{
+	if (el.attr('data-refresh') === undefined) {
+		postId = el[0].href.split('&p=')[1];
+		var post = el.parents('#p' + postId).css('pointer-events', 'none');
+		if (post.hasClass('bg1') || post.hasClass('bg2')) {
 			var posts1 = post.nextAll('.bg1');
 			post.nextAll('.bg2').removeClass('bg2').addClass('bg1');
 			posts1.removeClass('bg1').addClass('bg2');
@@ -128,7 +126,7 @@ phpbb.add_ajax_callback('post_delete', function() {
 });
 
 // This callback removes the approve / disapprove div or link.
-phpbb.add_ajax_callback('post_approve', function(res) {
+phpbb.addAjaxCallback('post_approve', function(res) {
 	var remove = (res.approved) ? $(this) : $(this).parents('.post');
 	$(remove).css('pointer-events', 'none').fadeOut(function() {
 		$(this).remove();
@@ -136,12 +134,12 @@ phpbb.add_ajax_callback('post_approve', function(res) {
 });
 
 // This removes the parent row of the link or form that fired the callback.
-phpbb.add_ajax_callback('row_delete', function() {
+phpbb.addAjaxCallback('row_delete', function() {
 	$(this).parents('tr').remove();
 });
 
 // This handles friend / foe additions removals.
-phpbb.add_ajax_callback('zebra', function(res) {
+phpbb.addAjaxCallback('zebra', function(res) {
 	var zebra;
 
 	if (res.success) {
@@ -151,11 +149,10 @@ phpbb.add_ajax_callback('zebra', function(res) {
 	}
 });
 
-phpbb.add_ajax_callback('revisions.compare', function(res) {
+phpbb.addAjaxCallback('revisions.compare', function(res) {
 	var i;
 
-	for (i in res.revisions_block)
-	{
+	for (i in res.revisions_block) {
 		$('#r' + res.revisions_block[i].ID).css('opacity', res.revisions_block[i].IN_RANGE ? 1.0 : 0.7);
 	}
 
@@ -165,36 +162,33 @@ phpbb.add_ajax_callback('revisions.compare', function(res) {
 	$('#revision_lines_changed').html(res.lines_changed);
 });
 
-phpbb.add_ajax_callback('revisions.protect', function(res) {
-    if (res.success)
-    {
-    	$('#r' + res.revision_id + ' #link_protect').hide();
-    	$('#r' + res.revision_id + ' #link_unprotect').show();
-    	$('.revision_action_success').html(res.message).fadeIn(500).delay(5000).fadeOut(500);
-    }
+phpbb.addAjaxCallback('revisions.protect', function(res) {
+	if (res.success) {
+		$('#r' + res.revision_id + ' #link_protect').hide();
+		$('#r' + res.revision_id + ' #link_unprotect').show();
+		$('.revision_action_success').html(res.message).fadeIn(500).delay(5000).fadeOut(500);
+	}
 });
 
-phpbb.add_ajax_callback('revisions.unprotect', function(res) {
-	if (res.success)
-	{
-    	$('#r' + res.revision_id + ' #link_unprotect').hide();
-    	$('#r' + res.revision_id + ' #link_protect').show();
-    	$('.revision_action_success').html(res.message).fadeIn(500).delay(5000).fadeOut(500);
-    }
+phpbb.addAjaxCallback('revisions.unprotect', function(res) {
+	if (res.success) {
+		$('#r' + res.revision_id + ' #link_unprotect').hide();
+		$('#r' + res.revision_id + ' #link_protect').show();
+		$('.revision_action_success').html(res.message).fadeIn(500).delay(5000).fadeOut(500);
+	}
 });
 
-phpbb.add_ajax_callback('revisions.delete', function(res) {
-    if (res.success)
-    {
-    	var revision_count;
+phpbb.addAjaxCallback('revisions.delete', function(res) {
+	if (res.success) {
+		var revisionCount;
 
-    	$(this).parents('ul').remove();
-    	revision_count = parseInt($('#compare_summary').html());
-    	$('#compare_summary').html(revision_count - 1);
-    }
+		$(this).parents('ul').remove();
+		revisionCount = parseInt($('#compare_summary').html());
+		$('#compare_summary').html(revisionCount - 1);
+	}
 });
 
-phpbb.add_ajax_callback('revisions.viewtopic_view', function() {
+phpbb.addAjaxCallback('revisions.viewtopic_view', function() {
 	var id;
 	id = $(this).parents('.post').attr('id');
 	$('#' + id + '_revisions').slideToggle();
@@ -207,8 +201,7 @@ $('[data-ajax]').each(function() {
 		ajax = $this.attr('data-ajax'),
 		fn;
 
-	if (ajax !== 'false')
-	{
+	if (ajax !== 'false') {
 		fn = (ajax !== 'true') ? ajax : null;
 		phpbb.ajaxify({
 			selector: this,
@@ -242,12 +235,9 @@ phpbb.ajaxify({
 	filter: function (data) {
 		var action = $('#quick-mod-select').val();
 
-		if (action === 'make_normal')
-		{
+		if (action === 'make_normal') {
 			return $(this).find('select option[value="make_global"]').length > 0;
-		}
-		else if (action === 'lock' || action === 'unlock')
-		{
+		} else if (action === 'lock' || action === 'unlock') {
 			return true;
 		}
 
@@ -263,6 +253,21 @@ $('#quick-mod-select').change(function () {
 	$('#quickmodform').submit();
 });
 
-
+/**
+* Toggle the member search panel in memberlist.php.
+*
+* If user returns to search page after viewing results the search panel is automatically displayed.
+* In any case the link will toggle the display status of the search panel and link text will be
+* appropriately changed based on the status of the search panel.
+*/
+$('#member_search').click(function () {
+	$('#memberlist_search').slideToggle('fast');
+	phpbb.ajax_callbacks['alt_text'].call(this);
+	// Focus on the username textbox if it's available and displayed
+	if ($('#memberlist_search').is(':visible')) {
+		$('#username').focus();
+	}
+	return false;
+});
 
 })(jQuery); // Avoid conflicts with other libraries
