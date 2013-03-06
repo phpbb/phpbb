@@ -177,6 +177,17 @@ class phpbb_avatar_manager
 		$keys = array_keys($row);
 		$values = array_values($row);
 
+		// Upon creation of a user/group $row might be empty
+		if (empty($keys))
+		{
+			return array(
+				'avatar'		=> '',
+				'avatar_type'	=> '',
+				'avatar_width'	=> '',
+				'avatar_height'	=> '',
+			);
+		}
+
 		$keys = array_map(array('phpbb_avatar_manager', 'strip_prefix'), $keys);
 
 		return array_combine($keys, $values);
