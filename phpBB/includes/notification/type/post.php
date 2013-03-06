@@ -106,10 +106,24 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		}
 		$this->db->sql_freeresult($result);
 
+		$sql = 'SELECT user_id
+			FROM ' . FORUMS_WATCH_TABLE . '
+			WHERE forum_id = ' . (int) $post['forum_id'] . '
+				AND notify_status = ' . NOTIFY_YES . '
+				AND user_id <> ' . (int) $post['poster_id'];
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$users[] = $row['user_id'];
+		}
+		$this->db->sql_freeresult($result);
+
 		if (empty($users))
 		{
 			return array();
 		}
+
+		$users = array_unique($users);
 
 		$auth_read = $this->auth->acl_get_list($users, 'f_read', $post['forum_id']);
 
