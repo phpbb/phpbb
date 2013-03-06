@@ -613,12 +613,14 @@ class mcp_queue
 				$topic_info[$topic_id]['posts'][] = (int) $post_id;
 				$topic_info[$topic_id]['forum_id'] = (int) $post_data['forum_id'];
 
-				if ($post_id == $post_data['topic_first_post_id'])
+				// Refresh the first post, if the time or id is older then the current one
+				if ($post_id <= $post_data['topic_first_post_id'] || $post_data['post_time'] <= $post_data['topic_time'])
 				{
 					$topic_info[$topic_id]['first_post'] = true;
 				}
 
-				if ($post_id == $post_data['topic_last_post_id'])
+				// Refresh the last post, if the time or id is newer then the current one
+				if ($post_id >= $post_data['topic_last_post_id'] || $post_data['post_time'] >= $post_data['topic_last_post_time'])
 				{
 					$topic_info[$topic_id]['last_post'] = true;
 				}
