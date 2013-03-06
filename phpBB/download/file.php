@@ -56,18 +56,7 @@ if (isset($_GET['avatar']))
 	$phpbb_class_loader_ext->register();
 
 	// Set up container
-	$phpbb_container = phpbb_create_dumped_container_unless_debug(
-		array(
-			new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
-			new phpbb_di_extension_core($phpbb_root_path),
-		),
-		array(
-			new phpbb_di_pass_collection_pass(),
-			new phpbb_di_pass_kernel_pass(),
-		),
-		$phpbb_root_path,
-		$phpEx
-	);
+	$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 
 	$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 	$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
@@ -78,6 +67,7 @@ if (isset($_GET['avatar']))
 	$phpbb_dispatcher = $phpbb_container->get('dispatcher');
 	$request	= $phpbb_container->get('request');
 	$db			= $phpbb_container->get('dbal.conn');
+	$phpbb_log	= $phpbb_container->get('log');
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
@@ -98,6 +88,8 @@ if (isset($_GET['avatar']))
 
 	// worst-case default
 	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
+
+	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 
 	$filename = request_var('avatar', '');
 	$avatar_group = false;

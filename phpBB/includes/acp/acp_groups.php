@@ -26,7 +26,7 @@ class acp_groups
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
-		global $request;
+		global $request, $phpbb_container;
 
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
@@ -55,15 +55,16 @@ class acp_groups
 
 
 		// Clear some vars
-		$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 		$group_row = array();
 
 		// Grab basic data for group, if group_id is set and exists
 		if ($group_id)
 		{
-			$sql = 'SELECT *
-				FROM ' . GROUPS_TABLE . "
-				WHERE group_id = $group_id";
+			$sql = 'SELECT g.*, t.teampage_position AS group_teampage
+				FROM ' . GROUPS_TABLE . ' g
+				LEFT JOIN ' . TEAMPAGE_TABLE . ' t
+					ON (t.group_id = g.group_id)
+				WHERE g.group_id = ' . $group_id;
 			$result = $db->sql_query($sql);
 			$group_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -126,13 +127,34 @@ class acp_groups
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
+				else if (empty($mark_ary))
+				{
+					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+				}
 
 				if (confirm_box(true))
 				{
 					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+					group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);	
+					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+				}
+				else
+				{
+					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						'mark'		=> $mark_ary,
+						'g'			=> $group_id,
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'action'	=> $action))
+					);
+				}
 
-					if (!sizeof($mark_ary))
+				break;
+			case 'set_default_on_all':
+					if (confirm_box(true))
 					{
+						$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+							
 						$start = 0;
 
 						do
@@ -163,28 +185,25 @@ class acp_groups
 							$db->sql_freeresult($result);
 						}
 						while ($start);
+							
+						trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 					}
 					else
 					{
-						group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
+						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+							'mark'		=> $mark_ary,
+							'g'			=> $group_id,
+							'i'			=> $id,
+							'mode'		=> $mode,
+							'action'	=> $action))
+						);
 					}
-
-					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
-				}
-				else
-				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
-						'mark'		=> $mark_ary,
-						'g'			=> $group_id,
-						'i'			=> $id,
-						'mode'		=> $mode,
-						'action'	=> $action))
-					);
-				}
-
 			break;
-
 			case 'deleteusers':
+				if (empty($mark_ary))
+				{
+					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+				}
 			case 'delete':
 				if (!$group_id)
 				{
@@ -282,8 +301,21 @@ class acp_groups
 				$error = array();
 				$user->add_lang('ucp');
 
-				$avatar_select = basename(request_var('avatar_select', ''));
-				$category = basename(request_var('category', ''));
+				// Setup avatar data for later
+				$avatars_enabled = false;
+				$avatar_drivers = null;
+				$avatar_data = null;
+				$avatar_error = array();
+
+				if ($config['allow_avatar'])
+				{
+					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
+
+					// This is normalised data, without the group_ prefix
+					$avatar_data = phpbb_avatar_manager::clean_row($group_row);
+				}
+
 
 				// Did we submit?
 				if ($update)
@@ -300,12 +332,6 @@ class acp_groups
 					$allow_desc_bbcode	= request_var('desc_parse_bbcode', false);
 					$allow_desc_urls	= request_var('desc_parse_urls', false);
 					$allow_desc_smilies	= request_var('desc_parse_smilies', false);
-
-					$data['uploadurl']	= request_var('uploadurl', '');
-					$data['remotelink']	= request_var('remotelink', '');
-					$data['width']		= request_var('width', '');
-					$data['height']		= request_var('height', '');
-					$delete				= request_var('delete', '');
 
 					$submit_ary = array(
 						'colour'			=> request_var('group_colour', ''),
@@ -324,81 +350,35 @@ class acp_groups
 						$submit_ary['founder_manage'] = isset($_REQUEST['group_founder_manage']) ? 1 : 0;
 					}
 
-					$uploadfile = $request->file('uploadfile');
-					if (!empty($uploadfile['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
+					if ($config['allow_avatar'])
 					{
-						// Avatar stuff
-						$var_ary = array(
-							'uploadurl'		=> array('string', true, 5, 255),
-							'remotelink'	=> array('string', true, 5, 255),
-							'width'			=> array('string', true, 1, 3),
-							'height'		=> array('string', true, 1, 3),
-						);
+						// Handle avatar
+						$driver_name = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
 
-						if (!($error = validate_data($data, $var_ary)))
+						if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
 						{
-							$data['user_id'] = "g$group_id";
+							$driver = $phpbb_avatar_manager->get_driver($driver_name);
+							$result = $driver->process_form($request, $template, $user, $avatar_data, $avatar_error);
 
-							if ((!empty($uploadfile['tmp_name']) || $data['uploadurl']) && $can_upload)
+							if ($result && empty($avatar_error))
 							{
-								list($submit_ary['avatar_type'], $submit_ary['avatar'], $submit_ary['avatar_width'], $submit_ary['avatar_height']) = avatar_upload($data, $error);
-							}
-							else if ($data['remotelink'])
-							{
-								list($submit_ary['avatar_type'], $submit_ary['avatar'], $submit_ary['avatar_width'], $submit_ary['avatar_height']) = avatar_remote($data, $error);
+								$result['avatar_type'] = $driver_name;
+								$submit_ary = array_merge($submit_ary, $result);
 							}
 						}
-					}
-					else if ($avatar_select && $config['allow_avatar_local'])
-					{
-						// check avatar gallery
-						if (is_dir($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category))
+						else
 						{
-							$submit_ary['avatar_type'] = AVATAR_GALLERY;
-
-							list($submit_ary['avatar_width'], $submit_ary['avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_select);
-							$submit_ary['avatar'] = $category . '/' . $avatar_select;
-						}
-					}
-					else if ($delete)
-					{
-						$submit_ary['avatar'] = '';
-						$submit_ary['avatar_type'] = $submit_ary['avatar_width'] = $submit_ary['avatar_height'] = 0;
-					}
-					else if ($data['width'] && $data['height'])
-					{
-						// Only update the dimensions?
-						if ($config['avatar_max_width'] || $config['avatar_max_height'])
-						{
-							if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
+							$driver = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']);
+							if ($driver)
 							{
-								$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
+								$driver->delete($avatar_data);
 							}
-						}
 
-						if (!sizeof($error))
-						{
-							if ($config['avatar_min_width'] || $config['avatar_min_height'])
-							{
-								if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
-								{
-									$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
-								}
-							}
-						}
-
-						if (!sizeof($error))
-						{
-							$submit_ary['avatar_width'] = $data['width'];
-							$submit_ary['avatar_height'] = $data['height'];
-						}
-					}
-
-					if ((isset($submit_ary['avatar']) && $submit_ary['avatar'] && (!isset($group_row['group_avatar']))) || $delete)
-					{
-						if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
-						{
-							avatar_delete('group', $group_row, true);
+							// Removing the avatar
+							$submit_ary['avatar_type'] = '';
+							$submit_ary['avatar'] = '';
+							$submit_ary['avatar_width'] = 0;
+							$submit_ary['avatar_height'] = 0;
 						}
 					}
 
@@ -425,7 +405,7 @@ class acp_groups
 							'rank'			=> 'int',
 							'colour'		=> 'string',
 							'avatar'		=> 'string',
-							'avatar_type'	=> 'int',
+							'avatar_type'	=> 'string',
 							'avatar_width'	=> 'int',
 							'avatar_height'	=> 'int',
 							'receive_pm'	=> 'int',
@@ -439,7 +419,7 @@ class acp_groups
 
 						foreach ($test_variables as $test => $type)
 						{
-							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || in_array($test, $set_attributes)))
+							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || isset($group_attributes['group_avatar']) && strpos($test, 'avatar') === 0 || in_array($test, $set_attributes)))
 							{
 								settype($submit_ary[$test], $type);
 								$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
@@ -496,7 +476,7 @@ class acp_groups
 								}
 							}
 
-							$cache->destroy('sql', GROUPS_TABLE);
+							$cache->destroy('sql', array(GROUPS_TABLE, TEAMPAGE_TABLE));
 
 							$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 							trigger_error($user->lang[$message] . adm_back_link($this->u_action));
@@ -555,14 +535,42 @@ class acp_groups
 				$type_closed	= ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
 				$type_hidden	= ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 
-				$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
-
-				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
-
-				if ($config['allow_avatar_local'] && $display_gallery)
+				// Load up stuff for avatars
+				if ($config['allow_avatar'])
 				{
-					avatar_gallery($category, $avatar_select, 4);
+					$avatars_enabled = false;
+					$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $avatar_data['avatar_type']));
+
+					foreach ($avatar_drivers as $current_driver)
+					{
+						$driver = $phpbb_avatar_manager->get_driver($current_driver);
+
+						$avatars_enabled = true;
+						$config_name = $phpbb_avatar_manager->get_driver_config_name($driver);
+						$template->set_filenames(array(
+							'avatar' => "acp_avatar_options_{$config_name}.html",
+						));
+
+						if ($driver->prepare_form($request, $template, $user, $avatar_data, $avatar_error))
+						{
+							$driver_name = $phpbb_avatar_manager->prepare_driver_name($current_driver);
+							$driver_upper = strtoupper($driver_name);
+							$template->assign_block_vars('avatar_drivers', array(
+								'L_TITLE' => $user->lang($driver_upper . '_TITLE'),
+								'L_EXPLAIN' => $user->lang($driver_upper . '_EXPLAIN'),
+
+								'DRIVER' => $driver_name,
+								'SELECTED' => $current_driver == $selected_driver,
+								'OUTPUT' => $template->assign_display('avatar'),
+							));
+						}
+					}
 				}
+
+				$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
+
+				// Merge any avatar errors into the primary error array
+				$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
 
 				$back_link = request_var('back_link', '');
 
@@ -582,12 +590,10 @@ class acp_groups
 					'S_ADD_GROUP'		=> ($action == 'add') ? true : false,
 					'S_GROUP_PERM'		=> ($action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
 					'S_INCLUDE_SWATCH'	=> true,
-					'S_CAN_UPLOAD'		=> $can_upload,
 					'S_ERROR'			=> (sizeof($error)) ? true : false,
 					'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
-					'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
-					'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
 					'S_USER_FOUNDER'	=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
+					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
 
 					'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
@@ -608,8 +614,7 @@ class acp_groups
 
 					'S_RANK_OPTIONS'		=> $rank_options,
 					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
-					'AVATAR'				=> $avatar_img,
-					'AVATAR_IMAGE'			=> $avatar_img,
+					'AVATAR'				=> empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar,
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
 					'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
 					'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
@@ -698,7 +703,7 @@ class acp_groups
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
 					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'),
-					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id",
+					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=set_default_on_all&amp;g=$group_id",
 				));
 
 				// Grab the members
@@ -811,56 +816,112 @@ class acp_groups
 
 	public function manage_position()
 	{
-		global $config, $db, $template, $user;
+		global $config, $db, $template, $user, $request, $phpbb_container;
 
 		$this->tpl_name = 'acp_groups_position';
 		$this->page_title = 'ACP_GROUPS_POSITION';
 
-		$field = request_var('field', '');
-		$action = request_var('action', '');
-		$group_id = request_var('g', 0);
+		$field = $request->variable('field', '');
+		$action = $request->variable('action', '');
+		$group_id = $request->variable('g', 0);
+		$teampage_id = $request->variable('t', 0);
+		$category_id = $request->variable('c', 0);
 
 		if ($field && !in_array($field, array('legend', 'teampage')))
 		{
 			// Invalid mode
 			trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
-		else if ($field)
+		else if ($field && in_array($field, array('legend', 'teampage')))
 		{
-			$group_position = new phpbb_group_positions($db, $field, $this->u_action);
+
+			$group_position = $phpbb_container->get('groupposition.' . $field);
 		}
 
-		switch ($action)
+		if ($field == 'teampage')
 		{
-			case 'set_config_legend':
-				set_config('legend_sort_groupname', request_var('legend_sort_groupname', 0));
-			break;
+			try
+			{
+				switch ($action)
+				{
+					case 'add':
+						$group_position->add_group_teampage($group_id, $category_id);
+					break;
 
-			case 'set_config_teampage':
-				set_config('teampage_forums', request_var('teampage_forums', 0));
-				set_config('teampage_memberships', request_var('teampage_memberships', 0));
-			break;
+					case 'add_category':
+						$group_position->add_category_teampage($request->variable('category_name', '', true));
+					break;
 
-			case 'add':
-				$group_position->add_group($group_id);
-			break;
+					case 'delete':
+						$group_position->delete_teampage($teampage_id);
+					break;
 
-			case 'delete':
-				$group_position->delete_group($group_id);
-			break;
+					case 'move_up':
+						$group_position->move_up_teampage($teampage_id);
+					break;
 
-			case 'move_up':
-				$group_position->move_up($group_id);
-			break;
+					case 'move_down':
+						$group_position->move_down_teampage($teampage_id);
+					break;
+				}
+			}
+			catch (phpbb_groupposition_exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()) . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+		}
+		else if ($field == 'legend')
+		{
+			try
+			{
+				switch ($action)
+				{
+					case 'add':
+						$group_position->add_group($group_id);
+					break;
 
-			case 'move_down':
-				$group_position->move_down($group_id);
-			break;
+					case 'delete':
+						$group_position->delete_group($group_id);
+					break;
+
+					case 'move_up':
+						$group_position->move_up($group_id);
+					break;
+
+					case 'move_down':
+						$group_position->move_down($group_id);
+					break;
+				}
+			}
+			catch (phpbb_groupposition_exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()) . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+		}
+		else
+		{
+			switch ($action)
+			{
+				case 'set_config_teampage':
+					$config->set('teampage_forums', $request->variable('teampage_forums', 0));
+					$config->set('teampage_memberships', $request->variable('teampage_memberships', 0));
+				break;
+
+				case 'set_config_legend':
+					$config->set('legend_sort_groupname', $request->variable('legend_sort_groupname', 0));
+				break;
+			}
+		}
+
+		if (($action == 'move_up' || $action == 'move_down') && $request->is_ajax())
+		{
+			$json_response = new phpbb_json_response;
+			$json_response->send(array('success' => true));
 		}
 
 		$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
 			FROM ' . GROUPS_TABLE . '
-			ORDER BY group_legend, group_name ASC';
+			ORDER BY group_legend ASC, group_type DESC, group_name ASC';
 		$result = $db->sql_query($sql);
 
 		$s_group_select_legend = '';
@@ -870,57 +931,99 @@ class acp_groups
 			if ($row['group_legend'])
 			{
 				$template->assign_block_vars('legend', array(
-					'GROUP_NAME' => $group_name,
-					'GROUP_COLOUR' => ($row['group_colour']) ? ' style="color: #' . $row['group_colour'] . '"' : '',
-					'GROUP_TYPE' => $user->lang[phpbb_group_positions::group_type_language($row['group_type'])],
+					'GROUP_NAME'	=> $group_name,
+					'GROUP_COLOUR'	=> ($row['group_colour']) ? '#' . $row['group_colour'] : '',
+					'GROUP_TYPE'	=> $user->lang[phpbb_groupposition_legend::group_type_language($row['group_type'])],
 
-					'U_MOVE_DOWN' => "{$this->u_action}&amp;field=legend&amp;action=move_down&amp;g=" . $row['group_id'],
-					'U_MOVE_UP' => "{$this->u_action}&amp;field=legend&amp;action=move_up&amp;g=" . $row['group_id'],
-					'U_DELETE' => "{$this->u_action}&amp;field=legend&amp;action=delete&amp;g=" . $row['group_id'],
+					'U_MOVE_DOWN'	=> "{$this->u_action}&amp;field=legend&amp;action=move_down&amp;g=" . $row['group_id'],
+					'U_MOVE_UP'		=> "{$this->u_action}&amp;field=legend&amp;action=move_up&amp;g=" . $row['group_id'],
+					'U_DELETE'		=> "{$this->u_action}&amp;field=legend&amp;action=delete&amp;g=" . $row['group_id'],
 				));
 			}
 			else
 			{
-				$s_group_select_legend .= '<option value="' . (int) $row['group_id'] . '">' . $group_name . '</option>';
+				$template->assign_block_vars('add_legend', array(
+					'GROUP_ID'		=> (int) $row['group_id'],
+					'GROUP_NAME'	=> $group_name,
+					'GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL),
+				));
 			}
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT group_id, group_name, group_colour, group_type, group_teampage
-			FROM ' . GROUPS_TABLE . '
-			ORDER BY group_teampage, group_name ASC';
+		$category_url_param = (($category_id) ? '&amp;c=' . $category_id : '');
+
+		$sql = 'SELECT t.*, g.group_name, g.group_colour, g.group_type
+			FROM ' . TEAMPAGE_TABLE . ' t
+			LEFT JOIN ' . GROUPS_TABLE . ' g
+				ON (t.group_id = g.group_id)
+			WHERE t.teampage_parent = ' . $category_id . '
+				OR t.teampage_id = ' . $category_id . '
+			ORDER BY t.teampage_position ASC';
+		$result = $db->sql_query($sql);
+
+		$category_data = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['teampage_id'] == $category_id)
+			{
+				$template->assign_vars(array(
+					'CURRENT_CATEGORY_NAME'		=> $row['teampage_name'],
+				));
+				continue;
+			}
+
+			if ($row['group_id'])
+			{
+				$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+				$group_type = $user->lang[phpbb_groupposition_teampage::group_type_language($row['group_type'])];
+			}
+			else
+			{
+				$group_name = $row['teampage_name'];
+				$group_type = '';
+			}
+
+			$template->assign_block_vars('teampage', array(
+				'GROUP_NAME'	=> $group_name,
+				'GROUP_COLOUR'	=> ($row['group_colour']) ? '#' . $row['group_colour'] : '',
+				'GROUP_TYPE'	=> $group_type,
+
+				'U_CATEGORY'	=> (!$row['group_id']) ? "{$this->u_action}&amp;c=" . $row['teampage_id'] : '',
+				'U_MOVE_DOWN'	=> "{$this->u_action}&amp;field=teampage&amp;action=move_down{$category_url_param}&amp;t=" . $row['teampage_id'],
+				'U_MOVE_UP'		=> "{$this->u_action}&amp;field=teampage&amp;action=move_up{$category_url_param}&amp;t=" . $row['teampage_id'],
+				'U_DELETE'		=> "{$this->u_action}&amp;field=teampage&amp;action=delete{$category_url_param}&amp;t=" . $row['teampage_id'],
+			));
+		}
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
+			FROM ' . GROUPS_TABLE . ' g
+			LEFT JOIN ' . TEAMPAGE_TABLE . ' t
+				ON (t.group_id = g.group_id)
+			WHERE t.teampage_id IS NULL
+			ORDER BY g.group_type DESC, g.group_name ASC';
 		$result = $db->sql_query($sql);
 
 		$s_group_select_teampage = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
-			if ($row['group_teampage'])
-			{
-				$template->assign_block_vars('teampage', array(
-					'GROUP_NAME' => $group_name,
-					'GROUP_COLOUR' => ($row['group_colour']) ? ' style="color: #' . $row['group_colour'] . '"' : '',
-					'GROUP_TYPE' => $user->lang[phpbb_group_positions::group_type_language($row['group_type'])],
-
-					'U_MOVE_DOWN' => "{$this->u_action}&amp;field=teampage&amp;action=move_down&amp;g=" . $row['group_id'],
-					'U_MOVE_UP' => "{$this->u_action}&amp;field=teampage&amp;action=move_up&amp;g=" . $row['group_id'],
-					'U_DELETE' => "{$this->u_action}&amp;field=teampage&amp;action=delete&amp;g=" . $row['group_id'],
-				));
-			}
-			else
-			{
-				$s_group_select_teampage .= '<option value="' . (int) $row['group_id'] . '">' . $group_name . '</option>';
-			}
+			$template->assign_block_vars('add_teampage', array(
+				'GROUP_ID'		=> (int) $row['group_id'],
+				'GROUP_NAME'	=> $group_name,
+				'GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL),
+			));
 		}
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'U_ACTION' => $this->u_action,
-			'U_ACTION_LEGEND' => $this->u_action . '&amp;field=legend',
-			'U_ACTION_TEAMPAGE' => $this->u_action . '&amp;field=teampage',
+			'U_ACTION'					=> $this->u_action,
+			'U_ACTION_LEGEND'			=> $this->u_action . '&amp;field=legend',
+			'U_ACTION_TEAMPAGE'			=> $this->u_action . '&amp;field=teampage' . $category_url_param,
+			'U_ACTION_TEAMPAGE_CAT'		=> $this->u_action . '&amp;field=teampage_cat',
 
-			'S_GROUP_SELECT_LEGEND'		=> $s_group_select_legend,
-			'S_GROUP_SELECT_TEAMPAGE'	=> $s_group_select_teampage,
+			'S_TEAMPAGE_CATEGORY'		=> $category_id,
 			'DISPLAY_FORUMS'			=> ($config['teampage_forums']) ? true : false,
 			'DISPLAY_MEMBERSHIPS'		=> $config['teampage_memberships'],
 			'LEGEND_SORT_GROUPNAME'		=> ($config['legend_sort_groupname']) ? true : false,

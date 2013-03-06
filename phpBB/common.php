@@ -63,12 +63,17 @@ if (!defined('PHPBB_INSTALLED'))
 	exit;
 }
 
+// In case $phpbb_adm_relative_path is not set (in case of an update), use the default.
+$phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relative_path : 'adm/';
+$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
+
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
 
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
@@ -83,18 +88,7 @@ $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_pat
 $phpbb_class_loader_ext->register();
 
 // Set up container
-$phpbb_container = phpbb_create_dumped_container_unless_debug(
-	array(
-		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
-		new phpbb_di_extension_core($phpbb_root_path),
-	),
-	array(
-		new phpbb_di_pass_collection_pass(),
-		new phpbb_di_pass_kernel_pass(),
-	),
-	$phpbb_root_path,
-	$phpEx
-);
+$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
@@ -117,6 +111,8 @@ $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
+$phpbb_log = $phpbb_container->get('log');
+
 // load extensions
 $phpbb_extension_manager = $phpbb_container->get('ext.manager');
 $phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
@@ -127,8 +123,9 @@ $phpbb_style = $phpbb_container->get('style');
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 $phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('phpbb_template', 'display')));
+$phpbb_hook_finder = $phpbb_container->get('hook_finder');
 
-foreach ($cache->obtain_hooks() as $hook)
+foreach ($phpbb_hook_finder->find() as $hook)
 {
 	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 }

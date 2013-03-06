@@ -34,9 +34,11 @@ class metadata_manager_test extends phpbb_database_test_case
 			'version'		=> '3.1.0',
 		));
 		$this->db = $this->new_dbal();
+		$this->db_tools = new phpbb_db_tools($this->db);
 		$this->phpbb_root_path = dirname(__FILE__) . '/';
 		$this->phpEx = '.php';
 		$this->user = new phpbb_user();
+		$this->table_prefix = 'phpbb_';
 
 		$this->template = new phpbb_template(
 			$this->phpbb_root_path,
@@ -47,9 +49,21 @@ class metadata_manager_test extends phpbb_database_test_case
 			new phpbb_template_context()
 		);
 
+		$this->migrator = new phpbb_db_migrator(
+			$this->config,
+			$this->db,
+			$this->db_tools,
+			'phpbb_migrations',
+			$this->phpbb_root_path,
+			'php',
+			$this->table_prefix,
+			array()
+		);
 		$this->extension_manager = new phpbb_extension_manager(
+			new phpbb_mock_container_builder(),
 			$this->db,
 			$this->config,
+			$this->migrator,
 			'phpbb_ext',
 			$this->phpbb_root_path,
 			$this->phpEx,

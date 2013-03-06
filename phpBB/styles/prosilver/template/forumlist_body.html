@@ -51,6 +51,7 @@
 						<!-- IF forumrow.U_UNAPPROVED_TOPICS --><a href="{forumrow.U_UNAPPROVED_TOPICS}">{UNAPPROVED_IMG}</a><!-- ENDIF -->
 						<!-- IF forumrow.LAST_POST_TIME --><dfn>{L_LAST_POST}</dfn>
 						<!-- IF forumrow.S_DISPLAY_SUBJECT -->
+							<!-- EVENT forumlist_body_last_post_title_prepend -->
 							<a href="{forumrow.U_LAST_POST}" title="{forumrow.LAST_POST_SUBJECT}" class="lastsubject">{forumrow.LAST_POST_SUBJECT_TRUNCATED}</a> <br />
 						<!-- ENDIF --> 
 						{L_POST_BY_AUTHOR} {forumrow.LAST_POSTER_FULL}

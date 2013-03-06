@@ -5,7 +5,7 @@
 <meta name="keywords" content="" />
 <meta name="description" content="" />
 {META}
-<title><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
+<title><!-- IF UNREAD_NOTIFICATIONS_COUNT -->({UNREAD_NOTIFICATIONS_COUNT}) <!-- ENDIF --><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
 
 <!-- IF S_ENABLE_FEEDS -->
 	<!-- IF S_ENABLE_FEEDS_OVERALL --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {SITENAME}" href="{U_FEED}" /><!-- ENDIF -->
@@ -84,8 +84,9 @@
 	<link href="{T_THEME_PATH}/tweaks.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen, projection" />
 <![endif]-->
 
-</head>
+<!-- EVENT overall_header_head_append -->
 
+</head>
 <body id="phpbb" class="section-{SCRIPT_NAME} {S_CONTENT_DIRECTION}">
 
 <div id="wrap">
@@ -121,7 +122,11 @@
 
 			<ul class="linklist navlinks">
 				<!-- DEFINE $MICRODATA = ' itemtype="http://data-vocabulary.org/Breadcrumb" itemscope=""' -->
-				<li class="icon-home"><!-- IF U_SITE_HOME --><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a> <strong>&#8249;</strong> <!-- ENDIF --><a href="{U_INDEX}" accesskey="h"{$MICRODATA}>{L_INDEX}</a> <!-- BEGIN navlinks --> <strong>&#8249;</strong> <a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}>{navlinks.FORUM_NAME}</a><!-- END navlinks --></li>
+				<li class="icon-home"><!-- IF U_SITE_HOME --><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a> <strong>&#8249;</strong> <!-- ENDIF -->
+					<a href="{U_INDEX}" accesskey="h"{$MICRODATA}>{L_INDEX}</a> 
+					<!-- BEGIN navlinks --> <strong>&#8249;</strong> <a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}>{navlinks.FORUM_NAME}</a><!-- END navlinks -->
+					<!-- EVENT overall_header_breadcrumb_append -->
+				</li>
 
 				<!-- IF U_EMAIL_TOPIC --><li class="rightside"><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}" class="sendemail">{L_EMAIL_TOPIC}</a></li><!-- ENDIF -->
 				<!-- IF U_EMAIL_PM --><li class="rightside"><a href="{U_EMAIL_PM}" title="{L_EMAIL_PM}" class="sendemail">{L_EMAIL_PM}</a></li><!-- ENDIF -->
@@ -131,6 +136,45 @@
 
 			<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
 			<ul class="linklist leftside">
+				<!-- IF S_NOTIFICATIONS_DISPLAY -->
+				<li>
+					[ <a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a> ] &bull;
+					<div id="notification_list" class="notification_list">
+						<div class="pointer"><div class="pointer_inner"></div></div>
+						<div class="header">
+							{L_NOTIFICATIONS}
+							<span class="header_settings"><a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a></span>
+						</div>
+
+						<ul>
+							<!-- IF not .notifications -->
+								<li>
+									{L_NO_NOTIFICATIONS}
+								</li>
+							<!-- ENDIF -->
+							<!-- BEGIN notifications -->
+								<li class="<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
+									<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
+										{notifications.AVATAR}
+										<div>
+											<p>{notifications.FORMATTED_TITLE}</p>
+											<p>&raquo; {notifications.TIME}</p>
+
+											<!-- IF not notifications.URL and notifications.U_MARK_READ -->
+												<p><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a></p>
+											<!-- ENDIF -->
+										</div>
+									<!-- IF notifications.URL --></a><!-- ENDIF -->
+								</li>
+				   			<!-- END notifications -->
+						</ul>
+
+						<div class="footer">
+							<a href="{U_VIEW_ALL_NOTIFICATIONS}"><span>{L_SEE_ALL}</span></a>
+						</div>
+					</div>
+				</li>
+				<!-- ENDIF -->
 				<li class="icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
 						<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a>)<!-- ENDIF -->
@@ -145,12 +189,14 @@
 			<!-- ENDIF -->
 
 			<ul class="linklist rightside">
+				<!-- EVENT overall_header_navigation_prepend -->
 				<li class="icon-faq"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_DISPLAY_MEMBERLIST --><li class="icon-members"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
 					<!-- IF not S_USER_LOGGED_IN and S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --><li class="icon-register"><a href="{U_REGISTER}">{L_REGISTER}</a></li><!-- ENDIF -->
 					<li class="icon-logout"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x">{L_LOGIN_LOGOUT}</a></li>
 				<!-- ENDIF -->
+				<!-- EVENT overall_header_navigation_append -->
 			</ul>
 
 			</div>

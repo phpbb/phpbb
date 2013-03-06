@@ -61,7 +61,7 @@ function generate_smilies($mode, $forum_id)
 			'body' => 'posting_smilies.html')
 		);
 
-		generate_pagination(append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id), $smiley_count, $config['smilies_per_page'], $start);	
+		generate_pagination(append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id), $smiley_count, $config['smilies_per_page'], $start);
 	}
 
 	$display_link = false;
@@ -1175,238 +1175,6 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	return true;
 }
 
-/**
-* User Notification
-*/
-function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id, $author_name = '')
-{
-	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
-
-	$topic_notification = ($mode == 'reply' || $mode == 'quote') ? true : false;
-	$forum_notification = ($mode == 'post') ? true : false;
-
-	if (!$topic_notification && !$forum_notification)
-	{
-		trigger_error('NO_MODE');
-	}
-
-	if (($topic_notification && !$config['allow_topic_notify']) || ($forum_notification && !$config['allow_forum_notify']))
-	{
-		return;
-	}
-
-	$topic_title = ($topic_notification) ? $topic_title : $subject;
-	$topic_title = censor_text($topic_title);
-
-	// Exclude guests, current user and banned users from notifications
-	if (!function_exists('phpbb_get_banned_user_ids'))
-	{
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-	}
-	$sql_ignore_users = phpbb_get_banned_user_ids();
-	$sql_ignore_users[ANONYMOUS] = ANONYMOUS;
-	$sql_ignore_users[$user->data['user_id']] = $user->data['user_id'];
-
-	$notify_rows = array();
-
-	// -- get forum_userids	|| topic_userids
-	$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
-		FROM ' . (($topic_notification) ? TOPICS_WATCH_TABLE : FORUMS_WATCH_TABLE) . ' w, ' . USERS_TABLE . ' u
-		WHERE w.' . (($topic_notification) ? 'topic_id' : 'forum_id') . ' = ' . (($topic_notification) ? $topic_id : $forum_id) . '
-			AND ' . $db->sql_in_set('w.user_id', $sql_ignore_users, true) . '
-			AND w.notify_status = ' . NOTIFY_YES . '
-			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-			AND u.user_id = w.user_id';
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$notify_user_id = (int) $row['user_id'];
-		$notify_rows[$notify_user_id] = array(
-			'user_id'		=> $notify_user_id,
-			'username'		=> $row['username'],
-			'user_email'	=> $row['user_email'],
-			'user_jabber'	=> $row['user_jabber'],
-			'user_lang'		=> $row['user_lang'],
-			'notify_type'	=> ($topic_notification) ? 'topic' : 'forum',
-			'template'		=> ($topic_notification) ? 'topic_notify' : 'newtopic_notify',
-			'method'		=> $row['user_notify_type'],
-			'allowed'		=> false
-		);
-
-		// Add users who have been already notified to ignore list
-		$sql_ignore_users[$notify_user_id] = $notify_user_id;
-	}
-	$db->sql_freeresult($result);
-
-	// forum notification is sent to those not already receiving topic notifications
-	if ($topic_notification)
-	{
-		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
-			FROM ' . FORUMS_WATCH_TABLE . ' fw, ' . USERS_TABLE . " u
-			WHERE fw.forum_id = $forum_id
-				AND " . $db->sql_in_set('fw.user_id', $sql_ignore_users, true) . '
-				AND fw.notify_status = ' . NOTIFY_YES . '
-				AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-				AND u.user_id = fw.user_id';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$notify_user_id = (int) $row['user_id'];
-			$notify_rows[$notify_user_id] = array(
-				'user_id'		=> $notify_user_id,
-				'username'		=> $row['username'],
-				'user_email'	=> $row['user_email'],
-				'user_jabber'	=> $row['user_jabber'],
-				'user_lang'		=> $row['user_lang'],
-				'notify_type'	=> 'forum',
-				'template'		=> 'forum_notify',
-				'method'		=> $row['user_notify_type'],
-				'allowed'		=> false
-			);
-		}
-		$db->sql_freeresult($result);
-	}
-
-	if (!sizeof($notify_rows))
-	{
-		return;
-	}
-
-	// Make sure users are allowed to read the forum
-	foreach ($auth->acl_get_list(array_keys($notify_rows), 'f_read', $forum_id) as $forum_id => $forum_ary)
-	{
-		foreach ($forum_ary as $auth_option => $user_ary)
-		{
-			foreach ($user_ary as $user_id)
-			{
-				$notify_rows[$user_id]['allowed'] = true;
-			}
-		}
-	}
-
-	// Now, we have to do a little step before really sending, we need to distinguish our users a little bit. ;)
-	$msg_users = $delete_ids = $update_notification = array();
-	foreach ($notify_rows as $user_id => $row)
-	{
-		if (!$row['allowed'] || !trim($row['user_email']))
-		{
-			$delete_ids[$row['notify_type']][] = $row['user_id'];
-		}
-		else
-		{
-			$msg_users[] = $row;
-			$update_notification[$row['notify_type']][] = $row['user_id'];
-
-			/*
-			* We also update the forums watch table for this user when we are
-			* sending out a topic notification to prevent sending out another
-			* notification in case this user is also subscribed to the forum
-			* this topic was posted in.
-			* Since an UPDATE query is used, this has no effect on users only
-			* subscribed to the topic (i.e. no row is created) and should not
-			* be a performance issue.
-			*/
-			if ($row['notify_type'] === 'topic')
-			{
-				$update_notification['forum'][] = $row['user_id'];
-			}
-		}
-	}
-	unset($notify_rows);
-
-	// Now, we are able to really send out notifications
-	if (sizeof($msg_users))
-	{
-		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-		$messenger = new messenger();
-
-		$msg_list_ary = array();
-		foreach ($msg_users as $row)
-		{
-			$pos = (!isset($msg_list_ary[$row['template']])) ? 0 : sizeof($msg_list_ary[$row['template']]);
-
-			$msg_list_ary[$row['template']][$pos]['method']	= $row['method'];
-			$msg_list_ary[$row['template']][$pos]['email']	= $row['user_email'];
-			$msg_list_ary[$row['template']][$pos]['jabber']	= $row['user_jabber'];
-			$msg_list_ary[$row['template']][$pos]['name']	= $row['username'];
-			$msg_list_ary[$row['template']][$pos]['lang']	= $row['user_lang'];
-			$msg_list_ary[$row['template']][$pos]['user_id']= $row['user_id'];
-		}
-		unset($msg_users);
-
-		foreach ($msg_list_ary as $email_template => $email_list)
-		{
-			foreach ($email_list as $addr)
-			{
-				$messenger->template($email_template, $addr['lang']);
-
-				$messenger->to($addr['email'], $addr['name']);
-				$messenger->im($addr['jabber'], $addr['name']);
-
-				$messenger->assign_vars(array(
-					'USERNAME'		=> htmlspecialchars_decode($addr['name']),
-					'TOPIC_TITLE'	=> htmlspecialchars_decode($topic_title),
-					'FORUM_NAME'	=> htmlspecialchars_decode($forum_name),
-					'AUTHOR_NAME'	=> htmlspecialchars_decode($author_name),
-
-					'U_FORUM'				=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id",
-					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id",
-					'U_NEWEST_POST'			=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&p=$post_id&e=$post_id",
-					'U_STOP_WATCHING_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?uid={$addr['user_id']}&f=$forum_id&t=$topic_id&unwatch=topic",
-					'U_STOP_WATCHING_FORUM'	=> generate_board_url() . "/viewforum.$phpEx?uid={$addr['user_id']}&f=$forum_id&unwatch=forum",
-				));
-
-				$messenger->send($addr['method']);
-			}
-		}
-		unset($msg_list_ary);
-
-		$messenger->save_queue();
-	}
-
-	// Handle the DB updates
-	$db->sql_transaction('begin');
-
-	if (!empty($update_notification['topic']))
-	{
-		$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . '
-			SET notify_status = ' . NOTIFY_NO . "
-			WHERE topic_id = $topic_id
-				AND " . $db->sql_in_set('user_id', $update_notification['topic']);
-		$db->sql_query($sql);
-	}
-
-	if (!empty($update_notification['forum']))
-	{
-		$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . '
-			SET notify_status = ' . NOTIFY_NO . "
-			WHERE forum_id = $forum_id
-				AND " . $db->sql_in_set('user_id', $update_notification['forum']);
-		$db->sql_query($sql);
-	}
-
-	// Now delete the user_ids not authorised to receive notifications on this topic/forum
-	if (!empty($delete_ids['topic']))
-	{
-		$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . "
-			WHERE topic_id = $topic_id
-				AND " . $db->sql_in_set('user_id', $delete_ids['topic']);
-		$db->sql_query($sql);
-	}
-
-	if (!empty($delete_ids['forum']))
-	{
-		$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . "
-			WHERE forum_id = $forum_id
-				AND " . $db->sql_in_set('user_id', $delete_ids['forum']);
-		$db->sql_query($sql);
-	}
-
-	$db->sql_transaction('commit');
-}
-
 //
 // Post handling functions
 //
@@ -1642,7 +1410,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 */
 function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true, $update_search_index = true)
 {
-	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path;
+	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container;
 
 	// We do not handle erasing posts here
 	if ($mode == 'delete')
@@ -1695,8 +1463,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// The variable name should be $post_approved, because it indicates if the post is approved or not
 	$post_approval = 1;
 
-	// Check the permissions for post approval. Moderators are not affected.
-	if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
+	// Check the permissions for post approval.
+	// Moderators must go through post approval like ordinary users.
+	if (!$auth->acl_get('f_noapprove', $data['forum_id']))
 	{
 		// Post not approved, but in queue
 		$post_approval = 0;
@@ -2453,10 +2222,76 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Send Notifications
-	if (($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_approval)
+	$notification_data = array_merge($data, array(
+		'topic_title'		=> (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
+		'post_username'		=> $username,
+		'poster_id'			=> $poster_id,
+		'post_text'			=> $data['message'],
+		'post_time'			=> $current_time,
+		'post_subject'		=> $subject,
+	));
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+	if ($post_approval)
 	{
-		$username = ($username) ? $username : $user->data['username'];
-		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id'], $username);
+		switch ($mode)
+		{
+			case 'post':
+				$phpbb_notifications->add_notifications(array(
+					'quote',
+					'topic',
+				), $notification_data);
+			break;
+
+			case 'reply':
+			case 'quote':
+				$phpbb_notifications->add_notifications(array(
+					'quote',
+					'bookmark',
+					'post',
+				), $notification_data);
+			break;
+
+			case 'edit_topic':
+			case 'edit_first_post':
+			case 'edit':
+			case 'edit_last_post':
+				$phpbb_notifications->update_notifications(array(
+					'quote',
+					'bookmark',
+					'topic',
+					'post',
+				), $notification_data);
+			break;
+		}
+	}
+	else
+	{
+		switch ($mode)
+		{
+			case 'post':
+				$phpbb_notifications->add_notifications('topic_in_queue', $notification_data);
+			break;
+
+			case 'reply':
+			case 'quote':
+				$phpbb_notifications->add_notifications('post_in_queue', $notification_data);
+			break;
+
+			case 'edit_topic':
+			case 'edit_first_post':
+			case 'edit':
+			case 'edit_last_post':
+				$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
+
+				$phpbb_notifications->delete_notifications(array(
+					'quote',
+					'bookmark',
+					'post',
+				), $data['post_id']);
+			break;
+		}
 	}
 
 	$params = $add_anchor = '';

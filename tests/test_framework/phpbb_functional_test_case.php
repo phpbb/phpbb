@@ -134,19 +134,32 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		if (!$this->extension_manager)
-		{
-			$this->extension_manager = new phpbb_extension_manager(
-				$this->get_db(),
-				new phpbb_config(array()),
-				self::$config['table_prefix'] . 'ext',
-				$phpbb_root_path,
-				".$phpEx",
-				$this->get_cache_driver()
-			);
-		}
+		$config = new phpbb_config(array());
+		$db = $this->get_db();
+		$db_tools = new phpbb_db_tools($db);
 
-		return $this->extension_manager;
+		$migrator = new phpbb_db_migrator(
+			$config,
+			$db,
+			$db_tools,
+			self::$config['table_prefix'] . 'migrations',
+			$phpbb_root_path,
+			$php_ext,
+			self::$config['table_prefix'],
+			array()
+		);
+		$extension_manager = new phpbb_extension_manager(
+			new phpbb_mock_container_builder(),
+			$db,
+			$config,
+			$migrator,
+			self::$config['table_prefix'] . 'ext',
+			dirname(__FILE__) . '/',
+			'.' . $php_ext,
+			$this->get_cache_driver()
+		);
+
+		return $extension_manager;
 	}
 
 	static protected function install_board()
@@ -262,13 +275,21 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$config['rand_seed_last_update'] = time() + 600;
 
 		// Required by user_add
-		global $db, $cache, $phpbb_dispatcher;
+		global $db, $cache, $phpbb_dispatcher, $phpbb_container;
 		$db = $this->get_db();
 		if (!function_exists('phpbb_mock_null_cache'))
 		{
 			require_once(__DIR__ . '/../mock/null_cache.php');
 		}
 		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new phpbb_cache_driver_null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
 
 		if (!function_exists('utf_clean_string'))
 		{
@@ -323,7 +344,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* Login to the ACP
 	* You must run login() before calling this.
 	*/
-	protected function admin_login()
+	protected function admin_login($username = 'admin')
 	{
 		$this->add_lang('acp/common');
 
@@ -343,7 +364,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			if (strpos($field, 'password_') === 0)
 			{
-				$login = $this->client->submit($form, array('username' => 'admin', $field => 'admin'));
+				$crawler = $this->client->submit($form, array('username' => $username, $field => $username));
+				$this->assert_response_success();
+				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
 
 				$cookies = $this->cookieJar->all();
 
@@ -423,5 +446,21 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertEquals(200, $this->client->getResponse()->getStatus());
 		$content = $this->client->getResponse()->getContent();
 		$this->assertNotContains('Fatal error:', $content);
+	}
+
+	public function assert_filter($crawler, $expr, $msg = null)
+	{
+		$nodes = $crawler->filter($expr);
+		if ($msg)
+		{
+			$msg .= "\n";
+		}
+		else
+		{
+			$msg = '';
+		}
+		$msg .= "`$expr` not found in DOM.";
+		$this->assertGreaterThan(0, count($nodes), $msg);
+		return $nodes;
 	}
 }

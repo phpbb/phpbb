@@ -206,7 +206,7 @@ class phpbb_db_driver
 			$query_id = $this->query_result;
 		}
 
-		if ($cache->sql_exists($query_id))
+		if ($cache && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
@@ -256,7 +256,7 @@ class phpbb_db_driver
 				$this->sql_rowseek($rownum, $query_id);
 			}
 
-			if (!is_object($query_id) && $cache->sql_exists($query_id))
+			if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
 			{
 				return $cache->sql_fetchfield($query_id, $field);
 			}
@@ -822,7 +822,7 @@ class phpbb_db_driver
 	*/
 	function sql_report($mode, $query = '')
 	{
-		global $cache, $starttime, $phpbb_root_path, $user;
+		global $cache, $starttime, $phpbb_root_path, $phpbb_admin_path, $user;
 		global $request;
 
 		if (is_object($request) && !$request->variable('explain', false))
@@ -852,7 +852,7 @@ class phpbb_db_driver
 					<head>
 						<meta charset="utf-8">
 						<title>SQL Report</title>
-						<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+						<link href="' . htmlspecialchars($phpbb_admin_path) . 'style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 					</head>
 					<body id="errorpage">
 					<div id="wrap">

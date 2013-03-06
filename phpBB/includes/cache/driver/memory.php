@@ -283,12 +283,10 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 	}
 
 	/**
-	* Save sql query
+	* {@inheritDoc}
 	*/
-	function sql_save($query, $query_result, $ttl)
+	function sql_save(phpbb_db_driver $db, $query, $query_result, $ttl)
 	{
-		global $db;
-
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 		$hash = md5($query);

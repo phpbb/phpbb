@@ -61,6 +61,20 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		{
 			markread('all', false, false, request_var('mark_time', 0));
 
+			if ($request->is_ajax())
+			{
+				// Tell the ajax script what language vars and URL need to be replaced
+				$data = array(
+					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
+					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&mark=forums&mark_time=' . time()) : '',
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
+				);
+				$json_response = new phpbb_json_response();
+				$json_response->send($data);
+			}
+
 			trigger_error(
 				$user->lang['FORUMS_MARKED'] . '<br /><br />' .
 				sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect . '">', '</a>')
@@ -312,6 +326,20 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			markread('topics', $forum_ids, false, request_var('mark_time', 0));
 			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
+
+			if ($request->is_ajax())
+			{
+				// Tell the ajax script what language vars and URL need to be replaced
+				$data = array(
+					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
+					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&f=' . $root_data['forum_id'] . '&mark=forums&mark_time=' . time()) : '',
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
+				);
+				$json_response = new phpbb_json_response();
+				$json_response->send($data);
+			}
 
 			trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
 		}
@@ -1313,79 +1341,87 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 /**
 * Get user avatar
 *
-* @param string $avatar Users assigned avatar name
-* @param int $avatar_type Type of avatar
-* @param string $avatar_width Width of users avatar
-* @param string $avatar_height Height of users avatar
+* @param array $user_row Row from the users table
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
 * @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
 *
-* @return string Avatar image
+* @return string Avatar html
 */
-function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR', $ignore_config = false)
+function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false)
 {
-	global $user, $config, $phpbb_root_path, $phpEx;
-	global $phpbb_dispatcher;
+	$row = phpbb_avatar_manager::clean_row($user_row);
+	return phpbb_get_avatar($row, $alt, $ignore_config);
+}
 
-	$overwrite_avatar = '';
+/**
+* Get group avatar
+*
+* @param array $group_row Row from the groups table
+* @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+*
+* @return string Avatar html
+*/
+function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
+{
+	$row = phpbb_avatar_manager::clean_row($user_row);
+	return phpbb_get_avatar($row, $alt, $ignore_config);
+}
 
-	/**
-	* Overwrite users avatar
-	*
-	* @event core.display_custom_bbcodes_modify_row
-	* @var	string	avatar			Users assigned avatar name
-	* @var	int		avatar_type		Type of avatar
-	* @var	string	avatar_width	Width of users avatar
-	* @var	string	avatar_height	Height of users avatar
-	* @var	string	alt				Language string for alt tag within image
-	*								Can be a language key or text
-	* @var	bool	ignore_config	Ignores config and force displaying avatar
-	* @var	string	overwrite_avatar	If set, this string will be the avatar
-	* @since 3.1-A1
-	*/
-	$vars = array('avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'alt', 'ignore_config', 'overwrite_avatar');
-	extract($phpbb_dispatcher->trigger_event('core.user_get_avatar', compact($vars)));
+/**
+* Get avatar
+*
+* @param array $row Row cleaned by phpbb_avatar_driver::clean_row
+* @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+*
+* @return string Avatar html
+*/
+function phpbb_get_avatar($row, $alt, $ignore_config = false)
+{
+	global $user, $config, $cache, $phpbb_root_path, $phpEx;
+	global $request;
+	global $phpbb_container;
 
-	if ($overwrite_avatar)
-	{
-		return $overwrite_avatar;
-	}
-
-	if (empty($avatar) || !$avatar_type || (!$config['allow_avatar'] && !$ignore_config))
+	if (!$config['allow_avatar'] && !$ignore_config)
 	{
 		return '';
 	}
 
-	$avatar_img = '';
+	$avatar_data = array(
+		'src' => $row['avatar'],
+		'width' => $row['avatar_width'],
+		'height' => $row['avatar_height'],
+	);
 
-	switch ($avatar_type)
+	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+	$driver = $phpbb_avatar_manager->get_driver($row['avatar_type'], $ignore_config);
+	$html = '';
+
+	if ($driver)
 	{
-		case AVATAR_UPLOAD:
-			if (!$config['allow_avatar_upload'] && !$ignore_config)
-			{
-				return '';
-			}
-			$avatar_img = $phpbb_root_path . "download/file.$phpEx?avatar=";
-		break;
+		$html = $driver->get_custom_html($user, $row, $alt);
+		if (!empty($html))
+		{
+			return $html;
+		}
 
-		case AVATAR_GALLERY:
-			if (!$config['allow_avatar_local'] && !$ignore_config)
-			{
-				return '';
-			}
-			$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
-		break;
-
-		case AVATAR_REMOTE:
-			if (!$config['allow_avatar_remote'] && !$ignore_config)
-			{
-				return '';
-			}
-		break;
+		$avatar_data = $driver->get_data($row, $ignore_config);
+	}
+	else
+	{
+		$avatar_data['src'] = '';
 	}
 
-	$avatar_img .= $avatar;
-	return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $avatar_width . '" height="' . $avatar_height . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+	if (!empty($avatar_data['src']))
+	{
+		$html = '<img src="' . $avatar_data['src'] . '" ' .
+			($avatar_data['width'] ? ('width="' . $avatar_data['width'] . '" ') : '') .
+			($avatar_data['height'] ? ('height="' . $avatar_data['height'] . '" ') : '') .
+			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+	}
+
+	return $html;
 }
 
 /**

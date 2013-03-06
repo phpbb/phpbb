@@ -71,11 +71,14 @@ if ($post_id)
 		trigger_error('POST_NOT_EXIST');
 	}
 
-	$forum_id 				= (int) $report_data['forum_id'];
-	$topic_id 				= (int) $report_data['topic_id'];
-	$reported_post_text		= $report_data['post_text'];
-	$reported_post_bitfield	= $report_data['bbcode_bitfield'];
-	$reported_post_uid		= $report_data['bbcode_uid'];
+	$forum_id 							= (int) $report_data['forum_id'];
+	$topic_id 							= (int) $report_data['topic_id'];
+	$reported_post_text					= $report_data['post_text'];
+	$reported_post_bitfield				= $report_data['bbcode_bitfield'];
+	$reported_post_uid					= $report_data['bbcode_uid'];
+	$reported_post_enable_bbcode		= $report_data['enable_bbcode'];
+	$reported_post_enable_smilies		= $report_data['enable_smilies'];
+	$reported_post_enable_magic_url		= $report_data['enable_magic_url'];
 
 	$sql = 'SELECT *
 		FROM ' . FORUMS_TABLE . '
@@ -134,9 +137,11 @@ else
 		trigger_error($message);
 	}
 	
-	$reported_post_text 	= $report_data['message_text'];
-	$reported_post_bitfield	= $report_data['bbcode_bitfield'];
-	$reported_post_uid		= $report_data['bbcode_uid'];
+	$reported_post_text 				= $report_data['message_text'];
+	$reported_post_bitfield				= $report_data['bbcode_bitfield'];
+	$reported_post_enable_bbcode		= $report_data['reported_post_enable_bbcode'];
+	$reported_post_enable_smilies		= $report_data['reported_post_enable_smilies'];
+	$reported_post_enable_magic_url		= $report_data['reported_post_enable_magic_url'];
 }
 
 // Submit report?
@@ -155,22 +160,27 @@ if ($submit && $reason_id)
 	}
 
 	$sql_ary = array(
-		'reason_id'				=> (int) $reason_id,
-		'post_id'				=> $post_id,
-		'pm_id'					=> $pm_id,
-		'user_id'				=> (int) $user->data['user_id'],
-		'user_notify'			=> (int) $user_notify,
-		'report_closed'			=> 0,
-		'report_time'			=> (int) time(),
-		'report_text'			=> (string) $report_text,
-		'reported_post_text'	=> $reported_post_text,
-		'reported_post_uid'		=> $reported_post_uid,
-		'reported_post_bitfield'=> $reported_post_bitfield,
+		'reason_id'							=> (int) $reason_id,
+		'post_id'							=> $post_id,
+		'pm_id'								=> $pm_id,
+		'user_id'							=> (int) $user->data['user_id'],
+		'user_notify'						=> (int) $user_notify,
+		'report_closed'						=> 0,
+		'report_time'						=> (int) time(),
+		'report_text'						=> (string) $report_text,
+		'reported_post_text'				=> $reported_post_text,
+		'reported_post_uid'					=> $reported_post_uid,
+		'reported_post_bitfield'			=> $reported_post_bitfield,
+		'reported_post_enable_bbcode'		=> $reported_post_enable_bbcode,
+		'reported_post_enable_smilies'		=> $reported_post_enable_smilies,
+		'reported_post_enable_magic_url'	=> $reported_post_enable_magic_url,
 	);
 
 	$sql = 'INSERT INTO ' . REPORTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 	$db->sql_query($sql);
 	$report_id = $db->sql_nextid();
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	if ($post_id)
 	{
@@ -190,6 +200,10 @@ if ($submit && $reason_id)
 
 		$lang_return = $user->lang['RETURN_TOPIC'];
 		$lang_success = $user->lang['POST_REPORTED_SUCCESS'];
+
+		$phpbb_notifications->add_notifications('report_post', array_merge($report_data, $row, $forum_data, array(
+			'report_text'	=> $report_text,
+		)));
 	}
 	else
 	{
@@ -216,6 +230,12 @@ if ($submit && $reason_id)
 
 		$lang_return = $user->lang['RETURN_PM'];
 		$lang_success = $user->lang['PM_REPORTED_SUCCESS'];
+
+		$phpbb_notifications->add_notifications('report_pm', array_merge($report_data, $row, array(
+			'report_text'	=> $report_text,
+			'from_user_id'	=> $report_data['author_id'],
+			'report_id'		=> $report_id,
+		)));
 	}
 
 	meta_refresh(3, $redirect_url);

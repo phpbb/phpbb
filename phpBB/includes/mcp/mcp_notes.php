@@ -173,13 +173,13 @@ class mcp_notes
 		}
 
 		// Generate the appropriate user information for the user we are looking at
-		if (!function_exists('get_user_avatar'))
+		if (!function_exists('phpbb_get_user_avatar'))
 		{
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
 
 		$rank_title = $rank_img = '';
-		$avatar_img = get_user_avatar($userrow['user_avatar'], $userrow['user_avatar_type'], $userrow['user_avatar_width'], $userrow['user_avatar_height']);
+		$avatar_img = phpbb_get_user_avatar($userrow);
 
 		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_IP'], 'd' => $user->lang['SORT_ACTION']);
