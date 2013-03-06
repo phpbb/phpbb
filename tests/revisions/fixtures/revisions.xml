@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_post_revisions">
+		<column>revision_id</column>
+		<column>revision_subject</column>
+		<column>enable_bbcode</column>
+		<column>enable_smilies</column>
+		<column>enable_magic_url</column>
+		<column>bbcode_bitfield</column>
+		<column>bbcode_uid</column>
+		<column>revision_time</column>
+		<column>revision_reason</column>
+		<column>user_id</column>
+		<column>username</column>
+		<column>user_colour</column>
+		<column>user_avatar</column>
+		<column>user_avatar_type</column>
+		<column>user_avatar_width</column>
+		<column>user_avatar_height</column>
+		<column>poster_id</column>
+		<column>post_id</column>
+		<column>forum_id</column>
+		<column>revision_protected</column>
+		<column>is_current</column>
+		<row>
+			<value>1</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+			<value>0</value>
+			<value>Anonymous</value>
+			<value></value>
+			<value></value>
+			<value>0</value>
+			<value>0</value>
+			<value>0</value>
+			<value>0</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+</dataset>
