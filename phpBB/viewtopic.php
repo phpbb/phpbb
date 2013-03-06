@@ -1549,10 +1549,16 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		!$row['post_edit_locked']
 	)));
 
+	// The user can view the post's revisions if:
+	// The post has revisions, AND:
+	// the user is a moderator, OR:
+	// the user is the post author AND has f_revisions in this forum, OR:
+	// the post is a wiki post AND the user has f_wiki_edit in this forum
 	$can_view_revisions = $row['post_revision_count'] &&
 		($auth->acl_get('m_revisions', $forum_id) ||
-			($auth->acl_get('f_revisions', $forum_id) && $user->data['user_id'] == $poster_id
-	));
+			($user->data['user_id'] == $poster_id && $auth->acl_get('f_revisions', $forum_id)) ||
+			($row['post_wiki'] && $auth->acl_get('f_wiki_edit', $forum_id))
+		);
 
 	// List the most recent revisions
 	if ($can_view_revisions)

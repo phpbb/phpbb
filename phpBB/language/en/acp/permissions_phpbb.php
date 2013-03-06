@@ -158,7 +158,7 @@ $lang = array_merge($lang, array(
 	'acl_f_noapprove'	=> array('lang' => 'Can post without approval', 'cat' => 'post'),	
 	'acl_f_revisions'	=> array('lang' => 'Can view own posts’ revisions', 'cat' => 'post'),
 	'acl_f_wiki_create'	=> array('lang' => 'Can create wiki posts', 'cat' => 'post'),
-	'acl_f_wiki_edit'	=> array('lang' => 'Can edit wiki posts', 'cat' => 'post'),
+	'acl_f_wiki_edit'	=> array('lang' => 'Can edit wiki posts and view their revisions', 'cat' => 'post'),
 
 	'acl_f_attach'		=> array('lang' => 'Can attach files', 'cat' => 'content'),	
 	'acl_f_icons'		=> array('lang' => 'Can use topic/post icons', 'cat' => 'content'),

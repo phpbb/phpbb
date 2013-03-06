@@ -326,7 +326,7 @@ if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_statu
 // else it depends on editing times, lock status and if we're the correct user
 if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 {
-	if ($user->data['user_id'] != $post_data['poster_id'])
+	if ($user->data['user_id'] != $post_data['poster_id'] && (empty($post_data['post_wiki']) && $auth->acl_get('f_wiki_edit', $forum_id)))
 	{
 		trigger_error('USER_CANNOT_EDIT');
 	}
