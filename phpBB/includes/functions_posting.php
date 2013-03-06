@@ -2214,7 +2214,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			break;
 		}
 	}
-	else
+	else if ($post_visibility == ITEM_UNAPPROVED)
 	{
 		switch ($mode)
 		{
@@ -2231,6 +2231,32 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			case 'edit_first_post':
 			case 'edit':
 			case 'edit_last_post':
+				// @todo: Check whether these notification deletions are correct
+				$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
+
+				$phpbb_notifications->delete_notifications(array(
+					'quote',
+					'bookmark',
+					'post',
+				), $data['post_id']);
+			break;
+		}
+	}
+	else if ($post_visibility == ITEM_DELETED)
+	{
+		switch ($mode)
+		{
+			case 'post':
+			case 'reply':
+			case 'quote':
+				// Nothing to do here
+			break;
+
+			case 'edit_topic':
+			case 'edit_first_post':
+			case 'edit':
+			case 'edit_last_post':
+				// @todo: Check whether these notification deletions are correct
 				$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
 
 				$phpbb_notifications->delete_notifications(array(
