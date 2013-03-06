@@ -262,12 +262,15 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 	*/
 	public function test_delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason, $expected_posts, $expected_topic, $expected_forum)
 	{
-		global $auth, $cache, $config, $db;
+		global $auth, $cache, $config, $db, $phpbb_container;
 
 		$config['search_type'] = 'phpbb_mock_search';
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 		set_config_count(null, null, null, new phpbb_config(array('num_posts' => 3, 'num_topics' => 1)));
+
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
 
 		// Create auth mock
 		$auth = $this->getMock('phpbb_auth');
