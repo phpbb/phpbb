@@ -332,6 +332,17 @@ CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic)
 /
 
 /*
+	Table: 'phpbb_config_text'
+*/
+CREATE TABLE phpbb_config_text (
+	config_name varchar2(255) DEFAULT '' ,
+	config_value clob DEFAULT '' ,
+	CONSTRAINT pk_phpbb_config_text PRIMARY KEY (config_name)
+)
+/
+
+
+/*
 	Table: 'phpbb_confirm'
 */
 CREATE TABLE phpbb_confirm (
