@@ -3158,8 +3158,9 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 
 		'YES_VALUE'			=> $user->lang['YES'],
 		'S_CONFIRM_ACTION'	=> $u_action,
-		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields)
-	);
+		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields,
+		'S_AJAX_REQUEST'	=> $request->is_ajax(),
+	));
 
 	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . $db->sql_escape($confirm_key) . "'
 		WHERE user_id = " . $user->data['user_id'];
@@ -3171,8 +3172,9 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		$u_action .= '&confirm_uid=' . $user->data['user_id'] . '&sess=' . $user->session_id . '&sid=' . $user->session_id;
 		$json_response = new phpbb_json_response;
 		$json_response->send(array(
+			'MESSAGE_BODY'		=> $template->assign_display('body'),
 			'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
-			'MESSAGE_TEXT' 	=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
+			'MESSAGE_TEXT'		=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
 
 			'YES_VALUE'			=> $user->lang['YES'],
 			'S_CONFIRM_ACTION'	=> str_replace('&amp;', '&', $u_action), //inefficient, rewrite whole function
