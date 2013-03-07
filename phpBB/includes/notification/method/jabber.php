@@ -53,7 +53,7 @@ class phpbb_notification_method_jabber extends phpbb_notification_method_email
 	*/
 	public function is_available()
 	{
-		return ($this->global_available() && $this->user->data['jabber']);
+		return ($this->global_available() && $this->user->data['user_jabber']);
 	}
 
 	/**

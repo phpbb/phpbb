@@ -303,8 +303,8 @@ phpbb.ajaxify = function(options) {
 					}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 				}
 			} else {
-				// If confirmation is required, display a diologue to the user.
-				phpbb.confirm(res.MESSAGE_TEXT, function(del) {
+				// If confirmation is required, display a dialog to the user.
+				phpbb.confirm(res.MESSAGE_BODY, function(del) {
 					if (del) {
 						phpbb.loadingAlert();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();

@@ -548,9 +548,9 @@ li.pagination ul {
 	border: 1px solid transparent;
 	position: fixed;
 	display: none;
-	top: 40%;
-	left: 35%;
-	width: 30%;
+	top: 150px;
+	left: 25%;
+	width: 50%;
 	z-index: 50;
 	padding: 25px;
 	padding: 0 25px 20px 25px;
@@ -574,6 +574,20 @@ li.pagination ul {
 .phpbb_alert p {
 	margin: 8px 0;
 	padding-bottom: 8px;
+}
+
+.phpbb_alert label {
+	display: block;
+	margin: 8px 0;
+	padding-bottom: 8px;
+}
+
+.phpbb_alert div.alert_text > p,
+.phpbb_alert div.alert_text > label,
+.phpbb_alert div.alert_text > select,
+.phpbb_alert div.alert_text > textarea,
+.phpbb_alert div.alert_text > input {
+	font-size: 1.1em;
 }
 
 #darkenwrapper {

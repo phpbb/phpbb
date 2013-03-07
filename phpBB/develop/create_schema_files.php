@@ -998,6 +998,14 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_config_text'] = array(
+		'COLUMNS'		=> array(
+			'config_name'		=> array('VCHAR', ''),
+			'config_value'		=> array('MTEXT', ''),
+		),
+		'PRIMARY_KEY'	=> 'config_name',
+	);
+
 	$schema_data['phpbb_confirm'] = array(
 		'COLUMNS'		=> array(
 			'confirm_id'		=> array('CHAR:32', ''),
