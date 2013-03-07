@@ -65,10 +65,4 @@ class phpbb_db_migration_data_310_softdelete_p2 extends phpbb_db_migration
 			),
 		);
 	}
-
-	public function update_data()
-	{
-		return array(
-		);
-	}
 }
