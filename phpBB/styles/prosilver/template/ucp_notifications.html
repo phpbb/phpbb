@@ -48,6 +48,7 @@
 			<!-- END notification_types -->
 			</ul>
 		<!-- ELSE -->
+			<!-- IF .notification_list -->
 			<!-- IF .pagination or TOTAL_COUNT -->
 				<div class="topic-actions">
 					<div class="pagination">
@@ -70,13 +71,6 @@
 							<dd class="mark">{L_MARK_READ}</dd>
 						</dl>
 					</li>
-					<!-- IF not .notifications -->
-						<li>
-							<dl>
-								<dt>{L_NO_NOTIFICATIONS}</dt>
-							</dl>
-						</li>
-					<!-- ENDIF -->
 					<!-- BEGIN notification_list -->
 						<li class="row<!-- IF notification_list.UNREAD --> bg3<!-- ELSE --><!-- IF notification_list.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- ENDIF -->">
 							<dl>
@@ -112,6 +106,10 @@
 						<!-- ENDIF -->
 					</div>
 				</div>
+			<!-- ENDIF -->
+
+			<!-- ELSE -->
+				<p><strong>{L_NO_NOTIFICATIONS}</strong></p>
 			<!-- ENDIF -->
 
 		<!-- ENDIF -->
