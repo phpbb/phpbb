@@ -46,8 +46,9 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 			if (!empty($avatar_list[$cat]))
 			{
 				$template->assign_block_vars('avatar_local_cats', array(
-					'NAME' => $cat,
+					'NAME' => $avatar_list[$cat]['cat_name'],
 					'SELECTED' => ($cat == $category),
+					'HASH'		=> $cat,
 				));
 			}
 
@@ -73,6 +74,13 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 			{
 				$img = current($avatar_list[$category]);
 				next($avatar_list[$category]);
+
+				// skip category name
+				if (is_string($img))
+				{
+					++$avatar_pos;
+					continue;
+				}
 
 				if ($col_count == 0)
 				{
@@ -134,7 +142,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 		}
 
 		return array(
-			'avatar' => ($category != $user->lang['MAIN']) ? $category . '/' . $file : $file,
+			'avatar' => $avatar_list[$category][urldecode($file)]['file'],
 			'avatar_width' => $avatar_list[$category][urldecode($file)]['width'],
 			'avatar_height' => $avatar_list[$category][urldecode($file)]['height'],
 		);
@@ -174,9 +182,16 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 					{
 						$dims = array(0, 0);
 					}
-					$cat = ($path == $file_path) ? $user->lang['MAIN'] : str_replace("$path/", '', $file_path);
+
+					$cat_path = ($path == $file_path) ? $user->lang['MAIN'] : str_replace("$path/", '', $file_path);
+					$cat = md5($cat_path);
+
+					if (!isset($avatar_list[$cat]['cat_name']))
+					{
+						$avatar_list[$cat]['cat_name'] = utf8_encode($cat_path);
+					}
 					$avatar_list[$cat][$image] = array(
-						'file'      => ($cat != $user->lang['MAIN']) ? rawurlencode($cat) . '/' . rawurlencode($image) : rawurlencode($image),
+						'file'      => ($cat_path != $user->lang['MAIN']) ? rawurlencode($avatar_list[$cat]['cat_name']) . '/' . rawurlencode($image) : rawurlencode($image),
 						'filename'  => rawurlencode($image),
 						'name'      => ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $image))),
 						'width'     => $dims[0],
