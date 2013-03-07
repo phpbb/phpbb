@@ -122,7 +122,7 @@
 <fieldset class="display-actions">
 	<input type="hidden" name="form_time" value="{FORM_TIME}" />
 	{S_HIDDEN_FIELDS}
-	<input type="submit" name="submit" value="{L_MARK_READ}" class="button1" />
+	<input type="submit" name="submit" value="<!-- IF MODE == 'notification_options' -->{L_SUBMIT}<!-- ELSE -->{L_MARK_READ}<!-- ENDIF -->" class="button1" />
 	<div><a href="#" onclick="$('#ucp input:checkbox').attr('checked', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="$('#ucp input:checkbox').attr('checked', false); return false;">{L_UNMARK_ALL}</a></div>
 	{S_FORM_TOKEN}
 </fieldset>
