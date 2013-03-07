@@ -654,9 +654,6 @@ class mcp_queue
 			{
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-				// Send out normal user notifications
-				$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 				// Handle notifications
 				foreach ($post_info as $post_id => $post_data)
 				{
@@ -813,9 +810,6 @@ class mcp_queue
 			// Only send out the mails, when the posts are being approved
 			if ($action == 'approve')
 			{
-				// Send out normal user notifications
-				$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 				// Handle notifications
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
@@ -961,8 +955,6 @@ class mcp_queue
 				{
 					$disapprove_reason_lang = strtoupper($row['reason_title']);
 				}
-
-				$email_disapprove_reason = $disapprove_reason;
 			}
 		}
 
@@ -1121,7 +1113,7 @@ class mcp_queue
 				}
 			}
 
-			unset($lang_reasons,$post_info, $disapprove_reason, $email_disapprove_reason, $disapprove_reason_lang);
+			unset($lang_reasons, $post_info, $disapprove_reason, $disapprove_reason_lang);
 
 			if ($num_disapproved_topics)
 			{
