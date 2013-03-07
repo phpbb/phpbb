@@ -134,7 +134,7 @@ class phpbb_db_migration_data_310_softdelete_p1 extends phpbb_db_migration
 			WHERE topic_visibility = ' . ITEM_UNAPPROVED;
 		$this->sql_query($sql);
 
-		$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS sum_topics, SUM(topic_posts) AS sum_posts, SUM(topic_posts_unapproved) AS sum_posts_unapproved
+		$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS sum_topics, SUM(topic_posts_approved) AS sum_posts_approved, SUM(topic_posts_unapproved) AS sum_posts_unapproved
 			FROM ' . $this->table_prefix . 'topics
 			GROUP BY forum_id, topic_visibility';
 		$result = $this->db->sql_query($sql);
@@ -153,7 +153,7 @@ class phpbb_db_migration_data_310_softdelete_p1 extends phpbb_db_migration
 				);
 			}
 
-			$update_forums[$forum_id]['forum_posts_approved'] += (int) $row['sum_posts'];
+			$update_forums[$forum_id]['forum_posts_approved'] += (int) $row['sum_posts_approved'];
 			$update_forums[$forum_id]['forum_posts_unapproved'] += (int) $row['sum_posts_unapproved'];
 
 			$update_forums[$forum_id][(($row['topic_visibility'] == ITEM_APPROVED) ? 'forum_topics_approved' : 'forum_topics_unapproved')] += (int) $row['sum_topics'];
