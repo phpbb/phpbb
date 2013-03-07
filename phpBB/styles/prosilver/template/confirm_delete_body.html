@@ -2,27 +2,26 @@
 	<p>{MESSAGE_TEXT}</p>
 
 	<!-- IF not S_SOFTDELETED and (S_DELETE_REASON or (S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE)) -->
-		<fieldset class="fields1">
-			<!-- IF S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
-				<dl>
-					<dt><label for="delete_permanent">{L_DELETE_PERMANENTLY}:</label></dt>
-					<dd>
-						<label for="delete_permanent">
-							<input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" {S_CHECKED_PERMANENT} />
-							<!-- IF S_TOPIC_MODE -->{L_DELETE_TOPIC_PERMANENTLY}<!-- ELSE -->{L_DELETE_POST_PERMANENTLY}<!-- ENDIF -->
-						</label>
-					</dd>
-				</dl>
-			<!-- ENDIF -->
+		<!-- IF S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
+			<label>
+				<strong>{L_DELETE_PERMANENTLY}:</strong>
+				<input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" {S_CHECKED_PERMANENT} />
+				<!-- IF S_TOPIC_MODE -->{L_DELETE_TOPIC_PERMANENTLY}<!-- ELSE -->{L_DELETE_POST_PERMANENTLY}<!-- ENDIF -->
+			</label>
+		<!-- ENDIF -->
 
-			<!-- IF S_DELETE_REASON -->
-				<dl>
-					<dt><label for="delete_reason">{L_DELETE_REASON}:</label><br /><span>{L_DELETE_REASON_EXPLAIN}</span></dt>
-					<dd><input type="text" name="delete_reason" id="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" /></dd>
-				</dl>
-			<!-- ENDIF -->
-		</fieldset>
+		<!-- IF S_DELETE_REASON -->
+			<label>
+				<strong>{L_DELETE_REASON}:</strong><br /><span>{L_DELETE_REASON_EXPLAIN}</span><br />
+				<input type="text" name="delete_reason" id="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" />
+			</label>
+		<!-- ENDIF -->
 	<!-- ENDIF -->
+
+	<fieldset class="submit-buttons">
+		<input type="button" name="confirm" value="{L_YES}" class="button1" />&nbsp;
+		<input type="button" name="cancel" value="{L_NO}" class="button2" />
+	</fieldset>
 
 <!-- ELSE -->
 

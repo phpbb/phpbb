@@ -7,7 +7,7 @@
 		<label><input type="checkbox" name="notify_poster" checked="checked" /> <!-- IF S_APPROVE -->{L_NOTIFY_POSTER_APPROVAL}<!-- ELSE -->{L_NOTIFY_POSTER_DISAPPROVAL}<!-- ENDIF --></label>
 	<!-- ENDIF -->
 
-	<!-- IF not S_APPROVE -->
+	<!-- IF not S_APPROVE and not S_RESTORE -->
 		<label><strong>{L_DISAPPROVE_REASON}{L_COLON}</strong>
 		<select name="reason_id">
 			<!-- BEGIN reason --><option value="{reason.ID}"<!-- IF reason.S_SELECTED --> selected="selected"<!-- ENDIF -->>{reason.DESCRIPTION}</option><!-- END reason -->
