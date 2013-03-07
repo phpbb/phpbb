@@ -185,6 +185,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 
 					$cat_path = ($path == $file_path) ? $user->lang['MAIN'] : str_replace("$path/", '', $file_path);
 					$cat = md5($cat_path);
+					$image = utf8_encode($image);
 
 					if (!isset($avatar_list[$cat]['cat_name']))
 					{
