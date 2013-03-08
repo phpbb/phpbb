@@ -196,9 +196,22 @@ function login_ldap(&$username, &$password)
 				// User inactive...
 				if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
 				{
+					if($config['require_activation'] == USER_ACTIVATION_SELF)
+					{
+						$activation_msg = 'ACTIVE_ERROR_USER';
+					}
+					else if($config['require_activation'] == USER_ACTIVATION_ADMIN)
+					{
+						$activation_msg = 'ACTIVE_ERROR_ADMIN';
+					}
+					else
+					{
+						$activation_msg = 'ACTIVE_ERROR';
+					}
+
 					return array(
 						'status'		=> LOGIN_ERROR_ACTIVE,
-						'error_msg'		=> 'ACTIVE_ERROR',
+						'error_msg'		=> $activation_msg,
 						'user_row'		=> $row,
 					);
 				}

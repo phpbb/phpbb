@@ -41,7 +41,7 @@ function init_apache()
 */
 function login_apache(&$username, &$password)
 {
-	global $db, $request;
+	global $db, $request, $config;
 
 	// do not allow empty password
 	if (!$password)
@@ -94,12 +94,26 @@ function login_apache(&$username, &$password)
 
 		if ($row)
 		{
+	
 			// User inactive...
 			if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
 			{
+				if($config['require_activation'] == USER_ACTIVATION_SELF)
+				{
+					$activation_msg = 'ACTIVE_ERROR_USER';
+				}
+				else if($config['require_activation'] == USER_ACTIVATION_ADMIN)
+				{
+					$activation_msg = 'ACTIVE_ERROR_ADMIN';
+				}
+				else
+				{
+					$activation_msg = 'ACTIVE_ERROR';
+				}
+
 				return array(
 					'status'		=> LOGIN_ERROR_ACTIVE,
-					'error_msg'		=> 'ACTIVE_ERROR',
+					'error_msg'		=> $activation_msg,
 					'user_row'		=> $row,
 				);
 			}
