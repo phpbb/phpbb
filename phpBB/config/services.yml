@@ -59,6 +59,12 @@ services:
             - @cache.driver
             - %tables.config%
 
+    config_text:
+        class: phpbb_config_db_text
+        arguments:
+            - @dbal.conn
+            - %tables.config_text%
+
     controller.helper:
         class: phpbb_controller_helper
         arguments:

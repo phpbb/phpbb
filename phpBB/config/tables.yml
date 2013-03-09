@@ -1,5 +1,6 @@
 parameters:
     tables.config: %core.table_prefix%config
+    tables.config_text: %core.table_prefix%config_text
     tables.ext: %core.table_prefix%ext
     tables.log: %core.table_prefix%log
     tables.notification_types: %core.table_prefix%notification_types

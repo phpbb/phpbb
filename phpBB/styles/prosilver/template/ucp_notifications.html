@@ -41,13 +41,14 @@
 							<!-- BEGIN notification_methods -->
 								<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /> <dfn>{notification_methods.NAME}</dfn></dd>
 							<!-- END notification_methods -->
-							<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /> <dfn>{notification_methods.NAME}</dfn></dd>
+							<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /> <dfn>{L_NOTIFICATIONS}</dfn></dd>
 						</dl>
 					</li>
 				<!-- ENDIF -->
 			<!-- END notification_types -->
 			</ul>
 		<!-- ELSE -->
+			<!-- IF .notification_list -->
 			<!-- IF .pagination or TOTAL_COUNT -->
 				<div class="topic-actions">
 					<div class="pagination">
@@ -70,13 +71,8 @@
 							<dd class="mark">{L_MARK_READ}</dd>
 						</dl>
 					</li>
-					<!-- IF not .notifications -->
-						<li>
-							<dl>
-								<dt>{L_NO_NOTIFICATIONS}</dt>
-							</dl>
-						</li>
-					<!-- ENDIF -->
+				</ul>
+				<ul class="topiclist cplist">
 					<!-- BEGIN notification_list -->
 						<li class="row<!-- IF notification_list.UNREAD --> bg3<!-- ELSE --><!-- IF notification_list.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- ENDIF -->">
 							<dl>
@@ -114,15 +110,19 @@
 				</div>
 			<!-- ENDIF -->
 
+			<!-- ELSE -->
+				<p><strong>{L_NO_NOTIFICATIONS}</strong></p>
+			<!-- ENDIF -->
+
 		<!-- ENDIF -->
 	</div>
 </div>
 
-<!-- IF .notifications -->
+<!-- IF .notification_types or .notification_list -->
 <fieldset class="display-actions">
 	<input type="hidden" name="form_time" value="{FORM_TIME}" />
 	{S_HIDDEN_FIELDS}
-	<input type="submit" name="submit" value="{L_MARK_READ}" class="button1" />
+	<input type="submit" name="submit" value="<!-- IF MODE == 'notification_options' -->{L_SUBMIT}<!-- ELSE -->{L_MARK_READ}<!-- ENDIF -->" class="button1" />
 	<div><a href="#" onclick="$('#ucp input:checkbox').attr('checked', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="$('#ucp input:checkbox').attr('checked', false); return false;">{L_UNMARK_ALL}</a></div>
 	{S_FORM_TOKEN}
 </fieldset>

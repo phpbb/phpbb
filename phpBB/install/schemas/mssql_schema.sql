@@ -294,6 +294,23 @@ GO
 
 
 /*
+	Table: 'phpbb_config_text'
+*/
+CREATE TABLE [phpbb_config_text] (
+	[config_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[config_value] [text] DEFAULT ('') NOT NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_config_text] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_config_text] PRIMARY KEY  CLUSTERED 
+	(
+		[config_name]
+	)  ON [PRIMARY] 
+GO
+
+
+/*
 	Table: 'phpbb_confirm'
 */
 CREATE TABLE [phpbb_confirm] (

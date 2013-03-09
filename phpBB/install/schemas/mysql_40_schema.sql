@@ -157,6 +157,14 @@ CREATE TABLE phpbb_config (
 );
 
 
+# Table: 'phpbb_config_text'
+CREATE TABLE phpbb_config_text (
+	config_name varbinary(255) DEFAULT '' NOT NULL,
+	config_value mediumblob NOT NULL,
+	PRIMARY KEY (config_name)
+);
+
+
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
 	confirm_id binary(32) DEFAULT '' NOT NULL,
