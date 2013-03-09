@@ -340,7 +340,7 @@ phpbb.ajaxify = function(options) {
 					if (del) {
 						phpbb.loadingAlert();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
-						if( $('input:checkbox').is(':checked') ){
+						if ($('input:checkbox').is(':checked')) {
 							data += '&option=' + res.YES_VALUE;
 						}
 						$.ajax({

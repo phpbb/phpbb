@@ -1574,7 +1574,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				'post_postcount'		=> $post_data['post_postcount']
 			);
 
-			if($del_topic_with_posts)
+			if ($del_topic_with_posts)
 			{
 				delete_topics('topic_id', array($topic_id), true);
 			}
@@ -1604,12 +1604,12 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 			trigger_error($message);
 		}
-		else if(($post_data['topic_first_post_id'] == $post_id) && ($post_data['topic_first_post_id'] != $post_data['topic_last_post_id']) && (!$optional_feild_added))
+		else if (($post_data['topic_first_post_id'] == $post_id) && ($post_data['topic_first_post_id'] != $post_data['topic_last_post_id']) && (!$optional_feild_added))
 		{
 			if ($request->is_ajax())
 			{
-				$u_action = $phpbb_root_path.$user->page['page'];
-				$optional_field_html = '<br />'.'<input type="checkbox" name="delTopic" value="delTopic">'.$user->lang['DELETE_ENTIRE_TOPIC'].'<br />';
+				$u_action = $phpbb_root_path . $user->page['page'];
+				$optional_field_html = '<br /><input type="checkbox" name="delTopic" value="delTopic">' . $user->lang['DELETE_ENTIRE_TOPIC'].'<br />';
 				$json_response = new phpbb_json_response;
 				$json_response->send(array(
 					'S_CONFIRM_ACTION'  => $u_action,
