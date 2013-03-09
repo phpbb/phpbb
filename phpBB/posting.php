@@ -1553,10 +1553,10 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			'mode'	=> 'delete')
 		);
 
-		//Confirmation varible to delete topic with its posts
+		// Confirmation varible to delete topic with its posts
 		$del_topic_with_posts = ($user->lang['YES'] === $request->variable('option', '', true, phpbb_request_interface::POST));
 
-		//Confirmation variable to added optional field to confirm box layout in order to delete topic 
+		// Confirmation variable to added optional field to confirm box layout in order to delete topic 
 		$optional_feild_added = ($user->lang['YES'] === $request->variable('optional_feild_added', '', true, phpbb_request_interface::POST));
 
 		if (confirm_box(true))
@@ -1573,11 +1573,12 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				'poster_id'				=> $post_data['poster_id'],
 				'post_postcount'		=> $post_data['post_postcount']
 			);
-			
+
 			if($del_topic_with_posts)
 			{
 				delete_topics('topic_id', array($topic_id), true);
-			}else
+			}
+			else
 			{
 				$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data);
 			}
