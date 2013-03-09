@@ -178,7 +178,7 @@ class phpbb_notification_type_topic extends phpbb_notification_type_base
 		}
 		else
 		{
-			$username = $this->user_loader->get_username($this->get_data('poster_id'), 'no_profile');
+			$username = $this->user_loader->get_username($this->get_data('poster_id'), 'username');
 		}
 
 		return array(
