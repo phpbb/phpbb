@@ -255,6 +255,8 @@ class phpbb_revisions_comparison
 	*/
 	public function get_text_diff_rendered()
 	{
-		return $this->text_diff_rendered;
+		// The \n below is a literal string, rather than the actual new line
+		// character. We do this because '\n' is written in the diff itself
+		return str_replace('\n', '<br />', $this->text_diff_rendered);
 	}
 }
