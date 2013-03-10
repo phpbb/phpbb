@@ -2,7 +2,7 @@
 	<ul class="revisionlist">
 		<li class="header">
 			<dl>
-				<!-- IF S_COMPARISON --><dd>{L_COMPARE}</dd><!-- ENDIF -->
+				<!-- IF S_DISPLAY_COMPARISON --><dd>{L_COMPARE}</dd><!-- ENDIF -->
 				<dd class="revisionview">{L_REVISION}</dd>
 				<dd class="revisionuser">{L_USERNAME}</dd>
 				<dd class="revisiondate">{L_REVISION} {L_TIME}</dd>
@@ -17,7 +17,7 @@
 			<li class="revision_compare"><input type="radio" name="first" value="{revision.ID}"<!-- IF revision.FIRST_IN_COMPARE --> checked="checked"<!-- ENDIF --><!-- IF REVISION_COUNT eq 0 --> disabled="disabled"<!-- ENDIF --> /> <input type="radio" name="last" value="{revision.ID}"<!-- IF revision.LAST_IN_COMPARE --> checked="checked"<!-- ENDIF --><!-- IF REVISION_COUNT eq 0 --> disabled="disabled"<!-- ENDIF --> /></li>
 			<!-- ENDIF -->
 			<li class="revision_id"><a href="{revision.U_REVISION_VIEW}">#{revision.NUMBER} ({L_VIEW})</a></li>
-			<li class="revsion_user">{revision.USER_AVATAR} <span>{revision.USERNAME}</span></li>
+			<li class="revision_user">{revision.USER_AVATAR} <span>{revision.USERNAME}</span></li>
 			<li class="revision_date">{revision.DATE}</li>
 			<li class="revision_reason"><!-- IF revision.REASON --><strong>{revision.REASON}</strong><!-- ELSE --><em>{L_NO_REASON}</em><!-- ENDIF --></li>
 			<li class="revision_options">
