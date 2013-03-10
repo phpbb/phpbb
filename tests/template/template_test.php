@@ -197,8 +197,6 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('loop'),
 				'',
 			),
-			/* Currently fail on develop:
-			http://tracker.phpbb.com/browse/PHPBB3-11323
 			array(
 				'include_define_variable.html',
 				array('VARIABLE' => 'variable.html'),
@@ -213,7 +211,6 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				'value',
 			),
-			*/
 			/* no top level nested loops
 			array(
 				'loop_vars.html',
