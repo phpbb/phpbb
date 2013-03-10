@@ -309,8 +309,7 @@ class phpbb_content_visibility
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_posts = user_posts + ' . $num_posts . '
-					WHERE ' . $db->sql_in_set('user_id', $poster_ids) . '
-						AND user_posts >= ' . $num_posts;
+					WHERE ' . $db->sql_in_set('user_id', $poster_ids);
 				$db->sql_query($sql);
 			}
 		}
