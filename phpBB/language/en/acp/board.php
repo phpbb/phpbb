@@ -191,7 +191,7 @@ $lang = array_merge($lang, array(
 
 	'POST_REVISION_TRACKING'					=> 'Post Revision Tracking',
 	'REVISION_HISTORY'							=> 'Track post revision history',
-	'REVISION_HISTORY_EXPLAIN'					=> 'Each time a post is edited, an a copy of the old post is saved. Authorized users can view post revision history and can change between revisions.',
+	'REVISION_HISTORY_EXPLAIN'					=> 'Each time a post is edited, a copy of the old post is saved. Authorized users can view post revision history and can change between revisions.',
 	'REVISION_MAX_AGE'							=> 'Maximum revision age',
 	'REVISION_MAX_AGE_EXPLAIN'					=> 'Set to 0 for unlimited revision age. Revisions older than the specified age will be removed automatically.',
 	'REVISION_LIMIT'							=> 'Maximum revisions to save per post',
