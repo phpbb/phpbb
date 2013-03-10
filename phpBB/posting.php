@@ -363,7 +363,8 @@ if ($mode == 'delete' || $mode == 'soft_delete')
 		trigger_error('NO_POST');
 	}
 
-	$soft_delete_reason = ($mode == 'soft_delete' && $auth->acl_get('m_softdelete', $forum_id)) ? $request->variable('delete_reason', '', true) : '';
+	$allow_reason = $auth->acl_get('m_softdelete', $forum_id) || ($auth->acl_gets('m_delete', 'f_delete', $forum_id) && $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id));
+	$soft_delete_reason = ($mode == 'soft_delete' && $allow_reason) ? $request->variable('delete_reason', '', true) : '';
 	handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete'), $soft_delete_reason);
 	return;
 }
@@ -1154,7 +1155,8 @@ if ($submit || $preview || $refresh)
 			// Handle delete mode...
 			if ($request->is_set_post('delete') || $request->is_set_post('delete_permanent'))
 			{
-				$soft_delete_reason = (!$request->is_set_post('delete_permanent') && $auth->acl_get('m_softdelete', $forum_id)) ? $request->variable('delete_reason', '', true) : '';
+				$allow_reason = $auth->acl_get('m_softdelete', $forum_id) || ($auth->acl_gets('m_delete', 'f_delete', $forum_id) && $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id));
+				$soft_delete_reason = (!$request->is_set_post('delete_permanent') && $allow_reason) ? $request->variable('delete_reason', '', true) : '';
 				handle_post_delete($forum_id, $topic_id, $post_id, $post_data, !$request->is_set_post('delete_permanent'), $soft_delete_reason);
 				return;
 			}
@@ -1645,12 +1647,14 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 		{
 			global $user, $template, $request;
 
+			$display_reason = $auth->acl_get('m_softdelete', $forum_id) || ($auth->acl_gets('m_delete', 'f_delete', $forum_id) && $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id));
+
 			$template->assign_vars(array(
 				'S_SOFTDELETED'			=> $post_data['post_visibility'] == ITEM_DELETED,
 				'S_CHECKED_PERMANENT'	=> $request->is_set_post('delete_permanent') ? ' checked="checked"' : '',
 				'S_ALLOWED_DELETE'		=> $auth->acl_gets('m_delete', 'f_delete', $forum_id),
 				'S_ALLOWED_SOFTDELETE'	=> $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id),
-				'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
+				'S_DELETE_REASON'		=> $display_reason,
 			));
 
 			$l_confirm = 'DELETE_POST';
