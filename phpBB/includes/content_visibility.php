@@ -244,13 +244,13 @@ class phpbb_content_visibility
 
 			if ($row['post_visibility'] != $visibility)
 			{
-				if ($row['post_postcount'] && !isset($poster_postcounts[$row['poster_id']]))
+				if ($row['post_postcount'] && !isset($poster_postcounts[(int) $row['poster_id']]))
 				{
-					$poster_postcounts[$row['poster_id']] = 1;
+					$poster_postcounts[(int) $row['poster_id']] = 1;
 				}
 				else if ($row['post_postcount'])
 				{
-					$poster_postcounts[$row['poster_id']]++;
+					$poster_postcounts[(int) $row['poster_id']]++;
 				}
 
 				if (!isset($postcount_visibility[$row['post_visibility']]))
@@ -411,12 +411,12 @@ class phpbb_content_visibility
 				// Update the number for replies and posts
 				$sql = 'UPDATE ' . TOPICS_TABLE . '
 					SET ' . implode(', ', $topic_sql) . '
-					WHERE topic_id = ' . $topic_id;
+					WHERE topic_id = ' . (int) $topic_id;
 				$db->sql_query($sql);
 
 				$sql = 'UPDATE ' . FORUMS_TABLE . '
 					SET ' . implode(', ', $forum_sql) . '
-					WHERE forum_id = ' . $forum_id;
+					WHERE forum_id = ' . (int) $forum_id;
 				$db->sql_query($sql);
 			}
 		}
