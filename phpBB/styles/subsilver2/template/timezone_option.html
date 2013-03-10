@@ -7,7 +7,7 @@
 				<option value="">{L_SELECT_CURRENT_TIME}</option>
 				{S_TZ_DATE_OPTIONS}
 			</select><br />
-			<input type="button" id="tz_select_date_suggest" class="btnlite" style="display: none;" data-is-registration="<!-- IF S_REGISTRATION -->true<!-- ELSE -->false<!-- ENDIF -->" data-l-suggestion="{L_TIMEZONE_DATE_SUGGESTION}" value="{L_TIMEZONE_DATE_SUGGESTION}" />
+			<input type="button" id="tz_select_date_suggest" class="btnlite" style="display: none;" timezone-preselect="<!-- IF S_TZ_PRESELECT -->true<!-- ELSE -->false<!-- ENDIF -->" data-l-suggestion="{L_TIMEZONE_DATE_SUGGESTION}" value="{L_TIMEZONE_DATE_SUGGESTION}" />
 		</div>
 		<!-- ENDIF -->
 		<select name="tz" id="timezone" class="autowidth tz_select">
