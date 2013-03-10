@@ -260,7 +260,6 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 			'S_TOPIC_DELETED'		=> $topic_deleted,
 			'S_UNREAD_TOPIC'		=> $unread_topic,
-
 		);
 
 		if ($row['topic_status'] == ITEM_MOVED)
