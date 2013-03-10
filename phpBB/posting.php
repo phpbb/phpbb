@@ -1668,7 +1668,6 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 				$s_hidden_fields['delete_permanent'] = '1';
 			}
 
-			// @todo: This needs fixing! AJAX confirm_box should be able to call template files!
 			confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 		}
 	}
