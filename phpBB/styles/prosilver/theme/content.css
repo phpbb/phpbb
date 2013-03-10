@@ -102,6 +102,12 @@ dd.revisiondate {
 	font-size: 1.2em;
 }
 
+dd.revisionreason {
+	width: 50%;
+	line-height: 2.2em;
+	font-size: 1.2em;
+}
+
 div.revisions_block {
 	display: block;
 	width: 75%;
