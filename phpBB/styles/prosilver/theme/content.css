@@ -117,6 +117,7 @@ div.revisions_block {
 
 fieldset.actions-left {
 	float: left;
+	padding-top:10px;
 }
 
 fieldset.actions-right {
