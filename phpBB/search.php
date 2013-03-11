@@ -519,7 +519,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	// make sure that some arrays are always in the same order
 	sort($ex_fid_ary);
-// @TODO	sort($m_approve_fid_ary);
 	sort($author_id_ary);
 
 	if ($search->get_search_query())
