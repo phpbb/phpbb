@@ -960,6 +960,17 @@ class mcp_queue
 
 		$post_info = get_post_data($post_id_list, 'm_approve');
 
+		$is_disapproving = false;
+		foreach ($post_info as $post_id => $post_data)
+		{
+			if ($post_data['post_visibility'] == ITEM_DELETED)
+			{
+				continue;
+			}
+
+			$is_disapproving = true;
+		}
+
 		if (confirm_box(true))
 		{
 			$disapprove_log = $disapprove_log_topics = $disapprove_log_posts = array();
@@ -996,6 +1007,7 @@ class mcp_queue
 							'post_subject'	=> $post_info[$post_id]['topic_title'],
 							'forum_id'		=> $post_info[$post_id]['forum_id'],
 							'topic_id'		=> 0, // useless to log a topic id, as it will be deleted
+							'post_username'	=> ($post_info[$post_id]['poster_id'] == ANONYMOUS && !empty($post_info[$post_id]['post_username'])) ? $post_info[$post_id]['post_username'] : $post_info[$post_id]['username'],
 						);
 					}
 				}
@@ -1007,6 +1019,7 @@ class mcp_queue
 						'post_subject'	=> $post_info[$post_id]['post_subject'],
 						'forum_id'		=> $post_info[$post_id]['forum_id'],
 						'topic_id'		=> $post_info[$post_id]['topic_id'],
+						'post_username'	=> ($post_info[$post_id]['poster_id'] == ANONYMOUS && !empty($post_info[$post_id]['post_username'])) ? $post_info[$post_id]['post_username'] : $post_info[$post_id]['username'],
 					);
 
 				}
@@ -1037,7 +1050,16 @@ class mcp_queue
 
 				foreach ($disapprove_log as $log_data)
 				{
-					add_log('mod', $log_data['forum_id'], $log_data['topic_id'], ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED', $log_data['post_subject'], $disapprove_reason);
+					if ($is_disapproving)
+					{
+						$l_log_message = ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED';
+						add_log('mod', $log_data['forum_id'], $log_data['topic_id'], $l_log_message, $log_data['post_subject'], $disapprove_reason);
+					}
+					else
+					{
+						$l_log_message = ($log_data['type'] == 'topic') ? 'LOG_DELETE_TOPIC' : 'LOG_DELETE_POST';
+						add_log('mod', $log_data['forum_id'], $log_data['topic_id'], $l_log_message, $log_data['post_subject'], $log_data['post_username']);
+					}
 				}
 			}
 
@@ -1115,20 +1137,28 @@ class mcp_queue
 
 			unset($lang_reasons, $post_info, $disapprove_reason, $disapprove_reason_lang);
 
+
 			if ($num_disapproved_topics)
 			{
-				$success_msg = ($num_disapproved_topics == 1) ? 'TOPIC_DISAPPROVED_SUCCESS' : 'TOPICS_DISAPPROVED_SUCCESS';
+				$success_msg = ($num_disapproved_topics == 1) ? 'TOPIC' : 'TOPICS';
 			}
 			else
 			{
-				$success_msg = ($num_disapproved_posts == 1) ? 'POST_DISAPPROVED_SUCCESS' : 'POSTS_DISAPPROVED_SUCCESS';
+				$success_msg = ($num_disapproved_posts == 1) ? 'POST' : 'POSTS';
+			}
+
+			if ($is_disapproving)
+			{
+				$success_msg .= '_DISAPPROVED_SUCCESS';
+			}
+			else
+			{
+				$success_msg .= '_DELETED_SUCCESS';
 			}
 		}
 		else
 		{
 			include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-
-			display_reasons($reason_id);
 
 			$show_notify = false;
 
@@ -1145,14 +1175,29 @@ class mcp_queue
 				}
 			}
 
+			$l_confirm_msg = 'DISAPPROVE_POST';
+			$confirm_template = 'mcp_approve.html';
+			if ($is_disapproving)
+			{
+				display_reasons($reason_id);
+			}
+			else
+			{
+				$user->add_lang('posting');
+
+				$l_confirm_msg = 'DELETE_POST_PERMANENTLY';
+				$confirm_template = 'confirm_delete_body.html';
+			}
+			$l_confirm_msg .= ((sizeof($post_id_list) == 1) ? '' : 'S');
+
 			$template->assign_vars(array(
 				'S_NOTIFY_POSTER'	=> $show_notify,
 				'S_APPROVE'			=> false,
-				'REASON'			=> $reason,
-				'ADDITIONAL_MSG'	=> $additional_msg)
-			);
+				'REASON'			=> ($is_disapproving) ? $reason : '',
+				'ADDITIONAL_MSG'	=> $additional_msg,
+			));
 
-			confirm_box(false, 'DISAPPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
+			confirm_box(false, $l_confirm_msg, $s_hidden_fields, $confirm_template);
 		}
 
 		$redirect = $request->variable('redirect', "index.$phpEx");
