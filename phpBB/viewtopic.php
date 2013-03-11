@@ -1538,10 +1538,12 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			$user_cache[$row['post_delete_user']] = $post_delete_list[$row['post_delete_user']];
 		}
 
+		$display_postername = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
+
 		// User having deleted the post also being the post author?
 		if (!$row['post_delete_user'] || $row['post_delete_user'] == $poster_id)
 		{
-			$display_username = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
+			$display_username = $display_postername;
 		}
 		else
 		{
@@ -1550,11 +1552,11 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		if ($row['post_delete_reason'])
 		{
-			$l_deleted_message = $user->lang('POST_DELETED_BY_REASON', $display_username, $user->format_date($row['post_delete_time'], false, true), $row['post_delete_reason']);
+			$l_deleted_message = $user->lang('POST_DELETED_BY_REASON', $display_postername, $display_username, $user->format_date($row['post_delete_time'], false, true), $row['post_delete_reason']);
 		}
 		else
 		{
-			$l_deleted_message = $user->lang('POST_DELETED_BY', $display_username, $user->format_date($row['post_delete_time'], false, true));
+			$l_deleted_message = $user->lang('POST_DELETED_BY', $display_postername, $display_username, $user->format_date($row['post_delete_time'], false, true));
 		}
 		$l_deleted_by = $user->lang('DELETED_INFORMATION', $display_username, $user->format_date($row['post_delete_time'], false, true));
 	}
