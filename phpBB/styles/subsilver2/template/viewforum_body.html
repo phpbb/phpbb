@@ -45,6 +45,9 @@
 				<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 					<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{UNAPPROVED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
+				<!-- IF topicrow.DELETED_IMG -->
+					<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{topicrow.DELETED_IMG}</a>&nbsp;
+				<!-- ENDIF -->
 				<!-- IF topicrow.S_TOPIC_REPORTED -->
 					<a href="{topicrow.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
 				<!-- ENDIF -->

@@ -39,6 +39,9 @@
 				<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
 					<a href="{searchresults.U_MCP_QUEUE}" class="imageset">{searchresults.UNAPPROVED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
+				<!-- IF searchresults.DELETED_IMG -->
+					<a href="{searchresults.U_MCP_QUEUE}" class="imageset">{searchresults.DELETED_IMG}</a>&nbsp;
+				<!-- ENDIF -->
 				<!-- IF searchresults.S_TOPIC_REPORTED -->
 					<a href="{searchresults.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
