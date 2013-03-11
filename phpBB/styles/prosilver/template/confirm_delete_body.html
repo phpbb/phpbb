@@ -11,9 +11,9 @@
 		<!-- ENDIF -->
 
 		<!-- IF S_DELETE_REASON -->
-			<label>
+			<label id="delete_reason">
 				<strong>{L_DELETE_REASON}:</strong><br /><span>{L_DELETE_REASON_EXPLAIN}</span><br />
-				<input type="text" name="delete_reason" id="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" />
+				<input type="text" name="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" />
 			</label>
 		<!-- ENDIF -->
 	<!-- ENDIF -->
@@ -50,9 +50,9 @@
 		<!-- ENDIF -->
 
 		<!-- IF S_DELETE_REASON -->
-			<dl>
+			<dl id="delete_reason">
 				<dt><label for="delete_reason">{L_DELETE_REASON}:</label><br /><span>{L_DELETE_REASON_EXPLAIN}</span></dt>
-				<dd><input type="text" name="delete_reason" id="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" /></dd>
+				<dd><input type="text" name="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" /></dd>
 			</dl>
 		<!-- ENDIF -->
 	</fieldset>

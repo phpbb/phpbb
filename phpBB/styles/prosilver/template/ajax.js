@@ -230,6 +230,14 @@ $('#quick-mod-select').change(function () {
 	$('#quickmodform').submit();
 });
 
+$('#delete_permanent').click(function () {
+	if ($(this).attr('checked')) {
+		$('#delete_reason').hide();
+	} else {
+		$('#delete_reason').show();
+	}
+});
+
 /**
 * Toggle the member search panel in memberlist.php.
 *

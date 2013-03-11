@@ -317,6 +317,18 @@ phpbb.ajaxify = function(options) {
 						});
 					}
 				}, false);
+
+				// Add the click function to the code we just laoded.
+				// Should be removed and replace with a call to .on()
+				// when jQuery is updated to 1.7.x or higher
+				// $(document).on('click', '#delete_permanent', function () {});
+				$('#delete_permanent').click(function () {
+					if ($(this).attr('checked')) {
+						$('#delete_reason').hide();
+					} else {
+						$('#delete_reason').show();
+					}
+				});
 			}
 		}
 
