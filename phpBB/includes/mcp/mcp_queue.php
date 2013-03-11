@@ -904,7 +904,7 @@ class mcp_queue
 	*/
 	static public function disapprove_posts($post_id_list, $id, $mode)
 	{
-		global $db, $template, $user, $config;
+		global $db, $template, $user, $config, $phpbb_container;
 		global $phpEx, $phpbb_root_path, $request;
 
 		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
