@@ -266,7 +266,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 				$maxlength = strlen( (string) $max );
 			}
 
-			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (( $maxlength != '' ) ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="' . $name . '" value="' . $new[$config_key] . '" />';
+			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (( $maxlength != '' ) ? $maxlength : 255) . '"' . (( $min != '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="' . $name . '" value="' . $new[$config_key] . '" />';
 		break;
 
 		case 'dimension':
@@ -278,7 +278,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 				$maxlength = strlen( (string) $max );
 			}
 
-			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (($maxlength != '') ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="config[' . $config_key . '_width]" value="' . $new[$config_key . '_width'] . '" /> x <input type="number" maxlength="' . (($maxlength != '') ? $maxlength : 255) . '" min="' . $min . '" max="' . $max . '" name="config[' . $config_key . '_height]" value="' . $new[$config_key . '_height'] . '" />';
+			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (($maxlength != '') ? $maxlength : 255) . '"' . (( $min != '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_width]" value="' . $new[$config_key . '_width'] . '" /> x <input type="number" maxlength="' . (($maxlength != '') ? $maxlength : 255) . '"' . (( $min != '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_height]" value="' . $new[$config_key . '_height'] . '" />';
 		break;
 
 		case 'textarea':
