@@ -2,7 +2,6 @@
 /**
 *
 * @package testing
-* @version $Id$
 * @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
