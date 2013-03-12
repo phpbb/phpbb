@@ -46,6 +46,17 @@ class phpbb_avatar_manager
 	protected $container;
 
 	/**
+	* Default avatar data row
+	* @var array
+	*/
+	static protected $default_row = array(
+		'avatar'		=> '',
+		'avatar_type'	=> '',
+		'avatar_width'	=> '',
+		'avatar_height'	=> '',
+	);
+
+	/**
 	* Construct an avatar manager object
 	*
 	* @param phpbb_config $config phpBB configuration
@@ -174,6 +185,12 @@ class phpbb_avatar_manager
 	*/
 	static public function clean_row($row)
 	{
+		// Upon creation of a user/group $row might be empty
+		if (empty($row))
+		{
+			return self::$default_row;
+		}
+
 		$keys = array_keys($row);
 		$values = array_values($row);
 
