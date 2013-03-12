@@ -6,6 +6,7 @@
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_extension_finder_test extends phpbb_test_case
 {
@@ -131,6 +132,21 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	{
 		$classes = $this->finder
 			->directory('/sub/type')
+			->get_classes();
+
+		sort($classes);
+		$this->assertEquals(
+			array(
+				'phpbb_ext_foo_sub_type_alternative',
+			),
+			$classes
+		);
+	}
+
+	public function test_uncleansub_directory_get_classes()
+	{
+		$classes = $this->finder
+			->directory('/sub/../sub/type')
 			->get_classes();
 
 		sort($classes);
