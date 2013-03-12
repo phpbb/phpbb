@@ -227,7 +227,7 @@ class phpbb_extension_finder
 	*/
 	protected function sanitise_directory($directory)
 	{
-		$directory = preg_replace('#(?:^|/)\./#', '/', $directory);
+		$directory = phpbb_clean_path($directory);
 		$dir_len = strlen($directory);
 
 		if ($dir_len > 1 && $directory[$dir_len - 1] === '/')
