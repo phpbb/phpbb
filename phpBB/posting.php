@@ -296,7 +296,7 @@ switch ($mode)
 	break;
 
 	case 'delete':
-		if ($user->data['is_registered'] && $auth->acl_gets('f_delete', 'm_delete', $forum_id))
+		if ($user->data['is_registered'] && ($auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id))))
 		{
 			$is_authed = true;
 		}
@@ -306,6 +306,11 @@ switch ($mode)
 		if ($user->data['is_registered'] && phpbb_content_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
 		{
 			$is_authed = true;
+		}
+		else
+		{
+			// Display the same error message for softdelete we use for delete
+			$mode = 'delete';
 		}
 	break;
 }
@@ -1647,13 +1652,15 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 		{
 			global $user, $template, $request;
 
-			$display_reason = $auth->acl_get('m_softdelete', $forum_id) || ($auth->acl_gets('m_delete', 'f_delete', $forum_id) && $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id));
+			$can_delete = $auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id));
+			$can_softdelete = $auth->acl_get('m_softdelete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_softdelete', $forum_id));
+			$display_reason = $auth->acl_get('m_softdelete', $forum_id) || ($can_delete && $can_softdelete);
 
 			$template->assign_vars(array(
 				'S_SOFTDELETED'			=> $post_data['post_visibility'] == ITEM_DELETED,
 				'S_CHECKED_PERMANENT'	=> $request->is_set_post('delete_permanent') ? ' checked="checked"' : '',
-				'S_ALLOWED_DELETE'		=> $auth->acl_gets('m_delete', 'f_delete', $forum_id),
-				'S_ALLOWED_SOFTDELETE'	=> $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id),
+				'S_ALLOWED_DELETE'		=> $can_delete,
+				'S_ALLOWED_SOFTDELETE'	=> $can_softdelete,
 				'S_DELETE_REASON'		=> $display_reason,
 			));
 
@@ -1663,7 +1670,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 				$l_confirm .= '_PERMANENTLY';
 				$s_hidden_fields['delete_permanent'] = '1';
 			}
-			else if (!$auth->acl_get('m_softdelete', $forum_id) && !$auth->acl_get('f_softdelete', $forum_id))
+			else if (!$can_softdelete)
 			{
 				$s_hidden_fields['delete_permanent'] = '1';
 			}
