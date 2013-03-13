@@ -334,7 +334,7 @@ function feed_generate_content($content, $uid, $bitfield, $options, $forum_id, $
 	}	
 
 	// Remove Comments from inline attachments [ia]
-	$content	= preg_replace('#<div class="(inline-attachment|attachtitle)">(.*?)<!-- ia(.*?) -->(.*?)<!-- ia(.*?) -->(.*?)</div>#si','$4',$content);
+	$content	= preg_replace('#<dd>(.*?)</dd>#','',$content);
 
 	// Replace some entities with their unicode counterpart
 	$entities = array(
