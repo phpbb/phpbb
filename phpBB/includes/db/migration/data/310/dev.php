@@ -91,7 +91,7 @@ class phpbb_db_migration_data_310_dev extends phpbb_db_migration
 			array('config.add', array('fulltext_sphinx_indexer_mem_limit', 512)),
 
 			array('config.add', array('load_jquery_cdn', 0)),
-			array('config.add', array('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js')),
+			array('config.add', array('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js')),
 
 			array('config.add', array('use_system_cron', 0)),
 
