@@ -274,6 +274,7 @@ class phpbb_search_fulltext_sphinx
 						p.forum_id,
 						p.topic_id,
 						p.poster_id,
+						p.post_visibility,
 						CASE WHEN p.post_id = t.topic_first_post_id THEN 1 ELSE 0 END as topic_first_post,
 						p.post_time,
 						p.post_subject,
@@ -291,6 +292,7 @@ class phpbb_search_fulltext_sphinx
 				array('sql_attr_uint',				'forum_id'),
 				array('sql_attr_uint',				'topic_id'),
 				array('sql_attr_uint',				'poster_id'),
+				array('sql_attr_uint',				'post_visibility'),
 				array('sql_attr_bool',				'topic_first_post'),
 				array('sql_attr_bool',				'deleted'),
 				array('sql_attr_timestamp'	,		'post_time'),
@@ -306,6 +308,7 @@ class phpbb_search_fulltext_sphinx
 						p.forum_id,
 						p.topic_id,
 						p.poster_id,
+						p.post_visibility,
 						CASE WHEN p.post_id = t.topic_first_post_id THEN 1 ELSE 0 END as topic_first_post,
 						p.post_time,
 						p.post_subject,
@@ -569,10 +572,13 @@ class phpbb_search_fulltext_sphinx
 			$this->sphinx->SetFilter('poster_id', $author_ary);
 		}
 
+		// As this is not simply possible at the moment, we limit the result to approved posts.
+		// This will make it impossible for moderators to search unapproved and softdeleted posts,
+		// but at least it will also cause the same for normal users.
+		$this->sphinx->SetFilter('post_visibility', array(ITEM_APPROVED));
+
 		if (sizeof($ex_fid_ary))
 		{
-			//@todo: Limit using $post_visibility
-
 			// All forums that a user is allowed to access
 			$fid_ary = array_unique(array_intersect(array_keys($this->auth->acl_getf('f_read', true)), array_keys($this->auth->acl_getf('f_search', true))));
 			// All forums that the user wants to and can search in
