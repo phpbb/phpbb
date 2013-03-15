@@ -129,7 +129,9 @@ viewtopic_body_footer_before
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
-* Purpose: Add content to the bottom of the View topic screen below the posts and quick reply, directly before the jumpbox in Prosilver, breadcrumbs in Subsilver2.
+* Purpose: Add content to the bottom of the View topic screen below the posts
+and quick reply, directly before the jumpbox in Prosilver, breadcrumbs in
+Subsilver2.
 
 viewtopic_topic_title_prepend
 ===
