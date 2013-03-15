@@ -70,7 +70,6 @@ class phpbb_user_loader
 	{
 		$user_ids[] = ANONYMOUS;
 
-		// Load the users
 		$user_ids = array_unique($user_ids);
 
 		// Do not load users we already have in $this->users
