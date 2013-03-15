@@ -95,6 +95,13 @@ class phpbb_controller_helper
 	*/
 	public function url($route, $params = false, $is_amp = true, $session_id = false)
 	{
+		$route_params = '';
+		if (($route_delim = strpos($route, '?')) !== false)
+		{
+			$route_params = substr($route, $route_delim);
+			$route = substr($route, 0, $route_delim);
+		}
+
 		if (is_array($params) && !empty($params))
 		{
 			$params = array_merge(array(
@@ -110,7 +117,7 @@ class phpbb_controller_helper
 			$params = array('controller' => $route);
 		}
 
-		return append_sid($this->phpbb_root_path . 'app' . $this->php_ext, $params, $is_amp, $session_id);
+		return append_sid($this->phpbb_root_path . 'app' . $this->php_ext . $route_params, $params, $is_amp, $session_id);
 	}
 
 	/**
