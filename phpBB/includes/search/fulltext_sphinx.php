@@ -258,13 +258,13 @@ class phpbb_search_fulltext_sphinx
 		$config_object = new phpbb_search_sphinx_config($this->config_file_data);
 		$config_data = array(
 			'source source_phpbb_' . $this->id . '_main' => array(
-				array('type',						$this->dbtype),
+				array('type',						$this->dbtype . ' #mysql or pgsql'),
 				// This config value sql_host needs to be changed incase sphinx and sql are on different servers
-				array('sql_host',					$dbhost),
+				array('sql_host',					$dbhost . ' #SQL server host sphinx connects to'),
 				array('sql_user',					$dbuser),
 				array('sql_pass',					$dbpasswd),
 				array('sql_db',						$dbname),
-				array('sql_port',					$dbport),
+				array('sql_port',					$dbport . ' #optional, default is 3306 for mysql and 5432 for pgsql'),
 				array('sql_query_pre',				'SET NAMES \'utf8\''),
 				array('sql_query_pre',				'UPDATE ' . SPHINX_TABLE . ' SET max_doc_id = (SELECT MAX(post_id) FROM ' . POSTS_TABLE . ') WHERE counter_id = 1'),
 				array('sql_query_range',			'SELECT MIN(post_id), MAX(post_id) FROM ' . POSTS_TABLE . ''),
