@@ -87,12 +87,30 @@ class phpbb_controller_helper
 	/**
 	* Generate a URL
 	*
-	* @param string $route The route to travel
+	* @param string	$route		The route to travel
+	* @param mixed	$params		String or array of additional url parameters
+	* @param bool	$is_amp		Is url using &amp; (true) or & (false)
+	* @param string	$session_id	Possibility to use a custom session id instead of the global one
 	* @return string The URL already passed through append_sid()
 	*/
-	public function url($route)
+	public function url($route, $params = false, $is_amp = true, $session_id = false)
 	{
-		return append_sid($this->phpbb_root_path . 'app' . $this->php_ext, array('controller' => $route));
+		if (is_array($params) && !empty($params))
+		{
+			$params = array_merge(array(
+				'controller' => $route,
+			), $params);
+		}
+		else if (is_string($params) && $params)
+		{
+			$params = 'controller=' . $route . (($is_amp) ? '&amp;' : '&') . $params;
+		}
+		else
+		{
+			$params = array('controller' => $route);
+		}
+
+		return append_sid($this->phpbb_root_path . 'app' . $this->php_ext, $params, $is_amp, $session_id);
 	}
 
 	/**
