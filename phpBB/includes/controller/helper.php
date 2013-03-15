@@ -55,7 +55,7 @@ class phpbb_controller_helper
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_template $template = null, phpbb_user $user = null, $phpbb_root_path = './', $php_ext = '.php')
+	public function __construct(phpbb_template $template, phpbb_user $user, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
