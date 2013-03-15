@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -14,7 +16,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class phpbb_controller_test extends phpbb_test_case
+class phpbb_controller_controller_test extends phpbb_test_case
 {
 	public function setUp()
 	{
