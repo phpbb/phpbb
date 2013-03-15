@@ -124,6 +124,13 @@ viewtopic_print_head_append
 * Location: styles/prosilver/template/viewtopic_print.html
 * Purpose: Add asset calls directly before the `</head>` tag of the Print Topic screen
 
+viewtopic_body_footer_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Purpose: Add content to the bottom of the viewtopic page after all posts and pagination links
+
 viewtopic_topic_title_prepend
 ===
 * Locations:
