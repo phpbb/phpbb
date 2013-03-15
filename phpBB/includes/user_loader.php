@@ -70,7 +70,8 @@ class phpbb_user_loader
 	{
 		$user_ids[] = ANONYMOUS;
 
-		$user_ids = array_unique($user_ids);
+		// Make user_ids unique and convert to integer.
+		$user_ids = array_map('intval', array_unique($user_ids));
 
 		// Do not load users we already have in $this->users
 		$user_ids = array_diff($user_ids, array_keys($this->users));
