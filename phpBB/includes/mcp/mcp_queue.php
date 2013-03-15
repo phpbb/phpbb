@@ -984,6 +984,7 @@ function disapprove_post($post_id_list, $id, $mode)
 
 	$redirect = request_var('redirect', "index.$phpEx");
 	$redirect = reapply_sid($redirect);
+	$current_forum_id = request_var('f', 0);
 
 	if (!$success_msg)
 	{
@@ -991,19 +992,11 @@ function disapprove_post($post_id_list, $id, $mode)
 	}
 	else
 	{
-		$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>');
-
-		if ($request->is_ajax())
+		if (($request->is_ajax()) && ($current_forum_id != 0))
 		{
-			$json_response = new phpbb_json_response;
-			$json_response->send(array(
-				'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-				'MESSAGE_TEXT'		=> $message,
-				'REFRESH_DATA'		=> null,
-				'approved'				=> false
-			));
+			$redirect = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $current_forum_id);
 		}
-
+		$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>');
 		meta_refresh(3, $redirect);
 		trigger_error($message);
 	}

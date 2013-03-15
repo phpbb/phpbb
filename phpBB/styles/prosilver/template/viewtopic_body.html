@@ -139,7 +139,7 @@
 			<p class="author"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><!-- ENDIF -->{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; {postrow.POST_DATE} </p>
 
 			<!-- IF postrow.S_POST_UNAPPROVED or postrow.S_POST_REPORTED -->
-			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}" data-ajax="post_approve">
+			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}" data-ajax="post_approve" data-refresh="true">
 				<p class="rules">
 					<!-- IF postrow.S_POST_UNAPPROVED -->
 						{UNAPPROVED_IMG} <strong>{L_POST_UNAPPROVED}</strong>
