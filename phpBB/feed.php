@@ -71,6 +71,40 @@ if ($feed === false)
 	trigger_error('NO_FEED');
 }
 
+$sql_array = array(
+				'SELECT'	=> 'a.*',
+				'FROM'		=> array(
+					ATTACHMENTS_TABLE	=>	'a'
+				),			    
+				'WHERE'		=> 'a.in_message = 0 ',
+				'ORDER_BY'	=> 'a.filetime DESC, a.post_msg_id ASC'
+			);
+
+if ($topic_id)
+{
+	$sql_array['WHERE'] .= 'AND a.topic_id = ' . $topic_id;
+}
+else if ($forum_id)
+{
+	$sql_array['LEFT_JOIN'] = array(
+									array(
+										'FROM'  => array(TOPICS_TABLE => 't'),
+										'ON'    => 'a.topic_id = t.topic_id'
+									)
+								);
+	$sql_array['WHERE'] .= 'AND t.forum_id = ' . $forum_id;
+}
+
+$sql = $db->sql_build_query('SELECT', $sql_array);
+$result = $db->sql_query($sql);
+
+// Set attachments in feed items
+while ($row = $db->sql_fetchrow($result))
+{
+	$attachments[$row['post_msg_id']][] = $row;
+}
+$db->sql_freeresult($result);
+
 // Open Feed
 $feed->open();
 
@@ -106,7 +140,7 @@ while ($row = $feed->get_item())
 		'title'			=> censor_text($title),
 		'category'		=> ($config['feed_item_statistics'] && !empty($row['forum_id'])) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
 		'category_name'	=> ($config['feed_item_statistics'] && isset($row['forum_name'])) ? $row['forum_name'] : '',
-		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], $row['post_id'], $row['post_attachment'])),
+		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], (($row['post_attachment']) ? $attachments[$row['post_id']] : null))),
 		'statistics'	=> '',
 	);
 
@@ -265,7 +299,7 @@ function feed_format_date($time)
 /**
 * Generate text content
 **/
-function feed_generate_content($content, $uid, $bitfield, $options, $forum_id, $post_id, $post_attachment)
+function feed_generate_content($content, $uid, $bitfield, $options, $forum_id, $post_attachments)
 {
 	global $user, $db, $config, $phpbb_root_path, $phpEx, $board_url;
 
@@ -315,22 +349,10 @@ function feed_generate_content($content, $uid, $bitfield, $options, $forum_id, $
 	$content	= preg_replace( '#<(script|iframe)([^[]+)\1>#siU', ' <strong>$1</strong> ', $content);
 
 	// Parse inline images to display with the feed
-	if ($post_attachment)
+	if ($post_attachments != null)
 	{
-		$sql = 'SELECT *
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE post_msg_id = ' . $post_id . '
-				AND in_message = 0
-			ORDER BY filetime DESC, post_msg_id ASC';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$attachments[$row['post_msg_id']][] = $row;
-		}
-		$db->sql_freeresult($result);
 		$update_count = array();
-		parse_attachments($forum_id, $content, $attachments[$post_id], $update_count);
+		parse_attachments($forum_id, $content, $post_attachments, $update_count);
 	}	
 
 	// Remove Comments from inline attachments [ia]
