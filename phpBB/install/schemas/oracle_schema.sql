@@ -881,7 +881,7 @@ CREATE TABLE phpbb_notification_types (
 	Table: 'phpbb_notifications'
 */
 CREATE TABLE phpbb_notifications (
-	notification_id number(8) NOT NULL,
+	notification_id number(10) NOT NULL,
 	item_type varchar2(255) DEFAULT '' ,
 	item_id number(8) DEFAULT '0' NOT NULL,
 	item_parent_id number(8) DEFAULT '0' NOT NULL,

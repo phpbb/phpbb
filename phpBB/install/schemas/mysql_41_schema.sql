@@ -460,7 +460,7 @@ CREATE TABLE phpbb_notification_types (
 
 # Table: 'phpbb_notifications'
 CREATE TABLE phpbb_notifications (
-	notification_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	notification_id int(10) UNSIGNED NOT NULL auto_increment,
 	item_type varchar(255) DEFAULT '' NOT NULL,
 	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	item_parent_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,

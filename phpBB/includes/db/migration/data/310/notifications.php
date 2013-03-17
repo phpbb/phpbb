@@ -32,7 +32,7 @@ class phpbb_db_migration_data_310_notifications extends phpbb_db_migration
 				),
 				$this->table_prefix . 'notifications'		=> array(
 					'COLUMNS'			=> array(
-						'notification_id'  				=> array('UINT', NULL, 'auto_increment'),
+						'notification_id'  				=> array('UINT:10', NULL, 'auto_increment'),
 						'item_type'			   			=> array('VCHAR:255', ''),
 						'item_id'		  				=> array('UINT', 0),
 						'item_parent_id'   				=> array('UINT', 0),

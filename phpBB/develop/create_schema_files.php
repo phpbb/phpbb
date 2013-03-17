@@ -1325,7 +1325,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_notifications'] = array(
 		'COLUMNS'			=> array(
-			'notification_id'				=> array('UINT', NULL, 'auto_increment'),
+			'notification_id'				=> array('UINT:10', NULL, 'auto_increment'),
 			'item_type'			   			=> array('VCHAR:255', ''),
 			'item_id'						=> array('UINT', 0),
 			'item_parent_id'				=> array('UINT', 0),
