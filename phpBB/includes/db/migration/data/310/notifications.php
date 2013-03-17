@@ -97,59 +97,74 @@ class phpbb_db_migration_data_310_notifications extends phpbb_db_migration
 
 	public function convert_notifications()
 	{
-		$convert_notifications = array(
-			array(
-				'check'			=> $this->config['allow_topic_notify'],
-				'item_type'		=> 'post',
-			),
-			array(
-				'check'			=> $this->config['allow_forum_notify'],
-				'item_type'		=> 'topic',
-			),
-			array(
-				'check'			=> $this->config['allow_privmsg'],
-				'item_type'		=> 'pm',
-			),
-		);
+		$insert_table = $this->table_prefix . 'user_notifications';
 
-		foreach ($convert_notifications as $convert_data)
+		$sql = 'SELECT user_id, user_notify_type, user_notify_pm
+			FROM ' . USERS_TABLE;
+		$result = $this->db->sql_query($sql);
+
+		$sql_insert_data = array();
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if ($convert_data['check'])
+			$notification_methods = array();
+
+			// In-board notification
+			$notification_methods[] = '';
+
+			if ($row['user_notify_type'] == NOTIFY_EMAIL || $row['user_notify_type'] == NOTIFY_BOTH)
 			{
-				$sql = 'SELECT user_id, user_notify_type
-					FROM ' . USERS_TABLE;
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					$this->sql_query('INSERT INTO ' . $this->table_prefix . 'user_notifications ' . $this->db->sql_build_array('INSERT', array(
-						'item_type'		=> $convert_data['item_type'],
-						'item_id'		=> 0,
-						'user_id'		=> $row['user_id'],
-						'method'		=> '',
-					)));
+				$notification_methods[] = 'email';
+			}
 
-					if ($row['user_notify_type'] == NOTIFY_EMAIL || $row['user_notify_type'] == NOTIFY_BOTH)
-					{
-						$this->sql_query('INSERT INTO ' . $this->table_prefix . 'user_notifications ' . $this->db->sql_build_array('INSERT', array(
-							'item_type'		=> $convert_data['item_type'],
-							'item_id'		=> 0,
-							'user_id'		=> $row['user_id'],
-							'method'		=> 'email',
-						)));
-					}
+			if ($row['user_notify_type'] == NOTIFY_IM || $row['user_notify_type'] == NOTIFY_BOTH)
+			{
+				$notification_methods[] = 'jabber';
+			}
 
-					if ($row['user_notify_type'] == NOTIFY_IM || $row['user_notify_type'] == NOTIFY_BOTH)
-					{
-						$this->sql_query('INSERT INTO ' . $this->table_prefix . 'user_notifications ' . $this->db->sql_build_array('INSERT', array(
-							'item_type'		=> $convert_data['item_type'],
-							'item_id'		=> 0,
-							'user_id'		=> $row['user_id'],
-							'method'		=> 'jabber',
-						)));
-					}
-				}
-				$this->db->sql_freeresult($result);
+			// Notifications for  posts
+			foreach (array('post', 'topic') as $item_type)
+			{
+				$sql_insert_data = $this->add_method_rows(
+					$sql_insert_data,
+					$item_type,
+					0,
+					$row['user_id'],
+					$notification_methods
+				);
+			}
+
+			if ($row['user_notify_pm'])
+			{
+				// Notifications for private messages
+				// User either gets all methods or no method
+				$sql_insert_data = $this->add_method_rows(
+					$sql_insert_data,
+					'pm',
+					0,
+					$row['user_id'],
+					$notification_methods
+				);
 			}
 		}
+		$this->db->sql_freeresult($result);
+
+		$db->sql_multi_insert($insert_table, $sql_insert_data);
+	}
+
+	protected function add_method_rows(array $sql_insert_data, $item_type, $item_id, $user_id, array $methods)
+	{
+		$row_base = array(
+			'item_type'		=> $item_type,
+			'item_id'		=> (int) $item_id,
+			'user_id'		=> (int) $user_id,
+		);
+
+		foreach ($methods as $method)
+		{
+			$row_base['method'] = $method;
+			$sql_insert_data[] = $row_base;
+		}
+
+		return $sql_insert_data;
 	}
 }
