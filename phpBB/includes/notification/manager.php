@@ -430,6 +430,13 @@ class phpbb_notification_manager
 			// Store the creation array in our new rows that will be inserted later
 			$new_rows[] = $notification->create_insert_array($data, $pre_create_data);
 
+			// Flush to DB if $new_rows is big enough.
+			if (sizeof($new_rows) > 500)
+			{
+				$this->db->sql_multi_insert($this->notifications_table, $new_rows);
+				$new_rows = array();
+			}
+
 			// Users are needed to send notifications
 			$user_ids = array_merge($user_ids, $notification->users_to_query());
 
@@ -448,8 +455,10 @@ class phpbb_notification_manager
 			}
 		}
 
-		// insert into the db
-		$this->db->sql_multi_insert($this->notifications_table, $new_rows);
+		if (!empty($new_rows))
+		{
+			$this->db->sql_multi_insert($this->notifications_table, $new_rows);
+		}
 
 		// We need to load all of the users to send notifications
 		$this->user_loader->load_users($user_ids);
