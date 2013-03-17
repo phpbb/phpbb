@@ -117,8 +117,7 @@ class phpbb_db_migration_data_310_notifications extends phpbb_db_migration
 			if ($convert_data['check'])
 			{
 				$sql = 'SELECT user_id, user_notify_type
-					FROM ' . USERS_TABLE . '
-						WHERE user_notify = 1';
+					FROM ' . USERS_TABLE;
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
