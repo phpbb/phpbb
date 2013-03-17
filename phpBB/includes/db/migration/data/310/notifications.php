@@ -145,10 +145,19 @@ class phpbb_db_migration_data_310_notifications extends phpbb_db_migration
 					$notification_methods
 				);
 			}
+
+			if (sizeof($sql_insert_data) > 500)
+			{
+				$db->sql_multi_insert($insert_table, $sql_insert_data);
+				$sql_insert_data = array();
+			}
 		}
 		$this->db->sql_freeresult($result);
 
-		$db->sql_multi_insert($insert_table, $sql_insert_data);
+		if (!empty($sql_insert_data))
+		{
+			$db->sql_multi_insert($insert_table, $sql_insert_data);
+		}
 	}
 
 	protected function add_method_rows(array $sql_insert_data, $item_type, $item_id, $user_id, array $methods)
