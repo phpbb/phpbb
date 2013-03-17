@@ -99,15 +99,15 @@ class phpbb_db_migration_data_310_notifications extends phpbb_db_migration
 	{
 		$convert_notifications = array(
 			array(
-				'check'			=> ($this->config['allow_topic_notify']),
+				'check'			=> $this->config['allow_topic_notify'],
 				'item_type'		=> 'post',
 			),
 			array(
-				'check'			=> ($this->config['allow_forum_notify']),
+				'check'			=> $this->config['allow_forum_notify'],
 				'item_type'		=> 'topic',
 			),
 			array(
-				'check'			=> ($this->config['allow_privmsg']),
+				'check'			=> $this->config['allow_privmsg'],
 				'item_type'		=> 'pm',
 			),
 		);
