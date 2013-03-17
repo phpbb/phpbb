@@ -107,10 +107,6 @@ class phpbb_db_migration_data_310_notifications extends phpbb_db_migration
 				'item_type'		=> 'topic',
 			),
 			array(
-				'check'			=> ($this->config['allow_bookmarks']),
-				'item_type'		=> 'bookmark',
-			),
-			array(
 				'check'			=> ($this->config['allow_privmsg']),
 				'item_type'		=> 'pm',
 			),
