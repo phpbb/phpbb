@@ -619,7 +619,7 @@ class phpbb_notification_manager
 	}
 
 	/**
-	* Get number of total/unread notifications of a specific user.
+	* Get number of total and unread notifications for a specific user.
 	*
 	* @param bool|int $user_id The user_id (bool false for current user)
 	*
@@ -629,30 +629,18 @@ class phpbb_notification_manager
 	{
 		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
-		// Get the total number of unread notifications
-		$sql = 'SELECT COUNT(n.notification_id) AS unread_count
-			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-			WHERE n.user_id = ' . (int) $user_id . '
-				AND n.notification_read = 0
-				AND nt.notification_type = n.item_type
-				AND nt.notification_type_enabled = 1';
-		$result = $this->db->sql_query($sql);
-		$unread_count = (int) $this->db->sql_fetchfield('unread_count', $result);
-		$this->db->sql_freeresult($result);
-
-		// Get the total number of notifications
-		$sql = 'SELECT COUNT(n.notification_id) AS total_count
+		$sql = 'SELECT SUM(n.notification_read) AS read_count, COUNT(n.notification_id) AS total_count
 			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
 			WHERE n.user_id = ' . (int) $user_id . '
 				AND nt.notification_type = n.item_type
 				AND nt.notification_type_enabled = 1';
 		$result = $this->db->sql_query($sql);
-		$total_count = (int) $this->db->sql_fetchfield('total_count', $result);
+		$row = array_map('intval', $this->db->sql_fetchrow($result));
 		$this->db->sql_freeresult($result);
 
 		return array(
-			'unread_count'		=> $unread_count,
-			'total_count'		=> $total_count,
+			'unread_count'	=> $row['total_count'] - $row['read_count'],
+			'total_count'	=> $row['total_count'],
 		);
 	}
 
