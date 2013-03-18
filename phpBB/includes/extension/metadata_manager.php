@@ -22,9 +22,7 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_extension_metadata_manager
 {
-	protected $phpEx;
 	protected $extension_manager;
-	protected $db;
 	protected $phpbb_root_path;
 	protected $template;
 	protected $ext_name;
@@ -34,17 +32,13 @@ class phpbb_extension_metadata_manager
 	/**
 	* Creates the metadata manager
 	*
-	* @param phpbb_db_driver $db A database connection
 	* @param string $extension_manager An instance of the phpbb extension manager
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
-	* @param string $phpEx php file extension
 	*/
-	public function __construct($ext_name, phpbb_db_driver $db, phpbb_extension_manager $extension_manager, $phpbb_root_path, $phpEx = 'php', phpbb_template $template, phpbb_config $config)
+	public function __construct($ext_name, phpbb_extension_manager $extension_manager, $phpbb_root_path, phpbb_template $template, phpbb_config $config)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->db = $db;
 		$this->config = $config;
-		$this->phpEx = $phpEx;
 		$this->template = $template;
 		$this->extension_manager = $extension_manager;
 		$this->ext_name = $ext_name;
