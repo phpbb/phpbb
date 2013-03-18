@@ -22,11 +22,6 @@ class phpbb_notification_test extends phpbb_database_test_case
 
 		global $phpbb_root_path, $phpEx;
 
-		if (!function_exists('set_var'))
-		{
-			include($phpbb_root_path . 'includes/functions.' . $phpEx);
-		}
-
 		include_once(__DIR__ . '/ext/test/notification/type/test.' . $phpEx);
 
 		$this->db = $this->new_dbal();
