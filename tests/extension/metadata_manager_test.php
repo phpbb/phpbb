@@ -422,12 +422,10 @@ class metadata_manager_test extends phpbb_database_test_case
 	{
 		return new phpbb_extension_metadata_manager_test(
 			$ext_name,
-			$this->db,
+			$this->config,
 			$this->extension_manager,
-			$this->phpbb_root_path,
-			$this->phpEx,
 			$this->template,
-			$this->config
+			$this->phpbb_root_path
 		);
 	}
 }

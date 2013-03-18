@@ -155,7 +155,7 @@ class phpbb_extension_manager
 	*/
 	public function create_extension_metadata_manager($name, phpbb_template $template)
 	{
-		return new phpbb_extension_metadata_manager($name, $this->db, $this, $this->phpbb_root_path, $this->php_ext, $template, $this->config);
+		return new phpbb_extension_metadata_manager($name, $this->config, $this, $template, $this->phpbb_root_path);
 	}
 
 	/**
