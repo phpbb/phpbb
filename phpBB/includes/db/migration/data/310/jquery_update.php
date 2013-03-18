@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_db_migration_data_310_dev_p2 extends phpbb_db_migration
+class phpbb_db_migration_data_310_jquery_update extends phpbb_db_migration
 {
 	public function effectively_installed()
 	{
