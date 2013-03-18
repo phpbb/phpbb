@@ -35,12 +35,13 @@ class phpbb_extension_metadata_manager
 	* @param string $extension_manager An instance of the phpbb extension manager
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	*/
-	public function __construct($ext_name, phpbb_extension_manager $extension_manager, $phpbb_root_path, phpbb_template $template, phpbb_config $config)
+	public function __construct($ext_name, phpbb_config $config, phpbb_extension_manager $extension_manager, phpbb_template $template, $phpbb_root_path)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
 		$this->config = $config;
-		$this->template = $template;
 		$this->extension_manager = $extension_manager;
+		$this->template = $template;
+		$this->phpbb_root_path = $phpbb_root_path;
+
 		$this->ext_name = $ext_name;
 		$this->metadata = array();
 		$this->metadata_file = '';
