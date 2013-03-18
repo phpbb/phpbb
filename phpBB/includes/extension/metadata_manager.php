@@ -22,18 +22,56 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_extension_metadata_manager
 {
+	/**
+	* phpBB Config instance
+	* @var phpbb_config
+	*/
+	protected $config;
+
+	/**
+	* phpBB Extension Manager
+	* @var phpbb_extension_manager
+	*/
 	protected $extension_manager;
-	protected $phpbb_root_path;
+
+	/**
+	* phpBB Template instance
+	* @var phpbb_template
+	*/
 	protected $template;
+
+	/**
+	* phpBB root path
+	* @var string
+	*/
+	protected $phpbb_root_path;
+
+	/**
+	* Name (including vendor) of the extension
+	* @var string
+	*/
 	protected $ext_name;
+
+	/**
+	* Metadata from the composer.json file
+	* @var array
+	*/
 	protected $metadata;
+
+	/**
+	* Link (including root path) to the metadata file
+	* @var string
+	*/
 	protected $metadata_file;
 
 	/**
 	* Creates the metadata manager
 	*
-	* @param string $extension_manager An instance of the phpbb extension manager
-	* @param string $phpbb_root_path Path to the phpbb includes directory.
+	* @param string				$ext_name			Name (including vendor) of the extension
+	* @param phpbb_config		$config				phpBB Config instance
+	* @param phpbb_extension_manager	$extension_manager An instance of the phpBBb extension manager
+	* @param phpbb_template		$template			phpBB Template instance
+	* @param string				$phpbb_root_path	Path to the phpbb includes directory.
 	*/
 	public function __construct($ext_name, phpbb_config $config, phpbb_extension_manager $extension_manager, phpbb_template $template, $phpbb_root_path)
 	{
