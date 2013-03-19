@@ -793,6 +793,7 @@ GO
 	Table: 'phpbb_notification_types'
 */
 CREATE TABLE [phpbb_notification_types] (
+	[notification_type_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[notification_type] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[notification_type_enabled] [int] DEFAULT (1) NOT NULL 
 ) ON [PRIMARY]
@@ -801,8 +802,11 @@ GO
 ALTER TABLE [phpbb_notification_types] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_notification_types] PRIMARY KEY  CLUSTERED 
 	(
-		[notification_type]
+		[notification_type_id]
 	)  ON [PRIMARY] 
+GO
+
+CREATE  UNIQUE  INDEX [type] ON [phpbb_notification_types]([notification_type]) ON [PRIMARY]
 GO
 
 

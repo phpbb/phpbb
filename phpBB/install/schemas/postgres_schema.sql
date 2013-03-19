@@ -623,12 +623,16 @@ CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id
 /*
 	Table: 'phpbb_notification_types'
 */
+CREATE SEQUENCE phpbb_notification_types_seq;
+
 CREATE TABLE phpbb_notification_types (
+	notification_type_id INT2 DEFAULT nextval('phpbb_notification_types_seq'),
 	notification_type varchar(255) DEFAULT '' NOT NULL,
 	notification_type_enabled INT2 DEFAULT '1' NOT NULL CHECK (notification_type_enabled >= 0),
-	PRIMARY KEY (notification_type)
+	PRIMARY KEY (notification_type_id)
 );
 
+CREATE UNIQUE INDEX phpbb_notification_types_type ON phpbb_notification_types (notification_type);
 
 /*
 	Table: 'phpbb_notifications'

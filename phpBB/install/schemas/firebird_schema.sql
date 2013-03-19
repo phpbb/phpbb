@@ -642,11 +642,24 @@ END;;
 
 # Table: 'phpbb_notification_types'
 CREATE TABLE phpbb_notification_types (
+	notification_type_id INTEGER NOT NULL,
 	notification_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	notification_type_enabled INTEGER DEFAULT 1 NOT NULL
 );;
 
-ALTER TABLE phpbb_notification_types ADD PRIMARY KEY (notification_type);;
+ALTER TABLE phpbb_notification_types ADD PRIMARY KEY (notification_type_id);;
+
+CREATE UNIQUE INDEX phpbb_notification_types_type ON phpbb_notification_types(notification_type);;
+
+CREATE GENERATOR phpbb_notification_types_gen;;
+SET GENERATOR phpbb_notification_types_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_notification_types FOR phpbb_notification_types
+BEFORE INSERT
+AS
+BEGIN
+	NEW.notification_type_id = GEN_ID(phpbb_notification_types_gen, 1);
+END;;
 
 
 # Table: 'phpbb_notifications'
