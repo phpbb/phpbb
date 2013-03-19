@@ -794,7 +794,7 @@ GO
 */
 CREATE TABLE [phpbb_notification_types] (
 	[notification_type_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[notification_type] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[notification_type_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[notification_type_enabled] [int] DEFAULT (1) NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -806,7 +806,7 @@ ALTER TABLE [phpbb_notification_types] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-CREATE  UNIQUE  INDEX [type] ON [phpbb_notification_types]([notification_type]) ON [PRIMARY]
+CREATE  UNIQUE  INDEX [type] ON [phpbb_notification_types]([notification_type_name]) ON [PRIMARY]
 GO
 
 

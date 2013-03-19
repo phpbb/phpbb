@@ -453,10 +453,10 @@ CREATE TABLE phpbb_modules (
 # Table: 'phpbb_notification_types'
 CREATE TABLE phpbb_notification_types (
 	notification_type_id smallint(4) UNSIGNED NOT NULL auto_increment,
-	notification_type varbinary(255) DEFAULT '' NOT NULL,
+	notification_type_name varbinary(255) DEFAULT '' NOT NULL,
 	notification_type_enabled tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (notification_type_id),
-	UNIQUE type (notification_type)
+	UNIQUE type (notification_type_name)
 );
 
 

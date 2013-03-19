@@ -145,7 +145,7 @@ class phpbb_notification_manager
 				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
 				WHERE n.user_id = ' . (int) $options['user_id'] . '
 					AND n.notification_read = 0
-					AND nt.notification_type = n.item_type
+					AND nt.notification_type_name = n.item_type
 					AND nt.notification_type_enabled = 1';
 			$result = $this->db->sql_query($sql);
 			$unread_count = (int) $this->db->sql_fetchfield('unread_count', $result);
@@ -158,7 +158,7 @@ class phpbb_notification_manager
 			$sql = 'SELECT COUNT(n.notification_id) AS total_count
 				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
 				WHERE n.user_id = ' . (int) $options['user_id'] . '
-					AND nt.notification_type = n.item_type
+					AND nt.notification_type_name = n.item_type
 					AND nt.notification_type_enabled = 1';
 			$result = $this->db->sql_query($sql);
 			$total_count = (int) $this->db->sql_fetchfield('total_count', $result);
@@ -174,7 +174,7 @@ class phpbb_notification_manager
 				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
 				WHERE n.user_id = ' . (int) $options['user_id'] .
 					(($options['notification_id']) ? ((is_array($options['notification_id'])) ? ' AND ' . $this->db->sql_in_set('n.notification_id', $options['notification_id']) : ' AND n.notification_id = ' . (int) $options['notification_id']) : '') . '
-					AND nt.notification_type = n.item_type
+					AND nt.notification_type_name = n.item_type
 					AND nt.notification_type_enabled = 1
 				ORDER BY n.' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
 			$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
@@ -193,7 +193,7 @@ class phpbb_notification_manager
 					WHERE n.user_id = ' . (int) $options['user_id'] . '
 						AND n.notification_read = 0
 						AND ' . $this->db->sql_in_set('n.notification_id', array_keys($rowset), true) . '
-						AND nt.notification_type = n.item_type
+						AND nt.notification_type_name = n.item_type
 						AND nt.notification_type_enabled = 1
 					ORDER BY n.' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
 				$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
@@ -368,16 +368,16 @@ class phpbb_notification_manager
 			return;
 		}
 
-		$sql = 'SELECT notification_type
+		$sql = 'SELECT notification_type_name
 			FROM ' . $this->notification_types_table . "
-			WHERE notification_type = '" . $this->db->sql_escape($item_type) . "'";
+			WHERE notification_type_name = '" . $this->db->sql_escape($item_type) . "'";
 		$result = $this->db->sql_query($sql);
 
 		if ($this->db->sql_fetchrow($result) === false)
 		{
 			// Does not exist in the database, must add the item type
 			$sql = 'INSERT INTO ' . $this->notification_types_table . ' ' . $this->db->sql_build_array('INSERT', array(
-				'notification_type'				=> $item_type,
+				'notification_type_name'		=> $item_type,
 				'notification_type_enabled'		=> 1,
 			));
 			$this->db->sql_query($sql);
@@ -400,7 +400,7 @@ class phpbb_notification_manager
 			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . " nt
 			WHERE n.item_type = '" . $this->db->sql_escape($item_type) . "'
 				AND n.item_id = " . (int) $item_id . '
-				AND nt.notification_type = n.item_type
+				AND nt.notification_type_name = n.item_type
 				AND nt.notification_type_enabled = 1';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -760,7 +760,7 @@ class phpbb_notification_manager
 	{
 		$sql = 'UPDATE ' . $this->notification_types_table . "
 			SET notification_type_enabled = 0
-			WHERE notification_type = '" . $this->db->sql_escape($item_type) . "'";
+			WHERE notification_type_name = '" . $this->db->sql_escape($item_type) . "'";
 		$this->db->sql_query($sql);
 	}
 
@@ -779,7 +779,7 @@ class phpbb_notification_manager
 		$this->db->sql_query($sql);
 
 		$sql = 'DELETE FROM ' . $this->notification_types_table . "
-			WHERE notification_type = '" . $this->db->sql_escape($item_type) . "'";
+			WHERE notification_type_name = '" . $this->db->sql_escape($item_type) . "'";
 		$this->db->sql_query($sql);
 	}
 
@@ -796,7 +796,7 @@ class phpbb_notification_manager
 	{
 		$sql = 'UPDATE ' . $this->notification_types_table . "
 			SET notification_type_enabled = 1
-			WHERE notification_type = '" . $this->db->sql_escape($item_type) . "'";
+			WHERE notification_type_name = '" . $this->db->sql_escape($item_type) . "'";
 		$this->db->sql_query($sql);
 	}
 

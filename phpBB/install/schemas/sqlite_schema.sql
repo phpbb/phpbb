@@ -440,11 +440,11 @@ CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id
 # Table: 'phpbb_notification_types'
 CREATE TABLE phpbb_notification_types (
 	notification_type_id INTEGER PRIMARY KEY NOT NULL ,
-	notification_type varchar(255) NOT NULL DEFAULT '',
+	notification_type_name varchar(255) NOT NULL DEFAULT '',
 	notification_type_enabled INTEGER UNSIGNED NOT NULL DEFAULT '1'
 );
 
-CREATE UNIQUE INDEX phpbb_notification_types_type ON phpbb_notification_types (notification_type);
+CREATE UNIQUE INDEX phpbb_notification_types_type ON phpbb_notification_types (notification_type_name);
 
 # Table: 'phpbb_notifications'
 CREATE TABLE phpbb_notifications (

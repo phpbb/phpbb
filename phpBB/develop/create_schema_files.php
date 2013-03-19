@@ -1318,12 +1318,12 @@ function get_schema_struct()
 	$schema_data['phpbb_notification_types'] = array(
 		'COLUMNS'			=> array(
 			'notification_type_id'		=> array('USINT', NULL, 'auto_increment'),
-			'notification_type'			=> array('VCHAR:255', ''),
+			'notification_type_name'	=> array('VCHAR:255', ''),
 			'notification_type_enabled'	=> array('BOOL', 1),
 		),
 		'PRIMARY_KEY'		=> array('notification_type_id'),
 		'KEYS'				=> array(
-			'type'			=> array('UNIQUE', array('notification_type')),
+			'type'			=> array('UNIQUE', array('notification_type_name')),
 		),
 	);
 

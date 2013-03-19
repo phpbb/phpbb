@@ -627,12 +627,12 @@ CREATE SEQUENCE phpbb_notification_types_seq;
 
 CREATE TABLE phpbb_notification_types (
 	notification_type_id INT2 DEFAULT nextval('phpbb_notification_types_seq'),
-	notification_type varchar(255) DEFAULT '' NOT NULL,
+	notification_type_name varchar(255) DEFAULT '' NOT NULL,
 	notification_type_enabled INT2 DEFAULT '1' NOT NULL CHECK (notification_type_enabled >= 0),
 	PRIMARY KEY (notification_type_id)
 );
 
-CREATE UNIQUE INDEX phpbb_notification_types_type ON phpbb_notification_types (notification_type);
+CREATE UNIQUE INDEX phpbb_notification_types_type ON phpbb_notification_types (notification_type_name);
 
 /*
 	Table: 'phpbb_notifications'

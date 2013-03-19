@@ -106,7 +106,7 @@ class phpbb_notification_type_bookmark extends phpbb_notification_type_post
 			WHERE n.item_type = '" . $this->get_type() . "'
 				AND n.item_parent_id = " . (int) self::get_item_parent_id($post) . '
 				AND n.notification_read = 0
-				AND nt.notification_type = n.item_type
+				AND nt.notification_type_name = n.item_type
 				AND nt.notification_type_enabled = 1';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))

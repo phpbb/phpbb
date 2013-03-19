@@ -871,10 +871,10 @@ END;
 */
 CREATE TABLE phpbb_notification_types (
 	notification_type_id number(4) NOT NULL,
-	notification_type varchar2(255) DEFAULT '' ,
+	notification_type_name varchar2(255) DEFAULT '' ,
 	notification_type_enabled number(1) DEFAULT '1' NOT NULL,
 	CONSTRAINT pk_phpbb_notification_types PRIMARY KEY (notification_type_id),
-	CONSTRAINT u_phpbb_type UNIQUE (notification_type)
+	CONSTRAINT u_phpbb_type UNIQUE (notification_type_name)
 )
 /
 
