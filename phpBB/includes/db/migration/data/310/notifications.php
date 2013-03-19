@@ -28,7 +28,7 @@ class phpbb_db_migration_data_310_notifications extends phpbb_db_migration
 						'notification_type'			=> array('VCHAR:255', ''),
 						'notification_type_enabled'	=> array('BOOL', 1),
 					),
-					'PRIMARY_KEY'		=> array('notification_type', 'notification_type_enabled'),
+					'PRIMARY_KEY'		=> array('notification_type'),
 				),
 				$this->table_prefix . 'notifications'		=> array(
 					'COLUMNS'			=> array(

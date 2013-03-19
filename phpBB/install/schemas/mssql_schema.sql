@@ -801,8 +801,7 @@ GO
 ALTER TABLE [phpbb_notification_types] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_notification_types] PRIMARY KEY  CLUSTERED 
 	(
-		[notification_type],
-		[notification_type_enabled]
+		[notification_type]
 	)  ON [PRIMARY] 
 GO
 

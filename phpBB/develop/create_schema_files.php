@@ -1320,7 +1320,7 @@ function get_schema_struct()
 			'notification_type'			=> array('VCHAR:255', ''),
 			'notification_type_enabled'	=> array('BOOL', 1),
 		),
-		'PRIMARY_KEY'		=> array('notification_type', 'notification_type_enabled'),
+		'PRIMARY_KEY'		=> array('notification_type'),
 	);
 
 	$schema_data['phpbb_notifications'] = array(

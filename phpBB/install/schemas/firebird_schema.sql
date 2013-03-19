@@ -646,7 +646,7 @@ CREATE TABLE phpbb_notification_types (
 	notification_type_enabled INTEGER DEFAULT 1 NOT NULL
 );;
 
-ALTER TABLE phpbb_notification_types ADD PRIMARY KEY (notification_type, notification_type_enabled);;
+ALTER TABLE phpbb_notification_types ADD PRIMARY KEY (notification_type);;
 
 
 # Table: 'phpbb_notifications'

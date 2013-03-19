@@ -454,7 +454,7 @@ CREATE TABLE phpbb_modules (
 CREATE TABLE phpbb_notification_types (
 	notification_type varchar(255) DEFAULT '' NOT NULL,
 	notification_type_enabled tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	PRIMARY KEY (notification_type, notification_type_enabled)
+	PRIMARY KEY (notification_type)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

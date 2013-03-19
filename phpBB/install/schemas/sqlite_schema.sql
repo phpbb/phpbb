@@ -441,7 +441,7 @@ CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id
 CREATE TABLE phpbb_notification_types (
 	notification_type varchar(255) NOT NULL DEFAULT '',
 	notification_type_enabled INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	PRIMARY KEY (notification_type, notification_type_enabled)
+	PRIMARY KEY (notification_type)
 );
 
 
