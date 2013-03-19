@@ -815,7 +815,7 @@ GO
 */
 CREATE TABLE [phpbb_notifications] (
 	[notification_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[item_type] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[notification_type_id] [int] DEFAULT (0) NOT NULL ,
 	[item_id] [int] DEFAULT (0) NOT NULL ,
 	[item_parent_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
@@ -832,7 +832,7 @@ ALTER TABLE [phpbb_notifications] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-CREATE  INDEX [item_ident] ON [phpbb_notifications]([item_type], [item_id]) ON [PRIMARY]
+CREATE  INDEX [item_ident] ON [phpbb_notifications]([notification_type_id], [item_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [user] ON [phpbb_notifications]([user_id], [notification_read]) ON [PRIMARY]
@@ -1591,7 +1591,7 @@ GO
 	Table: 'phpbb_user_notifications'
 */
 CREATE TABLE [phpbb_user_notifications] (
-	[item_type] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[notification_type_id] [int] DEFAULT (0) NOT NULL ,
 	[item_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[method] [varchar] (255) DEFAULT ('') NOT NULL ,

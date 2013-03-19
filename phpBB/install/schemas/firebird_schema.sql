@@ -665,7 +665,7 @@ END;;
 # Table: 'phpbb_notifications'
 CREATE TABLE phpbb_notifications (
 	notification_id INTEGER NOT NULL,
-	item_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notification_type_id INTEGER DEFAULT 0 NOT NULL,
 	item_id INTEGER DEFAULT 0 NOT NULL,
 	item_parent_id INTEGER DEFAULT 0 NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
@@ -676,7 +676,7 @@ CREATE TABLE phpbb_notifications (
 
 ALTER TABLE phpbb_notifications ADD PRIMARY KEY (notification_id);;
 
-CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications(item_type, item_id);;
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications(notification_type_id, item_id);;
 CREATE INDEX phpbb_notifications_user ON phpbb_notifications(user_id, notification_read);;
 
 CREATE GENERATOR phpbb_notifications_gen;;
@@ -1303,7 +1303,7 @@ CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch(notify_status)
 
 # Table: 'phpbb_user_notifications'
 CREATE TABLE phpbb_user_notifications (
-	item_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notification_type_id INTEGER DEFAULT 0 NOT NULL,
 	item_id INTEGER DEFAULT 0 NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
 	method VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,

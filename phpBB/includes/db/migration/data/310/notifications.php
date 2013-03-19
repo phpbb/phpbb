@@ -52,12 +52,12 @@ class phpbb_db_migration_data_310_notifications extends phpbb_db_migration
 					),
 				),
 				$this->table_prefix . 'user_notifications'	=> array(
-					'COLUMNS'			=> array(
-						'item_type'			=> array('VCHAR:255', ''),
-						'item_id'			=> array('UINT', 0),
-						'user_id'			=> array('UINT', 0),
-						'method'			=> array('VCHAR:255', ''),
-						'notify'			=> array('BOOL', 1),
+					'COLUMNS'		=> array(
+						'notification_type_id'		=> array('USINT', 0),
+						'item_id'					=> array('UINT', 0),
+						'user_id'					=> array('UINT', 0),
+						'method'					=> array('VCHAR:255', ''),
+						'notify'					=> array('BOOL', 1),
 					),
 				),
 			),

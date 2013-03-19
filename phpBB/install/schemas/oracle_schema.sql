@@ -900,7 +900,7 @@ END;
 */
 CREATE TABLE phpbb_notifications (
 	notification_id number(10) NOT NULL,
-	item_type varchar2(255) DEFAULT '' ,
+	notification_type_id number(4) DEFAULT '0' NOT NULL,
 	item_id number(8) DEFAULT '0' NOT NULL,
 	item_parent_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
@@ -911,7 +911,7 @@ CREATE TABLE phpbb_notifications (
 )
 /
 
-CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id)
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (notification_type_id, item_id)
 /
 CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read)
 /
@@ -1720,7 +1720,7 @@ CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status
 	Table: 'phpbb_user_notifications'
 */
 CREATE TABLE phpbb_user_notifications (
-	item_type varchar2(255) DEFAULT '' ,
+	notification_type_id number(4) DEFAULT '0' NOT NULL,
 	item_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
 	method varchar2(255) DEFAULT '' ,
