@@ -88,7 +88,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		$this->assertContains('Details', $this->client->getResponse()->getContent());
 	}
 
-	public function test_permissions_tab()
+	public function test_extensions_details()
 	{
 		$crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=foo%2Fbar&sid=' . $this->sid);
 		$this->assert_response_success();
@@ -100,5 +100,14 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		// Details should be html escaped
 		$this->assertContains($this->lang('PHP_VERSION'), $this->client->getResponse()->getContent());
 		$this->assertContains('&gt;=5.3', $this->client->getResponse()->getContent());
+	}
+
+	public function test_extensions_details_notexists()
+	{
+		$crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=not%2Fexists&sid=' . $this->sid);
+		$this->assert_response_success();
+
+		// Error message because the files do not exist
+		$this->assertContains('The required file does not exist:', $this->client->getResponse()->getContent());
 	}
 }
