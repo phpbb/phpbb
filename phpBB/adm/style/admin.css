@@ -701,6 +701,10 @@ input, textarea {
 	background-color: #E3DFD8;
 }
 
+input.inputfile {
+	cursor: pointer;
+}
+
 .rtl input, .rtl textarea {
 	border-left: 1px solid #D5D5C8;
 	border-top: 1px solid #AFAEAA;
