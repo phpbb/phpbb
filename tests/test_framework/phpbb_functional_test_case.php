@@ -422,6 +422,67 @@ class phpbb_functional_test_case extends phpbb_test_case
 	}
 
 	/**
+	* Helper for submitting posts
+	* 
+	* @param string $posting_url
+	* @param string $posting_contains
+	* @param array $form_data
+	* @return array post_id, topic_id
+	*/
+	protected function submit_post($posting_url, $posting_contains, $form_data)
+	{
+		$this->add_lang('posting');
+
+		$crawler = $this->request('GET', $posting_url);
+		$this->assert_response_success();
+		$this->assertContains($this->lang($posting_contains), $crawler->filter('html')->text());
+
+		$hidden_fields = array(
+			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
+				return array('name' => $node->getAttribute('name'), 'value' => $node->getAttribute('value'));
+			}),
+		);
+
+		foreach ($hidden_fields as $fields)
+		{
+			foreach($fields as $field)
+			{
+				$form_data[$field['name']] = $field['value'];
+			}
+		}
+
+		// Bypass time restriction that said that if the lastclick time (i.e. time when the form was opened)
+		// is not at least 2 seconds before submission, cancel the form
+		$form_data['lastclick'] = 0;
+
+		// I use a request because the form submission method does not allow you to send data that is not
+		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
+		// Instead, I send it as a request with the submit button "post" set to true.
+		$crawler = $this->client->request('POST', $posting_url, $form_data);
+		$this->assert_response_success();
+		// I'm using hardcoded language here because I need to match one of
+		// POST_EDITED and POST_STORED, and both contain the word
+		// 'successfully', but that word is not in its own language string
+		// I could not find a way to make it match one or the other, so I had
+		// to do this. It's okay because tests are run in English so there
+		// won't be an issue about translations.
+		$this->assertContains('successfully', $crawler->filter('html')->text());
+
+		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
+
+		$matches = $topic_id = $post_id = false;
+		preg_match_all('#&t=([0-9]+)(&p=([0-9]+))?#', $url, $matches);
+		
+		$topic_id = (int) (isset($matches[1][0])) ? $matches[1][0] : 0;
+		$post_id = (int) (isset($matches[3][0])) ? $matches[3][0] : 0;
+
+		return array(
+			'topic_id'	=> $topic_id,
+			'post_id'	=> $post_id,
+		);
+	}
+
+	/**
 	 * assertContains for language strings
 	 *
 	 * @param string $needle Search string
