@@ -178,7 +178,7 @@
 
 			<!-- IF postrow.S_DISPLAY_NOTICE --><div class="rules">{L_DOWNLOAD_NOTICE}</div><!-- ENDIF -->
 			<!-- IF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
-				<div class="notice">{postrow.EDITED_MESSAGE}<!-- IF postrow.S_VIEW_POST_REVISIONS --> <a href="{postrow.U_VIEW_POST_REVISIONS}" data-ajax="revisions.viewtopic_view">{L_EDITED_REVISIONS_TOTAL}</a><!-- ENDIF -->
+				<div class="notice">{postrow.EDITED_MESSAGE}<!-- IF postrow.S_VIEW_POST_REVISIONS --> <a href="{postrow.U_VIEW_POST_REVISIONS}" class="revision_toggle">{L_EDITED_REVISIONS_TOTAL}</a><!-- ENDIF -->
 					<!-- IF postrow.EDIT_REASON --><br /><strong>{L_REASON}{L_COLON}</strong> <em>{postrow.EDIT_REASON}</em><!-- ENDIF -->
 				</div>
 			<!-- ENDIF -->
@@ -242,7 +242,7 @@
 
 <!-- IF postrow.S_VIEW_POST_REVISIONS -->
 	<div id="p{postrow.POST_ID}_revisions" class="no-display">
-		<h3>{L_LAST_FIVE_REVISIONS} (<a href="{postrow.U_VIEW_POST_REVISIONS}">{L_EDITED_REVISIONS_TOTAL}</a>)</h3>
+		<h3>{L_LAST_FIVE_REVISIONS} (<a href="{postrow.U_VIEW_POST_REVISIONS}">{L_VIEW_ALL}</a>)</h3>
 		<!-- INCLUDE revisions_comparison_list.html -->
 	</div>
 <!-- ENDIF -->

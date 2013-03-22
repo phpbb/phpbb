@@ -106,6 +106,7 @@ $lang = array_merge($lang, array(
 
 	'UNLOCK_TOPIC'			=> 'Unlock topic',
 
+	'VIEW_ALL'				=> 'View all',
 	'VIEW_INFO'				=> 'Post details',
 	'VIEW_NEXT_TOPIC'		=> 'Next topic',
 	'VIEW_PREVIOUS_TOPIC'	=> 'Previous topic',

@@ -188,10 +188,12 @@ phpbb.addAjaxCallback('revisions.delete', function(res) {
 	}
 });
 
-phpbb.addAjaxCallback('revisions.viewtopic_view', function() {
+$('.revision_toggle').click(function() {
 	var id;
 	id = $(this).parents('.post').attr('id');
 	$('#' + id + '_revisions').slideToggle();
+	// Don't follow the link
+	return false;
 });
 
 
