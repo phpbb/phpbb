@@ -11,7 +11,7 @@ class phpbb_db_migration_data_310_jquery_update extends phpbb_db_migration
 {
 	public function effectively_installed()
 	{
-		return !isset($this->config['load_jquery_url']);
+		return $this->config['load_jquery_url'] !== '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js';
 	}
 
 	static public function depends_on()
