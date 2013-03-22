@@ -196,12 +196,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);
 
 		$data = array_merge($data, array(
-			'email_enable'		=> false,
-			'smtp_delivery'		=> false,
-			'smtp_host'		=> '',
-			'smtp_auth'		=> '',
-			'smtp_user'		=> '',
-			'smtp_pass'		=> '',
+			'email_enable'		=> true,
+			'smtp_delivery'		=> true,
+			'smtp_host'			=> 'nxdomain.phpbb.com',
+			'smtp_auth'			=> '',
+			'smtp_user'			=> 'nxuser',
+			'smtp_pass'			=> 'nxpass',
 			'cookie_secure'		=> false,
 			'force_server_vars'	=> false,
 			'server_protocol'	=> $parseURL['scheme'] . '://',
