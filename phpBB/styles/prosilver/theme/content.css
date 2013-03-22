@@ -61,6 +61,7 @@ ul.revisionlist li {
 	display: block;
 	list-style-type: none;
 	margin: 0;
+	font-size: 1.2em;
 }
 
 ul.revisionlist dl {
@@ -110,7 +111,7 @@ dd.revisionreason {
 
 div.revisions_block {
 	display: block;
-	width: 75%;
+	width: auto;
 	margin: 0 auto;
 	margin-bottom: 30px;
 }
@@ -162,7 +163,7 @@ ul.revisions.current {
 
 ul.revisions li {
 	display: inline-block;
-	padding: 10px;
+	padding: 5px 10px;
 }
 
 ul.revisions li.revision_user {
