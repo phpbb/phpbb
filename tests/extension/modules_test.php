@@ -7,7 +7,10 @@
 *
 */
 
-require_once dirname(__FILE__) . './../../phpBB/includes/acp/acp_modules.php';
+require_once dirname(__FILE__) . '/ext/foo/acp/a_info.php';
+require_once dirname(__FILE__) . '/ext/foo/mcp/a_info.php';
+require_once dirname(__FILE__) . '/ext/foo/acp/fail_info.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/acp/acp_modules.php';
 
 class phpbb_extension_modules_test extends phpbb_test_case
 {
@@ -39,12 +42,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 
 	public function test_get_module_infos()
 	{
-		// the modules' info files needs to be included before the test for
-		// some reason ...
-		require_once dirname(__FILE__) . '/ext/foo/acp/a_info.php';
-		require_once dirname(__FILE__) . '/ext/foo/mcp/a_info.php';
-		require_once dirname(__FILE__) . '/ext/foo/acp/fail_info.php';
-
 		$this->acp_modules->module_class = 'acp';
 		$acp_modules = $this->acp_modules->get_module_infos();
 		$this->assertEquals(array(
