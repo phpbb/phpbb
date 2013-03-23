@@ -239,7 +239,7 @@ class phpbb_controller_post_revisions
 			'POSTER_ID'			=> $post_data['poster_id'],
 
 			'L_VIEWING_POST_REVISION_EXPLAIN'	=> $this->user->lang('VIEWING_POST_REVISION_EXPLAIN',
-				$revision->get_username() . $revision->get_avatar(20, 20),
+				$revision->get_avatar(20, 20) . ' ' . $revision->get_username(),
 				$this->user->format_date($revision->get_time())
 			),
 
