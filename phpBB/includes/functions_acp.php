@@ -363,7 +363,9 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 
 			if ($tpl_type[0] == 'select')
 			{
-				$tpl = '<select id="' . $key . '" name="' . $name . '">' . $return . '</select>';
+				$size = (isset($tpl_type[1])) ? (int) $tpl_type[1] : 1;
+
+				$tpl = '<select id="' . $key . '" name="' . $name . '"' . (($size) ? ' size="' . $size . '"' : '') . '>' . $return . '</select>';
 			}
 			else
 			{
