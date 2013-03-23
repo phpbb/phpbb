@@ -53,34 +53,12 @@ class phpbb_notification_submit_post_notifications_test extends phpbb_database_t
 				$this->greaterThan(0))
 			->will($this->returnValueMap(array(
 				array(
-					array(
-						0 => '3',
-						1 => '4',
-						2 => '5',
-						3 => '6',
-						5 => '7',
-						6 => '8',
-					),
+					array('3', '4', '5', '6', '7', '8',),
 					'f_read',
 					1,
 					array(
 						1 => array(
 							'f_read' => array(3, 5, 6, 7, 8,),
-						),
-					),
-				),
-				array(
-					array(
-						0 => '3',
-						1 => '4',
-						2 => '5',
-						3 => '6',
-					),
-					'f_read',
-					1,
-					array(
-						1 => array(
-							'f_read' => array(3, 5, 6,),
 						),
 					),
 				),
