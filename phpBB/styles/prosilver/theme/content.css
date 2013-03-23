@@ -90,29 +90,29 @@ ul.revisionlist dd {
 
 dd.revisionview {
 	text-align: center;
-	line-height: 2.2em;
-	font-size: 1.2em;
+	line-height: 1.0em;
+	font-size: 1.0em;
 }
 
 dd.revisionuser {
 	width: 10%;
 	text-align: center;
-	line-height: 2.2em;
-	font-size: 1.2em;
+	line-height: 1.0em;
+	font-size: 1.0em;
 }
 
 dd.revisiondate {
 	width: 20%;
 	text-align: center;
-	line-height: 2.2em;
-	font-size: 1.2em;
+	line-height: 1.0em;
+	font-size: 1.0em;
 }
 
 dd.revisionreason {
 	width: 35%;
 	text-align: center;
-	line-height: 2.2em;
-	font-size: 1.2em;
+	line-height: 1.0em;
+	font-size: 1.0em;
 }
 
 div.revisions_block {
