@@ -85,7 +85,7 @@ ul.revisionlist dd {
 	display: block;
 	float: left;
 	border-left: 1px solid transparent;
-	padding: 5px;
+	padding: 5px 10px;
 }
 
 dd.revisionview {
@@ -189,12 +189,11 @@ ul.revisions li.revision_date {
 }
 
 ul.revisions li.revision_reason {
-	width: 35%;
+	width: 30%;
 }
 
 ul.revisions li.revision_options {
 	text-align: right;
-	width: 15%;
 }
 
 div.revision_action_success {
