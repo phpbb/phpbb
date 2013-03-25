@@ -65,6 +65,9 @@ class phpbb_db_sql_insert_buffer
 	{
 		if (!$this->db_supports_multi_insert)
 		{
+			// The database does not support multi inserts.
+			// Pass data on to sql_multi_insert right away which will
+			// immediately send an INSERT INTO query to the database.
 			$this->db->sql_multi_insert($this->table_name, array($row));
 		}
 
