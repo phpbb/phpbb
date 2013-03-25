@@ -25,12 +25,14 @@
 		<column>user_id</column>
 		<column>item_id</column>
 		<column>item_parent_id</column>
+		<column>notification_read</column>
 		<column>notification_data</column>
 		<row>
 			<value>post</value>
 			<value>5</value>
 			<value>1</value>
 			<value>1</value>
+			<value>0</value>
 			<value></value>
 		</row>
 		<row>
@@ -38,6 +40,7 @@
 			<value>5</value>
 			<value>1</value>
 			<value>1</value>
+			<value>0</value>
 			<value></value>
 		</row>
 		<row>
@@ -45,10 +48,41 @@
 			<value>8</value>
 			<value>1</value>
 			<value>1</value>
+			<value>0</value>
 			<value></value>
 		</row>
 	</table>
+	<table name="phpbb_notification_types">
+		<column>notification_type</column>
+		<column>notification_type_enabled</column>
+		<row>
+			<value>post</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>quote</value>
+			<value>1</value>
+		</row>
+	</table>
 	<table name="phpbb_posts">
+		<column>post_id</column>
+		<column>topic_id</column>
+		<column>forum_id</column>
+		<column>post_text</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_topics">
+		<column>topic_id</column>
+		<column>forum_id</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+		</row>
 	</table>
 	<table name="phpbb_topics_watch">
 		<column>topic_id</column>

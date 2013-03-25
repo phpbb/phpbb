@@ -92,10 +92,10 @@ class phpbb_notification_submit_post_type_post_test extends phpbb_notification_s
 			ORDER BY user_id ASC, item_id ASC";
 		$result = $this->db->sql_query($sql);
 		$this->assertEquals(array(
-			array('user_id' => 3, 'item_id' => 1, 'item_parent_id' => 1),
+			array('user_id' => 3, 'item_id' => 2, 'item_parent_id' => 1),
 			array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
-			array('user_id' => 6, 'item_id' => 1, 'item_parent_id' => 1),
-			array('user_id' => 7, 'item_id' => 1, 'item_parent_id' => 1),
+			array('user_id' => 6, 'item_id' => 2, 'item_parent_id' => 1),
+			array('user_id' => 7, 'item_id' => 2, 'item_parent_id' => 1),
 			array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
 		), $this->db->sql_fetchrowset($result));
 		$this->db->sql_freeresult($result);
