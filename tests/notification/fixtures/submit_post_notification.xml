@@ -34,6 +34,13 @@
 			<value></value>
 		</row>
 		<row>
+			<value>quote</value>
+			<value>5</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+		</row>
+		<row>
 			<value>post</value>
 			<value>8</value>
 			<value>1</value>
@@ -73,6 +80,62 @@
 			<value>0</value>
 		</row>
 	</table>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username_clean</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<column>user_occ</column>
+		<column>user_interests</column>
+		<row>
+			<value>2</value>
+			<value>poster</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>test</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>unauthorized</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>notified</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>6</value>
+			<value>disabled</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>7</value>
+			<value>default</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
 	<table name="phpbb_user_notifications">
 		<column>item_type</column>
 		<column>item_id</column>
@@ -87,7 +150,21 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>quote</value>
+			<value>0</value>
+			<value>2</value>
+			<value></value>
+			<value>1</value>
+		</row>
+		<row>
 			<value>post</value>
+			<value>0</value>
+			<value>3</value>
+			<value></value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>quote</value>
 			<value>0</value>
 			<value>3</value>
 			<value></value>
@@ -101,7 +178,21 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>quote</value>
+			<value>0</value>
+			<value>4</value>
+			<value></value>
+			<value>1</value>
+		</row>
+		<row>
 			<value>post</value>
+			<value>0</value>
+			<value>5</value>
+			<value></value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>quote</value>
 			<value>0</value>
 			<value>5</value>
 			<value></value>
@@ -113,6 +204,13 @@
 			<value>6</value>
 			<value></value>
 			<value>1</value>
+		</row>
+		<row>
+			<value>quote</value>
+			<value>0</value>
+			<value>6</value>
+			<value></value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>post</value>

@@ -12,7 +12,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
-class phpbb_notification_submit_post_notifications_test extends phpbb_database_test_case
+class phpbb_notification_submit_post_type_quote_test extends phpbb_database_test_case
 {
 	protected $notifications, $db, $container, $user, $config, $auth, $cache;
 
@@ -53,12 +53,12 @@ class phpbb_notification_submit_post_notifications_test extends phpbb_database_t
 				$this->greaterThan(0))
 			->will($this->returnValueMap(array(
 				array(
-					array('3', '4', '5', '6', '7', '8'),
+					array('3', '4', '5', '6', '7'),
 					'f_read',
 					1,
 					array(
 						1 => array(
-							'f_read' => array(3, 5, 6, 7, 8),
+							'f_read' => array(3, 5, 6, 7),
 						),
 					),
 				),
@@ -114,27 +114,25 @@ class phpbb_notification_submit_post_notifications_test extends phpbb_database_t
 	* submit_post() Notifications test
 	*
 	* submit_post() $mode = 'reply'
-	* Notification item_type = 'post'
+	* Notification item_type = 'quote'
 	*
 	* User => State description
 	*	2	=> Poster, should NOT receive a notification
-	*	3	=> Topic subscribed, should receive a notification
-	*	4	=> Topic subscribed, but unauthed to read, should NOT receive a notification
-	*	5	=> Topic subscribed, but already notified, should NOT receive a new notification
-	*	6	=> Topic and forum subscribed, should receive ONE notification
-	*	7	=> Forum subscribed, should receive a notification
-	*	8	=> Forum subscribed, but already notified, should NOT receive a new notification
+	*	3	=> Quoted, should receive a notification
+	*	4	=> Quoted, but unauthed to read, should NOT receive a notification
+	*	5	=> Quoted, but already notified, should NOT receive a new notification
+	*	6	=> Quoted, but option disabled, should NOT receive a notification
+	*	7	=> Quoted, option set to default, should receive a notification
 	*/
-	public function test_type_post()
+	public function test_type_quote()
 	{
 		$sql = 'SELECT user_id, item_id, item_parent_id
 			FROM ' . NOTIFICATIONS_TABLE . "
-			WHERE item_type = 'post'
+			WHERE item_type = 'quote'
 			ORDER BY user_id, item_id ASC";
 		$result = $this->db->sql_query($sql);
 		$this->assertEquals(array(
 			array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
-			array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
 		), $this->db->sql_fetchrowset($result));
 		$this->db->sql_freeresult($result);
 
@@ -148,11 +146,19 @@ class phpbb_notification_submit_post_notifications_test extends phpbb_database_t
 			'enable_smilies'	=> 0,
 			'enable_urls'		=> 0,
 			'enable_sig'		=> 0,
-			'message'			=> '',
+			'message'			=> implode(' ', array(
+				'[quote=&quot;poster&quot;:uid]poster should not be notified[/quote:uid]',
+				'[quote=&quot;test&quot;:uid]test should be notified[/quote:uid]',
+				'[quote=&quot;unauthorized&quot;:uid]unauthorized to read, should not receive a notification[/quote:uid]',
+				'[quote=&quot;notified&quot;:uid]already notified, should not receive a new notification[/quote:uid]',
+				'[quote=&quot;disabled&quot;:uid]option disabled, should not receive a notification[/quote:uid]',
+				'[quote=&quot;default&quot;:uid]option set to default, should receive a notification[/quote:uid]',
+				'[quote=&quot;doesn\'t exist&quot;:uid]user does not exist, should not receive a notification[/quote:uid]',
+			)),
 			'message_md5'		=> '',
 			'attachment_data'	=> array(),
 			'bbcode_bitfield'	=> '',
-			'bbcode_uid'		=> '',
+			'bbcode_uid'		=> 'uid',
 			'post_edit_locked'	=> false,
 			//'force_approved_state'	=> 1,
 		);
@@ -161,15 +167,13 @@ class phpbb_notification_submit_post_notifications_test extends phpbb_database_t
 
 		$sql = 'SELECT user_id, item_id, item_parent_id
 			FROM ' . NOTIFICATIONS_TABLE . "
-			WHERE item_type = 'post'
+			WHERE item_type = 'quote'
 			ORDER BY user_id ASC, item_id ASC";
 		$result = $this->db->sql_query($sql);
 		$this->assertEquals(array(
 			array('user_id' => 3, 'item_id' => 1, 'item_parent_id' => 1),
 			array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
-			array('user_id' => 6, 'item_id' => 1, 'item_parent_id' => 1),
 			array('user_id' => 7, 'item_id' => 1, 'item_parent_id' => 1),
-			array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
 		), $this->db->sql_fetchrowset($result));
 		$this->db->sql_freeresult($result);
 	}
