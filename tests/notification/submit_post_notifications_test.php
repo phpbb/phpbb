@@ -53,12 +53,12 @@ class phpbb_notification_submit_post_notifications_test extends phpbb_database_t
 				$this->greaterThan(0))
 			->will($this->returnValueMap(array(
 				array(
-					array('3', '4', '5', '6', '7', '8',),
+					array('3', '4', '5', '6', '7', '8'),
 					'f_read',
 					1,
 					array(
 						1 => array(
-							'f_read' => array(3, 5, 6, 7, 8,),
+							'f_read' => array(3, 5, 6, 7, 8),
 						),
 					),
 				),
@@ -113,6 +113,9 @@ class phpbb_notification_submit_post_notifications_test extends phpbb_database_t
 	/**
 	* submit_post() Notifications test
 	*
+	* submit_post() $mode = 'reply'
+	* Notification item_type = 'post'
+	*
 	* User => State description
 	*	2	=> Poster, should NOT receive a notification
 	*	3	=> Topic subscribed, should receive a notification
@@ -162,11 +165,11 @@ class phpbb_notification_submit_post_notifications_test extends phpbb_database_t
 			ORDER BY user_id ASC, item_id ASC";
 		$result = $this->db->sql_query($sql);
 		$this->assertEquals(array(
-			array('user_id' => 3, 'item_id' => 1, 'item_parent_id' => 1,),
-			array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1,),
-			array('user_id' => 6, 'item_id' => 1, 'item_parent_id' => 1,),
-			array('user_id' => 7, 'item_id' => 1, 'item_parent_id' => 1,),
-			array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1,),
+			array('user_id' => 3, 'item_id' => 1, 'item_parent_id' => 1),
+			array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
+			array('user_id' => 6, 'item_id' => 1, 'item_parent_id' => 1),
+			array('user_id' => 7, 'item_id' => 1, 'item_parent_id' => 1),
+			array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
 		), $this->db->sql_fetchrowset($result));
 		$this->db->sql_freeresult($result);
 	}
