@@ -126,7 +126,9 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 		$this->assertEquals($expected_before, $this->db->sql_fetchrowset($result));
 		$this->db->sql_freeresult($result);
 
-		submit_post('reply', '', 'poster-name', POST_NORMAL, $this->poll_data, array_merge($this->post_data, $additional_post_data), false, false);
+		$poll_data = $this->poll_data;
+		$post_data = array_merge($this->post_data, $additional_post_data);
+		submit_post('reply', '', 'poster-name', POST_NORMAL, $poll_data, $post_data, false, false);
 
 		$sql = 'SELECT user_id, item_id, item_parent_id
 			FROM ' . NOTIFICATIONS_TABLE . "
