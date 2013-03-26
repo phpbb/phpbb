@@ -39,7 +39,7 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/submit_post_notification.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/submit_post_' . $this->item_type . '.xml');
 	}
 
 	public function setUp()

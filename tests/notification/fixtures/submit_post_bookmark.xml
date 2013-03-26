@@ -28,26 +28,6 @@
 			<value>7</value>
 		</row>
 	</table>
-	<table name="phpbb_forums_watch">
-		<column>forum_id</column>
-		<column>user_id</column>
-		<column>notify_status</column>
-		<row>
-			<value>1</value>
-			<value>6</value>
-			<value>0</value>
-		</row>
-		<row>
-			<value>1</value>
-			<value>7</value>
-			<value>0</value>
-		</row>
-		<row>
-			<value>1</value>
-			<value>8</value>
-			<value>0</value>
-		</row>
-	</table>
 	<table name="phpbb_notifications">
 		<column>item_type</column>
 		<column>user_id</column>
@@ -56,32 +36,8 @@
 		<column>notification_read</column>
 		<column>notification_data</column>
 		<row>
-			<value>post</value>
-			<value>5</value>
-			<value>1</value>
-			<value>1</value>
-			<value>0</value>
-			<value></value>
-		</row>
-		<row>
-			<value>quote</value>
-			<value>5</value>
-			<value>1</value>
-			<value>1</value>
-			<value>0</value>
-			<value></value>
-		</row>
-		<row>
 			<value>bookmark</value>
 			<value>5</value>
-			<value>1</value>
-			<value>1</value>
-			<value>0</value>
-			<value></value>
-		</row>
-		<row>
-			<value>post</value>
-			<value>8</value>
 			<value>1</value>
 			<value>1</value>
 			<value>0</value>
@@ -91,14 +47,6 @@
 	<table name="phpbb_notification_types">
 		<column>notification_type</column>
 		<column>notification_type_enabled</column>
-		<row>
-			<value>post</value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>quote</value>
-			<value>1</value>
-		</row>
 		<row>
 			<value>bookmark</value>
 			<value>1</value>
@@ -122,36 +70,6 @@
 		<row>
 			<value>1</value>
 			<value>1</value>
-		</row>
-	</table>
-	<table name="phpbb_topics_watch">
-		<column>topic_id</column>
-		<column>user_id</column>
-		<column>notify_status</column>
-		<row>
-			<value>1</value>
-			<value>2</value>
-			<value>0</value>
-		</row>
-		<row>
-			<value>1</value>
-			<value>3</value>
-			<value>0</value>
-		</row>
-		<row>
-			<value>1</value>
-			<value>4</value>
-			<value>0</value>
-		</row>
-		<row>
-			<value>1</value>
-			<value>5</value>
-			<value>0</value>
-		</row>
-		<row>
-			<value>1</value>
-			<value>6</value>
-			<value>0</value>
 		</row>
 	</table>
 	<table name="phpbb_users">
@@ -217,37 +135,9 @@
 		<column>method</column>
 		<column>notify</column>
 		<row>
-			<value>post</value>
-			<value>0</value>
-			<value>2</value>
-			<value></value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>quote</value>
-			<value>0</value>
-			<value>2</value>
-			<value></value>
-			<value>1</value>
-		</row>
-		<row>
 			<value>bookmark</value>
 			<value>0</value>
 			<value>2</value>
-			<value></value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>post</value>
-			<value>0</value>
-			<value>3</value>
-			<value></value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>quote</value>
-			<value>0</value>
-			<value>3</value>
 			<value></value>
 			<value>1</value>
 		</row>
@@ -259,37 +149,9 @@
 			<value>1</value>
 		</row>
 		<row>
-			<value>post</value>
-			<value>0</value>
-			<value>4</value>
-			<value></value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>quote</value>
-			<value>0</value>
-			<value>4</value>
-			<value></value>
-			<value>1</value>
-		</row>
-		<row>
 			<value>bookmark</value>
 			<value>0</value>
 			<value>4</value>
-			<value></value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>post</value>
-			<value>0</value>
-			<value>5</value>
-			<value></value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>quote</value>
-			<value>0</value>
-			<value>5</value>
 			<value></value>
 			<value>1</value>
 		</row>
@@ -301,39 +163,11 @@
 			<value>1</value>
 		</row>
 		<row>
-			<value>post</value>
-			<value>0</value>
-			<value>6</value>
-			<value></value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>quote</value>
-			<value>0</value>
-			<value>6</value>
-			<value></value>
-			<value>0</value>
-		</row>
-		<row>
 			<value>bookmark</value>
 			<value>0</value>
 			<value>6</value>
 			<value></value>
 			<value>0</value>
-		</row>
-		<row>
-			<value>post</value>
-			<value>0</value>
-			<value>7</value>
-			<value></value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>post</value>
-			<value>0</value>
-			<value>8</value>
-			<value></value>
-			<value>1</value>
 		</row>
 	</table>
 </dataset>
