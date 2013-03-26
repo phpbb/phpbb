@@ -5,10 +5,8 @@
 /**
 * Window popup
 */
-function popup(url, width, height, name)
-{
-	if (!name)
-	{
+function popup(url, width, height, name) {
+	if (!name) {
 		name = '_popup';
 	}
 
@@ -19,18 +17,13 @@ function popup(url, width, height, name)
 /**
 * Jump to page
 */
-function jumpto()
-{
+function jumpto() {
 	var page = prompt(jump_page, on_page);
 
-	if (page !== null && !isNaN(page) && page === Math.floor(page) && page > 0)
-	{
-		if (base_url.indexOf('?') === -1)
-		{
+	if (page !== null && !isNaN(page) && page === Math.floor(page) && page > 0) {
+		if (base_url.indexOf('?') === -1) {
 			document.location.href = base_url + '?start=' + ((page - 1) * per_page);
-		}
-		else
-		{
+		} else {
 			document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * per_page);
 		}
 	}
@@ -40,21 +33,17 @@ function jumpto()
 * Mark/unmark checklist
 * id = ID of parent container, name = name prefix, state = state [true/false]
 */
-function marklist(id, name, state)
-{
+function marklist(id, name, state) {
 	var parent = document.getElementById(id) || document[id];
 
-	if (!parent)
-	{
+	if (!parent) {
 		return;
 	}
 
 	var rb = parent.getElementsByTagName('input');
-	
-	for (var r = 0; r < rb.length; r++)
-	{	
-		if (rb[r].name.substr(0, name.length) === name)
-		{
+
+	for (var r = 0; r < rb.length; r++) {
+		if (rb[r].name.substr(0, name.length) === name) {
 			rb[r].checked = state;
 		}
 	}
@@ -64,28 +53,23 @@ function marklist(id, name, state)
 * Resize viewable area for attached image or topic review panel (possibly others to come)
 * e = element
 */
-function viewableArea(e, itself)
-{
+function viewableArea(e, itself) {
 	if (!e) {
 		return;
 	}
 
-	if (!itself)
-	{
+	if (!itself) {
 		e = e.parentNode;
 	}
-	
-	if (!e.vaHeight)
-	{
+
+	if (!e.vaHeight) {
 		// Store viewable area height before changing style to auto
 		e.vaHeight = e.offsetHeight;
 		e.vaMaxHeight = e.style.maxHeight;
 		e.style.height = 'auto';
 		e.style.maxHeight = 'none';
 		e.style.overflow = 'visible';
-	}
-	else
-	{
+	} else {
 		// Restore viewable area height to the default
 		e.style.height = e.vaHeight + 'px';
 		e.style.overflow = 'auto';
@@ -99,16 +83,13 @@ function viewableArea(e, itself)
 * s[-1,0,1] = hide,toggle display,show
 * type = string: inline, block, inline-block or other CSS "display" type
 */
-function dE(n, s, type)
-{
-	if (!type)
-	{
+function dE(n, s, type) {
+	if (!type) {
 		type = 'block';
 	}
 
 	var e = document.getElementById(n);
-	if (!s)
-	{
+	if (!s) {
 		s = (e.style.display === '' || e.style.display === type) ? -1 : 1;
 	}
 	e.style.display = (s === 1) ? type : 'none';
@@ -117,35 +98,26 @@ function dE(n, s, type)
 /**
 * Alternate display of subPanels
 */
-function subPanels(p)
-{
+function subPanels(p) {
 	var i, e, t;
 
-	if (typeof(p) === 'string')
-	{
+	if (typeof(p) === 'string') {
 		show_panel = p;
 	}
 
-	for (i = 0; i < panels.length; i++)
-	{
+	for (i = 0; i < panels.length; i++) {
 		e = document.getElementById(panels[i]);
 		t = document.getElementById(panels[i] + '-tab');
 
-		if (e)
-		{
-			if (panels[i] === show_panel)
-			{
+		if (e) {
+			if (panels[i] === show_panel) {
 				e.style.display = 'block';
-				if (t)
-				{
+				if (t) {
 					t.className = 'activetab';
 				}
-			}
-			else
-			{
+			} else {
 				e.style.display = 'none';
-				if (t)
-				{
+				if (t) {
 					t.className = '';
 				}
 			}
@@ -156,14 +128,10 @@ function subPanels(p)
 /**
 * Call print preview
 */
-function printPage()
-{
-	if (is_ie)
-	{
+function printPage() {
+	if (is_ie) {
 		printPreview();
-	}
-	else
-	{
+	} else {
 		window.print();
 	}
 }
@@ -172,49 +140,40 @@ function printPage()
 * Show/hide groups of blocks
 * c = CSS style name
 * e = checkbox element
-* t = toggle dispay state (used to show 'grip-show' image in the profile block when hiding the profiles) 
+* t = toggle dispay state (used to show 'grip-show' image in the profile block when hiding the profiles)
 */
-function displayBlocks(c, e, t)
-{
+function displayBlocks(c, e, t) {
 	var s = (e.checked === true) ?  1 : -1;
 
-	if (t)
-	{
+	if (t) {
 		s *= -1;
 	}
 
 	var divs = document.getElementsByTagName("DIV");
 
-	for (var d = 0; d < divs.length; d++)
-	{
-		if (divs[d].className.indexOf(c) === 0)
-		{
+	for (var d = 0; d < divs.length; d++) {
+		if (divs[d].className.indexOf(c) === 0) {
 			divs[d].style.display = (s === 1) ? 'none' : 'block';
 		}
 	}
 }
 
-function selectCode(a)
-{
+function selectCode(a) {
 	// Get ID of code block
 	var e = a.parentNode.parentNode.getElementsByTagName('CODE')[0];
 	var s, r;
 
 	// Not IE and IE9+
-	if (window.getSelection)
-	{
+	if (window.getSelection) {
 		s = window.getSelection();
 		// Safari
-		if (s.setBaseAndExtent)
-		{
+		if (s.setBaseAndExtent) {
 			s.setBaseAndExtent(e, 0, e, e.innerText.length - 1);
 		}
 		// Firefox and Opera
-		else
-		{
+		else {
 			// workaround for bug # 42885
-			if (window.opera && e.innerHTML.substring(e.innerHTML.length - 4) === '<BR>')
-			{
+			if (window.opera && e.innerHTML.substring(e.innerHTML.length - 4) === '<BR>') {
 				e.innerHTML = e.innerHTML + '&nbsp;';
 			}
 
@@ -225,8 +184,7 @@ function selectCode(a)
 		}
 	}
 	// Some older browsers
-	else if (document.getSelection)
-	{
+	else if (document.getSelection) {
 		s = document.getSelection();
 		r = document.createRange();
 		r.selectNodeContents(e);
@@ -234,8 +192,7 @@ function selectCode(a)
 		s.addRange(r);
 	}
 	// IE
-	else if (document.selection)
-	{
+	else if (document.selection) {
 		r = document.body.createTextRange();
 		r.moveToElementText(e);
 		r.select();
@@ -246,13 +203,11 @@ function selectCode(a)
 * Play quicktime file by determining it's width/height
 * from the displayed rectangle area
 */
-function play_qt_file(obj)
-{
+function play_qt_file(obj) {
 	var rectangle = obj.GetRectangle();
 	var width, height;
 
-	if (rectangle)
-	{
+	if (rectangle) {
 		rectangle = rectangle.split(',');
 		var x1 = parseInt(rectangle[0], 10);
 		var x2 = parseInt(rectangle[2], 10);
@@ -261,9 +216,7 @@ function play_qt_file(obj)
 
 		width = (x1 < 0) ? (x1 * -1) + x2 : x2 - x1;
 		height = (y1 < 0) ? (y1 * -1) + y2 : y2 - y1;
-	}
-	else
-	{
+	} else {
 		width = 200;
 		height = 0;
 	}
@@ -279,8 +232,7 @@ function play_qt_file(obj)
 * Check if the nodeName of elem is name
 * @author jQuery
 */
-function is_node_name(elem, name)
-{
+function is_node_name(elem, name) {
 	return elem.nodeName && elem.nodeName.toUpperCase() === name.toUpperCase();
 }
 
@@ -288,8 +240,7 @@ function is_node_name(elem, name)
 * Check if elem is in array, return position
 * @author jQuery
 */
-function is_in_array(elem, array)
-{
+function is_in_array(elem, array) {
 	for (var i = 0, length = array.length; i < length; i++) {
 		// === is correct (IE)
 		if (array[i] === elem) {
@@ -305,18 +256,16 @@ function is_in_array(elem, array)
 * Not used, but may come in handy for those not using JQuery
 * @author jQuery.find, Meik Sievertsen
 */
-function find_in_tree(node, tag, type, class_name)
-{
+function find_in_tree(node, tag, type, class_name) {
 	var result, element, i = 0, length = node.childNodes.length;
 
-	for (element = node.childNodes[0]; i < length; element = node.childNodes[++i])
-	{
+	for (element = node.childNodes[0]; i < length; element = node.childNodes[++i]) {
 		if (!element || element.nodeType !== 1) {
 			continue;
 		}
 
-		if ((!tag || is_node_name(element, tag)) && (!type || element.type === type) && (!class_name || is_in_array(class_name, (element.className || element).toString().split(/\s+/)) > -1))
-		{
+		if ((!tag || is_node_name(element, tag)) && (!type || element.type === type)
+				&& (!class_name || is_in_array(class_name, (element.className || element).toString().split(/\s+/)) > -1)) {
 			return element;
 		}
 
@@ -336,27 +285,23 @@ var last_key_entered = '';
 /**
 * Check event key
 */
-function phpbb_check_key(event)
-{
+function phpbb_check_key(event) {
 	// Keycode is array down or up?
 	if (event.keyCode && (event.keyCode === 40 || event.keyCode === 38)) {
 		in_autocomplete = true;
 	}
 
 	// Make sure we are not within an "autocompletion" field
-	if (in_autocomplete)
-	{
+	if (in_autocomplete) {
 		// If return pressed and key changed we reset the autocompletion
-		if (!last_key_entered || last_key_entered === event.which)
-		{
+		if (!last_key_entered || last_key_entered === event.which) {
 			in_autocompletion = false;
 			return true;
 		}
 	}
 
 	// Keycode is not return, then return. ;)
-	if (event.which !== 13)
-	{
+	if (event.which !== 13) {
 		last_key_entered = event.which;
 		return true;
 	}
@@ -367,8 +312,7 @@ function phpbb_check_key(event)
 /**
 * Usually used for onkeypress event, to submit a form on enter
 */
-function submit_default_button(event, selector, class_name)
-{
+function submit_default_button(event, selector, class_name) {
 	// Add which for key events
 	if (!event.which && ((event.charCode || event.charCode === 0) ? event.charCode : event.keyCode)) {
 		event.which = event.charCode || event.keyCode;
@@ -390,8 +334,7 @@ function submit_default_button(event, selector, class_name)
 	var input_tags = current.getElementsByTagName('input');
 	current = false;
 
-	for (var i = 0, element = input_tags[0]; i < input_tags.length; element = input_tags[++i])
-	{
+	for (var i = 0, element = input_tags[0]; i < input_tags.length; element = input_tags[++i]) {
 		if (element.type === 'submit' && is_in_array(class_name, (element.className || element).toString().split(/\s+/)) > -1) {
 			current = element;
 		}
@@ -412,15 +355,12 @@ function submit_default_button(event, selector, class_name)
 * The jQuery snippet used is based on http://greatwebguy.com/programming/dom/default-html-button-submit-on-enter-with-jquery/
 * The non-jQuery code is a mimick of the jQuery code ;)
 */
-function apply_onkeypress_event()
-{
+function apply_onkeypress_event() {
 	// jQuery code in case jQuery is used
-	if (jquery_present)
-	{
-		jQuery('form input[type=text], form input[type=password]').live('keypress', function (e)
-		{
+	if (jquery_present) {
+		jQuery('form input[type=text], form input[type=password]').live('keypress', function (e) {
 			var default_button = jQuery(this).parents('form').find('input[type=submit].default-submit-action');
-			
+
 			if (!default_button || default_button.length <= 0) {
 				return true;
 			}
@@ -429,24 +369,21 @@ function apply_onkeypress_event()
 				return true;
 			}
 
-			if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13))
-			{
+			if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
 				default_button.click();
 				return false;
 			}
 
 			return true;
 		});
-	
+
 		return;
 	}
 
 	var input_tags = document.getElementsByTagName('input');
 
-	for (var i = 0, element = input_tags[0]; i < input_tags.length ; element = input_tags[++i])
-	{
-		if (element.type === 'text' || element.type === 'password')
-		{
+	for (var i = 0, element = input_tags[0]; i < input_tags.length ; element = input_tags[++i]) {
+		if (element.type === 'text' || element.type === 'password') {
 			// onkeydown is possible too
 			element.onkeypress = function (evt) { submit_default_button((evt || window.event), this, 'default-submit-action'); };
 		}

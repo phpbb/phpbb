@@ -57,7 +57,7 @@ phpbb.clearLoadingTimeout = function() {
  * @param string title Title of the message, eg "Information" (HTML).
  * @param string msg Message to display (HTML).
  * @param bool fadedark Remove the dark background when done? Defaults
- * to yes.
+ *     to yes.
  *
  * @returns object Returns the div created.
  */
@@ -353,8 +353,7 @@ phpbb.ajaxify = function(options) {
 			return;
 		}
 
-		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') === 'true'))
-		{
+		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') === 'true')) {
 			phpbb.loadingAlert();
 		}
 

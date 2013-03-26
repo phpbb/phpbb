@@ -189,19 +189,18 @@ phpbb.ajaxify({
 	refresh: true,
 	filter: function (data) {
 		var action = $('#quick-mod-select').val();
-		var ret = false;
 
 		if (action === 'make_normal') {
-			ret = $(this).find('select option[value="make_global"]').length > 0;
+			return $(this).find('select option[value="make_global"]').length > 0;
 		} else if (action === 'lock' || action === 'unlock') {
-			ret = true;
+			return true;
 		}
 
 		if (action === 'delete_topic' || action === 'make_sticky' || action === 'make_announce' || action === 'make_global') {
-			ret = true;
+			return true;
 		}
 
-		return ret;
+		return false;
 	}
 });
 
