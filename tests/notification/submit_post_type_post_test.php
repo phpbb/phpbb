@@ -11,6 +11,8 @@ require_once dirname(__FILE__) . '/submit_post_base.php';
 
 class phpbb_notification_submit_post_type_post_test extends phpbb_notification_submit_post_base
 {
+	protected $item_type = 'post';
+
 	public function setUp()
 	{
 		parent::setUp();
@@ -42,62 +44,53 @@ class phpbb_notification_submit_post_type_post_test extends phpbb_notification_s
 	*
 	* submit_post() $mode = 'reply'
 	* Notification item_type = 'post'
-	*
-	* User => State description
-	*	2	=> Poster, should NOT receive a notification
-	*	3	=> Topic subscribed, should receive a notification
-	*	4	=> Topic subscribed, but unauthed to read, should NOT receive a notification
-	*	5	=> Topic subscribed, but already notified, should NOT receive a new notification
-	*	6	=> Topic and forum subscribed, should receive ONE notification
-	*	7	=> Forum subscribed, should receive a notification
-	*	8	=> Forum subscribed, but already notified, should NOT receive a new notification
 	*/
-	public function test_type_post()
+	public function submit_post_data()
 	{
-		$sql = 'SELECT user_id, item_id, item_parent_id
-			FROM ' . NOTIFICATIONS_TABLE . "
-			WHERE item_type = 'post'
-			ORDER BY user_id, item_id ASC";
-		$result = $this->db->sql_query($sql);
-		$this->assertEquals(array(
-			array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
-			array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
-		), $this->db->sql_fetchrowset($result));
-		$this->db->sql_freeresult($result);
+		return array(
+			/**
+			* Normal post
+			*
+			* User => State description
+			*	2	=> Poster, should NOT receive a notification
+			*	3	=> Topic subscribed, should receive a notification
+			*	4	=> Topic subscribed, but unauthed to read, should NOT receive a notification
+			*	5	=> Topic subscribed, but already notified, should NOT receive a new notification
+			*	6	=> Topic and forum subscribed, should receive ONE notification
+			*	7	=> Forum subscribed, should receive a notification
+			*	8	=> Forum subscribed, but already notified, should NOT receive a new notification
+			*/
+			array(
+				array(),
+				array(
+					array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
+					array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
+				),
+				array(
+					array('user_id' => 3, 'item_id' => 2, 'item_parent_id' => 1),
+					array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
+					array('user_id' => 6, 'item_id' => 2, 'item_parent_id' => 1),
+					array('user_id' => 7, 'item_id' => 2, 'item_parent_id' => 1),
+					array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
+				),
+			),
 
-		$poll = array();
-		$data = array(
-			'forum_id'		=> 1,
-			'topic_id'		=> 1,
-			'topic_title'	=> 'topic_title',
-			'icon_id'		=> 0,
-			'enable_bbcode'		=> 0,
-			'enable_smilies'	=> 0,
-			'enable_urls'		=> 0,
-			'enable_sig'		=> 0,
-			'message'			=> '',
-			'message_md5'		=> '',
-			'attachment_data'	=> array(),
-			'bbcode_bitfield'	=> '',
-			'bbcode_uid'		=> '',
-			'post_edit_locked'	=> false,
-			//'force_approved_state'	=> 1,
+			/**
+			* Unapproved post
+			*
+			* No new notifications
+			*/
+			array(
+				array('force_approved_state' => false),
+				array(
+					array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
+					array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
+				),
+				array(
+					array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
+					array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
+				),
+			),
 		);
-
-		submit_post('reply', '', 'poster-name', POST_NORMAL, $poll, $data, false, false);
-
-		$sql = 'SELECT user_id, item_id, item_parent_id
-			FROM ' . NOTIFICATIONS_TABLE . "
-			WHERE item_type = 'post'
-			ORDER BY user_id ASC, item_id ASC";
-		$result = $this->db->sql_query($sql);
-		$this->assertEquals(array(
-			array('user_id' => 3, 'item_id' => 2, 'item_parent_id' => 1),
-			array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
-			array('user_id' => 6, 'item_id' => 2, 'item_parent_id' => 1),
-			array('user_id' => 7, 'item_id' => 2, 'item_parent_id' => 1),
-			array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
-		), $this->db->sql_fetchrowset($result));
-		$this->db->sql_freeresult($result);
 	}
 }

@@ -16,6 +16,27 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 {
 	protected $notifications, $db, $container, $user, $config, $auth, $cache;
 
+	protected $item_type = '';
+
+	protected $poll_data = array();
+	protected $post_data = array(
+		'forum_id'		=> 1,
+		'topic_id'		=> 1,
+		'topic_title'	=> 'topic_title',
+		'icon_id'		=> 0,
+		'enable_bbcode'		=> 0,
+		'enable_smilies'	=> 0,
+		'enable_urls'		=> 0,
+		'enable_sig'		=> 0,
+		'message'			=> '',
+		'message_md5'		=> '',
+		'attachment_data'	=> array(),
+		'bbcode_bitfield'	=> '',
+		'bbcode_uid'		=> '',
+		'post_edit_locked'	=> false,
+		//'force_approved_state'	=> 1,
+	);
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/submit_post_notification.xml');
@@ -81,7 +102,7 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 		$phpbb_container->set('notification_manager', $phpbb_notifications);
 
 		// Notification Types
-		$notification_types = array('quote', 'bookmark', 'post');
+		$notification_types = array('quote', 'bookmark', 'post', 'post_in_queue');
 		foreach ($notification_types as $type)
 		{
 			$class_name = 'phpbb_notification_type_' . $type;
@@ -90,5 +111,29 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 				$phpbb_root_path, '.' . $phpEx,
 				NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE));
 		}
+	}
+
+	/**
+	* @dataProvider submit_post_data
+	*/
+	public function test_submit_post($additional_post_data, $expected_before, $expected_after)
+	{
+		$sql = 'SELECT user_id, item_id, item_parent_id
+			FROM ' . NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . $this->item_type . "'
+			ORDER BY user_id, item_id ASC";
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals($expected_before, $this->db->sql_fetchrowset($result));
+		$this->db->sql_freeresult($result);
+
+		submit_post('reply', '', 'poster-name', POST_NORMAL, $this->poll_data, array_merge($this->post_data, $additional_post_data), false, false);
+
+		$sql = 'SELECT user_id, item_id, item_parent_id
+			FROM ' . NOTIFICATIONS_TABLE . "
+			WHERE item_type = '" . $this->item_type . "'
+			ORDER BY user_id ASC, item_id ASC";
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals($expected_after, $this->db->sql_fetchrowset($result));
+		$this->db->sql_freeresult($result);
 	}
 }
