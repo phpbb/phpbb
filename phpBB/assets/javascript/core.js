@@ -308,8 +308,8 @@ phpbb.ajaxify = function(options) {
 					}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 				}
 			} else {
-				// If confirmation is required, display a diologue to the user.
-				phpbb.confirm(res.MESSAGE_TEXT, function(del) {
+				// If confirmation is required, display a dialog to the user.
+				phpbb.confirm(res.MESSAGE_BODY, function(del) {
 					if (del) {
 						phpbb.loadingAlert();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
@@ -488,6 +488,19 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 		}
 	}
 };
+
+// Toggle notification list
+$('#notification_list_button').click(function(e) {
+	$('#notification_list').toggle();
+	e.preventDefault();
+});
+$('#phpbb').click(function(e) {
+    var target = $(e.target);
+
+    if (!target.is('#notification_list') && !target.is('#notification_list_button') && !target.parents().is('#notification_list')) {
+        $('#notification_list').hide();
+    }
+});
 
 phpbb.ajaxCallbacks = {};
 

@@ -1,4 +1,4 @@
-/*  	
+/*
 --------------------------------------------------------------
 Colours and backgrounds for common.css
 -------------------------------------------------------------- */
@@ -65,7 +65,7 @@ hr {
 
 .panel {
 	background-color: #ECF1F3;
-	color: #28313F;	
+	color: #28313F;
 }
 
 .post:target .content {
@@ -219,7 +219,7 @@ p.rules {
 	background-image: none;
 }
 
-/*  	
+/*
 --------------------------------------------------------------
 Colours and backgrounds for links.css
 -------------------------------------------------------------- */
@@ -312,7 +312,7 @@ a.topictitle:active {
 	color: #105289;
 }
 
-/* Profile searchresults */	
+/* Profile searchresults */
 .search .postprofile a {
 	color: #105289;
 }
@@ -349,7 +349,7 @@ a.arrow-right:hover {
 }
 
 
-/*  	
+/*
 --------------------------------------------------------------
 Colours and backgrounds for content.css
 -------------------------------------------------------------- */
@@ -644,7 +644,7 @@ fieldset.polls dd div {
 	background-image: url("./en/icon_user_online.gif");
 }
 
-/*  	
+/*
 --------------------------------------------------------------
 Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
@@ -771,7 +771,7 @@ a.sendemail {
 .pm_read														{ background-image: url("./images/topic_read.gif"); }
 .pm_unread														{ background-image: url("./images/topic_unread.gif"); }
 
-/*  	
+/*
 --------------------------------------------------------------
 Colours and backgrounds for cp.css
 -------------------------------------------------------------- */
@@ -940,7 +940,7 @@ dl.mini dt {
 	background-color: #EEE;
 }
 
-/*  	
+/*
 --------------------------------------------------------------
 Colours and backgrounds for forms.css
 -------------------------------------------------------------- */
@@ -995,7 +995,7 @@ fieldset.quick-login input.inputbox {
 /* Input field styles
 ---------------------------------------- */
 .inputbox {
-	background-color: #FFFFFF; 
+	background-color: #FFFFFF;
 	border-color: #B4BAC0;
 	color: #333333;
 }
@@ -1061,5 +1061,42 @@ input.disabled {
 }
 #darken {
 	background-color: #000000;
+}
+
+#notification_list {
+	background-color: #FFFFFF;
+	border-color: #B9B9B9;
+}
+
+#notification_list ul li {
+	border-bottom-color: #B9B9B9;
+}
+
+#notification_list ul li:hover {
+	background-color: #CFE1F6;
+	color: #000000;
+}
+
+#notification_list > .header, .notification_list > .footer {
+	border-color: #B9B9B9;
+	color: #000000;
+}
+
+#notification_list > .header {
+	background: #F1F8FF;
+	background: -moz-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F1F8FF), color-stop(100%, #CADCEB));
+	background: -webkit-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
+	background: -o-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
+	background: -ms-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
+	background: linear-gradient(to bottom, #F1F8FF 0%, #CADCEB 100%);
+}
+
+.notification_list .pointer {
+	border-bottom-color: #B9B9B9;
+}
+
+.notification_list .pointer_inner {
+	border-bottom-color: #F1F8FF;
 }
 

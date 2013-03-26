@@ -97,11 +97,21 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$php_ext = 'php';
 		$table_prefix = 'phpbb_';
 
+		$migrator = new phpbb_db_migrator(
+			$config,
+			$db,
+			$db_tools,
+			'phpbb_migrations',
+			$phpbb_root_path,
+			$php_ext,
+			$table_prefix,
+			array()
+		);
 		return new phpbb_extension_manager(
 			new phpbb_mock_container_builder(),
 			$db,
 			$config,
-			new phpbb_db_migrator($config, $db, $db_tools, 'phpbb_migrations', $phpbb_root_path, $php_ext, $table_prefix, array()),
+			$migrator,
 			'phpbb_ext',
 			dirname(__FILE__) . '/',
 			'.' . $php_ext,

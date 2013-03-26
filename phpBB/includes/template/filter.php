@@ -843,7 +843,18 @@ class phpbb_template_filter extends php_user_filter
 			return 'unset(' . (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ');';
 		}
 
-		$parsed_statement = implode(' ', $this->compile_expression($match[3]));
+		/*
+		* Define tags that contain template variables (enclosed in curly brackets)
+		* need to be treated differently.
+		*/
+		if (substr($match[3], 1, 1) == '{' && substr($match[3], -2, 1) == '}')
+		{
+			$parsed_statement = implode(' ', $this->compile_expression(substr($match[3], 2, -2)));
+		}
+		else
+		{
+			$parsed_statement = implode(' ', $this->compile_expression($match[3]));
+		}
 
 		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ' = ' . $parsed_statement . ';';
 	}

@@ -73,6 +73,7 @@ require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
 
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
@@ -109,6 +110,8 @@ request_var('', 0, false, false, $request); // "dependency injection" for a func
 $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
+
+$phpbb_log = $phpbb_container->get('log');
 
 // load extensions
 $phpbb_extension_manager = $phpbb_container->get('ext.manager');

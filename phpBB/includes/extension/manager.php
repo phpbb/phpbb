@@ -43,6 +43,7 @@ class phpbb_extension_manager
 	* @param ContainerInterface $container A container
 	* @param phpbb_db_driver $db A database connection
 	* @param phpbb_config $config phpbb_config
+	* @param phpbb_db_migrator $migrator
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
@@ -521,13 +522,27 @@ class phpbb_extension_manager
 	*/
 	protected function handle_migrations($extension_name, $mode)
 	{
-		$migrations_path = $this->phpbb_root_path . $this->get_extension_path($extension_name) . 'migrations/';
-		if (!file_exists($migrations_path) || !is_dir($migrations_path))
+		$extensions = array(
+			$extension_name => $this->phpbb_root_path . $this->get_extension_path($extension_name),
+		);
+
+		$finder = $this->get_finder();
+		$migrations = array();
+		$file_list = $finder
+			->extension_directory('/migrations')
+			->find_from_paths($extensions);
+
+		if (empty($file_list))
 		{
 			return true;
 		}
 
-		$migrations = $this->migrator->load_migrations($migrations_path);
+		foreach ($file_list as $file)
+		{
+			$migrations[$file['named_path']] = $file['ext_name'];
+		}
+		$migrations = $finder->get_classes_from_files($migrations);
+		$this->migrator->set_migrations($migrations);
 
 		// What is a safe limit of execution time? Half the max execution time should be safe.
 		$safe_time_limit = (ini_get('max_execution_time') / 2);

@@ -44,7 +44,27 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		$tools = array(
 			new phpbb_db_migration_tool_config($this->config),
 		);
-		$this->migrator = new phpbb_db_migrator($this->config, $this->db, $this->db_tools, 'phpbb_migrations', dirname(__FILE__) . '/../../phpBB/', 'php', 'phpbb_', $tools);
+
+		$this->migrator = new phpbb_db_migrator(
+			$this->config,
+			$this->db,
+			$this->db_tools,
+			'phpbb_migrations',
+			dirname(__FILE__) . '/../../phpBB/',
+			'php',
+			'phpbb_',
+			$tools
+		);
+		$this->extension_manager = new phpbb_extension_manager(
+			new phpbb_mock_container_builder(),
+			$this->db,
+			$this->config,
+			$this->migrator,
+			'phpbb_ext',
+			dirname(__FILE__) . '/../../phpBB/',
+			'.php',
+			null
+		);
 	}
 
 	public function test_update()

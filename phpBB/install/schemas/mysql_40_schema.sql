@@ -157,6 +157,14 @@ CREATE TABLE phpbb_config (
 );
 
 
+# Table: 'phpbb_config_text'
+CREATE TABLE phpbb_config_text (
+	config_name varbinary(255) DEFAULT '' NOT NULL,
+	config_value mediumblob NOT NULL,
+	PRIMARY KEY (config_name)
+);
+
+
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
 	confirm_id binary(32) DEFAULT '' NOT NULL,
@@ -317,7 +325,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varbinary(8) DEFAULT '' NOT NULL,
 	group_display tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_avatar varbinary(255) DEFAULT '' NOT NULL,
-	group_avatar_type tinyint(2) DEFAULT '0' NOT NULL,
+	group_avatar_type varbinary(255) DEFAULT '' NOT NULL,
 	group_avatar_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	group_avatar_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	group_rank mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -327,7 +335,6 @@ CREATE TABLE phpbb_groups (
 	group_message_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_max_recipients mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_legend mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	group_teampage mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (group_id),
 	KEY group_legend_name (group_legend, group_name(255))
 );
@@ -440,6 +447,30 @@ CREATE TABLE phpbb_modules (
 	KEY left_right_id (left_id, right_id),
 	KEY module_enabled (module_enabled),
 	KEY class_left_id (module_class, left_id)
+);
+
+
+# Table: 'phpbb_notification_types'
+CREATE TABLE phpbb_notification_types (
+	notification_type varbinary(255) DEFAULT '' NOT NULL,
+	notification_type_enabled tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	PRIMARY KEY (notification_type, notification_type_enabled)
+);
+
+
+# Table: 'phpbb_notifications'
+CREATE TABLE phpbb_notifications (
+	notification_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	item_type varbinary(255) DEFAULT '' NOT NULL,
+	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	item_parent_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	notification_read tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	notification_time int(11) UNSIGNED DEFAULT '1' NOT NULL,
+	notification_data blob NOT NULL,
+	PRIMARY KEY (notification_id),
+	KEY item_ident (item_type, item_id),
+	KEY user (user_id, notification_read)
 );
 
 
@@ -789,6 +820,17 @@ CREATE TABLE phpbb_styles (
 );
 
 
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	teampage_name blob NOT NULL,
+	teampage_position mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	teampage_parent mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (teampage_id)
+);
+
+
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
 	topic_id mediumint(8) UNSIGNED NOT NULL auto_increment,
@@ -867,6 +909,16 @@ CREATE TABLE phpbb_topics_watch (
 );
 
 
+# Table: 'phpbb_user_notifications'
+CREATE TABLE phpbb_user_notifications (
+	item_type varbinary(255) DEFAULT '' NOT NULL,
+	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	method varbinary(255) DEFAULT '' NOT NULL,
+	notify tinyint(1) UNSIGNED DEFAULT '1' NOT NULL
+);
+
+
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
 	group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -935,7 +987,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_options int(11) UNSIGNED DEFAULT '230271' NOT NULL,
 	user_avatar varbinary(255) DEFAULT '' NOT NULL,
-	user_avatar_type tinyint(2) DEFAULT '0' NOT NULL,
+	user_avatar_type varbinary(255) DEFAULT '' NOT NULL,
 	user_avatar_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	user_avatar_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	user_sig mediumblob NOT NULL,

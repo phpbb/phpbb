@@ -5,7 +5,7 @@
 <meta name="keywords" content="" />
 <meta name="description" content="" />
 {META}
-<title><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
+<title><!-- IF UNREAD_NOTIFICATIONS_COUNT -->({UNREAD_NOTIFICATIONS_COUNT}) <!-- ENDIF --><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
 
 <!-- IF S_ENABLE_FEEDS -->
 	<!-- IF S_ENABLE_FEEDS_OVERALL --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {SITENAME}" href="{U_FEED}" /><!-- ENDIF -->
@@ -136,6 +136,45 @@
 
 			<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
 			<ul class="linklist leftside">
+				<!-- IF S_NOTIFICATIONS_DISPLAY -->
+				<li>
+					[ <a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a> ] &bull;
+					<div id="notification_list" class="notification_list">
+						<div class="pointer"><div class="pointer_inner"></div></div>
+						<div class="header">
+							{L_NOTIFICATIONS}
+							<span class="header_settings"><a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a></span>
+						</div>
+
+						<ul>
+							<!-- IF not .notifications -->
+								<li>
+									{L_NO_NOTIFICATIONS}
+								</li>
+							<!-- ENDIF -->
+							<!-- BEGIN notifications -->
+								<li class="<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
+									<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
+										{notifications.AVATAR}
+										<div>
+											<p>{notifications.FORMATTED_TITLE}</p>
+											<p>&raquo; {notifications.TIME}</p>
+
+											<!-- IF not notifications.URL and notifications.U_MARK_READ -->
+												<p><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a></p>
+											<!-- ENDIF -->
+										</div>
+									<!-- IF notifications.URL --></a><!-- ENDIF -->
+								</li>
+				   			<!-- END notifications -->
+						</ul>
+
+						<div class="footer">
+							<a href="{U_VIEW_ALL_NOTIFICATIONS}"><span>{L_SEE_ALL}</span></a>
+						</div>
+					</div>
+				</li>
+				<!-- ENDIF -->
 				<li class="icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
 						<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a>)<!-- ENDIF -->

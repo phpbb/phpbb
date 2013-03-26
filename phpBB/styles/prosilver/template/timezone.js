@@ -15,7 +15,7 @@ $(document).ready(
 );
 
 $(document).ready(
-	phpbb.timezonePreselectSelect($('#tz_select_date_suggest').attr('data-is-registration') === 'true')
+	phpbb.timezonePreselectSelect($('#tz_select_date_suggest').attr('timezone-preselect') === 'true')
 );
 
 })(jQuery); // Avoid conflicts with other libraries

@@ -35,21 +35,20 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'CONFIG_ALREADY_EXIST'				=> 'The config setting "%s" unexpectedly already exists.',
 	'CONFIG_NOT_EXIST'					=> 'The config setting "%s" unexpectedly does not exist.',
 
 	'GROUP_NOT_EXIST'					=> 'The group "%s" unexpectedly does not exist.',
 
+	'MIGRATION_DATA_DONE'				=> 'Installed Data: %s',
+	'MIGRATION_EFFECTIVELY_INSTALLED'	=> 'Migration already effectively installed (skipped): %s',
 	'MIGRATION_EXCEPTION_ERROR'			=> 'Something went wrong during the request and an exception was thrown. The changes made before the error occurred were reversed to the best of our abilities, but you should check the board for errors.',
 	'MIGRATION_NOT_FULFILLABLE'			=> 'The migration "%1$s" is not fulfillable, missing migration "%2$s".',
+	'MIGRATION_SCHEMA_DONE'				=> 'Installed Schema: %s',
 
-	'MODULE_ALREADY_EXIST'				=> 'The module "%s" unexpectedly already exists.',
 	'MODULE_ERROR'						=> 'An error occured while creating a module: %s',
 	'MODULE_INFO_FILE_NOT_EXIST'		=> 'A required module info file is missing: %2$s',
 	'MODULE_NOT_EXIST'					=> 'A required module does not exist: %s',
-	'MODULE_NOT_REMOVABLE'				=> 'Module %1$s was unable to be removed: %2$s',
 
-	'PERMISSION_ALREADY_EXIST'			=> 'The permission setting "%s" unexpectedly already exists.',
 	'PERMISSION_NOT_EXIST'				=> 'The permission setting "%s" unexpectedly does not exist.',
 
 	'ROLE_NOT_EXIST'					=> 'The permission role "%s" unexpectedly does not exist.',

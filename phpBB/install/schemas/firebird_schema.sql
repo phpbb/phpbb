@@ -222,6 +222,15 @@ ALTER TABLE phpbb_config ADD PRIMARY KEY (config_name);;
 
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config(is_dynamic);;
 
+# Table: 'phpbb_config_text'
+CREATE TABLE phpbb_config_text (
+	config_name VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	config_value BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL
+);;
+
+ALTER TABLE phpbb_config_text ADD PRIMARY KEY (config_name);;
+
+
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
 	confirm_id CHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
@@ -445,7 +454,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	group_display INTEGER DEFAULT 0 NOT NULL,
 	group_avatar VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	group_avatar_type INTEGER DEFAULT 0 NOT NULL,
+	group_avatar_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	group_avatar_width INTEGER DEFAULT 0 NOT NULL,
 	group_avatar_height INTEGER DEFAULT 0 NOT NULL,
 	group_rank INTEGER DEFAULT 0 NOT NULL,
@@ -454,8 +463,7 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm INTEGER DEFAULT 0 NOT NULL,
 	group_message_limit INTEGER DEFAULT 0 NOT NULL,
 	group_max_recipients INTEGER DEFAULT 0 NOT NULL,
-	group_legend INTEGER DEFAULT 0 NOT NULL,
-	group_teampage INTEGER DEFAULT 0 NOT NULL
+	group_legend INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_groups ADD PRIMARY KEY (group_id);;
@@ -629,6 +637,43 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.module_id = GEN_ID(phpbb_modules_gen, 1);
+END;;
+
+
+# Table: 'phpbb_notification_types'
+CREATE TABLE phpbb_notification_types (
+	notification_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notification_type_enabled INTEGER DEFAULT 1 NOT NULL
+);;
+
+ALTER TABLE phpbb_notification_types ADD PRIMARY KEY (notification_type, notification_type_enabled);;
+
+
+# Table: 'phpbb_notifications'
+CREATE TABLE phpbb_notifications (
+	notification_id INTEGER NOT NULL,
+	item_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	item_id INTEGER DEFAULT 0 NOT NULL,
+	item_parent_id INTEGER DEFAULT 0 NOT NULL,
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	notification_read INTEGER DEFAULT 0 NOT NULL,
+	notification_time INTEGER DEFAULT 1 NOT NULL,
+	notification_data BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
+);;
+
+ALTER TABLE phpbb_notifications ADD PRIMARY KEY (notification_id);;
+
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications(item_type, item_id);;
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications(user_id, notification_read);;
+
+CREATE GENERATOR phpbb_notifications_gen;;
+SET GENERATOR phpbb_notifications_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_notifications FOR phpbb_notifications
+BEFORE INSERT
+AS
+BEGIN
+	NEW.notification_id = GEN_ID(phpbb_notifications_gen, 1);
 END;;
 
 
@@ -1128,6 +1173,29 @@ BEGIN
 END;;
 
 
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id INTEGER NOT NULL,
+	group_id INTEGER DEFAULT 0 NOT NULL,
+	teampage_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	teampage_position INTEGER DEFAULT 0 NOT NULL,
+	teampage_parent INTEGER DEFAULT 0 NOT NULL
+);;
+
+ALTER TABLE phpbb_teampage ADD PRIMARY KEY (teampage_id);;
+
+
+CREATE GENERATOR phpbb_teampage_gen;;
+SET GENERATOR phpbb_teampage_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_teampage FOR phpbb_teampage
+BEFORE INSERT
+AS
+BEGIN
+	NEW.teampage_id = GEN_ID(phpbb_teampage_gen, 1);
+END;;
+
+
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
 	topic_id INTEGER NOT NULL,
@@ -1220,6 +1288,16 @@ CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch(topic_id);;
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch(user_id);;
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch(notify_status);;
 
+# Table: 'phpbb_user_notifications'
+CREATE TABLE phpbb_user_notifications (
+	item_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	item_id INTEGER DEFAULT 0 NOT NULL,
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	method VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notify INTEGER DEFAULT 1 NOT NULL
+);;
+
+
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
 	group_id INTEGER DEFAULT 0 NOT NULL,
@@ -1288,7 +1366,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail INTEGER DEFAULT 1 NOT NULL,
 	user_options INTEGER DEFAULT 230271 NOT NULL,
 	user_avatar VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_avatar_type INTEGER DEFAULT 0 NOT NULL,
+	user_avatar_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	user_avatar_width INTEGER DEFAULT 0 NOT NULL,
 	user_avatar_height INTEGER DEFAULT 0 NOT NULL,
 	user_sig BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,

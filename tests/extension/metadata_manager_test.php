@@ -49,11 +49,21 @@ class metadata_manager_test extends phpbb_database_test_case
 			new phpbb_template_context()
 		);
 
+		$this->migrator = new phpbb_db_migrator(
+			$this->config,
+			$this->db,
+			$this->db_tools,
+			'phpbb_migrations',
+			$this->phpbb_root_path,
+			'php',
+			$this->table_prefix,
+			array()
+		);
 		$this->extension_manager = new phpbb_extension_manager(
 			new phpbb_mock_container_builder(),
 			$this->db,
 			$this->config,
-			new phpbb_db_migrator($this->config, $this->db, $this->db_tools, 'phpbb_migrations', $this->phpbb_root_path, $this->php_ext, $this->table_prefix, array()),
+			$this->migrator,
 			'phpbb_ext',
 			$this->phpbb_root_path,
 			$this->phpEx,

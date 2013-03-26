@@ -67,6 +67,7 @@ if (isset($_GET['avatar']))
 	$phpbb_dispatcher = $phpbb_container->get('dispatcher');
 	$request	= $phpbb_container->get('request');
 	$db			= $phpbb_container->get('dbal.conn');
+	$phpbb_log	= $phpbb_container->get('log');
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
@@ -87,6 +88,8 @@ if (isset($_GET['avatar']))
 
 	// worst-case default
 	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
+
+	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 
 	$filename = request_var('avatar', '');
 	$avatar_group = false;
