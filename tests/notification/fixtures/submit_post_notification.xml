@@ -1,5 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dataset>
+	<table name="phpbb_bookmarks">
+		<column>topic_id</column>
+		<column>user_id</column>
+		<row>
+			<value>1</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>4</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>5</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>6</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>7</value>
+		</row>
+	</table>
 	<table name="phpbb_forums_watch">
 		<column>forum_id</column>
 		<column>user_id</column>
@@ -44,6 +72,14 @@
 			<value></value>
 		</row>
 		<row>
+			<value>bookmark</value>
+			<value>5</value>
+			<value>1</value>
+			<value>1</value>
+			<value>0</value>
+			<value></value>
+		</row>
+		<row>
 			<value>post</value>
 			<value>8</value>
 			<value>1</value>
@@ -61,6 +97,10 @@
 		</row>
 		<row>
 			<value>quote</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>bookmark</value>
 			<value>1</value>
 		</row>
 	</table>
@@ -191,6 +231,13 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>bookmark</value>
+			<value>0</value>
+			<value>2</value>
+			<value></value>
+			<value>1</value>
+		</row>
+		<row>
 			<value>post</value>
 			<value>0</value>
 			<value>3</value>
@@ -199,6 +246,13 @@
 		</row>
 		<row>
 			<value>quote</value>
+			<value>0</value>
+			<value>3</value>
+			<value></value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>bookmark</value>
 			<value>0</value>
 			<value>3</value>
 			<value></value>
@@ -213,6 +267,13 @@
 		</row>
 		<row>
 			<value>quote</value>
+			<value>0</value>
+			<value>4</value>
+			<value></value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>bookmark</value>
 			<value>0</value>
 			<value>4</value>
 			<value></value>
@@ -227,6 +288,13 @@
 		</row>
 		<row>
 			<value>quote</value>
+			<value>0</value>
+			<value>5</value>
+			<value></value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>bookmark</value>
 			<value>0</value>
 			<value>5</value>
 			<value></value>
@@ -241,6 +309,13 @@
 		</row>
 		<row>
 			<value>quote</value>
+			<value>0</value>
+			<value>6</value>
+			<value></value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>bookmark</value>
 			<value>0</value>
 			<value>6</value>
 			<value></value>
