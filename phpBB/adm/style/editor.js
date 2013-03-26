@@ -12,9 +12,8 @@ var theSelection = false;
 var clientPC = navigator.userAgent.toLowerCase(); // Get client info
 var clientVer = parseInt(navigator.appVersion, 10); // Get browser version
 
-var is_ie = ((clientPC.indexOf('msie') != -1) && (clientPC.indexOf('opera') == -1));
-var is_win = ((clientPC.indexOf('win') != -1) || (clientPC.indexOf('16bit') != -1));
-
+var is_ie = ((clientPC.indexOf('msie') !== -1) && (clientPC.indexOf('opera') === -1));
+var is_win = ((clientPC.indexOf('win') !== -1) || (clientPC.indexOf('16bit') !== -1));
 var baseHeight;
 
 /**
@@ -29,10 +28,11 @@ function helpline(help)
 * Fix a bug involving the TextRange object. From
 * http://www.frostjedi.com/terra/scripts/demo/caretBug.html
 */ 
-function initInsertions() 
+function initInsertions()
 {
 	var doc;
-	if(document.forms[form_name])
+
+	if (document.forms[form_name])
 	{
 		doc = document;
 	}
@@ -42,7 +42,8 @@ function initInsertions()
 	}
 
 	var textarea = doc.forms[form_name].elements[text_name];
-	if (is_ie && typeof(baseHeight) != 'number')
+
+	if (is_ie && typeof(baseHeight) !== 'number')
 	{
 		textarea.focus();
 		baseHeight = doc.selection.createRange().duplicate().boundingHeight;
@@ -59,14 +60,14 @@ function initInsertions()
 */
 function bbstyle(bbnumber)
 {
-	if (bbnumber != -1)
+	if (bbnumber !== -1)
 	{
 		bbfontstyle(bbtags[bbnumber], bbtags[bbnumber+1]);
 	}
 	else
 	{
 		insert_text('[*]');
-		document.forms[form_name].elements[text_name].focus();		
+		document.forms[form_name].elements[text_name].focus();
 	}
 }
 
@@ -76,7 +77,7 @@ function bbstyle(bbnumber)
 function bbfontstyle(bbopen, bbclose)
 {
 	theSelection = false;
-		
+
 	var textarea = document.forms[form_name].elements[text_name];
 
 	textarea.focus();
@@ -102,10 +103,10 @@ function bbfontstyle(bbopen, bbclose)
 		theSelection = '';
 		return;
 	}
-	
+
 	//The new position for the cursor after adding the bbcode
 	var caret_pos = getCaretPosition(textarea).start;
-	var new_pos = caret_pos + bbopen.length;		
+	var new_pos = caret_pos + bbopen.length;
 
 	// Open tag
 	insert_text(bbopen + bbclose);
@@ -116,7 +117,7 @@ function bbfontstyle(bbopen, bbclose)
 	{
 		textarea.selectionStart = new_pos;
 		textarea.selectionEnd = new_pos;
-	}	
+	}
 	// IE
 	else if (document.selection)
 	{
@@ -136,7 +137,7 @@ function bbfontstyle(bbopen, bbclose)
 function insert_text(text, spaces, popup)
 {
 	var textarea;
-	
+
 	if (!popup)
 	{
 		textarea = document.forms[form_name].elements[text_name];
@@ -159,18 +160,17 @@ function insert_text(text, spaces, popup)
 		mozWrap(textarea, text, '');
 		textarea.selectionStart = sel_start + text.length;
 		textarea.selectionEnd = sel_end + text.length;
-	}	
-	
+	}
 	else if (textarea.createTextRange && textarea.caretPos)
 	{
-		if (baseHeight != textarea.caretPos.boundingHeight) 
+		if (baseHeight !== textarea.caretPos.boundingHeight)
 		{
 			textarea.focus();
 			storeCaret(textarea);
 		}
+
 		var caret_pos = textarea.caretPos;
-		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
-		
+		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) === ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
 	}
 	else
 	{
@@ -181,7 +181,6 @@ function insert_text(text, spaces, popup)
 	{
 		textarea.focus();
 	}
-
 }
 
 /**
@@ -225,7 +224,7 @@ function addquote(post_id, username)
 		theSelection = document.selection.createRange().text;
 	}
 
-	if (theSelection == '' || typeof theSelection == 'undefined' || theSelection == null)
+	if (theSelection === '' || typeof theSelection === 'undefined' || theSelection === null)
 	{
 		if (divarea.innerHTML)
 		{
@@ -233,7 +232,7 @@ function addquote(post_id, username)
 			theSelection = theSelection.replace(/<br\/>/ig, '\n');
 			theSelection = theSelection.replace(/&lt\;/ig, '<');
 			theSelection = theSelection.replace(/&gt\;/ig, '>');
-			theSelection = theSelection.replace(/&amp\;/ig, '&');			
+			theSelection = theSelection.replace(/&amp\;/ig, '&');
 			theSelection = theSelection.replace(/&nbsp\;/ig, ' ');
 		}
 		else if (document.all)
@@ -263,12 +262,12 @@ function addquote(post_id, username)
 */
 function mozWrap(txtarea, open, close)
 {
-	var selLength = (typeof(txtarea.textLength) == 'undefined') ? txtarea.value.length : txtarea.textLength;
+	var selLength = (typeof(txtarea.textLength) === 'undefined') ? txtarea.value.length : txtarea.textLength;
 	var selStart = txtarea.selectionStart;
 	var selEnd = txtarea.selectionEnd;
 	var scrollTop = txtarea.scrollTop;
 
-	if (selEnd == 1 || selEnd == 2) 
+	if (selEnd === 1 || selEnd === 2)
 	{
 		selEnd = selLength;
 	}
@@ -317,18 +316,18 @@ function colorPalette(dir, width, height)
 
 	for (r = 0; r < 5; r++)
 	{
-		if (dir == 'h')
+		if (dir === 'h')
 		{
 			document.writeln('<tr>');
 		}
 
 		for (g = 0; g < 5; g++)
 		{
-			if (dir == 'v')
+			if (dir === 'v')
 			{
 				document.writeln('<tr>');
 			}
-			
+
 			for (b = 0; b < 5; b++)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
@@ -337,20 +336,19 @@ function colorPalette(dir, width, height)
 				document.writeln('</td>');
 			}
 
-			if (dir == 'v')
+			if (dir === 'v')
 			{
 				document.writeln('</tr>');
 			}
 		}
 
-		if (dir == 'h')
+		if (dir === 'h')
 		{
 			document.writeln('</tr>');
 		}
 	}
 	document.writeln('</table>');
 }
-
 
 /**
 * Caret Position object
@@ -361,16 +359,15 @@ function caretPosition()
 	var end = null;
 }
 
-
 /**
 * Get the caret position in an textarea
 */
 function getCaretPosition(txtarea)
 {
 	var caretPos = new caretPosition();
-	
+
 	// simple Gecko/Opera way
-	if (txtarea.selectionStart || txtarea.selectionStart == 0)
+	if (txtarea.selectionStart || txtarea.selectionStart === 0)
 	{
 		caretPos.start = txtarea.selectionStart;
 		caretPos.end = txtarea.selectionEnd;
@@ -384,19 +381,19 @@ function getCaretPosition(txtarea)
 		// a new selection of the whole textarea
 		var range_all = document.body.createTextRange();
 		range_all.moveToElementText(txtarea);
-		
+
 		// calculate selection start point by moving beginning of range_all to beginning of range
 		var sel_start;
 		for (sel_start = 0; range_all.compareEndPoints('StartToStart', range) < 0; sel_start++)
 		{
 			range_all.moveStart('character', 1);
 		}
-	
+
 		txtarea.sel_start = sel_start;
-	
+
 		// we ignore the end value for IE, this is already dirty enough and we don't need it
 		caretPos.start = txtarea.sel_start;
-		caretPos.end = txtarea.sel_start;			
+		caretPos.end = txtarea.sel_start;
 	}
 
 	return caretPos;
