@@ -82,7 +82,7 @@ class phpbb_notification_type_topic_in_queue extends phpbb_notification_type_top
 			'ignore_users'		=> array(),
 		), $options);
 
-		// 0 is for global
+		// 0 is for global moderator permissions
 		$auth_approve = $this->auth->acl_get_list(false, 'm_approve', array($topic['forum_id'], 0));
 
 		if (empty($auth_approve))
