@@ -96,19 +96,11 @@ class phpbb_db_sql_insert_buffer
 	*/
 	public function insert(array $row)
 	{
-		if (!$this->db_supports_multi_insert)
-		{
-			// The database does not support multi inserts.
-			// Pass data on to sql_multi_insert right away which will
-			// immediately send an INSERT INTO query to the database.
-			$this->db->sql_multi_insert($this->table_name, array($row));
-
-			return true;
-		}
-
 		$this->buffer[] = $row;
 
-		if (sizeof($this->buffer) >= $this->max_buffered_rows)
+		// Flush buffer if it is full or when DB does not support multi inserts.
+		// In the later case, the buffer will always only contain one row.
+		if (!$this->db_supports_multi_insert || sizeof($this->buffer) >= $this->max_buffered_rows)
 		{
 			return $this->flush();
 		}
