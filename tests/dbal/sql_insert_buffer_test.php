@@ -14,6 +14,15 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/config.xml');
 	}
 
+	protected function assert_config_count($db, $num_configs)
+	{
+		$sql = 'SELECT COUNT(*) AS num_configs
+			FROM phpbb_config';
+		$result = $db->sql_query($sql);
+		$this->assertEquals($num_configs, $db->sql_fetchfield('num_configs'));
+		$db->sql_freeresult($result);
+	}
+
 	public function insert_buffer_data()
 	{
 		$db = $this->new_dbal();
@@ -45,11 +54,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		$buffer = new phpbb_db_sql_insert_buffer($db, 'phpbb_config', 2);
 
-		$sql = 'SELECT COUNT(*) AS num_configs
-			FROM phpbb_config';
-		$result = $db->sql_query_limit($sql, 1);
-		$this->assertEquals(2, $db->sql_fetchfield('num_configs'));
-		$db->sql_freeresult($result);
+		$this->assert_config_count($db, 2);
 
 		// This call can be buffered
 		$buffer->insert(array(
@@ -60,29 +65,17 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		if ($db->multi_insert)
 		{
-			$sql = 'SELECT COUNT(*) AS num_configs
-				FROM phpbb_config';
-			$result = $db->sql_query_limit($sql, 1);
-			$this->assertEquals(2, $db->sql_fetchfield('num_configs'));
-			$db->sql_freeresult($result);
+			$this->assert_config_count($db, 2);
 		}
 		else
 		{
-			$sql = 'SELECT COUNT(*) AS num_configs
-				FROM phpbb_config';
-			$result = $db->sql_query_limit($sql, 1);
-			$this->assertEquals(3, $db->sql_fetchfield('num_configs'));
-			$db->sql_freeresult($result);
+			$this->assert_config_count($db, 3);
 		}
 
 		// Manually flush
 		$buffer->flush();
 
-		$sql = 'SELECT COUNT(*) AS num_configs
-			FROM phpbb_config';
-		$result = $db->sql_query_limit($sql, 1);
-		$this->assertEquals(3, $db->sql_fetchfield('num_configs'));
-		$db->sql_freeresult($result);
+		$this->assert_config_count($db, 3);
 	}
 
 	/**
@@ -95,11 +88,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		$buffer = new phpbb_db_sql_insert_buffer($db, 'phpbb_config', 2);
 
-		$sql = 'SELECT COUNT(*) AS num_configs
-			FROM phpbb_config';
-		$result = $db->sql_query_limit($sql, 1);
-		$this->assertEquals(2, $db->sql_fetchfield('num_configs'));
-		$db->sql_freeresult($result);
+		$this->assert_config_count($db, 2);
 
 		$buffer->insert(array(
 			'config_name'	=> 'name1',
@@ -114,11 +103,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 			'is_dynamic'	=> '0',
 		));
 
-		$sql = 'SELECT COUNT(*) AS num_configs
-			FROM phpbb_config';
-		$result = $db->sql_query_limit($sql, 1);
-		$this->assertEquals(4, $db->sql_fetchfield('num_configs'));
-		$db->sql_freeresult($result);
+		$this->assert_config_count($db, 4);
 	}
 
 	/**
@@ -131,11 +116,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		$buffer = new phpbb_db_sql_insert_buffer($db, 'phpbb_config', 2);
 
-		$sql = 'SELECT COUNT(*) AS num_configs
-			FROM phpbb_config';
-		$result = $db->sql_query_limit($sql, 1);
-		$this->assertEquals(2, $db->sql_fetchfield('num_configs'));
-		$db->sql_freeresult($result);
+		$this->assert_config_count($db, 2);
 
 		$buffer->insert_all(array(
 			array(
@@ -157,20 +138,12 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		if ($db->multi_insert)
 		{
-			$sql = 'SELECT COUNT(*) AS num_configs
-				FROM phpbb_config';
-			$result = $db->sql_query_limit($sql, 1);
-			$this->assertEquals(4, $db->sql_fetchfield('num_configs'));
-			$db->sql_freeresult($result);
+			$this->assert_config_count($db, 4);
 
 			// Manually flush
 			$buffer->flush();
 		}
 
-		$sql = 'SELECT COUNT(*) AS num_configs
-			FROM phpbb_config';
-		$result = $db->sql_query_limit($sql, 1);
-		$this->assertEquals(5, $db->sql_fetchfield('num_configs'));
-		$db->sql_freeresult($result);
+		$this->assert_config_count($db, 5);
 	}
 }
