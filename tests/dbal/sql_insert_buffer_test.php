@@ -33,16 +33,16 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		$this->assert_config_count($db, 2);
 
 		// This call can be buffered
-		$buffer->insert(array(
+		$this->assertTrue($buffer->insert(array(
 			'config_name'	=> 'name1',
 			'config_value'	=> 'value1',
 			'is_dynamic'	=> '0',
-		));
+		)));
 
 		$this->assert_config_count($db, 3);
 
 		// Manually flush
-		$buffer->flush();
+		$this->assertFalse($buffer->flush());
 
 		$this->assert_config_count($db, 3);
 	}
@@ -61,16 +61,16 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		$this->assert_config_count($db, 2);
 
 		// This call can be buffered
-		$buffer->insert(array(
+		$this->assertFalse($buffer->insert(array(
 			'config_name'	=> 'name1',
 			'config_value'	=> 'value1',
 			'is_dynamic'	=> '0',
-		));
+		)));
 
 		$this->assert_config_count($db, 2);
 
 		// Manually flush
-		$buffer->flush();
+		$this->assertTrue($buffer->flush());
 
 		$this->assert_config_count($db, 3);
 	}
@@ -84,18 +84,18 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		$this->assert_config_count($db, 2);
 
-		$buffer->insert(array(
+		$this->assertTrue($buffer->insert(array(
 			'config_name'	=> 'name1',
 			'config_value'	=> 'value1',
 			'is_dynamic'	=> '0',
-		));
+		)));
 
 		// This call flushes the values
-		$buffer->insert(array(
+		$this->assertTrue($buffer->insert(array(
 			'config_name'	=> 'name2',
 			'config_value'	=> 'value2',
 			'is_dynamic'	=> '0',
-		));
+		)));
 
 		$this->assert_config_count($db, 4);
 	}
@@ -113,18 +113,18 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		$this->assert_config_count($db, 2);
 
-		$buffer->insert(array(
+		$this->assertFalse($buffer->insert(array(
 			'config_name'	=> 'name1',
 			'config_value'	=> 'value1',
 			'is_dynamic'	=> '0',
-		));
+		)));
 
 		// This call flushes the values
-		$buffer->insert(array(
+		$this->assertTrue($buffer->insert(array(
 			'config_name'	=> 'name2',
 			'config_value'	=> 'value2',
 			'is_dynamic'	=> '0',
-		));
+		)));
 
 		$this->assert_config_count($db, 4);
 	}
@@ -138,7 +138,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		$this->assert_config_count($db, 2);
 
-		$buffer->insert_all(array(
+		$this->assertTrue($buffer->insert_all(array(
 			array(
 				'config_name'	=> 'name1',
 				'config_value'	=> 'value1',
@@ -154,7 +154,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 				'config_value'	=> 'value3',
 				'is_dynamic'	=> '0',
 			),
-		));
+		)));
 
 		$this->assert_config_count($db, 5);
 	}
@@ -172,7 +172,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		$this->assert_config_count($db, 2);
 
-		$buffer->insert_all(array(
+		$this->assertTrue($buffer->insert_all(array(
 			array(
 				'config_name'	=> 'name1',
 				'config_value'	=> 'value1',
@@ -188,12 +188,12 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 				'config_value'	=> 'value3',
 				'is_dynamic'	=> '0',
 			),
-		));
+		)));
 
 		$this->assert_config_count($db, 4);
 
 		// Manually flush
-		$buffer->flush();
+		$this->assertTrue($buffer->flush());
 
 		$this->assert_config_count($db, 5);
 	}
