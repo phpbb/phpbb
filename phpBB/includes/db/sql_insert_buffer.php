@@ -19,6 +19,21 @@ if (!defined('IN_PHPBB'))
 * Collects rows for insert into a database until the buffer size is reached.
 * Then flushes the buffer to the database and starts over again.
 *
+* Usage:
+* <code>
+*	$buffer = new phpbb_db_sql_insert_buffer($db, 'test_table', 1234);
+*
+*	while (do_stuff())
+*	{
+*		$buffer->insert(array(
+*			'column1' => 'value1',
+*			'column2' => 'value2',
+*		));
+*	}
+*
+*	$buffer->flush();
+* </code>
+*
 * @package dbal
 */
 class phpbb_db_sql_insert_buffer
