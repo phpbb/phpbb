@@ -58,9 +58,6 @@ class phpbb_db_sql_insert_buffer
 	/** @var phpbb_db_driver */
 	protected $db;
 
-	/** @var bool */
-	protected $db_supports_multi_insert;
-
 	/** @var string */
 	protected $table_name;
 
@@ -78,7 +75,6 @@ class phpbb_db_sql_insert_buffer
 	public function __construct(phpbb_db_driver $db, $table_name, $max_buffered_rows = 500)
 	{
 		$this->db = $db;
-		$this->db_supports_multi_insert = $db->multi_insert;
 		$this->table_name = $table_name;
 		$this->max_buffered_rows = $max_buffered_rows;
 	}
@@ -100,7 +96,7 @@ class phpbb_db_sql_insert_buffer
 
 		// Flush buffer if it is full or when DB does not support multi inserts.
 		// In the later case, the buffer will always only contain one row.
-		if (!$this->db_supports_multi_insert || sizeof($this->buffer) >= $this->max_buffered_rows)
+		if (!$this->db->multi_insert || sizeof($this->buffer) >= $this->max_buffered_rows)
 		{
 			return $this->flush();
 		}
