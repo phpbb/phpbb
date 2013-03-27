@@ -31,18 +31,21 @@ class phpbb_notification_submit_post_type_post_in_queue_test extends phpbb_notif
 					'm_approve',
 					array(1, 0),
 					array(
+						0 => array(
+							'm_approve' => array(9),
+						),
 						1 => array(
 							'm_approve' => array(3, 4, 6, 7, 8),
 						),
 					),
 				),
 				array(
-					array(3, 4, 6, 7, 8),
+					array(3, 4, 6, 7, 8, 9),
 					'f_read',
 					1,
 					array(
 						1 => array(
-							'f_read' => array(3, 6, 7, 8),
+							'f_read' => array(3, 6, 7, 8, 9),
 						),
 					),
 				),
@@ -84,6 +87,7 @@ class phpbb_notification_submit_post_type_post_in_queue_test extends phpbb_notif
 			*	6	=> Moderator, but already notified, should STILL receive a new notification
 			*	7	=> Moderator, but option disabled, should NOT receive a notification
 			*	8	=> Moderator, option set to default, should receive a notification
+			*	9	=> Moderator, has only global mod permissions, should receive a notification
 			*/
 			array(
 				array('force_approved_state' => false),
@@ -95,6 +99,7 @@ class phpbb_notification_submit_post_type_post_in_queue_test extends phpbb_notif
 					array('user_id' => 6, 'item_id' => 1, 'item_parent_id' => 1),
 					array('user_id' => 6, 'item_id' => 2, 'item_parent_id' => 1),
 					array('user_id' => 8, 'item_id' => 2, 'item_parent_id' => 1),
+					array('user_id' => 9, 'item_id' => 2, 'item_parent_id' => 1),
 				),
 			),
 		);

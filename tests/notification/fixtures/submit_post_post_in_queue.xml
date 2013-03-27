@@ -107,6 +107,14 @@
 			<value></value>
 			<value></value>
 		</row>
+		<row>
+			<value>9</value>
+			<value>test glboal-permissions</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
 	</table>
 	<table name="phpbb_user_notifications">
 		<column>item_type</column>
@@ -155,6 +163,13 @@
 			<value>7</value>
 			<value></value>
 			<value>0</value>
+		</row>
+		<row>
+			<value>needs_approval</value>
+			<value>0</value>
+			<value>9</value>
+			<value></value>
+			<value>1</value>
 		</row>
 	</table>
 </dataset>
