@@ -24,11 +24,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		$this->assert_config_count($db, 2);
 
 		// This call can be buffered
-		$this->assertTrue($buffer->insert(array(
-			'config_name'	=> 'name1',
-			'config_value'	=> 'value1',
-			'is_dynamic'	=> '0',
-		)));
+		$this->assertTrue($buffer->insert($this->get_row(1)));
 
 		$this->assert_config_count($db, 3);
 
@@ -52,11 +48,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		$this->assert_config_count($db, 2);
 
 		// This call can be buffered
-		$this->assertFalse($buffer->insert(array(
-			'config_name'	=> 'name1',
-			'config_value'	=> 'value1',
-			'is_dynamic'	=> '0',
-		)));
+		$this->assertFalse($buffer->insert($this->get_row(1)));
 
 		$this->assert_config_count($db, 2);
 
@@ -75,18 +67,10 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		$this->assert_config_count($db, 2);
 
-		$this->assertTrue($buffer->insert(array(
-			'config_name'	=> 'name1',
-			'config_value'	=> 'value1',
-			'is_dynamic'	=> '0',
-		)));
+		$this->assertTrue($buffer->insert($this->get_row(1)));
 
 		// This call flushes the values
-		$this->assertTrue($buffer->insert(array(
-			'config_name'	=> 'name2',
-			'config_value'	=> 'value2',
-			'is_dynamic'	=> '0',
-		)));
+		$this->assertTrue($buffer->insert($this->get_row(2)));
 
 		$this->assert_config_count($db, 4);
 	}
@@ -104,18 +88,10 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		$this->assert_config_count($db, 2);
 
-		$this->assertFalse($buffer->insert(array(
-			'config_name'	=> 'name1',
-			'config_value'	=> 'value1',
-			'is_dynamic'	=> '0',
-		)));
+		$this->assertFalse($buffer->insert($this->get_row(1)));
 
 		// This call flushes the values
-		$this->assertTrue($buffer->insert(array(
-			'config_name'	=> 'name2',
-			'config_value'	=> 'value2',
-			'is_dynamic'	=> '0',
-		)));
+		$this->assertTrue($buffer->insert($this->get_row(2)));
 
 		$this->assert_config_count($db, 4);
 	}
@@ -166,24 +142,21 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
+	protected function get_row($rownum)
+	{
+		return array(
+			'config_name'	=> "name$rownum",
+			'config_value'	=> "value$rownum",
+			'is_dynamic'	=> '0',
+		);
+	}
+
 	protected function get_three_rows()
 	{
 		return array(
-			array(
-				'config_name'	=> 'name1',
-				'config_value'	=> 'value1',
-				'is_dynamic'	=> '0',
-			),
-			array(
-				'config_name'	=> 'name2',
-				'config_value'	=> 'value2',
-				'is_dynamic'	=> '0',
-			),
-			array(
-				'config_name'	=> 'name3',
-				'config_value'	=> 'value3',
-				'is_dynamic'	=> '0',
-			),
+			$this->get_row(1),
+			$this->get_row(2),
+			$this->get_row(3),
 		);
 	}
 }
