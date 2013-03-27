@@ -777,9 +777,9 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogm');
 
 # User Notification Options (for first user)
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_post', 0, 2, '');
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_post', 0, 2, 'phpbb_notification_method_email');
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_topic', 0, 2, '');
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_topic', 0, 2, 'phpbb_notification_method_email');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('post', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('post', 0, 2, 'email');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('topic', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('topic', 0, 2, 'email');
 
 # POSTGRES COMMIT #
