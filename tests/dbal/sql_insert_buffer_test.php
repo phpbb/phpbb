@@ -48,6 +48,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 	{
 		$this->db->multi_insert = false;
 		$this->assertTrue($this->buffer->insert($this->get_row(1)));
+		$this->assert_config_count(3);
 		$this->assertTrue($this->buffer->insert($this->get_row(2)));
 		$this->assert_config_count(4);
 	}
@@ -56,6 +57,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 	{
 		$this->check_multi_insert_support();
 		$this->assertFalse($this->buffer->insert($this->get_row(1)));
+		$this->assert_config_count(2);
 		$this->assertTrue($this->buffer->insert($this->get_row(2)));
 		$this->assert_config_count(4);
 	}
