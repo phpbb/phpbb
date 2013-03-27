@@ -14,15 +14,6 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/config.xml');
 	}
 
-	protected function assert_config_count($db, $num_configs)
-	{
-		$sql = 'SELECT COUNT(*) AS num_configs
-			FROM phpbb_config';
-		$result = $db->sql_query($sql);
-		$this->assertEquals($num_configs, $db->sql_fetchfield('num_configs'));
-		$db->sql_freeresult($result);
-	}
-
 	public function test_multi_insert_disabled_insert_and_flush()
 	{
 		$db = $this->new_dbal();
@@ -196,5 +187,14 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		$this->assertTrue($buffer->flush());
 
 		$this->assert_config_count($db, 5);
+	}
+
+	protected function assert_config_count($db, $num_configs)
+	{
+		$sql = 'SELECT COUNT(*) AS num_configs
+			FROM phpbb_config';
+		$result = $db->sql_query($sql);
+		$this->assertEquals($num_configs, $db->sql_fetchfield('num_configs'));
+		$db->sql_freeresult($result);
 	}
 }
