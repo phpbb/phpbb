@@ -86,7 +86,8 @@ class phpbb_db_sql_insert_buffer
 	*
 	* @param array $row
 	*
-	* @return null
+	* @return bool		True when some data was flushed to the database.
+	*					False otherwise.
 	*/
 	public function insert(array $row)
 	{
@@ -96,15 +97,18 @@ class phpbb_db_sql_insert_buffer
 			// Pass data on to sql_multi_insert right away which will
 			// immediately send an INSERT INTO query to the database.
 			$this->db->sql_multi_insert($this->table_name, array($row));
-			return;
+
+			return true;
 		}
 
 		$this->buffer[] = $row;
 
 		if (sizeof($this->buffer) >= $this->max_buffered_rows)
 		{
-			$this->flush();
+			return $this->flush();
 		}
+
+		return false;
 	}
 
 	/**
@@ -116,20 +120,26 @@ class phpbb_db_sql_insert_buffer
 	*
 	* @param array $rows 
 	*
-	* @return null
+	* @return bool		True when some data was flushed to the database.
+	*					False otherwise.
 	*/
 	public function insert_all(array $rows)
 	{
+		$result = false;
+
 		foreach ($rows as $row)
 		{
-			$this->insert($row);
+			$result |= $this->insert($row);
 		}
+
+		return $result;
 	}
 
 	/**
 	* Flushes the buffer content to the DB and clears the buffer.
 	*
-	* @return null
+	* @return bool		True when some data was flushed to the database.
+	*					False otherwise.
 	*/
 	public function flush()
 	{
@@ -137,6 +147,10 @@ class phpbb_db_sql_insert_buffer
 		{
 			$this->db->sql_multi_insert($this->table_name, $this->buffer);
 			$this->buffer = array();
+
+			return true;
 		}
+
+		return false;
 	}
 }
