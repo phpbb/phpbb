@@ -90,7 +90,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 	{
 		$this->db->multi_insert = false;
 
-		$this->assertTrue($this->buffer->insert_all($this->get_three_rows()));
+		$this->assertTrue($this->buffer->insert_all($this->get_rows(3)));
 
 		$this->assert_config_count(5);
 	}
@@ -102,7 +102,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 			$this->markTestSkipped('Database does not support multi_insert');
 		}
 
-		$this->assertTrue($this->buffer->insert_all($this->get_three_rows()));
+		$this->assertTrue($this->buffer->insert_all($this->get_rows(3)));
 
 		$this->assert_config_count(4);
 
@@ -130,12 +130,13 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		);
 	}
 
-	protected function get_three_rows()
+	protected function get_rows($n)
 	{
-		return array(
-			$this->get_row(1),
-			$this->get_row(2),
-			$this->get_row(3),
-		);
+		$result = array();
+		for ($i = 0; $i < $n; ++$i)
+		{
+			$result[] = $this->get_row($i);
+		}
+		return $result;
 	}
 }
