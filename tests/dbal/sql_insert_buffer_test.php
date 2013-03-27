@@ -29,77 +29,50 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 	public function test_multi_insert_disabled_insert_and_flush()
 	{
 		$this->db->multi_insert = false;
-
-		// This call can be buffered
 		$this->assertTrue($this->buffer->insert($this->get_row(1)));
-
 		$this->assert_config_count(3);
-
-		// Manually flush
 		$this->assertFalse($this->buffer->flush());
-
 		$this->assert_config_count(3);
 	}
 
 	public function test_multi_insert_enabled_insert_and_flush()
 	{
 		$this->check_multi_insert_support();
-
-		// This call can be buffered
 		$this->assertFalse($this->buffer->insert($this->get_row(1)));
-
 		$this->assert_config_count(2);
-
-		// Manually flush
 		$this->assertTrue($this->buffer->flush());
-
 		$this->assert_config_count(3);
 	}
 
 	public function test_multi_insert_disabled_insert_with_flush()
 	{
 		$this->db->multi_insert = false;
-
 		$this->assertTrue($this->buffer->insert($this->get_row(1)));
-
-		// This call flushes the values
 		$this->assertTrue($this->buffer->insert($this->get_row(2)));
-
 		$this->assert_config_count(4);
 	}
 
 	public function test_multi_insert_enabled_insert_with_flush()
 	{
 		$this->check_multi_insert_support();
-
 		$this->assertFalse($this->buffer->insert($this->get_row(1)));
-
-		// This call flushes the values
 		$this->assertTrue($this->buffer->insert($this->get_row(2)));
-
 		$this->assert_config_count(4);
 	}
 
 	public function test_multi_insert_disabled_insert_all_and_flush()
 	{
 		$this->db->multi_insert = false;
-
 		$this->assertTrue($this->buffer->insert_all($this->get_rows(3)));
-
 		$this->assert_config_count(5);
 	}
 
 	public function test_multi_insert_enabled_insert_all_and_flush()
 	{
 		$this->check_multi_insert_support();
-
 		$this->assertTrue($this->buffer->insert_all($this->get_rows(3)));
-
 		$this->assert_config_count(4);
-
-		// Manually flush
 		$this->assertTrue($this->buffer->flush());
-
 		$this->assert_config_count(5);
 	}
 
