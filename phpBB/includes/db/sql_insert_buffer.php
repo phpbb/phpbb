@@ -31,6 +31,11 @@ if (!defined('IN_PHPBB'))
 *  - Usage of less PHP memory because data no longer needed is discarded on
 *    buffer flush.
 *
+* Attention:
+* Please note that users of this class have to call flush() to flush the
+* remaining rows to the database after their batch insert operation is
+* finished.
+*
 * Usage:
 * <code>
 *	$buffer = new phpbb_db_sql_insert_buffer($db, 'test_table', 1234);
