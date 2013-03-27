@@ -19,6 +19,18 @@ if (!defined('IN_PHPBB'))
 * Collects rows for insert into a database until the buffer size is reached.
 * Then flushes the buffer to the database and starts over again.
 *
+* Benefits over collecting a (possibly huge) insert array and then using
+* $db->sql_multi_insert() include:
+*
+*  - Going over max packet size of the database connection is usually prevented
+*    because the data is submitted in batches.
+*
+*  - Reaching database connection timeout is usually prevented because
+*    submission of batches talks to the database every now and then.
+*
+*  - Usage of less PHP memory because data no longer needed is discarded on
+*    buffer flush.
+*
 * Usage:
 * <code>
 *	$buffer = new phpbb_db_sql_insert_buffer($db, 'test_table', 1234);
