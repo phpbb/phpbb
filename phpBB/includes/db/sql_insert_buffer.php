@@ -118,11 +118,12 @@ class phpbb_db_sql_insert_buffer
 	*/
 	public function insert_all(array $rows)
 	{
-		$result = false;
+		// Using bitwise |= because PHP does not have logical ||=
+		$result = 0;
 
 		foreach ($rows as $row)
 		{
-			$result |= $this->insert($row);
+			$result |= (int) $this->insert($row);
 		}
 
 		return (bool) $result;
