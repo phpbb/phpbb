@@ -137,7 +137,7 @@ class phpbb_db_sql_insert_buffer
 			$result |= $this->insert($row);
 		}
 
-		return $result;
+		return (bool) $result;
 	}
 
 	/**
