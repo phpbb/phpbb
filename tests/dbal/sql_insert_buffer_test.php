@@ -18,6 +18,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 		$this->db = $this->new_dbal();
 		$this->buffer = new phpbb_db_sql_insert_buffer($this->db, 'phpbb_config', 2);
+		$this->assert_config_count(2);
 	}
 
 	public function getDataSet()
@@ -28,8 +29,6 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 	public function test_multi_insert_disabled_insert_and_flush()
 	{
 		$this->db->multi_insert = false;
-
-		$this->assert_config_count(2);
 
 		// This call can be buffered
 		$this->assertTrue($this->buffer->insert($this->get_row(1)));
@@ -49,8 +48,6 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 			$this->markTestSkipped('Database does not support multi_insert');
 		}
 
-		$this->assert_config_count(2);
-
 		// This call can be buffered
 		$this->assertFalse($this->buffer->insert($this->get_row(1)));
 
@@ -65,8 +62,6 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 	public function test_multi_insert_disabled_insert_with_flush()
 	{
 		$this->db->multi_insert = false;
-
-		$this->assert_config_count(2);
 
 		$this->assertTrue($this->buffer->insert($this->get_row(1)));
 
@@ -83,8 +78,6 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 			$this->markTestSkipped('Database does not support multi_insert');
 		}
 
-		$this->assert_config_count(2);
-
 		$this->assertFalse($this->buffer->insert($this->get_row(1)));
 
 		// This call flushes the values
@@ -97,8 +90,6 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 	{
 		$this->db->multi_insert = false;
 
-		$this->assert_config_count(2);
-
 		$this->assertTrue($this->buffer->insert_all($this->get_three_rows()));
 
 		$this->assert_config_count(5);
@@ -110,8 +101,6 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		{
 			$this->markTestSkipped('Database does not support multi_insert');
 		}
-
-		$this->assert_config_count(2);
 
 		$this->assertTrue($this->buffer->insert_all($this->get_three_rows()));
 
