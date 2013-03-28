@@ -220,6 +220,8 @@ class phpbb_session
 		$this->host					= $this->extract_current_hostname();
 		$this->page					= $this->extract_current_page($phpbb_root_path);
 
+		$this->storage->set_time_now($this->time_now);
+
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])
 		{
@@ -353,13 +355,18 @@ class phpbb_session
 		// if session id is set
 		if (!empty($this->session_id))
 		{
-			$sql = 'SELECT u.*, s.*
-				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
-				WHERE s.session_id = '" . $db->sql_escape($this->session_id) . "'
-					AND u.user_id = s.session_user_id";
-			$result = $db->sql_query($sql);
-			$this->data = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$this->data = $this->storage->get($this->session_id);
+
+			// retrieve user info if session storage only gets session data
+			if (isset($this->data['session_user_id']) && !isset($this->data['user_id']))
+			{
+				$sql = 'SELECT u.*
+					FROM ' . USERS_TABLE . " u
+					WHERE u.user_id = " . (int) $this->data['session_user_id'];
+				$result = $db->sql_query($sql);
+				$this->data = array_merge($this->data, $db->sql_fetchrow($result));
+				$db->sql_freeresult($result);
+			}
 
 			// Did the session exist in the DB?
 			if (isset($this->data['user_id']))
@@ -737,7 +744,7 @@ class phpbb_session
 			else
 			{
 				// If the ip and browser does not match make sure we only have one bot assigned to one session
-				$db->sql_query('DELETE FROM ' . SESSIONS_TABLE . ' WHERE session_user_id = ' . $this->data['user_id']);
+				$this->storage->delete_by_user_id($this->data['user_id']);
 			}
 		}
 
@@ -766,26 +773,14 @@ class phpbb_session
 
 		$db->sql_return_on_error(true);
 
-		$sql = 'DELETE
-			FROM ' . SESSIONS_TABLE . '
-			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'
-				AND session_user_id = ' . ANONYMOUS;
-
-		if (!defined('IN_ERROR_HANDLER') && (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows()))
+		if (!defined('IN_ERROR_HANDLER') && (!$this->session_id || !$this->storage->delete($this->session_id, ANONYMOUS)))
 		{
 			// Limit new sessions in 1 minute period (if required)
 			if (empty($this->data['session_time']) && $config['active_sessions'])
 			{
-//				$db->sql_return_on_error(false);
+				$num_sessions = $this->storage->num_active_sessions();
 
-				$sql = 'SELECT COUNT(session_id) AS sessions
-					FROM ' . SESSIONS_TABLE . '
-					WHERE session_time >= ' . ($this->time_now - 60);
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if ((int) $row['sessions'] > (int) $config['active_sessions'])
+				if ((int) $num_sessions > (int) $config['active_sessions'])
 				{
 					send_status_line(503, 'Service Unavailable');
 					trigger_error('BOARD_UNAVAILABLE');
@@ -812,8 +807,7 @@ class phpbb_session
 		$sql_ary['session_page'] = (string) substr($this->page['page'], 0, 199);
 		$sql_ary['session_forum_id'] = $this->page['forum'];
 
-		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-		$db->sql_query($sql);
+		$this->storage->create($sql_ary);
 
 		$db->sql_return_on_error(false);
 
@@ -838,15 +832,12 @@ class phpbb_session
 
 			unset($cookie_expire);
 
-			$sql = 'SELECT COUNT(session_id) AS sessions
-					FROM ' . SESSIONS_TABLE . '
-					WHERE session_user_id = ' . (int) $this->data['user_id'] . '
-					AND session_time >= ' . (int) ($this->time_now - (max($config['session_length'], $config['form_token_lifetime'])));
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$num_sessions = $this->storage->num_sessions(
+				$this->data['user_id'],
+				$this->time_now - (max($config['session_length'], $config['form_token_lifetime']))
+			);
 
-			if ((int) $row['sessions'] <= 1 || empty($this->data['user_form_salt']))
+			if ($num_sessions <= 1 || empty($this->data['user_form_salt']))
 			{
 				$this->data['user_form_salt'] = unique_id();
 				// Update the form key
@@ -885,10 +876,7 @@ class phpbb_session
 	{
 		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx, $phpbb_container;
 
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
-				AND session_user_id = " . (int) $this->data['user_id'];
-		$db->sql_query($sql);
+		$this->storage->delete($this->session_id, $this->data['user_id']);
 
 		// Allow connecting logout with external auth method logout
 		$method = basename(trim($config['auth_method']));
@@ -1414,13 +1402,7 @@ class phpbb_session
 		$db->sql_query($sql);
 
 		// If the user is logged in, update last visit info first before deleting sessions
-		$sql = 'SELECT session_time, session_page
-			FROM ' . SESSIONS_TABLE . '
-			WHERE session_user_id = ' . (int) $user_id . '
-			ORDER BY session_time DESC';
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$row = $this->storage->get_newest($user_id);
 
 		if ($row)
 		{
@@ -1491,11 +1473,7 @@ class phpbb_session
 
 	function unset_admin()
 	{
-		global $db;
-		$sql = 'UPDATE ' . SESSIONS_TABLE . '
-			SET session_admin = 0
-			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'';
-		$db->sql_query($sql);
+		$this->storage->unset_admin($this->session_id);
 	}
 
 	/**
@@ -1506,8 +1484,6 @@ class phpbb_session
 	*/
 	public function update_session($session_data, $session_id = null)
 	{
-		global $db;
-
 		$session_id = ($session_id) ? $session_id : $this->session_id;
 
 		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $session_data) . "
