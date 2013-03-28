@@ -108,6 +108,8 @@ class phpbb_db_migration_data_310_dev extends phpbb_db_migration
 			array('config.add', array('site_home_url', '')),
 			array('config.add', array('site_home_text', '')),
 
+			array('config.add', array('board_home_text', '')),
+
 			array('permission.add', array('u_chgprofileinfo', true, 'u_sig')),
 
 			array('module.add', array(

@@ -59,6 +59,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email', 'add
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig', '{L_CONFIG_BOARD_EMAIL_SIG}');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_hide_emails', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_home_text', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone', 'UTC');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_interval', '10');
