@@ -41,9 +41,11 @@ if (!function_exists('phpbb_require_updated'))
 	}
 }
 
-function phpbb_end_update($cache)
+function phpbb_end_update($cache, $config)
 {
 	$cache->purge();
+
+	$config->increment('assets_version', 1);
 
 ?>
 								</p>
@@ -232,7 +234,7 @@ while (!$migrator->finished())
 	{
 		echo $e->getLocalisedMessage($user);
 
-		phpbb_end_update($cache);
+		phpbb_end_update($cache, $config);
 	}
 
 	$state = array_merge(array(
@@ -265,7 +267,7 @@ while (!$migrator->finished())
 		echo $user->lang['DATABASE_UPDATE_NOT_COMPLETED'] . '<br />';
 		echo '<a href="' . append_sid($phpbb_root_path . 'test.' . $phpEx) . '">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
 
-		phpbb_end_update($cache);
+		phpbb_end_update($cache, $config);
 	}
 }
 
@@ -276,4 +278,4 @@ if ($orig_version != $config['version'])
 
 echo $user->lang['DATABASE_UPDATE_COMPLETE'];
 
-phpbb_end_update($cache);
+phpbb_end_update($cache, $config);
