@@ -89,6 +89,7 @@ class phpbb_notification_type_bookmark extends phpbb_notification_type_post
 		{
 			return array();
 		}
+		sort($users);
 
 		$auth_read = $this->auth->acl_get_list($users, 'f_read', $post['forum_id']);
 
