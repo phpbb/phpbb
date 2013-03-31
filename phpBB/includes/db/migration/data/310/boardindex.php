@@ -11,7 +11,7 @@ class phpbb_db_migration_data_310_boardindex extends phpbb_db_migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.1.0-dev', '>=');
+		return isset($this->config['board_index_text']);
 	}
 
 	public function update_data()
