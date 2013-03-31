@@ -227,6 +227,16 @@ class phpbb_extension_finder
 	*/
 	protected function sanitise_directory($directory)
 	{
+		if (is_string($this->query['core_directory']) && strpos($this->query['core_directory'], '/styles/') !== false && strpos($directory, '/' . $this->phpbb_root_path) === 0)
+		{
+			// Remove phpBB root path from the beginning of the directory name,
+			// when we try to find styles. Styles have the root path prepended
+			// when they are added to the locator. If we do not remove it here,
+			// template files from extensions can not be used, when the current
+			// root path is not the phpBB root path.
+			$directory = '/' . substr($directory, strlen('/' . $this->phpbb_root_path));
+		}
+
 		$directory = preg_replace('#(?:^|/)\./#', '/', $directory);
 		$dir_len = strlen($directory);
 

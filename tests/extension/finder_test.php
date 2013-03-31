@@ -71,6 +71,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		sort($dirs);
 		$this->assertEquals(array(
+			dirname(__FILE__) . '/ext/foo/styles/prosilver/template/',
 			dirname(__FILE__) . '/ext/foo/sub/type/',
 			dirname(__FILE__) . '/ext/foo/type/',
 			dirname(__FILE__) . '/ext/foo/typewrong/',
