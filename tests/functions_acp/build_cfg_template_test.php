@@ -234,4 +234,39 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
+
+	public function build_cfg_template_select_data()
+	{
+		return array(
+			array(
+				array('select'),
+				'key_name',
+				array('config_key_name'	=> '0'),
+				'config_key_name',
+				array(),
+				'<select name="config[config_key_name]" id="key_name"><option value="1">First_Option</option><option value="2" selected="selected">Second_Option</option><option value="3">Third_Option</option></select>',
+			),
+			array(
+				array('select', 8),
+				'key_name',
+				array('config_key_name'	=> '1'),
+				'config_key_name',
+				array(),
+				'<select name="config[config_key_name]" id="key_name" size="8"><option value="1">First_Option</option><option value="2" selected="selected">Second_Option</option><option value="3">Third_Option</option></select>',
+			),
+		);
+	}
+
+	/**
+	* @dataProvider build_cfg_template_select_data
+	*/
+	public function test_build_cfg_template_select($tpl_type, $key, $new, $config_key, $vars, $expected)
+	{
+		global $user, $phpbb_dispatcher;
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user->lang = new phpbb_mock_lang();
+
+		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+	}
 }
