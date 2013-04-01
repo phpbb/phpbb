@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
+
 class metadata_manager_test extends phpbb_database_test_case
 {
 	protected $class_loader;
