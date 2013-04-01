@@ -242,6 +242,7 @@ services:
         arguments:
             - @ext.manager
             - @style.path_provider
+            - %core.root_path%
 
     style.path_provider:
         class: phpbb_style_path_provider

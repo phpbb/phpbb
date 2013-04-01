@@ -209,7 +209,7 @@ class messenger
 		if (!isset($this->tpl_msg[$template_lang . $template_file]))
 		{
 			$style_resource_locator = new phpbb_style_resource_locator();
-			$style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider());
+			$style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider(), $phpbb_root_path);
 			$tpl = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, new phpbb_template_context(), $phpbb_extension_manager);
 			$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, $style_path_provider, $tpl);
 

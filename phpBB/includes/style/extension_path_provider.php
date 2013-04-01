@@ -40,17 +40,22 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 	*/
 	protected $base_path_provider;
 
+	/** @var string */
+	protected $phpbb_root_path;
+
 	/**
 	* Constructor stores extension manager
 	*
 	* @param phpbb_extension_manager $extension_manager phpBB extension manager
 	* @param phpbb_style_path_provider $base_path_provider A simple path provider
 	*            to provide paths to be located in extensions
+	* @param string		$phpbb_root_path	phpBB root path
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, phpbb_style_path_provider $base_path_provider)
+	public function __construct(phpbb_extension_manager $extension_manager, phpbb_style_path_provider $base_path_provider, $phpbb_root_path)
 	{
 		parent::__construct($extension_manager);
 		$this->base_path_provider = $base_path_provider;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -91,6 +96,14 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 					$directories['style'][] = $path;
 					if ($path && !phpbb_is_absolute($path))
 					{
+						// Remove phpBB root path from the style path,
+						// so the finder is able to find extension styles,
+						// when the root path is not ./
+						if (strpos($path, $this->phpbb_root_path) === 0)
+						{
+							$path = substr($path, strlen($this->phpbb_root_path));
+						}
+
 						$result = $finder->directory('/' . $this->ext_dir_prefix . $path)
 							->get_directories(true, false, true);
 						foreach ($result as $ext => $ext_path)
