@@ -71,39 +71,8 @@ if ($feed === false)
 	trigger_error('NO_FEED');
 }
 
-$sql_array = array(
-				'SELECT'	=> 'a.*',
-				'FROM'		=> array(
-					ATTACHMENTS_TABLE	=>	'a'
-				),			    
-				'WHERE'		=> 'a.in_message = 0 ',
-				'ORDER_BY'	=> 'a.filetime DESC, a.post_msg_id ASC'
-			);
-
-if ($topic_id)
-{
-	$sql_array['WHERE'] .= 'AND a.topic_id = ' . $topic_id;
-}
-else if ($forum_id)
-{
-	$sql_array['LEFT_JOIN'] = array(
-									array(
-										'FROM'  => array(TOPICS_TABLE => 't'),
-										'ON'    => 'a.topic_id = t.topic_id'
-									)
-								);
-	$sql_array['WHERE'] .= 'AND t.forum_id = ' . $forum_id;
-}
-
-$sql = $db->sql_build_query('SELECT', $sql_array);
-$result = $db->sql_query($sql);
-
-// Set attachments in feed items
-while ($row = $db->sql_fetchrow($result))
-{
-	$attachments[$row['post_msg_id']][] = $row;
-}
-$db->sql_freeresult($result);
+// Get attachments for this feed
+$feed->fetch_attachments();
 
 // Open Feed
 $feed->open();
@@ -140,7 +109,7 @@ while ($row = $feed->get_item())
 		'title'			=> censor_text($title),
 		'category'		=> ($config['feed_item_statistics'] && !empty($row['forum_id'])) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
 		'category_name'	=> ($config['feed_item_statistics'] && isset($row['forum_name'])) ? $row['forum_name'] : '',
-		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], (($row['post_attachment']) ? $attachments[$row['post_id']] : null))),
+		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], (($row['post_attachment']) ? $feed->attachments[$row['post_id']] : null))),
 		'statistics'	=> '',
 	);
 
@@ -349,7 +318,7 @@ function feed_generate_content($content, $uid, $bitfield, $options, $forum_id, $
 	$content	= preg_replace( '#<(script|iframe)([^[]+)\1>#siU', ' <strong>$1</strong> ', $content);
 
 	// Parse inline images to display with the feed
-	if ($post_attachments != null)
+	if (count($post_attachments) > 0)
 	{
 		$update_count = array();
 		parse_attachments($forum_id, $content, $post_attachments, $update_count);
@@ -687,6 +656,7 @@ class phpbb_feed_base
 class phpbb_feed_post_base extends phpbb_feed_base
 {
 	var $num_items = 'feed_limit_post';
+	var $attachments = array();
 
 	function set_keys()
 	{
@@ -719,6 +689,45 @@ class phpbb_feed_post_base extends phpbb_feed_base
 				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('published')])
 				. (($this->is_moderator_approve_forum($row['forum_id']) && !$row['post_approved']) ? ' ' . $this->separator_stats . ' ' . $user->lang['POST_UNAPPROVED'] : '');
 		}
+	}
+
+	function fetch_attachments()
+	{
+		global $db;
+		
+		$sql_array = array(
+						'SELECT'	=> 'a.*',
+						'FROM'		=> array(
+							ATTACHMENTS_TABLE	=>	'a'
+						),			    
+						'WHERE'		=> 'a.in_message = 0 ',
+						'ORDER_BY'	=> 'a.filetime DESC, a.post_msg_id ASC'
+					);
+		
+		if (isset($this->topic_id))
+		{
+			$sql_array['WHERE'] .= 'AND a.topic_id = ' . $this->topic_id;
+		}
+		else if (isset($this->forum_id))
+		{
+			$sql_array['LEFT_JOIN'] = array(
+											array(
+												'FROM'  => array(TOPICS_TABLE => 't'),
+												'ON'    => 'a.topic_id = t.topic_id'
+											)
+										);
+			$sql_array['WHERE'] .= 'AND t.forum_id = ' . $this->forum_id;
+		}
+
+		$sql = $db->sql_build_query('SELECT', $sql_array);
+		$result = $db->sql_query($sql);
+		
+		// Set attachments in feed items
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$this->attachments[$row['post_msg_id']][] = $row;
+		}
+		$db->sql_freeresult($result);
 	}
 }
 
