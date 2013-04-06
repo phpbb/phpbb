@@ -270,7 +270,7 @@ function feed_format_date($time)
 **/
 function feed_generate_content($content, $uid, $bitfield, $options, $forum_id, $post_attachments)
 {
-	global $user, $db, $config, $phpbb_root_path, $phpEx, $board_url;
+	global $user, $config, $phpbb_root_path, $phpEx, $board_url;
 
 	if (empty($content))
 	{
