@@ -110,7 +110,7 @@ while ($row = $feed->get_item())
 		'title'			=> censor_text($title),
 		'category'		=> ($config['feed_item_statistics'] && !empty($row['forum_id'])) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
 		'category_name'	=> ($config['feed_item_statistics'] && isset($row['forum_name'])) ? $row['forum_name'] : '',
-		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], (($row['post_attachment']) ? $feed->attachments[$row['post_id']] : null))),
+		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], (($row['post_attachment']) ? $feed->attachments[$row['post_id']] : array()))),
 		'statistics'	=> '',
 	);
 
@@ -334,7 +334,7 @@ function feed_generate_content($content, $uid, $bitfield, $options, $forum_id, $
 	}	
 
 	// Remove Comments from inline attachments [ia]
-	$content	= preg_replace('#<dd>(.*?)</dd>#','',$content);
+	$content = preg_replace('#<dd>(.*?)</dd>#','',$content);
 
 	// Replace some entities with their unicode counterpart
 	$entities = array(
@@ -709,7 +709,7 @@ class phpbb_feed_post_base extends phpbb_feed_base
 	function fetch_attachments()
 	{
 		global $db;
-		
+
 		$sql_array = array(
 						'SELECT'	=> 'a.*',
 						'FROM'		=> array(
@@ -718,7 +718,7 @@ class phpbb_feed_post_base extends phpbb_feed_base
 						'WHERE'		=> 'a.in_message = 0 ',
 						'ORDER_BY'	=> 'a.filetime DESC, a.post_msg_id ASC'
 					);
-		
+
 		if (isset($this->topic_id))
 		{
 			$sql_array['WHERE'] .= 'AND a.topic_id = ' . $this->topic_id;
@@ -736,7 +736,7 @@ class phpbb_feed_post_base extends phpbb_feed_base
 
 		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query($sql);
-		
+
 		// Set attachments in feed items
 		while ($row = $db->sql_fetchrow($result))
 		{
