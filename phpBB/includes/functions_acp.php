@@ -251,6 +251,18 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		case 'password':
 		case 'url':
 		case 'email':
+		case 'color':
+		case 'date':
+		case 'time':
+		case 'datetime':
+		case 'datetime-local':
+		case 'month':
+		case 'range':
+		case 'search':
+		case 'tel':
+		case 'time':
+		case 'url':
+		case 'week':
 			$size = (int) $tpl_type[1];
 			$maxlength = (int) $tpl_type[2];
 
