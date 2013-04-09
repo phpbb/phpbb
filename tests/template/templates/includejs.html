@@ -5,4 +5,7 @@
 <!-- INCLUDEJS subdir/{PARENT} -->
 <!-- INCLUDEJS {SUBDIR}/subsubdir/{PARENT} -->
 <!-- INCLUDEJS {SUBDIR}/parent_only.{EXT} -->
+<!-- DEFINE $TEST = 'child_only.js?test1=1&amp;test2=2#test3' -->
+<!-- INCLUDEJS {$TEST} -->
+<!-- INCLUDEJS parent_only.js?test1=1&amp;test2=2#test3 -->
 {SCRIPTS}

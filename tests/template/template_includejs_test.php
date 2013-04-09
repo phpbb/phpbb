@@ -24,6 +24,8 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 			'<script src="' . $this->test_path . '/templates/subdir/parent_only.js?assets_version=1"></script>',
 			'<script src="' . $this->test_path . '/templates/subdir/subsubdir/parent_only.js?assets_version=1"></script>',
 			'<script src="' . $this->test_path . '/templates/subdir/parent_only.js?assets_version=1"></script>',
+			'<script src="' . $this->test_path . '/templates/child_only.js?test1=1&amp;test2=2&amp;assets_version=1#test3"></script>',
+			'<script src="' . $this->test_path . '/parent_templates/parent_only.js?test1=1&amp;test2=2&amp;assets_version=1#test3"></script>',
 		);
 
 		// Run test
