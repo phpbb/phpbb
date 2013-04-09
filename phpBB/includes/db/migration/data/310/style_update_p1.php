@@ -19,6 +19,20 @@ class phpbb_db_migration_data_310_style_update_p1 extends phpbb_db_migration
 		return array('phpbb_db_migration_data_30x_3_0_11');
 	}
 
+	public function update_schema()
+	{
+		return array(
+			'add_columns'	=> array(
+				$this->table_prefix . 'styles'		=> array(
+					'style_path'			=> array('VCHAR:100', ''),
+					'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
+					'style_parent_id'		=> array('UINT', 0),
+					'style_parent_tree'		=> array('TEXT', ''),
+				),
+			),
+		);
+	}
+
 	public function update_data()
 	{
 		return array(
