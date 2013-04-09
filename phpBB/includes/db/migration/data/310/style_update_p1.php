@@ -33,6 +33,20 @@ class phpbb_db_migration_data_310_style_update_p1 extends phpbb_db_migration
 		);
 	}
 
+	public function revert_schema()
+	{
+		return array(
+			'drop_columns'	=> array(
+				$this->table_prefix . 'styles'		=> array(
+					'style_path',
+					'bbcode_bitfield',
+					'style_parent_id',
+					'style_parent_tree',
+				),
+			),
+		);
+	}
+
 	public function update_data()
 	{
 		return array(
