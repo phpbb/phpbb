@@ -152,7 +152,7 @@ $('[data-ajax]').each(function() {
 * Automatically resize textarea
 */
 $(document).ready(function() {
-	phpbb.resizeTextArea($('textarea'), {minHeight: 75});
+	phpbb.resizeTextArea($('textarea:not(.no-auto-resize)'), {minHeight: 75});
 });
 
 
