@@ -491,25 +491,33 @@ class phpbb_template
 	*/
 	public function _js_include($file, $locate = false, $relative = false)
 	{
+		$path = $this->locator->parse_resource_path($file);
+		$urlencode = false;
+
 		// Locate file
 		if ($locate)
 		{
-			$located = $this->locator->get_first_file_location(array($file), false, true);
+			$located = $this->locator->get_first_file_location(array($path['filename']), false, true);
 			if ($located)
 			{
-				$file = $located;
+				$path['filename'] = $located;
+				$urlencode = true;
 			}
 		}
 		else if ($relative)
 		{
-			$file = $this->phpbb_root_path . $file;
+			$path['filename'] = $this->phpbb_root_path . $path['filename'];
 		}
 
-		$file .= (strpos($file, '?') === false) ? '?' : '&';
-		$file .= 'assets_version=' . $this->config['assets_version'];
+		if ($path['protocol'] === false && substr($path['filename'], 0, 2) != '//')
+		{
+			$path['params'] = (strlen($path['params']) ? $path['params'] . '&amp;' : '') . 'assets_version=' . $this->config['assets_version'];
+		}
+
+		$file = $this->locator->join_resource_path($path, $urlencode);
 
 		// Add HTML code
-		$code = '<script src="' . htmlspecialchars($file) . '"></script>';
+		$code = '<script src="' . $file . '"></script>';
 		$this->context->append_var('SCRIPTS', $code);
 	}
 }

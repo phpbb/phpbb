@@ -1125,14 +1125,20 @@ class phpbb_template_filter extends php_user_filter
 			return $this->parse_dynamic_path($tag_args, '_js_include');
 		}
 
+		// Remove URL parameters
+		$path = $this->locator->parse_resource_path($tag_args);
+
 		// Locate file
-		$filename = $this->locator->get_first_file_location(array($tag_args), false, true);
+		$filename = $this->locator->get_first_file_location(array($path['filename']), false, true);
 
 		if ($filename === false)
 		{
 			// File does not exist, find it during run time
-			return ' $_template->_js_include(\'' . addslashes($tag_args) . '\', true); ';
+			return ' $_template->_js_include(\'' . addslashes($path['full']) . '\', true); ';
 		}
+
+		$path['filename'] = $filename;
+		$filename = $this->locator->join_resource_path($path, true);
 
 		if (substr($filename, 0, strlen($this->phpbb_root_path)) != $this->phpbb_root_path)
 		{
