@@ -53,6 +53,14 @@ class phpbb_extension_modules_test extends phpbb_test_case
 						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('ACP_MODS')),
 					),
 				),
+				'acp_foobar' => array(
+					'filename'	=> 'acp_foobar',
+					'title'		=> 'ACP Foobar',
+					'version'	=> '3.1.0-dev',
+					'modes'		=> array(
+						'test'		=> array('title' => 'Test', 'auth' => '', 'cat' => array('ACP_GENERAL')),
+					),
+				),
 			), $acp_modules);
 
 		$this->acp_modules->module_class = 'mcp';
