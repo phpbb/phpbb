@@ -577,10 +577,11 @@ class acp_modules
 			// manually because it does not support auto loading
 			if (!class_exists($info_class))
 			{
-				$info_class = str_replace("phpbb_{$module_class}_info_", '', $cur_module) . '_info';
-				if (file_exists($directory . $info_class . '.' . $phpEx))
+				$info_class_file = str_replace("phpbb_{$module_class}_info_", '', $cur_module);
+				$info_class = $info_class_file . '_info';
+				if (file_exists($directory . $info_class_file . '.' . $phpEx))
 				{
-					include($directory . $info_class . '.' . $phpEx);
+					include($directory . $info_class_file . '.' . $phpEx);
 				}
 			}
 
