@@ -600,7 +600,7 @@ phpbb.resizeTextArea = function(items) {
 		var $item = $(item);
 		if ($item.hasClass('auto-resized'))
 		{
-			$(item).css('height', '').removeClass('auto-resized');
+			$(item).css({height: '', resize: ''}).removeClass('auto-resized');
 			configuration.resetCallback.call(item, $item);
 		}
 	};
@@ -609,7 +609,7 @@ phpbb.resizeTextArea = function(items) {
 	{
 		function setHeight(height)
 		{
-			$item.css('height', height + 'px').addClass('auto-resized');
+			$item.css({height: height + 'px', resize: 'none'}).addClass('auto-resized');
 			configuration.resizeCallback.call(item, $item);
 		}
 
@@ -640,7 +640,7 @@ phpbb.resizeTextArea = function(items) {
 		$(this).each(function() {
 			autoResize(this);
 		});
-	}).css('resize', 'none').change();
+	}).change();
 
 	$(window).resize(function() {
 		items.each(function() {
