@@ -90,10 +90,10 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		// Copy back the board installed extensions from the temp directory
 		self::$helper->copy_dir($phpbb_root_path . 'store/temp_ext/', $phpbb_root_path . 'ext/');
 
-		self::$copied_files[] = $phpbb_root_path . 'store/temp_ext/';
-
 		// Remove all of the files we copied around (from board ext -> temp_ext, from test ext -> board ext)
 		self::$helper->remove_files(self::$copied_files);
+
+		self::$helper->empty_dir($phpbb_root_path . 'store/temp_ext/');
 	}
 
 	public function test_list()
