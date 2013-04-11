@@ -81,7 +81,7 @@ class acp_extensions
 			case 'enable_pre':
 				if (!$md_manager->validate_enable())
 				{
-					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($phpbb_extension_manager->enabled($ext_name))
@@ -100,7 +100,7 @@ class acp_extensions
 			case 'enable':
 				if (!$md_manager->validate_enable())
 				{
-					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				try
