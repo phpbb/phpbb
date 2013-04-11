@@ -88,8 +88,6 @@ class phpbb_db_migrator
 		{
 			$this->tools[$tool->get_name()] = $tool;
 		}
-
-		$this->load_migration_state();
 	}
 
 	/**
