@@ -146,7 +146,7 @@ switch ($mode)
 
 		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
-		$user_ary = array();
+		$user_ary = $user_ids = $group_users = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$row['forums'] = '';
@@ -157,11 +157,13 @@ switch ($mode)
 		}
 		$db->sql_freeresult($result);
 
-		if ($config['teampage_forums'])
+		$user_ids = array_unique($user_ids);
+
+		if (!empty($user_ids) && $config['teampage_forums'])
 		{
 			$template->assign_var('S_DISPLAY_MODERATOR_FORUMS', true);
 			// Get all moderators
-			$perm_ary = $auth->acl_get_list(array_unique($user_ids), array('m_'), false);
+			$perm_ary = $auth->acl_get_list($user_ids, array('m_'), false);
 
 			foreach ($perm_ary as $forum_id => $forum_ary)
 			{
