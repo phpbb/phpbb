@@ -7,6 +7,9 @@
 *
 */
 
+/**
+* @group functional
+*/
 class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 {
 	static private $copied_files = array();
