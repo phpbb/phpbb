@@ -213,6 +213,7 @@ if (!$db_tools->sql_table_exists($table_prefix . 'migrations'))
 }
 
 $migrator = $phpbb_container->get('migrator');
+$migrator->load_migration_state();
 $extension_manager = $phpbb_container->get('ext.manager');
 $finder = $extension_manager->get_finder();
 
