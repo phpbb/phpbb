@@ -34,7 +34,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		self::$helper->empty_dir($phpbb_root_path . 'ext/');
 
 		// Copy our ext/ files from the test case to the board
-		self::$copied_files = array_merge(self::$copied_files, self::$helper->copy_dir(dirname(__FILE__) . '/ext/', $phpbb_root_path . 'ext/'));
+		self::$copied_files = array_merge(self::$copied_files, self::$helper->copy_dir(dirname(__FILE__) . '/../extension/ext/', $phpbb_root_path . 'ext/'));
 	}
 
 	public function setUp()
