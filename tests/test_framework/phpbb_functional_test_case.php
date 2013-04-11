@@ -318,18 +318,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected function remove_user_group($group_name, $usernames)
 	{
-		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container;
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
 
 		$config = new phpbb_config(array());
 		$config['coppa_enable'] = 0;
 
 		$db = $this->get_db();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = $this->getMock('phpbb_user');
+		$auth = $this->getMock('phpbb_auth');
 
-		$phpbb_log = $this->getMock('phpbb_log');
-		$phpbb_log
-			->expects($this->any())
-			->method('add')
-			->will($this->returnValue(true));
+		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
 		$cache_driver = new phpbb_cache_driver_null();
@@ -348,8 +347,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
 		}
-		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$auth = $this->getMock('Observer', array('acl_clear_prefetch'));
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
@@ -363,18 +360,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected function add_user_group($group_name, $usernames)
 	{
-		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container;
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
 
 		$config = new phpbb_config(array());
 		$config['coppa_enable'] = 0;
 
 		$db = $this->get_db();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = $this->getMock('phpbb_user');
+		$auth = $this->getMock('phpbb_auth');
 
-		$phpbb_log = $this->getMock('phpbb_log');
-		$phpbb_log
-			->expects($this->any())
-			->method('add')
-			->will($this->returnValue(true));
+		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
 		$cache_driver = new phpbb_cache_driver_null();
@@ -393,8 +389,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
 		}
-		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$auth = $this->getMock('Observer', array('acl_clear_prefetch'));
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
