@@ -40,4 +40,13 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		$this->assert_response_success();
 		$this->assertContains('admin', $crawler->filter('h2')->text());
 	}
+
+	public function test_leaders()
+	{
+		$this->login();
+		$this->remove_user_group('ADMINISTRATORS', array('admin'));
+
+		$crawler = $this->request('GET', 'memberlist.php?mode=leaders&sid=' . $this->sid);
+		$this->assert_response_success();
+	}
 }

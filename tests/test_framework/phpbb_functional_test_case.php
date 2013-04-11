@@ -316,6 +316,46 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return user_add($user_row);
 	}
 
+	protected function remove_user_group($group_name, $usernames)
+	{
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_container;
+
+		$config = new phpbb_config(array());
+		$config['coppa_enable'] = 0;
+
+		$db = $this->get_db();
+
+		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new phpbb_cache_driver_null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
+
+		if (!function_exists('utf_clean_string'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
+		}
+		if (!function_exists('group_user_del'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
+		}
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$auth = $this->getMock('Observer', array('acl_clear_prefetch'));
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		return group_user_del($group_id, false, $usernames, $group_name);
+	}
+
 	protected function login($username = 'admin')
 	{
 		$this->add_lang('ucp');
