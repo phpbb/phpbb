@@ -44,7 +44,6 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 	public function test_leaders()
 	{
 		$this->login();
-		$this->create_user('memberlist-test-user');
 		$this->create_user('memberlist-test-moderator');
 
 		// Admin should be listed, user not
