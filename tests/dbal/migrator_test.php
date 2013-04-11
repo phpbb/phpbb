@@ -55,6 +55,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			'phpbb_',
 			$tools
 		);
+
 		$this->extension_manager = new phpbb_extension_manager(
 			new phpbb_mock_container_builder(),
 			$this->db,
@@ -69,6 +70,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 	public function test_update()
 	{
+		$this->migrator->load_migration_state();
 		$this->migrator->set_migrations(array('phpbb_dbal_migration_dummy'));
 
 		// schema
@@ -112,6 +114,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 	public function test_unfulfillable()
 	{
+		$this->migrator->load_migration_state();
 		$this->migrator->set_migrations(array('phpbb_dbal_migration_unfulfillable', 'phpbb_dbal_migration_dummy'));
 
 		while (!$this->migrator->finished())
@@ -132,6 +135,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 	public function test_if()
 	{
+		$this->migrator->load_migration_state();
 		$this->migrator->set_migrations(array('phpbb_dbal_migration_if'));
 
 		// Don't like this, but I'm not sure there is any other way to do this
@@ -157,6 +161,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 	public function test_recall()
 	{
+		$this->migrator->load_migration_state();
 		$this->migrator->set_migrations(array('phpbb_dbal_migration_recall'));
 
 		global $migrator_test_call_input;
@@ -228,6 +233,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 	public function test_fail()
 	{
+		$this->migrator->load_migration_state();
 		$this->migrator->set_migrations(array('phpbb_dbal_migration_fail'));
 
 		$this->assertFalse(isset($this->config['foobar3']));
@@ -257,6 +263,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 	public function test_installed()
 	{
+		$this->migrator->load_migration_state();
 		$this->migrator->set_migrations(array('phpbb_dbal_migration_installed'));
 
 		global $migrator_test_installed_failed;
