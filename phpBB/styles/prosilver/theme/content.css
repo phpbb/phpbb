@@ -669,6 +669,11 @@ fieldset.polls dd div {
 	margin-left: 8px;
 }
 
+.postprofile dd {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 .postprofile strong {
 	font-weight: normal;
 }
