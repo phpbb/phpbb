@@ -14,6 +14,7 @@ define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
@@ -1540,7 +1541,7 @@ function upload_popup($forum_style = 0)
 */
 function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 {
-	global $user, $db, $auth, $config;
+	global $user, $db, $auth, $config, $request;
 	global $phpbb_root_path, $phpEx;
 
 	// If moderator removing post or user itself removing post, present a confirmation screen
@@ -1551,6 +1552,12 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			'f'		=> $forum_id,
 			'mode'	=> 'delete')
 		);
+
+		// Confirmation varible to delete topic with its posts
+		$del_topic_with_posts = ($user->lang['YES'] === $request->variable('option', '', true, phpbb_request_interface::POST));
+
+		// Confirmation variable to added optional field to confirm box layout in order to delete topic 
+		$optional_feild_added = ($user->lang['YES'] === $request->variable('optional_feild_added', '', true, phpbb_request_interface::POST));
 
 		if (confirm_box(true))
 		{
@@ -1567,15 +1574,23 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				'post_postcount'		=> $post_data['post_postcount']
 			);
 
-			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data);
+			if ($del_topic_with_posts)
+			{
+				delete_topics('topic_id', array($topic_id), true);
+			}
+			else
+			{
+				$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data);
+			}
+
 			$post_username = ($post_data['poster_id'] == ANONYMOUS && !empty($post_data['post_username'])) ? $post_data['post_username'] : $post_data['username'];
 
-			if ($next_post_id === false)
+			if (($next_post_id === false) || $del_topic_with_posts)
 			{
 				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_TOPIC', $post_data['topic_title'], $post_username);
 
 				$meta_info = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
-				$message = $user->lang['POST_DELETED'];
+				$message = $user->lang['TOPIC_DELETED_SUCCESS'];
 			}
 			else
 			{
@@ -1588,6 +1603,21 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			meta_refresh(3, $meta_info);
 			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 			trigger_error($message);
+		}
+		else if (($post_data['topic_first_post_id'] == $post_id) && ($post_data['topic_first_post_id'] != $post_data['topic_last_post_id']) && (!$optional_feild_added))
+		{
+			if ($request->is_ajax())
+			{
+				$u_action = $phpbb_root_path . $user->page['page'];
+				$optional_field_html = '<br /><input type="checkbox" name="delTopic" value="delTopic">' . $user->lang['DELETE_ENTIRE_TOPIC'].'<br />';
+				$json_response = new phpbb_json_response;
+				$json_response->send(array(
+					'S_CONFIRM_ACTION'  => $u_action,
+					'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+					'OPTIONAL_FIELD'	=> $optional_field_html,
+					'YES_VALUE'			=> $user->lang['YES']
+				));
+			}
 		}
 		else
 		{

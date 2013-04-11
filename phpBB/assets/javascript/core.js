@@ -14,6 +14,7 @@ var keymap = {
 var dark = $('#darkenwrapper');
 var loadingAlert = $('#loadingalert');
 var phpbbAlertTimer = null;
+var onlyCheckboxOptionAdded = false;
 
 
 /**
@@ -129,7 +130,13 @@ phpbb.alert = function(title, msg, fadedark) {
  */
 phpbb.confirm = function(msg, callback, fadedark) {
 	var div = $('#phpbb_confirm');
-	div.find('.alert_text').html(msg);
+	
+	if (onlyCheckboxOptionAdded) {
+		div.find('.alert_text').prepend(msg);
+		onlyCheckboxOptionAdded = false;
+	} else {
+		div.find('.alert_text').html(msg);
+	}
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
@@ -200,6 +207,18 @@ phpbb.confirm = function(msg, callback, fadedark) {
 
 	return div;
 };
+
+/**
+ * Adding an extra option to delete topic when deleting top post. 
+ *
+ * @param string field_content content for the option field with checkbox (HTML).
+ * @param string callback Method name needs to be called
+ */
+phpbb.addOption = function(field_content, callback) {
+	$('#phpbb_confirm').find('.alert_text').html(field_content);
+	onlyCheckboxOptionAdded = true;
+	callback();
+}
 
 /**
  * Turn a querystring into an array.
@@ -302,12 +321,28 @@ phpbb.ajaxify = function(options) {
 						});
 					}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 				}
+			} else if (typeof res.OPTIONAL_FIELD !== 'undefined') {
+			// If confirmation is required, display a diologue to the user.
+				phpbb.addOption(res.OPTIONAL_FIELD, function() {
+					data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
+					data += '&optional_feild_added=' + res.YES_VALUE;
+					$.ajax({
+						url: res.S_CONFIRM_ACTION,
+						type: 'POST',
+						data: data,
+						success: returnHandler,
+						error: errorHandler
+					});
+				});
 			} else {
 				// If confirmation is required, display a dialog to the user.
 				phpbb.confirm(res.MESSAGE_BODY, function(del) {
 					if (del) {
 						phpbb.loadingAlert();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
+						if ($('input:checkbox').is(':checked')) {
+							data += '&option=' + res.YES_VALUE;
+						}
 						$.ajax({
 							url: res.S_CONFIRM_ACTION,
 							type: 'POST',
