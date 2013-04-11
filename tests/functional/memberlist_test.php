@@ -49,26 +49,36 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		// Admin should be listed, user not
 		$crawler = $this->request('GET', 'memberlist.php?mode=leaders&sid=' . $this->sid);
 		$this->assert_response_success();
-		$this->assertContains('admin', $crawler->filter('tr')->text());
-		$this->assertNotContains('memberlist-test-user', $crawler->filter('tr')->text());
-		$this->assertNotContains('memberlist-test-moderator', $crawler->filter('tr')->text());
+		$this->assertContains('admin', $crawler->text());
+		$this->assertNotContains('memberlist-test-user', $crawler->text());
+		$this->assertNotContains('memberlist-test-moderator', $crawler->text());
+	}
+
+	public function test_leaders_remove_users()
+	{
+		$this->login();
 
 		// Remove admin from admins, still a moderator
 		$this->remove_user_group('ADMINISTRATORS', array('admin'));
 		$crawler = $this->request('GET', 'memberlist.php?mode=leaders&sid=' . $this->sid);
 		$this->assert_response_success();
-		$this->assertContains('admin', $crawler->filter('tr')->text());
+		$this->assertContains('admin', $crawler->text());
 
 		// Remove admin from moderators
 		$this->remove_user_group('GLOBAL_MODERATORS', array('admin'));
 		$crawler = $this->request('GET', 'memberlist.php?mode=leaders&sid=' . $this->sid);
 		$this->assert_response_success();
-		$this->assertNotContains('admin', $crawler->filter('tr')->text());
+		$this->assertNotContains('admin', $crawler->text());
+	}
+
+	public function test_leaders_add_users()
+	{
+		$this->login();
 
 		// Add mod to moderators
 		$this->add_user_group('GLOBAL_MODERATORS', array('memberlist-test-moderator'));
 		$crawler = $this->request('GET', 'memberlist.php?mode=leaders&sid=' . $this->sid);
 		$this->assert_response_success();
-		$this->assertContains('memberlist-test-moderator', $crawler->filter('tr')->text());
+		$this->assertContains('memberlist-test-moderator', $crawler->text());
 	}
 }
