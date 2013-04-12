@@ -188,7 +188,41 @@ class mcp_main
 			break;
 
 			default:
-				trigger_error('NO_MODE', E_USER_ERROR);
+				if( $quickmod )
+				{
+					switch( $action )
+					{
+						case 'lock':
+						case 'unlock':
+						case 'make_announce':
+						case 'make_sticky':
+						case 'make_global':
+						case 'make_normal':
+						case 'make_onindex':
+						case 'move':
+						case 'fork':
+						case 'delete_topic':
+							// Non-fatal error. Can be displayed by board.
+							trigger_error( 'TOPIC_NOT_EXIST' );
+						break;
+				
+						case 'lock_post':
+						case 'unlock_post':
+						case 'delete_post':
+							// Non-fatal error. Can be displayed by board.
+							trigger_error( 'POST_NOT_EXIST' );
+						break;
+						
+						default:
+							// Kept here in case something is left.
+							trigger_error('NO_MODE');
+						break;
+					}
+				}
+				else
+				{
+					trigger_error('NO_MODE', E_USER_ERROR);
+				}
 			break;
 		}
 	}
