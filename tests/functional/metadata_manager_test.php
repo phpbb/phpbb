@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
+
 /**
 * @group functional
 */
@@ -14,8 +16,10 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 {
 	protected $phpbb_extension_manager;
 
+	static private $helpers;
+
 	static protected $fixtures = array(
-		'foo/bar/composer.json',
+		'foo/bar/',
 	);
 
 	/**
@@ -27,23 +31,16 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		global $phpbb_root_path;
 		parent::setUpBeforeClass();
 
-		$directories = array(
-			$phpbb_root_path . 'ext/foo/bar/',
-		);
+		self::$helpers = new phpbb_test_case_helpers(self);
 
-		foreach ($directories as $dir)
+		if (!file_exists($phpbb_root_path . 'ext/foo/bar/'))
 		{
-			if (!is_dir($dir))
-			{
-				mkdir($dir, 0777, true);
-			}
+			self::$helpers->makedirs($phpbb_root_path . 'ext/foo/bar/');
 		}
 
 		foreach (self::$fixtures as $fixture)
 		{
-			copy(
-				"tests/functional/fixtures/ext/$fixture",
-				"{$phpbb_root_path}ext/$fixture");
+			self::$helpers->copy_dir(dirname(__FILE__) . '/fixtures/ext/' . $fixture, $phpbb_root_path . 'ext/' . $fixture);
 		}
 	}
 
@@ -57,11 +54,9 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 
 		foreach (self::$fixtures as $fixture)
 		{
-			unlink("{$phpbb_root_path}ext/$fixture");
+			self::$helpers->empty_dir($phpbb_root_path . 'ext/' . $fixture);
 		}
-
-		rmdir("{$phpbb_root_path}ext/foo/bar");
-		rmdir("{$phpbb_root_path}ext/foo");
+		self::$helpers->empty_dir($phpbb_root_path . 'ext/foo/');
 	}
 
 	public function setUp()
@@ -83,9 +78,9 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		$crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 		$this->assert_response_success();
 
-		$this->assertContains($this->lang('EXTENSIONS_EXPLAIN'), $this->client->getResponse()->getContent());
-		$this->assertContains('phpBB 3.1 Extension Testing', $this->client->getResponse()->getContent());
-		$this->assertContains('Details', $this->client->getResponse()->getContent());
+		$this->assertContains($this->lang('EXTENSIONS_EXPLAIN'), $crawler->filter('#page-body')->text());
+		$this->assertContains('phpBB 3.1 Extension Testing', $crawler->filter('#page-body')->text());
+		$this->assertContains('Details', $crawler->filter('#page-body')->text());
 	}
 
 	public function test_extensions_details()
@@ -94,11 +89,14 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		$this->assert_response_success();
 
 		// Test whether the details are displayed
-		$this->assertContains($this->lang('CLEAN_NAME'), $this->client->getResponse()->getContent());
-		$this->assertContains('foo/bar', $this->client->getResponse()->getContent());
+		$this->assertContains($this->lang('CLEAN_NAME'), $crawler->filter('#page-body')->text());
+		$this->assertContains('foo/bar', $crawler->filter('#page-body')->text());
 
 		// Details should be html escaped
-		$this->assertContains($this->lang('PHP_VERSION'), $this->client->getResponse()->getContent());
+		$this->assertContains($this->lang('PHP_VERSION'), $crawler->filter('#page-body')->text());
+		// The Crawler parses the text, so we can not see whether it was escaped anymore
+		// To test this, we grab the content of the response directly
+		// $this->assertContains('&gt;=5.3', $$crawler->filter('#page-body')->text());
 		$this->assertContains('&gt;=5.3', $this->client->getResponse()->getContent());
 	}
 
@@ -108,6 +106,6 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		$this->assert_response_success();
 
 		// Error message because the files do not exist
-		$this->assertContains('The required file does not exist:', $this->client->getResponse()->getContent());
+		$this->assertContains('The required file does not exist:', $crawler->filter('#page-body')->text());
 	}
 }
