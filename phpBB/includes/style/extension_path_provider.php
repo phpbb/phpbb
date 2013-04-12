@@ -108,6 +108,11 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 							->get_directories(true, false, true);
 						foreach ($result as $ext => $ext_path)
 						{
+							// Make sure $ext_path has no ending slash
+							if (substr($ext_path, -1) === '/')
+							{
+								$ext_path = substr($ext_path, 0, -1);
+							}
 							$directories[$ext][] = $ext_path;
 						}
 					}
