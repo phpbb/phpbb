@@ -326,7 +326,7 @@ function colorPalette(dir, width, height) {
 			for (b = 0; b < 5; b++) {
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				html += '<td bgcolor="#' + color + '" style="width: ' + width + 'px; height: ' + height + 'px;">';
-				html += '<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>';
+				html += '<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" style="display: block; width: ' + width + 'px; height: ' + height + 'px; " alt="#' + color + '" title="#' + color + '"></a>';
 				html += '</td>';
 			}
 
@@ -346,7 +346,7 @@ function colorPalette(dir, width, height) {
 (function($) {
 	$(document).ready(function() {
 		$('#color_palette_placeholder').each(function() {
-			$(this).html(colorPalette('h', 15, 10));
+			$(this).html(colorPalette('h', 15, 12));
 		});
 	});
 })(jQuery);
