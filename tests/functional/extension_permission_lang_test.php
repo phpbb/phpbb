@@ -34,7 +34,14 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 		// User permissions
 		$crawler = $this->request('GET', 'adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&sid=' . $this->sid);
 		$this->assert_response_success();
-		$this->assertContains('Can view foo', $this->client->getResponse()->getContent());
+
+		// Select admin
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$data = array('username[0]' => 'admin');
+		$form->setValues($data);
+		$crawler = $this->client->submit($form);
+		$this->assert_response_success();
+		$this->assertContains('Can view foo', $crawler->filter('body')->text());
 	}
 
 	public function permissions_data()
