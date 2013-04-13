@@ -711,7 +711,7 @@ function file_gc()
 
 /**
 * Check if the browser is internet explorer version 7+
-* @returns true if ie7+
+* @return true if ie7+
 */
 function phpbb_is_greater_ie7($browser)
 {
