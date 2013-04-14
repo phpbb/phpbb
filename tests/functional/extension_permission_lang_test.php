@@ -14,9 +14,73 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 {
 	protected $phpbb_extension_manager;
 
+	static protected $fixtures = array(
+		'foo/bar/language/en/permissions_foo.php',
+	);
+
+	/**
+	* This should only be called once before the tests are run.
+	* This is used to copy the fixtures to the phpBB install
+	*/
+	static public function setUpBeforeClass()
+	{
+		global $phpbb_root_path;
+		parent::setUpBeforeClass();
+
+		$directories = array(
+			$phpbb_root_path . 'ext/foo/bar/',
+			$phpbb_root_path . 'ext/foo/bar/language/',
+			$phpbb_root_path . 'ext/foo/bar/language/en/',
+		);
+
+		foreach ($directories as $dir)
+		{
+			if (!is_dir($dir))
+			{
+				mkdir($dir, 0777, true);
+			}
+		}
+
+		foreach (self::$fixtures as $fixture)
+		{
+			copy(
+				"tests/functional/fixtures/ext/$fixture",
+				"{$phpbb_root_path}ext/$fixture");
+		}
+	}
+
+	/**
+	* This should only be called once after the tests are run.
+	* This is used to remove the fixtures from the phpBB install
+	*/
+	static public function tearDownAfterClass()
+	{
+		global $phpbb_root_path;
+
+		foreach (self::$fixtures as $fixture)
+		{
+			unlink("{$phpbb_root_path}ext/$fixture");
+		}
+
+		rmdir("{$phpbb_root_path}ext/foo/bar/language/en");
+		rmdir("{$phpbb_root_path}ext/foo/bar/language");
+		rmdir("{$phpbb_root_path}ext/foo/bar");
+		rmdir("{$phpbb_root_path}ext/foo");
+	}
+
 	public function setUp()
 	{
 		parent::setUp();
+		
+		$this->get_db();
+		
+		$acl_ary = array(
+			'auth_option'	=> 'u_foo',
+			'is_global'		=> 1,
+		);
+
+		$sql = 'INSERT INTO phpbb_acl_options ' . $this->db->sql_build_array('INSERT', $acl_ary);
+		$this->db->sql_query($sql);
 
 		$this->phpbb_extension_manager = $this->get_extension_manager();
 
@@ -42,25 +106,5 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 		$crawler = $this->client->submit($form);
 		$this->assert_response_success();
 		$this->assertContains('Can view foo', $crawler->filter('body')->text());
-	}
-
-	public function permissions_data()
-	{
-		return array(
-			// description
-			// permission type
-			// permission name
-			// mode
-			// object name
-			// object id
-			array(
-				'user permission',
-				'u_',
-				'acl_u_foo',
-				'setting_user_global',
-				'user_id',
-				2,
-			),
-		);
 	}
 }
