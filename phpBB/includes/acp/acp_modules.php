@@ -579,7 +579,7 @@ class acp_modules
 			{
 				$info_class_file = str_replace("phpbb_{$module_class}_info_", '', $cur_module);
 				$info_class = $info_class_file . '_info';
-				if (file_exists($directory . $info_class_file . '.' . $phpEx))
+				if (!class_exists($info_class) && file_exists($directory . $info_class_file . '.' . $phpEx))
 				{
 					include($directory . $info_class_file . '.' . $phpEx);
 				}
