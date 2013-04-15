@@ -66,7 +66,7 @@ function login_db($username, $password, $ip = '', $browser = '', $forwarded_for 
 
 	$username_clean = utf8_clean_string($username);
 
-	$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
+	$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts, user_lastvisit, user_inactive_time
 		FROM ' . USERS_TABLE . "
 		WHERE username_clean = '" . $db->sql_escape($username_clean) . "'";
 	$result = $db->sql_query($sql);
@@ -258,7 +258,11 @@ function login_db($username, $password, $ip = '', $browser = '', $forwarded_for 
 		// User inactive...
 		if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
 		{
-			if ($config['require_activation'] == USER_ACTIVATION_SELF)
+			if ($row['user_lastvisit'] != 0 && $row['user_lastvisit'] < $row['user_inactive_time'])
+			{
+				$activation_msg = 'ACTIVE_ERROR_USER_DEACTIVATED';
+			}
+			else if ($config['require_activation'] == USER_ACTIVATION_SELF)
 			{
 				$activation_msg = 'ACTIVE_ERROR_USER';
 			}
