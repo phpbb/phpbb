@@ -78,7 +78,7 @@ abstract class phpbb_notification_method_messenger_base extends phpbb_notificati
 				continue;
 			}
 
-			$messenger->template($email_template_base_dir . $notification->get_email_template(), $user['user_lang']);
+			$messenger->template($template_dir_prefix . $notification->get_email_template(), $user['user_lang']);
 
 			$messenger->to($user['user_email'], $user['username']);
 
