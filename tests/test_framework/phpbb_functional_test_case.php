@@ -530,6 +530,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertEquals(200, $this->client->getResponse()->getStatus());
 		$content = $this->client->getResponse()->getContent();
 		$this->assertNotContains('Fatal error:', $content);
+		$this->assertNotContains('Notice:', $content);
+		$this->assertNotContains('Warning:', $content);
+		$this->assertNotContains('[phpBB Debug]', $content);
 	}
 
 	public function assert_filter($crawler, $expr, $msg = null)
