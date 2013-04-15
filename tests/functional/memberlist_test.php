@@ -41,17 +41,12 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		$this->assertContains('admin', $crawler->filter('h2')->text());
 	}
 
-	protected function get_memberlist_leaders_crawler()
+	protected function get_memberlist_leaders_table_crawler()
 	{
 		$crawler = $this->request('GET', 'memberlist.php?mode=leaders&sid=' . $this->sid);
 		$this->assert_response_success();
 
-		return $crawler;
-	}
-
-	protected function get_crawler_table_text($crawler, $table)
-	{
-		return $crawler->filter('.forumbg-table')->eq($table)->text();
+		return $crawler->filter('.forumbg-table');
 	}
 
 	public function test_leaders()
@@ -59,19 +54,19 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		$this->login();
 		$this->create_user('memberlist-test-moderator');
 
-		$crawler = $this->get_memberlist_leaders_crawler();
+		$crawler = $this->get_memberlist_leaders_table_crawler();
 
 		// Admin in admin group, but not in moderators
-		$this->assertContains('admin', $this->get_crawler_table_text($crawler, 0));
-		$this->assertNotContains('admin', $this->get_crawler_table_text($crawler, 1));
+		$this->assertContains('admin', $crawler->eq(0)->text());
+		$this->assertNotContains('admin', $crawler->eq(1)->text());
 
 		// memberlist-test-user in neither group
-		$this->assertNotContains('memberlist-test-user', $this->get_crawler_table_text($crawler, 0));
-		$this->assertNotContains('memberlist-test-user', $this->get_crawler_table_text($crawler, 1));
+		$this->assertNotContains('memberlist-test-user', $crawler->eq(0)->text());
+		$this->assertNotContains('memberlist-test-user', $crawler->eq(1)->text());
 
 		// memberlist-test-moderator in neither group
-		$this->assertNotContains('memberlist-test-moderator', $this->get_crawler_table_text($crawler, 0));
-		$this->assertNotContains('memberlist-test-moderator', $this->get_crawler_table_text($crawler, 1));
+		$this->assertNotContains('memberlist-test-moderator', $crawler->eq(0)->text());
+		$this->assertNotContains('memberlist-test-moderator', $crawler->eq(1)->text());
 	}
 
 	public function test_leaders_remove_users()
@@ -80,15 +75,15 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 
 		// Remove admin from admins, but is now in moderators
 		$this->remove_user_group('ADMINISTRATORS', array('admin'));
-		$crawler = $this->get_memberlist_leaders_crawler();
-		$this->assertNotContains('admin', $this->get_crawler_table_text($crawler, 0));
-		$this->assertContains('admin', $this->get_crawler_table_text($crawler, 1));
+		$crawler = $this->get_memberlist_leaders_table_crawler();
+		$this->assertNotContains('admin', $crawler->eq(0)->text());
+		$this->assertContains('admin', $crawler->eq(1)->text());
 
 		// Remove admin from moderators, should not be visible anymore
 		$this->remove_user_group('GLOBAL_MODERATORS', array('admin'));
-		$crawler = $this->get_memberlist_leaders_crawler();
-		$this->assertNotContains('admin', $this->get_crawler_table_text($crawler, 0));
-		$this->assertNotContains('admin', $this->get_crawler_table_text($crawler, 1));
+		$crawler = $this->get_memberlist_leaders_table_crawler();
+		$this->assertNotContains('admin', $crawler->eq(0)->text());
+		$this->assertNotContains('admin', $crawler->eq(1)->text());
 	}
 
 	public function test_leaders_add_users()
@@ -97,8 +92,8 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 
 		// Add memberlist-test-moderator to moderators
 		$this->add_user_group('GLOBAL_MODERATORS', array('memberlist-test-moderator'));
-		$crawler = $this->get_memberlist_leaders_crawler();
-		$this->assertNotContains('memberlist-test-moderator', $this->get_crawler_table_text($crawler, 0));
-		$this->assertContains('memberlist-test-moderator', $this->get_crawler_table_text($crawler, 1));
+		$crawler = $this->get_memberlist_leaders_table_crawler();
+		$this->assertNotContains('memberlist-test-moderator', $crawler->eq(0)->text());
+		$this->assertContains('memberlist-test-moderator', $crawler->eq(1)->text());
 	}
 }
