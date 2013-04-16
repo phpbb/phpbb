@@ -18,8 +18,8 @@
 			<value>1</value>
 			<value>2</value>
 			<value>1365956770</value>
-			<value>foo</value>
-			<value>foo</value>
+			<value>not_yet_activated_usr1</value>
+			<value>not_yet_activated_usr1</value>
 			<value>$H$90WktkH6.I2Bs4Zk5YyTKozBa.fScr1</value>
 			<value>1365956770</value>
 			<value>0</value>
@@ -32,98 +32,42 @@
 			<value>1</value>
 			<value>2</value>
 			<value>1365957767</value>
-			<value>bar</value>
-			<value>bar</value>
+			<value>not_yet_activated_usr2</value>
+			<value>not_yet_activated_usr2</value>
 			<value>$H$92jjDqs36urF8yLLrEQtGxbY5.PK5l/</value>
 			<value>1365957767</value>
 			<value>0</value>
 			<value>barfoo@gmail.com</value>
 			<value>0</value>
-			<value>1366025345</value>
+			<value>1366025955</value>
 		</row>
 		<row>
 			<value>3</value>
 			<value>1</value>
 			<value>2</value>
-			<value>1365957767</value>
-			<value>barfoo</value>
-			<value>barfoo</value>
-			<value>$H$92jjDqs36urF8yLLrEQtGxbY5.PK5l/</value>
-			<value>1365957767</value>
+			<value>1365956770</value>
+			<value>deactivated_usr</value>
+			<value>deactivated_usr</value>
+			<value>$H$90WktkH6.I2Bs4Zk5YyTKozBa.fScr1</value>
+			<value>1365956770</value>
 			<value>0</value>
-			<value>barfoo@gmail.com</value>
+			<value>foobar@gmail.com</value>
 			<value>1366025345</value>
 			<value>1366025955</value>
 		</row>
 		<row>
 			<value>4</value>
-			<value>1</value>
+			<value>0</value>
 			<value>2</value>
 			<value>1365956770</value>
-			<value>foofoo</value>
-			<value>foofoo</value>
-			<value>$H$90WktkH6.I2Bs4Zk5YyTKozBa.fScr1</value>
-			<value>1365956770</value>
-			<value>0</value>
-			<value>foobar@gmail.com</value>
-			<value>0</value>
-			<value>0</value>
-		</row>
-		<row>
-			<value>5</value>
-			<value>1</value>
-			<value>2</value>
-			<value>1365956770</value>
-			<value>foobar</value>
-			<value>foobar</value>
-			<value>$H$90WktkH6.I2Bs4Zk5YyTKozBa.fScr1</value>
-			<value>1365956770</value>
-			<value>0</value>
-			<value>foobar@gmail.com</value>
-			<value>0</value>
-			<value>1366025345</value>
-		</row>
-		<row>
-			<value>6</value>
-			<value>1</value>
-			<value>2</value>
-			<value>1365956770</value>
-			<value>foobarfoo</value>
-			<value>foobarfoo</value>
+			<value>activated_usr</value>
+			<value>activated_usr</value>
 			<value>$H$90WktkH6.I2Bs4Zk5YyTKozBa.fScr1</value>
 			<value>1365956770</value>
 			<value>0</value>
 			<value>foobar@gmail.com</value>
 			<value>1366025345</value>
 			<value>0</value>
-		</row>
-		<row>
-			<value>7</value>
-			<value>1</value>
-			<value>2</value>
-			<value>1365956770</value>
-			<value>barfoobar</value>
-			<value>barfoobar</value>
-			<value>$H$90WktkH6.I2Bs4Zk5YyTKozBa.fScr1</value>
-			<value>1365956770</value>
-			<value>0</value>
-			<value>foobar@gmail.com</value>
-			<value>1366025955</value>
-			<value>1366025345</value>
-		</row>
-		<row>
-			<value>8</value>
-			<value>0</value>
-			<value>2</value>
-			<value>1365956770</value>
-			<value>barbar</value>
-			<value>barbar</value>
-			<value>$H$90WktkH6.I2Bs4Zk5YyTKozBa.fScr1</value>
-			<value>1365956770</value>
-			<value>0</value>
-			<value>foobar@gmail.com</value>
-			<value>1366025345</value>
-			<value></value>
 		</row>
 	</table>
 	<table name="phpbb_login_attempts">

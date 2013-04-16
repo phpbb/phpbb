@@ -2,7 +2,7 @@
 /**
 *
 * @package testing
-* @copyright (c) 2008 phpBB Group
+* @copyright (c) 2013 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -27,44 +27,26 @@ class phpbb_auth_db_test extends phpbb_database_test_case
 		$request = new phpbb_mock_request();
 	}
 
-	public function test_login_db()
+	public function login_db_data(){
+	    return array(
+			array('not_yet_activated_usr1', 'foobar123', USER_ACTIVATION_SELF, 'ACTIVE_ERROR_USER'),
+			array('not_yet_activated_usr2', 'barfoo123', USER_ACTIVATION_ADMIN, 'ACTIVE_ERROR_ADMIN'),
+			array('deactivated_usr', 'foobar123', USER_ACTIVATION_SELF, 'ACTIVE_ERROR_USER_DEACTIVATED'),
+			array('deactivated_usr', 'foobar123', USER_ACTIVATION_ADMIN, 'ACTIVE_ERROR_USER_DEACTIVATED'),
+			array('activated_usr', 'foobar123', USER_ACTIVATION_SELF, false),
+			array('activated_usr', 'foobar123', USER_ACTIVATION_ADMIN, false)
+	    );
+	}
+
+	/**
+	 * @dataProvider login_db_data
+	 */
+	public function test_login_db($username, $password, $activation_method, $expected)
 	{
 		global $config;
 
-		$config->set('require_activation', USER_ACTIVATION_SELF);
-		$returned_value = login_db('foo', 'foobar123');
-		$this->assertEquals($returned_value['error_msg'], 'ACTIVE_ERROR_USER');
-		
-		$config->set('require_activation', USER_ACTIVATION_ADMIN);
-		$returned_value = login_db('bar', 'barfoo123');
-		$this->assertEquals($returned_value['error_msg'], 'ACTIVE_ERROR_ADMIN');
-		
-		$config->set('require_activation', USER_ACTIVATION_ADMIN);
-		$returned_value = login_db('barfoo', 'barfoo123');
-		$this->assertEquals($returned_value['error_msg'], 'ACTIVE_ERROR_USER_DEACTIVATED');
-		
-		$config->set('require_activation', USER_ACTIVATION_SELF);
-		$returned_value = login_db('barfoo', 'barfoo123');
-		$this->assertEquals($returned_value['error_msg'], 'ACTIVE_ERROR_USER_DEACTIVATED');
-		
-		$config->set('require_activation', USER_ACTIVATION_SELF);
-		$returned_value = login_db('foofoo', 'foobar123');
-		$this->assertEquals($returned_value['error_msg'], 'ACTIVE_ERROR_USER');
-		
-		$config->set('require_activation', USER_ACTIVATION_SELF);
-		$returned_value = login_db('foobar', 'foobar123');
-		$this->assertEquals($returned_value['error_msg'], 'ACTIVE_ERROR_USER');
-		
-		$config->set('require_activation', USER_ACTIVATION_SELF);
-		$returned_value = login_db('foobarfoo', 'foobar123');
-		$this->assertEquals($returned_value['error_msg'], 'ACTIVE_ERROR_USER');
-		
-		$config->set('require_activation', USER_ACTIVATION_SELF);
-		$returned_value = login_db('barfoobar', 'foobar123');
-		$this->assertEquals($returned_value['error_msg'], 'ACTIVE_ERROR_USER');
-		
-		$config->set('require_activation', USER_ACTIVATION_SELF);
-		$returned_value = login_db('barbar', 'foobar123');
-		$this->assertEquals($returned_value['error_msg'], false);
+		$config->set('require_activation', $activation_method);
+		$returned_value = login_db($username, $password);
+		$this->assertEquals($returned_value['error_msg'], $expected);
 	}
 }
