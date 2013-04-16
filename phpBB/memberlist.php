@@ -55,7 +55,7 @@ switch ($mode)
 	break;
 }
 
-$start	= request_var('start', 0);
+$start	= max(request_var('start', 0), 0);
 $submit = (isset($_POST['submit'])) ? true : false;
 
 $default_key = 'c';
