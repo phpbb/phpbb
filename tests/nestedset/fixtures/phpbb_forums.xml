@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_forums">
+		<column>forum_id</column>
+		<column>parent_id</column>
+		<column>left_id</column>
+		<column>right_id</column>
+		<column>forum_parents</column>
+		<column>forum_name</column>
+		<column>forum_desc</column>
+		<column>forum_rules</column>
+		<row>
+			<value>1</value>
+			<value>0</value>
+			<value>1</value>
+			<value>6</value>
+			<value></value>
+			<value>Parent with two flat children</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>2</value>
+			<value>3</value>
+			<value></value>
+			<value>Flat child #1</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>4</value>
+			<value>5</value>
+			<value></value>
+			<value>Flat child #2</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>0</value>
+			<value>7</value>
+			<value>12</value>
+			<value></value>
+			<value>Parent with two nested children</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>4</value>
+			<value>8</value>
+			<value>11</value>
+			<value></value>
+			<value>Nested child #1</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>6</value>
+			<value>5</value>
+			<value>9</value>
+			<value>10</value>
+			<value></value>
+			<value>Nested child #2</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>7</value>
+			<value>0</value>
+			<value>13</value>
+			<value>22</value>
+			<value></value>
+			<value>Parent with flat and nested children</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>8</value>
+			<value>7</value>
+			<value>14</value>
+			<value>15</value>
+			<value></value>
+			<value>Mixed child #1</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>9</value>
+			<value>7</value>
+			<value>16</value>
+			<value>19</value>
+			<value></value>
+			<value>Mixed child #2</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>10</value>
+			<value>9</value>
+			<value>17</value>
+			<value>18</value>
+			<value></value>
+			<value>Nested child #1 of Mixed child #2</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>11</value>
+			<value>7</value>
+			<value>20</value>
+			<value>21</value>
+			<value></value>
+			<value>Mixed child #3</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+</dataset>
