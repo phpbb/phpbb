@@ -188,9 +188,9 @@ class mcp_main
 			break;
 
 			default:
-				if( $quickmod )
+				if ($quickmod)
 				{
-					switch( $action )
+					switch ($action)
 					{
 						case 'lock':
 						case 'unlock':
@@ -203,26 +203,18 @@ class mcp_main
 						case 'fork':
 						case 'delete_topic':
 							// Non-fatal error. Can be displayed by board.
-							trigger_error( 'TOPIC_NOT_EXIST' );
+							trigger_error('TOPIC_NOT_EXIST');
 						break;
 				
 						case 'lock_post':
 						case 'unlock_post':
 						case 'delete_post':
 							// Non-fatal error. Can be displayed by board.
-							trigger_error( 'POST_NOT_EXIST' );
-						break;
-						
-						default:
-							// Kept here in case something is left.
-							trigger_error('NO_MODE');
+							trigger_error('POST_NOT_EXIST');
 						break;
 					}
 				}
-				else
-				{
-					trigger_error('NO_MODE', E_USER_ERROR);
-				}
+				trigger_error('NO_MODE', E_USER_ERROR);
 			break;
 		}
 	}
