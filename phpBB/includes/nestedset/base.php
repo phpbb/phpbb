@@ -157,8 +157,8 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		* siblings between the current spot and the target then the
 		* item will move as far as possible
 		*/
-		$sql = 'SELECT ' . implode(', ', $this->table_columns) . '
-			FROM ' . $this->table_name . '
+		$sql = "SELECT {$this->column_item_id}, {$this->column_parent_id}, {$this->column_left_id}, {$this->column_right_id}, {$this->column_item_parents}
+			FROM " . $this->table_name . '
 			WHERE ' . $this->column_parent_id . ' = ' . (int) $item[$this->column_parent_id] . '
 				' . $this->get_sql_where() . '
 				AND ';
