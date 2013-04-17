@@ -67,7 +67,7 @@ class phpbb_nestedset_forum extends phpbb_nestedset_base
 	/**
 	* @inheritdoc
 	*/
-	public function move_children(phpbb_nestedset_item_interface $current_parent, phpbb_nestedset_item_interface $new_parent)
+	public function move_children(array $current_parent, array $new_parent)
 	{
 		while (!$this->lock->acquire())
 		{
@@ -92,7 +92,7 @@ class phpbb_nestedset_forum extends phpbb_nestedset_base
 	/**
 	* @inheritdoc
 	*/
-	public function set_parent(phpbb_nestedset_item_interface $item, phpbb_nestedset_item_interface $new_parent)
+	public function set_parent(array $item, array $new_parent)
 	{
 		while (!$this->lock->acquire())
 		{
