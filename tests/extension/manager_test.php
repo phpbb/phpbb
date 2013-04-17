@@ -112,6 +112,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$db,
 			$config,
 			$migrator,
+			new phpbb_filesystem(),
 			'phpbb_ext',
 			dirname(__FILE__) . '/',
 			'.' . $php_ext,
