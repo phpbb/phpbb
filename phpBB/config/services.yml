@@ -141,9 +141,9 @@ services:
         class: phpbb_extension_finder
         arguments:
             - @ext.manager
+            - @filesystem
             - %core.root_path%
             - @cache.driver
-            - @filesystem
             - .%core.php_ext%
             - _ext_finder
 
