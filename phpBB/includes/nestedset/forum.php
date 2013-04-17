@@ -33,8 +33,8 @@ class phpbb_nestedset_forum extends phpbb_nestedset_base
 	* Column names in the table
 	* @var String
 	*/
-	protected $columns_item_id = 'forum_id';
-	protected $columns_item_parents = 'forum_parents';
+	protected $column_item_id = 'forum_id';
+	protected $column_item_parents = 'forum_parents';
 
 	/**
 	* Additional SQL restrictions

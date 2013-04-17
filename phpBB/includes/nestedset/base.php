@@ -30,11 +30,11 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	* Column names in the table
 	* @var String
 	*/
-	protected $columns_item_id = 'item_id';
-	protected $columns_left_id = 'left_id';
-	protected $columns_right_id = 'right_id';
-	protected $columns_parent_id = 'parent_id';
-	protected $columns_item_parents = 'item_parents';
+	protected $column_item_id = 'item_id';
+	protected $column_left_id = 'left_id';
+	protected $column_right_id = 'right_id';
+	protected $column_parent_id = 'parent_id';
+	protected $column_item_parents = 'item_parents';
 
 	/**
 	* Additional SQL restrictions
