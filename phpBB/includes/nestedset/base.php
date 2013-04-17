@@ -28,15 +28,13 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 
 	/**
 	* Column names in the table
-	* @var array
+	* @var String
 	*/
-	protected $table_columns = array(
-		'item_id'	=> 'item_id',
-		'left_id'	=> 'left_id',
-		'right_id'	=> 'right_id',
-		'parent_id'	=> 'parent_id',
-		'item_parents'	=> 'item_parents',
-	);
+	protected $columns_item_id = 'item_id';
+	protected $columns_left_id = 'left_id';
+	protected $columns_right_id = 'right_id';
+	protected $columns_parent_id = 'parent_id';
+	protected $columns_item_parents = 'item_parents';
 
 	/**
 	* Additional SQL restrictions
@@ -72,18 +70,18 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	public function insert(array $additional_data)
 	{
 		$item_data = array_merge($additional_data, array(
-			$this->table_columns['parent_id']		=> 0,
-			$this->table_columns['left_id']			=> 0,
-			$this->table_columns['right_id']		=> 0,
-			$this->table_columns['item_parents']	=> '',
+			$this->column_parent_id		=> 0,
+			$this->column_left_id		=> 0,
+			$this->column_right_id		=> 0,
+			$this->column_item_parents	=> '',
 		));
 
-		unset($item_data[$this->table_columns['item_id']]);
+		unset($item_data[$this->column_item_id]);
 
 		$sql = 'INSERT INTO ' . $this->table_name . ' ' . $this->db->sql_build_array('INSERT', $item_data);
 		$this->db->sql_query($sql);
 
-		$item_data[$this->table_columns['item_id']] = (int) $this->db->sql_nextid();
+		$item_data[$this->column_item_id] = (int) $this->db->sql_nextid();
 
 		$item = new $this->item_class($item_data);
 
@@ -95,23 +93,23 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	*/
 	public function add(phpbb_nestedset_item_interface $item)
 	{
-		$sql = 'SELECT MAX(' . $this->table_columns['right_id'] . ') AS ' . $this->table_columns['right_id'] . '
+		$sql = 'SELECT MAX(' . $this->column_right_id . ') AS ' . $this->column_right_id . '
 			FROM ' . $this->table_name . '
 			' . $this->get_sql_where('WHERE');
 		$result = $this->db->sql_query($sql);
-		$current_max_right_id = (int) $this->db->sql_fetchfield($this->table_columns['right_id']);
+		$current_max_right_id = (int) $this->db->sql_fetchfield($this->column_right_id);
 		$this->db->sql_freeresult($result);
 
 		$update_item_data = array(
-			$this->table_columns['parent_id']		=> 0,
-			$this->table_columns['left_id']			=> $current_max_right_id + 1,
-			$this->table_columns['right_id']		=> $current_max_right_id + 2,
-			$this->table_columns['item_parents']	=> '',
+			$this->column_parent_id		=> 0,
+			$this->column_left_id		=> $current_max_right_id + 1,
+			$this->column_right_id		=> $current_max_right_id + 2,
+			$this->column_item_parents	=> '',
 		);
 
 		$sql = 'UPDATE ' . $this->table_name . '
 			SET ' . $this->db->sql_build_array('UPDATE', $update_item_data) . '
-			WHERE ' . $this->table_columns['item_id'] . ' = ' . $item->get_item_id();
+			WHERE ' . $this->column_item_id . ' = ' . $item->get_item_id();
 		$this->db->sql_query($sql);
 
 		return $update_item_data;
@@ -144,7 +142,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		$removed_items = $this->remove($item);
 
 		$sql = 'DELETE FROM ' . $this->table_name . '
-			WHERE ' . $this->db->sql_in_set($this->table_columns['item_id'], $removed_items) . '
+			WHERE ' . $this->db->sql_in_set($this->column_item_id, $removed_items) . '
 			' . $this->get_sql_where('AND');
 		$this->db->sql_query($sql);
 
@@ -172,17 +170,17 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		*/
 		$sql = 'SELECT ' . implode(', ', $this->table_columns) . '
 			FROM ' . $this->table_name . '
-			WHERE ' . $this->table_columns['parent_id'] . ' = ' . $item->get_parent_id() . '
+			WHERE ' . $this->column_parent_id . ' = ' . $item->get_parent_id() . '
 				' . $this->get_sql_where() . '
 				AND ';
 
 		if ($action == 'move_up')
 		{
-			$sql .= $this->table_columns['right_id'] . ' < ' . $item->get_right_id() . ' ORDER BY ' . $this->table_columns['right_id'] . ' DESC';
+			$sql .= $this->column_right_id . ' < ' . $item->get_right_id() . ' ORDER BY ' . $this->column_right_id . ' DESC';
 		}
 		else
 		{
-			$sql .= $this->table_columns['left_id'] . ' > ' . $item->get_left_id() . ' ORDER BY ' . $this->table_columns['left_id'] . ' ASC';
+			$sql .= $this->column_left_id . ' > ' . $item->get_left_id() . ' ORDER BY ' . $this->column_left_id . ' ASC';
 		}
 
 		$result = $this->db->sql_query_limit($sql, $delta);
@@ -232,18 +230,18 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 
 		// Now do the dirty job
 		$sql = 'UPDATE ' . $this->table_name . '
-			SET ' . $this->table_columns['left_id'] . ' = ' . $this->table_columns['left_id'] . ' + CASE
-				WHEN ' . $this->table_columns['left_id'] . " BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
+			SET ' . $this->column_left_id . ' = ' . $this->column_left_id . ' + CASE
+				WHEN ' . $this->column_left_id . " BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
 				ELSE {$diff_down}
 			END,
-			" . $this->table_columns['right_id'] . ' = ' . $this->table_columns['right_id'] . ' + CASE
-				WHEN ' . $this->table_columns['right_id'] . " BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
+			" . $this->column_right_id . ' = ' . $this->column_right_id . ' + CASE
+				WHEN ' . $this->column_right_id . " BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
 				ELSE {$diff_down}
 			END,
-			" . $this->table_columns['item_parents'] . " = ''
+			" . $this->column_item_parents . " = ''
 			WHERE
-				" . $this->table_columns['left_id'] . " BETWEEN {$left_id} AND {$right_id}
-				AND " . $this->table_columns['right_id'] . " BETWEEN {$left_id} AND {$right_id}
+				" . $this->column_left_id . " BETWEEN {$left_id} AND {$right_id}
+				AND " . $this->column_right_id . " BETWEEN {$left_id} AND {$right_id}
 				" . $this->get_sql_where();
 		$this->db->sql_query($sql);
 
@@ -284,7 +282,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		}
 
 		$diff = sizeof($move_items) * 2;
-		$sql_exclude_moved_items = $this->db->sql_in_set($this->table_columns['item_id'], $move_items, true);
+		$sql_exclude_moved_items = $this->db->sql_in_set($this->column_item_id, $move_items, true);
 
 		$this->db->sql_transaction('begin');
 
@@ -295,7 +293,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			// Retrieve new-parent again, it may have been changed...
 			$sql = 'SELECT *
 				FROM ' . $this->table_name . '
-				WHERE ' . $this->table_columns['item_id'] . ' = ' . $new_parent->get_item_id();
+				WHERE ' . $this->column_item_id . ' = ' . $new_parent->get_item_id();
 			$result = $this->db->sql_query($sql);
 			$parent_data = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
@@ -321,7 +319,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		}
 		else
 		{
-			$sql = 'SELECT MAX(' . $this->table_columns['right_id'] . ') AS ' . $this->table_columns['right_id'] . '
+			$sql = 'SELECT MAX(' . $this->column_right_id . ') AS ' . $this->column_right_id . '
 				FROM ' . $this->table_name . '
 				WHERE ' . $sql_exclude_moved_items . '
 					' . $this->get_sql_where('AND');
@@ -329,15 +327,15 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
 
-			$diff = ' + ' . ($row[$this->table_columns['right_id']] - $current_parent->get_left_id());
+			$diff = ' + ' . ($row[$this->column_right_id] - $current_parent->get_left_id());
 		}
 
 		$sql = 'UPDATE ' . $this->table_name . '
-			SET ' . $this->table_columns['left_id'] . ' = ' . $this->table_columns['left_id'] . $diff . ',
-				' . $this->table_columns['right_id'] . ' = ' . $this->table_columns['right_id'] . $diff . ',
-				' . $this->table_columns['parent_id'] . ' = ' . $this->db->sql_case($this->table_columns['parent_id'] . ' = ' . $current_parent->get_item_id(), $new_parent->get_item_id(), $this->table_columns['parent_id']) . ',
-				' . $this->table_columns['item_parents'] . " = ''
-			WHERE " . $this->db->sql_in_set($this->table_columns['item_id'], $move_items) . '
+			SET ' . $this->column_left_id . ' = ' . $this->column_left_id . $diff . ',
+				' . $this->column_right_id . ' = ' . $this->column_right_id . $diff . ',
+				' . $this->column_parent_id . ' = ' . $this->db->sql_case($this->column_parent_id . ' = ' . $current_parent->get_item_id(), $new_parent->get_item_id(), $this->column_parent_id) . ',
+				' . $this->column_item_parents . " = ''
+			WHERE " . $this->db->sql_in_set($this->column_item_id, $move_items) . '
 				' . $this->get_sql_where('AND');
 		$this->db->sql_query($sql);
 
@@ -359,7 +357,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		}
 
 		$diff = sizeof($move_items) * 2;
-		$sql_exclude_moved_items = $this->db->sql_in_set($this->table_columns['item_id'], $move_items, true);
+		$sql_exclude_moved_items = $this->db->sql_in_set($this->column_item_id, $move_items, true);
 
 		$this->db->sql_transaction('begin');
 
@@ -370,7 +368,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			// Retrieve new-parent again, it may have been changed...
 			$sql = 'SELECT *
 				FROM ' . $this->table_name . '
-				WHERE ' . $this->table_columns['item_id'] . ' = ' . $new_parent->get_item_id();
+				WHERE ' . $this->column_item_id . ' = ' . $new_parent->get_item_id();
 			$result = $this->db->sql_query($sql);
 			$parent_data = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
@@ -396,7 +394,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		}
 		else
 		{
-			$sql = 'SELECT MAX(' . $this->table_columns['right_id'] . ') AS ' . $this->table_columns['right_id'] . '
+			$sql = 'SELECT MAX(' . $this->column_right_id . ') AS ' . $this->column_right_id . '
 				FROM ' . $this->table_name . '
 				WHERE ' . $sql_exclude_moved_items . '
 					' . $this->get_sql_where('AND');
@@ -404,15 +402,15 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
 
-			$diff = ' + ' . ($row[$this->table_columns['right_id']] - $item->get_left_id() + 1);
+			$diff = ' + ' . ($row[$this->column_right_id] - $item->get_left_id() + 1);
 		}
 
 		$sql = 'UPDATE ' . $this->table_name . '
-			SET ' . $this->table_columns['left_id'] . ' = ' . $this->table_columns['left_id'] . $diff . ',
-				' . $this->table_columns['right_id'] . ' = ' . $this->table_columns['right_id'] . $diff . ',
-				' . $this->table_columns['parent_id'] . ' = ' . $this->db->sql_case($this->table_columns['item_id'] . ' = ' . $item->get_item_id(), $new_parent->get_item_id(), $this->table_columns['parent_id']) . ',
-				' . $this->table_columns['item_parents'] . " = ''
-			WHERE " . $this->db->sql_in_set($this->table_columns['item_id'], $move_items) . '
+			SET ' . $this->column_left_id . ' = ' . $this->column_left_id . $diff . ',
+				' . $this->column_right_id . ' = ' . $this->column_right_id . $diff . ',
+				' . $this->column_parent_id . ' = ' . $this->db->sql_case($this->column_item_id . ' = ' . $item->get_item_id(), $new_parent->get_item_id(), $this->column_parent_id) . ',
+				' . $this->column_item_parents . " = ''
+			WHERE " . $this->db->sql_in_set($this->column_item_id, $move_items) . '
 				' . $this->get_sql_where('AND');
 		$this->db->sql_query($sql);
 
@@ -429,16 +427,16 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		switch ($type)
 		{
 			case 'parents':
-				$condition = 'i1.' . $this->table_columns['left_id'] . ' BETWEEN i2.' . $this->table_columns['left_id'] . ' AND i2.' . $this->table_columns['right_id'] . '';
+				$condition = 'i1.' . $this->column_left_id . ' BETWEEN i2.' . $this->column_left_id . ' AND i2.' . $this->column_right_id . '';
 			break;
 
 			case 'children':
-				$condition = 'i2.' . $this->table_columns['left_id'] . ' BETWEEN i1.' . $this->table_columns['left_id'] . ' AND i1.' . $this->table_columns['right_id'] . '';
+				$condition = 'i2.' . $this->column_left_id . ' BETWEEN i1.' . $this->column_left_id . ' AND i1.' . $this->column_right_id . '';
 			break;
 
 			default:
-				$condition = 'i2.' . $this->table_columns['left_id'] . ' BETWEEN i1.' . $this->table_columns['left_id'] . ' AND i1.' . $this->table_columns['right_id'] . '
-					OR i1.' . $this->table_columns['left_id'] . ' BETWEEN i2.' . $this->table_columns['left_id'] . ' AND i2.' . $this->table_columns['right_id'];
+				$condition = 'i2.' . $this->column_left_id . ' BETWEEN i1.' . $this->column_left_id . ' AND i1.' . $this->column_right_id . '
+					OR i1.' . $this->column_left_id . ' BETWEEN i2.' . $this->column_left_id . ' AND i2.' . $this->column_right_id;
 			break;
 		}
 
@@ -448,19 +446,19 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			FROM ' . $this->table_name . ' i1
 			LEFT JOIN ' . $this->table_name . " i2
 				ON (($condition) " . $this->get_sql_where('AND', 'i2.') . ')
-			WHERE i1.' . $this->table_columns['item_id'] . ' = ' . $item->get_item_id() . '
+			WHERE i1.' . $this->column_item_id . ' = ' . $item->get_item_id() . '
 				' . $this->get_sql_where('AND', 'i1.') . '
-			ORDER BY i2.' . $this->table_columns['left_id'] . ' ' . ($order_desc ? 'ASC' : 'DESC');
+			ORDER BY i2.' . $this->column_left_id . ' ' . ($order_desc ? 'ASC' : 'DESC');
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (!$include_item && $item->get_item_id() === (int) $row[$this->table_columns['item_id']])
+			if (!$include_item && $item->get_item_id() === (int) $row[$this->column_item_id])
 			{
 				continue;
 			}
 
-			$rows[$row[$this->table_columns['item_id']]] = $row;
+			$rows[$row[$this->column_item_id]] = $row;
 		}
 		$this->db->sql_freeresult($result);
 
@@ -483,23 +481,23 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			{
 				$sql = 'SELECT ' . implode(', ', $this->item_basic_data) . '
 					FROM ' . $this->table_name . '
-					WHERE ' . $this->table_columns['left_id'] . ' < ' . $item->get_left_id() . '
-						AND ' . $this->table_columns['right_id'] . ' > ' . $item->get_right_id() . '
+					WHERE ' . $this->column_left_id . ' < ' . $item->get_left_id() . '
+						AND ' . $this->column_right_id . ' > ' . $item->get_right_id() . '
 						' . $this->get_sql_where('AND') . '
-					ORDER BY ' . $this->table_columns['left_id'] . ' ASC';
+					ORDER BY ' . $this->column_left_id . ' ASC';
 				$result = $this->db->sql_query($sql);
 
 				while ($row = $this->db->sql_fetchrow($result))
 				{
-					$parents[$row[$this->table_columns['item_id']]] = $row;
+					$parents[$row[$this->column_item_id]] = $row;
 				}
 				$this->db->sql_freeresult($result);
 
 				$item_parents = serialize($parents);
 
 				$sql = 'UPDATE ' . $this->table_name . '
-					SET ' . $this->table_columns['item_parents'] . " = '" . $this->db->sql_escape($item_parents) . "'
-					WHERE " . $this->table_columns['parent_id'] . ' = ' . $item->get_parent_id();
+					SET ' . $this->column_item_parents . " = '" . $this->db->sql_escape($item_parents) . "'
+					WHERE " . $this->column_parent_id . ' = ' . $item->get_parent_id();
 				$this->db->sql_query($sql);
 			}
 			else
@@ -522,16 +520,16 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	protected function remove_subset(array $subset_items, phpbb_nestedset_item_interface $bounding_item, $set_subset_zero = true)
 	{
 		$diff = sizeof($subset_items) * 2;
-		$sql_subset_items = $this->db->sql_in_set($this->table_columns['item_id'], $subset_items);
-		$sql_not_subset_items = $this->db->sql_in_set($this->table_columns['item_id'], $subset_items, true);
+		$sql_subset_items = $this->db->sql_in_set($this->column_item_id, $subset_items);
+		$sql_not_subset_items = $this->db->sql_in_set($this->column_item_id, $subset_items, true);
 
-		$sql_is_parent = $this->table_columns['left_id'] . ' <= ' . $bounding_item->get_right_id() . '
-			AND ' . $this->table_columns['right_id'] . ' >= ' . $bounding_item->get_right_id();
+		$sql_is_parent = $this->column_left_id . ' <= ' . $bounding_item->get_right_id() . '
+			AND ' . $this->column_right_id . ' >= ' . $bounding_item->get_right_id();
 
-		$sql_is_right = $this->table_columns['left_id'] . ' > ' . $bounding_item->get_right_id();
+		$sql_is_right = $this->column_left_id . ' > ' . $bounding_item->get_right_id();
 
-		$set_left_id = $this->db->sql_case($sql_is_right, $this->table_columns['left_id'] . ' - ' . $diff, $this->table_columns['left_id']);
-		$set_right_id = $this->db->sql_case($sql_is_parent . ' OR ' . $sql_is_right, $this->table_columns['right_id'] . ' - ' . $diff, $this->table_columns['right_id']);
+		$set_left_id = $this->db->sql_case($sql_is_right, $this->column_left_id . ' - ' . $diff, $this->column_left_id);
+		$set_right_id = $this->db->sql_case($sql_is_parent . ' OR ' . $sql_is_right, $this->column_right_id . ' - ' . $diff, $this->column_right_id);
 
 		if ($set_subset_zero)
 		{
@@ -540,10 +538,10 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		}
 
 		$sql = 'UPDATE ' . $this->table_name . '
-			SET ' . $this->table_columns['left_id'] . ' = ' . $set_left_id . ',
-				' . $this->table_columns['right_id'] . ' = ' . $set_right_id . ',
-				' . (($set_subset_zero) ? $this->table_columns['parent_id'] . ' = ' . $this->db->sql_case($sql_subset_items, 0, $this->table_columns['parent_id']) . ',' : '') . '
-				' . $this->table_columns['item_parents'] . " = ''
+			SET ' . $this->column_left_id . ' = ' . $set_left_id . ',
+				' . $this->column_right_id . ' = ' . $set_right_id . ',
+				' . (($set_subset_zero) ? $this->column_parent_id . ' = ' . $this->db->sql_case($sql_subset_items, 0, $this->column_parent_id) . ',' : '') . '
+				' . $this->column_item_parents . " = ''
 			" . ((!$set_subset_zero) ? ' WHERE ' . $sql_not_subset_items . ' ' . $this->get_sql_where('AND') : $this->get_sql_where('WHERE'));
 		$this->db->sql_query($sql);
 	}
@@ -558,15 +556,15 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	protected function prepare_adding_subset(array $subset_items, phpbb_nestedset_item_interface $new_parent)
 	{
 		$diff = sizeof($subset_items) * 2;
-		$sql_not_subset_items = $this->db->sql_in_set($this->table_columns['item_id'], $subset_items, true);
+		$sql_not_subset_items = $this->db->sql_in_set($this->column_item_id, $subset_items, true);
 
-		$set_left_id = $this->db->sql_case($this->table_columns['left_id'] . ' > ' . $new_parent->get_right_id(), $this->table_columns['left_id'] . ' + ' . $diff, $this->table_columns['left_id']);
-		$set_right_id = $this->db->sql_case($this->table_columns['right_id'] . ' >= ' . $new_parent->get_right_id(), $this->table_columns['right_id'] . ' + ' . $diff, $this->table_columns['right_id']);
+		$set_left_id = $this->db->sql_case($this->column_left_id . ' > ' . $new_parent->get_right_id(), $this->column_left_id . ' + ' . $diff, $this->column_left_id);
+		$set_right_id = $this->db->sql_case($this->column_right_id . ' >= ' . $new_parent->get_right_id(), $this->column_right_id . ' + ' . $diff, $this->column_right_id);
 
 		$sql = 'UPDATE ' . $this->table_name . '
-			SET ' . $this->table_columns['left_id'] . ' = ' . $set_left_id . ',
-				' . $this->table_columns['right_id'] . ' = ' . $set_right_id . ',
-				' . $this->table_columns['item_parents'] . " = ''
+			SET ' . $this->column_left_id . ' = ' . $set_left_id . ',
+				' . $this->column_right_id . ' = ' . $set_right_id . ',
+				' . $this->column_item_parents . " = ''
 			WHERE " . $sql_not_subset_items . '
 				' . $this->get_sql_where('AND');
 		$this->db->sql_query($sql);
@@ -583,9 +581,9 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		{
 			$sql = 'UPDATE ' . $this->table_name . '
 				SET ' . $this->db->sql_build_array('UPDATE', array(
-					$this->table_columns['left_id'] => 0,
-					$this->table_columns['right_id'] => 0,
-					$this->table_columns['item_parents'] => '',
+					$this->column_left_id		=> 0,
+					$this->column_right_id		=> 0,
+					$this->column_item_parents	=> '',
 				)) . '
 				' . $this->get_sql_where('WHERE');
 			$this->db->sql_query($sql);
@@ -593,34 +591,34 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 
 		$sql = 'SELECT *
 			FROM ' . $this->table_name . '
-			WHERE ' . $this->table_columns['parent_id'] . ' = ' . (int) $parent_id . '
+			WHERE ' . $this->column_parent_id . ' = ' . (int) $parent_id . '
 				' . $this->get_sql_where('AND') . '
-			ORDER BY ' . $this->table_columns['left_id'] . ', ' . $this->table_columns['item_id'] . ' ASC';
+			ORDER BY ' . $this->column_left_id . ', ' . $this->column_item_id . ' ASC';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			// First we update the left_id for this module
-			if ($row[$this->table_columns['left_id']] != $new_id)
+			if ($row[$this->column_left_id] != $new_id)
 			{
 				$sql = 'UPDATE ' . $this->table_name . '
 					SET ' . $this->db->sql_build_array('UPDATE', array(
-						$this->table_columns['left_id'] => $new_id,
-						$this->table_columns['item_parents'] => '',
+						$this->column_left_id		=> $new_id,
+						$this->column_item_parents	=> '',
 					)) . '
-					WHERE ' . $this->table_columns['item_id'] . ' = ' . $row[$this->table_columns['item_id']];
+					WHERE ' . $this->column_item_id . ' = ' . $row[$this->column_item_id];
 				$this->db->sql_query($sql);
 			}
 			$new_id++;
 
 			// Then we go through any children and update their left/right id's
-			$new_id = $this->recalculate_nested_set($new_id, $row[$this->table_columns['item_id']]);
+			$new_id = $this->recalculate_nested_set($new_id, $row[$this->column_item_id]);
 
 			// Then we come back and update the right_id for this module
-			if ($row[$this->table_columns['right_id']] != $new_id)
+			if ($row[$this->column_right_id] != $new_id)
 			{
 				$sql = 'UPDATE ' . $this->table_name . '
-					SET ' . $this->db->sql_build_array('UPDATE', array($this->table_columns['right_id'] => $new_id)) . '
-					WHERE ' . $this->table_columns['item_id'] . ' = ' . $row[$this->table_columns['item_id']];
+					SET ' . $this->db->sql_build_array('UPDATE', array($this->column_right_id => $new_id)) . '
+					WHERE ' . $this->column_item_id . ' = ' . $row[$this->column_item_id];
 				$this->db->sql_query($sql);
 			}
 			$new_id++;

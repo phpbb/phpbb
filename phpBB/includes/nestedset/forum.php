@@ -31,15 +31,10 @@ class phpbb_nestedset_forum extends phpbb_nestedset_base
 
 	/**
 	* Column names in the table
-	* @var array
+	* @var String
 	*/
-	protected $table_columns = array(
-		'item_id'	=> 'forum_id',
-		'left_id'	=> 'left_id',
-		'right_id'	=> 'right_id',
-		'parent_id'	=> 'parent_id',
-		'item_parents'	=> 'forum_parents',
-	);
+	protected $columns_item_id = 'forum_id';
+	protected $columns_item_parents = 'forum_parents';
 
 	/**
 	* Additional SQL restrictions
