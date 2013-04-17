@@ -192,6 +192,7 @@ class mcp_main
 				{
 					switch ($action)
 					{
+						// Handling possible errors in quickmod actions.
 						case 'lock':
 						case 'unlock':
 						case 'make_announce':
@@ -202,18 +203,17 @@ class mcp_main
 						case 'move':
 						case 'fork':
 						case 'delete_topic':
-							// Non-fatal error. Can be displayed by board.
 							trigger_error('TOPIC_NOT_EXIST');
 						break;
 				
 						case 'lock_post':
 						case 'unlock_post':
 						case 'delete_post':
-							// Non-fatal error. Can be displayed by board.
 							trigger_error('POST_NOT_EXIST');
 						break;
 					}
 				}
+				// Unhandled case. Set to E_USER_ERROR. Can be changed when new case is reported.
 				trigger_error('NO_MODE', E_USER_ERROR);
 			break;
 		}
