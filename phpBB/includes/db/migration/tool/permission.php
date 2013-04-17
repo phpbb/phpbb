@@ -107,7 +107,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	{
 		if ($this->exists($auth_option, $global))
 		{
-			throw new phpbb_db_migration_exception('PERMISSION_ALREADY_EXISTS', $auth_option);
+			return;
 		}
 
 		// We've added permissions, so set to true to notify the user.
@@ -190,7 +190,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	{
 		if (!$this->exists($auth_option, $global))
 		{
-			throw new phpbb_db_migration_exception('PERMISSION_NOT_EXIST', $auth_option);
+			return;
 		}
 
 		if ($global)
@@ -252,7 +252,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 		if ($role_id)
 		{
-			throw new phpbb_db_migration_exception('ROLE_ALREADY_EXISTS', $old_role_name);
+			return;
 		}
 
 		$sql = 'SELECT MAX(role_order) AS max_role_order
@@ -290,7 +290,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 		if (!$role_id)
 		{
-			throw new phpbb_db_migration_exception('ROLE_NOT_EXISTS', $old_role_name);
+			throw new phpbb_db_migration_exception('ROLE_NOT_EXIST', $old_role_name);
 		}
 
 		$sql = 'UPDATE ' . ACL_ROLES_TABLE . "
@@ -315,7 +315,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 		if (!$role_id)
 		{
-			throw new phpbb_db_migration_exception('ROLE_NOT_EXIST', $role_name);
+			return;
 		}
 
 		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
@@ -422,7 +422,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 					$this->db->sql_query($sql);
 					$role_name = $this->db->sql_fetchfield('role_name');
 
-					return $this->set($role_name, $auth_option, 'role', $has_permission);
+					return $this->permission_set($role_name, $auth_option, 'role', $has_permission);
 				}
 
 				$sql = 'SELECT auth_option_id, auth_setting

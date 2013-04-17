@@ -353,7 +353,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
 	*/
-	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
+	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
 		// No keywords? No posts
 		if (!$this->search_query)
@@ -374,6 +374,11 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			implode(',', $m_approve_fid_ary),
 			implode(',', $author_ary)
 		)));
+
+		if ($start < 0)
+		{
+			$start = 0;
+		}
 
 		// try reading the results from cache
 		$result_count = 0;
@@ -488,16 +493,11 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 		$id_ary = array_unique($id_ary);
 
-		if (!sizeof($id_ary))
-		{
-			return false;
-		}
-
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count)
 		{
-			$sql = 'SELECT FOUND_ROWS() as result_count';
-			$result = $this->db->sql_query($sql);
+			$sql_found_rows = 'SELECT FOUND_ROWS() as result_count';
+			$result = $this->db->sql_query($sql_found_rows);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 			$this->db->sql_freeresult($result);
 
@@ -505,6 +505,21 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			{
 				return false;
 			}
+		}
+
+		if ($start >= $result_count)
+		{
+			$start = floor(($result_count - 1) / $per_page) * $per_page;
+
+			$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$id_ary[] = (int) $row[$field];
+			}
+			$this->db->sql_freeresult($result);
+
+			$id_ary = array_unique($id_ary);
 		}
 
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
@@ -533,7 +548,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
 	*/
-	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
+	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
 		// No author? No posts
 		if (!sizeof($author_ary))
@@ -556,6 +571,11 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			implode(',', $author_ary),
 			$author_name,
 		)));
+
+		if ($start < 0)
+		{
+			$start = 0;
+		}
 
 		// try reading the results from cache
 		$result_count = 0;
@@ -662,8 +682,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		// retrieve the total result count if needed
 		if (!$result_count)
 		{
-			$sql = 'SELECT FOUND_ROWS() as result_count';
-			$result = $this->db->sql_query($sql);
+			$sql_found_rows = 'SELECT FOUND_ROWS() as result_count';
+			$result = $this->db->sql_query($sql_found_rows);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 			$this->db->sql_freeresult($result);
 
@@ -671,6 +691,20 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			{
 				return false;
 			}
+		}
+
+		if ($start >= $result_count)
+		{
+			$start = floor(($result_count - 1) / $per_page) * $per_page;
+
+			$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$id_ary[] = (int) $row[$field];
+			}
+			$this->db->sql_freeresult($result);
+
+			$id_ary = array_unique($id_ary);
 		}
 
 		if (sizeof($id_ary))

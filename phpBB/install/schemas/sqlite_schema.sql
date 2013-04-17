@@ -154,6 +154,14 @@ CREATE TABLE phpbb_config (
 
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic);
 
+# Table: 'phpbb_config_text'
+CREATE TABLE phpbb_config_text (
+	config_name varchar(255) NOT NULL DEFAULT '',
+	config_value mediumtext(16777215) NOT NULL DEFAULT '',
+	PRIMARY KEY (config_name)
+);
+
+
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
 	confirm_id char(32) NOT NULL DEFAULT '',
@@ -309,7 +317,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varchar(8) NOT NULL DEFAULT '',
 	group_display INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_avatar varchar(255) NOT NULL DEFAULT '',
-	group_avatar_type tinyint(2) NOT NULL DEFAULT '0',
+	group_avatar_type varchar(255) NOT NULL DEFAULT '',
 	group_avatar_width INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_avatar_height INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_rank INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -318,8 +326,7 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_message_limit INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_max_recipients INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	group_teampage INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_groups_group_legend_name ON phpbb_groups (group_legend, group_name);
@@ -429,6 +436,29 @@ CREATE TABLE phpbb_modules (
 CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules (left_id, right_id);
 CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules (module_enabled);
 CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id);
+
+# Table: 'phpbb_notification_types'
+CREATE TABLE phpbb_notification_types (
+	notification_type varchar(255) NOT NULL DEFAULT '',
+	notification_type_enabled INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	PRIMARY KEY (notification_type, notification_type_enabled)
+);
+
+
+# Table: 'phpbb_notifications'
+CREATE TABLE phpbb_notifications (
+	notification_id INTEGER PRIMARY KEY NOT NULL ,
+	item_type varchar(255) NOT NULL DEFAULT '',
+	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	item_parent_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	notification_read INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	notification_time INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	notification_data text(65535) NOT NULL DEFAULT ''
+);
+
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id);
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read);
 
 # Table: 'phpbb_poll_options'
 CREATE TABLE phpbb_poll_options (
@@ -764,6 +794,16 @@ CREATE TABLE phpbb_styles (
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
 
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id INTEGER PRIMARY KEY NOT NULL ,
+	group_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	teampage_name varchar(255) NOT NULL DEFAULT '',
+	teampage_position INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	teampage_parent INTEGER UNSIGNED NOT NULL DEFAULT '0'
+);
+
+
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
 	topic_id INTEGER PRIMARY KEY NOT NULL ,
@@ -841,6 +881,16 @@ CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch (topic_id);
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch (user_id);
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status);
 
+# Table: 'phpbb_user_notifications'
+CREATE TABLE phpbb_user_notifications (
+	item_type varchar(255) NOT NULL DEFAULT '',
+	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	method varchar(255) NOT NULL DEFAULT '',
+	notify INTEGER UNSIGNED NOT NULL DEFAULT '1'
+);
+
+
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
 	group_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -909,7 +959,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_options INTEGER UNSIGNED NOT NULL DEFAULT '230271',
 	user_avatar varchar(255) NOT NULL DEFAULT '',
-	user_avatar_type tinyint(2) NOT NULL DEFAULT '0',
+	user_avatar_type varchar(255) NOT NULL DEFAULT '',
 	user_avatar_width INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_avatar_height INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_sig mediumtext(16777215) NOT NULL DEFAULT '',

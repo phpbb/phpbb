@@ -60,7 +60,9 @@ class phpbb_db_migrator
 	protected $migrations = array();
 
 	/**
-	* 'name' and 'class' of the last migration run
+	* 'name,' 'class,' and 'state' of the last migration run
+	*
+	* 'effectively_installed' set and set to true if the migration was effectively_installed
 	*
 	* @var array
 	*/
@@ -99,18 +101,26 @@ class phpbb_db_migrator
 	{
 		$this->migration_state = array();
 
+		// prevent errors in case the table does not exist yet
+		$this->db->sql_return_on_error(true);
+
 		$sql = "SELECT *
 			FROM " . $this->migrations_table;
 		$result = $this->db->sql_query($sql);
 
-		while ($migration = $this->db->sql_fetchrow($result))
+		if (!$this->db->sql_error_triggered)
 		{
-			$this->migration_state[$migration['migration_name']] = $migration;
+			while ($migration = $this->db->sql_fetchrow($result))
+			{
+				$this->migration_state[$migration['migration_name']] = $migration;
 
-			$this->migration_state[$migration['migration_name']]['migration_depends_on'] = unserialize($migration['migration_depends_on']);
+				$this->migration_state[$migration['migration_name']]['migration_depends_on'] = unserialize($migration['migration_depends_on']);
+			}
 		}
 
 		$this->db->sql_freeresult($result);
+
+		$this->db->sql_return_on_error(false);
 	}
 
 	/**
@@ -122,120 +132,6 @@ class phpbb_db_migrator
 	public function set_migrations($class_names)
 	{
 		$this->migrations = $class_names;
-	}
-
-	/**
-	* This function adds all migrations in a specified directory to the migrations table
-	*
-	* THIS SHOULD NOT GENERALLY BE USED! THIS IS FOR THE PHPBB INSTALLER.
-	* THIS WILL THROW ERRORS IF MIGRATIONS ALREADY EXIST IN THE TABLE, DO NOT CALL MORE THAN ONCE!
-	*
-	* @param string $path Path to migration data files
-	* @param bool $recursive Set to true to also load data files from subdirectories
-	* @return null
-	*/
-	public function populate_migrations_from_directory($path, $recursive = true)
-	{
-		$existing_migrations = $this->migrations;
-
-		$this->migrations = array();
-		$this->load_migrations($path, true, $recursive);
-
-		foreach ($this->migrations as $name)
-		{
-			if ($this->migration_state($name) === false)
-			{
-				$state = array(
-					'migration_depends_on'	=> $name::depends_on(),
-					'migration_schema_done' => true,
-					'migration_data_done'	=> true,
-					'migration_data_state'	=> '',
-					'migration_start_time'	=> time(),
-					'migration_end_time'	=> time(),
-				);
-				$this->insert_migration($name, $state);
-			}
-		}
-
-		$this->migrations = $existing_migrations;
-	}
-
-	/**
-	* Load migration data files from a directory
-	*
-	* Migration data files loaded with this function MUST contain
-	* 	ONLY ONE class in them (or an exception will be thrown).
-	*
-	* @param string $path Path to migration data files
-	* @param bool $check_fulfillable If TRUE (default), we will check
-	* 	if all of the migrations are fulfillable after loading them.
-	* 	If FALSE, we will not check. You SHOULD check at least once
-	* 	to prevent errors (if including multiple directories, check
-	* 	with the last call to prevent throwing errors unnecessarily).
-	* @param bool $recursive Set to true to also load data files from subdirectories
-	* @return array Array of migration names
-	*/
-	public function load_migrations($path, $check_fulfillable = true, $recursive = true)
-	{
-		if (!is_dir($path))
-		{
-			throw new phpbb_db_migration_exception('DIRECTORY INVALID', $path);
-		}
-
-		$handle = opendir($path);
-		while (($file = readdir($handle)) !== false)
-		{
-			if ($file == '.' || $file == '..')
-			{
-				continue;
-			}
-
-			// Recursion through subdirectories
-			if (is_dir($path . $file) && $recursive)
-			{
-				$this->load_migrations($path . $file . '/', $check_fulfillable, $recursive);
-			}
-
-			if (strpos($file, '_') !== 0 && strrpos($file, '.' . $this->php_ext) === (strlen($file) - strlen($this->php_ext) - 1))
-			{
-				// We try to find what class existed by comparing the classes declared before and after including the file.
-				$declared_classes = get_declared_classes();
-
-				include ($path . $file);
-
-				$added_classes = array_diff(get_declared_classes(), $declared_classes);
-
-				if (
-					// If two classes have been added and phpbb_db_migration is one of them, we've only added one real migration
-					!(sizeof($added_classes) == 2 && in_array('phpbb_db_migration', $added_classes)) &&
-					// Otherwise there should only be one class added
-					sizeof($added_classes) != 1
-				)
-				{
-					throw new phpbb_db_migration_exception('MIGRATION DATA FILE INVALID', $path . $file);
-				}
-
-				$name = array_pop($added_classes);
-
-				if (!in_array($name, $this->migrations))
-				{
-					$this->migrations[] = $name;
-				}
-			}
-		}
-
-		if ($check_fulfillable)
-		{
-			foreach ($this->migrations as $name)
-			{
-				if ($this->unfulfillable($name))
-				{
-					throw new phpbb_db_migration_exception('MIGRATION NOT FULFILLABLE', $name);
-				}
-			}
-		}
-
-		return $this->migrations;
 	}
 
 	/**
@@ -305,25 +201,27 @@ class phpbb_db_migrator
 		$this->last_run_migration = array(
 			'name'	=> $name,
 			'class'	=> $migration,
+			'state'	=> $state,
 		);
 
-		if ($migration->effectively_installed())
+		if (!isset($this->migration_state[$name]))
 		{
-			$state = array(
-				'migration_depends_on'	=> $migration->depends_on(),
-				'migration_schema_done' => true,
-				'migration_data_done'	=> true,
-				'migration_data_state'	=> '',
-				'migration_start_time'	=> 0,
-				'migration_end_time'	=> 0,
-			);
-		}
-		else
-		{
-			if (!isset($this->migration_state[$name]))
+			if ($migration->effectively_installed())
+			{
+				$state = array(
+					'migration_depends_on'	=> $migration->depends_on(),
+					'migration_schema_done' => true,
+					'migration_data_done'	=> true,
+					'migration_data_state'	=> '',
+					'migration_start_time'	=> 0,
+					'migration_end_time'	=> 0,
+				);
+
+				$this->last_run_migration['effectively_installed'] = true;
+			}
+			else
 			{
 				$state['migration_start_time'] = time();
-				$this->insert_migration($name, $state);
 			}
 		}
 
@@ -352,14 +250,7 @@ class phpbb_db_migrator
 			}
 		}
 
-		$insert = $state;
-		$insert['migration_depends_on'] = serialize($state['migration_depends_on']);
-		$sql = 'UPDATE ' . $this->migrations_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $insert) . "
-			WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
-		$this->db->sql_query($sql);
-
-		$this->migration_state[$name] = $state;
+		$this->set_migration_state($name, $state);
 
 		return true;
 	}
@@ -425,20 +316,13 @@ class phpbb_db_migrator
 			}
 			else
 			{
-				$result = $this->process_data_step($migration->revert_data(), $state['migration_data_state'], false);
+				$result = $this->process_data_step($migration->revert_data(), '', false);
 
 				$state['migration_data_state'] = ($result === true) ? '' : $result;
 				$state['migration_data_done'] = ($result === true) ? false : true;
 			}
 
-			$insert = $state;
-			$insert['migration_depends_on'] = serialize($state['migration_depends_on']);
-			$sql = 'UPDATE ' . $this->migrations_table . '
-				SET ' . $this->db->sql_build_array('UPDATE', $insert) . "
-				WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
-			$this->db->sql_query($sql);
-
-			$this->migration_state[$name] = $state;
+			$this->set_migration_state($name, $state);
 		}
 		else
 		{
@@ -477,6 +361,12 @@ class phpbb_db_migrator
 	protected function process_data_step($steps, $state, $revert = false)
 	{
 		$state = ($state) ? unserialize($state) : false;
+
+		// reverse order of steps if reverting
+		if ($revert === true)
+		{
+			$steps = array_reverse($steps);
+		}
 
 		foreach ($steps as $step_identifier => $step)
 		{
@@ -651,30 +541,42 @@ class phpbb_db_migrator
 	}
 
 	/**
-	* Insert migration row into the database
+	* Insert/Update migration row into the database
 	*
 	* @param string $name Name of the migration
 	* @param array $state
 	* @return null
 	*/
-	protected function insert_migration($name, $state)
+	protected function set_migration_state($name, $state)
 	{
 		$migration_row = $state;
-		$migration_row['migration_name'] = $name;
 		$migration_row['migration_depends_on'] = serialize($state['migration_depends_on']);
 
-		$sql = 'INSERT INTO ' . $this->migrations_table . '
-			' . $this->db->sql_build_array('INSERT', $migration_row);
-		$this->db->sql_query($sql);
+		if (isset($this->migration_state[$name]))
+		{
+			$sql = 'UPDATE ' . $this->migrations_table . '
+				SET ' . $this->db->sql_build_array('UPDATE', $migration_row) . "
+				WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
+			$this->db->sql_query($sql);
+		}
+		else
+		{
+			$migration_row['migration_name'] = $name;
+			$sql = 'INSERT INTO ' . $this->migrations_table . '
+				' . $this->db->sql_build_array('INSERT', $migration_row);
+			$this->db->sql_query($sql);
+		}
 
 		$this->migration_state[$name] = $state;
+
+		$this->last_run_migration['state'] = $state;
 	}
 
 	/**
 	* Checks if a migration's dependencies can even theoretically be satisfied.
 	*
 	* @param string	$name The class name of the migration
-	* @return bool Whether the migration cannot be fulfilled
+	* @return bool|string False if fulfillable, string of missing migration name if unfulfillable
 	*/
 	public function unfulfillable($name)
 	{
@@ -685,7 +587,7 @@ class phpbb_db_migrator
 
 		if (!class_exists($name))
 		{
-			return true;
+			return $name;
 		}
 
 		$migration = $this->get_migration($name);
@@ -693,9 +595,10 @@ class phpbb_db_migrator
 
 		foreach ($depends as $depend)
 		{
-			if ($this->unfulfillable($depend))
+			$unfulfillable = $this->unfulfillable($depend);
+			if ($unfulfillable !== false)
 			{
-				return true;
+				return $unfulfillable;
 			}
 		}
 
@@ -715,7 +618,7 @@ class phpbb_db_migrator
 			{
 				// skip unfulfillable migrations, but fulfillables mean we
 				// are not finished yet
-				if ($this->unfulfillable($name))
+				if ($this->unfulfillable($name) !== false)
 				{
 					continue;
 				}
@@ -758,5 +661,86 @@ class phpbb_db_migrator
 	protected function get_migration($name)
 	{
 		return new $name($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix);
+	}
+
+	/**
+	* This function adds all migrations sent to it to the migrations table
+	*
+	* THIS SHOULD NOT GENERALLY BE USED! THIS IS FOR THE PHPBB INSTALLER.
+	* THIS WILL THROW ERRORS IF MIGRATIONS ALREADY EXIST IN THE TABLE, DO NOT CALL MORE THAN ONCE!
+	*
+	* @param array $migrations Array of migrations (names) to add to the migrations table
+	* @return null
+	*/
+	public function populate_migrations($migrations)
+	{
+		foreach ($migrations as $name)
+		{
+			if ($this->migration_state($name) === false)
+			{
+				$state = array(
+					'migration_depends_on'	=> $name::depends_on(),
+					'migration_schema_done' => true,
+					'migration_data_done'	=> true,
+					'migration_data_state'	=> '',
+					'migration_start_time'	=> time(),
+					'migration_end_time'	=> time(),
+				);
+				$this->set_migration_state($name, $state);
+			}
+		}
+	}
+
+	/**
+	* Load migration data files from a directory
+	*
+	* @param phpbb_extension_finder $finder
+	* @param string $path Path to migration data files
+	* @param bool $check_fulfillable If TRUE (default), we will check
+	* 	if all of the migrations are fulfillable after loading them.
+	* 	If FALSE, we will not check. You SHOULD check at least once
+	* 	to prevent errors (if including multiple directories, check
+	* 	with the last call to prevent throwing errors unnecessarily).
+	* @return array Array of migration names
+	*/
+	public function load_migrations(phpbb_extension_finder $finder, $path, $check_fulfillable = true)
+	{
+		if (!is_dir($path))
+		{
+			throw new phpbb_db_migration_exception('DIRECTORY INVALID', $path);
+		}
+
+		$migrations = array();
+
+		$files = $finder
+			->extension_directory("/")
+			->find_from_paths(array('/' => $path));
+		foreach ($files as $file)
+		{
+			$migrations[$file['path'] . $file['filename']] = '';
+		}
+		$migrations = $finder->get_classes_from_files($migrations);
+
+		foreach ($migrations as $migration)
+		{
+			if (!in_array($migration, $this->migrations))
+			{
+				$this->migrations[] = $migration;
+			}
+		}
+
+		if ($check_fulfillable)
+		{
+			foreach ($this->migrations as $name)
+			{
+				$unfulfillable = $this->unfulfillable($name);
+				if ($unfulfillable !== false)
+				{
+					throw new phpbb_db_migration_exception('MIGRATION_NOT_FULFILLABLE', $name, $unfulfillable);
+				}
+			}
+		}
+
+		return $this->migrations;
 	}
 }

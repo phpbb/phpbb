@@ -270,6 +270,16 @@ CREATE TABLE phpbb_config (
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic);
 
 /*
+	Table: 'phpbb_config_text'
+*/
+CREATE TABLE phpbb_config_text (
+	config_name varchar(255) DEFAULT '' NOT NULL,
+	config_value TEXT DEFAULT '' NOT NULL,
+	PRIMARY KEY (config_name)
+);
+
+
+/*
 	Table: 'phpbb_confirm'
 */
 CREATE TABLE phpbb_confirm (
@@ -463,7 +473,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varchar(8) DEFAULT '' NOT NULL,
 	group_display INT2 DEFAULT '0' NOT NULL CHECK (group_display >= 0),
 	group_avatar varchar(255) DEFAULT '' NOT NULL,
-	group_avatar_type INT2 DEFAULT '0' NOT NULL,
+	group_avatar_type varchar(255) DEFAULT '' NOT NULL,
 	group_avatar_width INT2 DEFAULT '0' NOT NULL CHECK (group_avatar_width >= 0),
 	group_avatar_height INT2 DEFAULT '0' NOT NULL CHECK (group_avatar_height >= 0),
 	group_rank INT4 DEFAULT '0' NOT NULL CHECK (group_rank >= 0),
@@ -473,7 +483,6 @@ CREATE TABLE phpbb_groups (
 	group_message_limit INT4 DEFAULT '0' NOT NULL CHECK (group_message_limit >= 0),
 	group_max_recipients INT4 DEFAULT '0' NOT NULL CHECK (group_max_recipients >= 0),
 	group_legend INT4 DEFAULT '0' NOT NULL CHECK (group_legend >= 0),
-	group_teampage INT4 DEFAULT '0' NOT NULL CHECK (group_teampage >= 0),
 	PRIMARY KEY (group_id)
 );
 
@@ -610,6 +619,36 @@ CREATE TABLE phpbb_modules (
 CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules (left_id, right_id);
 CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules (module_enabled);
 CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id);
+
+/*
+	Table: 'phpbb_notification_types'
+*/
+CREATE TABLE phpbb_notification_types (
+	notification_type varchar(255) DEFAULT '' NOT NULL,
+	notification_type_enabled INT2 DEFAULT '1' NOT NULL CHECK (notification_type_enabled >= 0),
+	PRIMARY KEY (notification_type, notification_type_enabled)
+);
+
+
+/*
+	Table: 'phpbb_notifications'
+*/
+CREATE SEQUENCE phpbb_notifications_seq;
+
+CREATE TABLE phpbb_notifications (
+	notification_id INT4 DEFAULT nextval('phpbb_notifications_seq'),
+	item_type varchar(255) DEFAULT '' NOT NULL,
+	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
+	item_parent_id INT4 DEFAULT '0' NOT NULL CHECK (item_parent_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	notification_read INT2 DEFAULT '0' NOT NULL CHECK (notification_read >= 0),
+	notification_time INT4 DEFAULT '1' NOT NULL CHECK (notification_time >= 0),
+	notification_data varchar(4000) DEFAULT '' NOT NULL,
+	PRIMARY KEY (notification_id)
+);
+
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id);
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read);
 
 /*
 	Table: 'phpbb_poll_options'
@@ -1026,6 +1065,21 @@ CREATE TABLE phpbb_styles (
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
 
 /*
+	Table: 'phpbb_teampage'
+*/
+CREATE SEQUENCE phpbb_teampage_seq;
+
+CREATE TABLE phpbb_teampage (
+	teampage_id INT4 DEFAULT nextval('phpbb_teampage_seq'),
+	group_id INT4 DEFAULT '0' NOT NULL CHECK (group_id >= 0),
+	teampage_name varchar(255) DEFAULT '' NOT NULL,
+	teampage_position INT4 DEFAULT '0' NOT NULL CHECK (teampage_position >= 0),
+	teampage_parent INT4 DEFAULT '0' NOT NULL CHECK (teampage_parent >= 0),
+	PRIMARY KEY (teampage_id)
+);
+
+
+/*
 	Table: 'phpbb_topics'
 */
 CREATE SEQUENCE phpbb_topics_seq;
@@ -1114,6 +1168,18 @@ CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch (user_id);
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status);
 
 /*
+	Table: 'phpbb_user_notifications'
+*/
+CREATE TABLE phpbb_user_notifications (
+	item_type varchar(255) DEFAULT '' NOT NULL,
+	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	method varchar(255) DEFAULT '' NOT NULL,
+	notify INT2 DEFAULT '1' NOT NULL CHECK (notify >= 0)
+);
+
+
+/*
 	Table: 'phpbb_user_group'
 */
 CREATE TABLE phpbb_user_group (
@@ -1187,7 +1253,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail INT2 DEFAULT '1' NOT NULL CHECK (user_allow_massemail >= 0),
 	user_options INT4 DEFAULT '230271' NOT NULL CHECK (user_options >= 0),
 	user_avatar varchar(255) DEFAULT '' NOT NULL,
-	user_avatar_type INT2 DEFAULT '0' NOT NULL,
+	user_avatar_type varchar(255) DEFAULT '' NOT NULL,
 	user_avatar_width INT2 DEFAULT '0' NOT NULL CHECK (user_avatar_width >= 0),
 	user_avatar_height INT2 DEFAULT '0' NOT NULL CHECK (user_avatar_height >= 0),
 	user_sig TEXT DEFAULT '' NOT NULL,

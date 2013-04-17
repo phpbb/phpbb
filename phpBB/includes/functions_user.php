@@ -310,8 +310,10 @@ function user_add($user_row, $cp_data = false)
 
 		if ($add_group_id)
 		{
-			// Because these actions only fill the log unneccessarily we skip the add_log() entry with a little hack. :/
-			$GLOBALS['skip_add_log'] = true;
+			global $phpbb_log;
+
+			// Because these actions only fill the log unneccessarily we skip the add_log() entry.
+			$phpbb_log->disable('admin');
 
 			// Add user to "newly registered users" group and set to default group if admin specified so.
 			if ($config['new_member_group_default'])
@@ -324,7 +326,7 @@ function user_add($user_row, $cp_data = false)
 				group_user_add($add_group_id, $user_id);
 			}
 
-			unset($GLOBALS['skip_add_log']);
+			$phpbb_log->enable('admin');
 		}
 	}
 
@@ -2048,6 +2050,7 @@ function avatar_delete($mode, $row, $clean_db = false)
 		avatar_remove_db($row[$mode . '_avatar']);
 	}
 	$filename = get_avatar_filename($row[$mode . '_avatar']);
+
 	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $filename))
 	{
 		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $filename);
@@ -2055,134 +2058,6 @@ function avatar_delete($mode, $row, $clean_db = false)
 	}
 
 	return false;
-}
-
-/**
-* Remote avatar linkage
-*/
-function avatar_remote($data, &$error)
-{
-	global $config, $db, $user, $phpbb_root_path, $phpEx;
-
-	if (!preg_match('#^(http|https|ftp)://#i', $data['remotelink']))
-	{
-		$data['remotelink'] = 'http://' . $data['remotelink'];
-	}
-	if (!preg_match('#^(http|https|ftp)://(?:(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}|(?:\d{1,3}\.){3,5}\d{1,3}):?([0-9]*?).*?\.(gif|jpg|jpeg|png)$#i', $data['remotelink']))
-	{
-		$error[] = $user->lang['AVATAR_URL_INVALID'];
-		return false;
-	}
-
-	// Make sure getimagesize works...
-	if (($image_data = @getimagesize($data['remotelink'])) === false && (empty($data['width']) || empty($data['height'])))
-	{
-		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
-		return false;
-	}
-
-	if (!empty($image_data) && ($image_data[0] < 2 || $image_data[1] < 2))
-	{
-		$error[] = $user->lang['AVATAR_NO_SIZE'];
-		return false;
-	}
-
-	$width = ($data['width'] && $data['height']) ? $data['width'] : $image_data[0];
-	$height = ($data['width'] && $data['height']) ? $data['height'] : $image_data[1];
-
-	if ($width < 2 || $height < 2)
-	{
-		$error[] = $user->lang['AVATAR_NO_SIZE'];
-		return false;
-	}
-
-	// Check image type
-	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$types = fileupload::image_types();
-	$extension = strtolower(filespec::get_extension($data['remotelink']));
-
-	if (!empty($image_data) && (!isset($types[$image_data[2]]) || !in_array($extension, $types[$image_data[2]])))
-	{
-		if (!isset($types[$image_data[2]]))
-		{
-			$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
-		}
-		else
-		{
-			$error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$image_data[2]][0], $extension);
-		}
-		return false;
-	}
-
-	if ($config['avatar_max_width'] || $config['avatar_max_height'])
-	{
-		if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
-		{
-			$error[] = phpbb_avatar_error_wrong_size($width, $height);
-			return false;
-		}
-	}
-
-	if ($config['avatar_min_width'] || $config['avatar_min_height'])
-	{
-		if ($width < $config['avatar_min_width'] || $height < $config['avatar_min_height'])
-		{
-			$error[] = phpbb_avatar_error_wrong_size($width, $height);
-			return false;
-		}
-	}
-
-	return array(AVATAR_REMOTE, $data['remotelink'], $width, $height);
-}
-
-/**
-* Avatar upload using the upload class
-*/
-function avatar_upload($data, &$error)
-{
-	global $phpbb_root_path, $config, $db, $user, $phpEx, $request;
-
-	// Init upload class
-	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], (isset($config['mime_triggers']) ? explode('|', $config['mime_triggers']) : false));
-
-	$uploadfile = $request->file('uploadfile');
-	if (!empty($uploadfile['name']))
-	{
-		$file = $upload->form_upload('uploadfile');
-	}
-	else
-	{
-		$file = $upload->remote_upload($data['uploadurl']);
-	}
-
-	$prefix = $config['avatar_salt'] . '_';
-	$file->clean_filename('avatar', $prefix, $data['user_id']);
-
-	$destination = $config['avatar_path'];
-
-	// Adjust destination path (no trailing slash)
-	if (substr($destination, -1, 1) == '/' || substr($destination, -1, 1) == '\\')
-	{
-		$destination = substr($destination, 0, -1);
-	}
-
-	$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
-	if ($destination && ($destination[0] == '/' || $destination[0] == "\\"))
-	{
-		$destination = '';
-	}
-
-	// Move file and overwrite any existing image
-	$file->move_file($destination, true);
-
-	if (sizeof($file->error))
-	{
-		$file->remove();
-		$error = array_merge($error, $file->error);
-	}
-
-	return array(AVATAR_UPLOAD, $data['user_id'] . '_' . time() . '.' . $file->get('extension'), $file->get('width'), $file->get('height'));
 }
 
 /**
@@ -2205,344 +2080,6 @@ function get_avatar_filename($avatar_entry)
 	$ext 			= substr(strrchr($avatar_entry, '.'), 1);
 	$avatar_entry	= intval($avatar_entry);
 	return $config['avatar_salt'] . '_' . (($avatar_group) ? 'g' : '') . $avatar_entry . '.' . $ext;
-}
-
-/**
-* Avatar Gallery
-*/
-function avatar_gallery($category, $avatar_select, $items_per_column, $block_var = 'avatar_row')
-{
-	global $user, $cache, $template;
-	global $config, $phpbb_root_path;
-
-	$avatar_list = array();
-
-	$path = $phpbb_root_path . $config['avatar_gallery_path'];
-
-	if (!file_exists($path) || !is_dir($path))
-	{
-		$avatar_list = array($user->lang['NO_AVATAR_CATEGORY'] => array());
-	}
-	else
-	{
-		// Collect images
-		$dp = @opendir($path);
-
-		if (!$dp)
-		{
-			return array($user->lang['NO_AVATAR_CATEGORY'] => array());
-		}
-
-		while (($file = readdir($dp)) !== false)
-		{
-			if ($file[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $file) && is_dir("$path/$file"))
-			{
-				$avatar_row_count = $avatar_col_count = 0;
-
-				if ($dp2 = @opendir("$path/$file"))
-				{
-					while (($sub_file = readdir($dp2)) !== false)
-					{
-						if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_file))
-						{
-							$avatar_list[$file][$avatar_row_count][$avatar_col_count] = array(
-								'file'		=> rawurlencode($file) . '/' . rawurlencode($sub_file),
-								'filename'	=> rawurlencode($sub_file),
-								'name'		=> ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_file))),
-							);
-							$avatar_col_count++;
-							if ($avatar_col_count == $items_per_column)
-							{
-								$avatar_row_count++;
-								$avatar_col_count = 0;
-							}
-						}
-					}
-					closedir($dp2);
-				}
-			}
-		}
-		closedir($dp);
-	}
-
-	if (!sizeof($avatar_list))
-	{
-		$avatar_list = array($user->lang['NO_AVATAR_CATEGORY'] => array());
-	}
-
-	@ksort($avatar_list);
-
-	$category = (!$category) ? key($avatar_list) : $category;
-	$avatar_categories = array_keys($avatar_list);
-
-	$s_category_options = '';
-	foreach ($avatar_categories as $cat)
-	{
-		$s_category_options .= '<option value="' . $cat . '"' . (($cat == $category) ? ' selected="selected"' : '') . '>' . $cat . '</option>';
-	}
-
-	$template->assign_vars(array(
-		'S_AVATARS_ENABLED'		=> true,
-		'S_IN_AVATAR_GALLERY'	=> true,
-		'S_CAT_OPTIONS'			=> $s_category_options)
-	);
-
-	$avatar_list = (isset($avatar_list[$category])) ? $avatar_list[$category] : array();
-
-	foreach ($avatar_list as $avatar_row_ary)
-	{
-		$template->assign_block_vars($block_var, array());
-
-		foreach ($avatar_row_ary as $avatar_col_ary)
-		{
-			$template->assign_block_vars($block_var . '.avatar_column', array(
-				'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
-				'AVATAR_NAME'	=> $avatar_col_ary['name'],
-				'AVATAR_FILE'	=> $avatar_col_ary['filename'])
-			);
-
-			$template->assign_block_vars($block_var . '.avatar_option_column', array(
-				'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
-				'S_OPTIONS_AVATAR'	=> $avatar_col_ary['filename'])
-			);
-		}
-	}
-
-	return $avatar_list;
-}
-
-
-/**
-* Tries to (re-)establish avatar dimensions
-*/
-function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $current_y = 0)
-{
-	global $config, $phpbb_root_path, $user;
-
-	switch ($avatar_type)
-	{
-		case AVATAR_REMOTE :
-			break;
-
-		case AVATAR_UPLOAD :
-			$avatar = $phpbb_root_path . $config['avatar_path'] . '/' . get_avatar_filename($avatar);
-			break;
-
-		case AVATAR_GALLERY :
-			$avatar = $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar ;
-			break;
-	}
-
-	// Make sure getimagesize works...
-	if (($image_data = @getimagesize($avatar)) === false)
-	{
-		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
-		return false;
-	}
-
-	if ($image_data[0] < 2 || $image_data[1] < 2)
-	{
-		$error[] = $user->lang['AVATAR_NO_SIZE'];
-		return false;
-	}
-
-	// try to maintain ratio
-	if (!(empty($current_x) && empty($current_y)))
-	{
-		if ($current_x != 0)
-		{
-			$image_data[1] = (int) floor(($current_x / $image_data[0]) * $image_data[1]);
-			$image_data[1] = min($config['avatar_max_height'], $image_data[1]);
-			$image_data[1] = max($config['avatar_min_height'], $image_data[1]);
-		}
-		if ($current_y != 0)
-		{
-			$image_data[0] = (int) floor(($current_y / $image_data[1]) * $image_data[0]);
-			$image_data[0] = min($config['avatar_max_width'], $image_data[1]);
-			$image_data[0] = max($config['avatar_min_width'], $image_data[1]);
-		}
-	}
-	return array($image_data[0], $image_data[1]);
-}
-
-/**
-* Uploading/Changing user avatar
-*/
-function avatar_process_user(&$error, $custom_userdata = false, $can_upload = null)
-{
-	global $config, $phpbb_root_path, $auth, $user, $db, $request;
-
-	$data = array(
-		'uploadurl'		=> request_var('uploadurl', ''),
-		'remotelink'	=> request_var('remotelink', ''),
-		'width'			=> request_var('width', 0),
-		'height'		=> request_var('height', 0),
-	);
-
-	$error = validate_data($data, array(
-		'uploadurl'		=> array('string', true, 5, 255),
-		'remotelink'	=> array('string', true, 5, 255),
-		'width'			=> array('string', true, 1, 3),
-		'height'		=> array('string', true, 1, 3),
-	));
-
-	if (sizeof($error))
-	{
-		return false;
-	}
-
-	$sql_ary = array();
-
-	if ($custom_userdata === false)
-	{
-		$userdata = &$user->data;
-	}
-	else
-	{
-		$userdata = &$custom_userdata;
-	}
-
-	$data['user_id'] = $userdata['user_id'];
-	$change_avatar = ($custom_userdata === false) ? $auth->acl_get('u_chgavatar') : true;
-	$avatar_select = basename(request_var('avatar_select', ''));
-
-	// Can we upload?
-	if (is_null($can_upload))
-	{
-		$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
-	}
-
-	$uploadfile = $request->file('uploadfile');
-	if ((!empty($uploadfile['name']) || $data['uploadurl']) && $can_upload)
-	{
-		list($sql_ary['user_avatar_type'], $sql_ary['user_avatar'], $sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = avatar_upload($data, $error);
-	}
-	else if ($data['remotelink'] && $change_avatar && $config['allow_avatar_remote'])
-	{
-		list($sql_ary['user_avatar_type'], $sql_ary['user_avatar'], $sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = avatar_remote($data, $error);
-	}
-	else if ($avatar_select && $change_avatar && $config['allow_avatar_local'])
-	{
-		$category = basename(request_var('category', ''));
-
-		$sql_ary['user_avatar_type'] = AVATAR_GALLERY;
-		$sql_ary['user_avatar'] = $avatar_select;
-
-		// check avatar gallery
-		if (!is_dir($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category))
-		{
-			$sql_ary['user_avatar'] = '';
-			$sql_ary['user_avatar_type'] = $sql_ary['user_avatar_width'] = $sql_ary['user_avatar_height'] = 0;
-		}
-		else
-		{
-			list($sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . urldecode($sql_ary['user_avatar']));
-			$sql_ary['user_avatar'] = $category . '/' . $sql_ary['user_avatar'];
-		}
-	}
-	else if (isset($_POST['delete']) && $change_avatar)
-	{
-		$sql_ary['user_avatar'] = '';
-		$sql_ary['user_avatar_type'] = $sql_ary['user_avatar_width'] = $sql_ary['user_avatar_height'] = 0;
-	}
-	else if (!empty($userdata['user_avatar']))
-	{
-		// Only update the dimensions
-
-		if (empty($data['width']) || empty($data['height']))
-		{
-			if ($dims = avatar_get_dimensions($userdata['user_avatar'], $userdata['user_avatar_type'], $error, $data['width'], $data['height']))
-			{
-				list($guessed_x, $guessed_y) = $dims;
-				if (empty($data['width']))
-				{
-					$data['width'] = $guessed_x;
-				}
-				if (empty($data['height']))
-				{
-					$data['height'] = $guessed_y;
-				}
-			}
-		}
-		if (($config['avatar_max_width'] || $config['avatar_max_height']) &&
-			(($data['width'] != $userdata['user_avatar_width']) || $data['height'] != $userdata['user_avatar_height']))
-		{
-			if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
-			{
-				$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
-			}
-		}
-
-		if (!sizeof($error))
-		{
-			if ($config['avatar_min_width'] || $config['avatar_min_height'])
-			{
-				if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
-				{
-					$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
-				}
-			}
-		}
-
-		if (!sizeof($error))
-		{
-			$sql_ary['user_avatar_width'] = $data['width'];
-			$sql_ary['user_avatar_height'] = $data['height'];
-		}
-	}
-
-	if (!sizeof($error))
-	{
-		// Do we actually have any data to update?
-		if (sizeof($sql_ary))
-		{
-			$ext_new = $ext_old = '';
-			if (isset($sql_ary['user_avatar']))
-			{
-				$userdata = ($custom_userdata === false) ? $user->data : $custom_userdata;
-				$ext_new = (empty($sql_ary['user_avatar'])) ? '' : substr(strrchr($sql_ary['user_avatar'], '.'), 1);
-				$ext_old = (empty($userdata['user_avatar'])) ? '' : substr(strrchr($userdata['user_avatar'], '.'), 1);
-
-				if ($userdata['user_avatar_type'] == AVATAR_UPLOAD)
-				{
-					// Delete old avatar if present
-					if ((!empty($userdata['user_avatar']) && empty($sql_ary['user_avatar']))
-					   || ( !empty($userdata['user_avatar']) && !empty($sql_ary['user_avatar']) && $ext_new !== $ext_old))
-					{
-						avatar_delete('user', $userdata);
-					}
-				}
-			}
-
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE user_id = ' . (($custom_userdata === false) ? $user->data['user_id'] : $custom_userdata['user_id']);
-			$db->sql_query($sql);
-
-		}
-	}
-
-	return (sizeof($error)) ? false : true;
-}
-
-/**
-* Returns a language string with the avatar size of the new avatar and the allowed maximum and minimum
-*
-* @param $width		int		The width of the new uploaded/selected avatar
-* @param $height	int		The height of the new uploaded/selected avatar
-* @return string
-*/
-function phpbb_avatar_error_wrong_size($width, $height)
-{
-	global $config, $user;
-
-	return $user->lang('AVATAR_WRONG_SIZE',
-		$user->lang('PIXELS', (int) $config['avatar_min_width']),
-		$user->lang('PIXELS', (int) $config['avatar_min_height']),
-		$user->lang('PIXELS', (int) $config['avatar_max_width']),
-		$user->lang('PIXELS', (int) $config['avatar_max_height']),
-		$user->lang('PIXELS', (int) $width),
-		$user->lang('PIXELS', (int) $height));
 }
 
 /**
@@ -2570,7 +2107,7 @@ function phpbb_avatar_explanation_string()
 */
 function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow_desc_bbcode = false, $allow_desc_urls = false, $allow_desc_smilies = false)
 {
-	global $phpbb_root_path, $config, $db, $user, $file_upload;
+	global $phpbb_root_path, $config, $db, $user, $file_upload, $phpbb_container;
 
 	$error = array();
 
@@ -2594,22 +2131,32 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		$error[] = $user->lang['GROUP_ERR_TYPE'];
 	}
 
+	$group_teampage = !empty($group_attributes['group_teampage']);
+	unset($group_attributes['group_teampage']);
+
 	if (!sizeof($error))
 	{
-		$current_legend = phpbb_group_positions::GROUP_DISABLED;
-		$current_teampage = phpbb_group_positions::GROUP_DISABLED;
+		$current_legend = phpbb_groupposition_legend::GROUP_DISABLED;
+		$current_teampage = phpbb_groupposition_teampage::GROUP_DISABLED;
 
-		$legend = new phpbb_group_positions($db, 'legend');
-		$teampage = new phpbb_group_positions($db, 'teampage');
+		$legend = $phpbb_container->get('groupposition.legend');
+		$teampage = $phpbb_container->get('groupposition.teampage');
 		if ($group_id)
 		{
-			$current_legend = $legend->get_group_value($group_id);
-			$current_teampage = $teampage->get_group_value($group_id);
+			try
+			{
+				$current_legend = $legend->get_group_value($group_id);
+				$current_teampage = $teampage->get_group_value($group_id);
+			}
+			catch (phpbb_groupposition_exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()));
+			}
 		}
 
 		if (!empty($group_attributes['group_legend']))
 		{
-			if (($group_id && ($current_legend == phpbb_group_positions::GROUP_DISABLED)) || !$group_id)
+			if (($group_id && ($current_legend == phpbb_groupposition_legend::GROUP_DISABLED)) || !$group_id)
 			{
 				// Old group currently not in the legend or new group, add at the end.
 				$group_attributes['group_legend'] = 1 + $legend->get_group_count();
@@ -2620,44 +2167,26 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 				$group_attributes['group_legend'] = $current_legend;
 			}
 		}
-		else if ($group_id && ($current_legend > phpbb_group_positions::GROUP_DISABLED))
+		else if ($group_id && ($current_legend != phpbb_groupposition_legend::GROUP_DISABLED))
 		{
 			// Group is removed from the legend
-			$legend->delete_group($group_id, true);
-			$group_attributes['group_legend'] = phpbb_group_positions::GROUP_DISABLED;
+			try
+			{
+				$legend->delete_group($group_id, true);
+			}
+			catch (phpbb_groupposition_exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()));
+			}
+			$group_attributes['group_legend'] = phpbb_groupposition_legend::GROUP_DISABLED;
 		}
 		else
 		{
-			$group_attributes['group_legend'] = phpbb_group_positions::GROUP_DISABLED;
-		}
-
-		if (!empty($group_attributes['group_teampage']))
-		{
-			if (($group_id && ($current_teampage == phpbb_group_positions::GROUP_DISABLED)) || !$group_id)
-			{
-				// Old group currently not on the teampage or new group, add at the end.
-				$group_attributes['group_teampage'] = 1 + $teampage->get_group_count();
-			}
-			else
-			{
-				// Group stayes on the teampage
-				$group_attributes['group_teampage'] = $current_teampage;
-			}
-		}
-		else if ($group_id && ($current_teampage > phpbb_group_positions::GROUP_DISABLED))
-		{
-			// Group is removed from the teampage
-			$teampage->delete_group($group_id, true);
-			$group_attributes['group_teampage'] = phpbb_group_positions::GROUP_DISABLED;
-		}
-		else
-		{
-			$group_attributes['group_teampage'] = phpbb_group_positions::GROUP_DISABLED;
+			$group_attributes['group_legend'] = phpbb_groupposition_legend::GROUP_DISABLED;
 		}
 
 		// Unset the objects, we don't need them anymore.
 		unset($legend);
-		unset($teampage);
 
 		$user_ary = array();
 		$sql_ary = array(
@@ -2751,6 +2280,20 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			$db->sql_query($sql);
 		}
 
+		// Remove the group from the teampage, only if unselected and we are editing a group,
+		// which is currently displayed.
+		if (!$group_teampage && $group_id && $current_teampage != phpbb_groupposition_teampage::GROUP_DISABLED)
+		{
+			try
+			{
+				$teampage->delete_group($group_id);
+			}
+			catch (phpbb_groupposition_exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()));
+			}
+		}
+
 		if (!$group_id)
 		{
 			$group_id = $db->sql_nextid();
@@ -2760,6 +2303,31 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 				group_correct_avatar($group_id, $sql_ary['group_avatar']);
 			}
 		}
+
+		try
+		{
+			if ($group_teampage && $current_teampage == phpbb_groupposition_teampage::GROUP_DISABLED)
+			{
+				$teampage->add_group($group_id);
+			}
+
+			if ($group_teampage)
+			{
+				if ($current_teampage == phpbb_groupposition_teampage::GROUP_DISABLED)
+				{
+					$teampage->add_group($group_id);
+				}
+			}
+			else if ($group_id && ($current_teampage != phpbb_groupposition_teampage::GROUP_DISABLED))
+			{
+				$teampage->delete_group($group_id);
+			}
+		}
+		catch (phpbb_groupposition_exception $exception)
+		{
+			trigger_error($user->lang($exception->getMessage()));
+		}
+		unset($teampage);
 
 		// Set user attributes
 		$sql_ary = array();
@@ -2842,7 +2410,7 @@ function avatar_remove_db($avatar_name)
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db, $cache, $auth, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $db, $cache, $auth, $user, $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_container;
 
 	if (!$group_name)
 	{
@@ -2884,12 +2452,31 @@ function group_delete($group_id, $group_name = false)
 	while ($start);
 
 	// Delete group from legend and teampage
-	$legend = new phpbb_group_positions($db, 'legend');
-	$legend->delete_group($group_id);
-	unset($legend);
-	$teampage = new phpbb_group_positions($db, 'teampage');
-	$teampage->delete_group($group_id);
-	unset($teampage);
+	try
+	{
+		$legend = $phpbb_container->get('groupposition.legend');
+		$legend->delete_group($group_id);
+		unset($legend);
+	}
+	catch (phpbb_groupposition_exception $exception)
+	{
+		// The group we want to delete does not exist.
+		// No reason to worry, we just continue the deleting process.
+		//trigger_error($user->lang($exception->getMessage()));
+	}
+
+	try
+	{
+		$teampage = $phpbb_container->get('groupposition.teampage');
+		$teampage->delete_group($group_id);
+		unset($teampage);
+	}
+	catch (phpbb_groupposition_exception $exception)
+	{
+		// The group we want to delete does not exist.
+		// No reason to worry, we just continue the deleting process.
+		//trigger_error($user->lang($exception->getMessage()));
+	}
 
 	// Delete group
 	$sql = 'DELETE FROM ' . GROUPS_TABLE . "

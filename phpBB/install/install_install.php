@@ -53,7 +53,7 @@ class install_install extends module
 	function main($mode, $sub)
 	{
 		global $lang, $template, $language, $phpbb_root_path, $phpEx;
-		global $phpbb_container, $cache;
+		global $phpbb_container, $cache, $phpbb_log;
 
 		switch ($sub)
 		{
@@ -105,8 +105,9 @@ class install_install extends module
 				// Create a normal container now
 				$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 
-				// Sets the global $cache variable
+				// Sets the global variables
 				$cache = $phpbb_container->get('cache');
+				$phpbb_log = $phpbb_container->get('log');
 
 				$this->build_search_index($mode, $sub);
 				$this->add_modules($mode, $sub);
@@ -114,6 +115,7 @@ class install_install extends module
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
 				$this->disable_avatars_if_unwritable();
+				$this->populate_migrations($phpbb_container->get('ext.manager'), $phpbb_container->get('migrator'));
 
 				// Remove the lock file
 				@unlink($phpbb_root_path . 'cache/install_lock');
@@ -1456,12 +1458,12 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config;
+		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config, $phpbb_container;
 
 		// modules require an extension manager
 		if (empty($phpbb_extension_manager))
 		{
-			$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+			$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 		}
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
@@ -1881,6 +1883,26 @@ class install_install extends module
 	}
 
 	/**
+	* Populate migrations for the installation
+	*
+	* This "installs" all migrations from (root path)/includes/db/migrations/data.
+	* "installs" means it adds all migrations to the migrations table, but does not
+	* perform any of the actions in the migrations.
+	*
+	* @param phpbb_extension_manager $extension_manager
+	* @param phpbb_db_migrator $migrator
+	*/
+	function populate_migrations($extension_manager, $migrator)
+	{
+		$finder = $extension_manager->get_finder();
+
+		$migrations = $finder
+			->core_path('includes/db/migration/data/')
+			->get_classes();
+		$migrator->populate_migrations($migrations);
+	}
+
+	/**
 	* Generate a list of available mail server authentication methods
 	*/
 	function mail_auth_select($selected_method)
@@ -2098,7 +2120,7 @@ class install_install extends module
 			),
 			'ACP_CAT_CUSTOMISE'		=> array(
 				'ACP_STYLE_MANAGEMENT',
-				'ACP_EXTENSIONS_MANAGEMENT',
+				'ACP_EXTENSION_MANAGEMENT',
 				'ACP_LANGUAGE',
 			),
 			'ACP_CAT_MAINTENANCE'	=> array(

@@ -1,5 +1,11 @@
 parameters:
     tables.config: %core.table_prefix%config
+    tables.config_text: %core.table_prefix%config_text
     tables.ext: %core.table_prefix%ext
+    tables.log: %core.table_prefix%log
     tables.migrations: %core.table_prefix%migrations
     tables.modules: %core.table_prefix%modules
+    tables.notification_types: %core.table_prefix%notification_types
+    tables.notifications: %core.table_prefix%notifications
+    tables.user_notifications: %core.table_prefix%user_notifications
+    tables.users: %core.table_prefix%users

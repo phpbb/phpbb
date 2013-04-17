@@ -125,7 +125,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 	*/
 	public function test_group_user_attributes($description, $user_id, $group_id, $group_row, $expected)
 	{
-		global $auth, $cache, $db, $phpbb_dispatcher, $user, $phpbb_container;
+		global $auth, $cache, $db, $phpbb_dispatcher, $user, $phpbb_container, $phpbb_log, $phpbb_root_path, $phpEx;
 
 		$user->ip = '';
 		$cache = new phpbb_mock_cache;
@@ -141,6 +141,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 			->method('get')
 			->with('cache.driver')
 			->will($this->returnValue($cache_driver));
+		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		group_user_attributes('default', $group_id, array($user_id), false, 'group_name', $group_row);
 

@@ -1098,12 +1098,13 @@ input.disabled {
 	border: 1px solid #999999;
 	position: fixed;
 	display: none;
-	top: 100px;
-	left: 35%;
-	width: 30%;
+	top: 150px;
+	left: 25%;
+	width: 50%;
 	z-index: 50;
 	padding: 25px;
 	padding: 0 25px 20px 25px;
+	text-align: left;
 }
 
 .phpbb_alert .alert_close {
@@ -1125,6 +1126,20 @@ input.disabled {
 .phpbb_alert p {
 	margin: 8px 0;
 	padding-bottom: 8px;
+}
+
+.phpbb_alert label {
+	display: block;
+	margin: 8px 0;
+	padding-bottom: 8px;
+}
+
+.phpbb_alert div.alert_text > p,
+.phpbb_alert div.alert_text > label,
+.phpbb_alert div.alert_text > select,
+.phpbb_alert div.alert_text > textarea,
+.phpbb_alert div.alert_text > input {
+	font-size: 0.9em;
 }
 
 #darkenwrapper {
