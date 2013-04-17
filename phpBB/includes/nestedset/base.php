@@ -50,9 +50,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	protected $item_basic_data = array('*');
 
 	/**
-	* Delete an item from the nested set (also deletes the rows form the table)
-	*
-	* Also deletes all subitems from the nested set
+	* Returns additional sql where restrictions
 	*
 	* @param string		$operator		SQL operator that needs to be prepended to sql_where,
 	*									if it is not empty.
