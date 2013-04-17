@@ -67,14 +67,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	*/
 	public function insert(array $additional_data)
 	{
-		$item_data = array_merge($additional_data, array(
-			$this->column_parent_id		=> 0,
-			$this->column_left_id		=> 0,
-			$this->column_right_id		=> 0,
-			$this->column_item_parents	=> '',
-		));
-
-		unset($item_data[$this->column_item_id]);
+		$item_data = $this->reset_nestedset_values($additional_data);
 
 		$sql = 'INSERT INTO ' . $this->table_name . ' ' . $this->db->sql_build_array('INSERT', $item_data);
 		$this->db->sql_query($sql);
@@ -562,6 +555,26 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		$this->db->sql_query($sql);
 
 		return $new_parent[$this->column_right_id] + $diff;
+	}
+
+	/**
+	* Resets values required for the nested set system
+	*
+	* @param array	$item		Original item data
+	* @return	array		Original item data + nested set defaults
+	*/
+	protected function reset_nestedset_values(array $item)
+	{
+		$item_data = array_merge($item, array(
+			$this->column_parent_id		=> 0,
+			$this->column_left_id		=> 0,
+			$this->column_right_id		=> 0,
+			$this->column_item_parents	=> '',
+		));
+
+		unset($item_data[$this->column_item_id]);
+
+		return $item_data;
 	}
 
 	/**
