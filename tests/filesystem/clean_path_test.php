@@ -7,11 +7,17 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
-class phpbb_clean_path_test extends phpbb_test_case
+class phpbb_filesystem_clean_path_test extends phpbb_test_case
 {
-	public function clean_path_test_data()
+	protected $filesystem;
+
+	public function setUp()
+	{
+		parent::setUp();
+		$this->filesystem = new phpbb_filesystem();
+	}
+
+	public function clean_path_data()
 	{
 		return array(
 			array('foo', 'foo'),
@@ -33,12 +39,10 @@ class phpbb_clean_path_test extends phpbb_test_case
 	}
 
 	/**
-	* @dataProvider clean_path_test_data
+	* @dataProvider clean_path_data
 	*/
 	public function test_clean_path($input, $expected)
 	{
-		$output = phpbb_clean_path($input);
-
-		$this->assertEquals($expected, $output);
+		$this->assertEquals($expected, $this->filesystem->clean_path($input));
 	}
 }

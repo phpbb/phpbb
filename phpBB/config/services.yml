@@ -142,8 +142,12 @@ services:
             - @ext.manager
             - %core.root_path%
             - @cache.driver
+            - @filesystem
             - .%core.php_ext%
             - _ext_finder
+
+    filesystem:
+        class: phpbb_filesystem
 
     groupposition.legend:
         class: phpbb_groupposition_legend
