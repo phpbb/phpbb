@@ -66,9 +66,7 @@ class phpbb_tests_nestedset_set_forum_get_data_test extends phpbb_tests_nestedse
 	*/
 	public function test_get_branch_data($forum_id, $type, $order_desc, $include_item, $expected)
 	{
-		$forum = new phpbb_nestedset_item_forum($this->forum_data[$forum_id]);
-
-		$this->assertEquals($expected, array_keys($this->set->get_branch_data($forum, $type, $order_desc, $include_item)));
+		$this->assertEquals($expected, array_keys($this->set->get_branch_data($this->forum_data[$forum_id], $type, $order_desc, $include_item)));
 	}
 
 	public function get_parent_data_data()
@@ -88,9 +86,6 @@ class phpbb_tests_nestedset_set_forum_get_data_test extends phpbb_tests_nestedse
 	*/
 	public function test_get_parent_data($forum_id, $forum_data, $expected)
 	{
-		$data = array_merge($this->forum_data[$forum_id], $forum_data);
-		$forum = new phpbb_nestedset_item_forum($data);
-
-		$this->assertEquals($expected, array_keys($this->set->get_parent_data($forum)));
+		$this->assertEquals($expected, array_keys($this->set->get_parent_data(array_merge($this->forum_data[$forum_id], $forum_data))));
 	}
 }
