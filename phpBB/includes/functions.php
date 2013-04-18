@@ -1046,6 +1046,38 @@ else
 	}
 }
 
+/**
+* Eliminates useless . and .. components from specified path.
+*
+* Deprecated, use filesystem class instead
+*
+* @param string $path Path to clean
+* @return string Cleaned path
+*
+* @deprecated
+*/
+function phpbb_clean_path($path)
+{
+	global $phpbb_container;
+
+	if ($phpbb_container)
+	{
+		$phpbb_filesystem = new phpbb_filesystem();
+	}
+	else
+	{
+		// The container is not yet loaded, use a new instance
+		if (!class_exists('phpbb_filesystem'))
+		{
+			global $phpbb_root_path, $phpEx;
+			require($phpbb_root_path . 'includes/filesystem.' . $phpEx);
+		}
+		$phpbb_filesystem = new phpbb_filesystem();
+	}
+
+	return $phpbb_filesystem->clean_path($path);
+}
+
 // functions used for building option fields
 
 /**
