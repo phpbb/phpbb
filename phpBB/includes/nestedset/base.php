@@ -20,8 +20,17 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	/** @var phpbb_db_driver*/
 	protected $db;
 
+	/** @var phpbb_lock_db */
+	protected $lock;
+
 	/** @var String */
 	protected $table_name;
+
+	/**
+	* Prefix for the language keys returned by exceptions
+	* @var String
+	*/
+	protected $message_prefix = '';
 
 	/**
 	* Column names in the table
@@ -145,6 +154,11 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			return false;
 		}
 
+		if (!$this->lock->acquire())
+		{
+			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
+		}
+
 		$action = ($delta > 0) ? 'move_up' : 'move_down';
 		$delta = abs($delta);
 
@@ -180,6 +194,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 
 		if (is_null($target))
 		{
+			$this->lock->release();
 			// The item is already on top or bottom
 			return false;
 		}
@@ -231,6 +246,8 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 				" . $this->get_sql_where();
 		$this->db->sql_query($sql);
 
+		$this->lock->release();
+
 		return true;
 	}
 
@@ -260,11 +277,17 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			return false;
 		}
 
+		if (!$this->lock->acquire())
+		{
+			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
+		}
+
 		$move_items = array_keys($this->get_branch_data($current_parent, 'children', true, false));
 
 		if (in_array($new_parent[$this->column_item_id], $move_items))
 		{
-			throw new phpbb_nestedset_exception('INVALID_PARENT');
+			$this->lock->release();
+			throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_PARENT');
 		}
 
 		$diff = sizeof($move_items) * 2;
@@ -272,7 +295,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 
 		$this->db->sql_transaction('begin');
 
-		$this->remove_subset($move_items, $current_parent, false);
+		$this->remove_subset($move_items, $current_parent, false, true);
 
 		if ($new_parent[$this->column_item_id])
 		{
@@ -287,10 +310,11 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			if (!$new_parent)
 			{
 				$this->db->sql_transaction('rollback');
-				throw new phpbb_nestedset_exception('INVALID_PARENT');
+				$this->lock->release();
+				throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_PARENT');
 			}
 
-			$new_right_id = $this->prepare_adding_subset($move_items, $new_parent);
+			$new_right_id = $this->prepare_adding_subset($move_items, $new_parent, true);
 
 			if ($new_right_id > $current_parent[$this->column_right_id])
 			{
@@ -324,6 +348,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		$this->db->sql_query($sql);
 
 		$this->db->sql_transaction('commit');
+		$this->lock->release();
 
 		return true;
 	}
@@ -333,11 +358,17 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	*/
 	public function set_parent(array $item, array $new_parent)
 	{
+		if (!$this->lock->acquire())
+		{
+			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
+		}
+
 		$move_items = array_keys($this->get_branch_data($item, 'children'));
 
 		if (in_array($new_parent[$this->column_item_id], $move_items))
 		{
-			throw new phpbb_nestedset_exception('INVALID_PARENT');
+			$this->lock->release();
+			throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_PARENT');
 		}
 
 		$diff = sizeof($move_items) * 2;
@@ -345,7 +376,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 
 		$this->db->sql_transaction('begin');
 
-		$this->remove_subset($move_items, $item, false);
+		$this->remove_subset($move_items, $item, false, true);
 
 		if ($new_parent[$this->column_item_id])
 		{
@@ -360,10 +391,11 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			if (!$new_parent)
 			{
 				$this->db->sql_transaction('rollback');
-				throw new phpbb_nestedset_exception('INVALID_PARENT');
+				$this->lock->release();
+				throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_PARENT');
 			}
 
-			$new_right_id = $this->prepare_adding_subset($move_items, $new_parent);
+			$new_right_id = $this->prepare_adding_subset($move_items, $new_parent, true);
 
 			if ($new_right_id > (int) $item[$this->column_right_id])
 			{
@@ -397,6 +429,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		$this->db->sql_query($sql);
 
 		$this->db->sql_transaction('commit');
+		$this->lock->release();
 
 		return true;
 	}
@@ -497,10 +530,16 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	* @param array	$subset_items		Subset of items to remove
 	* @param array	$bounding_item	Item containing the right bound of the subset
 	* @param bool	$set_subset_zero	Should the parent, left and right id of the item be set to 0, or kept unchanged?
+	* @param bool	$table_already_locked	Is the table already locked, or should we acquire a new lock?
 	* @return	null
 	*/
-	protected function remove_subset(array $subset_items, array $bounding_item, $set_subset_zero = true)
+	protected function remove_subset(array $subset_items, array $bounding_item, $set_subset_zero = true, $table_already_locked = false)
 	{
+		if (!$table_already_locked && !$this->lock->acquire())
+		{
+			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
+		}
+
 		$diff = sizeof($subset_items) * 2;
 		$sql_subset_items = $this->db->sql_in_set($this->column_item_id, $subset_items);
 		$sql_not_subset_items = $this->db->sql_in_set($this->column_item_id, $subset_items, true);
@@ -526,6 +565,11 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 				' . $this->column_item_parents . " = ''
 			" . ((!$set_subset_zero) ? ' WHERE ' . $sql_not_subset_items . ' ' . $this->get_sql_where('AND') : $this->get_sql_where('WHERE'));
 		$this->db->sql_query($sql);
+
+		if (!$table_already_locked)
+		{
+			$this->lock->release();
+		}
 	}
 
 	/**
@@ -581,6 +625,12 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	{
 		if ($reset_ids)
 		{
+			if (!$this->lock->acquire())
+			{
+				throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
+			}
+			$this->db->sql_transaction('begin');
+
 			$sql = 'UPDATE ' . $this->table_name . '
 				SET ' . $this->db->sql_build_array('UPDATE', array(
 					$this->column_left_id		=> 0,
@@ -626,6 +676,13 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			$new_id++;
 		}
 		$this->db->sql_freeresult($result);
+
+
+		if ($reset_ids)
+		{
+			$this->db->sql_transaction('commit');
+			$this->lock->release();
+		}
 
 		return $new_id;
 	}
