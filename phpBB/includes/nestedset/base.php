@@ -17,24 +17,24 @@ if (!defined('IN_PHPBB'))
 
 abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 {
-	/** @var phpbb_db_driver*/
+	/** @var phpbb_db_driver */
 	protected $db;
 
 	/** @var phpbb_lock_db */
 	protected $lock;
 
-	/** @var String */
+	/** @var string */
 	protected $table_name;
 
 	/**
 	* Prefix for the language keys returned by exceptions
-	* @var String
+	* @var string
 	*/
 	protected $message_prefix = '';
 
 	/**
 	* Column names in the table
-	* @var String
+	* @var string
 	*/
 	protected $column_item_id = 'item_id';
 	protected $column_left_id = 'left_id';
@@ -45,7 +45,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	/**
 	* Additional SQL restrictions
 	* Allows to have multiple nested sets in one table
-	* @var String
+	* @var string
 	*/
 	protected $sql_where = '';
 

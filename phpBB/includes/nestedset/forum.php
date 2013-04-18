@@ -19,14 +19,14 @@ class phpbb_nestedset_forum extends phpbb_nestedset_base
 {
 	/**
 	* Column names in the table
-	* @var String
+	* @var string
 	*/
 	protected $column_item_id = 'forum_id';
 	protected $column_item_parents = 'forum_parents';
 
 	/**
 	* Prefix for the language keys returned by exceptions
-	* @var String
+	* @var string
 	*/
 	protected $message_prefix = 'FORUM_NESTEDSET_';
 
