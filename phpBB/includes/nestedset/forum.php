@@ -17,15 +17,6 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_nestedset_forum extends phpbb_nestedset_base
 {
-	/** @var phpbb_db_driver */
-	protected $db;
-
-	/** @var phpbb_lock_db */
-	protected $lock;
-
-	/** @var String */
-	protected $table_name;
-
 	/**
 	* Column names in the table
 	* @var String
@@ -34,12 +25,10 @@ class phpbb_nestedset_forum extends phpbb_nestedset_base
 	protected $column_item_parents = 'forum_parents';
 
 	/**
-	* Additional SQL restrictions
-	* Allows to have multiple nestedsets in one table
-	* Columns must be prefixed with %1$s
+	* Prefix for the language keys returned by exceptions
 	* @var String
 	*/
-	protected $sql_where = '';
+	protected $message_prefix = 'FORUM_NESTEDSET_';
 
 	/**
 	* List of item properties to be cached in $item_parents
@@ -59,55 +48,5 @@ class phpbb_nestedset_forum extends phpbb_nestedset_base
 		$this->db = $db;
 		$this->lock = $lock;
 		$this->table_name = $table_name;
-	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function move_children(array $current_parent, array $new_parent)
-	{
-		while (!$this->lock->acquire())
-		{
-			// Retry after 0.2 seconds
-			usleep(200 * 1000);
-		}
-
-		try
-		{
-			$return = parent::move_children($current_parent, $new_parent);
-		}
-		catch (phpbb_nestedset_exception $e)
-		{
-			$this->lock->release();
-			throw new phpbb_nestedset_exception('FORUM_NESTEDSET_' . $e->getMessage());
-		}
-		$this->lock->release();
-
-		return $return;
-	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function set_parent(array $item, array $new_parent)
-	{
-		while (!$this->lock->acquire())
-		{
-			// Retry after 0.2 seconds
-			usleep(200 * 1000);
-		}
-
-		try
-		{
-			$return = parent::set_parent($item, $new_parent);
-		}
-		catch (phpbb_nestedset_exception $e)
-		{
-			$this->lock->release();
-			throw new phpbb_nestedset_exception('FORUM_NESTEDSET_' . $e->getMessage());
-		}
-		$this->lock->release();
-
-		return $return;
 	}
 }
