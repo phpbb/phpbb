@@ -26,9 +26,6 @@ class phpbb_nestedset_forum extends phpbb_nestedset_base
 	/** @var String */
 	protected $table_name;
 
-	/** @var String */
-	protected $item_class = 'phpbb_nestedset_item_forum';
-
 	/**
 	* Column names in the table
 	* @var String

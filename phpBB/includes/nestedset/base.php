@@ -23,9 +23,6 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	/** @var String */
 	protected $table_name;
 
-	/** @var String */
-	protected $item_class = 'phpbb_nestedset_item_base';
-
 	/**
 	* Column names in the table
 	* @var String
