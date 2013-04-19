@@ -26,7 +26,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package dbal
 */
-class phpbb_db_driver_mssql_odbc extends phpbb_db_driver
+class phpbb_db_driver_mssql_odbc extends phpbb_db_driver_mssql_base
 {
 	var $last_query_text = '';
 	var $connect_error = '';
@@ -123,14 +123,6 @@ class phpbb_db_driver_mssql_odbc extends phpbb_db_driver
 		}
 
 		return ($this->sql_server_version) ? 'MSSQL (ODBC)<br />' . $this->sql_server_version : 'MSSQL (ODBC)';
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	public function sql_concatenate($expr1, $expr2)
-	{
-		return $expr1 . ' + ' . $expr2;
 	}
 
 	/**
@@ -323,40 +315,6 @@ class phpbb_db_driver_mssql_odbc extends phpbb_db_driver
 		}
 
 		return false;
-	}
-
-	/**
-	* Escape string used in sql query
-	*/
-	function sql_escape($msg)
-	{
-		return str_replace(array("'", "\0"), array("''", ''), $msg);
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_lower_text($column_name)
-	{
-		return "LOWER(SUBSTRING($column_name, 1, DATALENGTH($column_name)))";
-	}
-
-	/**
-	* Build LIKE expression
-	* @access private
-	*/
-	function _sql_like_expression($expression)
-	{
-		return $expression . " ESCAPE '\\'";
-	}
-
-	/**
-	* Build db-specific query data
-	* @access private
-	*/
-	function _sql_custom_build($stage, $data)
-	{
-		return $data;
 	}
 
 	/**
