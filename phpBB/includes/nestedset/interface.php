@@ -101,19 +101,19 @@ interface phpbb_nestedset_interface
 	*
 	* This method can return all parents, children or both of the given item
 	*
-	* @param array	$item		The item to get the branch from
+	* @param int		$item_id		The item id to get the parents from
 	* @param string		$type			One of all|parent|children
 	* @param bool		$order_desc		Order the items descending (most outer parent first)
 	* @param bool		$include_item	Should the given item be included in the list aswell
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
-	public function get_branch_data(array $item, $type, $order_desc, $include_item);
+	public function get_branch_data($item_id, $type, $order_desc, $include_item);
 
 	/**
 	* Get base information of parent items
 	*
-	* @param array	$item		The item to get the parents from
+	* @param array	$item		The item to get the branch from
 	* @return array			Array of items (containing basic columns from the item table)
 	*							ID => Item data
 	*/

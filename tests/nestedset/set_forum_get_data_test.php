@@ -66,7 +66,7 @@ class phpbb_tests_nestedset_set_forum_get_data_test extends phpbb_tests_nestedse
 	*/
 	public function test_get_branch_data($forum_id, $type, $order_desc, $include_item, $expected)
 	{
-		$this->assertEquals($expected, array_keys($this->set->get_branch_data($this->forum_data[$forum_id], $type, $order_desc, $include_item)));
+		$this->assertEquals($expected, array_keys($this->set->get_branch_data($forum_id, $type, $order_desc, $include_item)));
 	}
 
 	public function get_parent_data_data()

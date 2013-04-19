@@ -115,14 +115,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	*/
 	public function remove(array $item)
 	{
-		if ($item[$this->column_right_id] - $item[$this->column_left_id] > 1)
-		{
-			$items = array_keys($this->get_branch_data($item, 'children'));
-		}
-		else
-		{
-			$items = array((int) $item[$this->column_item_id]);
-		}
+		$items = array_keys($this->get_branch_data($item[$this->column_item_id], 'children'));
 
 		$this->remove_subset($items, $item);
 
@@ -282,7 +275,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 		}
 
-		$move_items = array_keys($this->get_branch_data($current_parent, 'children', true, false));
+		$move_items = array_keys($this->get_branch_data((int) $current_parent[$this->column_item_id], 'children', true, false));
 
 		if (in_array($new_parent[$this->column_item_id], $move_items))
 		{
@@ -363,7 +356,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 		}
 
-		$move_items = array_keys($this->get_branch_data($item, 'children'));
+		$move_items = array_keys($this->get_branch_data((int) $item[$this->column_item_id], 'children'));
 
 		if (in_array($new_parent[$this->column_item_id], $move_items))
 		{
@@ -437,7 +430,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	/**
 	* @inheritdoc
 	*/
-	public function get_branch_data(array $item, $type = 'all', $order_desc = true, $include_item = true)
+	public function get_branch_data($item_id, $type = 'all', $order_desc = true, $include_item = true)
 	{
 		switch ($type)
 		{
@@ -461,14 +454,14 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			FROM ' . $this->table_name . ' i1
 			LEFT JOIN ' . $this->table_name . " i2
 				ON (($condition) " . $this->get_sql_where('AND', 'i2.') . ')
-			WHERE i1.' . $this->column_item_id . ' = ' . (int) $item[$this->column_item_id] . '
+			WHERE i1.' . $this->column_item_id . ' = ' . (int) $item_id . '
 				' . $this->get_sql_where('AND', 'i1.') . '
 			ORDER BY i2.' . $this->column_left_id . ' ' . ($order_desc ? 'ASC' : 'DESC');
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (!$include_item && $item[$this->column_item_id] == $row[$this->column_item_id])
+			if (!$include_item && $item_id == $row[$this->column_item_id])
 			{
 				continue;
 			}
