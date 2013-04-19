@@ -113,21 +113,22 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	/**
 	* @inheritdoc
 	*/
-	public function remove(array $item)
+	public function remove($item_id)
 	{
-		$items = array_keys($this->get_branch_data($item[$this->column_item_id], 'children'));
+		$items = $this->get_branch_data($item_id, 'children');
+		$item_ids = array_keys($items);
 
-		$this->remove_subset($items, $item);
+		$this->remove_subset($item_ids, $items[$item_id]);
 
-		return $items;
+		return $item_ids;
 	}
 
 	/**
 	* @inheritdoc
 	*/
-	public function delete(array $item)
+	public function delete($item_id)
 	{
-		$removed_items = $this->remove($item);
+		$removed_items = $this->remove($item_id);
 
 		$sql = 'DELETE FROM ' . $this->table_name . '
 			WHERE ' . $this->db->sql_in_set($this->column_item_id, $removed_items) . '

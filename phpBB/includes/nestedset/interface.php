@@ -38,20 +38,20 @@ interface phpbb_nestedset_interface
 	*
 	* Also removes all subitems from the nested set
 	*
-	* @param array	$item	The item to be removed
-	* @return array		Items that have been removed
+	* @param int	$item_id	The item to be deleted
+	* @return array		Item ids that have been removed
 	*/
-	public function remove(array $item);
+	public function remove($item);
 
 	/**
 	* Delete an item from the nested set (also deletes the rows form the table)
 	*
 	* Also deletes all subitems from the nested set
 	*
-	* @param array	$item	The item to be deleted
-	* @return array		Items that have been deleted
+	* @param int	$item_id	The item to be deleted
+	* @return array		Item ids that have been deleted
 	*/
-	public function delete(array $item);
+	public function delete($item);
 
 	/**
 	* Move an item by a given delta

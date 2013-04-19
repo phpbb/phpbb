@@ -78,7 +78,7 @@ class phpbb_tests_nestedset_set_forum_add_remove_test extends phpbb_tests_nested
 	*/
 	public function test_remove_add($forum_id, $expected_removed, $expected_remove_table, $expected_added, $expected_add_table)
 	{
-		$removed_items = $this->set->remove($this->forum_data[$forum_id]);
+		$removed_items = $this->set->remove($forum_id);
 
 		$this->assertEquals($expected_removed, $removed_items);
 
@@ -139,7 +139,7 @@ class phpbb_tests_nestedset_set_forum_add_remove_test extends phpbb_tests_nested
 	*/
 	public function test_delete($forum_id, $expected_deleted, $expected)
 	{
-		$this->assertEquals($expected_deleted, $this->set->delete($this->forum_data[$forum_id]));
+		$this->assertEquals($expected_deleted, $this->set->delete($forum_id));
 
 		$result = $this->db->sql_query("SELECT forum_id, parent_id, left_id, right_id, forum_parents
 			FROM phpbb_forums
