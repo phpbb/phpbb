@@ -202,10 +202,10 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		*/
 		if ($action == 'move_up')
 		{
-			$left_id = $target[$this->column_left_id];
+			$left_id = (int) $target[$this->column_left_id];
 			$right_id = (int) $item[$this->column_right_id];
 
-			$diff_up = (int) $item[$this->column_left_id] - $target[$this->column_left_id];
+			$diff_up = (int) $item[$this->column_left_id] - (int) $target[$this->column_left_id];
 			$diff_down = (int) $item[$this->column_right_id] + 1 - (int) $item[$this->column_left_id];
 
 			$move_up_left = (int) $item[$this->column_left_id];
@@ -214,13 +214,13 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		else
 		{
 			$left_id = (int) $item[$this->column_left_id];
-			$right_id = $target[$this->column_right_id];
+			$right_id = (int) $target[$this->column_right_id];
 
 			$diff_up = (int) $item[$this->column_right_id] + 1 - (int) $item[$this->column_left_id];
-			$diff_down = $target[$this->column_right_id] - (int) $item[$this->column_right_id];
+			$diff_down = (int) $target[$this->column_right_id] - (int) $item[$this->column_right_id];
 
 			$move_up_left = (int) $item[$this->column_right_id] + 1;
-			$move_up_right = $target[$this->column_right_id];
+			$move_up_right = (int) $target[$this->column_right_id];
 		}
 
 		// Now do the dirty job
