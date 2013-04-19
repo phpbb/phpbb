@@ -125,6 +125,49 @@ only want the slow tests, run:
 
     $ phpunit --group slow
 
+Functional Tests
+-----------------
+
+Functional tests test software the way a user would. 
+They simulate a user browsing the website, but they do these steps in an automated way.
+phpBB allows you to write such tests as well.
+
+Running
+=======
+
+To run the functional tests, you will need PHP 5.3 or greater with the cURL module.
+Also required is the --dev installation from composer:
+
+     php composer.phar --dev install
+
+Running the tests requires your phpBB3 repository to be accessible through a local web server.
+As of PHP 5.4 a builtin webserver is available. 
+If you are on PHP 5.3 you will also need to supply the URL to a webserver of your own in the 'tests/test_config.php' file. 
+This is as simple as defining the '$phpbb_functional_url', which contains the URL for the directory containing the board.
+Make sure you include the trailing slash. Testing makes use of a seperate database defined in this config file and before running the tests each time this database is deleted.
+
+Note that without extensive changes to the test framework, you cannot use a board outside of the repository on which to run tests.
+
+    <?php
+    $dbms = 'mysqli';
+    $dbhost = 'localhost';
+    $dbport = '';
+    $dbname = 'phpbb_test';
+    $dbuser = 'root';
+    $dbpasswd = '';
+    $phpbb_functional_url = 'http://localhost/phpBB3/';
+
+On PHP 5.4 you do not need the $phpbb_functional_url parameter but you can configure the port the builtin webserver runs on using
+
+    $phpbb_functional_port = 8000;
+
+To then run the tests, you run PHPUnit, but use the phpunit.xml.functional config file instead of the default one. 
+Specify this through the "-c" option:
+
+    phpunit -c phpunit.xml.functional
+
+This will change your board's config.php file, but it makes a backup at config_dev.php, so you can restore it after the test run is complete.
+
 More Information
 ================
 
