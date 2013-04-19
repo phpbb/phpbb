@@ -144,15 +144,8 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$this->migrator->update();
 		}
 
-		if ($migrator_test_if_true_failed)
-		{
-			$this->fail('True test failed');
-		}
-
-		if ($migrator_test_if_false_failed)
-		{
-			$this->fail('False test failed');
-		}
+		$this->assertFalse($migrator_test_if_true_failed, 'True test failed');
+		$this->assertFalse($migrator_test_if_false_failed, 'False test failed');
 	}
 
 	public function test_recall()
