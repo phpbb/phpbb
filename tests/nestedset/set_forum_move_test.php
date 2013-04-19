@@ -120,7 +120,7 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	*/
 	public function test_move($explain, $forum_id, $delta, $expected_moved, $expected)
 	{
-		$this->assertEquals($expected_moved, $this->set->move($this->forum_data[$forum_id], $delta));
+		$this->assertEquals($expected_moved, $this->set->move($forum_id, $delta));
 
 		$result = $this->db->sql_query("SELECT forum_id, parent_id, left_id, right_id, forum_parents
 			FROM phpbb_forums
@@ -167,7 +167,7 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	*/
 	public function test_move_down($explain, $forum_id, $expected_moved, $expected)
 	{
-		$this->assertEquals($expected_moved, $this->set->move_down($this->forum_data[$forum_id]));
+		$this->assertEquals($expected_moved, $this->set->move_down($forum_id));
 
 		$result = $this->db->sql_query("SELECT forum_id, parent_id, left_id, right_id, forum_parents
 			FROM phpbb_forums
@@ -214,7 +214,7 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	*/
 	public function test_move_up($explain, $forum_id, $expected_moved, $expected)
 	{
-		$this->assertEquals($expected_moved, $this->set->move_up($this->forum_data[$forum_id]));
+		$this->assertEquals($expected_moved, $this->set->move_up($forum_id));
 
 		$result = $this->db->sql_query("SELECT forum_id, parent_id, left_id, right_id, forum_parents
 			FROM phpbb_forums
@@ -243,22 +243,6 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 			)),
 			array('Move to same parent',
 				4, 4, false, array(
-				array('forum_id' => 1, 'parent_id' => 0, 'left_id' => 1, 'right_id' => 6, 'forum_parents' => ''),
-				array('forum_id' => 2, 'parent_id' => 1, 'left_id' => 2, 'right_id' => 3, 'forum_parents' => ''),
-				array('forum_id' => 3, 'parent_id' => 1, 'left_id' => 4, 'right_id' => 5, 'forum_parents' => ''),
-
-				array('forum_id' => 4, 'parent_id' => 0, 'left_id' => 7, 'right_id' => 12, 'forum_parents' => ''),
-				array('forum_id' => 5, 'parent_id' => 4, 'left_id' => 8, 'right_id' => 11, 'forum_parents' => ''),
-				array('forum_id' => 6, 'parent_id' => 5, 'left_id' => 9, 'right_id' => 10, 'forum_parents' => ''),
-
-				array('forum_id' => 7, 'parent_id' => 0, 'left_id' => 13, 'right_id' => 22, 'forum_parents' => ''),
-				array('forum_id' => 8, 'parent_id' => 7, 'left_id' => 14, 'right_id' => 15, 'forum_parents' => ''),
-				array('forum_id' => 9, 'parent_id' => 7, 'left_id' => 16, 'right_id' => 19, 'forum_parents' => ''),
-				array('forum_id' => 10, 'parent_id' => 9, 'left_id' => 17, 'right_id' => 18, 'forum_parents' => ''),
-				array('forum_id' => 11, 'parent_id' => 7, 'left_id' => 20, 'right_id' => 21, 'forum_parents' => ''),
-			)),
-			array('Parent is 0',
-				0, 1, false, array(
 				array('forum_id' => 1, 'parent_id' => 0, 'left_id' => 1, 'right_id' => 6, 'forum_parents' => ''),
 				array('forum_id' => 2, 'parent_id' => 1, 'left_id' => 2, 'right_id' => 3, 'forum_parents' => ''),
 				array('forum_id' => 3, 'parent_id' => 1, 'left_id' => 4, 'right_id' => 5, 'forum_parents' => ''),
@@ -380,7 +364,7 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	*/
 	public function test_move_children($explain, $forum_id, $target_id, $expected_moved, $expected)
 	{
-		$this->assertEquals($expected_moved, $this->set->move_children($this->forum_data[$forum_id], $this->forum_data[$target_id]));
+		$this->assertEquals($expected_moved, $this->set->move_children($forum_id, $target_id));
 
 		$result = $this->db->sql_query("SELECT forum_id, parent_id, left_id, right_id, forum_parents
 			FROM phpbb_forums
@@ -388,7 +372,26 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 		$this->assertEquals($expected, $this->db->sql_fetchrowset($result));
 	}
 
-	public function move_children_throws_data()
+	public function move_children_throws_item_data()
+	{
+		return array(
+			array('Item 0 does not exist', 0, 5),
+			array('Item does not exist', 200, 5),
+		);
+	}
+
+	/**
+	* @dataProvider move_children_throws_item_data
+	*
+	* @expectedException			phpbb_nestedset_exception
+	* @expectedExceptionMessage		FORUM_NESTEDSET_INVALID_ITEM
+	*/
+	public function test_move_children_throws_item($explain, $forum_id, $target_id)
+	{
+		$this->set->move_children($forum_id, $target_id);
+	}
+
+	public function move_children_throws_parent_data()
 	{
 		return array(
 			array('New parent is child', 4, 5),
@@ -398,14 +401,14 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	}
 
 	/**
-	* @dataProvider move_children_throws_data
+	* @dataProvider move_children_throws_parent_data
 	*
 	* @expectedException			phpbb_nestedset_exception
 	* @expectedExceptionMessage		FORUM_NESTEDSET_INVALID_PARENT
 	*/
-	public function test_move_children_throws($explain, $forum_id, $target_id)
+	public function test_move_children_throws_parent($explain, $forum_id, $target_id)
 	{
-		$this->set->move_children($this->forum_data[$forum_id], $this->forum_data[$target_id]);
+		$this->set->move_children($forum_id, $target_id);
 	}
 
 	public function set_parent_data()
@@ -517,7 +520,7 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	*/
 	public function test_set_parent($explain, $forum_id, $target_id, $expected_moved, $expected)
 	{
-		$this->assertEquals($expected_moved, $this->set->set_parent($this->forum_data[$forum_id], $this->forum_data[$target_id]));
+		$this->assertEquals($expected_moved, $this->set->set_parent($forum_id, $target_id));
 
 		$result = $this->db->sql_query("SELECT forum_id, parent_id, left_id, right_id, forum_parents
 			FROM phpbb_forums
@@ -525,7 +528,26 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 		$this->assertEquals($expected, $this->db->sql_fetchrowset($result));
 	}
 
-	public function set_parent_throws_data()
+	public function set_parent_throws_item_data()
+	{
+		return array(
+			array('Item 0 does not exist', 0, 5),
+			array('Item does not exist', 200, 5),
+		);
+	}
+
+	/**
+	* @dataProvider set_parent_throws_item_data
+	*
+	* @expectedException			phpbb_nestedset_exception
+	* @expectedExceptionMessage		FORUM_NESTEDSET_INVALID_ITEM
+	*/
+	public function test_set_parent_throws_item($explain, $forum_id, $target_id)
+	{
+		$this->set->set_parent($forum_id, $target_id);
+	}
+
+	public function set_parent_throws_parent_data()
 	{
 		return array(
 			array('New parent is child', 4, 5),
@@ -535,13 +557,13 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	}
 
 	/**
-	* @dataProvider set_parent_throws_data
+	* @dataProvider set_parent_throws_parent_data
 	*
 	* @expectedException			phpbb_nestedset_exception
 	* @expectedExceptionMessage		FORUM_NESTEDSET_INVALID_PARENT
 	*/
-	public function test_set_parent_throws($explain, $forum_id, $target_id)
+	public function test_set_parent_throws_parent($explain, $forum_id, $target_id)
 	{
-		$this->set->set_parent($this->forum_data[$forum_id], $this->forum_data[$target_id]);
+		$this->set->set_parent($forum_id, $target_id);
 	}
 }

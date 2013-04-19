@@ -56,45 +56,45 @@ interface phpbb_nestedset_interface
 	/**
 	* Move an item by a given delta
 	*
-	* @param array	$item	The item to be moved
-	* @param int	$delta	Number of steps to move this item, < 0 => down, > 0 => up
+	* @param int	$item_id	The item to be moved
+	* @param int	$delta		Number of steps to move this item, < 0 => down, > 0 => up
 	* @return bool True if the item was moved
 	*/
-	public function move(array $item, $delta);
+	public function move($item_id, $delta);
 
 	/**
 	* Move an item down by 1
 	*
-	* @param array	$item	The item to be moved
+	* @param int	$item_id	The item to be moved
 	* @return bool True if the item was moved
 	*/
-	public function move_down(array $item);
+	public function move_down($item_id);
 
 	/**
 	* Move an item up by 1
 	*
-	* @param array	$item	The item to be moved
+	* @param int	$item_id	The item to be moved
 	* @return bool True if the item was moved
 	*/
-	public function move_up(array $item);
+	public function move_up($item_id);
 
 	/**
 	* Moves all children of one item to another item
 	*
-	* @param array	$current_parent		The current parent item
-	* @param array	$new_parent			The new parent item
+	* @param int	$current_parent_id	The current parent item
+	* @param int	$new_parent_id		The new parent item
 	* @return bool True if any items where moved
 	*/
-	public function move_children(array $current_parent, array $new_parent);
+	public function move_children($current_parent_id, $new_parent_id);
 
 	/**
 	* Set the parent item
 	*
-	* @param array	$item		The item to be moved
-	* @param array	$new_parent	The new parent item
+	* @param int	$item_id			The item to be moved
+	* @param int	$new_parent_id		The new parent item
 	* @return bool True if the parent was set successfully
 	*/
-	public function set_parent(array $item, array $new_parent);
+	public function set_parent($item, $new_parent_id);
 
 	/**
 	* Get branch of the item
