@@ -125,7 +125,6 @@ only want the slow tests, run:
 
     $ phpunit --group slow
 
-
 More Information
 ================
 
