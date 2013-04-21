@@ -564,7 +564,7 @@ INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 
 
 # Permissions
 
-# GUESTS - u_download and u_search ability, they can also view profiles
+# GUESTS - u_download, u_search and u_viewprofile ability
 INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) SELECT 1, 0, auth_option_id, 0, 1 FROM phpbb_acl_options WHERE auth_option IN ('u_', 'u_download', 'u_search', 'u_viewprofile');
 
 # Admin user - full user features
