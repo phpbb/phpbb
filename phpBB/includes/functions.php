@@ -1062,7 +1062,7 @@ function phpbb_clean_path($path)
 
 	if ($phpbb_container)
 	{
-		$phpbb_filesystem = new phpbb_filesystem();
+		$phpbb_filesystem = $phpbb_container->get('filesystem');
 	}
 	else
 	{
