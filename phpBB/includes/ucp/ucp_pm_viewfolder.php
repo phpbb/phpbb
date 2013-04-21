@@ -146,8 +146,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					}
 				}
 
-				// Get root path
-				$root_path = get_root_path();
+				$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
 				// Send vars to template
 				$template->assign_block_vars('messagerow', array(
 					'PM_CLASS'			=> ($row_indicator) ? 'pm_' . $row_indicator . '_colour' : '',
