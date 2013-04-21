@@ -929,7 +929,11 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		$block_array = array();
 
 		// Some basics...
+<<<<<<< HEAD
 		$root_path = get_root_path();
+=======
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+>>>>>>> branch 'develop' of ssh://git@github.com/mhlas7/phpbb3.git
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
 		$filename = $root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
 		$thumbnail_filename = $root_path . $config['upload_path'] . '/thumb_' . utf8_basename($attachment['physical_filename']);

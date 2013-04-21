@@ -146,6 +146,10 @@ function view_folder($id, $mode, $folder_id, $folder)
 					}
 				}
 
+<<<<<<< HEAD
+=======
+				//Get root path
+>>>>>>> branch 'develop' of ssh://git@github.com/mhlas7/phpbb3.git
 				$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
 				// Send vars to template
 				$template->assign_block_vars('messagerow', array(
