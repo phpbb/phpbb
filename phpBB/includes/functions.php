@@ -3271,7 +3271,14 @@ function login_forum_box($forum_data)
 
 	page_header($user->lang['LOGIN'], false);
 
+	$forum_name = '';
+	if (isset($forum_data['forum_name']))
+	{
+		$forum_name = $forum_data['forum_name'];
+	}
+
 	$template->assign_vars(array(
+		'FORUM_NAME'			=> $forum_name,
 		'S_LOGIN_ACTION'		=> build_url(array('f')),
 		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])))
 	);
