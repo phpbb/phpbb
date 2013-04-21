@@ -542,6 +542,7 @@ class phpbb_extension_manager
 			$migrations[$file['named_path']] = $file['ext_name'];
 		}
 		$migrations = $finder->get_classes_from_files($migrations);
+		$this->migrator->load_migration_state();
 		$this->migrator->set_migrations($migrations);
 
 		// What is a safe limit of execution time? Half the max execution time should be safe.
