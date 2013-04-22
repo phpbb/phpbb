@@ -175,7 +175,7 @@ class phpbb_extension_migrator
 		// disable first if necessary
 		if ($extension_data['ext_active'])
 		{
-			$this->manager->disable($name);
+			$this->disable($name);
 		}
 
 		$old_state = unserialize($extension_data['ext_state']);

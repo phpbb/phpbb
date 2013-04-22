@@ -12,7 +12,7 @@
 */
 class phpbb_functional_extension_controller_test extends phpbb_functional_test_case
 {
-	protected $phpbb_extension_manager;
+	protected $phpbb_extension_migrator;
 
 	static protected $fixtures = array(
 		'foo/bar/config/routing.yml',
@@ -79,7 +79,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	{
 		parent::setUp();
 
-		$this->phpbb_extension_manager = $this->get_extension_manager();
+		$this->phpbb_extension_migrator = $this->get_extension_migrator();
 
 		$this->purge_cache();
 	}
@@ -89,11 +89,11 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_foo_bar()
 	{
-		$this->phpbb_extension_manager->enable('foo/bar');
+		$this->phpbb_extension_migrator->enable('foo/bar');
 		$crawler = $this->request('GET', 'app.php?controller=foo/bar');
 		$this->assert_response_success();
 		$this->assertContains("foo/bar controller handle() method", $crawler->filter('body')->text());
-		$this->phpbb_extension_manager->purge('foo/bar');
+		$this->phpbb_extension_migrator->purge('foo/bar');
 	}
 
 	/**
@@ -101,11 +101,11 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_controller_with_template()
 	{
-		$this->phpbb_extension_manager->enable('foo/bar');
+		$this->phpbb_extension_migrator->enable('foo/bar');
 		$crawler = $this->request('GET', 'app.php?controller=foo/template');
 		$this->assert_response_success();
 		$this->assertContains("I am a variable", $crawler->filter('#content')->text());
-		$this->phpbb_extension_manager->purge('foo/bar');
+		$this->phpbb_extension_migrator->purge('foo/bar');
 	}
 
 	/**
@@ -114,11 +114,11 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_missing_argument()
 	{
-		$this->phpbb_extension_manager->enable('foo/bar');
+		$this->phpbb_extension_migrator->enable('foo/bar');
 		$crawler = $this->request('GET', 'app.php?controller=foo/baz');
 		$this->assertEquals(500, $this->client->getResponse()->getStatus());
 		$this->assertContains('Missing value for argument #1: test in class phpbb_ext_foo_bar_controller:baz', $crawler->filter('body')->text());
-		$this->phpbb_extension_manager->purge('foo/bar');
+		$this->phpbb_extension_migrator->purge('foo/bar');
 	}
 
 	/**
@@ -126,11 +126,11 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_exception_should_result_in_500_status_code()
 	{
-		$this->phpbb_extension_manager->enable('foo/bar');
+		$this->phpbb_extension_migrator->enable('foo/bar');
 		$crawler = $this->request('GET', 'app.php?controller=foo/exception');
 		$this->assertEquals(500, $this->client->getResponse()->getStatus());
 		$this->assertContains('Exception thrown from foo/exception route', $crawler->filter('body')->text());
-		$this->phpbb_extension_manager->purge('foo/bar');
+		$this->phpbb_extension_migrator->purge('foo/bar');
 	}
 
 	/**
