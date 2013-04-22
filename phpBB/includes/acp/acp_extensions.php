@@ -30,8 +30,9 @@ class acp_extensions
 	function main()
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx;
+		global $config, $user, $template, $request, $phpbb_container, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx;
 
+		$phpbb_extension_migrator = $phpbb_container->get('ext.migrator');
 		$this->db = $db;
 		$this->config = $config;
 		$this->template = $template;
@@ -105,7 +106,7 @@ class acp_extensions
 
 				try
 				{
-					if ($phpbb_extension_manager->enable_step($ext_name))
+					if ($phpbb_extension_migrator->enable_step($ext_name))
 					{
 						$template->assign_var('S_NEXT_STEP', true);
 
@@ -139,7 +140,7 @@ class acp_extensions
 			break;
 
 			case 'disable':
-				if ($phpbb_extension_manager->disable_step($ext_name))
+				if ($phpbb_extension_migrator->disable_step($ext_name))
 				{
 					$template->assign_var('S_NEXT_STEP', true);
 
@@ -165,7 +166,7 @@ class acp_extensions
 			case 'purge':
 				try
 				{
-					if ($phpbb_extension_manager->purge_step($ext_name))
+					if ($phpbb_extension_migrator->purge_step($ext_name))
 					{
 						$template->assign_var('S_NEXT_STEP', true);
 
