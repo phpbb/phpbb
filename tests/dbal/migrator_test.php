@@ -55,16 +55,6 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			'phpbb_',
 			$tools
 		);
-		$this->extension_manager = new phpbb_extension_manager(
-			new phpbb_mock_container_builder(),
-			$this->db,
-			$this->config,
-			$this->migrator,
-			'phpbb_ext',
-			dirname(__FILE__) . '/../../phpBB/',
-			'.php',
-			null
-		);
 	}
 
 	public function test_update()
