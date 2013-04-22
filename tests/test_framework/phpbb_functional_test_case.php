@@ -138,6 +138,27 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$db = $this->get_db();
 		$db_tools = new phpbb_db_tools($db);
 
+		$extension_manager = new phpbb_extension_manager(
+			new phpbb_mock_container_builder(),
+			$db,
+			$config,
+			self::$config['table_prefix'] . 'ext',
+			dirname(__FILE__) . '/',
+			'.' . $php_ext,
+			$this->get_cache_driver()
+		);
+
+		return $extension_manager;
+	}
+
+	protected function get_extension_migrator($extension_manager = null)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$config = new phpbb_config(array());
+		$db = $this->get_db();
+		$db_tools = new phpbb_db_tools($db);
+
 		$migrator = new phpbb_db_migrator(
 			$config,
 			$db,
@@ -148,18 +169,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::$config['table_prefix'],
 			array()
 		);
-		$extension_manager = new phpbb_extension_manager(
-			new phpbb_mock_container_builder(),
-			$db,
-			$config,
-			$migrator,
-			self::$config['table_prefix'] . 'ext',
-			dirname(__FILE__) . '/',
-			'.' . $php_ext,
-			$this->get_cache_driver()
-		);
 
-		return $extension_manager;
+		if (is_null($extension_manager))
+		{
+			$extension_manager = $this->get_extension_manager();
+		}
+
+		return new phpbb_extension_migrator($extension_manager, $migrator);
 	}
 
 	static protected function install_board()

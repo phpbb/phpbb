@@ -29,7 +29,6 @@ class phpbb_extension_manager
 
 	protected $db;
 	protected $config;
-	protected $migrator;
 	protected $cache;
 	protected $php_ext;
 	protected $extensions;
@@ -43,20 +42,18 @@ class phpbb_extension_manager
 	* @param ContainerInterface $container A container
 	* @param phpbb_db_driver $db A database connection
 	* @param phpbb_config $config phpbb_config
-	* @param phpbb_db_migrator $migrator
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, phpbb_db_migrator $migrator, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, $extension_table, $phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->container = $container;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
 		$this->config = $config;
-		$this->migrator = $migrator;
 		$this->cache = $cache;
 		$this->php_ext = $php_ext;
 		$this->extension_table = $extension_table;
@@ -157,238 +154,63 @@ class phpbb_extension_manager
 	}
 
 	/**
-	* Runs a step of the extension enabling process.
+	* Set extension data
 	*
-	* Allows the exentension to enable in a long running script that works
-	* in multiple steps across requests. State is kept for the extension
-	* in the extensions table.
-	*
-	* @param	string	$name	The extension's name
-	* @return	bool			False if enabling is finished, true otherwise
+	* @param	string	$name	Name of the extension
+	* @param	mixed	$data	Null if the extension should be deleted, array with data otherwise
+	* @param	bool	$merge_data	Should the extension data be merged with the current one?
 	*/
-	public function enable_step($name)
+	public function set_extension_data($name, $data, $merge_data = true)
 	{
-		// ignore extensions that are already enabled
-		if (isset($this->extensions[$name]) && $this->extensions[$name]['ext_active'])
+		if (is_null($data))
 		{
-			return false;
-		}
+			unset($this->extensions[$name]);
 
-		$old_state = (isset($this->extensions[$name]['ext_state'])) ? unserialize($this->extensions[$name]['ext_state']) : false;
-
-		// Returns false if not completed
-		if (!$this->handle_migrations($name, 'enable'))
-		{
-			return true;
-		}
-
-		$extension = $this->get_extension($name);
-		$state = $extension->enable_step($old_state);
-
-		$active = ($state === false);
-
-		$extension_data = array(
-			'ext_name'		=> $name,
-			'ext_active'	=> $active,
-			'ext_state'		=> serialize($state),
-		);
-
-		$this->extensions[$name] = $extension_data;
-		$this->extensions[$name]['ext_path'] = $this->get_extension_path($extension_data['ext_name']);
-		ksort($this->extensions);
-
-		$sql = 'UPDATE ' . $this->extension_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
-			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
-		$this->db->sql_query($sql);
-
-		if (!$this->db->sql_affectedrows())
-		{
-			$sql = 'INSERT INTO ' . $this->extension_table . '
-				' . $this->db->sql_build_array('INSERT', $extension_data);
+			$sql = 'DELETE FROM ' . $this->extension_table . "
+				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 			$this->db->sql_query($sql);
 		}
-
-		if ($this->cache)
+		else
 		{
-			$this->cache->purge();
-		}
-
-		return !$active;
-	}
-
-	/**
-	* Enables an extension
-	*
-	* This method completely enables an extension. But it could be long running
-	* so never call this in a script that has a max_execution time.
-	*
-	* @param string $name The extension's name
-	* @return null
-	*/
-	public function enable($name)
-	{
-		while ($this->enable_step($name));
-	}
-
-	/**
-	* Disables an extension
-	*
-	* Calls the disable method on the extension's meta class to allow it to
-	* process the event.
-	*
-	* @param string $name The extension's name
-	* @return bool False if disabling is finished, true otherwise
-	*/
-	public function disable_step($name)
-	{
-		// ignore extensions that are already disabled
-		if (!isset($this->extensions[$name]) || !$this->extensions[$name]['ext_active'])
-		{
-			return false;
-		}
-
-		$old_state = unserialize($this->extensions[$name]['ext_state']);
-
-		$extension = $this->get_extension($name);
-		$state = $extension->disable_step($old_state);
-
-		// continue until the state is false
-		if ($state !== false)
-		{
-			$extension_data = array(
-				'ext_state'		=> serialize($state),
-			);
-			$this->extensions[$name]['ext_state'] = serialize($state);
+			if (!$merge_data)
+			{
+				$this->extensions[$name] = $data;
+				$this->extensions[$name]['ext_path'] = $this->get_extension_path($name);
+			}
+			else
+			{
+				$this->extensions[$name] = array_merge($this->extensions[$name], $data);
+			}
 
 			$sql = 'UPDATE ' . $this->extension_table . '
-				SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
+				SET ' . $this->db->sql_build_array('UPDATE', $data) . "
 				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 			$this->db->sql_query($sql);
 
-			if ($this->cache)
+			if (!$this->db->sql_affectedrows())
 			{
-				$this->cache->purge();
+				$sql = 'INSERT INTO ' . $this->extension_table . '
+					' . $this->db->sql_build_array('INSERT', $data);
+				$this->db->sql_query($sql);
+				ksort($this->extensions);
 			}
-
-			return true;
 		}
-
-		$extension_data = array(
-			'ext_active'	=> false,
-			'ext_state'		=> serialize(false),
-		);
-		$this->extensions[$name]['ext_active'] = false;
-		$this->extensions[$name]['ext_state'] = serialize(false);
-
-		$sql = 'UPDATE ' . $this->extension_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
-			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
-		$this->db->sql_query($sql);
 
 		if ($this->cache)
 		{
 			$this->cache->purge();
 		}
-
-		return false;
 	}
 
 	/**
-	* Disables an extension
+	* Get extension data
 	*
-	* Disables an extension completely at once. This process could run for a
-	* while so never call this in a script that has a max_execution time.
-	*
-	* @param string $name The extension's name
-	* @return null
+	* @param	string	$name	Name of the extension
+	* @return mixed Null if the extension does not exist, array with data otherwise
 	*/
-	public function disable($name)
+	public function get_extension_data($name)
 	{
-		while ($this->disable_step($name));
-	}
-
-	/**
-	* Purge an extension
-	*
-	* Disables the extension first if active, and then calls purge on the
-	* extension's meta class to delete the extension's database content.
-	*
-	* @param string $name The extension's name
-	* @return bool False if purging is finished, true otherwise
-	*/
-	public function purge_step($name)
-	{
-		// ignore extensions that do not exist
-		if (!isset($this->extensions[$name]))
-		{
-			return false;
-		}
-
-		// disable first if necessary
-		if ($this->extensions[$name]['ext_active'])
-		{
-			$this->disable($name);
-		}
-
-		$old_state = unserialize($this->extensions[$name]['ext_state']);
-
-		// Returns false if not completed
-		if (!$this->handle_migrations($name, 'purge'))
-		{
-			return true;
-		}
-
-		$extension = $this->get_extension($name);
-		$state = $extension->purge_step($old_state);
-
-		// continue until the state is false
-		if ($state !== false)
-		{
-			$extension_data = array(
-				'ext_state'		=> serialize($state),
-			);
-			$this->extensions[$name]['ext_state'] = serialize($state);
-
-			$sql = 'UPDATE ' . $this->extension_table . '
-				SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
-				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
-			$this->db->sql_query($sql);
-
-			if ($this->cache)
-			{
-				$this->cache->purge();
-			}
-
-			return true;
-		}
-
-		unset($this->extensions[$name]);
-
-		$sql = 'DELETE FROM ' . $this->extension_table . "
-			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
-		$this->db->sql_query($sql);
-
-		if ($this->cache)
-		{
-			$this->cache->purge();
-		}
-
-		return false;
-	}
-
-	/**
-	* Purge an extension
-	*
-	* Purges an extension completely at once. This process could run for a while
-	* so never call this in a script that has a max_execution time.
-	*
-	* @param string $name The extension's name
-	* @return null
-	*/
-	public function purge($name)
-	{
-		while ($this->purge_step($name));
+		return isset($this->extensions[$name]) ? $this->extensions[$name] : null;
 	}
 
 	/**
@@ -511,73 +333,5 @@ class phpbb_extension_manager
 	public function get_finder()
 	{
 		return new phpbb_extension_finder($this, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
-	}
-
-	/**
-	* Handle installing/reverting migrations
-	*
-	* @param string $extension_name Name of the extension
-	* @param string $mode enable or purge
-	* @return bool True if completed, False if not completed
-	*/
-	protected function handle_migrations($extension_name, $mode)
-	{
-		$extensions = array(
-			$extension_name => $this->phpbb_root_path . $this->get_extension_path($extension_name),
-		);
-
-		$finder = $this->get_finder();
-		$migrations = array();
-		$file_list = $finder
-			->extension_directory('/migrations')
-			->find_from_paths($extensions);
-
-		if (empty($file_list))
-		{
-			return true;
-		}
-
-		foreach ($file_list as $file)
-		{
-			$migrations[$file['named_path']] = $file['ext_name'];
-		}
-		$migrations = $finder->get_classes_from_files($migrations);
-		$this->migrator->set_migrations($migrations);
-
-		// What is a safe limit of execution time? Half the max execution time should be safe.
-		$safe_time_limit = (ini_get('max_execution_time') / 2);
-		$start_time = time();
-
-		if ($mode == 'enable')
-		{
-			while (!$this->migrator->finished())
-			{
-				$this->migrator->update();
-
-				// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
-				if ((time() - $start_time) >= $safe_time_limit)
-				{
-					return false;
-				}
-			}
-		}
-		else if ($mode == 'purge')
-		{
-			foreach ($migrations as $migration)
-			{
-				while ($this->migrator->migration_state($migration) !== false)
-				{
-					$this->migrator->revert($migration);
-
-					// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
-					if ((time() - $start_time) >= $safe_time_limit)
-					{
-						return false;
-					}
-				}
-			}
-		}
-
-		return true;
 	}
 }
