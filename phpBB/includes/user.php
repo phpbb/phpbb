@@ -215,7 +215,7 @@ class phpbb_user extends phpbb_session
 
 		if (!$this->style)
 		{
-			trigger_error('Could not get style data', E_USER_ERROR);
+			trigger_error('STYLE_NOT_FOUND', E_USER_ERROR);
 		}
 
 		// Now parse the cfg file and cache it
