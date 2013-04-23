@@ -182,7 +182,7 @@ if ($quickmod)
 		break;
 
 		default:
-			trigger_error("$action not allowed as quickmod", E_USER_ERROR);
+			trigger_error($user->lang('QUICKMOD_ACTION_NOT_ALLOWED', $action), E_USER_ERROR);
 		break;
 	}
 }
