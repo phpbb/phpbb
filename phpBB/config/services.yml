@@ -181,7 +181,7 @@ services:
         arguments:
             - @ext.finder
             - %core.root_path%
-            - .%core.php_ext%
+            - %core.php_ext%
         tags:
             - { name: kernel.event_subscriber }
 
