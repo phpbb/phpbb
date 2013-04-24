@@ -213,8 +213,10 @@ class mcp_main
 						break;
 					}
 				}
+				
 				// Unhandled case. Set to E_USER_ERROR. Can be changed when new case is reported.
 				trigger_error('NO_MODE', E_USER_ERROR);
+				
 			break;
 		}
 	}
