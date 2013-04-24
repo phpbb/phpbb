@@ -67,7 +67,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_prefix_get_directories()
 	{
 		$dirs = $this->finder
-            ->prefix('t')
+            ->prefix('ty')
 			->get_directories();
 
 		sort($dirs);
