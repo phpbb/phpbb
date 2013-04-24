@@ -1049,31 +1049,33 @@ else
 /**
 * Eliminates useless . and .. components from specified path.
 *
+* Deprecated, use filesystem class instead
+*
 * @param string $path Path to clean
 * @return string Cleaned path
+*
+* @deprecated
 */
 function phpbb_clean_path($path)
 {
-	$exploded = explode('/', $path);
-	$filtered = array();
-	foreach ($exploded as $part)
-	{
-		if ($part === '.' && !empty($filtered))
-		{
-			continue;
-		}
+	global $phpbb_container;
 
-		if ($part === '..' && !empty($filtered) && $filtered[sizeof($filtered) - 1] !== '..')
-		{
-			array_pop($filtered);
-		}
-		else
-		{
-			$filtered[] = $part;
-		}
+	if ($phpbb_container)
+	{
+		$phpbb_filesystem = $phpbb_container->get('filesystem');
 	}
-	$path = implode('/', $filtered);
-	return $path;
+	else
+	{
+		// The container is not yet loaded, use a new instance
+		if (!class_exists('phpbb_filesystem'))
+		{
+			global $phpbb_root_path, $phpEx;
+			require($phpbb_root_path . 'includes/filesystem.' . $phpEx);
+		}
+		$phpbb_filesystem = new phpbb_filesystem();
+	}
+
+	return $phpbb_filesystem->clean_path($path);
 }
 
 // functions used for building option fields
