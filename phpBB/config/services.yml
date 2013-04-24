@@ -70,7 +70,7 @@ services:
             - @template
             - @user
             - %core.root_path%
-            - .%core.php_ext%
+            - %core.php_ext%
 
     controller.resolver:
         class: phpbb_controller_resolver
