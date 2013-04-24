@@ -134,7 +134,7 @@ services:
             - @filesystem
             - %tables.ext%
             - %core.root_path%
-            - .%core.php_ext%
+            - %core.php_ext%
             - @cache.driver
 
     ext.finder:
@@ -144,7 +144,7 @@ services:
             - @filesystem
             - %core.root_path%
             - @cache.driver
-            - .%core.php_ext%
+            - %core.php_ext%
             - _ext_finder
 
     filesystem:
