@@ -2733,7 +2733,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
 	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false || strpos($url, ';') !== false)
 	{
-		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 
 	// Now, also check the protocol and for a valid url the last time...
@@ -2742,7 +2742,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 	if ($url_parts === false || empty($url_parts['scheme']) || !in_array($url_parts['scheme'], $allowed_protocols))
 	{
-		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 
 	if ($return)
@@ -4184,7 +4184,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 // Handler, header and footer
 
 /**
-* Error and message handler, call with trigger_error if reqd
+* Error and message handler, call with trigger_error if read
 */
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {

@@ -313,6 +313,7 @@ $lang = array_merge($lang, array(
 	'IN'						=> 'in',
 	'INDEX'						=> 'Index page',
 	'INFORMATION'				=> 'Information',
+	'INSECURE_REDIRECT'			=> 'Tried to redirect to potentially insecure url.',
 	'INTERESTS'					=> 'Interests',
 	'INVALID_DIGEST_CHALLENGE'	=> 'Invalid digest challenge.',
 	'INVALID_EMAIL_LOG'			=> '<strong>%s</strong> possibly an invalid email address?',
