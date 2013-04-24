@@ -173,7 +173,7 @@ services:
         class: phpbb_hook_finder
         arguments:
             - %core.root_path%
-            - .%core.php_ext%
+            - %core.php_ext%
             - @cache.driver
 
     kernel_request_subscriber:
