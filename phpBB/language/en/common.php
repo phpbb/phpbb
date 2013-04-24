@@ -391,6 +391,7 @@ $lang = array_merge($lang, array(
 	'NO_POSTS_TIME_FRAME'		=> 'No posts exist inside this topic for the selected time frame.',
 	'NO_FEED_ENABLED'			=> 'Feeds are not available on this board.',
 	'NO_FEED'					=> 'The requested feed is not available.',
+	'NO_STYLE_DATA'				=> 'Could not get style data',
 	'NO_SUBJECT'				=> 'No subject specified',								// Used for posts having no subject defined but displayed within management pages.
 	'NO_SUCH_SEARCH_MODULE'		=> 'The specified search backend doesn’t exist.',
 	'NO_SUPPORTED_AUTH_METHODS'	=> 'No supported authentication methods.',
