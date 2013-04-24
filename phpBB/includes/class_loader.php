@@ -52,7 +52,7 @@ class phpbb_class_loader
 	* @param string $php_ext The file extension for PHP files
 	* @param phpbb_cache_driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function __construct($prefix, $path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null)
+	public function __construct($prefix, $path, $php_ext = 'php', phpbb_cache_driver_interface $cache = null)
 	{
 		$this->prefix = $prefix;
 		$this->path = $path;
@@ -111,7 +111,7 @@ class phpbb_class_loader
 	{
 		if (isset($this->cached_paths[$class]))
 		{
-			return $this->path . $this->cached_paths[$class] . $this->php_ext;
+			return $this->path . $this->cached_paths[$class] . '.' . $this->php_ext;
 		}
 
 		if (!preg_match('/^' . $this->prefix . '[a-zA-Z0-9_]+$/', $class))
@@ -136,7 +136,7 @@ class phpbb_class_loader
 
 		$relative_path = $dirs . implode(array_slice($parts, $i, sizeof($parts) - $i), '_');
 
-		if (!file_exists($this->path . $relative_path . $this->php_ext))
+		if (!file_exists($this->path . $relative_path . '.' . $this->php_ext))
 		{
 			return false;
 		}
@@ -147,7 +147,7 @@ class phpbb_class_loader
 			$this->cache->put('class_loader_' . $this->prefix, $this->cached_paths);
 		}
 
-		return $this->path . $relative_path . $this->php_ext;
+		return $this->path . $relative_path . '.' . $this->php_ext;
 	}
 
 	/**

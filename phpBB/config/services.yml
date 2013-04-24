@@ -36,7 +36,7 @@ services:
         arguments:
             - phpbb_
             - %core.root_path%includes/
-            - .%core.php_ext%
+            - %core.php_ext%
         calls:
             - [register, []]
             - [set_cache, [@cache.driver]]
@@ -46,7 +46,7 @@ services:
         arguments:
             - phpbb_ext_
             - %core.root_path%ext/
-            - .%core.php_ext%
+            - %core.php_ext%
         calls:
             - [register, []]
             - [set_cache, [@cache.driver]]
