@@ -36,7 +36,7 @@ class metadata_manager_test extends phpbb_database_test_case
 		$this->db = $this->new_dbal();
 		$this->db_tools = new phpbb_db_tools($this->db);
 		$this->phpbb_root_path = dirname(__FILE__) . '/';
-		$this->phpEx = '.php';
+		$this->phpEx = 'php';
 		$this->user = new phpbb_user();
 		$this->table_prefix = 'phpbb_';
 
