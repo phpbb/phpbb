@@ -411,7 +411,7 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 		$this->set->move_children($forum_id, $target_id);
 	}
 
-	public function set_parent_data()
+	public function change_parent_data()
 	{
 		return array(
 			array('Move single child up',
@@ -516,11 +516,11 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	}
 
 	/**
-	* @dataProvider set_parent_data
+	* @dataProvider change_parent_data
 	*/
-	public function test_set_parent($explain, $forum_id, $target_id, $expected_moved, $expected)
+	public function test_change_parent($explain, $forum_id, $target_id, $expected_moved, $expected)
 	{
-		$this->assertEquals($expected_moved, $this->set->set_parent($forum_id, $target_id));
+		$this->assertEquals($expected_moved, $this->set->change_parent($forum_id, $target_id));
 
 		$result = $this->db->sql_query("SELECT forum_id, parent_id, left_id, right_id, forum_parents
 			FROM phpbb_forums
@@ -528,7 +528,7 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 		$this->assertEquals($expected, $this->db->sql_fetchrowset($result));
 	}
 
-	public function set_parent_throws_item_data()
+	public function change_parent_throws_item_data()
 	{
 		return array(
 			array('Item 0 does not exist', 0, 5),
@@ -537,17 +537,17 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	}
 
 	/**
-	* @dataProvider set_parent_throws_item_data
+	* @dataProvider change_parent_throws_item_data
 	*
 	* @expectedException			phpbb_nestedset_exception
 	* @expectedExceptionMessage		FORUM_NESTEDSET_INVALID_ITEM
 	*/
-	public function test_set_parent_throws_item($explain, $forum_id, $target_id)
+	public function test_change_parent_throws_item($explain, $forum_id, $target_id)
 	{
-		$this->set->set_parent($forum_id, $target_id);
+		$this->set->change_parent($forum_id, $target_id);
 	}
 
-	public function set_parent_throws_parent_data()
+	public function change_parent_throws_parent_data()
 	{
 		return array(
 			array('New parent is child', 4, 5),
@@ -557,13 +557,13 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	}
 
 	/**
-	* @dataProvider set_parent_throws_parent_data
+	* @dataProvider change_parent_throws_parent_data
 	*
 	* @expectedException			phpbb_nestedset_exception
 	* @expectedExceptionMessage		FORUM_NESTEDSET_INVALID_PARENT
 	*/
-	public function test_set_parent_throws_parent($explain, $forum_id, $target_id)
+	public function test_change_parent_throws_parent($explain, $forum_id, $target_id)
 	{
-		$this->set->set_parent($forum_id, $target_id);
+		$this->set->change_parent($forum_id, $target_id);
 	}
 }

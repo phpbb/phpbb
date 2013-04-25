@@ -95,13 +95,15 @@ interface phpbb_nestedset_interface
 	public function move_children($current_parent_id, $new_parent_id);
 
 	/**
-	* Set the parent item
+	* Change parent item
+	*
+	* Moves the item to the bottom of the new parent's list of children
 	*
 	* @param int	$item_id			The item to be moved
 	* @param int	$new_parent_id		The new parent item
 	* @return bool True if the parent was set successfully
 	*/
-	public function set_parent($item, $new_parent_id);
+	public function change_parent($item, $new_parent_id);
 
 	/**
 	* Get branch of the item

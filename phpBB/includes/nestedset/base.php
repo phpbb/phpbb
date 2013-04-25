@@ -388,7 +388,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	/**
 	* @inheritdoc
 	*/
-	public function set_parent($item_id, $new_parent_id)
+	public function change_parent($item_id, $new_parent_id)
 	{
 		$item_id = (int) $item_id;
 		$new_parent_id = (int) $new_parent_id;
