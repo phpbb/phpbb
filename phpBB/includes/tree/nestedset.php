@@ -56,6 +56,37 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	protected $item_basic_data = array('*');
 
 	/**
+	* Construct
+	*
+	* @param phpbb_db_driver	$db		Database connection
+	* @param phpbb_lock_db		$lock	Lock class used to lock the table when moving forums around
+	* @param string			$table_name			Table name
+	* @param string			$message_prefix		Prefix for the messages thrown by exceptions
+	* @param string			$sql_where			Additional SQL restrictions for the queries
+	* @param array			$item_basic_data	Array with basic item data that is stored in item_parents
+	* @param array			$columns			Array with column names to overwrite
+	*/
+	public function __construct(phpbb_db_driver $db, phpbb_lock_db $lock, $table_name, $message_prefix = '', $sql_where = '', $item_basic_data = array(), $columns = array())
+	{
+		$this->db = $db;
+		$this->lock = $lock;
+
+		$this->table_name = $table_name;
+		$this->message_prefix = $message_prefix;
+		$this->sql_where = $sql_where;
+		$this->item_basic_data = (!empty($item_basic_data)) ? $item_basic_data : array('*');
+
+		if (!empty($columns))
+		{
+			foreach ($columns as $column => $name)
+			{
+				$column_name = 'column_' . $column;
+				$this->$column_name = $name;
+			}
+		}
+	}
+
+	/**
 	* Returns additional sql where restrictions
 	*
 	* @param string		$operator		SQL operator that needs to be prepended to sql_where,

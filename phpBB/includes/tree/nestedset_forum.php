@@ -18,25 +18,6 @@ if (!defined('IN_PHPBB'))
 class phpbb_tree_nestedset_forum extends phpbb_tree_nestedset
 {
 	/**
-	* Column names in the table
-	* @var string
-	*/
-	protected $column_item_id = 'forum_id';
-	protected $column_item_parents = 'forum_parents';
-
-	/**
-	* Prefix for the language keys returned by exceptions
-	* @var string
-	*/
-	protected $message_prefix = 'FORUM_NESTEDSET_';
-
-	/**
-	* List of item properties to be cached in $item_parents
-	* @var array
-	*/
-	protected $item_basic_data = array('forum_id', 'forum_name', 'forum_type');
-
-	/**
 	* Construct
 	*
 	* @param phpbb_db_driver	$db		Database connection
@@ -45,8 +26,21 @@ class phpbb_tree_nestedset_forum extends phpbb_tree_nestedset
 	*/
 	public function __construct(phpbb_db_driver $db, phpbb_lock_db $lock, $table_name)
 	{
-		$this->db = $db;
-		$this->lock = $lock;
-		$this->table_name = $table_name;
+		parent::__construct(
+			$db,
+			$lock,
+			$table_name,
+			'FORUM_NESTEDSET_',
+			'',
+			array(
+				'forum_id',
+				'forum_name',
+				'forum_type',
+			),
+			array(
+				'item_id'		=> 'forum_id',
+				'item_parents'	=> 'forum_parents',
+			)
+		);
 	}
 }
