@@ -84,9 +84,12 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* Add an existing item at the end of the tree
+	*
+	* @param array	$item	The item to be added
+	* @return bool True if the item was added
 	*/
-	public function add(array $item)
+	protected function add(array $item)
 	{
 		$sql = 'SELECT MAX(' . $this->column_right_id . ') AS ' . $this->column_right_id . '
 			FROM ' . $this->table_name . '
@@ -111,9 +114,14 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* Remove an item from the tree WITHOUT removing the items from the table
+	*
+	* Also removes all subitems from the tree
+	*
+	* @param int	$item_id	The item to be deleted
+	* @return array		Item ids that have been removed
 	*/
-	public function remove($item_id)
+	protected function remove($item_id)
 	{
 		$items = $this->get_children_branch_data($item_id);
 		$item_ids = array_keys($items);
