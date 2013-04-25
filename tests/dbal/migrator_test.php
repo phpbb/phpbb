@@ -63,7 +63,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			new phpbb_filesystem(),
 			'phpbb_ext',
 			dirname(__FILE__) . '/../../phpBB/',
-			'.php',
+			'php',
 			null
 		);
 	}

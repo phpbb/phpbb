@@ -27,7 +27,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	public function get_data($row, $ignore_config = false)
 	{
 		return array(
-			'src' => $this->phpbb_root_path . 'download/file' . $this->php_ext . '?avatar=' . $row['avatar'],
+			'src' => $this->phpbb_root_path . 'download/file.' . $this->php_ext . '?avatar=' . $row['avatar'],
 			'width' => $row['avatar_width'],
 			'height' => $row['avatar_height'],
 		);
@@ -63,7 +63,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 
 		if (!class_exists('fileupload'))
 		{
-			include($this->phpbb_root_path . 'includes/functions_upload' . $this->php_ext);
+			include($this->phpbb_root_path . 'includes/functions_upload.' . $this->php_ext);
 		}
 
 		$upload = new fileupload('AVATAR_', $this->allowed_extensions, $this->config['avatar_filesize'], $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], (isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));

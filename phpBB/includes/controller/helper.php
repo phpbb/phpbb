@@ -117,7 +117,7 @@ class phpbb_controller_helper
 			$params = array('controller' => $route);
 		}
 
-		return append_sid($this->phpbb_root_path . 'app' . $this->php_ext . $route_params, $params, $is_amp, $session_id);
+		return append_sid($this->phpbb_root_path . 'app.' . $this->php_ext . $route_params, $params, $is_amp, $session_id);
 	}
 
 	/**

@@ -52,7 +52,7 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 		$this->user = $this->getMock('phpbb_user');
 		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $this->user, $this->style_resource_locator, new phpbb_template_context());
 
-		$helper = new phpbb_controller_helper($this->template, $this->user, '', '.php');
+		$helper = new phpbb_controller_helper($this->template, $this->user, '', 'php');
 		$this->assertEquals($helper->url($route, $params, $is_amp, $session_id), $expected);
 	}
 }
