@@ -63,14 +63,14 @@ class messenger
 	*/
 	function set_addresses($user)
 	{
-		if ($user['user_email'])
+		if (isset($user['user_email']) && $user['user_email'])
 		{
-			$this->to($user['user_email'], ($user['username']) ?: '');
+			$this->to($user['user_email'], (isset($user['username']) ? $user['username'] : ''));
 		}
 
-		if ($user['user_jabber'])
+		if (isset($user['user_jabber']) && $user['user_jabber'])
 		{
-			$this->im($user['user_jabber'], ($user['username']) ?: '');
+			$this->im($user['user_jabber'], (isset($user['username']) ? $user['username'] : ''));
 		}
 	}
 
