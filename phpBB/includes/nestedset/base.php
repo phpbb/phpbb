@@ -194,14 +194,14 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 
 		$result = $this->db->sql_query_limit($sql, $delta);
 
-		$target = null;
+		$target = false;
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$target = $row;
 		}
 		$this->db->sql_freeresult($result);
 
-		if (is_null($target))
+		if (!$target)
 		{
 			$this->lock->release();
 			// The item is already on top or bottom
