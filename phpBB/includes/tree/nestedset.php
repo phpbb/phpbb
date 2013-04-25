@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* @package Nested Set
+* @package Tree - Nested Set
 * @copyright (c) 2013 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
+abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 {
 	/** @var phpbb_db_driver */
 	protected $db;

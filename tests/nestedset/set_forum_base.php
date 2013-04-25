@@ -56,7 +56,7 @@ class phpbb_tests_nestedset_set_forum_base extends phpbb_database_test_case
 		set_config(null, null, null, $this->config);
 
 		$this->lock = new phpbb_lock_db('nestedset_forum_lock', $this->config, $this->db);
-		$this->set = new phpbb_nestedset_forum($this->db, $this->lock, 'phpbb_forums');
+		$this->set = new phpbb_tree_nestedset_forum($this->db, $this->lock, 'phpbb_forums');
 
 		$this->set_up_forums();
 	}

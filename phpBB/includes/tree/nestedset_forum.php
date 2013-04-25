@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* @package Nested Set
+* @package Tree - Nested Set Forum
 * @copyright (c) 2013 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_nestedset_forum extends phpbb_nestedset_base
+class phpbb_tree_nestedset_forum extends phpbb_tree_nestedset
 {
 	/**
 	* Column names in the table
