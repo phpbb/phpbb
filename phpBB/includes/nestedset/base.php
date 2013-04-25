@@ -603,8 +603,10 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	* Remove a subset from the nested set
 	*
 	* @param array	$subset_items		Subset of items to remove
-	* @param array	$bounding_item	Item containing the right bound of the subset
-	* @param bool	$set_subset_zero	Should the parent, left and right id of the item be set to 0, or kept unchanged?
+	* @param array	$bounding_item		Item containing the right bound of the subset
+	* @param bool	$set_subset_zero	Should the parent, left and right id of the items be set to 0, or kept unchanged?
+	*									In case of removing an item from the tree, we should the values to 0
+	*									In case of moving an item, we shouldkeep the original values, in order to allow "+ diff" later
 	* @param bool	$table_already_locked	Is the table already locked, or should we acquire a new lock?
 	* @return	null
 	*/
