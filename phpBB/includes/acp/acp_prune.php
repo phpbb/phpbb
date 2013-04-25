@@ -340,7 +340,7 @@ class acp_prune
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</select>';
+			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
 		$db->sql_freeresult($result);
 
