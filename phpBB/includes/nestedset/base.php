@@ -524,7 +524,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	* @param int		$item_id		The item id to get the parents/children from
 	* @param string		$condition		Query string restricting the item list
 	* @param bool		$order_desc		Order the items descending (most outer parent first)
-	* @param bool		$include_item	Should the given item be included in the list aswell
+	* @param bool		$include_item	Should the item (matching the given item id) be included in the list aswell
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
