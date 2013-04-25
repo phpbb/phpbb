@@ -425,6 +425,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 	}
 
+	protected function logout()
+	{
+		$this->add_lang('ucp');
+
+		$crawler = $this->request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
+		$this->assert_response_success();
+		$this->assertContains($this->lang('LOGOUT_REDIRECT'), $crawler->filter('#message')->text());
+		unset($this->sid);
+
+	}
+
 	/**
 	* Login to the ACP
 	* You must run login() before calling this.
