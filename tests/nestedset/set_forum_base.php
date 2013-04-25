@@ -57,5 +57,30 @@ class phpbb_tests_nestedset_set_forum_base extends phpbb_database_test_case
 
 		$this->lock = new phpbb_lock_db('nestedset_forum_lock', $this->config, $this->db);
 		$this->set = new phpbb_nestedset_forum($this->db, $this->lock, 'phpbb_forums');
+
+		$this->set_up_forums();
+	}
+
+	protected function set_up_forums()
+	{
+		$this->create_forum('Parent with two flat children');
+		$this->create_forum('Flat child #1', 1);
+		$this->create_forum('Flat child #2', 1);
+
+		$this->create_forum('Parent with two nested children');
+		$this->create_forum('Nested child #1', 4);
+		$this->create_forum('Nested child #2', 5);
+
+		$this->create_forum('Parent with flat and nested children');
+		$this->create_forum('Mixed child #1', 7);
+		$this->create_forum('Mixed child #2', 7);
+		$this->create_forum('Nested child #1 of Mixed child #2', 9);
+		$this->create_forum('Mixed child #3', 7);
+	}
+
+	protected function create_forum($name, $parent_id = 0)
+	{
+		$forum = $this->set->insert(array('forum_name' => $name, 'forum_desc' => '', 'forum_rules' => ''));
+		$this->set->change_parent($forum['forum_id'], $parent_id);
 	}
 }
