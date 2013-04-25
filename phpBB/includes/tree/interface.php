@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* @package Tree
+* @package tree
 * @copyright (c) 2013 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 interface phpbb_tree_interface
 {
 	/**
-	* Insert an item into the tree
+	* Insert an item into the tree (also insert the rows into the table)
 	*
 	* @param array	$item	The item to be added
 	* @return array Array with item data as set in the database
@@ -26,7 +26,7 @@ interface phpbb_tree_interface
 	public function insert(array $additional_data);
 
 	/**
-	* Delete an item from the tree
+	* Delete an item from the tree (also deletes the rows form the table)
 	*
 	* Also deletes all subitems from the tree
 	*
