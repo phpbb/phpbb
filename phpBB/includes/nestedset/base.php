@@ -674,7 +674,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	/**
 	* @inheritdoc
 	*/
-	public function recalculate_nested_set($new_id, $parent_id = 0, $reset_ids = false)
+	public function regenerate_left_right_ids($new_id, $parent_id = 0, $reset_ids = false)
 	{
 		if ($reset_ids)
 		{
@@ -716,7 +716,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			$new_id++;
 
 			// Then we go through any children and update their left/right id's
-			$new_id = $this->recalculate_nested_set($new_id, $row[$this->column_item_id]);
+			$new_id = $this->regenerate_left_right_ids($new_id, $row[$this->column_item_id]);
 
 			// Then we come back and update the right_id for this module
 			if ($row[$this->column_right_id] != $new_id)

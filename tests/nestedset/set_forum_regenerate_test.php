@@ -9,7 +9,7 @@
 
 require_once dirname(__FILE__) . '/set_forum_base.php';
 
-class phpbb_tests_nestedset_set_forum_recalculate_test extends phpbb_tests_nestedset_set_forum_base
+class phpbb_tests_nestedset_set_forum_regenerate_test extends phpbb_tests_nestedset_set_forum_base
 {
 	protected $fixed_set = array(
 		array('forum_id' => 1, 'parent_id' => 0, 'left_id' => 1, 'right_id' => 6, 'forum_parents' => ''),
@@ -27,7 +27,7 @@ class phpbb_tests_nestedset_set_forum_recalculate_test extends phpbb_tests_neste
 		array('forum_id' => 11, 'parent_id' => 7, 'left_id' => 20, 'right_id' => 21, 'forum_parents' => ''),
 	);
 
-	public function recalculate_nested_set_data()
+	public function regenerate_left_right_ids_data()
 	{
 		return array(
 			array('UPDATE phpbb_forums
@@ -56,13 +56,13 @@ class phpbb_tests_nestedset_set_forum_recalculate_test extends phpbb_tests_neste
 	}
 
 	/**
-	* @dataProvider recalculate_nested_set_data
+	* @dataProvider regenerate_left_right_ids_data
 	*/
-	public function test_recalculate_nested_set($breaking_query, $reset_ids)
+	public function test_regenerate_left_right_ids($breaking_query, $reset_ids)
 	{
 		$result = $this->db->sql_query($breaking_query);
 
-		$this->assertEquals(23, $this->set->recalculate_nested_set(1, 0, $reset_ids));
+		$this->assertEquals(23, $this->set->regenerate_left_right_ids(1, 0, $reset_ids));
 
 		$result = $this->db->sql_query('SELECT forum_id, parent_id, left_id, right_id, forum_parents
 			FROM phpbb_forums

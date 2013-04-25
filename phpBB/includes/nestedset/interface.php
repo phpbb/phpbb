@@ -124,12 +124,24 @@ interface phpbb_nestedset_interface
 	public function get_parent_data(array $item);
 
 	/**
-	* Recalculate Nested Sets
+	* Regenerate left/right ids from parent/child relationship
+	*
+	* This method regenerates the left/right ids for the nested set based on
+	* the parent/child relations. This function executes three queries per
+	* item, so it should only be called, when the set has one of the following
+	* problems:
+	*	- The set has a duplicated value inside the left/right id chain
+	*	- The set has a missing value inside the left/right id chain
+	*	- The set has items that do not have a left/right is set
+	*
+	* When regenerating the items, the items are sorted by parent id and their
+	* current left id, so the current child/parent relationships are kept
+	* and running the function on a working set will not change any orders.
 	*
 	* @param int	$new_id		First left_id to be used (should start with 1)
 	* @param int	$parent_id	parent_id of the current set (default = 0)
 	* @param bool	$reset_ids	Should we reset all left_id/right_id on the first call?
 	* @return	int		$new_id		The next left_id/right_id that should be used
 	*/
-	public function recalculate_nested_set($new_id, $parent_id = 0, $reset_ids = false);
+	public function regenerate_left_right_ids($new_id, $parent_id = 0, $reset_ids = false);
 }
