@@ -476,6 +476,8 @@ dl.details dd {
 	margin-bottom: 5px;
 	float: left;
 	width: 65%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, dl.polls {
