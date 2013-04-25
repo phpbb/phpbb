@@ -156,7 +156,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			new phpbb_filesystem(),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
-			'.' . $php_ext,
+			$php_ext,
 			$this->get_cache_driver()
 		);
 

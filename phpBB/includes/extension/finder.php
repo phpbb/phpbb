@@ -62,7 +62,7 @@ class phpbb_extension_finder
 	* @param string $cache_name The name of the cache variable, defaults to
 	*                           _ext_finder
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, phpbb_filesystem $filesystem, $phpbb_root_path = '', phpbb_cache_driver_interface $cache = null, $php_ext = '.php', $cache_name = '_ext_finder')
+	public function __construct(phpbb_extension_manager $extension_manager, phpbb_filesystem $filesystem, $phpbb_root_path = '', phpbb_cache_driver_interface $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
 	{
 		$this->extension_manager = $extension_manager;
 		$this->filesystem = $filesystem;
@@ -256,8 +256,8 @@ class phpbb_extension_finder
 	*/
 	public function get_classes($cache = true, $use_all_available = false)
 	{
-		$this->query['extension_suffix'] .= $this->php_ext;
-		$this->query['core_suffix'] .= $this->php_ext;
+		$this->query['extension_suffix'] .= '.' . $this->php_ext;
+		$this->query['core_suffix'] .= '.' . $this->php_ext;
 
 		$files = $this->find($cache, false, $use_all_available);
 
@@ -277,7 +277,7 @@ class phpbb_extension_finder
 		{
 			$file = preg_replace('#^includes/#', '', $file);
 
-			$classes[] = 'phpbb_' . str_replace('/', '_', substr($file, 0, -strlen($this->php_ext)));
+			$classes[] = 'phpbb_' . str_replace('/', '_', substr($file, 0, -strlen('.' . $this->php_ext)));
 		}
 		return $classes;
 	}

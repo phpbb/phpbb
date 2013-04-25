@@ -92,12 +92,12 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 		// Container
 		$phpbb_container = new phpbb_mock_container_builder();
 
-		$user_loader = new phpbb_user_loader($db, $phpbb_root_path, '.' . $phpEx, USERS_TABLE);
+		$user_loader = new phpbb_user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
 
 		// Notification Manager
 		$phpbb_notifications = new phpbb_notification_manager(array(), array(),
 			$phpbb_container, $user_loader, $db, $user,
-			$phpbb_root_path, '.' . $phpEx,
+			$phpbb_root_path, $phpEx,
 			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
 		$phpbb_container->set('notification_manager', $phpbb_notifications);
 
@@ -108,7 +108,7 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 			$class_name = 'phpbb_notification_type_' . $type;
 			$phpbb_container->set('notification.type.' . $type, new $class_name(
 				$user_loader, $db, $cache, $user, $auth, $config,
-				$phpbb_root_path, '.' . $phpEx,
+				$phpbb_root_path, $phpEx,
 				NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE));
 		}
 	}
