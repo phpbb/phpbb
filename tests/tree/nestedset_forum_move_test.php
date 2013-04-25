@@ -7,7 +7,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/set_forum_base.php';
+require_once dirname(__FILE__) . '/nestedset_forum_base.php';
 
 class phpbb_tests_tree_nestedset_forum_move_test extends phpbb_tests_tree_nestedset_forum_base
 {
