@@ -94,8 +94,7 @@ class ucp_remind
 
 			$messenger->template('user_activate_passwd', $user_row['user_lang']);
 
-			$messenger->to($user_row['user_email'], $user_row['username']);
-			$messenger->im($user_row['user_jabber'], $user_row['username']);
+			$messenger->set_addresses($user_row);
 
 			$messenger->assign_vars(array(
 				'USERNAME'		=> htmlspecialchars_decode($user_row['username']),

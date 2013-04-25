@@ -48,7 +48,13 @@ class phpbb_notification_method_jabber extends phpbb_notification_method_messeng
 	*/
 	public function global_available()
 	{
-		return ($this->config['jab_enable'] && @extension_loaded('xml'));
+		return !(
+			empty($this->config['jab_enable']) ||
+			empty($this->config['jab_host']) ||
+			empty($this->config['jab_username']) ||
+			empty($this->config['jab_password']) ||
+			!@extension_loaded('xml')
+		);
 	}
 
 	public function notify()

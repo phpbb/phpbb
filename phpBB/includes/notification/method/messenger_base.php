@@ -80,7 +80,7 @@ abstract class phpbb_notification_method_messenger_base extends phpbb_notificati
 
 			$messenger->template($template_dir_prefix . $notification->get_email_template(), $user['user_lang']);
 
-			$messenger->to($user['user_email'], $user['username']);
+			$messenger->set_addresses($user);
 
 			$messenger->assign_vars(array_merge(array(
 				'USERNAME'						=> $user['username'],

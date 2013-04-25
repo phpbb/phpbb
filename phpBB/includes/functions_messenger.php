@@ -55,6 +55,24 @@ class messenger
 		$this->vars = $this->msg = $this->replyto = $this->from = '';
 		$this->mail_priority = MAIL_NORMAL_PRIORITY;
 	}
+	
+	/**
+	* Set addresses for to/im as available
+	* 
+	* @param array $user User row
+	*/
+	function set_addresses($user)
+	{
+		if (isset($user['user_email']) && $user['user_email'])
+		{
+			$this->to($user['user_email'], (isset($user['username']) ? $user['username'] : ''));
+		}
+
+		if (isset($user['user_jabber']) && $user['user_jabber'])
+		{
+			$this->im($user['user_jabber'], (isset($user['username']) ? $user['username'] : ''));
+		}
+	}
 
 	/**
 	* Sets an email address to send to
