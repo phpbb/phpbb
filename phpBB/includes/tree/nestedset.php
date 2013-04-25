@@ -111,7 +111,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		$item_data[$this->column_item_id] = (int) $this->db->sql_nextid();
 
-		return array_merge($item_data, $this->add($item_data));
+		return array_merge($item_data, $this->add_item_to_nestedset($item_data));
 	}
 
 	/**
@@ -120,7 +120,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	* @param array	$item	The item to be added
 	* @return bool True if the item was added
 	*/
-	protected function add(array $item)
+	protected function add_item_to_nestedset(array $item)
 	{
 		$sql = 'SELECT MAX(' . $this->column_right_id . ') AS ' . $this->column_right_id . '
 			FROM ' . $this->table_name . '
@@ -152,7 +152,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	* @param int	$item_id	The item to be deleted
 	* @return array		Item ids that have been removed
 	*/
-	protected function remove($item_id)
+	protected function remove_item_from_nestedset($item_id)
 	{
 		$items = $this->get_children_branch_data($item_id);
 		$item_ids = array_keys($items);
@@ -167,7 +167,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	*/
 	public function delete($item_id)
 	{
-		$removed_items = $this->remove($item_id);
+		$removed_items = $this->remove_item_from_nestedset($item_id);
 
 		$sql = 'DELETE FROM ' . $this->table_name . '
 			WHERE ' . $this->db->sql_in_set($this->column_item_id, $removed_items) . '
