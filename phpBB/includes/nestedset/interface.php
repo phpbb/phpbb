@@ -56,6 +56,10 @@ interface phpbb_nestedset_interface
 	/**
 	* Move an item by a given delta
 	*
+	* An item is only moved up/down within the same parent. If the delta is
+	* larger then the number of children, the item is moved to the top/bottom
+	* of the list of children within this parent.
+	*
 	* @param int	$item_id	The item to be moved
 	* @param int	$delta		Number of steps to move this item, < 0 => down, > 0 => up
 	* @return bool True if the item was moved
