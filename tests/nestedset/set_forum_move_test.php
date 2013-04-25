@@ -383,7 +383,7 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	/**
 	* @dataProvider move_children_throws_item_data
 	*
-	* @expectedException			phpbb_nestedset_exception
+	* @expectedException			OutOfBoundsException
 	* @expectedExceptionMessage		FORUM_NESTEDSET_INVALID_ITEM
 	*/
 	public function test_move_children_throws_item($explain, $forum_id, $target_id)
@@ -403,7 +403,7 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	/**
 	* @dataProvider move_children_throws_parent_data
 	*
-	* @expectedException			phpbb_nestedset_exception
+	* @expectedException			OutOfBoundsException
 	* @expectedExceptionMessage		FORUM_NESTEDSET_INVALID_PARENT
 	*/
 	public function test_move_children_throws_parent($explain, $forum_id, $target_id)
@@ -539,7 +539,7 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	/**
 	* @dataProvider change_parent_throws_item_data
 	*
-	* @expectedException			phpbb_nestedset_exception
+	* @expectedException			OutOfBoundsException
 	* @expectedExceptionMessage		FORUM_NESTEDSET_INVALID_ITEM
 	*/
 	public function test_change_parent_throws_item($explain, $forum_id, $target_id)
@@ -559,7 +559,7 @@ class phpbb_tests_nestedset_set_forum_move_test extends phpbb_tests_nestedset_se
 	/**
 	* @dataProvider change_parent_throws_parent_data
 	*
-	* @expectedException			phpbb_nestedset_exception
+	* @expectedException			OutOfBoundsException
 	* @expectedExceptionMessage		FORUM_NESTEDSET_INVALID_PARENT
 	*/
 	public function test_change_parent_throws_parent($explain, $forum_id, $target_id)

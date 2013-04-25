@@ -150,7 +150,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 
 		if (!$this->lock->acquire())
 		{
-			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
+			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 		}
 
 		$action = ($delta > 0) ? 'move_up' : 'move_down';
@@ -168,7 +168,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		if (!$item)
 		{
 			$this->lock->release();
-			throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_ITEM');
+			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
 		/**
@@ -291,19 +291,19 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 
 		if (!$current_parent_id)
 		{
-			throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_ITEM');
+			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
 		if (!$this->lock->acquire())
 		{
-			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
+			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 		}
 
 		$item_data = $this->get_children_branch_data($current_parent_id);
 		if (!isset($item_data[$current_parent_id]))
 		{
 			$this->lock->release();
-			throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_ITEM');
+			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
 		$current_parent = $item_data[$current_parent_id];
@@ -319,7 +319,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		if (in_array($new_parent_id, $move_items))
 		{
 			$this->lock->release();
-			throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_PARENT');
+			throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 		}
 
 		$diff = sizeof($move_items) * 2;
@@ -343,7 +343,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			{
 				$this->db->sql_transaction('rollback');
 				$this->lock->release();
-				throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_PARENT');
+				throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 			}
 
 			$new_right_id = $this->prepare_adding_subset($move_items, $new_parent, true);
@@ -400,19 +400,19 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 
 		if (!$item_id)
 		{
-			throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_ITEM');
+			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
 		if (!$this->lock->acquire())
 		{
-			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
+			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 		}
 
 		$item_data = $this->get_children_branch_data($item_id);
 		if (!isset($item_data[$item_id]))
 		{
 			$this->lock->release();
-			throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_ITEM');
+			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
 		$item = $item_data[$item_id];
@@ -421,7 +421,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		if (in_array($new_parent_id, $move_items))
 		{
 			$this->lock->release();
-			throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_PARENT');
+			throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 		}
 
 		$diff = sizeof($move_items) * 2;
@@ -445,7 +445,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			{
 				$this->db->sql_transaction('rollback');
 				$this->lock->release();
-				throw new phpbb_nestedset_exception($this->message_prefix . 'INVALID_PARENT');
+				throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 			}
 
 			$new_right_id = $this->prepare_adding_subset($move_items, $new_parent, true);
@@ -612,7 +612,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	{
 		if (!$table_already_locked && !$this->lock->acquire())
 		{
-			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
+			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 		}
 
 		$diff = sizeof($subset_items) * 2;
@@ -702,7 +702,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 		{
 			if (!$this->lock->acquire())
 			{
-				throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
+				throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 			}
 			$this->db->sql_transaction('begin');
 
