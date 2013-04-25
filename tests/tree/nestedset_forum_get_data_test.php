@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* @package Nested Set
+* @package Nested Set Forum
 * @copyright (c) 2013 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
@@ -9,7 +9,7 @@
 
 require_once dirname(__FILE__) . '/set_forum_base.php';
 
-class phpbb_tests_nestedset_set_forum_get_data_test extends phpbb_tests_nestedset_set_forum_base
+class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_nestedset_forum_base
 {
 	public function get_full_branch_data_data()
 	{

@@ -1,13 +1,13 @@
 <?php
 /**
 *
-* @package Nested Set
+* @package Nested Set Forum
 * @copyright (c) 2013 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
-class phpbb_tests_nestedset_set_forum_base extends phpbb_database_test_case
+class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
