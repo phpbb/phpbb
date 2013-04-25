@@ -1,4 +1,4 @@
-Subject: Topic reply notification - "{TOPIC_TITLE}"
+Subject: Post moderation notification - "{TOPIC_TITLE}"
 
 Hello {USERNAME},
 
@@ -9,9 +9,5 @@ If you want to view the post, click the following link:
 
 If you want to view the topic, click the following link:
 {U_TOPIC}
-
-If you no longer wish to receive updates about replies to bookmarks, please update your notification settings here:
-
-{U_NOTIFICATION_SETTINGS}
 
 {EMAIL_SIG}

@@ -1,4 +1,4 @@
-Subject: Topic reply notification - "{TOPIC_TITLE}"
+Subject: Private Message report - "{TOPIC_TITLE}"
 
 Hello {USERNAME},
 
@@ -6,9 +6,5 @@ You are receiving this notification because a Private Message titled "{SUBJECT}"
 
 If you want to view the report, click the following link:
 {U_VIEW_REPORT}
-
-If you no longer wish to receive updates about replies to bookmarks, please update your notification settings here:
-
-{U_NOTIFICATION_SETTINGS}
 
 {EMAIL_SIG}
