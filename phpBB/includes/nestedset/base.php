@@ -115,7 +115,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	*/
 	public function remove($item_id)
 	{
-		$items = $this->get_branch_data($item_id, 'children');
+		$items = $this->get_children_branch_data($item_id);
 		$item_ids = array_keys($items);
 
 		$this->remove_subset($item_ids, $items[$item_id]);
@@ -299,7 +299,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 		}
 
-		$item_data = $this->get_branch_data($current_parent_id, 'children');
+		$item_data = $this->get_children_branch_data($current_parent_id);
 		if (!isset($item_data[$current_parent_id]))
 		{
 			$this->lock->release();
@@ -408,7 +408,7 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 			throw new phpbb_nestedset_exception($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 		}
 
-		$item_data = $this->get_branch_data($item_id, 'children');
+		$item_data = $this->get_children_branch_data($item_id);
 		if (!isset($item_data[$item_id]))
 		{
 			$this->lock->release();
@@ -490,24 +490,46 @@ abstract class phpbb_nestedset_base implements phpbb_nestedset_interface
 	/**
 	* @inheritdoc
 	*/
-	public function get_branch_data($item_id, $type = 'all', $order_desc = true, $include_item = true)
+	public function get_full_branch_data($item_id, $order_desc = true, $include_item = true)
 	{
-		switch ($type)
-		{
-			case 'parents':
-				$condition = 'i1.' . $this->column_left_id . ' BETWEEN i2.' . $this->column_left_id . ' AND i2.' . $this->column_right_id . '';
-			break;
+		$condition = 'i2.' . $this->column_left_id . ' BETWEEN i1.' . $this->column_left_id . ' AND i1.' . $this->column_right_id . '
+			OR i1.' . $this->column_left_id . ' BETWEEN i2.' . $this->column_left_id . ' AND i2.' . $this->column_right_id;
 
-			case 'children':
-				$condition = 'i2.' . $this->column_left_id . ' BETWEEN i1.' . $this->column_left_id . ' AND i1.' . $this->column_right_id . '';
-			break;
+		return $this->get_branch_data($item_id, $condition, $order_desc, $include_item);
+	}
 
-			default:
-				$condition = 'i2.' . $this->column_left_id . ' BETWEEN i1.' . $this->column_left_id . ' AND i1.' . $this->column_right_id . '
-					OR i1.' . $this->column_left_id . ' BETWEEN i2.' . $this->column_left_id . ' AND i2.' . $this->column_right_id;
-			break;
-		}
+	/**
+	* @inheritdoc
+	*/
+	public function get_parent_branch_data($item_id, $order_desc = true, $include_item = true)
+	{
+		$condition = 'i1.' . $this->column_left_id . ' BETWEEN i2.' . $this->column_left_id . ' AND i2.' . $this->column_right_id . '';
 
+		return $this->get_branch_data($item_id, $condition, $order_desc, $include_item);
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function get_children_branch_data($item_id, $order_desc = true, $include_item = true)
+	{
+		$condition = 'i2.' . $this->column_left_id . ' BETWEEN i1.' . $this->column_left_id . ' AND i1.' . $this->column_right_id . '';
+
+		return $this->get_branch_data($item_id, $condition, $order_desc, $include_item);
+	}
+
+	/**
+	* Get children and parent branch of the item
+	*
+	* @param int		$item_id		The item id to get the parents/children from
+	* @param string		$condition		Query string restricting the item list
+	* @param bool		$order_desc		Order the items descending (most outer parent first)
+	* @param bool		$include_item	Should the given item be included in the list aswell
+	* @return array			Array of items (containing all columns from the item table)
+	*							ID => Item data
+	*/
+	protected function get_branch_data($item_id, $condition, $order_desc = true, $include_item = true)
+	{
 		$rows = array();
 
 		$sql = 'SELECT i2.*

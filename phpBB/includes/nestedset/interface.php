@@ -106,18 +106,37 @@ interface phpbb_nestedset_interface
 	public function change_parent($item, $new_parent_id);
 
 	/**
-	* Get branch of the item
+	* Get children and parent branch of the item
 	*
-	* This method can return all parents, children or both of the given item
-	*
-	* @param int		$item_id		The item id to get the parents from
-	* @param string		$type			One of all|parent|children
+	* @param int		$item_id		The item id to get the parents/children from
 	* @param bool		$order_desc		Order the items descending (most outer parent first)
 	* @param bool		$include_item	Should the given item be included in the list aswell
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
-	public function get_branch_data($item_id, $type, $order_desc, $include_item);
+	public function get_full_branch_data($item_id, $order_desc, $include_item);
+
+	/**
+	* Get parent branch of the item
+	*
+	* @param int		$item_id		The item id to get the parents from
+	* @param bool		$order_desc		Order the items descending (most outer parent first)
+	* @param bool		$include_item	Should the given item be included in the list aswell
+	* @return array			Array of items (containing all columns from the item table)
+	*							ID => Item data
+	*/
+	public function get_parent_branch_data($item_id, $order_desc, $include_item);
+
+	/**
+	* Get children branch of the item
+	*
+	* @param int		$item_id		The item id to get the children from
+	* @param bool		$order_desc		Order the items descending (most outer parent first)
+	* @param bool		$include_item	Should the given item be included in the list aswell
+	* @return array			Array of items (containing all columns from the item table)
+	*							ID => Item data
+	*/
+	public function get_children_branch_data($item_id, $order_desc, $include_item);
 
 	/**
 	* Get base information of parent items
