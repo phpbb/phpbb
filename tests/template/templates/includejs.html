@@ -1,4 +1,7 @@
 <!-- INCLUDEJS parent_and_child.js -->
+<!-- INCLUDEJS parent_and_child.js?assets_version=0 -->
+<!-- INCLUDEJS parent_and_child.js?test=1&assets_version=0 -->
+<!-- INCLUDEJS parent_and_child.js?test=1&amp;assets_version=0 -->
 <!-- INCLUDEJS {PARENT} -->
 <!-- DEFINE $TEST = 'child_only.js' -->
 <!-- INCLUDEJS {$TEST} -->
@@ -8,4 +11,7 @@
 <!-- DEFINE $TEST = 'child_only.js?test1=1&amp;test2=2#test3' -->
 <!-- INCLUDEJS {$TEST} -->
 <!-- INCLUDEJS parent_only.js?test1=1&amp;test2=2#test3 -->
+<!-- INCLUDEJS //a.com/b.js -->
+<!-- INCLUDEJS http://a.com/b.js?c=d#f -->
+<!-- INCLUDEJS http://a.com/b.js?c=d&assets_version=1#f -->
 {SCRIPTS}
