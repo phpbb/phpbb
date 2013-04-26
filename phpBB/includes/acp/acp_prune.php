@@ -331,7 +331,7 @@ class acp_prune
 			$s_find_active_time .= '<option value="' . $key . '">' . $value . '</option>';
 		}
 
-		$s_group_list = '';
+		$s_group_list = '<option value="0"></option>';
 		$sql = 'SELECT group_id, group_name
 			FROM ' . GROUPS_TABLE . '
 			WHERE group_type <> ' . GROUP_SPECIAL . '
@@ -340,7 +340,7 @@ class acp_prune
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</select>';
+			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
 		$db->sql_freeresult($result);
 
