@@ -2340,12 +2340,12 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	$previous_page = ($on_page != 1) ? $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page) : '';
 
 	$template_array = array(
-		$tpl_prefix . 'BASE_URL'		=> $base_url,
-		'A_' . $tpl_prefix . 'BASE_URL'		=> addslashes($base_url),
+		'U_' . $tpl_prefix . 'BASE_URL'		=> $base_url,
+		'UA_' . $tpl_prefix . 'BASE_URL'		=> addslashes($base_url),
 		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-		$tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
+		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
 		$tpl_prefix . 'PREV_PAGE'		=> $previous_page,
-		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
+		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
 		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
 		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
 	);
