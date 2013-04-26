@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 interface phpbb_tree_interface
 {
 	/**
-	* Insert an item into the tree (also insert the rows into the table)
+	* Inserts an item into the database table and into the tree.
 	*
 	* @param array	$item	The item to be added
 	* @return array Array with item data as set in the database
@@ -26,9 +26,9 @@ interface phpbb_tree_interface
 	public function insert(array $additional_data);
 
 	/**
-	* Delete an item from the tree (also deletes the rows form the table)
+	* Delete an item from the tree and from the database table
 	*
-	* Also deletes all subitems from the tree
+	* Also deletes all subitems from the tree and from the database table
 	*
 	* @param int	$item_id	The item to be deleted
 	* @return array		Item ids that have been deleted

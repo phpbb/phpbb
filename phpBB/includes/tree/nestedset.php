@@ -115,7 +115,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	}
 
 	/**
-	* Add an existing item at the end of the tree
+	* Add an item which already has a database row at the end of the tree
 	*
 	* @param array	$item	The item to be added
 	* @return bool True if the item was added
@@ -145,9 +145,9 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	}
 
 	/**
-	* Remove an item from the tree WITHOUT removing the items from the table
+	* Remove an item from the tree without deleting it from the database
 	*
-	* Also removes all subitems from the tree
+	* Also removes all subitems from the tree without deleting them from the database either
 	*
 	* @param int	$item_id	The item to be deleted
 	* @return array		Item ids that have been removed
