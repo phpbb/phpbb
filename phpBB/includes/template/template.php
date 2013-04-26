@@ -509,7 +509,7 @@ class phpbb_template
 			$path['filename'] = $this->phpbb_root_path . $path['filename'];
 		}
 
-		if ($path['protocol'] === false && substr($path['filename'], 0, 2) != '//')
+		if ($path['protocol'] === false && substr($path['filename'], 0, 2) != '//' && !preg_match('/(^|[&;])assets_version=/', $path['params']))
 		{
 			$path['params'] = (strlen($path['params']) ? $path['params'] . '&amp;' : '') . 'assets_version=' . $this->config['assets_version'];
 		}
