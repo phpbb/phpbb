@@ -680,7 +680,7 @@ function set_modified_headers($stamp, $browser)
 	// let's see if we have to send the file at all
 	$last_load 	=  isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) : false;
 		
-	if ((strpos(strtolower($browser), 'msie 6.0') === false) && (!phpbb_is_greater_ie7($browser)))
+	if (strpos(strtolower($browser), 'msie 6.0') === false && !phpbb_is_greater_ie7($browser))
 	{
 		if ($last_load !== false && $last_load >= $stamp)
 		{
