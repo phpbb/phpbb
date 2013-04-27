@@ -711,11 +711,14 @@ function file_gc()
 
 /**
 * Check if the browser is internet explorer version 7+
-* @return true if ie7+
+*
+* @param string $user_agent	User agent HTTP header
+*
+* @return bool true if ie7+
 */
-function phpbb_is_greater_ie7($browser)
+function phpbb_is_greater_ie7($user_agent)
 {
-	return (bool) preg_match('/msie [^67]+\\.*;/', strtolower($browser));
+	return (bool) preg_match('/msie [^67]+\\.*;/', strtolower($user_agent));
 }
 
 ?>
