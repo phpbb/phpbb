@@ -714,7 +714,7 @@ function file_gc()
 *
 * @param string $user_agent	User agent HTTP header
 *
-* @return bool true if ie7+
+* @return bool true if internet explorer version is greater than 7
 */
 function phpbb_is_greater_ie7($user_agent)
 {
