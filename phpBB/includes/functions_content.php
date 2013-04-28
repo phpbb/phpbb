@@ -927,7 +927,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		$template->destroy_block_vars('_file');
 
 		$block_array = array();
-
 		$root_path = get_root_path();
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
 		$filename = $root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);

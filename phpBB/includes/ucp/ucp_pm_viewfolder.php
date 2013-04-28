@@ -146,7 +146,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 					}
 				}
 				
-				//Get root path
 				$root_path = get_root_path();
 				// Send vars to template
 				$template->assign_block_vars('messagerow', array(
