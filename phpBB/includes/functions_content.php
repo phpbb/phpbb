@@ -433,7 +433,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_before', compact($vars)));
 
 	if ($censor_text)
-	{		
+	{
 		$text = censor_text($text);
 	}
 
@@ -927,11 +927,10 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		$template->destroy_block_vars('_file');
 
 		$block_array = array();
-
-		// Some basics...
+		$root_path = get_root_path();
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
-		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . utf8_basename($attachment['physical_filename']);
+		$filename = $root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
+		$thumbnail_filename = $root_path . $config['upload_path'] . '/thumb_' . utf8_basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 
@@ -943,7 +942,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			}
 			else if ($extensions[$attachment['extension']]['upload_icon'])
 			{
-				$upload_icon = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
+				$upload_icon = '<img src="' . $root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
 			}
 		}
 
