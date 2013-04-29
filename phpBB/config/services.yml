@@ -218,6 +218,7 @@ services:
             - @service_container
             - @user_loader
             - @dbal.conn
+            - @cache
             - @user
             - %core.root_path%
             - %core.php_ext%
