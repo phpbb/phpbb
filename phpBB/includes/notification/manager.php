@@ -871,7 +871,10 @@ class phpbb_notification_manager
 
 		if (!isset($notification_type_ids[$notification_type_name]))
 		{
-			$notification_type = $this->get_item_type_class($notification_type_name);
+			if (!isset($this->notification_types[$notification_type_name]) && !isset($this->notification_types['notification.type.' . $notification_type_name]))
+			{
+				throw new phpbb_notification_exception('Notification type ' . $notification_type_name . ' does not exist');
+			}
 
 			$sql = 'INSERT INTO ' . $this->notification_types_table . ' ' . $this->db->sql_build_array('INSERT', array(
 				'notification_type_name'		=> $notification_type_name,
