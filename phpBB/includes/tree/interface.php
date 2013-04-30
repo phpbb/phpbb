@@ -92,7 +92,7 @@ interface phpbb_tree_interface
 	*
 	* @param int		$item_id		The item to get the ancestors/descendants from
 	* @param bool		$order_asc		Order the items ascending (most outer ancestor first)
-	* @param bool		$include_item	Should the item (matching the given item id) be included in the list aswell
+	* @param bool		$include_item	Should the item matching the given item id be included in the list as well
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
@@ -103,7 +103,7 @@ interface phpbb_tree_interface
 	*
 	* @param int		$item_id		The item id to get the ancestors from
 	* @param bool		$order_asc		Order the items ascending (most outer ancestor first)
-	* @param bool		$include_item	Should the item (matching the given item id) be included in the list aswell
+	* @param bool		$include_item	Should the item matching the given item id be included in the list as well
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
@@ -114,7 +114,7 @@ interface phpbb_tree_interface
 	*
 	* @param int		$item_id		The item id to get the descendants from
 	* @param bool		$order_asc		Order the items ascending
-	* @param bool		$include_item	Should the item (matching the given item id) be included in the list aswell
+	* @param bool		$include_item	Should the item matching the given item id be included in the list as well
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
