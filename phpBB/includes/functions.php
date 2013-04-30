@@ -2392,6 +2392,97 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 
 // Server functions (building urls, redirecting...)
 
+
+/**
+* Splits resource path into components
+*
+* @param string $path URL
+* @return array List of components
+*
+* Components list array:
+*	full - Original URL
+*	schema - Schema, false if not set
+*		Empty string for network-path relative URLs
+*	domain - Domain. Includes login and password if set. Empty string if not set
+*	path - Path. Empty string if not set
+*	query - Query string after '?'. Empty string if not set
+*	fragment - Part after hash mark '#'. Empty string if not set
+*/
+function parse_resource_path($path)
+{
+	$components = array(
+		'full' => $path,
+		'schema' => false,
+		'domain' => '',
+		'path' => '',
+		'query' => '',
+		'fragment' => '',
+	);
+
+	// Get part after hash
+	$paths = explode('#', $path, 2);
+	$path = $paths[0];
+	$components['fragment'] = isset($paths[1]) ? $paths[1] : '';
+
+	// Get query string
+	$paths = explode('?', $path, 2);
+	$filename = $paths[0];
+	$components['query'] = isset($paths[1]) ? $paths[1] : '';
+
+	// Separate schema and path
+	$paths = explode('://', $filename, 2);
+	if (count($paths) == 2)
+	{
+		$domain = explode('/', $paths[1], 2);
+		$components['schema'] = $paths[0];
+		$components['domain'] = $domain[0];
+		$components['path'] = count($domain) > 1 ? $domain[1] : '';
+	}
+	else
+	{
+		$components['path'] = $filename;
+	}
+
+	return $components;
+}
+
+/**
+* Joins resource path components into URL
+*
+* @param array $components List of components. See parse_resource_path() above for components description
+* @param bool $urlencode If true, path will be encoded with urlencode()
+* @return string URL
+*/
+function join_resource_path($components, $urlencode = false)
+{
+	if ($urlencode)
+	{
+		$paths = explode('/', $components['path']);
+		foreach ($paths as &$dir)
+		{
+			$dir = urlencode($dir);
+		}
+		$components['path'] = implode('/', $paths);
+	}
+
+	$path = '';
+	if ($components['schema'] !== false)
+	{
+		$path = $components['schema'] . '://' . $components['domain'] . '/';
+	}
+	$path .= $components['path'];
+	if (strlen($components['query']))
+	{
+		$path .= '?' . $components['query'];
+	}
+	if (strlen($components['fragment']))
+	{
+		$path .= '#' . $components['fragment'];
+	}
+
+	return $path;
+}
+
 /**
 * Append session id to url.
 * This function supports hooks.

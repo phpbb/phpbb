@@ -491,38 +491,38 @@ class phpbb_template
 	*/
 	public function _js_include($file, $locate = false, $relative = false)
 	{
-		$path = $this->locator->parse_resource_path($file);
+		$path = parse_resource_path($file);
 		$urlencode = false;
 
 		// Locate file
 		if ($locate)
 		{
-			$located = $this->locator->get_first_file_location(array($path['filename']), false, true);
+			$located = $this->locator->get_first_file_location(array($path['path']), false, true);
 			if ($located)
 			{
-				$path['filename'] = $located;
+				$path['path'] = $located;
 				$urlencode = true;
 			}
 		}
 		else if ($relative)
 		{
-			$path['filename'] = $this->phpbb_root_path . $path['filename'];
+			$path['path'] = $this->phpbb_root_path . $path['path'];
 		}
 
-		if ($path['protocol'] === false && substr($path['filename'], 0, 2) != '//' && !preg_match('/(^|[&;])assets_version=/', $path['params']))
+		if ($path['schema'] === false && substr($path['path'], 0, 2) != '//' && !preg_match('/(^|[&;])assets_version=/', $path['query']))
 		{
-			if (strlen($path['params']))
+			if (strlen($path['query']))
 			{
-				$separator = (strpos($path['params'], '&') === false) && (strpos($path['params'], ';') !== false) && preg_match('/^.*=.*;.*=.*$/', $path['params']) ? ';' : '&amp;';
+				$separator = (strpos($path['query'], '&') === false) && (strpos($path['query'], ';') !== false) && preg_match('/^.*=.*;.*=.*$/', $path['query']) ? ';' : '&amp;';
 			}
 			else
 			{
 				$separator = '';
 			}
-			$path['params'] .= $separator . 'assets_version=' . $this->config['assets_version'];
+			$path['query'] .= $separator . 'assets_version=' . $this->config['assets_version'];
 		}
 
-		$file = $this->locator->join_resource_path($path, $urlencode);
+		$file = join_resource_path($path, $urlencode);
 
 		// Add HTML code
 		$code = '<script src="' . $file . '"></script>' . "\n";
