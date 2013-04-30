@@ -272,9 +272,9 @@ $lang = array_merge($lang, array(
 	'LOGIN_EXPLAIN_UCP'			=> 'Please login in order to access the User Control Panel.',
 	'LOGIN_KEY'					=> 'Login Key',
 	'LOGIN_TIME'				=> 'Login Time',
-	'LOGIN_REDIRECT'			=> 'You have been successfully logged in.',
+	'LOGIN_REDIRECT'			=> 'You have been successfully logged in and will now be redirected to the index page.',
 	'LOGOUT_FAILED'				=> 'You were not logged out, as the request did not match your session. Please contact the board administrator if you continue to experience problems.',
-	'LOGOUT_REDIRECT'			=> 'You have been successfully logged out.',
+	'LOGOUT_REDIRECT'			=> 'You have been successfully logged out and will now be redirected to the index page.',
 
 	'MARK_IMPORTANT'				=> 'Mark/Unmark as important',
 	'MARKED_MESSAGE'				=> 'Marked message',
