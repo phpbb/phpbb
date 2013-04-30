@@ -56,12 +56,6 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	protected $item_basic_data = array('*');
 
 	/**
-	* Does the class currently have a lock on the item table?
-	* @var bool
-	*/
-	protected $lock_acquired = false;
-
-	/**
 	* Construct
 	*
 	* @param phpbb_db_driver	$db		Database connection
@@ -114,7 +108,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	*/
 	protected function acquire_lock()
 	{
-		if ($this->lock_acquired)
+		if ($this->lock->owns_lock())
 		{
 			return false;
 		}
@@ -124,25 +118,17 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 		}
 
-		$this->lock_acquired = true;
 		return true;
 	}
 
 	/**
 	* Releases the lock on the item table
 	*
-	* @return bool	False, if there was no lock to release, true otherwise
+	* @return null
 	*/
 	protected function release_lock()
 	{
-		if (!$this->lock_acquired)
-		{
-			return false;
-		}
-
 		$this->lock->release();
-		$this->lock_acquired = false;
-		return true;
 	}
 
 	/**
