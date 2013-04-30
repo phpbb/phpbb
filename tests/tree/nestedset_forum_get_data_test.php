@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/nestedset_forum_base.php';
 
 class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_nestedset_forum_base
 {
-	public function get_full_branch_data_data()
+	public function get_path_and_subtree_data_data()
 	{
 		return array(
 			array(1, true, true, array(1, 2, 3)),
@@ -32,14 +32,14 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 	}
 
 	/**
-	* @dataProvider get_full_branch_data_data
+	* @dataProvider get_path_and_subtree_data_data
 	*/
-	public function test_get_full_branch_data($forum_id, $order_desc, $include_item, $expected)
+	public function test_get_path_and_subtree_data($forum_id, $order_desc, $include_item, $expected)
 	{
-		$this->assertEquals($expected, array_keys($this->set->get_full_branch_data($forum_id, $order_desc, $include_item)));
+		$this->assertEquals($expected, array_keys($this->set->get_path_and_subtree_data($forum_id, $order_desc, $include_item)));
 	}
 
-	public function get_parent_branch_data_data()
+	public function get_path_data_data()
 	{
 		return array(
 			array(1, true, true, array(1)),
@@ -60,14 +60,14 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 	}
 
 	/**
-	* @dataProvider get_parent_branch_data_data
+	* @dataProvider get_path_data_data
 	*/
-	public function test_get_parent_branch_data($forum_id, $order_desc, $include_item, $expected)
+	public function test_get_path_data($forum_id, $order_desc, $include_item, $expected)
 	{
-		$this->assertEquals($expected, array_keys($this->set->get_parent_branch_data($forum_id, $order_desc, $include_item)));
+		$this->assertEquals($expected, array_keys($this->set->get_path_data($forum_id, $order_desc, $include_item)));
 	}
 
-	public function get_children_branch_data_data()
+	public function get_subtree_data_data()
 	{
 		return array(
 			array(1, true, true, array(1, 2, 3)),
@@ -88,11 +88,11 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 	}
 
 	/**
-	* @dataProvider get_children_branch_data_data
+	* @dataProvider get_subtree_data_data
 	*/
-	public function test_get_children_branch_data($forum_id, $order_desc, $include_item, $expected)
+	public function test_get_subtree_data($forum_id, $order_desc, $include_item, $expected)
 	{
-		$this->assertEquals($expected, array_keys($this->set->get_children_branch_data($forum_id, $order_desc, $include_item)));
+		$this->assertEquals($expected, array_keys($this->set->get_subtree_data($forum_id, $order_desc, $include_item)));
 	}
 
 	public function get_parent_data_data()

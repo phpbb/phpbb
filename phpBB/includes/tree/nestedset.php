@@ -154,7 +154,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	*/
 	protected function remove_item_from_nestedset($item_id)
 	{
-		$items = $this->get_children_branch_data($item_id);
+		$items = $this->get_subtree_data($item_id);
 		$item_ids = array_keys($items);
 
 		$this->remove_subset($item_ids, $items[$item_id]);
@@ -338,7 +338,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 		}
 
-		$item_data = $this->get_children_branch_data($current_parent_id);
+		$item_data = $this->get_subtree_data($current_parent_id);
 		if (!isset($item_data[$current_parent_id]))
 		{
 			$this->lock->release();
@@ -447,7 +447,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
 		}
 
-		$item_data = $this->get_children_branch_data($item_id);
+		$item_data = $this->get_subtree_data($item_id);
 		if (!isset($item_data[$item_id]))
 		{
 			$this->lock->release();
@@ -529,45 +529,45 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	/**
 	* @inheritdoc
 	*/
-	public function get_full_branch_data($item_id, $order_desc = true, $include_item = true)
+	public function get_path_and_subtree_data($item_id, $order_desc = true, $include_item = true)
 	{
 		$condition = 'i2.' . $this->column_left_id . ' BETWEEN i1.' . $this->column_left_id . ' AND i1.' . $this->column_right_id . '
 			OR i1.' . $this->column_left_id . ' BETWEEN i2.' . $this->column_left_id . ' AND i2.' . $this->column_right_id;
 
-		return $this->get_branch_data($item_id, $condition, $order_desc, $include_item);
+		return $this->get_set_of_nodes_data($item_id, $condition, $order_desc, $include_item);
 	}
 
 	/**
 	* @inheritdoc
 	*/
-	public function get_parent_branch_data($item_id, $order_desc = true, $include_item = true)
+	public function get_path_data($item_id, $order_desc = true, $include_item = true)
 	{
 		$condition = 'i1.' . $this->column_left_id . ' BETWEEN i2.' . $this->column_left_id . ' AND i2.' . $this->column_right_id . '';
 
-		return $this->get_branch_data($item_id, $condition, $order_desc, $include_item);
+		return $this->get_set_of_nodes_data($item_id, $condition, $order_desc, $include_item);
 	}
 
 	/**
 	* @inheritdoc
 	*/
-	public function get_children_branch_data($item_id, $order_desc = true, $include_item = true)
+	public function get_subtree_data($item_id, $order_desc = true, $include_item = true)
 	{
 		$condition = 'i2.' . $this->column_left_id . ' BETWEEN i1.' . $this->column_left_id . ' AND i1.' . $this->column_right_id . '';
 
-		return $this->get_branch_data($item_id, $condition, $order_desc, $include_item);
+		return $this->get_set_of_nodes_data($item_id, $condition, $order_desc, $include_item);
 	}
 
 	/**
-	* Get children and parent branch of the item
+	* Get items that are related to the given item by the condition
 	*
-	* @param int		$item_id		The item id to get the parents/children from
+	* @param int		$item_id		The item id to get the node set from
 	* @param string		$condition		Query string restricting the item list
 	* @param bool		$order_desc		Order the items descending (most outer parent first)
 	* @param bool		$include_item	Should the item (matching the given item id) be included in the list aswell
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
-	protected function get_branch_data($item_id, $condition, $order_desc = true, $include_item = true)
+	protected function get_set_of_nodes_data($item_id, $condition, $order_desc = true, $include_item = true)
 	{
 		$rows = array();
 

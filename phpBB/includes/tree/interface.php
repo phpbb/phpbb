@@ -28,12 +28,12 @@ interface phpbb_tree_interface
 	/**
 	* Delete an item from the tree and from the database table
 	*
-	* Also deletes all subitems from the tree and from the database table
+	* Also deletes the subtree from the tree and from the database table
 	*
 	* @param int	$item_id	The item to be deleted
 	* @return array		Item ids that have been deleted
 	*/
-	public function delete($item);
+	public function delete($item_id);
 
 	/**
 	* Move an item by a given delta
@@ -79,16 +79,16 @@ interface phpbb_tree_interface
 	/**
 	* Change parent item
 	*
-	* Moves the item to the bottom of the new parent's list of children
+	* Moves the item to the bottom of the new parent's subtree
 	*
 	* @param int	$item_id			The item to be moved
 	* @param int	$new_parent_id		The new parent item
 	* @return bool True if the parent was set successfully
 	*/
-	public function change_parent($item, $new_parent_id);
+	public function change_parent($item_id, $new_parent_id);
 
 	/**
-	* Get children and parent branch of the item
+	* Get all items that are either a parent or part of the subtree of the item
 	*
 	* @param int		$item_id		The item id to get the parents/children from
 	* @param bool		$order_desc		Order the items descending (most outer parent first)
@@ -96,10 +96,10 @@ interface phpbb_tree_interface
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
-	public function get_full_branch_data($item_id, $order_desc, $include_item);
+	public function get_path_and_subtree_data($item_id, $order_desc, $include_item);
 
 	/**
-	* Get parent branch of the item
+	* Get all parent items of the item
 	*
 	* @param int		$item_id		The item id to get the parents from
 	* @param bool		$order_desc		Order the items descending (most outer parent first)
@@ -107,10 +107,10 @@ interface phpbb_tree_interface
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
-	public function get_parent_branch_data($item_id, $order_desc, $include_item);
+	public function get_path_data($item_id, $order_desc, $include_item);
 
 	/**
-	* Get children branch of the item
+	* Get all items of the item's subtree
 	*
 	* @param int		$item_id		The item id to get the children from
 	* @param bool		$order_desc		Order the items descending (most outer parent first)
@@ -118,7 +118,7 @@ interface phpbb_tree_interface
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
-	public function get_children_branch_data($item_id, $order_desc, $include_item);
+	public function get_subtree_data($item_id, $order_desc, $include_item);
 
 	/**
 	* Get base information of parent items
