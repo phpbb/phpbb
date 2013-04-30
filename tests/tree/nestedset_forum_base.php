@@ -34,7 +34,7 @@ class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 		10	=> array('forum_id' => 10, 'parent_id' => 9, 'user_id' => 0, 'left_id' => 17, 'right_id' => 18, 'forum_parents' => 'a:0:{}'),
 		11	=> array('forum_id' => 11, 'parent_id' => 7, 'user_id' => 0, 'left_id' => 20, 'right_id' => 21, 'forum_parents' => 'a:0:{}'),
 
-		// Unexisting forums
+		// Non-existent forums
 		0	=> array('forum_id' => 0, 'parent_id' => 0, 'user_id' => 0, 'left_id' => 0, 'right_id' => 0, 'forum_parents' => 'a:0:{}'),
 		200	=> array('forum_id' => 200, 'parent_id' => 0, 'user_id' => 0, 'left_id' => 0, 'right_id' => 0, 'forum_parents' => 'a:0:{}'),
 	);

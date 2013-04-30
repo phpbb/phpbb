@@ -90,8 +90,8 @@ interface phpbb_tree_interface
 	/**
 	* Get all items that are either ancestors or descendants of the item
 	*
-	* @param int		$item_id		The item to get the ancestors/descendants from
-	* @param bool		$order_asc		Order the items ascending (most outer ancestor first)
+	* @param int		$item_id		The item id the ancestors/descendants should be retrieved from
+	* @param bool		$order_asc		Order the items ascendingly (most outer ancestor first)
 	* @param bool		$include_item	Should the item matching the given item id be included in the list as well
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
@@ -99,10 +99,10 @@ interface phpbb_tree_interface
 	public function get_path_and_subtree_data($item_id, $order_asc, $include_item);
 
 	/**
-	* Get all ancestors of the item
+	* Get all of the item's ancestors
 	*
-	* @param int		$item_id		The item id to get the ancestors from
-	* @param bool		$order_asc		Order the items ascending (most outer ancestor first)
+	* @param int		$item_id		The item id the ancestors should be retrieved from
+	* @param bool		$order_asc		Order the items ascendingly (most outer ancestor first)
 	* @param bool		$include_item	Should the item matching the given item id be included in the list as well
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
@@ -110,10 +110,10 @@ interface phpbb_tree_interface
 	public function get_path_data($item_id, $order_asc, $include_item);
 
 	/**
-	* Get all descendants of the item
+	* Get all of the item's descendants
 	*
-	* @param int		$item_id		The item id to get the descendants from
-	* @param bool		$order_asc		Order the items ascending
+	* @param int		$item_id		The item id the descendants should be retrieved from
+	* @param bool		$order_asc		Order the items ascendingly
 	* @param bool		$include_item	Should the item matching the given item id be included in the list as well
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
