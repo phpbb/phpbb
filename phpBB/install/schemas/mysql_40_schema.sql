@@ -913,7 +913,7 @@ CREATE TABLE phpbb_topics_watch (
 
 # Table: 'phpbb_user_notifications'
 CREATE TABLE phpbb_user_notifications (
-	notification_type_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+	item_type varbinary(255) DEFAULT '' NOT NULL,
 	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	method varbinary(255) DEFAULT '' NOT NULL,

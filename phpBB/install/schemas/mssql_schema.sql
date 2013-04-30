@@ -1591,7 +1591,7 @@ GO
 	Table: 'phpbb_user_notifications'
 */
 CREATE TABLE [phpbb_user_notifications] (
-	[notification_type_id] [int] DEFAULT (0) NOT NULL ,
+	[item_type] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[item_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[method] [varchar] (255) DEFAULT ('') NOT NULL ,

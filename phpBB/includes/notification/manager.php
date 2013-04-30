@@ -632,25 +632,25 @@ class phpbb_notification_manager
 	/**
 	* Add a subscription
 	*
-	* @param string $notification_type_name Type identifier of the subscription
+	* @param string $item_type Type identifier of the subscription
 	* @param int $item_id The id of the item
 	* @param string $method The method of the notification e.g. '', 'email', or 'jabber'
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
 	*/
-	public function add_subscription($notification_type_name, $item_id = 0, $method = '', $user_id = false)
+	public function add_subscription($item_type, $item_id = 0, $method = '', $user_id = false)
 	{
 		if ($method !== '')
 		{
-			$this->add_subscription($notification_type_name, $item_id, '', $user_id);
+			// Make sure to subscribe them to the base subscription
+			$this->add_subscription($item_type, $item_id, '', $user_id);
 		}
 
-		$notification_type_id = $this->get_notification_type_id($notification_type_name);
 		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
 		$sql = 'SELECT notify
-			FROM ' . $this->user_notifications_table . '
-			WHERE notification_type_id = ' . (int) $notification_type_name . '
-				AND item_id = ' . (int) $item_id . '
+			FROM ' . $this->user_notifications_table . "
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+				AND item_id = " . (int) $item_id . '
 				AND user_id = ' .(int) $user_id . "
 				AND method = '" . $this->db->sql_escape($method) . "'";
 		$this->db->sql_query($sql);
@@ -661,7 +661,7 @@ class phpbb_notification_manager
 		{
 			$sql = 'INSERT INTO ' . $this->user_notifications_table . ' ' .
 				$this->db->sql_build_array('INSERT', array(
-					'notification_type_id'		=> $notification_type_id,
+					'item_type'		=> $item_type,
 					'item_id'		=> (int) $item_id,
 					'user_id'		=> (int) $user_id,
 					'method'		=> $method,
@@ -671,10 +671,10 @@ class phpbb_notification_manager
 		}
 		else if (!$current)
 		{
-			$sql = 'UPDATE ' . $this->user_notifications_table . '
+			$sql = 'UPDATE ' . $this->user_notifications_table . "
 				SET notify = 1
-				WHERE notification_type_id = ' . (int) $notification_type_id . '
-					AND item_id = ' . (int) $item_id . '
+				WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+					AND item_id = " . (int) $item_id . '
 					AND user_id = ' .(int) $user_id . "
 					AND method = '" . $this->db->sql_escape($method) . "'";
 			$this->db->sql_query($sql);
@@ -684,23 +684,22 @@ class phpbb_notification_manager
 	/**
 	* Delete a subscription
 	*
-	* @param string $notification_type_name Type identifier of the subscription
+	* @param string $item_type Type identifier of the subscription
 	* @param int $item_id The id of the item
 	* @param string $method The method of the notification e.g. '', 'email', or 'jabber'
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
 	*/
-	public function delete_subscription($notification_type_name, $item_id = 0, $method = '', $user_id = false)
+	public function delete_subscription($item_type, $item_id = 0, $method = '', $user_id = false)
 	{
-		$notification_type_id = $this->get_notification_type_id($notification_type_name);
 		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
 		// If no method, make sure that no other notification methods for this item are selected before deleting
 		if ($method === '')
 		{
 			$sql = 'SELECT COUNT(*) as num_notifications
-				FROM ' . $this->user_notifications_table . '
-				WHERE notification_type_id = ' . (int) $notification_type_id . '
-					AND item_id = ' . (int) $item_id . '
+				FROM ' . $this->user_notifications_table . "
+				WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+					AND item_id = " . (int) $item_id . '
 					AND user_id = ' .(int) $user_id . "
 					AND method <> ''
 					AND notify = 1";
@@ -714,10 +713,10 @@ class phpbb_notification_manager
 			}
 		}
 
-		$sql = 'UPDATE ' . $this->user_notifications_table . '
+		$sql = 'UPDATE ' . $this->user_notifications_table . "
 			SET notify = 0
-			WHERE notification_type_id = ' . (int) $notification_type_id . '
-				AND item_id = '. (int) $item_id . '
+			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+				AND item_id = " . (int) $item_id . '
 				AND user_id = ' .(int) $user_id . "
 				AND method = '" . $this->db->sql_escape($method) . "'";
 		$this->db->sql_query($sql);
@@ -726,7 +725,7 @@ class phpbb_notification_manager
 		{
 			$sql = 'INSERT INTO ' . $this->user_notifications_table . ' ' .
 				$this->db->sql_build_array('INSERT', array(
-					'notification_type_id'		=> (int) $notification_type_id,
+					'item_type'		=> $item_type,
 					'item_id'		=> (int) $item_id,
 					'user_id'		=> (int) $user_id,
 					'method'		=> $method,

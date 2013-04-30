@@ -1720,7 +1720,7 @@ CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status
 	Table: 'phpbb_user_notifications'
 */
 CREATE TABLE phpbb_user_notifications (
-	notification_type_id number(4) DEFAULT '0' NOT NULL,
+	item_type varchar2(255) DEFAULT '' ,
 	item_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
 	method varchar2(255) DEFAULT '' ,

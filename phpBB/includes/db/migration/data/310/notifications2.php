@@ -20,7 +20,6 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 			'drop_tables'		=> array(
 				$this->table_prefix . 'notification_types',
 				$this->table_prefix . 'notifications',
-				$this->table_prefix . 'user_notifications',
 			),
 			'add_tables'		=> array(
 				$this->table_prefix . 'notification_types'	=> array(
@@ -51,20 +50,6 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 						'user'				=> array('INDEX', array('user_id', 'notification_read')),
 					),
 				),
-				$this->table_prefix . 'user_notifications'	=> array(
-					'COLUMNS'		=> array(
-						'notification_type_id'		=> array('USINT', 0),
-						'item_id'					=> array('UINT', 0),
-						'user_id'					=> array('UINT', 0),
-						'method'					=> array('VCHAR:255', ''),
-						'notify'					=> array('BOOL', 1),
-					),
-					'PRIMARY_KEY'		=> array(
-						'notification_type_id',
-						'item_id',
-						'user_id',
-					),
-				),
 			),
 		);
 	}
@@ -75,7 +60,6 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 			'drop_tables'	=> array(
 				$this->table_prefix . 'notification_types',
 				$this->table_prefix . 'notifications',
-				$this->table_prefix . 'user_notifications',
 			),
 			'add_tables'		=> array(
 				$this->table_prefix . 'notification_types'	=> array(
@@ -102,15 +86,6 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 						'user'				=> array('INDEX', array('user_id', 'notification_read')),
 					),
 				),
-				$this->table_prefix . 'user_notifications'	=> array(
-					'COLUMNS'			=> array(
-						'item_type'			=> array('VCHAR:255', ''),
-						'item_id'			=> array('UINT', 0),
-						'user_id'			=> array('UINT', 0),
-						'method'			=> array('VCHAR:255', ''),
-						'notify'			=> array('BOOL', 1),
-					),
-				),
 			),
 		);
 	}
@@ -125,6 +100,9 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 	public function convert_notifications()
 	{
 		$insert_table = $this->table_prefix . 'user_notifications';
+
+		$sql = 'DELETE FROM ' . $insert_table;
+		$this->db->sql_query($sql);
 
 		$sql = 'SELECT user_id, user_notify_type, user_notify_pm
 			FROM ' . USERS_TABLE;

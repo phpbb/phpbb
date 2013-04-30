@@ -1819,11 +1819,11 @@ function get_schema_struct()
 
 	$schema_data['phpbb_user_notifications'] = array(
 		'COLUMNS'		=> array(
-			'notification_type_id'		=> array('USINT', 0),
-			'item_id'					=> array('UINT', 0),
-			'user_id'					=> array('UINT', 0),
-			'method'					=> array('VCHAR:255', ''),
-			'notify'					=> array('BOOL', 1),
+			'item_type'			=> array('VCHAR:255', ''),
+			'item_id'			=> array('UINT', 0),
+			'user_id'			=> array('UINT', 0),
+			'method'			=> array('VCHAR:255', ''),
+			'notify'			=> array('BOOL', 1),
 		),
 	);
 
