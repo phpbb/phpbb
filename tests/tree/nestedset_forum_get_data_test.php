@@ -98,20 +98,22 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 	public function get_path_basic_data_data()
 	{
 		return array(
-			array(1, array(), array()),
-			array(1, array('forum_parents' => serialize(array())), array()),
-			array(2, array(), array(1)),
-			array(2, array('forum_parents' => serialize(array(1 => array()))), array(1)),
-			array(10, array(), array(7, 9)),
-			array(10, array('forum_parents' => serialize(array(7 => array(), 9 => array()))), array(7, 9)),
+			array(1, '', array()),
+			array(1, serialize(array()), array()),
+			array(2, '', array(1)),
+			array(2, serialize(array(1 => array())), array(1)),
+			array(10, '', array(7, 9)),
+			array(10, serialize(array(7 => array(), 9 => array())), array(7, 9)),
 		);
 	}
 
 	/**
 	* @dataProvider get_path_basic_data_data
 	*/
-	public function test_get_path_basic_data($forum_id, $forum_data, $expected)
+	public function test_get_path_basic_data($forum_id, $forum_parents, $expected)
 	{
-		$this->assertEquals($expected, array_keys($this->set->get_path_basic_data(array_merge($this->forum_data[$forum_id], $forum_data))));
+		$forum_data = $this->forum_data[$forum_id];
+		$forum_data['forum_parents'] = $forum_parents;
+		$this->assertEquals($expected, array_keys($this->set->get_path_basic_data($forum_data)));
 	}
 }
