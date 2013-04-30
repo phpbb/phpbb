@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* @package tree - nestedset
+* @package tree
 * @copyright (c) 2013 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
@@ -50,7 +50,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	protected $sql_where = '';
 
 	/**
-	* List of item properties to be cached in $item_parents
+	* List of item properties to be cached in the item_parents column
 	* @var array
 	*/
 	protected $item_basic_data = array('*');
@@ -746,11 +746,11 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	* problems:
 	*	- The set has a duplicated value inside the left/right id chain
 	*	- The set has a missing value inside the left/right id chain
-	*	- The set has items that do not have a left/right is set
+	*	- The set has items that do not have a left/right id set
 	*
 	* When regenerating the items, the items are sorted by parent id and their
 	* current left id, so the current child/parent relationships are kept
-	* and running the function on a working set will not change any orders.
+	* and running the function on a working set will not change the order.
 	*
 	* @param int	$new_id		First left_id to be used (should start with 1)
 	* @param int	$parent_id	parent_id of the current set (default = 0)

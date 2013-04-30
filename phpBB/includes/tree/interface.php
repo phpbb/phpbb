@@ -99,7 +99,7 @@ interface phpbb_tree_interface
 	public function get_path_and_subtree_data($item_id, $order_asc, $include_item);
 
 	/**
-	* Get all ancestors items of the item
+	* Get all ancestors of the item
 	*
 	* @param int		$item_id		The item id to get the ancestors from
 	* @param bool		$order_asc		Order the items ascending (most outer ancestor first)
