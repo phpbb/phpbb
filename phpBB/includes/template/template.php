@@ -511,7 +511,15 @@ class phpbb_template
 
 		if ($path['protocol'] === false && substr($path['filename'], 0, 2) != '//' && !preg_match('/(^|[&;])assets_version=/', $path['params']))
 		{
-			$path['params'] = (strlen($path['params']) ? $path['params'] . '&amp;' : '') . 'assets_version=' . $this->config['assets_version'];
+			if (strlen($path['params']))
+			{
+				$separator = (strpos($path['params'], '&') === false) && (strpos($path['params'], ';') !== false) && preg_match('/^.*=.*;.*=.*$/', $path['params']) ? ';' : '&amp;';
+			}
+			else
+			{
+				$separator = '';
+			}
+			$path['params'] .= $separator . 'assets_version=' . $this->config['assets_version'];
 		}
 
 		$file = $this->locator->join_resource_path($path, $urlencode);
