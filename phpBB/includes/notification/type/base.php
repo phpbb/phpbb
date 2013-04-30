@@ -96,7 +96,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* 
 	* @param phpbb_user_loader $user_loader
 	* @param phpbb_db_driver $db
-	* @param phpbb_cache_driver_interface $cache
+	* @param phpbb_cache_service $cache
 	* @param phpbb_user $user
 	* @param phpbb_auth $auth
 	* @param phpbb_config $config
@@ -107,7 +107,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	* @param string $user_notifications_table
 	* @return phpbb_notification_type_base
 	*/
-	public function __construct(phpbb_user_loader $user_loader, phpbb_db_driver $db, phpbb_cache_driver_interface $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct(phpbb_user_loader $user_loader, phpbb_db_driver $db, phpbb_cache_service $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;
