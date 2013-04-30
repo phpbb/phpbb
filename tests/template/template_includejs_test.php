@@ -32,9 +32,9 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 			'<script src="' . $this->test_path . '/parent_templates/parent_only.js?test1=1&amp;test2=2&amp;assets_version=1#test3"></script>',
 			'<script src="' . $this->test_path . '/parent_templates/parent_only.js?test1=1;test2=2;assets_version=1#test3"></script>',
 			'<script src="' . $this->test_path . '/parent_templates/parent_only.js?test1=&quot;&amp;assets_version=1#test3"></script>',
-			'<script src="//a.com/b.js"></script>',
-			'<script src="http://a.com/b.js?c=d#f"></script>',
-			'<script src="http://a.com/b.js?c=d&assets_version=1#f"></script>',
+			'<script src="//phpbb.com/b.js"></script>',
+			'<script src="http://phpbb.com/b.js?c=d#f"></script>',
+			'<script src="http://phpbb.com/b.js?c=d&assets_version=1#f"></script>',
 			'<script src="//[1234:d123:a105::123]:80/test.js"></script>',
 		);
 
