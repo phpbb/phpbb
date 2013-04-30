@@ -648,7 +648,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	public function get_path_basic_data(array $item)
 	{
 		$parents = array();
-		if ((int) $item[$this->column_parent_id])
+		if ($item[$this->column_parent_id])
 		{
 			if (!$item[$this->column_item_parents])
 			{
