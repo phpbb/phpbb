@@ -36,6 +36,6 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 
 		// Run test
 		$cache_file = $this->template->cachepath . 'includejs.html.php';
-		$this->run_template('includejs.html', array('PARENT' => 'parent_only.js', 'SUBDIR' => 'subdir', 'EXT' => 'js'), array(), array(), implode('', $scripts), $cache_file);
+		$this->run_template('includejs.html', array('PARENT' => 'parent_only.js', 'SUBDIR' => 'subdir', 'EXT' => 'js'), array(), array(), implode("\n", $scripts), $cache_file);
 	}
 }

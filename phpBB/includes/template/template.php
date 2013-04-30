@@ -517,7 +517,7 @@ class phpbb_template
 		$file = $this->locator->join_resource_path($path, $urlencode);
 
 		// Add HTML code
-		$code = '<script src="' . $file . '"></script>';
+		$code = '<script src="' . $file . '"></script>' . "\n";
 		$this->context->append_var('SCRIPTS', $code);
 	}
 }
