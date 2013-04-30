@@ -65,9 +65,9 @@ interface phpbb_tree_interface
 	public function move_up($item_id);
 
 	/**
-	* Moves all descendants of one item to another item
+	* Moves all children of one item to another item
 	*
-	* If the new parent already has descendants, the new descendants are appended
+	* If the new parent already has children, the new children are appended
 	* to the list.
 	*
 	* @param int	$current_parent_id	The current parent item
@@ -79,7 +79,7 @@ interface phpbb_tree_interface
 	/**
 	* Change parent item
 	*
-	* Moves the item to the bottom of the new parent's subtree
+	* Moves the item to the bottom of the new parent's list of children
 	*
 	* @param int	$item_id			The item to be moved
 	* @param int	$new_parent_id		The new parent item
@@ -88,7 +88,7 @@ interface phpbb_tree_interface
 	public function change_parent($item_id, $new_parent_id);
 
 	/**
-	* Get all items that are either an ancestors or descendants of the item
+	* Get all items that are either ancestors or descendants of the item
 	*
 	* @param int		$item_id		The item to get the ancestors/descendants from
 	* @param bool		$order_asc		Order the items ascending (most outer ancestor first)
