@@ -92,7 +92,8 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	* @param string		$operator		SQL operator that needs to be prepended to sql_where,
 	*									if it is not empty.
 	* @param string		$column_prefix	Prefix that needs to be prepended to column names
-	* @return bool True if the item was deleted
+	* @return string		Returns additional where statements to narrow down the tree,
+	*						prefixed with operator and prepended column_prefix to column names
 	*/
 	public function get_sql_where($operator = 'AND', $column_prefix = '')
 	{
