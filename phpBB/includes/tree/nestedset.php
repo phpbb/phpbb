@@ -577,7 +577,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	/**
 	* Get items that are related to the given item by the condition
 	*
-	* @param int		$item_id		The item id to get the node set from
+	* @param int		$item_id		Id of the item to retrieve the node set from
 	* @param string		$condition		Query string restricting the item list
 	* @param bool		$order_asc		Order the items ascending by their left_id
 	* @param bool		$include_item	Should the item matching the given item id be included in the list as well
