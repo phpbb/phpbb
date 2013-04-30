@@ -122,16 +122,6 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	}
 
 	/**
-	* Releases the lock on the item table
-	*
-	* @return null
-	*/
-	protected function release_lock()
-	{
-		$this->lock->release();
-	}
-
-	/**
 	* @inheritdoc
 	*/
 	public function insert(array $additional_data)
@@ -239,7 +229,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		if (!$item)
 		{
-			$this->release_lock();
+			$this->lock->release();
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
@@ -275,7 +265,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		if (!$target)
 		{
-			$this->release_lock();
+			$this->lock->release();
 			// The item is already on top or bottom
 			return false;
 		}
@@ -327,7 +317,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 				" . $this->get_sql_where();
 		$this->db->sql_query($sql);
 
-		$this->release_lock();
+		$this->lock->release();
 
 		return true;
 	}
@@ -371,7 +361,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 		$item_data = $this->get_subtree_data($current_parent_id);
 		if (!isset($item_data[$current_parent_id]))
 		{
-			$this->release_lock();
+			$this->lock->release();
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
@@ -381,13 +371,13 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		if (($current_parent[$this->column_right_id] - $current_parent[$this->column_left_id]) <= 1)
 		{
-			$this->release_lock();
+			$this->lock->release();
 			return false;
 		}
 
 		if (in_array($new_parent_id, $move_items))
 		{
-			$this->release_lock();
+			$this->lock->release();
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 		}
 
@@ -411,7 +401,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			if (!$new_parent)
 			{
 				$this->db->sql_transaction('rollback');
-				$this->release_lock();
+				$this->lock->release();
 				throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 			}
 
@@ -449,7 +439,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 		$this->db->sql_query($sql);
 
 		$this->db->sql_transaction('commit');
-		$this->release_lock();
+		$this->lock->release();
 
 		return true;
 	}
@@ -477,7 +467,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 		$item_data = $this->get_subtree_data($item_id);
 		if (!isset($item_data[$item_id]))
 		{
-			$this->release_lock();
+			$this->lock->release();
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
@@ -486,7 +476,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		if (in_array($new_parent_id, $move_items))
 		{
-			$this->release_lock();
+			$this->lock->release();
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 		}
 
@@ -510,7 +500,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			if (!$new_parent)
 			{
 				$this->db->sql_transaction('rollback');
-				$this->release_lock();
+				$this->lock->release();
 				throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 			}
 
@@ -548,7 +538,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 		$this->db->sql_query($sql);
 
 		$this->db->sql_transaction('commit');
-		$this->release_lock();
+		$this->lock->release();
 
 		return true;
 	}
@@ -710,7 +700,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		if ($acquired_new_lock)
 		{
-			$this->release_lock();
+			$this->lock->release();
 		}
 	}
 
@@ -838,7 +828,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 		if ($acquired_new_lock)
 		{
 			$this->db->sql_transaction('commit');
-			$this->release_lock();
+			$this->lock->release();
 		}
 
 		return $new_id;
