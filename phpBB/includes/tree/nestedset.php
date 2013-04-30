@@ -181,8 +181,19 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	*/
 	protected function remove_item_from_nestedset($item_id)
 	{
+		$item_id = (int) $item_id;
+		if (!$item_id)
+		{
+			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
+		}
+
 		$items = $this->get_subtree_data($item_id);
 		$item_ids = array_keys($items);
+
+		if (empty($items) || !isset($items[$item_id]))
+		{
+			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
+		}
 
 		$this->remove_subset($item_ids, $items[$item_id]);
 
