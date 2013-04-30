@@ -1280,6 +1280,8 @@ switch ($mode)
 			$total_users = $config['num_users'];
 		}
 
+		$start = min ($total_users - ($total_users % $config['topics_per_page']), $start);
+
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
 
