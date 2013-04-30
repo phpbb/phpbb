@@ -34,9 +34,9 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 	/**
 	* @dataProvider get_path_and_subtree_data_data
 	*/
-	public function test_get_path_and_subtree_data($forum_id, $order_desc, $include_item, $expected)
+	public function test_get_path_and_subtree_data($forum_id, $order_asc, $include_item, $expected)
 	{
-		$this->assertEquals($expected, array_keys($this->set->get_path_and_subtree_data($forum_id, $order_desc, $include_item)));
+		$this->assertEquals($expected, array_keys($this->set->get_path_and_subtree_data($forum_id, $order_asc, $include_item)));
 	}
 
 	public function get_path_data_data()
@@ -62,9 +62,9 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 	/**
 	* @dataProvider get_path_data_data
 	*/
-	public function test_get_path_data($forum_id, $order_desc, $include_item, $expected)
+	public function test_get_path_data($forum_id, $order_asc, $include_item, $expected)
 	{
-		$this->assertEquals($expected, array_keys($this->set->get_path_data($forum_id, $order_desc, $include_item)));
+		$this->assertEquals($expected, array_keys($this->set->get_path_data($forum_id, $order_asc, $include_item)));
 	}
 
 	public function get_subtree_data_data()
@@ -90,9 +90,9 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 	/**
 	* @dataProvider get_subtree_data_data
 	*/
-	public function test_get_subtree_data($forum_id, $order_desc, $include_item, $expected)
+	public function test_get_subtree_data($forum_id, $order_asc, $include_item, $expected)
 	{
-		$this->assertEquals($expected, array_keys($this->set->get_subtree_data($forum_id, $order_desc, $include_item)));
+		$this->assertEquals($expected, array_keys($this->set->get_subtree_data($forum_id, $order_asc, $include_item)));
 	}
 
 	public function get_path_basic_data_data()

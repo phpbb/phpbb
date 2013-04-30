@@ -65,9 +65,9 @@ interface phpbb_tree_interface
 	public function move_up($item_id);
 
 	/**
-	* Moves all children of one item to another item
+	* Moves all descendants of one item to another item
 	*
-	* If the new parent already has children, the new children are appended
+	* If the new parent already has descendants, the new descendants are appended
 	* to the list.
 	*
 	* @param int	$current_parent_id	The current parent item
@@ -88,35 +88,35 @@ interface phpbb_tree_interface
 	public function change_parent($item_id, $new_parent_id);
 
 	/**
-	* Get all items that are either a parent or part of the subtree of the item
+	* Get all items that are either an ancestors or descendants of the item
 	*
-	* @param int		$item_id		The item id to get the parents/children from
-	* @param bool		$order_desc		Order the items descending (most outer parent first)
+	* @param int		$item_id		The item to get the ancestors/descendants from
+	* @param bool		$order_asc		Order the items ascending (most outer ancestor first)
 	* @param bool		$include_item	Should the item (matching the given item id) be included in the list aswell
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
-	public function get_path_and_subtree_data($item_id, $order_desc, $include_item);
+	public function get_path_and_subtree_data($item_id, $order_asc, $include_item);
 
 	/**
-	* Get all parent items of the item
+	* Get all ancestors items of the item
 	*
-	* @param int		$item_id		The item id to get the parents from
-	* @param bool		$order_desc		Order the items descending (most outer parent first)
+	* @param int		$item_id		The item id to get the ancestors from
+	* @param bool		$order_asc		Order the items ascending (most outer ancestor first)
 	* @param bool		$include_item	Should the item (matching the given item id) be included in the list aswell
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
-	public function get_path_data($item_id, $order_desc, $include_item);
+	public function get_path_data($item_id, $order_asc, $include_item);
 
 	/**
-	* Get all items of the item's subtree
+	* Get all descendants of the item
 	*
-	* @param int		$item_id		The item id to get the children from
-	* @param bool		$order_desc		Order the items descending (most outer parent first)
+	* @param int		$item_id		The item id to get the descendants from
+	* @param bool		$order_asc		Order the items ascending
 	* @param bool		$include_item	Should the item (matching the given item id) be included in the list aswell
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
-	public function get_subtree_data($item_id, $order_desc, $include_item);
+	public function get_subtree_data($item_id, $order_asc, $include_item);
 }

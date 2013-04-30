@@ -529,32 +529,32 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	/**
 	* @inheritdoc
 	*/
-	public function get_path_and_subtree_data($item_id, $order_desc = true, $include_item = true)
+	public function get_path_and_subtree_data($item_id, $order_asc = true, $include_item = true)
 	{
 		$condition = 'i2.' . $this->column_left_id . ' BETWEEN i1.' . $this->column_left_id . ' AND i1.' . $this->column_right_id . '
 			OR i1.' . $this->column_left_id . ' BETWEEN i2.' . $this->column_left_id . ' AND i2.' . $this->column_right_id;
 
-		return $this->get_set_of_nodes_data($item_id, $condition, $order_desc, $include_item);
+		return $this->get_set_of_nodes_data($item_id, $condition, $order_asc, $include_item);
 	}
 
 	/**
 	* @inheritdoc
 	*/
-	public function get_path_data($item_id, $order_desc = true, $include_item = true)
+	public function get_path_data($item_id, $order_asc = true, $include_item = true)
 	{
 		$condition = 'i1.' . $this->column_left_id . ' BETWEEN i2.' . $this->column_left_id . ' AND i2.' . $this->column_right_id . '';
 
-		return $this->get_set_of_nodes_data($item_id, $condition, $order_desc, $include_item);
+		return $this->get_set_of_nodes_data($item_id, $condition, $order_asc, $include_item);
 	}
 
 	/**
 	* @inheritdoc
 	*/
-	public function get_subtree_data($item_id, $order_desc = true, $include_item = true)
+	public function get_subtree_data($item_id, $order_asc = true, $include_item = true)
 	{
 		$condition = 'i2.' . $this->column_left_id . ' BETWEEN i1.' . $this->column_left_id . ' AND i1.' . $this->column_right_id . '';
 
-		return $this->get_set_of_nodes_data($item_id, $condition, $order_desc, $include_item);
+		return $this->get_set_of_nodes_data($item_id, $condition, $order_asc, $include_item);
 	}
 
 	/**
@@ -562,12 +562,12 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	*
 	* @param int		$item_id		The item id to get the node set from
 	* @param string		$condition		Query string restricting the item list
-	* @param bool		$order_desc		Order the items descending (most outer parent first)
+	* @param bool		$order_asc		Order the items ascending by their left_id
 	* @param bool		$include_item	Should the item (matching the given item id) be included in the list aswell
 	* @return array			Array of items (containing all columns from the item table)
 	*							ID => Item data
 	*/
-	protected function get_set_of_nodes_data($item_id, $condition, $order_desc = true, $include_item = true)
+	protected function get_set_of_nodes_data($item_id, $condition, $order_asc = true, $include_item = true)
 	{
 		$rows = array();
 
@@ -577,7 +577,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 				ON (($condition) " . $this->get_sql_where('AND', 'i2.') . ')
 			WHERE i1.' . $this->column_item_id . ' = ' . (int) $item_id . '
 				' . $this->get_sql_where('AND', 'i1.') . '
-			ORDER BY i2.' . $this->column_left_id . ' ' . ($order_desc ? 'ASC' : 'DESC');
+			ORDER BY i2.' . $this->column_left_id . ' ' . ($order_asc ? 'ASC' : 'DESC');
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
