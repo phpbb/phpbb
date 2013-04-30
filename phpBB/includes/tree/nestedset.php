@@ -111,16 +111,17 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		$item_data[$this->column_item_id] = (int) $this->db->sql_nextid();
 
-		return array_merge($item_data, $this->add_item_to_nestedset($item_data));
+		return array_merge($item_data, $this->add_item_to_nestedset($item_data[$this->column_item_id]));
 	}
 
 	/**
 	* Add an item which already has a database row at the end of the tree
 	*
-	* @param array	$item	The item to be added
-	* @return bool True if the item was added
+	* @param int	$item_id	The item to be added
+	* @return array		Array with updated data, if the item was added successfully
+	*					Empty array otherwise
 	*/
-	protected function add_item_to_nestedset(array $item)
+	protected function add_item_to_nestedset($item_id)
 	{
 		$sql = 'SELECT MAX(' . $this->column_right_id . ') AS ' . $this->column_right_id . '
 			FROM ' . $this->table_name . '
@@ -138,10 +139,13 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		$sql = 'UPDATE ' . $this->table_name . '
 			SET ' . $this->db->sql_build_array('UPDATE', $update_item_data) . '
-			WHERE ' . $this->column_item_id . ' = ' . (int) $item[$this->column_item_id];
+			WHERE ' . $this->column_item_id . ' = ' . (int) $item_id . '
+				AND ' . $this->column_parent_id . ' = 0
+				AND ' . $this->column_left_id . ' = 0
+				AND ' . $this->column_right_id . ' = 0';
 		$this->db->sql_query($sql);
 
-		return $update_item_data;
+		return ($this->db->sql_affectedrows() == 1) ? $update_item_data : array();
 	}
 
 	/**
