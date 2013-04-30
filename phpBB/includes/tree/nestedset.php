@@ -56,6 +56,12 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	protected $item_basic_data = array('*');
 
 	/**
+	* Does the class currently have a lock on the item table?
+	* @var bool
+	*/
+	protected $lock_acquired = false;
+
+	/**
 	* Construct
 	*
 	* @param phpbb_db_driver	$db		Database connection
@@ -97,6 +103,46 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	public function get_sql_where($operator = 'AND', $column_prefix = '')
 	{
 		return (!$this->sql_where) ? '' : $operator . ' ' . sprintf($this->sql_where, $column_prefix);
+	}
+
+	/**
+	* Acquires a lock on the item table
+	*
+	* @return bool	True if the lock was acquired, false if it has been acquired previously
+	*
+	* @throws RuntimeException If the lock could not be acquired
+	*/
+	protected function acquire_lock()
+	{
+		if ($this->lock_acquired)
+		{
+			return false;
+		}
+
+		if (!$this->lock->acquire())
+		{
+			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
+		}
+
+		$this->lock_acquired = true;
+		return true;
+	}
+
+	/**
+	* Releases the lock on the item table
+	*
+	* @return bool	False, if there was no lock to release, true otherwise
+	*/
+	protected function release_lock()
+	{
+		if (!$this->lock_acquired)
+		{
+			return false;
+		}
+
+		$this->lock->release();
+		$this->lock_acquired = false;
+		return true;
 	}
 
 	/**
@@ -191,10 +237,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			return false;
 		}
 
-		if (!$this->lock->acquire())
-		{
-			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
-		}
+		$this->acquire_lock();
 
 		$action = ($delta > 0) ? 'move_up' : 'move_down';
 		$delta = abs($delta);
@@ -210,7 +253,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		if (!$item)
 		{
-			$this->lock->release();
+			$this->release_lock();
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
@@ -246,7 +289,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		if (!$target)
 		{
-			$this->lock->release();
+			$this->release_lock();
 			// The item is already on top or bottom
 			return false;
 		}
@@ -298,7 +341,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 				" . $this->get_sql_where();
 		$this->db->sql_query($sql);
 
-		$this->lock->release();
+		$this->release_lock();
 
 		return true;
 	}
@@ -337,15 +380,12 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
-		if (!$this->lock->acquire())
-		{
-			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
-		}
+		$this->acquire_lock();
 
 		$item_data = $this->get_subtree_data($current_parent_id);
 		if (!isset($item_data[$current_parent_id]))
 		{
-			$this->lock->release();
+			$this->release_lock();
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
@@ -355,13 +395,13 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		if (($current_parent[$this->column_right_id] - $current_parent[$this->column_left_id]) <= 1)
 		{
-			$this->lock->release();
+			$this->release_lock();
 			return false;
 		}
 
 		if (in_array($new_parent_id, $move_items))
 		{
-			$this->lock->release();
+			$this->release_lock();
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 		}
 
@@ -385,7 +425,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			if (!$new_parent)
 			{
 				$this->db->sql_transaction('rollback');
-				$this->lock->release();
+				$this->release_lock();
 				throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 			}
 
@@ -423,7 +463,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 		$this->db->sql_query($sql);
 
 		$this->db->sql_transaction('commit');
-		$this->lock->release();
+		$this->release_lock();
 
 		return true;
 	}
@@ -446,15 +486,12 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
-		if (!$this->lock->acquire())
-		{
-			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
-		}
+		$this->acquire_lock();
 
 		$item_data = $this->get_subtree_data($item_id);
 		if (!isset($item_data[$item_id]))
 		{
-			$this->lock->release();
+			$this->release_lock();
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_ITEM');
 		}
 
@@ -463,7 +500,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		if (in_array($new_parent_id, $move_items))
 		{
-			$this->lock->release();
+			$this->release_lock();
 			throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 		}
 
@@ -487,7 +524,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			if (!$new_parent)
 			{
 				$this->db->sql_transaction('rollback');
-				$this->lock->release();
+				$this->release_lock();
 				throw new OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 			}
 
@@ -525,7 +562,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 		$this->db->sql_query($sql);
 
 		$this->db->sql_transaction('commit');
-		$this->lock->release();
+		$this->release_lock();
 
 		return true;
 	}
@@ -653,15 +690,11 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	* @param bool	$set_subset_zero	Should the parent, left and right id of the items be set to 0, or kept unchanged?
 	*									In case of removing an item from the tree, we should the values to 0
 	*									In case of moving an item, we shouldkeep the original values, in order to allow "+ diff" later
-	* @param bool	$table_already_locked	Is the table already locked, or should we acquire a new lock?
 	* @return	null
 	*/
-	protected function remove_subset(array $subset_items, array $bounding_item, $set_subset_zero = true, $table_already_locked = false)
+	protected function remove_subset(array $subset_items, array $bounding_item, $set_subset_zero = true)
 	{
-		if (!$table_already_locked && !$this->lock->acquire())
-		{
-			throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
-		}
+		$acquired_new_lock = $this->acquire_lock();
 
 		$diff = sizeof($subset_items) * 2;
 		$sql_subset_items = $this->db->sql_in_set($this->column_item_id, $subset_items);
@@ -689,9 +722,9 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			" . ((!$set_subset_zero) ? ' WHERE ' . $sql_not_subset_items . ' ' . $this->get_sql_where('AND') : $this->get_sql_where('WHERE'));
 		$this->db->sql_query($sql);
 
-		if (!$table_already_locked)
+		if ($acquired_new_lock)
 		{
-			$this->lock->release();
+			$this->release_lock();
 		}
 	}
 
@@ -763,14 +796,13 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	*/
 	public function regenerate_left_right_ids($new_id, $parent_id = 0, $reset_ids = false)
 	{
+		if ($acquired_new_lock = $this->acquire_lock())
+		{
+			$this->db->sql_transaction('begin');
+		}
+
 		if ($reset_ids)
 		{
-			if (!$this->lock->acquire())
-			{
-				throw new RuntimeException($this->message_prefix . 'LOCK_FAILED_ACQUIRE');
-			}
-			$this->db->sql_transaction('begin');
-
 			$sql = 'UPDATE ' . $this->table_name . '
 				SET ' . $this->db->sql_build_array('UPDATE', array(
 					$this->column_left_id		=> 0,
@@ -817,11 +849,10 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 		}
 		$this->db->sql_freeresult($result);
 
-
-		if ($reset_ids)
+		if ($acquired_new_lock)
 		{
 			$this->db->sql_transaction('commit');
-			$this->lock->release();
+			$this->release_lock();
 		}
 
 		return $new_id;
