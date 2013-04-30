@@ -595,13 +595,16 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	}
 
 	/**
-	* Get base information of parent items
+	* Get basic data of all parent items
 	*
+	* Basic data is defined in the $item_basic_data property.
 	* Data is cached in the item_parents column in the item table
 	*
-	* @inheritdoc
+	* @param array	$item		The item to get the path from
+	* @return array			Array of items (containing basic columns from the item table)
+	*							ID => Item data
 	*/
-	public function get_parent_data(array $item)
+	public function get_path_basic_data(array $item)
 	{
 		$parents = array();
 		if ((int) $item[$this->column_parent_id])

@@ -119,13 +119,4 @@ interface phpbb_tree_interface
 	*							ID => Item data
 	*/
 	public function get_subtree_data($item_id, $order_desc, $include_item);
-
-	/**
-	* Get base information of parent items
-	*
-	* @param array	$item		The item to get the branch from
-	* @return array			Array of items (containing basic columns from the item table)
-	*							ID => Item data
-	*/
-	public function get_parent_data(array $item);
 }
