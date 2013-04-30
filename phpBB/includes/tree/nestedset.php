@@ -310,8 +310,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			" . $this->column_right_id . ' = ' . $this->column_right_id . ' + CASE
 				WHEN ' . $this->column_right_id . " BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
 				ELSE {$diff_down}
-			END,
-			" . $this->column_item_parents . " = ''
+			END
 			WHERE
 				" . $this->column_left_id . " BETWEEN {$left_id} AND {$right_id}
 				AND " . $this->column_right_id . " BETWEEN {$left_id} AND {$right_id}
@@ -692,11 +691,10 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 		}
 
 		$sql = 'UPDATE ' . $this->table_name . '
-			SET ' . $this->column_left_id . ' = ' . $set_left_id . ',
-				' . $this->column_right_id . ' = ' . $set_right_id . ',
-				' . (($set_subset_zero) ? $this->column_parent_id . ' = ' . $this->db->sql_case($sql_subset_items, 0, $this->column_parent_id) . ',' : '') . '
-				' . $this->column_item_parents . " = ''
-			" . ((!$set_subset_zero) ? ' WHERE ' . $sql_not_subset_items . ' ' . $this->get_sql_where('AND') : $this->get_sql_where('WHERE'));
+			SET ' . (($set_subset_zero) ? $this->column_parent_id . ' = ' . $this->db->sql_case($sql_subset_items, 0, $this->column_parent_id) . ',' : '') . '
+				' . $this->column_left_id . ' = ' . $set_left_id . ',
+				' . $this->column_right_id . ' = ' . $set_right_id . '
+			' . ((!$set_subset_zero) ? ' WHERE ' . $sql_not_subset_items . ' ' . $this->get_sql_where('AND') : $this->get_sql_where('WHERE'));
 		$this->db->sql_query($sql);
 
 		if ($acquired_new_lock)
@@ -706,7 +704,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	}
 
 	/**
-	* Add a subset to the nested set
+	* Prepare adding a subset to the nested set
 	*
 	* @param array	$subset_items		Subset of items to add
 	* @param array	$new_parent	Item containing the right bound of the new parent
@@ -722,9 +720,8 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		$sql = 'UPDATE ' . $this->table_name . '
 			SET ' . $this->column_left_id . ' = ' . $set_left_id . ',
-				' . $this->column_right_id . ' = ' . $set_right_id . ',
-				' . $this->column_item_parents . " = ''
-			WHERE " . $sql_not_subset_items . '
+				' . $this->column_right_id . ' = ' . $set_right_id . '
+			WHERE ' . $sql_not_subset_items . '
 				' . $this->get_sql_where('AND');
 		$this->db->sql_query($sql);
 
@@ -776,6 +773,14 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 		if ($acquired_new_lock = $this->acquire_lock())
 		{
 			$this->db->sql_transaction('begin');
+
+			if (!$reset_ids)
+			{
+				$sql = 'UPDATE ' . $this->table_name . '
+					SET ' . $this->column_item_parents . " = ''
+					" . $this->get_sql_where('WHERE');
+				$this->db->sql_query($sql);
+			}
 		}
 
 		if ($reset_ids)
@@ -802,10 +807,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 			if ($row[$this->column_left_id] != $new_id)
 			{
 				$sql = 'UPDATE ' . $this->table_name . '
-					SET ' . $this->db->sql_build_array('UPDATE', array(
-						$this->column_left_id		=> $new_id,
-						$this->column_item_parents	=> '',
-					)) . '
+					SET ' . $this->db->sql_build_array('UPDATE', array($this->column_left_id => $new_id)) . '
 					WHERE ' . $this->column_item_id . ' = ' . (int) $row[$this->column_item_id];
 				$this->db->sql_query($sql);
 			}
