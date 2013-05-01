@@ -546,22 +546,11 @@ class phpbb_extension_manager
 		$migrations = $finder->get_classes_from_files($migrations);
 		$this->migrator->set_migrations($migrations);
 
-		// What is a safe limit of execution time? Half the max execution time should be safe.
-		$safe_time_limit = (ini_get('max_execution_time') / 2);
-		$start_time = time();
-
 		if ($mode == 'enable')
 		{
-			while (!$this->migrator->finished())
-			{
-				$this->migrator->update();
+			$this->migrator->update();
 
-				// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
-				if ((time() - $start_time) >= $safe_time_limit)
-				{
-					return false;
-				}
-			}
+			return $this->migrator->finished();
 		}
 		else if ($mode == 'purge')
 		{
@@ -571,11 +560,7 @@ class phpbb_extension_manager
 				{
 					$this->migrator->revert($migration);
 
-					// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
-					if ((time() - $start_time) >= $safe_time_limit)
-					{
-						return false;
-					}
+					return false;
 				}
 			}
 		}
