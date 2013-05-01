@@ -1,0 +1,114 @@
+<?php
+/**
+*
+* @package testing
+* @copyright (c) 2013 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
+
+require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
+
+class phpbb_notification_convert_test extends phpbb_database_test_case
+{
+	protected $notifications, $db, $container, $user, $config, $auth, $cache;
+
+	public function getDataSet()
+	{
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/convert.xml');
+	}
+
+	protected function setUp()
+	{
+		parent::setUp();
+
+		global $phpbb_root_path, $phpEx;
+
+		$this->db = $this->new_dbal();
+
+		$this->migration = new phpbb_db_migration_data_310_notifications2(
+			new phpbb_config(array()),
+			$this->db,
+			new phpbb_db_tools($this->db),
+			$phpbb_root_path,
+			$phpEx,
+			'phpbb_'
+		);
+	}
+
+	public function test_convert()
+	{
+		$this->migration->convert_notifications();
+
+		$expected = array_merge(
+			$this->create_expected('post', 1, 'email'),
+			$this->create_expected('topic', 1, 'email'),
+
+			$this->create_expected('pm', 2, 'email'),
+			$this->create_expected('post', 2, 'email'),
+			$this->create_expected('topic', 2, 'email'),
+
+			$this->create_expected('post', 3, 'jabber'),
+			$this->create_expected('topic', 3, 'jabber'),
+
+			$this->create_expected('pm', 4, 'jabber'),
+			$this->create_expected('post', 4, 'jabber'),
+			$this->create_expected('topic', 4, 'jabber'),
+
+			$this->create_expected('post', 5, 'both'),
+			$this->create_expected('topic', 5, 'both'),
+
+			$this->create_expected('pm', 6, 'both'),
+			$this->create_expected('post', 6, 'both'),
+			$this->create_expected('topic', 6, 'both')
+		);
+
+		$sql = 'SELECT * FROM phpbb_user_notifications
+			ORDER BY user_id ASC, item_type ASC';
+		$result = $this->db->sql_query($sql);
+		$rowset = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$this->assertEquals($expected, $rowset);
+	}
+
+	protected function create_expected($type, $user_id, $method = '')
+	{
+		$return = array();
+
+		if ($method != '')
+		{
+			$return[] = array(
+				'item_type'		=> $type,
+				'item_id'		=> '0',
+				'user_id'		=> (string) $user_id,
+				'method'		=> '',
+				'notify'		=> '1',
+			);
+		}
+
+		if ($method == 'email' || $method == 'both')
+		{
+			$return[] = array(
+				'item_type'		=> $type,
+				'item_id'		=> '0',
+				'user_id'		=> (string) $user_id,
+				'method'		=> 'email',
+				'notify'		=> '1',
+			);
+		}
+
+		if ($method == 'jabber' || $method == 'both')
+		{
+			$return[] = array(
+				'item_type'		=> $type,
+				'item_id'		=> '0',
+				'user_id'		=> (string) $user_id,
+				'method'		=> 'jabber',
+				'notify'		=> '1',
+			);
+		}
+
+		return $return;
+	}
+}
