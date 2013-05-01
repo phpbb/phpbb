@@ -2,14 +2,14 @@
 /**
 *
 * @package testing
-* @copyright (c) 2011 phpBB Group
+* @copyright (c) 2013 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
 require_once dirname(__FILE__) . '/template_test_case.php';
 
-class phpbb_template_template_events_test extends phpbb_template_template_test_case
+class phpbb_template_template_spacing_test extends phpbb_template_template_test_case
 {
 	public function template_data()
 	{
@@ -27,61 +27,19 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 			),
 			*/
 			array(
-				'Simple template event',
+				'Spacing in templates',
 				'ext_trivial',
 				array(),
-				'event_simple.html',
+				'variable_spacing.html',
+				array(
+					'VARIABLE'	=> '{}',
+				),
 				array(),
 				array(),
-				array(),
-				"Simple in trivial extension.",
-			),
-			array(
-				'Universal template event ("all" style)',
-				'ext_trivial',
-				array(),
-				'event_universal.html',
-				array(),
-				array(),
-				array(),
-				"Universal in trivial extension.",
-			),
-			array(
-				'Template event with inheritance - parent',
-				'event_inheritance',
-				array('silver'),
-				'event_test.html',
-				array(),
-				array(),
-				array(),
-'Kappa test event in all
-Omega test event in all
-Zeta test event in all
-Kappa test event in silver
-Omega test event in silver',
-			),
-			array(
-				'Template event with inheritance - child',
-				'event_inheritance',
-				array('silver_inherit', 'silver'),
-				'event_test.html',
-				array(),
-				array(),
-				array(),
-'Kappa test event in all
-Omega test event in all
-Zeta test event in all
-Kappa test event in silver_inherit',
-			),
-			array(
-				'Definition in parent style',
-				'event_inheritance',
-				array('silver_inherit', 'silver'),
-				'event_two.html',
-				array(),
-				array(),
-				array(),
-'two in silver in omega',
+				'|{}|
+{}|{}|
+|{}
+<div class="{}">test</div>',
 			),
 		);
 	}
@@ -89,8 +47,22 @@ Kappa test event in silver_inherit',
 	/**
 	* @dataProvider template_data
 	*/
+	public function test_template($desc, $dataset, $style_names, $file, array $vars, array $block_vars, array $destroy, $expected)
+	{
+		// Run test
+		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
+		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
+	}
+
+	/**
+	* @dataProvider template_data
+	*/
 	public function test_event($desc, $dataset, $style_names, $file, array $vars, array $block_vars, array $destroy, $expected)
 	{
+		$this->markTestIncomplete(
+			'This test will fail until PHPBB3-11435 is fixed'
+		);
+
 		// Reset the engine state
 		$this->setup_engine_for_events($dataset, $style_names);
 
