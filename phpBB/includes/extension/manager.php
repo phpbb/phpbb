@@ -133,13 +133,15 @@ class phpbb_extension_manager
 	{
 		$extension_class_name = 'phpbb_ext_' . str_replace('/', '_', $name) . '_ext';
 
+		$migrator = $this->container->get('migrator');
+
 		if (class_exists($extension_class_name))
 		{
-			return new $extension_class_name($this->container, $name, $this->get_extension_path($name, true));
+			return new $extension_class_name($this->container, $this, $migrator, $name, $this->get_extension_path($name, true));
 		}
 		else
 		{
-			return new phpbb_extension_base($this->container, $name, $this->get_extension_path($name, true));
+			return new phpbb_extension_base($this->container, $this, $migrator, $name, $this->get_extension_path($name, true));
 		}
 	}
 

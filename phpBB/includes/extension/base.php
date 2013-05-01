@@ -27,6 +27,12 @@ class phpbb_extension_base implements phpbb_extension_interface
 	/** @var ContainerInterface */
 	protected $container;
 
+	/** @var phpbb_extension_manager */
+	protected $extension_manager;
+
+	/** @var phpbb_db_migrator */
+	protected $migrator;
+
 	/** @var string */
 	protected $extension_name;
 
@@ -37,12 +43,15 @@ class phpbb_extension_base implements phpbb_extension_interface
 	* Constructor
 	*
 	* @param ContainerInterface $container Container object
+	* @param phpbb_extension_manager $extension_manager
 	* @param string $extension_name Name of this extension (from ext.manager)
 	* @param string $extension_path Relative path to this extension
 	*/
-	public function __construct(ContainerInterface $container, $extension_name, $extension_path)
+	public function __construct(ContainerInterface $container, phpbb_extension_manager $extension_manager, phpbb_db_migrator $migrator, $extension_name, $extension_path)
 	{
 		$this->container = $container;
+		$this->extension_manager = $extension_manager;
+		$this->migrator = $migrator;
 
 		$this->extension_name = $extension_name;
 		$this->extension_path = $extension_path;
@@ -57,12 +66,12 @@ class phpbb_extension_base implements phpbb_extension_interface
 	public function enable_step($old_state)
 	{
 		$migrations = $this->get_migration_file_list();
-		$migrator = $this->container->get('migrator');
-		$migrator->set_migrations($migrations);
 
-		$migrator->update();
+		$this->migrator->set_migrations($migrations);
 
-		return !$migrator->finished();
+		$this->migrator->update();
+
+		return !$this->migrator->finished();
 	}
 
 	/**
@@ -85,14 +94,14 @@ class phpbb_extension_base implements phpbb_extension_interface
 	public function purge_step($old_state)
 	{
 		$migrations = $this->get_migration_file_list();
-		$migrator = $this->container->get('migrator');
-		$migrator->set_migrations($migrations);
+
+		$this->migrator->set_migrations($migrations);
 
 		foreach ($migrations as $migration)
 		{
-			while ($migrator->migration_state($migration) !== false)
+			while ($this->migrator->migration_state($migration) !== false)
 			{
-				$migrator->revert($migration);
+				$this->migrator->revert($migration);
 
 				return true;
 			}
@@ -120,8 +129,7 @@ class phpbb_extension_base implements phpbb_extension_interface
 			$this->extension_name => $this->extension_path,
 		);
 
-		$extension_manager = $this->container->get('ext.manager');
-		$finder = $extension_manager->get_finder();
+		$finder = $this->extension_manager->get_finder();
 		$migrations = array();
 		$file_list = $finder
 			->extension_directory('/migrations')
