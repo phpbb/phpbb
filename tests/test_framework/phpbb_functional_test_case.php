@@ -148,8 +148,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::$config['table_prefix'],
 			array()
 		);
+		$container = new phpbb_mock_container_builder();
+		$container->set('migrator', $migrator);
+
 		$extension_manager = new phpbb_extension_manager(
-			new phpbb_mock_container_builder(),
+			$container,
 			$db,
 			$config,
 			$migrator,
