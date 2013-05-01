@@ -138,11 +138,11 @@ class phpbb_extension_manager
 
 		if (class_exists($extension_class_name))
 		{
-			return new $extension_class_name($this->container);
+			return new $extension_class_name($this->container, $name, $this->get_extension_path($name, true));
 		}
 		else
 		{
-			return new phpbb_extension_base($this->container);
+			return new phpbb_extension_base($this->container, $name, $this->get_extension_path($name, true));
 		}
 	}
 
@@ -178,12 +178,6 @@ class phpbb_extension_manager
 
 		$old_state = (isset($this->extensions[$name]['ext_state'])) ? unserialize($this->extensions[$name]['ext_state']) : false;
 
-		// Returns false if not completed
-		if (!$this->handle_migrations($name, 'enable'))
-		{
-			return true;
-		}
-
 		$extension = $this->get_extension($name);
 		$state = $extension->enable_step($old_state);
 
@@ -199,12 +193,21 @@ class phpbb_extension_manager
 		$this->extensions[$name]['ext_path'] = $this->get_extension_path($extension_data['ext_name']);
 		ksort($this->extensions);
 
-		$sql = 'UPDATE ' . $this->extension_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
+		$sql = 'SELECT COUNT(ext_name) as row_count
+			FROM ' . $this->extension_table . "
 			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
-		$this->db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
+		$count = $this->db->sql_fetchfield('row_count');
+		$this->db->sql_freeresult($result);
 
-		if (!$this->db->sql_affectedrows())
+		if ($count)
+		{
+			$sql = 'UPDATE ' . $this->extension_table . '
+				SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
+				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
+			$this->db->sql_query($sql);
+		}
+		else
 		{
 			$sql = 'INSERT INTO ' . $this->extension_table . '
 				' . $this->db->sql_build_array('INSERT', $extension_data);
@@ -334,12 +337,6 @@ class phpbb_extension_manager
 		}
 
 		$old_state = unserialize($this->extensions[$name]['ext_state']);
-
-		// Returns false if not completed
-		if (!$this->handle_migrations($name, 'purge'))
-		{
-			return true;
-		}
 
 		$extension = $this->get_extension($name);
 		$state = $extension->purge_step($old_state);
@@ -513,58 +510,5 @@ class phpbb_extension_manager
 	public function get_finder()
 	{
 		return new phpbb_extension_finder($this, $this->filesystem, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
-	}
-
-	/**
-	* Handle installing/reverting migrations
-	*
-	* @param string $extension_name Name of the extension
-	* @param string $mode enable or purge
-	* @return bool True if completed, False if not completed
-	*/
-	protected function handle_migrations($extension_name, $mode)
-	{
-		$extensions = array(
-			$extension_name => $this->phpbb_root_path . $this->get_extension_path($extension_name),
-		);
-
-		$finder = $this->get_finder();
-		$migrations = array();
-		$file_list = $finder
-			->extension_directory('/migrations')
-			->find_from_paths($extensions);
-
-		if (empty($file_list))
-		{
-			return true;
-		}
-
-		foreach ($file_list as $file)
-		{
-			$migrations[$file['named_path']] = $file['ext_name'];
-		}
-		$migrations = $finder->get_classes_from_files($migrations);
-		$this->migrator->set_migrations($migrations);
-
-		if ($mode == 'enable')
-		{
-			$this->migrator->update();
-
-			return $this->migrator->finished();
-		}
-		else if ($mode == 'purge')
-		{
-			foreach ($migrations as $migration)
-			{
-				while ($this->migrator->migration_state($migration) !== false)
-				{
-					$this->migrator->revert($migration);
-
-					return false;
-				}
-			}
-		}
-
-		return true;
 	}
 }

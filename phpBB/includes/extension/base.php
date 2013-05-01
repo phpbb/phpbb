@@ -27,25 +27,42 @@ class phpbb_extension_base implements phpbb_extension_interface
 	/** @var ContainerInterface */
 	protected $container;
 
+	/** @var string */
+	protected $extension_name;
+
+	/** @var string */
+	protected $extension_path;
+
 	/**
 	* Constructor
 	*
 	* @param ContainerInterface $container Container object
+	* @param string $extension_name Name of this extension (from ext.manager)
+	* @param string $extension_path Relative path to this extension
 	*/
-	public function __construct(ContainerInterface $container)
+	public function __construct(ContainerInterface $container, $extension_name, $extension_path)
 	{
 		$this->container = $container;
+
+		$this->extension_name = $extension_name;
+		$this->extension_path = $extension_path;
 	}
 
 	/**
-	* Single enable step that does nothing
+	* Single enable step that installs any included migrations
 	*
 	* @param mixed $old_state State returned by previous call of this method
 	* @return false Indicates no further steps are required
 	*/
 	public function enable_step($old_state)
 	{
-		return false;
+		$migrations = $this->get_migration_file_list();
+		$migrator = $this->container->get('migrator');
+		$migrator->set_migrations($migrations);
+
+		$migrator->update();
+
+		return !$migrator->finished();
 	}
 
 	/**
@@ -60,13 +77,63 @@ class phpbb_extension_base implements phpbb_extension_interface
 	}
 
 	/**
-	* Single purge step that does nothing
+	* Single purge step that reverts any included and installed migrations
 	*
 	* @param mixed $old_state State returned by previous call of this method
 	* @return false Indicates no further steps are required
 	*/
 	public function purge_step($old_state)
 	{
+		$migrations = $this->get_migration_file_list();
+		$migrator = $this->container->get('migrator');
+		$migrator->set_migrations($migrations);
+
+		foreach ($migrations as $migration)
+		{
+			while ($migrator->migration_state($migration) !== false)
+			{
+				$migrator->revert($migration);
+
+				return true;
+			}
+		}
+
 		return false;
+	}
+
+	/**
+	* Get the list of migration files from this extension
+	*
+	* @return array
+	*/
+	protected function get_migration_file_list()
+	{
+		static $migrations = false;
+
+		if ($migrations !== false)
+		{
+			return $migrations;
+		}
+
+		// Only have the finder search in this extension path directory
+		$extensions = array(
+			$this->extension_name => $this->extension_path,
+		);
+
+		$extension_manager = $this->container->get('ext.manager');
+		$finder = $extension_manager->get_finder();
+		$migrations = array();
+		$file_list = $finder
+			->extension_directory('/migrations')
+			->find_from_paths($extensions);
+
+		foreach ($file_list as $file)
+		{
+			$migrations[$file['named_path']] = $file['ext_name'];
+		}
+
+		$migrations = $finder->get_classes_from_files($migrations);
+
+		return $migrations;
 	}
 }
