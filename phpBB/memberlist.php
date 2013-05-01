@@ -1280,7 +1280,7 @@ switch ($mode)
 			$total_users = $config['num_users'];
 		}
 
-		$start = min ($total_users - ($total_users % $config['topics_per_page']), $start);
+		$start = get_last_page_index($total_users, $config['topics_per_page'], $start);
 
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
@@ -1740,6 +1740,16 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
 	);
+}
+
+/**
+* Generate last valid page's starting parameter for paginating.
+*/
+
+function get_last_page_index($num_users, $display_per_page, $passed_index)
+{
+	$last_page = $num_users - ($num_users % $display_per_page);
+	return min($last_page, $passed_index);
 }
 
 function _sort_last_active($first, $second)
