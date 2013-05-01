@@ -108,7 +108,7 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 			FROM ' . USERS_TABLE;
 		$result = $this->db->sql_query($sql);
 
-		$sql_insert_data = array();
+		$insert_buffer = new phpbb_db_sql_insert_buffer($this->db, $insert_table);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$notification_methods = array();
@@ -129,8 +129,8 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 			// Notifications for  posts
 			foreach (array('post', 'topic') as $item_type)
 			{
-				$sql_insert_data = $this->add_method_rows(
-					$sql_insert_data,
+				$this->add_method_rows(
+					$insert_buffer,
 					$item_type,
 					0,
 					$row['user_id'],
@@ -142,30 +142,21 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 			{
 				// Notifications for private messages
 				// User either gets all methods or no method
-				$sql_insert_data = $this->add_method_rows(
-					$sql_insert_data,
+				$this->add_method_rows(
+					$insert_buffer,
 					'pm',
 					0,
 					$row['user_id'],
 					$notification_methods
 				);
 			}
-
-			if (sizeof($sql_insert_data) > 500)
-			{
-				$this->db->sql_multi_insert($insert_table, $sql_insert_data);
-				$sql_insert_data = array();
-			}
 		}
 		$this->db->sql_freeresult($result);
 
-		if (!empty($sql_insert_data))
-		{
-			$this->db->sql_multi_insert($insert_table, $sql_insert_data);
-		}
+		$insert_buffer->flush();
 	}
 
-	protected function add_method_rows(array $sql_insert_data, $item_type, $item_id, $user_id, array $methods)
+	protected function add_method_rows(phpbb_db_sql_insert_buffer $insert_buffer, $item_type, $item_id, $user_id, array $methods)
 	{
 		$row_base = array(
 			'item_type'		=> $item_type,
@@ -176,9 +167,7 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 		foreach ($methods as $method)
 		{
 			$row_base['method'] = $method;
-			$sql_insert_data[] = $row_base;
+			$insert_buffer->insert($row_base);
 		}
-
-		return $sql_insert_data;
 	}
 }
