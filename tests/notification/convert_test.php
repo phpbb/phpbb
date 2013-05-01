@@ -8,6 +8,7 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
+require_once dirname(__FILE__) . '/../mock/sql_insert_buffer.php';
 
 class phpbb_notification_convert_test extends phpbb_database_test_case
 {
