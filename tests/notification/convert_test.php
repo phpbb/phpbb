@@ -38,38 +38,33 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 
 	public function test_convert()
 	{
-		$this->migration->convert_notifications();
+		$buffer = new phpbb_mock_sql_insert_buffer($this->db, 'phpbb_user_notifications');
+		$this->migration->perform_conversion($buffer, 'phpbb_user_notifications');
 
 		$expected = array_merge(
 			$this->create_expected('post', 1, 'email'),
 			$this->create_expected('topic', 1, 'email'),
 
-			$this->create_expected('pm', 2, 'email'),
 			$this->create_expected('post', 2, 'email'),
 			$this->create_expected('topic', 2, 'email'),
+			$this->create_expected('pm', 2, 'email'),
 
 			$this->create_expected('post', 3, 'jabber'),
 			$this->create_expected('topic', 3, 'jabber'),
 
-			$this->create_expected('pm', 4, 'jabber'),
 			$this->create_expected('post', 4, 'jabber'),
 			$this->create_expected('topic', 4, 'jabber'),
+			$this->create_expected('pm', 4, 'jabber'),
 
 			$this->create_expected('post', 5, 'both'),
 			$this->create_expected('topic', 5, 'both'),
 
-			$this->create_expected('pm', 6, 'both'),
 			$this->create_expected('post', 6, 'both'),
-			$this->create_expected('topic', 6, 'both')
+			$this->create_expected('topic', 6, 'both'),
+			$this->create_expected('pm', 6, 'both')
 		);
 
-		$sql = 'SELECT * FROM phpbb_user_notifications
-			ORDER BY user_id ASC, item_type ASC';
-		$result = $this->db->sql_query($sql);
-		$rowset = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
-
-		$this->assertEquals($expected, $rowset);
+		$this->assertEquals($expected, $buffer->get_buffer());
 	}
 
 	protected function create_expected($type, $user_id, $method = '')
@@ -80,10 +75,10 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 		{
 			$return[] = array(
 				'item_type'		=> $type,
-				'item_id'		=> '0',
-				'user_id'		=> (string) $user_id,
+				'item_id'		=> 0,
+				'user_id'		=> $user_id,
 				'method'		=> '',
-				'notify'		=> '1',
+				'notify'		=> 1,
 			);
 		}
 
@@ -91,10 +86,10 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 		{
 			$return[] = array(
 				'item_type'		=> $type,
-				'item_id'		=> '0',
-				'user_id'		=> (string) $user_id,
+				'item_id'		=> 0,
+				'user_id'		=> $user_id,
 				'method'		=> 'email',
-				'notify'		=> '1',
+				'notify'		=> 1,
 			);
 		}
 
@@ -102,10 +97,10 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 		{
 			$return[] = array(
 				'item_type'		=> $type,
-				'item_id'		=> '0',
-				'user_id'		=> (string) $user_id,
+				'item_id'		=> 0,
+				'user_id'		=> $user_id,
 				'method'		=> 'jabber',
-				'notify'		=> '1',
+				'notify'		=> 1,
 			);
 		}
 

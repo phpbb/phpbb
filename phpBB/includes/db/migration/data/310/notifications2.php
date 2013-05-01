@@ -100,7 +100,16 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 	public function convert_notifications()
 	{
 		$insert_table = $this->table_prefix . 'user_notifications';
+		$insert_buffer = new phpbb_db_sql_insert_buffer($this->db, $insert_table);
 
+		$this->perform_conversion($insert_buffer, $insert_table);
+	}
+
+	/**
+	* Perform the conversion (separate for testability)
+	*/
+	public function perform_conversion($insert_buffer, $insert_table)
+	{
 		$sql = 'DELETE FROM ' . $insert_table;
 		$this->db->sql_query($sql);
 
@@ -108,7 +117,6 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 			FROM ' . USERS_TABLE;
 		$result = $this->db->sql_query($sql);
 
-		$insert_buffer = new phpbb_db_sql_insert_buffer($this->db, $insert_table);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$notification_methods = array();
@@ -162,6 +170,7 @@ class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
 			'item_type'		=> $item_type,
 			'item_id'		=> (int) $item_id,
 			'user_id'		=> (int) $user_id,
+			'notify'		=> 1
 		);
 
 		foreach ($methods as $method)
