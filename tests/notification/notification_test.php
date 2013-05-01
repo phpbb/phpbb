@@ -99,6 +99,35 @@ class phpbb_notification_test extends phpbb_database_test_case
 		return new $type($this->user_loader, $this->db, $this->cache, $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_notifications', 'phpbb_user_notifications');
 	}
 
+	public function test_get_notification_type_id()
+	{
+		// They should be inserted the first time
+		$this->assertEquals(1, $this->notifications->get_notification_type_id('post'));
+		$this->assertEquals(2, $this->notifications->get_notification_type_id('quote'));
+		$this->assertEquals(3, $this->notifications->get_notification_type_id('test'));
+
+		$this->assertEquals(array(
+				'test'	=> 3,
+				'quote'	=> 2,
+				'post'	=> 1,
+			),
+			$this->notifications->get_notification_type_ids(array(
+				'test',
+				'quote',
+				'post',
+			)
+		));
+		$this->assertEquals(2, $this->notifications->get_notification_type_id('quote'));
+
+		try
+		{
+			$this->assertEquals(3, $this->notifications->get_notification_type_id('fail'));
+
+			$this->fail('Non-existant type should throw exception');
+		}
+		catch (Exception $e) {}
+	}
+
 	public function test_get_subscription_types()
 	{
 		$subscription_types = $this->notifications->get_subscription_types();
