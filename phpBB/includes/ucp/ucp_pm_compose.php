@@ -1222,49 +1222,47 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	// Check for disallowed recipients
 	if (!empty($address_list['u']))
 	{
-		// We need to check their PM status (do they want to receive PM's?)
-		// Only check if not a moderator or admin, since they are allowed to override this user setting
-		if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
-		{
-			$sql = 'SELECT user_id
-				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
-					AND user_allow_pm = 0';
-			$result = $db->sql_query($sql);
-
-			$removed = false;
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$removed = true;
-				unset($address_list['u'][$row['user_id']]);
-			}
-			$db->sql_freeresult($result);
-
-			// print a notice about users not being added who do not want to receive pms
-			if ($removed)
-			{
-				$error[] = $user->lang['PM_USERS_REMOVED_NO_PM'];
-			}
-		}
-
-		// Administrator deactivated users check
-		$sql = 'SELECT user_id
+		// Administrator deactivated users check and we need to check their
+		//		PM status (do they want to receive PM's?)
+		// 		Only check PM status if not a moderator or admin, since they
+		//		are allowed to override this user setting
+		$sql = 'SELECT user_id, user_allow_pm
 			FROM ' . USERS_TABLE . '
 			WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
-				AND user_type = ' . USER_INACTIVE . '
-				AND user_inactive_reason = ' . INACTIVE_MANUAL;
+				AND (user_type = ' . USER_INACTIVE . '
+					AND user_inactive_reason = ' . INACTIVE_MANUAL . ')';
+
+		if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+		{
+			$sql .= ' OR user_allow_pm = 0';
+		}
+
 		$result = $db->sql_query($sql);
 
-		$removed = false;
+		$removed_no_pm = $removed_no_permission = false;
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$removed = true;
+			if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_') && !$row['user_allow_pm'])
+			{
+				$removed_no_pm = true;
+			}
+			else
+			{
+				$removed_no_permission = true;
+			}
+
 			unset($address_list['u'][$row['user_id']]);
 		}
 		$db->sql_freeresult($result);
 
+		// print a notice about users not being added who do not want to receive pms
+		if ($removed_no_pm)
+		{
+			$error[] = $user->lang['PM_USERS_REMOVED_NO_PM'];
+		}
+
 		// print a notice about users not being added who do not have permission to receive PMs
-		if ($removed)
+		if ($removed_no_permission)
 		{
 			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
 		}
