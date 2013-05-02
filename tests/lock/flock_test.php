@@ -26,15 +26,21 @@ class phpbb_lock_flock_test extends phpbb_test_case
 		$lock = new phpbb_lock_flock($path);
 		$ok = $lock->acquire();
 		$this->assertTrue($ok);
+		$this->assertTrue($lock->owns_lock());
 		$lock->release();
+		$this->assertFalse($lock->owns_lock());
 
 		$ok = $lock->acquire();
 		$this->assertTrue($ok);
+		$this->assertTrue($lock->owns_lock());
 		$lock->release();
+		$this->assertFalse($lock->owns_lock());
 
 		$ok = $lock->acquire();
 		$this->assertTrue($ok);
+		$this->assertTrue($lock->owns_lock());
 		$lock->release();
+		$this->assertFalse($lock->owns_lock());
 	}
 
 	/* This hangs the process.
@@ -77,15 +83,18 @@ class phpbb_lock_flock_test extends phpbb_test_case
 			$ok = $lock->acquire();
 			$delta = time() - $start;
 			$this->assertTrue($ok);
+			$this->assertTrue($lock->owns_lock());
 			$this->assertGreaterThan(0.5, $delta, 'First lock acquired too soon');
 
 			$lock->release();
+			$this->assertFalse($lock->owns_lock());
 
 			// acquire again, this should be instantaneous
 			$start = time();
 			$ok = $lock->acquire();
 			$delta = time() - $start;
 			$this->assertTrue($ok);
+			$this->assertTrue($lock->owns_lock());
 			$this->assertLessThan(0.1, $delta, 'Second lock not acquired instantaneously');
 
 			// reap the child
@@ -99,8 +108,10 @@ class phpbb_lock_flock_test extends phpbb_test_case
 			$lock = new phpbb_lock_flock($path);
 			$ok = $lock->acquire();
 			$this->assertTrue($ok);
+			$this->assertTrue($lock->owns_lock());
 			sleep(2);
 			$lock->release();
+			$this->assertFalse($lock->owns_lock());
 
 			// and go away silently
 			pcntl_exec('/usr/bin/env', array('true'));
