@@ -821,7 +821,7 @@ function smiley_text($text, $force_option = false)
 	}
 	else
 	{
-		$root_path = get_board_root_path();
+		$root_path = phpbb_get_root_url_path();
 		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img class="smilies" src="' . $root_path . $config['smilies_path'] . '/\2 />', $text);
 	}
 }
@@ -929,7 +929,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		$block_array = array();
 
 		// Some basics...
-		$root_path = get_board_root_path();
+		$root_path = phpbb_get_root_url_path();
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
 		$filename = $root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
 		$thumbnail_filename = $root_path . $config['upload_path'] . '/thumb_' . utf8_basename($attachment['physical_filename']);
