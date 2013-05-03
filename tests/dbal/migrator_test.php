@@ -63,7 +63,6 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$container,
 			$this->db,
 			$this->config,
-			$this->migrator,
 			new phpbb_filesystem(),
 			'phpbb_ext',
 			dirname(__FILE__) . '/../../phpBB/',
