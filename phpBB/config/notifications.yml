@@ -19,7 +19,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -37,7 +37,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -55,7 +55,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -73,7 +73,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -91,7 +91,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -109,7 +109,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -127,7 +127,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -145,7 +145,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -163,7 +163,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -181,7 +181,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -199,7 +199,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -217,7 +217,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -235,7 +235,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -253,7 +253,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -271,7 +271,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -289,7 +289,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config
@@ -304,7 +304,7 @@ services:
         arguments:
             - @user_loader
             - @dbal.conn
-            - @cache
+            - @cache.driver
             - @user
             - @auth
             - @config

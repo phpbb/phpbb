@@ -106,7 +106,7 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 		{
 			$class_name = 'phpbb_notification_type_' . $type;
 			$class = new $class_name(
-				$user_loader, $db, $cache, $user, $auth, $config,
+				$user_loader, $db, $cache->get_driver(), $user, $auth, $config,
 				$phpbb_root_path, $phpEx,
 				NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
 

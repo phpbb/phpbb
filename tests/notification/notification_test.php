@@ -61,7 +61,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 			'phpbb_user_notifications'
 		);
 
-		$this->notifications->setDependencies($this->auth, $this->cache, $this->config);
+		$this->notifications->setDependencies($this->auth, $this->config);
 
 		$types = array();
 		foreach (array(
@@ -123,7 +123,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 		{
 			$this->assertEquals(3, $this->notifications->get_notification_type_id('fail'));
 
-			$this->fail('Non-existant type should throw exception');
+			$this->fail('Non-existent type should throw an exception');
 		}
 		catch (Exception $e) {}
 	}
