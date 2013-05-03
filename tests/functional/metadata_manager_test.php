@@ -78,9 +78,9 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		$crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 		$this->assert_response_success();
 
-		$this->assertContains($this->lang('EXTENSIONS_EXPLAIN'), $crawler->filter('#page-body')->text());
-		$this->assertContains('phpBB 3.1 Extension Testing', $crawler->filter('#page-body')->text());
-		$this->assertContains('Details', $crawler->filter('#page-body')->text());
+		$this->assertContains($this->lang('EXTENSIONS_EXPLAIN'), $crawler->filter('#main')->text());
+		$this->assertContains('phpBB 3.1 Extension Testing', $crawler->filter('#main')->text());
+		$this->assertContains('Details', $crawler->filter('#main')->text());
 	}
 
 	public function test_extensions_details()
@@ -89,15 +89,15 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		$this->assert_response_success();
 
 		// Test whether the details are displayed
-		$this->assertContains($this->lang('CLEAN_NAME'), $crawler->filter('#page-body')->text());
-		$this->assertContains('foo/bar', $crawler->filter('#page-body')->text());
+		$this->assertContains($this->lang('CLEAN_NAME'), $crawler->filter('#main')->text());
+		$this->assertContains('foo/bar', $crawler->filter('#meta_name')->text());
 
+		$this->assertContains($this->lang('PHP_VERSION'), $crawler->filter('#main')->text());
+		$this->assertContains('>=5.3', $crawler->filter('#require_php')->text());
 		// Details should be html escaped
-		$this->assertContains($this->lang('PHP_VERSION'), $crawler->filter('#page-body')->text());
-		// The Crawler parses the text, so we can not see whether it was escaped anymore
-		// To test this, we grab the content of the response directly
-		// $this->assertContains('&gt;=5.3', $$crawler->filter('#page-body')->text());
-		$this->assertContains('&gt;=5.3', $this->client->getResponse()->getContent());
+		// However, text() only returns the displayed text, so HTML Special Chars are decoded.
+		// So we test this directly on the content of the response.
+		$this->assertContains('<p id="require_php">&gt;=5.3</p>', $this->client->getResponse()->getContent());
 	}
 
 	public function test_extensions_details_notexists()
@@ -106,6 +106,6 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		$this->assert_response_success();
 
 		// Error message because the files do not exist
-		$this->assertContains('The required file does not exist:', $crawler->filter('#page-body')->text());
+		$this->assertContains('The required file does not exist:', $crawler->filter('#main')->text());
 	}
 }
