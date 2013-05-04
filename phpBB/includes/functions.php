@@ -4347,6 +4347,21 @@ function phpbb_optionset($bit, $set, $data)
 }
 
 /**
+* Generate last valid page's starting parameter for paginating.
+*
+* @param int	$num_total	Maximum possible objects for paginating
+* @param int	$display_per_page	User configuration for pagination
+* @param int	$passed_index	Current index which may be out of bounds
+*
+* @return int	Minimum of last page number or $passed_index
+*/
+function phpbb_get_last_page_index($num_total, $display_per_page, $passed_index)
+{
+	$last_page = $num_total - ($num_total % $display_per_page);
+	return min($last_page, $passed_index);
+}
+
+/**
 * Login using http authenticate.
 *
 * @param array	$param		Parameter array, see $param_defaults array.
