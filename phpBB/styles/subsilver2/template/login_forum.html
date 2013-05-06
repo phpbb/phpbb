@@ -1,5 +1,13 @@
 <!-- INCLUDE overall_header.html -->
 
+<!-- IF FORUM_NAME -->
+	<div id="pageheader">
+		<h2><a class="titles" href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2>
+	</div>
+
+	<br clear="all" /><br />
+<!-- ENDIF -->
+
 <div id="pagecontent">
 
 	<form name="login_forum" method="post" action="{S_LOGIN_ACTION}">
