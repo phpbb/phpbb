@@ -224,28 +224,34 @@ class phpbb_template_filter extends php_user_filter
 		}
 
 		/*
-			Preserve whitespace.
-			PHP removes a newline after the closing tag (if it's there). This is by design.
+
+		Preserve whitespace.
+		PHP removes a newline after the closing tag (if it's there).
+		This is by design:
+
+		http://www.php.net/manual/en/language.basic-syntax.phpmode.php
+		http://www.php.net/manual/en/language.basic-syntax.instruction-separation.php
 
 
-			Consider the following template:
+		Consider the following template:
 
-				<!-- IF condition -->
-				some content
-				<!-- ENDIF -->
+			<!-- IF condition -->
+			some content
+			<!-- ENDIF -->
 
-			If we were to simply preserve all whitespace, we could simply replace all "?>" tags
-			with "?>\n".
-			Doing that, would add additional newlines to the compiled tempalte in place of the
-			IF and ENDIF statements. These newlines are unwanted (and one is conditional).
-			The IF and ENDIF are usually on their own line for ease of reading.
+		If we were to simply preserve all whitespace, we could simply
+		replace all "?>" tags with "?>\n".
+		Doing that, would add additional newlines to the compiled
+		template in place of the IF and ENDIF statements. These
+		newlines are unwanted (and one is conditional). The IF and
+		ENDIF are usually on their own line for ease of reading.
 
-			This replacement preserves newlines only for statements that aren't the only statement on a line.
-			It will NOT preserve newlines at the end of statements in the above examle.
-			It will preserve newlines in situations like:
+		This replacement preserves newlines only for statements that
+		are not the only statement on a line. It will NOT preserve
+		newlines at the end of statements in the above example.
+		It will preserve newlines in situations like:
 
-				<!-- IF condition -->inline content<!-- ENDIF -->
-
+			<!-- IF condition -->inline content<!-- ENDIF -->
 
 		*/
 
