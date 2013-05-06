@@ -170,7 +170,7 @@ else
 	if (!$attachment['in_message'])
 	{
 		//
-		$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
+		$sql = 'SELECT p.forum_id, f.forum_name, f.forum_password, f.parent_id
 			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
 			WHERE p.post_id = ' . $attachment['post_msg_id'] . '
 				AND p.forum_id = f.forum_id';
