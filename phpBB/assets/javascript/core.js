@@ -136,7 +136,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	});
 
 	var clickHandler = function(e) {
-		var res = this.className === 'button1';
+		var res = this.name === 'confirm';
 		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
 		fade.fadeOut(phpbb.alertTime, function() {
 			div.hide();
@@ -164,11 +164,11 @@ phpbb.confirm = function(msg, callback, fadedark) {
 
 	$(document).bind('keydown', function(e) {
 		if (e.keyCode === keymap.ENTER) {
-			$('input[type="button"].button1').trigger('click');
+			$('input[name="confirm"]').trigger('click');
 			e.preventDefault();
 			e.stopPropagation();
 		} else if (e.keyCode === keymap.ESC) {
-			$('input[type="button"].button2').trigger('click');
+			$('input[name="cancel"]').trigger('click');
 			e.preventDefault();
 			e.stopPropagation();
 		}
