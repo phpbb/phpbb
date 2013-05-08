@@ -136,36 +136,13 @@ class phpbb_notification_manager
 
 		$notifications = $user_ids = array();
 		$load_special = array();
-		$total_count = $unread_count = 0;
 
-		if ($options['count_unread'])
+		if ($options['count_unread'] || $options['count_total'])
 		{
-			// Get the total number of unread notifications
-			$sql = 'SELECT COUNT(n.notification_id) AS unread_count
-				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-				WHERE n.user_id = ' . (int) $options['user_id'] . '
-					AND n.notification_read = 0
-					AND nt.notification_type = n.item_type
-					AND nt.notification_type_enabled = 1';
-			$result = $this->db->sql_query($sql);
-			$unread_count = (int) $this->db->sql_fetchfield('unread_count', $result);
-			$this->db->sql_freeresult($result);
+			$stats = $this->get_user_notification_stats($options['user_id']);
 		}
 
-		if ($options['count_total'])
-		{
-			// Get the total number of notifications
-			$sql = 'SELECT COUNT(n.notification_id) AS total_count
-				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-				WHERE n.user_id = ' . (int) $options['user_id'] . '
-					AND nt.notification_type = n.item_type
-					AND nt.notification_type_enabled = 1';
-			$result = $this->db->sql_query($sql);
-			$total_count = (int) $this->db->sql_fetchfield('total_count', $result);
-			$this->db->sql_freeresult($result);
-		}
-
-		if (!$options['count_total'] || $total_count)
+		if (!$options['count_total'] || $stats['total_count'])
 		{
 			$rowset = array();
 
@@ -186,7 +163,7 @@ class phpbb_notification_manager
 			$this->db->sql_freeresult($result);
 
 			// Get all unread notifications
-			if ($unread_count && $options['all_unread'] && !empty($rowset))
+			if ($stats['unread_count'] && $options['all_unread'] && !empty($rowset))
 			{
 				$sql = 'SELECT n.*
 				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
@@ -233,10 +210,9 @@ class phpbb_notification_manager
 			}
 		}
 
-		return array(
-			'notifications'		=> $notifications,
-			'unread_count'		=> $unread_count,
-			'total_count'		=> $total_count,
+		return array_merge(
+			array('notifications' => $notifications),
+			$stats
 		);
 	}
 
@@ -641,6 +617,32 @@ class phpbb_notification_manager
 		}
 
 		return $subscriptions;
+	}
+
+	/**
+	* Get number of total and unread notifications for a specific user.
+	*
+	* @param bool|int $user_id The user_id (bool false for current user)
+	*
+	* @return array
+	*/
+	public function get_user_notification_stats($user_id = false)
+	{
+		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
+
+		$sql = 'SELECT SUM(n.notification_read) AS read_count, COUNT(n.notification_id) AS total_count
+			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
+			WHERE n.user_id = ' . (int) $user_id . '
+				AND nt.notification_type = n.item_type
+				AND nt.notification_type_enabled = 1';
+		$result = $this->db->sql_query($sql);
+		$row = array_map('intval', $this->db->sql_fetchrow($result));
+		$this->db->sql_freeresult($result);
+
+		return array(
+			'unread_count'	=> $row['total_count'] - $row['read_count'],
+			'total_count'	=> $row['total_count'],
+		);
 	}
 
 	/**
