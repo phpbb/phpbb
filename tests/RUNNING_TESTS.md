@@ -82,14 +82,16 @@ In order to run tests on some of the databases that we support, it will be
 necessary to provide a custom DSN string in test_config.php. This is only
 needed for MSSQL 2000+ (PHP module), MSSQL via ODBC, and Firebird when
 PDO_Firebird does not work on your system
-(https://bugs.php.net/bug.php?id=61183). The variable must be named $custom_dsn.
+(https://bugs.php.net/bug.php?id=61183). The variable must be named `$custom_dsn`.
 
 Examples:
 Firebird using http://www.firebirdsql.org/en/odbc-driver/
-$custom_dsn = "Driver={Firebird/InterBase(r) driver};dbname=$dbhost:$dbname";
+
+    $custom_dsn = "Driver={Firebird/InterBase(r) driver};dbname=$dbhost:$dbname";
 
 MSSQL
-$custom_dsn = "Driver={SQL Server Native Client 10.0};Server=$dbhost;Database=$dbname";
+
+    $custom_dsn = "Driver={SQL Server Native Client 10.0};Server=$dbhost;Database=$dbname";
 
 The other fields in test_config.php should be filled out as you would normally
 to connect to that database in phpBB.
