@@ -56,7 +56,8 @@
 
 	<target name="test" depends="clean,prepare,composer">
 		<exec dir="."
-			command="phpunit --log-junit build/logs/phpunit.xml
+			command="phpBB/vendor/bin/phpunit
+			--log-junit build/logs/phpunit.xml
 			--coverage-clover build/logs/clover.xml
 			--coverage-html build/coverage"
 			passthru="true" />
@@ -64,7 +65,8 @@
 
 	<target name="test-slow" depends="clean,prepare,composer">
 		<exec dir="."
-			command="phpunit --log-junit build/logs/phpunit.xml
+			command="phpBB/vendor/bin/phpunit
+			--log-junit build/logs/phpunit.xml
 			--configuration phpunit.xml.all
 			--group slow
 			--coverage-clover build/logs/clover-slow.xml
