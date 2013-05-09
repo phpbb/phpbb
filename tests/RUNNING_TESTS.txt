@@ -7,9 +7,14 @@ Prerequisites
 PHPUnit
 -------
 
-phpBB unit tests use PHPUnit framework. Version 3.5 or better is required
-to run the tests. PHPUnit prefers to be installed via PEAR; refer to
-http://www.phpunit.de/ for more information.
+phpBB unit tests use the PHPUnit framework (see http://www.phpunit.de for more
+information). Version 3.5 or higher is required to run the tests. PHPUnit can
+be installed via Composer together with other development dependencies as
+follows.
+
+    $ cd phpBB
+    $ php ../composer.phar install --dev
+    $ cd ..
 
 PHP extensions
 --------------
