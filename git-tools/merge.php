@@ -78,12 +78,12 @@ function work($pull_id, $remote)
 			add_remote($pull_user, 'phpbb3');
 			run("git fetch $pull_user");
 			run("git merge --no-ff $pull_user/$pull_branch");
-			run("phpunit");
+			run("phpBB/vendor/bin/phpunit");
 
 			run("git checkout develop");
 			run("git pull $remote develop");
 			run("git merge --no-ff develop-olympus");
-			run("phpunit");
+			run("phpBB/vendor/bin/phpunit");
 		break;
 
 		case 'develop':
@@ -93,7 +93,7 @@ function work($pull_id, $remote)
 			add_remote($pull_user, 'phpbb3');
 			run("git fetch $pull_user");
 			run("git merge --no-ff $pull_user/$pull_branch");
-			run("phpunit");
+			run("phpBB/vendor/bin/phpunit");
 		break;
 
 		default:
