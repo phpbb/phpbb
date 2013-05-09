@@ -95,7 +95,7 @@ Running
 Once the prerequisites are installed, run the tests from the project root
 directory (above phpBB):
 
-    $ phpunit
+    $ phpBB/vendor/bin/phpunit
 
 Slow tests
 --------------
@@ -105,7 +105,7 @@ Thus these tests are in the `slow` group, which is excluded by default. You can
 enable slow tests by copying the phpunit.xml.all file to phpunit.xml. If you
 only want the slow tests, run:
 
-    $ phpunit --group slow
+    $ phpBB/vendor/bin/phpunit --group slow
 
 More Information
 ================
