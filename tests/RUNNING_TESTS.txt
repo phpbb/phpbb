@@ -136,7 +136,7 @@ Running
 =======
 
 To run the functional tests, you will need PHP 5.3 or greater with the
-cURL module.Also required is the --dev installation from composer:
+cURL module. Also required is the --dev installation from composer:
 
     php composer.phar --dev install    
 
@@ -147,7 +147,7 @@ the 'tests/test_config.php' file. This is as simple as defining the
 '$phpbb_functional_url', which contains the URL for the directory containing
 the board. Make sure you include the trailing slash. Testing makes use of a 
 seperate database defined in this config file and before running the tests 
-each time this database is deleted.Note that without extensive changes to the
+each time this database is deleted. Note that without extensive changes to the
 test framework, you cannot use a board outside of the repository on which to
 run tests.
 
