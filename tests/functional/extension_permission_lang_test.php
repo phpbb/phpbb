@@ -14,8 +14,12 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 {
 	protected $phpbb_extension_manager;
 
+	static private $helper;
+
+	static private $copied_files = array();
+
 	static protected $fixtures = array(
-		'foo/bar/language/en/permissions_foo.php',
+		'foo/bar/language/en/',
 	);
 
 	/**
@@ -27,26 +31,21 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 		global $phpbb_root_path;
 		parent::setUpBeforeClass();
 
-		$directories = array(
-			$phpbb_root_path . 'ext/foo/bar/',
-			$phpbb_root_path . 'ext/foo/bar/language/',
-			$phpbb_root_path . 'ext/foo/bar/language/en/',
-		);
+		self::$helper = new phpbb_test_case_helpers(self);
 
-		foreach ($directories as $dir)
+		self::$copied_files = array();
+
+		if (file_exists($phpbb_root_path . 'ext/'))
 		{
-			if (!is_dir($dir))
-			{
-				mkdir($dir, 0777, true);
-			}
+			// First, move any extensions setup on the board to a temp directory
+			self::$copied_files = self::$helper->copy_dir($phpbb_root_path . 'ext/', $phpbb_root_path . 'store/temp_ext/');
+
+			// Then empty the ext/ directory on the board (for accurate test cases)
+			self::$helper->empty_dir($phpbb_root_path . 'ext/');
 		}
 
-		foreach (self::$fixtures as $fixture)
-		{
-			copy(
-				"tests/functional/fixtures/ext/$fixture",
-				"{$phpbb_root_path}ext/$fixture");
-		}
+		// Copy our ext/ files from the test case to the board
+		self::$copied_files = array_merge(self::$copied_files, self::$helper->copy_dir(dirname(__FILE__) . '/fixtures/ext/' . $fixture, $phpbb_root_path . 'ext/' . $fixture));
 	}
 
 	/**
@@ -56,16 +55,20 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 	static public function tearDownAfterClass()
 	{
 		global $phpbb_root_path;
-
-		foreach (self::$fixtures as $fixture)
+		
+		if (file_exists($phpbb_root_path . 'store/temp_ext/'))
 		{
-			unlink("{$phpbb_root_path}ext/$fixture");
+			// Copy back the board installed extensions from the temp directory
+			self::$helper->copy_dir($phpbb_root_path . 'store/temp_ext/', $phpbb_root_path . 'ext/');
 		}
 
-		rmdir("{$phpbb_root_path}ext/foo/bar/language/en");
-		rmdir("{$phpbb_root_path}ext/foo/bar/language");
-		rmdir("{$phpbb_root_path}ext/foo/bar");
-		rmdir("{$phpbb_root_path}ext/foo");
+		// Remove all of the files we copied around (from board ext -> temp_ext, from test ext -> board ext)
+		self::$helper->remove_files(self::$copied_files);
+
+		if (file_exists($phpbb_root_path . 'store/temp_ext/'))
+		{
+			self::$helper->empty_dir($phpbb_root_path . 'store/temp_ext/');
+		}
 	}
 
 	public function setUp()
