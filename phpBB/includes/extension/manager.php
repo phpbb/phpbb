@@ -137,11 +137,11 @@ class phpbb_extension_manager
 
 		if (class_exists($extension_class_name))
 		{
-			return new $extension_class_name($this->container, $this, $migrator, $name, $this->get_extension_path($name, true));
+			return new $extension_class_name($this->container, $this->get_finder(), $migrator, $name, $this->get_extension_path($name, true));
 		}
 		else
 		{
-			return new phpbb_extension_base($this->container, $this, $migrator, $name, $this->get_extension_path($name, true));
+			return new phpbb_extension_base($this->container, $this->get_finder(), $migrator, $name, $this->get_extension_path($name, true));
 		}
 	}
 

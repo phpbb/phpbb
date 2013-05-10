@@ -27,8 +27,8 @@ class phpbb_extension_base implements phpbb_extension_interface
 	/** @var ContainerInterface */
 	protected $container;
 
-	/** @var phpbb_extension_manager */
-	protected $extension_manager;
+	/** @var phpbb_extension_finder */
+	protected $finder;
 
 	/** @var phpbb_db_migrator */
 	protected $migrator;
@@ -43,14 +43,14 @@ class phpbb_extension_base implements phpbb_extension_interface
 	* Constructor
 	*
 	* @param ContainerInterface $container Container object
-	* @param phpbb_extension_manager $extension_manager
+	* @param phpbb_extension_finder $extension_finder
 	* @param string $extension_name Name of this extension (from ext.manager)
 	* @param string $extension_path Relative path to this extension
 	*/
-	public function __construct(ContainerInterface $container, phpbb_extension_manager $extension_manager, phpbb_db_migrator $migrator, $extension_name, $extension_path)
+	public function __construct(ContainerInterface $container, phpbb_extension_finder $extension_finder, phpbb_db_migrator $migrator, $extension_name, $extension_path)
 	{
 		$this->container = $container;
-		$this->extension_manager = $extension_manager;
+		$this->extension_finder = $extension_finder;
 		$this->migrator = $migrator;
 
 		$this->extension_name = $extension_name;
@@ -125,11 +125,10 @@ class phpbb_extension_base implements phpbb_extension_interface
 		}
 
 		// Only have the finder search in this extension path directory
-		$finder = $this->extension_manager->get_finder();
-		$migrations = $finder
+		$migrations = $this->extension_finder
 			->extension_directory('/migrations')
 			->find_from_extension($this->extension_name, $this->extension_path);
-		$migrations = $finder->get_classes_from_files($migrations);
+		$migrations = $this->extension_finder->get_classes_from_files($migrations);
 
 		return $migrations;
 	}
