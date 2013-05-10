@@ -47,6 +47,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 		// Correctly set the root path for this test to this directory, so the classes can be found
 		$phpbb_root_path = dirname(__FILE__) . '/';
 
+		// Find acp module info files
 		$this->acp_modules->module_class = 'acp';
 		$acp_modules = $this->acp_modules->get_module_infos();
 		$this->assertEquals(array(
@@ -68,6 +69,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				),
 			), $acp_modules);
 
+		// Find mcp module info files
 		$this->acp_modules->module_class = 'mcp';
 		$acp_modules = $this->acp_modules->get_module_infos();
 		$this->assertEquals(array(
@@ -81,6 +83,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				),
 			), $acp_modules);
 
+		// Find a specific module info file (mcp_a_module)
 		$this->acp_modules->module_class = 'mcp';
 		$acp_modules = $this->acp_modules->get_module_infos('mcp_a_module');
 		$this->assertEquals(array(
@@ -94,10 +97,12 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				),
 			), $acp_modules);
 
+		// The mcp module info file we're looking for shouldn't exist
 		$this->acp_modules->module_class = 'mcp';
 		$acp_modules = $this->acp_modules->get_module_infos('mcp_a_fail');
 		$this->assertEquals(array(), $acp_modules);
 
+		// As there are no ucp modules we shouldn't find any
 		$this->acp_modules->module_class = 'ucp';
 		$acp_modules = $this->acp_modules->get_module_infos();
 		$this->assertEquals(array(), $acp_modules);

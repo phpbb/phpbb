@@ -1,5 +1,8 @@
 <?php
-
+/*
+* Due to the mismatch between the class name and the file name, this module
+* file shouldn't be found by the extension finder
+*/
 class phpbb_ext_foo_acp_foo_info
 {
 	public function module()
