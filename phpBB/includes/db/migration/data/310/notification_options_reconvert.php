@@ -7,11 +7,11 @@
 *
 */
 
-class phpbb_db_migration_data_310_notifications3 extends phpbb_db_migration
+class phpbb_db_migration_data_310_notification_options_reconvert extends phpbb_db_migration
 {
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_310_notifications2');
+		return array('phpbb_db_migration_data_310_notifications_schema_fix');
 	}
 
 	public function update_data()
