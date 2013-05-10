@@ -125,21 +125,10 @@ class phpbb_extension_base implements phpbb_extension_interface
 		}
 
 		// Only have the finder search in this extension path directory
-		$extensions = array(
-			$this->extension_name => $this->extension_path,
-		);
-
 		$finder = $this->extension_manager->get_finder();
-		$migrations = array();
-		$file_list = $finder
+		$migrations = $finder
 			->extension_directory('/migrations')
-			->find_from_paths($extensions);
-
-		foreach ($file_list as $file)
-		{
-			$migrations[$file['named_path']] = $file['ext_name'];
-		}
-
+			->find_from_extension($this->extension_name, $this->extension_path);
 		$migrations = $finder->get_classes_from_files($migrations);
 
 		return $migrations;
