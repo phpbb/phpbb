@@ -216,6 +216,9 @@ class phpbb_filespec_test extends phpbb_test_case
 			array('png', 'image/png', true),
 			array('tif', 'image/tif', true),
 			array('txt', 'text/plain', false),
+			array('jpg', 'application/octet-stream', false),
+			array('gif', 'application/octetstream', false),
+			array('png', 'application/mime', false),
 		);
 	}
 
@@ -226,6 +229,29 @@ class phpbb_filespec_test extends phpbb_test_case
 	{
 		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
 		$this->assertEquals($expected, $filespec->is_image());
+	}
+
+	public function is_image_variables_with_file_path()
+	{
+		return array(
+			array('gif', 'image/gif', true),
+			array('jpg', 'image/jpg', true),
+			array('png', 'image/png', true),
+			array('tif', 'image/tif', true),
+			array('txt', 'text/plain', false),
+			array('jpg', 'application/octet-stream', true),
+			array('gif', 'application/octetstream', true),
+			array('png', 'application/mime', false),
+		);
+	}
+
+	/**
+	 * @dataProvider is_image_variables_with_file_path
+	 */
+	public function test_is_image_with_file_path($filename, $mimetype, $expected)
+	{
+		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
+		$this->assertEquals($expected, $filespec->is_image($this->path . $filename));
 	}
 
 	public function move_file_variables()

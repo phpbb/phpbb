@@ -432,7 +432,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	$cat_id = (isset($extensions[$file->get('extension')]['display_cat'])) ? $extensions[$file->get('extension')]['display_cat'] : ATTACHMENT_CATEGORY_NONE;
 
 	// Make sure the image category only holds valid images...
-	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && !$file->is_image())
+	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && !$file->is_image($file->get('filename')))
 	{
 		$file->remove();
 

@@ -147,10 +147,22 @@ class filespec
 	/**
 	* Check if file is an image (mimetype)
 	*
+	* @param string $file_path	Optional path of possible image. If supplied the path will be used
+	*				to acquire the mime type if the current type is set to
+	*				application/octet-stream or application/octetstream. Some browsers,
+	*				especially the current standard Android OS browser, do not supply
+	*				the correct image/jpeg type but rather a standard application type.
+	*
 	* @return true if it is an image, false if not
 	*/
-	function is_image()
+	function is_image($file_path = '')
 	{
+		if (class_exists('finfo') && !empty($file_path) &&
+			($this->mimetype === 'application/octetstream' || $this->mimetype === 'application/octet-stream'))
+		{
+			$fileinfo = new finfo();
+			$this->mimetype = $fileinfo->file($file_path, FILEINFO_MIME);
+		}
 		return (strpos($this->mimetype, 'image/') === 0);
 	}
 
@@ -357,7 +369,7 @@ class filespec
 		// Try to get real filesize from destination folder
 		$this->filesize = (@filesize($this->destination_file)) ? @filesize($this->destination_file) : $this->filesize;
 
-		if ($this->is_image() && !$skip_image_check)
+		if ($this->is_image($this->destination_file) && !$skip_image_check)
 		{
 			$this->width = $this->height = 0;
 
