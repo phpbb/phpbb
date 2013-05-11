@@ -108,6 +108,11 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 		$form->setValues($data);
 		$crawler = $this->client->submit($form);
 		$this->assert_response_success();
+
+		// language from language/en/acp/permissions_phpbb.php
+		$this->assertContains('Can attach files', $crawler->filter('body')->text());
+
+		// language from ext/foo/bar/language/en/permissions_foo.php
 		$this->assertContains('Can view foo', $crawler->filter('body')->text());
 	}
 }
