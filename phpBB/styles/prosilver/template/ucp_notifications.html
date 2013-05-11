@@ -9,44 +9,35 @@
 		<p>{TITLE_EXPLAIN}</p>
 
 		<!-- IF MODE == 'notification_options' -->
-			<ul class="topiclist">
-				<li class="header">
-					<dl>
-						<dt>{L_NOTIFICATION_TYPE}</dt>
-						<!-- BEGIN notification_methods -->
-							<dd class="mark">{notification_methods.NAME}</dd>
-						<!-- END notification_methods -->
-						<dd class="mark">{L_NOTIFICATIONS}</dd>
-					</dl>
-				</li>
-			</ul>
-			<ul class="topiclist cplist">
-
-			<!-- BEGIN notification_types -->
-				<!-- IF notification_types.GROUP_NAME -->
-					<li class="row bg3">
-						<dl>
-							<dt>
-								{notification_types.GROUP_NAME}
-							</dt>
-						</dl>
-					</li>
-				<!-- ELSE -->
-					<li class="row<!-- IF notification_types.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
-						<dl>
-							<dt>
+			<table class="table1" cellspacing="1">
+				<thead>
+					<th>{L_NOTIFICATION_TYPE}</th>
+					<!-- BEGIN notification_methods -->
+						<th class="mark">{notification_methods.NAME}</th>
+					<!-- END notification_methods -->
+					<th class="mark">{L_NOTIFICATIONS}</th>
+				</thead>
+				<tbody>
+				<!-- BEGIN notification_types -->
+					<!-- IF notification_types.GROUP_NAME -->
+						<tr class="bg3">
+							<td colspan="{NOTIFICATION_TYPES_COLS}">{notification_types.GROUP_NAME}</td>
+						</tr>
+					<!-- ELSE -->
+						<tr class="<!-- IF notification_types.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+							<td>
 								{notification_types.NAME}
 								<!-- IF notification_types.EXPLAIN --><br />&nbsp; &nbsp;{notification_types.EXPLAIN}<!-- ENDIF -->
-							</dt>
+							</td>
 							<!-- BEGIN notification_methods -->
-								<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /> <dfn>{notification_methods.NAME}</dfn></dd>
+								<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
 							<!-- END notification_methods -->
-							<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /> <dfn>{L_NOTIFICATIONS}</dfn></dd>
-						</dl>
-					</li>
-				<!-- ENDIF -->
-			<!-- END notification_types -->
-			</ul>
+							<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
+						</tr>
+					<!-- ENDIF -->
+				<!-- END notification_types -->
+				</tbody>
+			</table>
 		<!-- ELSE -->
 			<!-- IF .notification_list -->
 			<!-- IF .pagination or TOTAL_COUNT -->
