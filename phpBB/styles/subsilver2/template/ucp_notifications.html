@@ -2,145 +2,137 @@
 
 <form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
 
-<table width="100%" cellspacing="1">
+<!-- IF MODE == 'notification_options' -->
+	<table width="100%" cellspacing="1">
 	<tr>
-		<th colspan="4">{TITLE}</th>
+		<th colspan="{NOTIFICATION_TYPES_COLS}">{TITLE}</th>
 	</tr>
 	<tr>
-		<td class="row1" colspan="4" align="center"><span class="genmed">{TITLE_EXPLAIN}</span></td>
+		<td class="row1" colspan="{NOTIFICATION_TYPES_COLS}" align="center"><span class="genmed">{TITLE_EXPLAIN}</span></td>
 	</tr>
-	<!-- IF MODE == 'notification_options' -->
-		<tr>
-			<th>{L_NOTIFICATION_TYPE}</th>
-			<th width="10%">{L_NOTIFICATIONS}</th>
-			<!-- BEGIN notification_methods -->
-				<th width="10%">{notification_methods.NAME}</th>
-			<!-- END notification_methods -->
-		</tr>
+	<tr>
+		<th>{L_NOTIFICATION_TYPE}</th>
+		<th width="10%">{L_NOTIFICATIONS}</th>
+		<!-- BEGIN notification_methods -->
+			<th width="10%">{notification_methods.NAME}</th>
+		<!-- END notification_methods -->
+	</tr>
 
-		<!-- BEGIN notification_types -->
-			<!-- IF notification_types.GROUP_NAME -->
-				<tr>
-					<td class="row3" colspan="3">{notification_types.GROUP_NAME}</td>
-				</tr>
-			<!-- ELSE -->
-				<!-- IF notification_types.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-					<td>
-						{notification_types.NAME}
-						<!-- IF notification_types.EXPLAIN --><br />&nbsp; &nbsp;{notification_types.EXPLAIN}<!-- ENDIF -->
-					</td>
-					<td align="center"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
-					<!-- BEGIN notification_methods -->
-						<td align="center"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
-					<!-- END notification_methods -->
-				</tr>
-			<!-- ENDIF -->
-		<!-- END notification_types -->
+	<!-- BEGIN notification_types -->
+		<!-- IF notification_types.GROUP_NAME -->
+			<tr>
+				<td class="row3" colspan="{NOTIFICATION_TYPES_COLS}">{notification_types.GROUP_NAME}</td>
+			</tr>
+		<!-- ELSE -->
+			<!-- IF notification_types.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+				<td>
+					{notification_types.NAME}
+					<!-- IF notification_types.EXPLAIN --><br />&nbsp; &nbsp;{notification_types.EXPLAIN}<!-- ENDIF -->
+				</td>
+				<td align="center"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
+				<!-- BEGIN notification_methods -->
+					<td align="center"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
+				<!-- END notification_methods -->
+			</tr>
+		<!-- ENDIF -->
+	<!-- END notification_types -->
+	<tr>
+		<td class="cat" colspan="{NOTIFICATION_TYPES_COLS}" align="center">
+			<input type="hidden" name="form_time" value="{FORM_TIME}" />
+			{S_HIDDEN_FIELDS}
+			<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;
+			<input class="btnlite" type="reset" value="{L_RESET}" name="reset" />
+			{S_FORM_TOKEN}
+		</td>
+	</tr>
+	</table>
+<!-- ELSE -->
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
 		<tr>
-			<td class="cat" colspan="3" align="center">
-				<input type="hidden" name="form_time" value="{FORM_TIME}" />
-				{S_HIDDEN_FIELDS}
-				<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;
-				<input class="btnlite" type="reset" value="{L_RESET}" name="reset" />
-				{S_FORM_TOKEN}
-			</td>
-		</tr>
-	<!-- ELSE -->
-		<tr>
-			<td>
-				<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+			<td class="row1">
+				<table border="0" cellspacing="0" cellpadding="0" width="100%">
 					<tr>
-						<td class="row1">
-							<table border="0" cellspacing="0" cellpadding="0" width="100%">
-								<tr>
-									<td align="{S_CONTENT_FLOW_BEGIN}">
-										<!-- IF TOTAL_COUNT -->
-											<table width="100%" cellspacing="1">
-												<tr>
-													<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}</td>
-													<td class="gensmall" nowrap="nowrap" width="100%">&nbsp;[ <b>{TOTAL_COUNT}</b> ]&nbsp;</td>
-												</tr>
-											</table>
-										<!-- ENDIF -->
-									</td>
-									<td align="{S_CONTENT_FLOW_END}"><!-- INCLUDE pagination.html --></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-				</table>
-
-				<div style="padding: 2px;"></div>
-
-				<div class="notification_list">
-					<table class="tablebg" width="100%" cellspacing="1">
-						<tr>
-							<td class="cat" colspan="3">
-								<table width="100%" cellspacing="0">
-									<tr class="nav">
-										<td align="{S_CONTENT_FLOW_END}" valign="middle"><!-- IF U_MARK_ALL --><a href="{U_MARK_ALL}">{L_NOTIFICATIONS_MARK_ALL_READ}</a><!-- ENDIF --></td>
+						<td align="{S_CONTENT_FLOW_BEGIN}">
+							<!-- IF TOTAL_COUNT -->
+								<table width="100%" cellspacing="1">
+									<tr>
+										<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}</td>
+										<td class="gensmall" nowrap="nowrap" width="100%">&nbsp;[ <b>{TOTAL_COUNT}</b> ]&nbsp;</td>
 									</tr>
 								</table>
-							</td>
-						</tr>
-						<tr>
-							<th colspan="2">{L_NOTIFICATIONS}</th>
-							<th width="15%">{L_MARK_READ}</th>
-						</tr>
-						<!-- BEGIN notification_list -->
-							<tr class="row<!-- IF notification_list.UNREAD -->3<!-- ELSEIF notification_list.S_ROW_COUNT is even -->1<!-- ELSE -->2<!-- ENDIF -->">
-								<!-- IF notification_list.AVATAR -->
-									<td width="50px">
-										{notification_list.AVATAR}
-									</td>
-									<td valign="top">
-								<!-- ELSE -->
-									<td colspan="2" valign="top" height="50px">
-								<!-- ENDIF -->
-									<span class="gen">
-									<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
-										<strong>{notification_list.FORMATTED_TITLE}</strong>
-									<!-- IF notification_list.URL --></a><!-- ENDIF --><br />
-									&raquo; {notification_list.TIME}
-									</span>
-								</td>
-								<td align="center">
-									<!-- IF notification_list.UNREAD --><input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}" /><!-- ENDIF -->
-								</td>
-							</tr>
-						<!-- END notification_list -->
-						<tr>
-							<td class="cat" colspan="3" align="center">
-								<input type="hidden" name="form_time" value="{FORM_TIME}" />
-								{S_HIDDEN_FIELDS}
-								<input class="btnmain" type="submit" name="submit" value="{L_MARK_READ}" />
-								{S_FORM_TOKEN}
-							</td>
-						</tr>
-					</table>
-				</div>
-
-				<div style="padding: 2px;"></div>
-
-				<!-- IF .pagination -->
-					<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
-						<tr>
-							<td class="row1">
-								<table border="0" cellspacing="0" cellpadding="0" width="100%">
-								<tr>
-									<td align="{S_CONTENT_FLOW_BEGIN}">
-										<!-- INCLUDE pagination.html -->
-									</td>
-								</tr>
-								</table>
-							</td>
-						</tr>
-					</table>
-				<!-- ENDIF -->
+							<!-- ENDIF -->
+						</td>
+						<td align="{S_CONTENT_FLOW_END}"><!-- INCLUDE pagination.html --></td>
+					</tr>
+				</table>
 			</td>
 		</tr>
+	</table>
+
+	<div class="notification_list">
+		<table class="tablebg" width="100%" cellspacing="1">
+			<tr>
+				<td class="cat" colspan="3">
+					<table width="100%" cellspacing="0">
+						<tr class="nav">
+							<td align="{S_CONTENT_FLOW_END}" valign="middle"><!-- IF U_MARK_ALL --><a href="{U_MARK_ALL}">{L_NOTIFICATIONS_MARK_ALL_READ}</a><!-- ENDIF --></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<th colspan="2">{L_NOTIFICATIONS}</th>
+				<th width="15%">{L_MARK_READ}</th>
+			</tr>
+			<!-- BEGIN notification_list -->
+				<tr class="row<!-- IF notification_list.UNREAD -->3<!-- ELSEIF notification_list.S_ROW_COUNT is even -->1<!-- ELSE -->2<!-- ENDIF -->">
+					<!-- IF notification_list.AVATAR -->
+						<td width="50px">
+							{notification_list.AVATAR}
+						</td>
+						<td valign="top">
+					<!-- ELSE -->
+						<td colspan="2" valign="top" height="50px">
+					<!-- ENDIF -->
+						<span class="gen">
+						<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
+							<strong>{notification_list.FORMATTED_TITLE}</strong>
+						<!-- IF notification_list.URL --></a><!-- ENDIF --><br />
+						&raquo; {notification_list.TIME}
+						</span>
+					</td>
+					<td align="center">
+						<!-- IF notification_list.UNREAD --><input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}" /><!-- ENDIF -->
+					</td>
+				</tr>
+			<!-- END notification_list -->
+			<tr>
+				<td class="cat" colspan="3" align="center">
+					<input type="hidden" name="form_time" value="{FORM_TIME}" />
+					{S_HIDDEN_FIELDS}
+					<input class="btnmain" type="submit" name="submit" value="{L_MARK_READ}" />
+					{S_FORM_TOKEN}
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<!-- IF .pagination -->
+		<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+			<tr>
+				<td class="row1">
+					<table border="0" cellspacing="0" cellpadding="0" width="100%">
+					<tr>
+						<td align="{S_CONTENT_FLOW_BEGIN}">
+							<!-- INCLUDE pagination.html -->
+						</td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
 	<!-- ENDIF -->
-</table>
+<!-- ENDIF -->
 
 <!-- IF .notifications -->
 <div class="gensmall" style="float: {S_CONTENT_FLOW_END}; padding-top: 2px;"><b><a href="#" onclick="$('#ucp input:checkbox').attr('checked', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="$('#ucp input:checkbox').attr('checked', false); return false;">{L_UNMARK_ALL}</a></b></div>
