@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -495,6 +494,8 @@ class base_extractor
 
 	function base_extractor($download = false, $store = false, $format, $filename, $time)
 	{
+		global $request;
+
 		$this->download = $download;
 		$this->store = $store;
 		$this->time = $time;
@@ -539,7 +540,7 @@ class base_extractor
 				break;
 
 				case 'gzip':
-					if ((isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) && strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'msie') === false)
+					if (strpos($request->header('Accept-Encoding'), 'gzip') !== false && strpos(strtolower($request->header('User-Agent')), 'msie') === false)
 					{
 						ob_start('ob_gzhandler');
 					}
@@ -1016,43 +1017,8 @@ class sqlite_extractor extends base_extractor
 	function write_data($table_name)
 	{
 		global $db;
-		static $proper;
 
-		if (is_null($proper))
-		{
-			$proper = version_compare(PHP_VERSION, '5.1.3', '>=');
-		}
-
-		if ($proper)
-		{
-			$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
-		}
-		else
-		{
-			$sql = "SELECT sql
-				FROM sqlite_master
-				WHERE type = 'table'
-					AND name = '" . $table_name . "'";
-			$table_data = sqlite_single_query($db->db_connect_id, $sql);
-			$table_data = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', '', $table_data);
-			$table_data = trim($table_data);
-
-			preg_match('#\((.*)\)#s', $table_data, $matches);
-
-			$table_cols = explode(',', trim($matches[1]));
-			foreach ($table_cols as $declaration)
-			{
-				$entities = preg_split('#\s+#', trim($declaration));
-				$column_name = preg_replace('/"?([^"]+)"?/', '\1', $entities[0]);
-
-				// Hit a primary key, those are not what we need :D
-				if (empty($entities[1]) || (strtolower($entities[0]) === 'primary' && strtolower($entities[1]) === 'key'))
-				{
-					continue;
-				}
-				$col_types[$column_name] = $entities[1];
-			}
-		}
+		$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
 
 		$sql = "SELECT *
 			FROM $table_name";
@@ -1624,7 +1590,7 @@ class mssql_extractor extends base_extractor
 		}
 		$this->flush($sql_data);
 	}
-	
+
 	function write_data_mssqlnative($table_name)
 	{
 		global $db;
@@ -1650,7 +1616,7 @@ class mssql_extractor extends base_extractor
 
 		$row = new result_mssqlnative($result_fields);
 		$i_num_fields = $row->num_fields();
-		
+
 		for ($i = 0; $i < $i_num_fields; $i++)
 		{
 			$ary_type[$i] = $row->field_type($i);
@@ -1663,7 +1629,7 @@ class mssql_extractor extends base_extractor
 			WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
 		$result2 = $db->sql_query($sql);
 		$row2 = $db->sql_fetchrow($result2);
-		
+
 		if (!empty($row2['has_identity']))
 		{
 			$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\nGO\n";
@@ -1727,8 +1693,8 @@ class mssql_extractor extends base_extractor
 			$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\nGO\n";
 		}
 		$this->flush($sql_data);
-	}	
-	
+	}
+
 	function write_data_odbc($table_name)
 	{
 		global $db;
@@ -2464,5 +2430,3 @@ function fgetd_seekless(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
 
 	return false;
 }
-
-?>

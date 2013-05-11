@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -174,13 +173,13 @@ class mcp_notes
 		}
 
 		// Generate the appropriate user information for the user we are looking at
-		if (!function_exists('get_user_avatar'))
+		if (!function_exists('phpbb_get_user_avatar'))
 		{
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
 
 		$rank_title = $rank_img = '';
-		$avatar_img = get_user_avatar($userrow['user_avatar'], $userrow['user_avatar_type'], $userrow['user_avatar_width'], $userrow['user_avatar_height']);
+		$avatar_img = phpbb_get_user_avatar($userrow);
 
 		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_IP'], 'd' => $user->lang['SORT_ACTION']);
@@ -216,6 +215,9 @@ class mcp_notes
 			}
 		}
 
+		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
@@ -226,9 +228,8 @@ class mcp_notes
 
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
-			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start),
-			'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
+			'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
+			'TOTAL_REPORTS'		=> $user->lang('LIST_REPORTS', (int) $log_count),
 
 			'RANK_TITLE'		=> $rank_title,
 			'JOINED'			=> $user->format_date($userrow['user_regdate']),
@@ -247,5 +248,3 @@ class mcp_notes
 	}
 
 }
-
-?>

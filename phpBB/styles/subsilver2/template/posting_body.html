@@ -23,7 +23,7 @@
 		<h2><!-- IF TOPIC_TITLE --><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- ELSE --><a class="titles" href="{U_VIEW_FORUM}">{FORUM_NAME}</a><!-- ENDIF --></h2>
 
 		<!-- IF MODERATORS -->
-			<p class="moderators">{L_MODERATORS}: {MODERATORS}</p>
+			<p class="moderators">{L_MODERATORS}{L_COLON} {MODERATORS}</p>
 		<!-- ENDIF -->
 		<!-- IF U_MCP -->
 			<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
@@ -69,8 +69,8 @@
 
 		<td class="postdetails" style="padding: 4px;">{draftrow.DATE}</td>
 		<td style="padding: 4px;"><b class="gen">{draftrow.DRAFT_SUBJECT}</b>
-			<!-- IF draftrow.S_LINK_TOPIC --><br /><span class="gensmall">{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
-			<!-- ELSEIF draftrow.S_LINK_FORUM --><br /><span class="gensmall">{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
+			<!-- IF draftrow.S_LINK_TOPIC --><br /><span class="gensmall">{L_TOPIC}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
+			<!-- ELSEIF draftrow.S_LINK_FORUM --><br /><span class="gensmall">{L_FORUM}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
 			<!-- ELSEIF draftrow.S_LINK_PM --><br /><span class="gensmall">{L_PRIVATE_MESSAGE}</span>
 			<!-- ELSE --><br /><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF -->
 		</td>
@@ -116,14 +116,14 @@
 
 <!-- IF S_DELETE_ALLOWED -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_DELETE_POST}:</b></td>
+		<td class="row1"><b class="genmed">{L_DELETE_POST}{L_COLON}</b></td>
 		<td class="row2"><input type="checkbox" class="radio" name="delete" /> <span class="gensmall">[ {L_DELETE_POST_WARN} ]</span></td>
 	</tr>
 <!-- ENDIF -->
 
 <!-- IF S_SHOW_TOPIC_ICONS or S_SHOW_PM_ICONS -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_ICON}:</b></td>
+		<td class="row1"><b class="genmed">{L_ICON}{L_COLON}</b></td>
 		<td class="row2">
 			<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
@@ -136,14 +136,14 @@
 
 <!-- IF not S_PRIVMSGS and S_DISPLAY_USERNAME -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_USERNAME}:</b></td>
+		<td class="row1"><b class="genmed">{L_USERNAME}{L_COLON}</b></td>
 		<td class="row2"><input class="post" type="text" tabindex="1" name="username" size="25" value="{USERNAME}" /></td>
 	</tr>
 <!-- ENDIF -->
 
 <!-- IF S_PRIVMSGS -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_TO}:</b></td>
+		<td class="row1"><b class="genmed">{L_TO}{L_COLON}</b></td>
 		<td class="row2">
 			{S_HIDDEN_ADDRESS_FIELD}
 		<!-- BEGIN to_recipient -->
@@ -157,7 +157,7 @@
 	</tr>
 	<!-- IF S_ALLOW_MASS_PM -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_BCC}:</b></td>
+		<td class="row1"><b class="genmed">{L_BCC}{L_COLON}</b></td>
 		<td class="row2">
 		<!-- BEGIN bcc_recipient -->
 			<span class="genmed nowrap"><strong>
@@ -172,11 +172,11 @@
 <!-- ENDIF -->
 
 <tr>
-	<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}:</b></td>
-	<td class="row2" width="78%"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->60<!-- ELSE -->64<!-- ENDIF -->" tabindex="2" value="{SUBJECT}" /></td>
+	<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}{L_COLON}</b></td>
+	<td class="row2" width="78%"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}" /></td>
 </tr>
 <tr>
-	<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}:</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}&nbsp;</span><br /><br />
+	<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}{L_COLON}</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}&nbsp;</span><br /><br />
 	<!-- IF S_SMILIES_ALLOWED -->
 		<table width="100%" cellspacing="5" cellpadding="0" border="0" align="center">
 		<tr>
@@ -227,14 +227,14 @@
 
 <!-- IF S_INLINE_ATTACHMENT_OPTIONS -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_ATTACHMENTS}:</b></td>
+		<td class="row1"><b class="genmed">{L_ATTACHMENTS}{L_COLON}</b></td>
 		<td class="row2"><select name="attachments">{S_INLINE_ATTACHMENT_OPTIONS}</select>&nbsp;<input type="button" class="btnbbcode" accesskey="a" value="{L_PLACE_INLINE}" name="attachinline" onclick="attach_form = document.forms[form_name].elements['attachments']; attach_inline(attach_form.value, attach_form.options[attach_form.selectedIndex].text);" onmouseover="helpline('a')" onmouseout="helpline('tip')" />
 		</td>
 	</tr>
 <!-- ENDIF -->
 
 <tr>
-	<td class="row1" valign="top"><b class="genmed">{L_OPTIONS}:</b><br />
+	<td class="row1" valign="top"><b class="genmed">{L_OPTIONS}{L_COLON}</b><br />
 		<table cellspacing="2" cellpadding="0" border="0">
 		<tr>
 			<td class="gensmall">{BBCODE_STATUS}</td>
@@ -257,6 +257,7 @@
 	</td>
 	<td class="row2">
 		<table cellpadding="1">
+		<!-- EVENT posting_editor_options_prepend -->
 		<!-- IF S_BBCODE_ALLOWED -->
 			<tr>
 				<td><input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
@@ -310,7 +311,7 @@
 			<!-- IF S_TYPE_TOGGLE -->
 				<tr>
 					<td>&nbsp;</td>
-					<td class="gen"><!-- IF S_EDIT_POST -->{L_CHANGE_TOPIC_TO}<!-- ELSE -->{L_POST_TOPIC_AS}<!-- ENDIF -->: <!-- BEGIN topic_type --><input type="radio" class="radio" name="topic_type" value="{topic_type.VALUE}"{topic_type.S_CHECKED} />{topic_type.L_TOPIC_TYPE}&nbsp;&nbsp;<!-- END topic_type --></td>
+					<td class="gen"><!-- IF S_EDIT_POST -->{L_CHANGE_TOPIC_TO}<!-- ELSE -->{L_POST_TOPIC_AS}<!-- ENDIF -->{L_COLON} <!-- BEGIN topic_type --><input type="radio" class="radio" name="topic_type" value="{topic_type.VALUE}"{topic_type.S_CHECKED} />{topic_type.L_TOPIC_TYPE}&nbsp;&nbsp;<!-- END topic_type --></td>
 				</tr>
 			<!-- ENDIF -->
 		<!-- ENDIF -->
@@ -320,14 +321,14 @@
 
 <!-- IF S_TOPIC_TYPE_ANNOUNCE or S_TOPIC_TYPE_STICKY -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_STICK_TOPIC_FOR}:</b><br /><span class="gensmall">{L_STICKY_ANNOUNCE_TIME_LIMIT}</span></td>
+		<td class="row1"><b class="genmed">{L_STICK_TOPIC_FOR}{L_COLON}</b><br /><span class="gensmall">{L_STICKY_ANNOUNCE_TIME_LIMIT}</span></td>
 		<td class="row2"><input class="post" type="text" name="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" />&nbsp;<b class="gen">{L_DAYS}</b> <span class="gensmall">{L_STICK_TOPIC_FOR_EXPLAIN}</span></td>
 	</tr>
 <!-- ENDIF -->
 
 <!-- IF S_EDIT_REASON -->
 	<tr>
-		<td class="row1" valign="top"><b class="genmed">{L_EDIT_REASON}:</b></td>
+		<td class="row1" valign="top"><b class="genmed">{L_EDIT_REASON}{L_COLON}</b></td>
 		<td class="row2"><input class="post" type="text" name="edit_reason" size="50" value="{EDIT_REASON}" /></td>
 	</tr>
 <!-- ENDIF -->
@@ -355,7 +356,7 @@
 		<!-- INCLUDE posting_poll_body.html -->
 	<!-- ELSEIF S_POLL_DELETE -->
 		<tr>
-			<td class="row1"><span class="genmed"><b>{L_POLL_DELETE}:</b></span></td>
+			<td class="row1"><span class="genmed"><b>{L_POLL_DELETE}{L_COLON}</b></span></td>
 			<td class="row2"><input type="checkbox" class="radio" name="poll_delete" /></td>
 		</tr>
 	<!-- ENDIF -->

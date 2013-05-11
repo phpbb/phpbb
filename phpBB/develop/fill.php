@@ -38,8 +38,8 @@ $posts_per_topic = 500;
 
 
 // general vars
-$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'generate';
-$start = (isset($_REQUEST['start'])) ? intval($_REQUEST['start']) : 0;
+$mode = request_var('mode', 'generate');
+$start = request_var('start', 0);
 
 switch ($mode)
 {
@@ -183,5 +183,3 @@ function rndm_username()
 
 	return $usernames[array_rand($usernames)];
 }
-
-?>

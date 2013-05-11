@@ -26,7 +26,7 @@
 				</table>
 			</td>
 			<td width="100%"<!-- IF history_row.S_CURRENT_MSG --> style="background-color:lightblue"<!-- ENDIF -->>
-				<div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};"><b>{L_PM_SUBJECT}:</b>&nbsp;{history_row.SUBJECT}</div><div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><b>{L_FOLDER}:</b>&nbsp;{history_row.FOLDER}</div>
+				<div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};"><b>{L_PM_SUBJECT}{L_COLON}</b>&nbsp;{history_row.SUBJECT}</div><div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><b>{L_FOLDER}{L_COLON}</b>&nbsp;{history_row.FOLDER}</div>
 			</td>
 		</tr>
 
@@ -48,7 +48,7 @@
 						<tr valign="middle">
 							<td width="100%">&nbsp;</td>
 							<td width="10" nowrap="nowrap">{history_row.MINI_POST_IMG}</td>
-							<td class="gensmall" nowrap="nowrap"><b>{L_SENT_AT}:</b> {history_row.SENT_DATE}</td>
+							<td class="gensmall" nowrap="nowrap"><b>{L_SENT_AT}{L_COLON}</b> {history_row.SENT_DATE}</td>
 						</tr>
 						</table>
 					</td>
@@ -59,7 +59,7 @@
 
 		<!-- IF history_row.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 			<td class="gensmall"><a href="{history_row.U_VIEW_MESSAGE}">{L_VIEW_PM}</a></td>
-			<td><div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<!-- IF history_row.U_PROFILE --><a href="{history_row.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF history_row.U_EMAIL --><a href="{history_row.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><!-- IF history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE --><a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}', '{LA_WROTE}'); return false;"<!-- ENDIF -->>{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF history_row.U_POST_REPLY_PM --><a href="{history_row.U_POST_REPLY_PM}">{REPLY_IMG}</a><!-- ENDIF -->&nbsp;</div></td>
+			<td><div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<!-- IF history_row.U_PROFILE --><a href="{history_row.U_PROFILE}" class="imageset">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF history_row.U_EMAIL --><a href="{history_row.U_EMAIL}" class="imageset">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><!-- IF history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE --><a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}', '{LA_WROTE}'); return false;"<!-- ENDIF --> class="imageset">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF history_row.U_POST_REPLY_PM --><a href="{history_row.U_POST_REPLY_PM}" class="imageset">{REPLY_IMG}</a><!-- ENDIF -->&nbsp;</div></td>
 		</tr>
 		<tr>
 			<td class="spacer" colspan="2"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>

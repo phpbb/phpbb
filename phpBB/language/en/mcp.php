@@ -4,9 +4,8 @@
 * mcp [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -120,8 +119,10 @@ $lang = array_merge($lang, array(
 	'LATEST_WARNING_TIME'		=> 'Latest warning issued',
 	'LATEST_WARNINGS'			=> 'Latest 5 warnings',
 	'LEAVE_SHADOW'				=> 'Leave shadow topic in place',
-	'LIST_REPORT'				=> '1 report',
-	'LIST_REPORTS'				=> '%d reports',
+	'LIST_REPORTS'				=> array(
+		1	=> '%d report',
+		2	=> '%d reports',
+	),
 	'LOCK'						=> 'Lock',
 	'LOCK_POST_POST'			=> 'Lock post',
 	'LOCK_POST_POST_CONFIRM'	=> 'Are you sure you want to prevent editing this post?',
@@ -143,7 +144,7 @@ $lang = array_merge($lang, array(
 	'MCP_ADD'						=> 'Add a warning',
 
 	'MCP_BAN'					=> 'Banning',
-	'MCP_BAN_EMAILS'			=> 'Ban e-mails',
+	'MCP_BAN_EMAILS'			=> 'Ban emails',
 	'MCP_BAN_IPS'				=> 'Ban IPs',
 	'MCP_BAN_USERNAMES'			=> 'Ban Usernames',
 
@@ -237,6 +238,7 @@ $lang = array_merge($lang, array(
 	'NO_POST'						=> 'You have to select a post in order to warn the user for a post.',
 	'NO_POST_REPORT'				=> 'This post was not reported.',
 	'NO_POST_SELECTED'				=> 'You must select at least one post to perform this action.',
+	'NO_POSTS_QUEUE'				=> 'There are no posts waiting for approval.',
 	'NO_REASON_DISAPPROVAL'			=> 'Please give an appropriate reason for disapproval.',
 	'NO_REPORT'						=> 'No report found',
 	'NO_REPORTS'					=> 'No reports found',
@@ -248,14 +250,18 @@ $lang = array_merge($lang, array(
 	'ONLY_TOPIC'			=> 'Only topic “%s”',
 	'OTHER_USERS'			=> 'Other users posting from this IP',
 
+	'QUICKMOD_ACTION_NOT_ALLOWED' => "%s not allowed as quickmod",
+
 	'PM_REPORT_CLOSED_SUCCESS'	=> 'The selected PM report has been closed successfully.',
 	'PM_REPORT_DELETED_SUCCESS'	=> 'The selected PM report has been deleted successfully.',
 	'PM_REPORTED_SUCCESS'		=> 'This private message has been successfully reported.',
-	'PM_REPORT_TOTAL'			=> 'In total there is <strong>1</strong> PM report to review.',
 	'PM_REPORTS_CLOSED_SUCCESS'	=> 'The selected PM reports have been closed successfully.',
 	'PM_REPORTS_DELETED_SUCCESS'=> 'The selected PM reports have been deleted successfully.',
-	'PM_REPORTS_TOTAL'			=> 'In total there are <strong>%d</strong> PM reports to review.',
-	'PM_REPORTS_ZERO_TOTAL'		=> 'There are no PM reports to review.',
+	'PM_REPORTS_TOTAL'			=> array(
+		0	=> 'There are no PM reports to review.',
+		1	=> 'In total there is <strong>1</strong> PM report to review.',
+		2	=> 'In total there are <strong>%d</strong> PM reports to review.',
+	),
 	'PM_REPORT_DETAILS'			=> 'Private message report details',
 	'POSTER'					=> 'Poster',
 	'POSTS_APPROVED_SUCCESS'	=> 'The selected posts have been approved.',
@@ -282,8 +288,11 @@ $lang = array_merge($lang, array(
 	'REPORTED_ON_DATE'			=> 'on',
 	'REPORTS_CLOSED_SUCCESS'	=> 'The selected reports have been closed successfully.',
 	'REPORTS_DELETED_SUCCESS'	=> 'The selected reports have been deleted successfully.',
-	'REPORTS_TOTAL'				=> 'In total there are <strong>%d</strong> reports to review.',
-	'REPORTS_ZERO_TOTAL'		=> 'There are no reports to review.',
+	'REPORTS_TOTAL'				=> array(
+		0	=> 'There are no reports to review.',
+		1	=> 'In total there is <strong>1</strong> report to review.',
+		2	=> 'In total there are <strong>%d</strong> reports to review.',
+	),
 	'REPORT_CLOSED'				=> 'This report has already been closed.',
 	'REPORT_CLOSED_SUCCESS'		=> 'The selected report has been closed successfully.',
 	'REPORT_DELETED_SUCCESS'	=> 'The selected report has been deleted successfully.',
@@ -295,7 +304,6 @@ $lang = array_merge($lang, array(
 	'REPORT_POST_EXPLAIN'		=> 'Use this form to report the selected post to the forum moderators and board administrators. Reporting should generally be used only if the post breaks forum rules.',
 	'REPORT_REASON'				=> 'Report reason',
 	'REPORT_TIME'				=> 'Report time',
-	'REPORT_TOTAL'				=> 'In total there is <strong>1</strong> report to review.',
 	'RESYNC'					=> 'Resync',
 	'RETURN_MESSAGE'			=> '%sReturn to the message%s',
 	'RETURN_NEW_FORUM'			=> '%sGo to the new forum%s',
@@ -353,9 +361,11 @@ $lang = array_merge($lang, array(
 	'TOPIC_UNLOCKED_SUCCESS'	=> 'The selected topic has been unlocked.',
 	'TOTAL_WARNINGS'			=> 'Total Warnings',
 
-	'UNAPPROVED_POSTS_TOTAL'		=> 'In total there are <strong>%d</strong> posts waiting for approval.',
-	'UNAPPROVED_POSTS_ZERO_TOTAL'	=> 'There are no posts waiting for approval.',
-	'UNAPPROVED_POST_TOTAL'			=> 'In total there is <strong>1</strong> post waiting for approval.',
+	'UNAPPROVED_POSTS_TOTAL'		=> array(
+		0	=> 'There are no posts waiting for approval.',
+		1	=> 'In total there is <strong>1</strong> post waiting for approval.',
+		2	=> 'In total there are <strong>%d</strong> posts waiting for approval.',
+	),
 	'UNLOCK'						=> 'Unlock',
 	'UNLOCK_POST'					=> 'Unlock post',
 	'UNLOCK_POST_EXPLAIN'			=> 'Allow editing',
@@ -381,7 +391,7 @@ $lang = array_merge($lang, array(
 	'WARNING_PM_BODY'		=> 'The following is a warning which has been issued to you by an administrator or moderator of this site.[quote]%s[/quote]',
 	'WARNING_PM_SUBJECT'	=> 'Board warning issued',
 	'WARNING_POST_DEFAULT'	=> 'This is a warning regarding the following post made by you: %s .',
-	'WARNINGS_ZERO_TOTAL'	=> 'No warnings exist.',
+	'NO_WARNINGS'	=> 'No warnings exist.',
 
 	'YOU_SELECTED_TOPIC'	=> 'You selected topic number %d: %s.',
 
@@ -400,5 +410,3 @@ $lang = array_merge($lang, array(
 		)
 	),
 ));
-
-?>

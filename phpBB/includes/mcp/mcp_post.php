@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -394,7 +393,7 @@ function mcp_post_details($id, $mode, $action)
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db, $config, $phpbb_root_path, $phpEx;
+	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
@@ -465,15 +464,13 @@ function change_poster(&$post_info, $userdata)
 	}
 
 	// refresh search cache of this post
-	$search_type = basename($config['search_type']);
+	$search_type = $config['search_type'];
 
-	if (file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	if (class_exists($search_type))
 	{
-		require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
-
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;
-		$search = new $search_type($error);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		if (!$error && method_exists($search, 'destroy_cache'))
 		{
@@ -497,5 +494,3 @@ function change_poster(&$post_info, $userdata)
 	// Now add log entry
 	add_log('mod', $post_info['forum_id'], $post_info['topic_id'], 'LOG_MCP_CHANGE_POSTER', $post_info['topic_title'], $from_username, $to_username);
 }
-
-?>

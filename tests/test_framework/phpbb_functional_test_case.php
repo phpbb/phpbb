@@ -9,8 +9,6 @@
 use Symfony\Component\BrowserKit\CookieJar;
 
 require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
-require_once __DIR__ . '/../../phpBB/includes/acm/acm_file.php';
-require_once __DIR__ . '/../../phpBB/includes/cache.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
@@ -19,6 +17,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected $cache = null;
 	protected $db = null;
+	protected $extension_manager = null;
 
 	/**
 	* Session ID for current test's session (each test makes its own)
@@ -40,6 +39,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		parent::setUpBeforeClass();
 
 		self::$config = phpbb_test_case_helpers::get_test_config();
+
+		// Important: this is used both for installation and by
+		// test cases for querying the tables.
+		// Therefore table prefix must be set before a board is
+		// installed, and also before each test case is run.
+		self::$config['table_prefix'] = 'phpbb_';
 
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
@@ -84,18 +89,23 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 	}
 
+	public function __construct($name = NULL, array $data = array(), $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
+
+		$this->backupStaticAttributesBlacklist += array(
+			'phpbb_functional_test_case' => array('config', 'already_installed'),
+		);
+	}
+
 	protected function get_db()
 	{
 		global $phpbb_root_path, $phpEx;
 		// so we don't reopen an open connection
-		if (!($this->db instanceof dbal))
+		if (!($this->db instanceof phpbb_db_driver))
 		{
-			if (!class_exists('dbal_' . self::$config['dbms']))
-			{
-				include($phpbb_root_path . 'includes/db/' . self::$config['dbms'] . ".$phpEx");
-			}
-			$sql_db = 'dbal_' . self::$config['dbms'];
-			$this->db = new $sql_db();
+			$dbms = self::$config['dbms'];
+			$this->db = new $dbms();
 			$this->db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
 		}
 		return $this->db;
@@ -105,7 +115,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		if (!$this->cache)
 		{
-			$this->cache = new cache();
+			$this->cache = new phpbb_cache_driver_file;
 		}
 
 		return $this->cache;
@@ -120,20 +130,43 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$cache->load();
 	}
 
-	public function __construct($name = NULL, array $data = array(), $dataName = '')
+	protected function get_extension_manager()
 	{
-		parent::__construct($name, $data, $dataName);
+		global $phpbb_root_path, $phpEx;
 
-		$this->backupStaticAttributesBlacklist += array(
-			'phpbb_functional_test_case' => array('config', 'already_installed'),
+		$config = new phpbb_config(array());
+		$db = $this->get_db();
+		$db_tools = new phpbb_db_tools($db);
+
+		$migrator = new phpbb_db_migrator(
+			$config,
+			$db,
+			$db_tools,
+			self::$config['table_prefix'] . 'migrations',
+			$phpbb_root_path,
+			$php_ext,
+			self::$config['table_prefix'],
+			array()
 		);
+		$extension_manager = new phpbb_extension_manager(
+			new phpbb_mock_container_builder(),
+			$db,
+			$config,
+			$migrator,
+			new phpbb_filesystem(),
+			self::$config['table_prefix'] . 'ext',
+			dirname(__FILE__) . '/',
+			$php_ext,
+			$this->get_cache_driver()
+		);
+
+		return $extension_manager;
 	}
 
 	static protected function install_board()
 	{
 		global $phpbb_root_path, $phpEx;
 
-		self::$config['table_prefix'] = 'phpbb_';
 		self::recreate_database(self::$config);
 
 		if (file_exists($phpbb_root_path . "config.$phpEx"))
@@ -164,12 +197,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);
 
 		$data = array_merge($data, array(
-			'email_enable'		=> false,
-			'smtp_delivery'		=> false,
-			'smtp_host'		=> '',
-			'smtp_auth'		=> '',
-			'smtp_user'		=> '',
-			'smtp_pass'		=> '',
+			'email_enable'		=> true,
+			'smtp_delivery'		=> true,
+			'smtp_host'			=> 'nxdomain.phpbb.com',
+			'smtp_auth'			=> '',
+			'smtp_user'			=> 'nxuser',
+			'smtp_pass'			=> 'nxpass',
 			'cookie_secure'		=> false,
 			'force_server_vars'	=> false,
 			'server_protocol'	=> $parseURL['scheme'] . '://',
@@ -183,6 +216,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertNotSame(false, $content);
 		self::assertContains('Welcome to Installation', $content);
 
+		// Installer uses 3.0-style dbms name
+		$data['dbms'] = str_replace('phpbb_db_driver_', '', $data['dbms']);
 		$content = self::do_request('create_table', $data);
 		self::assertNotSame(false, $content);
 		self::assertContains('The database tables used by phpBB', $content);
@@ -192,7 +227,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$content = self::do_request('config_file', $data);
 		self::assertNotSame(false, $content);
 		self::assertContains('Configuration file', $content);
-		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], array(), true, true));
+		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], true, true));
 
 		$content = self::do_request('final', $data);
 		self::assertNotSame(false, $content);
@@ -236,22 +271,26 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Required by unique_id
 		global $config;
 
-		if (!is_array($config))
-		{
-			$config = array();
-		}
-
+		$config = new phpbb_config(array());
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
 		// Required by user_add
-		global $db, $cache;
+		global $db, $cache, $phpbb_dispatcher, $phpbb_container;
 		$db = $this->get_db();
 		if (!function_exists('phpbb_mock_null_cache'))
 		{
 			require_once(__DIR__ . '/../mock/null_cache.php');
 		}
 		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new phpbb_cache_driver_null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
 
 		if (!function_exists('utf_clean_string'))
 		{
@@ -261,6 +300,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
 		}
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$user_row = array(
 			'username' => $username,
@@ -273,6 +315,90 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'user_password' => phpbb_hash($username),
 		);
 		return user_add($user_row);
+	}
+
+	protected function remove_user_group($group_name, $usernames)
+	{
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
+
+		$config = new phpbb_config(array());
+		$config['coppa_enable'] = 0;
+
+		$db = $this->get_db();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = $this->getMock('phpbb_user');
+		$auth = $this->getMock('phpbb_auth');
+
+		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new phpbb_cache_driver_null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
+
+		if (!function_exists('utf_clean_string'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
+		}
+		if (!function_exists('group_user_del'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
+		}
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		return group_user_del($group_id, false, $usernames, $group_name);
+	}
+
+	protected function add_user_group($group_name, $usernames)
+	{
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
+
+		$config = new phpbb_config(array());
+		$config['coppa_enable'] = 0;
+
+		$db = $this->get_db();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = $this->getMock('phpbb_user');
+		$auth = $this->getMock('phpbb_auth');
+
+		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new phpbb_cache_driver_null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
+
+		if (!function_exists('utf_clean_string'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
+		}
+		if (!function_exists('group_user_del'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
+		}
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		return group_user_add($group_id, false, $usernames, $group_name);
 	}
 
 	protected function login($username = 'admin')
@@ -295,6 +421,61 @@ class phpbb_functional_test_case extends phpbb_test_case
 			if (substr($cookie->getName(), -4) == '_sid')
 			{
 				$this->sid = $cookie->getValue();
+			}
+		}
+	}
+
+	protected function logout()
+	{
+		$this->add_lang('ucp');
+
+		$crawler = $this->request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
+		$this->assert_response_success();
+		$this->assertContains($this->lang('LOGOUT_REDIRECT'), $crawler->filter('#message')->text());
+		unset($this->sid);
+
+	}
+
+	/**
+	* Login to the ACP
+	* You must run login() before calling this.
+	*/
+	protected function admin_login($username = 'admin')
+	{
+		$this->add_lang('acp/common');
+
+		// Requires login first!
+		if (empty($this->sid))
+		{
+			$this->fail('$this->sid is empty. Make sure you call login() before admin_login()');
+			return;
+		}
+
+		$crawler = $this->request('GET', 'adm/index.php?sid=' . $this->sid);
+		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
+
+		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
+
+		foreach ($form->getValues() as $field => $value)
+		{
+			if (strpos($field, 'password_') === 0)
+			{
+				$crawler = $this->client->submit($form, array('username' => $username, $field => $username));
+				$this->assert_response_success();
+				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
+
+				$cookies = $this->cookieJar->all();
+
+				// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
+				foreach ($cookies as $cookie);
+				{
+					if (substr($cookie->getName(), -4) == '_sid')
+					{
+						$this->sid = $cookie->getValue();
+					}
+				}
+
+				break;
 			}
 		}
 	}
@@ -337,6 +518,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 	}
 
 	/**
+	 * assertContains for language strings
+	 *
+	 * @param string $needle Search string
+	 * @param string $haystack Search this
+	 * @param string $message Optional failure message
+	 */
+	public function assertContainsLang($needle, $haystack, $message = null)
+	{
+		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+	}
+
+	/**
 	* Heuristic function to check that the response is success.
 	*
 	* When php decides to die with a fatal error, it still sends 200 OK
@@ -352,5 +545,85 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertNotContains('Notice:', $content);
 		$this->assertNotContains('Warning:', $content);
 		$this->assertNotContains('[phpBB Debug]', $content);
+	}
+
+	public function assert_filter($crawler, $expr, $msg = null)
+	{
+		$nodes = $crawler->filter($expr);
+		if ($msg)
+		{
+			$msg .= "\n";
+		}
+		else
+		{
+			$msg = '';
+		}
+		$msg .= "`$expr` not found in DOM.";
+		$this->assertGreaterThan(0, count($nodes), $msg);
+		return $nodes;
+	}
+
+	/**
+	* Asserts that exactly one checkbox with name $name exists within the scope
+	* of $crawler and that the checkbox is checked.
+	*
+	* @param Symfony\Component\DomCrawler\Crawler $crawler
+	* @param string $name
+	* @param string $message
+	*
+	* @return null
+	*/
+	public function assert_checkbox_is_checked($crawler, $name, $message = '')
+	{
+		$this->assertSame(
+			'checked',
+			$this->assert_find_one_checkbox($crawler, $name)->attr('checked'),
+			$message ?: "Failed asserting that checkbox $name is checked."
+		);
+	}
+
+	/**
+	* Asserts that exactly one checkbox with name $name exists within the scope
+	* of $crawler and that the checkbox is unchecked.
+	*
+	* @param Symfony\Component\DomCrawler\Crawler $crawler
+	* @param string $name
+	* @param string $message
+	*
+	* @return null
+	*/
+	public function assert_checkbox_is_unchecked($crawler, $name, $message = '')
+	{
+		$this->assertSame(
+			'',
+			$this->assert_find_one_checkbox($crawler, $name)->attr('checked'),
+			$message ?: "Failed asserting that checkbox $name is unchecked."
+		);
+	}
+
+	/**
+	* Searches for an input element of type checkbox with the name $name using
+	* $crawler. Contains an assertion that only one such checkbox exists within
+	* the scope of $crawler.
+	*
+	* @param Symfony\Component\DomCrawler\Crawler $crawler
+	* @param string $name
+	* @param string $message
+	*
+	* @return Symfony\Component\DomCrawler\Crawler
+	*/
+	public function assert_find_one_checkbox($crawler, $name, $message = '')
+	{
+		$query = sprintf('//input[@type="checkbox" and @name="%s"]', $name);
+		$result = $crawler->filterXPath($query);
+
+		$this->assertEquals(
+			1,
+			sizeof($result),
+			$message ?: 'Failed asserting that exactly one checkbox with name' .
+				" $name exists in crawler scope."
+		);
+
+		return $result;
 	}
 }

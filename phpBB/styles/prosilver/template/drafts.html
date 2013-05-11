@@ -2,16 +2,16 @@
 
 <!-- IF .draftrow -->
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h3>{L_LOAD_DRAFT}</h3>
 	<p>{L_LOAD_DRAFT_EXPLAIN}</p>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <div class="<!-- IF not S_PRIVMSGS -->forumbg<!-- ELSE -->panel<!-- ENDIF -->">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<ul class="topiclist">
 		<li class="header">
@@ -28,8 +28,8 @@
 		<dl>
 			<dt>
 				<a href="{draftrow.U_INSERT}" title="{L_LOAD_DRAFT}" class="topictitle">{draftrow.DRAFT_SUBJECT}</a><br />
-				<!-- IF not S_PRIVMSGS --><!-- IF draftrow.S_LINK_TOPIC -->{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
-				<!-- ELSEIF draftrow.S_LINK_FORUM -->{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
+				<!-- IF not S_PRIVMSGS --><!-- IF draftrow.S_LINK_TOPIC -->{L_TOPIC}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
+				<!-- ELSEIF draftrow.S_LINK_FORUM -->{L_FORUM}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
 				<!-- ELSE -->{L_NO_TOPIC_FORUM}<!-- ENDIF --><!-- ENDIF -->
 			</dt>
 			<dd class="posted">{draftrow.DATE}</dd>
@@ -39,6 +39,6 @@
 
 	</ul>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 <!-- ENDIF -->

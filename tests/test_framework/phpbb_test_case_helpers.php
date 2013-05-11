@@ -42,6 +42,11 @@ class phpbb_test_case_helpers
 		$this->test_case->setExpectedException($exceptionName, (string) $message, $errno);
 	}
 
+	public function makedirs($path)
+	{
+		mkdir($path, 0777, true);
+	}
+
 	static public function get_test_config()
 	{
 		$config = array();
@@ -49,7 +54,7 @@ class phpbb_test_case_helpers
 		if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
 		{
 			$config = array_merge($config, array(
-				'dbms'		=> 'sqlite',
+				'dbms'		=> 'phpbb_db_driver_sqlite',
 				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite2', // filename
 				'dbport'	=> '',
 				'dbname'	=> '',
@@ -72,8 +77,13 @@ class phpbb_test_case_helpers
 		{
 			include($test_config);
 
+			if (!function_exists('phpbb_convert_30_dbms_to_31'))
+			{
+				require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+			}
+
 			$config = array_merge($config, array(
-				'dbms'		=> $dbms,
+				'dbms'		=> phpbb_convert_30_dbms_to_31($dbms),
 				'dbhost'	=> $dbhost,
 				'dbport'	=> $dbport,
 				'dbname'	=> $dbname,
@@ -86,12 +96,26 @@ class phpbb_test_case_helpers
 			{
 				$config['phpbb_functional_url'] = $phpbb_functional_url;
 			}
+
+			if (isset($phpbb_redis_host))
+			{
+				$config['redis_host'] = $phpbb_redis_host;
+			}
+			if (isset($phpbb_redis_port))
+			{
+				$config['redis_port'] = $phpbb_redis_port;
+			}
 		}
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
 		{
+			if (!function_exists('phpbb_convert_30_dbms_to_31'))
+			{
+				require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+			}
+
 			$config = array_merge($config, array(
-				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? $_SERVER['PHPBB_TEST_DBMS'] : '',
+				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? phpbb_convert_30_dbms_to_31($_SERVER['PHPBB_TEST_DBMS']) : '',
 				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
 				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
 				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
@@ -108,6 +132,124 @@ class phpbb_test_case_helpers
 			));
 		}
 
+		if (isset($_SERVER['PHPBB_TEST_REDIS_HOST']))
+		{
+			$config['redis_host'] = $_SERVER['PHPBB_TEST_REDIS_HOST'];
+		}
+
+		if (isset($_SERVER['PHPBB_TEST_REDIS_PORT']))
+		{
+			$config['redis_port'] = $_SERVER['PHPBB_TEST_REDIS_PORT'];
+		}
+
 		return $config;
+	}
+
+	/**
+	* Recursive directory copying function
+	*
+	* @param string $source
+	* @param string $dest
+	* @return array list of files copied
+	*/
+	public function copy_dir($source, $dest)
+	{
+		$source = (substr($source, -1) == '/') ? $source : $source . '/';
+		$dest = (substr($dest, -1) == '/') ? $dest : $dest . '/';
+
+		$copied_files = array();
+
+		if (!is_dir($dest))
+		{
+			$this->makedirs($dest);
+		}
+
+		$files = scandir($source);
+		foreach ($files as $file)
+		{
+			if ($file == '.' || $file == '..')
+			{
+				continue;
+			}
+
+			if (is_dir($source . $file))
+			{
+				$created_dir = false;
+				if (!is_dir($dest . $file))
+				{
+					$created_dir = true;
+					$this->makedirs($dest . $file);
+				}
+
+				$copied_files = array_merge($copied_files, self::copy_dir($source . $file, $dest . $file));
+
+				if ($created_dir)
+				{
+					$copied_files[] = $dest . $file;
+				}
+			}
+			else
+			{
+				if (!file_exists($dest . $file))
+				{
+					copy($source . $file, $dest . $file);
+
+					$copied_files[] = $dest . $file;
+				}
+			}
+		}
+
+		return $copied_files;
+	}
+
+	/**
+	* Remove files/directories that are listed in an array
+	* Designed for use with $this->copy_dir()
+	*
+	* @param array $file_list
+	*/
+	public function remove_files($file_list)
+	{
+		foreach ($file_list as $file)
+		{
+			if (is_dir($file))
+			{
+				rmdir($file);
+			}
+			else
+			{
+				unlink($file);
+			}
+		}
+	}
+
+	/**
+	* Empty directory (remove any subdirectories/files below)
+	*
+	* @param array $file_list
+	*/
+	public function empty_dir($path)
+	{
+		$path = (substr($path, -1) == '/') ? $path : $path . '/';
+
+		$files = scandir($path);
+		foreach ($files as $file)
+		{
+			if ($file == '.' || $file == '..')
+			{
+				continue;
+			}
+
+			if (is_dir($path . $file))
+			{
+				$this->empty_dir($path . $file);
+
+				rmdir($path . $file);
+			}
+			else
+			{
+				unlink($path . $file);
+			}
+		}
 	}
 }

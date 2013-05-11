@@ -1,15 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}" xml:lang="{S_USER_LANG}">
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
 <head>
-
-<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
-<meta http-equiv="Content-Language" content="{S_USER_LANG}" />
-<meta http-equiv="imagetoolbar" content="no" />
+<meta charset="utf-8">
 <!-- IF META -->{META}<!-- ENDIF -->
 <title>{PAGE_TITLE}</title>
 
-<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="{T_TEMPLATE_PATH}/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 <script type="text/javascript">
 // <![CDATA[
@@ -46,14 +42,14 @@ function dE(n, s, type)
 		<!-- IF S_LANG_SELECT -->
 		<form method="post" action="">
 			<fieldset class="nobg">
-				<label for="language">{L_SELECT_LANG}:</label>
+				<label for="language">{L_SELECT_LANG}{L_COLON}</label>
 				{S_LANG_SELECT}
 				<input class="button1" type="submit" id="change_lang" name="change_lang" value="{L_CHANGE}" />
 			</fieldset>
 		</form>
 		<!-- ENDIF -->
 	</div>
-	
+
 	<div id="page-body">
 		<div id="tabs">
 			<ul>
@@ -77,5 +73,5 @@ function dE(n, s, type)
 						<!-- END l_block2 -->
 						</ul>
 					</div>
-	
+
 					<div id="main" class="install-body">

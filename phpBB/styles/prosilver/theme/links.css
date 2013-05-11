@@ -7,10 +7,17 @@ a {
 	unicode-bidi: embed;
 }
 
-a:link	{ color: #898989; text-decoration: none; }
-a:visited	{ color: #898989; text-decoration: none; }
-a:hover	{ color: #d3d3d3; text-decoration: underline; }
-a:active	{ color: #d2d2d2; text-decoration: none; }
+a:link, a:visited { 
+	text-decoration: none;
+}
+
+a:hover	{ 
+	text-decoration: underline;
+}
+
+a:active {
+	text-decoration: none;
+}
 
 /* Coloured usernames */
 .username-coloured {
@@ -21,22 +28,18 @@ a:active	{ color: #d2d2d2; text-decoration: none; }
 
 /* Links on gradient backgrounds */
 #search-box a:link, .navbg a:link, .forumbg .header a:link, .forabg .header a:link, th a:link {
-	color: #FFFFFF;
 	text-decoration: none;
 }
 
 #search-box a:visited, .navbg a:visited, .forumbg .header a:visited, .forabg .header a:visited, th a:visited {
-	color: #FFFFFF;
 	text-decoration: none;
 }
 
 #search-box a:hover, .navbg a:hover, .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
-	color: #ffffff;
 	text-decoration: underline;
 }
 
 #search-box a:active, .navbg a:active, .forumbg .header a:active, .forabg .header a:active, th a:active {
-	color: #ffffff;
 	text-decoration: none;
 }
 
@@ -45,96 +48,74 @@ a.forumtitle {
 	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;
 	font-size: 1.2em;
 	font-weight: bold;
-	color: #898989;
 	text-decoration: none;
 }
 
-/* a.forumtitle:visited { color: #898989; } */
-
 a.forumtitle:hover {
-	color: #bcbcbc;
 	text-decoration: underline;
-}
-
-a.forumtitle:active {
-	color: #898989;
 }
 
 a.topictitle {
 	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;
 	font-size: 1.2em;
 	font-weight: bold;
-	color: #898989;
 	text-decoration: none;
 }
 
-/* a.topictitle:visited { color: #d2d2d2; } */
-
 a.topictitle:hover {
-	color: #bcbcbc;
 	text-decoration: underline;
 }
 
-a.topictitle:active {
-	color: #898989;
+a.lastsubject {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a.lastsubject:hover {
+	text-decoration: underline;
 }
 
 /* Post body links */
 .postlink {
 	text-decoration: none;
-	color: #d2d2d2;
-	border-bottom: 1px solid #d2d2d2;
+	border-bottom: 1px solid transparent;
 	padding-bottom: 0;
 }
 
-/* .postlink:visited { color: #bdbdbd; } */
-
-.postlink:active {
-	color: #d2d2d2;
-}
-
 .postlink:hover {
-	background-color: #f6f6f6;
 	text-decoration: none;
-	color: #404040;
 }
 
 .signature a, .signature a:visited, .signature a:hover, .signature a:active {
 	border: none;
 	text-decoration: underline;
-	background-color: transparent;
 }
 
 /* Profile links */
 .postprofile a:link, .postprofile a:visited, .postprofile dt.author a {
 	font-weight: bold;
-	color: #898989;
 	text-decoration: none;
 }
 
 .postprofile a:hover, .postprofile dt.author a:hover {
 	text-decoration: underline;
-	color: #d3d3d3;
 }
 
 /* CSS spec requires a:link, a:visited, a:hover and a:active rules to be specified in this order. */
 /* See http://www.phpbb.com/bugs/phpbb3/59685 */
 .postprofile a:active {
 	font-weight: bold;
-	color: #898989;
 	text-decoration: none;
 }
 
 
 /* Profile searchresults */	
 .search .postprofile a {
-	color: #898989;
 	text-decoration: none; 
 	font-weight: normal;
 }
 
 .search .postprofile a:hover {
-	color: #d3d3d3;
 	text-decoration: underline; 
 }
 
@@ -148,8 +129,8 @@ a.topictitle:active {
 a.top {
 	background: none no-repeat top left;
 	text-decoration: none;
-	width: {IMG_ICON_BACK_TOP_WIDTH}px;
-	height: {IMG_ICON_BACK_TOP_HEIGHT}px;
+	width: 11px;
+	height: 11px;
 	display: block;
 	float: right;
 	overflow: hidden;
@@ -164,47 +145,44 @@ a.top2 {
 }
 
 /* Arrow links  */
-a.up		{ background: none no-repeat left center; }
-a.down		{ background: none no-repeat right center; }
-a.left		{ background: none no-repeat 3px 60%; }
-a.right		{ background: none no-repeat 95% 60%; }
+a.arrow-up		{ background: none no-repeat left center; }
+a.arrow-down		{ background: none no-repeat right center; }
+a.arrow-left		{ background: none no-repeat 3px 60%; }
+a.arrow-right		{ background: none no-repeat 95% 60%; }
 
-a.up, a.up:link, a.up:active, a.up:visited {
+a.arrow-up, a.arrow-up:link, a.arrow-up:active, a.arrow-up:visited {
 	padding-left: 10px;
 	text-decoration: none;
 	border-bottom-width: 0;
 }
 
-a.up:hover {
+a.arrow-up:hover {
 	background-position: left top;
-	background-color: transparent;
 }
 
-a.down, a.down:link, a.down:active, a.down:visited {
+a.arrow-down, a.arrow-down:link, a.arrow-down:active, a.arrow-down:visited {
 	padding-right: 10px;
 }
 
-a.down:hover {
+a.arrow-down:hover {
 	background-position: right bottom;
 	text-decoration: none;
 }
 
-a.left, a.left:active, a.left:visited {
+a.arrow-left, a.arrow-left:active, a.arrow-left:visited {
 	padding-left: 12px;
 }
 
-a.left:hover {
-	color: #d2d2d2;
+a.arrow-left:hover {
 	text-decoration: none;
 	background-position: 0 60%;
 }
 
-a.right, a.right:active, a.right:visited {
+a.arrow-right, a.arrow-right:active, a.arrow-right:visited {
 	padding-right: 12px;
 }
 
-a.right:hover {
-	color: #d2d2d2;
+a.arrow-right:hover {
 	text-decoration: none;
 	background-position: 100% 60%;
 }

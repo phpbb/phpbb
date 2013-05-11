@@ -16,7 +16,20 @@
 			<th>{L_SMILIES}</th>
 		</tr>
 		<tr>
-			<td class="row1" align="center" valign="middle"><!-- BEGIN smiley --> <a href="#" onclick="initInsertions(); insert_text('{smiley.A_SMILEY_CODE}', true, true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" hspace="2" vspace="2" /></a> <!-- END smiley --><br />{PAGINATION}<br /><a class="nav" href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a></td>
+			<td class="row1" align="center" valign="middle"><!-- BEGIN smiley --> <a href="#" onclick="initInsertions(); insert_text('{smiley.A_SMILEY_CODE}', true, true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" hspace="2" vspace="2" /></a> <!-- END smiley --><br />
+			<!-- IF .pagination -->
+				<b><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{L_GOTO_PAGE}</a> 
+				<!-- BEGIN pagination -->
+					<!-- IF pagination.S_IS_PREV --><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a>
+					<!-- ELSEIF pagination.S_IS_CURRENT --><strong>{pagination.PAGE_NUMBER}</strong>
+					<!-- ELSEIF pagination.S_IS_ELLIPSIS --> {L_ELLIPSIS} 
+					<!-- ELSEIF pagination.S_IS_NEXT --><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a>
+					<!-- ELSE --><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a>
+					<!-- ENDIF -->
+				<!-- END pagination -->
+			<br />	
+			<!-- ENDIF -->
+			<a class="nav" href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a></td>
 		</tr>
 		</table>
 	</td>

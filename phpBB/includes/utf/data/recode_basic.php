@@ -1539,5 +1539,3 @@ function utf8_to_cp1252($string)
 	);
 	return strtr($string, $transform);
 }
-
-?>

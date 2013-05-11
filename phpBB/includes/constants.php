@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -25,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-define('PHPBB_VERSION', '3.0.12-dev');
+define('PHPBB_VERSION', '3.1.0-dev');
 
 // QA-related
 // define('PHPBB_QA', 1);
@@ -226,6 +225,7 @@ define('CONFIG_TABLE',				$table_prefix . 'config');
 define('CONFIRM_TABLE',				$table_prefix . 'confirm');
 define('DISALLOW_TABLE',			$table_prefix . 'disallow');
 define('DRAFTS_TABLE',				$table_prefix . 'drafts');
+define('EXT_TABLE',					$table_prefix . 'ext');
 define('EXTENSIONS_TABLE',			$table_prefix . 'extensions');
 define('EXTENSION_GROUPS_TABLE',	$table_prefix . 'extension_groups');
 define('FORUMS_TABLE',				$table_prefix . 'forums');
@@ -237,8 +237,11 @@ define('ICONS_TABLE',				$table_prefix . 'icons');
 define('LANG_TABLE',				$table_prefix . 'lang');
 define('LOG_TABLE',					$table_prefix . 'log');
 define('LOGIN_ATTEMPT_TABLE',		$table_prefix . 'login_attempts');
+define('MIGRATIONS_TABLE',			$table_prefix . 'migrations');
 define('MODERATOR_CACHE_TABLE',		$table_prefix . 'moderator_cache');
 define('MODULES_TABLE',				$table_prefix . 'modules');
+define('NOTIFICATION_TYPES_TABLE',	$table_prefix . 'notification_types');
+define('NOTIFICATIONS_TABLE',		$table_prefix . 'notifications');
 define('POLL_OPTIONS_TABLE',		$table_prefix . 'poll_options');
 define('POLL_VOTES_TABLE',			$table_prefix . 'poll_votes');
 define('POSTS_TABLE',				$table_prefix . 'posts');
@@ -260,17 +263,20 @@ define('SESSIONS_TABLE',			$table_prefix . 'sessions');
 define('SESSIONS_KEYS_TABLE',		$table_prefix . 'sessions_keys');
 define('SITELIST_TABLE',			$table_prefix . 'sitelist');
 define('SMILIES_TABLE',				$table_prefix . 'smilies');
+define('SPHINX_TABLE',				$table_prefix . 'sphinx');
 define('STYLES_TABLE',				$table_prefix . 'styles');
 define('STYLES_TEMPLATE_TABLE',		$table_prefix . 'styles_template');
 define('STYLES_TEMPLATE_DATA_TABLE',$table_prefix . 'styles_template_data');
 define('STYLES_THEME_TABLE',		$table_prefix . 'styles_theme');
 define('STYLES_IMAGESET_TABLE',		$table_prefix . 'styles_imageset');
 define('STYLES_IMAGESET_DATA_TABLE',$table_prefix . 'styles_imageset_data');
+define('TEAMPAGE_TABLE',			$table_prefix . 'teampage');
 define('TOPICS_TABLE',				$table_prefix . 'topics');
 define('TOPICS_POSTED_TABLE',		$table_prefix . 'topics_posted');
 define('TOPICS_TRACK_TABLE',		$table_prefix . 'topics_track');
 define('TOPICS_WATCH_TABLE',		$table_prefix . 'topics_watch');
 define('USER_GROUP_TABLE',			$table_prefix . 'user_group');
+define('USER_NOTIFICATIONS_TABLE',	$table_prefix . 'user_notifications');
 define('USERS_TABLE',				$table_prefix . 'users');
 define('WARNINGS_TABLE',			$table_prefix . 'warnings');
 define('WORDS_TABLE',				$table_prefix . 'words');
@@ -278,5 +284,3 @@ define('ZEBRA_TABLE',				$table_prefix . 'zebra');
 
 // Additional tables
 
-
-?>

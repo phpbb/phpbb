@@ -24,6 +24,7 @@ the following PHP extensions must be installed and enabled to run unit tests:
 
 - ctype (also a PHPUnit dependency)
 - dom (PHPUnit dependency)
+- json (also a phpBB dependency)
 
 Some of the functionality in phpBB and/or the test suite uses additional
 PHP extensions. If these extensions are not loaded, respective tests
@@ -34,8 +35,10 @@ will be skipped:
 - interbase, pdo_firebird (Firebird database driver)
 - mysql, pdo_mysql (MySQL database driver)
 - mysqli, pdo_mysql (MySQLi database driver)
+- pcntl (flock class)
 - pdo (any database tests)
 - pgsql, pdo_pgsql (PostgreSQL database driver)
+- redis (https://github.com/nicolasff/phpredis, Redis cache driver)
 - simplexml (any database tests)
 - sqlite, pdo_sqlite (SQLite database driver, requires SQLite 2.x support
   in pdo_sqlite)
@@ -52,7 +55,7 @@ example for mysqli can be found below. More information on configuration
 options can be found on the wiki (see below).
 
     <?php
-    $dbms = 'mysqli';
+    $dbms = 'phpbb_db_driver_mysqli';
     $dbhost = 'localhost';
     $dbport = '';
     $dbname = 'database';
@@ -95,6 +98,21 @@ to connect to that database in phpBB.
 
 Additionally, you will need to be running the DbUnit fork from
 https://github.com/phpbb/dbunit/tree/phpbb.
+
+Redis
+-----
+
+In order to run tests for the Redis cache driver, at least one of Redis host
+or port must be specified in test configuration. This can be done via
+test_config.php as follows:
+
+    <?php
+    $phpbb_redis_host = 'localhost';
+    $phpbb_redis_port = 6379;
+
+Or via environment variables as follows:
+
+    $ PHPBB_TEST_REDIS_HOST=localhost PHPBB_TEST_REDIS_PORT=6379 phpunit
 
 Running
 =======

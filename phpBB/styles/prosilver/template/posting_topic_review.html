@@ -1,7 +1,7 @@
 
 <h3 id="review">
 	<span class="right-box"><a href="#review" onclick="viewableArea(getElementById('topicreview'), true); var rev_text = getElementById('review').getElementsByTagName('a').item(0).firstChild; if (rev_text.data == '{LA_EXPAND_VIEW}'){rev_text.data = '{LA_COLLAPSE_VIEW}'; } else if (rev_text.data == '{LA_COLLAPSE_VIEW}'){rev_text.data = '{LA_EXPAND_VIEW}'};">{L_EXPAND_VIEW}</a></span>
-	{L_TOPIC_REVIEW}: {TOPIC_TITLE}
+	{L_TOPIC_REVIEW}{L_COLON} {TOPIC_TITLE}
 </h3>
 
 <div id="topicreview">
@@ -14,11 +14,11 @@
 
 	<!-- IF topic_review_row.S_IGNORE_POST -->
 	<div class="post bg3 post-ignore">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 			{topic_review_row.L_IGNORE_POST}
 	<!-- ELSE -->
-	<div class="post <!-- IF topic_review_row.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-		<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="post <!-- IF topic_review_row.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF topic_review_row.POST_ID == REPORTED_POST_ID --> reported<!-- ENDIF -->">
+		<div class="inner">
 	<!-- ENDIF -->
 
 		<div class="postbody" id="pr{topic_review_row.POST_ID}">
@@ -45,7 +45,7 @@
 				<div id="message_{topic_review_row.POST_ID}" style="display: none;">{topic_review_row.DECODED_MESSAGE}</div>
 			<!-- ENDIF -->
 		</div>
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 	<!-- END topic_review_row -->
 </div>

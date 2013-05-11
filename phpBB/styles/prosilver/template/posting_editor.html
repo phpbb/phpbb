@@ -1,6 +1,6 @@
 <script type="text/javascript">
 // <![CDATA[
-	onload_functions.push('apply_onkeypress_event()');
+	onload_functions.push(apply_onkeypress_event);
 // ]]>
 </script>
 
@@ -13,7 +13,7 @@
 		<!-- IF S_ALLOW_MASS_PM -->
 			<!-- IF .to_recipient -->
 				<dl>
-					<dt><label>{L_TO}:</label></dt>
+					<dt><label>{L_TO}{L_COLON}</label></dt>
 					<dd>
 						<!-- BEGIN to_recipient -->
 							<!-- IF not to_recipient.S_FIRST_ROW and to_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
@@ -25,7 +25,7 @@
 			<!-- ENDIF -->
 			<!-- IF .bcc_recipient -->
 				<dl>
-					<dt><label>{L_BCC}:</label></dt>
+					<dt><label>{L_BCC}{L_COLON}</label></dt>
 					<dd>
 						<!-- BEGIN bcc_recipient -->
 							<!-- IF not bcc_recipient.S_FIRST_ROW and bcc_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
@@ -45,7 +45,7 @@
 			<!-- ENDIF -->
 		<!-- ELSE -->
 			<dl>
-				<dt><label for="username_list">{L_TO}:</label><!-- IF not S_EDIT_POST --><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false">{L_FIND_USERNAME}</a></span><!-- ENDIF --></dt>
+				<dt><label for="username_list">{L_TO}{L_COLON}</label><!-- IF not S_EDIT_POST --><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false">{L_FIND_USERNAME}</a></span><!-- ENDIF --></dt>
 				<!-- IF .to_recipient -->
 					<dd>
 						<!-- BEGIN to_recipient -->
@@ -67,7 +67,7 @@
 		<!-- IF S_GROUP_OPTIONS -->
 			<div class="column2">
 				<dl>
-					<dd><label for="group_list">{L_USERGROUPS}:</label> <select name="group_list[]" id="group_list" multiple="multiple" size="4" class="inputbox">{S_GROUP_OPTIONS}</select></dd>
+					<dd><label for="group_list">{L_USERGROUPS}{L_COLON}</label> <select name="group_list[]" id="group_list" multiple="multiple" size="4" class="inputbox">{S_GROUP_OPTIONS}</select></dd>
 				</dl>
 			</div>
 		<!-- ENDIF -->
@@ -78,14 +78,14 @@
 
 	<!-- IF S_DELETE_ALLOWED -->
 	<dl>
-		<dt><label for="delete">{L_DELETE_POST}:</label></dt>
+		<dt><label for="delete">{L_DELETE_POST}{L_COLON}</label></dt>
 		<dd><label for="delete"><input type="checkbox" name="delete" id="delete" /> {L_DELETE_POST_WARN}</label></dd>
 	</dl>
 	<!-- ENDIF -->
 
 	<!-- IF S_SHOW_TOPIC_ICONS or S_SHOW_PM_ICONS -->
 	<dl>
-		<dt><label for="icon">{L_ICON}:</label></dt>
+		<dt><label for="icon">{L_ICON}{L_COLON}</label></dt>
 		<dd>
 			<label for="icon"><input type="radio" name="icon" id="icon" value="0" checked="checked" tabindex="1" /> <!-- IF S_SHOW_TOPIC_ICONS -->{L_NO_TOPIC_ICON}<!-- ELSE -->{L_NO_PM_ICON}<!-- ENDIF --></label>
 			<!-- BEGIN topic_icon --><label for="icon-{topic_icon.ICON_ID}"><input type="radio" name="icon" id="icon-{topic_icon.ICON_ID}" value="{topic_icon.ICON_ID}" {topic_icon.S_ICON_CHECKED} tabindex="1" /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" /></label> <!-- END topic_icon -->
@@ -95,15 +95,15 @@
 
 	<!-- IF not S_PRIVMSGS and S_DISPLAY_USERNAME -->
 	<dl style="clear: left;">
-		<dt><label for="username">{L_USERNAME}:</label></dt>
+		<dt><label for="username">{L_USERNAME}{L_COLON}</label></dt>
 		<dd><input type="text" tabindex="1" name="username" id="username" size="25" value="{USERNAME}" class="inputbox autowidth" /></dd>
 	</dl>
 	<!-- ENDIF -->
 
 	<!-- IF S_POST_ACTION or S_PRIVMSGS or S_EDIT_DRAFT -->
 	<dl style="clear: left;">
-		<dt><label for="subject">{L_SUBJECT}:</label></dt>
-		<dd><input type="text" name="subject" id="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->60<!-- ELSE -->64<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="inputbox autowidth" /></dd>
+		<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
+		<dd><input type="text" name="subject" id="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="inputbox autowidth" /></dd>
 	</dl>
 	<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
 		<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
@@ -149,13 +149,13 @@
 <!-- IF $EXTRA_POSTING_OPTIONS eq 1 -->
 
 	<!-- IF not S_SHOW_DRAFTS -->
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 	<!-- ENDIF -->
 
 	<!-- IF S_HAS_ATTACHMENTS -->
 		<div class="panel bg2">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 			<h3>{L_POSTED_ATTACHMENTS}</h3>
 
 			<fieldset class="fields2">
@@ -163,7 +163,7 @@
 			<!-- BEGIN attach_row -->
 			<dl>
 
-				<dt><label for="comment_list_{attach_row.ASSOC_INDEX}">{L_FILE_COMMENT}:</label></dt>
+				<dt><label for="comment_list_{attach_row.ASSOC_INDEX}">{L_FILE_COMMENT}{L_COLON}</label></dt>
 				<dd><textarea name="comment_list[{attach_row.ASSOC_INDEX}]" id="comment_list_{attach_row.ASSOC_INDEX}" rows="1" cols="35" class="inputbox">{attach_row.FILE_COMMENT}</textarea></dd>
 				<dd><a href="{attach_row.U_VIEW_ATTACHMENT}">{attach_row.FILENAME}</a></dd>
 				<dd style="margin-top: 5px;">
@@ -177,13 +177,13 @@
 
 			</fieldset>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 	<!-- ENDIF -->
 
 	<!-- IF not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
 	<div class="panel bg2">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		<fieldset class="submit-buttons">
 			{S_HIDDEN_ADDRESS_FIELD}
 			{S_HIDDEN_FIELDS}
@@ -194,7 +194,7 @@
 
 		</fieldset>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 	<!-- ENDIF -->
 
@@ -210,9 +210,10 @@
 
 	<!-- IF not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
 	<div class="panel bg3" id="options-panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<fieldset class="fields1">
+			<!-- EVENT posting_editor_options_prepend -->
 			<!-- IF S_BBCODE_ALLOWED -->
 				<div><label for="disable_bbcode"><input type="checkbox" name="disable_bbcode" id="disable_bbcode"{S_BBCODE_CHECKED} /> {L_DISABLE_BBCODE}</label></div>
 			<!-- ENDIF -->
@@ -241,14 +242,14 @@
 
 			<!-- IF S_TYPE_TOGGLE -->
 			<dl>
-				<dt><label for="topic_type-0"><!-- IF S_EDIT_POST -->{L_CHANGE_TOPIC_TO}<!-- ELSE -->{L_POST_TOPIC_AS}<!-- ENDIF -->:</label></dt>
+				<dt><label for="topic_type-0"><!-- IF S_EDIT_POST -->{L_CHANGE_TOPIC_TO}<!-- ELSE -->{L_POST_TOPIC_AS}<!-- ENDIF -->{L_COLON}</label></dt>
 				<dd><!-- BEGIN topic_type --><label for="topic_type-{topic_type.VALUE}"><input type="radio" name="topic_type" id="topic_type-{topic_type.VALUE}" value="{topic_type.VALUE}"{topic_type.S_CHECKED} />{topic_type.L_TOPIC_TYPE}</label> <!-- END topic_type --></dd>
 			</dl>
 			<!-- ENDIF -->
 
 			<!-- IF S_TOPIC_TYPE_ANNOUNCE or S_TOPIC_TYPE_STICKY -->
 			<dl>
-				<dt><label for="topic_time_limit">{L_STICK_TOPIC_FOR}:</label></dt>
+				<dt><label for="topic_time_limit">{L_STICK_TOPIC_FOR}{L_COLON}</label></dt>
 				<dd><label for="topic_time_limit"><input type="text" name="topic_time_limit" id="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" class="inputbox autowidth" /> {L_DAYS}</label></dd>
 				<dd>{L_STICK_TOPIC_FOR_EXPLAIN}</dd>
 			</dl>
@@ -256,7 +257,7 @@
 
 			<!-- IF S_EDIT_REASON -->
 			<dl>
-				<dt><label for="edit_reason">{L_EDIT_REASON}:</label></dt>
+				<dt><label for="edit_reason">{L_EDIT_REASON}{L_COLON}</label></dt>
 				<dd><input type="text" name="edit_reason" id="edit_reason" value="{EDIT_REASON}" class="inputbox" /></dd>
 			</dl>
 			<!-- ENDIF -->

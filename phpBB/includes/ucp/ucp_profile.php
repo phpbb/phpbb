@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -29,13 +28,15 @@ class ucp_profile
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $cache, $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $request;
+		global $phpbb_container;
 
 		$user->add_lang('posting');
 
-		$preview	= (!empty($_POST['preview'])) ? true : false;
-		$submit		= (!empty($_POST['submit'])) ? true : false;
-		$delete		= (!empty($_POST['delete'])) ? true : false;
+		$preview	= $request->variable('preview', false, false, phpbb_request_interface::POST);
+		$submit		= $request->variable('submit', false, false, phpbb_request_interface::POST);
+		$delete		= $request->variable('delete', false, false, phpbb_request_interface::POST);
 		$error = $data = array();
 		$s_hidden_fields = '';
 
@@ -46,10 +47,9 @@ class ucp_profile
 				$data = array(
 					'username'			=> utf8_normalize_nfc(request_var('username', $user->data['username'], true)),
 					'email'				=> strtolower(request_var('email', $user->data['user_email'])),
-					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
-					'new_password'		=> request_var('new_password', '', true),
-					'cur_password'		=> request_var('cur_password', '', true),
-					'password_confirm'	=> request_var('password_confirm', '', true),
+					'new_password'		=> $request->variable('new_password', '', true),
+					'cur_password'		=> $request->variable('cur_password', '', true),
+					'password_confirm'	=> $request->variable('password_confirm', '', true),
 				);
 
 				add_form_key('ucp_reg_details');
@@ -65,7 +65,6 @@ class ucp_profile
 						'email'				=> array(
 							array('string', false, 6, 60),
 							array('email')),
-						'email_confirm'		=> array('string', true, 6, 60),
 					);
 
 					if ($auth->acl_get('u_chgname') && $config['allow_namechange'])
@@ -77,11 +76,6 @@ class ucp_profile
 					}
 
 					$error = validate_data($data, $check_ary);
-
-					if ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email'] && $data['email_confirm'] != $data['email'])
-					{
-						$error[] = ($data['email_confirm']) ? 'NEW_EMAIL_ERROR' : 'NEW_EMAIL_CONFIRM_EMPTY';
-					}
 
 					if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && $data['password_confirm'] != $data['new_password'])
 					{
@@ -181,8 +175,7 @@ class ucp_profile
 								while ($row = $db->sql_fetchrow($result))
 								{
 									$messenger->template('admin_activate', $row['user_lang']);
-									$messenger->to($row['user_email'], $row['username']);
-									$messenger->im($row['user_jabber'], $row['username']);
+									$messenger->set_addresses($row);
 
 									$messenger->assign_vars(array(
 										'USERNAME'			=> htmlspecialchars_decode($data['username']),
@@ -235,7 +228,7 @@ class ucp_profile
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$template->assign_vars(array(
@@ -247,8 +240,8 @@ class ucp_profile
 					'NEW_PASSWORD'		=> $data['new_password'],
 					'CUR_PASSWORD'		=> '',
 
-					'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+					'L_USERNAME_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
+					'L_CHANGE_PASSWORD_EXPLAIN'	=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars']), $user->lang('CHARACTERS', (int) $config['max_pass_chars'])),
 
 					'S_FORCE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd') && $config['chg_passforce'] && $user->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400)) ? true : false,
 					'S_CHANGE_USERNAME' => ($config['allow_namechange'] && $auth->acl_get('u_chgname')) ? true : false,
@@ -258,6 +251,11 @@ class ucp_profile
 			break;
 
 			case 'profile_info':
+				// Do not display profile information panel if not authed to do so
+				if (!$auth->acl_get('u_chgprofileinfo'))
+				{
+					trigger_error('NO_AUTH_PROFILEINFO');
+				}
 
 				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
@@ -382,7 +380,7 @@ class ucp_profile
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				if ($config['allow_birthdays'])
@@ -507,7 +505,7 @@ class ucp_profile
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$signature_preview = '';
@@ -536,7 +534,7 @@ class ucp_profile
 					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 					'MAX_FONT_SIZE'			=> (int) $config['max_sig_font_size'],
 
-					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
+					'L_SIGNATURE_EXPLAIN'	=> $user->lang('SIGNATURE_EXPLAIN', (int) $config['max_sig_chars']),
 
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
@@ -551,78 +549,183 @@ class ucp_profile
 			break;
 
 			case 'avatar':
-
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-
-				$display_gallery = request_var('display_gallery', '0');
-				$avatar_select = basename(request_var('avatar_select', ''));
-				$category = basename(request_var('category', ''));
-
-				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+				if (!function_exists('phpbb_get_user_avatar'))
+				{
+					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				}
 
 				add_form_key('ucp_avatar');
 
-				if ($submit)
+				$avatars_enabled = false;
+
+				if ($config['allow_avatar'] && $auth->acl_get('u_chgavatar'))
 				{
-					if (check_form_key('ucp_avatar'))
+					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
+
+					// This is normalised data, without the user_ prefix
+					$avatar_data = phpbb_avatar_manager::clean_row($user->data);
+
+					if ($submit)
 					{
-						if (avatar_process_user($error, false, $can_upload))
+						if (check_form_key('ucp_avatar'))
 						{
-							meta_refresh(3, $this->u_action);
-							$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-							trigger_error($message);
+							$driver_name = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
+
+							if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
+							{
+								$driver = $phpbb_avatar_manager->get_driver($driver_name);
+								$result = $driver->process_form($request, $template, $user, $avatar_data, $error);
+
+								if ($result && empty($error))
+								{
+									// Success! Lets save the result in the database
+									$result = array(
+										'user_avatar_type' => $driver_name,
+										'user_avatar' => $result['avatar'],
+										'user_avatar_width' => $result['avatar_width'],
+										'user_avatar_height' => $result['avatar_height'],
+									);
+
+									$sql = 'UPDATE ' . USERS_TABLE . '
+										SET ' . $db->sql_build_array('UPDATE', $result) . '
+										WHERE user_id = ' . (int) $user->data['user_id'];
+
+									$db->sql_query($sql);
+
+									meta_refresh(3, $this->u_action);
+									$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+									trigger_error($message);
+								}
+							}
+							else
+							{
+								if ($driver = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']))
+								{
+									$driver->delete($avatar_data);
+								}
+
+								$result = array(
+									'user_avatar' => '',
+									'user_avatar_type' => '',
+									'user_avatar_width' => 0,
+									'user_avatar_height' => 0,
+								);
+
+								$sql = 'UPDATE ' . USERS_TABLE . '
+									SET ' . $db->sql_build_array('UPDATE', $result) . '
+									WHERE user_id = ' . (int) $user->data['user_id'];
+
+								$db->sql_query($sql);
+
+								meta_refresh(3, $this->u_action);
+								$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+								trigger_error($message);
+							}
+						}
+						else
+						{
+							$error[] = 'FORM_INVALID';
 						}
 					}
-					else
+
+					$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $user->data['user_avatar_type']));
+
+					foreach ($avatar_drivers as $current_driver)
 					{
-						$error[] = 'FORM_INVALID';
+						$driver = $phpbb_avatar_manager->get_driver($current_driver);
+
+						$avatars_enabled = true;
+						$template->set_filenames(array(
+							'avatar' => $driver->get_template_name(),
+						));
+
+						if ($driver->prepare_form($request, $template, $user, $avatar_data, $error))
+						{
+							$driver_name = $phpbb_avatar_manager->prepare_driver_name($current_driver);
+							$driver_upper = strtoupper($driver_name);
+
+							$template->assign_block_vars('avatar_drivers', array(
+								'L_TITLE' => $user->lang($driver_upper . '_TITLE'),
+								'L_EXPLAIN' => $user->lang($driver_upper . '_EXPLAIN'),
+
+								'DRIVER' => $driver_name,
+								'SELECTED' => $current_driver == $selected_driver,
+								'OUTPUT' => $template->assign_display('avatar'),
+							));
+						}
 					}
-					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				if (!$config['allow_avatar'] && $user->data['user_avatar_type'])
-				{
-					$error[] = $user->lang['AVATAR_NOT_ALLOWED'];
-				}
-				else if ((($user->data['user_avatar_type'] == AVATAR_UPLOAD) && !$config['allow_avatar_upload']) ||
-				 (($user->data['user_avatar_type'] == AVATAR_REMOTE) && !$config['allow_avatar_remote']) ||
-				 (($user->data['user_avatar_type'] == AVATAR_GALLERY) && !$config['allow_avatar_local']))
-				{
-					$error[] = $user->lang['AVATAR_TYPE_NOT_ALLOWED'];
-				}
+				// Replace "error" strings with their real, localised form
+				$error = $phpbb_avatar_manager->localize_errors($user, $error);
+
+				$avatar = phpbb_get_user_avatar($user->data, 'USER_AVATAR', true);
 
 				$template->assign_vars(array(
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height'], 'USER_AVATAR', true),
-					'AVATAR_SIZE'	=> $config['avatar_filesize'],
+					'AVATAR'		=> $avatar,
 
-					'U_GALLERY'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
+					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 
-					'S_FORM_ENCTYPE'	=> ($can_upload && ($config['allow_avatar_upload'] || $config['allow_avatar_remote_upload'])) ? ' enctype="multipart/form-data"' : '',
+					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
+					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
 				));
 
-				if ($config['allow_avatar'] && $display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
-				{
-					avatar_gallery($category, $avatar_select, 4);
-				}
-				else if ($config['allow_avatar'])
-				{
-					$avatars_enabled = (($can_upload && ($config['allow_avatar_upload'] || $config['allow_avatar_remote_upload'])) || ($auth->acl_get('u_chgavatar') && ($config['allow_avatar_local'] || $config['allow_avatar_remote']))) ? true : false;
+			break;
 
-					$template->assign_vars(array(
-						'AVATAR_WIDTH'	=> request_var('width', $user->data['user_avatar_width']),
-						'AVATAR_HEIGHT'	=> request_var('height', $user->data['user_avatar_height']),
+			case 'autologin_keys':
 
-						'S_AVATARS_ENABLED'		=> $avatars_enabled,
-						'S_UPLOAD_AVATAR_FILE'	=> ($can_upload && $config['allow_avatar_upload']) ? true : false,
-						'S_UPLOAD_AVATAR_URL'	=> ($can_upload && $config['allow_avatar_remote_upload']) ? true : false,
-						'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_remote']) ? true : false,
-						'S_DISPLAY_GALLERY'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false)
-					);
+				add_form_key('ucp_autologin_keys');
+
+				if ($submit)
+				{
+					$keys = request_var('keys', array(''));
+
+					if (!check_form_key('ucp_autologin_keys'))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+
+					if (!sizeof($error))
+					{
+						if (!empty($keys))
+						{
+							$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+								WHERE user_id = ' . (int) $user->data['user_id'] . '
+								AND ' . $db->sql_in_set('key_id', $keys) ;
+
+							$db->sql_query($sql);
+
+							meta_refresh(3, $this->u_action);
+							$message = $user->lang['AUTOLOGIN_SESSION_KEYS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+							trigger_error($message);
+						}
+					}
+
+					// Replace "error" strings with their real, localised form
+					$error = array_map(array($user, 'lang'), $error);
 				}
+
+				$sql = 'SELECT key_id, last_ip, last_login
+					FROM ' . SESSIONS_KEYS_TABLE . '
+					WHERE user_id = ' . (int) $user->data['user_id'];
+
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$template->assign_block_vars('sessions', array(
+						'errors' => $error,
+
+						'KEY' => $row['key_id'],
+						'IP' => $row['last_ip'],
+						'LOGIN_TIME' => $user->format_date($row['last_login']),
+					));
+				}
+
+				$db->sql_freeresult($result);
 
 			break;
 		}
@@ -639,5 +742,3 @@ class ucp_profile
 		$this->page_title = 'UCP_PROFILE_' . strtoupper($mode);
 	}
 }
-
-?>

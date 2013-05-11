@@ -270,6 +270,16 @@ CREATE TABLE phpbb_config (
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic);
 
 /*
+	Table: 'phpbb_config_text'
+*/
+CREATE TABLE phpbb_config_text (
+	config_name varchar(255) DEFAULT '' NOT NULL,
+	config_value TEXT DEFAULT '' NOT NULL,
+	PRIMARY KEY (config_name)
+);
+
+
+/*
 	Table: 'phpbb_confirm'
 */
 CREATE TABLE phpbb_confirm (
@@ -313,6 +323,17 @@ CREATE TABLE phpbb_drafts (
 );
 
 CREATE INDEX phpbb_drafts_save_time ON phpbb_drafts (save_time);
+
+/*
+	Table: 'phpbb_ext'
+*/
+CREATE TABLE phpbb_ext (
+	ext_name varchar(255) DEFAULT '' NOT NULL,
+	ext_active INT2 DEFAULT '0' NOT NULL CHECK (ext_active >= 0),
+	ext_state varchar(8000) DEFAULT '' NOT NULL
+);
+
+CREATE UNIQUE INDEX phpbb_ext_ext_name ON phpbb_ext (ext_name);
 
 /*
 	Table: 'phpbb_extensions'
@@ -452,7 +473,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varchar(8) DEFAULT '' NOT NULL,
 	group_display INT2 DEFAULT '0' NOT NULL CHECK (group_display >= 0),
 	group_avatar varchar(255) DEFAULT '' NOT NULL,
-	group_avatar_type INT2 DEFAULT '0' NOT NULL,
+	group_avatar_type varchar(255) DEFAULT '' NOT NULL,
 	group_avatar_width INT2 DEFAULT '0' NOT NULL CHECK (group_avatar_width >= 0),
 	group_avatar_height INT2 DEFAULT '0' NOT NULL CHECK (group_avatar_height >= 0),
 	group_rank INT4 DEFAULT '0' NOT NULL CHECK (group_rank >= 0),
@@ -461,7 +482,7 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm INT2 DEFAULT '0' NOT NULL CHECK (group_receive_pm >= 0),
 	group_message_limit INT4 DEFAULT '0' NOT NULL CHECK (group_message_limit >= 0),
 	group_max_recipients INT4 DEFAULT '0' NOT NULL CHECK (group_max_recipients >= 0),
-	group_legend INT2 DEFAULT '1' NOT NULL CHECK (group_legend >= 0),
+	group_legend INT4 DEFAULT '0' NOT NULL CHECK (group_legend >= 0),
 	PRIMARY KEY (group_id)
 );
 
@@ -521,6 +542,7 @@ CREATE TABLE phpbb_log (
 );
 
 CREATE INDEX phpbb_log_log_type ON phpbb_log (log_type);
+CREATE INDEX phpbb_log_log_time ON phpbb_log (log_time);
 CREATE INDEX phpbb_log_forum_id ON phpbb_log (forum_id);
 CREATE INDEX phpbb_log_topic_id ON phpbb_log (topic_id);
 CREATE INDEX phpbb_log_reportee_id ON phpbb_log (reportee_id);
@@ -560,6 +582,21 @@ CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache (display_on
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id);
 
 /*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE phpbb_migrations (
+	migration_name varchar(255) DEFAULT '' NOT NULL,
+	migration_depends_on varchar(8000) DEFAULT '' NOT NULL,
+	migration_schema_done INT2 DEFAULT '0' NOT NULL CHECK (migration_schema_done >= 0),
+	migration_data_done INT2 DEFAULT '0' NOT NULL CHECK (migration_data_done >= 0),
+	migration_data_state varchar(8000) DEFAULT '' NOT NULL,
+	migration_start_time INT4 DEFAULT '0' NOT NULL CHECK (migration_start_time >= 0),
+	migration_end_time INT4 DEFAULT '0' NOT NULL CHECK (migration_end_time >= 0),
+	PRIMARY KEY (migration_name)
+);
+
+
+/*
 	Table: 'phpbb_modules'
 */
 CREATE SEQUENCE phpbb_modules_seq;
@@ -582,6 +619,36 @@ CREATE TABLE phpbb_modules (
 CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules (left_id, right_id);
 CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules (module_enabled);
 CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id);
+
+/*
+	Table: 'phpbb_notification_types'
+*/
+CREATE TABLE phpbb_notification_types (
+	notification_type varchar(255) DEFAULT '' NOT NULL,
+	notification_type_enabled INT2 DEFAULT '1' NOT NULL CHECK (notification_type_enabled >= 0),
+	PRIMARY KEY (notification_type, notification_type_enabled)
+);
+
+
+/*
+	Table: 'phpbb_notifications'
+*/
+CREATE SEQUENCE phpbb_notifications_seq;
+
+CREATE TABLE phpbb_notifications (
+	notification_id INT4 DEFAULT nextval('phpbb_notifications_seq'),
+	item_type varchar(255) DEFAULT '' NOT NULL,
+	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
+	item_parent_id INT4 DEFAULT '0' NOT NULL CHECK (item_parent_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	notification_read INT2 DEFAULT '0' NOT NULL CHECK (notification_read >= 0),
+	notification_time INT4 DEFAULT '1' NOT NULL CHECK (notification_time >= 0),
+	notification_data varchar(4000) DEFAULT '' NOT NULL,
+	PRIMARY KEY (notification_id)
+);
+
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id);
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read);
 
 /*
 	Table: 'phpbb_poll_options'
@@ -763,6 +830,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_required INT2 DEFAULT '0' NOT NULL CHECK (field_required >= 0),
 	field_show_novalue INT2 DEFAULT '0' NOT NULL CHECK (field_show_novalue >= 0),
 	field_show_on_reg INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_reg >= 0),
+	field_show_on_pm INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_pm >= 0),
 	field_show_on_vt INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_vt >= 0),
 	field_show_profile INT2 DEFAULT '0' NOT NULL CHECK (field_show_profile >= 0),
 	field_hide INT2 DEFAULT '0' NOT NULL CHECK (field_hide >= 0),
@@ -840,6 +908,12 @@ CREATE TABLE phpbb_reports (
 	report_closed INT2 DEFAULT '0' NOT NULL CHECK (report_closed >= 0),
 	report_time INT4 DEFAULT '0' NOT NULL CHECK (report_time >= 0),
 	report_text TEXT DEFAULT '' NOT NULL,
+	reported_post_text TEXT DEFAULT '' NOT NULL,
+	reported_post_uid varchar(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varchar(255) DEFAULT '' NOT NULL,
+	reported_post_enable_magic_url INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_magic_url >= 0),
+	reported_post_enable_smilies INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_smilies >= 0),
+	reported_post_enable_bbcode INT2 DEFAULT '1' NOT NULL CHECK (reported_post_enable_bbcode >= 0),
 	PRIMARY KEY (report_id)
 );
 
@@ -981,100 +1055,29 @@ CREATE TABLE phpbb_styles (
 	style_name varchar(255) DEFAULT '' NOT NULL,
 	style_copyright varchar(255) DEFAULT '' NOT NULL,
 	style_active INT2 DEFAULT '1' NOT NULL CHECK (style_active >= 0),
-	template_id INT4 DEFAULT '0' NOT NULL CHECK (template_id >= 0),
-	theme_id INT4 DEFAULT '0' NOT NULL CHECK (theme_id >= 0),
-	imageset_id INT4 DEFAULT '0' NOT NULL CHECK (imageset_id >= 0),
+	style_path varchar(100) DEFAULT '' NOT NULL,
+	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
+	style_parent_id INT4 DEFAULT '0' NOT NULL CHECK (style_parent_id >= 0),
+	style_parent_tree varchar(8000) DEFAULT '' NOT NULL,
 	PRIMARY KEY (style_id)
 );
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
-CREATE INDEX phpbb_styles_template_id ON phpbb_styles (template_id);
-CREATE INDEX phpbb_styles_theme_id ON phpbb_styles (theme_id);
-CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles (imageset_id);
 
 /*
-	Table: 'phpbb_styles_template'
+	Table: 'phpbb_teampage'
 */
-CREATE SEQUENCE phpbb_styles_template_seq;
+CREATE SEQUENCE phpbb_teampage_seq;
 
-CREATE TABLE phpbb_styles_template (
-	template_id INT4 DEFAULT nextval('phpbb_styles_template_seq'),
-	template_name varchar(255) DEFAULT '' NOT NULL,
-	template_copyright varchar(255) DEFAULT '' NOT NULL,
-	template_path varchar(100) DEFAULT '' NOT NULL,
-	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
-	template_storedb INT2 DEFAULT '0' NOT NULL CHECK (template_storedb >= 0),
-	template_inherits_id INT4 DEFAULT '0' NOT NULL CHECK (template_inherits_id >= 0),
-	template_inherit_path varchar(255) DEFAULT '' NOT NULL,
-	PRIMARY KEY (template_id)
+CREATE TABLE phpbb_teampage (
+	teampage_id INT4 DEFAULT nextval('phpbb_teampage_seq'),
+	group_id INT4 DEFAULT '0' NOT NULL CHECK (group_id >= 0),
+	teampage_name varchar(255) DEFAULT '' NOT NULL,
+	teampage_position INT4 DEFAULT '0' NOT NULL CHECK (teampage_position >= 0),
+	teampage_parent INT4 DEFAULT '0' NOT NULL CHECK (teampage_parent >= 0),
+	PRIMARY KEY (teampage_id)
 );
 
-CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (template_name);
-
-/*
-	Table: 'phpbb_styles_template_data'
-*/
-CREATE TABLE phpbb_styles_template_data (
-	template_id INT4 DEFAULT '0' NOT NULL CHECK (template_id >= 0),
-	template_filename varchar(100) DEFAULT '' NOT NULL,
-	template_included varchar(8000) DEFAULT '' NOT NULL,
-	template_mtime INT4 DEFAULT '0' NOT NULL CHECK (template_mtime >= 0),
-	template_data TEXT DEFAULT '' NOT NULL
-);
-
-CREATE INDEX phpbb_styles_template_data_tid ON phpbb_styles_template_data (template_id);
-CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data (template_filename);
-
-/*
-	Table: 'phpbb_styles_theme'
-*/
-CREATE SEQUENCE phpbb_styles_theme_seq;
-
-CREATE TABLE phpbb_styles_theme (
-	theme_id INT4 DEFAULT nextval('phpbb_styles_theme_seq'),
-	theme_name varchar(255) DEFAULT '' NOT NULL,
-	theme_copyright varchar(255) DEFAULT '' NOT NULL,
-	theme_path varchar(100) DEFAULT '' NOT NULL,
-	theme_storedb INT2 DEFAULT '0' NOT NULL CHECK (theme_storedb >= 0),
-	theme_mtime INT4 DEFAULT '0' NOT NULL CHECK (theme_mtime >= 0),
-	theme_data TEXT DEFAULT '' NOT NULL,
-	PRIMARY KEY (theme_id)
-);
-
-CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme (theme_name);
-
-/*
-	Table: 'phpbb_styles_imageset'
-*/
-CREATE SEQUENCE phpbb_styles_imageset_seq;
-
-CREATE TABLE phpbb_styles_imageset (
-	imageset_id INT4 DEFAULT nextval('phpbb_styles_imageset_seq'),
-	imageset_name varchar(255) DEFAULT '' NOT NULL,
-	imageset_copyright varchar(255) DEFAULT '' NOT NULL,
-	imageset_path varchar(100) DEFAULT '' NOT NULL,
-	PRIMARY KEY (imageset_id)
-);
-
-CREATE UNIQUE INDEX phpbb_styles_imageset_imgset_nm ON phpbb_styles_imageset (imageset_name);
-
-/*
-	Table: 'phpbb_styles_imageset_data'
-*/
-CREATE SEQUENCE phpbb_styles_imageset_data_seq;
-
-CREATE TABLE phpbb_styles_imageset_data (
-	image_id INT4 DEFAULT nextval('phpbb_styles_imageset_data_seq'),
-	image_name varchar(200) DEFAULT '' NOT NULL,
-	image_filename varchar(200) DEFAULT '' NOT NULL,
-	image_lang varchar(30) DEFAULT '' NOT NULL,
-	image_height INT2 DEFAULT '0' NOT NULL CHECK (image_height >= 0),
-	image_width INT2 DEFAULT '0' NOT NULL CHECK (image_width >= 0),
-	imageset_id INT4 DEFAULT '0' NOT NULL CHECK (imageset_id >= 0),
-	PRIMARY KEY (image_id)
-);
-
-CREATE INDEX phpbb_styles_imageset_data_i_d ON phpbb_styles_imageset_data (imageset_id);
 
 /*
 	Table: 'phpbb_topics'
@@ -1165,6 +1168,18 @@ CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch (user_id);
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status);
 
 /*
+	Table: 'phpbb_user_notifications'
+*/
+CREATE TABLE phpbb_user_notifications (
+	item_type varchar(255) DEFAULT '' NOT NULL,
+	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	method varchar(255) DEFAULT '' NOT NULL,
+	notify INT2 DEFAULT '1' NOT NULL CHECK (notify >= 0)
+);
+
+
+/*
 	Table: 'phpbb_user_group'
 */
 CREATE TABLE phpbb_user_group (
@@ -1212,8 +1227,7 @@ CREATE TABLE phpbb_users (
 	user_inactive_time INT4 DEFAULT '0' NOT NULL CHECK (user_inactive_time >= 0),
 	user_posts INT4 DEFAULT '0' NOT NULL CHECK (user_posts >= 0),
 	user_lang varchar(30) DEFAULT '' NOT NULL,
-	user_timezone decimal(5,2) DEFAULT '0' NOT NULL,
-	user_dst INT2 DEFAULT '0' NOT NULL CHECK (user_dst >= 0),
+	user_timezone varchar(100) DEFAULT 'UTC' NOT NULL,
 	user_dateformat varchar(30) DEFAULT 'd M Y H:i' NOT NULL,
 	user_style INT4 DEFAULT '0' NOT NULL CHECK (user_style >= 0),
 	user_rank INT4 DEFAULT '0' NOT NULL CHECK (user_rank >= 0),
@@ -1239,7 +1253,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail INT2 DEFAULT '1' NOT NULL CHECK (user_allow_massemail >= 0),
 	user_options INT4 DEFAULT '230271' NOT NULL CHECK (user_options >= 0),
 	user_avatar varchar(255) DEFAULT '' NOT NULL,
-	user_avatar_type INT2 DEFAULT '0' NOT NULL,
+	user_avatar_type varchar(255) DEFAULT '' NOT NULL,
 	user_avatar_width INT2 DEFAULT '0' NOT NULL CHECK (user_avatar_width >= 0),
 	user_avatar_height INT2 DEFAULT '0' NOT NULL CHECK (user_avatar_height >= 0),
 	user_sig TEXT DEFAULT '' NOT NULL,

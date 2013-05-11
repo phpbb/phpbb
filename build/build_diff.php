@@ -410,5 +410,3 @@ function run_command($command)
 	$result = trim(`$command`);
 	echo "\n- Command Run: " . $command . "\n";
 }
-
-?>

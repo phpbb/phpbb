@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -498,7 +497,7 @@ class acp_permissions
 
 				$template->assign_vars(array(
 					'S_FORUM_NAMES'		=> (sizeof($forum_names)) ? true : false,
-					'FORUM_NAMES'		=> implode(', ', $forum_names))
+					'FORUM_NAMES'		=> implode($user->lang['COMMA_SEPARATOR'], $forum_names))
 				);
 			}
 
@@ -657,7 +656,8 @@ class acp_permissions
 	*/
 	function set_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
 	{
-		global $user, $auth;
+		global $db, $cache, $user, $auth;
+		global $request;
 
 		$psubmit = request_var('psubmit', array(0 => array(0 => 0)));
 
@@ -676,18 +676,17 @@ class acp_permissions
 		list($ug_id, ) = each($psubmit);
 		list($forum_id, ) = each($psubmit[$ug_id]);
 
-		if (empty($_POST['setting']) || empty($_POST['setting'][$ug_id]) || empty($_POST['setting'][$ug_id][$forum_id]) || !is_array($_POST['setting'][$ug_id][$forum_id]))
+		$settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, phpbb_request_interface::POST);
+		if (empty($settings) || empty($settings[$ug_id]) || empty($settings[$ug_id][$forum_id]))
 		{
 			trigger_error('WRONG_PERMISSION_SETTING_FORMAT', E_USER_WARNING);
 		}
 
-		// We obtain and check $_POST['setting'][$ug_id][$forum_id] directly and not using request_var() because request_var()
-		// currently does not support the amount of dimensions required. ;)
-		//		$auth_settings = request_var('setting', array(0 => array(0 => array('' => 0))));
-		$auth_settings = array_map('intval', $_POST['setting'][$ug_id][$forum_id]);
+		$auth_settings = $settings[$ug_id][$forum_id];
 
 		// Do we have a role we want to set?
-		$assigned_role = (isset($_POST['role'][$ug_id][$forum_id])) ? (int) $_POST['role'][$ug_id][$forum_id] : 0;
+		$roles = $request->variable('role', array(0 => array(0 => 0)), false, phpbb_request_interface::POST);
+		$assigned_role = (isset($roles[$ug_id][$forum_id])) ? (int) $roles[$ug_id][$forum_id] : 0;
 
 		// Do the admin want to set these permissions to other items too?
 		$inherit = request_var('inherit', array(0 => array(0)));
@@ -727,13 +726,13 @@ class acp_permissions
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')
 		{
-			cache_moderators();
+			phpbb_cache_moderators($db, $cache, $auth);
 		}
 
 		// Remove users who are now moderators or admins from everyones foes list
 		if ($permission_type == 'm_' || $permission_type == 'a_')
 		{
-			update_foes($group_id, $user_id);
+			phpbb_update_foes($db, $auth, $group_id, $user_id);
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_id, $forum_id);
@@ -746,7 +745,8 @@ class acp_permissions
 	*/
 	function set_all_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
 	{
-		global $user, $auth;
+		global $db, $cache, $user, $auth;
+		global $request;
 
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
@@ -757,8 +757,8 @@ class acp_permissions
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$auth_settings = (isset($_POST['setting'])) ? $_POST['setting'] : array();
-		$auth_roles = (isset($_POST['role'])) ? $_POST['role'] : array();
+		$auth_settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, phpbb_request_interface::POST);
+		$auth_roles = $request->variable('role', array(0 => array(0 => 0)), false, phpbb_request_interface::POST);
 		$ug_ids = $forum_ids = array();
 
 		// We need to go through the auth settings
@@ -794,13 +794,13 @@ class acp_permissions
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')
 		{
-			cache_moderators();
+			phpbb_cache_moderators($db, $cache, $auth);
 		}
 
 		// Remove users who are now moderators or admins from everyones foes list
 		if ($permission_type == 'm_' || $permission_type == 'a_')
 		{
-			update_foes($group_id, $user_id);
+			phpbb_update_foes($db, $auth, $group_id, $user_id);
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_ids, $forum_ids);
@@ -858,7 +858,7 @@ class acp_permissions
 	*/
 	function remove_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id, &$forum_id)
 	{
-		global $user, $db, $auth;
+		global $user, $db, $cache, $auth;
 
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
@@ -874,7 +874,7 @@ class acp_permissions
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')
 		{
-			cache_moderators();
+			phpbb_cache_moderators($db, $cache, $auth);
 		}
 
 		$this->log_action($mode, 'del', $permission_type, $ug_type, (($ug_type == 'user') ? $user_id : $group_id), (sizeof($forum_id) ? $forum_id : array(0 => 0)));
@@ -952,12 +952,7 @@ class acp_permissions
 
 		if ($user_id != $user->data['user_id'])
 		{
-			$sql = 'SELECT user_id, username, user_permissions, user_type
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $user_id;
-			$result = $db->sql_query($sql);
-			$userdata = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$userdata = $auth->obtain_user_data($user_id);
 		}
 		else
 		{
@@ -1105,7 +1100,7 @@ class acp_permissions
 		{
 			if ($user_id != $user->data['user_id'])
 			{
-				$auth2 = new auth();
+				$auth2 = new phpbb_auth();
 				$auth2->acl($userdata);
 				$auth_setting = $auth2->acl_get($permission);
 			}
@@ -1172,7 +1167,7 @@ class acp_permissions
 	*/
 	function copy_forum_permissions()
 	{
-		global $auth, $cache, $template, $user;
+		global $db, $auth, $cache, $template, $user;
 
 		$user->add_lang('acp/forums');
 
@@ -1187,7 +1182,7 @@ class acp_permissions
 			{
 				if (copy_forum_permissions($src, $dest))
 				{
-					cache_moderators();
+					phpbb_cache_moderators($db, $cache, $auth);
 
 					$auth->acl_clear_prefetch();
 					$cache->destroy('sql', FORUMS_TABLE);
@@ -1311,5 +1306,3 @@ class acp_permissions
 		);
 	}
 }
-
-?>

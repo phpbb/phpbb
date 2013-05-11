@@ -14,10 +14,6 @@
     <testsuites>
         <testsuite name="phpBB Test Suite">
             <directory suffix="_test.php">./tests/</directory>
-            <exclude>./tests/functional</exclude>
-        </testsuite>
-        <testsuite name="phpBB Functional Tests">
-            <directory suffix="_test.php" phpVersion="5.3.0" phpVersionOperator=">=">./tests/functional</directory>
         </testsuite>
     </testsuites>
 
@@ -32,5 +28,13 @@
         <blacklist>
             <directory>./tests/</directory>
         </blacklist>
+        <whitelist>
+            <directory suffix=".php">./phpBB/includes/</directory>
+            <exclude>
+                <file>./phpBB/includes/search/fulltext_native.php</file>
+                <file>./phpBB/includes/search/fulltext_mysql.php</file>
+                <directory suffix=".php">./phpBB/includes/captcha/</directory>
+            </exclude>
+        </whitelist>
     </filter>
 </phpunit>

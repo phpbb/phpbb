@@ -7,8 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/session_testable.php';
-
 /**
 * This class exists to setup an instance of phpbb's session class for testing.
 *
@@ -24,6 +22,7 @@ class phpbb_session_testable_factory
 
 	protected $config;
 	protected $cache;
+	protected $request;
 
 	/**
 	* Initialises the factory with a set of default config and cache values.
@@ -60,22 +59,29 @@ class phpbb_session_testable_factory
 	/**
 	* Retrieve the configured session class instance
 	*
-	* @param dbal $dbal The database connection to use for session data
+	* @param phpbb_db_driver $dbal The database connection to use for session data
 	* @return phpbb_mock_session_testable A session instance
 	*/
-	public function get_session(dbal $dbal)
+	public function get_session(phpbb_db_driver $dbal)
 	{
 		// set up all the global variables used by session
-		global $SID, $_SID, $db, $config, $cache;
+		global $SID, $_SID, $db, $config, $cache, $request;
 
-		$config = $this->config = $this->get_config_data();
+		$request = $this->request = new phpbb_mock_request(
+			array(),
+			array(),
+			$this->cookies,
+			$this->server_data
+		);
+		request_var(null, null, null, null, $request);
+
+		$config = $this->config = new phpbb_config($this->get_config_data());
+		set_config(null, null, null, $config);
+
 		$db = $dbal;
 
 		$cache = $this->cache = new phpbb_mock_cache($this->get_cache_data());
 		$SID = $_SID = null;
-
-		$_COOKIE = $this->cookies;
-		$_SERVER = $this->server_data;
 
 		$session = new phpbb_mock_session_testable;
 		return $session;

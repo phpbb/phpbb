@@ -25,6 +25,12 @@ class phpbb_compress_test extends phpbb_test_case
 		'dir/subdir/4.txt',
 	);
 
+	protected $conflicts = array(
+		'1_1.txt',
+		'1_2.txt',
+		'dir/2_1.txt',
+	);
+
 	protected function setUp()
 	{
 		// Required for compress::add_file
@@ -88,6 +94,11 @@ class phpbb_compress_test extends phpbb_test_case
 		);
 		$compress->add_custom_file($this->path . 'dir/3.txt', 'dir/3.txt');
 		$compress->add_data(file_get_contents($this->path . 'dir/subdir/4.txt'), 'dir/subdir/4.txt');
+
+		// Add multiples of the same file to check conflicts are handled
+		$compress->add_file($this->path . '1.txt', $this->path);
+		$compress->add_file($this->path . '1.txt', $this->path);
+		$compress->add_file($this->path . 'dir/2.txt', $this->path);
 	}
 
 	protected function valid_extraction($extra = array())
@@ -150,7 +161,7 @@ class phpbb_compress_test extends phpbb_test_case
 		$compress->mode = 'r';
 		$compress->open();
 		$compress->extract('tests/compress/' . self::EXTRACT_DIR);
-		$this->valid_extraction();
+		$this->valid_extraction($this->conflicts);
 	}
 
 	/**
@@ -168,6 +179,6 @@ class phpbb_compress_test extends phpbb_test_case
 
 		$compress = new compress_zip('r', $zip);
 		$compress->extract('tests/compress/' . self::EXTRACT_DIR);
-		$this->valid_extraction();
+		$this->valid_extraction($this->conflicts);
 	}
 }

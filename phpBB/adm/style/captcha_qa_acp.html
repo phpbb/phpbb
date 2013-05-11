@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 
 	<a href="<!-- IF U_LIST -->{U_LIST}<!-- ELSE -->{U_ACTION}<!-- ENDIF -->" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
@@ -59,7 +59,7 @@
 	<fieldset>
 		<legend>{L_EDIT_QUESTION}</legend>
 	<dl>
-		<dt><label for="strict">{L_QUESTION_STRICT}:</label><br /><span>{L_QUESTION_STRICT_EXPLAIN}</span></dt>
+		<dt><label for="strict">{L_QUESTION_STRICT}{L_COLON}</label><br /><span>{L_QUESTION_STRICT_EXPLAIN}</span></dt>
 		<dd><label><input type="radio" class="radio" name="strict" value="1"<!-- IF STRICT --> id="strict" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 			<label><input type="radio" class="radio" name="strict" value="0"<!-- IF not STRICT --> id="strict" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>

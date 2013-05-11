@@ -1,17 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}" xml:lang="{S_USER_LANG}">
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset={S_CONTENT_ENCODING}" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="content-language" content="{S_USER_LANG}" />
-<meta http-equiv="imagetoolbar" content="no" />
-<meta name="resource-type" content="document" />
-<meta name="distribution" content="global" />
+<meta charset="utf-8">
 <meta name="keywords" content="" />
 <meta name="description" content="" />
 {META}
-<title>{SITENAME} &bull; <!-- IF S_IN_MCP -->{L_MCP} &bull; <!-- ELSEIF S_IN_UCP -->{L_UCP} &bull; <!-- ENDIF -->{PAGE_TITLE}</title>
+<title><!-- IF UNREAD_NOTIFICATIONS_COUNT -->({UNREAD_NOTIFICATIONS_COUNT}) <!-- ENDIF --><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
 
 <!-- IF S_ENABLE_FEEDS -->
 	<!-- IF S_ENABLE_FEEDS_OVERALL --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {SITENAME}" href="{U_FEED}" /><!-- ENDIF -->
@@ -32,7 +26,7 @@
 
 <script type="text/javascript">
 // <![CDATA[
-	var jump_page = '{LA_JUMP_PAGE}:';
+	var jump_page = '{LA_JUMP_PAGE}{L_COLON}';
 	var on_page = '{ON_PAGE}';
 	var per_page = '{PER_PAGE}';
 	var base_url = '{A_BASE_URL}';
@@ -62,7 +56,7 @@
 	{
 		for (var i = 0; i < onload_functions.length; i++)
 		{
-			eval(onload_functions[i]);
+			onload_functions[i]();
 		}
 	};
 
@@ -70,38 +64,39 @@
 	{
 		for (var i = 0; i < onunload_functions.length; i++)
 		{
-			eval(onunload_functions[i]);
+			onunload_functions[i]();
 		}
 	};
 
 // ]]>
 </script>
-<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/styleswitcher.js"></script>
-<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/forum_fn.js"></script>
+<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/forum_fn.js?assets_version={T_ASSETS_VERSION}"></script>
 
-<link href="{T_THEME_PATH}/print.css" rel="stylesheet" type="text/css" media="print" title="printonly" />
+<link href="{T_THEME_PATH}/print.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="print" title="printonly" />
 <link href="{T_STYLESHEET_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
-
-<link href="{T_THEME_PATH}/normal.css" rel="stylesheet" type="text/css" title="A" />
-<link href="{T_THEME_PATH}/medium.css" rel="alternate stylesheet" type="text/css" title="A+" />
-<link href="{T_THEME_PATH}/large.css" rel="alternate stylesheet" type="text/css" title="A++" />
+<link href="{T_STYLESHEET_LANG_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
 
 <!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-	<link href="{T_THEME_PATH}/bidi.css" rel="stylesheet" type="text/css" media="screen, projection" />
+	<link href="{T_THEME_PATH}/bidi.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen, projection" />
 <!-- ENDIF -->
 
-</head>
+<!--[if lte IE 8]>
+	<link href="{T_THEME_PATH}/tweaks.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen, projection" />
+<![endif]-->
 
+<!-- EVENT overall_header_head_append -->
+
+</head>
 <body id="phpbb" class="section-{SCRIPT_NAME} {S_CONTENT_DIRECTION}">
 
 <div id="wrap">
-	<a id="top" name="top" accesskey="t"></a>
+	<a id="top" accesskey="t"></a>
 	<div id="page-header">
 		<div class="headerbar">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 
 			<div id="site-description">
-				<a href="{U_INDEX}" title="{L_INDEX}" id="logo">{SITE_LOGO_IMG}</a>
+				<a href="<!-- IF U_SITE_HOME -->{U_SITE_HOME}<!-- ELSE -->{U_INDEX}<!-- ENDIF -->" title="<!-- IF U_SITE_HOME -->{L_SITE_HOME}<!-- ELSE -->{L_INDEX}<!-- ENDIF -->" id="logo">{SITE_LOGO_IMG}</a>
 				<h1>{SITENAME}</h1>
 				<p>{SITE_DESCRIPTION}</p>
 				<p class="skiplink"><a href="#start_here">{L_SKIP}</a></p>
@@ -119,16 +114,19 @@
 			</div>
 		<!-- ENDIF -->
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 
 		<div class="navbar">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 
 			<ul class="linklist navlinks">
-				<li class="icon-home"><a href="{U_INDEX}" accesskey="h">{L_INDEX}</a> <!-- BEGIN navlinks --> <strong>&#8249;</strong> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></li>
-
-				<li class="rightside"><a href="#" onclick="fontsizeup(); return false;" onkeypress="return fontsizeup(event);" class="fontsize" title="{L_CHANGE_FONT_SIZE}">{L_CHANGE_FONT_SIZE}</a></li>
+				<!-- DEFINE $MICRODATA = ' itemtype="http://data-vocabulary.org/Breadcrumb" itemscope=""' -->
+				<li class="icon-home"><!-- IF U_SITE_HOME --><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a> <strong>&#8249;</strong> <!-- ENDIF -->
+					<a href="{U_INDEX}" accesskey="h"{$MICRODATA}>{L_INDEX}</a> 
+					<!-- BEGIN navlinks --> <strong>&#8249;</strong> <a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}>{navlinks.FORUM_NAME}</a><!-- END navlinks -->
+					<!-- EVENT overall_header_breadcrumb_append -->
+				</li>
 
 				<!-- IF U_EMAIL_TOPIC --><li class="rightside"><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}" class="sendemail">{L_EMAIL_TOPIC}</a></li><!-- ENDIF -->
 				<!-- IF U_EMAIL_PM --><li class="rightside"><a href="{U_EMAIL_PM}" title="{L_EMAIL_PM}" class="sendemail">{L_EMAIL_PM}</a></li><!-- ENDIF -->
@@ -138,9 +136,48 @@
 
 			<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
 			<ul class="linklist leftside">
+				<!-- IF S_NOTIFICATIONS_DISPLAY -->
+				<li>
+					[ <a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a> ] &bull;
+					<div id="notification_list" class="notification_list">
+						<div class="pointer"><div class="pointer_inner"></div></div>
+						<div class="header">
+							{L_NOTIFICATIONS}
+							<span class="header_settings"><a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a></span>
+						</div>
+
+						<ul>
+							<!-- IF not .notifications -->
+								<li>
+									{L_NO_NOTIFICATIONS}
+								</li>
+							<!-- ENDIF -->
+							<!-- BEGIN notifications -->
+								<li class="<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
+									<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
+										{notifications.AVATAR}
+										<div>
+											<p>{notifications.FORMATTED_TITLE}</p>
+											<p>&raquo; {notifications.TIME}</p>
+
+											<!-- IF not notifications.URL and notifications.U_MARK_READ -->
+												<p><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a></p>
+											<!-- ENDIF -->
+										</div>
+									<!-- IF notifications.URL --></a><!-- ENDIF -->
+								</li>
+				   			<!-- END notifications -->
+						</ul>
+
+						<div class="footer">
+							<a href="{U_VIEW_ALL_NOTIFICATIONS}"><span>{L_SEE_ALL}</span></a>
+						</div>
+					</div>
+				</li>
+				<!-- ENDIF -->
 				<li class="icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
-						<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>)<!-- ENDIF -->
+						<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a>)<!-- ENDIF -->
 					<!-- IF S_DISPLAY_SEARCH --> &bull;
 					<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
 					<!-- ENDIF -->
@@ -152,25 +189,27 @@
 			<!-- ENDIF -->
 
 			<ul class="linklist rightside">
+				<!-- EVENT overall_header_navigation_prepend -->
 				<li class="icon-faq"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_DISPLAY_MEMBERLIST --><li class="icon-members"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
 					<!-- IF not S_USER_LOGGED_IN and S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --><li class="icon-register"><a href="{U_REGISTER}">{L_REGISTER}</a></li><!-- ENDIF -->
 					<li class="icon-logout"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x">{L_LOGIN_LOGOUT}</a></li>
 				<!-- ENDIF -->
+				<!-- EVENT overall_header_navigation_append -->
 			</ul>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 
 	</div>
 
-	<a name="start_here"></a>
+	<a id="start_here"></a>
 	<div id="page-body">
 		<!-- IF S_BOARD_DISABLED and S_USER_LOGGED_IN and (U_MCP or U_ACP) -->
 		<div id="information" class="rules">
-			<div class="inner"><span class="corners-top"><span></span></span>
-				<strong>{L_INFORMATION}:</strong> {L_BOARD_DISABLED}
-			<span class="corners-bottom"><span></span></span></div>
+			<div class="inner">
+				<strong>{L_INFORMATION}{L_COLON}</strong> {L_BOARD_DISABLED}
+			</div>
 		</div>
 		<!-- ENDIF -->

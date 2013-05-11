@@ -2,9 +2,8 @@
 /**
 *
 * @package VC
-* @version $Id$
 * @copyright (c) 2006, 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -19,7 +18,7 @@ if (!defined('IN_PHPBB'))
 /**
 * Placeholder for autoload
 */
-if (!class_exists('phpbb_default_captcha'))
+if (!class_exists('phpbb_default_captcha', false))
 {
 	include($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
 }
@@ -50,27 +49,15 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		}
 	}
 
-	function &get_instance()
+	static public function get_instance()
 	{
-		$instance =& new phpbb_captcha_gd();
+		$instance = new phpbb_captcha_gd();
 		return $instance;
 	}
 
-	function is_available()
+	static public function is_available()
 	{
-		global $phpbb_root_path, $phpEx;
-
-		if (@extension_loaded('gd'))
-		{
-			return true;
-		}
-
-		if (!function_exists('can_load_dll'))
-		{
-			include($phpbb_root_path . 'includes/functions_install.' . $phpEx);
-		}
-
-		return can_load_dll('gd');
+		return @extension_loaded('gd');
 	}
 
 	/**
@@ -81,7 +68,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		return true;
 	}
 
-	function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_GD';
 	}
@@ -152,14 +139,19 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		global $config;
 
 		$config_old = $config;
+
+		$config = new phpbb_config(array());
+		foreach ($config_old as $key => $value)
+		{
+			$config->set($key, $value);
+		}
+
 		foreach ($this->captcha_vars as $captcha_var => $template_var)
 		{
-				$config[$captcha_var] = request_var($captcha_var, (int) $config[$captcha_var]);
+			$config->set($captcha_var, request_var($captcha_var, (int) $config[$captcha_var]));
 		}
 		parent::execute_demo();
 		$config = $config_old;
 	}
 
 }
-
-?>

@@ -12,7 +12,7 @@
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_SUBJECT}</span></td>
-		<td class="row2" colspan="2"><input class="post" style="width: 350px" type="text" size="35" maxlength="64" name="subject" value="{SPLIT_SUBJECT}" /></td>
+		<td class="row2" colspan="2"><input class="post" style="width: 350px" type="text" size="35" maxlength="124" name="subject" value="{SPLIT_SUBJECT}" /></td>
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_FORUM}</span></td>
@@ -58,10 +58,10 @@
 	<td class="row2" colspan="2"><input class="post" type="text" name="posts_per_page" size="6" value="{POSTS_PER_PAGE}" /></td>
 </tr>
 <tr>
-	<td class="cat" colspan="3" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
+	<td class="cat" colspan="3" align="center"><span class="gensmall">{L_DISPLAY_POSTS}{L_COLON}</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
 </tr>
 <tr>
-	<th nowrap="nowrap" colspan="3">{L_TOPIC_REVIEW}: {TOPIC_TITLE}</th>
+	<th nowrap="nowrap" colspan="3">{L_TOPIC_REVIEW}{L_COLON} {TOPIC_TITLE}</th>
 </tr>
 <tr>
 	<td class="row3" colspan="3" align="center"><span class="gensmall">{RETURN_TOPIC}</span></td>
@@ -74,12 +74,12 @@
 		<td width="100%">
 			<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr valign="top">
-				<td class="gensmall" nowrap="nowrap">&nbsp;<b>{L_POST_SUBJECT}:</b>&nbsp;</td>
+				<td class="gensmall" nowrap="nowrap">&nbsp;<b>{L_POST_SUBJECT}{L_COLON}</b>&nbsp;</td>
 				<td class="gensmall" width="100%">{postrow.POST_SUBJECT}</td>
 			</tr>
 			</table>
 		</td>
-		<td width="5%" align="center"><a href="{postrow.U_POST_DETAILS}">{INFO_IMG}</a></td>
+		<td width="5%" align="center"><a href="{postrow.U_POST_DETAILS}" class="imageset">{INFO_IMG}</a></td>
 	</tr>
 
 	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
@@ -94,7 +94,7 @@
 
 						<table class="tablebg" width="100%" cellspacing="1">
 						<tr>
-							<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+							<td class="row3"><b class="genmed">{L_ATTACHMENTS}{L_COLON} </b></td>
 						</tr>
 						<!-- BEGIN attachment -->
 							<tr>
@@ -115,7 +115,7 @@
 							<!-- IF postrow.S_POST_REPORTED and postrow.U_MCP_REPORT --><span class="postreported">{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></span><!-- ENDIF -->
 						</td>
 						<td width="10" nowrap="nowrap">{postrow.MINI_POST_IMG}</td>
-						<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {postrow.POST_DATE}</td>
+						<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}{L_COLON}</b> {postrow.POST_DATE}</td>
 					</tr>
 					</table>
 				</td>

@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT -->
 
@@ -17,16 +17,16 @@
 		</div>
 	<!-- ENDIF -->
 
-	<form id="settings" method="post" action="{U_ACTION}"<!-- IF S_CAN_UPLOAD --> enctype="multipart/form-data"<!-- ENDIF -->>
+	<form id="settings" method="post" action="{U_ACTION}" enctype="multipart/form-data">
 
 	<fieldset>
 		<legend>{L_GROUP_DETAILS}</legend>
 	<dl>
-		<dt><label<!-- IF not S_SPECIAL_GROUP --> for="group_name"<!-- ENDIF -->>{L_GROUP_NAME}:</label></dt>
+		<dt><label<!-- IF not S_SPECIAL_GROUP --> for="group_name"<!-- ENDIF -->>{L_GROUP_NAME}{L_COLON}</label></dt>
 		<dd><!-- IF S_SPECIAL_GROUP --><strong>{GROUP_NAME}</strong><!-- ENDIF --><input name="group_name" type="<!-- IF S_SPECIAL_GROUP -->hidden<!-- ELSE -->text<!-- ENDIF -->" id="group_name" value="{GROUP_INTERNAL_NAME}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="group_desc">{L_GROUP_DESC}:</label></dt>
+		<dt><label for="group_desc">{L_GROUP_DESC}{L_COLON}</label></dt>
 		<dd><textarea id="group_desc" name="group_desc" rows="5" cols="45">{GROUP_DESC}</textarea></dd>
 		<dd><label><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
 			<label><input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
@@ -34,7 +34,7 @@
 	</dl>
 	<!-- IF not S_SPECIAL_GROUP -->
 		<dl>
-			<dt><label for="group_type">{L_GROUP_TYPE}:</label><br /><span>{L_GROUP_TYPE_EXPLAIN}</span></dt>
+			<dt><label for="group_type">{L_GROUP_TYPE}{L_COLON}</label><br /><span>{L_GROUP_TYPE_EXPLAIN}</span></dt>
 			<dd>
 				<label><input name="group_type" type="radio" class="radio" id="group_type" value="{GROUP_TYPE_FREE}"{GROUP_FREE} /> {L_GROUP_OPEN}</label>
 				<label><input name="group_type" type="radio" class="radio" value="{GROUP_TYPE_OPEN}"{GROUP_OPEN} /> {L_GROUP_REQUEST}</label>
@@ -48,7 +48,7 @@
 
 	<!-- IF S_ADD_GROUP and S_GROUP_PERM -->
 		<dl>
-			<dt><label for="group_perm_from">{L_COPY_PERMISSIONS}:</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
+			<dt><label for="group_perm_from">{L_COPY_PERMISSIONS}{L_COLON}</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
 			<dd><select id="group_perm_from" name="group_perm_from"><option value="0">{L_NO_PERMISSIONS}</option>{S_GROUP_OPTIONS}</select></dd>
 		</dl>
 	<!-- ENDIF -->
@@ -58,20 +58,24 @@
 		<legend>{L_GROUP_OPTIONS_SAVE}</legend>
 	<!-- IF S_USER_FOUNDER -->
 	<dl>
-		<dt><label for="group_founder_manage">{L_GROUP_FOUNDER_MANAGE}:</label><br /><span>{L_GROUP_FOUNDER_MANAGE_EXPLAIN}</span></dt>
+		<dt><label for="group_founder_manage">{L_GROUP_FOUNDER_MANAGE}{L_COLON}</label><br /><span>{L_GROUP_FOUNDER_MANAGE_EXPLAIN}</span></dt>
 		<dd><input name="group_founder_manage" type="checkbox" value="1" class="radio" id="group_founder_manage"{GROUP_FOUNDER_MANAGE} /></dd>
 	</dl>
 	<!-- ENDIF -->
 	<dl>
-		<dt><label for="group_skip_auth">{L_GROUP_SKIP_AUTH}:</label><br /><span>{L_GROUP_SKIP_AUTH_EXPLAIN}</span></dt>
+		<dt><label for="group_skip_auth">{L_GROUP_SKIP_AUTH}{L_COLON}</label><br /><span>{L_GROUP_SKIP_AUTH_EXPLAIN}</span></dt>
 		<dd><input name="group_skip_auth" type="checkbox" value="1" class="radio" id="group_skip_auth"{GROUP_SKIP_AUTH} /></dd>
 	</dl>
 	<dl>
-		<dt><label for="group_legend">{L_GROUP_LEGEND}:</label></dt>
+		<dt><label for="group_legend">{L_GROUP_LEGEND}{L_COLON}</label></dt>
 		<dd><input name="group_legend" type="checkbox" value="1" class="radio" id="group_legend"{GROUP_LEGEND} /></dd>
 	</dl>
 	<dl>
-		<dt><label for="group_receive_pm">{L_GROUP_RECEIVE_PM}:</label><br /><span>{L_GROUP_RECEIVE_PM_EXPLAIN}</span></dt>
+		<dt><label for="group_teampage">{L_GROUP_TEAMPAGE}{L_COLON}</label></dt>
+		<dd><input name="group_teampage" type="checkbox" value="1" class="radio" id="group_teampage"{GROUP_TEAMPAGE} /></dd>
+	</dl>
+	<dl>
+		<dt><label for="group_receive_pm">{L_GROUP_RECEIVE_PM}{L_COLON}</label><br /><span>{L_GROUP_RECEIVE_PM_EXPLAIN}</span></dt>
 		<dd><input name="group_receive_pm" type="checkbox" value="1" class="radio" id="group_receive_pm"{GROUP_RECEIVE_PM} /></dd>
 	</dl>
 	</fieldset>
@@ -79,19 +83,19 @@
 	<fieldset>
 		<legend>{L_GROUP_SETTINGS_SAVE}</legend>
 	<dl>
-		<dt><label for="group_message_limit">{L_GROUP_MESSAGE_LIMIT}:</label><br /><span>{L_GROUP_MESSAGE_LIMIT_EXPLAIN}</span></dt>
+		<dt><label for="group_message_limit">{L_GROUP_MESSAGE_LIMIT}{L_COLON}</label><br /><span>{L_GROUP_MESSAGE_LIMIT_EXPLAIN}</span></dt>
 		<dd><input name="group_message_limit" type="text" id="group_message_limit" maxlength="4" size="4" value="{GROUP_MESSAGE_LIMIT}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="group_max_recipients">{L_GROUP_MAX_RECIPIENTS}:</label><br /><span>{L_GROUP_MAX_RECIPIENTS_EXPLAIN}</span></dt>
+		<dt><label for="group_max_recipients">{L_GROUP_MAX_RECIPIENTS}{L_COLON}</label><br /><span>{L_GROUP_MAX_RECIPIENTS_EXPLAIN}</span></dt>
 		<dd><input name="group_max_recipients" type="text" id="group_max_recipients" maxlength="10" size="4" value="{GROUP_MAX_RECIPIENTS}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="group_colour">{L_GROUP_COLOR}:</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
+		<dt><label for="group_colour">{L_GROUP_COLOR}{L_COLON}</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
 		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" /><!-- IF GROUP_COLOUR -->&nbsp;<span style="background-color: #{GROUP_COLOUR}">&nbsp; &nbsp;</span><!-- ENDIF -->&nbsp;&nbsp;<span>[ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
 	</dl>
 	<dl>
-		<dt><label for="group_rank">{L_GROUP_RANK}:</label></dt>
+		<dt><label for="group_rank">{L_GROUP_RANK}{L_COLON}</label></dt>
 		<dd><select name="group_rank" id="group_rank">{S_RANK_OPTIONS}</select></dd>
 	</dl>
 	</fieldset>
@@ -99,67 +103,27 @@
 	<fieldset>
 		<legend>{L_GROUP_AVATAR}</legend>
 	<dl>
-		<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
-		<dd>{AVATAR_IMAGE}</dd>
-		<dd><label><input type="checkbox" class="radio" name="delete" /> {L_DELETE_AVATAR}</label></dd>
+		<dt><label>{L_CURRENT_IMAGE}{L_COLON}</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
+		<dd>{AVATAR}</dd>
+		<dd><label for="avatar_delete"><input type="checkbox" name="avatar_delete" id="avatar_delete" /> {L_DELETE_AVATAR}</label></dd>
 	</dl>
-	<!-- IF not S_IN_AVATAR_GALLERY -->
-		<!-- IF S_CAN_UPLOAD -->
-			<dl>
-				<dt><label for="uploadfile">{L_UPLOAD_AVATAR_FILE}:</label></dt>
-				<dd><input type="file" id="uploadfile" name="uploadfile" /></dd>
-			</dl>
-			<dl>
-				<dt><label for="uploadurl">{L_UPLOAD_AVATAR_URL}:</label><br /><span>{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></dt>
-				<dd><input name="uploadurl" type="text" id="uploadurl" value="" /></dd>
-			</dl>
-		<!-- ENDIF -->
-		<dl>
-			<dt><label for="remotelink">{L_LINK_REMOTE_AVATAR}:</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></dt>
-			<dd><input name="remotelink" type="text" id="remotelink" value="" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="width">{L_LINK_REMOTE_SIZE}:</label><br /><span>{L_LINK_REMOTE_SIZE_EXPLAIN}</span></dt>
-			<dd><input name="width" type="text" id="width" size="3" value="{AVATAR_WIDTH}" /> <span>{L_PIXEL} &times; </span> <input type="text" name="height" size="3" value="{AVATAR_HEIGHT}" /> <span>{L_PIXEL}</span></dd>
-		</dl>
-		<!-- IF S_DISPLAY_GALLERY -->
-			<dl>
-				<dt><label>{L_AVATAR_GALLERY}:</label></dt>
-				<dd><input class="button2" type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" /></dd>
-			</dl>
-		<!-- ENDIF -->
-	<!-- ELSE -->
-		</fieldset>
-
-		<fieldset>
-			<legend>{L_AVATAR_GALLERY}</legend>
-		<dl>
-			<dt><label for="category">{L_AVATAR_CATEGORY}:</label></dt>
-			<dd><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="button2" type="submit" value="{L_GO}" name="display_gallery" /></dd>
-		</dl>
-		<dl>
-			<table cellspacing="1">
-			<!-- BEGIN avatar_row -->
-			<tr>
-				<!-- BEGIN avatar_column -->
-					<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
-				<!-- END avatar_column -->
-			</tr>
-			<tr>
-				<!-- BEGIN avatar_option_column -->
-					<td class="row2" style="text-align: center;"><input type="radio" class="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
-				<!-- END avatar_option_column -->
-			</tr>
-			<!-- END avatar_row -->
-			</table>
-		</dl>
-		</fieldset>
-
-		<fieldset class="quick" style="margin-top: -15px;">
-			<input class="button2" type="submit" name="cancel" value="{L_CANCEL}" />
-		</fieldset>
-
-	<!-- ENDIF -->
+	<dl>
+		<dt><label>{L_AVATAR_TYPE}{L_COLON}</label></dt>
+		<dd><select name="avatar_driver" id="avatar_driver">
+			<option value="">{L_NO_AVATAR_CATEGORY}</option>
+			<!-- BEGIN avatar_drivers -->
+			<option value="{avatar_drivers.DRIVER}"<!-- IF avatar_drivers.SELECTED --> selected="selected"<!-- ENDIF -->>{avatar_drivers.L_TITLE}</option>
+			<!-- END avatar_drivers -->
+		</select></dd>
+	</dl>
+	<div id="avatar_options">
+	<!-- BEGIN avatar_drivers -->
+	<div id="avatar_option_{avatar_drivers.DRIVER}">
+		<p>{avatar_drivers.L_EXPLAIN}</p>
+		{avatar_drivers.OUTPUT}
+	</div>
+	<!-- END avatar_drivers -->
+	</div>
 	</fieldset>
 
 	<fieldset class="submit-buttons">
@@ -169,6 +133,8 @@
 		{S_FORM_TOKEN}
 	</fieldset>
 	</form>
+
+	<!-- INCLUDEJS avatars.js -->
 
 <!-- ELSEIF S_LIST -->
 
@@ -235,11 +201,11 @@
 	<!-- END member -->
 	</tbody>
 	</table>
-	<!-- IF PAGINATION -->
 	<div class="pagination">
-			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-	</div>
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->
 	<!-- ENDIF -->
+	</div>
 
 	<fieldset class="quick">
 		<select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select>
@@ -254,17 +220,17 @@
 	<fieldset>
 		<legend>{L_ADD_USERS}</legend>
 	<dl>
-		<dt><label for="leader">{L_USER_GROUP_LEADER}:</label></dt>
+		<dt><label for="leader">{L_USER_GROUP_LEADER}{L_COLON}</label></dt>
 		<dd><label><input name="leader" type="radio" class="radio" value="1" /> {L_YES}</label>
 			<label><input name="leader" type="radio" class="radio" id="leader" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="default">{L_USER_GROUP_DEFAULT}:</label><br /><span>{L_USER_GROUP_DEFAULT_EXPLAIN}</span></dt>
+		<dt><label for="default">{L_USER_GROUP_DEFAULT}{L_COLON}</label><br /><span>{L_USER_GROUP_DEFAULT_EXPLAIN}</span></dt>
 		<dd><label><input name="default" type="radio" class="radio" value="1" /> {L_YES}</label>
 			<label><input name="default" type="radio" class="radio" id="default" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="usernames">{L_USERNAME}:</label><br /><span>{L_USERNAMES_EXPLAIN}</span></dt>
+		<dt><label for="usernames">{L_USERNAME}{L_COLON}</label><br /><span>{L_USERNAMES_EXPLAIN}</span></dt>
 		<dd><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea></dd>
 		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
 	</dl>
@@ -318,7 +284,7 @@
 
 	<fieldset class="quick">
 		<!-- IF S_GROUP_ADD -->
-			{L_CREATE_GROUP}: <input type="text" name="group_name" value="" /> <input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
+			{L_CREATE_GROUP}{L_COLON} <input type="text" name="group_name" value="" /> <input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
 			<input type="hidden" name="add" value="1" />
 		<!-- ENDIF -->
 		{S_FORM_TOKEN}
@@ -346,7 +312,7 @@
 			<td style="text-align: center;">{groups.TOTAL_MEMBERS}</td>
 			<td style="text-align: center;"><a href="{groups.U_EDIT}">{L_SETTINGS}</a></td>
 			<td style="text-align: center;"><a href="{groups.U_LIST}">{L_MEMBERS}</a></td>
-			<td style="text-align: center;"><!-- IF not groups.S_GROUP_SPECIAL and groups.U_DELETE --><a href="{groups.U_DELETE}">{L_DELETE}</a><!-- ELSE -->{L_DELETE}<!-- ENDIF --></td>
+			<td style="text-align: center;"><!-- IF not groups.S_GROUP_SPECIAL and groups.U_DELETE --><a href="{groups.U_DELETE}" data-ajax="row_delete">{L_DELETE}</a><!-- ELSE -->{L_DELETE}<!-- ENDIF --></td>
 		</tr>
 		<!-- ENDIF -->
 	<!-- END groups -->

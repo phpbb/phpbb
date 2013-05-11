@@ -1,9 +1,8 @@
 <?php
 /**
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2009 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 * Idea and original RSS Feed 2.0 MOD (Version 1.0.8/9) by leviatan21
 * Original MOD: http://www.phpbb.com/community/viewtopic.php?f=69&t=1214645
@@ -127,7 +126,7 @@ if (!$feed_updated_time)
 // Some default assignments
 // FEED_IMAGE is not used (atom)
 $global_vars = array_merge($global_vars, array(
-	'FEED_IMAGE'			=> ($user->img('site_logo', '', false, '', 'src')) ? $board_url . '/' . substr($user->img('site_logo', '', false, '', 'src'), strlen($phpbb_root_path)) : '',
+	'FEED_IMAGE'			=> '',
 	'SELF_LINK'				=> feed_append_sid('/feed.' . $phpEx, $params),
 	'FEED_LINK'				=> $board_url . '/index.' . $phpEx,
 	'FEED_TITLE'			=> $config['sitename'],
@@ -151,7 +150,7 @@ if ($config['gzip_compress'])
 }
 
 // IF debug extra is enabled and admin want to "explain" the page we need to set other headers...
-if (defined('DEBUG_EXTRA') && request_var('explain', 0) && $auth->acl_get('a_'))
+if (defined('DEBUG') && request_var('explain', 0) && $auth->acl_get('a_'))
 {
 	header('Content-type: text/html; charset=UTF-8');
 	header('Cache-Control: private, no-cache="set-cookie"');
@@ -255,16 +254,8 @@ function feed_format_date($time)
 	{
 		global $user;
 
-		$zone_offset = (int) $user->timezone + (int) $user->dst;
-
-		$sign = ($zone_offset < 0) ? '-' : '+';
-		$time_offset = abs($zone_offset);
-
-		$offset_seconds	= $time_offset % 3600;
-		$offset_minutes	= $offset_seconds / 60;
-		$offset_hours	= ($time_offset - $offset_seconds) / 3600;
-
-		$offset_string	= sprintf("%s%02d:%02d", $sign, $offset_hours, $offset_minutes);
+		$zone_offset = $user->create_datetime()->getOffset();
+		$offset_string = phpbb_format_timezone_offset($zone_offset);
 	}
 
 	return gmdate("Y-m-d\TH:i:s", $time + $zone_offset) . $offset_string;
@@ -564,12 +555,6 @@ class phpbb_feed_base
 			$forum_ids = array_flip($this->get_moderator_approve_forums());
 		}
 
-		if (!$forum_id)
-		{
-			// Global announcement, your a moderator in any forum than it's okay.
-			return (!empty($forum_ids)) ? true : false;
-		}
-
 		return (isset($forum_ids[$forum_id])) ? true : false;
 	}
 
@@ -760,9 +745,6 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 			return false;
 		}
 
-		// Add global forum id
-		$forum_ids[] = 0;
-
 		// m_approve forums
 		$fid_m_approve = $this->get_moderator_approve_forums();
 		$sql_m_approve = (!empty($fid_m_approve)) ? 'OR ' . $db->sql_in_set('forum_id', $fid_m_approve) : '';
@@ -900,12 +882,11 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 		global $auth, $db;
 
 		$m_approve = ($auth->acl_get('m_approve', $this->forum_id)) ? true : false;
-		$forum_ids = array(0, $this->forum_id);
 
 		// Determine topics with recent activity
 		$sql = 'SELECT topic_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+			WHERE forum_id = ' . $this->forum_id . '
 				AND topic_moved_id = 0
 				' . ((!$m_approve) ? 'AND topic_approved = 1' : '') . '
 			ORDER BY topic_last_post_time DESC';
@@ -994,96 +975,37 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 			trigger_error('NO_TOPIC');
 		}
 
-		if ($this->topic_data['topic_type'] == POST_GLOBAL)
+		$this->forum_id = (int) $this->topic_data['forum_id'];
+
+		// Make sure topic is either approved or user authed
+		if (!$this->topic_data['topic_approved'] && !$auth->acl_get('m_approve', $this->forum_id))
 		{
-			// We need to find at least one postable forum where feeds are enabled,
-			// that the user can read and maybe also has approve permissions.
-			$in_fid_ary = $this->get_readable_forums();
-
-			if (empty($in_fid_ary))
-			{
-				// User cannot read any forums
-				trigger_error('SORRY_AUTH_READ');
-			}
-
-			if (!$this->topic_data['topic_approved'])
-			{
-				// Also require m_approve
-				$in_fid_ary = array_intersect($in_fid_ary, $this->get_moderator_approve_forums());
-
-				if (empty($in_fid_ary))
-				{
-					trigger_error('SORRY_AUTH_READ');
-				}
-			}
-
-			// Diff excluded forums
-			$in_fid_ary = array_diff($in_fid_ary, $this->get_excluded_forums());
-
-			if (empty($in_fid_ary))
-			{
-				trigger_error('SORRY_AUTH_READ');
-			}
-
-			// Also exclude passworded forums
-			$in_fid_ary = array_diff($in_fid_ary, $this->get_passworded_forums());
-
-			if (empty($in_fid_ary))
-			{
-				trigger_error('SORRY_AUTH_READ');
-			}
-
-			$sql = 'SELECT forum_id, left_id
-				FROM ' . FORUMS_TABLE . '
-				WHERE forum_type = ' . FORUM_POST . '
-					AND ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
-				ORDER BY left_id ASC';
-			$result = $db->sql_query_limit($sql, 1);
-			$this->forum_data = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if (empty($this->forum_data))
-			{
-				// No forum found.
-				trigger_error('SORRY_AUTH_READ');
-			}
-
-			unset($in_fid_ary);
+			trigger_error('SORRY_AUTH_READ');
 		}
-		else
+
+		// Make sure forum is not excluded from feed
+		if (phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $this->topic_data['forum_options']))
 		{
-			$this->forum_id = (int) $this->topic_data['forum_id'];
+			trigger_error('NO_FEED');
+		}
 
-			// Make sure topic is either approved or user authed
-			if (!$this->topic_data['topic_approved'] && !$auth->acl_get('m_approve', $this->forum_id))
+		// Make sure we can read this forum
+		if (!$auth->acl_get('f_read', $this->forum_id))
+		{
+			trigger_error('SORRY_AUTH_READ');
+		}
+
+		// Make sure forum is not passworded or user is authed
+		if ($this->topic_data['forum_password'])
+		{
+			$forum_ids_passworded = $this->get_passworded_forums();
+
+			if (isset($forum_ids_passworded[$this->forum_id]))
 			{
 				trigger_error('SORRY_AUTH_READ');
 			}
 
-			// Make sure forum is not excluded from feed
-			if (phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $this->topic_data['forum_options']))
-			{
-				trigger_error('NO_FEED');
-			}
-
-			// Make sure we can read this forum
-			if (!$auth->acl_get('f_read', $this->forum_id))
-			{
-				trigger_error('SORRY_AUTH_READ');
-			}
-
-			// Make sure forum is not passworded or user is authed
-			if ($this->topic_data['forum_password'])
-			{
-				$forum_ids_passworded = $this->get_passworded_forums();
-
-				if (isset($forum_ids_passworded[$this->forum_id]))
-				{
-					trigger_error('SORRY_AUTH_READ');
-				}
-
-				unset($forum_ids_passworded);
-			}
+			unset($forum_ids_passworded);
 		}
 	}
 
@@ -1169,8 +1091,8 @@ class phpbb_feed_forums extends phpbb_feed_base
 		{
 			global $user;
 
-			$item_row['statistics'] = sprintf($user->lang['TOTAL_TOPICS_OTHER'], $row['forum_topics'])
-				. ' ' . $this->separator_stats . ' ' . sprintf($user->lang['TOTAL_POSTS_OTHER'], $row['forum_posts']);
+			$item_row['statistics'] = $user->lang('TOTAL_TOPICS', (int) $row['forum_topics'])
+				. ' ' . $this->separator_stats . ' ' . $user->lang('TOTAL_POSTS_COUNT', (int) $row['forum_posts']);
 		}
 	}
 }
@@ -1229,9 +1151,6 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 		{
 			return false;
 		}
-
-		// Add global forum
-		$in_fid_ary[] = 0;
 
 		// We really have to get the post ids first!
 		$sql = 'SELECT topic_first_post_id, topic_time
@@ -1302,9 +1221,6 @@ class phpbb_feed_topics extends phpbb_feed_topic_base
 		{
 			return false;
 		}
-
-		// Add global forum
-		$in_fid_ary[] = 0;
 
 		// We really have to get the post ids first!
 		$sql = 'SELECT topic_first_post_id, topic_time
@@ -1395,9 +1311,6 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 			return false;
 		}
 
-		// Add global forum
-		$in_fid_ary[] = 0;
-
 		// Search for topics in last X days
 		$last_post_time_sql = ($this->sort_days) ? ' AND topic_last_post_time > ' . (time() - ($this->sort_days * 24 * 3600)) : '';
 
@@ -1482,6 +1395,3 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 		$item_row['title'] = (isset($row['forum_name']) && $row['forum_name'] !== '') ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
 	}
 }
-
-
-?>

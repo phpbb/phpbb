@@ -5,7 +5,7 @@
 <form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<p>{L_GROUPS_EXPLAIN}</p>
 	<!-- DEFINE $SHOW_BUTTONS = 0 -->
@@ -66,12 +66,12 @@
 		<!-- END member -->
 		</ul>
 	<!-- ENDIF -->
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>	
 
 <!-- IF .pending -->
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>	
+	<div class="inner">	
 		<ul class="topiclist">
 			<li class="header">
 				<dl>
@@ -98,12 +98,12 @@
 		</li>
 		<!-- END pending -->
 		</ul>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 <!-- ENDIF -->
 <!-- IF .nonmember -->
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 		<ul class="topiclist">
 			<li class="header">
 				<dl>
@@ -130,7 +130,7 @@
 		</li>
 		<!-- END nonmember -->
 		</ul>
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- ENDIF -->
 	
@@ -146,7 +146,7 @@
 
 		<!-- IF $SHOW_BUTTONS eq 1 -->
 		<div class="right-box">
-			<label for="action">{L_SELECT}:</label> 
+			<label for="action">{L_SELECT}{L_COLON}</label> 
 			<select name="action" id="action">
 				<option value="join">{L_JOIN_SELECTED}</option>
 				<option value="resign">{L_RESIGN_SELECTED}</option>

@@ -1,9 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}">
-<meta http-equiv="Content-Style-Type" content="text/css">
-<meta http-equiv="Content-Language" content="{S_USER_LANG}">
+<meta charset="utf-8">
 <title>{SITENAME} :: {PAGE_TITLE}</title>
 
 <style type="text/css">
@@ -76,13 +74,13 @@ hr.sep {
 
 <table width="85%" cellspacing="3" cellpadding="0" border="0" align="center">
 <tr>
-	<td width="10%" nowrap="nowrap">{L_PM_FROM}:&nbsp;</td>
+	<td width="10%" nowrap="nowrap">{L_PM_FROM}{L_COLON}&nbsp;</td>
 	<td><b>{MESSAGE_AUTHOR}</b> [ {SENT_DATE} ]</td>
 </tr>
 	
 <!-- IF S_TO_RECIPIENT -->
 	<tr>
-		<td width="10%" nowrap="nowrap">{L_TO}:</td>
+		<td width="10%" nowrap="nowrap">{L_TO}{L_COLON}</td>
 		<td>
 		<!-- BEGIN to_recipient -->
 			<span<!-- IF to_recipient.IS_GROUP --> class="sep"<!-- ENDIF -->>{to_recipient.NAME}</span>&nbsp;
@@ -93,7 +91,7 @@ hr.sep {
 
 <!-- IF S_BCC_RECIPIENT -->
 	<tr>
-		<td width="10%" nowrap="nowrap">{L_BCC}:</td>
+		<td width="10%" nowrap="nowrap">{L_BCC}{L_COLON}</td>
 		<td>
 		<!-- BEGIN bcc_recipient -->
 			<!-- IF bcc_recipient.COLOUR --><span style="color:{bcc_recipient.COLOUR}"><!-- ELSE --><span<!-- IF bcc_recipient.IS_GROUP --> class="sep"<!-- ENDIF -->><!-- ENDIF -->{bcc_recipient.NAME}</span>&nbsp;

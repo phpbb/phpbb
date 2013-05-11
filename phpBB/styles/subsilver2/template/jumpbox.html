@@ -1,10 +1,10 @@
 
 <!-- IF S_DISPLAY_JUMPBOX -->
-	<form method="post" name="jumpbox" action="{S_JUMPBOX_ACTION}" onsubmit="if(document.jumpbox.f.value == -1){return false;}">
+	<form method="get" name="jumpbox" action="{S_JUMPBOX_ACTION}" onsubmit="if(document.jumpbox.f.value == -1){return false;}">
 
 	<table cellspacing="0" cellpadding="0" border="0">
 	<tr>
-		<td nowrap="nowrap"><span class="gensmall"><!-- IF S_IN_MCP and S_MERGE_SELECT -->{L_SELECT_TOPICS_FROM}<!-- ELSEIF S_IN_MCP -->{L_MODERATE_FORUM}<!-- ELSE -->{L_JUMP_TO}<!-- ENDIF -->:</span>&nbsp;<select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ document.forms['jumpbox'].submit() }">
+		<td nowrap="nowrap">{HIDDEN_FIELDS_FOR_JUMPBOX}<span class="gensmall"><!-- IF S_IN_MCP and S_MERGE_SELECT -->{L_SELECT_TOPICS_FROM}<!-- ELSEIF S_IN_MCP -->{L_MODERATE_FORUM}<!-- ELSE -->{L_JUMP_TO}<!-- ENDIF -->{L_COLON}</span>&nbsp;<select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ document.forms['jumpbox'].submit() }">
 
 		<!-- BEGIN jumpbox_forums -->
 			<!-- IF jumpbox_forums.S_FORUM_COUNT eq 1 --><option value="-1">------------------</option><!-- ENDIF -->

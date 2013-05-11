@@ -8,13 +8,12 @@ ul.topiclist {
 }
 
 ul.forums {
-	background: #f9f9f9 none repeat-x 0 0;
+	background: transparent none repeat-x 0 0;
 }
 
 ul.topiclist li {
 	display: block;
 	list-style-type: none;
-	color: #777777;
 	margin: 0;
 }
 
@@ -38,7 +37,7 @@ ul.topiclist dt {
 ul.topiclist dd {
 	display: block;
 	float: left;
-	border-left: 1px solid #FFFFFF;
+	border-left: 1px solid transparent;
 	padding: 4px 0;
 }
 
@@ -65,28 +64,18 @@ ul.topiclist li.row dt a.subforum {
 }
 
 li.row {
-	border-top: 1px solid #FFFFFF;
-	border-bottom: 1px solid #8f8f8f;
+	border-top: 1px solid transparent;
+	border-bottom: 1px solid transparent;
 }
 
 li.row strong {
 	font-weight: normal;
-	color: #000000;
-}
-
-li.row:hover {
-	background-color: #f6f6f6;
-}
-
-li.row:hover dd {
-	border-left-color: #CCCCCC;
 }
 
 li.header dt, li.header dd {
 	line-height: 1em;
 	border-left-width: 0;
 	margin: 2px 0 4px 0;
-	color: #FFFFFF;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	font-size: 1em;
@@ -205,7 +194,6 @@ ul.topiclist dd.searchextra {
 	margin-left: 5px;
 	padding: 0.2em 0;
 	font-size: 1.1em;
-	color: #333333;
 	border-left: none;
 	clear: both;
 	width: 98%;
@@ -228,7 +216,6 @@ div[class].topic-actions {
 .postbody {
 	padding: 0;
 	line-height: 1.48em;
-	color: #333333;
 	width: 76%;
 	float: left;
 	clear: both;
@@ -320,14 +307,12 @@ div[class].topic-actions {
 	line-height: 1.4em;
 	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
-	color: #333333;
 	padding-bottom: 1px;
 }
 
 .content h2, .panel h2 {
 	font-weight: normal;
-	color: #989898;
-	border-bottom: 1px solid #CCCCCC;
+	border-bottom: 1px solid transparent;
 	font-size: 1.6em;
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;
@@ -351,6 +336,10 @@ div[class].topic-actions {
 	line-height: 1.4em;
 }
 
+span.corners-top, span.corners-bottom {
+    display: none;
+}
+
 dl.faq {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.1em;
@@ -361,7 +350,6 @@ dl.faq {
 
 dl.faq dt {
 	font-weight: bold;
-	color: #333333;
 }
 
 .content dl.faq {
@@ -379,15 +367,7 @@ dl.faq dt {
 }
 
 .posthilit {
-	background-color: #f3f3f3;
-	color: #BCBCBC;
 	padding: 0 2px 1px 2px;
-}
-
-.announce, .unreadpost {
-	/* Highlight the announcements & unread posts box */
-	border-left-color: #BCBCBC;
-	border-right-color: #BCBCBC;
 }
 
 /* Post author */
@@ -404,7 +384,7 @@ p.author {
 	margin-top: 1.5em;
 	padding-top: 0.2em;
 	font-size: 1.1em;
-	border-top: 1px solid #CCCCCC;
+	border-top: 1px solid transparent;
 	clear: left;
 	line-height: 140%;
 	overflow: hidden;
@@ -434,7 +414,7 @@ dd .signature {
 	margin-top: 1.5em;
 	padding-top: 0.2em;
 	font-size: 1em;
-	border-top: 1px dashed #CCCCCC;
+	border-top: 1px dashed transparent;
 	clear: left;
 	line-height: 130%;
 }
@@ -450,8 +430,8 @@ ul.searchresults {
 ----------------------------------------*/
 /* Quote block */
 blockquote {
-	background: #ebebeb none 6px 8px no-repeat;
-	border: 1px solid #dbdbdb;
+	background: transparent none 6px 8px no-repeat;
+	border: 1px solid transparent;
 	font-size: 0.95em;
 	margin: 0.5em 1px 0 25px;
 	overflow: hidden;
@@ -460,14 +440,8 @@ blockquote {
 
 blockquote blockquote {
 	/* Nested quotes */
-	background-color: #bababa;
 	font-size: 1em;
 	margin: 0.5em 1px 0 15px;	
-}
-
-blockquote blockquote blockquote {
-	/* Nested quotes */
-	background-color: #e4e4e4;
 }
 
 blockquote cite {
@@ -490,14 +464,13 @@ blockquote.uncited {
 /* Code block */
 dl.codebox {
 	padding: 3px;
-	background-color: #FFFFFF;
-	border: 1px solid #d8d8d8;
+	border: 1px solid transparent;
 	font-size: 1em;
 }
 
 dl.codebox dt {
 	text-transform: uppercase;
-	border-bottom: 1px solid #CCCCCC;
+	border-bottom: 1px solid transparent;
 	margin-bottom: 3px;
 	font-size: 0.8em;
 	font-weight: bold;
@@ -518,16 +491,8 @@ dl.codebox code {
 	padding-top: 5px;
 	font: 0.9em Monaco, "Andale Mono","Courier New", Courier, mono;
 	line-height: 1.3em;
-	color: #8b8b8b;
 	margin: 2px 0;
 }
-
-.syntaxbg		{ color: #FFFFFF; }
-.syntaxcomment	{ color: #000000; }
-.syntaxdefault	{ color: #bcbcbc; }
-.syntaxhtml		{ color: #000000; }
-.syntaxkeyword	{ color: #585858; }
-.syntaxstring	{ color: #a7a7a7; }
 
 /* Attachments
 ----------------------------------------*/
@@ -536,13 +501,8 @@ dl.codebox code {
 	width: auto; 
 	margin: 5px 5px 5px 0;
 	padding: 6px;
-	background-color: #FFFFFF;
-	border: 1px dashed #d8d8d8;
+	border: 1px dashed transparent;
 	clear: left;
-}
-
-.pm-message .attachbox {
-	background-color: #f3f3f3;
 }
 
 .attachbox dt {
@@ -554,7 +514,7 @@ dl.codebox code {
 	margin-top: 4px;
 	padding-top: 4px;
 	clear: left;
-	border-top: 1px solid #d8d8d8;
+	border-top: 1px solid transparent;
 }
 
 .attachbox dd dd {
@@ -563,7 +523,6 @@ dl.codebox code {
 
 .attachbox p {
 	line-height: 110%;
-	color: #666666;
 	font-weight: normal;
 	clear: left;
 }
@@ -571,7 +530,6 @@ dl.codebox code {
 .attachbox p.stats
 {
 	line-height: 110%;
-	color: #666666;
 	font-weight: normal;
 	clear: left;
 }
@@ -584,7 +542,7 @@ dl.codebox code {
 }
 
 .attach-image img {
-	border: 1px solid #999999;
+	border: 1px solid transparent;
 /*	cursor: move; */
 	cursor: default;
 }
@@ -613,19 +571,16 @@ dl.file dt {
 }
 
 dl.file dd {
-	color: #666666;
 	margin: 0;
 	padding: 0;	
 }
 
 dl.thumbnail img {
 	padding: 3px;
-	border: 1px solid #666666;
-	background-color: #FFF;
+	border: 1px solid transparent;
 }
 
 dl.thumbnail dd {
-	color: #666666;
 	font-style: italic;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 }
@@ -634,12 +589,8 @@ dl.thumbnail dd {
 	font-size: 100%;
 }
 
-dl.thumbnail dt a:hover {
-	background-color: #EEEEEE;
-}
-
 dl.thumbnail dt a:hover img {
-	border: 1px solid #d2d2d2;
+	border: 1px solid transparent;
 }
 
 /* Post poll styles
@@ -650,15 +601,13 @@ fieldset.polls {
 
 fieldset.polls dl {
 	margin-top: 5px;
-	border-top: 1px solid #e2e2e2;
+	border-top: 1px solid transparent;
 	padding: 5px 0 0 0;
 	line-height: 120%;
-	color: #666666;
 }
 
 fieldset.polls dl.voted {
 	font-weight: bold;
-	color: #000000;
 }
 
 fieldset.polls dt {
@@ -692,41 +641,15 @@ fieldset.polls dd input {
 fieldset.polls dd div {
 	text-align: right;
 	font-family: Arial, Helvetica, sans-serif;
-	color: #FFFFFF;
 	font-weight: bold;
 	padding: 0 2px;
 	overflow: visible;
 	min-width: 2%;
 }
 
-.pollbar1 {
-	background-color: #aaaaaa;
-	border-bottom: 1px solid #747474;
-	border-right: 1px solid #747474;
-}
-
-.pollbar2 {
-	background-color: #bebebe;
-	border-bottom: 1px solid #8c8c8c;
-	border-right: 1px solid #8c8c8c;
-}
-
-.pollbar3 {
-	background-color: #D1D1D1;
-	border-bottom: 1px solid #aaaaaa;
-	border-right: 1px solid #aaaaaa;
-}
-
-.pollbar4 {
-	background-color: #e4e4e4;
-	border-bottom: 1px solid #bebebe;
-	border-right: 1px solid #bebebe;
-}
-
-.pollbar5 {
-	background-color: #f8f8f8;
-	border-bottom: 1px solid #D1D1D1;
-	border-right: 1px solid #D1D1D1;
+.pollbar1, .pollbar2, .pollbar3, .pollbar4, .pollbar5 {
+	border-bottom: 1px solid transparent;
+	border-right: 1px solid transparent;
 }
 
 /* Poster profile block
@@ -735,14 +658,10 @@ fieldset.polls dd div {
 	/* Also see tweaks.css */
 	margin: 5px 0 10px 0;
 	min-height: 80px;
-	color: #666666;
-	border-left: 1px solid #FFFFFF;
+	border-left: 1px solid transparent;
 	width: 22%;
 	float: right;
 	display: inline;
-}
-.pm .postprofile {
-	border-left: 1px solid #DDDDDD;
 }
 
 .postprofile dd, .postprofile dt {
@@ -750,9 +669,13 @@ fieldset.polls dd div {
 	margin-left: 8px;
 }
 
+.postprofile dd {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 .postprofile strong {
 	font-weight: normal;
-	color: #000000;
 }
 
 .avatar {
@@ -783,4 +706,27 @@ dl.pmlist dt textarea {
 dl.pmlist dd {
 	margin-left: 61% !important;
 	margin-bottom: 2px;
+}
+
+.topic-actions div.dl_links {
+	padding: 10px 0 0 10px;
+}
+
+div.dl_links {
+	display: inline-block;
+	text-transform: none;
+}
+
+.dl_links strong {
+	font-weight: bold;
+}
+
+.dl_links ul {
+	list-style-type: none;
+	margin: 0;
+	display: inline-block;
+}
+
+.dl_links li {
+	display: inline-block;
 }

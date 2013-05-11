@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -26,7 +25,7 @@ class acp_forums
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		$user->add_lang('acp/forums');
@@ -151,6 +150,17 @@ class acp_forums
 						'forum_password_unset'	=> request_var('forum_password_unset', false),
 					);
 
+					/**
+					* Request forum data and operate on it (parse texts, etc.)
+					*
+					* @event core.acp_manage_forums_request_data
+					* @var	string	action		Type of the action: add|edit
+					* @var	array	forum_data	Array with new forum data
+					* @since 3.1-A1
+					*/
+					$vars = array('action', 'forum_data');
+					extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_request_data', compact($vars)));
+
 					// On add, add empty forum_options... else do not consider it (not updating it)
 					if ($action == 'add')
 					{
@@ -196,7 +206,7 @@ class acp_forums
 							($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 						{
 							copy_forum_permissions($forum_perm_from, $forum_data['forum_id'], ($action == 'edit') ? true : false);
-							cache_moderators();
+							phpbb_cache_moderators($db, $cache, $auth);
 							$copied_permissions = true;
 						}
 /* Commented out because of questionable UI workflow - re-visit for 3.0.7
@@ -255,6 +265,12 @@ class acp_forums
 				{
 					add_log('admin', 'LOG_FORUM_' . strtoupper($action), $row['forum_name'], $move_forum_name);
 					$cache->destroy('sql', FORUMS_TABLE);
+				}
+
+				if ($request->is_ajax())
+				{
+					$json_response = new phpbb_json_response;
+					$json_response->send(array('success' => ($move_forum_name !== false)));
 				}
 
 			break;
@@ -381,6 +397,9 @@ class acp_forums
 					$forum_data['forum_flags'] += (request_var('enable_quick_reply', false)) ? FORUM_FLAG_QUICK_REPLY : 0;
 				}
 
+				// Initialise $row, so we always have it in the event
+				$row = array();
+
 				// Show form to create/modify a forum
 				if ($action == 'edit')
 				{
@@ -447,6 +466,24 @@ class acp_forums
 						);
 					}
 				}
+
+				/**
+				* Initialise data before we display the add/edit form
+				*
+				* @event core.acp_manage_forums_initialise_data
+				* @var	string	action		Type of the action: add|edit
+				* @var	bool	update		Do we display the form only
+				*							or did the user press submit
+				* @var	int		forum_id	When editing: the forum id,
+				*							when creating: the parent forum id
+				* @var	array	row			Array with current forum data
+				*							empty when creating new forum
+				* @var	array	forum_data	Array with new forum data
+				* @var	string	parents_list	List of parent options
+				* @since 3.1-A1
+				*/
+				$vars = array('action', 'update', 'forum_id', 'row', 'forum_data', 'parents_list');
+				extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_initialise_data', compact($vars)));
 
 				$forum_rules_data = array(
 					'text'			=> $forum_data['forum_rules'],
@@ -577,7 +614,7 @@ class acp_forums
 					$errors[] = $user->lang['FORUM_PASSWORD_OLD'];
 				}
 
-				$template->assign_vars(array(
+				$template_data = array(
 					'S_EDIT_FORUM'		=> true,
 					'S_ERROR'			=> (sizeof($errors)) ? true : false,
 					'S_PARENT_ID'		=> $this->parent_id,
@@ -642,7 +679,31 @@ class acp_forums
 					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
 					'S_ENABLE_QUICK_REPLY'		=> ($forum_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) ? true : false,
 					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))) ? true : false,
-				));
+				);
+
+				/**
+				* Modify forum template data before we display the form
+				*
+				* @event core.acp_manage_forums_display_form
+				* @var	string	action		Type of the action: add|edit
+				* @var	bool	update		Do we display the form only
+				*							or did the user press submit
+				* @var	int		forum_id	When editing: the forum id,
+				*							when creating: the parent forum id
+				* @var	array	row			Array with current forum data
+				*							empty when creating new forum
+				* @var	array	forum_data	Array with new forum data
+				* @var	string	parents_list	List of parent options
+				* @var	array	errors		Array of errors, if you add errors
+				*					ensure to update the template variables
+				*					S_ERROR and ERROR_MSG to display it
+				* @var	array	template_data	Array with new forum data
+				* @since 3.1-A1
+				*/
+				$vars = array('action', 'update', 'forum_id', 'row', 'forum_data', 'parents_list', 'errors', 'template_data');
+				extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_display_form', compact($vars)));
+
+				$template->assign_vars($template_data);
 
 				return;
 
@@ -707,7 +768,7 @@ class acp_forums
 				if (!empty($forum_perm_from) && $forum_perm_from != $forum_id)
 				{
 					copy_forum_permissions($forum_perm_from, $forum_id, true);
-					cache_moderators();
+					phpbb_cache_moderators($db, $cache, $auth);
 					$auth->acl_clear_prefetch();
 					$cache->destroy('sql', FORUMS_TABLE);
 
@@ -867,9 +928,21 @@ class acp_forums
 	*/
 	function update_forum_data(&$forum_data)
 	{
-		global $db, $user, $cache, $phpbb_root_path;
+		global $db, $user, $cache, $phpbb_root_path, $phpbb_dispatcher;
 
 		$errors = array();
+
+		/**
+		* Validate the forum data before we create/update the forum
+		*
+		* @event core.acp_manage_forums_validate_data
+		* @var	array	forum_data	Array with new forum data
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key.
+		* @since 3.1-A1
+		*/
+		$vars = array('forum_data', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_validate_data', compact($vars)));
 
 		if ($forum_data['forum_name'] == '')
 		{
@@ -963,7 +1036,22 @@ class acp_forums
 		}
 		unset($forum_data_sql['forum_password_unset']);
 
-		if (!isset($forum_data_sql['forum_id']))
+		/**
+		* Remove invalid values from forum_data_sql that should not be updated
+		*
+		* @event core.acp_manage_forums_update_data_before
+		* @var	array	forum_data		Array with forum data
+		* @var	array	forum_data_sql	Array with data we are going to update
+		*						If forum_data_sql[forum_id] is set, we update
+		*						that forum, otherwise a new one is created.
+		* @since 3.1-A1
+		*/
+		$vars = array('forum_data', 'forum_data_sql');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_before', compact($vars)));
+
+		$is_new_forum = !isset($forum_data_sql['forum_id']);
+
+		if ($is_new_forum)
 		{
 			// no forum_id means we're creating a new forum
 			unset($forum_data_sql['type_action']);
@@ -1234,6 +1322,22 @@ class acp_forums
 			add_log('admin', 'LOG_FORUM_EDIT', $forum_data['forum_name']);
 		}
 
+		/**
+		* Event after a forum was updated or created
+		*
+		* @event core.acp_manage_forums_update_data_after
+		* @var	array	forum_data		Array with forum data
+		* @var	array	forum_data_sql	Array with data we updated
+		* @var	bool	is_new_forum	Did we create a forum or update one
+		*								If you want to overwrite this value,
+		*								ensure to set forum_data_sql[forum_id]
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key.
+		* @since 3.1-A1
+		*/
+		$vars = array('forum_data', 'forum_data_sql', 'is_new_forum', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_after', compact($vars)));
+
 		return $errors;
 	}
 
@@ -1242,7 +1346,7 @@ class acp_forums
 	*/
 	function move_forum($from_id, $to_id)
 	{
-		global $db, $user;
+		global $db, $user, $phpbb_dispatcher;
 
 		$to_data = $moved_ids = $errors = array();
 
@@ -1254,8 +1358,28 @@ class acp_forums
 			if ($to_data['forum_type'] == FORUM_LINK)
 			{
 				$errors[] = $user->lang['PARENT_IS_LINK_FORUM'];
-				return $errors;
 			}
+		}
+
+		/**
+		* Event when we move all children of one forum to another
+		*
+		* This event may be triggered, when a forum is deleted
+		*
+		* @event core.acp_manage_forums_move_children
+		* @var	int		from_id		If of the current parent forum
+		* @var	int		to_id		If of the new parent forum
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key.
+		* @since 3.1-A1
+		*/
+		$vars = array('from_id', 'to_id', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_children', compact($vars)));
+
+		// Return if there were errors
+		if (!empty($errors))
+		{
+			return $errors;
 		}
 
 		$moved_forums = get_forum_branch($from_id, 'children', 'descending');
@@ -1337,7 +1461,30 @@ class acp_forums
 	*/
 	function move_forum_content($from_id, $to_id, $sync = true)
 	{
-		global $db;
+		global $db, $phpbb_dispatcher;
+
+		$errors = array();
+
+		/**
+		* Event when we move content from one forum to another
+		*
+		* @event core.acp_manage_forums_move_children
+		* @var	int		from_id		If of the current parent forum
+		* @var	int		to_id		If of the new parent forum
+		* @var	bool	sync		Shall we sync the "to"-forum's data
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key. If this array is not empty,
+		*							The content will not be moved.
+		* @since 3.1-A1
+		*/
+		$vars = array('from_id', 'to_id', 'sync', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_content', compact($vars)));
+
+		// Return if there were errors
+		if (!empty($errors))
+		{
+			return $errors;
+		}
 
 		$table_ary = array(LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
 
@@ -1946,5 +2093,3 @@ class acp_forums
 	}
 
 }
-
-?>

@@ -1,0 +1,49 @@
+<!-- INCLUDE ucp_header.html -->
+
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th colspan="4" valign="middle">{L_TITLE}</th>
+</tr>
+<!-- IF .errors -->
+	<tr>
+		<td class="row3" colspan="2" align="center"><span class="gensmall error">
+			<!-- BEGIN errors -->
+				{errors} <br />
+			<!-- END errors -->
+		</td>
+	</tr>
+<!-- ENDIF -->
+
+<tr>
+	<td colspan="4" class="row1">{L_PROFILE_AUTOLOGIN_KEYS}</td>
+</tr>
+<tr>
+	<th>{L_MARK}</th>
+	<th>{L_LOGIN_KEY}</th>
+	<th>{L_IP}</th>
+	<th>{L_LOGIN_TIME}</th>
+</tr>
+<!-- BEGIN sessions -->
+	<!-- IF sessions.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td class="genmed" style="text-align: center"><input type="checkbox" name="keys[]" value="{sessions.KEY}" id="{sessions.KEY}"/></td>
+		<td class="genmed"><label for="{sessions.KEY}">{sessions.KEY}</label></td>
+		<td class="genmed" style="text-align: center">{sessions.IP}</td>
+		<td class="genmed" style="text-align: center">{sessions.LOGIN_TIME}</td>
+	</tr>
+<!-- BEGINELSE -->
+	<tr>
+		<td colspan="4" class="row1" style="text-align: center">{L_PROFILE_NO_AUTOLOGIN_KEYS}</td>
+	</tr>
+<!-- END sessions -->
+
+<!-- IF .sessions -->
+	<tr>
+		<td class="cat" colspan="4" align="center">
+			{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_DELETE}" />
+			{S_FORM_TOKEN}
+		</td>
+	</tr>
+<!-- ENDIF -->
+</table>
+
+<!-- INCLUDE ucp_footer.html -->

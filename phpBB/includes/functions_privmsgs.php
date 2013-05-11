@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -19,7 +18,8 @@ if (!defined('IN_PHPBB'))
 	Ability to simply add own rules by doing three things:
 		1) Add an appropriate constant
 		2) Add a new check array to the global_privmsgs_rules variable and the condition array (if one is required)
-		3) Add a new language variable to ucp.php
+		3) Implement the rule logic in the check_rule() function
+		4) Add a new language variable to ucp.php
 
 		The user is then able to select the new rule. It will be checked against and handled as specified.
 		To add new actions (yes, checks can be added here too) to the rule management, the core code has to be modified.
@@ -57,42 +57,42 @@ define('CHECK_TO', 5);
 */
 $global_privmsgs_rules = array(
 	CHECK_SUBJECT	=> array(
-		RULE_IS_LIKE		=> array('check0' => 'message_subject', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
-		RULE_IS_NOT_LIKE	=> array('check0' => 'message_subject', 'function' => '!(preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0}))'),
-		RULE_IS				=> array('check0' => 'message_subject', 'function' => '{CHECK0} == {STRING}'),
-		RULE_IS_NOT			=> array('check0' => 'message_subject', 'function' => '{CHECK0} != {STRING}'),
-		RULE_BEGINS_WITH	=> array('check0' => 'message_subject', 'function' => 'preg_match("/^" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
-		RULE_ENDS_WITH		=> array('check0' => 'message_subject', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "$/i", {CHECK0})'),
+		RULE_IS_LIKE		=> array('check0' => 'message_subject'),
+		RULE_IS_NOT_LIKE	=> array('check0' => 'message_subject'),
+		RULE_IS				=> array('check0' => 'message_subject'),
+		RULE_IS_NOT			=> array('check0' => 'message_subject'),
+		RULE_BEGINS_WITH	=> array('check0' => 'message_subject'),
+		RULE_ENDS_WITH		=> array('check0' => 'message_subject'),
 	),
 
 	CHECK_SENDER	=> array(
-		RULE_IS_LIKE		=> array('check0' => 'username', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
-		RULE_IS_NOT_LIKE	=> array('check0' => 'username', 'function' => '!(preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0}))'),
-		RULE_IS				=> array('check0' => 'username', 'function' => '{CHECK0} == {STRING}'),
-		RULE_IS_NOT			=> array('check0' => 'username', 'function' => '{CHECK0} != {STRING}'),
-		RULE_BEGINS_WITH	=> array('check0' => 'username', 'function' => 'preg_match("/^" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
-		RULE_ENDS_WITH		=> array('check0' => 'username', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "$/i", {CHECK0})'),
-		RULE_IS_FRIEND		=> array('check0' => 'friend', 'function' => '{CHECK0} == 1'),
-		RULE_IS_FOE			=> array('check0' => 'foe', 'function' => '{CHECK0} == 1'),
-		RULE_IS_USER		=> array('check0' => 'author_id', 'function' => '{CHECK0} == {USER_ID}'),
-		RULE_IS_GROUP		=> array('check0' => 'author_in_group', 'function' => 'in_array({GROUP_ID}, {CHECK0})'),
+		RULE_IS_LIKE		=> array('check0' => 'username'),
+		RULE_IS_NOT_LIKE	=> array('check0' => 'username'),
+		RULE_IS				=> array('check0' => 'username'),
+		RULE_IS_NOT			=> array('check0' => 'username'),
+		RULE_BEGINS_WITH	=> array('check0' => 'username'),
+		RULE_ENDS_WITH		=> array('check0' => 'username'),
+		RULE_IS_FRIEND		=> array('check0' => 'friend'),
+		RULE_IS_FOE			=> array('check0' => 'foe'),
+		RULE_IS_USER		=> array('check0' => 'author_id'),
+		RULE_IS_GROUP		=> array('check0' => 'author_in_group'),
 	),
 
 	CHECK_MESSAGE	=> array(
-		RULE_IS_LIKE		=> array('check0' => 'message_text', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
-		RULE_IS_NOT_LIKE	=> array('check0' => 'message_text', 'function' => '!(preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0}))'),
-		RULE_IS				=> array('check0' => 'message_text', 'function' => '{CHECK0} == {STRING}'),
-		RULE_IS_NOT			=> array('check0' => 'message_text', 'function' => '{CHECK0} != {STRING}'),
+		RULE_IS_LIKE		=> array('check0' => 'message_text'),
+		RULE_IS_NOT_LIKE	=> array('check0' => 'message_text'),
+		RULE_IS				=> array('check0' => 'message_text'),
+		RULE_IS_NOT			=> array('check0' => 'message_text'),
 	),
 
 	CHECK_STATUS	=> array(
-		RULE_ANSWERED		=> array('check0' => 'pm_replied', 'function' => '{CHECK0} == 1'),
-		RULE_FORWARDED		=> array('check0' => 'pm_forwarded', 'function' => '{CHECK0} == 1'),
+		RULE_ANSWERED		=> array('check0' => 'pm_replied'),
+		RULE_FORWARDED		=> array('check0' => 'pm_forwarded'),
 	),
 
 	CHECK_TO		=> array(
-		RULE_TO_GROUP		=> array('check0' => 'to', 'check1' => 'bcc', 'check2' => 'user_in_group', 'function' => 'in_array("g_" . {CHECK2}, {CHECK0}) || in_array("g_" . {CHECK2}, {CHECK1})'),
-		RULE_TO_ME			=> array('check0' => 'to', 'check1' => 'bcc', 'function' => 'in_array("u_" . $user_id, {CHECK0}) || in_array("u_" . $user_id, {CHECK1})'),
+		RULE_TO_GROUP		=> array('check0' => 'to', 'check1' => 'bcc', 'check2' => 'user_in_group'),
+		RULE_TO_ME			=> array('check0' => 'to', 'check1' => 'bcc'),
 	)
 );
 
@@ -260,16 +260,60 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 
 	$check_ary = $rules[$rule_row['rule_check']][$rule_row['rule_connection']];
 
-	// Replace Check Literals
-	$evaluate = $check_ary['function'];
-	$evaluate = preg_replace('/{(CHECK[0-9])}/', '$message_row[$check_ary[strtolower("\1")]]', $evaluate);
-
-	// Replace Rule Literals
-	$evaluate = preg_replace('/{(STRING|USER_ID|GROUP_ID)}/', '$rule_row["rule_" . strtolower("\1")]', $evaluate);
-
-	// Evil Statement
 	$result = false;
-	eval('$result = (' . $evaluate . ') ? true : false;');
+
+	$check0 = $message_row[$check_ary['check0']];
+
+	switch ($rule_row['rule_connection'])
+	{
+		case RULE_IS_LIKE:
+			$result = preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
+		break;
+
+		case RULE_IS_NOT_LIKE:
+			$result = !preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
+		break;
+
+		case RULE_IS:
+			$result = ($check0 == $rule_row['rule_string']);
+		break;
+
+		case RULE_IS_NOT:
+			$result = ($check0 != $rule_row['rule_string']);
+		break;
+
+		case RULE_BEGINS_WITH:
+			$result = preg_match("/^" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
+		break;
+
+		case RULE_ENDS_WITH:
+			$result = preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '$/i', $check0);
+		break;
+
+		case RULE_IS_FRIEND:
+		case RULE_IS_FOE:
+		case RULE_ANSWERED:
+		case RULE_FORWARDED:
+			$result = ($check0 == 1);
+		break;
+
+		case RULE_IS_USER:
+			$result = ($check0 == $rule_row['rule_user_id']);
+		break;
+
+		case RULE_IS_GROUP:
+			$result = in_array($rule_row['rule_group_id'], $check0);
+		break;
+
+		case RULE_TO_GROUP:
+			$result = (in_array('g_' . $message_row[$check_ary['check2']], $check0) || in_array('g_' . $message_row[$check_ary['check2']], $message_row[$check_ary['check1']]));
+		break;
+
+		case RULE_TO_ME:
+			$result = (in_array('u_' . $user_id, $check0) || in_array('u_' . $user_id, $message_row[$check_ary['check1']]));
+		break;
+	}
+
 
 	if (!$result)
 	{
@@ -299,7 +343,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 			$userdata = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			$auth2 = new auth();
+			$auth2 = new phpbb_auth();
 			$auth2->acl($userdata);
 
 			if (!$auth2->acl_get('a_') && !$auth2->acl_get('m_') && !$auth2->acl_getf_global('m_'))
@@ -832,7 +876,11 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 		return;
 	}
 
-	global $db, $user;
+	global $db, $user, $phpbb_container;
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+	$phpbb_notifications->mark_notifications_read('pm', $msg_id, $user_id);
 
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . "
 		SET pm_unread = 0
@@ -937,7 +985,7 @@ function handle_mark_actions($user_id, $mark_action)
 */
 function delete_pm($user_id, $msg_ids, $folder_id)
 {
-	global $db, $user, $phpbb_root_path, $phpEx;
+	global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
 
 	$user_id	= (int) $user_id;
 	$folder_id	= (int) $folder_id;
@@ -1049,6 +1097,10 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		$user->data['user_unread_privmsg'] -= $num_unread;
 	}
 
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+	$phpbb_notifications->delete_notifications('pm', array_keys($delete_rows));
+
 	// Now we have to check which messages we can delete completely
 	$sql = 'SELECT msg_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
@@ -1101,6 +1153,23 @@ function phpbb_delete_user_pms($user_id)
 		return false;
 	}
 
+	return phpbb_delete_users_pms(array($user_id));
+}
+
+/**
+* Delete all PM(s) for given users and delete the ones without references
+*
+* @param	array		$user_ids	IDs of the users whose private messages we want to delete
+*
+* @return	boolean		False if there were no pms found, true otherwise.
+*/
+function phpbb_delete_users_pms($user_ids)
+{
+	global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
+
+	$user_id_sql = $db->sql_in_set('user_id', $user_ids);
+	$author_id_sql = $db->sql_in_set('author_id', $user_ids);
+
 	// Get PM Information for later deleting
 	// The two queries where split, so we can use our indexes
 	$undelivered_msg = $delete_ids = array();
@@ -1108,7 +1177,7 @@ function phpbb_delete_user_pms($user_id)
 	// Part 1: get PMs the user received
 	$sql = 'SELECT msg_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE user_id = ' . $user_id;
+		WHERE ' . $user_id_sql;
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -1118,12 +1187,12 @@ function phpbb_delete_user_pms($user_id)
 	}
 	$db->sql_freeresult($result);
 
-	// Part 2: get PMs the user sent, but have yet to be received
-	// We cannot simply delete them. First we have to check,
+	// Part 2: get PMs the users sent, but are yet to be received.
+	// We cannot simply delete them. First we have to check
 	// whether another user already received and read the message.
 	$sql = 'SELECT msg_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE author_id = ' . $user_id . '
+		WHERE ' . $author_id_sql . '
 			AND folder_id = ' . PRIVMSGS_NO_BOX;
 	$result = $db->sql_query($sql);
 
@@ -1141,6 +1210,8 @@ function phpbb_delete_user_pms($user_id)
 
 	$db->sql_transaction('begin');
 
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 	if (!empty($undelivered_msg))
 	{
 		// A pm is delivered, if for any recipient the message was moved
@@ -1149,7 +1220,7 @@ function phpbb_delete_user_pms($user_id)
 		// received them.
 		$sql = 'SELECT msg_id
 			FROM ' . PRIVMSGS_TO_TABLE . '
-			WHERE author_id = ' . $user_id . '
+			WHERE ' . $author_id_sql . '
 				AND folder_id <> ' . PRIVMSGS_NO_BOX . '
 				AND folder_id <> ' . PRIVMSGS_OUTBOX . '
 				AND folder_id <> ' . PRIVMSGS_SENTBOX;
@@ -1169,7 +1240,7 @@ function phpbb_delete_user_pms($user_id)
 		// Count the messages we delete, so we can correct the user pm data
 		$sql = 'SELECT user_id, COUNT(msg_id) as num_undelivered_privmsgs
 			FROM ' . PRIVMSGS_TO_TABLE . '
-			WHERE author_id = ' . $user_id . '
+			WHERE ' . $author_id_sql . '
 				AND folder_id = ' . PRIVMSGS_NO_BOX . '
 					AND ' . $db->sql_in_set('msg_id', array_merge($undelivered_msg, $delivered_msg)) . '
 			GROUP BY user_id';
@@ -1209,6 +1280,8 @@ function phpbb_delete_user_pms($user_id)
 				WHERE folder_id = ' . PRIVMSGS_NO_BOX . '
 					AND ' . $db->sql_in_set('msg_id', $delivered_msg);
 			$db->sql_query($sql);
+
+			$phpbb_notifications->delete_notifications('pm', $delivered_msg);
 		}
 
 		if (!empty($undelivered_msg))
@@ -1220,6 +1293,8 @@ function phpbb_delete_user_pms($user_id)
 			$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
 				WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
 			$db->sql_query($sql);
+
+			$phpbb_notifications->delete_notifications('pm', $undelivered_msg);
 		}
 	}
 
@@ -1227,12 +1302,12 @@ function phpbb_delete_user_pms($user_id)
 	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_new_privmsg = 0,
 			user_unread_privmsg = 0
-		WHERE user_id = ' . $user_id;
+		WHERE ' . $user_id_sql;
 	$db->sql_query($sql);
 
 	// Delete private message data of the user
 	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE user_id = ' . (int) $user_id;
+		WHERE ' . $user_id_sql;
 	$db->sql_query($sql);
 
 	if (!empty($delete_ids))
@@ -1262,6 +1337,8 @@ function phpbb_delete_user_pms($user_id)
 			$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
 				WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
 			$db->sql_query($sql);
+
+			$phpbb_notifications->delete_notifications('pm', $delete_ids);
 		}
 	}
 
@@ -1269,12 +1346,12 @@ function phpbb_delete_user_pms($user_id)
 	// This way users are still able to read messages from users being removed
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
 		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
+		WHERE ' . $author_id_sql;
 	$db->sql_query($sql);
 
 	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
 		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
+		WHERE ' . $author_id_sql;
 	$db->sql_query($sql);
 
 	$db->sql_transaction('commit');
@@ -1484,7 +1561,7 @@ function get_folder_status($folder_id, $folder)
 		'percent'		=> ($user->data['message_limit']) ? (($user->data['message_limit'] > 0) ? round(($folder['num_messages'] / $user->data['message_limit']) * 100) : 100) : 0,
 	);
 
-	$return['message']	= sprintf($user->lang['FOLDER_STATUS_MSG'], $return['percent'], $return['cur'], $return['max']);
+	$return['message']	= $user->lang('FOLDER_STATUS_MSG', (int) $return['max'], $return['cur'], $return['percent']);
 
 	return $return;
 }
@@ -1498,7 +1575,7 @@ function get_folder_status($folder_id, $folder)
 */
 function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 {
-	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path;
+	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path, $phpbb_container;
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
@@ -1798,95 +1875,23 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	$db->sql_transaction('commit');
 
 	// Send Notifications
-	if ($mode != 'edit')
+	$pm_data = array_merge($data, array(
+		'message_subject'		=> $subject,
+		'recipients'			=> $recipients,
+	));
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+	if ($mode == 'edit')
 	{
-		pm_notification($mode, $data['from_username'], $recipients, $subject, $data['message'], $data['msg_id']);
+		$phpbb_notifications->update_notifications('pm', $pm_data);
+	}
+	else
+	{
+		$phpbb_notifications->add_notifications('pm', $pm_data);
 	}
 
 	return $data['msg_id'];
-}
-
-/**
-* PM Notification
-*/
-function pm_notification($mode, $author, $recipients, $subject, $message, $msg_id)
-{
-	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
-
-	$subject = censor_text($subject);
-
-	// Exclude guests, current user and banned users from notifications
-	unset($recipients[ANONYMOUS], $recipients[$user->data['user_id']]);
-
-	if (!sizeof($recipients))
-	{
-		return;
-	}
-
-	if (!function_exists('phpbb_get_banned_user_ids'))
-	{
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-	}
-	$banned_users = phpbb_get_banned_user_ids(array_keys($recipients));
-	$recipients = array_diff(array_keys($recipients), $banned_users);
-
-	if (!sizeof($recipients))
-	{
-		return;
-	}
-
-	$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_pm, user_notify_type, user_jabber
-		FROM ' . USERS_TABLE . '
-		WHERE ' . $db->sql_in_set('user_id', $recipients);
-	$result = $db->sql_query($sql);
-
-	$msg_list_ary = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if ($row['user_notify_pm'] == 1 && trim($row['user_email']))
-		{
-			$msg_list_ary[] = array(
-				'method'	=> $row['user_notify_type'],
-				'email'		=> $row['user_email'],
-				'jabber'	=> $row['user_jabber'],
-				'name'		=> $row['username'],
-				'lang'		=> $row['user_lang']
-			);
-		}
-	}
-	$db->sql_freeresult($result);
-
-	if (!sizeof($msg_list_ary))
-	{
-		return;
-	}
-
-	include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-	$messenger = new messenger();
-
-	foreach ($msg_list_ary as $pos => $addr)
-	{
-		$messenger->template('privmsg_notify', $addr['lang']);
-
-		$messenger->to($addr['email'], $addr['name']);
-		$messenger->im($addr['jabber'], $addr['name']);
-
-		$messenger->assign_vars(array(
-			'SUBJECT'		=> htmlspecialchars_decode($subject),
-			'AUTHOR_NAME'	=> htmlspecialchars_decode($author),
-			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
-
-			'U_INBOX'			=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox",
-			'U_VIEW_MESSAGE'	=> generate_board_url() . "/ucp.$phpEx?i=pm&mode=view&p=$msg_id",
-		));
-
-		$messenger->send($addr['method']);
-	}
-	unset($msg_list_ary);
-
-	$messenger->save_queue();
-
-	unset($messenger);
 }
 
 /**
@@ -2040,7 +2045,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 			'SUBJECT'			=> $subject,
 			'SENT_DATE'			=> $user->format_date($row['message_time']),
 			'MESSAGE'			=> $message,
-			'FOLDER'			=> implode(', ', $row['folder']),
+			'FOLDER'			=> implode($user->lang['COMMA_SEPARATOR'], $row['folder']),
 			'DECODED_MESSAGE'	=> $decoded_message,
 
 			'S_CURRENT_MSG'		=> ($row['msg_id'] == $msg_id),
@@ -2176,5 +2181,3 @@ function get_recipient_strings($pm_by_id)
 
 	return $address_list;
 }
-
-?>

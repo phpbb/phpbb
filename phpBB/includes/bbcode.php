@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -30,7 +29,6 @@ class bbcode
 	var $bbcodes = array();
 
 	var $template_bitfield;
-	var $template_filename = '';
 
 	/**
 	* Constructor
@@ -128,28 +126,19 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $template, $user;
+		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager;
 
 		if (empty($this->template_filename))
 		{
-			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
-			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
+			$this->template_bitfield = new bitfield($user->style['bbcode_bitfield']);
 
-			if (!@file_exists($this->template_filename))
-			{
-				if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'])
-				{
-					$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_inherit_path'] . '/template/bbcode.html';
-					if (!@file_exists($this->template_filename))
-					{
-						trigger_error('The file ' . $this->template_filename . ' is missing.', E_USER_ERROR);
-					}
-				}
-				else
-				{
-					trigger_error('The file ' . $this->template_filename . ' is missing.', E_USER_ERROR);
-				}
-			}
+			$style_resource_locator = new phpbb_style_resource_locator();
+			$style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider(), $phpbb_root_path);
+			$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, new phpbb_template_context(), $phpbb_extension_manager);
+			$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, $style_path_provider, $template);
+			$style->set_style();
+			$template->set_filenames(array('bbcode.html' => 'bbcode.html'));
+			$this->template_filename = $style_resource_locator->get_source_file_for_handle('bbcode.html');
 		}
 
 		$bbcode_ids = $rowset = $sql = array();
@@ -605,5 +594,3 @@ class bbcode
 		return $code;
 	}
 }
-
-?>

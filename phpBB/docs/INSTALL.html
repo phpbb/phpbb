@@ -1,16 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="content-language" content="en" />
-<meta http-equiv="imagetoolbar" content="no" />
-<meta name="resource-type" content="document" />
-<meta name="distribution" content="global" />
-<meta name="copyright" content="phpBB Group" />
+<meta charset="utf-8">
 <meta name="keywords" content="" />
-<meta name="description" content="phpBB 3.0.x Installation, updating and conversion informations" />
+<meta name="description" content="phpBB 3.1.x Installation, updating and conversion informations" />
 <title>phpBB3 &bull; Install</title>
 
 <link href="stylesheet.css" rel="stylesheet" type="text/css" media="screen, projection" />
@@ -27,8 +20,8 @@
 
 			<div id="doc-description">
 				<a href="../index.php" id="logo"><img src="site_logo.gif" alt="" /></a>
-				<h1>phpBB 3.0.x Install</h1>
-				<p>phpBB 3.0.x Installation, updating and conversion informations</p>
+				<h1>phpBB 3.1.x Install</h1>
+				<p>phpBB 3.1.x Installation, updating and conversion informations</p>
 				<p style="display: none;"><a href="#start_here">Skip</a></p>
 			</div>
 
@@ -59,7 +52,7 @@
 	<li><a href="#quickinstall">Quick install</a></li>
 	<li><a href="#require">Requirements</a></li>
 	<li><a href="#install">New installation</a></li>
-	<li><a href="#update">Updating from stable releases of phpBB 3.0.x</a>
+	<li><a href="#update">Updating from stable releases of phpBB 3.1.x</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#update_full">Full package</a></li>
 		<li><a href="#update_files">Changed files</a></li>
@@ -68,7 +61,7 @@
 		<li><a href="#update_all">All package types</a></li>
 	</ol>
 	</li>
-	<li><a href="#convert">Conversion from phpBB 2.0.x to phpBB 3.0.x</a>
+	<li><a href="#convert">Conversion from phpBB 2.0.x to phpBB 3.1.x</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#prereq">Requirements before converting</a></li>
 		<li><a href="#conversion">Converting</a></li>
@@ -132,21 +125,25 @@
 
 		<div class="content">
 
-	<p>phpBB 3.0.x has a few requirements which must be met before you are able to install and use it.</p>
+	<p>phpBB 3.1.x has a few requirements which must be met before you are able to install and use it.</p>
 
 	<ul>
 		<li>A webserver or web hosting account running on any major Operating System with support for PHP</li>
 		<li>A SQL database system, <strong>one of</strong>:
 		<ul>
 			<li>MySQL 3.23 or above (MySQLi supported)</li>
-			<li>PostgreSQL 7.3+</li>
+			<li>PostgreSQL 8.3+</li>
 			<li>SQLite 2.8.2+ (SQLite 3 is not supported)</li>
 			<li>Firebird 2.1+</li>
 			<li>MS SQL Server 2000 or above (directly or via ODBC or the native adapter)</li>
 			<li>Oracle</li>
 		</ul>
 		</li>
-		<li><strong>PHP (>=4.3.3, >=4.4.0, >=5.0.0)</strong> with support for the database you intend to use.</li>
+		<li><strong>PHP 5.3.3+</strong> with support for the database you intend to use.</li>
+		<li>The following PHP modules are required:</li>
+		<ul>
+			<li>json</li>
+		</ul>
 		<li>getimagesize() function must be enabled.</li>
 		<li>Presence of the following modules within PHP will provide access to additional features, but they are not required:
 		<ul>
@@ -159,7 +156,7 @@
 		</li>
 	</ul>
 
-	<p>If your server or hosting account does not meet the requirements above then you will be unable to install phpBB 3.0.x.</p>
+	<p>If your server or hosting account does not meet the requirements above then you will be unable to install phpBB 3.1.x.</p>
 
 		</div>
 
@@ -250,7 +247,7 @@
 
 	<hr />
 
-	<a name="update"></a><h2>4. Updating from stable releases of phpBB 3.0.x</h2>
+	<a name="update"></a><h2>4. Updating from stable releases of phpBB 3.1.x</h2>
 
 	<div class="paragraph">
 		<div class="inner"><span class="corners-top"><span></span></span>
@@ -275,7 +272,7 @@
 
 	<p>This package is meant for those wanting to only replace the files that were changed between a previous version and the latest version.</p>
 
-	<p>This package contains a number of archives, each contains the files changed from a given release to the latest version. You should select the appropriate archive for your current version, e.g. if you currently have <strong>3.0.10</strong> you should select the appropriate <code>phpBB-3.0.11-files.zip/tar.bz2</code> file.</p>
+	<p>This package contains a number of archives, each contains the files changed from a given release to the latest version. You should select the appropriate archive for your current version, e.g. if you currently have <strong>3.1.0</strong> you should select the appropriate <code>phpBB-3.1.1-files.zip/tar.bz2</code> file.</p>
 
 	<p>The directory structure has been preserved, enabling you (if you wish) to simply upload the uncompressed contents of the archive to the appropriate location on your server, i.e. simply overwrite the existing files with the new versions. Do not forget that if you have installed any modifications (MODs) these files will overwrite the originals, possibly destroying them in the process. You will need to re-add MODs to any affected file before uploading.</p>
 
@@ -287,7 +284,7 @@
 
 	<p>The patch file is one solution for those with many Modifications (MODs) or other changes and do not want to re-add them back to all the changed files. To use this you will need command line access to a standard UNIX type <strong>patch</strong> application. If you do not have access to such an application, but still want to use this update approach, we strongly recommend the <a href="#update_auto">Automatic update package</a> explained below. It is also the recommended update method.</p>
 
-	<p>A number of patch files are provided to allow you to update from previous stable releases. Select the correct patch, e.g. if your current version is <strong>3.0.10</strong>, you need the <code>phpBB-3.0.11-patch.zip/tar.bz2</code> file. Place the correct patch in the parent directory containing the phpBB core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <code>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</code> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
+	<p>A number of patch files are provided to allow you to update from previous stable releases. Select the correct patch, e.g. if your current version is <strong>3.1.0</strong>, you need the <code>phpBB-3.1.1-patch.zip/tar.bz2</code> file. Place the correct patch in the parent directory containing the phpBB core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <code>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</code> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
 
 	<p>If you do get failures, you should look at using the <a href="#update_files">Changed Files</a> package to replace the files which failed to patch. Please note that you will need to manually re-add any MODs to these particular files. Alternatively, if you know how, you can examine the .rej files to determine what failed where and make manual adjustments to the relevant source.</p>
 
@@ -326,7 +323,7 @@
 
 	<hr />
 
-	<a name="convert"></a><h2>5. Conversion from phpBB 2.0.x to phpBB 3.0.x</h2>
+	<a name="convert"></a><h2>5. Conversion from phpBB 2.0.x to phpBB 3.1.x</h2>
 
 	<div class="paragraph">
 		<div class="inner"><span class="corners-top"><span></span></span>

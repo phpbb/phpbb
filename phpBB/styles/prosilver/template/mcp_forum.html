@@ -3,18 +3,22 @@
 <!-- DEFINE $CUSTOM_FIELDSET_CLASS = 'forum-selection2' -->
 <!-- INCLUDE jumpbox.html -->
 
-<h2><a href="{U_VIEW_FORUM}">{L_FORUM}: {FORUM_NAME}</a></h2>
+<h2><a href="{U_VIEW_FORUM}">{L_FORUM}{L_COLON} {FORUM_NAME}</a></h2>
 
 <form method="post" id="mcp" action="{S_MCP_ACTION}">
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
-	<!-- IF PAGINATION or TOTAL_TOPICS -->
+	<!-- IF .pagination or TOTAL_TOPICS -->
 		<ul class="linklist">
 			<li class="rightside pagination">
-				<!-- IF TOTAL_TOPICS --> {TOTAL_TOPICS}<!-- ENDIF -->
-				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+				<!-- IF TOTAL_TOPICS --> {TOTAL_TOPICS} &bull; <!-- ENDIF -->
+				<!-- IF .pagination --> 
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE --> 
+					{PAGE_NUMBER}
+				<!-- ENDIF -->
 			</li>
 		</ul>
 	<!-- ENDIF -->
@@ -34,7 +38,7 @@
 
 		<!-- BEGIN topicrow -->
 		<li class="row<!-- IF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ENDIF -->">
-			<dl class="icon" style="background-image: url({topicrow.TOPIC_FOLDER_IMG_SRC}); background-repeat: no-repeat;">
+			<dl class="icon {topicrow.TOPIC_IMG_STYLE}">
 				<dt <!-- IF topicrow.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF -->>
 					<!-- IF topicrow.S_SELECT_TOPIC --><a href="{topicrow.U_SELECT_TOPIC}" class="topictitle">[ {L_SELECT_MERGE} ]</a>&nbsp;&nbsp; <!-- ENDIF -->
 					<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
@@ -42,7 +46,20 @@
 					<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF -->
 					<!-- IF topicrow.S_MOVED_TOPIC and S_CAN_DELETE -->&nbsp;<a href="{topicrow.U_DELETE_TOPIC}" class="topictitle">[ {L_DELETE_SHADOW_TOPIC} ]</a><!-- ENDIF -->
 					<br />
-					<!-- IF topicrow.PAGINATION --><strong class="pagination"><span>{topicrow.PAGINATION}</span></strong><!-- ENDIF -->
+					<!-- IF .topicrow.pagination -->
+					<div class="pagination">
+						<ul>
+						<!-- BEGIN pagination -->
+							<!-- IF topicrow.pagination.S_IS_PREV -->
+							<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li class="active"><span>{topicrow.pagination.PAGE_NUMBER}</span></li>
+							<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+							<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
+							<!-- ELSE --><li><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
+							<!-- ENDIF -->
+						<!-- END pagination -->
+						</ul>
+					</div>
+					<!-- ENDIF -->
 					<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME} </dt>
 				<dd class="posts">{topicrow.REPLIES} <dfn>{L_REPLIES}</dfn></dd>
 				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}<br />{topicrow.LAST_POST_TIME}</span>
@@ -63,25 +80,42 @@
 	<!-- ENDIF -->
 
 	<fieldset class="display-options">
-		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box {S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
-		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
-		<label>{L_DISPLAY_TOPICS}: {S_SELECT_SORT_DAYS}</label>
+		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
+		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
+		<label>{L_DISPLAY_TOPICS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
 		<label>{S_SELECT_SORT_DIR} <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
 	</fieldset>
 
 	<hr />
 
-	<!-- IF PAGINATION or TOTAL_TOPICS -->
+	<!-- IF .pagination or TOTAL_TOPICS -->
 		<ul class="linklist">
 			<li class="rightside pagination">
-				<!-- IF TOTAL_TOPICS --> {TOTAL_TOPICS}<!-- ENDIF -->
-				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+				<!-- IF TOTAL_TOPICS --> {TOTAL_TOPICS} &bull; <!-- ENDIF -->
+				<!-- IF .pagination --> 
+					<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull;
+					<ul>
+					<!-- BEGIN pagination -->
+						<!-- IF pagination.S_IS_PREV -->
+						<!-- ELSEIF pagination.S_IS_CURRENT -->
+						<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+						<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
+						<li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+						<!-- ELSEIF pagination.S_IS_NEXT -->
+						<!-- ELSE -->
+						<li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
+						<!-- ENDIF -->
+					<!-- END pagination -->
+					</ul>
+				<!-- ELSE --> 
+					{PAGE_NUMBER}
+				<!-- ENDIF -->
 			</li>
 		</ul>
 	<!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <fieldset class="display-actions">

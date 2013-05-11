@@ -6,9 +6,8 @@
 * Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 *
 * @package login
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -310,35 +309,35 @@ function acp_ldap(&$new)
 	$tpl = '
 
 	<dl>
-		<dt><label for="ldap_server">' . $user->lang['LDAP_SERVER'] . ':</label><br /><span>' . $user->lang['LDAP_SERVER_EXPLAIN'] . '</span></dt>
+		<dt><label for="ldap_server">' . $user->lang['LDAP_SERVER'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_SERVER_EXPLAIN'] . '</span></dt>
 		<dd><input type="text" id="ldap_server" size="40" name="config[ldap_server]" value="' . $new['ldap_server'] . '" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="ldap_port">' . $user->lang['LDAP_PORT'] . ':</label><br /><span>' . $user->lang['LDAP_PORT_EXPLAIN'] . '</span></dt>
+		<dt><label for="ldap_port">' . $user->lang['LDAP_PORT'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_PORT_EXPLAIN'] . '</span></dt>
 		<dd><input type="text" id="ldap_port" size="40" name="config[ldap_port]" value="' . $new['ldap_port'] . '" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="ldap_dn">' . $user->lang['LDAP_DN'] . ':</label><br /><span>' . $user->lang['LDAP_DN_EXPLAIN'] . '</span></dt>
+		<dt><label for="ldap_dn">' . $user->lang['LDAP_DN'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_DN_EXPLAIN'] . '</span></dt>
 		<dd><input type="text" id="ldap_dn" size="40" name="config[ldap_base_dn]" value="' . $new['ldap_base_dn'] . '" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="ldap_uid">' . $user->lang['LDAP_UID'] . ':</label><br /><span>' . $user->lang['LDAP_UID_EXPLAIN'] . '</span></dt>
+		<dt><label for="ldap_uid">' . $user->lang['LDAP_UID'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_UID_EXPLAIN'] . '</span></dt>
 		<dd><input type="text" id="ldap_uid" size="40" name="config[ldap_uid]" value="' . $new['ldap_uid'] . '" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="ldap_user_filter">' . $user->lang['LDAP_USER_FILTER'] . ':</label><br /><span>' . $user->lang['LDAP_USER_FILTER_EXPLAIN'] . '</span></dt>
+		<dt><label for="ldap_user_filter">' . $user->lang['LDAP_USER_FILTER'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_USER_FILTER_EXPLAIN'] . '</span></dt>
 		<dd><input type="text" id="ldap_user_filter" size="40" name="config[ldap_user_filter]" value="' . $new['ldap_user_filter'] . '" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="ldap_email">' . $user->lang['LDAP_EMAIL'] . ':</label><br /><span>' . $user->lang['LDAP_EMAIL_EXPLAIN'] . '</span></dt>
+		<dt><label for="ldap_email">' . $user->lang['LDAP_EMAIL'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_EMAIL_EXPLAIN'] . '</span></dt>
 		<dd><input type="text" id="ldap_email" size="40" name="config[ldap_email]" value="' . $new['ldap_email'] . '" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="ldap_user">' . $user->lang['LDAP_USER'] . ':</label><br /><span>' . $user->lang['LDAP_USER_EXPLAIN'] . '</span></dt>
+		<dt><label for="ldap_user">' . $user->lang['LDAP_USER'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_USER_EXPLAIN'] . '</span></dt>
 		<dd><input type="text" id="ldap_user" size="40" name="config[ldap_user]" value="' . $new['ldap_user'] . '" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="ldap_password">' . $user->lang['LDAP_PASSWORD'] . ':</label><br /><span>' . $user->lang['LDAP_PASSWORD_EXPLAIN'] . '</span></dt>
+		<dt><label for="ldap_password">' . $user->lang['LDAP_PASSWORD'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_PASSWORD_EXPLAIN'] . '</span></dt>
 		<dd><input type="password" id="ldap_password" size="40" name="config[ldap_password]" value="' . $new['ldap_password'] . '" autocomplete="off" /></dd>
 	</dl>
 	';
@@ -349,5 +348,3 @@ function acp_ldap(&$new)
 		'config'	=> array('ldap_server', 'ldap_port', 'ldap_base_dn', 'ldap_uid', 'ldap_user_filter', 'ldap_email', 'ldap_user', 'ldap_password')
 	);
 }
-
-?>

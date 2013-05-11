@@ -2,7 +2,7 @@ Subject: Welcome to "{SITENAME}"
 
 {WELCOME_MSG}
 
-Please keep this e-mail for your records. Your account information is as follows:
+Please keep this email for your records. Your account information is as follows:
 
 ----------------------------
 Username: {USERNAME}
@@ -13,7 +13,6 @@ Your password has been securely stored in our database and cannot be retrieved. 
 Please visit the following link in order to activate your account:
 
 {U_ACTIVATE}
-
 
 Thank you for registering.
 

@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -1885,7 +1884,7 @@ function add_bots()
 			'user_email'			=> '',
 			'user_lang'				=> $config['default_lang'],
 			'user_style'			=> 1,
-			'user_timezone'			=> 0,
+			'user_timezone'			=> 'UTC',
 			'user_allow_massemail'	=> 0,
 		);
 
@@ -2473,7 +2472,3 @@ function fill_dateformat($user_dateformat)
 
 	return ((empty($user_dateformat)) ? $config['default_dateformat'] : $user_dateformat);
 }
-
-
-
-?>

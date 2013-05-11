@@ -8,6 +8,14 @@ phpBB is a free bulletin board written in PHP.
 
 Find support and lots more on [phpBB.com](http://www.phpbb.com)! Discuss the development on [area51](http://area51.phpbb.com/phpBB/index.php).
 
+## INSTALLING DEPENDENCIES
+
+To be able to run an installation from the repo (and not from a pre-built package) you need to run the following commands to install phpBB's dependencies.
+
+	cd phpBB
+	php ../composer.phar install --dev
+
+
 ## CONTRIBUTE
 
 1. [Create an account on phpBB.com](http://www.phpbb.com/community/ucp.php?mode=register)

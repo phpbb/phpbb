@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -171,9 +170,11 @@ class ucp_attachments
 		}
 		$db->sql_freeresult($result);
 
+		$base_url = $this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir";
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
+
 		$template->assign_vars(array(
-			'PAGE_NUMBER'			=> on_page($num_attachments, $config['topics_per_page'], $start),
-			'PAGINATION'			=> generate_pagination($this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $num_attachments, $config['topics_per_page'], $start),
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 
 			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],
@@ -197,5 +198,3 @@ class ucp_attachments
 		$this->page_title = 'UCP_ATTACHMENTS';
 	}
 }
-
-?>

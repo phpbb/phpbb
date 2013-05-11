@@ -1,16 +1,17 @@
 <!-- INCLUDE overall_header.html -->
 
-<h2><!-- IF SEARCH_TITLE -->{SEARCH_TITLE}<!-- ELSE -->{SEARCH_MATCHES}<!-- ENDIF --><!-- IF SEARCH_WORDS -->: <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
-<!-- IF SEARCHED_QUERY --> <p>{L_SEARCHED_QUERY}: <strong>{SEARCHED_QUERY}</strong></p><!-- ENDIF -->
-<!-- IF IGNORED_WORDS --> <p>{L_IGNORED_TERMS}: <strong>{IGNORED_WORDS}</strong></p><!-- ENDIF -->
+<h2><!-- IF SEARCH_TITLE -->{SEARCH_TITLE}<!-- ELSE -->{SEARCH_MATCHES}<!-- ENDIF --><!-- IF SEARCH_WORDS -->{L_COLON} <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
+<!-- IF SEARCHED_QUERY --> <p>{L_SEARCHED_QUERY}{L_COLON} <strong>{SEARCHED_QUERY}</strong></p><!-- ENDIF -->
+<!-- IF IGNORED_WORDS --> <p>{L_IGNORED_TERMS}{L_COLON} <strong>{IGNORED_WORDS}</strong></p><!-- ENDIF -->
+<!-- IF PHRASE_SEARCH_DISABLED --> <p><strong>{L_PHRASE_SEARCH_DISABLED}</strong></p><!-- ENDIF -->
 
 <!-- IF SEARCH_TOPIC -->
-	<p><a class="{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH_TOPIC}">{L_RETURN_TO}: {SEARCH_TOPIC}</a></p>
+	<p><a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH_TOPIC}">{L_RETURN_TO}{L_COLON} {SEARCH_TOPIC}</a></p>
 <!-- ELSE -->
-	<p><a class="{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH}" title="{L_SEARCH_ADV}">{L_RETURN_TO_SEARCH_ADV}</a></p>
+	<p><a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH}" title="{L_SEARCH_ADV}">{L_RETURN_TO_SEARCH_ADV}</a></p>
 <!-- ENDIF -->
 
-<!-- IF PAGINATION or SEARCH_MATCHES or PAGE_NUMBER -->
+<!-- IF .pagination or SEARCH_MATCHES or PAGE_NUMBER -->
 	<form method="post" action="{S_SEARCH_ACTION}">
 
 	<div class="topic-actions">
@@ -18,14 +19,20 @@
 	<!-- IF SEARCH_MATCHES -->
 		<div class="search-box">
 			<!-- IF SEARCH_IN_RESULTS -->
-				<label for="add_keywords">{L_SEARCH_IN_RESULTS}: <input type="text" name="add_keywords" id="add_keywords" value="" class="inputbox narrow" /></label>
+				<label for="add_keywords">{L_SEARCH_IN_RESULTS}{L_COLON} <input type="text" name="add_keywords" id="add_keywords" value="" class="inputbox narrow" /></label>
 				<input class="button2" type="submit" name="submit" value="{L_SEARCH}" />
 			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
 
 		<div class="rightside pagination">
-			{SEARCH_MATCHES}<!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF -->
+			{SEARCH_MATCHES}
+			<!-- IF .pagination -->
+				&bull;
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE -->
+				{PAGE_NUMBER}
+			<!-- ENDIF -->
 		</div>
 	</div>
 
@@ -37,7 +44,7 @@
 	<!-- IF .searchresults -->
 	<div class="forumbg">
 
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		<ul class="topiclist">
 			<li class="header">
 				<dl class="icon">
@@ -52,15 +59,27 @@
 
 		<!-- BEGIN searchresults -->
 			<li class="row<!-- IF searchresults.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
-				<dl class="icon" style="background-image: url({searchresults.TOPIC_FOLDER_IMG_SRC}); background-repeat: no-repeat;">
-					<dt <!-- IF searchresults.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF -->>
+				<dl class="icon {searchresults.TOPIC_IMG_STYLE}">
+					<dt <!-- IF searchresults.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
 						<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF -->
 						<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a> {searchresults.ATTACH_ICON_IMG}
 						<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED --><a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a> <!-- ENDIF -->
 						<!-- IF searchresults.S_TOPIC_REPORTED --><a href="{searchresults.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
-						<!-- IF searchresults.PAGINATION --><strong class="pagination"><span>{searchresults.PAGINATION}</span></strong><!-- ENDIF -->
-						{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} &raquo; {searchresults.FIRST_POST_TIME}
-						<!-- IF not searchresults.S_TOPIC_GLOBAL -->{L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a><!-- ELSE --> ({L_GLOBAL})<!-- ENDIF -->
+						<!-- IF .searchresults.pagination -->
+						<div class="pagination">
+							<ul>
+							<!-- BEGIN pagination -->
+								<!-- IF searchresults.pagination.S_IS_PREV -->
+								<!-- ELSEIF searchresults.pagination.S_IS_CURRENT --><li class="active"><span>{searchresults.pagination.PAGE_NUMBER}</span></li>
+								<!-- ELSEIF searchresults.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+								<!-- ELSEIF searchresults.pagination.S_IS_NEXT -->
+								<!-- ELSE --><li><a href="{searchresults.pagination.PAGE_URL}">{searchresults.pagination.PAGE_NUMBER}</a></li>
+								<!-- ENDIF -->
+							<!-- END pagination -->
+							</ul>
+						</div>
+						<!-- ENDIF -->
+						{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} &raquo; {searchresults.FIRST_POST_TIME} &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
 					</dt>
 					<dd class="posts">{searchresults.TOPIC_REPLIES}</dd>
 					<dd class="views">{searchresults.TOPIC_VIEWS}</dd>
@@ -73,13 +92,13 @@
 		<!-- END searchresults -->
 		</ul>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 	<!-- ELSE -->
 		<div class="panel">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 			<strong>{L_NO_SEARCH_RESULTS}</strong>
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 	<!-- ENDIF -->
 
@@ -87,7 +106,7 @@
 
 	<!-- BEGIN searchresults -->
 		<div class="search post <!-- IF searchresults.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF searchresults.S_POST_REPORTED --> reported<!-- ENDIF -->">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 
 	<!-- IF searchresults.S_IGNORE_POST -->
 		<div class="postbody">
@@ -103,40 +122,36 @@
 			<dt class="author">{L_POST_BY_AUTHOR} {searchresults.POST_AUTHOR_FULL}</dt>
 			<dd>{searchresults.POST_DATE}</dd>
 			<dd>&nbsp;</dd>
-			<!-- IF searchresults.FORUM_TITLE -->
-				<dd>{L_FORUM}: <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></dd>
-				<dd>{L_TOPIC}: <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a></dd>
-			<!-- ELSE -->
-				<dd>{L_GLOBAL}: <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a></dd>
-			<!-- ENDIF -->
-			<dd>{L_REPLIES}: <strong>{searchresults.TOPIC_REPLIES}</strong></dd>
-			<dd>{L_VIEWS}: <strong>{searchresults.TOPIC_VIEWS}</strong></dd>
+			<dd>{L_FORUM}{L_COLON} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></dd>
+			<dd>{L_TOPIC}{L_COLON} <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a></dd>
+			<dd>{L_REPLIES}{L_COLON} <strong>{searchresults.TOPIC_REPLIES}</strong></dd>
+			<dd>{L_VIEWS}{L_COLON} <strong>{searchresults.TOPIC_VIEWS}</strong></dd>
 		</dl>
 	<!-- ENDIF -->
 
 	<!-- IF not searchresults.S_IGNORE_POST -->
 		<ul class="searchresults">
-			<li ><a href="{searchresults.U_VIEW_POST}" class="{S_CONTENT_FLOW_END}">{L_JUMP_TO_POST}</a></li>
+			<li ><a href="{searchresults.U_VIEW_POST}" class="arrow-{S_CONTENT_FLOW_END}">{L_JUMP_TO_POST}</a></li>
 		</ul>
 	<!-- ENDIF -->
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 	<!-- BEGINELSE -->
 		<div class="panel">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 			<strong>{L_NO_SEARCH_RESULTS}</strong>
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 	<!-- END searchresults -->
 <!-- ENDIF -->
 
-<!-- IF PAGINATION or .searchresults or S_SELECT_SORT_KEY or S_SELECT_SORT_DAYS -->
+<!-- IF .pagination or .searchresults or S_SELECT_SORT_KEY or S_SELECT_SORT_DAYS -->
 	<form method="post" action="{S_SEARCH_ACTION}">
 
 	<fieldset class="display-options">
-		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
-		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box {S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
+		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
+		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
 		<!-- IF S_SELECT_SORT_DAYS or S_SELECT_SORT_KEY -->
 			<label><!-- IF S_SHOW_TOPICS -->{L_DISPLAY_POSTS}<!-- ELSE -->{L_SORT_BY}</label><label><!-- ENDIF --> {S_SELECT_SORT_DAYS}<!-- IF S_SELECT_SORT_KEY --></label> <label>{S_SELECT_SORT_KEY}</label>
 			<label>{S_SELECT_SORT_DIR}<!-- ENDIF --> <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
@@ -148,10 +163,29 @@
 	<hr />
 <!-- ENDIF -->
 
-<!-- IF PAGINATION or .searchresults or PAGE_NUMBER -->
+<!-- IF .pagination or .searchresults or PAGE_NUMBER -->
 	<ul class="linklist">
 		<li class="rightside pagination">
-			{SEARCH_MATCHES}<!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF -->
+			{SEARCH_MATCHES}
+			<!-- IF .pagination -->
+				&bull;
+				<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull;
+				<ul>
+				<!-- BEGIN pagination -->
+					<!-- IF pagination.S_IS_PREV -->
+					<!-- ELSEIF pagination.S_IS_CURRENT -->
+					<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+					<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
+					<li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+					<!-- ELSEIF pagination.S_IS_NEXT -->
+					<!-- ELSE -->
+					<li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
+					<!-- ENDIF -->
+				<!-- END pagination -->
+				</ul>
+			<!-- ELSE -->
+				{PAGE_NUMBER}
+			<!-- ENDIF -->
 		</li>
 	</ul>
 <!-- ENDIF -->

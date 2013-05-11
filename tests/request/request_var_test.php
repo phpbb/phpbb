@@ -10,8 +10,17 @@
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
-class phpbb_request_request_var_test extends phpbb_test_case
+class phpbb_request_var_test extends phpbb_test_case
 {
+	/**
+	* Makes sure request_var has its standard behaviour.
+	*/
+	protected function setUp()
+	{
+		parent::setUp();
+		request_var(false, false, false, false, false);
+	}
+
 	/**
 	* @dataProvider request_variables
 	*/
@@ -73,7 +82,48 @@ class phpbb_request_request_var_test extends phpbb_test_case
 		unset($_GET[$var], $_POST[$var], $_REQUEST[$var], $_COOKIE[$var]);
 	}
 
-	static public function request_variables()
+	/**
+	* @dataProvider deep_access
+	* Only possible with 3.1.x (later)
+	*/
+	public function test_deep_multi_dim_array_access($path, $default, $expected)
+	{
+		$this->unset_variables('var');
+
+		// cannot set $_REQUEST directly because in phpbb_request implementation
+		// $_REQUEST = $_POST + $_GET
+		$_POST['var'] = array(
+			0 => array(
+				'b' => array(
+					true => array(
+						5 => 'c',
+						6 => 'd',
+					),
+				),
+			),
+			2 => array(
+				3 => array(
+					false => 5,
+				),
+			),
+		);
+
+		$result = request_var($path, $default);
+		$this->assertEquals($expected, $result, 'Testing deep access to multidimensional input arrays: ' . $path);
+	}
+
+	public function deep_access()
+	{
+		return array(
+			// array(path, default, expected result)
+			array(array('var', 0, 'b', true, 5), '', 'c'),
+			array(array('var', 0, 'b', true, 6), '', 'd'),
+			array(array('var', 2, 3, false), 0, 5),
+			array(array('var', 0, 'b', true), array(0 => ''), array(5 => 'c', 6 => 'd')),
+		);
+	}
+
+	public function request_variables()
 	{
 		return array(
 			// strings
@@ -171,6 +221,50 @@ class phpbb_request_request_var_test extends phpbb_test_case
 				array(
 					'xyz' => array(123, 0),
 					'abc' => array()
+				)
+			),
+			array(
+				// input:
+				array(
+					0 => array(0 => array(3, '4', 'ab'), 1 => array()),
+					1 => array(array(3, 4)),
+				),
+				// default:
+				array(0 => array(0 => array(0))),
+				false,
+				// expected:
+				array(
+					0 => array(0 => array(3, 4, 0), 1 => array()),
+					1 => array(array(3, 4))
+				)
+			),
+			array(
+				// input:
+				array(
+					'ü' => array(array('c' => 'd')),
+					'ä' => array(4 => array('a' => 2, 'ö' => 3)),
+				),
+				// default:
+				array('' => array(0 => array('' => 0))),
+				false,
+				// expected:
+				array(
+					'??' => array(4 => array('a' => 2, '??' => 3)),
+				)
+			),
+			array(
+				// input:
+				array(
+					'ü' => array(array('c' => 'd')),
+					'ä' => array(4 => array('a' => 2, 'ö' => 3)),
+				),
+				// default:
+				array('' => array(0 => array('' => 0))),
+				true,
+				// expected:
+				array(
+					'ü' => array(array('c' => 0)),
+					'ä' => array(4 => array('a' => 2, 'ö' => 3)),
 				)
 			),
 		);

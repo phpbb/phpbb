@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -14,7 +13,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Helper functions for phpBB 2.0.x to phpBB 3.0.x conversion
+* Helper functions for phpBB 2.0.x to phpBB 3.1.x conversion
 */
 
 /**
@@ -458,7 +457,7 @@ function phpbb_get_birthday($birthday = '')
 	{
 		$birthday = (int) $birthday;
 
-		if (!$birthday || $birthday == 999999 || ((version_compare(PHP_VERSION, '5.1.0') < 0) && $birthday < 0))
+		if (!$birthday || $birthday == 999999)
 		{
 			return ' 0- 0-   0';
 		}
@@ -1866,5 +1865,3 @@ function phpbb_check_username_collisions()
 	$drop_sql = 'DROP TABLE ' . USERCONV_TABLE;
 	$db->sql_query($drop_sql);
 }
-
-?>

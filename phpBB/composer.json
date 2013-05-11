@@ -1,4 +1,13 @@
 {
+	"minimum-stability": "beta",
+	"require": {
+		"symfony/config": "2.1.*",
+		"symfony/dependency-injection": "2.1.*",
+		"symfony/event-dispatcher": "2.1.*",
+		"symfony/http-kernel": "2.1.*",
+		"symfony/routing": "2.1.*",
+		"symfony/yaml": "2.1.*"
+	},
 	"require-dev": {
 		"fabpot/goutte": "v0.1.0",
 		"phpunit/dbunit": "1.2.*",

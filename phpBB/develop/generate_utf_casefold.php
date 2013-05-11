@@ -151,5 +151,3 @@ function download($url)
 
 	echo "\n";
 }
-
-?>

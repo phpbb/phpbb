@@ -16,7 +16,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/config.xml');
 	}
 
-	static public function build_array_insert_data()
+	public function build_array_insert_data()
 	{
 		return array(
 			array(array(
@@ -104,7 +104,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	static public function update_data()
+	public function update_data()
 	{
 		return array(
 			array(

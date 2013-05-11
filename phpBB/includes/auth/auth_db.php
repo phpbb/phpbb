@@ -7,9 +7,8 @@
 * This is for authentication via the integrated user table
 *
 * @package login
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -40,6 +39,11 @@ if (!defined('IN_PHPBB'))
 function login_db($username, $password, $ip = '', $browser = '', $forwarded_for = '')
 {
 	global $db, $config;
+	global $request;
+
+	// Auth plugins get the password untrimmed.
+	// For compatibility we trim() here.
+	$password = trim($password);
 
 	// do not allow empty password
 	if (!$password)
@@ -131,13 +135,13 @@ function login_db($username, $password, $ip = '', $browser = '', $forwarded_for 
 	if ($show_captcha)
 	{
 		// Visual Confirmation handling
-		if (!class_exists('phpbb_captcha_factory'))
+		if (!class_exists('phpbb_captcha_factory', false))
 		{
 			global $phpbb_root_path, $phpEx;
 			include ($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
 		}
 
-		$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+		$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 		$captcha->init(CONFIRM_LOGIN);
 		$vc_response = $captcha->validate($row);
 		if ($vc_response)
@@ -158,12 +162,23 @@ function login_db($username, $password, $ip = '', $browser = '', $forwarded_for 
 	// If the password convert flag is set we need to convert it
 	if ($row['user_pass_convert'])
 	{
+		// enable super globals to get literal value
+		// this is needed to prevent unicode normalization
+		$super_globals_disabled = $request->super_globals_disabled();
+		if ($super_globals_disabled)
+		{
+			$request->enable_super_globals();
+		}
+
 		// in phpBB2 passwords were used exactly as they were sent, with addslashes applied
 		$password_old_format = isset($_REQUEST['password']) ? (string) $_REQUEST['password'] : '';
 		$password_old_format = (!STRIP) ? addslashes($password_old_format) : $password_old_format;
-		$password_new_format = '';
+		$password_new_format = $request->variable('password', '', true);
 
-		set_var($password_new_format, stripslashes($password_old_format), 'string', true);
+		if ($super_globals_disabled)
+		{
+			$request->disable_super_globals();
+		}
 
 		if ($password == $password_new_format)
 		{
@@ -272,5 +287,3 @@ function login_db($username, $password, $ip = '', $browser = '', $forwarded_for 
 		'user_row'		=> $row,
 	);
 }
-
-?>

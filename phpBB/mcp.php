@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -31,15 +30,8 @@ $template->assign_var('S_IN_MCP', true);
 // Basic parameter data
 $id = request_var('i', '');
 
-if (isset($_REQUEST['mode']) && is_array($_REQUEST['mode']))
-{
-	$mode = request_var('mode', array(''));
-	list($mode, ) = each($mode);
-}
-else
-{
-	$mode = request_var('mode', '');
-}
+$mode = request_var('mode', array(''));
+$mode = sizeof($mode) ? array_shift($mode) : request_var('mode', '');
 
 // Only Moderators can go beyond this point
 if (!$user->data['is_registered'])
@@ -57,7 +49,7 @@ $action = request_var('action', '');
 $action_ary = request_var('action', array('' => 0));
 
 $forum_action = request_var('forum_action', '');
-if ($forum_action !== '' && !empty($_POST['sort']))
+if ($forum_action !== '' && $request->variable('sort', false, false, phpbb_request_interface::POST))
 {
 	$action = $forum_action;
 }
@@ -92,7 +84,7 @@ if ($post_id)
 	$db->sql_freeresult($result);
 
 	$topic_id = (int) $row['topic_id'];
-	$forum_id = (int) ($row['forum_id']) ? $row['forum_id'] : $forum_id;
+	$forum_id = (int) $row['forum_id'];
 }
 else if ($topic_id)
 {
@@ -174,7 +166,7 @@ if ($quickmod)
 			// Reset start parameter if we jumped from the quickmod dropdown
 			if (request_var('start', 0))
 			{
-				$_REQUEST['start'] = 0;
+				$request->overwrite('start', 0);
 			}
 
 			$module->set_active('logs', 'topic_logs');
@@ -190,7 +182,7 @@ if ($quickmod)
 		break;
 
 		default:
-			trigger_error("$action not allowed as quickmod", E_USER_ERROR);
+			trigger_error($user->lang('QUICKMOD_ACTION_NOT_ALLOWED', $action), E_USER_ERROR);
 		break;
 	}
 }
@@ -407,12 +399,6 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!$row['forum_id'])
-			{
-				// Global Announcement?
-				$row['forum_id'] = request_var('f', 0);
-			}
-
 			$rowset[$row['topic_id']] = $row;
 
 			if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
@@ -492,12 +478,6 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (!$row['forum_id'])
-		{
-			// Global Announcement?
-			$row['forum_id'] = request_var('f', 0);
-		}
-
 		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
 		{
 			continue;
@@ -911,5 +891,3 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 
 	return ($single_forum === false) ? true : (int) $forum_id;
 }
-
-?>

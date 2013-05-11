@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT -->
 
@@ -245,7 +245,7 @@
 			<td style="text-align: right; white-space: nowrap;">
 				<!-- IF items.S_FIRST_ROW and not PREVIOUS_PAGE -->{ICON_MOVE_UP_DISABLED}<!-- ELSE --><a href="{items.U_MOVE_UP}">{ICON_MOVE_UP}</a><!-- ENDIF -->&nbsp;
 				<!-- IF items.S_LAST_ROW and not NEXT_PAGE -->{ICON_MOVE_DOWN_DISABLED}<!-- ELSE --><a href="{items.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a><!-- ENDIF -->
-				&nbsp;<a href="{items.U_EDIT}">{ICON_EDIT}</a> <a href="{items.U_DELETE}">{ICON_DELETE}</a>
+				&nbsp;<a href="{items.U_EDIT}">{ICON_EDIT}</a> <a href="{items.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
 			</td>
 		</tr>
 	<!-- BEGINELSE -->
@@ -255,7 +255,11 @@
 	<!-- END items -->
 	</tbody>
 	</table>
-	<div>{PAGINATION}</div>
+	<div class="pagination">
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->	
+	<!-- ENDIF -->
+	</div>
 	<p class="quick">
 		<input class="button2" name="add" type="submit" value="{L_ICON_ADD}" />&nbsp; &nbsp;<input class="button2" type="submit" name="edit" value="{L_ICON_EDIT}" />
 	</p>

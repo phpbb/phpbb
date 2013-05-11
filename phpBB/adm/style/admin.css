@@ -1,4 +1,4 @@
-/*  phpBB 3.0 Admin Style Sheet
+/*  phpBB 3.1 Admin Style Sheet
 	------------------------------------------------------------------------
 	Original author:	subBlue ( http://www.subblue.com/ )
 	Copyright 2007 phpBB Group ( http://www.phpbb.com/ )
@@ -99,6 +99,10 @@ hr {
 
 .small {
 	font-size: 0.85em;
+}
+
+.hidden {
+	display: none;
 }
 
 /* General links  */
@@ -626,10 +630,27 @@ td.name {
 .col1 { background-color: #DCEBFE; }
 .col2 { background-color: #F9F9F9; }
 
+/* 4 row background colours for trees */
+.row1a { background-color: #F9F9F9; }
+.row1b { background-color: #F6F6F6; }
+.row2a { background-color: #E7EEF4; }
+.row2b { background-color: #E3EBF2; }
+
 .spacer {
 	background-color: #DBDFE2;
 	height: 1px;
 	line-height: 1px;
+}
+
+/* Deactivated row */
+.row-inactive { 
+	color: #999; 
+}
+.row-inactive a, .row-inactive strong { 
+	color: #888;
+}
+.row-inactive a:hover {
+	color: #BC2A4D;
 }
 
 /* General form styles
@@ -1007,11 +1028,11 @@ fieldset.submit-buttons legend {
 /* Input field styles
 ---------------------------------------- */
 
-input.radio, input.permissions-checkbox {
+input.radio, input.checkbox, input.permissions-checkbox {
 	width: auto !important;
 	background-color: transparent;
 	border: none;
-	cursor: default;
+	cursor: pointer;
 }
 
 input.full,
@@ -1070,6 +1091,71 @@ input.disabled {
 	color: #666666;
 }
 
+/* jQuery popups
+---------------------------------------- */
+.phpbb_alert {
+	background-color: #FFFFFF;
+	border: 1px solid #999999;
+	position: fixed;
+	display: none;
+	top: 150px;
+	left: 25%;
+	width: 50%;
+	z-index: 50;
+	padding: 25px;
+	padding: 0 25px 20px 25px;
+	text-align: left;
+}
+
+.phpbb_alert .alert_close {
+	display: block;
+	float: right;
+	width: 16px;
+	height: 16px;
+	overflow: hidden;
+	text-decoration: none !important;
+	background: transparent url("../images/alert_close.png") 0 0 no-repeat;
+	margin-top: -7px;
+	margin-right: -31px;
+}
+.phpbb_alert .alert_close:hover {
+	background-position: 0 -16px;
+}
+
+
+.phpbb_alert p {
+	margin: 8px 0;
+	padding-bottom: 8px;
+}
+
+.phpbb_alert label {
+	display: block;
+	margin: 8px 0;
+	padding-bottom: 8px;
+}
+
+.phpbb_alert div.alert_text > p,
+.phpbb_alert div.alert_text > label,
+.phpbb_alert div.alert_text > select,
+.phpbb_alert div.alert_text > textarea,
+.phpbb_alert div.alert_text > input {
+	font-size: 0.9em;
+}
+
+#darkenwrapper {
+	display: none;
+}
+
+#darken {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #000000;
+	opacity: 0.5;
+}
+
 /* Pagination
 ---------------------------------------- */
 .pagination {
@@ -1077,55 +1163,79 @@ input.disabled {
 	width: auto;
 	text-align: right;
 	margin-top: 5px;
-	font-size: 0.85em;
-	padding-bottom: 2px;
+	float: right;
 }
 
 .rtl .pagination {
 	text-align: left;
+	float: left;
 }
 
-.pagination strong,
-.pagination b {
-	font-weight: normal;
-}
-
-.pagination span.page-sep {
-	display:none;
-}
-
-.pagination span strong {
-	padding: 0 2px;
-	margin: 0 2px;
-	font-weight: normal;
-	font-size: 0.85em;
-	color: #FFFFFF;
-	background: #4692BF;
-	border: 1px solid #4692BF;
-}
-
-.pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active {
-	font-weight: normal;
-	font-size: 0.85em;
-	text-decoration: none;
-	color: #5C758C;
-	margin: 0 2px;
-	padding: 0 2px;
-	background: #ECEDEE;
-	border: 1px solid #B4BAC0;
-}
-
-.pagination span a:hover {
-	border-color: #368AD2;
-	background: #368AD2;
-	color: #FFFFFF;
-	text-decoration: none;
+li.pagination {
+	margin-top: 0;
 }
 
 .pagination img {
 	vertical-align: middle;
 }
 
+.pagination ul {
+	display: inline-block;
+	*display: inline; /* IE7 inline-block hack */
+	*zoom: 1;
+	margin-left: 0;
+	margin-bottom: 0;
+}
+
+li.pagination ul {
+	margin-top: -2px;
+	vertical-align: middle;
+}
+
+.pagination ul li, dl .pagination ul li, dl.icon .pagination ul li {
+	display: inline;
+	padding: 0;
+	font-size: 100%;
+	line-height: normal;
+}
+
+.pagination li a, .pagnation li span, li .pagination li a, li .pagnation li span, .pagination li.active span, .pagination li.ellipsis span {
+	font-weight: normal;
+	text-decoration: none;
+	padding: 0 2px;
+	border: 1px solid transparent;
+	font-size: 0.9em;
+	line-height: 1.5em;
+}
+
+.pagination li a, .pagination li a:link, .pagination li a:visited {
+	color: #5C758C;
+	background-color: #ECEDEE;
+	border-color: #B4BAC0;
+}
+
+.pagination li.ellipsis  span {
+	background-color: transparent;
+	color: #000000;
+}
+
+.pagination li.active span {
+	color: #FFFFFF;
+	background-color: #4692BF;
+	border-color: #4692BF;
+}
+
+.pagination li a:hover, .pagination .active a:hover {
+	color: #FFFFFF;
+	background-color: #368AD2;
+	border-color: #368AD2;
+}
+
+.pagination li a:active, .pagination li.active a:active {
+	color: #5C758C;
+	background-color: #ECEDEE;
+	border-color: #B4BAC0;
+}
 
 /* Action Highlighting
 ---------------------------------------- */
@@ -1646,4 +1756,14 @@ fieldset.permissions .padding {
 
 .phpinfo td, .phpinfo th, .phpinfo h2, .phpinfo h1 {
 	text-align: left;
+}
+
+.requirements_not_met {
+	padding: 5px;
+	background-color: #BC2A4D;
+}
+
+.requirements_not_met dt label, .requirements_not_met dd p {
+	color: #FFFFFF;
+	font-size: 1.4em;
 }

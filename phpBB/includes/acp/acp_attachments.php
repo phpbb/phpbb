@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -61,6 +60,10 @@ class acp_attachments
 				$l_title = 'ACP_ORPHAN_ATTACHMENTS';
 			break;
 
+			case 'manage':
+				$l_title = 'ACP_MANAGE_ATTACHMENTS';
+			break;
+
 			default:
 				trigger_error('NO_MODE', E_USER_ERROR);
 			break;
@@ -95,7 +98,7 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
-				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
+				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode($user->lang['COMMA_SEPARATOR'], $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
 
 				$display_vars = array(
 					'title'	=> 'ACP_ATTACHMENT_SETTINGS',
@@ -914,7 +917,7 @@ class acp_attachments
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode(', ', $delete_files));
-						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode(', ', $delete_files));
+						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode($user->lang['COMMA_SEPARATOR'], $delete_files));
 					}
 
 					$upload_list = array();
@@ -1041,6 +1044,231 @@ class acp_attachments
 					);
 				}
 				$db->sql_freeresult($result);
+
+			break;
+
+			case 'manage':
+
+				if ($submit)
+				{
+					$delete_files = (isset($_POST['delete'])) ? array_keys(request_var('delete', array('' => 0))) : array();
+
+					if (sizeof($delete_files))
+					{
+						// Select those attachments we want to delete...
+						$sql = 'SELECT real_filename
+							FROM ' . ATTACHMENTS_TABLE . '
+							WHERE ' . $db->sql_in_set('attach_id', $delete_files) . '
+								AND is_orphan = 0';
+						$result = $db->sql_query($sql);
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$deleted_filenames[] = $row['real_filename'];
+						}
+						$db->sql_freeresult($result);
+
+						if ($num_deleted = delete_attachments('attach', $delete_files))
+						{
+							if (sizeof($delete_files) != $num_deleted)
+							{
+								$error[] = $user->lang['FILES_GONE'];
+							}
+							add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode(', ', $deleted_filenames));
+							$notify[] = sprintf($user->lang['LOG_ATTACHMENTS_DELETED'], implode($user->lang['COMMA_SEPARATOR'], $deleted_filenames));
+						}
+						else
+						{
+							$error[] = $user->lang['NO_FILES_TO_DELETE'];
+						}
+					}
+				}
+
+				$template->assign_vars(array(
+					'S_MANAGE'		=> true)
+				);
+
+				$start		= request_var('start', 0);
+
+				// Sort keys
+				$sort_days	= request_var('st', 0);
+				$sort_key	= request_var('sk', 't');
+				$sort_dir	= request_var('sd', 'd');
+
+				// Sorting
+				$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+				$sort_by_text = array('f' => $user->lang['FILENAME'], 't' => $user->lang['FILEDATE'], 's' => $user->lang['FILESIZE'], 'x' => $user->lang['EXTENSION'], 'd' => $user->lang['DOWNLOADS'],'p' => $user->lang['ATTACH_POST_TYPE'], 'u' => $user->lang['AUTHOR']);
+				$sort_by_sql = array('f' => 'a.real_filename', 't' => 'a.filetime', 's' => 'a.filesize', 'x' => 'a.extension', 'd' => 'a.download_count', 'p' => 'a.in_message', 'u' => 'u.username');
+
+				$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
+				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
+
+				$min_filetime = ($sort_days) ? (time() - ($sort_days * 86400)) : '';
+				$limit_filetime = ($min_filetime) ? " AND a.filetime >= $min_filetime " : '';
+				$start = ($sort_days && isset($_POST['sort'])) ? 0 : $start;
+
+				$attachments_per_page = (int) $config['topics_per_page'];
+
+				// Handle files stats resync
+				$action = request_var('action', '');
+				$resync_files_stats = false;
+				if ($action && $action = 'stats')
+				{
+					if (!confirm_box(true))
+					{
+						confirm_box(false, $user->lang['RESYNC_FILES_STATS_CONFIRM'], build_hidden_fields(array(
+							'i'			=> $id,
+							'mode'		=> $mode,
+							'action'	=> $action,
+						)));
+					}
+					else
+					{
+						$resync_files_stats = true;
+						add_log('admin', 'LOG_RESYNC_FILES_STATS');
+					}
+				}
+
+				// Check if files stats are accurate
+				$sql = 'SELECT COUNT(attach_id) as num_files
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE is_orphan = 0';
+				$result = $db->sql_query($sql, 600);
+				$num_files_real = (int) $db->sql_fetchfield('num_files');
+				if ($resync_files_stats === true)
+				{
+					set_config('num_files', $num_files_real, true);
+				}
+				$db->sql_freeresult($result);
+
+				$sql = 'SELECT SUM(filesize) as upload_dir_size
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE is_orphan = 0';
+				$result = $db->sql_query($sql, 600);
+				$total_size_real = (float) $db->sql_fetchfield('upload_dir_size');
+				if ($resync_files_stats === true)
+				{
+					set_config('upload_dir_size', $total_size_real, true);
+				}
+				$db->sql_freeresult($result);
+
+				// Get current files stats
+				$num_files = (int) $config['num_files'];
+				$total_size = (float) $config['upload_dir_size'];
+
+				// Issue warning message if files stats are inaccurate
+				if (($num_files != $num_files_real) || ($total_size != $total_size_real))
+				{
+					$error[] = $user->lang('FILES_STATS_WRONG', (int) $num_files_real, get_formatted_filesize($total_size_real));
+
+					$template->assign_vars(array(
+						'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
+						'U_ACTION'			=> $this->u_action,)
+					);
+				}
+
+				// Make sure $start is set to the last page if it exceeds the amount
+				if ($start < 0 || $start > $num_files)
+				{
+					$start = ($start < 0) ? 0 : floor(($num_files - 1) / $attachments_per_page) * $attachments_per_page;
+				}
+
+				// If the user is trying to reach the second half of the attachments list, fetch it starting from the end
+				$store_reverse = false;
+				$sql_limit = $attachments_per_page;
+
+				if ($start > $num_files / 2)
+				{
+					$store_reverse = true;
+
+					if ($start + $attachments_per_page > $num_files)
+					{
+						$sql_limit = min($attachments_per_page, max(1, $num_files - $start));
+					}
+
+					// Select the sort order. Add time sort anchor for non-time sorting cases
+					$sql_sort_anchor = ($sort_key != 't') ? ', a.filetime ' . (($sort_dir == 'd') ? 'ASC' : 'DESC') : '';
+					$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'ASC' : 'DESC') . $sql_sort_anchor;
+					$sql_start = max(0, $num_files - $sql_limit - $start);
+				}
+				else
+				{
+					// Select the sort order. Add time sort anchor for non-time sorting cases
+					$sql_sort_anchor = ($sort_key != 't') ? ', a.filetime ' . (($sort_dir == 'd') ? 'DESC' : 'ASC') : '';
+					$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC') . $sql_sort_anchor;
+					$sql_start = $start;
+
+				}
+
+				$attachments_list = array();
+
+				// Just get the files
+				$sql = 'SELECT a.*, u.username, u.user_colour, t.topic_title
+					FROM ' . ATTACHMENTS_TABLE . ' a 
+					LEFT JOIN ' . USERS_TABLE . ' u ON (u.user_id = a.poster_id) 
+					LEFT JOIN ' . TOPICS_TABLE . " t ON (a.topic_id = t.topic_id)
+					WHERE a.is_orphan = 0
+						$limit_filetime
+					ORDER BY $sql_sort_order";
+				$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
+
+				$i = ($store_reverse) ? $sql_limit - 1 : 0;
+
+				// Store increment value in a variable to save some conditional calls
+				$i_increment = ($store_reverse) ? -1 : 1;
+				while ($attachment_row = $db->sql_fetchrow($result))
+				{
+					$attachments_list[$i] = $attachment_row;
+					$i = $i + $i_increment;
+				}
+				$db->sql_freeresult($result);
+
+				$base_url = $this->u_action . "&amp;$u_sort_param";
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_files, $attachments_per_page, $start);
+
+				$template->assign_vars(array(
+					'TOTAL_FILES'		=> $num_files,
+					'TOTAL_SIZE'		=> get_formatted_filesize($total_size),
+
+					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $num_files, $attachments_per_page, $start),
+					'S_LIMIT_DAYS'		=> $s_limit_days,
+					'S_SORT_KEY'		=> $s_sort_key,
+					'S_SORT_DIR'		=> $s_sort_dir)
+				);
+
+				// Grab extensions
+				$extensions = $cache->obtain_attach_extensions(true);
+
+				for ($i = 0, $end = sizeof($attachments_list); $i < $end; ++$i)
+				{
+					$row = $attachments_list[$i];
+
+					$row['extension'] = strtolower(trim((string) $row['extension']));
+					$comment = ($row['attach_comment'] && !$row['in_message']) ? str_replace(array("\n", "\r"), array('<br />', "\n"), $row['attach_comment']) : '';
+					$display_cat = $extensions[$row['extension']]['display_cat'];
+					$l_downloaded_viewed = ($display_cat == ATTACHMENT_CATEGORY_NONE) ? 'DOWNLOAD_COUNTS' : 'VIEWED_COUNTS';
+
+					$template->assign_block_vars('attachments', array(
+						'ATTACHMENT_POSTER'	=> get_username_string('full', (int) $row['poster_id'], (string) $row['username'], (string) $row['user_colour'], (string) $row['username']),
+						'FILESIZE'			=> get_formatted_filesize((int) $row['filesize']),
+						'FILETIME'			=> $user->format_date((int) $row['filetime']),
+						'REAL_FILENAME'		=> (!$row['in_message']) ? utf8_wordwrap(utf8_basename((string) $row['real_filename']), 40, '<br />', true) : '',
+						'PHYSICAL_FILENAME'	=> utf8_basename((string) $row['physical_filename']),
+						'EXT_GROUP_NAME'	=> (!empty($extensions[$row['extension']]['group_name'])) ? $user->lang['EXT_GROUP_' . $extensions[$row['extension']]['group_name']] : '',
+						'COMMENT'			=> $comment,
+						'TOPIC_TITLE'		=> (!$row['in_message']) ? (string) $row['topic_title'] : '',
+						'ATTACH_ID'			=> (int) $row['attach_id'],
+						'POST_ID'			=> (int) $row['post_msg_id'],
+						'TOPIC_ID'			=> (int) $row['topic_id'],
+						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? (int) $post_ids[$row['attach_id']] : '',
+
+						'L_DOWNLOAD_COUNT'	=> $user->lang($l_downloaded_viewed, (int) $row['download_count']),
+
+						'S_IN_MESSAGE'		=> (bool) $row['in_message'],
+
+						'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row['topic_id']}&amp;p={$row['post_msg_id']}") . "#p{$row['post_msg_id']}",
+						'U_FILE'			=> append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']))
+					);
+				}
 
 			break;
 		}
@@ -1235,6 +1463,7 @@ class acp_attachments
 	function perform_site_list()
 	{
 		global $db, $user;
+		global $request;
 
 		if (isset($_REQUEST['securesubmit']))
 		{
@@ -1243,7 +1472,7 @@ class acp_attachments
 			$ip_list = array_unique(explode("\n", $ips));
 			$ip_list_log = implode(', ', $ip_list);
 
-			$ip_exclude = (!empty($_POST['ipexclude'])) ? 1 : 0;
+			$ip_exclude = (int) $request->variable('ipexclude', false, false, phpbb_request_interface::POST);
 
 			$iplist = array();
 			$hostlist = array();
@@ -1455,5 +1684,3 @@ class acp_attachments
 	}
 
 }
-
-?>

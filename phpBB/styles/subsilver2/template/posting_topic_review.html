@@ -34,9 +34,9 @@
 					<table width="100%" cellspacing="0">
 					<tr>
 						<td>&nbsp;</td>
-						<td class="gensmall" valign="middle" nowrap="nowrap"><b>{L_POST_SUBJECT}:</b>&nbsp;</td>
+						<td class="gensmall" valign="middle" nowrap="nowrap"><b>{L_POST_SUBJECT}{L_COLON}</b>&nbsp;</td>
 						<td class="gensmall" width="100%" valign="middle">{topic_review_row.POST_SUBJECT}</td>
-						<td valign="top" nowrap="nowrap">&nbsp;<!-- IF topic_review_row.POSTER_QUOTE and topic_review_row.DECODED_MESSAGE --><a href="#" onclick="addquote({topic_review_row.POST_ID},'{topic_review_row.POSTER_QUOTE}', '{LA_WROTE}'); return false;">{QUOTE_IMG}</a><!-- ENDIF --></td>
+						<td valign="top" nowrap="nowrap">&nbsp;<!-- IF topic_review_row.POSTER_QUOTE and topic_review_row.DECODED_MESSAGE --><a href="#" onclick="addquote({topic_review_row.POST_ID},'{topic_review_row.POSTER_QUOTE}', '{LA_WROTE}'); return false;" class="imageset">{QUOTE_IMG}</a><!-- ENDIF --></td>
 					</tr>
 					</table>
 				</td>
@@ -51,6 +51,13 @@
 							<table width="100%" cellspacing="0" cellpadding="2">
 							<tr>
 								<td>
+									<!-- IF topic_review_row.POST_ID == REPORTED_POST_ID -->
+									<table width="100%" cellspacing="0">
+										<tr>
+											<span class="postreported">{REPORTED_IMG}</span>
+										</tr>
+									</table>
+									<!-- ENDIF -->
 									<div class="postbody">{topic_review_row.MESSAGE}</div>
 
 									<!-- IF topic_review_row.S_HAS_ATTACHMENTS -->
@@ -58,7 +65,7 @@
 
 										<table class="tablebg" width="100%" cellspacing="1">
 										<tr>
-											<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+											<td class="row3"><b class="genmed">{L_ATTACHMENTS}{L_COLON} </b></td>
 										</tr>
 										<!-- BEGIN attachment -->
 											<tr>
@@ -81,8 +88,8 @@
 							<table width="100%" cellspacing="0">
 							<tr valign="middle">
 								<td width="100%" align="{S_CONTENT_FLOW_BEGIN}"><span class="gensmall"><!-- IF topic_review_row.U_MCP_DETAILS -->[ <a href="{topic_review_row.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF --></span></td>
-								<td width="10" nowrap="nowrap"><!-- IF S_IS_BOT -->{topic_review_row.MINI_POST_IMG}<!-- ELSE --><a href="{topic_review_row.U_MINI_POST}">{topic_review_row.MINI_POST_IMG}</a><!-- ENDIF --></td>
-								<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {topic_review_row.POST_DATE}</td>
+								<td width="10" nowrap="nowrap"><!-- IF S_IS_BOT -->{topic_review_row.MINI_POST_IMG}<!-- ELSE --><a href="{topic_review_row.U_MINI_POST}" class="imageset">{topic_review_row.MINI_POST_IMG}</a><!-- ENDIF --></td>
+								<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}{L_COLON}</b> {topic_review_row.POST_DATE}</td>
 							</tr>
 							</table>
 						</td>

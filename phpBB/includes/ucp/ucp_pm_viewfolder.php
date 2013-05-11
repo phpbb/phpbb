@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -165,7 +164,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 					'PM_ICON_URL'		=> (!empty($icons[$row['icon_id']])) ? $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] : '',
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-					'FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
+					'FOLDER_IMG_STYLE'	=> $folder_img,
 					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
 					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
@@ -177,7 +176,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
 					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',
 					'U_MCP_REPORT'		=> (isset($row['report_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $row['report_id']) : '',
-					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '')
+					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode($user->lang['COMMA_SEPARATOR'], $address_list[$message_id]) : '')
 				);
 			}
 			unset($folder_info['rowset']);
@@ -267,9 +266,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 					}
 				}
 
-				// There is the chance that all recipients of the message got deleted. To avoid creating 
+				// There is the chance that all recipients of the message got deleted. To avoid creating
 				// exports without recipients, we add a bogus "undisclosed recipient".
-				if (!(isset($address[$message_id]['g']) && sizeof($address[$message_id]['g'])) && 
+				if (!(isset($address[$message_id]['g']) && sizeof($address[$message_id]['g'])) &&
 				    !(isset($address[$message_id]['u']) && sizeof($address[$message_id]['u'])))
 				{
 					$address[$message_id]['u'] = array();
@@ -278,12 +277,12 @@ function view_folder($id, $mode, $folder_id, $folder)
 				}
 
 				decode_message($message_row['message_text'], $message_row['bbcode_uid']);
-				
+
 				$data[] = array(
 					'subject'	=> censor_text($row['message_subject']),
 					'sender'	=> $row['username'],
 					// ISO 8601 date. For PHP4 we are able to hardcode the timezone because $user->format_date() does not set it.
-					'date'		=> $user->format_date($row['message_time'], (PHP_VERSION >= 5) ? 'c' : "Y-m-d\TH:i:s+00:00", true),
+					'date'		=> $user->format_date($row['message_time'], 'c', true),
 					'to'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? $address[$message_id] : '',
 					'message'	=> $message_row['message_text']
 				);
@@ -452,10 +451,12 @@ function get_pm_from($folder_id, $folder, $user_id)
 		$sql_limit_time = '';
 	}
 
+	$base_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param");
+	phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $pm_count, $config['topics_per_page'], $start);
+
 	$template->assign_vars(array(
-		'PAGINATION'		=> generate_pagination(append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param"), $pm_count, $config['topics_per_page'], $start),
-		'PAGE_NUMBER'		=> on_page($pm_count, $config['topics_per_page'], $start),
-		'TOTAL_MESSAGES'	=> (($pm_count == 1) ? $user->lang['VIEW_PM_MESSAGE'] : sprintf($user->lang['VIEW_PM_MESSAGES'], $pm_count)),
+		'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $pm_count, $config['topics_per_page'], $start),
+		'TOTAL_MESSAGES'	=> $user->lang('VIEW_PM_MESSAGES', (int) $pm_count),
 
 		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('button_topic_locked', 'POST_PM_LOCKED') : $user->img('button_pm_new', 'POST_NEW_PM'),
 
@@ -552,5 +553,3 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'rowset'	=> $rowset
 	);
 }
-
-?>

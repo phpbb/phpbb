@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -148,23 +147,15 @@ class phpbb_questionnaire_system_data_provider
 	*/
 	function get_data()
 	{
+		global $request;
+
 		// Start discovering the IPV4 server address, if available
-		$server_address = '0.0.0.0';
-
-		if (!empty($_SERVER['SERVER_ADDR']))
-		{
-			$server_address = $_SERVER['SERVER_ADDR'];
-		}
-
-		// Running on IIS?
-		if (!empty($_SERVER['LOCAL_ADDR']))
-		{
-			$server_address = $_SERVER['LOCAL_ADDR'];
-		}
+		// Try apache, IIS, fall back to 0.0.0.0
+		$server_address = htmlspecialchars_decode($request->server('SERVER_ADDR', $request->server('LOCAL_ADDR', '0.0.0.0')));
 
 		return array(
 			'os'	=> PHP_OS,
-			'httpd'	=> $_SERVER['SERVER_SOFTWARE'],
+			'httpd'	=> htmlspecialchars_decode($request->server('SERVER_SOFTWARE')),
 			// we don't want the real IP address (for privacy policy reasons) but only
 			// a network address to see whether your installation is running on a private or public network.
 			'private_ip'	=> $this->is_private_ip($server_address),
@@ -269,6 +260,8 @@ class phpbb_questionnaire_phpbb_data_provider
 		include("{$phpbb_root_path}config.$phpEx");
 		unset($dbhost, $dbport, $dbname, $dbuser, $dbpasswd); // Just a precaution
 
+		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
 		// Only send certain config vars
 		$config_vars = array(
 			'active_sessions' => true,
@@ -313,7 +306,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'avatar_max_width' => true,
 			'avatar_min_height' => true,
 			'avatar_min_width' => true,
-			'board_dst' => true,
 			'board_email_form' => true,
 			'board_hide_emails' => true,
 			'board_timezone' => true,
@@ -482,17 +474,16 @@ class phpbb_questionnaire_phpbb_data_provider
 			}
 		}
 
-		global $db;
+		global $db, $request;
 
 		$result['dbms'] = $dbms;
 		$result['acm_type'] = $acm_type;
-		$result['load_extensions'] = $load_extensions;
 		$result['user_agent'] = 'Unknown';
 		$result['dbms_version'] = $db->sql_server_info(true);
 
 		// Try to get user agent vendor and version
 		$match = array();
-		$user_agent = (!empty($_SERVER['HTTP_USER_AGENT'])) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+		$user_agent = $request->header('User-Agent');
 		$agents = array('firefox', 'msie', 'opera', 'chrome', 'safari', 'mozilla', 'seamonkey', 'konqueror', 'netscape', 'gecko', 'navigator', 'mosaic', 'lynx', 'amaya', 'omniweb', 'avant', 'camino', 'flock', 'aol');
 
 		// We check here 1 by 1 because some strings occur after others (for example Mozilla [...] Firefox/)
@@ -508,5 +499,3 @@ class phpbb_questionnaire_phpbb_data_provider
 		return $result;
 	}
 }
-
-?>

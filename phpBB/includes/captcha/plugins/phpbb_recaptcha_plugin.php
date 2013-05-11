@@ -2,9 +2,8 @@
 /**
 *
 * @package VC
-* @version $Id$
 * @copyright (c) 2006, 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -16,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-if (!class_exists('phpbb_default_captcha'))
+if (!class_exists('phpbb_default_captcha', false))
 {
 	// we need the classic captcha code for tracking solutions and attempts
 	include($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
@@ -41,7 +40,8 @@ class phpbb_recaptcha extends phpbb_default_captcha
 	// PHP4 Constructor
 	function phpbb_recaptcha()
 	{
-		$this->recaptcha_server = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? $this->recaptcha_server_secure : $this->recaptcha_server;
+		global $request;
+		$this->recaptcha_server = $request->is_secure() ? $this->recaptcha_server_secure : $this->recaptcha_server;
 	}
 
 	function init($type)
@@ -54,13 +54,13 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		$this->response = request_var('recaptcha_response_field', '');
 	}
 
-	function &get_instance()
+	static public function get_instance()
 	{
-		$instance =& new phpbb_recaptcha();
+		$instance = new phpbb_recaptcha();
 		return $instance;
 	}
 
-	function is_available()
+	static public function is_available()
 	{
 		global $config, $user;
 		$user->add_lang('captcha_recaptcha');
@@ -75,7 +75,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		return true;
 	}
 
-	function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_RECAPTCHA';
 	}
@@ -163,7 +163,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 				'RECAPTCHA_SERVER'			=> $this->recaptcha_server,
 				'RECAPTCHA_PUBKEY'			=> isset($config['recaptcha_pubkey']) ? $config['recaptcha_pubkey'] : '',
 				'RECAPTCHA_ERRORGET'		=> '',
-				'S_RECAPTCHA_AVAILABLE'		=> $this->is_available(),
+				'S_RECAPTCHA_AVAILABLE'		=> self::is_available(),
 				'S_CONFIRM_CODE'			=> true,
 				'S_TYPE'					=> $this->type,
 				'L_CONFIRM_EXPLAIN'			=> $explain,
@@ -270,7 +270,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		$response = '';
 		if (false == ($fs = @fsockopen($host, $port, $errno, $errstr, 10)))
 		{
-			trigger_error('Could not open socket', E_USER_ERROR);
+			trigger_error('RECAPTCHA_SOCKET_ERROR', E_USER_ERROR);
 		}
 
 		fwrite($fs, $http_request);
@@ -341,5 +341,3 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		return $req;
 	}
 }
-
-?>

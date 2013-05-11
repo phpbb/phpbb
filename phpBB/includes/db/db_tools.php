@@ -2,9 +2,8 @@
 /**
 *
 * @package dbal
-* @version $Id$
 * @copyright (c) 2007 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -21,7 +20,6 @@ if (!defined('IN_PHPBB'))
 * Currently not supported is returning SQL for creating tables.
 *
 * @package dbal
-* @note currently not used within phpBB3, but may be utilized later.
 */
 class phpbb_db_tools
 {
@@ -302,10 +300,10 @@ class phpbb_db_tools
 	/**
 	* Constructor. Set DB Object and set {@link $return_statements return_statements}.
 	*
-	* @param phpbb_dbal	$db					DBAL object
+	* @param phpbb_db_driver	$db					Database connection
 	* @param bool		$return_statements	True if only statements should be returned and no SQL being executed
 	*/
-	function phpbb_db_tools(&$db, $return_statements = false)
+	function phpbb_db_tools(phpbb_db_driver $db, $return_statements = false)
 	{
 		$this->db = $db;
 		$this->return_statements = $return_statements;
@@ -345,6 +343,17 @@ class phpbb_db_tools
 				$this->sql_layer = $this->db->sql_layer;
 			break;
 		}
+	}
+
+	/**
+	* Setter for {@link $return_statements return_statements}.
+	*
+	* @param bool $return_statements True if SQL should not be executed but returned as strings
+	* @return null
+	*/
+	public function set_return_statements($return_statements)
+	{
+		$this->return_statements = $return_statements;
 	}
 
 	/**
@@ -676,6 +685,8 @@ class phpbb_db_tools
 	* Handle passed database update array.
 	* Expected structure...
 	* Key being one of the following
+	*	drop_tables: Drop tables
+	*	add_tables: Add tables
 	*	change_columns: Column changes (only type, not name)
 	*	add_columns: Add columns to a table
 	*	drop_keys: Dropping keys
@@ -1504,7 +1515,7 @@ class phpbb_db_tools
 			$column_type = $this->dbms_type_map[$this->sql_layer][$column_data[0]];
 		}
 
-		// Adjust default value if db-dependant specified
+		// Adjust default value if db-dependent specified
 		if (is_array($column_data[1]))
 		{
 			$column_data[1] = (isset($column_data[1][$this->sql_layer])) ? $column_data[1][$this->sql_layer] : $column_data[1]['default'];
@@ -2473,5 +2484,3 @@ class phpbb_db_tools
 		return $this->_sql_run_sql($statements);
 	}
 }
-
-?>

@@ -5,9 +5,8 @@
 * Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 *
 * @package login
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -28,9 +27,9 @@ if (!defined('IN_PHPBB'))
 */
 function init_apache()
 {
-	global $user;
+	global $user, $request;
 
-	if (!isset($_SERVER['PHP_AUTH_USER']) || $user->data['username'] !== $_SERVER['PHP_AUTH_USER'])
+	if (!$request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER) || $user->data['username'] !== htmlspecialchars_decode($request->server('PHP_AUTH_USER')))
 	{
 		return $user->lang['APACHE_SETUP_BEFORE_USE'];
 	}
@@ -42,7 +41,7 @@ function init_apache()
 */
 function login_apache(&$username, &$password)
 {
-	global $db;
+	global $db, $request;
 
 	// do not allow empty password
 	if (!$password)
@@ -63,7 +62,7 @@ function login_apache(&$username, &$password)
 		);
 	}
 
-	if (!isset($_SERVER['PHP_AUTH_USER']))
+	if (!$request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
 	{
 		return array(
 			'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -72,8 +71,8 @@ function login_apache(&$username, &$password)
 		);
 	}
 
-	$php_auth_user = $_SERVER['PHP_AUTH_USER'];
-	$php_auth_pw = $_SERVER['PHP_AUTH_PW'];
+	$php_auth_user = htmlspecialchars_decode($request->server('PHP_AUTH_USER'));
+	$php_auth_pw = htmlspecialchars_decode($request->server('PHP_AUTH_PW'));
 
 	if (!empty($php_auth_user) && !empty($php_auth_pw))
 	{
@@ -136,15 +135,15 @@ function login_apache(&$username, &$password)
 */
 function autologin_apache()
 {
-	global $db;
+	global $db, $request;
 
-	if (!isset($_SERVER['PHP_AUTH_USER']))
+	if (!$request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
 	{
 		return array();
 	}
 
-	$php_auth_user = $_SERVER['PHP_AUTH_USER'];
-	$php_auth_pw = $_SERVER['PHP_AUTH_PW'];
+	$php_auth_user = htmlspecialchars_decode($request->server('PHP_AUTH_USER'));
+	$php_auth_pw = htmlspecialchars_decode($request->server('PHP_AUTH_PW'));
 
 	if (!empty($php_auth_user) && !empty($php_auth_pw))
 	{
@@ -228,11 +227,12 @@ function user_row_apache($username, $password)
 */
 function validate_session_apache(&$user)
 {
+	global $request;
+
 	// Check if PHP_AUTH_USER is set and handle this case
-	if (isset($_SERVER['PHP_AUTH_USER']))
+	if ($request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
 	{
-		$php_auth_user = '';
-		set_var($php_auth_user, $_SERVER['PHP_AUTH_USER'], 'string', true);
+		$php_auth_user = $request->server('PHP_AUTH_USER');
 
 		return ($php_auth_user === $user['username']) ? true : false;
 	}
@@ -245,5 +245,3 @@ function validate_session_apache(&$user)
 
 	return false;
 }
-
-?>

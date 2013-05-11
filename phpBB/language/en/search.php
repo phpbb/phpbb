@@ -4,9 +4,8 @@
 * search [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -41,9 +40,14 @@ $lang = array_merge($lang, array(
 
 	'DISPLAY_RESULTS'		=> 'Display results as',
 
-	'FOUND_SEARCH_MATCH'		=> 'Search found %d match',
-	'FOUND_SEARCH_MATCHES'		=> 'Search found %d matches',
-	'FOUND_MORE_SEARCH_MATCHES'	=> 'Search found more than %d matches',
+	'FOUND_SEARCH_MATCHES'		=> array(
+		1	=> 'Search found %d match',
+		2	=> 'Search found %d matches',
+	),
+	'FOUND_MORE_SEARCH_MATCHES'		=> array(
+		1	=> 'Search found more than %d match',
+		2	=> 'Search found more than %d matches',
+	),
 
 	'GLOBAL'				=> 'Global announcement',
 
@@ -58,7 +62,7 @@ $lang = array_merge($lang, array(
 
 	'MAX_NUM_SEARCH_KEYWORDS_REFINE'	=> 'You specified too many words to search for. Please do not enter more than %1$d words.',
 
-	'NO_KEYWORDS'			=> 'You must specify at least one word to search for. Each word must consist of at least %d characters and must not contain more than %d characters excluding wildcards.',
+	'NO_KEYWORDS'			=> 'You must specify at least one word to search for. Each word must consist of at least %s and must not contain more than %s excluding wildcards.',
 	'NO_RECENT_SEARCHES'	=> 'No searches have been carried out recently.',
 	'NO_SEARCH'				=> 'Sorry but you are not permitted to use the search system.',
 	'NO_SEARCH_RESULTS'		=> 'No suitable matches were found.',
@@ -68,6 +72,7 @@ $lang = array_merge($lang, array(
 	'WORDS_IN_NO_POST'		=> 'No posts were found because the words <strong>%s</strong> are not contained in any post.',
 
 	'POST_CHARACTERS'		=> 'characters of posts',
+	'PHRASE_SEARCH_DISABLED'	=> 'Searching by exact phrase is not supported on this board.',
 
 	'RECENT_SEARCHES'		=> 'Recent searches',
 	'RESULT_DAYS'			=> 'Limit results to previous',
@@ -100,8 +105,11 @@ $lang = array_merge($lang, array(
 	'SORT_FORUM'				=> 'Forum',
 	'SORT_POST_SUBJECT'			=> 'Post subject',
 	'SORT_TIME'					=> 'Post time',
+	'SPHINX_SEARCH_FAILED'		=> 'Search failed: %s',
+	'SPHINX_SEARCH_FAILED_LOG'	=> 'Sorry, search could not be performed. More information about this failure has been logged in the error log.',
 
-	'TOO_FEW_AUTHOR_CHARS'	=> 'You must specify at least %d characters of the authors name.',
+	'TOO_FEW_AUTHOR_CHARS'	=> array(
+		1	=> 'You must specify at least %d character of the authors name.',
+		2	=> 'You must specify at least %d characters of the authors name.',
+	),
 ));
-
-?>

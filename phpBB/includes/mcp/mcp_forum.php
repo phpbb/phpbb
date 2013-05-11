@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -23,6 +22,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 {
 	global $template, $db, $user, $auth, $cache, $module;
 	global $phpEx, $phpbb_root_path, $config;
+	global $request, $phpbb_dispatcher;
 
 	$user->add_lang(array('viewtopic', 'viewforum'));
 
@@ -34,7 +34,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	if ($merge_select)
 	{
 		// Fixes a "bug" that makes forum_view use the same ordering as topic_view
-		unset($_POST['sk'], $_POST['sd'], $_REQUEST['sk'], $_REQUEST['sd']);
+		$request->overwrite('sk', null);
+		$request->overwrite('sd', null);
+		$request->overwrite('sk', null, phpbb_request_interface::POST);
+		$request->overwrite('sd', null, phpbb_request_interface::POST);
 	}
 
 	$forum_id			= $forum_info['forum_id'];
@@ -98,6 +101,9 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
 	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
+	$base_url = $url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;sd=$sort_dir&amp;sk=$sort_key&amp;st=$sort_days" . (($merge_select) ? $selected_ids : '');
+	phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $forum_topics, $topics_per_page, $start);
+
 	$template->assign_vars(array(
 		'ACTION'				=> $action,
 		'FORUM_NAME'			=> $forum_info['forum_name'],
@@ -126,9 +132,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;forum_action=$action&amp;mode=$mode&amp;start=$start" . (($merge_select) ? $selected_ids : ''),
 
-		'PAGINATION'			=> generate_pagination($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;sd=$sort_dir&amp;sk=$sort_key&amp;st=$sort_days" . (($merge_select) ? $selected_ids : ''), $forum_topics, $topics_per_page, $start),
-		'PAGE_NUMBER'			=> on_page($forum_topics, $topics_per_page, $start),
-		'TOTAL_TOPICS'			=> ($forum_topics == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $forum_topics),
+		'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $forum_topics, $topics_per_page, $start),
+		'TOTAL_TOPICS'			=> $user->lang('VIEW_FORUM_TOPICS', (int) $forum_topics),
 	));
 
 	// Grab icons
@@ -146,10 +151,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		$read_tracking_join = $read_tracking_select = '';
 	}
 
-	$sql = "SELECT t.topic_id
-		FROM " . TOPICS_TABLE . " t
-		WHERE t.forum_id IN($forum_id, 0)
-			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
+	$sql = 'SELECT t.topic_id
+		FROM ' . TOPICS_TABLE . ' t
+		WHERE t.forum_id = ' . $forum_id . '
+			' . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
 	$result = $db->sql_query_limit($sql, $topics_per_page, $start);
@@ -184,11 +189,11 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	{
 		if ($config['load_db_lastread'])
 		{
-			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $topic_rows, array($forum_id => $forum_info['mark_time']), array());
+			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $topic_rows, array($forum_id => $forum_info['mark_time']));
 		}
 		else
 		{
-			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list, array());
+			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list);
 		}
 	}
 
@@ -221,8 +226,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$topic_row = array(
 			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+			'TOPIC_IMG_STYLE'		=> $folder_img,
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-			'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
@@ -282,6 +287,17 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 				'S_TOPIC_CHECKED'	=> ($topic_id_list && in_array($row['topic_id'], $topic_id_list)) ? true : false,
 			));
 		}
+
+		/**
+		* Modify the topic data before it is assigned to the template in MCP
+		*
+		* @event core.mcp_view_forum_modify_topicrow
+		* @var	array	row			Array with topic data
+		* @var	array	topic_row	Template array with topic data
+		* @since 3.1-A1
+		*/
+		$vars = array('row', 'topic_row');
+		extract($phpbb_dispatcher->trigger_event('core.mcp_view_forum_modify_topicrow', compact($vars)));
 
 		$template->assign_block_vars('topicrow', $topic_row);
 	}
@@ -433,7 +449,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		confirm_box(false, 'MERGE_TOPICS', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -442,9 +458,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 	}
 	else
 	{
-		meta_refresh(3, append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$to_forum_id&amp;t=$to_topic_id"));
+		meta_refresh(3, $redirect);
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
-
-?>

@@ -21,18 +21,18 @@
 		<th colspan="2">{L_GROUP_DETAILS}</th>
 	</tr>
 	<tr>
-		<td class="row1" width="35%"><label<!-- IF not S_SPECIAL_GROUP --> for="group_name"<!-- ENDIF -->>{L_GROUP_NAME}:</label></td>
+		<td class="row1" width="35%"><label<!-- IF not S_SPECIAL_GROUP --> for="group_name"<!-- ENDIF -->>{L_GROUP_NAME}{L_COLON}</label></td>
 		<td class="row2"><!-- IF S_SPECIAL_GROUP --><b<!-- IF GROUP_COLOUR --> style="color: #{GROUP_COLOUR};"<!-- ENDIF -->>{GROUP_NAME}</b><!-- ENDIF --><input name="group_name" type="<!-- IF S_SPECIAL_GROUP -->hidden<!-- ELSE -->text<!-- ENDIF -->" id="group_name" value="{GROUP_INTERNAL_NAME}" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="35%"><label for="group_desc">{L_GROUP_DESC}:</label></td>
+		<td class="row1" width="35%"><label for="group_desc">{L_GROUP_DESC}{L_COLON}</label></td>
 		<td class="row2"><textarea id="group_desc" name="group_desc" rows="5" cols="45">{GROUP_DESC}</textarea>
 			<br /><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}
 		</td>
 	</tr>
 	<!-- IF not S_SPECIAL_GROUP -->
 		<tr>
-			<td class="row1" width="35%"><label for="group_type">{L_GROUP_TYPE}:</label><br /><span>{L_GROUP_TYPE_EXPLAIN}</span></td>
+			<td class="row1" width="35%"><label for="group_type">{L_GROUP_TYPE}{L_COLON}</label><br /><span>{L_GROUP_TYPE_EXPLAIN}</span></td>
 			<td class="row2">
 				<input name="group_type" type="radio" class="radio" id="group_type" value="{GROUP_TYPE_FREE}"{GROUP_FREE} /> {L_GROUP_OPEN} &nbsp;
 				<input name="group_type" type="radio" class="radio" value="{GROUP_TYPE_OPEN}"{GROUP_OPEN} /> {L_GROUP_REQUEST} &nbsp;
@@ -48,85 +48,54 @@
 		<th colspan="2">{L_GROUP_SETTINGS_SAVE}</th>
 	</tr>
 	<tr>
-		<td class="row1" width="35%"><label for="group_colour">{L_GROUP_COLOR}:</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></td>
+		<td class="row1" width="35%"><label for="group_colour">{L_GROUP_COLOR}{L_COLON}</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></td>
 		<td class="row2"><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false;">{L_COLOUR_SWATCH}</a> ]</span></td>
 	</tr>
 	<tr>
-		<td class="row1" width="35%"><label for="group_rank">{L_GROUP_RANK}:</label></td>
+		<td class="row1" width="35%"><label for="group_rank">{L_GROUP_RANK}{L_COLON}</label></td>
 		<td class="row2"><select name="group_rank" id="group_rank">{S_RANK_OPTIONS}</select></td>
 	</tr>
 	<tr>
 		<th colspan="2">{L_GROUP_AVATAR}</th>
 	</tr>
 	<tr>
-		<td class="row1" width="35%"><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></td>
-		<td class="row2">{AVATAR_IMAGE}<br /><br /><input type="checkbox" class="radio" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></td>
+		<td class="row1" width="35%"><label>{L_CURRENT_IMAGE}{L_COLON}</label><br /><span>{L_AVATAR_EXPLAIN}</span></td>
+		<td class="row2">{AVATAR_IMAGE}<br /><br /><input type="checkbox" class="radio" name="avatar_delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></td>
 	</tr>
-	<!-- IF not S_IN_AVATAR_GALLERY -->
-		<!-- IF S_UPLOAD_AVATAR_FILE -->
-			<tr>
-				<td class="row1" width="35%"><label for="uploadfile">{L_UPLOAD_AVATAR_FILE}:</label></td>
-				<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_MAX_FILESIZE}" /><input type="file" id="uploadfile" name="uploadfile" /></td>
-			</tr>
-		<!-- ENDIF -->
-		<!-- IF S_UPLOAD_AVATAR_URL -->
-			<tr>
-				<td class="row1" width="35%"><label for="uploadurl">{L_UPLOAD_AVATAR_URL}:</label><br /><span>{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
-				<td class="row2"><input name="uploadurl" type="text" id="uploadurl" value="" /></td>
-			</tr>
-		<!-- ENDIF -->
-		<!-- IF S_LINK_AVATAR -->
-		<tr>
-			<td class="row1" width="35%"><label for="remotelink">{L_LINK_REMOTE_AVATAR}:</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
-			<td class="row2"><input name="remotelink" type="text" id="remotelink" value="" /></td>
-		</tr>
-		<tr>
-			<td class="row1" width="35%"><label for="width">{L_LINK_REMOTE_SIZE}:</label><br /><span>{L_LINK_REMOTE_SIZE_EXPLAIN}</span></td>
-			<td class="row2"><input name="width" type="text" id="width" size="3" value="{AVATAR_WIDTH}" /> <span>px X </span> <input type="text" name="height" size="3" value="{AVATAR_HEIGHT}" /> <span>px</span></td>
-		</tr>
-		<!-- ENDIF -->
-		<!-- IF S_DISPLAY_GALLERY -->
-			<tr>
-				<td class="row1" width="35%"><label>{L_AVATAR_GALLERY}:</label></td>
-				<td class="row2"><input class="btnmain" type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" /></td>
-			</tr>
-		<!-- ENDIF -->
-	<!-- ELSE -->
-
-		<tr>
-			<th colspan="2">{L_AVATAR_GALLERY}</th>
-		</tr>
-		<tr>
-			<td class="row1" width="35%"><label for="category">{L_AVATAR_CATEGORY}:</label></td>
-			<td class="row2"><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="btnmain" type="submit" value="{L_GO}" name="display_gallery" /></td>
-		</tr>
-		<tr>
-			<td class="row1" width="35%">
-				<table cellspacing="1">
-				<!-- BEGIN avatar_row -->
-				<tr>
-					<!-- BEGIN avatar_column -->
-						<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
-					<!-- END avatar_column -->
-				</tr>
-				<tr>
-					<!-- BEGIN avatar_option_column -->
-						<td class="row2" style="text-align: center;"><input type="radio" class="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
-					<!-- END avatar_option_column -->
-				</tr>
-				<!-- END avatar_row -->
-				</table>
-			</td>
-			<td class="row2"><input class="btnmain" type="submit" name="cancel" value="{L_CANCEL}" /></td>
-		</tr>
-
-	<!-- ENDIF -->
+<!-- IF not S_AVATARS_ENABLED -->
+	<tr>
+		<td class="row3" colspan="2" align="center">{L_AVATAR_FEATURES_DISABLED}</td>
+	</tr>
+<!-- ENDIF -->
+	<tr>
+		<th colspan="2">{L_AVATAR_SELECT}</th>
+	</tr>
+	<tr>
+		<td class="row1" width="35%"><b class="genmed">{L_AVATAR_TYPE}{L_COLON}</b></td>
+		<td class="row2">
+			<select name="avatar_driver" id="avatar_driver">
+				<option value="">{L_NO_AVATAR_CATEGORY}</option>
+				<!-- BEGIN avatar_drivers -->
+				<option value="{avatar_drivers.DRIVER}"<!-- IF avatar_drivers.SELECTED --> selected="selected"<!-- ENDIF -->>{avatar_drivers.L_TITLE}</option>
+				<!-- END avatar_drivers -->
+			</select></td>
+	</tr>
+<!-- BEGIN avatar_drivers -->
+	<tr class="avatar_option_{avatar_drivers.DRIVER}">
+		<td class="row1" width="35%" colspan="2"><noscript><b class="genmed">{avatar_drivers.L_TITLE} </b><br /></noscript>{avatar_drivers.L_EXPLAIN}</span></td>
+	</tr>
+	<tr class="avatar_option_{avatar_drivers.DRIVER}">
+		<td colspan="2" style="padding: 0">{avatar_drivers.OUTPUT}</td>
+	</tr>
+<!-- END avatar_drivers -->
 
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
 		<input class="btnmain" type="reset" id="reset" name="reset" value="{L_RESET}" /></td>
 	</tr>
 	</table>
+
+<!-- INCLUDEJS template/avatars.js -->
 
 <!-- ELSEIF S_LIST -->
 
@@ -185,7 +154,7 @@
 	</table>
 
 	<div class="pagination" style="float: {S_CONTENT_FLOW_BEGIN};">
-		<!-- IF PAGINATION -->
+		<!-- IF .pagination -->
 			<!-- INCLUDE pagination.html -->
 		<!-- ELSE -->
 			{S_ON_PAGE}
@@ -204,11 +173,11 @@
 		<th colspan="2">{L_ADD_USERS}</th>
 	</tr>
 	<tr>
-		<td class="row1"><label for="default">{L_USER_GROUP_DEFAULT}:</label><br /><span>{L_USER_GROUP_DEFAULT_EXPLAIN}</span></td>
+		<td class="row1"><label for="default">{L_USER_GROUP_DEFAULT}{L_COLON}</label><br /><span>{L_USER_GROUP_DEFAULT_EXPLAIN}</span></td>
 		<td class="row2"><input name="default" type="radio" class="radio" value="1" /> {L_YES} &nbsp; <input name="default" type="radio" class="radio" id="default" value="0" checked="checked" /> {L_NO}</td>
 	</tr>
 	<tr>
-		<td class="row1"><label for="usernames">{L_USERNAME}:</label><br /><span>{L_USERNAMES_EXPLAIN}</span></td>
+		<td class="row1"><label for="usernames">{L_USERNAME}{L_COLON}</label><br /><span>{L_USERNAMES_EXPLAIN}</span></td>
 		<td class="row2"><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</td>
 	</tr>
 	<tr>

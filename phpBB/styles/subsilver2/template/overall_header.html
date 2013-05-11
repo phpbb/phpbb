@@ -1,17 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}" xml:lang="{S_USER_LANG}">
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset={S_CONTENT_ENCODING}" />
-<meta http-equiv="content-language" content="{S_USER_LANG}" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="imagetoolbar" content="no" />
-<meta name="resource-type" content="document" />
-<meta name="distribution" content="global" />
+<meta charset="utf-8">
 <meta name="keywords" content="" />
 <meta name="description" content="" />
 {META}
-<title>{SITENAME} &bull; <!-- IF S_IN_MCP -->{L_MCP} &bull; <!-- ELSEIF S_IN_UCP -->{L_UCP} &bull; <!-- ENDIF -->{PAGE_TITLE}</title>
+<title><!-- IF UNREAD_NOTIFICATIONS_COUNT -->({UNREAD_NOTIFICATIONS_COUNT}) <!-- ENDIF --><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
 
 <!-- IF S_ENABLE_FEEDS -->
 	<!-- IF S_ENABLE_FEEDS_OVERALL --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {SITENAME}" href="{U_FEED}" /><!-- ENDIF -->
@@ -24,6 +18,7 @@
 <!-- ENDIF -->
 
 <link rel="stylesheet" href="{T_STYLESHEET_LINK}" type="text/css" />
+<link rel="stylesheet" href="{T_STYLESHEET_LANG_LINK}" type="text/css" />
 
 <script type="text/javascript">
 // <![CDATA[
@@ -44,7 +39,7 @@ function popup(url, width, height, name)
 
 function jumpto()
 {
-	var page = prompt('{LA_JUMP_PAGE}:', '{ON_PAGE}');
+	var page = prompt('{LA_JUMP_PAGE}{L_COLON}', '{ON_PAGE}');
 	var per_page = '{PER_PAGE}';
 	var base_url = '{A_BASE_URL}';
 
@@ -76,11 +71,7 @@ function find_username(url)
 */
 function marklist(id, name, state)
 {
-	var parent = document.getElementById(id);
-	if (!parent)
-	{
-		eval('parent = document.' + id);
-	}
+	var parent = document.getElementById(id) || document[id];
 
 	if (!parent)
 	{
@@ -88,7 +79,7 @@ function marklist(id, name, state)
 	}
 
 	var rb = parent.getElementsByTagName('input');
-	
+
 	for (var r = 0; r < rb.length; r++)
 	{
 		if (rb[r].name.substr(0, name.length) == name)
@@ -138,6 +129,9 @@ function marklist(id, name, state)
 
 // ]]>
 </script>
+
+<!-- EVENT overall_header_head_append -->
+
 </head>
 <body class="{S_CONTENT_DIRECTION}">
 
@@ -148,7 +142,7 @@ function marklist(id, name, state)
 	<div id="logodesc">
 		<table width="100%" cellspacing="0">
 		<tr>
-			<td><a href="{U_INDEX}">{SITE_LOGO_IMG}</a></td>
+			<td><a href="<!-- IF U_SITE_HOME -->{U_SITE_HOME}<!-- ELSE -->{U_INDEX}<!-- ENDIF -->" class="imageset">{SITE_LOGO_IMG}</a></td>
 			<td width="100%" align="center"><h1>{SITENAME}</h1><span class="gen">{SITE_DESCRIPTION}</span></td>
 		</tr>
 		</table>
@@ -158,6 +152,46 @@ function marklist(id, name, state)
 		<table width="100%" cellspacing="0">
 		<tr>
 			<td class="genmed">
+				<!-- IF S_NOTIFICATIONS_DISPLAY -->
+					[ <a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a> ] &bull;
+					<div id="notification_list" class="notification_list">
+						<div class="row1 header">
+							{L_NOTIFICATIONS}
+							<span class="header_settings"><a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a></span>
+						</div>
+
+						<div class="notification_scroll">
+							<table class="tablebg" width="310px" cellspacing="1">
+								<!-- BEGIN notifications -->
+									<tr class="row<!-- IF notifications.UNREAD -->2<!-- ELSE -->1<!-- ENDIF -->">
+										<!-- IF notifications.AVATAR -->
+											<td width="50px">
+												{notifications.AVATAR}
+											</td>
+											<td valign="top">
+										<!-- ELSE -->
+											<td colspan="2" valign="top">
+										<!-- ENDIF -->
+											<div class="notification_title">
+												<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
+													{notifications.FORMATTED_TITLE}
+												<!-- IF notifications.URL --></a><!-- ENDIF -->
+													<br />&raquo; {notifications.TIME}
+												<!-- IF not notifications.URL and notifications.UNREAD -->
+													<br /><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a>
+												<!-- ENDIF -->
+											</div>
+										</td>
+				   					</tr>
+				   				<!-- END notifications -->
+				   			</table>
+				   		</div>
+
+						<div class="row1 footer">
+							<a href="{U_VIEW_ALL_NOTIFICATIONS}"><span>{L_SEE_ALL}</span></a>
+						</div>
+					</div>
+				<!-- ENDIF -->
 				<!-- IF not S_IS_BOT --><a href="{U_LOGIN_LOGOUT}"><img src="{T_THEME_PATH}/images/icon_mini_login.gif" width="12" height="13" alt="*" /> {L_LOGIN_LOGOUT}</a>&nbsp;<!-- ENDIF -->
 				<!-- IF U_RESTORE_PERMISSIONS --> &nbsp;<a href="{U_RESTORE_PERMISSIONS}"><img src="{T_THEME_PATH}/images/icon_mini_login.gif" width="12" height="13" alt="*" /> {L_RESTORE_PERMISSIONS}</a><!-- ENDIF -->
 				<!-- IF S_BOARD_DISABLED and S_USER_LOGGED_IN --> &nbsp;<span style="color: red;">{L_BOARD_DISABLED}</span><!-- ENDIF -->
@@ -204,6 +238,8 @@ function marklist(id, name, state)
 
 	<br style="clear: both;" />
 
+	<!-- DEFINE $S_MICRODATA = 1 -->
 	<!-- INCLUDE breadcrumbs.html -->
+	<!-- DEFINE $S_MICRODATA = 0 -->
 
 	<br />

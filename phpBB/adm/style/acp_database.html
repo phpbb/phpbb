@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF MODE eq 'restore' -->
 	<h1>{L_ACP_RESTORE}</h1>
@@ -13,7 +13,7 @@
 	<fieldset>
 		<legend>{L_RESTORE_OPTIONS}</legend>
 	<dl>
-		<dt><label for="file">{L_SELECT_FILE}:</label></dt>
+		<dt><label for="file">{L_SELECT_FILE}{L_COLON}</label></dt>
 		<dd><select id="file" name="file" size="10"><!-- BEGIN files --><option value="{files.FILE}"<!-- IF files.S_LAST_ROW --> selected="selected"<!-- ENDIF -->>{files.NAME}</option><!-- END files --></select></dd>
 	</dl>
 
@@ -57,26 +57,26 @@
 	<fieldset>
 		<legend>{L_BACKUP_OPTIONS}</legend>
 	<dl>
-		<dt><label for="type">{L_BACKUP_TYPE}:</label></dt>
+		<dt><label for="type">{L_BACKUP_TYPE}{L_COLON}</label></dt>
 		<dd><label><input type="radio" class="radio" name="type" value="full" id="type" checked="checked" /> {L_FULL_BACKUP}</label>
 			<label><input type="radio" name="type" class="radio" value="structure" /> {L_STRUCTURE_ONLY}</label>
 			<label><input type="radio" class="radio" name="type" value="data" /> {L_DATA_ONLY}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="method">{L_FILE_TYPE}:</label></dt>
+		<dt><label for="method">{L_FILE_TYPE}{L_COLON}</label></dt>
 		<dd><!-- BEGIN methods -->
 		<label><input name="method"<!-- IF methods.S_FIRST_ROW --> id="method" checked="checked"<!-- ENDIF --> type="radio" class="radio" value="{methods.TYPE}" /> {methods.TYPE}</label>
 		<!-- END methods --></dd>
 	</dl>
 	<dl>
-		<dt><label for="where">{L_ACTION}:</label></dt>
+		<dt><label for="where">{L_ACTION}{L_COLON}</label></dt>
 		<dd>
 			<label><input id="where" type="radio" class="radio" name="where" value="store" checked="checked" /> {L_STORE_LOCAL}</label>
 			<label><input type="radio" class="radio" name="where" value="download" /> {L_DOWNLOAD}</label>
 		</dd>
 	</dl>
 	<dl>
-		<dt><label for="table">{L_TABLE_SELECT}:</label></dt>
+		<dt><label for="table">{L_TABLE_SELECT}{L_COLON}</label></dt>
 		<dd><select id="table" name="table[]" size="10" multiple="multiple">
 		<!-- BEGIN tables -->
 			<option value="{tables.TABLE}">{tables.TABLE}</option>

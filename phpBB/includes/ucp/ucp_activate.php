@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -115,7 +114,7 @@ class ucp_activate
 
 			$messenger->template('admin_welcome_activated', $user_row['user_lang']);
 
-			$messenger->to($user_row['user_email'], $user_row['username']);
+			$messenger->set_addresses($user_row);
 
 			$messenger->anti_abuse_headers($config, $user);
 
@@ -143,5 +142,3 @@ class ucp_activate
 		trigger_error($user->lang[$message]);
 	}
 }
-
-?>

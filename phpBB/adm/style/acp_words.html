@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT_WORD -->
 
@@ -60,7 +60,7 @@
 		<!-- IF words.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td style="text-align: center;">{words.WORD}</td>
 		<td style="text-align: center;">{words.REPLACEMENT}</td>
-		<td>&nbsp;<a href="{words.U_EDIT}">{ICON_EDIT}</a>&nbsp;&nbsp;<a href="{words.U_DELETE}">{ICON_DELETE}</a>&nbsp;</td>
+		<td>&nbsp;<a href="{words.U_EDIT}">{ICON_EDIT}</a>&nbsp;&nbsp;<a href="{words.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>&nbsp;</td>
 	</tr>
 	<!-- BEGINELSE -->
 	<tr class="row3">

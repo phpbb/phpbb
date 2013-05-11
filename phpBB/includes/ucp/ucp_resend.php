@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -92,7 +91,7 @@ class ucp_resend
 			if ($config['require_activation'] == USER_ACTIVATION_SELF || $coppa)
 			{
 				$messenger->template(($coppa) ? 'coppa_resend_inactive' : 'user_resend_inactive', $user_row['user_lang']);
-				$messenger->to($user_row['user_email'], $user_row['username']);
+				$messenger->set_addresses($user_row);
 
 				$messenger->anti_abuse_headers($config, $user);
 
@@ -127,8 +126,7 @@ class ucp_resend
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$messenger->template('admin_activate', $row['user_lang']);
-					$messenger->to($row['user_email'], $row['username']);
-					$messenger->im($row['user_jabber'], $row['username']);
+					$messenger->set_addresses($row);
 
 					$messenger->anti_abuse_headers($config, $user);
 
@@ -160,5 +158,3 @@ class ucp_resend
 		$this->page_title = 'UCP_RESEND';
 	}
 }
-
-?>

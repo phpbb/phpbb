@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -23,7 +22,7 @@ $auth->acl($user->data);
 $user->setup();
 
 // Set custom template for admin area
-$template->set_custom_template($phpbb_root_path . 'adm/style', 'admin');
+$phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
 
 $template->set_filenames(array(
 	'body' => 'colour_swatch.html')
@@ -49,5 +48,3 @@ $template->assign_vars(array(
 $template->display('body');
 
 garbage_collection();
-
-?>

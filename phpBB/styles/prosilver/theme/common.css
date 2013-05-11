@@ -1,12 +1,51 @@
-/* General Markup Styles
+/* CSS Reset http://meyerweb.com/eric/tools/css/reset/ v2.0 | 20110126
 ---------------------------------------- */
-
-* {
-	/* Reset browsers default margin, padding and font sizes */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
 	margin: 0;
 	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
 }
 
+/* General Markup Styles
+---------------------------------------- */
 html {
 	font-size: 100%;
 	/* Always show a scrollbar for short pages - stops the jump when the scrollbar appears. non-IE browsers */
@@ -16,10 +55,9 @@ html {
 body {
 	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	color: #828282;
-	background-color: #FFFFFF;
 	/*font-size: 62.5%;			 This sets the default font size to be equivalent to 10px */
 	font-size: 10px;
+	line-height: normal;
 	margin: 0;
 	padding: 12px 0;
 }
@@ -28,7 +66,6 @@ h1 {
 	/* Forum name */
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	margin-right: 200px;
-	color: #FFFFFF;
 	margin-top: 15px;
 	font-weight: bold;
 	font-size: 2em;
@@ -38,7 +75,6 @@ h2 {
 	/* Forum header titles */
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-weight: normal;
-	color: #3f3f3f;
 	font-size: 2em;
 	margin: 0.8em 0 0.2em 0;
 }
@@ -52,11 +88,10 @@ h3 {
 	font-family: Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	text-transform: uppercase;
-	border-bottom: 1px solid #CCCCCC;
+	border-bottom: 1px solid transparent;
 	margin-bottom: 3px;
 	padding-bottom: 2px;
 	font-size: 1.05em;
-	color: #989898;
 	margin-top: 20px;
 }
 
@@ -78,8 +113,8 @@ img {
 
 hr {
 	/* Also see tweaks.css */
-	border: 0 none #FFFFFF;
-	border-top: 1px solid #CCCCCC;
+	border: 0 solid transparent;
+	border-top-width: 1px;
 	height: 1px;
 	margin: 5px 0;
 	display: block;
@@ -87,7 +122,7 @@ hr {
 }
 
 hr.dashed {
-	border-top: 1px dashed #CCCCCC;
+	border-top-style: dashed;
 	margin: 10px 0;
 }
 
@@ -98,6 +133,39 @@ hr.divider {
 p.right {
 	text-align: right;
 }
+
+b, strong {
+	font-weight: bold;
+}
+
+i, em {
+	font-style: italic;
+}
+
+u {
+	text-decoration: underline;
+}
+
+ul {
+	list-style-type: disc;
+}
+
+ol {
+	list-style-type: decimal;
+}
+
+li {
+	display: list-item;
+}
+
+ul ul, ol ul {
+	list-style-type: circle;
+}
+
+ol ol ul, ol ul ul, ul ol ul, ul ul ul {
+	list-style-type: square;
+}
+
 
 /* Main blocks
 ---------------------------------------- */
@@ -136,7 +204,6 @@ a#logo:hover {
 /* Search box
 --------------------------------------------- */
 #search-box {
-	color: #FFFFFF;
 	position: relative;
 	margin-top: 30px;
 	margin-right: 5px;
@@ -148,11 +215,10 @@ a#logo:hover {
 
 #search-box #keywords {
 	width: 95px;
-	background-color: #FFF;
 }
 
 #search-box input {
-	border: 1px solid #b0b0b0;
+	border: 1px solid transparent;
 }
 
 /* .button1 style defined later, just a few tweaks for the search button version */
@@ -183,115 +249,56 @@ a#logo:hover {
 /* Round cornered boxes and backgrounds
 ---------------------------------------- */
 .headerbar {
-	background: #ebebeb none repeat-x 0 0;
-	color: #FFFFFF;
+	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
-	padding: 0 5px;
+	padding: 5px;
+	border-radius: 7px;
 }
 
 .navbar {
-	background-color: #ebebeb;
 	padding: 0 10px;
+	padding: 5px 10px 5px 10px;
+	border-radius: 7px;
 }
 
 .forabg {
-	background: #b1b1b1 none repeat-x 0 0;
+	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
-	padding: 0 5px;
+	padding: 5px;
 	clear: both;
+	border-radius: 7px;
 }
 
 .forumbg {
-	background: #ebebeb none repeat-x 0 0;
+	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
-	padding: 0 5px;
+	padding: 5px;
 	clear: both;
+	border-radius: 7px;
 }
 
 .panel {
 	margin-bottom: 4px;
-	padding: 0 10px;
-	background-color: #f3f3f3;
-	color: #3f3f3f;
+	padding: 5px 10px;
+	border-radius: 7px;
 }
 
 .post {
-	padding: 0 10px;
+	padding: 5px 10px;
 	margin-bottom: 4px;
 	background-repeat: no-repeat;
 	background-position: 100% 0;
+	border-radius: 7px;
 }
 
-.post:target .content {
-	color: #000000;
+.inner:after {
+	content: '';
+	clear: both;
+	display: block;
 }
-
-.post:target h3 a {
-	color: #000000;
-}
-
-.bg1	{ background-color: #f7f7f7;}
-.bg2	{ background-color: #f2f2f2; }
-.bg3	{ background-color: #ebebeb; }
 
 .rowbg {
 	margin: 5px 5px 2px 5px;
-}
-
-.ucprowbg {
-	background-color: #e2e2e2;
-}
-
-.fieldsbg {
-	/*border: 1px #DBDEE2 solid;*/
-	background-color: #eaeaea;
-}
-
-span.corners-top, span.corners-bottom, span.corners-top span, span.corners-bottom span {
-	font-size: 1px;
-	line-height: 1px;
-	display: block;
-	height: 5px;
-	background-repeat: no-repeat;
-}
-
-span.corners-top {
-	background-image: none;
-	background-position: 0 0;
-	margin: 0 -5px;
-}
-
-span.corners-top span {
-	background-image: none;
-	background-position: 100% 0;
-}
-
-span.corners-bottom {
-	background-image: none;
-	background-position: 0 100%;
-	margin: 0 -5px;
-	clear: both;
-}
-
-span.corners-bottom span {
-	background-image: none;
-	background-position: 100% 100%;
-}
-
-.headbg span.corners-bottom {
-	margin-bottom: -1px;
-}
-
-.post span.corners-top, .post span.corners-bottom, .panel span.corners-top, .panel span.corners-bottom, .navbar span.corners-top, .navbar span.corners-bottom {
-	margin: 0 -10px;
-}
-
-.rules span.corners-top {
-	margin: 0 -10px 5px -10px;
-}
-
-.rules span.corners-bottom {
-	margin: 5px -10px 0 -10px;
 }
 
 /* Horizontal lists
@@ -299,6 +306,12 @@ span.corners-bottom span {
 ul.linklist {
 	display: block;
 	margin: 0;
+	height: 4%;
+	overflow: hidden;
+}
+
+#cp-main .panel {
+	padding: 5px 10px;
 }
 
 ul.linklist li {
@@ -321,7 +334,7 @@ ul.linklist li.rightside, p.rightside {
 ul.navlinks {
 	padding-bottom: 1px;
 	margin-bottom: 1px;
-	border-bottom: 1px solid #FFFFFF;
+	border-bottom: 1px solid transparent;
 	font-weight: bold;
 }
 
@@ -342,7 +355,7 @@ ul.rightside {
 /* Table styles
 ----------------------------------------*/
 table.table1 {
-	/* See tweaks.css */
+	width: 100%;
 }
 
 #ucp-main table.table1 {
@@ -352,7 +365,6 @@ table.table1 {
 table.table1 thead th {
 	font-weight: normal;
 	text-transform: uppercase;
-	color: #FFFFFF;
 	line-height: 1.3em;
 	font-size: 1em;
 	padding: 0 0 4px 3px;
@@ -363,30 +375,22 @@ table.table1 thead th span {
 }
 
 table.table1 tbody tr {
-	border: 1px solid #cfcfcf;
-}
-
-table.table1 tbody tr:hover, table.table1 tbody tr.hover {
-	background-color: #f6f6f6;
-	color: #000;
+	border: 1px solid transparent;
 }
 
 table.table1 td {
-	color: #6a6a6a;
 	font-size: 1.1em;
 }
 
 table.table1 tbody td {
 	padding: 5px;
-	border-top: 1px solid #FAFAFA;
+	border-top: 1px solid transparent;
 }
 
 table.table1 tbody th {
 	padding: 5px;
-	border-bottom: 1px solid #000000;
+	border-bottom: 1px solid transparent;
 	text-align: left;
-	color: #333333;
-	background-color: #FFFFFF;
 }
 
 /* Specific column styles */
@@ -413,7 +417,6 @@ table.info tbody th {
 	padding: 3px;
 	text-align: right;
 	vertical-align: top;
-	color: #000000;
 	font-weight: normal;
 }
 
@@ -425,17 +428,9 @@ table.info tbody th {
 	margin: 0 -1px;
 }
 
-.forumbg-table > .inner > span.corners-top {
-	margin: 0 -4px -1px -4px;
-}
-
-.forumbg-table > .inner > span.corners-bottom {
-	margin: -1px -4px 0 -4px;
-}
-
 /* Misc layout styles
 ---------------------------------------- */
-/* column[1-2] styles are containers for two column layouts 
+/* column[1-2] styles are containers for two column layouts
    Also see tweaks.css */
 .column1 {
 	float: left;
@@ -472,7 +467,6 @@ dl.details dt {
 	clear: left;
 	width: 30%;
 	text-align: right;
-	color: #000000;
 	display: block;
 }
 
@@ -480,10 +474,17 @@ dl.details dd {
 	margin-left: 0;
 	padding-left: 5px;
 	margin-bottom: 5px;
-	color: #828282;
 	float: left;
 	width: 65%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
+
+.clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, dl.polls {
+	height: 1%;
+	overflow: hidden;
+}
+
 
 /* Pagination
 ---------------------------------------- */
@@ -495,49 +496,41 @@ dl.details dd {
 	float: right;
 }
 
-.pagination span.page-sep {
-	display: none;
-}
-
 li.pagination {
 	margin-top: 0;
 }
 
-.pagination strong, .pagination b {
-	font-weight: normal;
-}
-
-.pagination span strong {
-	padding: 0 2px;
-	margin: 0 2px;
-	font-weight: normal;
-	color: #FFFFFF;
-	background-color: #bfbfbf;
-	border: 1px solid #bfbfbf;
-	font-size: 0.9em;
-}
-
-.pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active {
-	font-weight: normal;
-	text-decoration: none;
-	color: #747474;
-	margin: 0 2px;
-	padding: 0 2px;
-	background-color: #eeeeee;
-	border: 1px solid #bababa;
-	font-size: 0.9em;
-	line-height: 1.5em;
-}
-
-.pagination span a:hover {
-	border-color: #d2d2d2;
-	background-color: #d2d2d2;
-	color: #FFF;
-	text-decoration: none;
-}
-
 .pagination img {
 	vertical-align: middle;
+}
+
+.pagination ul {
+	display: inline-block;
+	*display: inline; /* IE7 inline-block hack */
+	*zoom: 1;
+	margin-left: 0;
+	margin-bottom: 0;
+}
+
+li.pagination ul {
+	margin-top: -2px;
+	vertical-align: middle;
+}
+
+.pagination ul li, dl .pagination ul li, dl.icon .pagination ul li {
+	display: inline;
+	padding: 0;
+	font-size: 100%;
+	line-height: normal;
+}
+
+.pagination li a, .pagnation li span, li .pagination li a, li .pagnation li span, .pagination li.active span, .pagination li.ellipsis span {
+	font-weight: normal;
+	text-decoration: none;
+	padding: 0 2px;
+	border: 1px solid transparent;
+	font-size: 0.9em;
+	line-height: 1.5em;
 }
 
 /* Pagination in viewforum for multipage topics */
@@ -546,17 +539,70 @@ li.pagination {
 	float: right;
 	width: auto;
 	margin-top: 0;
-	padding: 1px 0 1px 15px;
+	padding: 1px 0 1px 8px;
 	font-size: 0.9em;
 	background: none 0 50% no-repeat;
 }
 
-.row .pagination span a, li.pagination span a {
-	background-color: #FFFFFF;
+/* jQuery popups
+---------------------------------------- */
+.phpbb_alert {
+	border: 1px solid transparent;
+	position: fixed;
+	display: none;
+	top: 150px;
+	left: 25%;
+	width: 50%;
+	z-index: 50;
+	padding: 25px;
+	padding: 0 25px 20px 25px;
 }
 
-.row .pagination span a:hover, li.pagination span a:hover {
-	background-color: #d2d2d2;
+.phpbb_alert .alert_close {
+	display: block;
+	float: right;
+	width: 16px;
+	height: 16px;
+	overflow: hidden;
+	text-decoration: none !important;
+	background: transparent none 0 0 no-repeat;
+	margin-top: -7px;
+	margin-right: -31px;
+}
+.phpbb_alert .alert_close:hover {
+	background-position: 0 -16px;
+}
+
+.phpbb_alert p {
+	margin: 8px 0;
+	padding-bottom: 8px;
+}
+
+.phpbb_alert label {
+	display: block;
+	margin: 8px 0;
+	padding-bottom: 8px;
+}
+
+.phpbb_alert div.alert_text > p,
+.phpbb_alert div.alert_text > label,
+.phpbb_alert div.alert_text > select,
+.phpbb_alert div.alert_text > textarea,
+.phpbb_alert div.alert_text > input {
+	font-size: 1.1em;
+}
+
+#darkenwrapper {
+	display: none;
+}
+
+#darken {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0.5;
 }
 
 /* Miscellaneous styles
@@ -573,7 +619,6 @@ li.pagination {
 .copyright {
 	padding: 5px;
 	text-align: center;
-	color: #555555;
 }
 
 .small {
@@ -589,25 +634,15 @@ li.pagination {
 }
 
 .error {
-	color: #bcbcbc;
 	font-weight: bold;
 	font-size: 1em;
 }
 
-.reported {
-	background-color: #f7f7f7;
-}
-
-li.reported:hover {
-	background-color: #ececec;
-}
-
 div.rules {
-	background-color: #ececec;
-	color: #bcbcbc;
-	padding: 0 10px;
 	margin: 10px 0;
 	font-size: 1.1em;
+	padding: 5px 10px;
+	border-radius: 7px;
 }
 
 div.rules ul, div.rules ol {
@@ -615,12 +650,15 @@ div.rules ul, div.rules ol {
 }
 
 p.rules {
-	background-color: #ececec;
 	background-image: none;
 	padding: 5px;
 }
 
 p.rules img {
+	vertical-align: middle;
+}
+
+p.rules strong {
 	vertical-align: middle;
 	padding-top: 5px;
 }
@@ -642,3 +680,119 @@ p.rules a {
 	line-height: 1px;
 	background: transparent;
 }
+
+.hidden {
+	display: none;
+}
+
+.smilies {
+	vertical-align: text-bottom;
+}
+
+#notification_list {
+	display: none;
+	position: absolute;
+	width: 330px;
+	z-index: 1;
+	border: 1px solid;
+	box-shadow: 3px 3px 5px darkgray;
+	border-radius: 5px;
+	margin-top: 8px;
+}
+
+#notification_list ul {
+	max-height: 350px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+#notification_list ul li {
+	width: 310px;
+	padding: 10px;
+	margin: 0;
+	float: left;
+	border-bottom: 1px solid;
+	list-style-type: none;
+	font-size: 0.95em;
+	clear: both;
+}
+
+#notification_list > .header {
+	padding: 0 10px;
+	font-family: Arial, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	text-shadow: 1px 1px 1px white;
+	text-transform: uppercase;	
+	line-height: 30px;
+	border-bottom: 1px solid;
+	border-radius: 5px 5px 0 0;
+}
+
+#notification_list > .header > .header_settings {
+	float: right;
+	font-weight: normal;
+	text-transform: none;
+}
+
+#notification_list > .footer {
+	text-align: center;
+	font-size: 1.2em;
+}
+
+#notification_list ul li a, .notification_list dt > a, #notification_list > .footer > a {
+	display: block;
+}
+
+.notification_list ul li img {
+	float: left;
+	max-width: 50px;
+	max-height: 50px;
+	margin-right: 5px;
+}
+
+.notification_list ul li p {
+	margin: 0;
+	word-wrap: break-word;
+}
+
+.notification_list ul.topiclist dt {
+	width: 88%;
+}
+
+.notification_list .pointer, .notification_list .pointer_inner {
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-top-width: 0;
+	border-bottom: 10px solid;
+	border-left: 10px dashed transparent;
+	border-right: 10px dashed transparent;
+	-webkit-transform: rotate(360deg); /* better anti-aliasing in webkit */
+	display: block;
+}
+
+.notification_list .pointer {
+	right: auto;
+	left: 10px;
+	top: -11px;
+}
+
+.notification_list .pointer_inner {
+	top: auto;
+	bottom: -11px;
+	left: -10px;
+}
+
+.notification_list div.notifications {
+	padding: 5px;
+}
+
+.notification_list p.notifications_title {
+	font-weight: bold;
+}
+
+.notification_list p.notifications_time {
+	font-size: 11px;
+}
+

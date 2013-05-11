@@ -5,14 +5,14 @@
 <h2>{L_TITLE}</h2>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<p>{L_DRAFTS_EXPLAIN}</p>
 
 <!-- IF S_EDIT_DRAFT -->
 
 		<!-- INCLUDE posting_editor.html -->
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 			<fieldset class="submit-buttons">
@@ -40,8 +40,8 @@
 				<dl>
 					<dt>
 						<a class="topictitle" href="{draftrow.U_VIEW_EDIT}">{draftrow.DRAFT_SUBJECT}</a><br />
-						<!-- IF draftrow.S_LINK_TOPIC -->{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
-						<!-- ELSEIF draftrow.S_LINK_FORUM -->{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
+						<!-- IF draftrow.S_LINK_TOPIC -->{L_TOPIC}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
+						<!-- ELSEIF draftrow.S_LINK_FORUM -->{L_FORUM}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
 						<!-- ELSEIF S_PRIVMSGS -->
 						<!-- ELSE -->{L_NO_TOPIC_FORUM}<!-- ENDIF -->
 					</dt>
@@ -55,7 +55,7 @@
 		<p><strong>{L_NO_SAVED_DRAFTS}</strong></p>
 	<!-- ENDIF -->
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 	<!-- IF .draftrow -->

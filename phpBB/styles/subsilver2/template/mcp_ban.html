@@ -41,26 +41,26 @@
 	<td class="row3" colspan="2">{L_EXPLAIN}</td>
 </tr>
 <tr>
-	<td class="row1" width="45%" valign="top"><b>{L_BAN_CELL}:</b></td>
+	<td class="row1" width="45%" valign="top"><b>{L_BAN_CELL}{L_COLON}</b></td>
 	<td class="row2">
 		<textarea name="ban" id="ban" cols="40" rows="3" class="post">{USERNAMES}</textarea>
 		<!-- IF S_USERNAME_BAN --><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]<!-- ENDIF -->
 	</td>
 </tr>
 <tr>
-	<td class="row1" valign="top"><b>{L_BAN_LENGTH}:</b></td>
+	<td class="row1" valign="top"><b>{L_BAN_LENGTH}{L_COLON}</b></td>
 	<td class="row2"><select name="banlength">{S_BAN_END_OPTIONS}</select><br /><input type="text" name="banlengthother" class="post" /> {L_YEAR_MONTH_DAY}</td>
 </tr>
 <tr>
-	<td class="row1" valign="top"><b>{L_BAN_EXCLUDE}:</b><br /><span class="gensmall">{L_BAN_EXCLUDE_EXPLAIN}</span></td>
+	<td class="row1" valign="top"><b>{L_BAN_EXCLUDE}{L_COLON}</b><br /><span class="gensmall">{L_BAN_EXCLUDE_EXPLAIN}</span></td>
 	<td class="row2"><input type="radio" class="radio" name="banexclude" value="1" /> {L_YES} &nbsp; <input type="radio" class="radio" name="banexclude" value="0" checked="checked" /> {L_NO}</td>
 </tr>
 <tr>
-	<td class="row1" valign="top"><b>{L_BAN_REASON}:</b></td>
+	<td class="row1" valign="top"><b>{L_BAN_REASON}{L_COLON}</b></td>
 	<td class="row2"><input name="banreason" type="text" class="post" maxlength="255" /></td>
 </tr>
 <tr>
-	<td class="row1" valign="top"><b>{L_BAN_GIVE_REASON}:</b></td>
+	<td class="row1" valign="top"><b>{L_BAN_GIVE_REASON}{L_COLON}</b></td>
 	<td class="row2"><input name="bangivereason" type="text" class="post" maxlength="255" /></td>
 </tr>
 <tr>
@@ -79,19 +79,19 @@
 </tr>
 <!-- IF S_BANNED_OPTIONS -->
 	<tr>
-		<td class="row1" valign="top" width="45%"><b>{L_BAN_CELL}:</b></td>
+		<td class="row1" valign="top" width="45%"><b>{L_BAN_CELL}{L_COLON}</b></td>
 		<td class="row2"><select name="unban[]" multiple="multiple" size="10" style="width: 50%" onchange="if (this.selectedIndex > -1) display_details(this.options[this.selectedIndex].value); else display_details(-1);">{BANNED_OPTIONS}</select></td>
 	</tr>
 	<tr>
-		<td class="row1" valign="top"><b>{L_BAN_LENGTH}:</b></td>
+		<td class="row1" valign="top"><b>{L_BAN_LENGTH}{L_COLON}</b></td>
 		<td class="row2"><input style="border: 0; width: 100%" type="text" name="unbanlength" readonly="readonly" /></td>
 	</tr>
 	<tr>
-		<td class="row1" valign="top"><b>{L_BAN_REASON}:</b></td>
+		<td class="row1" valign="top"><b>{L_BAN_REASON}{L_COLON}</b></td>
 		<td class="row2"><textarea style="border: 0; width: 100%" name="unbanreason" readonly="readonly" rows="5" cols="80">&nbsp;</textarea></td>
 	</tr>
 	<tr>
-		<td class="row1" valign="top"><b>{L_BAN_GIVE_REASON}:</b></td>
+		<td class="row1" valign="top"><b>{L_BAN_GIVE_REASON}{L_COLON}</b></td>
 		<td class="row2"><textarea style="border: 0; width: 100%" name="unbangivereason" readonly="readonly" rows="5" cols="80">&nbsp;</textarea></td>
 	</tr>
 	<tr>

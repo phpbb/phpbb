@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <h1>{L_ACP_DISALLOW_USERNAMES}</h1>
 
@@ -11,7 +11,7 @@
 <fieldset>
 	<legend>{L_ADD_DISALLOW_TITLE}</legend>
 <dl>
-	<dt><label for="user">{L_USERNAME}:</label><br /><span>{L_ADD_DISALLOW_EXPLAIN}</span></dt>
+	<dt><label for="user">{L_USERNAME}{L_COLON}</label><br /><span>{L_ADD_DISALLOW_EXPLAIN}</span></dt>
 	<dd><input id="user" type="text" class="text medium" maxlength="255" name="disallowed_user" /></dd>
 </dl>
 
@@ -28,7 +28,7 @@
 	<legend>{L_DELETE_DISALLOW_TITLE}</legend>
 <!-- IF S_DISALLOWED_NAMES -->
 	<dl>
-		<dt><label for="disallowed">{L_USERNAME}:</label></dt>
+		<dt><label for="disallowed">{L_USERNAME}{L_COLON}</label></dt>
 		<dd><select name="disallowed_id" id="disallowed">{S_DISALLOWED_NAMES}</select></dd>
 	</dl>
 

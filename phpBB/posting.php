@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -39,11 +38,46 @@ $load		= (isset($_POST['load'])) ? true : false;
 $delete		= (isset($_POST['delete'])) ? true : false;
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
-$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['full_editor']) || isset($_POST['cancel_unglobalise']) || $save || $load) ? true : false;
+$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load || $preview) ? true : false;
 $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var('mode', '');
 
 $error = $post_data = array();
 $current_time = time();
+
+/**
+* This event allows you to alter the above parameters, such as submit and mode
+* 
+* Note: $refresh must be true to retain previously submitted form data.
+*
+* Note: The template class will not work properly until $user->setup() is
+* called, and it has not been called yet. Extensions requiring template
+* assignments should use an event that comes later in this file.
+*
+* @event core.modify_posting_parameters
+* @var	int		post_id		ID of the post
+* @var	int		topic_id	ID of the topic
+* @var	int		forum_id	ID of the forum
+* @var	int		draft_id	ID of the draft
+* @var	int		lastclick	Timestamp of when the form was last loaded
+* @var	bool	submit		Whether or not the form has been submitted
+* @var	bool	preview		Whether or not the post is being previewed
+* @var	bool	save		Whether or not a draft is being saved
+* @var	bool	load		Whether or not a draft is being loaded
+* @var	bool	delete		Whether or not the post is being deleted
+* @var	bool	cancel		Whether or not to cancel the form (returns to
+*							viewtopic or viewforum depending on if the user
+*							is posting a new topic or editing a post)
+* @var	bool	refresh		Whether or not to retain previously submitted data
+* @var	string	mode		What action to take if the form has been sumitted
+*							post|reply|quote|edit|delete|bump|smilies|popup
+* @var	array	error		Any error strings; a non-empty array aborts
+*							form submission.
+*							NOTE: Should be actual language strings, NOT
+*							language keys.
+* @since 3.1-A1
+*/
+$vars = array('post_id', 'topic_id', 'forum_id', 'draft_id', 'lastclick', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error');
+extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compact($vars)));
 
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
@@ -87,9 +121,8 @@ switch ($mode)
 		$sql = 'SELECT f.*, t.*
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
-				AND (f.forum_id = t.forum_id
-					OR f.forum_id = $forum_id)" .
-			(($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1');
+				AND f.forum_id = t.forum_id" .
+			(($auth->acl_get('m_approve', $forum_id)) ? '' : ' AND t.topic_approved = 1');
 	break;
 
 	case 'quote':
@@ -116,9 +149,8 @@ switch ($mode)
 			WHERE p.post_id = $post_id
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
-				AND (f.forum_id = t.forum_id
-					OR f.forum_id = $forum_id)" .
-				(($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1');
+				AND f.forum_id = t.forum_id" .
+				(($auth->acl_get('m_approve', $forum_id)) ? '' : ' AND p.post_approved = 1');
 	break;
 
 	case 'smilies':
@@ -182,7 +214,7 @@ $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
 if ($config['enable_post_confirm'] && !$user->data['is_registered'])
 {
 	include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-	$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+	$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 	$captcha->init(CONFIRM_POST);
 }
 
@@ -325,7 +357,7 @@ if ($mode == 'bump')
 		$meta_url = phpbb_bump_topic($forum_id, $topic_id, $post_data, $current_time);
 		meta_refresh(3, $meta_url);
 
-		$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $meta_url . '">', '</a>');
+		$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . $user->lang('VIEW_MESSAGE', '<a href="' . $meta_url . '">', '</a>');
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 
 		trigger_error($message);
@@ -636,7 +668,7 @@ if ($submit || $preview || $refresh)
 	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
 	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
-	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
+	$post_data['post_edit_reason']	= ($request->variable('edit_reason', false, false, phpbb_request_interface::POST) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
 
 	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
@@ -844,7 +876,7 @@ if ($submit || $preview || $refresh)
 		if (($result = validate_string($post_data['username'], false, $config['min_name_chars'], $config['max_name_chars'])) !== false)
 		{
 			$min_max_amount = ($result == 'TOO_SHORT') ? $config['min_name_chars'] : $config['max_name_chars'];
-			$error[] = sprintf($user->lang['FIELD_' . $result], $user->lang['USERNAME'], $min_max_amount);
+			$error[] = $user->lang('FIELD_' . $result, $min_max_amount, $user->lang['USERNAME']);
 		}
 	}
 
@@ -996,60 +1028,6 @@ if ($submit || $preview || $refresh)
 	// Store message, sync counters
 	if (!sizeof($error) && $submit)
 	{
-		// Check if we want to de-globalize the topic... and ask for new forum
-		if ($post_data['topic_type'] != POST_GLOBAL)
-		{
-			$sql = 'SELECT topic_type, forum_id
-				FROM ' . TOPICS_TABLE . "
-				WHERE topic_id = $topic_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if ($row && !$row['forum_id'] && $row['topic_type'] == POST_GLOBAL)
-			{
-				$to_forum_id = request_var('to_forum_id', 0);
-
-				if ($to_forum_id)
-				{
-					$sql = 'SELECT forum_type
-						FROM ' . FORUMS_TABLE . '
-						WHERE forum_id = ' . $to_forum_id;
-					$result = $db->sql_query($sql);
-					$forum_type = (int) $db->sql_fetchfield('forum_type');
-					$db->sql_freeresult($result);
-
-					if ($forum_type != FORUM_POST || !$auth->acl_get('f_post', $to_forum_id) || !$auth->acl_get('f_noapprove', $to_forum_id))
-					{
-						$to_forum_id = 0;
-					}
-				}
-
-				if (!$to_forum_id)
-				{
-					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-
-					$template->assign_vars(array(
-						'S_FORUM_SELECT'	=> make_forum_select(false, false, false, true, true, true),
-						'S_UNGLOBALISE'		=> true)
-					);
-
-					$submit = false;
-					$refresh = true;
-				}
-				else
-				{
-					if (!$auth->acl_get('f_post', $to_forum_id))
-					{
-						// This will only be triggered if the user tried to trick the forum.
-						trigger_error('NOT_AUTHORISED');
-					}
-
-					$forum_id = $to_forum_id;
-				}
-			}
-		}
-
 		if ($submit)
 		{
 			// Lock/Unlock Topic
@@ -1213,8 +1191,8 @@ if (!sizeof($error) && $preview)
 			'POLL_QUESTION'		=> $parse_poll->message,
 
 			'L_POLL_LENGTH'		=> ($post_data['poll_length']) ? sprintf($user->lang['POLL_RUN_TILL'], $user->format_date($poll_end)) : '',
-			'L_MAX_VOTES'		=> ($post_data['poll_max_options'] == 1) ? $user->lang['MAX_OPTION_SELECT'] : sprintf($user->lang['MAX_OPTIONS_SELECT'], $post_data['poll_max_options']))
-		);
+			'L_MAX_VOTES'		=> $user->lang('MAX_OPTIONS_SELECT', (int) $post_data['poll_max_options']),
+		));
 
 		$parse_poll->message = implode("\n", $post_data['poll_options']);
 		$parse_poll->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies']);
@@ -1257,8 +1235,8 @@ if (!sizeof($error) && $preview)
 			'PREVIEW_MESSAGE'		=> $preview_message,
 			'PREVIEW_SIGNATURE'		=> $preview_signature,
 
-			'S_DISPLAY_PREVIEW'		=> true)
-		);
+			'S_DISPLAY_PREVIEW'		=> !empty($preview_message),
+		));
 	}
 }
 
@@ -1416,12 +1394,12 @@ add_form_key('posting');
 $template->assign_vars(array(
 	'L_POST_A'					=> $page_title,
 	'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
-	'L_MESSAGE_BODY_EXPLAIN'	=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
+	'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
 
 	'FORUM_NAME'			=> $post_data['forum_name'],
 	'FORUM_DESC'			=> ($post_data['forum_desc']) ? generate_text_for_display($post_data['forum_desc'], $post_data['forum_desc_uid'], $post_data['forum_desc_bitfield'], $post_data['forum_desc_options']) : '',
 	'TOPIC_TITLE'			=> censor_text($post_data['topic_title']),
-	'MODERATORS'			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
+	'MODERATORS'			=> (sizeof($moderators)) ? implode($user->lang['COMMA_SEPARATOR'], $moderators[$forum_id]) : '',
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? $post_data['username'] : '',
 	'SUBJECT'				=> $post_data['post_subject'],
 	'MESSAGE'				=> $post_data['post_text'],
@@ -1435,7 +1413,7 @@ $template->assign_vars(array(
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
-	'EDIT_REASON'			=> $post_data['post_edit_reason'],
+	'EDIT_REASON'			=> $request->variable('edit_reason', ''),
 	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
 	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
 	'U_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup"),
@@ -1476,6 +1454,14 @@ $template->assign_vars(array(
 	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 );
 
+/**
+* This event allows you to modify template variables for the posting screen
+*
+* @event core.posting_modify_template_vars
+* @since 3.1-A1
+*/
+$phpbb_dispatcher->trigger_event('core.posting_modify_template_vars');
+
 // Build custom bbcodes array
 display_custom_bbcodes();
 
@@ -1489,7 +1475,7 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 		'S_POLL_DELETE'			=> ($mode == 'edit' && sizeof($post_data['poll_options']) && ((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
 		'S_POLL_DELETE_CHECKED'	=> (!empty($poll_delete)) ? true : false,
 
-		'L_POLL_OPTIONS_EXPLAIN'	=> sprintf($user->lang['POLL_OPTIONS_' . (($mode == 'edit') ? 'EDIT_' : '') . 'EXPLAIN'], $config['max_poll_options']),
+		'L_POLL_OPTIONS_EXPLAIN'	=> $user->lang('POLL_OPTIONS_' . (($mode == 'edit') ? 'EDIT_' : '') . 'EXPLAIN', (int) $config['max_poll_options']),
 
 		'VOTE_CHANGE_CHECKED'	=> (!empty($post_data['poll_vote_change'])) ? ' checked="checked"' : '',
 		'POLL_TITLE'			=> (isset($post_data['poll_title'])) ? $post_data['poll_title'] : '',
@@ -1623,5 +1609,3 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 
 	trigger_error('USER_CANNOT_DELETE');
 }
-
-?>

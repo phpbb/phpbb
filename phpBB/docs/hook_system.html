@@ -1,14 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="content-language" content="en" />
-<meta http-equiv="imagetoolbar" content="no" />
-<meta name="resource-type" content="document" />
-<meta name="distribution" content="global" />
-<meta name="copyright" content="phpBB Group" />
+<meta charset="utf-8">
 <meta name="keywords" content="" />
 <meta name="description" content="Hook System explanation" />
 <title>phpBB3 &bull; Hook System</title>
@@ -375,12 +368,12 @@ a:active	{ color: #368AD2; }
 
 <p>In phpBB3 there are four functions you are able to hook into with your custom functions:</p>
 
-<p><code>phpbb_user_session_handler();</code> which is called within user::setup after the session and the user object is correctly initialized.<br />
+<p><code>phpbb_user_session_handler();</code> which is called within phpbb_user::setup after the session and the user object is correctly initialized.<br />
 <code>append_sid($url, $params = false, $is_amp = true, $session_id = false);</code> which is called for building urls (appending the session id)<br />
-<code>$template-&gt;display($handle, $include_once = true);</code> which is called directly before outputting the (not-yet-compiled) template.<br />
+<code>$template-&gt;display($handle, $template);</code> which is called directly before outputting the (not-yet-compiled) template.<br />
 <code>exit_handler();</code> which is called at the very end of phpBB3's execution.</p>
 
-<p>Please note: The <code>$template-&gt;display</code> hook takes a third <code>$template</code> argument, which is the template instance being used, which should be used instead of the global.</p>
+<p>Please note: The <code>$template-&gt;display</code> hook takes a <code>$template</code> argument, which is the template instance being used, which should be used instead of the global.</p>
 
 <p>There are also valid external constants you may want to use if you embed phpBB3 into your application:</p>
 
@@ -395,13 +388,14 @@ PHPBB_USE_BOARD_URL_PATH (use generate_board_url() for image paths instead of $p
 <p>If the <code>PHPBB_USE_BOARD_URL_PATH</code> constant is set to true, phpBB uses generate_board_url() (this will return the boards url with the script path included) on all instances where web-accessible images are loaded. The exact locations are:</p>
 
 <ul>
-	<li>/includes/session.php - user::img()</li>
+	<li>/includes/user.php - phpbb_user::img()</li>
 	<li>/includes/functions_content.php - smiley_text()</li>
 </ul>
 
 <p>Path locations for the following template variables are affected by this too:</p>
 
 <ul>
+	<li>{T_ASSETS_PATH} - assets</li>
 	<li>{T_THEME_PATH} - styles/xxx/theme</li>
 	<li>{T_TEMPLATE_PATH} - styles/xxx/template</li>
 	<li>{T_SUPER_TEMPLATE_PATH} - styles/xxx/template</li>

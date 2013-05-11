@@ -1,7 +1,7 @@
 <!-- INCLUDE mcp_header.html -->
 
 <div class="tabs-container">
-<h2><a href="{U_VIEW_TOPIC}">{L_TOPIC}: {TOPIC_TITLE}</a></h2>
+<h2><a href="{U_VIEW_TOPIC}">{L_TOPIC}{L_COLON} {TOPIC_TITLE}</a></h2>
 
 <script type="text/javascript">
 // <![CDATA[
@@ -23,15 +23,12 @@ onload_functions.push('subPanels()');
 <div id="minitabs">
 	<ul>
 		<li id="display-panel-tab"<!-- IF not S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			<span class="corners-top"><span></span></span>
 			<a href="#minitabs" onclick="subPanels('display-panel'); return false;"><span>{L_DISPLAY_OPTIONS}</span></a>
 		</li>
 		<li id="split-panel-tab">
-			<span class="corners-top"><span></span></span>
 			<a href="#minitabs" onclick="subPanels('split-panel'); return false;"><span>{L_SPLIT_TOPIC}</span></a>
 		</li>
 		<li id="merge-panel-tab"<!-- IF S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			<span class="corners-top"><span></span></span>
 			<a href="#minitabs" onclick="subPanels('merge-panel'); return false;"><span>{L_MERGE_POSTS}</span></a>
 		</li>
 	</ul>
@@ -41,15 +38,15 @@ onload_functions.push('subPanels()');
 <form id="mcp" method="post" action="{S_MCP_ACTION}">
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<fieldset id="display-panel" class="fields2">
 	<dl>
-		<dt><label for="posts_per_page">{L_POSTS_PER_PAGE}:</label><br /><span>{L_POSTS_PER_PAGE_EXPLAIN}</span></dt>
+		<dt><label for="posts_per_page">{L_POSTS_PER_PAGE}{L_COLON}</label><br /><span>{L_POSTS_PER_PAGE_EXPLAIN}</span></dt>
 		<dd><input class="inputbox autowidth" type="text" name="posts_per_page" id="posts_per_page" size="6" value="{POSTS_PER_PAGE}" /></dd>
 	</dl>
 	<dl>
-		<dt><label>{L_DISPLAY_POSTS}:</label></dt>
+		<dt><label>{L_DISPLAY_POSTS}{L_COLON}</label></dt>
 		<dd>{S_SELECT_SORT_DAYS}&nbsp;&nbsp;<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label> <input type="submit" name="sort" value="{L_GO}" class="button2" /></dd>
 	</dl>
 	</fieldset>
@@ -60,18 +57,18 @@ onload_functions.push('subPanels()');
 
 	<!-- IF S_SHOW_TOPIC_ICONS -->
 		<dl>
-			<dt><label for="icon">{L_TOPIC_ICON}:</label></dt>
+			<dt><label for="icon">{L_TOPIC_ICON}{L_COLON}</label></dt>
 			<dd><label for="icon"><input type="radio" name="icon" id="icon" value="0" checked="checked" /> {L_NO_TOPIC_ICON}</label>
 			<!-- BEGIN topic_icon --><label for="icon-{topic_icon.ICON_ID}"><input type="radio" name="icon" id="icon-{topic_icon.ICON_ID}" value="{topic_icon.ICON_ID}" {topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" /></label> <!-- END topic_icon --></dd>
 		</dl>
 	<!-- ENDIF -->
 
 	<dl>
-		<dt><label for="subject">{L_SPLIT_SUBJECT}:</label></dt>
-		<dd><input type="text" name="subject" id="subject" size="45" maxlength="64" tabindex="2" value="{SPLIT_SUBJECT}" title="{L_SPLIT_SUBJECT}" class="inputbox" /></dd>
+		<dt><label for="subject">{L_SPLIT_SUBJECT}{L_COLON}</label></dt>
+		<dd><input type="text" name="subject" id="subject" size="45" maxlength="124" tabindex="2" value="{SPLIT_SUBJECT}" title="{L_SPLIT_SUBJECT}" class="inputbox" /></dd>
 	</dl>
 	<dl>
-		<dt><label>{L_SPLIT_FORUM}:</label></dt>
+		<dt><label>{L_SPLIT_FORUM}{L_COLON}</label></dt>
 		<dd><select name="to_forum_id">{S_FORUM_SELECT}</select></dd>
 	</dl>
 	</fieldset>
@@ -81,7 +78,7 @@ onload_functions.push('subPanels()');
 	<fieldset id="merge-panel" class="fields2">
 		<p>{L_MERGE_TOPIC_EXPLAIN}</p>
 	<dl>
-		<dt><label for="to_topic_id">{L_MERGE_TOPIC_ID}:</label></dt>
+		<dt><label for="to_topic_id">{L_MERGE_TOPIC_ID}{L_COLON}</label></dt>
 		<dd>
 			<input class="inputbox autowidth" type="text" size="6" name="to_topic_id" id="to_topic_id" value="{TO_TOPIC_ID}" />
 			<a href="{U_SELECT_TOPIC}" >{L_SELECT_TOPIC}</a>
@@ -91,24 +88,24 @@ onload_functions.push('subPanels()');
 	</fieldset>
 <!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h3 id="review">
 		<span class="right-box"><a href="#review" onclick="viewableArea(getElementById('topicreview'), true); var rev_text = getElementById('review').getElementsByTagName('a').item(0).firstChild; if (rev_text.data == '{LA_EXPAND_VIEW}'){rev_text.data = '{LA_COLLAPSE_VIEW}'; } else if (rev_text.data == '{LA_COLLAPSE_VIEW}'){rev_text.data = '{LA_EXPAND_VIEW}'};">{L_EXPAND_VIEW}</a></span>
-		{L_TOPIC_REVIEW}: {TOPIC_TITLE}
+		{L_TOPIC_REVIEW}{L_COLON} {TOPIC_TITLE}
 	</h3>
 
 	<div id="topicreview">
 		<!-- BEGIN postrow -->
 		<div class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 
 			<div class="postbody" id="pr{postrow.POST_ID}">
-				<ul class="profile-icons"><li class="info-icon"><a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}"><span>{L_POST_DETAILS}</span></a></li><li><label for="post_id_list_select_{postrow.POST_ID}">{L_SELECT}: <input type="checkbox" id="post_id_list_select_{postrow.POST_ID}" name="post_id_list[]" value="{postrow.POST_ID}"<!-- IF postrow.S_CHECKED --> checked="checked"<!-- ENDIF --> /></label></li></ul>
+				<ul class="profile-icons"><li class="info-icon"><a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}"><span>{L_POST_DETAILS}</span></a></li><li><label for="post_id_list_select_{postrow.POST_ID}">{L_SELECT}{L_COLON} <input type="checkbox" id="post_id_list_select_{postrow.POST_ID}" name="post_id_list[]" value="{postrow.POST_ID}"<!-- IF postrow.S_CHECKED --> checked="checked"<!-- ENDIF --> /></label></li></ul>
 
 				<h3><a href="{postrow.U_POST_DETAILS}">{postrow.POST_SUBJECT}</a></h3>
 				<p class="author"><a href="#pr{postrow.POST_ID}">{postrow.MINI_POST_IMG}</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong><!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF --></p>
@@ -133,23 +130,27 @@ onload_functions.push('subPanels()');
 
 			</div>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 		<!-- END postrow -->
 	</div>
 
 	<hr />
 
-	<!-- IF PAGINATION or TOTAL_POSTS -->
+	<!-- IF .pagination or TOTAL_POSTS -->
 	<ul class="linklist">
 		<li class="rightside pagination">
-			<!-- IF TOTAL_POSTS --> {TOTAL_POSTS}<!-- ENDIF -->
-			<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+			<!-- IF TOTAL_POSTS --> {TOTAL_POSTS} &bull; <!-- ENDIF -->
+			<!-- IF .pagination --> 
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE --> 
+				{PAGE_NUMBER}
+			<!-- ENDIF -->
 		</li>
 	</ul>
 	<!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <fieldset class="display-actions">

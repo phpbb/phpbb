@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -28,6 +27,7 @@ class acp_icons
 	{
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $request;
 
 		$user->add_lang('acp/posting');
 
@@ -338,7 +338,7 @@ class acp_icons
 				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? request_var('display_on_posting', array('' => 0)) : array();
 
 				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
-				if (!empty($_POST['add_additional_code']))
+				if ($request->variable('add_additional_code', false, false, phpbb_request_interface::POST))
 				{
 					$add_image			= request_var('add_image', '');
 					$add_code			= utf8_normalize_nfc(request_var('add_code', '', true));
@@ -354,7 +354,7 @@ class acp_icons
 						$image_width[$add_image] = request_var('add_width', 0);
 						$image_height[$add_image] = request_var('add_height', 0);
 
-						if (!empty($_POST['add_display_on_posting']))
+						if ($request->variable('add_display_on_posting', false, false, phpbb_request_interface::POST))
 						{
 							$image_display_on_posting[$add_image] = 1;
 						}
@@ -378,7 +378,7 @@ class acp_icons
 
 					if ($smiley_count + $addable_smileys_count > SMILEY_LIMIT)
 					{
-						trigger_error(sprintf($user->lang['TOO_MANY_SMILIES'], SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('TOO_MANY_SMILIES', SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
 
@@ -486,21 +486,7 @@ class acp_icons
 				$cache->destroy('_icons');
 				$cache->destroy('sql', $table);
 
-				$level = E_USER_NOTICE;
-				switch ($icons_updated)
-				{
-					case 0:
-						$suc_lang = "{$lang}_NONE";
-						$level = E_USER_WARNING;
-						break;
-
-					case 1:
-						$suc_lang = "{$lang}_ONE";
-						break;
-
-					default:
-						$suc_lang = $lang;
-				}
+				$level = ($icons_updated) ? E_USER_NOTICE : E_USER_WARNING;
 				$errormsgs = '';
 				foreach ($errors as $img => $error)
 				{
@@ -508,11 +494,11 @@ class acp_icons
 				}
 				if ($action == 'modify')
 				{
-					trigger_error($user->lang[$suc_lang . '_EDITED'] . $errormsgs . adm_back_link($this->u_action), $level);
+					trigger_error($user->lang($lang . '_EDITED', $icons_updated) . $errormsgs . adm_back_link($this->u_action), $level);
 				}
 				else
 				{
-					trigger_error($user->lang[$suc_lang . '_ADDED'] . $errormsgs . adm_back_link($this->u_action), $level);
+					trigger_error($user->lang($lang . '_ADDED', $icons_updated) . $errormsgs . adm_back_link($this->u_action), $level);
 				}
 
 			break;
@@ -598,7 +584,7 @@ class acp_icons
 						$smiley_count = $this->item_count($table);
 						if ($smiley_count + sizeof($pak_ary) > SMILEY_LIMIT)
 						{
-							trigger_error(sprintf($user->lang['TOO_MANY_SMILIES'], SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('TOO_MANY_SMILIES', SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 
@@ -796,6 +782,18 @@ class acp_icons
 
 					$cache->destroy('_icons');
 					$cache->destroy('sql', $table);
+					
+					if ($request->is_ajax())
+					{
+						$json_response = new phpbb_json_response;
+						$json_response->send(array(
+							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+							'MESSAGE_TEXT'	=> $notice,
+							'REFRESH_DATA'	=> array(
+								'time'	=> 3
+							)
+						));
+					}
 				}
 				else
 				{
@@ -930,9 +928,7 @@ class acp_icons
 		}
 		$db->sql_freeresult($result);
 
-		$template->assign_var('PAGINATION',
-			generate_pagination($this->u_action, $item_count, $config['smilies_per_page'], $pagination_start, true)
-		);
+		phpbb_generate_template_pagination($template, $this->u_action, 'pagination', 'start', $item_count, $config['smilies_per_page'], $pagination_start);
 	}
 
 	/**
@@ -954,5 +950,3 @@ class acp_icons
 		return $item_count;
 	}
 }
-
-?>
