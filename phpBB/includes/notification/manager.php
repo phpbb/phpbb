@@ -256,6 +256,7 @@ class phpbb_notification_manager
 			SET notification_read = 1
 			WHERE notification_time <= " . (int) $time .
 				(($item_type !== false) ? ' AND ' . (is_array($item_type) ? $this->db->sql_in_set('item_type', $item_type) : " item_type = '" . $this->db->sql_escape($item_type) . "'") : '') .
+				(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '') .
 				(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '');
 		$this->db->sql_query($sql);
 	}
@@ -389,7 +390,6 @@ class phpbb_notification_manager
 
 		$user_ids = array();
 		$notification_objects = $notification_methods = array();
-		$new_rows = array();
 
 		// Never send notifications to the anonymous user!
 		unset($notify_users[ANONYMOUS]);
@@ -419,6 +419,8 @@ class phpbb_notification_manager
 		$pre_create_data = $notification->pre_create_insert_array($data, $notify_users);
 		unset($notification);
 
+		$insert_buffer = new phpbb_db_sql_insert_buffer($this->db, $this->notifications_table);
+
 		// Go through each user so we can insert a row in the DB and then notify them by their desired means
 		foreach ($notify_users as $user => $methods)
 		{
@@ -426,8 +428,8 @@ class phpbb_notification_manager
 
 			$notification->user_id = (int) $user;
 
-			// Store the creation array in our new rows that will be inserted later
-			$new_rows[] = $notification->create_insert_array($data, $pre_create_data);
+			// Insert notification row using buffer.
+			$insert_buffer->insert($notification->create_insert_array($data, $pre_create_data));
 
 			// Users are needed to send notifications
 			$user_ids = array_merge($user_ids, $notification->users_to_query());
@@ -447,8 +449,7 @@ class phpbb_notification_manager
 			}
 		}
 
-		// insert into the db
-		$this->db->sql_multi_insert($this->notifications_table, $new_rows);
+		$insert_buffer->flush();
 
 		// We need to load all of the users to send notifications
 		$this->user_loader->load_users($user_ids);

@@ -34,8 +34,16 @@
 	<!-- END forumrow -->
 	</ul>
 <!-- ELSEIF S_FORUM_NOTIFY -->
+    <ul class="topiclist">
+        <li class="header">
+            <dl class="icon">
+                <dt>{L_WATCHED_FORUMS}</dt>
+            </dl>
+        </li>
+    </ul>
 	<p><strong>{L_NO_WATCHED_FORUMS}</strong></p>
 <!-- ENDIF -->
+    <br />
 
 <!-- IF .topicrow -->
 	<ul class="topiclist">
@@ -83,14 +91,21 @@
 	<ul class="linklist">
 		<li class="rightside pagination">
 			<!-- IF TOTAL_TOPICS --> {TOTAL_TOPICS} &bull; <!-- ENDIF -->
-			<!-- IF .pagination --> 
+			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
-			<!-- ELSE --> 
+			<!-- ELSE -->
 				{PAGE_NUMBER}
 			<!-- ENDIF -->
 		</li>
 	</ul>
 <!-- ELSEIF S_TOPIC_NOTIFY -->
+    <ul class="topiclist">
+        <li class="header">
+            <dl class="icon">
+                <dt>{L_WATCHED_TOPICS}</dt>
+            </dl>
+        </li>
+    </ul>
 	<p><strong>{L_NO_WATCHED_TOPICS}</strong></p>
 <!-- ENDIF -->
 

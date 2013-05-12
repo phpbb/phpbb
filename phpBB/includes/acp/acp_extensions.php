@@ -54,7 +54,7 @@ class acp_extensions
 		// If they've specified an extension, let's load the metadata manager and validate it.
 		if ($ext_name)
 		{
-			$md_manager = new phpbb_extension_metadata_manager($ext_name, $db, $phpbb_extension_manager, $phpbb_root_path, ".$phpEx", $template, $config);
+			$md_manager = new phpbb_extension_metadata_manager($ext_name, $config, $phpbb_extension_manager, $template, $phpbb_root_path);
 
 			try
 			{
@@ -81,7 +81,7 @@ class acp_extensions
 			case 'enable_pre':
 				if (!$md_manager->validate_enable())
 				{
-					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($phpbb_extension_manager->enabled($ext_name))
@@ -100,7 +100,7 @@ class acp_extensions
 			case 'enable':
 				if (!$md_manager->validate_enable())
 				{
-					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				try

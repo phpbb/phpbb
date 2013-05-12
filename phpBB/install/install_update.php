@@ -72,7 +72,13 @@ class install_update extends module
 	function main($mode, $sub)
 	{
 		global $phpbb_style, $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
-		global $request, $phpbb_admin_path, $phpbb_adm_relative_path;
+		global $request, $phpbb_admin_path, $phpbb_adm_relative_path, $phpbb_container;
+
+		// Create a normal container now
+		$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+
+		// Writes into global $cache
+		$cache = $phpbb_container->get('cache');
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';

@@ -82,7 +82,7 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 			'ignore_users'		=> array(),
 		), $options);
 
-		// 0 is for global
+		// 0 is for global moderator permissions
 		$auth_approve = $this->auth->acl_get_list(false, $this->permission, array($post['forum_id'], 0));
 
 		if (empty($auth_approve))
@@ -101,8 +101,15 @@ class phpbb_notification_type_post_in_queue extends phpbb_notification_type_post
 		{
 			$has_permission = array_unique(array_merge($has_permission, $auth_approve[0][$this->permission]));
 		}
+		sort($has_permission);
 
-		return $this->check_user_notification_options($has_permission, array_merge($options, array(
+		$auth_read = $this->auth->acl_get_list($has_permission, 'f_read', $post['forum_id']);
+		if (empty($auth_read))
+		{
+			return array();
+		}
+
+		return $this->check_user_notification_options($auth_read[$post['forum_id']]['f_read'], array_merge($options, array(
 			'item_type'		=> self::$notification_option['id'],
 		)));
 	}

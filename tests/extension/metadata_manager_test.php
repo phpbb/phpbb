@@ -7,7 +7,9 @@
 *
 */
 
-class metadata_manager_test extends phpbb_database_test_case
+require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
+
+class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 {
 	protected $class_loader;
 	protected $extension_manager;
@@ -36,7 +38,7 @@ class metadata_manager_test extends phpbb_database_test_case
 		$this->db = $this->new_dbal();
 		$this->db_tools = new phpbb_db_tools($this->db);
 		$this->phpbb_root_path = dirname(__FILE__) . '/';
-		$this->phpEx = '.php';
+		$this->phpEx = 'php';
 		$this->user = new phpbb_user();
 		$this->table_prefix = 'phpbb_';
 
@@ -64,6 +66,7 @@ class metadata_manager_test extends phpbb_database_test_case
 			$this->db,
 			$this->config,
 			$this->migrator,
+			new phpbb_filesystem(),
 			'phpbb_ext',
 			$this->phpbb_root_path,
 			$this->phpEx,
@@ -415,31 +418,16 @@ class metadata_manager_test extends phpbb_database_test_case
 	* Get an instance of the metadata manager
 	*
 	* @param string $ext_name
-	* @return phpbb_extension_metadata_manager_test
+	* @return phpbb_mock_metadata_manager
 	*/
 	private function get_metadata_manager($ext_name)
 	{
-		return new phpbb_extension_metadata_manager_test(
+		return new phpbb_mock_metadata_manager(
 			$ext_name,
-			$this->db,
+			$this->config,
 			$this->extension_manager,
-			$this->phpbb_root_path,
-			$this->phpEx,
 			$this->template,
-			$this->config
+			$this->phpbb_root_path
 		);
-	}
-}
-
-class phpbb_extension_metadata_manager_test extends phpbb_extension_metadata_manager
-{
-	public function set_metadata($metadata)
-	{
-		$this->metadata = $metadata;
-	}
-
-	public function merge_metadata($metadata)
-	{
-		$this->metadata = array_merge($this->metadata, $metadata);
 	}
 }

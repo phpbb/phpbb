@@ -60,7 +60,7 @@ function phpbb_create_dumped_url_matcher(phpbb_extension_finder $finder, $root_p
 		'class'			=> 'phpbb_url_matcher',
 	));
 
-	file_put_contents($root_path . 'cache/url_matcher' . $php_ext, $cached_url_matcher_dump);
+	file_put_contents($root_path . 'cache/url_matcher.' . $php_ext, $cached_url_matcher_dump);
 }
 
 /**
@@ -87,7 +87,7 @@ function phpbb_create_url_matcher(phpbb_extension_finder $finder, RequestContext
 */
 function phpbb_load_url_matcher(RequestContext $context, $root_path, $php_ext)
 {
-	require($root_path . 'cache/url_matcher' . $php_ext);
+	require($root_path . 'cache/url_matcher.' . $php_ext);
 	return new phpbb_url_matcher($context);
 }
 
@@ -102,5 +102,5 @@ function phpbb_load_url_matcher(RequestContext $context, $root_path, $php_ext)
 */
 function phpbb_url_matcher_dumped($root_path, $php_ext)
 {
-	return file_exists($root_path . 'cache/url_matcher' . $php_ext);
+	return file_exists($root_path . 'cache/url_matcher.' . $php_ext);
 }

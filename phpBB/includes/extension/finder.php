@@ -23,6 +23,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_extension_finder
 {
 	protected $extension_manager;
+	protected $filesystem;
 	protected $phpbb_root_path;
 	protected $cache;
 	protected $php_ext;
@@ -54,15 +55,17 @@ class phpbb_extension_finder
 	* @param phpbb_extension_manager $extension_manager An extension manager
 	*            instance that provides the finder with a list of active
 	*            extensions and their locations
+	* @param phpbb_filesystem $filesystem Filesystem instance
 	* @param string $phpbb_root_path Path to the phpbb root directory
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $php_ext php file extension
 	* @param string $cache_name The name of the cache variable, defaults to
 	*                           _ext_finder
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, $phpbb_root_path = '', phpbb_cache_driver_interface $cache = null, $php_ext = '.php', $cache_name = '_ext_finder')
+	public function __construct(phpbb_extension_manager $extension_manager, phpbb_filesystem $filesystem, $phpbb_root_path = '', phpbb_cache_driver_interface $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
 	{
 		$this->extension_manager = $extension_manager;
+		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->cache = $cache;
 		$this->php_ext = $php_ext;
@@ -227,7 +230,7 @@ class phpbb_extension_finder
 	*/
 	protected function sanitise_directory($directory)
 	{
-		$directory = preg_replace('#(?:^|/)\./#', '/', $directory);
+		$directory = $this->filesystem->clean_path($directory);
 		$dir_len = strlen($directory);
 
 		if ($dir_len > 1 && $directory[$dir_len - 1] === '/')
@@ -253,8 +256,8 @@ class phpbb_extension_finder
 	*/
 	public function get_classes($cache = true, $use_all_available = false)
 	{
-		$this->query['extension_suffix'] .= $this->php_ext;
-		$this->query['core_suffix'] .= $this->php_ext;
+		$this->query['extension_suffix'] .= '.' . $this->php_ext;
+		$this->query['core_suffix'] .= '.' . $this->php_ext;
 
 		$files = $this->find($cache, false, $use_all_available);
 
@@ -274,7 +277,7 @@ class phpbb_extension_finder
 		{
 			$file = preg_replace('#^includes/#', '', $file);
 
-			$classes[] = 'phpbb_' . str_replace('/', '_', substr($file, 0, -strlen($this->php_ext)));
+			$classes[] = 'phpbb_' . str_replace('/', '_', substr($file, 0, -strlen('.' . $this->php_ext)));
 		}
 		return $classes;
 	}
