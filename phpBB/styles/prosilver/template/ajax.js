@@ -225,4 +225,13 @@ $('#member_search').click(function () {
 	return false;
 });
 
+/**
+* Automatically resize textarea
+*/
+$(document).ready(function() {
+	phpbb.resizeTextArea($('textarea:not(#message-box textarea, .no-auto-resize)'), {minHeight: 75, maxHeight: 250});
+	phpbb.resizeTextArea($('#message-box textarea'));
+});
+
+
 })(jQuery); // Avoid conflicts with other libraries
