@@ -731,5 +731,13 @@ function phpbb_download_clean_filename($filename)
 */
 function phpbb_is_greater_ie7($user_agent)
 {
-	return (bool) preg_match('/msie [^67]+\\.*;/', strtolower($user_agent));
+	if (preg_match('/msie (\d+)/', strtolower($user_agent), $matches))
+	{
+		$ie_version = (int) $matches[1];
+		return ($ie_version > 7);
+	}
+	else
+	{
+		return false;
+	}
 }
