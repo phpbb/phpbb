@@ -568,4 +568,100 @@ phpbb.addAjaxCallback('toggle_link', function() {
 	el.parent().attr('class', toggleClass);
 });
 
+/**
+* Automatically resize textarea
+*
+* This function automatically resizes textarea elements when user
+* types text.
+*
+* @param {jQuery} items jQuery object(s) to resize
+* @param {object} options Optional parameter that adjusts default
+* 	configuration. See configuration variable
+*
+* Optional parameters:
+*	minWindowHeight {number} Minimum browser window height when textareas are resized. Default = 500
+*	minHeight {number} Minimum height of textarea. Default = 200
+*	maxHeight {number} Maximum height of textarea. Default = 500
+*	heightDiff {number} Minimum difference between window and textarea height. Default = 200
+*	resizeCallback {function} Function to call after resizing textarea
+*	resetCallback {function} Function to call when resize has been canceled
+
+*		Callback function format: function(item) {}
+*			this points to DOM object
+*			item is a jQuery object, same as this
+*/
+phpbb.resizeTextArea = function(items, options) {
+	// Configuration
+	var configuration = {
+		minWindowHeight: 500,
+		minHeight: 200,
+		maxHeight: 500,
+		heightDiff: 200,
+		resizeCallback: function(item) { },
+		resetCallback: function(item) { }
+	};
+
+	if (arguments.length > 1)
+	{
+		configuration = $.extend(configuration, options);
+	}
+
+	function resetAutoResize(item) 
+	{
+		var $item = $(item);
+		if ($item.hasClass('auto-resized'))
+		{
+			$(item).css({height: '', resize: ''}).removeClass('auto-resized');
+			configuration.resetCallback.call(item, $item);
+		}
+	}
+
+	function autoResize(item) 
+	{
+		function setHeight(height)
+		{
+			$item.css({height: height + 'px', resize: 'none'}).addClass('auto-resized');
+			configuration.resizeCallback.call(item, $item);
+		}
+
+		var windowHeight = $(window).height();
+
+		if (windowHeight < configuration.minWindowHeight)
+		{
+			resetAutoResize(item);
+			return;
+		}
+
+		var maxHeight = Math.min(Math.max(windowHeight - configuration.heightDiff, configuration.minHeight), configuration.maxHeight),
+			$item = $(item),
+			height = parseInt($item.height()),
+			scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
+
+		if (height > maxHeight)
+		{
+			setHeight(maxHeight);
+		}
+		else if (scrollHeight > (height + 5))
+		{
+			setHeight(Math.min(maxHeight, scrollHeight));
+		}
+	}
+
+	items.bind('focus change keyup', function() {
+		$(this).each(function() {
+			autoResize(this);
+		});
+	}).change();
+
+	$(window).resize(function() {
+		items.each(function() {
+			if ($(this).hasClass('auto-resized'))
+			{
+				autoResize(this);
+			}
+		});
+	});
+};
+
+
 })(jQuery); // Avoid conflicts with other libraries
