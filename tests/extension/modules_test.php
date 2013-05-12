@@ -10,6 +10,7 @@
 require_once dirname(__FILE__) . '/ext/foo/acp/a_info.php';
 require_once dirname(__FILE__) . '/ext/foo/mcp/a_info.php';
 require_once dirname(__FILE__) . '/ext/foo/acp/fail_info.php';
+require_once dirname(__FILE__) . '/ext/barfoo/acp/a_info.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/acp/acp_modules.php';
 
 class phpbb_extension_modules_test extends phpbb_test_case
@@ -145,7 +146,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 		$this->assertEquals(array(), $acp_modules);
 
 		// No specific module, module class set to false (will default to the above acp)
-		// Setting $use_all_available will have no effect here as the ext manager is just mocked
+		// Setting $use_all_available will cause get_module_infos() to also load not enabled extensions (barfoo)
 		$this->acp_modules->module_class = 'acp';
 		$acp_modules = $this->acp_modules->get_module_infos('', false, true);
 		$this->assertEquals(array(
@@ -165,6 +166,27 @@ class phpbb_extension_modules_test extends phpbb_test_case
 						'test'		=> array('title' => 'Test', 'auth' => '', 'cat' => array('ACP_GENERAL')),
 					),
 				),
+				'phpbb_ext_barfoo_acp_a_module' => array(
+					'filename'	=> 'phpbb_ext_barfoo_acp_a_module',
+					'title'		=> 'Barfoo',
+					'version'	=> '3.1.0-dev',
+					'modes'		=> array(
+						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('ACP_MODS')),
+					),
+				)
+			), $acp_modules);
+
+		// Specific module set to disabled extension
+		$acp_modules = $this->acp_modules->get_module_infos('phpbb_ext_barfoo_acp_a_module', 'acp', true);
+		$this->assertEquals(array(
+				'phpbb_ext_barfoo_acp_a_module' => array(
+					'filename'	=> 'phpbb_ext_barfoo_acp_a_module',
+					'title'		=> 'Barfoo',
+					'version'	=> '3.1.0-dev',
+					'modes'		=> array(
+						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('ACP_MODS')),
+					),
+				)
 			), $acp_modules);
 	}
 }

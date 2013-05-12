@@ -30,7 +30,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 	public function test_available()
 	{
-		$this->assertEquals(array('bar', 'foo', 'vendor/moo'), array_keys($this->extension_manager->all_available()));
+		$this->assertEquals(array('bar', 'barfoo', 'foo', 'vendor/moo'), array_keys($this->extension_manager->all_available()));
 	}
 
 	public function test_enabled()
