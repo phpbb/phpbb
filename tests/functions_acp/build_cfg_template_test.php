@@ -64,7 +64,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name_width' => 10, 'config_key_name_height' => 20),
 				'config_key_name',
 				array(),
-				'<input id="number_key_name" type="number" maxlength="2" min="5" max="15" name="config[config_key_name_width]" value="10" /> x <input type="number" maxlength="2" min="5" max="15" name="config[config_key_name_height]" value="20" />',
+				'<input id="number_key_name" type="number" size="2" maxlength="2" min="5" max="15" name="config[config_key_name_width]" value="10" /> x <input type="number" size="2" maxlength="2" min="5" max="15" name="config[config_key_name_height]" value="20" />',
 			),
 			array(
 				array('dimension', 0, 15),
@@ -72,7 +72,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name_width' => 10, 'config_key_name_height' => 20),
 				'config_key_name',
 				array(),
-				'<input id="number_key_name" type="number" maxlength="2" min="0" max="15" name="config[config_key_name_width]" value="10" /> x <input type="number" maxlength="2" min="0" max="15" name="config[config_key_name_height]" value="20" />',
+				'<input id="number_key_name" type="number" size="2" maxlength="2" min="0" max="15" name="config[config_key_name_width]" value="10" /> x <input type="number" size="2" maxlength="2" min="0" max="15" name="config[config_key_name_height]" value="20" />',
 			),
 		);
 	}
