@@ -97,6 +97,20 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				),
 			), $acp_modules);
 
+		// Find a specific module info file (mcp_a_module) with passing the module_class
+		$this->acp_modules->module_class = '';
+		$acp_modules = $this->acp_modules->get_module_infos('mcp_a_module', 'mcp');
+		$this->assertEquals(array(
+				'phpbb_ext_foo_mcp_a_module' => array(
+					'filename'	=> 'phpbb_ext_foo_mcp_a_module',
+					'title'		=> 'Foobar',
+					'version'	=> '3.1.0-dev',
+					'modes'		=> array(
+						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('MCP_MAIN')),
+					),
+				),
+			), $acp_modules);
+
 		// The mcp module info file we're looking for shouldn't exist
 		$this->acp_modules->module_class = 'mcp';
 		$acp_modules = $this->acp_modules->get_module_infos('mcp_a_fail');
@@ -106,5 +120,51 @@ class phpbb_extension_modules_test extends phpbb_test_case
 		$this->acp_modules->module_class = 'ucp';
 		$acp_modules = $this->acp_modules->get_module_infos();
 		$this->assertEquals(array(), $acp_modules);
+
+		// Get module info of specified extension module
+		$this->acp_modules->module_class = 'acp';
+		$acp_modules = $this->acp_modules->get_module_infos('phpbb_ext_foo_acp_a_module');
+		$this->assertEquals(array(
+				'phpbb_ext_foo_acp_a_module' => array (
+					'filename' => 'phpbb_ext_foo_acp_a_module',
+					'title' => 'Foobar',
+					'version' => '3.1.0-dev',
+					'modes' => array (
+						'config'		=> array ('title' => 'Config', 'auth' => '', 'cat' => array ('ACP_MODS')),
+					),
+				),
+			), $acp_modules);
+
+		// No specific module and module class set to an incorrect name
+		$acp_modules = $this->acp_modules->get_module_infos('', 'wcp', true);
+		$this->assertEquals(array(), $acp_modules);
+
+		// No specific module, no module_class set in the function parameter, and an incorrect module class
+		$this->acp_modules->module_class = 'wcp';
+		$acp_modules = $this->acp_modules->get_module_infos();
+		$this->assertEquals(array(), $acp_modules);
+
+		// No specific module, module class set to false (will default to the above acp)
+		// Setting $use_all_available will have no effect here as the ext manager is just mocked
+		$this->acp_modules->module_class = 'acp';
+		$acp_modules = $this->acp_modules->get_module_infos('', false, true);
+		$this->assertEquals(array(
+				'phpbb_ext_foo_acp_a_module' => array(
+					'filename'	=> 'phpbb_ext_foo_acp_a_module',
+					'title'		=> 'Foobar',
+					'version'	=> '3.1.0-dev',
+					'modes'		=> array(
+						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('ACP_MODS')),
+					),
+				),
+				'acp_foobar' => array(
+					'filename'	=> 'acp_foobar',
+					'title'		=> 'ACP Foobar',
+					'version'	=> '3.1.0-dev',
+					'modes'		=> array(
+						'test'		=> array('title' => 'Test', 'auth' => '', 'cat' => array('ACP_GENERAL')),
+					),
+				),
+			), $acp_modules);
 	}
 }
