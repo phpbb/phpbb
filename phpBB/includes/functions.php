@@ -2907,7 +2907,7 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 
 		// For XHTML compatibility we change back & to &amp;
 		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
+			'META' => '<meta http-equiv="refresh" content="' . $time . '; url=' . $url . '" />')
 		);
 	}
 
