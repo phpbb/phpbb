@@ -112,7 +112,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
         $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 
         $this->assertCount(1, $crawler->filter('.ext_enabled'));
-        $this->assertCount(4, $crawler->filter('.ext_disabled'));
+        $this->assertCount(5, $crawler->filter('.ext_disabled'));
 
         $this->assertContains('phpBB Foo Extension', $crawler->filter('.ext_enabled')->eq(0)->text());
         $this->assertContainsLang('PURGE', $crawler->filter('.ext_enabled')->eq(0)->text());
