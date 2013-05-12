@@ -52,6 +52,38 @@ class phpbb_download_http_user_agent_test extends phpbb_test_case
 				'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1464.0 Safari/537.36',
 				false,
 			),
+			array(
+				'Googlebot-Image/1.0',
+				false,
+			),
+			array(
+				'Googlebot/2.1 ( http://www.google.com/bot.html)',
+				false,
+			),
+			array(
+				'Lynx/2.8.3dev.9 libwww-FM/2.14 SSL-MM/1.4.1 OpenSSL/0.9.6',
+				false,
+			),
+			array(
+				'Links (0.9x; Linux 2.4.7-10 i686)',
+				false,
+			),
+			array(
+				'Opera/9.60 (Windows NT 5.1; U; de) Presto/2.1.1',
+				false,
+			),
+			array(
+				'Mozilla/4.0 (compatible; MSIE 5.0; Windows NT;)',
+				false,
+			),
+			array(
+				'Mozilla/4.0 (compatible; MSIE 5.0; Windows NT 4.0) Opera 6.01 [en]',
+				false,
+			),
+			array(
+				'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 9.24',
+				false,
+			),
 		);
 	}
 
