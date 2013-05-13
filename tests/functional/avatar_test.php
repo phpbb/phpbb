@@ -21,7 +21,7 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$this->path = __DIR__ . '/fixtures/files/';
 		$this->login();
 		$this->admin_login();
-		$this->add_lang(array('acp/board', 'ucp'));
+		$this->add_lang(array('acp/board', 'ucp', 'acp/groups'));
 	}
 
 	public function test_acp_settings()
@@ -206,5 +206,49 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$form['avatar_remote_height']->setValue(80);
 		$crawler = $this->client->submit($form);
 		$this->assertContains($this->lang('NO_AVATAR_SELECTED'), $crawler->text());
+	}
+
+
+	public function test_group_ucp_settings()
+	{
+		// Test setting group avatar of admin group
+		$crawler = $this->request('GET', 'ucp.php?i=ucp_groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
+		$this->assert_response_success();
+		$this->assertContains($this->lang('AVATAR_TYPE'), $crawler->text());
+
+		// Test if setting a gravatar avatar properly works
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$form['avatar_driver']->select('avatar_driver_gravatar');
+		$form['avatar_gravatar_email']->setValue('test@example.com');
+		$form['avatar_gravatar_width']->setValue(80);
+		$form['avatar_gravatar_height']->setValue(80);
+		$crawler = $this->client->submit($form);
+		$this->assertContains($this->lang('GROUP_UPDATED'), $crawler->text());
+
+		// Go back to previous page
+		$crawler = $this->request('GET', 'ucp.php?i=ucp_groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
+		$this->assert_response_success();
+
+		// Test uploading a remote avatar
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$form['avatar_driver']->select('avatar_driver_upload');
+		// use default gravatar supplied by test@example.com and default size = 80px
+		$form['avatar_upload_url']->setValue('https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg');
+		$crawler = $this->client->submit($form);
+		$this->assertContains($this->lang('GROUP_UPDATED'), $crawler->text());
+
+		// Go back to previous page
+		$crawler = $this->request('GET', 'ucp.php?i=ucp_groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
+		$this->assert_response_success();
+
+		// Submit gravatar with incorrect email and correct size
+		$this->markTestIncomplete('No error when submitting incorrect ucp group settings. This needs to be fixed ASAP.');
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$form['avatar_driver']->select('avatar_driver_gravatar');
+		$form['avatar_gravatar_email']->setValue('test.example.com');
+		$form['avatar_gravatar_width']->setValue(80);
+		$form['avatar_gravatar_height']->setValue(80);
+		$crawler = $this->client->submit($form);
+		$this->assertContains($this->lang('EMAIL_INVALID_EMAIL'), $crawler->text());
 	}
 }
