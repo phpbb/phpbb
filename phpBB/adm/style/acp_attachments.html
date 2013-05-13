@@ -196,7 +196,7 @@
 		</dl>
 		<dl>
 			<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}{L_COLON}</label></dt>
-			<dd><input type="text" id="extgroup_filesize" size="3" maxlength="15" name="max_filesize" value="{EXTGROUP_FILESIZE}" /> <select name="size_select">{S_EXT_GROUP_SIZE_OPTIONS}</select></dd>
+			<dd><input type="number" id="extgroup_filesize" size="3" maxlength="15" name="max_filesize" value="{EXTGROUP_FILESIZE}" /> <select name="size_select">{S_EXT_GROUP_SIZE_OPTIONS}</select></dd>
 		</dl>
 		<dl>
 			<dt><label for="assigned_extensions">{L_ASSIGNED_EXTENSIONS}{L_COLON}</label></dt>
@@ -348,7 +348,7 @@
 			<td><a href="{orphan.U_FILE}">{orphan.REAL_FILENAME}</a></td>
 			<td>{orphan.FILETIME}</td>
 			<td>{orphan.FILESIZE}</td>
-			<td><strong>{L_ATTACH_ID}{L_COLON} </strong><input type="text" name="post_id[{orphan.ATTACH_ID}]" size="7" maxlength="10" value="{orphan.POST_ID}" /></td>
+			<td><strong>{L_ATTACH_ID}{L_COLON} </strong><input type="number" name="post_id[{orphan.ATTACH_ID}]" size="7" maxlength="10" value="{orphan.POST_ID}" /></td>
 			<td><input type="checkbox" class="radio" name="add[{orphan.ATTACH_ID}]" /></td>
 			<td><input type="checkbox" class="radio" name="delete[{orphan.ATTACH_ID}]" /></td>
 		</tr>
