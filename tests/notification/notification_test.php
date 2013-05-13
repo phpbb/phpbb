@@ -33,7 +33,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 			'allow_topic_notify'	=> true,
 			'allow_forum_notify'	=> true,
 		));
-		$this->user = new phpbb_mock_user();
+		$this->user = new phpbb_user();
 		$this->user_loader = new phpbb_user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$this->auth = new phpbb_mock_notifications_auth();
 		$this->cache = new phpbb_cache_service(
