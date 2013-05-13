@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_db_migration_data_310_notifications2 extends phpbb_db_migration
+class phpbb_db_migration_data_310_notifications_schema_fix extends phpbb_db_migration
 {
 	static public function depends_on()
 	{
