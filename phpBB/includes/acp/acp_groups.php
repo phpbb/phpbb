@@ -381,6 +381,9 @@ class acp_groups
 							$submit_ary['avatar_width'] = 0;
 							$submit_ary['avatar_height'] = 0;
 						}
+
+						// Merge any avatar errors into the primary error array
+						$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
 					}
 
 					// Validate the length of "Maximum number of allowed recipients per private message" setting.
@@ -570,8 +573,11 @@ class acp_groups
 
 				$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
 
-				// Merge any avatar errors into the primary error array
-				$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+				if (!$update)
+				{
+					// Merge any avatar errors into the primary error array
+					$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+				}
 
 				$back_link = request_var('back_link', '');
 
