@@ -15,15 +15,14 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_test_case
 	public function groups_manage_test_data()
 	{
 		return array(
-			array('#AA0000', 'GROUP_UPDATED'),
+			array('#AA0000', 'WRONG_DATA_COLOUR'),
 			array('AA0000', 'GROUP_UPDATED'),
-			array('AA0000v', 'COLOUR_INVALID'),
-			array('vAA0000', 'COLOUR_INVALID'),
-			array('AAG000', 'COLOUR_INVALID'),
-			array('#a00', 'GROUP_UPDATED'),
-			array('ag0', 'COLOUR_INVALID'),
-			array('#ag0', 'COLOUR_INVALID'),
-			array('##bcc', 'COLOUR_INVALID'),
+			array('AA0000v', 'WRONG_DATA_COLOUR'),
+			array('vAA0000', 'WRONG_DATA_COLOUR'),
+			array('AAG000','WRONG_DATA_COLOUR'),
+			array('a00', 'GROUP_UPDATED'),
+			array('ag0', 'WRONG_DATA_COLOUR'),
+			array('#aa0', 'WRONG_DATA_COLOUR'),
 		);
 	}
 

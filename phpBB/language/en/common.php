@@ -120,7 +120,6 @@ $lang = array_merge($lang, array(
 	'CLICK_VIEW_PRIVMSG'	=> '%sGo to your inbox%s',
 	'COLLAPSE_VIEW'			=> 'Collapse view',
 	'CLOSE_WINDOW'			=> 'Close window',
-	'COLOUR_INVALID'		=> 'The colour value you entered is invalid.',
 	'COLOUR_SWATCH'			=> 'Colour swatch',
 	'COMMA_SEPARATOR'		=> ', ',	// Used in pagination of ACP & prosilver, use localised comma if appropriate, eg: Ideographic or Arabic
 	'CONFIRM'				=> 'Confirm',
@@ -723,6 +722,7 @@ $lang = array_merge($lang, array(
 	'WHO_IS_ONLINE'		=> 'Who is online',
 	'WRONG_PASSWORD'	=> 'You entered an incorrect password.',
 
+	'WRONG_DATA_COLOUR'			=> 'The colour value you entered is invalid.',
 	'WRONG_DATA_ICQ'			=> 'The number you entered is not a valid ICQ number.',
 	'WRONG_DATA_JABBER'			=> 'The name you entered is not a valid Jabber account name.',
 	'WRONG_DATA_LANG'			=> 'The language you specified is not valid.',

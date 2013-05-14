@@ -595,18 +595,11 @@ class ucp_groups
 								$error[] = $user->lang['FORM_INVALID'];
 							}
 
-							if (!empty($submit_ary['colour']))
+							// Validate submitted colour value
+							if ($colour_error = validate_data($submit_ary, array('colour'	=> array('match', true, '/^([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/'))))
 							{
-								preg_match('/^#?(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/', $submit_ary['colour'], $group_colour);
-
-								if (sizeof($group_colour))
-								{
-									$submit_ary['colour'] = (strpos($group_colour[0], '#') !== false) ? str_replace('#', '', $group_colour[0]) : $group_colour[0];
-								}
-								else
-								{
-									$error[] = $user->lang['COLOUR_INVALID'];
-								}
+								// Replace "error" string with its real, localised form
+								$error = array_merge($error, array_map(array(&$user, 'lang'), $colour_error));
 							}
 
 							if (!sizeof($error))
