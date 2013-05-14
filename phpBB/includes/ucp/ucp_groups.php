@@ -597,6 +597,16 @@ class ucp_groups
 
 							if (!sizeof($error))
 							{
+								// Make sure maximum length of 6 of group color is not exceeded
+								if (strpos($submit_ary['colour'], '#') === 0)
+								{
+									$submit_ary['colour'] = substr($submit_ary['colour'], 1, 6);
+								}
+								else
+								{
+									$submit_ary['colour'] = substr($submit_ary['colour'], 0, 6);
+								}
+
 								// Only set the rank, colour, etc. if it's changed or if we're adding a new
 								// group. This prevents existing group members being updated if no changes
 								// were made.
