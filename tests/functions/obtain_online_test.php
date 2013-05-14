@@ -80,6 +80,22 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 				'hidden_online'			=> 1,
 				'guests_online'			=> 1,
 			)),
+			array(2, false, array(
+				'online_users'			=> array(),
+				'hidden_users'			=> array(),
+				'total_online'			=> 0,
+				'visible_online'		=> 0,
+				'hidden_online'			=> 0,
+				'guests_online'			=> 0,
+			)),
+			array(2, true, array(
+				'online_users'			=> array(),
+				'hidden_users'			=> array(),
+				'total_online'			=> 0,
+				'visible_online'		=> 0,
+				'hidden_online'			=> 0,
+				'guests_online'			=> 0,
+			)),
 		);
 	}
 
