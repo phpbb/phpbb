@@ -207,21 +207,25 @@
 <!-- ELSE -->
 
 	<!-- IF .leader -->
-		<ul class="topiclist">
+		<ul class="topiclist two-long-columns">
 			<li class="header">
 				<dl>
-					<dt>{L_GROUP_LEADER}</dt>
+					<dt><div class="list-inner">{L_GROUP_LEADER}</div></dt>
 					<dd class="info"><span>{L_OPTIONS}</span></dd>
 				</dl>
 			</li>
 		</ul>
-		<ul class="topiclist cplist">
+		<ul class="topiclist cplist two-long-columns">
 
 		<!-- BEGIN leader -->
 		<li class="row<!-- IF attachrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
-				<dt><a href="{leader.U_EDIT}" class="topictitle"<!-- IF leader.GROUP_COLOUR --> style="color: #{leader.GROUP_COLOUR};"<!-- ENDIF -->>{leader.GROUP_NAME}</a>
-					<!-- IF leader.GROUP_DESC --><br />{leader.GROUP_DESC}<!-- ENDIF --></dt>
+				<dt>
+					<div class="list-inner">
+						<a href="{leader.U_EDIT}" class="topictitle"<!-- IF leader.GROUP_COLOUR --> style="color: #{leader.GROUP_COLOUR};"<!-- ENDIF -->>{leader.GROUP_NAME}</a>
+						<!-- IF leader.GROUP_DESC --><br />{leader.GROUP_DESC}<!-- ENDIF -->
+					</div>
+				</dt>
 				<dd class="option"><span><a href="{leader.U_EDIT}" >{L_EDIT}</a></span></dd>
 				<dd class="option"><span><a href="{leader.U_LIST}">{L_GROUP_LIST}</a></span></dd>
 			</dl>

@@ -26,16 +26,16 @@
 				<!-- ENDIF -->
 			</li>
 		</ul>
-		<ul class="topiclist">
+		<ul class="topiclist missing-column">
 			<li class="header">
 				<dl>
-					<dt><!-- IF S_TOPICS -->{L_TOPIC}<!-- ELSE -->{L_POST}<!-- ENDIF --></dt>
+					<dt><div class="list-inner"><!-- IF S_TOPICS -->{L_TOPIC}<!-- ELSE -->{L_POST}<!-- ENDIF --></div></dt>
 					<dd class="moderation"><span><!-- IF not S_TOPICS -->{L_TOPIC} &amp; <!-- ENDIF -->{L_FORUM}</span></dd>
 					<dd class="mark">{L_MARK}</dd>
 				</dl>
 			</li>
 			</ul>
-			<ul class="topiclist cplist">
+			<ul class="topiclist cplist missing-column">
 
 		<!-- BEGIN postrow -->
 
@@ -46,8 +46,10 @@
 		<li class="row<!-- IF postrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt>
-					<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
-					<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
+					<div class="list-inner">
+						<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
+						<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
+					</div>
 				</dt>
 				<dd class="moderation">
 					<span>
