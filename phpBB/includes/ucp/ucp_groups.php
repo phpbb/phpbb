@@ -597,7 +597,7 @@ class ucp_groups
 
 							if (!empty($submit_ary['colour']))
 							{
-								preg_match('/^(#?)+(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/', $submit_ary['colour'], $group_colour);
+								preg_match('/^#?(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/', $submit_ary['colour'], $group_colour);
 
 								if (sizeof($group_colour))
 								{
