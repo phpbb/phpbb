@@ -595,18 +595,22 @@ class ucp_groups
 								$error[] = $user->lang['FORM_INVALID'];
 							}
 
-							if (!sizeof($error))
+							if (!empty($submit_ary['colour']))
 							{
-								// Make sure maximum length of 6 of group color is not exceeded
-								if (strpos($submit_ary['colour'], '#') === 0)
+								preg_match('/^(#?)+(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/', $submit_ary['colour'], $group_colour);
+
+								if (sizeof($group_colour))
 								{
-									$submit_ary['colour'] = substr($submit_ary['colour'], 1, 6);
+									$submit_ary['colour'] = (strpos($group_colour[0], '#') !== false) ? str_replace('#', '', $group_colour[0]) : $group_colour[0];
 								}
 								else
 								{
-									$submit_ary['colour'] = substr($submit_ary['colour'], 0, 6);
+									$error[] = $user->lang['COLOUR_INVALID'];
 								}
+							}
 
+							if (!sizeof($error))
+							{
 								// Only set the rank, colour, etc. if it's changed or if we're adding a new
 								// group. This prevents existing group members being updated if no changes
 								// were made.

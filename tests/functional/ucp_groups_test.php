@@ -12,50 +12,33 @@
 */
 class phpbb_functional_ucp_groups_test extends phpbb_functional_test_case
 {
-	public function test_groups_manage()
+	public function groups_manage_test_data()
 	{
-		$values = array();
+		return array(
+			array('#AA0000', 'GROUP_UPDATED'),
+			array('AA0000', 'GROUP_UPDATED'),
+			array('AA0000v', 'COLOUR_INVALID'),
+			array('vAA0000', 'COLOUR_INVALID'),
+			array('AAG000', 'COLOUR_INVALID'),
+			array('#a00', 'GROUP_UPDATED'),
+			array('ag0', 'COLOUR_INVALID'),
+			array('#ag0', 'COLOUR_INVALID'),
+		);
+	}
+
+	/**
+	* @dataProvider groups_manage_test_data
+	*/
+	public function test_groups_manage($input, $expected)
+	{
 		$this->login();
 		$this->add_lang(array('ucp', 'acp/groups'));
 
 		$crawler = $this->request('GET', 'ucp.php?i=groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
 		$this->assert_response_success();
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
-		$form['group_colour']->setValue('#AA0000');
+		$form['group_colour']->setValue($input);
 		$crawler = $this->client->submit($form);
-		$this->assertContains($this->lang('GROUP_UPDATED'), $crawler->text());
-
-		$crawler = $this->request('GET', 'ucp.php?i=groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
-		$this->assert_response_success();
-		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
-		$values = $form->getValues();
-		$this->assertContains('AA0000', $values['group_colour']);
-		$form['group_colour']->setValue('AA0000');
-		$crawler = $this->client->submit($form);
-		$this->assertContains($this->lang('GROUP_UPDATED'), $crawler->text());
-
-		$crawler = $this->request('GET', 'ucp.php?i=groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
-		$this->assert_response_success();
-		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
-		$values = $form->getValues();
-		$this->assertContains('AA0000', $values['group_colour']);
-		$form['group_colour']->setValue('AA0000v');
-		$crawler = $this->client->submit($form);
-		$this->assertContains($this->lang('GROUP_UPDATED'), $crawler->text());
-
-		$crawler = $this->request('GET', 'ucp.php?i=groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
-		$this->assert_response_success();
-		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
-		$values = $form->getValues();
-		$this->assertContains('AA0000', $values['group_colour']);
-		$form['group_colour']->setValue('vAA0000');
-		$crawler = $this->client->submit($form);
-		$this->assertContains($this->lang('GROUP_UPDATED'), $crawler->text());
-
-		$crawler = $this->request('GET', 'ucp.php?i=groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
-		$this->assert_response_success();
-		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
-		$values = $form->getValues();
-		$this->assertContains('vAA000', $values['group_colour']);
+		$this->assertContains($this->lang($expected), $crawler->text());
 	}
 }

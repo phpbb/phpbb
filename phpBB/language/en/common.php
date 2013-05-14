@@ -120,6 +120,7 @@ $lang = array_merge($lang, array(
 	'CLICK_VIEW_PRIVMSG'	=> '%sGo to your inbox%s',
 	'COLLAPSE_VIEW'			=> 'Collapse view',
 	'CLOSE_WINDOW'			=> 'Close window',
+	'COLOUR_INVALID'		=> 'The colour value you entered is invalid.',
 	'COLOUR_SWATCH'			=> 'Colour swatch',
 	'COMMA_SEPARATOR'		=> ', ',	// Used in pagination of ACP & prosilver, use localised comma if appropriate, eg: Ideographic or Arabic
 	'CONFIRM'				=> 'Confirm',
