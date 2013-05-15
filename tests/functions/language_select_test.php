@@ -22,6 +22,7 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 			array('', '<option value="en">English</option><option value="de">Deutsch</option>'),
 			array('en', '<option value="en" selected="selected">English</option><option value="de">Deutsch</option>'),
 			array('de', '<option value="en">English</option><option value="de" selected="selected">Deutsch</option>'),
+			array('cs', '<option value="en">English</option><option value="de">Deutsch</option>'),
 		);
 	}
 
