@@ -4,15 +4,18 @@
 		<column>lang_id</column>
 		<column>lang_iso</column>
 		<column>lang_local_name</column>
+		<column>lang_english_name</column>
 		<row>
 			<value>1</value>
 			<value>en</value>
+			<value>English</value>
 			<value>English</value>
 		</row>
 		<row>
 			<value>2</value>
 			<value>de</value>
 			<value>Deutsch</value>
+			<value>German</value>
 		</row>
 	</table>
 </dataset>
