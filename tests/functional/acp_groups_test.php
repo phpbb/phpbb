@@ -23,6 +23,9 @@ class phpbb_functional_acp_groups_test extends phpbb_functional_test_case
 			array('a00', 'GROUP_UPDATED'),
 			array('ag0', 'WRONG_DATA_COLOUR'),
 			array('#aa0', 'WRONG_DATA_COLOUR'),
+			array('AA0000 ', 'GROUP_UPDATED'),
+			array('AA0000 abf', 'WRONG_DATA_COLOUR'),
+			array('AA0000 AA0000', 'WRONG_DATA_COLOUR'),
 		);
 	}
 
