@@ -29,6 +29,6 @@ class phpbb_functions_is_absolute_test extends phpbb_test_case
 	*/
 	public function test_is_absolute($path, $expected)
 	{
-		$this->assertEquals($expected, is_absolute($path));
+		$this->assertEquals($expected, phpbb_is_absolute($path));
 	}
 }
