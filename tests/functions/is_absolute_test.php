@@ -14,6 +14,7 @@ class phpbb_functions_is_absolute_test extends phpbb_test_case
 	static public function is_absolute_data()
 	{
 		return array(
+			array('', false),
 			array('/etc/phpbb', true),
 			array('etc/phpbb', false),
 
