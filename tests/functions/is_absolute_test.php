@@ -14,14 +14,35 @@ class phpbb_functions_is_absolute_test extends phpbb_test_case
 	static public function is_absolute_data()
 	{
 		return array(
+			// Empty
 			array('', false),
-			array('/etc/phpbb', true),
-			array('etc/phpbb', false),
 
-			// Until we got DIRECTORY_SEPARATOR replaced in that function,
-			// test results vary on OS.
-			array('c:\windows', DIRECTORY_SEPARATOR == '\\'),
-			array('C:\Windows', DIRECTORY_SEPARATOR == '\\'),
+			// Absolute unix style
+			array('/etc/phpbb', true),
+			// Unix does not support \ so that is not an absolute path
+			array('\etc\phpbb', false),
+
+			// Absolute windows style
+			array('c:\windows', true),
+			array('C:\Windows', true),
+			array('c:/windows', true),
+			array('C:/Windows', true),
+
+			// Executable
+			array('etc/phpbb', false),
+			array('explorer.exe', false),
+
+			// Relative subdir
+			array('Windows\System32', false),
+			array('Windows\System32\explorer.exe', false),
+			array('Windows/System32', false),
+			array('Windows/System32/explorer.exe', false),
+
+			// Relative updir
+			array('..\Windows\System32', false),
+			array('..\Windows\System32\explorer.exe', false),
+			array('../Windows/System32', false),
+			array('../Windows/System32/explorer.exe', false),
 		);
 	}
 
