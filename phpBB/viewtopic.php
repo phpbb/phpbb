@@ -146,7 +146,6 @@ if ($view && !$post_id)
 
 			if (!$row)
 			{
-				// Check for forum style 
 				$sql = 'SELECT forum_style
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
