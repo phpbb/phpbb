@@ -299,6 +299,50 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 	}
 
+	/**
+	* Login to the ACP
+	* You must run login() before calling this.
+	*/
+	protected function admin_login($username = 'admin')
+	{
+		$this->add_lang('acp/common');
+
+		// Requires login first!
+		if (empty($this->sid))
+		{
+			$this->fail('$this->sid is empty. Make sure you call login() before admin_login()');
+			return;
+		}
+
+		$crawler = $this->request('GET', 'adm/index.php?sid=' . $this->sid);
+		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
+
+		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
+
+		foreach ($form->getValues() as $field => $value)
+		{
+			if (strpos($field, 'password_') === 0)
+			{
+				$crawler = $this->client->submit($form, array('username' => $username, $field => $username));
+				$this->assert_response_success();
+				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
+
+				$cookies = $this->cookieJar->all();
+
+				// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
+				foreach ($cookies as $cookie);
+				{
+					if (substr($cookie->getName(), -4) == '_sid')
+					{
+						$this->sid = $cookie->getValue();
+					}
+				}
+
+				break;
+			}
+		}
+	}
+
 	protected function add_lang($lang_file)
 	{
 		if (is_array($lang_file))
