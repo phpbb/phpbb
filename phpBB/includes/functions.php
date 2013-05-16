@@ -1005,7 +1005,7 @@ if (!function_exists('stripos'))
 */
 function is_absolute($path)
 {
-	return (isset($path[0]) && $path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:[/\\\]#i', $path))) ? true : false;
+	return (isset($path[0]) && $path[0] == '/' || preg_match('#^[a-z]:[/\\\]#i', $path)) ? true : false;
 }
 
 /**
