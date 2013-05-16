@@ -1247,8 +1247,9 @@ function validate_data($data, $val_ary)
 		{
 			$function = array_shift($validate);
 			array_unshift($validate, $data[$var]);
+			$function_prefix = (function_exists('phpbb_validate_' . $function)) ? 'phpbb_validate_' : 'validate';
 
-			if ($result = call_user_func_array('validate_' . $function, $validate))
+			if ($result = call_user_func_array($function_prefix . $function, $validate))
 			{
 				// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
 				$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
@@ -1891,6 +1892,27 @@ function validate_jabber($jid)
 	}
 
 	if (!$result)
+	{
+		return 'WRONG_DATA';
+	}
+
+	return false;
+}
+
+/**
+* Validate hex colour value
+*
+* @param string $colour The hex colour value
+* @return bool/string Error message if colour value is incorrect, false if it fits the hex colour code
+*/
+function phpbb_validate_colour($colour)
+{
+	if (empty($colour))
+	{
+		return false;
+	}
+
+	if (!preg_match('/^([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/', $colour))
 	{
 		return 'WRONG_DATA';
 	}

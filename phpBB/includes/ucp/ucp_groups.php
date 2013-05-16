@@ -596,7 +596,7 @@ class ucp_groups
 							}
 
 							// Validate submitted colour value
-							if ($colour_error = validate_data($submit_ary, array('colour'	=> array('match', true, '/^([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/'))))
+							if ($colour_error = validate_data($submit_ary, array('colour'	=> array('colour'))))
 							{
 								// Replace "error" string with its real, localised form
 								$error = array_merge($error, array_map(array(&$user, 'lang'), $colour_error));
