@@ -142,6 +142,14 @@ class phpbb_database_test_connection_manager
 		}
 
 		$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+		switch ($this->config['dbms'])
+		{
+			case 'mysql':
+			case 'mysqli':
+				$this->pdo->exec('SET NAMES utf8');
+			default:
+		}
 	}
 
 	/**
