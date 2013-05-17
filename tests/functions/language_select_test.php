@@ -19,10 +19,10 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 	static public function language_select_data()
 	{
 		return array(
-			array('', '<option value="en">English</option><option value="de">Deutsch</option>'),
-			array('en', '<option value="en" selected="selected">English</option><option value="de">Deutsch</option>'),
-			array('de', '<option value="en">English</option><option value="de" selected="selected">Deutsch</option>'),
-			array('cs', '<option value="en">English</option><option value="de">Deutsch</option>'),
+			array('', '<option value="cs">Čeština</option><option value="en">English</option>'),
+			array('en', '<option value="cs">Čeština</option><option value="en" selected="selected">English</option>'),
+			array('cs', '<option value="cs" selected="selected">Čeština</option><option value="en">English</option>'),
+			array('de', '<option value="cs">Čeština</option><option value="en">English</option>'),
 		);
 	}
 
