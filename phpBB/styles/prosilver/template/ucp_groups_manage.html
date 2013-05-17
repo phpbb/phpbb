@@ -6,19 +6,18 @@
 
 <div class="panel">
 	<div class="inner"><span class="corners-top"><span></span></span>
-	
+
+	<!-- IF S_ERROR -->
+	<fieldset>
+		<p class="error">{ERROR_MSG}</p>
+	</fieldset>
+	<!-- ENDIF -->
+
 	<p>{L_GROUPS_EXPLAIN}</p>
 
 	<!-- IF S_EDIT -->
 		<h3>{L_GROUP_DETAILS}</h3>
-	
-		<!-- IF S_ERROR -->
-		<div class="errorbox">
-			<h3>{L_WARNING}</h3>
-			<p>{ERROR_MSG}</p>
-		</div>
-		<!-- ENDIF -->
-	
+
 		<fieldset>
 		<dl>
 			<dt><label for="group_name">{L_GROUP_NAME}:</label></dt>
