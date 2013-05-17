@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_config">
+		<column>config_name</column>
+		<column>config_value</column>
+		<column>is_dynamic</column>
+		<row>
+			<value>Belarusian</value>
+			<value>Беларуская</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>Arabic</value>
+			<value>العربية</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>Czech</value>
+			<value>Čeština</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>German</value>
+			<value>Deutsch öäüß</value>
+			<value>0</value>
+		</row>
+	</table>
+</dataset>
