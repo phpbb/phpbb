@@ -158,6 +158,23 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		);
 	}
 
+	public function test_find_from_extension()
+	{
+		$files = $this->finder
+			->extension_directory('/type')
+			->find_from_extension('foo', dirname(__FILE__) . '/ext/foo/');
+		$classes = $this->finder->get_classes_from_files($files);
+
+		sort($classes);
+		$this->assertEquals(
+			array(
+				'phpbb_ext_foo_type_alternative',
+				'phpbb_ext_foo_type_dummy_empty',
+			),
+			$classes
+		);
+	}
+
 	/**
 	* These do not work because of changes with PHPBB3-11386
 	* They do not seem neccessary to me, so I am commenting them out for now
