@@ -130,7 +130,6 @@ services:
             - @service_container
             - @dbal.conn
             - @config
-            - @migrator
             - @filesystem
             - %tables.ext%
             - %core.root_path%
