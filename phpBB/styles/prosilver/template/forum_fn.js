@@ -3,6 +3,14 @@
 */
 
 /**
+* Find a member
+*/
+function find_username(url) {
+	popup(url, 760, 570, '_usersearch');
+	return false;
+}
+
+/**
 * Window popup
 */
 function popup(url, width, height, name) {
