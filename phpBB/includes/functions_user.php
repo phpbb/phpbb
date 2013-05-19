@@ -1903,14 +1903,16 @@ function validate_jabber($jid)
 * Validate hex colour value
 *
 * @param string $colour The hex colour value
-* @return bool|string 	Error message if colour value is incorrect, false if it
+* @param bool $optional Whether the colour value is optional. True if an empty
+*			string will be accepted as correct input, false if not.
+* @return bool|string Error message if colour value is incorrect, false if it
 *			fits the hex colour code
 */
-function phpbb_validate_hex_colour($colour)
+function phpbb_validate_hex_colour($colour, $optional = false)
 {
 	if (empty($colour))
 	{
-		return false;
+		return (($optional) ? false : 'WRONG_DATA');
 	}
 
 	if (!preg_match('/^([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/', $colour))

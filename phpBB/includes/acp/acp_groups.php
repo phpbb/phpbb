@@ -421,7 +421,7 @@ class acp_groups
 					*/
 					$validation_checks = array(
 						'max_recipients' => array('num', false, 0, 16777215),
-						'colour'	=> array('hex_colour'),
+						'colour'	=> array('hex_colour', true),
 					);
 
 					if ($validation_error = validate_data($submit_ary, $validation_checks))
