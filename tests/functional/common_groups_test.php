@@ -29,8 +29,9 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 			array('AA0000 ', 'GROUP_UPDATED'),
 			array('AA0000 abf', 'WRONG_DATA_COLOUR'),
 			array('AA0000 AA0000', 'WRONG_DATA_COLOUR'),
-			array('000 ', 'GROUP_UPDATED'),
-			array('000000 ', 'GROUP_UPDATED'),
+			array('', 'GROUP_UPDATED'),
+			array('000', 'GROUP_UPDATED'),
+			array('000000', 'GROUP_UPDATED'),
 		);
 	}
 
