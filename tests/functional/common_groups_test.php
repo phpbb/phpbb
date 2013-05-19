@@ -20,6 +20,7 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 			array('#AA0000', 'WRONG_DATA_COLOUR'),
 			array('AA0000', 'GROUP_UPDATED'),
 			array('AA0000v', 'WRONG_DATA_COLOUR'),
+			array('AA00000', 'WRONG_DATA_COLOUR'),
 			array('vAA0000', 'WRONG_DATA_COLOUR'),
 			array('AAG000','WRONG_DATA_COLOUR'),
 			array('a00', 'GROUP_UPDATED'),
@@ -28,6 +29,8 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 			array('AA0000 ', 'GROUP_UPDATED'),
 			array('AA0000 abf', 'WRONG_DATA_COLOUR'),
 			array('AA0000 AA0000', 'WRONG_DATA_COLOUR'),
+			array('000 ', 'GROUP_UPDATED'),
+			array('000000 ', 'GROUP_UPDATED'),
 		);
 	}
 
@@ -40,7 +43,8 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 		$this->admin_login();
 		$this->add_lang(array('ucp', 'acp/groups'));
 
-		$crawler = $this->request('GET', $this->get_url() . '&sid=' . $this->sid);
+		// Manage Administrators group
+		$crawler = $this->request('GET', $this->get_url() . '&g=5&sid=' . $this->sid);
 		$this->assert_response_success();
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['group_colour']->setValue($input);

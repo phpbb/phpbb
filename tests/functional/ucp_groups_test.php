@@ -16,6 +16,6 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 {
 	protected function get_url()
 	{
-		return 'ucp.php?i=groups&mode=manage&action=edit&g=5';
+		return 'ucp.php?i=groups&mode=manage&action=edit';
 	}
 }
