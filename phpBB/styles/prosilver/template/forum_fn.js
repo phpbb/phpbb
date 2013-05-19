@@ -20,7 +20,7 @@ function popup(url, width, height, name) {
 function jumpto() {
 	var page = prompt(jump_page, on_page);
 
-	if (page !== null && !isNaN(page) && page === Math.floor(page) && page > 0) {
+	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0) {
 		if (base_url.indexOf('?') === -1) {
 			document.location.href = base_url + '?start=' + ((page - 1) * per_page);
 		} else {
