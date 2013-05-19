@@ -423,7 +423,7 @@ class acp_groups
 					}
 
 					// Validate submitted colour value
-					if ($colour_error = validate_data($submit_ary, array('colour'	=> array('colour'))))
+					if ($colour_error = validate_data($submit_ary, array('colour'	=> array('hex_colour'))))
 					{
 						// Replace "error" string with its real, localised form
 						$error = array_merge($error, array_map(array(&$user, 'lang'), $colour_error));

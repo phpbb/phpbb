@@ -1903,9 +1903,10 @@ function validate_jabber($jid)
 * Validate hex colour value
 *
 * @param string $colour The hex colour value
-* @return bool/string Error message if colour value is incorrect, false if it fits the hex colour code
+* @return bool|string 	Error message if colour value is incorrect, false if it
+*			fits the hex colour code
 */
-function phpbb_validate_colour($colour)
+function phpbb_validate_hex_colour($colour)
 {
 	if (empty($colour))
 	{
