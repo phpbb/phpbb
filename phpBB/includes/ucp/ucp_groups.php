@@ -547,6 +547,9 @@ class ucp_groups
 									$submit_ary['avatar_width'] = 0;
 									$submit_ary['avatar_height'] = 0;
 								}
+
+								// Merge any avatars errors into the primary error array
+								$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
 							}
 
 							if (!check_form_key('ucp_groups'))
@@ -672,8 +675,11 @@ class ucp_groups
 							}
 						}
 
-						// Merge any avatars errors into the primary error array
-						$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+						if (!$update)
+						{
+							// Merge any avatars errors into the primary error array
+							$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+						}
 
 						$template->assign_vars(array(
 							'S_EDIT'			=> true,
