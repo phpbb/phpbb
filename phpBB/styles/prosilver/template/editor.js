@@ -433,16 +433,14 @@ function getCaretPosition(txtarea) {
 
 			for (i = 0; i < startTags.length; i++) {
 				var tagLength = startTags[i].length;
-				if (start >= tagLength)
-				{
+				if (start >= tagLength) {
 					index = value.lastIndexOf(startTags[i], start - tagLength);
 					lastStart = Math.max(lastStart, index);
 				}
 			}
 			if (lastStart == -1) return false;
 
-			if (start > 0)
-			{
+			if (start > 0) {
 				for (i = 0; i < endTags.length; i++) {
 					index = value.lastIndexOf(endTags[i], start - 1);
 					lastEnd = Math.max(lastEnd, index);
