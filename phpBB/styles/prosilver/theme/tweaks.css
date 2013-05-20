@@ -30,3 +30,20 @@ dl.details dd {
 #site-description p {
 	*margin-bottom: 1.0em;
 }
+
+/* Forum list column styles for IE7 */
+dl.icon dt, dl.icon dd {
+	*min-height: 32px;
+}
+
+dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
+	*width: 79px;
+}
+
+dd.lastpost, dd.redirect, dd.moderation, dd.time, dd.info {
+	*width: 249px;
+}
+
+dd.option {
+	*width: 124px;
+}

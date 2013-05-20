@@ -160,12 +160,10 @@ dl.icon dt .list-inner {
 
 dl.icon dt, dl.icon dd {
 	min-height: 40px;
-	*min-height: 32px;
 }
 
 dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
 	width: 80px;
-	*width: 79px;
 	text-align: center;
 	line-height: 2.2em;
 	font-size: 1.2em;
@@ -185,7 +183,6 @@ dl.icon dt li {
 
 dd.lastpost, dd.redirect, dd.moderation, dd.time, dd.info {
 	width: 250px;
-	*width: 249px;
 	font-size: 1.1em;
 }
 
@@ -208,7 +205,6 @@ dd.extra, dd.mark {
 
 dd.option {
 	width: 125px;
-	*width: 124px;
 	line-height: 200%;
 	text-align: center;
 	font-size: 1.1em;
