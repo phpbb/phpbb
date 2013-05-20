@@ -252,9 +252,21 @@ phpbb.ajaxify = function(options) {
 			return;
 		}
 
-		function errorHandler() {
+		/**
+		 * Handler for AJAX errors
+		 */
+		function errorHandler(jqXHR, textStatus, errorThrown) {
 			phpbb.clearLoadingTimeout();
-			phpbb.alert(dark.attr('data-ajax-error-title'), dark.attr('data-ajax-error-text'));
+			var errorText = false;
+			if (typeof errorThrown === 'string' && errorThrown.length > 0) {
+				errorText = errorThrown;
+			}
+			else {
+				errorText = dark.attr('data-ajax-error-text-' + textStatus);
+				if (typeof errorText !== 'string' || !errorText.length) 
+					errorText = dark.attr('data-ajax-error-text');
+			}
+			phpbb.alert(dark.attr('data-ajax-error-title'), errorText);
 		}
 
 		/**
