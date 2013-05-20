@@ -681,6 +681,10 @@ phpbb.applyCodeEditor = function(textarea) {
 		startTagsEnd = ']',
 		endTags = ['[/code]'];
 
+	if (!textarea || typeof textarea.selectionStart !== 'number') {
+		return;
+	}
+
 	if ($(textarea).data('code-editor') === true) {
 		return;
 	}

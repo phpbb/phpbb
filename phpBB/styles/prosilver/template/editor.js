@@ -415,9 +415,6 @@ function getCaretPosition(txtarea) {
 		}
 
 		textarea = doc.forms[form_name].elements[text_name];
-		if (!textarea || typeof textarea.selectionStart !== 'number') {
-			return;
-		}
 
 		phpbb.applyCodeEditor(textarea);
 	});
