@@ -256,6 +256,9 @@ phpbb.ajaxify = function(options) {
 		 * Handler for AJAX errors
 		 */
 		function errorHandler(jqXHR, textStatus, errorThrown) {
+			if (console && console.log) {
+				console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown);
+			}
 			phpbb.clearLoadingTimeout();
 			var errorText = false;
 			if (typeof errorThrown === 'string' && errorThrown.length > 0) {
