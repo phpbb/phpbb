@@ -383,3 +383,5 @@ function apply_onkeypress_event() {
 		return true;
 	});
 }
+
+jQuery(document).ready(apply_onkeypress_event);
