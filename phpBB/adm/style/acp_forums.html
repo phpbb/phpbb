@@ -152,7 +152,7 @@
 	</dl>
 	<dl>
 		<dt><label for="forum_desc">{L_FORUM_DESC}{L_COLON}</label><br /><span>{L_FORUM_DESC_EXPLAIN}</span></dt>
-		<dd><textarea id="forum_desc" name="forum_desc" rows="5" cols="45">{FORUM_DESC}</textarea></dd>
+		<dd><textarea id="forum_desc" name="forum_desc" rows="5" cols="45" data-bbcode="true">{FORUM_DESC}</textarea></dd>
 		<dd><label><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
 			<label><input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
 			<label><input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label></dd>
@@ -316,7 +316,7 @@
 	<!-- ENDIF -->
 		<dl>
 			<dt><label for="forum_rules">{L_FORUM_RULES}{L_COLON}</label><br /><span>{L_FORUM_RULES_EXPLAIN}</span></dt>
-			<dd><textarea id="forum_rules" name="forum_rules" rows="4" cols="70">{FORUM_RULES_PLAIN}</textarea></dd>
+			<dd><textarea id="forum_rules" name="forum_rules" rows="4" cols="70" data-bbcode="true">{FORUM_RULES_PLAIN}</textarea></dd>
 			<dd><label><input type="checkbox" class="radio" name="rules_parse_bbcode"<!-- IF S_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
 				<label><input type="checkbox" class="radio" name="rules_parse_smilies"<!-- IF S_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
 				<label><input type="checkbox" class="radio" name="rules_parse_urls"<!-- IF S_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label></dd>

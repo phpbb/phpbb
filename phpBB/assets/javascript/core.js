@@ -663,5 +663,145 @@ phpbb.resizeTextArea = function(items, options) {
 	});
 };
 
+/**
+* Adjust textarea to manage code bbcode
+*
+* This function allows to use tab characters when typing code
+* and keeps indentation of previous line of code when adding new
+* line while typing code.
+*
+* Editor's functionality is changed only when cursor is between
+* [code] and [/code] bbcode tags.
+*
+* @param {object} textarea Textarea DOM object to apply editor to
+*/
+phpbb.applyCodeEditor = function(textarea) {
+	// list of allowed start and end bbcode code tags, in lower case
+	var startTags = ['[code]', '[code='],
+		startTagsEnd = ']',
+		endTags = ['[/code]'];
+
+	if ($(textarea).data('code-editor') === true) {
+		return;
+	}
+
+	/**
+	* Check if cursor is currently inside code tag
+	*
+	* @return {boolean} True if cursor is in code tag
+	*/
+	function inTag() {
+		var start = textarea.selectionStart,
+			lastEnd = -1,
+			lastStart = -1,
+			i, index, value;
+
+		value = textarea.value.toLowerCase();
+
+		for (i = 0; i < startTags.length; i++) {
+			var tagLength = startTags[i].length;
+			if (start >= tagLength) {
+				index = value.lastIndexOf(startTags[i], start - tagLength);
+				lastStart = Math.max(lastStart, index);
+			}
+		}
+		if (lastStart == -1) return false;
+
+		if (start > 0) {
+			for (i = 0; i < endTags.length; i++) {
+				index = value.lastIndexOf(endTags[i], start - 1);
+				lastEnd = Math.max(lastEnd, index);
+			}
+		}
+
+		return (lastEnd < lastStart);
+	}
+
+	/**
+	* Get line of text before cursor
+	*
+	* @param {boolean} stripCodeStart If true, only part of line
+	*		after [code] tag will be returned.
+	*
+	* @return {string} Line of text
+	*/
+	function getLastLine(stripCodeStart) {
+		var start = textarea.selectionStart,
+			value = textarea.value,
+			index = value.lastIndexOf("\n", start - 1);
+
+		value = value.substring(index + 1, start);
+
+		if (stripCodeStart) {
+			for (var i = 0; i < startTags.length; i++) {
+				index = value.lastIndexOf(startTags[i]);
+				if (index >= 0) {
+					var tagLength = startTags[i].length;
+
+					value = value.substring(index + tagLength);
+					if (startTags[i].lastIndexOf(startTagsEnd) != tagLength) {
+						index = value.indexOf(startTagsEnd);
+
+						if (index >= 0) {
+							value = value.substr(index + 1);
+						}
+					}
+				}
+			}
+		}
+
+		return value;
+	}
+
+	/**
+	* Append text at cursor position
+	*
+	* @param {string} Text Text to append
+	*/
+	function appendText(text) {
+		var start = textarea.selectionStart,
+			end = textarea.selectionEnd,
+			value = textarea.value;
+
+		textarea.value = value.substr(0, start) + text + value.substr(end);
+		textarea.selectionStart = textarea.selectionEnd = start + text.length;
+	}
+
+	$(textarea).data('code-editor', true).on('keydown', function(event) {
+		var key = event.keyCode || event.which;
+
+		// intercept tabs
+		if (key == 9) {
+			if (inTag()) {
+				appendText("\t");
+				event.preventDefault();
+				return;
+			}
+		}
+
+		// intercept new line characters
+		if (key == 13) {
+			if (inTag()) {
+				var lastLine = getLastLine(true),
+					code = '' + /^\s*/g.exec(lastLine);
+
+				if (code.length > 0) {
+					appendText("\n" + code);
+					event.preventDefault();
+					return;
+				}
+			}
+		}
+	});
+};
+
+/**
+* Apply code editor to all textarea elements with data-bbcode attribute
+*/
+$(document).ready(function() {
+	$('textarea[data-bbcode]').each(function() {
+		phpbb.applyCodeEditor(this);
+	});
+});
 
 })(jQuery); // Avoid conflicts with other libraries

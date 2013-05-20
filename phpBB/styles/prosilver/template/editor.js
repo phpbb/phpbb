@@ -401,7 +401,7 @@ function getCaretPosition(txtarea) {
 */
 (function($) {
 	$(document).ready(function() {
-		var doc, textarea, startTags, startTagsEnd, endTags;
+		var doc, textarea;
 
 		// find textarea, make sure browser supports necessary functions
 		if (document.forms[form_name]) {
@@ -419,94 +419,7 @@ function getCaretPosition(txtarea) {
 			return;
 		}
 
-		// list of allowed start and end bbcode code tags, in lower case
-		startTags = ['[code]', '[code='];
-		startTagsEnd = ']';
-		endTags = ['[/code]'];
-
-		function inTag() {
-			var start = textarea.selectionStart,
-				lastEnd = -1,
-				lastStart = -1,
-				i, index, value;
-
-			value = textarea.value.toLowerCase();
-
-			for (i = 0; i < startTags.length; i++) {
-				var tagLength = startTags[i].length;
-				if (start >= tagLength) {
-					index = value.lastIndexOf(startTags[i], start - tagLength);
-					lastStart = Math.max(lastStart, index);
-				}
-			}
-			if (lastStart == -1) return false;
-
-			if (start > 0) {
-				for (i = 0; i < endTags.length; i++) {
-					index = value.lastIndexOf(endTags[i], start - 1);
-					lastEnd = Math.max(lastEnd, index);
-				}
-			}
-
-			return (lastEnd < lastStart);
-		}
-
-		function getLastLine(stripCodeTags) {
-			var start = textarea.selectionStart,
-				value = textarea.value,
-				index = value.lastIndexOf("\n", start - 1);
-			value = value.substring(index + 1, start);
-			if (stripCodeTags) {
-				for (var i = 0; i < startTags.length; i++) {
-					index = value.lastIndexOf(startTags[i]);
-					if (index >= 0) {
-						var tagLength = startTags[i].length;
-						value = value.substring(index + tagLength);
-						if (startTags[i].lastIndexOf(startTagsEnd) != tagLength) {
-							index = value.indexOf(startTagsEnd);
-							if (index >= 0) {
-								value = value.substr(index + 1);
-							}
-						}
-					}
-				}
-			}
-			return value;
-		}
-
-		function appendCode(code) {
-			var start = textarea.selectionStart,
-				end = textarea.selectionEnd,
-				value = textarea.value;
-			textarea.value = value.substr(0, start) + code + value.substr(end);
-			textarea.selectionStart = textarea.selectionEnd = start + code.length;
-		}
-
-		$(textarea).on('keydown', function(event) {
-			var key = event.keyCode || event.which;
-
-			// intercept tabs
-			if (key == 9) {
-				if (inTag()) {
-					appendCode("\t");
-					event.preventDefault();
-					return;
-				}
-			}
-
-			// intercept new line characters
-			if (key == 13) {
-				if (inTag()) {
-					var lastLine = getLastLine(true),
-						code = '' + /^\s*/g.exec(lastLine);
-					if (code.length > 0) {
-						appendCode("\n" + code);
-						event.preventDefault();
-						return;
-					}
-				}
-			}
-		});
+		phpbb.applyCodeEditor(textarea);
 	});
 })(jQuery);
 
