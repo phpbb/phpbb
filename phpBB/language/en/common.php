@@ -424,6 +424,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TOPIC_APPROVED'		=> 'Your topic "%2$s" in the forum "%3$s" was approved.',
 	'NOTIFICATION_TOPIC_DISAPPROVED'	=> 'Your topic "%1$s" was disapproved for reason: "%2$s".',
 	'NOTIFICATION_TOPIC_IN_QUEUE'		=> 'A new topic titled "%2$s" was posted by %1$s and needs approval.',
+	'NOTIFICATION_TYPE_NOT_EXIST'		=> 'The notification type "%s" is missing from the file system.',
 	'NOTIFY_ADMIN'				=> 'Please notify the board administrator or webmaster.',
 	'NOTIFY_ADMIN_EMAIL'		=> 'Please notify the board administrator or webmaster: <a href="mailto:%1$s">%1$s</a>',
 	'NO_ACCESS_ATTACHMENT'		=> 'You are not allowed to access this file.',

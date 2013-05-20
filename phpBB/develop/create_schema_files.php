@@ -1317,16 +1317,20 @@ function get_schema_struct()
 
 	$schema_data['phpbb_notification_types'] = array(
 		'COLUMNS'			=> array(
-			'notification_type'			=> array('VCHAR:255', ''),
+			'notification_type_id'		=> array('USINT', NULL, 'auto_increment'),
+			'notification_type_name'	=> array('VCHAR:255', ''),
 			'notification_type_enabled'	=> array('BOOL', 1),
 		),
-		'PRIMARY_KEY'		=> array('notification_type', 'notification_type_enabled'),
+		'PRIMARY_KEY'		=> array('notification_type_id'),
+		'KEYS'				=> array(
+			'type'			=> array('UNIQUE', array('notification_type_name')),
+		),
 	);
 
 	$schema_data['phpbb_notifications'] = array(
 		'COLUMNS'			=> array(
-			'notification_id'				=> array('UINT', NULL, 'auto_increment'),
-			'item_type'			   			=> array('VCHAR:255', ''),
+			'notification_id'				=> array('UINT:10', NULL, 'auto_increment'),
+			'notification_type_id'			=> array('USINT', 0),
 			'item_id'						=> array('UINT', 0),
 			'item_parent_id'				=> array('UINT', 0),
 			'user_id'						=> array('UINT', 0),
@@ -1336,7 +1340,7 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'		=> 'notification_id',
 		'KEYS'				=> array(
-			'item_ident'		=> array('INDEX', array('item_type', 'item_id')),
+			'item_ident'		=> array('INDEX', array('notification_type_id', 'item_id')),
 			'user'				=> array('INDEX', array('user_id', 'notification_read')),
 		),
 	);
@@ -1814,7 +1818,7 @@ function get_schema_struct()
 	);
 
 	$schema_data['phpbb_user_notifications'] = array(
-		'COLUMNS'			=> array(
+		'COLUMNS'		=> array(
 			'item_type'			=> array('VCHAR:255', ''),
 			'item_id'			=> array('UINT', 0),
 			'user_id'			=> array('UINT', 0),
