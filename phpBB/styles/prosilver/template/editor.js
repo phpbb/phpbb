@@ -441,9 +441,12 @@ function getCaretPosition(txtarea) {
 			}
 			if (lastStart == -1) return false;
 
-			for (i = 0; i < endTags.length; i++) {
-				index = value.lastIndexOf(endTags[i], start);
-				lastEnd = Math.max(lastEnd, index);
+			if (start > 0)
+			{
+				for (i = 0; i < endTags.length; i++) {
+					index = value.lastIndexOf(endTags[i], start - 1);
+					lastEnd = Math.max(lastEnd, index);
+				}
 			}
 
 			return (lastEnd < lastStart);
