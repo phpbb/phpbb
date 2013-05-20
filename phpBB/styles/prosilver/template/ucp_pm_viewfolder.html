@@ -45,20 +45,21 @@
 	<!-- ENDIF -->
 
 	<!-- IF .messagerow -->
-		<ul class="topiclist">
+		<ul class="topiclist two-columns">
 			<li class="header">
 				<dl>
-					<dt>{L_MESSAGE}</dt>
+					<dt><div class="list-inner">{L_MESSAGE}</div></dt>
 					<dd class="mark">{L_MARK}</dd>
 				</dl>
 			</li>
 		</ul>
-		<ul class="topiclist cplist pmlist">
+		<ul class="topiclist cplist pmlist two-columns">
 
 		<!-- BEGIN messagerow -->
 			<li class="row<!-- IF messagerow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF messagerow.PM_CLASS --> {messagerow.PM_CLASS}<!-- ENDIF -->">
 				<dl class="icon {messagerow.FOLDER_IMG_STYLE}">
 					<dt<!-- IF messagerow.PM_ICON_URL and S_PM_ICONS --> style="background-image: url({messagerow.PM_ICON_URL}); background-repeat: no-repeat;"<!-- ENDIF -->>
+						<div class="list-inner">
 
 						<!-- IF messagerow.S_PM_DELETED -->
 							<a href="{messagerow.U_REMOVE_PM}" class="topictitle">{L_DELETE_MESSAGE}</a><br />
@@ -72,6 +73,8 @@
 
 						<!-- IF messagerow.S_PM_REPORTED --><a href="{messagerow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --> {messagerow.ATTACH_ICON_IMG}<br />
 						<!-- IF S_SHOW_RECIPIENTS -->{L_MESSAGE_TO} {messagerow.RECIPIENTS}<!-- ELSE -->{L_MESSAGE_BY_AUTHOR} {messagerow.MESSAGE_AUTHOR_FULL} &raquo; {messagerow.SENT_TIME}<!-- ENDIF -->
+
+						</div>
 					</dt>
 					<!-- IF S_SHOW_RECIPIENTS --><dd class="info"><span>{L_SENT_AT}{L_COLON} {messagerow.SENT_TIME}</span></dd><!-- ENDIF -->
 					<!-- IF S_UNREAD --><dd class="info"><!-- IF messagerow.FOLDER --><a href="{messagerow.U_FOLDER}">{messagerow.FOLDER}</a><!-- ELSE -->{L_UNKNOWN_FOLDER}<!-- ENDIF --></dd><!-- ENDIF -->

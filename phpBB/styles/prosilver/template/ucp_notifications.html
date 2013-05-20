@@ -55,30 +55,32 @@
 			<!-- ENDIF -->
 
 			<div class="notification_list">
-				<ul class="topiclist">
+				<ul class="topiclist two-columns">
 					<li class="header">
 						<dl>
-							<dt>{L_NOTIFICATIONS}</dt>
+							<dt><div class="list-inner">{L_NOTIFICATIONS}</div></dt>
 							<dd class="mark">{L_MARK_READ}</dd>
 						</dl>
 					</li>
 				</ul>
-				<ul class="topiclist cplist">
+				<ul class="topiclist cplist two-columns">
 					<!-- BEGIN notification_list -->
 						<li class="row<!-- IF notification_list.UNREAD --> bg3<!-- ELSE --><!-- IF notification_list.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- ENDIF -->">
 							<dl>
 								<dt>
-									<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
-										{notification_list.AVATAR}
-										<div class="notifications">
-											<p class="notifications_title">{notification_list.FORMATTED_TITLE}</p>
-											<p class="notifications_time">&raquo; {notification_list.TIME}</p>
+									<div class="list-inner">
+										<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
+											{notification_list.AVATAR}
+											<div class="notifications">
+												<p class="notifications_title">{notification_list.FORMATTED_TITLE}</p>
+												<p class="notifications_time">&raquo; {notification_list.TIME}</p>
 
-											<!-- IF not notification_list.URL and notification_list.U_MARK_READ -->
-												<p><a href="{notification_list.U_MARK_READ}">{L_MARK_READ}</a></p>
-											<!-- ENDIF -->
-										</div>
-									<!-- IF notification_list.URL --></a><!-- ENDIF -->
+												<!-- IF not notification_list.URL and notification_list.U_MARK_READ -->
+													<p><a href="{notification_list.U_MARK_READ}">{L_MARK_READ}</a></p>
+												<!-- ENDIF -->
+											</div>
+										<!-- IF notification_list.URL --></a><!-- ENDIF -->
+									</div>
 								</dt>
 
 								<dd class="mark">&nbsp;<!-- IF notification_list.UNREAD --><input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}" /> <dfn>{L_MARK_READ}</dfn><!-- ENDIF -->&nbsp;</dd>
