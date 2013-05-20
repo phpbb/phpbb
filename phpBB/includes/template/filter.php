@@ -76,6 +76,14 @@ class phpbb_template_filter extends php_user_filter
 	private $allow_php;
 
 	/**
+	* Whether cleanup will be performed on resulting code, see compile()
+	* (Preserve whitespace)
+	*
+	* @var bool
+	*/
+	private $cleanup = true;
+
+	/**
 	* Resource locator.
 	*
 	* @var phpbb_template_locator
@@ -183,6 +191,7 @@ class phpbb_template_filter extends php_user_filter
 		$this->phpbb_root_path = $this->params['phpbb_root_path'];
 		$this->style_names = $this->params['style_names'];
 		$this->extension_manager = $this->params['extension_manager'];
+		$this->cleanup = $this->params['cleanup'];
 		if (isset($this->params['user']))
 		{
 			$this->user = $this->params['user'];
@@ -223,41 +232,45 @@ class phpbb_template_filter extends php_user_filter
 			$data = preg_replace('~<!-- ENDPHP -->.*?$~', '', $data);
 		}
 
-		/*
+		if ($this->cleanup)
+		{
+			/*
 
-		Preserve whitespace.
-		PHP removes a newline after the closing tag (if it's there).
-		This is by design:
+			Preserve whitespace.
+			PHP removes a newline after the closing tag (if it's there).
+			This is by design:
 
-		http://www.php.net/manual/en/language.basic-syntax.phpmode.php
-		http://www.php.net/manual/en/language.basic-syntax.instruction-separation.php
+			http://www.php.net/manual/en/language.basic-syntax.phpmode.php
+			http://www.php.net/manual/en/language.basic-syntax.instruction-separation.php
 
 
-		Consider the following template:
+			Consider the following template:
 
-			<!-- IF condition -->
-			some content
-			<!-- ENDIF -->
+				<!-- IF condition -->
+				some content
+				<!-- ENDIF -->
 
-		If we were to simply preserve all whitespace, we could simply
-		replace all "?>" tags with "?>\n".
-		Doing that, would add additional newlines to the compiled
-		template in place of the IF and ENDIF statements. These
-		newlines are unwanted (and one is conditional). The IF and
-		ENDIF are usually on their own line for ease of reading.
+			If we were to simply preserve all whitespace, we could simply
+			replace all "?>" tags with "?>\n".
+			Doing that, would add additional newlines to the compiled
+			template in place of the IF and ENDIF statements. These
+			newlines are unwanted (and one is conditional). The IF and
+			ENDIF are usually on their own line for ease of reading.
 
-		This replacement preserves newlines only for statements that
-		are not the only statement on a line. It will NOT preserve
-		newlines at the end of statements in the above example.
-		It will preserve newlines in situations like:
+			This replacement preserves newlines only for statements that
+			are not the only statement on a line. It will NOT preserve
+			newlines at the end of statements in the above example.
+			It will preserve newlines in situations like:
 
-			<!-- IF condition -->inline content<!-- ENDIF -->
+				<!-- IF condition -->inline content<!-- ENDIF -->
 
-		*/
+			*/
 
-		$data = preg_replace('~(?<!^)(<\?php.+(?<!/\*\*/)\?>)$~m', "$1\n", $data);
-		$data = str_replace('/**/?>', "?>\n", $data);
-		$data = str_replace('?><?php', '', $data);
+			$data = preg_replace('~(?<!^)(<\?php.+(?<!/\*\*/)\?>)$~m', "$1\n", $data);
+			$data = str_replace('/**/?>', "?>\n", $data);
+			$data = str_replace('?><?php', '', $data);
+		}
+
 		return $data;
 	}
 
@@ -995,7 +1008,13 @@ class phpbb_template_filter extends php_user_filter
 			$all_compiled = '';
 			foreach ($files as $file)
 			{
+				$this->template_compile->set_filter_params(array(
+					'cleanup'	=> false,
+				));
+
 				$compiled = $this->template_compile->compile_file($file);
+
+				$this->template_compile->reset_filter_params();
 
 				if ($compiled === false)
 				{
