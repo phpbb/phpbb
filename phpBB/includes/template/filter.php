@@ -335,6 +335,10 @@ class phpbb_template_filter extends php_user_filter
 				return '<?php ' . $this->compile_tag_define($matches[2], false) . ' ?>';
 			break;
 
+			case 'ENDDEFINE':
+				return '<?php ' . $this->compile_tag_enddefine() . ' ?>';
+			break;
+
 			case 'INCLUDE':
 				return '<?php ' . $this->compile_tag_include($matches[2]) . ' ?>';
 			break;
@@ -839,6 +843,16 @@ class phpbb_template_filter extends php_user_filter
 		$match = array();
 		preg_match('#^((?:' . self::REGEX_NS . '\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*)(?: = (.*?))?$#', $tag_args, $match);
 
+		if (!empty($match[2]) && !isset($match[3]) && $op)
+		{
+			// DEFINE tag with ENDDEFINE
+			$array = "\$_tpldata['DEFINE']['.vars']";
+			$code = 'ob_start(); ';
+			$code .= "if (!isset($array)) { $array = array(); } ";
+			$code .= "{$array}[] = '{$match[2]}'";
+			return $code;
+		}
+
 		if (empty($match[2]) || (!isset($match[3]) && $op))
 		{
 			return '';
@@ -863,6 +877,20 @@ class phpbb_template_filter extends php_user_filter
 		}
 
 		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ' = ' . $parsed_statement . ';';
+	}
+
+	/**
+	* Compile ENDDEFINE tag
+	*
+	* @return string compiled template code
+	*/
+	private function compile_tag_enddefine()
+	{
+		$array = "\$_tpldata['DEFINE']['.vars']";
+		$code = "if (!isset($array) || !sizeof($array)) { trigger_error('ENDDEFINE tag without DEFINE in ' . basename(__FILE__), E_USER_ERROR); }";
+		$code .= "\$define_var = array_pop($array); ";
+		$code .= "\$_tpldata['DEFINE']['.'][\$define_var] = ob_get_clean();";
+		return $code;
 	}
 
 	/**
