@@ -684,10 +684,6 @@ a.sendemail {
 	background-image: url("images/buttons.png");
 }
 
-#notification_list_button:before, #notification_list_button:after {
-	color: #536482;
-}
-
 /* Icon images
 ---------------------------------------- */
 .sitehome						{ background-image: url("./images/icon_home.gif"); }

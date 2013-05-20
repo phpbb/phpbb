@@ -97,20 +97,17 @@ a.sendemail {
 	padding: 1px 0 0 17px;
 }
 
-#notification_list_button:before, #notification_list_button:after {
+.icon-notification:before, .icon-notification:after {
 	display: inline;
 	font: inherit;
-	text-decoration: none;
 }
 
-#notification_list_button:before {
+.icon-notification:before {
 	content: '[';
-	padding-right: 4px;
 }
 
-#notification_list_button:after {
+.icon-notification:after {
 	content: ']';
-	padding-left: 4px;
 }
 
 /* Poster profile icons
