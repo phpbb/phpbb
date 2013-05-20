@@ -3088,7 +3088,7 @@ function obtain_latest_version_info($force_update = false, $warn_fail = false, $
 		$info = get_remote_file('version.phpbb.com', '/phpbb',
 				((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
 
-		if ($info === false)
+		if (empty($info))
 		{
 			$cache->destroy('versioncheck');
 			if ($warn_fail)
