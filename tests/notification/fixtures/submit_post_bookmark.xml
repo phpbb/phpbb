@@ -29,14 +29,14 @@
 		</row>
 	</table>
 	<table name="phpbb_notifications">
-		<column>item_type</column>
+		<column>notification_type_id</column>
 		<column>user_id</column>
 		<column>item_id</column>
 		<column>item_parent_id</column>
 		<column>notification_read</column>
 		<column>notification_data</column>
 		<row>
-			<value>bookmark</value>
+			<value>1</value>
 			<value>5</value>
 			<value>1</value>
 			<value>1</value>
@@ -45,9 +45,11 @@
 		</row>
 	</table>
 	<table name="phpbb_notification_types">
-		<column>notification_type</column>
+		<column>notification_type_id</column>
+		<column>notification_type_name</column>
 		<column>notification_type_enabled</column>
 		<row>
+			<value>1</value>
 			<value>bookmark</value>
 			<value>1</value>
 		</row>
