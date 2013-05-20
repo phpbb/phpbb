@@ -401,7 +401,7 @@ function getCaretPosition(txtarea) {
 */
 (function($) {
 	$(document).ready(function() {
-		var doc, textarea, startTags, endTags;
+		var doc, textarea, startTags, startTagsEnd, endTags;
 
 		// find textarea, make sure browser supports necessary functions
 		if (document.forms[form_name]) {
@@ -421,6 +421,7 @@ function getCaretPosition(txtarea) {
 
 		// list of allowed start and end bbcode code tags, in lower case
 		startTags = ['[code]', '[code='];
+		startTagsEnd = ']';
 		endTags = ['[/code]'];
 
 		function inTag() {
@@ -450,11 +451,27 @@ function getCaretPosition(txtarea) {
 			return (lastEnd < lastStart);
 		}
 
-		function getLastLine() {
+		function getLastLine(stripCodeTags) {
 			var start = textarea.selectionStart,
 				value = textarea.value,
 				index = value.lastIndexOf("\n", start - 1);
-			return value.substring(index + 1, start);
+			value = value.substring(index + 1, start);
+			if (stripCodeTags) {
+				for (var i = 0; i < startTags.length; i++) {
+					index = value.lastIndexOf(startTags[i]);
+					if (index >= 0) {
+						var tagLength = startTags[i].length;
+						value = value.substring(index + tagLength);
+						if (startTags[i].lastIndexOf(startTagsEnd) != tagLength) {
+							index = value.indexOf(startTagsEnd);
+							if (index >= 0) {
+								value = value.substr(index + 1);
+							}
+						}
+					}
+				}
+			}
+			return value;
 		}
 
 		function appendCode(code) {
@@ -480,7 +497,7 @@ function getCaretPosition(txtarea) {
 			// intercept new line characters
 			if (key == 13) {
 				if (inTag()) {
-					var lastLine = getLastLine(),
+					var lastLine = getLastLine(true),
 						code = '' + /^\s*/g.exec(lastLine);
 					if (code.length > 0) {
 						appendCode("\n" + code);
