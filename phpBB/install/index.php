@@ -678,7 +678,6 @@ class module
 			case 'range':
 			case 'search':
 			case 'tel':
-			case 'time':
 			case 'url':
 			case 'week':
 
