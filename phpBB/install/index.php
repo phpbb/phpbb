@@ -666,6 +666,21 @@ class module
 		{
 			case 'text':
 			case 'password':
+			// HTML5 text-like input types
+			case 'color':
+			case 'date':
+			case 'time':
+			case 'datetime':
+			case 'datetime-local':
+			case 'email':
+			case 'month':
+			case 'number':
+			case 'range':
+			case 'search':
+			case 'tel':
+			case 'url':
+			case 'week':
+
 				$size = (int) $tpl_type[1];
 				$maxlength = (int) $tpl_type[2];
 

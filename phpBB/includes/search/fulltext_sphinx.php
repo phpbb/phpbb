@@ -888,11 +888,11 @@ class phpbb_search_fulltext_sphinx
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_port">' . $this->user->lang['FULLTEXT_SPHINX_PORT'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_PORT_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_sphinx_port" type="text" size="4" maxlength="10" name="config[fulltext_sphinx_port]" value="' . $this->config['fulltext_sphinx_port'] . '" /></dd>
+			<dd><input id="fulltext_sphinx_port" type="number" size="4" maxlength="10" name="config[fulltext_sphinx_port]" value="' . $this->config['fulltext_sphinx_port'] . '" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_indexer_mem_limit">' . $this->user->lang['FULLTEXT_SPHINX_INDEXER_MEM_LIMIT'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_INDEXER_MEM_LIMIT_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_sphinx_indexer_mem_limit" type="text" size="4" maxlength="10" name="config[fulltext_sphinx_indexer_mem_limit]" value="' . $this->config['fulltext_sphinx_indexer_mem_limit'] . '" /> ' . $this->user->lang['MIB'] . '</dd>
+			<dd><input id="fulltext_sphinx_indexer_mem_limit" type="number" size="4" maxlength="10" name="config[fulltext_sphinx_indexer_mem_limit]" value="' . $this->config['fulltext_sphinx_indexer_mem_limit'] . '" /> ' . $this->user->lang['MIB'] . '</dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_config_file">' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN'] . '</span></dt>
