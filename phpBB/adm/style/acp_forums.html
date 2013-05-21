@@ -239,7 +239,7 @@
 		</dl>
 		<dl>
 			<dt><label for="topics_per_page">{L_FORUM_TOPICS_PAGE}{L_COLON}</label><br /><span>{L_FORUM_TOPICS_PAGE_EXPLAIN}</span></dt>
-			<dd><input type="text" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" size="4" maxlength="4" /></dd>
+			<dd><input type="number" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" size="4" maxlength="4" min="0" max="9999" /></dd>
 		</dl>
 		<!-- EVENT acp_forums_normal_settings_append -->
 		</fieldset>
@@ -253,15 +253,15 @@
 		</dl>
 		<dl>
 			<dt><label for="prune_freq">{L_AUTO_PRUNE_FREQ}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_FREQ_EXPLAIN}</span></dt>
-			<dd><input type="text" id="prune_freq" name="prune_freq" value="{PRUNE_FREQ}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="number" id="prune_freq" name="prune_freq" value="{PRUNE_FREQ}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_days">{L_AUTO_PRUNE_DAYS}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_DAYS_EXPLAIN}</span></dt>
-			<dd><input type="text" id="prune_days" name="prune_days" value="{PRUNE_DAYS}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="number" id="prune_days" name="prune_days" value="{PRUNE_DAYS}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_viewed">{L_AUTO_PRUNE_VIEWED}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_VIEWED_EXPLAIN}</span></dt>
-			<dd><input type="text" id="prune_viewed" name="prune_viewed" value="{PRUNE_VIEWED}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="number" id="prune_viewed" name="prune_viewed" value="{PRUNE_VIEWED}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_old_polls">{L_PRUNE_OLD_POLLS}{L_COLON}</label><br /><span>{L_PRUNE_OLD_POLLS_EXPLAIN}</span></dt>

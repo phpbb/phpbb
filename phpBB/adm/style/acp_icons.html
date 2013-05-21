@@ -108,8 +108,8 @@
 			<td><input class="text post" type="text" name="code[{items.IMG}]" value="{items.CODE}" size="10" maxlength="50" /></td>
 			<td><input class="text post" type="text" name="emotion[{items.IMG}]" value="{items.EMOTION}" size="10" maxlength="50" /></td>
 		<!-- ENDIF -->
-		<td><input class="text post" type="text" size="3" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
-		<td><input class="text post" type="text" size="3" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
+		<td><input class="text post" type="number" size="3" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
+		<td><input class="text post" type="number" size="3" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
 		<td>
 			<input type="checkbox" class="radio" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} onclick="toggle_select('{items.A_IMG}', this.checked, '{items.S_ROW_COUNT}');"/>
 			<!-- IF items.S_ID -->
@@ -136,8 +136,8 @@
 		<td style="vertical-align: top;"><img src="{IMG_SRC}" id="add_image_src" alt="" title="" /></td>
 		<td><input class="text post" type="text" name="add_code" id="add_code" value="{CODE}" size="10" maxlength="50" /></td>
 		<td><input class="text post" type="text" name="add_emotion" id="add_emotion" value="{EMOTION}" size="10" maxlength="50" /></td>
-		<td><input class="text post" type="text" size="3" name="add_width" id="add_width" value="{WIDTH}" /></td>
-		<td><input class="text post" type="text" size="3" name="add_height" id="add_height" value="{HEIGHT}" /></td>
+		<td><input class="text post" type="number" size="3" name="add_width" id="add_width" value="{WIDTH}" /></td>
+		<td><input class="text post" type="number" size="3" name="add_height" id="add_height" value="{HEIGHT}" /></td>
 		<td><input type="checkbox" class="radio" name="add_display_on_posting" checked="checked" onclick="toggle_select('add', this.checked, 'add_order');"/></td>
  		<td><select id="order_add_order" name="add_order">
 				<optgroup id="order_disp_add_order" label="{L_DISPLAY_POSTING}">{S_ADD_ORDER_LIST_DISPLAY}</optgroup>
