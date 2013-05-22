@@ -664,6 +664,49 @@ phpbb.resizeTextArea = function(items, options) {
 };
 
 /**
+* Check if cursor in textarea is currently inside a bbcode tag
+*
+* @param {object} textarea Textarea DOM object
+* @param {Array} startTags List of start tags to look for
+*		For example, Array('[code]', '[code=')
+* @param {Array} endTags List of end tags to look for
+*		For example, Array('[/code]')
+*
+* @return {boolean} True if cursor is in bbcode tag
+*/
+phpbb.inBBCodeTag = function(textarea, startTags, endTags) {
+	var start = textarea.selectionStart,
+		lastEnd = -1,
+		lastStart = -1,
+		i, index, value;
+
+	if (typeof start !== 'number') {
+		return false;
+	}
+
+	value = textarea.value.toLowerCase();
+
+	for (i = 0; i < startTags.length; i++) {
+		var tagLength = startTags[i].length;
+		if (start >= tagLength) {
+			index = value.lastIndexOf(startTags[i], start - tagLength);
+			lastStart = Math.max(lastStart, index);
+		}
+	}
+	if (lastStart == -1) return false;
+
+	if (start > 0) {
+		for (i = 0; i < endTags.length; i++) {
+			index = value.lastIndexOf(endTags[i], start - 1);
+			lastEnd = Math.max(lastEnd, index);
+		}
+	}
+
+	return (lastEnd < lastStart);
+}
+
+
+/**
 * Adjust textarea to manage code bbcode
 *
 * This function allows to use tab characters when typing code
@@ -689,36 +732,8 @@ phpbb.applyCodeEditor = function(textarea) {
 		return;
 	}
 
-	/**
-	* Check if cursor is currently inside code tag
-	*
-	* @return {boolean} True if cursor is in code tag
-	*/
 	function inTag() {
-		var start = textarea.selectionStart,
-			lastEnd = -1,
-			lastStart = -1,
-			i, index, value;
-
-		value = textarea.value.toLowerCase();
-
-		for (i = 0; i < startTags.length; i++) {
-			var tagLength = startTags[i].length;
-			if (start >= tagLength) {
-				index = value.lastIndexOf(startTags[i], start - tagLength);
-				lastStart = Math.max(lastStart, index);
-			}
-		}
-		if (lastStart == -1) return false;
-
-		if (start > 0) {
-			for (i = 0; i < endTags.length; i++) {
-				index = value.lastIndexOf(endTags[i], start - 1);
-				lastEnd = Math.max(lastEnd, index);
-			}
-		}
-
-		return (lastEnd < lastStart);
+		return phpbb.inBBCodeTag(textarea, startTags, endTags);
 	}
 
 	/**
