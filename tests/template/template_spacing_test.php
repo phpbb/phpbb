@@ -59,10 +59,6 @@ class phpbb_template_template_spacing_test extends phpbb_template_template_test_
 	*/
 	public function test_event($desc, $dataset, $style_names, $file, array $vars, array $block_vars, array $destroy, $expected)
 	{
-		$this->markTestIncomplete(
-			'This test will fail until PHPBB3-11435 is fixed'
-		);
-
 		// Reset the engine state
 		$this->setup_engine_for_events($dataset, $style_names);
 
