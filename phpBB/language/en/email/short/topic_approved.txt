@@ -7,5 +7,4 @@ You are receiving this notification because your topic "{TOPIC_TITLE}" at "{SITE
 If you want to view the topic, click the following link:
 {U_VIEW_TOPIC}
 
-
 {EMAIL_SIG}

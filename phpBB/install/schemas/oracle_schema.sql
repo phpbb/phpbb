@@ -870,10 +870,28 @@ END;
 	Table: 'phpbb_notification_types'
 */
 CREATE TABLE phpbb_notification_types (
-	notification_type varchar2(255) DEFAULT '' ,
+	notification_type_id number(4) NOT NULL,
+	notification_type_name varchar2(255) DEFAULT '' ,
 	notification_type_enabled number(1) DEFAULT '1' NOT NULL,
-	CONSTRAINT pk_phpbb_notification_types PRIMARY KEY (notification_type, notification_type_enabled)
+	CONSTRAINT pk_phpbb_notification_types PRIMARY KEY (notification_type_id),
+	CONSTRAINT u_phpbb_type UNIQUE (notification_type_name)
 )
+/
+
+
+CREATE SEQUENCE phpbb_notification_types_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_notification_types
+BEFORE INSERT ON phpbb_notification_types
+FOR EACH ROW WHEN (
+	new.notification_type_id IS NULL OR new.notification_type_id = 0
+)
+BEGIN
+	SELECT phpbb_notification_types_seq.nextval
+	INTO :new.notification_type_id
+	FROM dual;
+END;
 /
 
 
@@ -881,8 +899,8 @@ CREATE TABLE phpbb_notification_types (
 	Table: 'phpbb_notifications'
 */
 CREATE TABLE phpbb_notifications (
-	notification_id number(8) NOT NULL,
-	item_type varchar2(255) DEFAULT '' ,
+	notification_id number(10) NOT NULL,
+	notification_type_id number(4) DEFAULT '0' NOT NULL,
 	item_id number(8) DEFAULT '0' NOT NULL,
 	item_parent_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
@@ -893,7 +911,7 @@ CREATE TABLE phpbb_notifications (
 )
 /
 
-CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id)
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (notification_type_id, item_id)
 /
 CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read)
 /

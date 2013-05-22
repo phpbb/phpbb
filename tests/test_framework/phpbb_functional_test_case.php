@@ -148,14 +148,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::$config['table_prefix'],
 			array()
 		);
+		$container = new phpbb_mock_container_builder();
+		$container->set('migrator', $migrator);
+
 		$extension_manager = new phpbb_extension_manager(
-			new phpbb_mock_container_builder(),
+			$container,
 			$db,
 			$config,
-			$migrator,
+			new phpbb_filesystem(),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
-			'.' . $php_ext,
+			$php_ext,
 			$this->get_cache_driver()
 		);
 
@@ -196,12 +199,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);
 
 		$data = array_merge($data, array(
-			'email_enable'		=> false,
-			'smtp_delivery'		=> false,
-			'smtp_host'		=> '',
-			'smtp_auth'		=> '',
-			'smtp_user'		=> '',
-			'smtp_pass'		=> '',
+			'email_enable'		=> true,
+			'smtp_delivery'		=> true,
+			'smtp_host'			=> 'nxdomain.phpbb.com',
+			'smtp_auth'			=> '',
+			'smtp_user'			=> 'nxuser',
+			'smtp_pass'			=> 'nxpass',
 			'cookie_secure'		=> false,
 			'force_server_vars'	=> false,
 			'server_protocol'	=> $parseURL['scheme'] . '://',
@@ -316,6 +319,90 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return user_add($user_row);
 	}
 
+	protected function remove_user_group($group_name, $usernames)
+	{
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
+
+		$config = new phpbb_config(array());
+		$config['coppa_enable'] = 0;
+
+		$db = $this->get_db();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = $this->getMock('phpbb_user');
+		$auth = $this->getMock('phpbb_auth');
+
+		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new phpbb_cache_driver_null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
+
+		if (!function_exists('utf_clean_string'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
+		}
+		if (!function_exists('group_user_del'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
+		}
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		return group_user_del($group_id, false, $usernames, $group_name);
+	}
+
+	protected function add_user_group($group_name, $usernames)
+	{
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
+
+		$config = new phpbb_config(array());
+		$config['coppa_enable'] = 0;
+
+		$db = $this->get_db();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = $this->getMock('phpbb_user');
+		$auth = $this->getMock('phpbb_auth');
+
+		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new phpbb_cache_driver_null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
+
+		if (!function_exists('utf_clean_string'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
+		}
+		if (!function_exists('group_user_del'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
+		}
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		return group_user_add($group_id, false, $usernames, $group_name);
+	}
+
 	protected function login($username = 'admin')
 	{
 		$this->add_lang('ucp');
@@ -338,6 +425,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 				$this->sid = $cookie->getValue();
 			}
 		}
+	}
+
+	protected function logout()
+	{
+		$this->add_lang('ucp');
+
+		$crawler = $this->request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
+		$this->assert_response_success();
+		$this->assertContains($this->lang('LOGOUT_REDIRECT'), $crawler->filter('#message')->text());
+		unset($this->sid);
+
 	}
 
 	/**
@@ -507,6 +605,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertEquals(200, $this->client->getResponse()->getStatus());
 		$content = $this->client->getResponse()->getContent();
 		$this->assertNotContains('Fatal error:', $content);
+		$this->assertNotContains('Notice:', $content);
+		$this->assertNotContains('Warning:', $content);
+		$this->assertNotContains('[phpBB Debug]', $content);
 	}
 
 	public function assert_filter($crawler, $expr, $msg = null)
@@ -523,5 +624,69 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$msg .= "`$expr` not found in DOM.";
 		$this->assertGreaterThan(0, count($nodes), $msg);
 		return $nodes;
+	}
+
+	/**
+	* Asserts that exactly one checkbox with name $name exists within the scope
+	* of $crawler and that the checkbox is checked.
+	*
+	* @param Symfony\Component\DomCrawler\Crawler $crawler
+	* @param string $name
+	* @param string $message
+	*
+	* @return null
+	*/
+	public function assert_checkbox_is_checked($crawler, $name, $message = '')
+	{
+		$this->assertSame(
+			'checked',
+			$this->assert_find_one_checkbox($crawler, $name)->attr('checked'),
+			$message ?: "Failed asserting that checkbox $name is checked."
+		);
+	}
+
+	/**
+	* Asserts that exactly one checkbox with name $name exists within the scope
+	* of $crawler and that the checkbox is unchecked.
+	*
+	* @param Symfony\Component\DomCrawler\Crawler $crawler
+	* @param string $name
+	* @param string $message
+	*
+	* @return null
+	*/
+	public function assert_checkbox_is_unchecked($crawler, $name, $message = '')
+	{
+		$this->assertSame(
+			'',
+			$this->assert_find_one_checkbox($crawler, $name)->attr('checked'),
+			$message ?: "Failed asserting that checkbox $name is unchecked."
+		);
+	}
+
+	/**
+	* Searches for an input element of type checkbox with the name $name using
+	* $crawler. Contains an assertion that only one such checkbox exists within
+	* the scope of $crawler.
+	*
+	* @param Symfony\Component\DomCrawler\Crawler $crawler
+	* @param string $name
+	* @param string $message
+	*
+	* @return Symfony\Component\DomCrawler\Crawler
+	*/
+	public function assert_find_one_checkbox($crawler, $name, $message = '')
+	{
+		$query = sprintf('//input[@type="checkbox" and @name="%s"]', $name);
+		$result = $crawler->filterXPath($query);
+
+		$this->assertEquals(
+			1,
+			sizeof($result),
+			$message ?: 'Failed asserting that exactly one checkbox with name' .
+				" $name exists in crawler scope."
+		);
+
+		return $result;
 	}
 }

@@ -642,17 +642,30 @@ END;;
 
 # Table: 'phpbb_notification_types'
 CREATE TABLE phpbb_notification_types (
-	notification_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notification_type_id INTEGER NOT NULL,
+	notification_type_name VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	notification_type_enabled INTEGER DEFAULT 1 NOT NULL
 );;
 
-ALTER TABLE phpbb_notification_types ADD PRIMARY KEY (notification_type, notification_type_enabled);;
+ALTER TABLE phpbb_notification_types ADD PRIMARY KEY (notification_type_id);;
+
+CREATE UNIQUE INDEX phpbb_notification_types_type ON phpbb_notification_types(notification_type_name);;
+
+CREATE GENERATOR phpbb_notification_types_gen;;
+SET GENERATOR phpbb_notification_types_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_notification_types FOR phpbb_notification_types
+BEFORE INSERT
+AS
+BEGIN
+	NEW.notification_type_id = GEN_ID(phpbb_notification_types_gen, 1);
+END;;
 
 
 # Table: 'phpbb_notifications'
 CREATE TABLE phpbb_notifications (
 	notification_id INTEGER NOT NULL,
-	item_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notification_type_id INTEGER DEFAULT 0 NOT NULL,
 	item_id INTEGER DEFAULT 0 NOT NULL,
 	item_parent_id INTEGER DEFAULT 0 NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
@@ -663,7 +676,7 @@ CREATE TABLE phpbb_notifications (
 
 ALTER TABLE phpbb_notifications ADD PRIMARY KEY (notification_id);;
 
-CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications(item_type, item_id);;
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications(notification_type_id, item_id);;
 CREATE INDEX phpbb_notifications_user ON phpbb_notifications(user_id, notification_read);;
 
 CREATE GENERATOR phpbb_notifications_gen;;

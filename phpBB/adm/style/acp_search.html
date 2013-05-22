@@ -18,11 +18,11 @@
 	</dl>
 	<dl>
 		<dt><label for="search_interval">{L_SEARCH_INTERVAL}{L_COLON}</label><br /><span>{L_SEARCH_INTERVAL_EXPLAIN}</span></dt>
-		<dd><input id="search_interval" type="text" size="4" maxlength="4" name="config[search_interval]" value="{SEARCH_INTERVAL}" /> {L_SECONDS}</dd>
+		<dd><input id="search_interval" type="number" size="4" maxlength="4" min="0" max="9999" name="config[search_interval]" value="{SEARCH_INTERVAL}" /> {L_SECONDS}</dd>
 	</dl>
 	<dl>
 		<dt><label for="search_anonymous_interval">{L_SEARCH_GUEST_INTERVAL}{L_COLON}</label><br /><span>{L_SEARCH_GUEST_INTERVAL_EXPLAIN}</span></dt>
-		<dd><input id="search_anonymous_interval" type="text" size="4" maxlength="4" name="config[search_anonymous_interval]" value="{SEARCH_GUEST_INTERVAL}" /> {L_SECONDS}</dd>
+		<dd><input id="search_anonymous_interval" type="number" size="4" maxlength="4" min="0" max="9999" name="config[search_anonymous_interval]" value="{SEARCH_GUEST_INTERVAL}" /> {L_SECONDS}</dd>
 	</dl>
 	<dl>
 		<dt><label for="limit_search_load">{L_LIMIT_SEARCH_LOAD}{L_COLON}</label><br /><span>{L_LIMIT_SEARCH_LOAD_EXPLAIN}</span></dt>
@@ -30,15 +30,15 @@
 	</dl>
 	<dl>
 		<dt><label for="min_search_author_chars">{L_MIN_SEARCH_AUTHOR_CHARS}{L_COLON}</label><br /><span>{L_MIN_SEARCH_AUTHOR_CHARS_EXPLAIN}</span></dt>
-		<dd><input id="min_search_author_chars" type="text" size="4" maxlength="4" name="config[min_search_author_chars]" value="{MIN_SEARCH_AUTHOR_CHARS}" /></dd>
+		<dd><input id="min_search_author_chars" type="number" size="4" maxlength="4" min="0" max="9999" name="config[min_search_author_chars]" value="{MIN_SEARCH_AUTHOR_CHARS}" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="max_num_search_keywords">{L_MAX_NUM_SEARCH_KEYWORDS}{L_COLON}</label><br /><span>{L_MAX_NUM_SEARCH_KEYWORDS_EXPLAIN}</span></dt>
-		<dd><input id="max_num_search_keywords" type="text" size="4" maxlength="4" name="config[max_num_search_keywords]" value="{MAX_NUM_SEARCH_KEYWORDS}" /></dd>
+		<dd><input id="max_num_search_keywords" type="number" size="4" maxlength="4" min="0" max="9999" name="config[max_num_search_keywords]" value="{MAX_NUM_SEARCH_KEYWORDS}" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="search_store_results">{L_SEARCH_STORE_RESULTS}{L_COLON}</label><br /><span>{L_SEARCH_STORE_RESULTS_EXPLAIN}</span></dt>
-		<dd><input id="search_store_results" type="text" size="4" maxlength="6" name="config[search_store_results]" value="{SEARCH_STORE_RESULTS}" /> {L_SECONDS}</dd>
+		<dd><input id="search_store_results" type="number" size="4" maxlength="6" min="0" max="999999" name="config[search_store_results]" value="{SEARCH_STORE_RESULTS}" /> {L_SECONDS}</dd>
 	</dl>
 	</fieldset>
 

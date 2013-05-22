@@ -439,16 +439,17 @@ CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id
 
 # Table: 'phpbb_notification_types'
 CREATE TABLE phpbb_notification_types (
-	notification_type varchar(255) NOT NULL DEFAULT '',
-	notification_type_enabled INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	PRIMARY KEY (notification_type, notification_type_enabled)
+	notification_type_id INTEGER PRIMARY KEY NOT NULL ,
+	notification_type_name varchar(255) NOT NULL DEFAULT '',
+	notification_type_enabled INTEGER UNSIGNED NOT NULL DEFAULT '1'
 );
 
+CREATE UNIQUE INDEX phpbb_notification_types_type ON phpbb_notification_types (notification_type_name);
 
 # Table: 'phpbb_notifications'
 CREATE TABLE phpbb_notifications (
 	notification_id INTEGER PRIMARY KEY NOT NULL ,
-	item_type varchar(255) NOT NULL DEFAULT '',
+	notification_type_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	item_parent_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -457,7 +458,7 @@ CREATE TABLE phpbb_notifications (
 	notification_data text(65535) NOT NULL DEFAULT ''
 );
 
-CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id);
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (notification_type_id, item_id);
 CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read);
 
 # Table: 'phpbb_poll_options'

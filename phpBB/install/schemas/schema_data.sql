@@ -18,6 +18,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode', '1'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_birthdays', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bookmarks', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_emailreuse', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_password_reset', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_forum_notify', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_mass_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars', 'USERNAME_CHARS_ANY');
@@ -59,6 +60,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email', 'add
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig', '{L_CONFIG_BOARD_EMAIL_SIG}');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_hide_emails', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_index_text', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone', 'UTC');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_interval', '10');
@@ -174,7 +176,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewtopic
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_track', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_cdn', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jumpbox', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_notifications', '1');
@@ -793,9 +795,9 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogm');
 
 # User Notification Options (for first user)
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_post', 0, 2, '');
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_post', 0, 2, 'phpbb_notification_method_email');
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_topic', 0, 2, '');
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('phpbb_notification_type_topic', 0, 2, 'phpbb_notification_method_email');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('post', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('post', 0, 2, 'email');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('topic', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('topic', 0, 2, 'email');
 
 # POSTGRES COMMIT #

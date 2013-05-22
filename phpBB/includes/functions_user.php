@@ -2924,8 +2924,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			{
 				$messenger->template('group_approved', $row['user_lang']);
 
-				$messenger->to($row['user_email'], $row['username']);
-				$messenger->im($row['user_jabber'], $row['username']);
+				$messenger->set_addresses($row);
 
 				$messenger->assign_vars(array(
 					'USERNAME'		=> htmlspecialchars_decode($row['username']),

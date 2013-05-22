@@ -106,10 +106,25 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		}
 		$this->db->sql_freeresult($result);
 
+		$sql = 'SELECT user_id
+			FROM ' . FORUMS_WATCH_TABLE . '
+			WHERE forum_id = ' . (int) $post['forum_id'] . '
+				AND notify_status = ' . NOTIFY_YES . '
+				AND user_id <> ' . (int) $post['poster_id'];
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$users[] = $row['user_id'];
+		}
+		$this->db->sql_freeresult($result);
+
 		if (empty($users))
 		{
 			return array();
 		}
+
+		$users = array_unique($users);
+		sort($users);
 
 		$auth_read = $this->auth->acl_get_list($users, 'f_read', $post['forum_id']);
 
@@ -123,11 +138,11 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
 		$update_notifications = array();
 		$sql = 'SELECT n.*
-			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . " nt
-			WHERE n.item_type = '" . $this->get_type() . "'
-				AND n.item_parent_id = " . (int) self::get_item_parent_id($post) . '
+			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
+			WHERE n.notification_type_id = ' . (int) $this->notification_type_id . '
+				AND n.item_parent_id = ' . (int) self::get_item_parent_id($post) . '
 				AND n.notification_read = 0
-				AND nt.notification_type = n.item_type
+				AND nt.notification_type_id = n.notification_type_id
 				AND nt.notification_type_enabled = 1';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))

@@ -90,9 +90,9 @@ include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
 // Setup class loader first
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", $phpEx);
 $phpbb_class_loader->register();
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
 // Set up container
@@ -666,6 +666,21 @@ class module
 		{
 			case 'text':
 			case 'password':
+			// HTML5 text-like input types
+			case 'color':
+			case 'date':
+			case 'time':
+			case 'datetime':
+			case 'datetime-local':
+			case 'email':
+			case 'month':
+			case 'number':
+			case 'range':
+			case 'search':
+			case 'tel':
+			case 'url':
+			case 'week':
+
 				$size = (int) $tpl_type[1];
 				$maxlength = (int) $tpl_type[2];
 

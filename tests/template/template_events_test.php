@@ -16,9 +16,10 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 		return array(
 			/*
 			array(
-				'', // file
+				'', // Description
 				'', // dataset
 				array(), // style names
+				'', // file
 				array(), // vars
 				array(), // block vars
 				array(), // destroy

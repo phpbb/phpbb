@@ -111,6 +111,17 @@ class phpbb_lock_flock
 	}
 
 	/**
+	* Does this process own the lock?
+	*
+	* @return	bool			true if lock is owned
+	*							false otherwise
+	*/
+	public function owns_lock()
+	{
+		return (bool) $this->lock_fp;
+	}
+
+	/**
 	* Releases the lock.
 	*
 	* The lock must have been previously obtained, that is, acquire() call

@@ -29,7 +29,7 @@
 		<!-- IF U_ACP --><br /><strong><a href="{U_ACP}">{L_ACP}</a></strong><!-- ENDIF -->
 	</div>
 
-	<div id="darkenwrapper" data-ajax-error-title="{L_AJAX_ERROR_TITLE}" data-ajax-error-text="{L_AJAX_ERROR_TEXT}">
+	<div id="darkenwrapper" data-ajax-error-title="{L_AJAX_ERROR_TITLE}" data-ajax-error-text="{L_AJAX_ERROR_TEXT}" data-ajax-error-text-abort="{L_AJAX_ERROR_TEXT_ABORT}" data-ajax-error-text-timeout="{L_AJAX_ERROR_TEXT_TIMEOUT}" data-ajax-error-text-parsererror="{L_AJAX_ERROR_TEXT_PARSERERROR}">
 		<div id="darken">&nbsp;</div>
 		<div class="phpbb_alert" id="loadingalert"><h3>{L_LOADING}</h3><p>{L_PLEASE_WAIT}</p></div>
 	</div>
@@ -53,6 +53,7 @@
 
 <script type="text/javascript" src="{T_JQUERY_LINK}"></script>
 <!-- IF S_JQUERY_FALLBACK --><script type="text/javascript">window.jQuery || document.write(unescape('%3Cscript src="{T_ASSETS_PATH}/javascript/jquery.js?assets_version={T_ASSETS_VERSION}" type="text/javascript"%3E%3C/script%3E'));</script><!-- ENDIF -->
+<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/forum_fn.js?assets_version={T_ASSETS_VERSION}"></script>
 <script type="text/javascript" src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
 <!-- INCLUDEJS template/ajax.js -->
 {SCRIPTS}

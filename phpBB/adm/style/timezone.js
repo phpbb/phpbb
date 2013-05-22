@@ -1,5 +1,7 @@
 (function($) { // Avoid conflicts with other libraries
 
+"use strict";
+
 $('#tz_date').change(function() {
 	phpbb.timezoneSwitchDate(false);
 });

@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notification_method_jabber extends phpbb_notification_method_email
+class phpbb_notification_method_jabber extends phpbb_notification_method_messenger_base
 {
 	/**
 	* Get notification method name
@@ -32,20 +32,6 @@ class phpbb_notification_method_jabber extends phpbb_notification_method_email
 	{
 		return 'jabber';
 	}
-
-	/**
-	* Notify method (since jabber gets sent through the same messenger, we let the jabber class inherit from this to reduce code duplication)
-	*
-	* @var mixed
-	*/
-	protected $notify_method = NOTIFY_IM;
-
-	/**
-	* Base directory to prepend to the email template name
-	*
-	* @var string
-	*/
-	protected $email_template_base_dir = 'short/';
 
 	/**
 	* Is this method available for the user?
@@ -62,7 +48,13 @@ class phpbb_notification_method_jabber extends phpbb_notification_method_email
 	*/
 	public function global_available()
 	{
-		return ($this->config['jab_enable'] && @extension_loaded('xml'));
+		return !(
+			empty($this->config['jab_enable']) ||
+			empty($this->config['jab_host']) ||
+			empty($this->config['jab_username']) ||
+			empty($this->config['jab_password']) ||
+			!@extension_loaded('xml')
+		);
 	}
 
 	public function notify()
@@ -72,6 +64,6 @@ class phpbb_notification_method_jabber extends phpbb_notification_method_email
 			return;
 		}
 
-		return parent::notify();
+		return $this->notify_using_messenger(NOTIFY_IM, 'short/');
 	}
 }
