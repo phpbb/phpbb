@@ -117,29 +117,15 @@ jQuery(document).ready(function() {
 		}
 
 		function subPanels(p) {
-			var i, e, t;
+			var i;
 
 			if (typeof(p) === 'string') {
 				show_panel = p;
 			}
 
 			for (i = 0; i < panels.length; i++) {
-				e = document.getElementById(panels[i]);
-				t = document.getElementById(panels[i] + '-tab');
-
-				if (e) {
-					if (panels[i] === show_panel) {
-						e.style.display = 'block';
-						if (t) {
-							t.className = 'activetab';
-						}
-					} else {
-						e.style.display = 'none';
-						if (t) {
-							t.className = '';
-						}
-					}
-				}
+				jQuery('#' + panels[i]).css('display', panels[i] === show_panel ? 'block' : 'none');
+				jQuery('#' + panels[i] + '-tab').toggleClass('activetab', panels[i] === show_panel);
 			}
 		}
 	});
