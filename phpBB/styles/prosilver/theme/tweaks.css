@@ -9,6 +9,10 @@ tweaks required due to its poor CSS support.
 	zoom: 1;
 }
 
+ul.linklist {
+	zoom: 1;
+}
+
 /* Align checkboxes/radio buttons nicely */
 dd label input { 
 	vertical-align: text-bottom; 
@@ -46,4 +50,19 @@ dd.lastpost, dd.redirect, dd.moderation, dd.time, dd.info {
 
 dd.option {
 	*width: 124px;
+}
+
+/* Notifications list for IE7 */
+#notification_list {
+	*left: 0;
+}
+
+#notification_list .header_settings {
+	*position: absolute;
+	*right: 10px;
+	*top: 0;
+}
+
+.icon-notification {
+	*z-index: 2;
 }
