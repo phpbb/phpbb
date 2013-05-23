@@ -5,16 +5,21 @@
 	<div class="navbar">
 		<div class="inner">
 
-		<ul class="linklist">
+		<ul class="linklist leftside bulletin">
 			<li class="icon-home"><!-- IF U_SITE_HOME --><a href="{U_SITE_HOME}">{L_SITE_HOME}</a> <strong>&#8249;</strong> <!-- ENDIF --><a href="{U_INDEX}" accesskey="h">{L_INDEX}</a>
-				<!-- EVENT overall_footer_breadcrumb_append --></li>
-				<!-- IF not S_IS_BOT -->
-					<!-- IF U_WATCH_FORUM_LINK --><li <!-- IF S_WATCHING_FORUM -->class="icon-unsubscribe"<!-- ELSE -->class="icon-subscribe"<!-- ENDIF -->><a href="{U_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="toggle_link" data-toggle-class="icon-<!-- IF not S_WATCHING_FORUM -->unsubscribe<!-- ELSE -->subscribe<!-- ENDIF -->" data-toggle-text="{S_WATCH_FORUM_TOGGLE}" data-toggle-url="{U_WATCH_FORUM_TOGGLE}">{S_WATCH_FORUM_TITLE}</a></li><!-- ENDIF -->
-					<!-- IF U_WATCH_TOPIC --><li <!-- IF S_WATCHING_TOPIC -->class="icon-unsubscribe"<!-- ELSE -->class="icon-subscribe"<!-- ENDIF -->><a href="{U_WATCH_TOPIC}" title="{S_WATCH_TOPIC_TITLE}" data-ajax="toggle_link" data-toggle-class="<!-- IF not S_WATCHING_TOPIC -->icon-unsubscribe<!-- ELSE -->icon-subscribe<!-- ENDIF -->" data-toggle-text="{S_WATCH_TOPIC_TOGGLE}" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}">{S_WATCH_TOPIC_TITLE}</a></li><!-- ENDIF -->
-					<!-- IF U_BOOKMARK_TOPIC --><li class="icon-bookmark"><a href="{U_BOOKMARK_TOPIC}" title="{L_BOOKMARK_TOPIC}" data-ajax="alt_text" data-alt-text="{S_BOOKMARK_TOGGLE}">{S_BOOKMARK_TOPIC}</a></li><!-- ENDIF -->
-					<!-- IF U_BUMP_TOPIC --><li class="icon-bump"><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}" data-ajax="true">{L_BUMP_TOPIC}</a></li><!-- ENDIF -->
-				<!-- ENDIF -->
-			<li class="rightside"><!-- IF U_TEAM --><a href="{U_TEAM}">{L_THE_TEAM}</a> &bull; <!-- ENDIF --><!-- IF not S_IS_BOT --><a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true">{L_DELETE_COOKIES}</a> &bull; <!-- ENDIF -->{S_TIMEZONE}</li>
+				<!-- EVENT overall_footer_breadcrumb_append -->
+			</li>
+			<!-- IF not S_IS_BOT -->
+				<!-- IF U_WATCH_FORUM_LINK --><li <!-- IF S_WATCHING_FORUM -->class="icon-unsubscribe"<!-- ELSE -->class="icon-subscribe"<!-- ENDIF -->><a href="{U_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="toggle_link" data-toggle-class="icon-<!-- IF not S_WATCHING_FORUM -->unsubscribe<!-- ELSE -->subscribe<!-- ENDIF -->" data-toggle-text="{S_WATCH_FORUM_TOGGLE}" data-toggle-url="{U_WATCH_FORUM_TOGGLE}">{S_WATCH_FORUM_TITLE}</a></li><!-- ENDIF -->
+				<!-- IF U_WATCH_TOPIC --><li <!-- IF S_WATCHING_TOPIC -->class="icon-unsubscribe"<!-- ELSE -->class="icon-subscribe"<!-- ENDIF -->><a href="{U_WATCH_TOPIC}" title="{S_WATCH_TOPIC_TITLE}" data-ajax="toggle_link" data-toggle-class="<!-- IF not S_WATCHING_TOPIC -->icon-unsubscribe<!-- ELSE -->icon-subscribe<!-- ENDIF -->" data-toggle-text="{S_WATCH_TOPIC_TOGGLE}" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}">{S_WATCH_TOPIC_TITLE}</a></li><!-- ENDIF -->
+				<!-- IF U_BOOKMARK_TOPIC --><li class="icon-bookmark"><a href="{U_BOOKMARK_TOPIC}" title="{L_BOOKMARK_TOPIC}" data-ajax="alt_text" data-alt-text="{S_BOOKMARK_TOGGLE}">{S_BOOKMARK_TOPIC}</a></li><!-- ENDIF -->
+				<!-- IF U_BUMP_TOPIC --><li class="icon-bump"><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}" data-ajax="true">{L_BUMP_TOPIC}</a></li><!-- ENDIF -->
+			<!-- ENDIF -->
+		</ul>
+		<ul class="linklist rightside bulletin">
+			<!-- IF U_TEAM --><li><a href="{U_TEAM}">{L_THE_TEAM}</a><!-- ENDIF -->
+			<!-- IF not S_IS_BOT --><li><a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true">{L_DELETE_COOKIES}</a></li><!-- ENDIF -->
+			<li>{S_TIMEZONE}</li>
 		</ul>
 
 		</div>

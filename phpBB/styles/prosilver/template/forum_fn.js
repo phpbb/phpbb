@@ -385,3 +385,22 @@ function apply_onkeypress_event() {
 }
 
 jQuery(document).ready(apply_onkeypress_event);
+
+/**
+* Adjust HTML code for IE8 and older versions
+*/
+(function($) {
+	$(document).ready(function() {
+		var test = document.createElement('div'),
+			oldBrowser = (typeof test.style.borderRadius == 'undefined');
+		delete test;
+
+		if (!oldBrowser) {
+			return;
+		}
+
+		// Fix .linkslist.bulletin lists
+		$('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
+	});
+})(jQuery);
+
