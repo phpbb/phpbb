@@ -42,19 +42,12 @@ function jumpto() {
 * id = ID of parent container, name = name prefix, state = state [true/false]
 */
 function marklist(id, name, state) {
-	var parent = document.getElementById(id) || document[id];
-
-	if (!parent) {
-		return;
-	}
-
-	var rb = parent.getElementsByTagName('input');
-
-	for (var r = 0; r < rb.length; r++) {
-		if (rb[r].name.substr(0, name.length) === name) {
-			rb[r].checked = state;
+	jQuery('#' + id + ' input[type=checkbox][name]').each(function() {
+		var $this = jQuery(this);
+		if ($this.attr('name').substr(0, name.length) == name) {
+			$this.prop('checked', state);
 		}
-	}
+	});
 }
 
 /**
