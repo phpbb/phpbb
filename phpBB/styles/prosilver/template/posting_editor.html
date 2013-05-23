@@ -193,11 +193,11 @@
 	<!-- ENDIF -->
 
 	<!-- IF not S_PRIVMSGS and not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
-		<div id="tabs">
+		<div id="tabs" class="sub-panels" data-show-panel="options-panel" data-panels="options-panel,attach-panel,poll-panel">
 			<ul>
-				<li id="options-panel-tab" class="activetab"><a href="#tabs" onclick="subPanels('options-panel'); return false;"><span>{L_OPTIONS}</span></a></li>
-				<!-- IF S_SHOW_ATTACH_BOX --><li id="attach-panel-tab"><a href="#tabs" onclick="subPanels('attach-panel'); return false;"><span>{L_ADD_ATTACHMENT}</span></a></li><!-- ENDIF -->
-				<!-- IF S_SHOW_POLL_BOX || S_POLL_DELETE --><li id="poll-panel-tab"><a href="#tabs" onclick="subPanels('poll-panel'); return false;"><span>{L_ADD_POLL}</span></a></li><!-- ENDIF -->
+				<li id="options-panel-tab" class="activetab"><a href="#tabs" data-subpanel="options-panel"><span>{L_OPTIONS}</span></a></li>
+				<!-- IF S_SHOW_ATTACH_BOX --><li id="attach-panel-tab"><a href="#tabs" data-subpanel="attach-panel"><span>{L_ADD_ATTACHMENT}</span></a></li><!-- ENDIF -->
+				<!-- IF S_SHOW_POLL_BOX || S_POLL_DELETE --><li id="poll-panel-tab"><a href="#tabs" data-subpanel="poll-panel"><span>{L_ADD_POLL}</span></a></li><!-- ENDIF -->
 			</ul>
 		</div>
 	<!-- ENDIF -->
