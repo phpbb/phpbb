@@ -18,6 +18,7 @@ define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 if (!$config['feed_enable'])
 {
@@ -70,6 +71,9 @@ if ($feed === false)
 	trigger_error('NO_FEED');
 }
 
+// Get attachments for this feed
+$feed->fetch_attachments();
+
 // Open Feed
 $feed->open();
 
@@ -105,7 +109,7 @@ while ($row = $feed->get_item())
 		'title'			=> censor_text($title),
 		'category'		=> ($config['feed_item_statistics'] && !empty($row['forum_id'])) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
 		'category_name'	=> ($config['feed_item_statistics'] && isset($row['forum_name'])) ? $row['forum_name'] : '',
-		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options)),
+		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], (($row['post_attachment']) ? $feed->attachments[$row['post_id']] : array()))),
 		'statistics'	=> '',
 	);
 
@@ -264,7 +268,7 @@ function feed_format_date($time)
 /**
 * Generate text content
 **/
-function feed_generate_content($content, $uid, $bitfield, $options)
+function feed_generate_content($content, $uid, $bitfield, $options, $forum_id, $post_attachments)
 {
 	global $user, $config, $phpbb_root_path, $phpEx, $board_url;
 
@@ -313,8 +317,15 @@ function feed_generate_content($content, $uid, $bitfield, $options)
 	// Remove some specials html tag, because somewhere there are a mod to allow html tags ;)
 	$content	= preg_replace( '#<(script|iframe)([^[]+)\1>#siU', ' <strong>$1</strong> ', $content);
 
+	// Parse inline images to display with the feed
+	if (count($post_attachments) > 0)
+	{
+		$update_count = array();
+		parse_attachments($forum_id, $content, $post_attachments, $update_count);
+	}	
+
 	// Remove Comments from inline attachments [ia]
-	$content	= preg_replace('#<div class="(inline-attachment|attachtitle)">(.*?)<!-- ia(.*?) -->(.*?)<!-- ia(.*?) -->(.*?)</div>#si','$4',$content);
+	$content = preg_replace('#<dd>(.*?)</dd>#','',$content);
 
 	// Replace some entities with their unicode counterpart
 	$entities = array(
@@ -645,6 +656,7 @@ class phpbb_feed_base
 class phpbb_feed_post_base extends phpbb_feed_base
 {
 	var $num_items = 'feed_limit_post';
+	var $attachments = array();
 
 	function set_keys()
 	{
@@ -677,6 +689,45 @@ class phpbb_feed_post_base extends phpbb_feed_base
 				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('published')])
 				. (($this->is_moderator_approve_forum($row['forum_id']) && !$row['post_approved']) ? ' ' . $this->separator_stats . ' ' . $user->lang['POST_UNAPPROVED'] : '');
 		}
+	}
+
+	function fetch_attachments()
+	{
+		global $db;
+
+		$sql_array = array(
+						'SELECT'	=> 'a.*',
+						'FROM'		=> array(
+							ATTACHMENTS_TABLE	=>	'a'
+						),			    
+						'WHERE'		=> 'a.in_message = 0 ',
+						'ORDER_BY'	=> 'a.filetime DESC, a.post_msg_id ASC'
+					);
+
+		if (isset($this->topic_id))
+		{
+			$sql_array['WHERE'] .= 'AND a.topic_id = ' . $this->topic_id;
+		}
+		else if (isset($this->forum_id))
+		{
+			$sql_array['LEFT_JOIN'] = array(
+											array(
+												'FROM'  => array(TOPICS_TABLE => 't'),
+												'ON'    => 'a.topic_id = t.topic_id'
+											)
+										);
+			$sql_array['WHERE'] .= 'AND t.forum_id = ' . $this->forum_id;
+		}
+
+		$sql = $db->sql_build_query('SELECT', $sql_array);
+		$result = $db->sql_query($sql);
+
+		// Set attachments in feed items
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$this->attachments[$row['post_msg_id']][] = $row;
+		}
+		$db->sql_freeresult($result);
 	}
 }
 
@@ -777,7 +828,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		// Get the actual data
 		$this->sql = array(
 			'SELECT'	=>	'f.forum_id, f.forum_name, ' .
-							'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+							'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				USERS_TABLE		=> 'u',
@@ -908,7 +959,7 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 		}
 
 		$this->sql = array(
-			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
@@ -1014,7 +1065,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 		global $auth, $db;
 
 		$this->sql = array(
-			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
@@ -1176,7 +1227,7 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_replies_real, t.topic_views, t.topic_time, t.topic_last_post_time,
-							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				POSTS_TABLE		=> 'p',
@@ -1246,7 +1297,7 @@ class phpbb_feed_topics extends phpbb_feed_topic_base
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_replies_real, t.topic_views, t.topic_time, t.topic_last_post_time,
-							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				POSTS_TABLE		=> 'p',
@@ -1340,7 +1391,7 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_replies, t.topic_replies_real, t.topic_views,
 							t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time,
-							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				POSTS_TABLE		=> 'p',
