@@ -242,7 +242,6 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$this->assert_response_success();
 
 		// Submit gravatar with incorrect email and correct size
-		$this->markTestIncomplete('No error when submitting incorrect ucp group settings. This needs to be fixed ASAP.');
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['avatar_driver']->select('avatar_driver_gravatar');
 		$form['avatar_gravatar_email']->setValue('test.example.com');
