@@ -413,13 +413,21 @@ class acp_groups
 						}
 					}
 
-					// Validate the length of "Maximum number of allowed recipients per private message" setting.
-					// We use 16777215 as a maximum because it matches MySQL unsigned mediumint maximum value
-					// which is the lowest amongst DBMSes supported by phpBB3
-					if ($max_recipients_error = validate_data($submit_ary, array('max_recipients' => array('num', false, 0, 16777215))))
+					/*
+					* Validate the length of "Maximum number of allowed recipients per
+					* private message" setting. We use 16777215 as a maximum because it matches
+					* MySQL unsigned mediumint maximum value which is the lowest amongst DBMSes
+					* supported by phpBB3. Also validate the submitted colour value.
+					*/
+					$validation_checks = array(
+						'max_recipients' => array('num', false, 0, 16777215),
+						'colour'	=> array('hex_colour', true),
+					);
+
+					if ($validation_error = validate_data($submit_ary, $validation_checks))
 					{
 						// Replace "error" string with its real, localised form
-						$error = array_merge($error, array_map(array(&$user, 'lang'), $max_recipients_error));
+						$error = array_merge($error, array_map(array(&$user, 'lang'), $validation_error));
 					}
 
 					if (!sizeof($error))
