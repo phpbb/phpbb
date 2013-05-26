@@ -213,8 +213,8 @@ if (!$db_tools->sql_table_exists($table_prefix . 'migrations'))
 }
 
 $migrator = $phpbb_container->get('migrator');
-$extension_manager = $phpbb_container->get('ext.manager');
-$finder = $extension_manager->get_finder();
+$phpbb_extension_manager = $phpbb_container->get('ext.manager');
+$finder = $phpbb_extension_manager->get_finder();
 
 $migrations = $finder
 	->core_path('includes/db/migration/data/')
