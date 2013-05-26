@@ -158,6 +158,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$cookieJar = new CookieJar;
 		self::$static_client = new Goutte\Client(array(), null, $cookieJar);
+		// Set client manually so we can increase the cURL timeout
+		self::$static_client->setClient(new Guzzle\Http\Client('', array(
+			Guzzle\Http\Client::DISABLE_REDIRECTS	=> true,
+			'curl.options'	=> array(
+				CURLOPT_TIMEOUT	=> 120
+			),
+		)));
 
 		// Reset the curl handle because it is 0 at this point and not a valid
 		// resource
