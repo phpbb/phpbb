@@ -17,6 +17,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected $client;
 	protected $root_url;
 
+	static protected $static_client;
+	static protected $static_root_url;
+
 	protected $cache = null;
 	protected $db = null;
 
@@ -75,6 +78,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	public function request($method, $path)
 	{
 		return $this->client->request($method, $this->root_url . $path);
+	}
+
+	static public function static_request($method, $path)
+	{
+		return self::$static_client->request($method, self::$static_root_url . $path);
 	}
 
 	// bootstrap, called after board is set up
@@ -148,28 +156,78 @@ class phpbb_functional_test_case extends phpbb_test_case
 			}
 		}
 
-		// begin data
-		$data = array();
+		$cookieJar = new CookieJar;
+		self::$static_client = new Goutte\Client(array(), null, $cookieJar);
 
-		$data = array_merge($data, self::$config);
-
-		$data = array_merge($data, array(
-			'default_lang'	=> 'en',
-			'admin_name'	=> 'admin',
-			'admin_pass1'	=> 'admin',
-			'admin_pass2'	=> 'admin',
-			'board_email'	=> 'nobody@example.com',
-		));
+		// Reset the curl handle because it is 0 at this point and not a valid
+		// resource
+		self::$static_client->getClient()->getCurlMulti()->reset(true);
+		self::$static_root_url = self::$config['phpbb_functional_url'];
 
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);
 
-		$data = array_merge($data, array(
-			'email_enable'		=> false,
-			'smtp_delivery'		=> false,
-			'smtp_host'		=> '',
-			'smtp_auth'		=> '',
-			'smtp_user'		=> '',
-			'smtp_pass'		=> '',
+		$crawler = self::static_request('GET', 'install/index.php?mode=install');
+		self::static_assert_response_success();
+		self::assertContains('Welcome to Installation', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form();
+
+		$crawler = self::$static_client->submit($form);
+		self::static_assert_response_success();
+		self::assertContains('Installation compatibility', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form();
+
+		$crawler = self::$static_client->submit($form);
+		self::static_assert_response_success();
+		self::assertContains('Database configuration', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form(array(
+			// Installer uses 3.0-style dbms name
+			'dbms'			=> str_replace('phpbb_db_driver_', '',  self::$config['dbms']),
+			'dbhost'		=> self::$config['dbhost'],
+			'dbport'		=> self::$config['dbport'],
+			'dbname'		=> self::$config['dbname'],
+			'dbuser'		=> self::$config['dbuser'],
+			'dbpasswd'		=> self::$config['dbpasswd'],
+			'table_prefix'	=> self::$config['table_prefix'],
+		));
+
+		$crawler = self::$static_client->submit($form);
+		self::static_assert_response_success();
+		self::assertContains('Successful connection', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form();
+
+		$crawler = self::$static_client->submit($form);
+		self::static_assert_response_success();
+		self::assertContains('Administrator configuration', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form(array(
+			'default_lang'	=> 'en',
+			'admin_name'	=> 'admin',
+			'admin_pass1'	=> 'adminadmin',
+			'admin_pass2'	=> 'adminadmin',
+			'board_email1'	=> 'nobody@example.com',
+			'board_email2'	=> 'nobody@example.com',
+		));
+
+		$crawler = self::$static_client->submit($form);
+		self::static_assert_response_success();
+		self::assertContains('Tests passed', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form();
+
+		$crawler = self::$static_client->submit($form);
+		self::static_assert_response_success();
+		self::assertContains('The configuration file has been written.', $crawler->filter('#main')->text());
+		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data(self::$config, self::$config['dbms'], array(), true, true));
+		$form = $crawler->selectButton('submit')->form();
+
+		$crawler = self::$static_client->submit($form);
+		self::static_assert_response_success();
+		self::assertContains('The settings on this page are only necessary to set if you know that you require something different from the default.', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form(array(
+			'email_enable'		=> true,
+			'smtp_delivery'		=> true,
+			'smtp_host'			=> 'nxdomain.phpbb.com',
+			'smtp_auth'			=> 'PLAIN',
+			'smtp_user'			=> 'nxuser',
+			'smtp_pass'			=> 'nxpass',
 			'cookie_secure'		=> false,
 			'force_server_vars'	=> false,
 			'server_protocol'	=> $parseURL['scheme'] . '://',
@@ -177,26 +235,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'server_port'		=> isset($parseURL['port']) ? (int) $parseURL['port'] : 80,
 			'script_path'		=> $parseURL['path'],
 		));
-		// end data
 
-		$content = self::do_request('install');
-		self::assertNotSame(false, $content);
-		self::assertContains('Welcome to Installation', $content);
+		$crawler = self::$static_client->submit($form);
+		self::static_assert_response_success();
+		self::assertContains('The database tables used by phpBB', $crawler->filter('#main')->text());
+		self::assertContains('have been created and populated with some initial data.', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form();
 
-		$content = self::do_request('create_table', $data);
-		self::assertNotSame(false, $content);
-		self::assertContains('The database tables used by phpBB', $content);
-		// 3.0 or 3.1
-		self::assertContains('have been created and populated with some initial data.', $content);
-
-		$content = self::do_request('config_file', $data);
-		self::assertNotSame(false, $content);
-		self::assertContains('Configuration file', $content);
-		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], array(), true, true));
-
-		$content = self::do_request('final', $data);
-		self::assertNotSame(false, $content);
-		self::assertContains('You have successfully installed', $content);
+		$crawler = self::$static_client->submit($form);
+		self::static_assert_response_success();
+		self::assertContains('You have successfully installed', $crawler->text());
 		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
 	}
 
@@ -270,7 +318,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'user_lang' => 'en',
 			'user_timezone' => 0,
 			'user_dateformat' => '',
-			'user_password' => phpbb_hash($username),
+			'user_password' => phpbb_hash($username . $username),
 		);
 		return user_add($user_row);
 	}
@@ -283,7 +331,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
-		$crawler = $this->client->submit($form, array('username' => $username, 'password' => $username));
+		$crawler = $this->client->submit($form, array('username' => $username, 'password' => $username . $username));
 		$this->assert_response_success();
 		$this->assertContains($this->lang('LOGIN_REDIRECT'), $crawler->filter('html')->text());
 
@@ -323,7 +371,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			if (strpos($field, 'password_') === 0)
 			{
-				$crawler = $this->client->submit($form, array('username' => $username, $field => $username));
+				$crawler = $this->client->submit($form, array('username' => $username, $field => $username . $username));
 				$this->assert_response_success();
 				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
 
@@ -396,5 +444,23 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertNotContains('Notice:', $content);
 		$this->assertNotContains('Warning:', $content);
 		$this->assertNotContains('[phpBB Debug]', $content);
+	}
+
+	/**
+	* Heuristic function to check that the response is success.
+	*
+	* When php decides to die with a fatal error, it still sends 200 OK
+	* status code. This assertion tries to catch that.
+	*
+	* @return null
+	*/
+	static public function static_assert_response_success()
+	{
+		self::assertEquals(200, self::$static_client->getResponse()->getStatus());
+		$content = self::$static_client->getResponse()->getContent();
+		self::assertNotContains('Fatal error:', $content);
+		self::assertNotContains('Notice:', $content);
+		//@todo: self::assertNotContains('Warning:', $content);
+		self::assertNotContains('[phpBB Debug]', $content);
 	}
 }
