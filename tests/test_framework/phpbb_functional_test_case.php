@@ -447,10 +447,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->assertEquals(200, $this->client->getResponse()->getStatus());
 		$content = $this->client->getResponse()->getContent();
-		$this->assertNotContains('Fatal error:', $content);
-		$this->assertNotContains('Notice:', $content);
-		$this->assertNotContains('Warning:', $content);
-		$this->assertNotContains('[phpBB Debug]', $content);
+
+		// Any output before the doc type means there was an error
+		$this->assertEquals(0, strpos($content, '<!DOCTYPE'));
 	}
 
 	/**
@@ -465,9 +464,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		self::assertEquals(200, self::$static_client->getResponse()->getStatus());
 		$content = self::$static_client->getResponse()->getContent();
-		self::assertNotContains('Fatal error:', $content);
-		self::assertNotContains('Notice:', $content);
-		//@todo: self::assertNotContains('Warning:', $content);
-		self::assertNotContains('[phpBB Debug]', $content);
+
+		// Any output before the doc type means there was an error
+		self::assertEquals(0, strpos($content, '<!DOCTYPE'));
 	}
 }
