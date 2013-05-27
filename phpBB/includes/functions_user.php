@@ -1910,7 +1910,7 @@ function validate_jabber($jid)
 */
 function phpbb_validate_hex_colour($colour, $optional = false)
 {
-	if (empty($colour))
+	if ($colour === '')
 	{
 		return (($optional) ? false : 'WRONG_DATA');
 	}
