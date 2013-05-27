@@ -15,6 +15,7 @@ require_once __DIR__ . '/../../phpBB/includes/cache.php';
 class phpbb_functional_test_case extends phpbb_test_case
 {
 	static protected $client;
+	static protected $cookieJar;
 	static protected $root_url;
 
 	protected $cache = null;
@@ -60,8 +61,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$this->bootstrap();
 
-		$this->cookieJar = new CookieJar;
-		self::$client = new Goutte\Client(array(), null, $this->cookieJar);
+		self::$cookieJar = new CookieJar;
+		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
 		// Reset the curl handle because it is 0 at this point and not a valid
 		// resource
 		self::$client->getClient()->getCurlMulti()->reset(true);
@@ -185,8 +186,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 			}
 		}
 
-		$cookieJar = new CookieJar;
-		self::$client = new Goutte\Client(array(), null, $cookieJar);
+		self::$cookieJar = new CookieJar;
+		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
 		// Set client manually so we can increase the cURL timeout
 		self::$client->setClient(new Guzzle\Http\Client('', array(
 			Guzzle\Http\Client::DISABLE_REDIRECTS	=> true,
@@ -360,7 +361,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assert_response_success();
 		$this->assertContains($this->lang('LOGIN_REDIRECT'), $crawler->filter('html')->text());
 
-		$cookies = $this->cookieJar->all();
+		$cookies = self::$cookieJar->all();
 
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
 		foreach ($cookies as $cookie);
@@ -400,7 +401,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				$this->assert_response_success();
 				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
 
-				$cookies = $this->cookieJar->all();
+				$cookies = self::$cookieJar->all();
 
 				// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
 				foreach ($cookies as $cookie);
