@@ -14,7 +14,7 @@ class phpbb_dbal_order_lower_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/styles.xml');
 	}
 
-	public function test_cross_join()
+	public function test_order_lower()
 	{
 		$db = $this->new_dbal();
 
