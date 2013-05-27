@@ -15,7 +15,7 @@ before_script:
   - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'create database phpbb_tests;' -U postgres; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'SET GLOBAL storage_engine=\"InnoDB\";'; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'SET GLOBAL innodb_strict_mode=\"ON\";'; fi"
-  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'SET GLOBAL sql_mode=\"ONLY_FULL_GROUP_BY\";'; fi"
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'SET GLOBAL sql_mode=\"TRADITIONAL,ONLY_FULL_GROUP_BY\";'; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS phpbb_tests;'; fi"
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then pear install --force phpunit/DbUnit; phpenv rehash; fi"
   - cd phpBB
