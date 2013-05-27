@@ -14,11 +14,8 @@ require_once __DIR__ . '/../../phpBB/includes/cache.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
-	protected $client;
-	protected $root_url;
-
-	static protected $static_client;
-	static protected $static_root_url;
+	static protected $client;
+	static protected $root_url;
 
 	protected $cache = null;
 	protected $db = null;
@@ -43,6 +40,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		parent::setUpBeforeClass();
 
 		self::$config = phpbb_test_case_helpers::get_test_config();
+		self::$root_url = self::$config['phpbb_functional_url'];
 
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
@@ -63,11 +61,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->bootstrap();
 
 		$this->cookieJar = new CookieJar;
-		$this->client = new Goutte\Client(array(), null, $this->cookieJar);
+		self::$client = new Goutte\Client(array(), null, $this->cookieJar);
 		// Reset the curl handle because it is 0 at this point and not a valid
 		// resource
-		$this->client->getClient()->getCurlMulti()->reset(true);
-		$this->root_url = self::$config['phpbb_functional_url'];
+		self::$client->getClient()->getCurlMulti()->reset(true);
+
 		// Clear the language array so that things
 		// that were added in other tests are gone
 		$this->lang = array();
@@ -75,14 +73,45 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->purge_cache();
 	}
 
-	public function request($method, $path)
+	/**
+	* Perform a request to page
+	*
+	* @param string	$method		HTTP Method
+	* @param string	$path		Page path, relative from phpBB root path
+	* @param array $form_data	An array of form field values
+	* @param bool	$skip_assert_response_success	Should we skip the basic response assertions?
+	* @return Symfony\Component\DomCrawler\Crawler
+	*/
+	static public function request($method, $path, $form_data = array(), $skip_assert_response_success = false)
 	{
-		return $this->client->request($method, $this->root_url . $path);
+		$crawler = self::$client->request($method, self::$root_url . $path, $form_data);
+
+		if (!$skip_assert_response_success)
+		{
+			self::assert_response_success();
+		}
+
+		return $crawler;
 	}
 
-	static public function static_request($method, $path)
+	/**
+	* Submits a form
+	*
+	* @param Symfony\Component\DomCrawler\Form $form A Form instance
+	* @param array $values An array of form field values
+	* @param bool	$skip_assert_response_success	Should we skip the basic response assertions?
+	* @return Symfony\Component\DomCrawler\Crawler
+	*/
+	static public function submit(Symfony\Component\DomCrawler\Form $form, array $values = array(), $skip_assert_response_success = false)
 	{
-		return self::$static_client->request($method, self::$static_root_url . $path);
+		$crawler = self::$client->submit($form, $values);
+
+		if (!$skip_assert_response_success)
+		{
+			self::assert_response_success();
+		}
+
+		return $crawler;
 	}
 
 	// bootstrap, called after board is set up
@@ -157,9 +186,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 
 		$cookieJar = new CookieJar;
-		self::$static_client = new Goutte\Client(array(), null, $cookieJar);
+		self::$client = new Goutte\Client(array(), null, $cookieJar);
 		// Set client manually so we can increase the cURL timeout
-		self::$static_client->setClient(new Guzzle\Http\Client('', array(
+		self::$client->setClient(new Guzzle\Http\Client('', array(
 			Guzzle\Http\Client::DISABLE_REDIRECTS	=> true,
 			'curl.options'	=> array(
 				CURLOPT_TIMEOUT	=> 120
@@ -168,23 +197,19 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		// Reset the curl handle because it is 0 at this point and not a valid
 		// resource
-		self::$static_client->getClient()->getCurlMulti()->reset(true);
-		self::$static_root_url = self::$config['phpbb_functional_url'];
+		self::$client->getClient()->getCurlMulti()->reset(true);
 
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);
 
-		$crawler = self::static_request('GET', 'install/index.php?mode=install');
-		self::static_assert_response_success();
+		$crawler = self::request('GET', 'install/index.php?mode=install');
 		self::assertContains('Welcome to Installation', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
-		$crawler = self::$static_client->submit($form);
-		self::static_assert_response_success();
+		$crawler = self::submit($form);
 		self::assertContains('Installation compatibility', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
-		$crawler = self::$static_client->submit($form);
-		self::static_assert_response_success();
+		$crawler = self::submit($form);
 		self::assertContains('Database configuration', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
 			// Installer uses 3.0-style dbms name
@@ -197,13 +222,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'table_prefix'	=> self::$config['table_prefix'],
 		));
 
-		$crawler = self::$static_client->submit($form);
-		self::static_assert_response_success();
+		$crawler = self::submit($form);
 		self::assertContains('Successful connection', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
-		$crawler = self::$static_client->submit($form);
-		self::static_assert_response_success();
+		$crawler = self::submit($form);
 		self::assertContains('Administrator configuration', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
 			'default_lang'	=> 'en',
@@ -214,19 +237,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'board_email2'	=> 'nobody@example.com',
 		));
 
-		$crawler = self::$static_client->submit($form);
-		self::static_assert_response_success();
+		$crawler = self::submit($form);
 		self::assertContains('Tests passed', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
-		$crawler = self::$static_client->submit($form);
-		self::static_assert_response_success();
+		$crawler = self::submit($form);
 		self::assertContains('The configuration file has been written.', $crawler->filter('#main')->text());
 		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data(self::$config, self::$config['dbms'], array(), true, true));
 		$form = $crawler->selectButton('submit')->form();
 
-		$crawler = self::$static_client->submit($form);
-		self::static_assert_response_success();
+		$crawler = self::submit($form);
 		self::assertContains('The settings on this page are only necessary to set if you know that you require something different from the default.', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
 			'email_enable'		=> true,
@@ -243,14 +263,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'script_path'		=> $parseURL['path'],
 		));
 
-		$crawler = self::$static_client->submit($form);
-		self::static_assert_response_success();
+		$crawler = self::submit($form);
 		self::assertContains('The database tables used by phpBB', $crawler->filter('#main')->text());
 		self::assertContains('have been created and populated with some initial data.', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
-		$crawler = self::$static_client->submit($form);
-		self::static_assert_response_success();
+		$crawler = self::submit($form);
 		self::assertContains('You have successfully installed', $crawler->text());
 		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
 	}
@@ -338,7 +356,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
-		$crawler = $this->client->submit($form, array('username' => $username, 'password' => $username . $username));
+		$crawler = $this->submit($form, array('username' => $username, 'password' => $username . $username));
 		$this->assert_response_success();
 		$this->assertContains($this->lang('LOGIN_REDIRECT'), $crawler->filter('html')->text());
 
@@ -378,7 +396,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			if (strpos($field, 'password_') === 0)
 			{
-				$crawler = $this->client->submit($form, array('username' => $username, $field => $username . $username));
+				$crawler = $this->submit($form, array('username' => $username, $field => $username . $username));
 				$this->assert_response_success();
 				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
 
@@ -443,29 +461,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*
 	* @return null
 	*/
-	public function assert_response_success()
+	static public function assert_response_success()
 	{
-		$this->assertEquals(200, $this->client->getResponse()->getStatus());
-		$content = $this->client->getResponse()->getContent();
+		self::assertEquals(200, self::$client->getResponse()->getStatus());
+		$content = self::$client->getResponse()->getContent();
 
 		// Any output before the doc type means there was an error
-		$this->assertEquals(0, strpos($content, '<!DOCTYPE'));
-	}
-
-	/**
-	* Heuristic function to check that the response is success.
-	*
-	* When php decides to die with a fatal error, it still sends 200 OK
-	* status code. This assertion tries to catch that.
-	*
-	* @return null
-	*/
-	static public function static_assert_response_success()
-	{
-		self::assertEquals(200, self::$static_client->getResponse()->getStatus());
-		$content = self::$static_client->getResponse()->getContent();
-
-		// Any output before the doc type means there was an error
-		self::assertEquals(0, strpos($content, '<!DOCTYPE'));
+		self::assertStringStartsWith('<!DOCTYPE', $content, 'Output found before DOCTYPE specification.');
 	}
 }
