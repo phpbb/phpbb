@@ -28,7 +28,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$crawler = $this->request('GET', 'adm/index.php?i=16&sid=' . $this->sid);
 		$this->assert_response_success();
 		// these language strings are html
-		$this->assertContains($this->lang('ACP_PERMISSIONS_EXPLAIN'), $this->client->getResponse()->getContent());
+		$this->assertContains($this->lang('ACP_PERMISSIONS_EXPLAIN'), $this->get_content());
 	}
 
 	public function test_select_user()
@@ -36,13 +36,13 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		// User permissions
 		$crawler = $this->request('GET', 'adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&sid=' . $this->sid);
 		$this->assert_response_success();
-		$this->assertContains($this->lang('ACP_USERS_PERMISSIONS_EXPLAIN'), $this->client->getResponse()->getContent());
+		$this->assertContains($this->lang('ACP_USERS_PERMISSIONS_EXPLAIN'), $this->get_content());
 
 		// Select admin
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$data = array('username[0]' => 'admin');
 		$form->setValues($data);
-		$crawler = $this->client->submit($form);
+		$crawler = $this->submit($form);
 		$this->assert_response_success();
 		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 	}
@@ -114,7 +114,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		// set to never
 		$data = array("setting[$object_id][0][$permission]" => '0');
 		$form->setValues($data);
-		$crawler = $this->client->submit($form);
+		$crawler = $this->submit($form);
 		$this->assert_response_success();
 		$this->assertContains($this->lang('AUTH_UPDATED'), $crawler->text());
 

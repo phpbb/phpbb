@@ -106,7 +106,7 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$data = array('username[0]' => 'admin');
 		$form->setValues($data);
-		$crawler = $this->client->submit($form);
+		$crawler = $this->submit($form);
 		$this->assert_response_success();
 
 		// language from language/en/acp/permissions_phpbb.php

@@ -27,18 +27,13 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 		$this->admin_login();
 		$this->add_lang('ucp');
 		$crawler = $this->request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=security');
-		$this->assertEquals(200, $this->client->getResponse()->getStatus());
-		$content = $this->client->getResponse()->getContent();
-		$this->assertNotContains('Fatal error:', $content);
-		$this->assertNotContains('Notice:', $content);
-		$this->assertNotContains('[phpBB Debug]', $content);
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 
 		$values["config[allow_password_reset]"] = 0;
 		$form->setValues($values);
-		$crawler = $this->client->submit($form);
+		$crawler = $this->submit($form);
 
 		$this->logout();
 
