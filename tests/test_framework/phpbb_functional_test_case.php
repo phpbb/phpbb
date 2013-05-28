@@ -115,6 +115,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $crawler;
 	}
 
+	/**
+	* Get Client Content
+	*
+	* @return string HTML page
+	*/
+	static public function get_content()
+	{
+		return self::$client->getResponse()->getContent();
+	}
+
 	// bootstrap, called after board is set up
 	// once per test case class
 	// test cases can override this
