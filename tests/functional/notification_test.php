@@ -41,7 +41,6 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 	{
 		$this->login();
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_notifications&mode=notification_options');
-		$this->assert_response_success();
 
 		$cplist = $crawler->filter('.table1');
 		if ($expected_status)

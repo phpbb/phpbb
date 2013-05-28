@@ -26,7 +26,6 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		// Permissions tab
 		// XXX hardcoded id
 		$crawler = $this->request('GET', 'adm/index.php?i=16&sid=' . $this->sid);
-		$this->assert_response_success();
 		// these language strings are html
 		$this->assertContains($this->lang('ACP_PERMISSIONS_EXPLAIN'), $this->get_content());
 	}
@@ -35,7 +34,6 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 	{
 		// User permissions
 		$crawler = $this->request('GET', 'adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->assertContains($this->lang('ACP_USERS_PERMISSIONS_EXPLAIN'), $this->get_content());
 
 		// Select admin
@@ -43,7 +41,6 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$data = array('username[0]' => 'admin');
 		$form->setValues($data);
 		$crawler = $this->submit($form);
-		$this->assert_response_success();
 		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 	}
 
@@ -92,7 +89,6 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 	{
 		// Get the form
 		$crawler = $this->request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=$mode&${object_name}[0]=$object_id&type=$permission_type&sid=" . $this->sid);
-		$this->assert_response_success();
 		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 
 		// XXX globals for phpbb_auth, refactor it later
@@ -115,7 +111,6 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$data = array("setting[$object_id][0][$permission]" => '0');
 		$form->setValues($data);
 		$crawler = $this->submit($form);
-		$this->assert_response_success();
 		$this->assertContains($this->lang('AUTH_UPDATED'), $crawler->text());
 
 		// check acl again

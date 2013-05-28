@@ -17,7 +17,6 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 		global $config;
 		$this->add_lang('ucp');
 		$crawler = $this->request('GET', 'ucp.php?mode=sendpassword');
-		$this->assert_response_success();
 		$this->assertEquals($this->lang('SEND_PASSWORD'), $crawler->filter('h2')->text());
 	}
 
@@ -38,7 +37,6 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 		$this->logout();
 
 		$crawler = $this->request('GET', 'ucp.php?mode=sendpassword');
-		$this->assert_response_success();
 		$this->assertContains($this->lang('UCP_PASSWORD_RESET_DISABLED', '', ''), $crawler->text());
 
 	}

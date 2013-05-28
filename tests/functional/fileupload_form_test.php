@@ -66,7 +66,6 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 	{
 		$this->markTestIncomplete('Test fails intermittently.');
 		$crawler = $this->upload_file('valid.jpg', 'image/jpeg');
-		$this->assert_response_success();
 		// ensure there was no error message rendered
 		$this->assertNotContains('<h2>' . $this->lang('INFORMATION') . '</h2>', $this->get_content());
 		$this->assertContains($this->lang('POSTED_ATTACHMENTS'), $crawler->filter('#postform h3')->eq(1)->text());

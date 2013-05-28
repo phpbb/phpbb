@@ -18,17 +18,14 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		// logs in as admin
 		$this->login();
 		$crawler = $this->request('GET', 'memberlist.php?sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->assertContains('memberlist-test-user', $crawler->text());
 
 		// restrict by first character
 		$crawler = $this->request('GET', 'memberlist.php?first_char=m&sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->assertContains('memberlist-test-user', $crawler->text());
 
 		// make sure results for wrong character are not returned
 		$crawler = $this->request('GET', 'memberlist.php?first_char=a&sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->assertNotContains('memberlist-test-user', $crawler->text());
 	}
 
@@ -37,15 +34,12 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		$this->login();
 		// XXX hardcoded user id
 		$crawler = $this->request('GET', 'memberlist.php?mode=viewprofile&u=2&sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->assertContains('admin', $crawler->filter('h2')->text());
 	}
 
 	protected function get_memberlist_leaders_table_crawler()
 	{
 		$crawler = $this->request('GET', 'memberlist.php?mode=leaders&sid=' . $this->sid);
-		$this->assert_response_success();
-
 		return $crawler->filter('.forumbg-table');
 	}
 

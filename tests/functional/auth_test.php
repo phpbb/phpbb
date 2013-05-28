@@ -53,7 +53,6 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 
 		// check that we are logged in
 		$crawler = $this->request('GET', 'adm/index.php?sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->assertContains($this->lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
 	}
 }
