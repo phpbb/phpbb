@@ -462,9 +462,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*
 	* @return null
 	*/
-	static public function assert_response_success()
+	static public function assert_response_success($status_code = 200)
 	{
-		self::assertEquals(200, self::$client->getResponse()->getStatus());
+		self::assertEquals($status_code, self::$client->getResponse()->getStatus());
 		$content = self::$client->getResponse()->getContent();
 
 		// Any output before the doc type means there was an error
