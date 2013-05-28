@@ -45,7 +45,8 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	{
 		$this->db->sql_query('DELETE FROM phpbb_sessions');
 
-		$this->create_guest_sessions();
+		$time = time();
+		$this->create_guest_sessions($time);
 		$this->assertEquals($expected, obtain_guest_count($forum_id));
 	}
 
@@ -113,8 +114,9 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 		global $config;
 		$config['load_online_guests'] = $display_guests;
 
-		$this->create_guest_sessions();
-		$this->create_user_sessions();
+		$time = time();
+		$this->create_guest_sessions($time);
+		$this->create_user_sessions($time);
 		$this->assertEquals($expected, obtain_users_online($forum_id));
 	}
 
@@ -168,41 +170,42 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 				$this->anything())
 			->will($this->returnValueMap($acl_get_map));
 
-		$this->create_guest_sessions();
-		$this->create_user_sessions();
+		$time = time();
+		$this->create_guest_sessions($time);
+		$this->create_user_sessions($time);
 
 		$online_users = obtain_users_online($forum_id);
 		$this->assertEquals($expected, obtain_users_online_string($online_users, $forum_id));
 	}
 
-	protected function create_guest_sessions()
+	protected function create_guest_sessions($time)
 	{
-		$this->add_session(1, '0001', 0, true, 0);
-		$this->add_session(1, '0002', 1, true, 0);
-		$this->add_session(1, '0003', 0, true, 10);
-		$this->add_session(1, '0004', 1, true, 10);
+		$this->add_session(1, '0001', '192.168.0.1', 0, true, $time);
+		$this->add_session(1, '0002', '192.168.0.2', 1, true, $time);
+		$this->add_session(1, '0003', '192.168.0.3', 0, true, $time, 10);
+		$this->add_session(1, '0004', '192.168.0.4', 1, true, $time, 10);
 	}
 
-	protected function create_user_sessions()
+	protected function create_user_sessions($time)
 	{
-		$this->add_session(2, '0005', 0, true, 0);
-		$this->add_session(3, '0006', 1, true, 0);
-		$this->add_session(4, '0007', 0, true, 10);
-		$this->add_session(5, '0008', 1, true, 10);
-		$this->add_session(6, '0005', 0, false, 0);
-		$this->add_session(7, '0006', 1, false, 0);
-		$this->add_session(8, '0007', 0, false, 10);
-		$this->add_session(9, '0008', 1, false, 10);
+		$this->add_session(2, '0005', '192.168.0.5', 0, true, $time);
+		$this->add_session(3, '0006', '192.168.0.6', 1, true, $time);
+		$this->add_session(4, '0007', '192.168.0.7', 0, true, $time, 10);
+		$this->add_session(5, '0008', '192.168.0.8', 1, true, $time, 10);
+		$this->add_session(6, '0005', '192.168.0.9', 0, false, $time);
+		$this->add_session(7, '0006', '192.168.0.10', 1, false, $time);
+		$this->add_session(8, '0007', '192.168.0.11', 0, false, $time, 10);
+		$this->add_session(9, '0008', '192.168.0.12', 1, false, $time, 10);
 	}
 
-	protected function add_session($user_id, $user_ip, $forum_id, $view_online, $time_delta)
+	protected function add_session($user_id, $session_id, $user_ip, $forum_id, $view_online, $time, $time_delta = 0)
 	{
 		$sql_ary = array(
-			'session_id'			=> $user_id . '_' . $forum_id . '_session00000000000000000' . $user_ip,
+			'session_id'			=> $user_id . '_' . $forum_id . '_session00000000000000000' . $session_id,
 			'session_user_id'		=> $user_id,
 			'session_ip'			=> $user_ip,
 			'session_forum_id'		=> $forum_id,
-			'session_time'			=> time() - $time_delta * 60,
+			'session_time'			=> $time - $time_delta * 60,
 			'session_viewonline'	=> $view_online,
 		);
 		$this->db->sql_query('INSERT INTO phpbb_sessions ' . $this->db->sql_build_array('INSERT', $sql_ary));
