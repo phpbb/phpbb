@@ -468,6 +468,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$content = self::$client->getResponse()->getContent();
 
 		// Any output before the doc type means there was an error
-		self::assertStringStartsWith('<!DOCTYPE', $content, 'Output found before DOCTYPE specification.');
+		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
 	}
 }
