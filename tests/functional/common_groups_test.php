@@ -42,10 +42,9 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 
 		// Manage Administrators group
 		$crawler = $this->request('GET', $this->get_url() . '&g=5&sid=' . $this->sid);
-		$this->assert_response_success();
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['group_colour']->setValue($input);
-		$crawler = $this->client->submit($form);
+		$crawler = $this->submit($form);
 		$this->assertContains($this->lang($expected), $crawler->text());
 	}
 }

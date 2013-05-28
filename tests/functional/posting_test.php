@@ -30,7 +30,6 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 
 		// Test quoting a message
 		$crawler = $this->request('GET', "posting.php?mode=quote&f=2&t={$post2['topic_id']}&p={$post2['post_id']}&sid={$this->sid}");
-		$this->assert_response_success();
 		$this->assertContains('This is a test post posted by the testing framework.', $crawler->filter('html')->text());
 	}
 
@@ -95,7 +94,6 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$this->add_lang('posting');
 
 		$crawler = $this->request('GET', $posting_url);
-		$this->assert_response_success();
 		$this->assertContains($this->lang($posting_contains), $crawler->filter('html')->text());
 
 		$hidden_fields = array(
@@ -119,8 +117,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		// I use a request because the form submission method does not allow you to send data that is not
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
 		// Instead, I send it as a request with the submit button "post" set to true.
-		$crawler = $this->client->request('POST', $posting_url, $form_data);
-		$this->assert_response_success();
+		$crawler = $this->request('POST', $posting_url, $form_data);
 		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
 
 		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
