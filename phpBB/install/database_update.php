@@ -263,9 +263,8 @@ while (!$migrator->finished())
 	// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 	if ((time() - $update_start_time) >= $safe_time_limit)
 	{
-		//echo '<meta http-equiv="refresh" content="0;url=' . str_replace('&', '&amp;', append_sid($phpbb_root_path . 'test.' . $phpEx)) . '" />';
 		echo $user->lang['DATABASE_UPDATE_NOT_COMPLETED'] . '<br />';
-		echo '<a href="' . append_sid($phpbb_root_path . 'test.' . $phpEx) . '">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
+		echo '<a href="' . append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=' . $request->variable('type', 0) . '&amp;language=' . $user->lang['USER_LANG']) . '">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
 
 		phpbb_end_update($cache, $config);
 	}
