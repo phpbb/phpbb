@@ -114,7 +114,6 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = $this->request('GET', 'app.php?controller=foo/baz', array(), true);
-		$this->request('GET', 'app.php?controller=foo/baz', false);
 		$this->assert_response_success(500);
 		$this->assertContains('Missing value for argument #1: test in class phpbb_ext_foo_bar_controller:baz', $crawler->filter('body')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
