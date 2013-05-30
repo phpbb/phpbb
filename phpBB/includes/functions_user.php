@@ -1554,7 +1554,7 @@ function validate_username($username, $allowed_username = false)
 */
 function validate_password($password)
 {
-	global $config, $db, $user;
+	global $config;
 
 	if ($password === '' || $config['pass_complex'] === 'PASS_TYPE_ANY')
 	{
