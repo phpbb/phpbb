@@ -113,7 +113,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	public function test_missing_argument()
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
-		$crawler = $this->request('GET', 'app.php?controller=foo/baz', false);
+		$crawler = $this->request('GET', 'app.php?controller=foo/baz', array(), true);
 		$this->request('GET', 'app.php?controller=foo/baz', false);
 		$this->assert_response_success(500);
 		$this->assertContains('Missing value for argument #1: test in class phpbb_ext_foo_bar_controller:baz', $crawler->filter('body')->text());
@@ -126,7 +126,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	public function test_exception_should_result_in_500_status_code()
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
-		$crawler = $this->request('GET', 'app.php?controller=foo/exception', false);
+		$crawler = $this->request('GET', 'app.php?controller=foo/exception', array(), true);
 		$this->assert_response_success(500);
 		$this->assertContains('Exception thrown from foo/exception route', $crawler->filter('body')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
@@ -143,7 +143,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_error_ext_disabled_or_404()
 	{
-		$crawler = $this->request('GET', 'app.php?controller=does/not/exist', false);
+		$crawler = $this->request('GET', 'app.php?controller=does/not/exist', array(), true);
 		$this->assert_response_success(404);
 		$this->assertContains('No route found for "GET /does/not/exist"', $crawler->filter('body')->text());
 	}

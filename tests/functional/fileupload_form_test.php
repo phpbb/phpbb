@@ -32,7 +32,7 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 			'error' => UPLOAD_ERR_OK,
 		);
 
-		$crawler = $this->client->request(
+		$crawler = self::$client->request(
 			'POST',
 			'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid,
 			array('add_file' => $this->lang('ADD_FILE')),
