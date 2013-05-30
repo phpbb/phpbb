@@ -7,23 +7,30 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
+require_once dirname(__FILE__) . '/../mock/cache.php';
+require_once dirname(__FILE__) . '/../mock/user.php';
 
 class phpbb_functions_validate_data_test extends phpbb_database_test_case
 {
-	/*
-	* Types to test
-	* - username
-	*	. 
-	* - password
-	* - email
-	* - jabber
-	*/
+	protected $db;
+	protected $cache;
+	protected $user;
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/language_select.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/validate_data.xml');
+	}
+
+	protected function setUp()
+	{
+		parent::setUp();
+
+		$this->db = $this->new_dbal();
+		$this->cache = new phpbb_mock_cache;
+		$this->user = new phpbb_mock_user;
 	}
 
 	/**
@@ -42,22 +49,15 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 	{
 		foreach ($input as $key => $data)
 		{
-			$this->assertEquals($expected[$key], validate_data(array($data), array($validate_check[$key])));
+			$test = validate_data(array($data), array($validate_check[$key]));
+			if ($test != $expected[$key])
+			{
+				var_dump($key, $data, $test, $expected[$key]);
+			}
+			$this->assertEquals($expected[$key], $test);
 		}
 	}
 
-	/*
-	* Types to test
-	* - string:
-	*	empty + optional = true --> good
-	*	empty + optional = false --> good (min = 0)
-	*	'foobar' --> good
-	*	'foobar' + optional = false|true + min = 2 + max = 6 --> good
-	*	'foobar' + "			    + min = 7 + max = 9 --> TOO_SHORT
-	*	'foobar' + "			    + min = 2 + max = 5 --> TOO_LONG
-	*	''	   + optional = false	    + min = 1 + max = 6 --> TOO_SHORT
-	*	''	   + optional = true	    + min = 1 + max = 6 --> good
-	*/
 	public function test_validate_string()
 	{
 		$this->validate_data_check(array(
@@ -92,16 +92,6 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 		));
 	}
 
-	/*
-	* Types to test
-	* - num
-	*	empty + optional = true|false --> good
-	*	0	--> good
-	*	5 + optional = false|true + min = 2 + max = 6 --> good
-	*	5 + optional = false|true + min = 7 + max = 10 --> TOO_SMALL
-	*	5 + optional = false|true + min = 2 + max = 3 --> TOO_LARGE
-	*	'foobar' --> should fail with WRONG_DATA_NUMERIC !!!
-	*/
 	public function test_validate_num()
 	{
 		$this->validate_data_check(array(
@@ -130,19 +120,6 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 		));
 	}
 
-	/*
-	* Types to test
-	* - date
-	*	. ''	--> invalid
-	*	. '' + optional = true --> good
-	*	. 17-06-1990 --> good
-	*	. 05-05-1990 --> good
-	*	. 17-12-1990 --> good
-	*	. 01-01-0000 --> good!!!
-	*	. 17-17-1990 --> invalid
-	*	. 00-12-1990 --> invalid
-	*	. 01-00-1990 --> invalid
-	*/
 	public function test_validate_date()
 	{
 		$this->validate_data_check(array(
@@ -186,14 +163,6 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 		));
 	}
 
-	/*
-	* Types to test
-	* - match
-	*	. empty + optional = true --> good
-	*	. empty + empty match --> good
-	*	. 'test' + optional = true|false + match = '/[a-z]/' --> good
-	*	. 'test123' + optional = true|false + match = '/[a-z]/' --> WRONG_DATA_MATCH
-	*/
 	public function test_validate_match()
 	{
 		$this->validate_data_check(array(
@@ -216,19 +185,11 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 		));
 	}
 
-	/*
-	* Types to test
-	* - language_iso_name
-	*	. empty --> WRONG_DATA
-	*	. 'en' --> good
-	*	. 'cs' --> good
-	*	. 'de' --> WRONG_DATA (won't exist)
-	*/
 	public function test_validate_lang_iso()
 	{
 		global $db;
 
-		$db = $this->new_dbal();
+		$db = $this->db;
 
 		$this->validate_data_check(array(
 			'empty'		=> '',
@@ -247,6 +208,271 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 			'en'		=> array(),
 			'cs'		=> array(),
 			'de'		=> array('WRONG_DATA'),
+		));
+	}
+
+	public function validate_username_data()
+	{
+		return array(
+			array('USERNAME_CHARS_ANY', array(
+				'foobar_allow'		=> array(),
+				'foobar_ascii'		=> array(),
+				'foobar_any'		=> array(),
+				'foobar_alpha'		=> array(),
+				'foobar_alpha_spacers'	=> array(),
+				'foobar_letter_num'	=> array(),
+				'foobar_letter_num_sp'	=> array(),
+				'foobar_quot'		=> array('INVALID_CHARS'),
+				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
+				'admin_taken'		=> array('USERNAME_TAKEN'),
+				'group_taken'		=> array('USERNAME_TAKEN')
+			)),
+			array('USERNAME_ALPHA_ONLY', array(
+				'foobar_allow'		=> array(),
+				'foobar_ascii'		=> array(),
+				'foobar_any'		=> array('INVALID_CHARS'),
+				'foobar_alpha'		=> array(),
+				'foobar_alpha_spacers'	=> array('INVALID_CHARS'),
+				'foobar_letter_num'	=> array(),
+				'foobar_letter_num_sp'	=> array('INVALID_CHARS'),
+				'foobar_quot'		=> array('INVALID_CHARS'),
+				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
+				'admin_taken'		=> array('USERNAME_TAKEN'),
+				'group_taken'		=> array('INVALID_CHARS')
+			)),
+			array('USERNAME_ALPHA_SPACERS', array(
+				'foobar_allow'		=> array(),
+				'foobar_ascii'		=> array(),
+				'foobar_any'		=> array('INVALID_CHARS'),
+				'foobar_alpha'		=> array(),
+				'foobar_alpha_spacers'	=> array(),
+				'foobar_letter_num'	=> array(),
+				'foobar_letter_num_sp'	=> array('INVALID_CHARS'),
+				'foobar_quot'		=> array('INVALID_CHARS'),
+				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
+				'admin_taken'		=> array('USERNAME_TAKEN'),
+				'group_taken'		=> array('USERNAME_TAKEN')
+			)),
+			array('USERNAME_LETTER_NUM', array(
+				'foobar_allow'		=> array(),
+				'foobar_ascii'		=> array(),
+				'foobar_any'		=> array('INVALID_CHARS'),
+				'foobar_alpha'		=> array(),
+				'foobar_alpha_spacers'	=> array('INVALID_CHARS'),
+				'foobar_letter_num'	=> array(),
+				'foobar_letter_num_sp'	=> array('INVALID_CHARS'),
+				'foobar_quot'		=> array('INVALID_CHARS'),
+				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
+				'admin_taken'		=> array('USERNAME_TAKEN'),
+				'group_taken'		=> array('INVALID_CHARS')
+			)),
+			array('USERNAME_LETTER_NUM_SPACERS', array(
+				'foobar_allow'		=> array(),
+				'foobar_ascii'		=> array(),
+				'foobar_any'		=> array('INVALID_CHARS'),
+				'foobar_alpha'		=> array(),
+				'foobar_alpha_spacers'	=> array(),
+				'foobar_letter_num'	=> array(),
+				'foobar_letter_num_sp'	=> array(),
+				'foobar_quot'		=> array('INVALID_CHARS'),
+				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
+				'admin_taken'		=> array('USERNAME_TAKEN'),
+				'group_taken'		=> array('USERNAME_TAKEN')
+			)),
+			array('USERNAME_ASCII', array(
+				'foobar_allow'		=> array(),
+				'foobar_ascii'		=> array(),
+				'foobar_any'		=> array(),
+				'foobar_alpha'		=> array(),
+				'foobar_alpha_spacers'	=> array(),
+				'foobar_letter_num'	=> array(),
+				'foobar_letter_num_sp'	=> array('INVALID_CHARS'),
+				'foobar_quot'		=> array('INVALID_CHARS'),
+				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
+				'admin_taken'		=> array('USERNAME_TAKEN'),
+				'group_taken'		=> array('USERNAME_TAKEN')
+			)),
+		);
+	}
+
+	/**
+	* @dataProvider validate_username_data
+	*/
+	public function test_validate_username($allow_name_chars, $expected)
+	{
+		global $cache, $config, $db;
+
+		$db = $this->db;
+		$cache = $this->cache;
+		$cache->put('_disallowed_usernames', array('barfoo'));
+
+		$config['allow_name_chars'] = $allow_name_chars;
+
+		$this->validate_data_check(array(
+			'foobar_allow'		=> 'foobar',
+			'foobar_ascii'		=> 'foobar',
+			'foobar_any'		=> 'f*~*^=oo_bar1',
+			'foobar_alpha'		=> 'fo0Bar',
+			'foobar_alpha_spacers'	=> 'Fo0-[B]_a+ R',
+			'foobar_letter_num'	=> 'fo0Bar0',
+			'foobar_letter_num_sp'	=> 'Fö0-[B]_a+ R',
+			'foobar_quot'		=> '"foobar"',
+			'barfoo_disallow'	=> 'barfoo',
+			'admin_taken'		=> 'admin',
+			'group_taken'		=> 'foobar_group',
+		),
+		array(
+			'foobar_allow'		=> array('username', 'foobar'),
+			'foobar_ascii'		=> array('username'),
+			'foobar_any'		=> array('username'),
+			'foobar_alpha'		=> array('username'),
+			'foobar_alpha_spacers'	=> array('username'),
+			'foobar_letter_num'	=> array('username'),
+			'foobar_letter_num_sp'	=> array('username'),
+			'foobar_quot'		=> array('username'),
+			'barfoo_disallow'	=> array('username'),
+			'admin_taken'		=> array('username'),
+			'group_taken'		=> array('username'),
+		),
+		$expected);
+	}
+
+	public function validate_password_data()
+	{
+		return array(
+			array('PASS_TYPE_ANY', array(
+				'empty'			=> array(),
+				'foobar_any'		=> array(),
+				'foobar_mixed'		=> array(),
+				'foobar_alpha'		=> array(),
+				'foobar_symbol'		=> array(),
+			)),
+			array('PASS_TYPE_CASE', array(
+				'empty'			=> array(),
+				'foobar_any'		=> array('INVALID_CHARS'),
+				'foobar_mixed'		=> array(),
+				'foobar_alpha'		=> array(),
+				'foobar_symbol'		=> array(),
+			)),
+			array('PASS_TYPE_ALPHA', array(
+				'empty'			=> array(),
+				'foobar_any'		=> array('INVALID_CHARS'),
+				'foobar_mixed'		=> array('INVALID_CHARS'),
+				'foobar_alpha'		=> array(),
+				'foobar_symbol'		=> array(),
+			)),
+			array('PASS_TYPE_SYMBOL', array(
+				'empty'			=> array(),
+				'foobar_any'		=> array('INVALID_CHARS'),
+				'foobar_mixed'		=> array('INVALID_CHARS'),
+				'foobar_alpha'		=> array('INVALID_CHARS'),
+				'foobar_symbol'		=> array(),
+			)),
+		);
+	}
+
+	/**
+	* @dataProvider validate_password_data
+	*/
+	public function test_validate_password($pass_complexity, $expected)
+	{
+		global $config;
+
+		// Set complexity to mixed case letters, numbers and symbols
+		$config['pass_complex'] = $pass_complexity;
+
+		$this->validate_data_check(array(
+			'empty'			=> '',
+			'foobar_any'		=> 'foobar',
+			'foobar_mixed'		=> 'FooBar',
+			'foobar_alpha'		=> 'F00bar',
+			'foobar_symbol'		=> 'fooBar123*',
+		),
+		array(
+			'empty'			=> array('password'),
+			'foobar_any'		=> array('password'),
+			'foobar_mixed'		=> array('password'),
+			'foobar_alpha'		=> array('password'),
+			'foobar_symbol'		=> array('password'),
+		),
+		$expected);
+	}
+
+	public function test_validate_email()
+	{
+		global $config, $db, $user;
+
+		$config['email_check_mx'] = true;
+		$db = $this->db;
+		$user = $this->user;
+		$user->optionset('banned_users', array('banned@example.com'));
+
+		$this->validate_data_check(array(
+			'empty'			=> '',
+			'allowed'		=> 'foobar@example.com',
+			'invalid'		=> 'fööbar@example.com',
+			'valid_complex'		=> "'%$~test@example.com",
+			'taken'			=> 'admin@example.com',
+			'banned'		=> 'banned@example.com',
+			'no_mx'			=> 'test@wwrrrhhghgghgh.ttv',
+		),
+		array(
+			'empty'			=> array('email'),
+			'allowed'		=> array('email', 'foobar@example.com'),
+			'invalid'		=> array('email'),
+			'valid_complex'		=> array('email'),
+			'taken'			=> array('email'),
+			'banned'		=> array('email'),
+			'no_mx'			=> array('email'),
+		),
+		array(
+			'empty'			=> array(),
+			'allowed'		=> array(),
+			'invalid'		=> array('EMAIL_INVALID'),
+			'valid_complex'		=> array(),
+			'taken'			=> array('EMAIL_TAKEN'),
+			'banned'		=> array('EMAIL_BANNED'),
+			'no_mx'			=> array('DOMAIN_NO_MX_RECORD'),
+		));
+	}
+
+	public function test_validate_jabber()
+	{
+		$this->validate_data_check(array(
+			'empty'			=> '',
+			'no_seperator'		=> 'testjabber.ccc',
+			'no_user'		=> '@jabber.ccc',
+			'no_realm'		=> 'user@',
+			'dot_realm'		=> 'user@.....',
+			'-realm'		=> 'user@-jabber.ccc',
+			'realm-'		=> 'user@jabber.ccc-',
+			'correct'		=> 'user@jabber.09A-z.org',
+			'prohibited'		=> 'u@ser@jabber.ccc.org',
+			'prohibited_char'	=> 'u<s>er@jabber.ccc.org',
+		),
+		array(
+			'empty'			=> array('jabber'),
+			'no_seperator'		=> array('jabber'),
+			'no_user'		=> array('jabber'),
+			'no_realm'		=> array('jabber'),
+			'dot_realm'		=> array('jabber'),
+			'-realm'		=> array('jabber'),
+			'realm-'		=> array('jabber'),
+			'correct'		=> array('jabber'),
+			'prohibited'		=> array('jabber'),
+			'prohibited_char'	=> array('jabber'),
+		),
+		array(
+			'empty'			=> array(),
+			'no_seperator'		=> array('WRONG_DATA'),
+			'no_user'		=> array('WRONG_DATA'),
+			'no_realm'		=> array('WRONG_DATA'),
+			'dot_realm'		=> array('WRONG_DATA'),
+			'-realm'		=> array('WRONG_DATA'),
+			'realm-'		=> array('WRONG_DATA'),
+			'correct'		=> array(),
+			'prohibited'		=> array('WRONG_DATA'),
+			'prohibited_char'	=> array('WRONG_DATA'),
 		));
 	}
 }
