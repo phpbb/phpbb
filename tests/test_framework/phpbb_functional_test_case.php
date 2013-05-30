@@ -288,7 +288,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$crawler = self::submit($form);
 		self::assertContains('The configuration file has been written.', $crawler->filter('#main')->text());
-		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data(self::$config, self::$config['dbms'], array(), true, true));
+		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data(self::$config, self::$config['dbms'], true, true));
 		$form = $crawler->selectButton('submit')->form();
 
 		$crawler = self::submit($form);
