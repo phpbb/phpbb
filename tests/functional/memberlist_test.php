@@ -32,13 +32,44 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		$this->assertNotContains('memberlist-test-user', $crawler->text());
 	}
 
+	protected function get_viewprofile_crawler($user_agent = false)
+	{
+		// XXX hardcoded user id
+		$crawler = $this->request('GET', 'memberlist.php?mode=viewprofile&u=2&sid=' . $this->sid, $user_agent);
+		$this->assert_response_success();
+
+		return $crawler;
+	}
+
 	public function test_viewprofile()
 	{
+		// User can view profiles
 		$this->login();
-		// XXX hardcoded user id
-		$crawler = $this->request('GET', 'memberlist.php?mode=viewprofile&u=2&sid=' . $this->sid);
-		$this->assert_response_success();
+		$crawler = $this->get_viewprofile_crawler();
 		$this->assertContains('admin', $crawler->filter('h2')->text());
+	}
+
+	public function test_viewprofile_guest()
+	{
+		// Guests can view profiles
+		$crawler = $this->get_viewprofile_crawler();
+		$this->assertContains('admin', $crawler->filter('h2')->text());
+
+		// Login, register and logout links
+		$this->assertContainsLang('REGISTER', $crawler->filter('.navbar')->text());
+		$this->assertContainsLang('LOGIN', $crawler->filter('.navbar')->text());
+	}
+
+	public function test_viewprofile_bots()
+	{
+		// Bots can NOT view profiles
+		$crawler = $this->get_viewprofile_crawler('Googlebot');
+		$this->assertNotContains('admin', $crawler->filter('h2')->text());
+
+		// No login, register and logout links
+		$this->assertNotContainsLang('REGISTER', $crawler->filter('.navbar')->text());
+		$this->assertNotContainsLang('LOGIN', $crawler->filter('.navbar')->text());
+		$this->assertNotContainsLang('LOGOUT', $crawler->filter('.navbar')->text());
 	}
 
 	protected function get_memberlist_leaders_table_crawler()
