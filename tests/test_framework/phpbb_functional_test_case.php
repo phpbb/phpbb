@@ -318,25 +318,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
 	}
 
-	static private function do_request($sub, $post_data = null)
-	{
-		$context = null;
-
-		if ($post_data)
-		{
-			$context = stream_context_create(array(
-				'http' => array(
-					'method'	=> 'POST',
-					'header'	=> 'Content-Type: application/x-www-form-urlencoded',
-					'content'	=> http_build_query($post_data),
-					'ignore_errors' => true,
-				),
-			));
-		}
-
-		return file_get_contents(self::$config['phpbb_functional_url'] . 'install/index.php?mode=install&sub=' . $sub, false, $context);
-	}
-
 	static private function recreate_database($config)
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
@@ -626,7 +607,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$content = self::$client->getResponse()->getContent();
 
 		// Any output before the doc type means there was an error
-		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
+		if (strpos($content, '<!DOCTYPE') !== false)
+		{
+			self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
+		}
 	}
 
 	public function assert_filter($crawler, $expr, $msg = null)
