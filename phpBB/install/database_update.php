@@ -275,6 +275,17 @@ if ($orig_version != $config['version'])
 	add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $config['version']);
 }
 
-echo $user->lang['DATABASE_UPDATE_COMPLETE'];
+echo $user->lang['DATABASE_UPDATE_COMPLETE'] . '<br />';
+
+if ($request->variable('type', 0))
+{
+	echo $user->lang['INLINE_UPDATE_SUCCESSFUL'] . '<br /><br />';
+	echo '<a href="' . append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update&amp;sub=file_check&amp;language=' . $user->lang['USER_LANG']) . '" class="button1">' . $user->lang['CONTINUE_UPDATE_NOW'] . '</a>';
+}
+else
+{
+	echo '<div class="errorbox">' . $user->lang['UPDATE_FILES_NOTICE'] . '</div>';
+	echo $user->lang['COMPLETE_LOGIN_TO_BOARD'];
+}
 
 phpbb_end_update($cache, $config);
