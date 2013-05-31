@@ -25,7 +25,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 	{
 		// Permissions tab
 		// XXX hardcoded id
-		$crawler = $this->request('GET', 'adm/index.php?i=16&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=16&sid=' . $this->sid);
 		// these language strings are html
 		$this->assertContains($this->lang('ACP_PERMISSIONS_EXPLAIN'), $this->get_content());
 	}
@@ -33,14 +33,14 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 	public function test_select_user()
 	{
 		// User permissions
-		$crawler = $this->request('GET', 'adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&sid=' . $this->sid);
 		$this->assertContains($this->lang('ACP_USERS_PERMISSIONS_EXPLAIN'), $this->get_content());
 
 		// Select admin
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$data = array('username[0]' => 'admin');
 		$form->setValues($data);
-		$crawler = $this->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 	}
 
@@ -88,7 +88,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 	public function test_change_permission($description, $permission_type, $permission, $mode, $object_name, $object_id)
 	{
 		// Get the form
-		$crawler = $this->request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=$mode&${object_name}[0]=$object_id&type=$permission_type&sid=" . $this->sid);
+		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=$mode&${object_name}[0]=$object_id&type=$permission_type&sid=" . $this->sid);
 		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 
 		// XXX globals for phpbb_auth, refactor it later
@@ -110,7 +110,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		// set to never
 		$data = array("setting[$object_id][0][$permission]" => '0');
 		$form->setValues($data);
-		$crawler = $this->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContains($this->lang('AUTH_UPDATED'), $crawler->text());
 
 		// check acl again

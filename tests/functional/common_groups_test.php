@@ -41,10 +41,10 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 		$this->add_lang(array('ucp', 'acp/groups'));
 
 		// Manage Administrators group
-		$crawler = $this->request('GET', $this->get_url() . '&g=5&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url() . '&g=5&sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['group_colour']->setValue($input);
-		$crawler = $this->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContains($this->lang($expected), $crawler->text());
 	}
 }

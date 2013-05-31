@@ -99,13 +99,13 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 		$this->phpbb_extension_manager->enable('foo/bar');
 
 		// User permissions
-		$crawler = $this->request('GET', 'adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&sid=' . $this->sid);
 
 		// Select admin
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$data = array('username[0]' => 'admin');
 		$form->setValues($data);
-		$crawler = $this->submit($form);
+		$crawler = self::submit($form);
 
 		// language from language/en/acp/permissions_phpbb.php
 		$this->assertContains('Can attach files', $crawler->filter('body')->text());

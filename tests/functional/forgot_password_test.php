@@ -16,7 +16,7 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 	{
 		global $config;
 		$this->add_lang('ucp');
-		$crawler = $this->request('GET', 'ucp.php?mode=sendpassword');
+		$crawler = self::request('GET', 'ucp.php?mode=sendpassword');
 		$this->assertEquals($this->lang('SEND_PASSWORD'), $crawler->filter('h2')->text());
 	}
 
@@ -25,18 +25,18 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 		$this->add_lang('ucp');
-		$crawler = $this->request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=security');
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=security');
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 
 		$values["config[allow_password_reset]"] = 0;
 		$form->setValues($values);
-		$crawler = $this->submit($form);
+		$crawler = self::submit($form);
 
 		$this->logout();
 
-		$crawler = $this->request('GET', 'ucp.php?mode=sendpassword');
+		$crawler = self::request('GET', 'ucp.php?mode=sendpassword');
 		$this->assertContains($this->lang('UCP_PASSWORD_RESET_DISABLED', '', ''), $crawler->text());
 
 	}

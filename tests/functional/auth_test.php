@@ -17,7 +17,7 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$this->login();
 
 		// check for logout link
-		$crawler = $this->request('GET', 'index.php');
+		$crawler = self::request('GET', 'index.php');
 		$this->assertContains($this->lang('LOGOUT_USER', 'admin'), $crawler->filter('.navbar')->text());
 	}
 
@@ -25,7 +25,7 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 	{
 		$this->create_user('anothertestuser');
 		$this->login('anothertestuser');
-		$crawler = $this->request('GET', 'index.php');
+		$crawler = self::request('GET', 'index.php');
 		$this->assertContains('anothertestuser', $crawler->filter('.icon-logout')->text());
 	}
 
@@ -38,11 +38,11 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$this->add_lang('ucp');
 
 		// logout
-		$crawler = $this->request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
+		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
 		$this->assertContains($this->lang('LOGOUT_REDIRECT'), $crawler->filter('#message')->text());
 
 		// look for a register link, which should be visible only when logged out
-		$crawler = $this->request('GET', 'index.php');
+		$crawler = self::request('GET', 'index.php');
 		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 	}
 
@@ -52,7 +52,7 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$this->admin_login();
 
 		// check that we are logged in
-		$crawler = $this->request('GET', 'adm/index.php?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid);
 		$this->assertContains($this->lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
 	}
 }
