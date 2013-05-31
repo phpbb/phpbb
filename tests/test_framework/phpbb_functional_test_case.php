@@ -83,11 +83,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param bool	$skip_assert_response_success	Should we skip the basic response assertions?
 	* @return Symfony\Component\DomCrawler\Crawler
 	*/
-	static public function request($method, $path, $form_data = array(), $skip_assert_response_success = false)
+	static public function request($method, $path, $form_data = array(), $assert_response_success = true)
 	{
 		$crawler = self::$client->request($method, self::$root_url . $path, $form_data);
 
-		if (!$skip_assert_response_success)
+		if ($assert_response_success)
 		{
 			self::assert_response_success();
 		}
@@ -103,11 +103,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param bool	$skip_assert_response_success	Should we skip the basic response assertions?
 	* @return Symfony\Component\DomCrawler\Crawler
 	*/
-	static public function submit(Symfony\Component\DomCrawler\Form $form, array $values = array(), $skip_assert_response_success = false)
+	static public function submit(Symfony\Component\DomCrawler\Form $form, array $values = array(), $assert_response_success = true)
 	{
 		$crawler = self::$client->submit($form, $values);
 
-		if (!$skip_assert_response_success)
+		if ($assert_response_success)
 		{
 			self::assert_response_success();
 		}
