@@ -19,17 +19,17 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		// Test creating topic
 		$post = $this->create_topic(2, 'Test Topic 1', 'This is a test topic posted by the testing framework.');
 
-		$crawler = $this->request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
 		$this->assertContains('This is a test topic posted by the testing framework.', $crawler->filter('html')->text());
 
 		// Test creating a reply
 		$post2 = $this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', 'This is a test post posted by the testing framework.');
 
-		$crawler = $this->request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
 		$this->assertContains('This is a test post posted by the testing framework.', $crawler->filter('html')->text());
 
 		// Test quoting a message
-		$crawler = $this->request('GET', "posting.php?mode=quote&f=2&t={$post2['topic_id']}&p={$post2['post_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "posting.php?mode=quote&f=2&t={$post2['topic_id']}&p={$post2['post_id']}&sid={$this->sid}");
 		$this->assertContains('This is a test post posted by the testing framework.', $crawler->filter('html')->text());
 	}
 
@@ -54,7 +54,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 			'post'			=> true,
 		), $additional_form_data);
 
-		return $this->submit_post($posting_url, 'POST_TOPIC', $form_data);
+		return self::submit_post($posting_url, 'POST_TOPIC', $form_data);
 	}
 
 	/**
@@ -78,7 +78,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 			'post'			=> true,
 		), $additional_form_data);
 
-		return $this->submit_post($posting_url, 'POST_REPLY', $form_data);
+		return self::submit_post($posting_url, 'POST_REPLY', $form_data);
 	}
 	
 	/**
@@ -93,7 +93,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 	{
 		$this->add_lang('posting');
 
-		$crawler = $this->request('GET', $posting_url);
+		$crawler = self::request('GET', $posting_url);
 		$this->assertContains($this->lang($posting_contains), $crawler->filter('html')->text());
 
 		$hidden_fields = array(
@@ -117,7 +117,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		// I use a request because the form submission method does not allow you to send data that is not
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
 		// Instead, I send it as a request with the submit button "post" set to true.
-		$crawler = $this->request('POST', $posting_url, $form_data);
+		$crawler = self::request('POST', $posting_url, $form_data);
 		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
 
 		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();

@@ -14,19 +14,19 @@ class phpbb_functional_browse_test extends phpbb_functional_test_case
 {
 	public function test_index()
 	{
-		$crawler = $this->request('GET', 'index.php');
+		$crawler = self::request('GET', 'index.php');
 		$this->assertGreaterThan(0, $crawler->filter('.topiclist')->count());
 	}
 
 	public function test_viewforum()
 	{
-		$crawler = $this->request('GET', 'viewforum.php?f=2');
+		$crawler = self::request('GET', 'viewforum.php?f=2');
 		$this->assertGreaterThan(0, $crawler->filter('.topiclist')->count());
 	}
 
 	public function test_viewtopic()
 	{
-		$crawler = $this->request('GET', 'viewtopic.php?t=1');
+		$crawler = self::request('GET', 'viewtopic.php?t=1');
 		$this->assertGreaterThan(0, $crawler->filter('.postbody')->count());
 	}
 }

@@ -344,11 +344,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
-		$crawler = $this->request('GET', 'ucp.php');
+		$crawler = self::request('GET', 'ucp.php');
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
-		$crawler = $this->submit($form, array('username' => $username, 'password' => $username . $username));
+		$crawler = self::submit($form, array('username' => $username, 'password' => $username . $username));
 		$this->assert_response_success();
 		$this->assertContains($this->lang('LOGIN_REDIRECT'), $crawler->filter('html')->text());
 
@@ -379,7 +379,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			return;
 		}
 
-		$crawler = $this->request('GET', 'adm/index.php?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid);
 		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
@@ -388,7 +388,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			if (strpos($field, 'password_') === 0)
 			{
-				$crawler = $this->submit($form, array('username' => $username, $field => $username . $username));
+				$crawler = self::submit($form, array('username' => $username, $field => $username . $username));
 				$this->assert_response_success();
 				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
 
