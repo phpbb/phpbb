@@ -202,7 +202,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::$client->setClient(new Guzzle\Http\Client('', array(
 			Guzzle\Http\Client::DISABLE_REDIRECTS	=> true,
 			'curl.options'	=> array(
-				CURLOPT_TIMEOUT	=> 120
+				CURLOPT_TIMEOUT	=> 120,
 			),
 		)));
 
