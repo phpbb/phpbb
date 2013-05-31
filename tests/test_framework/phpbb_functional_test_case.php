@@ -80,16 +80,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string	$method		HTTP Method
 	* @param string	$path		Page path, relative from phpBB root path
 	* @param array $form_data	An array of form field values
-	* @param bool	$skip_assert_response_success	Should we skip the basic response assertions?
+	* @param bool	$assert_response_html	Should we perform standard assertions for a normal html page
 	* @return Symfony\Component\DomCrawler\Crawler
 	*/
-	static public function request($method, $path, $form_data = array(), $assert_response_success = true)
+	static public function request($method, $path, $form_data = array(), $assert_response_html = true)
 	{
 		$crawler = self::$client->request($method, self::$root_url . $path, $form_data);
 
-		if ($assert_response_success)
+		if ($assert_response_html)
 		{
-			self::assert_response_success();
+			self::assert_response_html();
 		}
 
 		return $crawler;
@@ -100,16 +100,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*
 	* @param Symfony\Component\DomCrawler\Form $form A Form instance
 	* @param array $values An array of form field values
-	* @param bool	$skip_assert_response_success	Should we skip the basic response assertions?
+	* @param bool	$assert_response_html	Should we perform standard assertions for a normal html page
 	* @return Symfony\Component\DomCrawler\Crawler
 	*/
-	static public function submit(Symfony\Component\DomCrawler\Form $form, array $values = array(), $assert_response_success = true)
+	static public function submit(Symfony\Component\DomCrawler\Form $form, array $values = array(), $assert_response_html = true)
 	{
 		$crawler = self::$client->submit($form, $values);
 
-		if ($assert_response_success)
+		if ($assert_response_html)
 		{
-			self::assert_response_success();
+			self::assert_response_html();
 		}
 
 		return $crawler;
@@ -349,7 +349,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 		$crawler = self::submit($form, array('username' => $username, 'password' => $username . $username));
-		$this->assert_response_success();
 		$this->assertContains($this->lang('LOGIN_REDIRECT'), $crawler->filter('html')->text());
 
 		$cookies = self::$cookieJar->all();
@@ -389,7 +388,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 			if (strpos($field, 'password_') === 0)
 			{
 				$crawler = self::submit($form, array('username' => $username, $field => $username . $username));
-				$this->assert_response_success();
 				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
 
 				$cookies = self::$cookieJar->all();
@@ -446,22 +444,36 @@ class phpbb_functional_test_case extends phpbb_test_case
 	}
 
 	/**
+	* Perform some basic assertions for the page
+	*
+	* Checks for debug/error output before the actual page content and the status code
+	*
+	* @param mixed $status_code		Expected status code, false to disable check
+	* @return null
+	*/
+	static public function assert_response_html($status_code = 200)
+	{
+		if ($status_code !== false)
+		{
+			self::assert_response_status_code($status_code);
+		}
+
+		// Any output before the doc type means there was an error
+		$content = self::$client->getResponse()->getContent();
+		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
+	}
+
+	/**
 	* Heuristic function to check that the response is success.
 	*
 	* When php decides to die with a fatal error, it still sends 200 OK
 	* status code. This assertion tries to catch that.
 	*
+	* @param int $status_code	Expected status code
 	* @return null
 	*/
-	static public function assert_response_success($status_code = 200)
+	static public function assert_response_status_code($status_code = 200)
 	{
 		self::assertEquals($status_code, self::$client->getResponse()->getStatus());
-		$content = self::$client->getResponse()->getContent();
-
-		// Any output before the doc type means there was an error
-		if (strpos($content, '<!DOCTYPE') !== false)
-		{
-			self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
-		}
 	}
 }
