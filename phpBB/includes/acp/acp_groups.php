@@ -920,10 +920,12 @@ class acp_groups
 				case 'set_config_teampage':
 					$config->set('teampage_forums', $request->variable('teampage_forums', 0));
 					$config->set('teampage_memberships', $request->variable('teampage_memberships', 0));
+					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 				break;
 
 				case 'set_config_legend':
 					$config->set('legend_sort_groupname', $request->variable('legend_sort_groupname', 0));
+					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 				break;
 			}
 		}
