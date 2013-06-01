@@ -86,7 +86,14 @@ class fulltext_mysql extends search_backend
 			$engine = $info['Type'];
 		}
 
-		if ($engine != 'MyISAM')
+		$fulltext_supported =
+			$engine === 'MyISAM' ||
+			// FULLTEXT is supported on InnoDB since MySQL 5.6.4 according to
+			// http://dev.mysql.com/doc/refman/5.6/en/innodb-storage-engine.html
+			$engine === 'InnoDB' &&
+			phpbb_version_compare($db->sql_server_info(true), '5.6.4', '>=');
+
+		if (!$fulltext_supported)
 		{
 			return $user->lang['FULLTEXT_MYSQL_NOT_MYISAM'];
 		}
