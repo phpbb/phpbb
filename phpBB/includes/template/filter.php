@@ -1126,7 +1126,7 @@ class phpbb_template_filter extends php_user_filter
 		}
 
 		// Remove URL parameters
-		$components = parse_resource_path($tag_args);
+		$components = phpbb_parse_resource_path($tag_args);
 
 		// Locate file
 		$filename = $this->locator->get_first_file_location(array($components['path']), false, true);
@@ -1138,7 +1138,7 @@ class phpbb_template_filter extends php_user_filter
 		}
 
 		$components['path'] = $filename;
-		$filename = join_resource_path($components, true);
+		$filename = phpbb_join_resource_path($components, true);
 
 		if (substr($filename, 0, strlen($this->phpbb_root_path)) != $this->phpbb_root_path)
 		{

@@ -491,7 +491,7 @@ class phpbb_template
 	*/
 	public function _js_include($file, $locate = false, $relative = false)
 	{
-		$path = parse_resource_path($file);
+		$path = phpbb_parse_resource_path($file);
 		$urlencode = false;
 
 		// Locate file
@@ -511,7 +511,7 @@ class phpbb_template
 
 		if ($path['schema'] === false && substr($path['path'], 0, 2) != '//' && !preg_match('/(^|[&;])assets_version=/', $path['query']))
 		{
-			if (strlen($path['query']))
+			if ($path['query'] !== '')
 			{
 				$separator = (strpos($path['query'], '&') === false) && (strpos($path['query'], ';') !== false) && preg_match('/^.*=.*;.*=.*$/', $path['query']) ? ';' : '&amp;';
 			}
@@ -522,7 +522,7 @@ class phpbb_template
 			$path['query'] .= $separator . 'assets_version=' . $this->config['assets_version'];
 		}
 
-		$file = join_resource_path($path, $urlencode);
+		$file = phpbb_join_resource_path($path, $urlencode);
 
 		// Add HTML code
 		$code = '<script src="' . $file . '"></script>' . "\n";

@@ -2408,7 +2408,7 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 *	query - Query string after '?'. Empty string if not set
 *	fragment - Part after hash mark '#'. Empty string if not set
 */
-function parse_resource_path($path)
+function phpbb_parse_resource_path($path)
 {
 	$components = array(
 		'full' => $path,
@@ -2449,11 +2449,11 @@ function parse_resource_path($path)
 /**
 * Joins resource path components into URL
 *
-* @param array $components List of components. See parse_resource_path() above for components description
+* @param array $components List of components. See phpbb_parse_resource_path() above for components description
 * @param bool $urlencode If true, path will be encoded with urlencode()
 * @return string URL
 */
-function join_resource_path($components, $urlencode = false)
+function phpbb_join_resource_path($components, $urlencode = false)
 {
 	if ($urlencode)
 	{
