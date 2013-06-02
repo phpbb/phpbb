@@ -2421,6 +2421,10 @@ function phpbb_parse_resource_path($path)
 
 	// Get part after hash
 	$paths = explode('#', $path, 2);
+	if (empty($paths))
+	{
+		return $components;
+	}
 	$path = $paths[0];
 	$components['fragment'] = isset($paths[1]) ? $paths[1] : '';
 
