@@ -133,6 +133,13 @@ else
 	}
 }
 
+if ($config['enable_post_confirm'] && !$user->data['is_registered'])
+{
+	include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+	$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+	$captcha->init(CONFIRM_POST);
+}
+
 // Submit report?
 if ($submit && $reason_id)
 {
@@ -223,6 +230,13 @@ if ($submit && $reason_id)
 display_reasons($reason_id);
 
 $page_title = ($pm_id) ? $user->lang['REPORT_MESSAGE'] : $user->lang['REPORT_POST'];
+
+if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === false))
+{
+	$template->assign_vars(array(
+		'CAPTCHA_TEMPLATE'	=> $captcha->get_template(),
+	));
+}
 
 $template->assign_vars(array(
 	'S_REPORT_POST'		=> ($pm_id) ? false : true,
