@@ -427,7 +427,15 @@ class acp_bbcodes
 				$fp_replace = str_replace($token, $replace, $fp_replace);
 
 				$sp_match = str_replace(preg_quote($token, '!'), $sp_tokens[$token_type], $sp_match);
-				$sp_replace = str_replace($token, '${' . ($n + 1) . '}', $sp_replace);
+				if ($token_type === 'LOCAL_URL')
+				{
+					// Prepend the board url to local relative links
+					$sp_replace = str_replace($token, generate_board_url() . '/' . '${' . ($n + 1) . '}', $sp_replace);
+				}
+				else
+				{
+					$sp_replace = str_replace($token, '${' . ($n + 1) . '}', $sp_replace);
+				}
 			}
 
 			$fp_match = '!' . $fp_match . '!' . $modifiers;
