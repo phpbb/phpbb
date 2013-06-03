@@ -113,8 +113,8 @@ class acp_bbcodes
 				{
 					$template->assign_block_vars('token', array(
 						'TOKEN'		=> '{' . $token . '}',
-						'EXPLAIN'	=> $token_explain)
-					);
+						'EXPLAIN'	=> ($token === 'LOCAL_URL') ? sprintf($token_explain, generate_board_url() . '/') : $token_explain,
+					));
 				}
 
 				return;
