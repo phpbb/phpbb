@@ -10,13 +10,13 @@
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 require_once dirname(__FILE__) . '/../mock/cache.php';
-require_once dirname(__FILE__) . '/common_validate_data.php';
+require_once dirname(__FILE__) . '/validate_data_helper.php';
 
 class phpbb_functions_validate_data_test extends phpbb_database_test_case
 {
 	protected $db;
 	protected $cache;
-	protected $common;
+	protected $helper;
 
 	public function getDataSet()
 	{
@@ -29,7 +29,7 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 
 		$this->db = $this->new_dbal();
 		$this->cache = new phpbb_mock_cache;
-		$this->common = new phpbb_functions_common_validate_data;
+		$this->helper = new phpbb_functions_validate_data_helper($this);
 	}
 
 	public function validate_username_data()
@@ -129,7 +129,7 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 
 		$config['allow_name_chars'] = $allow_name_chars;
 
-		$this->common->validate_data_check(array(
+		$this->helper->assert_validate_data($expected, array(
 			'foobar_allow'		=> 'foobar',
 			'foobar_ascii'		=> 'foobar',
 			'foobar_any'		=> 'f*~*^=oo_bar1',
@@ -154,7 +154,6 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 			'barfoo_disallow'	=> array('username'),
 			'admin_taken'		=> array('username'),
 			'group_taken'		=> array('username'),
-		),
-		$expected);
+		));
 	}
 }

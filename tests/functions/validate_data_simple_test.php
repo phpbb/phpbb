@@ -9,22 +9,32 @@
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
-require_once dirname(__FILE__) . '/common_validate_data.php';
+require_once dirname(__FILE__) . '/validate_data_helper.php';
 
 class phpbb_functions_validate_data_simple_test extends phpbb_test_case
 {
-	protected $common;
+	protected $helper;
 
 	protected function setUp()
 	{
 		parent::setUp();
 
-		$this->common = new phpbb_functions_common_validate_data;
+		$this->helper = new phpbb_functions_validate_data_helper($this);
 	}
 
 	public function test_validate_string()
 	{
-		$this->common->validate_data_check(array(
+		$this->helper->assert_validate_data(array(
+			'empty_opt'		=> array(),
+			'empty'			=> array(),
+			'foo'			=> array(),
+			'foo_minmax_correct'	=> array(),
+			'foo_minmax_short'	=> array('TOO_SHORT'),
+			'foo_minmax_long'	=> array('TOO_LONG'),
+			'empty_short'		=> array('TOO_SHORT'),
+			'empty_length_opt'	=> array(),
+		),
+		array(
 			'empty_opt'		=> '',
 			'empty'			=> '',
 			'foo'			=> 'foobar',
@@ -43,22 +53,20 @@ class phpbb_functions_validate_data_simple_test extends phpbb_test_case
 			'foo_minmax_long'	=> array('string', false, 2, 5),
 			'empty_short'		=> array('string', false, 1, 6),
 			'empty_length_opt'	=> array('string', true, 1, 6),
-		),
-		array(
-			'empty_opt'		=> array(),
-			'empty'			=> array(),
-			'foo'			=> array(),
-			'foo_minmax_correct'	=> array(),
-			'foo_minmax_short'	=> array('TOO_SHORT'),
-			'foo_minmax_long'	=> array('TOO_LONG'),
-			'empty_short'		=> array('TOO_SHORT'),
-			'empty_length_opt'	=> array(),
 		));
 	}
 
 	public function test_validate_num()
 	{
-		$this->common->validate_data_check(array(
+		$this->helper->assert_validate_data(array(
+			'empty'			=> array(),
+			'zero'			=> array(),
+			'five_minmax_correct'	=> array(),
+			'five_minmax_short'	=> array('TOO_SMALL'),
+			'five_minmax_long'	=> array('TOO_LARGE'),
+			'string'		=> array(),
+		),
+		array(
 			'empty'			=> '',
 			'zero'			=> 0,
 			'five_minmax_correct'	=> 5,
@@ -73,20 +81,25 @@ class phpbb_functions_validate_data_simple_test extends phpbb_test_case
 			'five_minmax_short'	=> array('num', false, 7, 10),
 			'five_minmax_long'	=> array('num', false, 2, 3),
 			'string'		=> array('num'),
-		),
-		array(
-			'empty'			=> array(),
-			'zero'			=> array(),
-			'five_minmax_correct'	=> array(),
-			'five_minmax_short'	=> array('TOO_SMALL'),
-			'five_minmax_long'	=> array('TOO_LARGE'),
-			'string'	=> array(),
 		));
 	}
 
 	public function test_validate_date()
 	{
-		$this->common->validate_data_check(array(
+		$this->helper->assert_validate_data(array(
+			'empty'			=> array('INVALID'),
+			'empty_opt'		=> array(),
+			'double_single'		=> array(),
+			'single_single'		=> array(),
+			'double_double'		=> array(),
+			// Currently fails
+			//'zero_year'		=> array(),
+			'month_high'		=> array('INVALID'),
+			'month_low'		=> array('INVALID'),
+			'day_high'		=> array('INVALID'),
+			'day_low'		=> array('INVALID'),
+		),
+		array(
 			'empty'			=> '',
 			'empty_opt'		=> '',
 			'double_single'		=> '17-06-1990',
@@ -111,25 +124,18 @@ class phpbb_functions_validate_data_simple_test extends phpbb_test_case
 			'month_low'		=> array('date'),
 			'day_high'		=> array('date'),
 			'day_low'		=> array('date'),
-		),
-		array(
-			'empty'			=> array('INVALID'),
-			'empty_opt'		=> array(),
-			'double_single'		=> array(),
-			'single_single'		=> array(),
-			'double_double'		=> array(),
-			// Currently fails
-			//'zero_year'		=> array(),
-			'month_high'		=> array('INVALID'),
-			'month_low'		=> array('INVALID'),
-			'day_high'		=> array('INVALID'),
-			'day_low'		=> array('INVALID'),
 		));
 	}
 
 	public function test_validate_match()
 	{
-		$this->common->validate_data_check(array(
+		$this->helper->assert_validate_data(array(
+			'empty_opt'		=> array(),
+			'empty_empty_match'	=> array(),
+			'foobar'		=> array(),
+			'foobar_fail'		=> array('WRONG_DATA'),
+		),
+		array(
 			'empty_opt'		=> '',
 			'empty_empty_match'	=> '',
 			'foobar'		=> 'foobar',
@@ -140,12 +146,6 @@ class phpbb_functions_validate_data_simple_test extends phpbb_test_case
 			'empty_empty_match'	=> array('match'),
 			'foobar'		=> array('match', false, '/[a-z]$/'),
 			'foobar_fail'		=> array('match', false, '/[a-z]$/'),
-		),
-		array(
-			'empty_opt'		=> array(),
-			'empty_empty_match'	=> array(),
-			'foobar'		=> array(),
-			'foobar_fail'		=> array('WRONG_DATA'),
 		));
 	}
 
@@ -193,7 +193,7 @@ class phpbb_functions_validate_data_simple_test extends phpbb_test_case
 		// Set complexity to mixed case letters, numbers and symbols
 		$config['pass_complex'] = $pass_complexity;
 
-		$this->common->validate_data_check(array(
+		$this->helper->assert_validate_data($expected, array(
 			'empty'			=> '',
 			'foobar_any'		=> 'foobar',
 			'foobar_mixed'		=> 'FooBar',
@@ -206,13 +206,24 @@ class phpbb_functions_validate_data_simple_test extends phpbb_test_case
 			'foobar_mixed'		=> array('password'),
 			'foobar_alpha'		=> array('password'),
 			'foobar_symbol'		=> array('password'),
-		),
-		$expected);
+		));
 	}
 
 	public function test_validate_jabber()
 	{
-		$this->common->validate_data_check(array(
+		$this->helper->assert_validate_data(array(
+			'empty'			=> array(),
+			'no_seperator'		=> array('WRONG_DATA'),
+			'no_user'		=> array('WRONG_DATA'),
+			'no_realm'		=> array('WRONG_DATA'),
+			'dot_realm'		=> array('WRONG_DATA'),
+			'-realm'		=> array('WRONG_DATA'),
+			'realm-'		=> array('WRONG_DATA'),
+			'correct'		=> array(),
+			'prohibited'		=> array('WRONG_DATA'),
+			'prohibited_char'	=> array('WRONG_DATA'),
+		),
+		array(
 			'empty'			=> '',
 			'no_seperator'		=> 'testjabber.ccc',
 			'no_user'		=> '@jabber.ccc',
@@ -235,18 +246,6 @@ class phpbb_functions_validate_data_simple_test extends phpbb_test_case
 			'correct'		=> array('jabber'),
 			'prohibited'		=> array('jabber'),
 			'prohibited_char'	=> array('jabber'),
-		),
-		array(
-			'empty'			=> array(),
-			'no_seperator'		=> array('WRONG_DATA'),
-			'no_user'		=> array('WRONG_DATA'),
-			'no_realm'		=> array('WRONG_DATA'),
-			'dot_realm'		=> array('WRONG_DATA'),
-			'-realm'		=> array('WRONG_DATA'),
-			'realm-'		=> array('WRONG_DATA'),
-			'correct'		=> array(),
-			'prohibited'		=> array('WRONG_DATA'),
-			'prohibited_char'	=> array('WRONG_DATA'),
 		));
 	}
 }

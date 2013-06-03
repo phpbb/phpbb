@@ -10,13 +10,13 @@
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
 require_once dirname(__FILE__) . '/../mock/user.php';
-require_once dirname(__FILE__) . '/common_validate_data.php';
+require_once dirname(__FILE__) . '/validate_data_helper.php';
 
 class phpbb_functions_validate_email_test extends phpbb_database_test_case
 {
 	protected $db;
 	protected $user;
-	protected $common;
+	protected $helper;
 
 	public function getDataSet()
 	{
@@ -29,7 +29,7 @@ class phpbb_functions_validate_email_test extends phpbb_database_test_case
 
 		$this->db = $this->new_dbal();
 		$this->user = new phpbb_mock_user;
-		$this->common = new phpbb_functions_common_validate_data;
+		$this->helper = new phpbb_functions_validate_data_helper($this);
 	}
 
 	public function test_validate_email()
@@ -41,7 +41,16 @@ class phpbb_functions_validate_email_test extends phpbb_database_test_case
 		$user = $this->user;
 		$user->optionset('banned_users', array('banned@example.com'));
 
-		$this->common->validate_data_check(array(
+		$this->helper->assert_validate_data(array(
+			'empty'			=> array(),
+			'allowed'		=> array(),
+			'invalid'		=> array('EMAIL_INVALID'),
+			'valid_complex'		=> array(),
+			'taken'			=> array('EMAIL_TAKEN'),
+			'banned'		=> array('EMAIL_BANNED'),
+			'no_mx'			=> array('DOMAIN_NO_MX_RECORD'),
+		),
+		array(
 			'empty'			=> '',
 			'allowed'		=> 'foobar@example.com',
 			'invalid'		=> 'fööbar@example.com',
@@ -58,15 +67,6 @@ class phpbb_functions_validate_email_test extends phpbb_database_test_case
 			'taken'			=> array('email'),
 			'banned'		=> array('email'),
 			'no_mx'			=> array('email'),
-		),
-		array(
-			'empty'			=> array(),
-			'allowed'		=> array(),
-			'invalid'		=> array('EMAIL_INVALID'),
-			'valid_complex'		=> array(),
-			'taken'			=> array('EMAIL_TAKEN'),
-			'banned'		=> array('EMAIL_BANNED'),
-			'no_mx'			=> array('DOMAIN_NO_MX_RECORD'),
 		));
 	}
 }

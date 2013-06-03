@@ -8,12 +8,12 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
-require_once dirname(__FILE__) . '/common_validate_data.php';
+require_once dirname(__FILE__) . '/validate_data_helper.php';
 
 class phpbb_functions_validate_lang_iso_test extends phpbb_database_test_case
 {
 	protected $db;
-	protected $common;
+	protected $helper;
 
 	public function getDataSet()
 	{
@@ -25,7 +25,7 @@ class phpbb_functions_validate_lang_iso_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->common = new phpbb_functions_common_validate_data;
+		$this->helper = new phpbb_functions_validate_data_helper($this);
 	}
 
 	public function test_validate_lang_iso()
@@ -34,7 +34,13 @@ class phpbb_functions_validate_lang_iso_test extends phpbb_database_test_case
 
 		$db = $this->db;
 
-		$this->common->validate_data_check(array(
+		$this->helper->assert_validate_data(array(
+			'empty'		=> array('WRONG_DATA'),
+			'en'		=> array(),
+			'cs'		=> array(),
+			'de'		=> array('WRONG_DATA'),
+		),
+		array(
 			'empty'		=> '',
 			'en'		=> 'en',
 			'cs'		=> 'cs',
@@ -45,12 +51,6 @@ class phpbb_functions_validate_lang_iso_test extends phpbb_database_test_case
 			'en'		=> array('language_iso_name'),
 			'cs'		=> array('language_iso_name'),
 			'de'		=> array('language_iso_name'),
-		),
-		array(
-			'empty'		=> array('WRONG_DATA'),
-			'en'		=> array(),
-			'cs'		=> array(),
-			'de'		=> array('WRONG_DATA'),
 		));
 	}
 }
