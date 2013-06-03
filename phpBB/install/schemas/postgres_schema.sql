@@ -623,12 +623,16 @@ CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id
 /*
 	Table: 'phpbb_notification_types'
 */
+CREATE SEQUENCE phpbb_notification_types_seq;
+
 CREATE TABLE phpbb_notification_types (
-	notification_type varchar(255) DEFAULT '' NOT NULL,
+	notification_type_id INT2 DEFAULT nextval('phpbb_notification_types_seq'),
+	notification_type_name varchar(255) DEFAULT '' NOT NULL,
 	notification_type_enabled INT2 DEFAULT '1' NOT NULL CHECK (notification_type_enabled >= 0),
-	PRIMARY KEY (notification_type, notification_type_enabled)
+	PRIMARY KEY (notification_type_id)
 );
 
+CREATE UNIQUE INDEX phpbb_notification_types_type ON phpbb_notification_types (notification_type_name);
 
 /*
 	Table: 'phpbb_notifications'
@@ -637,7 +641,7 @@ CREATE SEQUENCE phpbb_notifications_seq;
 
 CREATE TABLE phpbb_notifications (
 	notification_id INT4 DEFAULT nextval('phpbb_notifications_seq'),
-	item_type varchar(255) DEFAULT '' NOT NULL,
+	notification_type_id INT2 DEFAULT '0' NOT NULL CHECK (notification_type_id >= 0),
 	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
 	item_parent_id INT4 DEFAULT '0' NOT NULL CHECK (item_parent_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
@@ -647,7 +651,7 @@ CREATE TABLE phpbb_notifications (
 	PRIMARY KEY (notification_id)
 );
 
-CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id);
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (notification_type_id, item_id);
 CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read);
 
 /*

@@ -406,11 +406,6 @@ li.header dt, li.header dd {
 	color: #FFFFFF;
 }
 
-/* Forum list column styles */
-ul.topiclist dd.searchextra {
-	color: #333333;
-}
-
 /* Post body styles
 ----------------------------------------*/
 .postbody {
@@ -1000,6 +995,14 @@ fieldset.quick-login input.inputbox {
 	color: #333333;
 }
 
+.inputbox:-moz-placeholder {
+	color: #333333;
+}
+
+.inputbox::-webkit-input-placeholder {
+	color: #333333;
+}
+
 .inputbox:hover {
 	border-color: #11A3EA;
 }
@@ -1008,6 +1011,15 @@ fieldset.quick-login input.inputbox {
 	border-color: #11A3EA;
 	color: #0F4987;
 }
+
+.inputbox:focus:-moz-placeholder {
+	color: transparent;
+}
+
+.inputbox:focus::-webkit-input-placeholder {
+	color: transparent;
+}
+
 
 /* Form button styles
 ---------------------------------------- */

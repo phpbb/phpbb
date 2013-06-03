@@ -55,11 +55,14 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			'phpbb_',
 			$tools
 		);
+
+		$container = new phpbb_mock_container_builder();
+		$container->set('migrator', $migrator);
+
 		$this->extension_manager = new phpbb_extension_manager(
-			new phpbb_mock_container_builder(),
+			$container,
 			$this->db,
 			$this->config,
-			$this->migrator,
 			new phpbb_filesystem(),
 			'phpbb_ext',
 			dirname(__FILE__) . '/../../phpBB/',

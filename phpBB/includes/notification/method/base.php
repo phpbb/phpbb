@@ -30,7 +30,7 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	/** @var phpbb_db_driver */
 	protected $db;
 
-	/** @var phpbb_cache_service */
+	/** @var phpbb_cache_driver_interface */
 	protected $cache;
 
 	/** @var phpbb_template */

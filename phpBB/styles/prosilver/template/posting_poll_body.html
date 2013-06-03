@@ -26,18 +26,18 @@
 
 		<dl>
 			<dt><label for="poll_max_options">{L_POLL_MAX_OPTIONS}{L_COLON}</label></dt>
-			<dd><input type="text" name="poll_max_options" id="poll_max_options" size="3" maxlength="3" value="{POLL_MAX_OPTIONS}" class="inputbox autowidth" /></dd>
+			<dd><input type="number" min="1" max="999" name="poll_max_options" id="poll_max_options" size="3" maxlength="3" value="{POLL_MAX_OPTIONS}" class="inputbox autowidth" /></dd>
 			<dd>{L_POLL_MAX_OPTIONS_EXPLAIN}</dd>
 		</dl>
 		<dl>
 			<dt><label for="poll_length">{L_POLL_FOR}{L_COLON}</label></dt>
-			<dd><label for="poll_length"><input type="text" name="poll_length" id="poll_length" size="3" maxlength="3" value="{POLL_LENGTH}" class="inputbox autowidth" /> {L_DAYS}</label></dd>
+			<dd><label for="poll_length"><input type="number" min="0" max="999" name="poll_length" id="poll_length" size="3" maxlength="3" value="{POLL_LENGTH}" class="inputbox autowidth" /> {L_DAYS}</label></dd>
 			<dd>{L_POLL_FOR_EXPLAIN}</dd>
 		</dl>
 
 		<!-- IF S_POLL_VOTE_CHANGE -->
 			<hr class="dashed" />
-			
+
 			<dl>
 				<dt><label for="poll_vote_change">{L_POLL_VOTE_CHANGE}{L_COLON}</label></dt>
 				<dd><label for="poll_vote_change"><input type="checkbox" id="poll_vote_change" name="poll_vote_change"{VOTE_CHANGE_CHECKED} /> {L_POLL_VOTE_CHANGE_EXPLAIN}</label></dd>

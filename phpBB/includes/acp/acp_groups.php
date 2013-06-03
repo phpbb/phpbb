@@ -87,6 +87,11 @@ class acp_groups
 			case 'approve':
 			case 'demote':
 			case 'promote':
+				if (!check_form_key($form_key))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				if (!$group_id)
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -259,6 +264,11 @@ class acp_groups
 			break;
 
 			case 'addusers':
+				if (!check_form_key($form_key))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				if (!$group_id)
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -381,15 +391,26 @@ class acp_groups
 							$submit_ary['avatar_width'] = 0;
 							$submit_ary['avatar_height'] = 0;
 						}
+
+						// Merge any avatar errors into the primary error array
+						$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
 					}
 
-					// Validate the length of "Maximum number of allowed recipients per private message" setting.
-					// We use 16777215 as a maximum because it matches MySQL unsigned mediumint maximum value
-					// which is the lowest amongst DBMSes supported by phpBB3
-					if ($max_recipients_error = validate_data($submit_ary, array('max_recipients' => array('num', false, 0, 16777215))))
+					/*
+					* Validate the length of "Maximum number of allowed recipients per
+					* private message" setting. We use 16777215 as a maximum because it matches
+					* MySQL unsigned mediumint maximum value which is the lowest amongst DBMSes
+					* supported by phpBB3. Also validate the submitted colour value.
+					*/
+					$validation_checks = array(
+						'max_recipients' => array('num', false, 0, 16777215),
+						'colour'	=> array('hex_colour', true),
+					);
+
+					if ($validation_error = validate_data($submit_ary, $validation_checks))
 					{
 						// Replace "error" string with its real, localised form
-						$error = array_merge($error, array_map(array(&$user, 'lang'), $max_recipients_error));
+						$error = array_merge($error, array_map(array(&$user, 'lang'), $validation_error));
 					}
 
 					if (!sizeof($error))
@@ -570,8 +591,11 @@ class acp_groups
 
 				$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
 
-				// Merge any avatar errors into the primary error array
-				$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+				if (!$update)
+				{
+					// Merge any avatar errors into the primary error array
+					$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+				}
 
 				$back_link = request_var('back_link', '');
 
@@ -906,10 +930,12 @@ class acp_groups
 				case 'set_config_teampage':
 					$config->set('teampage_forums', $request->variable('teampage_forums', 0));
 					$config->set('teampage_memberships', $request->variable('teampage_memberships', 0));
+					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 				break;
 
 				case 'set_config_legend':
 					$config->set('legend_sort_groupname', $request->variable('legend_sort_groupname', 0));
+					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 				break;
 			}
 		}

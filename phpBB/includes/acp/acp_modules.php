@@ -544,80 +544,59 @@ class acp_modules
 	*/
 	function get_module_infos($module = '', $module_class = false, $use_all_available = false)
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_extension_manager, $phpbb_root_path, $phpEx;
 
 		$module_class = ($module_class === false) ? $this->module_class : $module_class;
 
 		$directory = $phpbb_root_path . 'includes/' . $module_class . '/info/';
 		$fileinfo = array();
 
-		if (!$module)
+		$finder = $phpbb_extension_manager->get_finder();
+
+		$modules = $finder
+			->extension_suffix('_module')
+			->extension_directory("/$module_class")
+			->core_path("includes/$module_class/info/")
+			->core_prefix($module_class . '_')
+			->get_classes(true, $use_all_available);
+
+		foreach ($modules as $cur_module)
 		{
-			global $phpbb_extension_manager;
-
-			$finder = $phpbb_extension_manager->get_finder();
-
-			$modules = $finder
-				->extension_suffix('_module')
-				->extension_directory("/$module_class")
-				->core_path("includes/$module_class/info/")
-				->core_prefix($module_class . '_')
-				->get_classes(true, $use_all_available);
-
-			foreach ($modules as $module)
+			// Skip entries we do not need if we know the module we are
+			// looking for
+			if ($module && strpos($cur_module, $module) === false)
 			{
-				$info_class = preg_replace('/_module$/', '_info', $module);
-
-				// If the class does not exist it might be following the old
-				// format. phpbb_acp_info_acp_foo needs to be turned into
-				// acp_foo_info and the respective file has to be included
-				// manually because it does not support auto loading
-				if (!class_exists($info_class))
-				{
-					$info_class = str_replace("phpbb_{$module_class}_info_", '', $module) . '_info';
-					if (file_exists($directory . $info_class . '.' . $phpEx))
-					{
-						include($directory . $info_class . '.' . $phpEx);
-					}
-				}
-
-				if (class_exists($info_class))
-				{
-					$info = new $info_class();
-					$module_info = $info->module();
-
-					$main_class = (isset($module_info['filename'])) ? $module_info['filename'] : $module;
-
-					$fileinfo[$main_class] = $module_info;
-				}
+				continue;
 			}
 
-			ksort($fileinfo);
-		}
-		else
-		{
-			$info_class = preg_replace('/_module$/', '_info', $module);
+			$info_class = preg_replace('/_module$/', '_info', $cur_module);
 
+			// If the class does not exist it might be following the old
+			// format. phpbb_acp_info_acp_foo needs to be turned into
+			// acp_foo_info and the respective file has to be included
+			// manually because it does not support auto loading
 			if (!class_exists($info_class))
 			{
-				$info_class = $module . '_info';
-				if (!class_exists($info_class) && file_exists($directory . $module . '.' . $phpEx))
+				$info_class_file = str_replace("phpbb_{$module_class}_info_", '', $cur_module);
+				$info_class = $info_class_file . '_info';
+				if (!class_exists($info_class) && file_exists($directory . $info_class_file . '.' . $phpEx))
 				{
-					include($directory . $module . '.' . $phpEx);
+					include($directory . $info_class_file . '.' . $phpEx);
 				}
 			}
 
-			// Get module title tag
 			if (class_exists($info_class))
 			{
 				$info = new $info_class();
 				$module_info = $info->module();
 
-				$main_class = (isset($module_info['filename'])) ? $module_info['filename'] : $module;
+				$main_class = (isset($module_info['filename'])) ? $module_info['filename'] : $cur_module;
 
 				$fileinfo[$main_class] = $module_info;
 			}
 		}
+
+		ksort($fileinfo);
 
 		return $fileinfo;
 	}

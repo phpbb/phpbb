@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_styles">
+		<column>style_id</column>
+		<column>style_name</column>
+		<column>style_active</column>
+		<column>style_parent_tree</column>
+		<row>
+			<value>1</value>
+			<value>prosilver</value>
+			<value>1</value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>subsilver2</value>
+			<value>1</value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>zoo</value>
+			<value>0</value>
+			<value></value>
+		</row>
+	</table>
+</dataset>

@@ -61,11 +61,13 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->table_prefix,
 			array()
 		);
+		$container = new phpbb_mock_container_builder();
+		$container->set('migrator', $migrator);
+
 		$this->extension_manager = new phpbb_extension_manager(
-			new phpbb_mock_container_builder(),
+			$container,
 			$this->db,
 			$this->config,
-			$this->migrator,
 			new phpbb_filesystem(),
 			'phpbb_ext',
 			$this->phpbb_root_path,

@@ -9,53 +9,53 @@
 		<td class="row3" colspan="2" align="center"><span class="gensmall error">{ERROR}</span></td>
 	</tr>
 <!-- ENDIF -->
-<tr> 
+<tr>
 	<td class="row1" colspan="2"><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
 </tr>
-<tr> 
+<tr>
 	<td class="row1" width="35%"><b class="genmed">{L_UCP_ICQ}{L_COLON} </b></td>
 	<td class="row2"><input class="post" type="text" name="icq" size="30" maxlength="15" value="{ICQ}" /></td>
 </tr>
-<tr> 
+<tr>
 	<td class="row1" width="35%"><b class="genmed">{L_UCP_AIM}{L_COLON} </b></td>
 	<td class="row2"><input class="post" type="text" name="aim" size="30" maxlength="255" value="{AIM}" /></td>
 </tr>
-<tr> 
+<tr>
 	<td class="row1" width="35%"><b class="genmed">{L_UCP_MSNM}{L_COLON} </b></td>
-	<td class="row2"><input class="post" type="text" name="msn" size="30" maxlength="255" value="{MSN}" /></td>
+	<td class="row2"><input class="post" type="email" name="msn" size="30" maxlength="255" value="{MSN}" /></td>
 </tr>
-<tr> 
+<tr>
 	<td class="row1" width="35%"><b class="genmed">{L_UCP_YIM}{L_COLON} </b></td>
-	<td class="row2"><input class="post" type="text" name="yim" size="30" maxlength="255" value="{YIM}" /></td>
+	<td class="row2"><input class="post" type="email" name="yim" size="30" maxlength="255" value="{YIM}" /></td>
 </tr>
-<tr> 
+<tr>
 	<td class="row1" width="35%"><b class="genmed">{L_UCP_JABBER}{L_COLON} </b></td>
 	<td class="row2"><input class="post" type="text" name="jabber" size="30" maxlength="255" value="{JABBER}" /></td>
 </tr>
-<tr> 
+<tr>
 	<td class="row1" width="35%"><b class="genmed">{L_WEBSITE}{L_COLON} </b></td>
-	<td class="row2"><input class="post" type="text" name="website" size="30" maxlength="255" value="{WEBSITE}" /></td>
+	<td class="row2"><input class="post" type="url" name="website" size="30" maxlength="255" value="{WEBSITE}" /></td>
 </tr>
-<tr> 
+<tr>
 	<td class="row1" width="35%"><b class="genmed">{L_LOCATION}{L_COLON} </b></td>
 	<td class="row2"><input class="post" type="text" name="location" size="30" maxlength="100" value="{LOCATION}" /></td>
 </tr>
-<tr> 
+<tr>
 	<td class="row1" width="35%"><b class="genmed">{L_OCCUPATION}{L_COLON} </b></td>
 	<td class="row2"><textarea class="post" name="occupation" rows="3" cols="30">{OCCUPATION}</textarea></td>
 </tr>
-<tr> 
+<tr>
 	<td class="row1" width="35%"><b class="genmed">{L_INTERESTS}{L_COLON} </b></td>
 	<td class="row2"><textarea class="post" name="interests" rows="3" cols="30">{INTERESTS}</textarea></td>
 </tr>
 <!-- IF S_BIRTHDAYS_ENABLED -->
-	<tr> 
+	<tr>
 		<td class="row1" width="35%"><b class="genmed">{L_BIRTHDAY}{L_COLON} </b><br /><span class="gensmall">{L_BIRTHDAY_EXPLAIN}</span></td>
 		<td class="row2"><span class="genmed">{L_DAY}{L_COLON}</span> <select name="bday_day">{S_BIRTHDAY_DAY_OPTIONS}</select> <span class="genmed">{L_MONTH}{L_COLON}</span> <select name="bday_month">{S_BIRTHDAY_MONTH_OPTIONS}</select> <span class="genmed">{L_YEAR}{L_COLON}</span> <select name="bday_year">{S_BIRTHDAY_YEAR_OPTIONS}</select></td>
 	</tr>
 <!-- ENDIF -->
 <!-- BEGIN profile_fields -->
-	<tr> 
+	<tr>
 		<td class="row1" width="35%">
 			<b class="genmed">{profile_fields.LANG_NAME}{L_COLON} </b>
 			<!-- IF profile_fields.S_REQUIRED --><b>*</b><!-- ENDIF -->

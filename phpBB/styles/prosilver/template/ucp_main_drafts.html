@@ -24,26 +24,28 @@
 <!-- ELSE -->
 
 	<!-- IF .draftrow -->
-		<ul class="topiclist">
+		<ul class="topiclist missing-column">
 			<li class="header">
 				<dl>
-					<dt>{L_DRAFT_TITLE}</dt>
+					<dt><div class="list-inner">{L_DRAFT_TITLE}</div></dt>
 					<dd class="info"><span>{L_SAVE_DATE}</span></dd>
 					<dd class="mark">{L_MARK}</dd>
 				</dl>
 			</li>
 		</ul>
-		<ul class="topiclist cplist">
+		<ul class="topiclist cplist missing-column">
 
 		<!-- BEGIN draftrow -->
 			<li class="row<!-- IF draftrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl>
 					<dt>
-						<a class="topictitle" href="{draftrow.U_VIEW_EDIT}">{draftrow.DRAFT_SUBJECT}</a><br />
-						<!-- IF draftrow.S_LINK_TOPIC -->{L_TOPIC}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
-						<!-- ELSEIF draftrow.S_LINK_FORUM -->{L_FORUM}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
-						<!-- ELSEIF S_PRIVMSGS -->
-						<!-- ELSE -->{L_NO_TOPIC_FORUM}<!-- ENDIF -->
+						<div class="list-inner">
+							<a class="topictitle" href="{draftrow.U_VIEW_EDIT}">{draftrow.DRAFT_SUBJECT}</a><br />
+							<!-- IF draftrow.S_LINK_TOPIC -->{L_TOPIC}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
+							<!-- ELSEIF draftrow.S_LINK_FORUM -->{L_FORUM}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
+							<!-- ELSEIF S_PRIVMSGS -->
+							<!-- ELSE -->{L_NO_TOPIC_FORUM}<!-- ENDIF -->
+						</div>
 					</dt>
 					<dd class="info"><span>{draftrow.DATE}<br /><!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a> &bull; <!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></span></dd>
 					<dd class="mark"><input type="checkbox" name="d[{draftrow.DRAFT_ID}]" id="d{draftrow.DRAFT_ID}" /></dd>

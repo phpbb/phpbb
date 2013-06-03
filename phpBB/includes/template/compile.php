@@ -33,6 +33,13 @@ class phpbb_template_compile
 	private $filter_params;
 
 	/**
+	* Array of default parameters
+	*
+	* @var array
+	*/
+	private $default_filter_params;
+
+	/**
 	* Constructor.
 	*
 	* @param bool $allow_php Whether PHP code will be allowed in templates (inline PHP code, PHP tag and INCLUDEPHP tag)
@@ -44,15 +51,37 @@ class phpbb_template_compile
 	*/
 	public function __construct($allow_php, $style_names, $locator, $phpbb_root_path, $extension_manager = null, $user = null)
 	{
-		$this->filter_params = array(
-			'allow_php'	=> $allow_php,
-			'style_names'	=> $style_names,
-			'locator'	=> $locator,
+		$this->filter_params = $this->default_filter_params = array(
+			'allow_php'			=> $allow_php,
+			'style_names'		=> $style_names,
+			'locator'			=> $locator,
 			'phpbb_root_path'	=> $phpbb_root_path,
 			'extension_manager'	=> $extension_manager,
-			'user'          => $user,
+			'user'          	=> $user,
 			'template_compile'	=> $this,
+			'cleanup'			=> true,
 		);
+	}
+
+	/**
+	* Set filter parameters
+	*
+	* @param array $params Array of parameters (will be merged onto $this->filter_params)
+	*/
+	public function set_filter_params($params)
+	{
+		$this->filter_params = array_merge(
+			$this->filter_params,
+			$params
+		);
+	}
+
+	/**
+	* Reset filter parameters to their default settings
+	*/
+	public function reset_filter_params()
+	{
+		$this->filter_params = $this->default_filter_params;
 	}
 
 	/**

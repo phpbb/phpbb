@@ -43,7 +43,7 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_notifications&mode=notification_options');
 		$this->assert_response_success();
 
-		$cplist = $crawler->filter('.cplist');
+		$cplist = $crawler->filter('.table1');
 		if ($expected_status)
 		{
 			$this->assert_checkbox_is_checked($cplist, $checkbox_name);
