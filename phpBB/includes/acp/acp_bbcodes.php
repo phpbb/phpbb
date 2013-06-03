@@ -345,6 +345,9 @@ class acp_bbcodes
 			'LOCAL_URL'	 => array(
 				'!(' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('relative_url')) . ')!e'	=>	"\$this->bbcode_specialchars('$1')"
 			),
+			'RELATIVE_URL'	=> array(
+				'!(' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('relative_url')) . ')!e'	=>	"\$this->bbcode_specialchars('$1')"
+			),
 			'EMAIL' => array(
 				'!(' . get_preg_expression('email') . ')!ie'	=>	"\$this->bbcode_specialchars('$1')"
 			),
@@ -371,6 +374,7 @@ class acp_bbcodes
 		$sp_tokens = array(
 			'URL'	 => '(?i)((?:' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('url')) . ')|(?:' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('www_url')) . '))(?-i)',
 			'LOCAL_URL'	 => '(?i)(' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('relative_url')) . ')(?-i)',
+			'RELATIVE_URL'	 => '(?i)(' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('relative_url')) . ')(?-i)',
 			'EMAIL' => '(' . get_preg_expression('email') . ')',
 			'TEXT' => '(.*?)',
 			'SIMPLETEXT' => '([a-zA-Z0-9-+.,_ ]+)',
