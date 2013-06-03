@@ -65,19 +65,32 @@ class phpbb_functions_validate_password_test extends phpbb_test_case
 		// Set complexity to mixed case letters, numbers and symbols
 		$config['pass_complex'] = $pass_complexity;
 
-		$this->helper->assert_validate_data($expected, array(
-			'empty'			=> '',
-			'foobar_any'		=> 'foobar',
-			'foobar_mixed'		=> 'FooBar',
-			'foobar_alpha'		=> 'F00bar',
-			'foobar_symbol'		=> 'fooBar123*',
-		),
-		array(
-			'empty'			=> array('password'),
-			'foobar_any'		=> array('password'),
-			'foobar_mixed'		=> array('password'),
-			'foobar_alpha'		=> array('password'),
-			'foobar_symbol'		=> array('password'),
+		$this->helper->assert_valid_data(array(
+			'empty'			=> array(
+				$expected['empty'],
+				'',
+				array('password'),
+			),
+			'foobar_any'		=> array(
+				$expected['foobar_any'],
+				'foobar',
+				array('password'),
+			),
+			'foobar_mixed'		=> array(
+				$expected['foobar_mixed'],
+				'FooBar',
+				array('password'),
+			),
+			'foobar_alpha'		=> array(
+				$expected['foobar_alpha'],
+				'F00bar',
+				array('password'),
+			),
+			'foobar_symbol'		=> array(
+				$expected['foobar_symbol'],
+				'fooBar123*',
+				array('password'),
+			),
 		));
 	}
 }

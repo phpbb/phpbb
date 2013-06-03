@@ -23,23 +23,27 @@ class phpbb_functions_validate_match_test extends phpbb_test_case
 
 	public function test_validate_match()
 	{
-		$this->helper->assert_validate_data(array(
-			'empty_opt'		=> array(),
-			'empty_empty_match'	=> array(),
-			'foobar'		=> array(),
-			'foobar_fail'		=> array('WRONG_DATA'),
-		),
-		array(
-			'empty_opt'		=> '',
-			'empty_empty_match'	=> '',
-			'foobar'		=> 'foobar',
-			'foobar_fail'		=> 'foobar123',
-		),
-		array(
-			'empty_opt'		=> array('match', true, '/[a-z]$/'),
-			'empty_empty_match'	=> array('match'),
-			'foobar'		=> array('match', false, '/[a-z]$/'),
-			'foobar_fail'		=> array('match', false, '/[a-z]$/'),
+		$this->helper->assert_valid_data(array(
+			'empty_opt' => array(
+				array(),
+				'',
+				array('match', true, '/[a-z]$/'),
+			),
+			'empty_empty_match' => array(
+				array(),
+				'',
+				array('match'),
+			),
+			'foobar' => array(
+				array(),
+				'foobar',
+				array('match', false, '/[a-z]$/'),
+			),
+			'foobar_fail' => array(
+				array('WRONG_DATA'),
+				'foobar123',
+				array('match', false, '/[a-z]$/'),
+			),
 		));
 	}
 }

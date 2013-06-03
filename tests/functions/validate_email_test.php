@@ -41,32 +41,42 @@ class phpbb_functions_validate_email_test extends phpbb_database_test_case
 		$user = $this->user;
 		$user->optionset('banned_users', array('banned@example.com'));
 
-		$this->helper->assert_validate_data(array(
-			'empty'			=> array(),
-			'allowed'		=> array(),
-			'invalid'		=> array('EMAIL_INVALID'),
-			'valid_complex'		=> array(),
-			'taken'			=> array('EMAIL_TAKEN'),
-			'banned'		=> array('EMAIL_BANNED'),
-			'no_mx'			=> array('DOMAIN_NO_MX_RECORD'),
-		),
-		array(
-			'empty'			=> '',
-			'allowed'		=> 'foobar@example.com',
-			'invalid'		=> 'fööbar@example.com',
-			'valid_complex'		=> "'%$~test@example.com",
-			'taken'			=> 'admin@example.com',
-			'banned'		=> 'banned@example.com',
-			'no_mx'			=> 'test@wwrrrhhghgghgh.ttv',
-		),
-		array(
-			'empty'			=> array('email'),
-			'allowed'		=> array('email', 'foobar@example.com'),
-			'invalid'		=> array('email'),
-			'valid_complex'		=> array('email'),
-			'taken'			=> array('email'),
-			'banned'		=> array('email'),
-			'no_mx'			=> array('email'),
+		$this->helper->assert_valid_data(array(
+			'empty' => array(
+				array(),
+				'',
+				array('email'),
+			),
+			'allowed' => array(
+				array(),
+				'foobar@example.com',
+				array('email', 'foobar@example.com'),
+			),
+			'invalid' => array(
+				array('EMAIL_INVALID'),
+				'fööbar@example.com',
+				array('email'),
+			),
+			'valid_complex' => array(
+				array(),
+				"'%$~test@example.com",
+				array('email'),
+			),
+			'taken' => array(
+				array('EMAIL_TAKEN'),
+				'admin@example.com',
+				array('email'),
+			),
+			'banned' => array(
+				array('EMAIL_BANNED'),
+				'banned@example.com',
+				array('email'),
+			),
+			'no_mx' => array(
+				array('DOMAIN_NO_MX_RECORD'),
+				'test@wwrrrhhghgghgh.ttv',
+				array('email'),
+			),
 		));
 	}
 }

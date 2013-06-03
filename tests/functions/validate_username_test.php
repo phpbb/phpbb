@@ -129,31 +129,62 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 
 		$config['allow_name_chars'] = $allow_name_chars;
 
-		$this->helper->assert_validate_data($expected, array(
-			'foobar_allow'		=> 'foobar',
-			'foobar_ascii'		=> 'foobar',
-			'foobar_any'		=> 'f*~*^=oo_bar1',
-			'foobar_alpha'		=> 'fo0Bar',
-			'foobar_alpha_spacers'	=> 'Fo0-[B]_a+ R',
-			'foobar_letter_num'	=> 'fo0Bar0',
-			'foobar_letter_num_sp'	=> 'Fö0-[B]_a+ R',
-			'foobar_quot'		=> '"foobar"',
-			'barfoo_disallow'	=> 'barfoo',
-			'admin_taken'		=> 'admin',
-			'group_taken'		=> 'foobar_group',
-		),
-		array(
-			'foobar_allow'		=> array('username', 'foobar'),
-			'foobar_ascii'		=> array('username'),
-			'foobar_any'		=> array('username'),
-			'foobar_alpha'		=> array('username'),
-			'foobar_alpha_spacers'	=> array('username'),
-			'foobar_letter_num'	=> array('username'),
-			'foobar_letter_num_sp'	=> array('username'),
-			'foobar_quot'		=> array('username'),
-			'barfoo_disallow'	=> array('username'),
-			'admin_taken'		=> array('username'),
-			'group_taken'		=> array('username'),
+		$this->helper->assert_valid_data(array(
+			'foobar_allow' => array(
+				$expected['foobar_allow'],
+				'foobar',
+				array('username', 'foobar'),
+			),
+			'foobar_ascii' => array(
+				$expected['foobar_ascii'],
+				'foobar',
+				array('username'),
+			),
+			'foobar_any' => array(
+				$expected['foobar_any'],
+				'f*~*^=oo_bar1',
+				array('username'),
+			),
+			'foobar_alpha' => array(
+				$expected['foobar_alpha'],
+				'fo0Bar',
+				array('username'),
+			),
+			'foobar_alpha_spacers' => array(
+				$expected['foobar_alpha_spacers'],
+				'Fo0-[B]_a+ R',
+				array('username'),
+			),
+			'foobar_letter_num' => array(
+				$expected['foobar_letter_num'],
+				'fo0Bar0',
+				array('username'),
+			),
+			'foobar_letter_num_sp' => array(
+				$expected['foobar_letter_num_sp'],
+				'Fö0-[B]_a+ R',
+				array('username'),
+			),
+			'foobar_quot' => array(
+				$expected['foobar_quot'],
+				'"foobar"',
+				array('username'),
+			),
+			'barfoo_disallow' => array(
+				$expected['barfoo_disallow'],
+				'barfoo',
+				array('username'),
+			),
+			'admin_taken' => array(
+				$expected['admin_taken'],
+				'admin',
+				array('username'),
+			),
+			'group_taken' => array(
+				$expected['group_taken'],
+				'foobar_group',
+				array('username'),
+			),
 		));
 	}
 }

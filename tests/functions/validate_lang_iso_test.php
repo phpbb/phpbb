@@ -34,23 +34,27 @@ class phpbb_functions_validate_lang_iso_test extends phpbb_database_test_case
 
 		$db = $this->db;
 
-		$this->helper->assert_validate_data(array(
-			'empty'		=> array('WRONG_DATA'),
-			'en'		=> array(),
-			'cs'		=> array(),
-			'de'		=> array('WRONG_DATA'),
-		),
-		array(
-			'empty'		=> '',
-			'en'		=> 'en',
-			'cs'		=> 'cs',
-			'de'		=> 'de',
-		),
-		array(
-			'empty'		=> array('language_iso_name'),
-			'en'		=> array('language_iso_name'),
-			'cs'		=> array('language_iso_name'),
-			'de'		=> array('language_iso_name'),
+		$this->helper->assert_valid_data(array(
+			'empty' => array(
+				array('WRONG_DATA'),
+				'',
+				array('language_iso_name'),
+			),
+			'en' => array(
+				array(),
+				'en',
+				array('language_iso_name'),
+			),
+			'cs' => array(
+				array(),
+				'cs',
+				array('language_iso_name'),
+			),
+			'de' => array(
+				array('WRONG_DATA'),
+				'de',
+				array('language_iso_name'),
+			),
 		));
 	}
 }

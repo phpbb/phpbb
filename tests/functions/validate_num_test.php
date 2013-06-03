@@ -23,29 +23,37 @@ class phpbb_functions_validate_num_test extends phpbb_test_case
 
 	public function test_validate_num()
 	{
-		$this->helper->assert_validate_data(array(
-			'empty'			=> array(),
-			'zero'			=> array(),
-			'five_minmax_correct'	=> array(),
-			'five_minmax_short'	=> array('TOO_SMALL'),
-			'five_minmax_long'	=> array('TOO_LARGE'),
-			'string'		=> array(),
-		),
-		array(
-			'empty'			=> '',
-			'zero'			=> 0,
-			'five_minmax_correct'	=> 5,
-			'five_minmax_short'	=> 5,
-			'five_minmax_long'	=> 5,
-			'string'		=> 'foobar',
-		),
-		array(
-			'empty'			=> array('num'),
-			'zero'			=> array('num'),
-			'five_minmax_correct'	=> array('num', false, 2, 6),
-			'five_minmax_short'	=> array('num', false, 7, 10),
-			'five_minmax_long'	=> array('num', false, 2, 3),
-			'string'		=> array('num'),
+		$this->helper->assert_valid_data(array(
+			'empty' => array(
+				array(),
+				'',
+				array('num'),
+			),
+			'zero' => array(
+				array(),
+				'0',
+				array('num'),
+			),
+			'five_minmax_correct' => array(
+				array(),
+				'5',
+				array('num', false, 2, 6),
+			),
+			'five_minmax_short' => array(
+				array('TOO_SMALL'),
+				'5',
+				array('num', false, 7, 10),
+			),
+			'five_minmax_long' => array(
+				array('TOO_LARGE'),
+				'5',
+				array('num', false, 2, 3),
+			),
+			'string' => array(
+				array(),
+				'foobar',
+				array('num'),
+			),
 		));
 	}
 }

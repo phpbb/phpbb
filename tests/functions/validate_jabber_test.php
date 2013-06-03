@@ -23,41 +23,57 @@ class phpbb_functions_validate_jabber_test extends phpbb_test_case
 
 	public function test_validate_jabber()
 	{
-		$this->helper->assert_validate_data(array(
-			'empty'			=> array(),
-			'no_seperator'		=> array('WRONG_DATA'),
-			'no_user'		=> array('WRONG_DATA'),
-			'no_realm'		=> array('WRONG_DATA'),
-			'dot_realm'		=> array('WRONG_DATA'),
-			'-realm'		=> array('WRONG_DATA'),
-			'realm-'		=> array('WRONG_DATA'),
-			'correct'		=> array(),
-			'prohibited'		=> array('WRONG_DATA'),
-			'prohibited_char'	=> array('WRONG_DATA'),
-		),
-		array(
-			'empty'			=> '',
-			'no_seperator'		=> 'testjabber.ccc',
-			'no_user'		=> '@jabber.ccc',
-			'no_realm'		=> 'user@',
-			'dot_realm'		=> 'user@.....',
-			'-realm'		=> 'user@-jabber.ccc',
-			'realm-'		=> 'user@jabber.ccc-',
-			'correct'		=> 'user@jabber.09A-z.org',
-			'prohibited'		=> 'u@ser@jabber.ccc.org',
-			'prohibited_char'	=> 'u<s>er@jabber.ccc.org',
-		),
-		array(
-			'empty'			=> array('jabber'),
-			'no_seperator'		=> array('jabber'),
-			'no_user'		=> array('jabber'),
-			'no_realm'		=> array('jabber'),
-			'dot_realm'		=> array('jabber'),
-			'-realm'		=> array('jabber'),
-			'realm-'		=> array('jabber'),
-			'correct'		=> array('jabber'),
-			'prohibited'		=> array('jabber'),
-			'prohibited_char'	=> array('jabber'),
+		$this->helper->assert_valid_data(array(
+			'empty' => array(
+				array(),
+				'',
+				array('jabber'),
+			),	
+			'no_seperator' => array(
+				array('WRONG_DATA'),
+				'testjabber.ccc',
+				array('jabber'),
+			),
+			'no_user' => array(
+				array('WRONG_DATA'),
+				'@jabber.ccc',
+				array('jabber'),
+			),
+			'no_realm' => array(
+				array('WRONG_DATA'),
+				'user@',
+				array('jabber'),
+			),
+			'dot_realm' => array(
+				array('WRONG_DATA'),
+				'user@.....',
+				array('jabber'),
+			),
+			'-realm' => array(
+				array('WRONG_DATA'),
+				'user@-jabber.ccc',
+				array('jabber'),
+			),
+			'realm-' => array(
+				array('WRONG_DATA'),
+				'user@jabber.ccc-',
+				array('jabber'),
+			),
+			'correct' => array(
+				array(),
+				'user@jabber.09A-z.org',
+				array('jabber'),
+			),
+			'prohibited' => array(
+				array('WRONG_DATA'),
+				'u@ser@jabber.ccc.org',
+				array('jabber'),
+			),
+			'prohibited_char' => array(
+				array('WRONG_DATA'),
+				'u<s>er@jabber.ccc.org',
+				array('jabber'),
+			),
 		));
 	}
 }
