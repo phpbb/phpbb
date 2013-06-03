@@ -95,7 +95,7 @@ class fulltext_mysql extends search_backend
 
 		if (!$fulltext_supported)
 		{
-			return $user->lang['FULLTEXT_MYSQL_NOT_MYISAM'];
+			return $user->lang['FULLTEXT_MYSQL_NOT_SUPPORTED'];
 		}
 
 		$sql = 'SHOW VARIABLES
