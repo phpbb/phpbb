@@ -2204,6 +2204,36 @@ function change_database_data(&$no_updates, $version)
 				_sql($sql, $errored, $error_ary);
 			}
 
+			/**
+			* Update BBCodes that currently use the LOCAL_URL tag
+			*
+			* To fix http://tracker.phpbb.com/browse/PHPBB3-8319 we changed
+			* the second_pass_replace value, so that needs updating for existing ones
+			*/
+			$sql = 'SELECT *
+				FROM ' . BBCODES_TABLE . '
+				WHERE bbcode_match ' . $db->sql_like_expression($db->any_char . 'LOCAL_URL' . $db->any_char);
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!class_exists('acp_bbcodes'))
+				{
+					phpbb_require_updated('includes/acp/acp_bbcodes.' . $phpEx);
+				}
+				$bbcode_match = $row['bbcode_match'];
+				$bbcode_tpl = $row['bbcode_tpl'];
+
+				$acp_bbcodes = new acp_bbcodes();
+				$sql_ary = $acp_bbcodes->build_regexp($bbcode_match, $bbcode_tpl);
+
+				$sql = 'UPDATE ' . BBCODES_TABLE . '
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+					WHERE bbcode_id = ' . (int) $row['bbcode_id'];
+				$db->sql_query($sql);
+			}
+			$db->sql_freeresult($result);
+
 			$no_updates = false;
 		break;
 	}
