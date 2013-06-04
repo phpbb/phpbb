@@ -522,7 +522,7 @@ class phpbb_template
 			$path['path'] = $this->phpbb_root_path . $path['path'];
 		}
 
-		if (phpbb_is_local_resource_path($path))
+		if (phpbb_is_relative_url($path))
 		{
 			if (!isset($path['query']))
 			{

@@ -2488,12 +2488,12 @@ function phpbb_join_url($components, $urlencode = false)
 }
 
 /**
-* Check is URL is local
+* Check is URL is local and relative
 *
 * @param array $components List of URL components as returned by parse_url()
 * @return bool True if URL is local
 */
-function phpbb_is_local_resource_path($components)
+function phpbb_is_relative_url($components)
 {
 	if (empty($components) || !isset($components['path']))
 	{

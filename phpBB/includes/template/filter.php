@@ -1132,7 +1132,7 @@ class phpbb_template_filter extends php_user_filter
 			return '';
 		}
 
-		if (!phpbb_is_local_resource_path($components))
+		if (!phpbb_is_relative_url($components))
 		{
 			$dump = var_export($components, true);
 			return ' $_template->_js_include(' . $dump . ', false, false); ';
