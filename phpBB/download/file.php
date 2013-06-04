@@ -279,7 +279,7 @@ else if ($download_id)
 		phpbb_increment_downloads($db, $attachment['attach_id']);
 	}
 
-	if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && !phpbb_is_greater_ie7($user->browser))
+	if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && !phpbb_is_greater_ie_version($user->browser, 7))
 	{
 		wrap_img_in_html(append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
 		file_gc();
