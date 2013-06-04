@@ -30,12 +30,6 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 	*/
 	public function test_groups_manage($input, $expected)
 	{
-		$this->markTestIncomplete(
-			'Test fails on develop due to another test deleting the Administrators group.'
-		);
-		// See https://github.com/phpbb/phpbb3/pull/1407#issuecomment-18465480
-		// and https://gist.github.com/bantu/22dc4f6c6c0b8f9e0fa1
-
 		$this->login();
 		$this->admin_login();
 		$this->add_lang(array('ucp', 'acp/groups'));
