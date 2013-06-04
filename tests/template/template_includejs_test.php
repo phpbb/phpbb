@@ -35,7 +35,7 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 			'<script src="//phpbb.com/b.js"></script>',
 			'<script src="http://phpbb.com/b.js?c=d#f"></script>',
 			'<script src="http://phpbb.com/b.js?c=d&assets_version=1#f"></script>',
-			'<script src="//[1234:d123:a105::123]:80/test.js"></script>',
+			'<script src="//[1234:d123:a105::123]/test.js"></script>',
 		);
 
 		// Run test
