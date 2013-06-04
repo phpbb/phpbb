@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_download.php';
 
 class phpbb_download_http_user_agent_test extends phpbb_test_case
 {
-	public function user_agents()
+	public function user_agents_check_greater_ie7()
 	{
 		return array(
 			// user agent
@@ -88,7 +88,7 @@ class phpbb_download_http_user_agent_test extends phpbb_test_case
 	}
 
 	/**
-	* @dataProvider user_agents
+	* @dataProvider user_agents_check_greater_ie7
 	*/
 	public function test_is_greater_ie7($user_agent, $expected)
 	{
