@@ -2407,7 +2407,11 @@ function phpbb_parse_resource_path($path)
 	{
 		// Workaround for PHP 5.4.6 and older bug #62844 - add fake scheme and then remove it
 		$result = parse_url('http:' . $path);
-		$result['scheme'] = '';
+		if (isset($result['port']))
+		{
+			return false;
+		}
+		unset($result['scheme']);
 		return $result;
 	}
 	return parse_url($path);
