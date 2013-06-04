@@ -2401,7 +2401,7 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 *
 * @see parse_url() in PHP manual
 */
-function phpbb_parse_resource_path($path)
+function phpbb_parse_url($path)
 {
 	if (version_compare(PHP_VERSION, '5.4.7') < 0 && substr($path, 0, 2) === '//')
 	{
@@ -2418,13 +2418,13 @@ function phpbb_parse_resource_path($path)
 }
 
 /**
-* Joins resource path components into URL
+* Joins URL components into URL
 *
 * @param array $components List of components. See parse_url() in PHP manual for components list
 * @param bool $urlencode If true, path will be encoded with rawurlencode()
 * @return string URL
 */
-function phpbb_join_resource_path($components, $urlencode = false)
+function phpbb_join_url($components, $urlencode = false)
 {
 	if ($urlencode && isset($components['path']))
 	{

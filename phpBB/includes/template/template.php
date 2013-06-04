@@ -497,7 +497,7 @@ class phpbb_template
 		}
 		else
 		{
-			$path = phpbb_parse_resource_path($file);
+			$path = phpbb_parse_url($file);
 		}
 
 		if (empty($path) || !isset($path['path']))
@@ -535,7 +535,7 @@ class phpbb_template
 			}
 		}
 
-		$file = phpbb_join_resource_path($path, $urlencode);
+		$file = phpbb_join_url($path, $urlencode);
 
 		// Add HTML code
 		$code = '<script src="' . $file . '"></script>' . "\n";

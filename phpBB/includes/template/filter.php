@@ -1126,7 +1126,7 @@ class phpbb_template_filter extends php_user_filter
 		}
 
 		// Split URL parameters
-		$components = phpbb_parse_resource_path($tag_args);
+		$components = phpbb_parse_url($tag_args);
 		if (!isset($components['path']))
 		{
 			return '';

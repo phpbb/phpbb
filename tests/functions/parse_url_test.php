@@ -64,7 +64,7 @@ class phpbb_parse_url_test extends phpbb_test_case
 	*/
 	public function test_parse_url($url, $expected)
 	{
-		$parts = phpbb_parse_resource_path($url);
+		$parts = phpbb_parse_url($url);
 		$this->assertEquals($expected, $parts);
 	}
 
@@ -73,8 +73,8 @@ class phpbb_parse_url_test extends phpbb_test_case
 	*/
 	public function test_join_url($url, $encode, $expected)
 	{
-		$parts = phpbb_parse_resource_path($url);
-		$joined = phpbb_join_resource_path($parts, $encode);
+		$parts = phpbb_parse_url($url);
+		$joined = phpbb_join_url($parts, $encode);
 		$this->assertEquals($expected, $joined);
 	}
 }
