@@ -92,6 +92,6 @@ class phpbb_download_http_user_agent_test extends phpbb_test_case
 	*/
 	public function test_is_greater_ie7($user_agent, $expected)
 	{
-		$this->assertEquals($expected, phpbb_is_greater_ie7($user_agent));
+		$this->assertEquals($expected, phpbb_is_greater_ie_version($user_agent, 7));
 	}
 }
