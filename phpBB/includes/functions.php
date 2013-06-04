@@ -2417,7 +2417,7 @@ function phpbb_parse_resource_path($path)
 * Joins resource path components into URL
 *
 * @param array $components List of components. See parse_url() in PHP manual for components list
-* @param bool $urlencode If true, path will be encoded with urlencode()
+* @param bool $urlencode If true, path will be encoded with rawurlencode()
 * @return string URL
 */
 function phpbb_join_resource_path($components, $urlencode = false)
@@ -2427,7 +2427,7 @@ function phpbb_join_resource_path($components, $urlencode = false)
 		$paths = explode('/', $components['path']);
 		foreach ($paths as &$dir)
 		{
-			$dir = urlencode($dir);
+			$dir = rawurlencode($dir);
 		}
 		$components['path'] = implode('/', $paths);
 	}
