@@ -2394,72 +2394,35 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 
 
 /**
-* Splits resource path into components
+* Splits URL into components
 *
 * @param string $path URL
 * @return array List of components
 *
-* Components list array:
-*	full - Original URL
-*	schema - Schema, false if not set
-*		Empty string for network-path relative URLs
-*	domain - Domain. Includes login and password if set. Empty string if not set
-*	path - Path. Empty string if not set
-*	query - Query string after '?'. Empty string if not set
-*	fragment - Part after hash mark '#'. Empty string if not set
+* @see parse_url() in PHP manual
 */
 function phpbb_parse_resource_path($path)
 {
-	$components = array(
-		'full' => $path,
-		'schema' => false,
-		'domain' => '',
-		'path' => '',
-		'query' => '',
-		'fragment' => '',
-	);
-
-	// Get part after hash
-	$paths = explode('#', $path, 2);
-	if (empty($paths))
+	if (version_compare(PHP_VERSION, '5.4.7') < 0 && substr($path, 0, 2) === '//')
 	{
-		return $components;
+		// Workaround for PHP 5.4.6 and older bug #62844 - add fake scheme and then remove it
+		$result = parse_url('http:' . $path);
+		$result['scheme'] = '';
+		return $result;
 	}
-	$path = $paths[0];
-	$components['fragment'] = isset($paths[1]) ? $paths[1] : '';
-
-	// Get query string
-	$paths = explode('?', $path, 2);
-	$filename = $paths[0];
-	$components['query'] = isset($paths[1]) ? $paths[1] : '';
-
-	// Separate schema and path
-	$paths = explode('://', $filename, 2);
-	if (count($paths) == 2)
-	{
-		$domain = explode('/', $paths[1], 2);
-		$components['schema'] = $paths[0];
-		$components['domain'] = $domain[0];
-		$components['path'] = count($domain) > 1 ? $domain[1] : '';
-	}
-	else
-	{
-		$components['path'] = $filename;
-	}
-
-	return $components;
+	return parse_url($path);
 }
 
 /**
 * Joins resource path components into URL
 *
-* @param array $components List of components. See phpbb_parse_resource_path() above for components description
+* @param array $components List of components. See parse_url() in PHP manual for components list
 * @param bool $urlencode If true, path will be encoded with urlencode()
 * @return string URL
 */
 function phpbb_join_resource_path($components, $urlencode = false)
 {
-	if ($urlencode)
+	if ($urlencode && isset($components['path']))
 	{
 		$paths = explode('/', $components['path']);
 		foreach ($paths as &$dir)
@@ -2470,21 +2433,70 @@ function phpbb_join_resource_path($components, $urlencode = false)
 	}
 
 	$path = '';
-	if ($components['schema'] !== false)
+	if (isset($components['scheme']))
 	{
-		$path = $components['schema'] . '://' . $components['domain'] . '/';
+		$path = $components['scheme'] === '' ? '//' : $components['scheme'] . '://';
 	}
-	$path .= $components['path'];
-	if (strlen($components['query']))
+
+	if (isset($components['user']) || isset($components['pass']))
+	{
+		if ($path === '' && !isset($components['port']))
+		{
+			$path = '//';
+		}
+		$path .= $components['user'];
+		if (isset($components['pass']))
+		{
+			$path .= ':' . $components['pass'];
+		}
+		$path .= '@';
+	}
+
+	if (isset($components['host']))
+	{
+		if ($path === '' && !isset($components['port']))
+		{
+			$path = '//';
+		}
+		$path .= $components['host'];
+		if (isset($components['port']))
+		{
+			$path .= ':' . $components['port'];
+		}
+	}
+
+	if (isset($components['path']))
+	{
+		$path .= $components['path'];
+	}
+
+	if (isset($components['query']))
 	{
 		$path .= '?' . $components['query'];
 	}
-	if (strlen($components['fragment']))
+
+	if (isset($components['fragment']))
 	{
 		$path .= '#' . $components['fragment'];
 	}
 
 	return $path;
+}
+
+/**
+* Check is URL is local
+*
+* @param array $components List of URL components as returned by parse_url()
+* @return bool True if URL is local
+*/
+function phpbb_is_local_resource_path($components)
+{
+	if (empty($components) || !isset($components['path']))
+	{
+		// Invalid URL
+		return false;
+	}
+	return !isset($components['scheme']) && !isset($components['host']) && substr($components['path'], 0, 1) !== '/';
 }
 
 /**

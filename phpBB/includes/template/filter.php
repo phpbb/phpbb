@@ -1125,8 +1125,18 @@ class phpbb_template_filter extends php_user_filter
 			return $this->parse_dynamic_path($tag_args, '_js_include');
 		}
 
-		// Remove URL parameters
+		// Split URL parameters
 		$components = phpbb_parse_resource_path($tag_args);
+		if (!isset($components['path']))
+		{
+			return '';
+		}
+
+		if (!phpbb_is_local_resource_path($components))
+		{
+			$dump = var_export($components, true);
+			return ' $_template->_js_include(' . $dump . ', false, false); ';
+		}
 
 		// Locate file
 		$filename = $this->locator->get_first_file_location(array($components['path']), false, true);
@@ -1134,21 +1144,23 @@ class phpbb_template_filter extends php_user_filter
 		if ($filename === false)
 		{
 			// File does not exist, find it during run time
-			return ' $_template->_js_include(\'' . addslashes($components['full']) . '\', true); ';
+			$dump = var_export($components, true);
+			return ' $_template->_js_include(' . $dump . ', true); ';
 		}
 
 		$components['path'] = $filename;
-		$filename = phpbb_join_resource_path($components, true);
 
-		if (substr($filename, 0, strlen($this->phpbb_root_path)) != $this->phpbb_root_path)
+		if (substr($components['path'], 0, strlen($this->phpbb_root_path)) != $this->phpbb_root_path)
 		{
 			// Absolute path, include as is
-			return ' $_template->_js_include(\'' . addslashes($filename) . '\', false, false); ';
+			$dump = var_export($components, true);
+			return ' $_template->_js_include(' . $dump . ', false, false); ';
 		}
 
 		// Relative path, remove root path from it
-		$filename = substr($filename, strlen($this->phpbb_root_path));
-		return ' $_template->_js_include(\'' . addslashes($filename) . '\', false, true); ';
+		$components['path'] = substr($components['path'], strlen($this->phpbb_root_path));
+		$dump = var_export($components, true);
+		return ' $_template->_js_include(' . $dump . ', false, true); ';
 	}
 
 	/**
