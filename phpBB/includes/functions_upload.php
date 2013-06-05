@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
+
 /**
 * Responsible for holding all file relevant information, as well as doing file-specific operations.
 * The {@link fileupload fileupload class} can be used to upload several files, each of them being this object to operate further on.
@@ -157,11 +159,10 @@ class filespec
 	*/
 	function is_image($file_path = '')
 	{
-		if (class_exists('finfo') && !empty($file_path) &&
-			($this->mimetype === 'application/octetstream' || $this->mimetype === 'application/octet-stream'))
+		if (!empty($file_path) && ($this->mimetype === 'application/octetstream' || $this->mimetype === 'application/octet-stream'))
 		{
-			$fileinfo = new finfo();
-			$this->mimetype = $fileinfo->file($file_path, FILEINFO_MIME);
+			$guesser = MimeTypeGuesser::getInstance();
+			$this->mimetype = $guesser->guess($file_path);
 		}
 		return (strpos($this->mimetype, 'image/') === 0);
 	}
