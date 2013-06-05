@@ -148,11 +148,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::$config['table_prefix'],
 			array()
 		);
+		$container = new phpbb_mock_container_builder();
+		$container->set('migrator', $migrator);
+
 		$extension_manager = new phpbb_extension_manager(
-			new phpbb_mock_container_builder(),
+			$container,
 			$db,
 			$config,
-			$migrator,
 			new phpbb_filesystem(),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
@@ -359,7 +361,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return group_user_del($group_id, false, $usernames, $group_name);
 	}
 
-	protected function add_user_group($group_name, $usernames)
+	protected function add_user_group($group_name, $usernames, $default = false, $leader = false)
 	{
 		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
 
@@ -398,7 +400,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$group_id = (int) $db->sql_fetchfield('group_id');
 		$db->sql_freeresult($result);
 
-		return group_user_add($group_id, false, $usernames, $group_name);
+		return group_user_add($group_id, false, $usernames, $group_name, $default, $leader);
 	}
 
 	protected function login($username = 'admin')

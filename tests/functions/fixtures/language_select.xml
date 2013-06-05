@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_lang">
+		<column>lang_id</column>
+		<column>lang_iso</column>
+		<column>lang_local_name</column>
+		<column>lang_english_name</column>
+		<row>
+			<value>1</value>
+			<value>en</value>
+			<value>English</value>
+			<value>English</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>cs</value>
+			<value>Čeština</value>
+			<value>Czech</value>
+		</row>
+	</table>
+</dataset>

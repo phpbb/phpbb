@@ -373,6 +373,7 @@ class module
 			'L_SKIP'				=> $lang['SKIP'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
 			'T_IMAGE_PATH'			=> htmlspecialchars($phpbb_admin_path) . 'images/',
+			'T_JQUERY_LINK'			=> $phpbb_root_path . 'assets/javascript/jquery.js',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_FLOW_BEGIN'	=> ($lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
@@ -666,6 +667,21 @@ class module
 		{
 			case 'text':
 			case 'password':
+			// HTML5 text-like input types
+			case 'color':
+			case 'date':
+			case 'time':
+			case 'datetime':
+			case 'datetime-local':
+			case 'email':
+			case 'month':
+			case 'number':
+			case 'range':
+			case 'search':
+			case 'tel':
+			case 'url':
+			case 'week':
+
 				$size = (int) $tpl_type[1];
 				$maxlength = (int) $tpl_type[2];
 

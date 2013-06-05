@@ -213,8 +213,8 @@ if (!$db_tools->sql_table_exists($table_prefix . 'migrations'))
 }
 
 $migrator = $phpbb_container->get('migrator');
-$extension_manager = $phpbb_container->get('ext.manager');
-$finder = $extension_manager->get_finder();
+$phpbb_extension_manager = $phpbb_container->get('ext.manager');
+$finder = $phpbb_extension_manager->get_finder();
 
 $migrations = $finder
 	->core_path('includes/db/migration/data/')
@@ -263,9 +263,8 @@ while (!$migrator->finished())
 	// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 	if ((time() - $update_start_time) >= $safe_time_limit)
 	{
-		//echo '<meta http-equiv="refresh" content="0;url=' . str_replace('&', '&amp;', append_sid($phpbb_root_path . 'test.' . $phpEx)) . '" />';
 		echo $user->lang['DATABASE_UPDATE_NOT_COMPLETED'] . '<br />';
-		echo '<a href="' . append_sid($phpbb_root_path . 'test.' . $phpEx) . '">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
+		echo '<a href="' . append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=' . $request->variable('type', 0) . '&amp;language=' . $user->lang['USER_LANG']) . '">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
 
 		phpbb_end_update($cache, $config);
 	}
@@ -276,6 +275,17 @@ if ($orig_version != $config['version'])
 	add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $config['version']);
 }
 
-echo $user->lang['DATABASE_UPDATE_COMPLETE'];
+echo $user->lang['DATABASE_UPDATE_COMPLETE'] . '<br />';
+
+if ($request->variable('type', 0))
+{
+	echo $user->lang['INLINE_UPDATE_SUCCESSFUL'] . '<br /><br />';
+	echo '<a href="' . append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update&amp;sub=file_check&amp;language=' . $user->lang['USER_LANG']) . '" class="button1">' . $user->lang['CONTINUE_UPDATE_NOW'] . '</a>';
+}
+else
+{
+	echo '<div class="errorbox">' . $user->lang['UPDATE_FILES_NOTICE'] . '</div>';
+	echo $user->lang['COMPLETE_LOGIN_TO_BOARD'];
+}
 
 phpbb_end_update($cache, $config);

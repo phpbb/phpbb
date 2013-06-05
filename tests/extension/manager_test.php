@@ -30,7 +30,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 	public function test_available()
 	{
-		$this->assertEquals(array('bar', 'foo', 'vendor/moo'), array_keys($this->extension_manager->all_available()));
+		$this->assertEquals(array('bar', 'barfoo', 'foo', 'vendor/moo'), array_keys($this->extension_manager->all_available()));
 	}
 
 	public function test_enabled()
@@ -107,11 +107,13 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$table_prefix,
 			array()
 		);
+		$container = new phpbb_mock_container_builder();
+		$container->set('migrator', $migrator);
+
 		return new phpbb_extension_manager(
-			new phpbb_mock_container_builder(),
+			$container,
 			$db,
 			$config,
-			$migrator,
 			new phpbb_filesystem(),
 			'phpbb_ext',
 			dirname(__FILE__) . '/',

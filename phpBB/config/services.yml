@@ -130,7 +130,6 @@ services:
             - @service_container
             - @dbal.conn
             - @config
-            - @migrator
             - @filesystem
             - %tables.ext%
             - %core.root_path%
@@ -218,6 +217,7 @@ services:
             - @service_container
             - @user_loader
             - @dbal.conn
+            - @cache
             - @user
             - %core.root_path%
             - %core.php_ext%

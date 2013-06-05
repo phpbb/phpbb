@@ -84,11 +84,11 @@
 		<legend>{L_GROUP_SETTINGS_SAVE}</legend>
 	<dl>
 		<dt><label for="group_message_limit">{L_GROUP_MESSAGE_LIMIT}{L_COLON}</label><br /><span>{L_GROUP_MESSAGE_LIMIT_EXPLAIN}</span></dt>
-		<dd><input name="group_message_limit" type="text" id="group_message_limit" maxlength="4" size="4" value="{GROUP_MESSAGE_LIMIT}" /></dd>
+		<dd><input name="group_message_limit" type="number" id="group_message_limit" maxlength="4" size="4" min="0" max="9999" value="{GROUP_MESSAGE_LIMIT}" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="group_max_recipients">{L_GROUP_MAX_RECIPIENTS}{L_COLON}</label><br /><span>{L_GROUP_MAX_RECIPIENTS_EXPLAIN}</span></dt>
-		<dd><input name="group_max_recipients" type="text" id="group_max_recipients" maxlength="10" size="4" value="{GROUP_MAX_RECIPIENTS}" /></dd>
+		<dd><input name="group_max_recipients" type="number" id="group_max_recipients" maxlength="10" size="4" value="{GROUP_MAX_RECIPIENTS}" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="group_colour">{L_GROUP_COLOR}{L_COLON}</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>

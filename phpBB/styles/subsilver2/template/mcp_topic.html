@@ -42,7 +42,7 @@
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_MERGE_TOPIC_ID}</span></td>
-		<td class="row2" colspan="2"><input class="post" type="text" size="6" name="to_topic_id" value="{TO_TOPIC_ID}" /> <a href="{U_SELECT_TOPIC}">{L_SELECT_TOPIC}</a></td>
+		<td class="row2" colspan="2"><input class="post" type="number" min="0" size="6" name="to_topic_id" value="{TO_TOPIC_ID}" /> <a href="{U_SELECT_TOPIC}">{L_SELECT_TOPIC}</a></td>
 	</tr>
 	<!-- IF TO_TOPIC_INFO -->
 		<tr>
@@ -55,7 +55,7 @@
 </tr>
 <tr>
 	<td class="row1" nowrap="nowrap"><span class="gen">{L_POSTS_PER_PAGE}</span><br /><span class="gensmall">{L_POSTS_PER_PAGE_EXPLAIN}</span></td>
-	<td class="row2" colspan="2"><input class="post" type="text" name="posts_per_page" size="6" value="{POSTS_PER_PAGE}" /></td>
+	<td class="row2" colspan="2"><input class="post" type="number" min="1" name="posts_per_page" size="6" value="{POSTS_PER_PAGE}" /></td>
 </tr>
 <tr>
 	<td class="cat" colspan="3" align="center"><span class="gensmall">{L_DISPLAY_POSTS}{L_COLON}</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>

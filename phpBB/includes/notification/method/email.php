@@ -39,7 +39,7 @@ class phpbb_notification_method_email extends phpbb_notification_method_messenge
 	*/
 	public function is_available()
 	{
-		return (bool) $this->config['email_enable'];
+		return $this->config['email_enable'] && $this->user->data['user_email'];
 	}
 
 	/**
