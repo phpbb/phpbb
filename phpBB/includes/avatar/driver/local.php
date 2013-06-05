@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\Finder\Finder;
+
 /**
 * Handles avatars selected from the board gallery
 * @package phpBB3
@@ -39,16 +41,15 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	public function prepare_form($request, $template, $user, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list($user);
-		$category = $request->variable('avatar_local_cat', '');
+		$category = $request->variable('avatar_local_cat', '', true);
 
 		foreach ($avatar_list as $cat => $null)
 		{
 			if (!empty($avatar_list[$cat]))
 			{
 				$template->assign_block_vars('avatar_local_cats', array(
-					'NAME' => $avatar_list[$cat]['cat_name'],
+					'NAME' => $cat,
 					'SELECTED' => ($cat == $category),
-					'HASH'		=> $cat,
 				));
 			}
 
@@ -74,13 +75,6 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 			{
 				$img = current($avatar_list[$category]);
 				next($avatar_list[$category]);
-
-				// skip category name
-				if (is_string($img))
-				{
-					++$avatar_pos;
-					continue;
-				}
 
 				if ($col_count == 0)
 				{
@@ -125,7 +119,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	public function process_form($request, $template, $user, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list($user);
-		$category = $request->variable('avatar_local_cat', '');
+		$category = $request->variable('avatar_local_cat', '', true);
 
 		$file = $request->variable('avatar_local_file', '');
 
@@ -142,7 +136,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 		}
 
 		return array(
-			'avatar' => $avatar_list[$category][urldecode($file)]['file'],
+			'avatar' => ($category != $user->lang['MAIN']) ? rawurlencode($category) . '/' . $file : $file,
 			'avatar_width' => $avatar_list[$category][urldecode($file)]['width'],
 			'avatar_height' => $avatar_list[$category][urldecode($file)]['height'],
 		);
@@ -164,12 +158,13 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 		{
 			$avatar_list = array();
 			$path = $this->phpbb_root_path . $this->config['avatar_gallery_path'];
+			$finder = new Finder();
+			$finder->files()->in($path);
 
-			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS), RecursiveIteratorIterator::SELF_FIRST);
-			foreach ($iterator as $file_info)
+			foreach ($finder as $file)
 			{
-				$file_path = $file_info->getPath();
-				$image = $file_info->getFilename();
+				$file_path = $file->getPath();
+				$image = $file->getFilename();
 
 				// Match all images in the gallery folder
 				if (preg_match('#^[^&\'"<>]+\.(?:' . implode('|', $this->allowed_extensions) . ')$#i', $image) && is_file($file_path . '/' . $image))
@@ -182,17 +177,9 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 					{
 						$dims = array(0, 0);
 					}
-
-					$cat_path = ($path == $file_path) ? $user->lang['MAIN'] : str_replace("$path/", '', $file_path);
-					$cat = md5($cat_path);
-					$image = utf8_encode($image);
-
-					if (!isset($avatar_list[$cat]['cat_name']))
-					{
-						$avatar_list[$cat]['cat_name'] = utf8_encode($cat_path);
-					}
+					$cat = ($path == $file_path) ? $user->lang['MAIN'] : str_replace("$path/", '', $file_path);
 					$avatar_list[$cat][$image] = array(
-						'file'      => ($cat_path != $user->lang['MAIN']) ? rawurlencode($avatar_list[$cat]['cat_name']) . '/' . rawurlencode($image) : rawurlencode($image),
+						'file'      => ($cat != $user->lang['MAIN']) ? rawurlencode($cat) . '/' . rawurlencode($image) : rawurlencode($image),
 						'filename'  => rawurlencode($image),
 						'name'      => ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $image))),
 						'width'     => $dims[0],
