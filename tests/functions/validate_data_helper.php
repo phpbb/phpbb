@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_functions_validate_data_helper extends PHPUnit_Framework_TestCase
+class phpbb_functions_validate_data_helper
 {
 	protected $test_case;
 
