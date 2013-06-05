@@ -18,11 +18,11 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 		// array(Input -> redirect(), expected triggered error (else false), expected returned result url (else false))
 		return array(
 			array('data://x', false, 'http://localhost/phpBB'),
-			array('bad://localhost/phpBB/index.php', 'Tried to redirect to potentially insecure url.', false),
+			array('bad://localhost/phpBB/index.php', 'INSECURE_REDIRECT', false),
 			array('http://www.otherdomain.com/somescript.php', false, 'http://localhost/phpBB'),
-			array("http://localhost/phpBB/memberlist.php\n\rConnection: close", 'Tried to redirect to potentially insecure url.', false),
+			array("http://localhost/phpBB/memberlist.php\n\rConnection: close", 'INSECURE_REDIRECT', false),
 			array('javascript:test', false, 'http://localhost/phpBB/../javascript:test'),
-			array('http://localhost/phpBB/index.php;url=', 'Tried to redirect to potentially insecure url.', false),
+			array('http://localhost/phpBB/index.php;url=', 'INSECURE_REDIRECT', false),
 		);
 	}
 

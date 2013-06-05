@@ -115,9 +115,9 @@ phpbb.addAjaxCallback('activate_deactivate', function(res) {
 	el.text(res.text);
 
 	if (newHref.indexOf('deactivate') !== -1) {
-		newHref = newHref.replace('deactivate', 'activate')
+		newHref = newHref.replace('deactivate', 'activate');
 	} else {
-		newHref = newHref.replace('activate', 'deactivate')
+		newHref = newHref.replace('activate', 'deactivate');
 	}
 
 	el.attr('href', newHref);
@@ -148,6 +148,12 @@ $('[data-ajax]').each(function() {
 	}
 });
 
+/**
+* Automatically resize textarea
+*/
+$(document).ready(function() {
+	phpbb.resizeTextArea($('textarea:not(.no-auto-resize)'), {minHeight: 75});
+});
 
 
 })(jQuery); // Avoid conflicts with other libraries

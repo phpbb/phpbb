@@ -20,7 +20,7 @@
 	</dl>
 	<dl>
 		<dt><label for="msn">{L_UCP_MSNM}{L_COLON}</label></dt>
-		<dd><input type="text" name="msn" id="msn" maxlength="255" value="{MSN}" class="inputbox" /></dd>
+		<dd><input type="email" name="msn" id="msn" maxlength="255" value="{MSN}" class="inputbox" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="yim">{L_UCP_YIM}{L_COLON}</label></dt>
@@ -28,11 +28,11 @@
 	</dl>
 	<dl>
 		<dt><label for="jabber">{L_UCP_JABBER}{L_COLON}</label></dt>
-		<dd><input type="text" name="jabber" id="jabber" maxlength="255" value="{JABBER}" class="inputbox" /></dd>
+		<dd><input type="email" name="jabber" id="jabber" maxlength="255" value="{JABBER}" class="inputbox" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="website">{L_WEBSITE}{L_COLON}</label></dt>
-		<dd><input type="text" name="website" id="website" maxlength="255" value="{WEBSITE}" class="inputbox" /></dd>
+		<dd><input type="url" name="website" id="website" maxlength="255" value="{WEBSITE}" class="inputbox" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="location">{L_LOCATION}{L_COLON}</label></dt>
@@ -50,8 +50,8 @@
 		<dl>
 			<dt><label for="bday_day">{L_BIRTHDAY}{L_COLON}</label><br /><span>{L_BIRTHDAY_EXPLAIN}</span></dt>
 			<dd>
-				<label for="bday_day">{L_DAY}{L_COLON} <select name="bday_day" id="bday_day" style="width: 4em;">{S_BIRTHDAY_DAY_OPTIONS}</select></label> 
-				<label for="bday_month">{L_MONTH}{L_COLON} <select name="bday_month" id="bday_month" style="width: 4em;">{S_BIRTHDAY_MONTH_OPTIONS}</select></label> 
+				<label for="bday_day">{L_DAY}{L_COLON} <select name="bday_day" id="bday_day" style="width: 4em;">{S_BIRTHDAY_DAY_OPTIONS}</select></label>
+				<label for="bday_month">{L_MONTH}{L_COLON} <select name="bday_month" id="bday_month" style="width: 4em;">{S_BIRTHDAY_MONTH_OPTIONS}</select></label>
 				<label for="bday_year">{L_YEAR}{L_COLON} <select name="bday_year" id="bday_year" style="width: 6em;">{S_BIRTHDAY_YEAR_OPTIONS}</select></label>
 			</dd>
 		</dl>
@@ -70,7 +70,7 @@
 </div>
 
 <fieldset class="submit-buttons">
-	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
+	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
 	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
 	{S_FORM_TOKEN}
 </fieldset>

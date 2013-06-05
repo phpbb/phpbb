@@ -228,6 +228,7 @@ if ($post_data['forum_password'])
 {
 	login_forum_box(array(
 		'forum_id'			=> $forum_id,
+		'forum_name'		=> $post_data['forum_name'],
 		'forum_password'	=> $post_data['forum_password'])
 	);
 }

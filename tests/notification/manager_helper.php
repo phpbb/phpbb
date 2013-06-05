@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Notifications service class
 * @package notifications
 */
-class phpbb_mock_notifications_notification_manager extends phpbb_notification_manager
+class phpbb_notification_manager_helper extends phpbb_notification_manager
 {
 	public function set_var($name, $value)
 	{
@@ -28,12 +28,10 @@ class phpbb_mock_notifications_notification_manager extends phpbb_notification_m
 
 	// Extra dependencies for get_*_class functions
 	protected $auth = null;
-	protected $cache = null;
 	protected $config = null;
-	public function setDependencies($auth, $cache, $config)
+	public function setDependencies($auth, $config)
 	{
 		$this->auth = $auth;
-		$this->cache = $cache;
 		$this->config = $config;
 	}
 
@@ -44,7 +42,7 @@ class phpbb_mock_notifications_notification_manager extends phpbb_notification_m
 	{
 		$item_type = 'phpbb_notification_type_' . $item_type;
 
-		$item = new $item_type($this->user_loader, $this->db, $this->cache, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, $this->notifications_table, $this->user_notifications_table);
+		$item = new $item_type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, $this->notifications_table, $this->user_notifications_table);
 
 		$item->set_notification_manager($this);
 
@@ -60,7 +58,7 @@ class phpbb_mock_notifications_notification_manager extends phpbb_notification_m
 	{
 		$method_name = 'phpbb_notification_method_' . $method_name;
 
-		$method = new $method_name($this->user_loader, $this->db, $this->cache, $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, $this->notifications_table, $this->user_notifications_table);
+		$method = new $method_name($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, $this->notifications_table, $this->user_notifications_table);
 
 		$method->set_notification_manager($this);
 

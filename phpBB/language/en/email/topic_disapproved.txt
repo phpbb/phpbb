@@ -8,5 +8,4 @@ The following reason was given for the disapproval:
 
 {REASON}
 
-
 {EMAIL_SIG}

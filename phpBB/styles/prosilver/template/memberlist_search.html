@@ -89,7 +89,7 @@ function insert_single(user)
 <!-- ENDIF -->
 	<dl>
 		<dt><label for="count">{L_POSTS}{L_COLON}</label></dt>
-		<dd><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="inputbox medium" type="text" name="count" id="count" value="{COUNT}" /></dd>
+		<dd><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="inputbox medium" type="number" min="0" name="count" id="count" value="{COUNT}" /></dd>
 	</dl>
 <!-- IF S_IP_SEARCH_ALLOWED -->
 	<dl>

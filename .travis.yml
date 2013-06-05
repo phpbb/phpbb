@@ -9,26 +9,19 @@ env:
   - DB=mysql
   - DB=postgres
 
-matrix:
-  allow_failures:
-    - php: 5.5
-
 before_script:
   - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres; fi"
   - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'create database phpbb_tests;' -U postgres; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS phpbb_tests;'; fi"
   - travis/install-php-extensions.sh
-  - pyrus set auto_discover 1
-  - pyrus install --force phpunit/DbUnit
-  - phpenv rehash
   - cd phpBB
-  - php ../composer.phar install --dev
+  - php ../composer.phar install --dev --no-interaction --prefer-source
   - cd ..
   - sh -c "if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.3.19', '>=');"` = "1" ]; then travis/setup-webserver.sh; fi"
 
 script:
-  - phpunit --configuration travis/phpunit-$DB-travis.xml
-
+  - phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml
+  
 notifications:
   email:
     recipients:

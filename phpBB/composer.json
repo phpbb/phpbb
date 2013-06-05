@@ -9,6 +9,8 @@
 		"symfony/yaml": "2.1.*"
 	},
 	"require-dev": {
-		"fabpot/goutte": "v0.1.0"
+		"fabpot/goutte": "v0.1.0",
+		"phpunit/dbunit": "1.2.*",
+		"phpunit/phpunit": "3.7.*"
 	}
 }

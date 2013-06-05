@@ -270,7 +270,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		$response = '';
 		if (false == ($fs = @fsockopen($host, $port, $errno, $errstr, 10)))
 		{
-			trigger_error('Could not open socket', E_USER_ERROR);
+			trigger_error('RECAPTCHA_SOCKET_ERROR', E_USER_ERROR);
 		}
 
 		fwrite($fs, $http_request);

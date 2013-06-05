@@ -214,7 +214,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	{
 		if ($terms == 'all')
 		{
-			$match		= array('#\sand\s#iu', '#\sor\s#iu', '#\snot\s#iu', '#\+#', '#-#', '#\|#');
+			$match		= array('#\sand\s#iu', '#\sor\s#iu', '#\snot\s#iu', '#(^|\s)\+#', '#(^|\s)-#', '#(^|\s)\|#');
 			$replace	= array(' +', ' |', ' -', ' +', ' -', ' |');
 
 			$keywords = preg_replace($match, $replace, $keywords);
@@ -970,11 +970,11 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		</dl>
                 <dl>
                         <dt><label for="fulltext_postgres_min_word_len">' . $this->user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN_EXPLAIN'] . '</span></dt>
-                        <dd><input id="fulltext_postgres_min_word_len" type="text" size="3" maxlength="3" name="config[fulltext_postgres_min_word_len]" value="' . (int) $this->config['fulltext_postgres_min_word_len'] . '" /></dd>
+                        <dd><input id="fulltext_postgres_min_word_len" type="number" size="3" maxlength="3" min="0" max="255" name="config[fulltext_postgres_min_word_len]" value="' . (int) $this->config['fulltext_postgres_min_word_len'] . '" /></dd>
                 </dl>
                 <dl>
                         <dt><label for="fulltext_postgres_max_word_len">' . $this->user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN_EXPLAIN'] . '</span></dt>
-                        <dd><input id="fulltext_postgres_max_word_len" type="text" size="3" maxlength="3" name="config[fulltext_postgres_max_word_len]" value="' . (int) $this->config['fulltext_postgres_max_word_len'] . '" /></dd>
+                        <dd><input id="fulltext_postgres_max_word_len" type="number" size="3" maxlength="3" min="0" max="255" name="config[fulltext_postgres_max_word_len]" value="' . (int) $this->config['fulltext_postgres_max_word_len'] . '" /></dd>
                 </dl>
 		';
 

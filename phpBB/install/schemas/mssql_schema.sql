@@ -793,7 +793,8 @@ GO
 	Table: 'phpbb_notification_types'
 */
 CREATE TABLE [phpbb_notification_types] (
-	[notification_type] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[notification_type_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[notification_type_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[notification_type_enabled] [int] DEFAULT (1) NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -801,9 +802,11 @@ GO
 ALTER TABLE [phpbb_notification_types] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_notification_types] PRIMARY KEY  CLUSTERED 
 	(
-		[notification_type],
-		[notification_type_enabled]
+		[notification_type_id]
 	)  ON [PRIMARY] 
+GO
+
+CREATE  UNIQUE  INDEX [type] ON [phpbb_notification_types]([notification_type_name]) ON [PRIMARY]
 GO
 
 
@@ -812,7 +815,7 @@ GO
 */
 CREATE TABLE [phpbb_notifications] (
 	[notification_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[item_type] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[notification_type_id] [int] DEFAULT (0) NOT NULL ,
 	[item_id] [int] DEFAULT (0) NOT NULL ,
 	[item_parent_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
@@ -829,7 +832,7 @@ ALTER TABLE [phpbb_notifications] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-CREATE  INDEX [item_ident] ON [phpbb_notifications]([item_type], [item_id]) ON [PRIMARY]
+CREATE  INDEX [item_ident] ON [phpbb_notifications]([notification_type_id], [item_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [user] ON [phpbb_notifications]([user_id], [notification_read]) ON [PRIMARY]

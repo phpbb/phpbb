@@ -362,6 +362,12 @@ class phpbb_db_migrator
 	{
 		$state = ($state) ? unserialize($state) : false;
 
+		// reverse order of steps if reverting
+		if ($revert === true)
+		{
+			$steps = array_reverse($steps);
+		}
+
 		foreach ($steps as $step_identifier => $step)
 		{
 			$last_result = false;

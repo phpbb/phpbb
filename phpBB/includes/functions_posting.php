@@ -403,14 +403,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		$upload->set_disallowed_content(explode('|', $config['mime_triggers']));
 	}
 
-	if (!$local)
-	{
-		$filedata['post_attach'] = ($upload->is_valid($form_name)) ? true : false;
-	}
-	else
-	{
-		$filedata['post_attach'] = true;
-	}
+	$filedata['post_attach'] = $local || $upload->is_valid($form_name);
 
 	if (!$filedata['post_attach'])
 	{
@@ -429,30 +422,18 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		return $filedata;
 	}
 
-	$cat_id = (isset($extensions[$file->get('extension')]['display_cat'])) ? $extensions[$file->get('extension')]['display_cat'] : ATTACHMENT_CATEGORY_NONE;
+	// Whether the uploaded file is in the image category
+	$is_image = (isset($extensions[$file->get('extension')]['display_cat'])) ? $extensions[$file->get('extension')]['display_cat'] == ATTACHMENT_CATEGORY_IMAGE : false;
 
-	// Make sure the image category only holds valid images...
-	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && !$file->is_image())
-	{
-		$file->remove();
-
-		// If this error occurs a user tried to exploit an IE Bug by renaming extensions
-		// Since the image category is displaying content inline we need to catch this.
-		trigger_error($user->lang['ATTACHED_IMAGE_NOT_IMAGE']);
-	}
-
-	// Do we have to create a thumbnail?
-	$filedata['thumbnail'] = ($cat_id == ATTACHMENT_CATEGORY_IMAGE && $config['img_create_thumbnail']) ? 1 : 0;
-
-	// Check Image Size, if it is an image
-	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id) && $cat_id == ATTACHMENT_CATEGORY_IMAGE)
-	{
-		$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);
-	}
-
-	// Admins and mods are allowed to exceed the allowed filesize
 	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id))
 	{
+		// Check Image Size, if it is an image
+		if ($is_image)
+		{
+			$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);
+		}
+
+		// Admins and mods are allowed to exceed the allowed filesize
 		if (!empty($extensions[$file->get('extension')]['max_filesize']))
 		{
 			$allowed_filesize = $extensions[$file->get('extension')]['max_filesize'];
@@ -467,10 +448,12 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 	$file->clean_filename('unique', $user->data['user_id'] . '_');
 
-	// Are we uploading an image *and* this image being within the image category? Only then perform additional image checks.
-	$no_image = ($cat_id == ATTACHMENT_CATEGORY_IMAGE) ? false : true;
+	// Are we uploading an image *and* this image being within the image category?
+	// Only then perform additional image checks.
+	$file->move_file($config['upload_path'], false, !$is_image);
 
-	$file->move_file($config['upload_path'], false, $no_image);
+	// Do we have to create a thumbnail?
+	$filedata['thumbnail'] = ($is_image && $config['img_create_thumbnail']) ? 1 : 0;
 
 	if (sizeof($file->error))
 	{
@@ -479,6 +462,16 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		$filedata['post_attach'] = false;
 
 		return $filedata;
+	}
+
+	// Make sure the image category only holds valid images...
+	if ($is_image && !$file->is_image())
+	{
+		$file->remove();
+
+		// If this error occurs a user tried to exploit an IE Bug by renaming extensions
+		// Since the image category is displaying content inline we need to catch this.
+		trigger_error($user->lang['ATTACHED_IMAGE_NOT_IMAGE']);
 	}
 
 	$filedata['filesize'] = $file->get('filesize');

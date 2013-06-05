@@ -41,15 +41,6 @@
 	<!-- ENDIF -->
 
 	/**
-	* Find a member
-	*/
-	function find_username(url)
-	{
-		popup(url, 760, 570, '_usersearch');
-		return false;
-	}
-
-	/**
 	* New function for handling multiple calls to window.onload and window.unload by pentapenguin
 	*/
 	window.onload = function()
@@ -70,7 +61,6 @@
 
 // ]]>
 </script>
-<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/forum_fn.js?assets_version={T_ASSETS_VERSION}"></script>
 
 <link href="{T_THEME_PATH}/print.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="print" title="printonly" />
 <link href="{T_STYLESHEET_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
@@ -106,7 +96,7 @@
 			<div id="search-box">
 				<form action="{U_SEARCH}" method="get" id="search">
 				<fieldset>
-					<input name="keywords" id="keywords" type="text" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search" value="<!-- IF SEARCH_WORDS-->{SEARCH_WORDS}<!-- ELSE -->{L_SEARCH_MINI}<!-- ENDIF -->" onclick="if(this.value=='{LA_SEARCH_MINI}')this.value='';" onblur="if(this.value=='')this.value='{LA_SEARCH_MINI}';" />
+					<input name="keywords" id="keywords" type="search" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search" value="{SEARCH_WORDS}" placeholder="{L_SEARCH_MINI}" />
 					<input class="button2" value="{L_SEARCH}" type="submit" /><br />
 					<a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH_ADV}</a> {S_SEARCH_HIDDEN_FIELDS}
 				</fieldset>
@@ -137,8 +127,8 @@
 			<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
 			<ul class="linklist leftside">
 				<!-- IF S_NOTIFICATIONS_DISPLAY -->
-				<li>
-					[ <a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a> ] &bull;
+				<li class="icon-notification">
+					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a>
 					<div id="notification_list" class="notification_list">
 						<div class="pointer"><div class="pointer_inner"></div></div>
 						<div class="header">
