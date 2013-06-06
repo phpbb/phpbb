@@ -39,8 +39,6 @@ class phpbb_feed_forums extends phpbb_feed_base
 
 	function get_sql()
 	{
-		global $auth, $db;
-
 		$in_fid_ary = array_diff($this->get_readable_forums(), $this->get_excluded_forums());
 		if (empty($in_fid_ary))
 		{
@@ -54,7 +52,7 @@ class phpbb_feed_forums extends phpbb_feed_base
 							f.forum_topics, f.forum_posts',
 			'FROM'		=> array(FORUMS_TABLE => 'f'),
 			'WHERE'		=> 'f.forum_type = ' . FORUM_POST . '
-							AND ' . $db->sql_in_set('f.forum_id', $in_fid_ary),
+							AND ' . $this->db->sql_in_set('f.forum_id', $in_fid_ary),
 			'ORDER_BY'	=> 'f.left_id ASC',
 		);
 
@@ -63,16 +61,12 @@ class phpbb_feed_forums extends phpbb_feed_base
 
 	function adjust_item(&$item_row, &$row)
 	{
-		global $phpEx, $config;
+		$item_row['link'] = $this->helper->append_sid('/viewforum.' . $this->phpEx, 'f=' . $row['forum_id']);
 
-		$item_row['link'] = $this->helper->append_sid('/viewforum.' . $phpEx, 'f=' . $row['forum_id']);
-
-		if ($config['feed_item_statistics'])
+		if ($this->config['feed_item_statistics'])
 		{
-			global $user;
-
-			$item_row['statistics'] = $user->lang('TOTAL_TOPICS', (int) $row['forum_topics'])
-				. ' ' . $this->separator_stats . ' ' . $user->lang('TOTAL_POSTS_COUNT', (int) $row['forum_posts']);
+			$item_row['statistics'] = $this->user->lang('TOTAL_TOPICS', (int) $row['forum_topics'])
+				. ' ' . $this->separator_stats . ' ' . $this->user->lang('TOTAL_POSTS_COUNT', (int) $row['forum_posts']);
 		}
 	}
 }

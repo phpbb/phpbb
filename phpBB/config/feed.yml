@@ -18,39 +18,81 @@ services:
         scope: prototype
         arguments:
             - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - %core.php_ext%
 
     feed.forums:
         class: phpbb_feed_forums
         scope: prototype
         arguments:
             - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - %core.php_ext%
 
     feed.news:
         class: phpbb_feed_news
         scope: prototype
         arguments:
             - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - %core.php_ext%
 
     feed.overall:
         class: phpbb_feed_overall
         scope: prototype
         arguments:
             - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - %core.php_ext%
 
     feed.topic:
         class: phpbb_feed_topic
         scope: prototype
         arguments:
             - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - %core.php_ext%
 
     feed.topics:
         class: phpbb_feed_topics
         scope: prototype
         arguments:
             - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - %core.php_ext%
 
     feed.topics_active:
         class: phpbb_feed_topics_active
         scope: prototype
         arguments:
             - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - %core.php_ext%

@@ -45,17 +45,15 @@ abstract class phpbb_feed_topic_base extends phpbb_feed_base
 
 	function adjust_item(&$item_row, &$row)
 	{
-		global $phpEx, $config, $user;
+		$item_row['link'] = $this->helper->append_sid('/viewtopic.' . $this->phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
 
-		$item_row['link'] = $this->helper->append_sid('/viewtopic.' . $phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
-
-		if ($config['feed_item_statistics'])
+		if ($this->config['feed_item_statistics'])
 		{
-			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('published')])
-				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . (($this->is_moderator_approve_forum($row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'])
-				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views']
-				. (($this->is_moderator_approve_forum($row['forum_id']) && ($row['topic_replies_real'] != $row['topic_replies'])) ? ' ' . $this->separator_stats . ' ' . $user->lang['POSTS_UNAPPROVED'] : '');
+			$item_row['statistics'] = $this->user->lang['POSTED'] . ' ' . $this->user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
+				. ' ' . $this->separator_stats . ' ' . $this->user->format_date($row[$this->get('published')])
+				. ' ' . $this->separator_stats . ' ' . $this->user->lang['REPLIES'] . ' ' . (($this->is_moderator_approve_forum($row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'])
+				. ' ' . $this->separator_stats . ' ' . $this->user->lang['VIEWS'] . ' ' . $row['topic_views']
+				. (($this->is_moderator_approve_forum($row['forum_id']) && ($row['topic_replies_real'] != $row['topic_replies'])) ? ' ' . $this->separator_stats . ' ' . $this->user->lang['POSTS_UNAPPROVED'] : '');
 		}
 	}
 }

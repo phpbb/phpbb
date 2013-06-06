@@ -43,16 +43,14 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 
 	function open()
 	{
-		global $auth, $db, $user;
-
 		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_approved, t.topic_title, t.topic_time, t.topic_views, t.topic_replies, t.topic_type
 			FROM ' . TOPICS_TABLE . ' t
 			LEFT JOIN ' . FORUMS_TABLE . ' f
 				ON (f.forum_id = t.forum_id)
 			WHERE t.topic_id = ' . $this->topic_id;
-		$result = $db->sql_query($sql);
-		$this->topic_data = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$this->topic_data = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
 
 		if (empty($this->topic_data))
 		{
@@ -62,7 +60,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 		$this->forum_id = (int) $this->topic_data['forum_id'];
 
 		// Make sure topic is either approved or user authed
-		if (!$this->topic_data['topic_approved'] && !$auth->acl_get('m_approve', $this->forum_id))
+		if (!$this->topic_data['topic_approved'] && !$this->auth->acl_get('m_approve', $this->forum_id))
 		{
 			trigger_error('SORRY_AUTH_READ');
 		}
@@ -74,7 +72,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 		}
 
 		// Make sure we can read this forum
-		if (!$auth->acl_get('f_read', $this->forum_id))
+		if (!$this->auth->acl_get('f_read', $this->forum_id))
 		{
 			trigger_error('SORRY_AUTH_READ');
 		}
@@ -95,8 +93,6 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 
 	function get_sql()
 	{
-		global $auth, $db;
-
 		$this->sql = array(
 			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
@@ -105,7 +101,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 				USERS_TABLE		=> 'u',
 			),
 			'WHERE'		=> 'p.topic_id = ' . $this->topic_id . '
-								' . ($this->forum_id && !$auth->acl_get('m_approve', $this->forum_id) ? 'AND p.post_approved = 1' : '') . '
+								' . ($this->forum_id && !$this->auth->acl_get('m_approve', $this->forum_id) ? 'AND p.post_approved = 1' : '') . '
 								AND p.poster_id = u.user_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
 		);

@@ -27,8 +27,6 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 {
 	function get_sql()
 	{
-		global $auth, $db;
-
 		$forum_ids = array_diff($this->get_readable_forums(), $this->get_excluded_forums(), $this->get_passworded_forums());
 		if (empty($forum_ids))
 		{
@@ -37,27 +35,27 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 
 		// m_approve forums
 		$fid_m_approve = $this->get_moderator_approve_forums();
-		$sql_m_approve = (!empty($fid_m_approve)) ? 'OR ' . $db->sql_in_set('forum_id', $fid_m_approve) : '';
+		$sql_m_approve = (!empty($fid_m_approve)) ? 'OR ' . $this->db->sql_in_set('forum_id', $fid_m_approve) : '';
 
 		// Determine topics with recent activity
 		$sql = 'SELECT topic_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+			WHERE ' . $this->db->sql_in_set('forum_id', $forum_ids) . '
 				AND topic_moved_id = 0
 				AND (topic_approved = 1
 					' . $sql_m_approve . ')
 			ORDER BY topic_last_post_time DESC';
-		$result = $db->sql_query_limit($sql, $this->num_items);
+		$result = $this->db->sql_query_limit($sql, $this->num_items);
 
 		$topic_ids = array();
 		$min_post_time = 0;
-		while ($row = $db->sql_fetchrow())
+		while ($row = $this->db->sql_fetchrow())
 		{
 			$topic_ids[] = (int) $row['topic_id'];
 
 			$min_post_time = (int) $row['topic_last_post_time'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if (empty($topic_ids))
 		{
@@ -79,7 +77,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 					'ON'	=> 'f.forum_id = p.forum_id',
 				),
 			),
-			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
+			'WHERE'		=> $this->db->sql_in_set('p.topic_id', $topic_ids) . '
 							AND (p.post_approved = 1
 								' . str_replace('forum_id', 'p.forum_id', $sql_m_approve) . ')
 							AND p.post_time >= ' . $min_post_time . '

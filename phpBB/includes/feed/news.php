@@ -27,27 +27,26 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 {
 	function get_news_forums()
 	{
-		global $db, $cache;
 		static $forum_ids;
 
 		// Matches acp/acp_board.php
 		$cache_name	= 'feed_news_forum_ids';
 
-		if (!isset($forum_ids) && ($forum_ids = $cache->get('_' . $cache_name)) === false)
+		if (!isset($forum_ids) && ($forum_ids = $this->cache->get('_' . $cache_name)) === false)
 		{
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE . '
-				WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_NEWS, '<> 0');
-			$result = $db->sql_query($sql);
+				WHERE ' . $this->db->sql_bit_and('forum_options', FORUM_OPTION_FEED_NEWS, '<> 0');
+			$result = $this->db->sql_query($sql);
 
 			$forum_ids = array();
-			while ($forum_id = (int) $db->sql_fetchfield('forum_id'))
+			while ($forum_id = (int) $this->db->sql_fetchfield('forum_id'))
 			{
 				$forum_ids[$forum_id] = $forum_id;
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
-			$cache->put('_' . $cache_name, $forum_ids);
+			$this->cache->put('_' . $cache_name, $forum_ids);
 		}
 
 		return $forum_ids;
@@ -55,8 +54,6 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 
 	function get_sql()
 	{
-		global $auth, $config, $db;
-
 		// Determine forum ids
 		$in_fid_ary = array_intersect($this->get_news_forums(), $this->get_readable_forums());
 		if (empty($in_fid_ary))
@@ -73,18 +70,18 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 		// We really have to get the post ids first!
 		$sql = 'SELECT topic_first_post_id, topic_time
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
+			WHERE ' . $this->db->sql_in_set('forum_id', $in_fid_ary) . '
 				AND topic_moved_id = 0
 				AND topic_approved = 1
 			ORDER BY topic_time DESC';
-		$result = $db->sql_query_limit($sql, $this->num_items);
+		$result = $this->db->sql_query_limit($sql, $this->num_items);
 
 		$post_ids = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$post_ids[] = (int) $row['topic_first_post_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if (empty($post_ids))
 		{
@@ -106,7 +103,7 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 				),
 			),
 			'WHERE'		=> 'p.topic_id = t.topic_id
-							AND ' . $db->sql_in_set('p.post_id', $post_ids),
+							AND ' . $this->db->sql_in_set('p.post_id', $post_ids),
 			'ORDER_BY'	=> 'p.post_time DESC',
 		);
 

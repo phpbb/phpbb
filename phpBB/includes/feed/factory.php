@@ -31,7 +31,7 @@ class phpbb_feed_factory
 	protected $config;
 
 	/** @var phpbb_db_driver */
-	protected $driver;
+	protected $db;
 
 	/**
 	* Constructor

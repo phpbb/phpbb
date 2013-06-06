@@ -38,8 +38,6 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 
 	function get_sql()
 	{
-		global $db, $config;
-
 		$forum_ids_read = $this->get_readable_forums();
 		if (empty($forum_ids_read))
 		{
@@ -59,19 +57,19 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 		// We really have to get the post ids first!
 		$sql = 'SELECT topic_last_post_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
+			WHERE ' . $this->db->sql_in_set('forum_id', $in_fid_ary) . '
 				AND topic_moved_id = 0
 				AND topic_approved = 1
 				' . $last_post_time_sql . '
 			ORDER BY topic_last_post_time DESC';
-		$result = $db->sql_query_limit($sql, $this->num_items);
+		$result = $this->db->sql_query_limit($sql, $this->num_items);
 
 		$post_ids = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$post_ids[] = (int) $row['topic_last_post_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if (empty($post_ids))
 		{
@@ -94,7 +92,7 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 				),
 			),
 			'WHERE'		=> 'p.topic_id = t.topic_id
-							AND ' . $db->sql_in_set('p.post_id', $post_ids),
+							AND ' . $this->db->sql_in_set('p.post_id', $post_ids),
 			'ORDER_BY'	=> 'p.post_time DESC',
 		);
 
@@ -103,28 +101,27 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 
 	function get_forum_ids()
 	{
-		global $db, $cache;
 		static $forum_ids;
 
 		$cache_name	= 'feed_topic_active_forum_ids';
 
-		if (!isset($forum_ids) && ($forum_ids = $cache->get('_' . $cache_name)) === false)
+		if (!isset($forum_ids) && ($forum_ids = $this->cache->get('_' . $cache_name)) === false)
 		{
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE . '
 				WHERE forum_type = ' . FORUM_POST . '
-					AND ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '= 0') . '
-					AND ' . $db->sql_bit_and('forum_flags', log(FORUM_FLAG_ACTIVE_TOPICS, 2), '<> 0');
-			$result = $db->sql_query($sql);
+					AND ' . $this->db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '= 0') . '
+					AND ' . $this->db->sql_bit_and('forum_flags', log(FORUM_FLAG_ACTIVE_TOPICS, 2), '<> 0');
+			$result = $this->db->sql_query($sql);
 
 			$forum_ids = array();
-			while ($forum_id = (int) $db->sql_fetchfield('forum_id'))
+			while ($forum_id = (int) $this->db->sql_fetchfield('forum_id'))
 			{
 				$forum_ids[$forum_id] = $forum_id;
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
-			$cache->put('_' . $cache_name, $forum_ids, 180);
+			$this->cache->put('_' . $cache_name, $forum_ids, 180);
 		}
 
 		return $forum_ids;

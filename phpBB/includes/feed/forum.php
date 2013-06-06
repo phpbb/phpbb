@@ -43,15 +43,13 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 
 	function open()
 	{
-		global $db, $auth;
-
 		// Check if forum exists
 		$sql = 'SELECT forum_id, forum_name, forum_password, forum_type, forum_options
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . $this->forum_id;
-		$result = $db->sql_query($sql);
-		$this->forum_data = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$this->forum_data = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
 
 		if (empty($this->forum_data))
 		{
@@ -71,7 +69,7 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 		}
 
 		// Make sure we can read this forum
-		if (!$auth->acl_get('f_read', $this->forum_id))
+		if (!$this->auth->acl_get('f_read', $this->forum_id))
 		{
 			trigger_error('SORRY_AUTH_READ');
 		}
@@ -92,9 +90,7 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 
 	function get_sql()
 	{
-		global $auth, $db;
-
-		$m_approve = ($auth->acl_get('m_approve', $this->forum_id)) ? true : false;
+		$m_approve = ($this->auth->acl_get('m_approve', $this->forum_id)) ? true : false;
 
 		// Determine topics with recent activity
 		$sql = 'SELECT topic_id, topic_last_post_time
@@ -103,17 +99,17 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 				AND topic_moved_id = 0
 				' . ((!$m_approve) ? 'AND topic_approved = 1' : '') . '
 			ORDER BY topic_last_post_time DESC';
-		$result = $db->sql_query_limit($sql, $this->num_items);
+		$result = $this->db->sql_query_limit($sql, $this->num_items);
 
 		$topic_ids = array();
 		$min_post_time = 0;
-		while ($row = $db->sql_fetchrow())
+		while ($row = $this->db->sql_fetchrow())
 		{
 			$topic_ids[] = (int) $row['topic_id'];
 
 			$min_post_time = (int) $row['topic_last_post_time'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if (empty($topic_ids))
 		{
@@ -127,7 +123,7 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 				POSTS_TABLE		=> 'p',
 				USERS_TABLE		=> 'u',
 			),
-			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
+			'WHERE'		=> $this->db->sql_in_set('p.topic_id', $topic_ids) . '
 							' . ((!$m_approve) ? 'AND p.post_approved = 1' : '') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND p.poster_id = u.user_id',
