@@ -28,11 +28,17 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 	var $forum_id		= 0;
 	var $forum_data		= array();
 
-	function __construct($forum_id)
+	/**
+	* Set the Forum ID
+	*
+	* @param int	$forum_id			Forum ID
+	* @return	phpbb_feed_forum
+	*/
+	public function set_forum_id($topic_id)
 	{
-		parent::__construct();
-
 		$this->forum_id = (int) $forum_id;
+
+		return $this;
 	}
 
 	function open()

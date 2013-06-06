@@ -23,6 +23,12 @@ if (!defined('IN_PHPBB'))
 abstract class phpbb_feed_base
 {
 	/**
+	* Feed helper object
+	* @var phpbb_feed_helper
+	*/
+	protected $helper;
+
+	/**
 	* SQL Query to be executed to get feed items
 	*/
 	var $sql = array();
@@ -49,8 +55,11 @@ abstract class phpbb_feed_base
 
 	/**
 	* Constructor
+	*
+	* @param phpbb_feed_helper $helper Feed helper
+	* @return	null
 	*/
-	function __construct()
+	function __construct(phpbb_feed_helper $helper)
 	{
 		global $config;
 
@@ -67,6 +76,8 @@ abstract class phpbb_feed_base
 				$this->num_items = 10;
 			}
 		}
+
+		$this->helper = $helper;
 	}
 
 	/**
@@ -225,6 +236,6 @@ abstract class phpbb_feed_base
 			return $user->lang['GUEST'];
 		}
 
-		return '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $author_id) . '">' . $row[$this->get('creator')] . '</a>';
+		return '<a href="' . $this->helper->append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $author_id) . '">' . $row[$this->get('creator')] . '</a>';
 	}
 }

@@ -65,7 +65,7 @@ class phpbb_feed_forums extends phpbb_feed_base
 	{
 		global $phpEx, $config;
 
-		$item_row['link'] = feed_append_sid('/viewforum.' . $phpEx, 'f=' . $row['forum_id']);
+		$item_row['link'] = $this->helper->append_sid('/viewforum.' . $phpEx, 'f=' . $row['forum_id']);
 
 		if ($config['feed_item_statistics'])
 		{

@@ -47,7 +47,7 @@ abstract class phpbb_feed_post_base extends phpbb_feed_base
 	{
 		global $phpEx, $config, $user;
 
-		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, "t={$row['topic_id']}&amp;p={$row['post_id']}#p{$row['post_id']}");
+		$item_row['link'] = $this->helper->append_sid('/viewtopic.' . $phpEx, "t={$row['topic_id']}&amp;p={$row['post_id']}#p{$row['post_id']}");
 
 		if ($config['feed_item_statistics'])
 		{

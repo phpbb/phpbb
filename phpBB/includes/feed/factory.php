@@ -22,6 +22,33 @@ if (!defined('IN_PHPBB'))
 class phpbb_feed_factory
 {
 	/**
+	* Service container object
+	* @var object
+	*/
+	protected $container;
+
+	/** @var phpbb_config */
+	protected $config;
+
+	/** @var phpbb_db_driver */
+	protected $driver;
+
+	/**
+	* Constructor
+	*
+	* @param objec				$container	Container object
+	* @param phpbb_config		$config		Config object
+	* @param phpbb_db_driver	$db			Database connection
+	* @return	null
+	*/
+	public function __construct($container, phpbb_config $config, phpbb_db_driver $db)
+	{
+		$this->container = $container;
+		$this->config = $config;
+		$this->db = $db;
+	}
+
+	/**
 	* Return correct object for specified mode
 	*
 	* @param string	$mode		The feeds mode.
@@ -30,71 +57,69 @@ class phpbb_feed_factory
 	*
 	* @return object	Returns correct feeds object for specified mode.
 	*/
-	function init($mode, $forum_id, $topic_id)
+	function get_feed($mode, $forum_id, $topic_id)
 	{
-		global $config;
-
 		switch ($mode)
 		{
 			case 'forums':
-				if (!$config['feed_overall_forums'])
+				if (!$this->config['feed_overall_forums'])
 				{
 					return false;
 				}
 
-				return new phpbb_feed_forums();
+				return $this->container->get('feed.forums');
 			break;
 
 			case 'topics':
 			case 'topics_new':
-				if (!$config['feed_topics_new'])
+				if (!$this->config['feed_topics_new'])
 				{
 					return false;
 				}
 
-				return new phpbb_feed_topics();
+				return $this->container->get('feed.topics');
 			break;
 
 			case 'topics_active':
-				if (!$config['feed_topics_active'])
+				if (!$this->config['feed_topics_active'])
 				{
 					return false;
 				}
 
-				return new phpbb_feed_topics_active();
+				return $this->container->get('feed.topics_active');
 			break;
 
 			case 'news':
-				global $db;
-
 				// Get at least one news forum
 				$sql = 'SELECT forum_id
 					FROM ' . FORUMS_TABLE . '
-					WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_NEWS, '<> 0');
-				$result = $db->sql_query_limit($sql, 1, 0, 600);
-				$s_feed_news = (int) $db->sql_fetchfield('forum_id');
-				$db->sql_freeresult($result);
+					WHERE ' . $this->db->sql_bit_and('forum_options', FORUM_OPTION_FEED_NEWS, '<> 0');
+				$result = $this->db->sql_query_limit($sql, 1, 0, 600);
+				$s_feed_news = (int) $this->db->sql_fetchfield('forum_id');
+				$this->db->sql_freeresult($result);
 
 				if (!$s_feed_news)
 				{
 					return false;
 				}
 
-				return new phpbb_feed_news();
+				return $this->container->get('feed.news');
 			break;
 
 			default:
-				if ($topic_id && $config['feed_topic'])
+				if ($topic_id && $this->config['feed_topic'])
 				{
-					return new phpbb_feed_topic($topic_id);
+					return $this->container->get('feed.topic')
+								->set_topic_id($topic_id);
 				}
-				else if ($forum_id && $config['feed_forum'])
+				else if ($forum_id && $this->config['feed_forum'])
 				{
-					return new phpbb_feed_forum($forum_id);
+					return $this->container->get('feed.forum')
+								->set_forum_id($forum_id);
 				}
-				else if ($config['feed_overall'])
+				else if ($this->config['feed_overall'])
 				{
-					return new phpbb_feed_overall();
+				return $this->container->get('feed.overall');
 				}
 
 				return false;
