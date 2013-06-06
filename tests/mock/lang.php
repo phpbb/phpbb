@@ -30,4 +30,9 @@ class phpbb_mock_lang implements ArrayAccess
 	public function offsetUnset($offset)
 	{
 	}
+
+	public function lang()
+	{
+		return implode(' ', func_get_args());
+	}
 }
