@@ -61,7 +61,7 @@ class phpbb_feed_forums extends phpbb_feed_base
 
 	function adjust_item(&$item_row, &$row)
 	{
-		$item_row['link'] = $this->helper->append_sid('/viewforum.' . $this->phpEx, 'f=' . $row['forum_id']);
+		$item_row['link'] = $this->helper->append_sid('viewforum.' . $this->phpEx, 'f=' . $row['forum_id']);
 
 		if ($this->config['feed_item_statistics'])
 		{

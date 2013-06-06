@@ -129,7 +129,7 @@ if (!$feed_updated_time)
 // FEED_IMAGE is not used (atom)
 $global_vars = array_merge($global_vars, array(
 	'FEED_IMAGE'			=> '',
-	'SELF_LINK'				=> $phpbb_feed_helper->append_sid('/feed.' . $phpEx, $params),
+	'SELF_LINK'				=> $phpbb_feed_helper->append_sid('feed.' . $phpEx, $params),
 	'FEED_LINK'				=> $board_url . '/index.' . $phpEx,
 	'FEED_TITLE'			=> $config['sitename'],
 	'FEED_SUBTITLE'			=> $config['site_desc'],

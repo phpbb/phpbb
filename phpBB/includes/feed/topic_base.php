@@ -45,7 +45,7 @@ abstract class phpbb_feed_topic_base extends phpbb_feed_base
 
 	function adjust_item(&$item_row, &$row)
 	{
-		$item_row['link'] = $this->helper->append_sid('/viewtopic.' . $this->phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
+		$item_row['link'] = $this->helper->append_sid('viewtopic.' . $this->phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
 
 		if ($this->config['feed_item_statistics'])
 		{

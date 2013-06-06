@@ -65,7 +65,7 @@ class phpbb_feed_helper
 	*/
 	public function append_sid($url, $params)
 	{
-		return append_sid($this->get_board_url() . $url, $params, true, '');
+		return append_sid($this->get_board_url() . '/' . $url, $params, true, '');
 	}
 
 	/**

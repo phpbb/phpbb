@@ -254,6 +254,6 @@ abstract class phpbb_feed_base
 			return $this->user->lang['GUEST'];
 		}
 
-		return '<a href="' . $this->helper->append_sid('/memberlist.' . $this->phpEx, 'mode=viewprofile&amp;u=' . $author_id) . '">' . $row[$this->get('creator')] . '</a>';
+		return '<a href="' . $this->helper->append_sid('memberlist.' . $this->phpEx, 'mode=viewprofile&amp;u=' . $author_id) . '">' . $row[$this->get('creator')] . '</a>';
 	}
 }
