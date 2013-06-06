@@ -14,6 +14,28 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 {
 	abstract protected function get_url();
 
+	/**
+	* Get group_manage form
+	* @param int $group_id ID of the group that should be managed
+	*/
+	protected function get_group_manage_form($group_id = 5)
+	{
+		// Manage Administrators group
+		$crawler = self::request('GET', $this->get_url() . "&g=$group_id&sid=" . $this->sid);
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		return $form;
+	}
+
+	/**
+	* Execute login calls and add_lang() calls for tests
+	*/
+	protected function group_manage_login()
+	{
+		$this->login();
+		$this->admin_login();
+		$this->add_lang(array('ucp', 'acp/groups'));
+	}
+
 	public function groups_manage_test_data()
 	{
 		return array(
@@ -30,19 +52,10 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 	*/
 	public function test_groups_manage($input, $expected)
 	{
-		$this->markTestIncomplete(
-			'Test fails on develop due to another test deleting the Administrators group.'
-		);
-		// See https://github.com/phpbb/phpbb3/pull/1407#issuecomment-18465480
-		// and https://gist.github.com/bantu/22dc4f6c6c0b8f9e0fa1
-
-		$this->login();
-		$this->admin_login();
-		$this->add_lang(array('ucp', 'acp/groups'));
+		$this->group_manage_login();
 
 		// Manage Administrators group
-		$crawler = self::request('GET', $this->get_url() . '&g=5&sid=' . $this->sid);
-		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$form = $this->get_group_manage_form();
 		$form['group_colour']->setValue($input);
 		$crawler = self::submit($form);
 		$this->assertContains($this->lang($expected), $crawler->text());
