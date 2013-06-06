@@ -21,9 +21,7 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 	protected function get_group_manage_form($group_id = 5)
 	{
 		// Manage Administrators group
-		$crawler = $this->request('GET', $this->get_url() . "&g=$group_id&sid=" . $this->sid);
-		$this->assert_response_success();
-		//var_export($this->client->getResponse()->getContent());
+		$crawler = self::request('GET', $this->get_url() . "&g=$group_id&sid=" . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		return $form;
 	}
@@ -59,7 +57,7 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 		// Manage Administrators group
 		$form = $this->get_group_manage_form();
 		$form['group_colour']->setValue($input);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContains($this->lang($expected), $crawler->text());
 	}
 }
