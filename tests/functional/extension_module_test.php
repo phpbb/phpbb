@@ -122,8 +122,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 	{
 		$this->login();
 		$this->admin_login();
-		$crawler = $this->request('GET', 'adm/index.php?i=phpbb_ext_foo_bar_acp_main_module&mode=mode&sid=' . $this->sid, array(), true);
-		$this->assert_response_success();
+		$crawler = self::request('GET', 'adm/index.php?i=phpbb_ext_foo_bar_acp_main_module&mode=mode&sid=' . $this->sid);
 		$this->assertContains("Bertie rulez!", $crawler->filter('#main')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}

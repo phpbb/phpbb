@@ -100,7 +100,7 @@ class phpbb_functional_acp_groups_test extends phpbb_functional_common_groups_te
 				$form['group_teampage']->untick();
 			}
 		}
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContains($this->lang('GROUP_UPDATED'), $crawler->text());
 
 		$form = $this->get_group_manage_form($group_id);

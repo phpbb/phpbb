@@ -109,7 +109,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 	public function test_list()
 	{
-        $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+        $crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 
         $this->assertCount(1, $crawler->filter('.ext_enabled'));
         $this->assertCount(5, $crawler->filter('.ext_disabled'));
@@ -131,7 +131,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 	public function test_details()
 	{
-        $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=foo&sid=' . $this->sid);
+        $crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=foo&sid=' . $this->sid);
 
         $validation = array(
         	'DISPLAY_NAME'		=> 'phpBB Foo Extension',
@@ -174,46 +174,46 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 	public function test_enable_pre()
 	{
 		// Foo is already enabled (redirect to list)
-        $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=foo&sid=' . $this->sid);
+        $crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=foo&sid=' . $this->sid);
         $this->assertContainsLang('EXTENSION_NAME', $crawler->filter('html')->text());
         $this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('html')->text());
         $this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('html')->text());
 
-        $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+        $crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
         $this->assertContainsLang('ENABLE_CONFIRM', $crawler->filter('html')->text());
 	}
 
 	public function test_disable_pre()
 	{
         // Moo is not enabled (redirect to list)
-        $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+        $crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
         $this->assertContainsLang('EXTENSION_NAME', $crawler->filter('html')->text());
         $this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('html')->text());
         $this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('html')->text());
 
-        $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=foo&sid=' . $this->sid);
+        $crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=foo&sid=' . $this->sid);
         $this->assertContainsLang('DISABLE_CONFIRM', $crawler->filter('html')->text());
 	}
 
 	public function test_purge_pre()
 	{
         // test2 is not available (error)
-        $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=purge_pre&ext_name=test2&sid=' . $this->sid);
+        $crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=purge_pre&ext_name=test2&sid=' . $this->sid);
         $this->assertContains('The required file does not exist', $crawler->filter('html')->text());
 
-        $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=purge_pre&ext_name=foo&sid=' . $this->sid);
+        $crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=purge_pre&ext_name=foo&sid=' . $this->sid);
         $this->assertContainsLang('PURGE_CONFIRM', $crawler->filter('html')->text());
 	}
 
 	public function test_actions()
 	{
-        $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+        $crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable&ext_name=vendor%2Fmoo&sid=' . $this->sid);
         $this->assertContainsLang('ENABLE_SUCCESS', $crawler->filter('html')->text());
 
-        $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+        $crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable&ext_name=vendor%2Fmoo&sid=' . $this->sid);
         $this->assertContainsLang('DISABLE_SUCCESS', $crawler->filter('html')->text());
 
-        $crawler = $this->request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=purge&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+        $crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=purge&ext_name=vendor%2Fmoo&sid=' . $this->sid);
         $this->assertContainsLang('PURGE_SUCCESS', $crawler->filter('html')->text());
 	}
 }
