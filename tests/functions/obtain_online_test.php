@@ -53,19 +53,19 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	{
 		return array(
 			array(0, false, array(
-				'online_users'			=> array(2 => 2, 3 => 3, 6 => 6, 7 => 7),
-				'hidden_users'			=> array(6 => 6, 7 => 7),
-				'total_online'			=> 4,
+				'online_users'			=> array(2 => 2, 3 => 3, 6 => 6, 7 => 7, 10 => 10),
+				'hidden_users'			=> array(6 => 6, 7 => 7, 10 => 10),
+				'total_online'			=> 5,
 				'visible_online'		=> 2,
-				'hidden_online'			=> 2,
+				'hidden_online'			=> 3,
 				'guests_online'			=> 0,
 			)),
 			array(0, true, array(
-				'online_users'			=> array(2 => 2, 3 => 3, 6 => 6, 7 => 7),
-				'hidden_users'			=> array(6 => 6, 7 => 7),
-				'total_online'			=> 6,
+				'online_users'			=> array(2 => 2, 3 => 3, 6 => 6, 7 => 7, 10 => 10),
+				'hidden_users'			=> array(6 => 6, 7 => 7, 10 => 10),
+				'total_online'			=> 7,
 				'visible_online'		=> 2,
-				'hidden_online'			=> 2,
+				'hidden_online'			=> 3,
 				'guests_online'			=> 2,
 			)),
 			array(1, false, array(
@@ -124,11 +124,11 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 		return array(
 			array(0, false, array(
 				'online_userlist'	=> 'REGISTERED_USERS 2, 3',
-				'l_online_users'	=> 'ONLINE_USERS_TOTAL 4 REG_USERS_TOTAL 2 HIDDEN_USERS_TOTAL 2',
+				'l_online_users'	=> 'ONLINE_USERS_TOTAL 5 REG_USERS_TOTAL 2 HIDDEN_USERS_TOTAL 3',
 			)),
 			array(0, true, array(
 				'online_userlist'	=> 'REGISTERED_USERS 2, 3',
-				'l_online_users'	=> 'ONLINE_USERS_TOTAL_GUESTS 6 REG_USERS_TOTAL 2 HIDDEN_USERS_TOTAL 2 GUEST_USERS_TOTAL 2',
+				'l_online_users'	=> 'ONLINE_USERS_TOTAL_GUESTS 7 REG_USERS_TOTAL 2 HIDDEN_USERS_TOTAL 3 GUEST_USERS_TOTAL 2',
 			)),
 			array(1, false, array(
 				'online_userlist'	=> 'BROWSING_FORUM 3',
@@ -198,6 +198,7 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 		$this->add_session(7, '0006', '192.168.0.10', 1, false, $time);
 		$this->add_session(8, '0007', '192.168.0.11', 0, false, $time, 10);
 		$this->add_session(9, '0008', '192.168.0.12', 1, false, $time, 10);
+		$this->add_session(10, '009', '192.168.0.13', 0, false, $time);
 	}
 
 	protected function add_session($user_id, $session_id, $user_ip, $forum_id, $view_online, $time, $time_delta = 0)
