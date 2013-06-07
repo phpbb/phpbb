@@ -11,6 +11,8 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 {
 	static private $already_connected;
 
+	private $db_connections;
+
 	protected $test_case_helpers;
 
 	protected $fixture_xml_data;
@@ -28,6 +30,22 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 			'phpbb_database_test_case' => array('already_connected'),
 		);
+
+		$this->db_connections = array();
+	}
+
+	protected function tearDown()
+	{
+		parent::tearDown();
+
+		// Close all database connections from this test
+		if (!empty($this->db_connections))
+		{
+			foreach ($this->db_connections as $db)
+			{
+				$db->sql_close();
+			}
+		}
 	}
 
 	protected function setUp()
@@ -120,6 +138,8 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 		$db = new $config['dbms']();
 		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
+
+		$this->db_connections[] = $db;
 
 		return $db;
 	}
