@@ -4,6 +4,7 @@ imports:
     - { resource: notifications.yml }
     - { resource: migrator.yml }
     - { resource: avatars.yml }
+    - { resource: feed.yml }
 
 services:
     auth:
