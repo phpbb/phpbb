@@ -16,7 +16,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 {
 	protected $phpbb_extension_manager;
 
-	static private $helpers;
+	static private $helper;
 
 	static protected $fixtures = array(
 		'foo/bar/',
@@ -28,20 +28,10 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 	*/
 	static public function setUpBeforeClass()
 	{
-		global $phpbb_root_path;
 		parent::setUpBeforeClass();
 
-		self::$helpers = new phpbb_test_case_helpers(self);
-
-		if (!file_exists($phpbb_root_path . 'ext/foo/bar/'))
-		{
-			self::$helpers->makedirs($phpbb_root_path . 'ext/foo/bar/');
-		}
-
-		foreach (self::$fixtures as $fixture)
-		{
-			self::$helpers->copy_dir(dirname(__FILE__) . '/fixtures/ext/' . $fixture, $phpbb_root_path . 'ext/' . $fixture);
-		}
+		self::$helper = new phpbb_test_case_helpers(self);
+		self::$helper->copy_ext_fixtures(dirname(__FILE__) . '/fixtures/ext/', self::$fixtures);
 	}
 
 	/**
@@ -50,13 +40,9 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 	*/
 	static public function tearDownAfterClass()
 	{
-		global $phpbb_root_path;
+		parent::tearDownAfterClass();
 
-		foreach (self::$fixtures as $fixture)
-		{
-			self::$helpers->empty_dir($phpbb_root_path . 'ext/' . $fixture);
-		}
-		self::$helpers->empty_dir($phpbb_root_path . 'ext/foo/');
+		self::$helper->restore_original_ext_dir();
 	}
 
 	public function setUp()

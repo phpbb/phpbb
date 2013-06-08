@@ -38,7 +38,7 @@ class phpbb_test_case_helpers
 		// Copy our ext/ files from the test case to the board
 		foreach ($fixtures as $fixture)
 		{
-			$this->copied_files = array_merge($this->copied_files, $this->copy_dir($fixtures_dir . 'ext/' . $fixture, $phpbb_root_path . 'ext/' . $fixture));
+			$this->copied_files = array_merge($this->copied_files, $this->copy_dir($fixtures_dir . $fixture, $phpbb_root_path . 'ext/' . $fixture));
 		}
 	}
 

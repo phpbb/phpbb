@@ -12,34 +12,33 @@
 */
 class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 {
-	static private $copied_files = array();
 	static private $helper;
+
+	static protected $fixtures = array(
+		'',
+	);
 
 	/**
 	* This should only be called once before the tests are run.
-	* This is used to copy the extensions to the phpBB install
+	* This is used to copy the fixtures to the phpBB install
 	*/
 	static public function setUpBeforeClass()
 	{
-		global $phpbb_root_path;
-
 		parent::setUpBeforeClass();
 
 		self::$helper = new phpbb_test_case_helpers(self);
+		self::$helper->copy_ext_fixtures(dirname(__FILE__) . '/fixtures/ext/', self::$fixtures);
+	}
 
-		self::$copied_files = array();
+	/**
+	* This should only be called once after the tests are run.
+	* This is used to remove the fixtures from the phpBB install
+	*/
+	static public function tearDownAfterClass()
+	{
+		parent::tearDownAfterClass();
 
-		if (file_exists($phpbb_root_path . 'ext/'))
-		{
-			// First, move any extensions setup on the board to a temp directory
-			self::$copied_files = self::$helper->copy_dir($phpbb_root_path . 'ext/', $phpbb_root_path . 'store/temp_ext/');
-
-			// Then empty the ext/ directory on the board (for accurate test cases)
-			self::$helper->empty_dir($phpbb_root_path . 'ext/');
-		}
-
-		// Copy our ext/ files from the test case to the board
-		self::$copied_files = array_merge(self::$copied_files, self::$helper->copy_dir(dirname(__FILE__) . '/../extension/ext/', $phpbb_root_path . 'ext/'));
+		self::$helper->restore_original_ext_dir();
 	}
 
 	public function setUp()
@@ -82,29 +81,6 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->admin_login();
 
 		$this->add_lang('acp/extensions');
-	}
-
-	/**
-	* This should only be called once after the tests are run.
-	* This is used to remove the files copied to the phpBB install
-	*/
-	static public function tearDownAfterClass()
-	{
-		global $phpbb_root_path;
-
-		if (file_exists($phpbb_root_path . 'store/temp_ext/'))
-		{
-			// Copy back the board installed extensions from the temp directory
-			self::$helper->copy_dir($phpbb_root_path . 'store/temp_ext/', $phpbb_root_path . 'ext/');
-		}
-
-		// Remove all of the files we copied around (from board ext -> temp_ext, from test ext -> board ext)
-		self::$helper->remove_files(self::$copied_files);
-
-		if (file_exists($phpbb_root_path . 'store/temp_ext/'))
-		{
-			self::$helper->empty_dir($phpbb_root_path . 'store/temp_ext/');
-		}
 	}
 
 	public function test_list()
