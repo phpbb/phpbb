@@ -45,7 +45,10 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 		}
 
 		// Copy our ext/ files from the test case to the board
-		self::$copied_files = array_merge(self::$copied_files, self::$helper->copy_dir(dirname(__FILE__) . '/fixtures/ext/' . $fixture, $phpbb_root_path . 'ext/' . $fixture));
+		foreach (self::$fixtures as $fixture)
+		{
+			self::$copied_files = array_merge(self::$copied_files, self::$helper->copy_dir(dirname(__FILE__) . '/fixtures/ext/' . $fixture, $phpbb_root_path . 'ext/' . $fixture));
+		}
 	}
 
 	/**
