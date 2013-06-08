@@ -18,10 +18,9 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	static private $helper;
 
 	static protected $fixtures = array(
-		'foo/bar/config/routing.yml',
-		'foo/bar/config/services.yml',
-		'foo/bar/controller/controller.php',
-		'foo/bar/styles/prosilver/template/foo_bar_body.html',
+		'foo/bar/config/',
+		'foo/bar/controller/',
+		'foo/bar/styles/prosilver/template/',
 	);
 
 	/**
