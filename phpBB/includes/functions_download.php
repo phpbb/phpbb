@@ -728,7 +728,7 @@ function phpbb_download_clean_filename($filename)
 * @param string $user_agent	User agent HTTP header
 * @param int $version IE version to check against
 *
-* @return bool true if internet explorer version is greater than 7
+* @return bool true if internet explorer version is greater than $version
 */
 function phpbb_is_greater_ie_version($user_agent, $version)
 {
