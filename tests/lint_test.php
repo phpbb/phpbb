@@ -29,6 +29,9 @@ class phpbb_lint_test extends phpbb_test_case
 		);
 	}
 
+	/**
+	* @group slow
+	*/
 	public function test_lint()
 	{
 		if (version_compare(PHP_VERSION, '5.3.0', '<'))
