@@ -141,6 +141,7 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'])
 }
 
 $error	= array();
+$s_hidden_fields = '';
 
 // Submit report?
 if ($submit && $reason_id)
@@ -165,6 +166,11 @@ if ($submit && $reason_id)
 
 	if (!sizeof($error))
 	{
+		if (isset($captcha))
+		{
+			$captcha->reset();
+		}
+
 		$sql_ary = array(
 			'reason_id'		=> (int) $reason_id,
 			'post_id'		=> $post_id,
@@ -235,6 +241,10 @@ if ($submit && $reason_id)
 		}
 		trigger_error($message);
 	}
+	else if (isset($captcha) && $captcha->is_solved() !== false)
+	{
+		$s_hidden_fields .= build_hidden_fields($captcha->get_hidden_fields());
+	}
 }
 
 // Generate the reasons
@@ -255,6 +265,7 @@ $template->assign_vars(array(
 	'S_REPORT_POST'		=> ($pm_id) ? false : true,
 	'REPORT_TEXT'		=> $report_text,
 	'S_REPORT_ACTION'	=> append_sid("{$phpbb_root_path}report.$phpEx", 'f=' . $forum_id . '&amp;p=' . $post_id . '&amp;pm=' . $pm_id),
+	'S_HIDDEN_FIELDS'	=> (sizeof($s_hidden_fields)) ? $s_hidden_fields : null,
 
 	'S_NOTIFY'			=> $user_notify,
 	'S_CAN_NOTIFY'		=> ($user->data['is_registered']) ? true : false)
