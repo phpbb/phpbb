@@ -254,7 +254,7 @@ services:
         class: phpbb_style_path_provider
 
     template:
-        class: phpbb_template
+        class: phpbb_template_twig
         arguments:
             - %core.root_path%
             - %core.php_ext%
