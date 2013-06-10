@@ -509,6 +509,9 @@ class install_update extends module
 
 				if ($all_up_to_date)
 				{
+					global $phpbb_log, $phpbb_container;
+					$phpbb_log = $phpbb_container->get('log');
+
 					// Add database update to log
 					add_log('admin', 'LOG_UPDATE_PHPBB', $this->current_version, $this->update_to_version);
 
