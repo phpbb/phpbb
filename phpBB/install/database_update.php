@@ -286,7 +286,7 @@ while (!$migrator->finished())
 	if ((time() - $update_start_time) >= $safe_time_limit)
 	{
 		echo $user->lang['DATABASE_UPDATE_NOT_COMPLETED'] . '<br />';
-		echo '<a href="' . append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=' . $request->variable('type', 0) . '&amp;language=' . $user->lang['USER_LANG']) . '">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
+		echo '<a href="' . append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=' . $request->variable('type', 0) . '&amp;language=' . $request->variable('language', 'en')) . '">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
 
 		phpbb_end_update($cache, $config);
 	}
@@ -302,7 +302,7 @@ echo $user->lang['DATABASE_UPDATE_COMPLETE'] . '<br />';
 if ($request->variable('type', 0))
 {
 	echo $user->lang['INLINE_UPDATE_SUCCESSFUL'] . '<br /><br />';
-	echo '<a href="' . append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update&amp;sub=file_check&amp;language=' . $user->lang['USER_LANG']) . '" class="button1">' . $user->lang['CONTINUE_UPDATE_NOW'] . '</a>';
+	echo '<a href="' . append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update&amp;sub=file_check&amp;language=' . $request->variable('language', 'en')) . '" class="button1">' . $user->lang['CONTINUE_UPDATE_NOW'] . '</a>';
 }
 else
 {
