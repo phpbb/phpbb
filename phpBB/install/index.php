@@ -43,6 +43,23 @@ function phpbb_require_updated($path, $optional = false)
 	}
 }
 
+function phpbb_include_updated($path, $optional = false)
+{
+	global $phpbb_root_path;
+
+	$new_path = $phpbb_root_path . 'install/update/new/' . $path;
+	$old_path = $phpbb_root_path . $path;
+
+	if (file_exists($new_path))
+	{
+		include($new_path);
+	}
+	else if (!$optional || file_exists($old_path))
+	{
+		include($old_path);
+	}
+}
+
 phpbb_require_updated('includes/startup.' . $phpEx);
 
 // Try to override some limits - maybe it helps some...
@@ -78,18 +95,20 @@ $phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relati
 $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
 
 // Include essential scripts
-require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
+phpbb_require_updated('includes/class_loader.' . $phpEx);
 
-require($phpbb_root_path . 'includes/functions.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
+phpbb_require_updated('includes/functions.' . $phpEx);
+phpbb_require_updated('includes/functions_container.' . $phpEx);
 
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
-include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
+phpbb_include_updated('includes/functions_admin.' . $phpEx);
+phpbb_include_updated('includes/utf/utf_tools.' . $phpEx);
+phpbb_require_updated('includes/functions_install.' . $phpEx);
 
 // Setup class loader first
+$phpbb_class_loader_new = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}install/update/new/includes/", $phpEx);
+$phpbb_class_loader_new->register();
 $phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", $phpEx);
 $phpbb_class_loader->register();
 $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", $phpEx);
