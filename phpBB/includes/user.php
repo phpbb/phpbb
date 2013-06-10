@@ -592,6 +592,18 @@ class phpbb_user extends phpbb_session
 
 			if (!file_exists($language_filename))
 			{
+				// File was not found, try to find it in update directory
+				$orig_language_filename = $language_filename;
+				$language_filename = str_replace('language/', 'install/update/new/language/', $language_filename);
+				if (!file_exists($language_filename))
+				{
+					// Not found either, go back to the original file name
+					$language_filename = $orig_language_filename;
+				}
+			}
+
+			if (!file_exists($language_filename))
+			{
 				global $config;
 
 				if ($this->lang_name == 'en')
