@@ -49,7 +49,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		$code = preg_replace('#<!-- (' . implode('|', $valid_starting_tokens) . ') (not )?(\$|\.)?(?:(.*?) ?)?-->#', '{% $1 $2$4 %}', $code);
 		
 		// Replace all of our variables, {VARNAME} or {$VARNAME}, with Twig style, {{ VARNAME }}
-		$code = preg_replace('#{\$?([A-Z_][A-Z_0-9]+)}#', '{{ $1 }}', $code);
+		$code = preg_replace('#{\$?([a-zA-Z0-9_\.]+)}#', '{{ $1 }}', $code);
 //echo $code;
 //exit;
 		return parent::tokenize($code, $filename);

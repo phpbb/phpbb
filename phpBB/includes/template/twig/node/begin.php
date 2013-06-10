@@ -45,10 +45,9 @@ class phpbb_template_twig_node_begin extends Twig_Node
         }
 
         $compiler
-			->write("if (isset(\$context['loop'])) {")
-			->write("foreach (\$context['loop']['")
-			->write($this->getAttribute('beginName'))
-			->write("'] as \$loops[\$nestingLevel]['i'] => \$loops[\$nestingLevel]['values']) {")
+			->write("if (isset(\$context['loop']['" . $this->getAttribute('beginName') . "'])) {")
+			->write("foreach (\$context['loop']['". $this->getAttribute('beginName'). "'] as \$" . $this->getAttribute('beginName') . ") {")
+			->write("\$context['". $this->getAttribute('beginName'). "'] = \$" . $this->getAttribute('beginName') . ";")
 			->indent()
         ;
 
