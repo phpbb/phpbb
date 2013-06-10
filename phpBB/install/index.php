@@ -186,11 +186,23 @@ if (!file_exists($phpbb_root_path . 'language/' . $language) || !is_dir($phpbb_r
 }
 
 // And finally, load the relevant language files
-include($phpbb_root_path . 'language/' . $language . '/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/acp/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/acp/board.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/posting.' . $phpEx);
+$load_lang_files = array('common', 'acp/common', 'acp/board', 'install', 'posting');
+$new_path = $phpbb_root_path . 'install/update/new/language/' . $language . '/';
+$old_path = $phpbb_root_path . 'language/' . $language . '/';
+
+// NOTE: we can not use "phpbb_include_updated" as the files uses vars which would be required
+// to be global while loading.
+foreach ($load_lang_files as $lang_file)
+{
+	if (file_exists($new_path . $lang_file . '.' . $phpEx))
+	{
+		include($new_path . $lang_file . '.' . $phpEx);
+	}
+	else
+	{
+		include($old_path . $lang_file . '.' . $phpEx);
+	}
+}
 
 // usually we would need every single constant here - and it would be consistent. For 3.0.x, use a dirty hack... :(
 
