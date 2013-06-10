@@ -26,10 +26,11 @@ class phpbb_template_twig_extension extends Twig_Extension
 	{
 		return array(
 			new phpbb_template_twig_tokenparser_if,
-			new phpbb_template_twig_tokenparser_include,
-			new phpbb_template_twig_tokenparser_event,
 			new phpbb_template_twig_tokenparser_begin,
 			new phpbb_template_twig_tokenparser_define,
+			new phpbb_template_twig_tokenparser_include,
+			new phpbb_template_twig_tokenparser_includejs,
+			new phpbb_template_twig_tokenparser_event,
 		);
 	}
 
@@ -39,7 +40,6 @@ class phpbb_template_twig_extension extends Twig_Extension
 			array(),
 			array(
 				'eq' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_Equal', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
-				//'and' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_And', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
 				'!==' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_NotEqual', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
 			),
 		);

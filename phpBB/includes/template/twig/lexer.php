@@ -17,62 +17,41 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_template_twig_lexer extends Twig_Lexer
 {
-	protected function lexExpression()
+	public function tokenize($code, $filename = null)
 	{
-    	var_dump(substr($this->code, $this->cursor, 40), $this->states);
-		parent::lexExpression();
-
-		// Last element parsed
-		$last_element = end($this->tokens);
+		$valid_starting_tokens = array(
+			'BEGIN',
+			'BEGINELSE',
+			'END',
+			'IF',
+			'ELSE',
+			'ELSEIF',
+			'ENDIF',
+			'DEFINE',
+			'DEFINE',
+			'UNDEFINE',
+			'ENDDEFINE',
+			/*'INCLUDE',
+			'INCLUDEPHP',
+			'INCLUDEJS',*/
+			'PHP',
+			'ENDPHP',
+			'EVENT',
+		);
 		
-		/**
-		* Check for old fashioned INCLUDE statements without enclosed quotes
-		*/
-		if ($last_element->getValue() === 'INCLUDE')
-		{
-	        if (preg_match('#^\s*([a-zA-Z0-9_]+\.[a-zA-Z0-9]+)#', substr($this->code, $this->cursor), $match))
-	        {
-	            $this->pushToken(Twig_Token::STRING_TYPE, stripcslashes($match[1]));
-	            $this->moveCursor($match[0]);
-	        }
-		}
+		// Replace <!-- INCLUDE blah.html --> with {% include 'blah.html' %}
+		$code = preg_replace('#<!-- INCLUDE(PHP|JS)? (.*?) -->#', "{% INCLUDE$1 '$2' %}", $code);
 
-		/**
-		* This is some compatibility code to continue supporting expressions such as:
-		* <!-- IF .blah -->
-		*/
-		if ($last_element->getValue() === 'IF')
-		{
-	        if (preg_match('#^\s*(not\s)?\.([a-zA-Z0-9_\.]+)#', substr($this->code, $this->cursor), $match))
-	        {
-	            $this->pushToken(Twig_Token::STRING_TYPE, stripcslashes($match[1]));
-	            $this->moveCursor($match[0]);
-	        }
-		}
-
-		/**
-		* This is some compatibility code to continue supporting expressions such as:
-		* <!-- DEFINE $VAR = 'foo' -->
-		*/
-		if ($last_element->getValue() === 'DEFINE')
-		{
-	        if (preg_match('#^\s*\$([A-Z0-9]+)#', substr($this->code, $this->cursor), $match))
-	        {
-	            $this->pushToken(Twig_Token::STRING_TYPE, stripcslashes($match[1]));
-	            $this->moveCursor($match[1]);
-	        }
-		}
+		// Replace all of our starting tokens, <!-- TOKEN --> with Twig style, {% TOKEN %}
+		// This also strips the $ inside of a tag directly after the token, which was used in <!-- DEFINE $NAME
+		// This also strips the . inside of a tag directly after the token, which was used in <!-- IF .blah
+		// This also strips outer parenthesis, <!-- IF (blah) --> becomes <!-- IF blah -->
+		$code = preg_replace('#<!-- (' . implode('|', $valid_starting_tokens) . ') (not )?(\$|\.)?(?:(.*?) ?)?-->#', '{% $1 $2$4 %}', $code);
 		
-		/**
-		* Check for old fashioned INCLUDE statements without enclosed quotes
-		*/
-		if ($last_element->getValue() === 'INCLUDE')
-		{
-	        if (preg_match('#^\s*([a-zA-Z0-9_]+\.[a-zA-Z0-9]+)#', substr($this->code, $this->cursor), $match))
-	        {
-	            $this->pushToken(Twig_Token::STRING_TYPE, stripcslashes($match[1]));
-	            $this->moveCursor($match[0]);
-	        }
-		}
+		// Replace all of our variables, {VARNAME} or {$VARNAME}, with Twig style, {{ VARNAME }}
+		$code = preg_replace('#{\$?([A-Z_][A-Z_0-9]+)}#', '{{ $1 }}', $code);
+//echo $code;
+//exit;
+		return parent::tokenize($code, $filename);
 	}
 }

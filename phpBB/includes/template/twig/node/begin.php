@@ -31,40 +31,41 @@ class phpbb_template_twig_node_begin extends Twig_Node
     public function compile(Twig_Compiler $compiler)
     {
 		$compiler
-			->write("if (!isset(\$blocks)) {\n")
+			->write("if (!isset(\$loops)) {\n")
 			->indent()
-			->write("\$blocks = array();")
+			->write("\$loops = array();")
 			->write("\$nestingLevel = 0;")
 			->outdent()
 			->write("}\n")
-			->write("\$blocks[\$nestingLevel] = array();\n")
+			->write("\$loops[\$nestingLevel] = array();\n")
 		;
 
         if (null !== $this->getNode('else')) {
-            $compiler->write("\$blocks[\$nestingLevel]['iterated'] = false;\n");
+            $compiler->write("\$loops[\$nestingLevel]['iterated'] = false;\n");
         }
 
         $compiler
-			->write("foreach (\$context['_phpbb_blocks']['")
+			->write("if (isset(\$context['loop'])) {")
+			->write("foreach (\$context['loop']['")
 			->write($this->getAttribute('beginName'))
-			->write("'] as \$blocks[\$nestingLevel]['i'] => \$blocks[\$nestingLevel]['values']) {")
+			->write("'] as \$loops[\$nestingLevel]['i'] => \$loops[\$nestingLevel]['values']) {")
 			->indent()
         ;
 
         $compiler->subcompile($this->getNode('body'));
 
         if (null !== $this->getNode('else')) {
-            $compiler->write("\$blocks[\$nestingLevel]['iterated'] = true;\n");
+            $compiler->write("\$loops[\$nestingLevel]['iterated'] = true;\n");
         }
 
         $compiler
             ->outdent()
-            ->write("}\n")
+            ->write("}}\n")
         ;
 
         if (null !== $this->getNode('else')) {
             $compiler
-                ->write("if (!\$blocks[\$nestingLevel]['iterated']) {\n")
+                ->write("if (!\$loops[\$nestingLevel]['iterated']) {\n")
                 ->indent()
                 ->subcompile($this->getNode('else'))
                 ->outdent()

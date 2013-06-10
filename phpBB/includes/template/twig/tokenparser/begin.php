@@ -37,7 +37,7 @@ class phpbb_template_twig_tokenparser_begin extends Twig_TokenParser_For
 
 		$this->parser->getStream()->expect(Twig_Token::BLOCK_END_TYPE);
 		$body = $this->parser->subparse(array($this, 'decideBeginFork'));
-		if ($this->parser->getStream()->next()->getValue() == 'ELSE') {
+		if ($this->parser->getStream()->next()->getValue() == 'BEGINELSE') {
 			$this->parser->getStream()->expect(Twig_Token::BLOCK_END_TYPE);
 			$else = $this->parser->subparse(array($this, 'decideBeginEnd'), true);
 		} else {
@@ -54,7 +54,7 @@ class phpbb_template_twig_tokenparser_begin extends Twig_TokenParser_For
         return $token->test(array('BEGINELSE', 'END'));
     }
 
-    public function decideForEnd(Twig_Token $token)
+    public function decideBeginEnd(Twig_Token $token)
     {
         return $token->test('END');
     }
