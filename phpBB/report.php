@@ -151,20 +151,20 @@ if ($submit && $reason_id)
 		$error[] = $vc_response;
 	}
 
+	$sql = 'SELECT *
+		FROM ' . REPORTS_REASONS_TABLE . "
+		WHERE reason_id = $reason_id";
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if (!$row || (!$report_text && strtolower($row['reason_title']) == 'other'))
+	{
+		$error[] = $user->lang('EMPTY_REPORT');
+	}
+
 	if (!sizeof($error))
 	{
-		$sql = 'SELECT *
-			FROM ' . REPORTS_REASONS_TABLE . "
-			WHERE reason_id = $reason_id";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (!$row || (!$report_text && strtolower($row['reason_title']) == 'other'))
-		{
-			trigger_error('EMPTY_REPORT');
-		}
-
 		$sql_ary = array(
 			'reason_id'		=> (int) $reason_id,
 			'post_id'		=> $post_id,
