@@ -42,10 +42,23 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		*/
 		if ($last_element->getValue() === 'IF')
 		{
-	        if (preg_match('#^\s*\.([a-zA-Z0-9\.]+)#', substr($this->code, $this->cursor), $match))
+	        if (preg_match('#^\s*\.([a-zA-Z0-9_\.]+)#', substr($this->code, $this->cursor), $match))
 	        {
 	            $this->pushToken(Twig_Token::STRING_TYPE, stripcslashes($match[1]));
 	            $this->moveCursor($match[0]);
+	        }
+		}
+
+		/**
+		* This is some compatibility code to continue supporting expressions such as:
+		* <!-- DEFINE $VAR = 'foo' -->
+		*/
+		if ($last_element->getValue() === 'DEFINE')
+		{
+	        if (preg_match('#^\s*\$([A-Z0-9]+)#', substr($this->code, $this->cursor), $match))
+	        {
+	            $this->pushToken(Twig_Token::STRING_TYPE, stripcslashes($match[1]));
+	            $this->moveCursor($match[1]);
 	        }
 		}
 	}

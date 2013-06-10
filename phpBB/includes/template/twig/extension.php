@@ -29,6 +29,7 @@ class phpbb_template_twig_extension extends Twig_Extension
 			new phpbb_template_twig_tokenparser_include,
 			new phpbb_template_twig_tokenparser_event,
 			new phpbb_template_twig_tokenparser_begin,
+			new phpbb_template_twig_tokenparser_define,
 		);
 	}
 
