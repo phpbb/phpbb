@@ -19,11 +19,12 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 {
 	protected function lexExpression()
 	{
+    	var_dump(substr($this->code, $this->cursor, 40), $this->states);
 		parent::lexExpression();
 
 		// Last element parsed
 		$last_element = end($this->tokens);
-
+		
 		/**
 		* Check for old fashioned INCLUDE statements without enclosed quotes
 		*/
@@ -42,7 +43,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		*/
 		if ($last_element->getValue() === 'IF')
 		{
-	        if (preg_match('#^\s*\.([a-zA-Z0-9_\.]+)#', substr($this->code, $this->cursor), $match))
+	        if (preg_match('#^\s*(not\s)?\.([a-zA-Z0-9_\.]+)#', substr($this->code, $this->cursor), $match))
 	        {
 	            $this->pushToken(Twig_Token::STRING_TYPE, stripcslashes($match[1]));
 	            $this->moveCursor($match[0]);
@@ -59,6 +60,18 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 	        {
 	            $this->pushToken(Twig_Token::STRING_TYPE, stripcslashes($match[1]));
 	            $this->moveCursor($match[1]);
+	        }
+		}
+		
+		/**
+		* Check for old fashioned INCLUDE statements without enclosed quotes
+		*/
+		if ($last_element->getValue() === 'INCLUDE')
+		{
+	        if (preg_match('#^\s*([a-zA-Z0-9_]+\.[a-zA-Z0-9]+)#', substr($this->code, $this->cursor), $match))
+	        {
+	            $this->pushToken(Twig_Token::STRING_TYPE, stripcslashes($match[1]));
+	            $this->moveCursor($match[0]);
 	        }
 		}
 	}
