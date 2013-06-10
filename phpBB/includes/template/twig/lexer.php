@@ -19,24 +19,34 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 {
 	protected function lexExpression()
 	{
+		parent::lexExpression();
+
+		// Last element parsed
+		$last_element = end($this->tokens);
+
+		/**
+		* Check for old fashioned INCLUDE statements without enclosed quotes
+		*/
+		if ($last_element->getValue() === 'INCLUDE')
+		{
+	        if (preg_match('#^\s*([a-zA-Z0-9_]+\.[a-zA-Z0-9]+)#', substr($this->code, $this->cursor), $match))
+	        {
+	            $this->pushToken(Twig_Token::STRING_TYPE, stripcslashes($match[1]));
+	            $this->moveCursor($match[0]);
+	        }
+		}
+
 		/**
 		* This is some compatibility code to continue supporting expressions such as:
 		* <!-- IF .blah -->
-		* 
-		* This does not seem very efficient, but I have not been able to find a better 
-		* 	method which works properly (maybe lexData can do it better, @todo test this)
 		*/
-		$last_element = end($this->tokens);
-		if ($last_element->getValue() === '.')
+		if ($last_element->getValue() === 'IF')
 		{
-			$last_element2 = prev($this->tokens);
-
-			if ($last_element2->getValue() === 'IF')
-			{
-				array_pop($this->tokens);
-			}
+	        if (preg_match('#^\s*\.([a-zA-Z0-9\.]+)#', substr($this->code, $this->cursor), $match))
+	        {
+	            $this->pushToken(Twig_Token::STRING_TYPE, stripcslashes($match[1]));
+	            $this->moveCursor($match[0]);
+	        }
 		}
-        
-		parent::lexExpression();
 	}
 }
