@@ -127,7 +127,7 @@ $request	= $phpbb_container->get('request');
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Try and load an appropriate language if required
-$language = basename(request_var('language', ''));
+$language = basename($request->variable('language', ''));
 
 if ($request->header('Accept-Language') && !$language)
 {
@@ -212,8 +212,8 @@ define('CHMOD_READ', 4);
 define('CHMOD_WRITE', 2);
 define('CHMOD_EXECUTE', 1);
 
-$mode = request_var('mode', 'overview');
-$sub = request_var('sub', '');
+$mode = $request->variable('mode', 'overview');
+$sub = $request->variable('sub', '');
 
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
