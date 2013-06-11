@@ -24,9 +24,9 @@ class phpbb_template_twig implements phpbb_template
 	/**
 	* Template context.
 	* Stores template data used during template rendering.
-	* @var array
+	* @var phpbb_template_context
 	*/
-	protected $context = array();
+	protected $context;
 
 	/**
 	* Path of the cache directory for the template
@@ -38,38 +38,38 @@ class phpbb_template_twig implements phpbb_template
 	* phpBB root path
 	* @var string
 	*/
-	private $phpbb_root_path;
+	protected $phpbb_root_path;
 
 	/**
 	* PHP file extension
 	* @var string
 	*/
-	private $php_ext;
+	protected $php_ext;
 
 	/**
 	* phpBB config instance
 	* @var phpbb_config
 	*/
-	private $config;
+	protected $config;
 
 	/**
 	* Current user
 	* @var phpbb_user
 	*/
-	private $user;
+	protected $user;
 
 	/**
 	* Template locator
 	* @var phpbb_template_locator
 	*/
-	private $locator;
+	protected $locator;
 
 	/**
 	* Extension manager.
 	*
 	* @var phpbb_extension_manager
 	*/
-	private $extension_manager;
+	protected $extension_manager;
 
 	/**
 	* Name of the style that the template being compiled and/or rendered
@@ -79,7 +79,7 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @var array
 	*/
-	private $style_names;
+	protected $style_names;
 
 	/**
 	* Twig Environment
@@ -104,6 +104,7 @@ class phpbb_template_twig implements phpbb_template
 		$this->config = $config;
 		$this->user = $user;
 		$this->locator = $locator;
+		$this->context = $context;
 		$this->extension_manager = $extension_manager;
 
 		$loader = new Twig_Loader_Filesystem($phpbb_root_path . 'styles/prosilver/template/');
@@ -160,12 +161,7 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function destroy_block_vars($blockname)
 	{
-		if (!isset($this->context['loop'][$blockname]))
-		{
-			return;
-		}
-
-		unset($this->context['loop'][$blockname]);
+		return $this->context->destroy_block_vars($blockname);
 	}
 
 	/**
@@ -188,7 +184,7 @@ class phpbb_template_twig implements phpbb_template
 
 		try
 		{
-			echo $this->twig->render($this->locator->get_filename_for_handle($handle), $this->context);
+			echo $this->twig->render($this->locator->get_filename_for_handle($handle), $this->get_template_vars());
 		}
 		catch (Twig_Error $e)
 		{
@@ -291,7 +287,7 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function assign_var($varname, $varval)
 	{
-		$this->context[$varname] = $varval;
+		return $this->context->assign_var($varname, $varval);
 	}
 
 	/**
@@ -304,7 +300,7 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function append_var($varname, $varval)
 	{
-		$this->context[$varname] .= $varval;
+		return $this->context->append_var($varname, $varval);
 	}
 
 	// Docstring is copied from phpbb_template_context method with the same name.
@@ -315,7 +311,7 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function assign_block_vars($blockname, array $vararray)
 	{
-		$this->context['loop'][$blockname][] = $vararray;
+		return $this->context->assign_block_vars($blockname, $vararray);
 	}
 
 	// Docstring is copied from phpbb_template_context method with the same name.
@@ -348,22 +344,36 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
-		switch ($mode)
+		return $this->context->alter_block_array($blockname, $vararray, $key, $mode);
+	}
+
+	protected function get_template_vars()
+	{
+		$vars = array();
+
+		// Work-around for now
+		foreach ($this->user->lang as $key => $value)
 		{
-			case 'insert' :
-				$this->context['loop'][$blockname][$key] = $vararray;
-			break;
+			if (is_array($value))
+			{
+				continue;
+			}
 
-			case 'change' :
-				if (!isset($this->context['loop'][$blockname][$key]))
-				{
-					return false;
-				}
-
-				$this->context['loop'][$blockname][$key] = array_merge($this->context['loop'][$blockname][$key], $vararray);
-			break;
+			$vars['L_' . strtoupper($key)] = $value;
+			$vars['LA_' . strtoupper($key)] = addslashes($value);
 		}
 
-		return true;
+		$vars = array_merge(
+			$vars,
+			$this->context->get_rootref(),
+			array(
+				'loop'	=> $this->context->get_tpldata(),
+			)
+		);
+
+		// cleanup
+		unset($vars['loop']['.']);
+
+		return $vars;
 	}
 }
