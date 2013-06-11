@@ -20,6 +20,10 @@ class phpbb_test_case_helpers
 
 	private $copied_files = array();
 
+	/**
+	* This should only be called once before the tests are run.
+	* This is used to copy the fixtures to the phpBB install
+	*/
 	public function copy_ext_fixtures($fixtures_dir, $fixtures)
 	{
 		global $phpbb_root_path;
@@ -42,6 +46,10 @@ class phpbb_test_case_helpers
 		}
 	}
 
+	/**
+	* This should only be called once after the tests are run.
+	* This is used to remove the fixtures from the phpBB install
+	*/
 	public function restore_original_ext_dir()
 	{
 		global $phpbb_root_path;

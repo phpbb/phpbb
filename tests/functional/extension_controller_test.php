@@ -23,10 +23,6 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		'foo/bar/styles/prosilver/template/',
 	);
 
-	/**
-	* This should only be called once before the tests are run.
-	* This is used to copy the fixtures to the phpBB install
-	*/
 	static public function setUpBeforeClass()
 	{
 		parent::setUpBeforeClass();
@@ -35,10 +31,6 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		self::$helper->copy_ext_fixtures(dirname(__FILE__) . '/fixtures/ext/', self::$fixtures);
 	}
 
-	/**
-	* This should only be called once after the tests are run.
-	* This is used to remove the fixtures from the phpBB install
-	*/
 	static public function tearDownAfterClass()
 	{
 		parent::tearDownAfterClass();
