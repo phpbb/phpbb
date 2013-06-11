@@ -347,6 +347,11 @@ class phpbb_template_twig implements phpbb_template
 		return $this->context->alter_block_array($blockname, $vararray, $key, $mode);
 	}
 
+	/**
+	* Get template vars in a format Twig will use (from the context)
+	*
+	* @return array
+	*/
 	protected function get_template_vars()
 	{
 		$vars = array();
@@ -354,7 +359,7 @@ class phpbb_template_twig implements phpbb_template
 		// Work-around for now
 		foreach ($this->user->lang as $key => $value)
 		{
-			if (is_array($value))
+			if (!is_string($value))
 			{
 				continue;
 			}

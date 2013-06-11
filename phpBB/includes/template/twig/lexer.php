@@ -38,20 +38,35 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			'ENDPHP',
 			'EVENT',
 		);
-		
+
 		// Replace <!-- INCLUDE blah.html --> with {% include 'blah.html' %}
 		$code = preg_replace('#<!-- INCLUDE(PHP|JS)? (.*?) -->#', "{% INCLUDE$1 '$2' %}", $code);
 
+		// This strips the $ inside of a tag directly after the token, which was used in <!-- DEFINE $NAME
+		$code = preg_replace('#<!-- DEFINE \$(.*)-->#', '<!-- DEFINE $1-->', $code);
+
+		// This strips the . inside of a tag directly before a variable name, which was used in <!-- IF .blah
+		$code = preg_replace_callback('#<!-- IF((.*)[\s][\$|\.]([^\s]+)(.*))-->#', array($this, 'tag_if_cleanup'), $code);
+
 		// Replace all of our starting tokens, <!-- TOKEN --> with Twig style, {% TOKEN %}
-		// This also strips the $ inside of a tag directly after the token, which was used in <!-- DEFINE $NAME
-		// This also strips the . inside of a tag directly after the token, which was used in <!-- IF .blah
 		// This also strips outer parenthesis, <!-- IF (blah) --> becomes <!-- IF blah -->
-		$code = preg_replace('#<!-- (' . implode('|', $valid_starting_tokens) . ') (not )?(\$|\.)?(?:(.*?) ?)?-->#', '{% $1 $2$4 %}', $code);
-		
+		$code = preg_replace('#<!-- (' . implode('|', $valid_starting_tokens) . ')(?: (.*?) ?)?-->#', '{% $1 $2 %}', $code);
+
 		// Replace all of our variables, {VARNAME} or {$VARNAME}, with Twig style, {{ VARNAME }}
 		$code = preg_replace('#{\$?([a-zA-Z0-9_\.]+)}#', '{{ $1 }}', $code);
-//echo $code;
-//exit;
+
 		return parent::tokenize($code, $filename);
+	}
+
+	/**
+	* preg_replace_callback to clean up IF statements
+	*
+	* This strips the . inside of a tag directly before a variable name, which was used in <!-- IF .blah
+	*
+	* @param mixed $matches
+	*/
+	protected function tag_if_cleanup($matches)
+	{
+		return '<!-- IF ' . preg_replace('#\s\.([a-zA-Z_0-9]+)#', ' $1', $matches[1]) . ' -->';
 	}
 }
