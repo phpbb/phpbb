@@ -18,8 +18,6 @@ class phpbb_test_case_helpers
 		$this->test_case = $test_case;
 	}
 
-	private $copied_files = array();
-
 	/**
 	* This should only be called once before the tests are run.
 	* This is used to copy the fixtures to the phpBB install
@@ -28,12 +26,10 @@ class phpbb_test_case_helpers
 	{
 		global $phpbb_root_path;
 
-		$this->copied_files = array();
-
 		if (file_exists($phpbb_root_path . 'ext/'))
 		{
 			// First, move any extensions setup on the board to a temp directory
-			$this->copied_files = $this->copy_dir($phpbb_root_path . 'ext/', $phpbb_root_path . 'store/temp_ext/');
+			$this->copy_dir($phpbb_root_path . 'ext/', $phpbb_root_path . 'store/temp_ext/');
 
 			// Then empty the ext/ directory on the board (for accurate test cases)
 			$this->empty_dir($phpbb_root_path . 'ext/');
@@ -42,7 +38,7 @@ class phpbb_test_case_helpers
 		// Copy our ext/ files from the test case to the board
 		foreach ($fixtures as $fixture)
 		{
-			$this->copied_files = array_merge($this->copied_files, $this->copy_dir($fixtures_dir . $fixture, $phpbb_root_path . 'ext/' . $fixture));
+			$this->copy_dir($fixtures_dir . $fixture, $phpbb_root_path . 'ext/' . $fixture);
 		}
 	}
 
@@ -65,8 +61,6 @@ class phpbb_test_case_helpers
 			// Remove all of the files we copied from board ext -> temp_ext
 			$this->empty_dir($phpbb_root_path . 'store/temp_ext/');
 		}
-
-		$this->copied_files = array();
 
 		if (file_exists($phpbb_root_path . 'store/temp_ext/'))
 		{
