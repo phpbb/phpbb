@@ -691,7 +691,7 @@ class ucp_groups
 							}
 						}
 
-						if (!$update)
+						if (isset($phpbb_avatar_manager) && !$update)
 						{
 							// Merge any avatars errors into the primary error array
 							$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
