@@ -54,14 +54,18 @@ class phpbb_test_case_helpers
 	{
 		global $phpbb_root_path;
 
+		// Remove all of the files we copied from test ext -> board ext
+		$this->empty_dir($phpbb_root_path . 'ext/');
+
 		// Copy back the board installed extensions from the temp directory
 		if (file_exists($phpbb_root_path . 'store/temp_ext/'))
 		{
 			$this->copy_dir($phpbb_root_path . 'store/temp_ext/', $phpbb_root_path . 'ext/');
+
+			// Remove all of the files we copied from board ext -> temp_ext
+			$this->empty_dir($phpbb_root_path . 'store/temp_ext/');
 		}
 
-		// Remove all of the files we copied around (from board ext -> temp_ext, from test ext -> board ext)
-		$this->remove_files($this->copied_files);
 		$this->copied_files = array();
 
 		if (file_exists($phpbb_root_path . 'store/temp_ext/'))
@@ -252,27 +256,6 @@ class phpbb_test_case_helpers
 		}
 
 		return $copied_files;
-	}
-
-	/**
-	* Remove files/directories that are listed in an array
-	* Designed for use with $this->copy_dir()
-	*
-	* @param array $file_list
-	*/
-	public function remove_files($file_list)
-	{
-		foreach ($file_list as $file)
-		{
-			if (is_dir($file))
-			{
-				rmdir($file);
-			}
-			else
-			{
-				unlink($file);
-			}
-		}
 	}
 
 	/**
