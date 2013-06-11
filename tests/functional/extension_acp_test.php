@@ -15,7 +15,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 	static private $helper;
 
 	static protected $fixtures = array(
-		'',
+		'./',
 	);
 
 	static public function setUpBeforeClass()
