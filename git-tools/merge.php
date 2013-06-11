@@ -124,7 +124,12 @@ function get_repository_url($username, $repository, $ssh = false)
 
 function api_request($query)
 {
-	$contents = file_get_contents("http://github.com/api/v2/json/$query");
+	$c = curl_init();
+	curl_setopt($c, CURLOPT_URL, "https://api.github.com/$query");
+	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($c, CURLOPT_USERAGENT, 'phpBB/1.0');
+	$contents = curl_exec($c);
+	curl_close($c);
 
 	if ($contents === false)
 	{
