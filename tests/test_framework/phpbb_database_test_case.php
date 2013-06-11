@@ -62,6 +62,21 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		}
 	}
 
+	/**
+	* Performs synchronisations for a given table/column set on the database
+	*
+	* @param	array	$table_column_map		Information about the tables/columns to synchronise
+	*
+	* @return null
+	*/
+	protected function database_synchronisation($table_column_map)
+	{
+		$config = $this->get_database_config();
+		$manager = $this->create_connection_manager($config);
+		$manager->connect();
+		$manager->database_synchronisation($table_column_map);
+	}
+
 	public function createXMLDataSet($path)
 	{
 		$db_config = $this->get_database_config();
