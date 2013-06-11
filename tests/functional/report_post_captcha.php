@@ -44,7 +44,8 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 		$form->setValues($values);
 		$crawler = self::submit($form);
 
-		$form = $crawler->selectButton('Apply all permissions')->form();
+		$this->add_lang('acp/permissions');
+		$form = $crawler->selectButton($this->lang('APPLY_ALL_PERMISSIONS'))->form();
 		$values = $form->getValues();
 		$values["setting[1][2][f_report]"] = 1;
 		$form->setValues($values);
