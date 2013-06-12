@@ -21,12 +21,13 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 
 	public function test_guest_report_post()
 	{
-		$this->enable_reporting_guest();
+		$this->set_reporting_guest(1);
 		$crawler = self::request('GET', 'report.php?f=2&p=1');
 		$this->assertContains($this->lang('CONFIRM_CODE'), $crawler->filter('html')->text());
+		$this->set_reporting_guest(-1);
 	}
 
-	protected function enable_reporting_guest()
+	protected function set_reporting_guest($report_post_allowed)
 	{
 		$this->login();
 		$this->admin_login();
@@ -47,7 +48,7 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 		$this->add_lang('acp/permissions');
 		$form = $crawler->selectButton($this->lang('APPLY_ALL_PERMISSIONS'))->form();
 		$values = $form->getValues();
-		$values["setting[1][2][f_report]"] = 1;
+		$values["setting[1][2][f_report]"] = $report_post_allowed;
 		$form->setValues($values);
 		$crawler = self::submit($form);
 
