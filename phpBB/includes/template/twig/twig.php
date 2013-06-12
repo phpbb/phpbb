@@ -107,7 +107,7 @@ class phpbb_template_twig implements phpbb_template
 		$this->context = $context;
 		$this->extension_manager = $extension_manager;
 
-		$loader = new Twig_Loader_Filesystem($phpbb_root_path . 'styles/prosilver/template/');
+		$loader = new phpbb_template_twig_loader($phpbb_root_path . 'styles/prosilver/template/', $this->locator);
 		//$loader = new Twig_Loader_Filesystem($phpbb_root_path . 'adm/style/');
 		$this->twig = new Twig_Environment($loader, array(
 		    'cache'			=> $phpbb_root_path . 'cache/twig/',
