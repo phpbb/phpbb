@@ -1,25 +1,13 @@
 <?php
-
-/*
- * This file is part of Twig.
- *
- * (c) 2009 Fabien Potencier
- * (c) 2009 Armin Ronacher
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 /**
- * Includes a template.
- *
- * <pre>
- *   {% include 'header.html' %}
- *     Body
- *   {% include 'footer.html' %}
- * </pre>
- */
-class phpbb_template_twig_tokenparser_includejs extends Twig_TokenParser_Include
+*
+* @package phpBB3
+* @copyright (c) 2013 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
+
+class phpbb_template_twig_tokenparser_includejs extends Twig_TokenParser
 {
     /**
      * Parses a token and returns a node.
@@ -32,9 +20,10 @@ class phpbb_template_twig_tokenparser_includejs extends Twig_TokenParser_Include
     {
         $expr = $this->parser->getExpressionParser()->parseExpression();
 
-        list($variables, $only, $ignoreMissing) = $this->parseArguments();
+        $stream = $this->parser->getStream();
+        $stream->expect(Twig_Token::BLOCK_END_TYPE);
 
-        return new phpbb_template_twig_node_includejs($expr, $variables, $only, $ignoreMissing, $token->getLine(), $this->getTag());
+        return new phpbb_template_twig_node_includejs($expr, $token->getLine(), $this->getTag());
     }
 
     /**
