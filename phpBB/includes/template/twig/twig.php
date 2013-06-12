@@ -108,12 +108,16 @@ class phpbb_template_twig implements phpbb_template
 		$this->extension_manager = $extension_manager;
 
 		$loader = new Twig_Loader_Filesystem($phpbb_root_path . 'styles/prosilver/template/');
+		//$loader = new Twig_Loader_Filesystem($phpbb_root_path . 'adm/style/');
 		$this->twig = new Twig_Environment($loader, array(
-		    //'cache'			=> $phpbb_root_path . 'cache/twig/',
+		    'cache'			=> $phpbb_root_path . 'cache/twig/',
 		    'debug'			=> true,
 		    'auto_reload'	=> true,
     		'autoescape'	=> false,
 		));
+
+		// Clear previous cache files (while WIP)
+		$this->twig->clearCacheFiles();
 
 		$this->twig->addExtension(new phpbb_template_twig_extension);
 
