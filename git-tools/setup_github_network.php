@@ -22,7 +22,7 @@ function show_usage()
 	echo "  collaborators                 Repositories of people who have push access to the specified repository\n";
 	echo "  contributors                  Repositories of people who have contributed to the specified repository\n";
 	echo "  organisation                  Repositories of members of the organisation at github\n";
-	echo "  network                       All repositories of the whole github network\n";
+	echo "  forks                         All repositories of the whole github network\n";
 	echo "\n";
 
 	echo "Options:\n";
@@ -55,10 +55,10 @@ exit(work($scope, $username, $repository, $developer));
 function work($scope, $username, $repository, $developer)
 {
 	// Get some basic data
-	$network		= get_network($username, $repository);
+	$forks		= get_forks($username, $repository);
 	$collaborators	= get_collaborators($username, $repository);
 
-	if ($network === false || $collaborators === false)
+	if ($forks === false || $collaborators === false)
 	{
 		echo "Error: failed to retrieve network or collaborators\n";
 		return 1;
@@ -67,19 +67,19 @@ function work($scope, $username, $repository, $developer)
 	switch ($scope)
 	{
 		case 'collaborators':
-			$remotes = array_intersect_key($network, $collaborators);
+			$remotes = array_intersect_key($forks, $collaborators);
 		break;
 
 		case 'organisation':
-			$remotes = array_intersect_key($network, get_organisation_members($username));
+			$remotes = array_intersect_key($forks, get_organisation_members($username));
 		break;
 
 		case 'contributors':
-			$remotes = array_intersect_key($network, get_contributors($username, $repository));
+			$remotes = array_intersect_key($forks, get_contributors($username, $repository));
 		break;
 
-		case 'network':
-			$remotes = $network;
+		case 'forks':
+			$remotes = $forks;
 		break;
 
 		default:
@@ -210,20 +210,20 @@ function get_collaborators($username, $repository)
 	return $usernames;
 }
 
-function get_network($username, $repository)
+function get_forks($username, $repository)
 {
-	$request = api_request("repos/show/$username/$repository/network");
+	$request = api_request("repos/$username/$repository/forks");
 	if ($request === false)
 	{
 		return false;
 	}
 
 	$usernames = array();
-	foreach ($request->network as $network)
+	foreach ($request as $fork)
 	{
-		$usernames[$network->owner] = array(
-			'username'		=> $network->owner,
-			'repository'	=> $network->name,
+		$usernames[$fork->owner->login] = array(
+			'username'		=> $fork->owner->login,
+			'repository'	=> $fork->name,
 		);
 	}
 
