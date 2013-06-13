@@ -53,6 +53,21 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 		);
 	}
 
+	/**
+	* Obtain disallowed usernames. Input data via standard put method.
+	*/
+	public function obtain_disallowed_usernames()
+	{
+		if (($usernames = $this->get('_disallowed_usernames')) !== false)
+		{
+			return $usernames;
+		}
+		else
+		{
+			return array();
+		}
+	}
+
 	public function checkVar(PHPUnit_Framework_Assert $test, $var_name, $data)
 	{
 		$test->assertTrue(isset($this->data[$var_name]));
