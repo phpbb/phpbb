@@ -143,17 +143,15 @@ function get_repository_url($username, $repository, $ssh = false)
 	return $url_base . $username . '/' . $repository . '.git';
 }
 
-function api_request($query, $full_url = false)
+function api_request($query)
+{
+	return api_url_request("https://api.github.com/$query?per_page=100");
+}
+
+function api_url_request($url)
 {
 	$c = curl_init();
-	if ($full_url)
-	{
-		curl_setopt($c, CURLOPT_URL, $query);
-	}
-	else
-	{
-		curl_setopt($c, CURLOPT_URL, "https://api.github.com/$query?per_page=100");
-	}
+	curl_setopt($c, CURLOPT_URL, $url);
 	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($c, CURLOPT_USERAGENT, 'phpBB/1.0');
 	curl_setopt($c, CURLOPT_HEADER, true);
@@ -177,7 +175,7 @@ function api_request($query, $full_url = false)
 					if ($rel == 'rel="next"')
 					{
 						// Found a next link, follow it and merge the results
-						$sub_request_result = api_request(substr($url, 1, -1), true);
+						$sub_request_result = api_url_request(substr($url, 1, -1));
 					}
 				}
 			}
