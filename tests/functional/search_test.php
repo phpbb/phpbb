@@ -37,11 +37,15 @@ class phpbb_functional_search_test extends phpbb_functional_test_case
 
 	public function search_found()
 	{
-
+		$crawler = self::request('GET', 'search.php?keywords=phpbb3');
+		$crawler->filter('.postbody')->text();
 	}
 
 	public function search_not_found()
 	{
+		$this->add_lang('search');
+		$crawler = self::request('GET', 'search.php?keywords=loremipsumdedo');
+		$this->assertContains($this->lang('NO_SEARCH_RESULTS'), $crawler->text());	
 
 	}
 
@@ -71,13 +75,38 @@ class phpbb_functional_search_test extends phpbb_functional_test_case
 
 			}
 			catch (InvalidArgumentException $e) {}
+
+			$this->create_search_index($search_backend);
 		}
 
-		$this->create_search_index($crawler);
+		$this->search_found();
+		$this->search_not_found();
+		$this->delete_search_index($search_backend);
 	}
 
-	protected function create_search_index($create_index_crawler)
+	protected function create_search_index($search_backend)
 	{
-		var_dump($create_index_crawler->selectLink('Go to search index page'));
+		$crawler = self::request(
+			'POST',
+			'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid,
+			array(
+				'search_type'	=> $search_backend,
+				'action'		=> 'create',
+				'submit'		=> true,
+			)
+		);
+	}
+
+	protected function delete_search_index($search_backend)
+	{
+		$crawler = self::request(
+			'POST',
+			'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid,
+			array(
+				'search_type'	=> $search_backend,
+				'action'		=> 'delete',
+				'submit'		=> true,
+			)
+		);
 	}
 }
