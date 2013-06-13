@@ -46,7 +46,7 @@ function send_avatar_to_browser($file, $browser)
 		$image_data = @getimagesize($file_path);
 		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
 
-		if (!phpbb_is_greater_ie_version($browser, 7))
+		if ((strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($browser, 7))
 		{
 			header('Content-Disposition: attachment; ' . header_filename($file));
 
