@@ -285,7 +285,7 @@ else if (($display_cat == ATTACHMENT_CATEGORY_NONE/* || $display_cat == ATTACHME
 	$db->sql_query($sql);
 }
 
-if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && !phpbb_is_greater_ie_version($user->browser, 7))
+if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && (strpos(strtolower($browser), 'msie') !== false) && !phpbb_is_greater_ie_version($user->browser, 7))
 {
 	wrap_img_in_html(append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
 	file_gc();
@@ -344,7 +344,7 @@ function send_avatar_to_browser($file, $browser)
 		$image_data = @getimagesize($file_path);
 		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
 			
-		if (!phpbb_is_greater_ie_version($browser, 7))
+		if ((strpos(strtolower($browser), 'msie') !== false) && !phpbb_is_greater_ie_version($browser, 7))
 		{
 			header('Content-Disposition: attachment; ' . header_filename($file));
 
