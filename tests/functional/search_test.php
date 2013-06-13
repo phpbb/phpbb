@@ -77,8 +77,12 @@ class phpbb_functional_search_test extends phpbb_functional_test_case
 			$this->create_search_index($search_backend);
 		}
 
+		$this->logout();
 		$this->search_found();
 		$this->search_not_found();
+
+		$this->login();
+		$this->admin_login();
 		$this->delete_search_index($search_backend);
 	}
 
