@@ -44,6 +44,10 @@ class acp_extensions
 		$action = $request->variable('action', 'list');
 		$ext_name = $request->variable('ext_name', '');
 
+		// What is a safe limit of execution time? Half the max execution time should be safe.
+		$safe_time_limit = (ini_get('max_execution_time') / 2);
+		$start_time = time();
+
 		// Cancel action
 		if ($request->is_set_post('cancel'))
 		{
@@ -54,7 +58,7 @@ class acp_extensions
 		// If they've specified an extension, let's load the metadata manager and validate it.
 		if ($ext_name)
 		{
-			$md_manager = new phpbb_extension_metadata_manager($ext_name, $db, $phpbb_extension_manager, $phpbb_root_path, $phpEx, $template, $config);
+			$md_manager = new phpbb_extension_metadata_manager($ext_name, $config, $phpbb_extension_manager, $template, $phpbb_root_path);
 
 			try
 			{
@@ -105,11 +109,15 @@ class acp_extensions
 
 				try
 				{
-					if ($phpbb_extension_manager->enable_step($ext_name))
+					while ($phpbb_extension_manager->enable_step($ext_name))
 					{
-						$template->assign_var('S_NEXT_STEP', true);
+						// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
+						if ((time() - $start_time) >= $safe_time_limit)
+						{
+							$template->assign_var('S_NEXT_STEP', true);
 
-						meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name));
+							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name));
+						}
 					}
 				}
 				catch (phpbb_db_migration_exception $e)
@@ -139,11 +147,15 @@ class acp_extensions
 			break;
 
 			case 'disable':
-				if ($phpbb_extension_manager->disable_step($ext_name))
+				while ($phpbb_extension_manager->disable_step($ext_name))
 				{
-					$template->assign_var('S_NEXT_STEP', true);
+					// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
+					if ((time() - $start_time) >= $safe_time_limit)
+					{
+						$template->assign_var('S_NEXT_STEP', true);
 
-					meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name));
+						meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name));
+					}
 				}
 
 				$this->tpl_name = 'acp_ext_disable';
@@ -165,11 +177,15 @@ class acp_extensions
 			case 'purge':
 				try
 				{
-					if ($phpbb_extension_manager->purge_step($ext_name))
+					while ($phpbb_extension_manager->purge_step($ext_name))
 					{
-						$template->assign_var('S_NEXT_STEP', true);
+						// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
+						if ((time() - $start_time) >= $safe_time_limit)
+						{
+							$template->assign_var('S_NEXT_STEP', true);
 
-						meta_refresh(0, $this->u_action . '&amp;action=purge&amp;ext_name=' . urlencode($ext_name));
+							meta_refresh(0, $this->u_action . '&amp;action=purge&amp;ext_name=' . urlencode($ext_name));
+						}
 					}
 				}
 				catch (phpbb_db_migration_exception $e)

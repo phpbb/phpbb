@@ -97,6 +97,19 @@ a.sendemail {
 	padding: 1px 0 0 17px;
 }
 
+.icon-notification:before, .icon-notification:after {
+	display: inline;
+	font: inherit;
+}
+
+.icon-notification:before {
+	content: '[';
+}
+
+.icon-notification:after {
+	content: ']';
+}
+
 /* Poster profile icons
 ----------------------------------------*/
 ul.profile-icons {

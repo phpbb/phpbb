@@ -24,7 +24,7 @@
 		<ul class="topiclist">
 			<li class="header">
 				<dl>
-					<dt style="width: 40%"><a href="{U_SORT_FILENAME}">{L_FILENAME}</a></dt>
+					<dt><div class="list-inner"><a href="{U_SORT_FILENAME}">{L_FILENAME}</a></div></dt>
 					<dd class="extra"><a href="{U_SORT_DOWNLOADS}">{L_DOWNLOADS}</a></dd>
 					<dd class="time"><span><a href="{U_SORT_POST_TIME}">{L_POST_TIME}</a></span></dd>
 					<dd class="mark">{L_MARK}</dd>
@@ -36,8 +36,12 @@
 		<!-- BEGIN attachrow -->
 		<li class="row<!-- IF attachrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
-				<dt style="width: 40%"><a href="{attachrow.U_VIEW_ATTACHMENT}" class="topictitle">{attachrow.FILENAME}</a> ({attachrow.SIZE})<br />
-					<!-- IF attachrow.S_IN_MESSAGE -->{L_PM}{L_COLON} <!-- ELSE -->{L_TOPIC}{L_COLON} <!-- ENDIF --><a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a></dt>
+				<dt>
+					<div class="list-inner">
+						<a href="{attachrow.U_VIEW_ATTACHMENT}" class="topictitle">{attachrow.FILENAME}</a> ({attachrow.SIZE})<br />
+						<!-- IF attachrow.S_IN_MESSAGE -->{L_PM}{L_COLON} <!-- ELSE -->{L_TOPIC}{L_COLON} <!-- ENDIF --><a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a>
+					</div>
+				</dt>
 				<dd class="extra">{attachrow.DOWNLOAD_COUNT}</dd>
 				<dd class="time"><span>{attachrow.POST_TIME}</span></dd>
 				<dd class="mark"><input type="checkbox" name="attachment[{attachrow.ATTACH_ID}]" value="1" /></dd>

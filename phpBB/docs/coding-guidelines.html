@@ -1060,6 +1060,8 @@ $action_ary = request_var('action', array('' =&gt; 0));
 	<h4>Login checks/redirection: </h4>
 	<p>To show a forum login box use <code>login_forum_box($forum_data)</code>, else use the <code>login_box()</code> function.</p>
 
+	<p><code>$forum_data</code> should contain at least the <code>forum_id</code> and <code>forum_password</code> fields. If the field <code>forum_name</code> is available, then it is displayed on the forum login page.</p>
+
 	<p>The <code>login_box()</code> function can have a redirect as the first parameter. As a thumb of rule, specify an empty string if you want to redirect to the users current location, else do not add the <code>$SID</code> to the redirect string (for example within the ucp/login we redirect to the board index because else the user would be redirected to the login screen).</p>
 
 	<h4>Sensitive Operations: </h4>
@@ -2490,7 +2492,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<hr />
 
-<a name="disclaimer"></a><h2>8. Copyright and disclaimer</h2>
+<a name="disclaimer"></a><h2>7. Copyright and disclaimer</h2>
 
 	<div class="paragraph">
 		<div class="inner"><span class="corners-top"><span></span></span>

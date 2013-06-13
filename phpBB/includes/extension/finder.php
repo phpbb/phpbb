@@ -377,6 +377,34 @@ class phpbb_extension_finder
 
 		return $files;
 	}
+	
+	/**
+	* Finds all file system entries matching the configured options for one
+	* specific extension
+	*
+	* @param string $extension_name Name of the extension
+	* @param string $extension_path Relative path to the extension root directory
+	* @param bool $cache Whether the result should be cached
+	* @param bool $is_dir Directories will be returned when true, only files
+	*                     otherwise
+	* @return array An array of paths to found items
+	*/
+	public function find_from_extension($extension_name, $extension_path, $cache = true, $is_dir = false)
+	{
+		$extensions = array(
+			$extension_name => $extension_path,
+		);
+
+		$files = array();
+		$file_list = $this->find_from_paths($extensions, $cache, $is_dir);
+
+		foreach ($file_list as $file)
+		{
+			$files[$file['named_path']] = $file['ext_name'];
+		}
+
+		return $files;
+	}
 
 	/**
 	* Finds all file system entries matching the configured options from

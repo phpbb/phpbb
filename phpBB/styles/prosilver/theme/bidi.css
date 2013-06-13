@@ -268,8 +268,45 @@
 	left: 0;
 }
 
-.rtl ul.topiclist dt {
+.rtl ul.topiclist dt, .rtl li.header dt {
 	float: right;
+	margin-right: 0;
+	margin-left: -410px;
+}
+
+.rtl ul.topiclist.missing-column dt {
+	margin-right: 0;
+	margin-left: -330px;
+}
+
+.rtl ul.topiclist.two-long-columns dt {
+	margin-right: 0;
+	margin-left: -250px;
+}
+
+.rtl ul.topiclist.two-columns dt {
+	margin-right: 0;
+	margin-left: -80px;
+}
+
+.rtl ul.topiclist dt .list-inner {
+	margin-right: 0;
+	margin-left: 410px;
+}
+
+.rtl ul.topiclist.missing-column dt .list-inner {
+	margin-right: 0;
+	margin-left: 330px;
+}
+
+.rtl ul.topiclist.two-long-columns dt .list-inner {
+	margin-right: 0;
+	margin-left: 250px;
+}
+
+.rtl ul.topiclist.two-columns dt .list-inner {
+	margin-right: 0;
+	margin-left: 80px;
 }
 
 .rtl ul.topiclist dl {
@@ -308,31 +345,24 @@
 	background-position: 99.5% 50%;
 }
 
-.rtl li.header dl.icon dt {
+.rtl li.header dl.icon dt .list-inner {
 	/* Tweak for headers alignment when folder icon used */
 	padding-right: 0;
 	padding-left: 50px;
 }
 
 .rtl dl.icon dt {
-	padding-left: 0;
-	padding-right: 45px;					/* Space for folder icon */
 	background-position: 99.5% 95%;			/* Position of topic icon */
 }
 
-.rtl dd.lastpost span, .rtl ul.topiclist dd.searchby span, .rtl ul.topiclist dd.info span, .rtl ul.topiclist dd.time span, .rtl dd.redirect span, .rtl dd.moderation span {
+.rtl dl.icon dt .list-inner {
+	padding-left: 0;
+	padding-right: 45px;					/* Space for folder icon */
+}
+
+.rtl dd.lastpost span, .rtl ul.topiclist dd.info span, .rtl ul.topiclist dd.time span, .rtl dd.redirect span, .rtl dd.moderation span {
 	padding-left: 0;
 	padding-right: 5px;
-}
-
-.rtl dd.mark {
-	float: left !important;
-}
-
-.rtl ul.topiclist dd.searchextra {
-	margin-left: 0;
-	margin-right: 5px;
-	border-right: none;
 }
 
 /* Post body styles

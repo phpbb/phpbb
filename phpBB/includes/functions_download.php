@@ -625,7 +625,7 @@ function phpbb_increment_downloads($db, $ids)
 */
 function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 {
-	$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
+	$sql = 'SELECT t.forum_id, f.forum_name, f.forum_password, f.parent_id
 		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 		WHERE t.topic_id = " . (int) $topic_id . "
 			AND t.forum_id = f.forum_id";

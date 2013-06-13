@@ -394,3 +394,29 @@ function getCaretPosition(txtarea) {
 
 	return caretPos;
 }
+
+/**
+* Allow to use tab character when typing code
+* Keep indentation of last line of code when typing code
+*/
+(function($) {
+	$(document).ready(function() {
+		var doc, textarea;
+
+		// find textarea, make sure browser supports necessary functions
+		if (document.forms[form_name]) {
+			doc = document;
+		} else {
+			doc = opener.document;
+		}
+
+		if (!doc.forms[form_name]) {
+			return;
+		}
+
+		textarea = doc.forms[form_name].elements[text_name];
+
+		phpbb.applyCodeEditor(textarea);
+	});
+})(jQuery);
+

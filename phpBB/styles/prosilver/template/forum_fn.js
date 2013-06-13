@@ -3,6 +3,14 @@
 */
 
 /**
+* Find a member
+*/
+function find_username(url) {
+	popup(url, 760, 570, '_usersearch');
+	return false;
+}
+
+/**
 * Window popup
 */
 function popup(url, width, height, name) {
@@ -20,7 +28,7 @@ function popup(url, width, height, name) {
 function jumpto() {
 	var page = prompt(jump_page, on_page);
 
-	if (page !== null && !isNaN(page) && page === Math.floor(page) && page > 0) {
+	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0) {
 		if (base_url.indexOf('?') === -1) {
 			document.location.href = base_url + '?start=' + ((page - 1) * per_page);
 		} else {
@@ -356,41 +364,24 @@ function submit_default_button(event, selector, class_name) {
 * The non-jQuery code is a mimick of the jQuery code ;)
 */
 function apply_onkeypress_event() {
-	// jQuery code in case jQuery is used
-	if (jquery_present) {
-		jQuery('form input[type=text], form input[type=password]').live('keypress', function (e) {
-			var default_button = jQuery(this).parents('form').find('input[type=submit].default-submit-action');
+	jQuery('form input[type=text], form input[type=password]').on('keypress', function (e) {
+		var default_button = jQuery(this).parents('form').find('input[type=submit].default-submit-action');
 
-			if (!default_button || default_button.length <= 0) {
-				return true;
-			}
-
-			if (phpbb_check_key(e)) {
-				return true;
-			}
-
-			if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
-				default_button.click();
-				return false;
-			}
-
+		if (!default_button || default_button.length <= 0) {
 			return true;
-		});
-
-		return;
-	}
-
-	var input_tags = document.getElementsByTagName('input');
-
-	for (var i = 0, element = input_tags[0]; i < input_tags.length ; element = input_tags[++i]) {
-		if (element.type === 'text' || element.type === 'password') {
-			// onkeydown is possible too
-			element.onkeypress = function (evt) { submit_default_button((evt || window.event), this, 'default-submit-action'); };
 		}
-	}
+
+		if (phpbb_check_key(e)) {
+			return true;
+		}
+
+		if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+			default_button.click();
+			return false;
+		}
+
+		return true;
+	});
 }
 
-/**
-* Detect JQuery existance. We currently do not deliver it, but some styles do, so why not benefit from it. ;)
-*/
-var jquery_present = typeof jQuery === 'function';
+jQuery(document).ready(apply_onkeypress_event);

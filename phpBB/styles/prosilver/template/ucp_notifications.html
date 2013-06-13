@@ -9,44 +9,35 @@
 		<p>{TITLE_EXPLAIN}</p>
 
 		<!-- IF MODE == 'notification_options' -->
-			<ul class="topiclist">
-				<li class="header">
-					<dl>
-						<dt>{L_NOTIFICATION_TYPE}</dt>
-						<!-- BEGIN notification_methods -->
-							<dd class="mark">{notification_methods.NAME}</dd>
-						<!-- END notification_methods -->
-						<dd class="mark">{L_NOTIFICATIONS}</dd>
-					</dl>
-				</li>
-			</ul>
-			<ul class="topiclist cplist">
-
-			<!-- BEGIN notification_types -->
-				<!-- IF notification_types.GROUP_NAME -->
-					<li class="row bg3">
-						<dl>
-							<dt>
-								{notification_types.GROUP_NAME}
-							</dt>
-						</dl>
-					</li>
-				<!-- ELSE -->
-					<li class="row<!-- IF notification_types.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
-						<dl>
-							<dt>
+			<table class="table1" cellspacing="1">
+				<thead>
+					<th>{L_NOTIFICATION_TYPE}</th>
+					<!-- BEGIN notification_methods -->
+						<th class="mark">{notification_methods.NAME}</th>
+					<!-- END notification_methods -->
+					<th class="mark">{L_NOTIFICATIONS}</th>
+				</thead>
+				<tbody>
+				<!-- BEGIN notification_types -->
+					<!-- IF notification_types.GROUP_NAME -->
+						<tr class="bg3">
+							<td colspan="{NOTIFICATION_TYPES_COLS}">{notification_types.GROUP_NAME}</td>
+						</tr>
+					<!-- ELSE -->
+						<tr class="<!-- IF notification_types.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+							<td>
 								{notification_types.NAME}
 								<!-- IF notification_types.EXPLAIN --><br />&nbsp; &nbsp;{notification_types.EXPLAIN}<!-- ENDIF -->
-							</dt>
+							</td>
 							<!-- BEGIN notification_methods -->
-								<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /> <dfn>{notification_methods.NAME}</dfn></dd>
+								<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
 							<!-- END notification_methods -->
-							<dd class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /> <dfn>{L_NOTIFICATIONS}</dfn></dd>
-						</dl>
-					</li>
-				<!-- ENDIF -->
-			<!-- END notification_types -->
-			</ul>
+							<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
+						</tr>
+					<!-- ENDIF -->
+				<!-- END notification_types -->
+				</tbody>
+			</table>
 		<!-- ELSE -->
 			<!-- IF .notification_list -->
 			<!-- IF .pagination or TOTAL_COUNT -->
@@ -64,30 +55,32 @@
 			<!-- ENDIF -->
 
 			<div class="notification_list">
-				<ul class="topiclist">
+				<ul class="topiclist two-columns">
 					<li class="header">
 						<dl>
-							<dt>{L_NOTIFICATIONS}</dt>
+							<dt><div class="list-inner">{L_NOTIFICATIONS}</div></dt>
 							<dd class="mark">{L_MARK_READ}</dd>
 						</dl>
 					</li>
 				</ul>
-				<ul class="topiclist cplist">
+				<ul class="topiclist cplist two-columns">
 					<!-- BEGIN notification_list -->
 						<li class="row<!-- IF notification_list.UNREAD --> bg3<!-- ELSE --><!-- IF notification_list.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- ENDIF -->">
 							<dl>
 								<dt>
-									<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
-										{notification_list.AVATAR}
-										<div class="notifications">
-											<p class="notifications_title">{notification_list.FORMATTED_TITLE}</p>
-											<p class="notifications_time">&raquo; {notification_list.TIME}</p>
+									<div class="list-inner">
+										<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
+											{notification_list.AVATAR}
+											<div class="notifications">
+												<p class="notifications_title">{notification_list.FORMATTED_TITLE}</p>
+												<p class="notifications_time">&raquo; {notification_list.TIME}</p>
 
-											<!-- IF not notification_list.URL and notification_list.U_MARK_READ -->
-												<p><a href="{notification_list.U_MARK_READ}">{L_MARK_READ}</a></p>
-											<!-- ENDIF -->
-										</div>
-									<!-- IF notification_list.URL --></a><!-- ENDIF -->
+												<!-- IF not notification_list.URL and notification_list.U_MARK_READ -->
+													<p><a href="{notification_list.U_MARK_READ}">{L_MARK_READ}</a></p>
+												<!-- ENDIF -->
+											</div>
+										<!-- IF notification_list.URL --></a><!-- ENDIF -->
+									</div>
 								</dt>
 
 								<dd class="mark">&nbsp;<!-- IF notification_list.UNREAD --><input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}" /> <dfn>{L_MARK_READ}</dfn><!-- ENDIF -->&nbsp;</dd>

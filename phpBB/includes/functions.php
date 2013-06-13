@@ -846,7 +846,7 @@ function phpbb_is_writable($file)
 */
 function phpbb_is_absolute($path)
 {
-	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:[/\\\]#i', $path))) ? true : false;
+	return (isset($path[0]) && $path[0] == '/' || preg_match('#^[a-z]:[/\\\]#i', $path)) ? true : false;
 }
 
 /**
@@ -2907,7 +2907,7 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 
 		// For XHTML compatibility we change back & to &amp;
 		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
+			'META' => '<meta http-equiv="refresh" content="' . $time . '; url=' . $url . '" />')
 		);
 	}
 
@@ -3467,6 +3467,7 @@ function login_forum_box($forum_data)
 	page_header($user->lang['LOGIN'], false);
 
 	$template->assign_vars(array(
+		'FORUM_NAME'			=> isset($forum_data['forum_name']) ? $forum_data['forum_name'] : '',
 		'S_LOGIN_ACTION'		=> build_url(array('f')),
 		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])))
 	);

@@ -330,7 +330,7 @@ function acp_ldap(&$new)
 	</dl>
 	<dl>
 		<dt><label for="ldap_email">' . $user->lang['LDAP_EMAIL'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_EMAIL_EXPLAIN'] . '</span></dt>
-		<dd><input type="text" id="ldap_email" size="40" name="config[ldap_email]" value="' . $new['ldap_email'] . '" /></dd>
+		<dd><input type="email" id="ldap_email" size="40" name="config[ldap_email]" value="' . $new['ldap_email'] . '" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="ldap_user">' . $user->lang['LDAP_USER'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_USER_EXPLAIN'] . '</span></dt>

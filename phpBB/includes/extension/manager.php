@@ -29,7 +29,6 @@ class phpbb_extension_manager
 
 	protected $db;
 	protected $config;
-	protected $migrator;
 	protected $cache;
 	protected $php_ext;
 	protected $extensions;
@@ -43,7 +42,6 @@ class phpbb_extension_manager
 	* @param ContainerInterface $container A container
 	* @param phpbb_db_driver $db A database connection
 	* @param phpbb_config $config phpbb_config
-	* @param phpbb_db_migrator $migrator
 	* @param phpbb_filesystem $filesystem
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
@@ -51,13 +49,12 @@ class phpbb_extension_manager
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, phpbb_db_migrator $migrator, phpbb_filesystem $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, phpbb_filesystem $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->container = $container;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
 		$this->config = $config;
-		$this->migrator = $migrator;
 		$this->cache = $cache;
 		$this->filesystem = $filesystem;
 		$this->php_ext = $php_ext;
@@ -136,13 +133,15 @@ class phpbb_extension_manager
 	{
 		$extension_class_name = 'phpbb_ext_' . str_replace('/', '_', $name) . '_ext';
 
+		$migrator = $this->container->get('migrator');
+
 		if (class_exists($extension_class_name))
 		{
-			return new $extension_class_name($this->container);
+			return new $extension_class_name($this->container, $this->get_finder(), $migrator, $name, $this->get_extension_path($name, true));
 		}
 		else
 		{
-			return new phpbb_extension_base($this->container);
+			return new phpbb_extension_base($this->container, $this->get_finder(), $migrator, $name, $this->get_extension_path($name, true));
 		}
 	}
 
@@ -155,7 +154,7 @@ class phpbb_extension_manager
 	*/
 	public function create_extension_metadata_manager($name, phpbb_template $template)
 	{
-		return new phpbb_extension_metadata_manager($name, $this->db, $this, $this->phpbb_root_path, $this->php_ext, $template, $this->config);
+		return new phpbb_extension_metadata_manager($name, $this->config, $this, $template, $this->phpbb_root_path);
 	}
 
 	/**
@@ -178,12 +177,6 @@ class phpbb_extension_manager
 
 		$old_state = (isset($this->extensions[$name]['ext_state'])) ? unserialize($this->extensions[$name]['ext_state']) : false;
 
-		// Returns false if not completed
-		if (!$this->handle_migrations($name, 'enable'))
-		{
-			return true;
-		}
-
 		$extension = $this->get_extension($name);
 		$state = $extension->enable_step($old_state);
 
@@ -199,12 +192,21 @@ class phpbb_extension_manager
 		$this->extensions[$name]['ext_path'] = $this->get_extension_path($extension_data['ext_name']);
 		ksort($this->extensions);
 
-		$sql = 'UPDATE ' . $this->extension_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
+		$sql = 'SELECT COUNT(ext_name) as row_count
+			FROM ' . $this->extension_table . "
 			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
-		$this->db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
+		$count = $this->db->sql_fetchfield('row_count');
+		$this->db->sql_freeresult($result);
 
-		if (!$this->db->sql_affectedrows())
+		if ($count)
+		{
+			$sql = 'UPDATE ' . $this->extension_table . '
+				SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
+				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
+			$this->db->sql_query($sql);
+		}
+		else
 		{
 			$sql = 'INSERT INTO ' . $this->extension_table . '
 				' . $this->db->sql_build_array('INSERT', $extension_data);
@@ -334,12 +336,6 @@ class phpbb_extension_manager
 		}
 
 		$old_state = unserialize($this->extensions[$name]['ext_state']);
-
-		// Returns false if not completed
-		if (!$this->handle_migrations($name, 'purge'))
-		{
-			return true;
-		}
 
 		$extension = $this->get_extension($name);
 		$state = $extension->purge_step($old_state);
@@ -513,73 +509,5 @@ class phpbb_extension_manager
 	public function get_finder()
 	{
 		return new phpbb_extension_finder($this, $this->filesystem, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
-	}
-
-	/**
-	* Handle installing/reverting migrations
-	*
-	* @param string $extension_name Name of the extension
-	* @param string $mode enable or purge
-	* @return bool True if completed, False if not completed
-	*/
-	protected function handle_migrations($extension_name, $mode)
-	{
-		$extensions = array(
-			$extension_name => $this->phpbb_root_path . $this->get_extension_path($extension_name),
-		);
-
-		$finder = $this->get_finder();
-		$migrations = array();
-		$file_list = $finder
-			->extension_directory('/migrations')
-			->find_from_paths($extensions);
-
-		if (empty($file_list))
-		{
-			return true;
-		}
-
-		foreach ($file_list as $file)
-		{
-			$migrations[$file['named_path']] = $file['ext_name'];
-		}
-		$migrations = $finder->get_classes_from_files($migrations);
-		$this->migrator->set_migrations($migrations);
-
-		// What is a safe limit of execution time? Half the max execution time should be safe.
-		$safe_time_limit = (ini_get('max_execution_time') / 2);
-		$start_time = time();
-
-		if ($mode == 'enable')
-		{
-			while (!$this->migrator->finished())
-			{
-				$this->migrator->update();
-
-				// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
-				if ((time() - $start_time) >= $safe_time_limit)
-				{
-					return false;
-				}
-			}
-		}
-		else if ($mode == 'purge')
-		{
-			foreach ($migrations as $migration)
-			{
-				while ($this->migrator->migration_state($migration) !== false)
-				{
-					$this->migrator->revert($migration);
-
-					// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
-					if ((time() - $start_time) >= $safe_time_limit)
-					{
-						return false;
-					}
-				}
-			}
-		}
-
-		return true;
 	}
 }
