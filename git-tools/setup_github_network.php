@@ -60,7 +60,7 @@ function work($scope, $username, $repository, $developer)
 
 	if ($forks === false || $collaborators === false)
 	{
-		echo "Error: failed to retrieve network or collaborators\n";
+		echo "Error: failed to retrieve forks or collaborators\n";
 		return 1;
 	}
 
@@ -143,34 +143,70 @@ function get_repository_url($username, $repository, $ssh = false)
 	return $url_base . $username . '/' . $repository . '.git';
 }
 
-function api_request($query)
+function api_request($query, $full_url = false)
 {
 	$c = curl_init();
-	curl_setopt($c, CURLOPT_URL, "https://api.github.com/$query");
+	if ($full_url)
+	{
+		curl_setopt($c, CURLOPT_URL, $query);
+	}
+	else
+	{
+		curl_setopt($c, CURLOPT_URL, "https://api.github.com/$query?per_page=100");
+	}
 	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($c, CURLOPT_USERAGENT, 'phpBB/1.0');
+    curl_setopt($c, CURLOPT_HEADER, true);
 	$contents = curl_exec($c);
 	curl_close($c);
+
+	$sub_request_result = array();
+	if ($contents && strpos($contents, "\r\n\r\n") > 0)
+	{
+	    list($header, $contents) = explode("\r\n\r\n", $contents);
+	    foreach (explode("\n", $header) as $header_element)
+	    {
+			if (strpos($header_element, 'Link') === 0)
+			{
+				list($head, $header_content) = explode(': ', $header_element);
+				foreach (explode(', ', $header_content) as $links)
+				{
+					list($url, $rel) = explode('; ', $links);
+					if ($rel == 'rel="next"')
+					{
+						$sub_request_result = api_request(substr($url, 1, -1), true);
+					}
+				}
+			}
+	    }
+	}
 
 	if ($contents === false)
 	{
 		return false;
 	}
-	return json_decode($contents);
+	$contents = json_decode($contents);
+
+	if (isset($contents->message) && strpos($contents->message, 'API Rate Limit') === 0)
+	{
+		exit('Reached github API Rate Limit. Please try again later' . "\n");
+	}
+
+	return ($sub_request_result) ? array_merge($sub_request_result, $contents) : $contents;
 }
 
 function get_contributors($username, $repository)
 {
-	$request = api_request("repos/show/$username/$repository/contributors");
+	$request = api_request("repos/$username/$repository/stats/contributors");
 	if ($request === false)
 	{
 		return false;
 	}
 
 	$usernames = array();
-	foreach ($request->contributors as $contributor)
+	foreach ($request as $contribution)
 	{
-		$usernames[$contributor->login] = $contributor->login;
+		$usernames[$contribution->author->login] = $contribution->author->login;
 	}
 
 	return $usernames;
@@ -178,14 +214,14 @@ function get_contributors($username, $repository)
 
 function get_organisation_members($username)
 {
-	$request = api_request("organizations/$username/public_members");
+	$request = api_request("orgs/$username/public_members");
 	if ($request === false)
 	{
 		return false;
 	}
 
 	$usernames = array();
-	foreach ($request->users as $member)
+	foreach ($request as $member)
 	{
 		$usernames[$member->login] = $member->login;
 	}
@@ -195,16 +231,16 @@ function get_organisation_members($username)
 
 function get_collaborators($username, $repository)
 {
-	$request = api_request("repos/show/$username/$repository/collaborators");
+	$request = api_request("repos/$username/$repository/collaborators");
 	if ($request === false)
 	{
 		return false;
 	}
 
 	$usernames = array();
-	foreach ($request->collaborators as $collaborator)
+	foreach ($request as $collaborator)
 	{
-		$usernames[$collaborator] = $collaborator;
+		$usernames[$collaborator->login] = $collaborator->login;
 	}
 
 	return $usernames;

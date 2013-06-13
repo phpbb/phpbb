@@ -128,6 +128,7 @@ function api_request($query)
 	curl_setopt($c, CURLOPT_URL, "https://api.github.com/$query");
 	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($c, CURLOPT_USERAGENT, 'phpBB/1.0');
+	curl_setopt($c, CURLOPT_HEADER, true);
 	$contents = curl_exec($c);
 	curl_close($c);
 
@@ -135,13 +136,19 @@ function api_request($query)
 	{
 		throw new RuntimeException("Error: failed to retrieve pull request data\n", 4);
 	}
+	$contents = json_decode($contents);
 
-	return json_decode($contents);
+	if (isset($contents->message) && strpos($contents->message, 'API Rate Limit') === 0)
+	{
+		exit('Reached github API Rate Limit. Please try again later' . "\n");
+	}
+
+	return $contents;
 }
 
 function get_pull($username, $repository, $pull_id)
 {
-	$request = api_request("pulls/$username/$repository/$pull_id");
+	$request = api_request("repos/$username/$repository/pulls/$pull_id");
 
 	$pull = $request->pull;
 
