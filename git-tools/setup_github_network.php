@@ -156,17 +156,19 @@ function api_request($query, $full_url = false)
 	}
 	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($c, CURLOPT_USERAGENT, 'phpBB/1.0');
-    curl_setopt($c, CURLOPT_HEADER, true);
+	curl_setopt($c, CURLOPT_HEADER, true);
 	$contents = curl_exec($c);
 	curl_close($c);
 
 	$sub_request_result = array();
+	// Split possible headers from the body
 	if ($contents && strpos($contents, "\r\n\r\n") > 0)
 	{
 	    list($header, $contents) = explode("\r\n\r\n", $contents);
 	    foreach (explode("\n", $header) as $header_element)
 	    {
-			if (strpos($header_element, 'Link') === 0)
+			// Find Link Header which gives us a link to the next page
+			if (strpos($header_element, 'Link: ') === 0)
 			{
 				list($head, $header_content) = explode(': ', $header_element);
 				foreach (explode(', ', $header_content) as $links)
@@ -174,6 +176,7 @@ function api_request($query, $full_url = false)
 					list($url, $rel) = explode('; ', $links);
 					if ($rel == 'rel="next"')
 					{
+						// Found a next link, follow it and merge the results
 						$sub_request_result = api_request(substr($url, 1, -1), true);
 					}
 				}
