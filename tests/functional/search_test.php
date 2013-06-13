@@ -64,14 +64,20 @@ class phpbb_functional_search_test extends phpbb_functional_test_case
 			$values = $form->getValues();
 			$crawler = self::submit($form);
 
-			file_put_contents('log' . $search_backend . '.html', $crawler->text());
+			try
+			{
+				$crawler->filter('.errorbox')->text();
+				self::markTestSkipped("Search backend is not supported/running");
+
+			}
+			catch (InvalidArgumentException $e) {}
 		}
 
-		$this->create_search_index($search_backend);
+		$this->create_search_index($crawler);
 	}
 
-	protected function create_search_index($search_backend)
+	protected function create_search_index($create_index_crawler)
 	{
-
+		var_dump($create_index_crawler->selectLink('Go to search index page'));
 	}
 }
