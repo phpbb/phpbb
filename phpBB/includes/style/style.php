@@ -135,15 +135,29 @@ class phpbb_style
 		$this->provider->set_styles($paths);
 		$this->locator->set_paths($this->provider);
 
-		$this->template->set_style_names($names);
-
 		if ($template_path !== false)
 		{
 			$this->locator->set_template_path($template_path);
+
+			$appended_paths = array();
+			foreach ($paths as $path)
+			{
+				$appended_paths[] = $path . '/' . $template_path;
+			}
+
+			$this->template->set_style_names($names, $appended_paths);
 		}
 		else
 		{
 			$this->locator->set_default_template_path();
+
+			$appended_paths = array();
+			foreach ($paths as $path)
+			{
+				$appended_paths[] = $path . '/template/';
+			}
+
+			$this->template->set_style_names($names, $appended_paths);
 		}
 
 		$this->template->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $name) . '_';

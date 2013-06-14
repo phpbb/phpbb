@@ -91,6 +91,8 @@ class phpbb_template_twig implements phpbb_template
 	/**
 	* Constructor.
 	*
+	* @todo remove unnecessary dependencies
+	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
 	* @param phpbb_template_locator $locator template locator
@@ -107,17 +109,44 @@ class phpbb_template_twig implements phpbb_template
 		$this->context = $context;
 		$this->extension_manager = $extension_manager;
 
-		$loader = new phpbb_template_twig_loader($phpbb_root_path . 'styles/prosilver/template/', $this->locator);
-		//$loader = new Twig_Loader_Filesystem($phpbb_root_path . 'adm/style/');
+		$this->cachepath = $phpbb_root_path . 'cache/twig/';
+
+		// Setup loader with __main__ paths
+		$loader = new Twig_Loader_Filesystem(array(
+			$phpbb_root_path . 'styles/prosilver/template/',
+		), $this->locator);
+
+		// Add core namespace
+		$loader->addPath($this->phpbb_root_path . 'styles/prosilver/template/', 'core');
+
+		// Add admin namespace
+		// @todo use phpbb_admin path
+		$loader->addPath($this->phpbb_root_path . 'adm/style/', 'admin');
+
+		// Add all namespaces for all extensions
+		if ($this->extension_manager instanceof phpbb_extension_manager)
+		{
+			foreach ($this->extension_manager->all_enabled() as $ext_namespace => $ext_path)
+			{
+				// @todo proper style chain
+				$loader->addPath($ext_path . 'styles/prosilver/', $ext_namespace);
+				$loader->addPath($ext_path . 'styles/all/', $ext_namespace);
+			}
+		}
+
 		$this->twig = new Twig_Environment($loader, array(
-		    'cache'			=> $phpbb_root_path . 'cache/twig/',
-		    'debug'			=> true,
-		    'auto_reload'	=> true,
+		    'cache'			=> $this->cachepath,
+		    'debug'			=> true, // @todo
+		    'auto_reload'	=> true, // @todo
     		'autoescape'	=> false,
 		));
 
 		// Clear previous cache files (while WIP)
-		$this->twig->clearCacheFiles();
+		// @todo remove
+		if (is_dir($this->cachepath))
+		{
+			$this->twig->clearCacheFiles();
+		}
 
 		$this->twig->addExtension(new phpbb_template_twig_extension);
 
@@ -130,12 +159,13 @@ class phpbb_template_twig implements phpbb_template
 	* Sets the template filenames for handles.
 	*
 	* @param array $filename_array Should be a hash of handle => filename pairs.
+	* @return phpbb_template $this
 	*/
 	public function set_filenames(array $filename_array)
 	{
 		$this->locator->set_filenames($filename_array);
 
-		return true;
+		return $this;
 	}
 
 	/**
@@ -143,19 +173,27 @@ class phpbb_template_twig implements phpbb_template
 	* and/or rendered.
 	*
 	* @param array $style_names List of style names in inheritance tree order
-	* @return null
+	* @return phpbb_template $this
 	*/
-	public function set_style_names(array $style_names)
+	public function set_style_names(array $style_names, $style_paths = array())
 	{
 		$this->style_names = $style_names;
+
+		$this->twig->getLoader()->setPaths($style_paths);
+
+		return $this;
 	}
 
 	/**
 	* Clears all variables and blocks assigned to this template.
+	*
+	* @return phpbb_template $this
 	*/
 	public function destroy()
 	{
 		$this->context = array();
+
+		return $this;
 	}
 
 	/**
@@ -236,6 +274,7 @@ class phpbb_template_twig implements phpbb_template
 		{
 			$lang = array();
 		}
+
 		return $lang;
 	}
 

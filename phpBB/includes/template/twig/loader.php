@@ -7,6 +7,7 @@
 *
 */
 
+// @todo remove if not needed
 class phpbb_template_twig_loader extends Twig_Loader_Filesystem
 {
 	protected $phpbb_locator;
