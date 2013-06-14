@@ -230,7 +230,7 @@ class phpbb_template_twig implements phpbb_template
 		}
 		catch (Twig_Error $e)
 		{
-			return false;
+			throw $e;
 		}
 
 		return true;
