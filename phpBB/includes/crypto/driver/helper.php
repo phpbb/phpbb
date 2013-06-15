@@ -24,6 +24,12 @@ class phpbb_crypto_driver_helper
 	protected $driver;
 
 	/**
+	* base64 alphabet
+	* @var string
+	*/
+	public $itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+	/**
 	* Constructor of crypto driver helper object
 	*/
 	public function __construct($driver)
@@ -36,11 +42,10 @@ class phpbb_crypto_driver_helper
 	*
 	* @param string $input Input string
 	* @param int $count Input string length
-	* @param string $itoa64 Allowed characters string
 	*
 	* @return string base64 encoded string
 	*/
-	public function hash_encode64($input, $count, &$itoa64)
+	public function hash_encode64($input, $count)
 	{
 		$output = '';
 		$i = 0;
@@ -48,14 +53,14 @@ class phpbb_crypto_driver_helper
 		do
 		{
 			$value = ord($input[$i++]);
-			$output .= $itoa64[$value & 0x3f];
+			$output .= $this->itoa64[$value & 0x3f];
 
 			if ($i < $count)
 			{
 				$value |= ord($input[$i]) << 8;
 			}
 
-			$output .= $itoa64[($value >> 6) & 0x3f];
+			$output .= $this->itoa64[($value >> 6) & 0x3f];
 
 			if ($i++ >= $count)
 			{
@@ -67,14 +72,14 @@ class phpbb_crypto_driver_helper
 				$value |= ord($input[$i]) << 16;
 			}
 
-			$output .= $itoa64[($value >> 12) & 0x3f];
+			$output .= $this->itoa64[($value >> 12) & 0x3f];
 
 			if ($i++ >= $count)
 			{
 				break;
 			}
 
-			$output .= $itoa64[($value >> 18) & 0x3f];
+			$output .= $this->itoa64[($value >> 18) & 0x3f];
 		}
 		while ($i < $count);
 
@@ -104,5 +109,35 @@ class phpbb_crypto_driver_helper
 		}
 
 		return substr($val, 4, 16);
+	}
+
+	/**
+	* Get random salt with specified length
+	*
+	* @param int $length Salt length
+	*/
+	public function get_random_salt($length)
+	{
+		$random = '';
+
+		if (($fh = @fopen('/dev/urandom', 'rb')))
+		{
+			$random = fread($fh, $length);
+			fclose($fh);
+		}
+
+		if (strlen($random) < $length)
+		{
+			$random = '';
+			$random_state = $this->helper->unique_id();
+
+			for ($i = 0; $i < $length; $i += 16)
+			{
+				$random_state = md5($this->helper->unique_id() . $random_state);
+				$random .= pack('H*', md5($random_state));
+			}
+			$random = substr($random, 0, $length);
+		}
+		return $random;
 	}
 }

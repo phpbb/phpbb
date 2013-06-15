@@ -20,8 +20,6 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
 {
-	protected $itoa = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
 	const PREFIX = '$H$';
 
 	/**
@@ -68,7 +66,7 @@ class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
 		while (--$settings['count']);
 
 		$output = $settings['full'];
-		$output .= $this->helper->hash_encode64($hash, 16, $this->itoa);
+		$output .= $this->helper->hash_encode64($hash, 16);
 
 		if (strlen($output) == 34)
 		{
@@ -108,28 +106,11 @@ class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
 		$random = '';
 		$count = 6;
 
-		if (($fh = @fopen('/dev/urandom', 'rb')))
-		{
-			$random = fread($fh, $count);
-			fclose($fh);
-		}
-
-		if (strlen($random) < $count)
-		{
-			$random = '';
-			$random_state = $this->helper->unique_id();
-
-			for ($i = 0; $i < $count; $i += 16)
-			{
-				$random_state = md5($this->helper->unique_id() . $random_state);
-				$random .= pack('H*', md5($random_state));
-			}
-			$random = substr($random, 0, $count);
-		}
+		$random = $this->helper->get_random_salt($count);
 
 		$salt = '$H$';
-		$salt .= $this->itoa[min($count + 5, 30)];
-		$salt .= $this->helper->hash_encode64($random, 6, $this->itoa);
+		$salt .= $this->helper->itoa64[min($count + 5, 30)];
+		$salt .= $this->helper->hash_encode64($random, $count);
 
 		return $salt;
 	}
@@ -146,7 +127,7 @@ class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
 		{
 			return false;
 		}
-		$count_log2 = strpos($this->itoa, $hash[3]);
+		$count_log2 = strpos($this->helper->itoa64, $hash[3]);
 		$salt = substr($hash, 4, 8);
 
 		if ($count_log2 < 7 || $count_log2 > 30 || strlen($salt) != 8)

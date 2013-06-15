@@ -81,6 +81,6 @@ class phpbb_crypto_driver_bcrypt extends phpbb_crypto_driver_base
 	*/
 	protected function get_random_salt()
 	{
-		return substr(str_replace('+', '.', bin2hex(openssl_random_pseudo_bytes(22))), 0, 22);
+		return $this->helper->hash_encode64($this->helper->get_random_salt(22), 22);
 	}
 }
