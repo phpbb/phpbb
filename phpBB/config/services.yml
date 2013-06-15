@@ -6,6 +6,7 @@ imports:
     - { resource: avatars.yml }
     - { resource: feed.yml }
     - { resource: auth_providers.yml }
+    - { resource: crypto.yml }
 
 services:
     acl.permissions:

@@ -1,0 +1,35 @@
+services:
+    crypto.driver.bcrypt:
+        class: phpbb_crypto_driver_bcrypt
+        arguments:
+            - @config
+        tags:
+            - { name: crypto.driver }
+
+    crypto.driver.bcrypt_2y:
+        class: phpbb_crypto_driver_bcrypt_2y
+        arguments:
+            - @config
+        tags:
+            - { name: crypto.driver }
+
+    crypto.driver.salted_md5:
+        class: phpbb_crypto_driver_salted_md5
+        arguments:
+            - @config
+        tags:
+            - { name: crypto.driver }
+
+    crypto.driver.phpass:
+        class: phpbb_crypto_driver_phpass
+        arguments:
+            - @config
+        tags:
+            - { name: crypto.driver }
+
+    crypto.driver_collection:
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: crypto.driver }
