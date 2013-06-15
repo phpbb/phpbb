@@ -31,6 +31,11 @@ class phpbb_crypto_manager
 	protected $type_map = false;
 
 	/**
+	* Password convert flag. Password should be converted
+	*/
+	public $convert_flag = false;
+
+	/**
 	* Crypto helper
 	* @var phpbb_crypto_helper
 	*/
@@ -183,18 +188,14 @@ class phpbb_crypto_manager
 		// Multiple hash passes needed
 		if (is_array($stored_hash_type))
 		{
-
 			return $this->helper->check_combined_hash($password, $stored_hash_type, $hash);
 		}
 
-		return $stored_hash_type->check($password, $hash);
 		if ($stored_hash_type->get_type() !== $this->type)
 		{
-			// check with "old" hash and convert to new one
+			$this->convert_flag = true;
 		}
-		else
-		{
-			// check with default type
-		}
+
+		return $stored_hash_type->check($password, $hash);
 	}
 }
