@@ -23,6 +23,9 @@ abstract class phpbb_crypto_driver_base implements phpbb_crypto_driver_interface
 	/** @var phpbb_config */
 	protected $config;
 
+	/** @var phpbb_crypto_driver_helper */
+	protected $helper;
+
 	/**
 	* Constructor of crypto driver object
 	*
@@ -31,6 +34,7 @@ abstract class phpbb_crypto_driver_base implements phpbb_crypto_driver_interface
 	public function __construct(phpbb_config $config)
 	{
 		$this->config = $config;
+		$this->helper = new phpbb_crypto_driver_helper($this);
 	}
 
 	/**

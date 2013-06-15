@@ -68,7 +68,7 @@ class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
 		while (--$settings['count']);
 
 		$output = $settings['full'];
-		$output .= _hash_encode64($hash, 16, $this->itoa);
+		$output .= $this->helper->hash_encode64($hash, 16, $this->itoa);
 
 		if (strlen($output) == 34)
 		{
@@ -98,28 +98,6 @@ class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
 	}
 
 	/**
-	* Return unique id
-	* @param string $extra additional entropy
-	*/
-	protected function unique_id($extra = 'c')
-	{
-		static $dss_seeded = false;
-
-		$val = $this->config['rand_seed'] . microtime();
-		$val = md5($val);
-		$this->config['rand_seed'] = md5($this->config['rand_seed'] . $val . $extra);
-
-		if ($dss_seeded !== true && ($this->config['rand_seed_last_update'] < time() - rand(1,10)))
-		{
-			set_config('rand_seed_last_update', time(), true);
-			set_config('rand_seed', $this->config['rand_seed'], true);
-			$dss_seeded = true;
-		}
-
-		return substr($val, 4, 16);
-	}
-
-	/**
 	* Generate salt for hashing method
 	*
 	* @return string Salt for hashing method
@@ -139,11 +117,11 @@ class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
 		if (strlen($random) < $count)
 		{
 			$random = '';
-			$random_state = unique_id();
+			$random_state = $this->helper->unique_id();
 
 			for ($i = 0; $i < $count; $i += 16)
 			{
-				$random_state = md5(unique_id() . $random_state);
+				$random_state = md5($this->helper->unique_id() . $random_state);
 				$random .= pack('H*', md5($random_state));
 			}
 			$random = substr($random, 0, $count);
@@ -151,8 +129,7 @@ class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
 
 		$salt = '$H$';
 		$salt .= $this->itoa[min($count + 5, 30)];
-		$salt .= _hash_encode64($random, 6, $this->itoa);
-		var_dump($salt);
+		$salt .= $this->helper->hash_encode64($random, 6, $this->itoa);
 
 		return $salt;
 	}

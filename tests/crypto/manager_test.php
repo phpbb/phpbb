@@ -48,7 +48,7 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 			array('', '2y', 60),
 			array('crypto.driver.bcrypt_2y', '2y', 60),
 			array('crypto.driver.bcrypt', '2a', 60),
-			//array('crypto.driver.salted_md5', '$H$', 45),
+			array('crypto.driver.salted_md5', 'H', 34),
 		);
 	}
 
