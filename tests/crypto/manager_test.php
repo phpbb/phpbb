@@ -45,12 +45,24 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 
 	public function hash_password_data()
 	{
-		return array(
-			array('', '2y', 60),
-			array('crypto.driver.bcrypt_2y', '2y', 60),
-			array('crypto.driver.bcrypt', '2a', 60),
-			array('crypto.driver.salted_md5', 'H', 34),
-		);
+		if (version_compare(PHP_VERSION, '5.3.7', '<'))
+		{
+			return array(
+				array('', '2a', 60),
+				array('crypto.driver.bcrypt_2y', '2a', 60),
+				array('crypto.driver.bcrypt', '2a', 60),
+				array('crypto.driver.salted_md5', 'H', 34),
+			);
+		}
+		else
+		{
+			return array(
+				array('', '2y', 60),
+				array('crypto.driver.bcrypt_2y', '2y', 60),
+				array('crypto.driver.bcrypt', '2a', 60),
+				array('crypto.driver.salted_md5', 'H', 34),
+			);
+		}
 	}
 
 	/**
