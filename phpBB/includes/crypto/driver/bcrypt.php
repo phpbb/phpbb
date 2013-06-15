@@ -61,9 +61,8 @@ class phpbb_crypto_driver_bcrypt extends phpbb_crypto_driver_base
 	*/
 	public function check($password, $hash)
 	{
-		$salt = substr($hash, strpos($hash, '$', 4) + 1, 22);
-		var_dump('bcrypt salt: ' . $salt . ' with length ' . strlen($salt));
-		if (strlen($salt) != 22)
+		$salt = substr($hash, 0, 29);
+		if (strlen($salt) != 29)
 		{
 			return false;
 		}
