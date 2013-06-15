@@ -45,7 +45,7 @@ class phpbb_crypto_driver_bcrypt extends phpbb_crypto_driver_base
 	{
 		// The 2x and 2y prefixes of bcrypt might not be supported
 		// Revert to 2a if this is the case
-		$prefix = (!$this->is_supported()) ? '$2a$' : self::PREFIX;
+		$prefix = (!$this->is_supported()) ? '$2a$' : $this->get_prefix();
 
 		if ($salt == '')
 		{
