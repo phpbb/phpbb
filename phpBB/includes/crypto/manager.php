@@ -154,20 +154,26 @@ class phpbb_crypto_manager
 	* @param string $password Password that should be hashed
 	* @param string $type Hash type. Will default to standard hash type if
 	*			none is supplied
-	* @return string Password hash of supplied password
+	* @return string|bool Password hash of supplied password or false if
+	*			if something went wrong during hashing
 	*
 	* @throws RunTimeException If hash type is not supported
 	*/
 	public function hash_password($password, $type = '')
 	{
-		if ($type === '')
+		$type = ($type === '') ? $this->type : $type;
+
+		$hashing_algorithm = $this->container->get($type);
+		// Do not support 8-bit characters with $2a$ bcrypt
+		if ($type === 'crypto.driver.bcrypt' || ($type === 'crypto.driver.bcrypt_2y' && !$hashing_algorithm->is_supported()))
 		{
-			return $this->container->get($this->type)->hash($password);
+			if (ord($password[strlen($password)-1]) & 128)
+			{
+				return false;
+			}
 		}
-		else
-		{
-			return $this->container->get($type)->hash($password);
-		}
+
+		return $this->container->get($type)->hash($password);
 	}
 
 	public function check_hash($password, $hash)
