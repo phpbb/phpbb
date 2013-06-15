@@ -11,6 +11,7 @@ require_once dirname(__FILE__) . '/../mock/container_builder.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/crypto/driver/bcrypt.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/crypto/driver/bcrypt_2y.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/crypto/driver/salted_md5.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/crypto/driver/helper.php';
 
 class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 {
