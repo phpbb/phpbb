@@ -11,6 +11,7 @@ require_once dirname(__FILE__) . '/../mock/container_builder.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/crypto/driver/bcrypt.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/crypto/driver/bcrypt_2y.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/crypto/driver/salted_md5.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/crypto/driver/phpass.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/crypto/driver/helper.php';
 
 class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
@@ -29,6 +30,7 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 			'crypto.driver.bcrypt'		=> new phpbb_crypto_driver_bcrypt($config),
 			'crypto.driver.bcrypt_2y'	=> new phpbb_crypto_driver_bcrypt_2y($config),
 			'crypto.driver.salted_md5'	=> new phpbb_crypto_driver_salted_md5($config),
+			'crypto.driver.phpass'		=> new phpbb_crypto_driver_phpass($config),
 		);
 
 		foreach ($crypto_drivers as $key => $driver)
@@ -74,5 +76,43 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		preg_match('#^\$([a-zA-Z0-9\\\]*?)\$#', $hash, $match);
 		$this->assertEquals($prefix, $match[1]);
 		$this->assertEquals($length, strlen($hash));
+	}
+
+	public function check_password_data()
+	{
+		if (version_compare(PHP_VERSION, '5.3.7', '<'))
+		{
+			return array(
+				array('foobar', 'crypto.driver.bcrypt'),
+				array('foobar', 'crypto.driver.salted_md5'),
+				array('barfoo', 'crypto.driver.phpass'),
+			);
+		}
+		else
+		{
+			return array(
+				array('foobar', 'crypto.driver.bcrypt_2y'),
+				array('barfoo', 'crypto.driver.bcrypt'),
+				array('foobar', 'crypto.driver.salted_md5'),
+				array('barfoo', 'crypto.driver.phpass'),
+			);
+		}
+	}
+
+	/**
+	* @dataProvider check_password_data
+	*/
+	public function test_check_password($password, $hash_type)
+	{
+		$hash = $this->manager->hash_password($password, $hash_type);
+		$test_word = $password;
+		$time = microtime(true);
+
+		// Limit each test to 3 seconds
+		while ((microtime(true) - $time) < 3)
+		{
+			$this->assertEquals($test_word === $password, $this->manager->check_hash($test_word, $hash));
+			$test_word = str_shuffle($test_word);
+		}
 	}
 }
