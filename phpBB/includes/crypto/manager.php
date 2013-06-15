@@ -57,7 +57,7 @@ class phpbb_crypto_manager
 	{
 		$this->config = $config;
 		$this->container = $container;
-		$this->type = 'phpbb_crypto_driver_bcrypt'; // might want to make this flexible
+		$this->type = 'crypto.driver.bcrypt_2y'; // might want to make this flexible
 
 		$this->fill_type_map($hashing_algorithms);
 		$this->load_crypto_helper();
