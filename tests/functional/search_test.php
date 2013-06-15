@@ -32,7 +32,8 @@ class phpbb_functional_search_test extends phpbb_functional_test_case
 
 	public function test_sphinx()
 	{
-		//$this->search_backend_test('phpbb_search_fulltext_sphinx');
+		$this->markTestIncomplete('Sphinx search not running for the test board');
+		$this->search_backend_test('phpbb_search_fulltext_sphinx');
 	}
 
 	public function search_found()
