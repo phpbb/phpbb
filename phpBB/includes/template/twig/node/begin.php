@@ -30,48 +30,59 @@ class phpbb_template_twig_node_begin extends Twig_Node
      */
     public function compile(Twig_Compiler $compiler)
     {
+        $compiler->addDebugInfo($this);
+
 		$compiler
-			->write("if (!isset(\$loops)) {\n")
+			// name -> loop name
+			// local context -> parent template variable context
+			// global context -> global template variable context
+			// variable chain -> full chain of variables to output template vars properly in subloops
+			//		e.g. [foo][bar][foobar]
+			// current chain location -> current location in subloop
+			//		e.g. [foobar] of [foo][bar]
+			->write("\$iterator = function (\$name, \$local_context, \$global_context, &\$variable_chain, &\$current_chain_location) {\n")
 			->indent()
-			->write("\$loops = array();")
-			->write("\$nestingLevel = 0;")
+				//->write("var_dump(\$name, \$local_context);\n")
+				// Try to find the loop in the
+				// local context (child of local context passed, in case of a child loop)
+				// global context (root template var)
+				->write("if (isset(\$local_context[\$name])) {\n")
+				->indent()
+					->write("\$local_context = \$local_context[\$name];\n")
+				->outdent()
+				->write("}\n")
+				->write("else if (isset(\$global_context[\$name])) {\n")
+				->indent()
+					->write("\$local_context = \$global_context[\$name];\n")
+				->outdent()
+				->write("} else { return; }\n")
+
+				->write("if (!is_array(\$local_context) || empty(\$local_context)) { return; }\n")
+
+				->write("foreach (\$local_context as \$for_context) {\n")
+				->indent()
+					// Some hackish stuff for Twig to properly subcompile
+					->write("\$current_chain_location[\$name] = \$for_context;\n")
+					->write("\$context = array_merge(\$global_context, \$variable_chain);\n")
+
+					// Children
+					->subcompile($this->getNode('body'))
+				->outdent()
+				->write("}\n")
 			->outdent()
-			->write("}\n")
-			->write("\$loops[\$nestingLevel] = array();\n")
-		;
-
-        if (null !== $this->getNode('else')) {
-            $compiler->write("\$loops[\$nestingLevel]['iterated'] = false;\n");
-        }
-
-        $compiler
-			->write("if (isset(\$context['loop']['" . $this->getAttribute('beginName') . "'])) {")
-			->write("foreach (\$context['loop']['". $this->getAttribute('beginName'). "'] as \$" . $this->getAttribute('beginName') . ") {")
-			->write("\$context['". $this->getAttribute('beginName'). "'] = \$" . $this->getAttribute('beginName') . ";")
+			->write("};\n")
+			->write("if (isset(\$global_context)) {\n")
 			->indent()
-        ;
-
-        $compiler->subcompile($this->getNode('body'));
-
-        if (null !== $this->getNode('else')) {
-            $compiler->write("\$loops[\$nestingLevel]['iterated'] = true;\n");
-        }
-
-        $compiler
-            ->outdent()
-            ->write("}}\n")
-        ;
-
-        if (null !== $this->getNode('else')) {
-            $compiler
-                ->write("if (!\$loops[\$nestingLevel]['iterated']) {\n")
-                ->indent()
-                ->subcompile($this->getNode('else'))
-                ->outdent()
-                ->write("}\n")
-            ;
-        }
-
-		$compiler->write("\$nestingLevel--;\n");
+				// We are already inside an anonymous function
+				->write("\$iterator('" . $this->getAttribute('beginName') . "', \$for_context, \$global_context, \$variable_chain, \$current_chain_location[\$name]);\n")
+			->outdent()
+			->write("} else {\n")
+			->indent()
+				// We are not inside the anonymous function (first level)
+				->write("\$variable_chain = array();\n")
+				->write("\$current_chain_location = array();\n")
+				->write("\$iterator('" . $this->getAttribute('beginName') . "', array(), \$context, \$variable_chain, \$variable_chain);\n")
+			->outdent()
+			->write("}\n");
     }
 }

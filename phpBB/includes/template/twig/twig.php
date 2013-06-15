@@ -414,13 +414,11 @@ class phpbb_template_twig implements phpbb_template
 		$vars = array_merge(
 			$vars,
 			$this->context->get_rootref(),
-			array(
-				'loop'	=> $this->context->get_tpldata(),
-			)
+			$this->context->get_tpldata()
 		);
 
 		// cleanup
-		unset($vars['loop']['.']);
+		unset($vars['.']);
 
 		return $vars;
 	}
