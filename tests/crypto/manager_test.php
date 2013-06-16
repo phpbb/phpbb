@@ -16,6 +16,8 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/crypto/driver/helper.php
 
 class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 {
+	protected $crypto_drivers;
+
 	public function setUp()
 	{
 		global $phpbb_root_path, $phpEx;
@@ -26,14 +28,14 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		// Prepare dependencies for manager and driver
 		$config = new phpbb_config(array());
 
-		$crypto_drivers = array(
+		$this->crypto_drivers = array(
 			'crypto.driver.bcrypt'		=> new phpbb_crypto_driver_bcrypt($config),
 			'crypto.driver.bcrypt_2y'	=> new phpbb_crypto_driver_bcrypt_2y($config),
 			'crypto.driver.salted_md5'	=> new phpbb_crypto_driver_salted_md5($config),
 			'crypto.driver.phpass'		=> new phpbb_crypto_driver_phpass($config),
 		);
 
-		foreach ($crypto_drivers as $key => $driver)
+		foreach ($this->crypto_drivers as $key => $driver)
 		{
 			$this->phpbb_container->set($key, $driver);
 		}
@@ -42,7 +44,7 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		$config['allow_avatar_' . get_class($this->avatar_barfoo)] = false;
 */
 		// Set up avatar manager
-		$this->manager = new phpbb_crypto_manager($config, $this->phpbb_container, $crypto_drivers);
+		$this->manager = new phpbb_crypto_manager($config, $this->phpbb_container, $this->crypto_drivers);
 	}
 
 	public function hash_password_data()
@@ -113,6 +115,14 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		{
 			$this->assertEquals($test_word === $password, $this->manager->check_hash($test_word, $hash));
 			$test_word = str_shuffle($test_word);
+		}
+	}
+
+	public function test_hash_password_length()
+	{
+		foreach ($this->crypto_drivers as $driver)
+		{
+			$this->assertEquals(false, $driver->hash('foobar', 'foobar'));
 		}
 	}
 }

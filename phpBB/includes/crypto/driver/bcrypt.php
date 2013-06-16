@@ -53,6 +53,10 @@ class phpbb_crypto_driver_bcrypt extends phpbb_crypto_driver_base
 		}
 
 		$hash = crypt($password, $salt);
+		if (strlen($hash) < 60)
+		{
+			return false;
+		}
 		return $hash;
 	}
 
