@@ -109,7 +109,7 @@ class phpbb_crypto_manager
 	*
 	* @throws RunTimeException If hash type is not supported
 	*/
-	public function get_hashing_algorithm($hash)
+	protected function get_hashing_algorithm($hash)
 	{
 		// preg_match() will also show hashing algos like $2a\H$, which
 		// is a combination of bcrypt and phpass
