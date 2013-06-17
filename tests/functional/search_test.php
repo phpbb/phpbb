@@ -38,8 +38,9 @@ class phpbb_functional_search_test extends phpbb_functional_test_case
 
 	public function search_found()
 	{
-		$crawler = self::request('GET', 'search.php?keywords=phpbb3');
+		$crawler = self::request('GET', 'search.php?keywords=phpbb3+installation');
 		$this->assertGreaterThan(0, $crawler->filter('.postbody')->count());
+		$this->assertEquals(3, $crawler->filter('.posthilit')->count());
 	}
 
 	public function search_not_found()
