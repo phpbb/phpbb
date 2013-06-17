@@ -954,7 +954,7 @@ CREATE TABLE phpbb_users (
 	user_regdate int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	username blob NOT NULL,
 	username_clean blob NOT NULL,
-	user_password varbinary(120) DEFAULT '' NOT NULL,
+	user_password blob DEFAULT '' NOT NULL,
 	user_passchg int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	user_pass_convert tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	user_email blob NOT NULL,

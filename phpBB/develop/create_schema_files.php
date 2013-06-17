@@ -1862,7 +1862,7 @@ function get_schema_struct()
 			'user_regdate'				=> array('TIMESTAMP', 0),
 			'username'					=> array('VCHAR_CI', ''),
 			'username_clean'			=> array('VCHAR_CI', ''),
-			'user_password'				=> array('VCHAR_UNI:40', ''),
+			'user_password'				=> array('VCHAR_CI', ''),
 			'user_passchg'				=> array('TIMESTAMP', 0),
 			'user_pass_convert'			=> array('BOOL', 0),
 			'user_email'				=> array('VCHAR_UNI:100', ''),

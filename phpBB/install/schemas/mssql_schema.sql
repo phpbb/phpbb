@@ -1644,7 +1644,7 @@ CREATE TABLE [phpbb_users] (
 	[user_regdate] [int] DEFAULT (0) NOT NULL ,
 	[username] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[username_clean] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[user_password] [varchar] (40) DEFAULT ('') NOT NULL ,
+	[user_password] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_passchg] [int] DEFAULT (0) NOT NULL ,
 	[user_pass_convert] [int] DEFAULT (0) NOT NULL ,
 	[user_email] [varchar] (100) DEFAULT ('') NOT NULL ,
