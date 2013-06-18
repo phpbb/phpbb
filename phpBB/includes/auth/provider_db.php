@@ -34,10 +34,6 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	 *
 	 * @param string $username
 	 * @param string $password
-	 * @param string $ip			IP address the login is taking place from. Used to
-	 *							limit the number of login attempts per IP address.
-	 * @param string $browser	The user agent used to login
-	 * @param string $forwarded_for X_FORWARDED_FOR header sent with login request
 	 * @return array				A associative array of the format
 	 *							array(
 	 *								'status' => status constant
@@ -45,10 +41,10 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	 *								'user_row' => array
 	 *							)
 	 */
-	public function login($username, $password, $ip = '', $browser = '', $forwarded_for = '')
+	public function login($username, $password)
 	{
 		global $db, $config;
-		global $request;
+		global $request, $user;
 
 		// Auth plugins get the password untrimmed.
 		// For compatibility we trim() here.
@@ -82,19 +78,19 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if (($ip && !$config['ip_login_limit_use_forwarded']) ||
-			($forwarded_for && $config['ip_login_limit_use_forwarded']))
+		if (($user->ip && !$config['ip_login_limit_use_forwarded']) ||
+			($user->forwarded_for && $config['ip_login_limit_use_forwarded']))
 		{
 			$sql = 'SELECT COUNT(*) AS attempts
 				FROM ' . LOGIN_ATTEMPT_TABLE . '
 				WHERE attempt_time > ' . (time() - (int) $config['ip_login_limit_time']);
 			if ($config['ip_login_limit_use_forwarded'])
 			{
-				$sql .= " AND attempt_forwarded_for = '" . $db->sql_escape($forwarded_for) . "'";
+				$sql .= " AND attempt_forwarded_for = '" . $db->sql_escape($user->forwarded_for) . "'";
 			}
 			else
 			{
-				$sql .= " AND attempt_ip = '" . $db->sql_escape($ip) . "' ";
+				$sql .= " AND attempt_ip = '" . $db->sql_escape($user->ip) . "' ";
 			}
 
 			$result = $db->sql_query($sql);
@@ -102,9 +98,9 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 			$db->sql_freeresult($result);
 
 			$attempt_data = array(
-				'attempt_ip'			=> $ip,
-				'attempt_browser'		=> trim(substr($browser, 0, 149)),
-				'attempt_forwarded_for'	=> $forwarded_for,
+				'attempt_ip'			=> $user->ip,
+				'attempt_browser'		=> trim(substr($user->browser, 0, 149)),
+				'attempt_forwarded_for'	=> $user->forwarded_for,
 				'attempt_time'			=> time(),
 				'user_id'				=> ($row) ? (int) $row['user_id'] : 0,
 				'username'				=> $username,
