@@ -43,7 +43,7 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	/**
 	 * Login function
 	 */
-	public function login(&$username, &$password)
+	public function login($username, $password)
 	{
 		global $db, $request;
 
