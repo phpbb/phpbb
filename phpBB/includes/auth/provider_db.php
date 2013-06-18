@@ -30,21 +30,21 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	}
 
 	/**
-	* Login function
-	*
-	* @param string $username
-	* @param string $password
-	* @param string $ip			IP address the login is taking place from. Used to
-	*							limit the number of login attempts per IP address.
-	* @param string $browser	The user agent used to login
-	* @param string $forwarded_for X_FORWARDED_FOR header sent with login request
-	* @return array				A associative array of the format
-	*							array(
-	*								'status' => status constant
-	*								'error_msg' => string
-	*								'user_row' => array
-	*							)
-	*/
+	 * Login function
+	 *
+	 * @param string $username
+	 * @param string $password
+	 * @param string $ip			IP address the login is taking place from. Used to
+	 *							limit the number of login attempts per IP address.
+	 * @param string $browser	The user agent used to login
+	 * @param string $forwarded_for X_FORWARDED_FOR header sent with login request
+	 * @return array				A associative array of the format
+	 *							array(
+	 *								'status' => status constant
+	 *								'error_msg' => string
+	 *								'user_row' => array
+	 *							)
+	 */
 	public function login($username, $password, $ip = '', $browser = '', $forwarded_for = '')
 	{
 		global $db, $config;

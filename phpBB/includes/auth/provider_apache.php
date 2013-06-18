@@ -23,12 +23,12 @@ if (!defined('IN_PHPBB'))
 class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 {
 	/**
-	* Checks whether the user is identified to apache
-	* Only allow changing authentication to apache if the user is identified
-	* Called in acp_board while setting authentication plugins
-	*
-	* @return boolean|string false if the user is identified and else an error message
-	*/
+	 * Checks whether the user is identified to apache
+	 * Only allow changing authentication to apache if the user is identified
+	 * Called in acp_board while setting authentication plugins
+	 *
+	 * @return boolean|string false if the user is identified and else an error message
+	 */
 	public function init()
 	{
 		global $user, $request;
@@ -41,8 +41,8 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	}
 
 	/**
-	* Login function
-	*/
+	 * Login function
+	 */
 	public function login(&$username, &$password)
 	{
 		global $db, $request;
@@ -133,11 +133,11 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	}
 
 	/**
-	* Autologin function
-	*
-	* @return 	array 	containing the user row or empty if no auto login should
-	* 					take place
-	*/
+	 * Autologin function
+	 *
+	 * @return 	array 	containing the user row or empty if no auto login should
+	 * 					take place
+	 */
 	public function autologin()
 	{
 		global $db, $request;
@@ -194,14 +194,14 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	}
 
 	/**
-	* This function generates an array which can be passed to the user_add
-	* function in order to create a user
-	*
-	* @param 	str 	$username 	The username of the new user.
-	* @param 	str 	$password 	The password of the new user.
-	* @return 	array 				Contains data that can be passed directly to
-	*								the user_add function.
-	*/
+	 * This function generates an array which can be passed to the user_add
+	 * function in order to create a user
+	 *
+	 * @param 	str 	$username 	The username of the new user.
+	 * @param 	str 	$password 	The password of the new user.
+	 * @return 	array 				Contains data that can be passed directly to
+	 *								the user_add function.
+	 */
 	private function user_row($username, $password)
 	{
 		global $db, $config, $user;
@@ -232,11 +232,11 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	}
 
 	/**
-	* The session validation function checks whether the user is still logged in
-	*
-	* @return 	boolean 	true if the given user is authenticated or false if
-	* 						the session should be closed
-	*/
+	 * The session validation function checks whether the user is still logged in
+	 *
+	 * @return 	boolean 	true if the given user is authenticated or false if
+	 * 						the session should be closed
+	 */
 	public function validate_session(&$user)
 	{
 		global $request;

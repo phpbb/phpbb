@@ -25,10 +25,10 @@ if (!defined('IN_PHPBB'))
 class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 {
 	/**
-	* Connect to ldap server
-	* Only allow changing authentication to ldap if we can connect to the ldap server
-	* Called in acp_board while setting authentication plugins
-	*/
+	 * Connect to ldap server
+	 * Only allow changing authentication to ldap if we can connect to the ldap server
+	 * Called in acp_board while setting authentication plugins
+	 */
 	public function init()
 	{
 		global $config, $user;
@@ -100,8 +100,8 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	}
 
 	/**
-	* Login function
-	*/
+	 * Login function
+	 */
 	public function login(&$username, &$password)
 	{
 			global $db, $config, $user;
@@ -278,9 +278,9 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	public function autologin();
 
 	/**
-	* This function is used to output any required fields in the authentication
-	* admin panel. It also defines any required configuration table fields.
-	*/
+	 * This function is used to output any required fields in the authentication
+	 * admin panel. It also defines any required configuration table fields.
+	 */
 	public function acp(&$new)
 	{
 		global $user;
@@ -329,12 +329,12 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	}
 
 	/**
-	* Generates a filter string for ldap_search to find a user
-	*
-	* @param	$username	string	Username identifying the searched user
-	*
-	* @return				string	A filter string for ldap_search
-	*/
+	 * Generates a filter string for ldap_search to find a user
+	 *
+	 * @param	$username	string	Username identifying the searched user
+	 *
+	 * @return				string	A filter string for ldap_search
+	 */
 	public function user_filter($username)
 	{
 		global $config;
@@ -349,8 +349,8 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	}
 
 	/**
-	* Escapes an LDAP AttributeValue
-	*/
+	 * Escapes an LDAP AttributeValue
+	 */
 	public function escape($string)
 	{
 		return str_replace(array('*', '\\', '(', ')'), array('\\*', '\\\\', '\\(', '\\)'), $string);
