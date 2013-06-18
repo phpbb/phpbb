@@ -16,14 +16,14 @@ abstract class phpbb_functional_search_test extends phpbb_functional_test_case
 	protected function search_found()
 	{
 		$crawler = self::request('GET', 'search.php?keywords=phpbb3+installation');
-		$this->assertGreaterThan(0, $crawler->filter('.postbody')->count());
+		$this->assertEquals(1, $crawler->filter('.postbody')->count());
 		$this->assertEquals(3, $crawler->filter('.posthilit')->count());
 	}
 
 	protected function search_not_found()
 	{
 		$crawler = self::request('GET', 'search.php?keywords=loremipsumdedo');
-		$this->assertLessThan(1, $crawler->filter('.postbody')->count());
+		$this->assertEquals(0, $crawler->filter('.postbody')->count());
 	}
 
 	public function test_search_backend()
