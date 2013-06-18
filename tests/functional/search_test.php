@@ -10,46 +10,23 @@
 /**
  * @group functional
  */
-class phpbb_functional_search_test extends phpbb_functional_test_case
+abstract class phpbb_functional_search_test extends phpbb_functional_test_case
 {
 
-	public function test_native()
-	{
-		$this->search_backend_test('phpbb_search_fulltext_native');
-	}
-
-	public function test_mysql_fulltext()
-	{
-		$this->search_backend_test('phpbb_search_fulltext_mysql');
-
-	}
-
-	public function test_postgres_fulltext()
-	{
-		$this->search_backend_test('phpbb_search_fulltext_postgres');
-
-	}
-
-	public function test_sphinx()
-	{
-		$this->markTestIncomplete('Sphinx search not running for the test board');
-		$this->search_backend_test('phpbb_search_fulltext_sphinx');
-	}
-
-	public function search_found()
+	protected function search_found()
 	{
 		$crawler = self::request('GET', 'search.php?keywords=phpbb3+installation');
 		$this->assertGreaterThan(0, $crawler->filter('.postbody')->count());
 		$this->assertEquals(3, $crawler->filter('.posthilit')->count());
 	}
 
-	public function search_not_found()
+	protected function search_not_found()
 	{
 		$crawler = self::request('GET', 'search.php?keywords=loremipsumdedo');
 		$this->assertLessThan(1, $crawler->filter('.postbody')->count());
 	}
 
-	protected function search_backend_test($search_backend)
+	public function test_search_backend()
 	{
 		$this->login();
 		$this->admin_login();
@@ -58,9 +35,9 @@ class phpbb_functional_search_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 
-		if ($values["config[search_type]"] != $search_backend)
+		if ($values["config[search_type]"] != $this->search_backend)
 		{
-			$values["config[search_type]"] = $search_backend;
+			$values["config[search_type]"] = $this->search_backend;
 			$form->setValues($values);
 			$crawler = self::submit($form);
 
@@ -72,11 +49,10 @@ class phpbb_functional_search_test extends phpbb_functional_test_case
 			{
 				$crawler->filter('.errorbox')->text();
 				self::markTestSkipped("Search backend is not supported/running");
-
 			}
 			catch (InvalidArgumentException $e) {}
 
-			$this->create_search_index($search_backend);
+			$this->create_search_index();
 		}
 
 		$this->logout();
@@ -85,17 +61,17 @@ class phpbb_functional_search_test extends phpbb_functional_test_case
 
 		$this->login();
 		$this->admin_login();
-		$this->delete_search_index($search_backend);
+		$this->delete_search_index();
 	}
 
-	protected function create_search_index($search_backend)
+	protected function create_search_index()
 	{
 		$this->add_lang('acp/search');
 		$crawler = self::request(
 			'POST',
 			'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid,
 			array(
-				'search_type'	=> $search_backend,
+				'search_type'	=> $this->search_backend,
 				'action'		=> 'create',
 				'submit'		=> true,
 			)
@@ -103,14 +79,14 @@ class phpbb_functional_search_test extends phpbb_functional_test_case
 		$this->assertContains($this->lang('SEARCH_INDEX_CREATED'), $crawler->text());
 	}
 
-	protected function delete_search_index($search_backend)
+	protected function delete_search_index()
 	{
 		$this->add_lang('acp/search');
 		$crawler = self::request(
 			'POST',
 			'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid,
 			array(
-				'search_type'	=> $search_backend,
+				'search_type'	=> $this->search_backend,
 				'action'		=> 'delete',
 				'submit'		=> true,
 			)
