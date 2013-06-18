@@ -111,28 +111,12 @@ class phpbb_template_twig implements phpbb_template
 
 		$this->cachepath = $phpbb_root_path . 'cache/twig/';
 
-		// Setup loader with __main__ paths
-		$loader = new Twig_Loader_Filesystem(array(
-			$phpbb_root_path . 'styles/prosilver/template/',
-		), $this->locator);
-
-		// Add core namespace
-		$loader->addPath($this->phpbb_root_path . 'styles/prosilver/template/', 'core');
+		// Initiate the loader, __main__ namespace paths will be setup later in set_style_names()
+		$loader = new Twig_Loader_Filesystem('');
 
 		// Add admin namespace
 		// @todo use phpbb_admin path
 		$loader->addPath($this->phpbb_root_path . 'adm/style/', 'admin');
-
-		// Add all namespaces for all extensions
-		if ($this->extension_manager instanceof phpbb_extension_manager)
-		{
-			foreach ($this->extension_manager->all_enabled() as $ext_namespace => $ext_path)
-			{
-				// @todo proper style chain
-				$loader->addPath($ext_path . 'styles/prosilver/', $ext_namespace);
-				$loader->addPath($ext_path . 'styles/all/', $ext_namespace);
-			}
-		}
 
 		$this->twig = new Twig_Environment($loader, array(
 		    'cache'			=> $this->cachepath,
@@ -179,7 +163,31 @@ class phpbb_template_twig implements phpbb_template
 	{
 		$this->style_names = $style_names;
 
+		// Set as __main__ namespace
 		$this->twig->getLoader()->setPaths($style_paths);
+
+		// Core style namespace from phpbb_style::set_style()
+		if ($style_names === array($this->user->style['style_path']) || $style_names[0] == $this->user->style['style_path'])
+		{
+			$this->twig->getLoader()->setPaths($style_paths, 'core');
+
+			// Add all namespaces for all extensions
+			if ($this->extension_manager instanceof phpbb_extension_manager)
+			{
+				$style_names[] = 'all';
+
+				foreach ($this->extension_manager->all_enabled() as $ext_namespace => $ext_path)
+				{
+					foreach ($style_names as $style_name)
+					{
+						if (is_dir($ext_path . 'styles/' . $style_name))
+						{
+							$this->twig->getLoader()->addPath($ext_path . 'styles/' . $style_name, $ext_namespace);
+						}
+					}
+				}
+			}
+		}
 
 		return $this;
 	}
