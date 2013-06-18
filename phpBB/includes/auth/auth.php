@@ -932,10 +932,11 @@ class phpbb_auth
 		$method = trim(basename($config['auth_method']));
 		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-		$method = 'login_' . $method;
-		if (function_exists($method))
+		$class = 'phpbb_auth_provider_' . $method;
+		if (class_exists($class))
 		{
-			$login = $method($username, $password, $user->ip, $user->browser, $user->forwarded_for);
+			$provider = new $class();
+			$login = $provider->login($username, $password);
 
 			// If the auth module wants us to create an empty profile do so and then treat the status as LOGIN_SUCCESS
 			if ($login['status'] == LOGIN_SUCCESS_CREATE_PROFILE)
