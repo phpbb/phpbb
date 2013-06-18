@@ -68,7 +68,7 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 		$search = @ldap_search(
 			$ldap,
 			htmlspecialchars_decode($config['ldap_base_dn']),
-			ldap_user_filter($user->data['username']),
+			$this->ldap_user_filter($user->data['username']),
 			(empty($config['ldap_email'])) ?
 				array(htmlspecialchars_decode($config['ldap_uid'])) :
 				array(htmlspecialchars_decode($config['ldap_uid']), htmlspecialchars_decode($config['ldap_email'])),
@@ -102,7 +102,7 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	/**
 	 * Login function
 	 */
-	public function login(&$username, &$password)
+	public function login($username, $password)
 	{
 			global $db, $config, $user;
 
@@ -171,7 +171,7 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 		$search = @ldap_search(
 			$ldap,
 			htmlspecialchars_decode($config['ldap_base_dn']),
-			ldap_user_filter($username),
+			$this->ldap_user_filter($username),
 			(empty($config['ldap_email'])) ?
 				array(htmlspecialchars_decode($config['ldap_uid'])) :
 				array(htmlspecialchars_decode($config['ldap_uid']), htmlspecialchars_decode($config['ldap_email'])),
@@ -275,7 +275,10 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 		);
 	}
 
-	public function autologin();
+	public function autologin()
+	{
+		return;
+	}
 
 	/**
 	 * This function is used to output any required fields in the authentication
@@ -335,7 +338,7 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	 *
 	 * @return				string	A filter string for ldap_search
 	 */
-	public function user_filter($username)
+	public function ldap_user_filter($username)
 	{
 		global $config;
 
