@@ -184,15 +184,19 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::$config['table_prefix'] = 'phpbb_';
 		self::recreate_database(self::$config);
 
-		if (file_exists($phpbb_root_path . "config.$phpEx"))
+		$config_file = $phpbb_root_path . "config.$phpEx";
+		$config_file_dev = $phpbb_root_path . "config_dev.$phpEx";
+		$config_file_test = $phpbb_root_path . "config_test.$phpEx";
+
+		if (file_exists($config_file))
 		{
-			if (!file_exists($phpbb_root_path . "config_dev.$phpEx"))
+			if (!file_exists($config_file_dev))
 			{
-				rename($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_dev.$phpEx");
+				rename($config_file, $config_file_dev);
 			}
 			else
 			{
-				unlink($phpbb_root_path . "config.$phpEx");
+				unlink($config_file);
 			}
 		}
 
@@ -254,7 +258,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$crawler = self::submit($form);
 		self::assertContains('The configuration file has been written.', $crawler->filter('#main')->text());
-		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data(self::$config, self::$config['dbms'], array(), true, true));
+		file_put_contents($config_file, phpbb_create_config_file_data(self::$config, self::$config['dbms'], array(), true, true));
 		$form = $crawler->selectButton('submit')->form();
 
 		$crawler = self::submit($form);
@@ -281,7 +285,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$crawler = self::submit($form);
 		self::assertContains('You have successfully installed', $crawler->text());
-		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
+		copy($config_file, $config_file_test);
 	}
 
 	static private function recreate_database($config)
