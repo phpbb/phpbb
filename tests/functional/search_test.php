@@ -76,7 +76,7 @@ abstract class phpbb_functional_search_test extends phpbb_functional_test_case
 				'submit'		=> true,
 			)
 		);
-		$this->assertContains($this->lang('SEARCH_INDEX_CREATED'), $crawler->text());
+		$this->assertContainsLang('SEARCH_INDEX_CREATED', $crawler->text());
 	}
 
 	protected function delete_search_index()
@@ -91,6 +91,6 @@ abstract class phpbb_functional_search_test extends phpbb_functional_test_case
 				'submit'		=> true,
 			)
 		);
-		$this->assertContains($this->lang('SEARCH_INDEX_REMOVED'), $crawler->text());
+		$this->assertContainsLang('SEARCH_INDEX_REMOVED', $crawler->text());
 	}
 }
