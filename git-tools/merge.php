@@ -143,7 +143,7 @@ function api_url_request($url)
 
 	if (isset($contents->message) && strpos($contents->message, 'API Rate Limit') === 0)
 	{
-		exit('Reached github API Rate Limit. Please try again later' . "\n");
+		throw new RuntimeException('Reached github API Rate Limit. Please try again later' . "\n", 4);
 	}
 
 	return $contents;
