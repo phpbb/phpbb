@@ -568,12 +568,12 @@ class phpbb_session
 		}
 
 		$method = basename(trim($config['auth_method']));
-		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-		$method = 'autologin_' . $method;
-		if (function_exists($method))
+		$class = 'phpbb_auth_provider_' . $method;
+		if (class_exists($class))
 		{
-			$this->data = $method();
+			$provider = new $class();
+			$this->data = $class->autologin();
 
 			if (sizeof($this->data))
 			{
