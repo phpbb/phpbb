@@ -237,7 +237,7 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	 * @return 	boolean 	true if the given user is authenticated or false if
 	 * 						the session should be closed
 	 */
-	public function validate_session(&$user)
+	public function validate_session($user)
 	{
 		global $request;
 
@@ -259,6 +259,11 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	}
 
 	public function acp($new)
+	{
+		return;
+	}
+
+	public function logout($data, $new_session)
 	{
 		return;
 	}

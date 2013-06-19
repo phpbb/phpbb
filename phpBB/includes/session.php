@@ -402,12 +402,13 @@ class phpbb_session
 
 					// Check whether the session is still valid if we have one
 					$method = basename(trim($config['auth_method']));
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-					$method = 'validate_session_' . $method;
-					if (function_exists($method))
+					$class = 'phpbb_auth_provider_' . $method;
+					if (class_exists($class))
 					{
-						if (!$method($this->data))
+						$provider = new $class();
+						$ret = $provider->validate_session($this->data);
+						if ($ret !== null && !$ret)
 						{
 							$session_expired = true;
 						}
@@ -573,7 +574,7 @@ class phpbb_session
 		if (class_exists($class))
 		{
 			$provider = new $class();
-			$this->data = $class->autologin();
+			$this->data = $provider->autologin();
 
 			if (sizeof($this->data))
 			{
@@ -893,12 +894,12 @@ class phpbb_session
 
 		// Allow connecting logout with external auth method logout
 		$method = basename(trim($config['auth_method']));
-		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-		$method = 'logout_' . $method;
-		if (function_exists($method))
+		$class = 'phpbb_auth_provider_' . $method;
+		if (class_exists($class))
 		{
-			$method($this->data, $new_session);
+			$provider = new $class();
+			$provider->logout($this->data, $new_session);
 		}
 
 		if ($this->data['user_id'] != ANONYMOUS)

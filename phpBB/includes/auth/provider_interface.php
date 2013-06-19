@@ -57,6 +57,25 @@ interface phpbb_auth_provider_interface
 	/**
 	 * This function is used to output any required fields in the authentication
 	 * admin panel. It also defines any required configuration table fields.
+	 *
+	 * @param 	type 	$new
 	 */
 	public function acp($new);
+
+	/**
+	 * Special logout function.
+	 *
+	 * @param 	type 	$data
+	 * @param 	type 	$new_session
+	 */
+	public function logout($data, $new_session);
+
+	/**
+	 * The session validation function checks whether the user is still logged in.
+	 *
+	 * @param 	type 	$user
+	 * @return 	boolean	true if the given user is authenticated, false if the 
+	 * 					session should be closed, or null if not implemented.
+	 */
+	public function validate_session($user);
 }

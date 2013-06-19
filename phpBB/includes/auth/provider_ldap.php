@@ -358,4 +358,14 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 	{
 		return str_replace(array('*', '\\', '(', ')'), array('\\*', '\\\\', '\\(', '\\)'), $string);
 	}
+
+	public function logout($data, $new_session)
+	{
+		return;
+	}
+
+	public function validate_session($user)
+	{
+		return;
+	}
 }

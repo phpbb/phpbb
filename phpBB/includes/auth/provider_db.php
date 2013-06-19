@@ -302,4 +302,14 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	{
 		return;
 	}
+
+	public function logout($data, $new_session)
+	{
+		return;
+	}
+
+	public function validate_session($user)
+	{
+		return;
+	}
 }
