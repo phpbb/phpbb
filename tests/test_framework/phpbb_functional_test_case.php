@@ -184,15 +184,19 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::$config['table_prefix'] = 'phpbb_';
 		self::recreate_database(self::$config);
 
-		if (file_exists($phpbb_root_path . "config.$phpEx"))
+		$config_file = $phpbb_root_path . "config.$phpEx";
+		$config_file_dev = $phpbb_root_path . "config_dev.$phpEx";
+		$config_file_test = $phpbb_root_path . "config_test.$phpEx";
+
+		if (file_exists($config_file))
 		{
-			if (!file_exists($phpbb_root_path . "config_dev.$phpEx"))
+			if (!file_exists($config_file_dev))
 			{
-				rename($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_dev.$phpEx");
+				rename($config_file, $config_file_dev);
 			}
 			else
 			{
-				unlink($phpbb_root_path . "config.$phpEx");
+				unlink($config_file);
 			}
 		}
 
@@ -216,10 +220,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertContains('Welcome to Installation', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=requirements
 		$crawler = self::submit($form);
 		self::assertContains('Installation compatibility', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=database
 		$crawler = self::submit($form);
 		self::assertContains('Database configuration', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
@@ -233,10 +239,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'table_prefix'	=> self::$config['table_prefix'],
 		));
 
+		// install/index.php?mode=install&sub=database
 		$crawler = self::submit($form);
 		self::assertContains('Successful connection', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=administrator
 		$crawler = self::submit($form);
 		self::assertContains('Administrator configuration', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
@@ -248,16 +256,38 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'board_email2'	=> 'nobody@example.com',
 		));
 
+		// install/index.php?mode=install&sub=administrator
 		$crawler = self::submit($form);
 		self::assertContains('Tests passed', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
-		$crawler = self::submit($form);
-		self::assertContains('The configuration file has been written.', $crawler->filter('#main')->text());
-		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data(self::$config, self::$config['dbms'], array(), true, true));
-		$form = $crawler->selectButton('submit')->form();
+		// We have to skip install/index.php?mode=install&sub=config_file
+		// because that step will create a config.php file if phpBB has the
+		// permission to do so. We have to create the config file on our own
+		// in order to get the DEBUG constants defined.
+		$config_php_data = phpbb_create_config_file_data(self::$config, self::$config['dbms'], array(), true, true);
+		$config_created = file_put_contents($config_file, $config_php_data) !== false;
+		if (!$config_created)
+		{
+			self::markTestSkipped("Could not write $config_file file.");
+		}
 
-		$crawler = self::submit($form);
+		// We also have to create a install lock that is normally created by
+		// the installer. The file will be removed by the final step of the
+		// installer.
+		$install_lock_file = $phpbb_root_path . 'cache/install_lock';
+		$lock_created = file_put_contents($install_lock_file, '') !== false;
+		if (!$lock_created)
+		{
+			self::markTestSkipped("Could not create $lock_created file.");
+		}
+		@chmod($install_lock_file, 0666);
+
+		// install/index.php?mode=install&sub=advanced
+		$form_data = $form->getValues();
+		unset($form_data['submit']);
+
+		$crawler = self::request('POST', 'install/index.php?mode=install&sub=advanced', $form_data);
 		self::assertContains('The settings on this page are only necessary to set if you know that you require something different from the default.', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
 			'email_enable'		=> true,
@@ -274,14 +304,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'script_path'		=> $parseURL['path'],
 		));
 
+		// install/index.php?mode=install&sub=create_table
 		$crawler = self::submit($form);
 		self::assertContains('The database tables used by phpBB', $crawler->filter('#main')->text());
 		self::assertContains('have been created and populated with some initial data.', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=final
 		$crawler = self::submit($form);
 		self::assertContains('You have successfully installed', $crawler->text());
-		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
+
+		copy($config_file, $config_file_test);
 	}
 
 	static private function recreate_database($config)
