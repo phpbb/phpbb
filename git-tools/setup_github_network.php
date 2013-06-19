@@ -150,21 +150,18 @@ function api_request($query)
 
 function api_url_request($url)
 {
-	$c = curl_init();
-	curl_setopt($c, CURLOPT_URL, $url);
-	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($c, CURLOPT_USERAGENT, 'phpBB/1.0');
-	curl_setopt($c, CURLOPT_HEADER, true);
-	$contents = curl_exec($c);
-	curl_close($c);
+	$contents = file_get_contents($url, false, stream_context_create(array(
+		'http' => array(
+			'header' => "User-Agent: phpBB/1.0\r\n",
+		),
+	)));
 
 	$sub_request_result = array();
 	// Split possible headers from the body
-	if ($contents && strpos($contents, "\r\n\r\n") > 0)
+	if (!empty($http_response_header))
 	{
-	    list($header, $contents) = explode("\r\n\r\n", $contents);
-	    foreach (explode("\n", $header) as $header_element)
-	    {
+		foreach ($http_response_header as $header_element)
+		{
 			// Find Link Header which gives us a link to the next page
 			if (strpos($header_element, 'Link: ') === 0)
 			{
@@ -179,7 +176,7 @@ function api_url_request($url)
 					}
 				}
 			}
-	    }
+		}
 	}
 
 	if ($contents === false)

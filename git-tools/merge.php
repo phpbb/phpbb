@@ -124,13 +124,16 @@ function get_repository_url($username, $repository, $ssh = false)
 
 function api_request($query)
 {
-	$c = curl_init();
-	curl_setopt($c, CURLOPT_URL, "https://api.github.com/$query");
-	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($c, CURLOPT_USERAGENT, 'phpBB/1.0');
-	curl_setopt($c, CURLOPT_HEADER, true);
-	$contents = curl_exec($c);
-	curl_close($c);
+	return api_url_request("https://api.github.com/$query?per_page=100");
+}
+
+function api_url_request($url)
+{
+	$contents = file_get_contents($url, false, stream_context_create(array(
+		'http' => array(
+			'header' => "User-Agent: phpBB/1.0\r\n",
+		),
+	)));
 
 	if ($contents === false)
 	{
