@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-class phpbb_auth_provider_db implements phpbb_auth_provider_interface
+class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 {
 	/**
 	 * Connect to ldap server
@@ -284,7 +284,7 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	 * This function is used to output any required fields in the authentication
 	 * admin panel. It also defines any required configuration table fields.
 	 */
-	public function acp(&$new)
+	public function acp($new)
 	{
 		global $user;
 

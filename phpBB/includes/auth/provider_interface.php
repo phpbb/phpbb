@@ -58,5 +58,5 @@ interface phpbb_auth_provider_interface
 	 * This function is used to output any required fields in the authentication
 	 * admin panel. It also defines any required configuration table fields.
 	 */
-	public function acp();
+	public function acp($new);
 }

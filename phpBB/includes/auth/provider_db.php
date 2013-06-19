@@ -298,7 +298,7 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 		return;
 	}
 
-	public function acp()
+	public function acp($new)
 	{
 		return;
 	}

@@ -530,9 +530,9 @@ class acp_board
 			{
 				while (($file = readdir($dp)) !== false)
 				{
-					if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
+					if (preg_match('#^provider_(.*?)\.' . $phpEx . '$#', $file) && !preg_match('#^provider_interface\.' . $phpEx . '$#', $file))
 					{
-						$auth_plugins[] = basename(preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file));
+						$auth_plugins[] = basename(preg_replace('#^provider_(.*?)\.' . $phpEx . '$#', '\1', $file));
 					}
 				}
 				closedir($dp);
@@ -544,14 +544,13 @@ class acp_board
 			$old_auth_config = array();
 			foreach ($auth_plugins as $method)
 			{
-				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+				if ($method)
 				{
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-					$method = 'acp_' . $method;
-					if (function_exists($method))
+					$class = 'phpbb_auth_provider_' . $method;
+					if (class_exists($class))
 					{
-						if ($fields = $method($this->new_config))
+						$provider = new $class();
+						if ($fields = $provider->acp($this->new_config))
 						{
 							// Check if we need to create config fields for this plugin and save config when submit was pressed
 							foreach ($fields['config'] as $field)
@@ -585,14 +584,13 @@ class acp_board
 			if ($submit && (($cfg_array['auth_method'] != $this->new_config['auth_method']) || $updated_auth_settings))
 			{
 				$method = basename($cfg_array['auth_method']);
-				if ($method && in_array($method, $auth_plugins))
+				if ($method)
 				{
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-					$method = 'init_' . $method;
-					if (function_exists($method))
+					$class = 'phpbb_auth_provider_' . $method;
+					if (class_exists($class))
 					{
-						if ($error = $method())
+						$provider = new $class();
+						if ($error = $provider->init())
 						{
 							foreach ($old_auth_config as $config_name => $config_value)
 							{
@@ -685,12 +683,13 @@ class acp_board
 
 			foreach ($auth_plugins as $method)
 			{
-				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+				if ($method)
 				{
-					$method = 'acp_' . $method;
-					if (function_exists($method))
+					$class = 'phpbb_auth_provider_' . $method;
+					if (class_exists($class))
 					{
-						$fields = $method($this->new_config);
+						$provider = new $class();
+						$fields = $provider->acp($this->new_config);
 
 						if ($fields['tpl'])
 						{
