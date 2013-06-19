@@ -930,7 +930,6 @@ class phpbb_auth
 		global $config, $db, $user, $phpbb_root_path, $phpEx;
 
 		$method = trim(basename($config['auth_method']));
-		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
 		$class = 'phpbb_auth_provider_' . $method;
 		if (class_exists($class))

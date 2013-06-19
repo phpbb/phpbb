@@ -1,4 +1,4 @@
-<?
+<?php
 /**
 *
 * @package auth
@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-class phpbb_auth_provider_interface
+interface phpbb_auth_provider_interface
 {
 	/**
 	 * Checks whether the user is currently identified to the authentication
