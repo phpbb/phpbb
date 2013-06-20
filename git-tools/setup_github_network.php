@@ -15,7 +15,7 @@ function show_usage()
 	echo "$filename adds repositories of a github network as remotes to a local git repository.\n";
 	echo "\n";
 
-	echo "Usage: [php] $filename -s collaborators|organisation|contributors|network [OPTIONS]\n";
+	echo "Usage: [php] $filename -s collaborators|organisation|contributors|forks [OPTIONS]\n";
 	echo "\n";
 
 	echo "Scopes:\n";
