@@ -157,7 +157,7 @@ function api_url_request($url)
 	)));
 
 	$sub_request_result = array();
-	// Split possible headers from the body
+	// Check headers for pagination links
 	if (!empty($http_response_header))
 	{
 		foreach ($http_response_header as $header_element)
