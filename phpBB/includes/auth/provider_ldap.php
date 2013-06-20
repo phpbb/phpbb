@@ -338,11 +338,11 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 	 *
 	 * @return				string	A filter string for ldap_search
 	 */
-	public function ldap_user_filter($username)
+	private function ldap_user_filter($username)
 	{
 		global $config;
 
-		$filter = '(' . $config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($username)) . ')';
+		$filter = '(' . $config['ldap_uid'] . '=' . $this->ldap_escape(htmlspecialchars_decode($username)) . ')';
 		if ($config['ldap_user_filter'])
 		{
 			$_filter = ($config['ldap_user_filter'][0] == '(' && substr($config['ldap_user_filter'], -1) == ')') ? $config['ldap_user_filter'] : "({$config['ldap_user_filter']})";
@@ -354,7 +354,7 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 	/**
 	 * Escapes an LDAP AttributeValue
 	 */
-	public function escape($string)
+	private function ldap_escape($string)
 	{
 		return str_replace(array('*', '\\', '(', ')'), array('\\*', '\\\\', '\\(', '\\)'), $string);
 	}
