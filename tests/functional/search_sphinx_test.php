@@ -20,6 +20,9 @@ class phpbb_functional_search_sphinx_test extends phpbb_functional_search_test
 	{
 		parent::setUp();
 		$this->search_backend = 'phpbb_search_fulltext_sphinx';
-		$this->markTestIncomplete('Sphinx search not running for the test board');
+		if (!isset($config['fulltext_sphinx_id']))
+		{
+			$this->markTestIncomplete('Sphinx search not running for the test board');
+		}
 	}
 }
