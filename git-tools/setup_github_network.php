@@ -15,7 +15,7 @@ function show_usage()
 	echo "$filename adds repositories of a github network as remotes to a local git repository.\n";
 	echo "\n";
 
-	echo "Usage: [php] $filename -s collaborators|organisation|contributors|network [OPTIONS]\n";
+	echo "Usage: [php] $filename -s collaborators|organisation|contributors|forks [OPTIONS]\n";
 	echo "\n";
 
 	echo "Scopes:\n";
@@ -157,7 +157,7 @@ function api_url_request($url)
 	)));
 
 	$sub_request_result = array();
-	// Split possible headers from the body
+	// Check headers for pagination links
 	if (!empty($http_response_header))
 	{
 		foreach ($http_response_header as $header_element)
