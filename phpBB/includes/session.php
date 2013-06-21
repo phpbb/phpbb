@@ -207,7 +207,7 @@ class phpbb_session
 	function session_begin($update_session_page = true)
 	{
 		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
-		global $request;
+		global $request, $phpbb_container;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -403,15 +403,11 @@ class phpbb_session
 					// Check whether the session is still valid if we have one
 					$method = basename(trim($config['auth_method']));
 
-					$class = 'phpbb_auth_provider_' . $method;
-					if (class_exists($class))
+					$provider = $phpbb_container->get('auth.provider.' . $method);
+					$ret = $provider->validate_session($this->data);
+					if ($ret !== null && !$ret)
 					{
-						$provider = new $class();
-						$ret = $provider->validate_session($this->data);
-						if ($ret !== null && !$ret)
-						{
-							$session_expired = true;
-						}
+						$session_expired = true;
 					}
 
 					if (!$session_expired)
@@ -505,7 +501,7 @@ class phpbb_session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx;
+		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx, $phpbb_container;
 
 		$this->data = array();
 
@@ -570,17 +566,13 @@ class phpbb_session
 
 		$method = basename(trim($config['auth_method']));
 
-		$class = 'phpbb_auth_provider_' . $method;
-		if (class_exists($class))
-		{
-			$provider = new $class();
-			$this->data = $provider->autologin();
+		$provider = $phpbb_container->get('auth.provider.' . $method);
+		$this->data = $provider->autologin();
 
-			if (sizeof($this->data))
-			{
-				$this->cookie_data['k'] = '';
-				$this->cookie_data['u'] = $this->data['user_id'];
-			}
+		if (sizeof($this->data))
+		{
+			$this->cookie_data['k'] = '';
+			$this->cookie_data['u'] = $this->data['user_id'];
 		}
 
 		// If we're presented with an autologin key we'll join against it.
@@ -885,7 +877,7 @@ class phpbb_session
 	*/
 	function session_kill($new_session = true)
 	{
-		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx;
+		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx, $phpbb_container;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
@@ -895,12 +887,8 @@ class phpbb_session
 		// Allow connecting logout with external auth method logout
 		$method = basename(trim($config['auth_method']));
 
-		$class = 'phpbb_auth_provider_' . $method;
-		if (class_exists($class))
-		{
-			$provider = new $class();
-			$provider->logout($this->data, $new_session);
-		}
+		$provider = $phpbb_container->get('auth.provider.' . $method);
+		$provider->logout($this->data, $new_session);
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{

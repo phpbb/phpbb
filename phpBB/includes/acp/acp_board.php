@@ -546,10 +546,9 @@ class acp_board
 			{
 				if ($method)
 				{
-					$class = 'phpbb_auth_provider_' . $method;
-					if (class_exists($class))
+					$provider = $phpbb_container->get('auth.provider.' . $method);
+					if ($provider)
 					{
-						$provider = new $class();
 						if ($fields = $provider->acp($this->new_config))
 						{
 							// Check if we need to create config fields for this plugin and save config when submit was pressed
@@ -586,10 +585,9 @@ class acp_board
 				$method = basename($cfg_array['auth_method']);
 				if ($method)
 				{
-					$class = 'phpbb_auth_provider_' . $method;
-					if (class_exists($class))
+					$provider = $phpbb_container->get('auth.provider.' . $method);
+					if ($provider)
 					{
-						$provider = new $class();
 						if ($error = $provider->init())
 						{
 							foreach ($old_auth_config as $config_name => $config_value)
@@ -685,10 +683,9 @@ class acp_board
 			{
 				if ($method)
 				{
-					$class = 'phpbb_auth_provider_' . $method;
-					if (class_exists($class))
+					$provider = $phpbb_container->get('auth.provider.' . $method);
+					if ($provider)
 					{
-						$provider = new $class();
 						$fields = $provider->acp($this->new_config);
 
 						if ($fields['tpl'])
