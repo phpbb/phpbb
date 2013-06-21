@@ -1,1 +1,18 @@
 services:
+    auth.provider.db:
+        class: phpbb_auth_provider_db
+        arguments:
+            - @dbal.conn
+            - @config
+            - @request
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+    auth.provider.apache:
+        class: phpbb_auth_provider_apache
+        arguments:
+
+    auth.provider.ldap:
+        class: phpbb_auth_provider_ldap
+        arguments:
+
