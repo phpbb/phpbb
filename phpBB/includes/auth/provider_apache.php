@@ -23,6 +23,26 @@ if (!defined('IN_PHPBB'))
 class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 {
 	/**
+	 * Apache Authentication Constructor
+	 *
+	 * @param 	phpbb_db_driver 	$db
+	 * @param 	phpbb_config 		$config
+	 * @param 	phpbb_request 		$request
+	 * @param 	phpbb_user 			$user
+	 * @param 	string 				$phpbb_root_path
+	 * @param 	string 				$phpEx
+	 */
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $phpbb_root_path, $phpEx)
+	{
+		$this->db = $db;
+		$this->config = $config;
+		$this->request = $request;
+		$this->user = $user;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
+	}
+
+	/**
 	 * Checks whether the user is identified to apache
 	 * Only allow changing authentication to apache if the user is identified
 	 * Called in acp_board while setting authentication plugins
@@ -31,11 +51,9 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	 */
 	public function init()
 	{
-		global $user, $request;
-
-		if (!$request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER) || $user->data['username'] !== htmlspecialchars_decode($request->server('PHP_AUTH_USER')))
+		if (!$this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER) || $this->user->data['username'] !== htmlspecialchars_decode($this->request->server('PHP_AUTH_USER')))
 		{
-			return $user->lang['APACHE_SETUP_BEFORE_USE'];
+			return $this->user->lang['APACHE_SETUP_BEFORE_USE'];
 		}
 		return false;
 	}
@@ -45,8 +63,6 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	 */
 	public function login($username, $password)
 	{
-		global $db, $request;
-
 		// do not allow empty password
 		if (!$password)
 		{
@@ -66,7 +82,7 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 			);
 		}
 
-		if (!$request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
+		if (!$this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
 		{
 			return array(
 				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -75,8 +91,8 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 			);
 		}
 
-		$php_auth_user = htmlspecialchars_decode($request->server('PHP_AUTH_USER'));
-		$php_auth_pw = htmlspecialchars_decode($request->server('PHP_AUTH_PW'));
+		$php_auth_user = htmlspecialchars_decode($this->request->server('PHP_AUTH_USER'));
+		$php_auth_pw = htmlspecialchars_decode($this->request->server('PHP_AUTH_PW'));
 
 		if (!empty($php_auth_user) && !empty($php_auth_pw))
 		{
@@ -91,10 +107,10 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 
 			$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
 				FROM ' . USERS_TABLE . "
-				WHERE username = '" . $db->sql_escape($php_auth_user) . "'";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+				WHERE username = '" . $this->db->sql_escape($php_auth_user) . "'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
 
 			if ($row)
 			{
@@ -140,15 +156,13 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	 */
 	public function autologin()
 	{
-		global $db, $request;
-
-		if (!$request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
+		if (!$this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
 		{
 			return array();
 		}
 
-		$php_auth_user = htmlspecialchars_decode($request->server('PHP_AUTH_USER'));
-		$php_auth_pw = htmlspecialchars_decode($request->server('PHP_AUTH_PW'));
+		$php_auth_user = htmlspecialchars_decode($this->request->server('PHP_AUTH_USER'));
+		$php_auth_pw = htmlspecialchars_decode($this->request->server('PHP_AUTH_PW'));
 
 		if (!empty($php_auth_user) && !empty($php_auth_pw))
 		{
@@ -157,10 +171,10 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
-				WHERE username = '" . $db->sql_escape($php_auth_user) . "'";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+				WHERE username = '" . $this->db->sql_escape($php_auth_user) . "'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
 
 			if ($row)
 			{
@@ -169,9 +183,7 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 
 			if (!function_exists('user_add'))
 			{
-				global $phpbb_root_path, $phpEx;
-
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				include($this->phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
 			}
 
 			// create the user if he does not exist yet
@@ -179,10 +191,10 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
-				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($php_auth_user)) . "'";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+				WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($php_auth_user)) . "'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
 
 			if ($row)
 			{
@@ -204,15 +216,14 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	 */
 	private function user_row($username, $password)
 	{
-		global $db, $config, $user;
 		// first retrieve default group id
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = '" . $db->sql_escape('REGISTERED') . "'
+			WHERE group_name = '" . $this->db->sql_escape('REGISTERED') . "'
 				AND group_type = " . GROUP_SPECIAL;
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
 
 		if (!$row)
 		{
@@ -226,8 +237,8 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 			'user_email'	=> '',
 			'group_id'		=> (int) $row['group_id'],
 			'user_type'		=> USER_NORMAL,
-			'user_ip'		=> $user->ip,
-			'user_new'		=> ($config['new_member_post_limit']) ? 1 : 0,
+			'user_ip'		=> $this->user->ip,
+			'user_new'		=> ($this->config['new_member_post_limit']) ? 1 : 0,
 		);
 	}
 
@@ -239,12 +250,10 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	 */
 	public function validate_session($user)
 	{
-		global $request;
-
 		// Check if PHP_AUTH_USER is set and handle this case
-		if ($request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
+		if ($this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
 		{
-			$php_auth_user = $request->server('PHP_AUTH_USER');
+			$php_auth_user = $this->request->server('PHP_AUTH_USER');
 
 			return ($php_auth_user === $user['username']) ? true : false;
 		}
