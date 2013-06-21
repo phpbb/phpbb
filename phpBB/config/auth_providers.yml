@@ -15,4 +15,6 @@ services:
     auth.provider.ldap:
         class: phpbb_auth_provider_ldap
         arguments:
-
+            - @dbal.conn
+            - @config
+            - @user

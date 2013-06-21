@@ -25,60 +25,72 @@ if (!defined('IN_PHPBB'))
 class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 {
 	/**
+	 * LDAP Authentication Constructor
+	 *
+	 * @param 	phpbb_db_driver 	$db
+	 * @param 	phpbb_config 		$config
+	 * @param 	phpbb_user 			$user
+	 */
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_user $user)
+	{
+		$this->db = $db;
+		$this->config = $config;
+		$this->user = $user;
+	}
+
+	/**
 	 * Connect to ldap server
 	 * Only allow changing authentication to ldap if we can connect to the ldap server
 	 * Called in acp_board while setting authentication plugins
 	 */
 	public function init()
 	{
-		global $config, $user;
-
 		if (!@extension_loaded('ldap'))
 		{
-			return $user->lang['LDAP_NO_LDAP_EXTENSION'];
+			return $this->user->lang['LDAP_NO_LDAP_EXTENSION'];
 		}
 
-		$config['ldap_port'] = (int) $config['ldap_port'];
-		if ($config['ldap_port'])
+		$this->config['ldap_port'] = (int) $this->config['ldap_port'];
+		if ($this->config['ldap_port'])
 		{
-			$ldap = @ldap_connect($config['ldap_server'], $config['ldap_port']);
+			$ldap = @ldap_connect($this->config['ldap_server'], $this->config['ldap_port']);
 		}
 		else
 		{
-			$ldap = @ldap_connect($config['ldap_server']);
+			$ldap = @ldap_connect($this->config['ldap_server']);
 		}
 
 		if (!$ldap)
 		{
-			return $user->lang['LDAP_NO_SERVER_CONNECTION'];
+			return $this->user->lang['LDAP_NO_SERVER_CONNECTION'];
 		}
 
 		@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 		@ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
 
-		if ($config['ldap_user'] || $config['ldap_password'])
+		if ($this->config['ldap_user'] || $this->config['ldap_password'])
 		{
-			if (!@ldap_bind($ldap, htmlspecialchars_decode($config['ldap_user']), htmlspecialchars_decode($config['ldap_password'])))
+			if (!@ldap_bind($ldap, htmlspecialchars_decode($this->config['ldap_user']), htmlspecialchars_decode($this->config['ldap_password'])))
 			{
-				return $user->lang['LDAP_INCORRECT_USER_PASSWORD'];
+				return $this->user->lang['LDAP_INCORRECT_USER_PASSWORD'];
 			}
 		}
 
 		// ldap_connect only checks whether the specified server is valid, so the connection might still fail
 		$search = @ldap_search(
 			$ldap,
-			htmlspecialchars_decode($config['ldap_base_dn']),
-			$this->ldap_user_filter($user->data['username']),
-			(empty($config['ldap_email'])) ?
-				array(htmlspecialchars_decode($config['ldap_uid'])) :
-				array(htmlspecialchars_decode($config['ldap_uid']), htmlspecialchars_decode($config['ldap_email'])),
+			htmlspecialchars_decode($this->config['ldap_base_dn']),
+			$this->ldap_user_filter($this->user->data['username']),
+			(empty($this->config['ldap_email'])) ?
+				array(htmlspecialchars_decode($this->config['ldap_uid'])) :
+				array(htmlspecialchars_decode($this->config['ldap_uid']), htmlspecialchars_decode($this->config['ldap_email'])),
 			0,
 			1
 		);
 
 		if ($search === false)
 		{
-			return $user->lang['LDAP_SEARCH_FAILED'];
+			return $this->user->lang['LDAP_SEARCH_FAILED'];
 		}
 
 		$result = @ldap_get_entries($ldap, $search);
@@ -88,12 +100,12 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 
 		if (!is_array($result) || sizeof($result) < 2)
 		{
-			return sprintf($user->lang['LDAP_NO_IDENTITY'], $user->data['username']);
+			return sprintf($this->user->lang['LDAP_NO_IDENTITY'], $this->user->data['username']);
 		}
 
-		if (!empty($config['ldap_email']) && !isset($result[0][htmlspecialchars_decode($config['ldap_email'])]))
+		if (!empty($this->config['ldap_email']) && !isset($result[0][htmlspecialchars_decode($this->config['ldap_email'])]))
 		{
-			return $user->lang['LDAP_NO_EMAIL'];
+			return $this->user->lang['LDAP_NO_EMAIL'];
 		}
 
 		return false;
@@ -104,8 +116,6 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 	 */
 	public function login($username, $password)
 	{
-			global $db, $config, $user;
-
 		// do not allow empty password
 		if (!$password)
 		{
@@ -134,14 +144,14 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 			);
 		}
 
-		$config['ldap_port'] = (int) $config['ldap_port'];
-		if ($config['ldap_port'])
+		$this->config['ldap_port'] = (int) $this->config['ldap_port'];
+		if ($this->config['ldap_port'])
 		{
-			$ldap = @ldap_connect($config['ldap_server'], $config['ldap_port']);
+			$ldap = @ldap_connect($this->config['ldap_server'], $this->config['ldap_port']);
 		}
 		else
 		{
-			$ldap = @ldap_connect($config['ldap_server']);
+			$ldap = @ldap_connect($this->config['ldap_server']);
 		}
 
 		if (!$ldap)
@@ -156,9 +166,9 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 		@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 		@ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
 
-		if ($config['ldap_user'] || $config['ldap_password'])
+		if ($this->config['ldap_user'] || $this->config['ldap_password'])
 		{
-			if (!@ldap_bind($ldap, htmlspecialchars_decode($config['ldap_user']), htmlspecialchars_decode($config['ldap_password'])))
+			if (!@ldap_bind($ldap, htmlspecialchars_decode($this->config['ldap_user']), htmlspecialchars_decode($this->config['ldap_password'])))
 			{
 				return array(
 					'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -170,11 +180,11 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 
 		$search = @ldap_search(
 			$ldap,
-			htmlspecialchars_decode($config['ldap_base_dn']),
+			htmlspecialchars_decode($this->config['ldap_base_dn']),
 			$this->ldap_user_filter($username),
-			(empty($config['ldap_email'])) ?
-				array(htmlspecialchars_decode($config['ldap_uid'])) :
-				array(htmlspecialchars_decode($config['ldap_uid']), htmlspecialchars_decode($config['ldap_email'])),
+			(empty($this->config['ldap_email'])) ?
+				array(htmlspecialchars_decode($this->config['ldap_uid'])) :
+				array(htmlspecialchars_decode($this->config['ldap_uid']), htmlspecialchars_decode($this->config['ldap_email'])),
 			0,
 			1
 		);
@@ -189,10 +199,10 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 
 				$sql ='SELECT user_id, username, user_password, user_passchg, user_email, user_type
 					FROM ' . USERS_TABLE . "
-					WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+					WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'";
+				$result = $this->db->sql_query($sql);
+				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
 
 				if ($row)
 				{
@@ -220,11 +230,11 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 					// retrieve default group id
 					$sql = 'SELECT group_id
 						FROM ' . GROUPS_TABLE . "
-						WHERE group_name = '" . $db->sql_escape('REGISTERED') . "'
+						WHERE group_name = '" . $this->db->sql_escape('REGISTERED') . "'
 							AND group_type = " . GROUP_SPECIAL;
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = $this->db->sql_query($sql);
+					$row = $this->db->sql_fetchrow($result);
+					$this->db->sql_freeresult($result);
 
 					if (!$row)
 					{
@@ -235,11 +245,11 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 					$ldap_user_row = array(
 						'username'		=> $username,
 						'user_password'	=> phpbb_hash($password),
-						'user_email'	=> (!empty($config['ldap_email'])) ? utf8_htmlspecialchars($ldap_result[0][htmlspecialchars_decode($config['ldap_email'])][0]) : '',
+						'user_email'	=> (!empty($this->config['ldap_email'])) ? utf8_htmlspecialchars($ldap_result[0][htmlspecialchars_decode($this->config['ldap_email'])][0]) : '',
 						'group_id'		=> (int) $row['group_id'],
 						'user_type'		=> USER_NORMAL,
-						'user_ip'		=> $user->ip,
-						'user_new'		=> ($config['new_member_post_limit']) ? 1 : 0,
+						'user_ip'		=> $this->user->ip,
+						'user_new'		=> ($this->config['new_member_post_limit']) ? 1 : 0,
 					);
 
 					unset($ldap_result);
@@ -286,40 +296,38 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 	 */
 	public function acp($new)
 	{
-		global $user;
-
 		$tpl = '
 
 		<dl>
-			<dt><label for="ldap_server">' . $user->lang['LDAP_SERVER'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_SERVER_EXPLAIN'] . '</span></dt>
+			<dt><label for="ldap_server">' . $this->user->lang['LDAP_SERVER'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_SERVER_EXPLAIN'] . '</span></dt>
 			<dd><input type="text" id="ldap_server" size="40" name="config[ldap_server]" value="' . $new['ldap_server'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="ldap_port">' . $user->lang['LDAP_PORT'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_PORT_EXPLAIN'] . '</span></dt>
+			<dt><label for="ldap_port">' . $this->user->lang['LDAP_PORT'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_PORT_EXPLAIN'] . '</span></dt>
 			<dd><input type="text" id="ldap_port" size="40" name="config[ldap_port]" value="' . $new['ldap_port'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="ldap_dn">' . $user->lang['LDAP_DN'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_DN_EXPLAIN'] . '</span></dt>
+			<dt><label for="ldap_dn">' . $this->user->lang['LDAP_DN'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_DN_EXPLAIN'] . '</span></dt>
 			<dd><input type="text" id="ldap_dn" size="40" name="config[ldap_base_dn]" value="' . $new['ldap_base_dn'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="ldap_uid">' . $user->lang['LDAP_UID'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_UID_EXPLAIN'] . '</span></dt>
+			<dt><label for="ldap_uid">' . $this->user->lang['LDAP_UID'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_UID_EXPLAIN'] . '</span></dt>
 			<dd><input type="text" id="ldap_uid" size="40" name="config[ldap_uid]" value="' . $new['ldap_uid'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="ldap_user_filter">' . $user->lang['LDAP_USER_FILTER'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_USER_FILTER_EXPLAIN'] . '</span></dt>
+			<dt><label for="ldap_user_filter">' . $this->user->lang['LDAP_USER_FILTER'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_USER_FILTER_EXPLAIN'] . '</span></dt>
 			<dd><input type="text" id="ldap_user_filter" size="40" name="config[ldap_user_filter]" value="' . $new['ldap_user_filter'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="ldap_email">' . $user->lang['LDAP_EMAIL'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_EMAIL_EXPLAIN'] . '</span></dt>
+			<dt><label for="ldap_email">' . $this->user->lang['LDAP_EMAIL'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_EMAIL_EXPLAIN'] . '</span></dt>
 			<dd><input type="email" id="ldap_email" size="40" name="config[ldap_email]" value="' . $new['ldap_email'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="ldap_user">' . $user->lang['LDAP_USER'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_USER_EXPLAIN'] . '</span></dt>
+			<dt><label for="ldap_user">' . $this->user->lang['LDAP_USER'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_USER_EXPLAIN'] . '</span></dt>
 			<dd><input type="text" id="ldap_user" size="40" name="config[ldap_user]" value="' . $new['ldap_user'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="ldap_password">' . $user->lang['LDAP_PASSWORD'] . $user->lang['COLON'] . '</label><br /><span>' . $user->lang['LDAP_PASSWORD_EXPLAIN'] . '</span></dt>
+			<dt><label for="ldap_password">' . $this->user->lang['LDAP_PASSWORD'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_PASSWORD_EXPLAIN'] . '</span></dt>
 			<dd><input type="password" id="ldap_password" size="40" name="config[ldap_password]" value="' . $new['ldap_password'] . '" autocomplete="off" /></dd>
 		</dl>
 		';
@@ -340,12 +348,10 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 	 */
 	private function ldap_user_filter($username)
 	{
-		global $config;
-
-		$filter = '(' . $config['ldap_uid'] . '=' . $this->ldap_escape(htmlspecialchars_decode($username)) . ')';
-		if ($config['ldap_user_filter'])
+		$filter = '(' . $this->config['ldap_uid'] . '=' . $this->ldap_escape(htmlspecialchars_decode($username)) . ')';
+		if ($this->config['ldap_user_filter'])
 		{
-			$_filter = ($config['ldap_user_filter'][0] == '(' && substr($config['ldap_user_filter'], -1) == ')') ? $config['ldap_user_filter'] : "({$config['ldap_user_filter']})";
+			$_filter = ($this->config['ldap_user_filter'][0] == '(' && substr($this->config['ldap_user_filter'], -1) == ')') ? $this->config['ldap_user_filter'] : "({$this->config['ldap_user_filter']})";
 			$filter = "(&{$filter}{$_filter})";
 		}
 		return $filter;
