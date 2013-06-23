@@ -47,9 +47,11 @@ Database Tests
 By default all tests requiring a database connection will use sqlite. If you
 do not have sqlite installed the tests will be skipped. If you wish to run the
 tests on a different database you have to create a test_config.php file within
-your tests directory following the same format as phpBB's config.php. An
-example for mysqli can be found below. More information on configuration
-options can be found on the wiki (see below).
+your tests directory following the same format as phpBB's config.php. Testing
+makes use of a seperate database defined in this config file and before running
+the tests each time this database is deleted. An example for mysqli can be
+found below. More information on configuration options can be found on the
+wiki (see below).
 
     <?php
     $dbms = 'mysqli';
@@ -129,11 +131,9 @@ local web server. As of PHP 5.4 a builtin webserver is available. If you are
 on PHP 5.3 you will also need to supply the URL to a webserver of your own in
 the 'tests/test_config.php' file. This is as simple as defining the
 '$phpbb_functional_url', which contains the URL for the directory containing
-the board. Make sure you include the trailing slash. Testing makes use of a
-seperate database defined in this config file and before running the tests
-each time this database is deleted. Note that without extensive changes to the
-test framework, you cannot use a board outside of the repository on which to
-run tests.
+the board. Make sure you include the trailing slash. Note that without extensive
+changes to the test framework, you cannot use a board outside of the repository
+on which to run tests.
 
     $phpbb_functional_url = 'http://localhost/phpBB3/';
 
