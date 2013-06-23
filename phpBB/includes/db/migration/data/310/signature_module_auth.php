@@ -40,7 +40,7 @@ class phpbb_db_migration_data_310_signature_module_auth extends phpbb_db_migrati
 
 	public function update_signature_module_auth()
 	{
-		$sql = 'UPDATE ' . MODULES TABLE . "
+		$sql = 'UPDATE ' . MODULES_TABLE . "
 			SET module_auth = 'acl_u_sig'
 			WHERE module_class = 'ucp'
 				AND module_basename = 'ucp_profile'
