@@ -15,8 +15,7 @@ class phpbb_db_migration_data_310_signature_module_auth extends phpbb_db_migrati
 			FROM ' . MODULES_TABLE . "
 			WHERE module_class = 'ucp'
 				AND module_basename = 'ucp_profile'
-				AND module_mode = 'signature'
-				AND module_auth = ''";
+				AND module_mode = 'signature'";
 		$result = $this->db->sql_query($sql);
 		$module_auth = $this->db_sql_fetchfield('module_auth');
 		$this->db->sql_freeresult($result);
@@ -45,7 +44,8 @@ class phpbb_db_migration_data_310_signature_module_auth extends phpbb_db_migrati
 			SET module_auth = 'acl_u_sig'
 			WHERE module_class = 'ucp'
 				AND module_basename = 'ucp_profile'
-				AND module_mode = 'signature'";
+				AND module_mode = 'signature'
+				AND module_auth = ''";
 		$this->db->sql_query($sql);
 	}
 }
