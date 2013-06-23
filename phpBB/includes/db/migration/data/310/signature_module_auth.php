@@ -2,8 +2,8 @@
 /**
 *
 * @package migration
-* @copyright (c) 2012 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License v2
+* @copyright (c) 2013 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU Public License v2
 *
 */
 
@@ -15,12 +15,13 @@ class phpbb_db_migration_data_310_signature_module_auth extends phpbb_db_migrati
 			FROM ' . MODULES_TABLE . "
 			WHERE module_class = 'ucp'
 				AND module_basename = 'ucp_profile'
-				AND module_mode = 'signature'";
+				AND module_mode = 'signature'
+				AND module_auth = ''";
 		$result = $this->db->sql_query($sql);
 		$module_auth = $this->db_sql_fetchfield('module_auth');
 		$this->db->sql_freeresult($result);
 
-		return $module_auth === 'alc_u_sig';
+		return $module_auth === 'acl_u_sig' || $module_auth === false;
 	}
 
 	static public function depends_on()
@@ -32,7 +33,7 @@ class phpbb_db_migration_data_310_signature_module_auth extends phpbb_db_migrati
 	{
 		return array(
 			array('custom', array(
-					array(&$this, 'update_signature_module_auth'),
+					array($this, 'update_signature_module_auth'),
 				),
 			),
 		);
@@ -46,7 +47,5 @@ class phpbb_db_migration_data_310_signature_module_auth extends phpbb_db_migrati
 				AND module_basename = 'ucp_profile'
 				AND module_mode = 'signature'";
 		$this->db->sql_query($sql);
-
-		return;
 	}
 }
