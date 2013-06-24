@@ -238,7 +238,7 @@ class phpbb_template_twig implements phpbb_template
 
 		try
 		{
-			echo $this->twig->render($this->locator->get_filename_for_handle($handle), $this->get_template_vars());
+			$this->twig->display($this->locator->get_filename_for_handle($handle), $this->get_template_vars());
 		}
 		catch (Twig_Error $e)
 		{
