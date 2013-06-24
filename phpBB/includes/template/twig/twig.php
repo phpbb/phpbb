@@ -125,6 +125,9 @@ class phpbb_template_twig implements phpbb_template
     		'autoescape'	=> false,
 		));
 
+		// Set enabled phpbb extensions
+		$this->twig->set_phpbb_extensions($this->extension_manager->all_enabled());
+
 		// Clear previous cache files (while WIP)
 		// @todo remove
 		if (is_dir($this->cachepath))
@@ -182,7 +185,8 @@ class phpbb_template_twig implements phpbb_template
 					{
 						if (is_dir($ext_path . 'styles/' . $style_name))
 						{
-							$this->twig->getLoader()->addPath($ext_path . 'styles/' . $style_name, $ext_namespace);
+							// namespaces cannot contain /
+							$this->twig->getLoader()->addPath($ext_path . 'styles/' . $style_name . '/template', str_replace('/', '_', $ext_namespace));
 						}
 					}
 				}

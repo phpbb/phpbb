@@ -17,6 +17,35 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_template_twig_environment extends Twig_Environment
 {
+	/** @var array */
+	protected $phpbbExtensions;
+
+    /**
+     * Gets the cache filename for a given template.
+     *
+     * @param string $name The template name
+     *
+     * @return string The cache file name
+     */
+    public function getCacheFilename($name)
+    {
+        if (false === $this->cache) {
+            return false;
+        }
+
+    	return $this->getCache() . '/' . preg_replace('#[^a-zA-Z0-9_/]#', '_', $name) . '.php';
+    }
+
+    public function set_phpbb_extensions($extensions)
+    {
+    	$this->phpbbExtensions = $extensions;
+	}
+
+	public function get_phpbb_extensions()
+	{
+		return $this->phpbbExtensions;
+	}
+
 	/**
 	* recursive helper to set variables into $context so that Twig can properly fetch them for display
 	*
