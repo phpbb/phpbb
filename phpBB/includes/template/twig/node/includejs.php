@@ -24,8 +24,9 @@ class phpbb_template_twig_node_includejs extends Twig_Node
         $compiler->addDebugInfo($this);
 
         $compiler
-        	->write("\$context['SCRIPTS'] .= '<script type=\"text/javascript\" src=")
+        	->write("\$context['SCRIPTS'] .= '<script type=\"text/javascript\" src=\"' . ")
         	->subcompile($this->getNode('expr'))
-        	->raw(">';\n\n");
+        	->raw(" . '\">';\n\n")
+        ;
     }
 }

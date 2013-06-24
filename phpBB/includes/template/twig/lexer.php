@@ -32,15 +32,15 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			'UNDEFINE',
 			'ENDDEFINE',
 			/*'INCLUDE',
-			'INCLUDEPHP',
-			'INCLUDEJS',*/
+			'INCLUDEPHP',*/
+			'INCLUDEJS',
 			'PHP',
 			'ENDPHP',
 			'EVENT',
 		);
 
 		// Replace <!-- INCLUDE blah.html --> with {% include 'blah.html' %}
-		$code = preg_replace('#<!-- INCLUDE(PHP|JS)? (.*?) -->#', "{% INCLUDE$1 '$2' %}", $code);
+		$code = preg_replace('#<!-- INCLUDE(PHP)? (.*?) -->#', "{% INCLUDE$1 '$2' %}", $code);
 
 		// This strips the $ inside of a tag directly after the token, which was used in <!-- DEFINE $NAME
 		$code = preg_replace('#<!-- DEFINE \$(.*)-->#', '<!-- DEFINE $1-->', $code);
