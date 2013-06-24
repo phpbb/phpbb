@@ -45,7 +45,7 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 	*/
 	public function test_helper_url($route, $params, $is_amp, $session_id, $expected, $description)
 	{
-		global $phpbb_dispatcher;
+		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$this->style_resource_locator = new phpbb_style_resource_locator();
