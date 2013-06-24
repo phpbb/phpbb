@@ -326,7 +326,7 @@ class phpbb_db_driver_mssqlnative extends phpbb_db_driver_mssql_base
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl)
+				if ($cache && $cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
@@ -394,7 +394,7 @@ class phpbb_db_driver_mssqlnative extends phpbb_db_driver_mssql_base
 	*/
 	function sql_affectedrows()
 	{
-		return (!empty($this->query_result)) ? @sqlsrv_rows_affected($this->query_result) : false;
+		return ($this->db_connect_id) ? @sqlsrv_rows_affected($this->query_result) : false;
 	}
 
 	/**
@@ -409,7 +409,7 @@ class phpbb_db_driver_mssqlnative extends phpbb_db_driver_mssql_base
 			$query_id = $this->query_result;
 		}
 
-		if ($cache->sql_exists($query_id))
+		if ($cache && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -474,9 +474,9 @@ class phpbb_db_driver_mssqlnative extends phpbb_db_driver_mssql_base
 			return $cache->sql_freeresult($query_id);
 		}
 
-		if (isset($this->open_queries[$query_id]))
+		if (isset($this->open_queries[(int) $query_id]))
 		{
-			unset($this->open_queries[$query_id]);
+			unset($this->open_queries[(int) $query_id]);
 			return @sqlsrv_free_stmt($query_id);
 		}
 		return false;

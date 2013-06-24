@@ -15,65 +15,27 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 {
 	protected $phpbb_extension_manager;
 
+	static private $helper;
+
 	static protected $fixtures = array(
-		'foo/bar/config/routing.yml',
-		'foo/bar/config/services.yml',
-		'foo/bar/controller/controller.php',
-		'foo/bar/styles/prosilver/template/foo_bar_body.html',
+		'foo/bar/config/',
+		'foo/bar/controller/',
+		'foo/bar/styles/prosilver/template/',
 	);
 
-	/**
-	* This should only be called once before the tests are run.
-	* This is used to copy the fixtures to the phpBB install
-	*/
 	static public function setUpBeforeClass()
 	{
-		global $phpbb_root_path;
 		parent::setUpBeforeClass();
 
-		$directories = array(
-			$phpbb_root_path . 'ext/foo/bar/',
-			$phpbb_root_path . 'ext/foo/bar/config/',
-			$phpbb_root_path . 'ext/foo/bar/controller/',
-			$phpbb_root_path . 'ext/foo/bar/styles/prosilver/template',
-		);
-
-		foreach ($directories as $dir)
-		{
-			if (!is_dir($dir))
-			{
-				mkdir($dir, 0777, true);
-			}
-		}
-
-		foreach (self::$fixtures as $fixture)
-		{
-			copy(
-				"tests/functional/fixtures/ext/$fixture",
-				"{$phpbb_root_path}ext/$fixture");
-		}
+		self::$helper = new phpbb_test_case_helpers(self);
+		self::$helper->copy_ext_fixtures(dirname(__FILE__) . '/fixtures/ext/', self::$fixtures);
 	}
 
-	/**
-	* This should only be called once after the tests are run.
-	* This is used to remove the fixtures from the phpBB install
-	*/
 	static public function tearDownAfterClass()
 	{
-		global $phpbb_root_path;
+		parent::tearDownAfterClass();
 
-		foreach (self::$fixtures as $fixture)
-		{
-			unlink("{$phpbb_root_path}ext/$fixture");
-		}
-
-		rmdir("{$phpbb_root_path}ext/foo/bar/config");
-		rmdir("{$phpbb_root_path}ext/foo/bar/controller");
-		rmdir("{$phpbb_root_path}ext/foo/bar/styles/prosilver/template");
-		rmdir("{$phpbb_root_path}ext/foo/bar/styles/prosilver");
-		rmdir("{$phpbb_root_path}ext/foo/bar/styles");
-		rmdir("{$phpbb_root_path}ext/foo/bar");
-		rmdir("{$phpbb_root_path}ext/foo");
+		self::$helper->restore_original_ext_dir();
 	}
 
 	public function setUp()
