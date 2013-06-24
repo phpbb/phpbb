@@ -7,3 +7,8 @@
 # The above will be accessed via app.php?controller=foo and it will
 # instantiate the "foo_service" service and call the "method" method.
 #
+api_forums_controller:
+    pattern: /api/forums/{forum_id}
+    defaults: { _controller: api.controller:forums, forum_id: 0 }
+    requirements:
+        forum_id: \d+
