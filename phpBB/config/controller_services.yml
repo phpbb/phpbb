@@ -1,0 +1,5 @@
+services:
+    api.controller:
+        class: phpbb_controller_api
+        arguments:
+            - @dbal.conn
