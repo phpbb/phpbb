@@ -27,7 +27,6 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 	public function test_acp_settings()
 	{
 		$crawler = $this->request('GET', 'adm/index.php?i=acp_board&mode=avatar&sid=' . $this->sid);
-		$this->assert_response_success();
 		// Check the default entries we should have
 		$this->assertContainsLang('ALLOW_GRAVATAR', $crawler->text());
 		$this->assertContainsLang('ALLOW_REMOTE', $crawler->text());
@@ -40,7 +39,7 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$form['config[allow_avatar_gravatar]']->select(1);
 		$form['config[allow_avatar_remote]']->select(1);
 		$form['config[allow_avatar_remote_upload]']->select(1);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('CONFIG_UPDATED', $crawler->text());
 	}
 
@@ -48,13 +47,11 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 	{
 		// Get ACP settings
 		$crawler = $this->request('GET', 'adm/index.php?i=acp_board&mode=avatar&sid=' . $this->sid);
-		$this->assert_response_success();
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$this->form_content = $form->getValues();
 
 		// Check if required form elements exist
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_profile&mode=avatar&sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->assertContainsLang('AVATAR_TYPE', $crawler->text());
 		$this->assertContainsLang('AVATAR_DRIVER_GRAVATAR_TITLE', $crawler->filter('#avatar_driver')->text());
 		$this->assertContainsLang('GRAVATAR_AVATAR_EMAIL', $crawler->text());
@@ -65,7 +62,7 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$form['avatar_gravatar_email']->setValue('test@example.com');
 		$form['avatar_gravatar_width']->setValue(80);
 		$form['avatar_gravatar_height']->setValue(80);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('PROFILE_UPDATED', $crawler->text());
 
 		// Submit gravatar with correct mail but incorrect size
@@ -75,7 +72,7 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$form['avatar_gravatar_email']->setValue('test@example.com');
 		$form['avatar_gravatar_width']->setValue(120);
 		$form['avatar_gravatar_height']->setValue(120);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContains(sprintf($this->lang['AVATAR_WRONG_SIZE'],
 			$this->form_content['config[avatar_min_width]'],
 			$this->form_content['config[avatar_min_height]'],
@@ -91,7 +88,7 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$form['avatar_gravatar_email']->setValue('test.example.com');
 		$form['avatar_gravatar_width']->setValue(80);
 		$form['avatar_gravatar_height']->setValue(80);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('EMAIL_INVALID_EMAIL', $crawler->text());
 	}
 
@@ -99,7 +96,6 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 	{
 		// Check if required form elements exist
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_profile&mode=avatar&sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->assertContainsLang('AVATAR_DRIVER_UPLOAD_TITLE', $crawler->filter('#avatar_driver')->text());
 		$this->assertContainsLang('UPLOAD_AVATAR_FILE', $crawler->text());
 		$this->assertContainsLang('UPLOAD_AVATAR_URL', $crawler->text());
@@ -109,27 +105,25 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$form['avatar_driver']->select('avatar_driver_upload');
 		// use default gravatar supplied by test@example.com and default size = 80px
 		$form['avatar_upload_url']->setValue('https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg');
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('PROFILE_UPDATED', $crawler->text());
 
 		// This will fail as the upload avatar currently expects a file that ends with an extension, e.g. .jpg
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_profile&mode=avatar&sid=' . $this->sid);
-		$this->assert_response_success();
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['avatar_driver']->select('avatar_driver_upload');
 		// use default gravatar supplied by test@example.com and size (s) = 80px
 		$form['avatar_upload_url']->setValue('https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=80');
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('AVATAR_URL_INVALID', $crawler->text());
 
 		// Submit gravatar with correct email and correct size
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_profile&mode=avatar&sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->markTestIncomplete('Test fails due to bug in DomCrawler with Symfony < 2.2: https://github.com/symfony/symfony/issues/4674.');
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['avatar_driver']->select('avatar_driver_upload');
 		$form['avatar_upload_file']->setValue($this->path . 'valid.jpg');
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('PROFILE_UPDATED', $crawler->text());
 	}
 
@@ -137,13 +131,11 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 	{
 		// Get ACP settings
 		$crawler = $this->request('GET', 'adm/index.php?i=acp_board&mode=avatar&sid=' . $this->sid);
-		$this->assert_response_success();
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$this->form_content = $form->getValues();
 
 		// Check if required form elements exist
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_profile&mode=avatar&sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->assertContainsLang('AVATAR_DRIVER_REMOTE_TITLE', $crawler->filter('#avatar_driver')->text());
 		$this->assertContainsLang('LINK_REMOTE_AVATAR', $crawler->text());
 		$this->assertContainsLang('LINK_REMOTE_SIZE', $crawler->text());
@@ -155,19 +147,18 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$form['avatar_remote_url']->setValue('https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg');
 		$form['avatar_remote_width']->setValue(80);
 		$form['avatar_remote_height']->setValue(80);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('PROFILE_UPDATED', $crawler->text());
 
 		// Set remote avatar with incorrect size
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_profile&mode=avatar&sid=' . $this->sid);
-		$this->assert_response_success();
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['avatar_driver']->select('avatar_driver_remote');
 		// use default gravatar supplied by test@example.com and size (s) = 80px
 		$form['avatar_remote_url']->setValue('https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg');
 		$form['avatar_remote_width']->setValue(120);
 		$form['avatar_remote_height']->setValue(120);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContains(sprintf($this->lang['AVATAR_WRONG_SIZE'],
 			$this->form_content['config[avatar_min_width]'],
 			$this->form_content['config[avatar_min_height]'],
@@ -179,14 +170,13 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 
 		// Enter correct data in form entries but select incorrect avatar driver
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_profile&mode=avatar&sid=' . $this->sid);
-		$this->assert_response_success();
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['avatar_driver']->select('avatar_driver_upload');
 		// use default gravatar supplied by test@example.com and size (s) = 80px
 		$form['avatar_remote_url']->setValue('https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg');
 		$form['avatar_remote_width']->setValue(80);
 		$form['avatar_remote_height']->setValue(80);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('NO_AVATAR_SELECTED', $crawler->text());
 
 		/*
@@ -196,7 +186,6 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		 * the current phpBB 3.0.11 release.
 		 */
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_profile&mode=avatar&sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->markTestIncomplete('Test currently fails because the remote avatar does not seem to check if it is an image');
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['avatar_driver']->select('avatar_driver_remote');
@@ -204,7 +193,7 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$form['avatar_remote_url']->setValue('https://www.phpbb.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg');
 		$form['avatar_remote_width']->setValue(80);
 		$form['avatar_remote_height']->setValue(80);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('NO_AVATAR_SELECTED', $crawler->text());
 	}
 
@@ -213,7 +202,6 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 	{
 		// Test setting group avatar of admin group
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
-		$this->assert_response_success();
 		$this->assertContainsLang('AVATAR_TYPE', $crawler->text());
 
 		// Test if setting a gravatar avatar properly works
@@ -222,24 +210,22 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$form['avatar_gravatar_email']->setValue('test@example.com');
 		$form['avatar_gravatar_width']->setValue(80);
 		$form['avatar_gravatar_height']->setValue(80);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('GROUP_UPDATED', $crawler->text());
 
 		// Go back to previous page
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
-		$this->assert_response_success();
 
 		// Test uploading a remote avatar
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['avatar_driver']->select('avatar_driver_upload');
 		// use default gravatar supplied by test@example.com and default size = 80px
 		$form['avatar_upload_url']->setValue('https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg');
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('GROUP_UPDATED', $crawler->text());
 
 		// Go back to previous page
 		$crawler = $this->request('GET', 'ucp.php?i=ucp_groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
-		$this->assert_response_success();
 
 		// Submit gravatar with incorrect email and correct size
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
@@ -247,7 +233,14 @@ class phpbb_functional_avatar_test extends phpbb_functional_test_case
 		$form['avatar_gravatar_email']->setValue('test.example.com');
 		$form['avatar_gravatar_width']->setValue(80);
 		$form['avatar_gravatar_height']->setValue(80);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('EMAIL_INVALID_EMAIL', $crawler->text());
+
+		// Delete avatar
+		$crawler = $this->request('GET', 'ucp.php?i=ucp_groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$form['avatar_delete']->tick();
+		$crawler = self::submit($form);
+		$this->assertContainsLang('GROUP_UPDATED', $crawler->text());
 	}
 }
