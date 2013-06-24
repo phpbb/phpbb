@@ -114,10 +114,6 @@ class phpbb_template_twig implements phpbb_template
 		// Initiate the loader, __main__ namespace paths will be setup later in set_style_names()
 		$loader = new Twig_Loader_Filesystem('');
 
-		// Add admin namespace
-		// @todo use phpbb_admin path
-		$loader->addPath($this->phpbb_root_path . 'adm/style/', 'admin');
-
 		$this->twig = new phpbb_template_twig_environment($loader, array(
 		    'cache'			=> $this->cachepath,
 		    'debug'			=> true, // @todo
@@ -133,16 +129,28 @@ class phpbb_template_twig implements phpbb_template
 
 		// Clear previous cache files (while WIP)
 		// @todo remove
-		if (is_dir($this->cachepath))
-		{
-			$this->twig->clearCacheFiles();
-		}
+		$this->clear_cache();
 
 		$this->twig->addExtension(new phpbb_template_twig_extension);
 
 		$lexer = new phpbb_template_twig_lexer($this->twig);
 
 		$this->twig->setLexer($lexer);
+	}
+
+	/**
+	* Clear the cache
+	*
+	* @return phpbb_template
+	*/
+	public function clear_cache()
+	{
+		if (is_dir($this->cachepath))
+		{
+			$this->twig->clearCacheFiles();
+		}
+
+		return $this;
 	}
 
 	/**
@@ -176,6 +184,10 @@ class phpbb_template_twig implements phpbb_template
 		if ($style_names === array($this->user->style['style_path']) || $style_names[0] == $this->user->style['style_path'])
 		{
 			$this->twig->getLoader()->setPaths($style_paths, 'core');
+
+			// Add admin namespace
+			// @todo use phpbb_admin path
+			$loader->addPath($this->phpbb_root_path . 'adm/style/', 'admin');
 
 			// Add all namespaces for all extensions
 			if ($this->extension_manager instanceof phpbb_extension_manager)
@@ -415,24 +427,27 @@ class phpbb_template_twig implements phpbb_template
 		$vars = array();
 
 		// Work-around for now
-		foreach ($this->user->lang as $key => $value)
+		if (!empty($this->user->lang))
 		{
-			if (!is_string($value))
+			foreach ($this->user->lang as $key => $value)
 			{
-				continue;
+				if (!is_string($value))
+				{
+					continue;
+				}
+
+				$vars['L_' . strtoupper($key)] = $value;
+				$vars['LA_' . strtoupper($key)] = addslashes($value);
 			}
 
-			$vars['L_' . strtoupper($key)] = $value;
-			$vars['LA_' . strtoupper($key)] = addslashes($value);
+			$vars = array_merge(
+				$vars,
+				$this->context->get_rootref(),
+				array(
+					'_phpbb_blocks'	=>  $this->context->get_tpldata(),
+				)
+			);
 		}
-
-		$vars = array_merge(
-			$vars,
-			$this->context->get_rootref(),
-			array(
-				'_phpbb_blocks'	=>  $this->context->get_tpldata(),
-			)
-		);
 
 		// Must do this so that <!-- IF .blah --> works correctly
 		// (only for the base loops, the rest are properly handled by the begin node)

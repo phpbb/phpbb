@@ -130,4 +130,11 @@ interface phpbb_template
 	* @return bool false on error, true on success
 	*/
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert');
+
+	/**
+	* Clear the cache
+	*
+	* @return phpbb_template
+	*/
+	public function clear_cache();
 }

@@ -77,32 +77,15 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		// Test the engine can be used
 		$this->setup_engine();
 
-		$template_cache_dir = dirname($this->template->cachepath);
-		if (!is_writable($template_cache_dir))
-		{
-			$this->markTestSkipped("Template cache directory ({$template_cache_dir}) is not writable.");
-		}
-
-		foreach (glob($this->template->cachepath . '*') as $file)
-		{
-			unlink($file);
-		}
-
-		$this->setup_engine();
+		$this->template->clear_cache();
 	}
 
 	protected function tearDown()
 	{
-		if (is_object($this->template))
-		{
-			foreach (glob($this->template->cachepath . '*') as $file)
-			{
-				unlink($file);
-			}
-		}
+		$this->template->clear_cache();
 	}
 
-	protected function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $cache_file)
+	protected function run_template($file, array $vars, array $block_vars, array $destroy, $expected)
 	{
 		$this->template->set_filenames(array('test' => $file));
 		$this->template->assign_vars($vars);
@@ -123,22 +106,10 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		try
 		{
 			$this->assertEquals($expected, $this->display('test'), "Testing $file");
-			$this->assertFileExists($cache_file);
 		}
 		catch (ErrorException $e)
 		{
-			if (file_exists($cache_file))
-			{
-				copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
-			}
 			throw $e;
-		}
-
-		// For debugging.
-		// When testing eval path the cache file may not exist.
-		if (self::PRESERVE_CACHE && file_exists($cache_file))
-		{
-			copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
 		}
 	}
 }

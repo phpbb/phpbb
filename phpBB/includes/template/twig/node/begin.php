@@ -32,20 +32,36 @@ class phpbb_template_twig_node_begin extends Twig_Node
 		;
 
         $compiler
-			->write("foreach (\$parent['" . $this->getAttribute('beginName') . "'] as \$" . $this->getAttribute('beginName') . ") {\n")
-			->indent()
-				// Set up $context correctly so that Twig can get the correct data with $this->getAttribute
-				->write("\$this->getEnvironment()->context_recursive_loop_builder(\$" . $this->getAttribute('beginName') . ", \$phpbb_blocks, \$context);\n")
+        	->write("if (!empty(\$parent['" . $this->getAttribute('beginName') . "'])) {\n")
+        	->indent()
+				->write("foreach (\$parent['" . $this->getAttribute('beginName') . "'] as \$" . $this->getAttribute('beginName') . ") {\n")
+				->indent()
+					// Set up $context correctly so that Twig can get the correct data with $this->getAttribute
+					->write("\$this->getEnvironment()->context_recursive_loop_builder(\$" . $this->getAttribute('beginName') . ", \$phpbb_blocks, \$context);\n")
 
-				// We store the parent so that we can do this recursively
-				->write("\$parent = \$" . $this->getAttribute('beginName') . ";\n")
+					// We store the parent so that we can do this recursively
+					->write("\$parent = \$" . $this->getAttribute('beginName') . ";\n")
         ;
 
         $compiler->subcompile($this->getNode('body'));
 
-        $compiler
-            ->outdent()
-            ->write("}\n")
+		$compiler
+				->outdent()
+				->write("}\n")
+		;
+
+		if (null !== $this->getNode('else')) {
+			$compiler
+				->write("} else {\n")
+				->indent()
+					->subcompile($this->getNode('else'))
+				->outdent()
+			;
+		}
+
+		$compiler
+			->outdent()
+			->write("}\n")
 
             // Remove the last item from the blocks storage as we've completed iterating over them all
             ->write("array_pop(\$phpbb_blocks);\n")
