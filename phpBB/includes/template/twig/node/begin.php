@@ -30,6 +30,49 @@ class phpbb_template_twig_node_begin extends Twig_Node
      */
     public function compile(Twig_Compiler $compiler)
     {
+		$compiler
+			->write("if (!isset(\$phpbb_blocks)) {\n")
+			->indent()
+				->write("\$phpbb_blocks = array();\n")
+				->write("\$parent = \$context['_phpbb_blocks'];\n")
+			->outdent()
+			->write("}\n")
+			->write("\$phpbb_blocks[] = '" . $this->getAttribute('beginName') . "';\n")
+		;
+
+        $compiler
+			->write("foreach (\$parent['" . $this->getAttribute('beginName') . "'] as \$" . $this->getAttribute('beginName') . ") {\n")
+			->indent()
+				// Set up $context correctly so that Twig can get the correct data with $this->getAttribute
+				->write("\$this->getEnvironment()->context_recursive_loop_builder(\$" . $this->getAttribute('beginName') . ", \$phpbb_blocks, \$context);\n")
+
+				// We store the parent so that we can do this recursively
+				->write("\$parent = \$" . $this->getAttribute('beginName') . ";\n")
+        ;
+
+        $compiler->subcompile($this->getNode('body'));
+
+        $compiler
+            ->outdent()
+            ->write("}\n")
+
+            // Remove the last item from the blocks storage as we've completed iterating over them all
+            ->write("array_pop(\$phpbb_blocks);\n")
+
+            // If we've gone through all of the blocks, we're back at the main level and have completed, so unset the var
+            ->write("if (empty(\$phpbb_blocks)) { unset(\$phpbb_blocks); }\n")
+        ;
+    }
+
+    /**
+     * Compiles the node to PHP.
+     *
+     * Uses anonymous functions to compile the loops, which seems nicer to me, but requires PHP 5.4 (since subcompile uses $this, which is not available in 5.3)
+     *
+     * @param Twig_Compiler A Twig_Compiler instance
+     *
+    public function compile(Twig_Compiler $compiler)
+    {
         $compiler->addDebugInfo($this);
 
 		$compiler
@@ -85,4 +128,5 @@ class phpbb_template_twig_node_begin extends Twig_Node
 			->outdent()
 			->write("}\n");
     }
+    */
 }

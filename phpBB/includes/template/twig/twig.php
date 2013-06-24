@@ -118,7 +118,7 @@ class phpbb_template_twig implements phpbb_template
 		// @todo use phpbb_admin path
 		$loader->addPath($this->phpbb_root_path . 'adm/style/', 'admin');
 
-		$this->twig = new Twig_Environment($loader, array(
+		$this->twig = new phpbb_template_twig_environment($loader, array(
 		    'cache'			=> $this->cachepath,
 		    'debug'			=> true, // @todo
 		    'auto_reload'	=> true, // @todo
@@ -422,11 +422,13 @@ class phpbb_template_twig implements phpbb_template
 		$vars = array_merge(
 			$vars,
 			$this->context->get_rootref(),
-			$this->context->get_tpldata()
+			array(
+				'_phpbb_blocks'	=>  $this->context->get_tpldata(),
+			)
 		);
 
 		// cleanup
-		unset($vars['.']);
+		unset($vars['_phpbb_blocks']['.']);
 
 		return $vars;
 	}
