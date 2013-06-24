@@ -126,7 +126,10 @@ class phpbb_template_twig implements phpbb_template
 		));
 
 		// Set enabled phpbb extensions
-		$this->twig->set_phpbb_extensions($this->extension_manager->all_enabled());
+		if ($this->extension_manager)
+		{
+			$this->twig->set_phpbb_extensions($this->extension_manager->all_enabled());
+		}
 
 		// Clear previous cache files (while WIP)
 		// @todo remove
