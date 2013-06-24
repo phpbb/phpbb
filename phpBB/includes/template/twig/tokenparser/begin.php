@@ -1,26 +1,12 @@
 <?php
-
-/*
- * This file is part of Twig.
- *
- * (c) 2009 Fabien Potencier
- * (c) 2009 Armin Ronacher
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 /**
- * Loops over each item of a sequence.
- *
- * <pre>
- * <ul>
- *  {% for user in users %}
- *    <li>{{ user.username|e }}</li>
- *  {% endfor %}
- * </ul>
- * </pre>
- */
+*
+* @package phpBB3
+* @copyright (c) 2013 phpBB Group, sections (c) 2009 Fabien Potencier
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
+
 class phpbb_template_twig_tokenparser_begin extends Twig_TokenParser_For
 {
     /**

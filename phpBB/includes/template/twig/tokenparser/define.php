@@ -1,31 +1,12 @@
 <?php
-
-/*
- * This file is part of Twig.
- *
- * (c) 2009 Fabien Potencier
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 /**
- * Defines a variable.
- *
- * <pre>
- *  {% set foo = 'foo' %}
- *
- *  {% set foo = [1, 2] %}
- *
- *  {% set foo = {'foo': 'bar'} %}
- *
- *  {% set foo = 'foo' ~ 'bar' %}
- *
- *  {% set foo, bar = 'foo', 'bar' %}
- *
- *  {% set foo %}Some content{% endset %}
- * </pre>
- */
+*
+* @package phpBB3
+* @copyright (c) 2013 phpBB Group, sections (c) 2009 Fabien Potencier
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
+
 class phpbb_template_twig_tokenparser_define extends Twig_TokenParser_Set
 {
     public function decideBlockEnd(Twig_Token $token)
