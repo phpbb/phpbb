@@ -27,8 +27,6 @@ class phpbb_template_twig_node_event extends Twig_Node
     {
         $compiler->addDebugInfo($this);
 
-        $compiler->indent();
-
     	$location = $this->getNode('expr')->getAttribute('name');
 
     	foreach ($this->environment->get_phpbb_extensions() as $ext_namespace => $ext_path)

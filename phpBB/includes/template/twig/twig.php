@@ -431,6 +431,13 @@ class phpbb_template_twig implements phpbb_template
 			)
 		);
 
+		// Must do this so that <!-- IF .blah --> works correctly
+		// (only for the base loops, the rest are properly handled by the begin node)
+		foreach ($this->context->get_tpldata() as $block_name => $block_values)
+		{
+			$vars[$block_name] = !empty($block_values);
+		}
+
 		// cleanup
 		unset($vars['_phpbb_blocks']['.']);
 
