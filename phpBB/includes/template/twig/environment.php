@@ -20,6 +20,9 @@ class phpbb_template_twig_environment extends Twig_Environment
 	/** @var array */
 	protected $phpbbExtensions;
 
+	/** @var array **/
+	protected $namespaceLookUpOrder = array('__main__');
+
     /**
      * Gets the cache filename for a given template.
      *
@@ -36,15 +39,88 @@ class phpbb_template_twig_environment extends Twig_Environment
     	return $this->getCache() . '/' . preg_replace('#[^a-zA-Z0-9_/]#', '_', $name) . '.php';
     }
 
-    public function set_phpbb_extensions($extensions)
-    {
-    	$this->phpbbExtensions = $extensions;
-	}
-
+	/**
+	* Get the list of enabled phpBB extensions
+	*
+	* @return array
+	*/
 	public function get_phpbb_extensions()
 	{
 		return $this->phpbbExtensions;
 	}
+
+    /**
+    * Store the list of enabled phpBB extensions
+    *
+    * @param array $extensions
+    * @return Twig_Environment
+    */
+    public function set_phpbb_extensions($extensions)
+    {
+    	$this->phpbbExtensions = $extensions;
+
+		return $this;
+	}
+
+	/**
+	* Get the namespace look up order
+	*
+	* @return array
+	*/
+	public function getNamespaceLookUpOrder()
+	{
+		return $this->namespaceLookUpOrder;
+	}
+
+	/**
+	* Set the namespace look up order to load templates from
+	*
+	* @param array $namespace
+    * @return Twig_Environment
+	*/
+	public function setNamespaceLookUpOrder($namespace)
+	{
+		$this->namespaceLookUpOrder = $namespace;
+
+		return $this;
+	}
+
+    /**
+     * Loads a template by name.
+     *
+     * @param string  $name  The template name
+     * @param integer $index The index if it is an embedded template
+     *
+     * @return Twig_TemplateInterface A template instance representing the given template name
+     */
+    public function loadTemplate($name, $index = null)
+    {
+    	if (strpos($name, '@') === false)
+    	{
+    		foreach ($this->namespaceLookUpOrder as $namespace)
+    		{
+        		try
+    			{
+    				if ($namespace === '__main__')
+    				{
+    					return parent::loadTemplate($name, $index);
+					}
+
+    				return parent::loadTemplate('@' . $namespace . '/' . $name, $index);
+				}
+				catch (Twig_Error_Loader $e)
+				{
+				}
+			}
+
+			// We were unable to load any templates
+			throw $e;
+		}
+		else
+		{
+    		return parent::loadTemplate($name, $index);
+		}
+    }
 
 	/**
 	* recursive helper to set variables into $context so that Twig can properly fetch them for display
