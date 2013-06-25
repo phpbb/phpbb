@@ -29,7 +29,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 	/** @var array **/
 	protected $namespaceLookUpOrder = array('__main__');
 
-    public function __construct(phpbb_config $phpbb_config, $phpbb_extensions, $phpbb_root_path, Twig_LoaderInterface $loader = null, $options = array())
+    public function __construct($phpbb_config, $phpbb_extensions, $phpbb_root_path, Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 		$this->phpbb_extensions = $phpbb_extensions;
