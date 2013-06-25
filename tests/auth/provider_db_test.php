@@ -33,8 +33,18 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 		$expected = array(
 			'status'		=> LOGIN_SUCCESS,
 			'error_msg'		=> false,
-			'user_row'		=> '',
+			'user_row'		=> array(
+				'user_id' 				=> '1',
+				'username' 				=> 'foobar',
+				'user_password'			=> '$H$9E45lK6J8nLTSm9oJE5aNCSTFK9wqa/',
+				'user_passchg' 			=> '0',
+				'user_pass_convert' 	=> '0',
+				'user_email' 			=> 'example@example.com',
+				'user_type' 			=> '0',
+				'user_login_attempts' 	=> '0',
+				),
 		);
-		$this->assertEquals($expected, $provider->login('example', 'example'));
+
+		$this->assertEquals($expected, $provider->login('foobar', 'example'));
 	}
 }
