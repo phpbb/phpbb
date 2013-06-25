@@ -12,6 +12,8 @@ require_once dirname(__FILE__).'/../../phpBB/includes/functions.php';
 class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 {
 	protected $provider;
+	protected $user;
+	protected $request;
 
 	protected function setup()
 	{
@@ -21,10 +23,10 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 
 		$db = $this->new_dbal();
 		$config = new phpbb_config(array());
-		$request = $this->getMock('phpbb_request');
-		$user = $this->getMock('phpbb_user');
+		$this->request = $this->getMock('phpbb_request');
+		$this->user = $this->getMock('phpbb_user');
 
-		$this->provider = new phpbb_auth_provider_apache($db, $config, $request, $user, $phpbb_root_path, $phpEx);
+		$this->provider = new phpbb_auth_provider_apache($db, $config, $this->request, $this->user, $phpbb_root_path, $phpEx);
 	}
 
 	public function getDataSet()
@@ -32,9 +34,15 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user.xml');
 	}
 
+	/**
+	 * Test to see if a user is identified to Apache. Expects false if they are.
+	 */
 	public function test_init()
 	{
-		$this->markTestIncomplete();
+		$this->user->data['username'] = 'foobar';
+		$this->request->overwrite('PHP_AUTH_USER', 'foobar', phpbb_request_interface::SERVER);
+
+		$this->assertFalse($this->provider->init());
 	}
 
 	public function test_login()
