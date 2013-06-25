@@ -20,6 +20,9 @@ class phpbb_template_twig_environment extends Twig_Environment
 	/** @var array */
 	protected $phpbbExtensions;
 
+	/** @var phpbb_config */
+	protected $phpbbConfig;
+
 	/** @var array **/
 	protected $namespaceLookUpOrder = array('__main__');
 
@@ -58,6 +61,29 @@ class phpbb_template_twig_environment extends Twig_Environment
     public function set_phpbb_extensions($extensions)
     {
     	$this->phpbbExtensions = $extensions;
+
+		return $this;
+	}
+
+	/**
+	* Get phpBB config
+	*
+	* @return phpbb_config
+	*/
+	public function get_phpbb_config()
+	{
+		return $this->phpbbConfig;
+	}
+
+    /**
+    * Set phpBB config
+    *
+    * @param phpbb_config $config
+    * @return Twig_Environment
+    */
+    public function set_phpbb_config($config)
+    {
+    	$this->phpbbConfig = $config;
 
 		return $this;
 	}

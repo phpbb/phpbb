@@ -127,6 +127,9 @@ class phpbb_template_twig implements phpbb_template
 			$this->twig->set_phpbb_extensions($this->extension_manager->all_enabled());
 		}
 
+		// Set config
+		$this->twig->set_phpbb_config($this->config);
+
 		// Clear previous cache files (while WIP)
 		// @todo remove
 		$this->clear_cache();
@@ -187,7 +190,7 @@ class phpbb_template_twig implements phpbb_template
 
 			// Add admin namespace
 			// @todo use phpbb_admin path
-			$loader->addPath($this->phpbb_root_path . 'adm/style/', 'admin');
+			$this->twig->getLoader()->addPath($this->phpbb_root_path . 'adm/style/', 'admin');
 
 			// Add all namespaces for all extensions
 			if ($this->extension_manager instanceof phpbb_extension_manager)
@@ -439,15 +442,15 @@ class phpbb_template_twig implements phpbb_template
 				$vars['L_' . strtoupper($key)] = $value;
 				$vars['LA_' . strtoupper($key)] = addslashes($value);
 			}
-
-			$vars = array_merge(
-				$vars,
-				$this->context->get_rootref(),
-				array(
-					'_phpbb_blocks'	=>  $this->context->get_tpldata(),
-				)
-			);
 		}
+
+		$vars = array_merge(
+			$vars,
+			$this->context->get_rootref(),
+			array(
+				'_phpbb_blocks'	=>  $this->context->get_tpldata(),
+			)
+		);
 
 		// Must do this so that <!-- IF .blah --> works correctly
 		// (only for the base loops, the rest are properly handled by the begin node)

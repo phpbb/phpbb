@@ -23,7 +23,7 @@ class phpbb_template_twig_tokenparser_includejs extends Twig_TokenParser
         $stream = $this->parser->getStream();
         $stream->expect(Twig_Token::BLOCK_END_TYPE);
 
-        return new phpbb_template_twig_node_includejs($expr, $token->getLine(), $this->getTag());
+        return new phpbb_template_twig_node_includejs($expr, $this->parser->getEnvironment(), $token->getLine(), $this->getTag());
     }
 
     /**

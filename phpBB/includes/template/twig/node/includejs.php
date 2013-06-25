@@ -9,8 +9,13 @@
 
 class phpbb_template_twig_node_includejs extends Twig_Node
 {
-    public function __construct(Twig_Node_Expression $expr, $lineno, $tag = null)
+	/** @var Twig_Environment */
+	protected $environment;
+
+    public function __construct(Twig_Node_Expression $expr, phpbb_template_twig_environment $environment, $lineno, $tag = null)
     {
+    	$this->environment = $environment;
+
         parent::__construct(array('expr' => $expr), array(), $lineno, $tag);
     }
 
@@ -23,10 +28,12 @@ class phpbb_template_twig_node_includejs extends Twig_Node
     {
         $compiler->addDebugInfo($this);
 
+		$config = $this->environment->get_phpbb_config();
+
         $compiler
         	->write("\$context['SCRIPTS'] .= '<script type=\"text/javascript\" src=\"' . ")
         	->subcompile($this->getNode('expr'))
-        	->raw(" . '\">';\n\n")
+        	->raw(" . '?assets_version=" . $config['assets_version'] . "\"></script>';\n\n")
         ;
     }
 }

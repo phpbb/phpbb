@@ -9,6 +9,7 @@
 
 class phpbb_template_twig_node_event extends Twig_Node
 {
+	/** @var Twig_Environment */
 	protected $environment;
 
     public function __construct(Twig_Node_Expression $expr, phpbb_template_twig_environment $environment, $lineno, $tag = null)
