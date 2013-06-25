@@ -50,9 +50,17 @@ class phpbb_template_twig_node_includephp extends Twig_Node
 		$expr = preg_replace('#{{ ([a-zA-Z0-9_]+) }}#', '\' . ((isset($context["$1"])) ? $context["$1"] : null) . \'', $this->getNode('expr')->getAttribute('value'));
 
 		$compiler
-			->write("require(\$this->getEnvironment()->get_phpbb_root_path() . '")
-			->raw($expr)
-			->raw("');\n")
+			->write("if (phpbb_is_absolute('$expr')) {\n")
+			->indent()
+				->write("require('$expr');\n")
+			->outdent()
+			->write("} else {\n")
+			->indent()
+				->write("require(\$this->getEnvironment()->get_phpbb_root_path() . '")
+				->raw($expr)
+				->raw("');\n")
+			->outdent()
+			->write("}\n")
 		;
 
         if ($this->getAttribute('ignore_missing')) {
