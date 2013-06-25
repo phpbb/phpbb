@@ -69,6 +69,34 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $this->provider->login($username, $password));
 	}
 
+	public function test_autologin()
+	{
+		$this->request->overwrite('PHP_AUTH_USER', 'foobar', phpbb_request_interface::SERVER);
+		$this->request->overwrite('PHP_AUTH_PW', 'example', phpbb_request_interface::SERVER);
+
+		$expected = array(
+			'status'		=> LOGIN_SUCCESS,
+			'error_msg'		=> false,
+			'user_row'		=> array(
+				'user_id' 				=> '1',
+				'username' 				=> 'foobar',
+				'username_clean'		=> 'foobar',
+				'user_password'			=> '$H$9E45lK6J8nLTSm9oJE5aNCSTFK9wqa/',
+				'user_passchg' 			=> '0',
+				'user_pass_convert'		=> '0',
+				'user_email' 			=> 'example@example.com',
+				'user_type' 			=> '0',
+				'user_login_attempts'	=> '0',
+				'user_permission'		=> '',
+				'user_sig'				=> '',
+				'user_occ'				=> '',
+				'user_interests'		=> '',
+				),
+		);
+
+		$this->assertEquals($expected, $this->provider->autologin());
+	}
+
 	public function test_validate_session()
 	{
 		$this->markTestIncomplete();
