@@ -88,27 +88,51 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 		$this->assertEquals('avatar.driver.foobar', $drivers['avatar.driver.foobar']);
 	}
 
-	public function get_driver_data()
+	public function get_driver_data_enabled()
 	{
 		return array(
-			array('avatar.driver.foobar', 'avatar.driver.foobar', false),
-			array('avatar.driver.foo_wrong', NULL, false),
 			array('avatar.driver.foobar', 'avatar.driver.foobar'),
 			array('avatar.driver.foo_wrong', NULL),
-			array('avatar.driver.local', 'avatar.driver.local', false),
-			array(AVATAR_GALLERY, 'avatar.driver.local', false),
-			array(AVATAR_UPLOAD, 'avatar.driver.upload', false),
-			array(AVATAR_REMOTE, 'avatar.driver.remote', false),
+			array('avatar.driver.foobar', 'avatar.driver.foobar'),
+			array('avatar.driver.foo_wrong', NULL),
+			array('avatar.driver.local', NULL),
+			array(AVATAR_GALLERY, NULL),
+			array(AVATAR_UPLOAD, NULL),
+			array(AVATAR_REMOTE, NULL),
 			array(AVATAR_GALLERY, NULL),
 		);
 	}
 
 	/**
-	* @dataProvider get_driver_data
+	* @dataProvider get_driver_data_enabled
 	*/
-	public function test_get_driver($driver_name, $expected, $enabled_only = true)
+	public function test_get_driver_enabled($driver_name, $expected)
 	{
-		$driver = $this->manager->get_driver($driver_name, $enabled_only);
+		$driver = $this->manager->get_driver($driver_name);
+		$this->assertEquals($expected, $driver);
+	}
+
+	public function get_driver_data_all()
+	{
+		return array(
+			array('avatar.driver.foobar', 'avatar.driver.foobar'),
+			array('avatar.driver.foo_wrong', NULL),
+			array('avatar.driver.foobar', 'avatar.driver.foobar'),
+			array('avatar.driver.foo_wrong', NULL),
+			array('avatar.driver.local', 'avatar.driver.local'),
+			array(AVATAR_GALLERY, 'avatar.driver.local'),
+			array(AVATAR_UPLOAD, 'avatar.driver.upload'),
+			array(AVATAR_REMOTE, 'avatar.driver.remote'),
+			array(AVATAR_GALLERY, 'avatar.driver.local'),
+		);
+	}
+
+	/**
+	* @dataProvider get_driver_data_all
+	*/
+	public function test_get_driver_all($driver_name, $expected)
+	{
+		$driver = $this->manager->get_driver($driver_name, false);
 		$this->assertEquals($expected, $driver);
 	}
 
