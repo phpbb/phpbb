@@ -38,7 +38,8 @@ class phpbb_session_creation_test extends phpbb_database_test_case
 			'Check if exacly one session for user id 3 was created'
 		);
 
-		$cookie_expire = $session->time_now + 31536000; // default is one year
+		$one_year_in_seconds = 365 * 24 * 60 * 60;
+		$cookie_expire = $session->time_now + $one_year_in_seconds;
 
 		$session->check_cookies($this, array(
 			'u' => array(null, $cookie_expire),
