@@ -11,8 +11,6 @@ require_once dirname(__FILE__) . '/driver/foobar.php';
 
 class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 {
-	protected $user;
-
 	public function setUp()
 	{
 		global $phpbb_root_path, $phpEx;
@@ -230,23 +228,23 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 
 	public function test_localize_errors()
 	{
-		$this->user = $this->getMock('phpbb_user');
+		$user = $this->getMock('phpbb_user');
 		$lang_array = array(
 			array('FOOBAR_OFF', 'foobar_off'),
 			array('FOOBAR_EXPLAIN', 'FOOBAR_EXPLAIN %s'),
 		);
-		$this->user->expects($this->any())
+		$user->expects($this->any())
 			->method('lang')
 			->will($this->returnValueMap($lang_array));
 
 		// Pass error as string
-		$this->assertEquals(array('foobar_off'), $this->manager->localize_errors($this->user, array('FOOBAR_OFF')));
+		$this->assertEquals(array('foobar_off'), $this->manager->localize_errors($user, array('FOOBAR_OFF')));
 
 		// Pass error as array for vsprintf()
-		$this->assertEquals(array('FOOBAR_EXPLAIN foo'), $this->manager->localize_errors($this->user, array(array('FOOBAR_EXPLAIN', 'foo'))));
+		$this->assertEquals(array('FOOBAR_EXPLAIN foo'), $this->manager->localize_errors($user, array(array('FOOBAR_EXPLAIN', 'foo'))));
 
 		// Pass both types
-		$this->assertEquals(array('foobar_off', 'FOOBAR_EXPLAIN foo'), $this->manager->localize_errors($this->user, array(
+		$this->assertEquals(array('foobar_off', 'FOOBAR_EXPLAIN foo'), $this->manager->localize_errors($user, array(
 			'FOOBAR_OFF',
 			array('FOOBAR_EXPLAIN', 'foo'),
 		)));
