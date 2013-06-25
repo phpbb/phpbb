@@ -99,6 +99,10 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 
 	public function test_validate_session()
 	{
-		$this->markTestIncomplete();
+		$user = $this->getMock('phpbb_user');
+		$user->data['username'] = 'foobar';
+		$this->request->overwrite('PHP_AUTH_USER', 'foobar', phpbb_request_interface::SERVER);
+
+		$this->assertTrue($this->provider->validate_session($user));
 	}
 }
