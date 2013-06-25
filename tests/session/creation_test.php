@@ -34,7 +34,7 @@ class phpbb_session_creation_test extends phpbb_database_test_case
 		$this->assertSqlResultEquals(
 			array(array('session_user_id' => 3)),
 			$sql,
-			'Check if exacly one session for user id 3 was created'
+			'Check if exactly one session for user id 3 was created'
 		);
 
 		$one_year_in_seconds = 365 * 24 * 60 * 60;
