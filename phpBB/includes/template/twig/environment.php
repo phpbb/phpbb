@@ -18,13 +18,25 @@ if (!defined('IN_PHPBB'))
 class phpbb_template_twig_environment extends Twig_Environment
 {
 	/** @var array */
-	protected $phpbbExtensions;
+	protected $phpbb_extensions;
 
 	/** @var phpbb_config */
-	protected $phpbbConfig;
+	protected $phpbb_config;
+
+	/** @var string */
+	protected $phpbb_root_path;
 
 	/** @var array **/
 	protected $namespaceLookUpOrder = array('__main__');
+
+    public function __construct(phpbb_config $phpbb_config, $phpbb_extensions, $phpbb_root_path, Twig_LoaderInterface $loader = null, $options = array())
+	{
+		$this->phpbb_config = $phpbb_config;
+		$this->phpbb_extensions = $phpbb_extensions;
+		$this->phpbb_root_path = $phpbb_root_path;
+
+		return parent::__construct($loader, $options);
+	}
 
     /**
      * Gets the cache filename for a given template.
@@ -51,20 +63,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 	*/
 	public function get_phpbb_extensions()
 	{
-		return $this->phpbbExtensions;
-	}
-
-    /**
-    * Store the list of enabled phpBB extensions
-    *
-    * @param array $extensions
-    * @return Twig_Environment
-    */
-    public function set_phpbb_extensions($extensions)
-    {
-    	$this->phpbbExtensions = $extensions;
-
-		return $this;
+		return $this->phpbb_extensions;
 	}
 
 	/**
@@ -74,20 +73,17 @@ class phpbb_template_twig_environment extends Twig_Environment
 	*/
 	public function get_phpbb_config()
 	{
-		return $this->phpbbConfig;
+		return $this->phpbb_config;
 	}
 
-    /**
-    * Set phpBB config
-    *
-    * @param phpbb_config $config
-    * @return Twig_Environment
-    */
-    public function set_phpbb_config($config)
-    {
-    	$this->phpbbConfig = $config;
-
-		return $this;
+	/**
+	* Get the phpBB root path
+	*
+	* @return string
+	*/
+	public function get_phpbb_root_path()
+	{
+		return $this->phpbb_root_path;
 	}
 
 	/**

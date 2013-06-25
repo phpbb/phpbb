@@ -114,21 +114,18 @@ class phpbb_template_twig implements phpbb_template
 		// Initiate the loader, __main__ namespace paths will be setup later in set_style_names()
 		$loader = new Twig_Loader_Filesystem('');
 
-		$this->twig = new phpbb_template_twig_environment($loader, array(
-		    'cache'			=> $this->cachepath,
-		    'debug'			=> true, // @todo
-		    'auto_reload'	=> true, // @todo
-    		'autoescape'	=> false,
-		));
-
-		// Set enabled phpbb extensions
-		if ($this->extension_manager)
-		{
-			$this->twig->set_phpbb_extensions($this->extension_manager->all_enabled());
-		}
-
-		// Set config
-		$this->twig->set_phpbb_config($this->config);
+		$this->twig = new phpbb_template_twig_environment(
+			$this->config,
+			($this->extension_manager) ? $this->extension_manager->all_enabled() : array(),
+			$this->phpbb_root_path,
+			$loader,
+			array(
+				'cache'			=> $this->cachepath,
+				'debug'			=> true, // @todo
+				'auto_reload'	=> true, // @todo
+				'autoescape'	=> false,
+			)
+		);
 
 		// Clear previous cache files (while WIP)
 		// @todo remove
