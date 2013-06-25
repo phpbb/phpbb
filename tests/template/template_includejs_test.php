@@ -18,16 +18,15 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 
 		// Prepare correct result
 		$scripts = array(
-			'<script src="' . $this->test_path . '/templates/parent_and_child.js?assets_version=1"></script>',
-			'<script src="' . $this->test_path . '/parent_templates/parent_only.js?assets_version=1"></script>',
-			'<script src="' . $this->test_path . '/templates/child_only.js?assets_version=1"></script>',
-			'<script src="' . $this->test_path . '/templates/subdir/parent_only.js?assets_version=1"></script>',
-			'<script src="' . $this->test_path . '/templates/subdir/subsubdir/parent_only.js?assets_version=1"></script>',
-			'<script src="' . $this->test_path . '/templates/subdir/parent_only.js?assets_version=1"></script>',
+			'<script type="text/javascript" src="parent_and_child.js?assets_version=1"></script>',
+			'<script type="text/javascript" src="parent_only.js?assets_version=1"></script>',
+			'<script type="text/javascript" src="child_only.js?assets_version=1"></script>',
+			'<script type="text/javascript" src="subdir/parent_only.js?assets_version=1"></script>',
+			'<script type="text/javascript" src="subdir/subsubdir/parent_only.js?assets_version=1"></script>',
+			'<script type="text/javascript" src="subdir/parent_only.js?assets_version=1"></script>',
 		);
 
 		// Run test
-		$cache_file = $this->template->cachepath . 'includejs.html.php';
-		$this->run_template('includejs.html', array('PARENT' => 'parent_only.js', 'SUBDIR' => 'subdir', 'EXT' => 'js'), array(), array(), implode('', $scripts), $cache_file);
+		$this->run_template('includejs.html', array('PARENT' => 'parent_only.js', 'SUBDIR' => 'subdir', 'EXT' => 'js'), array(), array(), implode('', $scripts));
 	}
 }
