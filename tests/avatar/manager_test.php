@@ -90,14 +90,12 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 	{
 		return array(
 			array('avatar.driver.foobar', 'avatar.driver.foobar'),
-			array('avatar.driver.foo_wrong', NULL),
-			array('avatar.driver.foobar', 'avatar.driver.foobar'),
-			array('avatar.driver.foo_wrong', NULL),
-			array('avatar.driver.local', NULL),
-			array(AVATAR_GALLERY, NULL),
-			array(AVATAR_UPLOAD, NULL),
-			array(AVATAR_REMOTE, NULL),
-			array(AVATAR_GALLERY, NULL),
+			array('avatar.driver.foo_wrong', null),
+			array('avatar.driver.local', null),
+			array(AVATAR_GALLERY, null),
+			array(AVATAR_UPLOAD, null),
+			array(AVATAR_REMOTE, null),
+			array(AVATAR_GALLERY, null),
 		);
 	}
 
@@ -114,9 +112,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 	{
 		return array(
 			array('avatar.driver.foobar', 'avatar.driver.foobar'),
-			array('avatar.driver.foo_wrong', NULL),
-			array('avatar.driver.foobar', 'avatar.driver.foobar'),
-			array('avatar.driver.foo_wrong', NULL),
+			array('avatar.driver.foo_wrong', null),
 			array('avatar.driver.local', 'avatar.driver.local'),
 			array(AVATAR_GALLERY, 'avatar.driver.local'),
 			array(AVATAR_UPLOAD, 'avatar.driver.upload'),
