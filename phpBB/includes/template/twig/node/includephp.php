@@ -46,10 +46,13 @@ class phpbb_template_twig_node_includephp extends Twig_Node
             ;
         }
 
+		// Replace variables in the expression
+		$expr = preg_replace('#{{ ([a-zA-Z0-9_]+) }}#', '\' . ((isset($context["$1"])) ? $context["$1"] : null) . \'', $this->getNode('expr')->getAttribute('value'));
+
 		$compiler
-			->write("include(\$this->getEnvironment()->get_phpbb_root_path() . ")
-			->subcompile($this->getNode('expr'), true)
-			->raw(");\n")
+			->write("require(\$this->getEnvironment()->get_phpbb_root_path() . '")
+			->raw($expr)
+			->raw("');\n")
 		;
 
         if ($this->getAttribute('ignore_missing')) {
