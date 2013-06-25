@@ -39,6 +39,8 @@ class phpbb_template_twig_environment extends Twig_Environment
             return false;
         }
 
+		// @todo correct cache file name handling
+
     	return $this->getCache() . '/' . preg_replace('#[^a-zA-Z0-9_/]#', '_', $name) . '.php';
     }
 
