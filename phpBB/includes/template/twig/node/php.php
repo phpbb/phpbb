@@ -28,13 +28,17 @@ class phpbb_template_twig_node_php extends Twig_Node
     {
         $compiler->addDebugInfo($this);
 
-		$config = $this->environment->get_phpbb_config();
-
-		if ($config['tpl_allow_php'])
+		if (!$config['tpl_allow_php'])
 		{
 			$compiler
-				->raw($this->getNode('text')->getAttribute('data'))
+				->write("// PHP Disabled\n")
 			;
+
+			return;
 		}
+
+		$compiler
+			->raw($this->getNode('text')->getAttribute('data'))
+		;
     }
 }
