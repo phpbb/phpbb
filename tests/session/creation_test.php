@@ -10,7 +10,7 @@
 require_once dirname(__FILE__) . '/../mock/cache.php';
 require_once dirname(__FILE__) . '/testable_factory.php';
 
-class phpbb_session_init_test extends phpbb_database_test_case
+class phpbb_session_creation_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
