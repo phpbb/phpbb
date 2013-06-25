@@ -12,3 +12,4 @@ api_forums_controller:
     defaults: { _controller: api.controller:forums, forum_id: 0 }
     requirements:
         forum_id: \d+
+        _method: GET

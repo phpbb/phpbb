@@ -3,3 +3,4 @@ services:
         class: phpbb_controller_api
         arguments:
             - @dbal.conn
+            - @service_container

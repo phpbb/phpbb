@@ -15,6 +15,10 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
+include($phpbb_root_path . 'includes/tree/nestedset_forum.' . $phpEx);
+
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -27,32 +31,55 @@ class phpbb_controller_api
 	protected $db;
 
 	/**
+	 * Service container object
+	 * @var object
+	 */
+	protected $container;
+
+	/**
 	 * Constructor
 	 *
 	 * @param phpbb_db_driver $db
 	 */
-	function __construct(phpbb_db_driver $db)
+	function __construct(phpbb_db_driver $db, $container)
 	{
 		$this->db = $db;
+		$this->container = $container;
 	}
 
+	/**
+	 * Controller method to return a list of forums
+	 *
+	 * Accesible trough /api/forums/{forum_id} (no {forum_id} defaults to 0)
+	 * Method: GET
+	 *
+	 * @param $forum_id The forum to fetch, 0 fetches everything
+	 * @return Response an array of forums, jsonencoded
+	 */
 	public function forums($forum_id)
 	{
-		/** @TODO: Implement this in nested sets instead */
-		$sql = 'SELECT f1.forum_id, f1.parent_id, f1.forum_name, f1.forum_desc, f1.forum_type, f1.forum_posts,
-			f1.forum_topics, f1.forum_last_post_id, f1.forum_last_poster_id, f1.forum_last_post_subject,
-			f1.forum_last_post_time, f1.forum_last_poster_name, f1.forum_last_poster_colour
-			FROM ' . FORUMS_TABLE . ' as f1, ' . FORUMS_TABLE . " as f2
-				WHERE f2.parent_id = $forum_id
-					AND f1.left_id >= f2.left_id
-						AND f1.right_id <= f2.right_id";
+		if($forum_id == 0)
+		{
+			/** @TODO: Implement this in nested sets instead */
+			$sql = 'SELECT *
+					FROM ' . FORUMS_TABLE;
 
-		$result = $this->db->sql_query($sql);
+			$query = $this->db->sql_query($sql);
+			$result = $this->db->sql_fetchrowset();
+			$this->db->sql_freeresult($query);
+		}
+		else
+		{
+			$lock = $this->container->get('cron.lock_db');
+			$nestedset_forum = new phpbb_tree_nestedset_forum($this->db, $lock, FORUMS_TABLE);
+
+			$result = $nestedset_forum->get_subtree_data($forum_id);
+		}
 
 		$forums = array();
-		while ($row = $this->db->sql_fetchrow($result))
+		foreach ($result as $row)
 		{
-			if($row['parent_id'] == $forum_id)
+			if($row['forum_id'] == $forum_id || $row['parent_id'] == 0)
 			{
 				$forums[] = $row;
 			}
@@ -62,8 +89,8 @@ class phpbb_controller_api
 			}
 		}
 
-		$result = array(200, array('status' => 'success', 'response' => $forums));
-		return new Response(json_encode($result[1]), $result[0]);
+		$response = array(200, array('status' => 'success', 'response' => $forums));
+		return new Response(json_encode($response[1]), $response[0]);
 	}
 
 	/** @TODO: Move this somewhere other than the controller, fix better name, maybe not even needed after nested sets */
