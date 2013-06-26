@@ -527,7 +527,7 @@ class acp_board
 
 			foreach($auth_providers as $key => $value)
 			{
-				$auth_plugins[] = str_replace('auth.provider.', '', $key);
+				$auth_plugins[] = $key;
 			}
 
 			$updated_auth_settings = false;
@@ -536,7 +536,7 @@ class acp_board
 			{
 				if ($method)
 				{
-					$provider = $auth_providers['auth.provider.' . $method];
+					$provider = $auth_providers[$method];
 					if ($provider)
 					{
 						if ($fields = $provider->acp($this->new_config))
@@ -575,7 +575,7 @@ class acp_board
 				$method = basename($cfg_array['auth_method']);
 				if ($method)
 				{
-					$provider = $auth_providers['auth.provider.' . $method];
+					$provider = $auth_providers[$method];
 					if ($provider)
 					{
 						if ($error = $provider->init())
@@ -673,7 +673,7 @@ class acp_board
 			{
 				if ($method)
 				{
-					$provider = $auth_providers['auth.provider.' . $method];
+					$provider = $auth_providers[$method];
 					if ($provider)
 					{
 						$fields = $provider->acp($this->new_config);
