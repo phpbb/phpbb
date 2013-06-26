@@ -69,9 +69,14 @@ class phpbb_template_template_test extends phpbb_test_case
 			$this->markTestSkipped("Template cache directory ({$template_cache_dir}) is not writable.");
 		}
 
-		foreach (glob($this->template->cachepath . '*') as $file)
+		$file_array = scandir($template_cache_dir);
+		$file_prefix = basename($this->template->cachepath);
+		foreach ($file_array as $file)
 		{
-			unlink($file);
+			if (strpos($file, $file_prefix) === 0)
+			{
+				unlink($template_cache_dir . '/' . $file);
+			}
 		}
 
 		$GLOBALS['config'] = array(
@@ -84,9 +89,15 @@ class phpbb_template_template_test extends phpbb_test_case
 	{
 		if (is_object($this->template))
 		{
-			foreach (glob($this->template->cachepath . '*') as $file)
+			$template_cache_dir = dirname($this->template->cachepath);
+			$file_array = scandir($template_cache_dir);
+			$file_prefix = basename($this->template->cachepath);
+			foreach ($file_array as $file)
 			{
-				unlink($file);
+				if (strpos($file, $file_prefix) === 0)
+				{
+					unlink($template_cache_dir . '/' . $file);
+				}
 			}
 		}
 	}
