@@ -59,12 +59,6 @@ class phpbb_template_twig implements phpbb_template
 	protected $user;
 
 	/**
-	* Template locator
-	* @var phpbb_template_locator
-	*/
-	protected $locator;
-
-	/**
 	* Extension manager.
 	*
 	* @var phpbb_extension_manager
@@ -89,6 +83,13 @@ class phpbb_template_twig implements phpbb_template
 	protected $twig;
 
 	/**
+	* Array of filenames assigned to set_filenames
+	*
+	* @var array
+	*/
+	protected $filenames = array();
+
+	/**
 	* Constructor.
 	*
 	* @todo remove unnecessary dependencies
@@ -105,7 +106,6 @@ class phpbb_template_twig implements phpbb_template
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
-		$this->locator = $locator;
 		$this->context = $context;
 		$this->extension_manager = $extension_manager;
 
@@ -161,7 +161,7 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function set_filenames(array $filename_array)
 	{
-		$this->locator->set_filenames($filename_array);
+		$this->filenames = array_merge($filename_array, $this->filenames);
 
 		return $this;
 	}
@@ -181,30 +181,40 @@ class phpbb_template_twig implements phpbb_template
 		$this->twig->getLoader()->setPaths($style_paths);
 
 		// Core style namespace from phpbb_style::set_style()
-		if ($style_names === array($this->user->style['style_path']) || $style_names[0] == $this->user->style['style_path'])
+		if ($this->user && ($style_names === array($this->user->style['style_path']) || $style_names[0] == $this->user->style['style_path']))
 		{
 			$this->twig->getLoader()->setPaths($style_paths, 'core');
+		}
 
-			// Add admin namespace
-			// @todo use phpbb_admin path
-			$this->twig->getLoader()->addPath($this->phpbb_root_path . 'adm/style/', 'admin');
+		// Add admin namespace
+		// @todo use phpbb_admin path
+		if (is_dir($this->phpbb_root_path . 'adm/style/'))
+		{
+			$this->twig->getLoader()->setPaths($this->phpbb_root_path . 'adm/style/', 'admin');
+		}
 
-			// Add all namespaces for all extensions
-			if ($this->extension_manager instanceof phpbb_extension_manager)
+		// Add all namespaces for all extensions
+		if ($this->extension_manager instanceof phpbb_extension_manager)
+		{
+			$style_names[] = 'all';
+
+			foreach ($this->extension_manager->all_enabled() as $ext_namespace => $ext_path)
 			{
-				$style_names[] = 'all';
+				// namespaces cannot contain /
+				$namespace = str_replace('/', '_', $ext_namespace);
+				$paths = array();
 
-				foreach ($this->extension_manager->all_enabled() as $ext_namespace => $ext_path)
+				foreach ($style_names as $style_name)
 				{
-					foreach ($style_names as $style_name)
+					$ext_style_path = $ext_path . 'styles/' . $style_name . '/template';
+
+					if (is_dir($ext_style_path))
 					{
-						if (is_dir($ext_path . 'styles/' . $style_name))
-						{
-							// namespaces cannot contain /
-							$this->twig->getLoader()->addPath($ext_path . 'styles/' . $style_name . '/template', str_replace('/', '_', $ext_namespace));
-						}
+						$paths[] = $ext_style_path;
 					}
 				}
+
+				$this->twig->getLoader()->setPaths($paths, $namespace);
 			}
 		}
 
@@ -253,7 +263,7 @@ class phpbb_template_twig implements phpbb_template
 
 		try
 		{
-			$this->twig->display($this->locator->get_filename_for_handle($handle), $this->get_template_vars());
+			$this->twig->display($this->filenames[$handle], $this->get_template_vars());
 		}
 		catch (Twig_Error $e)
 		{
