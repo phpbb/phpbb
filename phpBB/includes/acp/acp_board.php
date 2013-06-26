@@ -525,20 +525,10 @@ class acp_board
 			$auth_plugins = array();
 			$auth_providers = $phpbb_container->get('auth.provider_collection');
 
-			foreach($auth_providers as $key => $value)
-			{
-				$auth_plugins[] = $key;
-			}
-
 			$updated_auth_settings = false;
 			$old_auth_config = array();
-			foreach ($auth_plugins as $method)
+			foreach ($auth_providers as $provider)
 			{
-				if ($method)
-				{
-					$provider = $auth_providers[$method];
-					if ($provider)
-					{
 						if ($fields = $provider->acp($this->new_config))
 						{
 							// Check if we need to create config fields for this plugin and save config when submit was pressed
@@ -566,8 +556,6 @@ class acp_board
 							}
 						}
 						unset($fields);
-					}
-				}
 			}
 
 			if ($submit && (($cfg_array['auth_method'] != $this->new_config['auth_method']) || $updated_auth_settings))
@@ -575,7 +563,7 @@ class acp_board
 				$method = basename($cfg_array['auth_method']);
 				if ($method)
 				{
-					$provider = $auth_providers[$method];
+					$provider = $auth_providers['auth.provider.' . $method];
 					if ($provider)
 					{
 						if ($error = $provider->init())
@@ -669,13 +657,8 @@ class acp_board
 		{
 			$template->assign_var('S_AUTH', true);
 
-			foreach ($auth_plugins as $method)
+			foreach ($auth_provider as $provider)
 			{
-				if ($method)
-				{
-					$provider = $auth_providers[$method];
-					if ($provider)
-					{
 						$fields = $provider->acp($this->new_config);
 
 						if ($fields['tpl'])
@@ -685,8 +668,6 @@ class acp_board
 							);
 						}
 						unset($fields);
-					}
-				}
 			}
 		}
 	}
