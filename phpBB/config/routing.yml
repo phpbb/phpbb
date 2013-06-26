@@ -9,7 +9,7 @@
 #
 api_forums_controller:
     pattern: /api/forums/{forum_id}
-    defaults: { _controller: api.controller:forums, forum_id: 0 }
+    defaults: { _controller: api.controller.forum:forums, forum_id: 0 }
     requirements:
         forum_id: \d+
         _method: GET

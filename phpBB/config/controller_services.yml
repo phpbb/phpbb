@@ -1,6 +1,5 @@
 services:
-    api.controller:
-        class: phpbb_controller_api
+    api.controller.forum:
+        class: phpbb_controller_api_forum
         arguments:
-            - @dbal.conn
-            - @service_container
+            - @model.api.forum

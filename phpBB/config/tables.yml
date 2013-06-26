@@ -12,3 +12,4 @@ parameters:
     tables.topics: %core.table_prefix%topics
     tables.user_notifications: %core.table_prefix%user_notifications
     tables.users: %core.table_prefix%users
+    tables.forums: %core.table_prefix%forums

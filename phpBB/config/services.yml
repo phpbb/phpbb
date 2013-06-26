@@ -230,6 +230,12 @@ services:
             - %core.php_ext%
             - %tables.log%
 
+    model.api.forum:
+        class: phpbb_model_api_forum
+        arguments:
+            - @tree.nestedset_forum
+            - @dbal.conn
+
     notification_manager:
         class: phpbb_notification_manager
         arguments:
@@ -289,6 +295,13 @@ services:
 
     template_context:
         class: phpbb_template_context
+
+    tree.nestedset_forum:
+        class: phpbb_tree_nestedset_forum
+        arguments:
+            - @dbal.conn
+            - @cron.lock_db
+            - %tables.forums%
 
     user:
         class: phpbb_user
