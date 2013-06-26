@@ -82,7 +82,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 	protected function tearDown()
 	{
-		$this->template->clear_cache();
+		//$this->template->clear_cache();
 	}
 
 	protected function run_template($file, array $vars, array $block_vars, array $destroy, $expected)

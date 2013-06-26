@@ -45,15 +45,27 @@ class phpbb_template_twig_environment extends Twig_Environment
      *
      * @return string The cache file name
      */
-    public function getCacheFilename($name)
+    public function ignoregetCacheFilename($name)
     {
         if (false === $this->cache) {
             return false;
         }
+// @todo
+		$file_path = $this->getLoader()->getCacheKey($name);
+		foreach ($this->getLoader()->getNamespaces() as $namespace)
+		{
+			foreach ($this->getLoader()->getPaths($namespace) as $path)
+			{
+				if (strpos($file_path, $path) === 0)
+				{
+					//return $this->getCache() . '/' . preg_replace('#[^a-zA-Z0-9_/]#', '_', $namespace . '/' . $name) . '.php';
+				}
+			}
+		}
 
-		// @todo correct cache file name handling
-
+		// We probably should never get here under normal circumstances
     	return $this->getCache() . '/' . preg_replace('#[^a-zA-Z0-9_/]#', '_', $name) . '.php';
+    	return $this->getCache() . '/' . preg_replace('#[^a-zA-Z0-9_/]#', '_', $name) . '_' . md5($this->getLoader()->getCacheKey($name)) . '.php';
     }
 
 	/**
