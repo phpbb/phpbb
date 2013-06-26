@@ -432,7 +432,7 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @return array
 	*/
-	protected function get_template_vars()
+	public function get_template_vars()
 	{
 		$vars = array();
 
@@ -454,20 +454,11 @@ class phpbb_template_twig implements phpbb_template
 		$vars = array_merge(
 			$vars,
 			$this->context->get_rootref(),
-			array(
-				'_phpbb_blocks'	=>  $this->context->get_tpldata(),
-			)
+			$this->context->get_tpldata()
 		);
 
-		// Must do this so that <!-- IF .blah --> works correctly
-		// (only for the base loops, the rest are properly handled by the begin node)
-		foreach ($this->context->get_tpldata() as $block_name => $block_values)
-		{
-			$vars[$block_name] = !empty($block_values);
-		}
-
 		// cleanup
-		unset($vars['_phpbb_blocks']['.']);
+		unset($vars['.']);
 
 		return $vars;
 	}
