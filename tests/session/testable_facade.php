@@ -28,7 +28,7 @@ class phpbb_session_testable_facade
 		$request->overwrite('PHP_SELF', $php_self, phpbb_request_interface::SERVER);
 		$request->overwrite('QUERY_STRING', $query_string, phpbb_request_interface::SERVER);
 		$request->overwrite('REQUEST_URI', $request_uri, phpbb_request_interface::SERVER);
-		return phpbb_session::extract_current_page($root_path, phpbb_request_interface::SERVER);
+		return phpbb_session::extract_current_page($root_path);
 	}
 
 	// [To be completed]
