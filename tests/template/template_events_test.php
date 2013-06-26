@@ -54,11 +54,9 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 				array(),
 				array(),
 				array(),
-'Kappa test event in all
-Omega test event in all
-Zeta test event in all
-Kappa test event in silver
-Omega test event in silver',
+'Kappa test event in silver
+Omega test event in silver
+Zeta test event in all',
 			),
 			array(
 				'Template event with inheritance - child',
@@ -68,10 +66,9 @@ Omega test event in silver',
 				array(),
 				array(),
 				array(),
-'Kappa test event in all
-Omega test event in all
-Zeta test event in all
-Kappa test event in silver_inherit',
+'Kappa test event in silver_inherit
+Omega test event in silver
+Zeta test event in all',
 			),
 			array(
 				'Definition in parent style',
@@ -95,8 +92,7 @@ Kappa test event in silver_inherit',
 		$this->setup_engine_for_events($dataset, $style_names);
 
 		// Run test
-		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
-		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
+		$this->run_template($file, $vars, $block_vars, $destroy, $expected);
 	}
 
 	protected function setup_engine_for_events($dataset, $style_names, array $new_config = array())
