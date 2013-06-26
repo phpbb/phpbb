@@ -158,7 +158,7 @@ class phpbb_template_context
 			}
 
 			$s_row_count = isset($str[$blocks[$blockcount]]) ? sizeof($str[$blocks[$blockcount]]) : 0;
-			$vararray['S_ROW_COUNT'] = $s_row_count;
+			$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $s_row_count;
 
 			// Assign S_FIRST_ROW
 			if (!$s_row_count)
@@ -183,7 +183,7 @@ class phpbb_template_context
 		{
 			// Top-level block.
 			$s_row_count = (isset($this->tpldata[$blockname])) ? sizeof($this->tpldata[$blockname]) : 0;
-			$vararray['S_ROW_COUNT'] = $s_row_count;
+			$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $s_row_count;
 
 			// Assign S_FIRST_ROW
 			if (!$s_row_count)
@@ -323,12 +323,12 @@ class phpbb_template_context
 			{
 				$block[$i] = $block[$i-1];
 
-				$block[$i]['S_ROW_COUNT'] = $i;
+				$block[$i]['S_ROW_COUNT'] = $block[$i]['S_ROW_NUM'] = $i;
 			}
 
 			// Insert vararray at given position
 			$block[$key] = $vararray;
-			$block[$key]['S_ROW_COUNT'] = $key;
+			$block[$key]['S_ROW_COUNT'] = $block[$key]['S_ROW_NUM'] = $key;
 
 			return true;
 		}
