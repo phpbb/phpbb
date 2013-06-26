@@ -523,21 +523,11 @@ class acp_board
 		{
 			// Retrieve a list of auth plugins and check their config values
 			$auth_plugins = array();
+			$auth_providers = $phpbb_container->get('auth.provider_collection');
 
-			$dp = @opendir($phpbb_root_path . 'includes/auth');
-
-			if ($dp)
+			foreach($auth_providers as $key => $value)
 			{
-				while (($file = readdir($dp)) !== false)
-				{
-					if (preg_match('#^provider_(.*?)\.' . $phpEx . '$#', $file) && !preg_match('#^provider_interface\.' . $phpEx . '$#', $file))
-					{
-						$auth_plugins[] = basename(preg_replace('#^provider_(.*?)\.' . $phpEx . '$#', '\1', $file));
-					}
-				}
-				closedir($dp);
-
-				sort($auth_plugins);
+				$auth_plugins[] = str_replace('auth.provider.', '', $key);
 			}
 
 			$updated_auth_settings = false;
@@ -546,7 +536,7 @@ class acp_board
 			{
 				if ($method)
 				{
-					$provider = $phpbb_container->get('auth.provider.' . $method);
+					$provider = $auth_providers['auth.provider.' . $method];
 					if ($provider)
 					{
 						if ($fields = $provider->acp($this->new_config))
@@ -585,7 +575,7 @@ class acp_board
 				$method = basename($cfg_array['auth_method']);
 				if ($method)
 				{
-					$provider = $phpbb_container->get('auth.provider.' . $method);
+					$provider = $auth_providers['auth.provider.' . $method];
 					if ($provider)
 					{
 						if ($error = $provider->init())
@@ -683,7 +673,7 @@ class acp_board
 			{
 				if ($method)
 				{
-					$provider = $phpbb_container->get('auth.provider.' . $method);
+					$provider = $auth_providers['auth.provider.' . $method];
 					if ($provider)
 					{
 						$fields = $provider->acp($this->new_config);
@@ -709,22 +699,12 @@ class acp_board
 		global $phpbb_root_path, $phpEx;
 
 		$auth_plugins = array();
+		$auth_providers = $phpbb_container->get('auth.provider_collection');
 
-		$dp = @opendir($phpbb_root_path . 'includes/auth');
-
-		if (!$dp)
+		foreach($auth_providers as $key => $value)
 		{
-			return '';
+			$auth_plugins[] = str_replace('auth.provider.', '', $key);
 		}
-
-		while (($file = readdir($dp)) !== false)
-		{
-			if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
-			{
-				$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
-			}
-		}
-		closedir($dp);
 
 		sort($auth_plugins);
 
