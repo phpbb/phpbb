@@ -654,7 +654,7 @@ class acp_board
 		{
 			$template->assign_var('S_AUTH', true);
 
-			foreach ($auth_provider as $provider)
+			foreach ($auth_providers as $provider)
 			{
 				$fields = $provider->acp($this->new_config);
 
@@ -674,7 +674,7 @@ class acp_board
 	*/
 	function select_auth_method($selected_method, $key = '')
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx, $phpbb_container;
 
 		$auth_plugins = array();
 		$auth_providers = $phpbb_container->get('auth.provider_collection');
