@@ -322,10 +322,13 @@ class phpbb_template_context
 			for ($i = sizeof($block); $i > $key; $i--)
 			{
 				$block[$i] = $block[$i-1];
+
+				$block[$i]['S_ROW_COUNT'] = $i;
 			}
 
 			// Insert vararray at given position
 			$block[$key] = $vararray;
+			$block[$key]['S_ROW_COUNT'] = $key;
 
 			return true;
 		}
