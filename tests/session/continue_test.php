@@ -53,7 +53,20 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 	*/
 	public function test_session_begin_valid_session($session_id, $user_id, $user_agent, $ip, $expected_sessions, $expected_cookies, $message)
 	{
+		global $phpbb_container, $phpbb_root_path, $phpEx;
+
 		$db = $this->new_dbal();
+		$config = new phpbb_config(array());
+		$request = $this->getMock('phpbb_request');
+		$user = $this->getMock('phpbb_user');
+
+		$auth_provider = new phpbb_auth_provider_db($db, $config, $request, $user, $phpbb_root_path, $phpEx);
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container->expects($this->any())
+			->method('get')
+			->with('auth.provider.db')
+			->will($this->returnValue($auth_provider));
+
 		$session_factory = new phpbb_session_testable_factory;
 		$session_factory->set_cookies(array(
 			'_sid' => $session_id,

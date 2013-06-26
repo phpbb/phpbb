@@ -522,84 +522,54 @@ class acp_board
 		if ($mode == 'auth')
 		{
 			// Retrieve a list of auth plugins and check their config values
-			$auth_plugins = array();
-
-			$dp = @opendir($phpbb_root_path . 'includes/auth');
-
-			if ($dp)
-			{
-				while (($file = readdir($dp)) !== false)
-				{
-					if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
-					{
-						$auth_plugins[] = basename(preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file));
-					}
-				}
-				closedir($dp);
-
-				sort($auth_plugins);
-			}
+			$auth_providers = $phpbb_container->get('auth.provider_collection');
 
 			$updated_auth_settings = false;
 			$old_auth_config = array();
-			foreach ($auth_plugins as $method)
+			foreach ($auth_providers as $provider)
 			{
-				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+				if ($fields = $provider->acp($this->new_config))
 				{
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-					$method = 'acp_' . $method;
-					if (function_exists($method))
+					// Check if we need to create config fields for this plugin and save config when submit was pressed
+					foreach ($fields['config'] as $field)
 					{
-						if ($fields = $method($this->new_config))
+						if (!isset($config[$field]))
 						{
-							// Check if we need to create config fields for this plugin and save config when submit was pressed
-							foreach ($fields['config'] as $field)
-							{
-								if (!isset($config[$field]))
-								{
-									set_config($field, '');
-								}
-
-								if (!isset($cfg_array[$field]) || strpos($field, 'legend') !== false)
-								{
-									continue;
-								}
-
-								$old_auth_config[$field] = $this->new_config[$field];
-								$config_value = $cfg_array[$field];
-								$this->new_config[$field] = $config_value;
-
-								if ($submit)
-								{
-									$updated_auth_settings = true;
-									set_config($field, $config_value);
-								}
-							}
+							set_config($field, '');
 						}
-						unset($fields);
+
+						if (!isset($cfg_array[$field]) || strpos($field, 'legend') !== false)
+						{
+							continue;
+						}
+
+						$old_auth_config[$field] = $this->new_config[$field];
+						$config_value = $cfg_array[$field];
+						$this->new_config[$field] = $config_value;
+
+						if ($submit)
+						{
+							$updated_auth_settings = true;
+							set_config($field, $config_value);
+						}
 					}
 				}
+				unset($fields);
 			}
 
 			if ($submit && (($cfg_array['auth_method'] != $this->new_config['auth_method']) || $updated_auth_settings))
 			{
 				$method = basename($cfg_array['auth_method']);
-				if ($method && in_array($method, $auth_plugins))
+				if (array_key_exists('auth.provider.' . $method, $auth_providers))
 				{
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-					$method = 'init_' . $method;
-					if (function_exists($method))
+					$provider = $auth_providers['auth.provider.' . $method];
+					if ($error = $provider->init())
 					{
-						if ($error = $method())
+						foreach ($old_auth_config as $config_name => $config_value)
 						{
-							foreach ($old_auth_config as $config_name => $config_value)
-							{
-								set_config($config_name, $config_value);
-							}
-							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+							set_config($config_name, $config_value);
 						}
+						trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					set_config('auth_method', basename($cfg_array['auth_method']));
 				}
@@ -683,24 +653,17 @@ class acp_board
 		{
 			$template->assign_var('S_AUTH', true);
 
-			foreach ($auth_plugins as $method)
+			foreach ($auth_providers as $provider)
 			{
-				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
-				{
-					$method = 'acp_' . $method;
-					if (function_exists($method))
-					{
-						$fields = $method($this->new_config);
+				$fields = $provider->acp($this->new_config);
 
-						if ($fields['tpl'])
-						{
-							$template->assign_block_vars('auth_tpl', array(
-								'TPL'	=> $fields['tpl'])
-							);
-						}
-						unset($fields);
-					}
+				if ($fields['tpl'])
+				{
+					$template->assign_block_vars('auth_tpl', array(
+						'TPL'	=> $fields['tpl'])
+					);
 				}
+				unset($fields);
 			}
 		}
 	}
@@ -710,25 +673,15 @@ class acp_board
 	*/
 	function select_auth_method($selected_method, $key = '')
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx, $phpbb_container;
 
 		$auth_plugins = array();
+		$auth_providers = $phpbb_container->get('auth.provider_collection');
 
-		$dp = @opendir($phpbb_root_path . 'includes/auth');
-
-		if (!$dp)
+		foreach($auth_providers as $key => $value)
 		{
-			return '';
+			$auth_plugins[] = str_replace('auth.provider.', '', $key);
 		}
-
-		while (($file = readdir($dp)) !== false)
-		{
-			if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
-			{
-				$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
-			}
-		}
-		closedir($dp);
 
 		sort($auth_plugins);
 
