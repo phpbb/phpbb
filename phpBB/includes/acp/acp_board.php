@@ -529,51 +529,48 @@ class acp_board
 			$old_auth_config = array();
 			foreach ($auth_providers as $provider)
 			{
-						if ($fields = $provider->acp($this->new_config))
+				if ($fields = $provider->acp($this->new_config))
+				{
+					// Check if we need to create config fields for this plugin and save config when submit was pressed
+					foreach ($fields['config'] as $field)
+					{
+						if (!isset($config[$field]))
 						{
-							// Check if we need to create config fields for this plugin and save config when submit was pressed
-							foreach ($fields['config'] as $field)
-							{
-								if (!isset($config[$field]))
-								{
-									set_config($field, '');
-								}
-
-								if (!isset($cfg_array[$field]) || strpos($field, 'legend') !== false)
-								{
-									continue;
-								}
-
-								$old_auth_config[$field] = $this->new_config[$field];
-								$config_value = $cfg_array[$field];
-								$this->new_config[$field] = $config_value;
-
-								if ($submit)
-								{
-									$updated_auth_settings = true;
-									set_config($field, $config_value);
-								}
-							}
+							set_config($field, '');
 						}
-						unset($fields);
+
+						if (!isset($cfg_array[$field]) || strpos($field, 'legend') !== false)
+						{
+							continue;
+						}
+
+						$old_auth_config[$field] = $this->new_config[$field];
+						$config_value = $cfg_array[$field];
+						$this->new_config[$field] = $config_value;
+
+						if ($submit)
+						{
+							$updated_auth_settings = true;
+							set_config($field, $config_value);
+						}
+					}
+				}
+				unset($fields);
 			}
 
 			if ($submit && (($cfg_array['auth_method'] != $this->new_config['auth_method']) || $updated_auth_settings))
 			{
 				$method = basename($cfg_array['auth_method']);
-				if ($method)
+				if (array_key_exists('auth.provider.' . $method, $auth_providers))
 				{
 					$provider = $auth_providers['auth.provider.' . $method];
-					if ($provider)
+					if ($error = $provider->init())
 					{
-						if ($error = $provider->init())
+						foreach ($old_auth_config as $config_name => $config_value)
 						{
-							foreach ($old_auth_config as $config_name => $config_value)
-							{
-								set_config($config_name, $config_value);
-							}
-							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+							set_config($config_name, $config_value);
 						}
+						trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					set_config('auth_method', basename($cfg_array['auth_method']));
 				}
@@ -659,15 +656,15 @@ class acp_board
 
 			foreach ($auth_provider as $provider)
 			{
-						$fields = $provider->acp($this->new_config);
+				$fields = $provider->acp($this->new_config);
 
-						if ($fields['tpl'])
-						{
-							$template->assign_block_vars('auth_tpl', array(
-								'TPL'	=> $fields['tpl'])
-							);
-						}
-						unset($fields);
+				if ($fields['tpl'])
+				{
+					$template->assign_block_vars('auth_tpl', array(
+						'TPL'	=> $fields['tpl'])
+					);
+				}
+				unset($fields);
 			}
 		}
 	}
