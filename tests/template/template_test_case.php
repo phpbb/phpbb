@@ -83,9 +83,13 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			$this->markTestSkipped("Template cache directory ({$template_cache_dir}) is not writable.");
 		}
 
-		foreach (glob($this->template->cachepath . '*') as $file)
+		$file_array = glob($this->template->cachepath . '*');
+		if (!empty($file_array))
 		{
-			unlink($file);
+			foreach ($file_array as $file)
+			{
+				unlink($file);
+			}
 		}
 
 		$this->setup_engine();
@@ -95,9 +99,13 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	{
 		if (is_object($this->template))
 		{
-			foreach (glob($this->template->cachepath . '*') as $file)
+			$file_array = glob($this->template->cachepath . '*');
+			if (!empty($file_array))
 			{
-				unlink($file);
+				foreach ($file_array as $file)
+				{
+					unlink($file);
+				}
 			}
 		}
 	}
