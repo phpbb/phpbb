@@ -50,9 +50,11 @@ Database Tests
 By default all tests requiring a database connection will use sqlite. If you
 do not have sqlite installed the tests will be skipped. If you wish to run the
 tests on a different database you have to create a test_config.php file within
-your tests directory following the same format as phpBB's config.php. An
-example for mysqli can be found below. More information on configuration
-options can be found on the wiki (see below).
+your tests directory following the same format as phpBB's config.php. Testing
+makes use of a seperate database defined in this config file and before running
+the tests each time this database is deleted. An example for mysqli can be
+found below. More information on configuration options can be found on the
+wiki (see below).
 
     <?php
     $dbms = 'phpbb_db_driver_mysqli';
@@ -131,6 +133,40 @@ enable slow tests by copying the phpunit.xml.all file to phpunit.xml. If you
 only want the slow tests, run:
 
     $ phpBB/vendor/bin/phpunit --group slow
+
+Functional tests
+-----------------
+
+Functional tests test software the way a user would. They simulate a user
+browsing the website, but they do these steps in an automated way.
+phpBB allows you to write such tests. This document will tell you how.
+
+Running
+=======
+
+Running the tests requires your phpBB3 repository to be accessible through a
+local web server. As of PHP 5.4 a builtin webserver is available. If you are
+on PHP 5.3 you will also need to supply the URL to a webserver of your own in
+the 'tests/test_config.php' file. This is as simple as defining the
+'$phpbb_functional_url', which contains the URL for the directory containing
+the board. Make sure you include the trailing slash. Note that without extensive
+changes to the test framework, you cannot use a board outside of the repository
+on which to run tests.
+
+    $phpbb_functional_url = 'http://localhost/phpBB3/';
+
+On PHP 5.4 you do not need the $phpbb_functional_url parameter but you can
+configure the port the builtin webserver runs on using
+
+    $phpbb_functional_port = 8000;
+
+To then run the tests, you run PHPUnit, but use the phpunit.xml.functional
+config file instead of the default one. Specify this through the "-c" option:
+
+    phpunit -c phpunit.xml.functional
+
+This will change your board's config.php file, but it makes a backup at
+config_dev.php, so you can restore it after the test run is complete.
 
 More Information
 ================
