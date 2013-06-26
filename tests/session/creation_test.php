@@ -9,7 +9,7 @@
 
 require_once dirname(__FILE__) . '/testable_factory.php';
 
-class phpbb_session_init_test extends phpbb_database_test_case
+class phpbb_session_creation_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
@@ -34,10 +34,11 @@ class phpbb_session_init_test extends phpbb_database_test_case
 		$this->assertSqlResultEquals(
 			array(array('session_user_id' => 3)),
 			$sql,
-			'Check if exacly one session for user id 3 was created'
+			'Check if exactly one session for user id 3 was created'
 		);
 
-		$cookie_expire = $session->time_now + 31536000; // default is one year
+		$one_year_in_seconds = 365 * 24 * 60 * 60;
+		$cookie_expire = $session->time_now + $one_year_in_seconds;
 
 		$session->check_cookies($this, array(
 			'u' => array(null, $cookie_expire),
