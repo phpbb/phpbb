@@ -30,16 +30,16 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	 * @param 	phpbb_request 		$request
 	 * @param 	phpbb_user 			$user
 	 * @param 	string 				$phpbb_root_path
-	 * @param 	string 				$phpEx
+	 * @param 	string 				$php_ext
 	 */
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $phpbb_root_path, $phpEx)
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -183,7 +183,7 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 
 			if (!function_exists('user_add'))
 			{
-				include($this->phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
+				include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
 			}
 
 			// create the user if he does not exist yet

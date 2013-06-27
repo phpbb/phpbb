@@ -33,16 +33,16 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	 * @param 	phpbb_request 		$request
 	 * @param 	phpbb_user 			$user
 	 * @param 	string 				$phpbb_root_path
-	 * @param 	string 				$phpEx
+	 * @param 	string 				$php_ext
 	 */
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $phpbb_root_path, $phpEx)
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
+		$this->php_ext = $php_ext;
 	}
 
 	public function init()
@@ -160,7 +160,7 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 			// Visual Confirmation handling
 			if (!class_exists('phpbb_captcha_factory', false))
 			{
-				include ($this->phpbb_root_path . 'includes/captcha/captcha_factory.' . $this->phpEx);
+				include ($this->phpbb_root_path . 'includes/captcha/captcha_factory.' . $this->php_ext);
 			}
 
 			$captcha = phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
@@ -206,7 +206,7 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 			{
 				if (!function_exists('utf8_to_cp1252'))
 				{
-					include($this->phpbb_root_path . 'includes/utf/data/recode_basic.' . $this->phpEx);
+					include($this->phpbb_root_path . 'includes/utf/data/recode_basic.' . $this->php_ext);
 				}
 
 				// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
