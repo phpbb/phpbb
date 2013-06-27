@@ -12,7 +12,7 @@
 */
 if (!defined('IN_PHPBB'))
 {
-exit;
+	exit;
 }
 
 /**
@@ -25,7 +25,17 @@ abstract class phpbb_model_entity
 	{
 		foreach ($data as $field => $value)
 		{
-			$this->$field = $value;
+			$this->set($field, $value);
 		}
+	}
+
+	public function get($field)
+	{
+		return $this->$field;
+	}
+
+	public function set($field, $value)
+	{
+		$this->$field = $value;
 	}
 }

@@ -8,6 +8,7 @@
 		"symfony/event-dispatcher": "2.3.*",
 		"symfony/http-kernel": "2.3.*",
 		"symfony/routing": "2.3.*",
+        "symfony/serializer": "2.1.*",
 		"symfony/yaml": "2.3.*",
 		"twig/twig": "1.13.*"
 	},

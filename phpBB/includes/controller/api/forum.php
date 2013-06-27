@@ -18,7 +18,10 @@ if (!defined('IN_PHPBB'))
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-use Symfony\Component\HttpFoundation\Response;
+
+use Symfony\Component\HttpFoundation\Response,
+	Symfony\Component\Serializer\Serializer,
+	Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 /**
  * Controller for the api of a phpBB forum
@@ -29,7 +32,7 @@ class phpbb_controller_api_forum
 
 	/**
 	 * API Model
-	 * @var object
+	 * @var phpbb_model_api_forum
 	 */
 	protected $model;
 
@@ -54,11 +57,12 @@ class phpbb_controller_api_forum
 	 */
 	public function forums($forum_id)
 	{
-
 		$forums = $this->model->get($forum_id);
 
-		$response = array(200, array('status' => 'success', 'response' => $forums));
-		return new Response(json_encode($response[1]), $response[0]);
+		$serializer = new Serializer(array(new phpbb_model_normalizer_forum()), array(new JsonEncoder()));
+		$json = $serializer->serialize($forums, 'json');
+
+		return new Response($json);
 	}
 
 }
