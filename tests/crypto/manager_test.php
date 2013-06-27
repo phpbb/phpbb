@@ -131,7 +131,7 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		return array(
 			array(
 				'crypto.driver.salted_md5',
-				array('crypto.driver.bcrypt_2y', 'crypto.driver.bcrypt'),
+				array('crypto.driver.bcrypt_2y'),
 			),
 			array(
 				'crypto.driver.salted_md5',
@@ -140,6 +140,10 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 			array(
 				'crypto.driver.phpass',
 				array('crypto.driver.salted_md5'),
+			),
+			array(
+				'crypto.driver.salted_md5',
+				array('crypto.driver.bcrypt_2y', 'crypto.driver.bcrypt'),
 			),
 		);
 	}

@@ -129,6 +129,10 @@ class phpbb_crypto_manager
 			{
 				if (isset($this->type_map["\${$type}\$"]))
 				{
+					while(isset($return_ary[$type]))
+					{
+						$type = $type + ' ';
+					}
 					$return_ary[$type] = $this->type_map["\${$type}\$"];
 				}
 				else
