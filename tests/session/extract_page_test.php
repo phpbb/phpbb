@@ -14,6 +14,88 @@ class phpbb_session_extract_page_test extends phpbb_database_test_case
 	public $session_factory;
 	public $db;
 
+	static public function extract_current_page_data()
+	{
+		return array(
+			array(
+				'./',
+				'/phpBB/index.php',
+				'',
+				'/phpBB/',
+				array(
+					'page_name' => 'index.php',
+					'page_dir' => '',
+					'query_string' => '',
+					'script_path' => '/phpBB/',
+					'root_script_path' => '/phpBB/',
+					'page' => 'index.php',
+					'forum' => 0
+				)
+			) ,
+			array(
+				'./',
+				'/phpBB/ucp.php',
+				'mode=login',
+				'/phpBB/ucp.php?mode=login',
+				array(
+					'page_name' => 'ucp.php',
+					'page_dir' => '',
+					'query_string' => 'mode=login',
+					'script_path' => '/phpBB/',
+					'root_script_path' => '/phpBB/',
+					'page' => 'ucp.php?mode=login',
+					'forum' => 0
+				)
+			) ,
+			array(
+				'./',
+				'/phpBB/ucp.php',
+				'mode=register',
+				'/phpBB/ucp.php?mode=register',
+				array(
+					'page_name' => 'ucp.php',
+					'page_dir' => '',
+					'query_string' => 'mode=register',
+					'script_path' => '/phpBB/',
+					'root_script_path' => '/phpBB/',
+					'page' => 'ucp.php?mode=register',
+					'forum' => 0
+				)
+			) ,
+			array(
+				'./',
+				'/phpBB/ucp.php',
+				'mode=register',
+				'/phpBB/ucp.php?mode=register',
+				array(
+					'page_name' => 'ucp.php',
+					'page_dir' => '',
+					'query_string' => 'mode=register',
+					'script_path' => '/phpBB/',
+					'root_script_path' => '/phpBB/',
+					'page' => 'ucp.php?mode=register',
+					'forum' => 0
+				)
+			) ,
+			array(
+				'./../',
+				'/phpBB/adm/index.php',
+				'sid=e7215d958cdd41a6fc13509bebe53e42',
+				'/phpBB/adm/index.php?sid=e7215d958cdd41a6fc13509bebe53e42',
+				array(
+					'page_name' => 'index.php',
+					//'page_dir' => 'adm',
+					// ^-- Ignored because .. returns different directory in live vs testing
+					'query_string' => '',
+					'script_path' => '/phpBB/adm/',
+					'root_script_path' => '/phpBB/',
+					//'page' => 'adm/index.php',
+					'forum' => 0
+				)
+			)
+		);
+	}
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_empty.xml');
@@ -25,25 +107,20 @@ class phpbb_session_extract_page_test extends phpbb_database_test_case
 		$this->db = $this->new_dbal();
 	}
 
-	function test_extract_current_page()
+	/** @dataProvider extract_current_page_data */
+	function test_extract_current_page($root_path, $php_self, $query_string, $request_uri, $expected)
 	{
-		$expected_fields = array(
-			'page_name' => "index.php",
-			'script_path' => "/phpBB/"
-		);
-
 		$output = phpbb_session_testable_facade::extract_current_page(
 			$this->db,
 			$this->session_factory,
-			/* Root Path   */ "./",
-			/* PHP Self    */ "/phpBB/index.php",
-			/* Query String*/ "",
-			/* Request URI */ "/phpBB/"
+			$root_path,
+			$php_self,
+			$query_string,
+			$request_uri
 		);
 
-		foreach($expected_fields as $field => $expected_value)
-		{
-			$this->assertSame($expected_value, $output[$field]);
-		}
+		// This compares the result of the output.
+		// Any keys that are not in the expected array are overwritten by the output (aka not checked).
+		$this->assert_array_content_equals(array_merge($output, $expected), $output);
 	}
 }
