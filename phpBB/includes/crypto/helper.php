@@ -55,7 +55,8 @@ class phpbb_crypto_helper
 	{
 		preg_match('#^\$([a-zA-Z0-9\\\]*?)\$#', $hash, $match);
 		$hash_settings = substr($hash, strpos($hash, $match[1]) + strlen($match[1]) + 1);
-		foreach ($match as $cur_type)
+		$matches = explode('\\', $match[1]);
+		foreach ($matches as $cur_type)
 		{
 			$dollar_position = strpos($hash_settings, '$');
 			$output[] = substr($hash_settings, 0, ($dollar_position != false) ? $dollar_position : strlen($hash_settings));
@@ -112,7 +113,7 @@ class phpbb_crypto_helper
 		if ($type == 'prefix')
 		{
 			$data[$type] .= ($data[$type] !== '$') ? '\\' : '';
-			$data[$type] .= $value;
+			$data[$type] .= str_replace('$', '', $value);
 		}
 		elseif ($type == 'settings')
 		{
