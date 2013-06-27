@@ -23,11 +23,15 @@ class phpbb_functional_paging_test extends phpbb_functional_test_case
 			$this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', 'This is a test post no' . $post_id . ' posted by the testing framework.');
 		}
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
-		$link = $crawler->filter('#viewtopic > fieldset > a')->attr('href');
-		$crawler = self::request('GET', $link);
+		$this->assertContains('post no9', $crawler->text());
 
-		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}&start=10");
-		$link = $crawler->filter('#viewtopic > fieldset > a')->attr('href');
-		$crawler = self::request('GET', $link);
+		$next_link = $crawler->filter('#viewtopic > fieldset > a.arrow-right')->attr('href');
+		$crawler = self::request('GET', $next_link);
+		$this->assertContains('post no19', $crawler->text());
+
+
+		$prev_link = $crawler->filter('#viewtopic > fieldset > a.arrow-left')->attr('href');
+		$crawler = self::request('GET', $prev_link);
+		$this->assertContains('post no9', $crawler->text());
 	}
 }
