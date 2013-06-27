@@ -26,31 +26,33 @@ interface phpbb_auth_provider_interface
 	 * Checks whether the user is currently identified to the authentication
 	 * provider.
 	 * Called in acp_board while setting authentication plugins.
+	 * Changing to an authentication provider will not be permitted in acp_board
+	 * if there is an error.
 	 *
 	 * @return 	boolean|string 	False if the user is identified, otherwise an
-	 *							error message.
+	 *							error message, or null if not implemented.
 	 */
 	public function init();
 
 	/**
 	 * Performs login.
 	 *
-	 * @param 	$username 	string 	The name of the user being authenticated.
-	 * @param 	$password 	string 	The password of the user.
-	 * @return 	array 		An associative array of the format:
-	 *							array(
-	 *								'status' => status constant
-	 *								'error_msg' => string
-	 *								'user_row' => array
-	 *							)
+	 * @param	string	$username 	The name of the user being authenticated.
+	 * @param	string	$password	The password of the user.
+	 * @return	array	An associative array of the format:
+	 *						array(
+	 *							'status' => status constant
+	 *							'error_msg' => string
+	 *							'user_row' => array
+	 *						)
 	 */
 	public function login($username, $password);
 
 	/**
 	 * Autologin function
 	 *
-	 * @return 	array 	containing the user row or empty if no auto login should
-	 * 					take place
+	 * @return 	array|null	containing the user row, empty if no auto login
+	 * 						should take place, or null if not impletmented.
 	 */
 	public function autologin();
 
@@ -58,22 +60,32 @@ interface phpbb_auth_provider_interface
 	 * This function is used to output any required fields in the authentication
 	 * admin panel. It also defines any required configuration table fields.
 	 *
-	 * @param 	type 	$new
+	 * @param 	array 	$new 	Contains the new configuration values that have
+	 * 							been set in acp_board.
+	 * @return	array|null	Returns null if not implemented or an array of the
+	 *						form:
+	 *							array(
+	 *								'tpl'		=> string
+	 *								'config' 	=> array
+	 *							)
 	 */
 	public function acp($new);
 
 	/**
-	 * Special logout function.
+	 * Performs additional actions during logout.
 	 *
-	 * @param 	type 	$data
-	 * @param 	type 	$new_session
+	 * @param 	array	$data			An array corresponding to
+	 *									phpbb_session::data
+	 * @param 	boolean	$new_session	True for a new session, false for no new
+	 *									session.
 	 */
 	public function logout($data, $new_session);
 
 	/**
-	 * The session validation function checks whether the user is still logged in.
+	 * The session validation function checks whether the user is still logged
+	 * into phpBB.
 	 *
-	 * @param 	type 	$user
+	 * @param 	array 	$user
 	 * @return 	boolean	true if the given user is authenticated, false if the 
 	 * 					session should be closed, or null if not implemented.
 	 */

@@ -27,9 +27,9 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 	/**
 	 * LDAP Authentication Constructor
 	 *
-	 * @param 	phpbb_db_driver 	$db
-	 * @param 	phpbb_config 		$config
-	 * @param 	phpbb_user 			$user
+	 * @param 	phpbb_db_driver	$db
+	 * @param 	phpbb_config	$config
+	 * @param 	phpbb_user		$user
 	 */
 	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_user $user)
 	{
@@ -38,11 +38,6 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 		$this->user = $user;
 	}
 
-	/**
-	 * Connect to ldap server
-	 * Only allow changing authentication to ldap if we can connect to the ldap server
-	 * Called in acp_board while setting authentication plugins
-	 */
 	public function init()
 	{
 		if (!@extension_loaded('ldap'))
@@ -111,9 +106,6 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 		return false;
 	}
 
-	/**
-	 * Login function
-	 */
 	public function login($username, $password)
 	{
 		// do not allow empty password
@@ -290,10 +282,6 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 		return;
 	}
 
-	/**
-	 * This function is used to output any required fields in the authentication
-	 * admin panel. It also defines any required configuration table fields.
-	 */
 	public function acp($new)
 	{
 		$tpl = '
@@ -359,6 +347,9 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 
 	/**
 	 * Escapes an LDAP AttributeValue
+	 *
+	 * @param	string	$string	The string to be escaped
+	 * @return	string	The escaped string
 	 */
 	private function ldap_escape($string)
 	{

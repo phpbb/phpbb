@@ -42,13 +42,6 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 		$this->php_ext = $php_ext;
 	}
 
-	/**
-	 * Checks whether the user is identified to apache
-	 * Only allow changing authentication to apache if the user is identified
-	 * Called in acp_board while setting authentication plugins
-	 *
-	 * @return boolean|string false if the user is identified and else an error message
-	 */
 	public function init()
 	{
 		if (!$this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER) || $this->user->data['username'] !== htmlspecialchars_decode($this->request->server('PHP_AUTH_USER')))
@@ -58,9 +51,6 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 		return false;
 	}
 
-	/**
-	 * Login function
-	 */
 	public function login($username, $password)
 	{
 		// do not allow empty password
@@ -148,12 +138,6 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 		);
 	}
 
-	/**
-	 * Autologin function
-	 *
-	 * @return 	array 	containing the user row or empty if no auto login should
-	 * 					take place
-	 */
 	public function autologin()
 	{
 		if (!$this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
@@ -209,8 +193,8 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 	 * This function generates an array which can be passed to the user_add
 	 * function in order to create a user
 	 *
-	 * @param 	str 	$username 	The username of the new user.
-	 * @param 	str 	$password 	The password of the new user.
+	 * @param 	string	$username 	The username of the new user.
+	 * @param 	string	$password 	The password of the new user.
 	 * @return 	array 				Contains data that can be passed directly to
 	 *								the user_add function.
 	 */
@@ -242,12 +226,6 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 		);
 	}
 
-	/**
-	 * The session validation function checks whether the user is still logged in
-	 *
-	 * @return 	boolean 	true if the given user is authenticated or false if
-	 * 						the session should be closed
-	 */
 	public function validate_session($user)
 	{
 		// Check if PHP_AUTH_USER is set and handle this case

@@ -28,12 +28,12 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 	/**
 	 * Database Authentication Constructor
 	 *
-	 * @param 	phpbb_db_driver 	$db
-	 * @param 	phpbb_config 		$config
-	 * @param 	phpbb_request 		$request
-	 * @param 	phpbb_user 			$user
-	 * @param 	string 				$phpbb_root_path
-	 * @param 	string 				$php_ext
+	 * @param	phpbb_db_driver	$db
+	 * @param	phpbb_config 	$config
+	 * @param	phpbb_request	$request
+	 * @param	phpbb_user		$user
+	 * @param	string			$phpbb_root_path
+	 * @param	string			$php_ext
 	 */
 	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $phpbb_root_path, $php_ext)
 	{
@@ -50,18 +50,6 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 		return;
 	}
 
-	/**
-	 * Login function
-	 *
-	 * @param string $username
-	 * @param string $password
-	 * @return array				A associative array of the format
-	 *							array(
-	 *								'status' => status constant
-	 *								'error_msg' => string
-	 *								'user_row' => array
-	 *							)
-	 */
 	public function login($username, $password)
 	{
 		// Auth plugins get the password untrimmed.
