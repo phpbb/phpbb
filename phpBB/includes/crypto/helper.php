@@ -145,4 +145,15 @@ class phpbb_crypto_helper
 		$rebuilt_hash .= $settings;
 		return $rebuilt_hash;
 	}
+
+	/**
+	* Obtain only the actual hash after the prefixes
+	*
+	* @param string		$hash The full password hash
+	* @return string	Actual hash (incl. settings)
+	*/
+	protected function obtain_hash_only($hash)
+	{
+		return substr($hash, strripos($hash, '$') + 1);
+	}
 }
