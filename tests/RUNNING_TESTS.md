@@ -130,7 +130,7 @@ Running the tests requires your phpBB3 repository to be accessible through a
 local web server. As of PHP 5.4 a builtin webserver is available. If you are
 on PHP 5.3 you will also need to supply the URL to a webserver of your own in
 the 'tests/test_config.php' file. This is as simple as defining the
-'$phpbb_functional_url', which contains the URL for the directory containing
+'$phpbb_functional_url' variable, which contains the URL for the directory containing
 the board. Make sure you include the trailing slash. Note that without extensive
 changes to the test framework, you cannot use a board outside of the repository
 on which to run tests.
@@ -145,7 +145,7 @@ configure the port the builtin webserver runs on using
 To then run the tests, you run PHPUnit, but use the phpunit.xml.functional
 config file instead of the default one. Specify this through the "-c" option:
 
-    phpunit -c phpunit.xml.functional
+    $ phpBB/vendor/bin/phpunit -c phpunit.xml.functional
 
 This will change your board's config.php file, but it makes a backup at
 config_dev.php, so you can restore it after the test run is complete.
