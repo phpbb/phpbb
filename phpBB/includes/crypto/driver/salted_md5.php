@@ -108,7 +108,7 @@ class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
 
 		$random = $this->helper->get_random_salt($count);
 
-		$salt = '$H$';
+		$salt = $this->get_prefix();
 		$salt .= $this->helper->itoa64[min($count + 5, 30)];
 		$salt .= $this->helper->hash_encode64($random, $count);
 
