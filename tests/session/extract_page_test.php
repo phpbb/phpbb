@@ -9,7 +9,7 @@
 
 require_once dirname(__FILE__) . '/testable_facade.php';
 
-class phpbb_session_class_functions_test extends phpbb_database_test_case
+class phpbb_session_extract_page_test extends phpbb_database_test_case
 {
 	public $session_factory;
 	public $db;
