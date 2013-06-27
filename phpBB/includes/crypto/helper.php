@@ -67,6 +67,41 @@ class phpbb_crypto_helper
 	}
 
 	/**
+	* Create combined hash from already hashed password
+	*
+	* @param string $password_hash Complete current password hash
+	* @param string $type Type of the hashing algorithm the password hash
+	*		should be combined with
+	* @return string|bool Combined password hash if combined hashing was
+	*		successful, else false
+	*/
+	public function combined_hash_password($password_hash, $type)
+	{
+		$data = array(
+			'prefix' => '$',
+			'settings' => '$',
+		);
+		$hash_settings = $this->get_combined_hash_settings($password_hash);
+		$hash = $hash_settings[0];
+
+		// Put settings of current hash into data array
+		$stored_hash_type = $this->manager->get_hashing_algorithm($password_hash);
+		$this->combine_hash_output($data, 'prefix', $stored_hash_type->get_prefix());
+		$this->combine_hash_output($data, 'settings', $stored_hash_type->get_settings_only($password_hash));
+
+		// Hash current hash with the defined types
+		foreach ($type as $cur_type)
+		{
+			$new_hash_type = $this->container->get($cur_type);
+			$new_hash = $new_hash_type->hash(str_replace($stored_hash_type->get_settings_only($password_hash), '', $hash));
+			$this->combine_hash_output($data, 'prefix', $new_hash_type->get_prefix());
+			$this->combine_hash_output($data, 'settings', substr(str_replace('$', '\\', $new_hash_type->get_settings_only($new_hash, true)), 0));
+			$hash = str_replace($new_hash_type->get_settings_only($new_hash), '', $this->obtain_hash_only($new_hash));
+		}
+		return $this->combine_hash_output($data, 'hash', $hash);
+	}
+
+	/**
 	* Check combined password hash against the supplied password
 	*
 	* @param string $password Password entered by user

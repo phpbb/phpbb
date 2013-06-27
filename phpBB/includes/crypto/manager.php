@@ -163,6 +163,11 @@ class phpbb_crypto_manager
 	{
 		$type = ($type === '') ? $this->type : $type;
 
+		if (is_array($type))
+		{
+			return $this->helper->combined_hash_password($password, $type);
+		}
+
 		$hashing_algorithm = $this->container->get($type);
 		// Do not support 8-bit characters with $2a$ bcrypt
 		if ($type === 'crypto.driver.bcrypt' || ($type === 'crypto.driver.bcrypt_2y' && !$hashing_algorithm->is_supported()))
