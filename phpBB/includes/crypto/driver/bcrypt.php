@@ -87,4 +87,22 @@ class phpbb_crypto_driver_bcrypt extends phpbb_crypto_driver_base
 	{
 		return $this->helper->hash_encode64($this->helper->get_random_salt(22), 22);
 	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function get_settings_only($hash, $full = false)
+	{
+		if ($full)
+		{
+			$pos = stripos($hash, '$', 1) + 1;
+			$length = 22 + (strripos($hash, '$') + 1 - $pos);
+		}
+		else
+		{
+			$pos = strripos($hash, '$') + 1;
+			$length = 22;
+		}
+		return substr($hash, $pos, $length);
+	}
 }

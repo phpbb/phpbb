@@ -50,7 +50,19 @@ interface phpbb_crypto_driver_interface
 	/**
 	* Check the password against the supplied hash
 	*
+	* @param string		$password The password to check
+	* @param string		$hash The password hash to check against
 	* @return bool		True if password is correct, else false
 	*/
 	public function check($password, $hash);
+
+	/**
+	* Get only the settings of the specified hash
+	*
+	* @param string		$hash Password hash
+	* @param bool		$full Return full settings or only settings
+	*			related to the salt
+	* @return string	String containing the hash settings
+	*/
+	public function get_settings_only($hash, $full = false);
 }

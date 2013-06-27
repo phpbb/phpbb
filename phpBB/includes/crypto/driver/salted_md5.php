@@ -141,4 +141,12 @@ class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
 			'full'	=> substr($hash, 0, 12),
 		);
 	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function get_settings_only($hash, $full = false)
+	{
+		return substr($hash, 3, 9);
+	}
 }
