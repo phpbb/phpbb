@@ -110,8 +110,8 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		$test_word = $password;
 		$time = microtime(true);
 
-		// Limit each test to 3 seconds
-		while ((microtime(true) - $time) < 3)
+		// Limit each test to 1 second
+		while ((microtime(true) - $time) < 1)
 		{
 			$this->assertEquals($test_word === $password, $this->manager->check_hash($test_word, $hash));
 			$test_word = str_shuffle($test_word);
@@ -123,6 +123,43 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		foreach ($this->crypto_drivers as $driver)
 		{
 			$this->assertEquals(false, $driver->hash('foobar', 'foobar'));
+		}
+	}
+
+	public function test_combined_hash_data()
+	{
+		return array(
+			array(
+				'crypto.driver.salted_md5',
+				array('crypto.driver.bcrypt_2y', 'crypto.driver.bcrypt'),
+			),
+			array(
+				'crypto.driver.salted_md5',
+				array('crypto.driver.bcrypt'),
+			),
+			array(
+				'crypto.driver.phpass',
+				array('crypto.driver.salted_md5'),
+			),
+		);
+	}
+
+	/**
+	* @dataProvider test_combined_hash_data
+	*/
+	public function test_combined_hash_password($first_type, $second_type)
+	{
+		$password = 'foobar';
+		$test_word = $password;
+		$hash = $this->manager->hash_password($password, $first_type);
+		$combined_hash = $this->manager->hash_password($hash, $second_type);
+
+		$time = microtime(true);
+		// Limit each test to 1 second
+		while ((microtime(true) - $time) < 1)
+		{
+			$this->assertEquals(($test_word === $password), $this->manager->check_hash($test_word, $combined_hash));
+			$test_word = str_shuffle($test_word);
 		}
 	}
 }
