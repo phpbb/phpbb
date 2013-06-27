@@ -96,7 +96,7 @@ class phpbb_crypto_manager
 	{
 		if ($this->helper === NULL)
 		{
-			$this->helper = new phpbb_crypto_helper($this);
+			$this->helper = new phpbb_crypto_helper($this, $this->container);
 		}
 	}
 

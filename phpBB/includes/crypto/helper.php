@@ -26,13 +26,20 @@ class phpbb_crypto_helper
 	protected $manager;
 
 	/**
+	* @var phpbb_container
+	*/
+	protected $container;
+
+	/**
 	* Construct a phpbb_crypto_helper object
 	*
 	* @param phpbb_crypto_manager $manager Crypto manager object
+	* @param phpbb_container $container phpBB container object
 	*/
-	public function __construct($manager)
+	public function __construct($manager, $container)
 	{
 		$this->manager = $manager;
+		$this->container = $container;
 	}
 
 	/**
