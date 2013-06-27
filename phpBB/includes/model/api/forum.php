@@ -50,7 +50,6 @@ class phpbb_model_api_forum
 		}
 		else
 		{
-
 			$result = $this->nestedset_forum->get_subtree_data($forum_id);
 		}
 
@@ -58,7 +57,8 @@ class phpbb_model_api_forum
 		foreach ($result as $row)
 		{
 			$forum = new phpbb_model_entity_forum($row);
-			if ($forum->forum_id == $forum_id || $forum->parent_id == 0)
+
+			if ($forum->get('forum_id') == $forum_id || $forum->get('parent_id') == 0)
 			{
 				$forums[] = $forum;
 			}
@@ -83,14 +83,16 @@ class phpbb_model_api_forum
 	{
 		for ($i = 0; $i < count($forums);$i++)
 		{
-			if ($forums[$i]->forum_id == $forum->parent_id)
+			if ($forums[$i]->get('forum_id') == $forum->get('parent_id'))
 			{
-				$forums[$i]->subforums[] = $forum;
+				$subforums = $forums[$i]->get('subforums');
+				$subforums[] = $forum;
+				$forums[$i]->set('subforums', $subforums);
 				break;
 			}
-			else if (isset($forums[$i]->subforums))
+			else if ($forums[$i]->get('subforums') !== null)
 			{
-				$forums[$i]->subforums = $this->add_subforum($forum, $forums[$i]->subforums);
+				$forums[$i]->set('subforums', $this->add_subforum($forum, $forums[$i]->get('subforums')));
 			}
 		}
 		return $forums;
