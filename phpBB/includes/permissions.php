@@ -107,20 +107,20 @@ class phpbb_permissions
 	);
 
 	protected $categories = array(
-		'actions'		=> 'Actions',
-		'content'		=> 'Content',
-		'forums'		=> 'Forums',
-		'misc'			=> 'Misc',
-		'permissions'	=> 'Permissions',
-		'pm'			=> 'Private messages',
-		'polls'			=> 'Polls',
-		'post'			=> 'Post',
-		'post_actions'	=> 'Post actions',
-		'posting'		=> 'Posting',
-		'profile'		=> 'Profile',
-		'settings'		=> 'Settings',
-		'topic_actions'	=> 'Topic actions',
-		'user_group'	=> 'Users &amp; Groups',
+		'actions'		=> 'ACL_CAT_ACTIONS',
+		'content'		=> 'ACL_CAT_CONTENT',
+		'forums'		=> 'ACL_CAT_FORUMS',
+		'misc'			=> 'ACL_CAT_MISC',
+		'permissions'	=> 'ACL_CAT_PERMISSIONS',
+		'pm'			=> 'ACL_CAT_PM',
+		'polls'			=> 'ACL_CAT_POLLS',
+		'post'			=> 'ACL_CAT_POST',
+		'post_actions'	=> 'ACL_CAT_POST_ACTIONS',
+		'posting'		=> 'ACL_CAT_POSTING',
+		'profile'		=> 'ACL_CAT_PROFILE',
+		'settings'		=> 'ACL_CAT_SETTINGS',
+		'topic_actions'	=> 'ACL_CAT_TOPIC_ACTIONS',
+		'user_group'	=> 'ACL_CAT_USER_GROUP',
 	);
 
 	protected $permissions = array(

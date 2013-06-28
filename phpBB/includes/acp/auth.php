@@ -1100,7 +1100,10 @@ class auth_admin extends phpbb_auth
 	*/
 	function assign_cat_array(&$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $show_trace = false, $s_view)
 	{
-		global $template, $user, $phpbb_admin_path, $phpEx;
+		global $template, $user, $phpbb_admin_path, $phpEx, $phpbb_container;
+
+		$permissions = $phpbb_container->get('acl.permissions');
+		$permission_categories = $permissions->get_categories();
 
 		@reset($category_array);
 		while (list($cat, $cat_array) = each($category_array))
@@ -1110,8 +1113,8 @@ class auth_admin extends phpbb_auth
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
 				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false,
 
-				'CAT_NAME'	=> $user->lang['permission_cat'][$cat])
-			);
+				'CAT_NAME'	=> $user->lang($permission_categories[$cat]),
+			));
 
 			/*	Sort permissions by name (more naturaly and user friendly than sorting by a primary key)
 			*	Commented out due to it's memory consumption and time needed
@@ -1176,7 +1179,10 @@ class auth_admin extends phpbb_auth
 	*/
 	function build_permission_array(&$permission_row, &$content_array, &$categories, $key_sort_array)
 	{
-		global $user;
+		global $user, $phpbb_container;
+
+		$permissions = $phpbb_container->get('acl.permissions');
+		$permission_categories = $permissions->get_categories();
 
 		foreach ($key_sort_array as $forum_id)
 		{
@@ -1204,7 +1210,7 @@ class auth_admin extends phpbb_auth
 				// Build our categories array
 				if (!isset($categories[$cat]))
 				{
-					$categories[$cat] = $user->lang['permission_cat'][$cat];
+					$categories[$cat] = $user->lang($permission_categories[$cat]);
 				}
 
 				// Build our content array
