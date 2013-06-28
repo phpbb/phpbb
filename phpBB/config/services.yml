@@ -12,6 +12,7 @@ services:
         class: phpbb_permissions
         arguments:
             - @dispatcher
+            - @user
 
     auth:
         class: phpbb_auth

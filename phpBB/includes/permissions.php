@@ -22,59 +22,35 @@ class phpbb_permissions
 	* @var phpbb_event_dispatcher
 	*/
 	protected $dispatcher;
+
+	/**
+	* User object
+	* @var phpbb_user
+	*/
+	protected $user;
+
 	/**
 	* Constructor
 	*
 	* @param	phpbb_event_dispatcher	$phpbb_dispatcher	Event dispatcher
+	* @param	phpbb_user				$user				User Object
 	* @return	null
 	*/
-	public function __construct(phpbb_event_dispatcher $phpbb_dispatcher)
+	public function __construct(phpbb_event_dispatcher $phpbb_dispatcher, phpbb_user $user)
 	{
 		$this->dispatcher = $phpbb_dispatcher;
-	}
+		$this->user = $user;
 
-	public function get_categories()
-	{
 		$categories = $this->categories;
-
-		/**
-		* Allows to specify additional permission categories
-		*
-		* @event core.permissions_get_categories
-		* @var	array	categories	Array with permission categories (pm, post, settings, misc, etc.)
-		* @since 3.1-A1
-		*/
-		$vars = array('categories');
-		extract($this->dispatcher->trigger_event('core.permissions_get_categories', $vars));
-
-		return $categories;
-	}
-
-	public function get_types()
-	{
 		$types = $this->types;
-
-		/**
-		* Allows to specify additional permission types
-		*
-		* @event core.permissions_get_types
-		* @var	array	types	Array with permission types (a_, u_, m_, etc.)
-		* @since 3.1-A1
-		*/
-		$vars = array('types');
-		extract($this->dispatcher->trigger_event('core.permissions_get_types', $vars));
-
-		return $types;
-	}
-
-	public function get_permissions()
-	{
 		$permissions = $this->permissions;
 
 		/**
-		* Allows to specify additional permissions
+		* Allows to specify additional permission categories, types and permissions
 		*
-		* @event core.permissions_get_types
+		* @event core.permissions
+		* @var	array	types			Array with permission types (a_, u_, m_, etc.)
+		* @var	array	categories		Array with permission categories (pm, post, settings, misc, etc.)
 		* @var	array	permissions		Array with permissions. Each Permission has the following layout:
 		*		'acl_<type><permission>' => array(
 		*			'lang'	=> 'Language Key with a Short description', // Optional, if not set,
@@ -87,13 +63,56 @@ class phpbb_permissions
 		*			'lang'	=> 'ACL_U_VIEWPROFILE',
 		*			'cat'	=> 'profile',
 		*		),
-		*
 		* @since 3.1-A1
 		*/
-		$vars = array('permissions');
-		extract($this->dispatcher->trigger_event('core.permissions_get_permissions', $vars));
+		$vars = array('types', 'categories', 'permissions');
+		extract($phpbb_dispatcher->trigger_event('core.permissions', $vars));
 
-		return $permissions;
+		$this->categories = $categories;
+		$this->types = $types;
+		$this->permissions = $permissions;
+	}
+
+	/**
+	* Returns an array with all the permission categories (pm, post, settings, misc, etc.)
+	*
+	* @return	array	Layout: cat-identifier => Language key
+	*/
+	public function get_categories()
+	{
+		return $this->categories;
+	}
+
+	/**
+	* Returns an array with all the permission types (a_, u_, m_, etc.)
+	*
+	* @return	array	Layout: type-identifier => Language key
+	*/
+	public function get_types()
+	{
+		return $this->types;
+	}
+
+	/**
+	* Returns an array with all the permissions.
+	* Each Permission has the following layout:
+	*	'acl_<type><permission>' => array(
+	*		'lang'	=> 'Language Key with a Short description', // Optional, if not set,
+	*					// the permissions identifier 'acl_<type><permission>' is used with
+	*					// all uppercase.
+	*		'cat'	=> 'Identifier of the category, the permission should be displayed in',
+	*	),
+	*	Example:
+	*	'acl_u_viewprofile' => array(
+	*		'lang'	=> 'ACL_U_VIEWPROFILE',
+	*		'cat'	=> 'profile',
+	*	),
+	*
+	* @return	array
+	*/
+	public function get_permissions()
+	{
+		return $this->permissions;
 	}
 
 	protected $types = array(
