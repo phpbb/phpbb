@@ -128,24 +128,44 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 
 	public function test_combined_hash_data()
 	{
-		return array(
-			array(
-				'crypto.driver.salted_md5',
-				array('crypto.driver.bcrypt_2y'),
-			),
-			array(
-				'crypto.driver.salted_md5',
-				array('crypto.driver.bcrypt'),
-			),
-			array(
-				'crypto.driver.phpass',
-				array('crypto.driver.salted_md5'),
-			),
-			array(
-				'crypto.driver.salted_md5',
-				array('crypto.driver.bcrypt_2y', 'crypto.driver.bcrypt'),
-			),
-		);
+		if (version_compare(PHP_VERSION, '5.3.7', '<'))
+		{
+			return array(
+				array(
+					'crypto.driver.salted_md5',
+					array('crypto.driver.bcrypt'),
+				),
+				array(
+					'crypto.driver.phpass',
+					array('crypto.driver.salted_md5'),
+				),
+				array(
+					'crypto.driver.salted_md5',
+					array('crypto.driver.phpass', 'crypto.driver.bcrypt'),
+				),
+			);
+		}
+		else
+		{
+			return array(
+				array(
+					'crypto.driver.salted_md5',
+					array('crypto.driver.bcrypt_2y'),
+				),
+				array(
+					'crypto.driver.salted_md5',
+					array('crypto.driver.bcrypt'),
+				),
+				array(
+					'crypto.driver.phpass',
+					array('crypto.driver.salted_md5'),
+				),
+				array(
+					'crypto.driver.salted_md5',
+					array('crypto.driver.bcrypt_2y', 'crypto.driver.bcrypt'),
+				),
+			);
+		}
 	}
 
 	/**
