@@ -45,11 +45,17 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 		$this->php_ext = $php_ext;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function init()
 	{
 		return;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function login($username, $password)
 	{
 		// Auth plugins get the password untrimmed.
@@ -297,21 +303,33 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 		);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function autologin()
 	{
 		return;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function acp($new)
 	{
 		return;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function logout($data, $new_session)
 	{
 		return;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function validate_session($user)
 	{
 		return;

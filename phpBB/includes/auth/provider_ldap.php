@@ -38,6 +38,9 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 		$this->user = $user;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function init()
 	{
 		if (!@extension_loaded('ldap'))
@@ -106,6 +109,9 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 		return false;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function login($username, $password)
 	{
 		// do not allow empty password
@@ -277,11 +283,17 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 		);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function autologin()
 	{
 		return;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function acp($new)
 	{
 		$tpl = '
@@ -356,11 +368,17 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 		return str_replace(array('*', '\\', '(', ')'), array('\\*', '\\\\', '\\(', '\\)'), $string);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function logout($data, $new_session)
 	{
 		return;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function validate_session($user)
 	{
 		return;

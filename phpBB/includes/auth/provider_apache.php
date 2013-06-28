@@ -42,6 +42,9 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 		$this->php_ext = $php_ext;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function init()
 	{
 		if (!$this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER) || $this->user->data['username'] !== htmlspecialchars_decode($this->request->server('PHP_AUTH_USER')))
@@ -51,6 +54,9 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 		return false;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function login($username, $password)
 	{
 		// do not allow empty password
@@ -138,6 +144,9 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 		);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function autologin()
 	{
 		if (!$this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
@@ -226,6 +235,9 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 		);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function validate_session($user)
 	{
 		// Check if PHP_AUTH_USER is set and handle this case
@@ -245,11 +257,17 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 		return false;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function acp($new)
 	{
 		return;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function logout($data, $new_session)
 	{
 		return;
