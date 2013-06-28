@@ -78,7 +78,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		$callback = function ($matches) use ($parent_class, $parent_nodes)
 		{
 			$name = $matches[1];
-			$slice = $matches[2];
+			$subset = trim(substr($matches[2], 1, -1)); // Remove parenthesis
 			$body = $matches[3];
 
 			// Is the designer wanting to call another loop in a loop?
@@ -118,16 +118,19 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			array_pop($parent_nodes);
 			$parent = (!empty($parent_nodes)) ? end($parent_nodes) . '_loop_element.' : '';
 
-			$slice = ($slice) ? '|slice(' . $slice . ')' : '';
+			if ($subset !== '')
+			{
+				$subset = '|subset(' . $subset . ')';
+			}
 
 			// Turn into a Twig for loop, using (loop name)_loop_element for each child
-			return "{% for {$name}_loop_element in {$parent}{$name}{$slice} %}{$body}{% endfor %}";
+			return "{% for {$name}_loop_element in {$parent}{$name}{$subset} %}{$body}{% endfor %}";
 		};
 
 		// Replace <!-- BEGINELSE --> correctly, only needs to be done once
 		$code = str_replace('<!-- BEGINELSE -->', '{% else %}', $code);
 
-		return preg_replace_callback('#<!-- BEGIN ([!a-zA-Z0-9_]+)\(?([0-9,]+)?\)? -->(.+?)<!-- END \1 -->#s', $callback, $code);
+		return preg_replace_callback('#<!-- BEGIN ([!a-zA-Z0-9_]+)(\([0-9,\-]+\))? -->(.+?)<!-- END \1 -->#s', $callback, $code);
 	}
 
 	/**
