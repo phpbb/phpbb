@@ -84,6 +84,16 @@ class phpbb_permissions
 	}
 
 	/**
+	* Returns the language string of a permission category
+	*
+	* @return	array	Language string
+	*/
+	public function get_lang_category($category)
+	{
+		return $this->user->lang($this->categories[$category]);
+	}
+
+	/**
 	* Returns an array with all the permission types (a_, u_, m_, etc.)
 	*
 	* @return	array	Layout: type-identifier => Language key
@@ -91,6 +101,25 @@ class phpbb_permissions
 	public function get_types()
 	{
 		return $this->types;
+	}
+
+	/**
+	* Returns the language string of a permission type
+	*
+	* @return	array	Language string
+	*/
+	public function get_lang_type($type, $scope = false)
+	{
+		if ($scope && isset($this->types[$scope][$type]))
+		{
+			$lang_key = $this->types[$scope][$type];
+		}
+		else
+		{
+			$lang_key = $this->types[$type];
+		}
+
+		return $this->user->lang($lang_key);
 	}
 
 	/**

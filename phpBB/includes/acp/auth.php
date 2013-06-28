@@ -1103,7 +1103,6 @@ class auth_admin extends phpbb_auth
 		global $template, $user, $phpbb_admin_path, $phpEx, $phpbb_container;
 
 		$permissions = $phpbb_container->get('acl.permissions');
-		$permission_categories = $permissions->get_categories();
 
 		@reset($category_array);
 		while (list($cat, $cat_array) = each($category_array))
@@ -1113,7 +1112,7 @@ class auth_admin extends phpbb_auth
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
 				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false,
 
-				'CAT_NAME'	=> $user->lang($permission_categories[$cat]),
+				'CAT_NAME'	=> $permissions->get_lang_category($cat),
 			));
 
 			/*	Sort permissions by name (more naturaly and user friendly than sorting by a primary key)
@@ -1182,7 +1181,6 @@ class auth_admin extends phpbb_auth
 		global $user, $phpbb_container;
 
 		$permissions = $phpbb_container->get('acl.permissions');
-		$permission_categories = $permissions->get_categories();
 
 		foreach ($key_sort_array as $forum_id)
 		{
@@ -1210,7 +1208,7 @@ class auth_admin extends phpbb_auth
 				// Build our categories array
 				if (!isset($categories[$cat]))
 				{
-					$categories[$cat] = $user->lang($permission_categories[$cat]);
+					$categories[$cat] = $permissions->get_lang_category($cat);
 				}
 
 				// Build our content array

@@ -587,10 +587,9 @@ class acp_permissions
 	*/
 	function build_permission_dropdown($options, $default_option, $permission_scope)
 	{
-		global $user, $auth, $phpbb_container;
+		global $auth, $phpbb_container;
 
 		$permissions = $phpbb_container->get('acl.permissions');
-		$permission_types = $permissions->get_types();
 
 		$s_dropdown_options = '';
 		foreach ($options as $setting)
@@ -601,8 +600,8 @@ class acp_permissions
 			}
 
 			$selected = ($setting == $default_option) ? ' selected="selected"' : '';
-			$l_setting = (isset($permission_types[$permission_scope][$setting])) ? $permission_types[$permission_scope][$setting] : $permission_types[$setting];
-			$s_dropdown_options .= '<option value="' . $setting . '"' . $selected . '>' . $user->lang($l_setting) . '</option>';
+			$l_setting = $permissions->get_lang_type($setting, $permission_scope);
+			$s_dropdown_options .= '<option value="' . $setting . '"' . $selected . '>' . $l_setting . '</option>';
 		}
 
 		return $s_dropdown_options;

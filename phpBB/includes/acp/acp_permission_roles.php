@@ -459,7 +459,6 @@ class acp_permission_roles
 		global $template, $user, $phpbb_container;
 
 		$permissions = $phpbb_container->get('acl.permissions');
-		$permission_categories = $permissions->get_categories();
 
 		$content_array = $categories = array();
 		$key_sort_array = array(0);
@@ -476,7 +475,7 @@ class acp_permission_roles
 		foreach ($content_array as $cat => $cat_array)
 		{
 			$template->assign_block_vars('auth', array(
-				'CAT_NAME'	=> $user->lang($permission_categories[$cat]),
+				'CAT_NAME'	=> $permissions->get_lang_category($cat),
 
 				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
