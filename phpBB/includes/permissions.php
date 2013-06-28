@@ -19,16 +19,16 @@ class phpbb_permissions
 {
 	/**
 	* Event dispatcher object
-	* @var phpbb_dispatcher
+	* @var phpbb_event_dispatcher
 	*/
 	protected $dispatcher;
 	/**
 	* Constructor
 	*
-	* @param	phpbb_dispatcher	$phpbb_dispatcher	Event dispatcher
+	* @param	phpbb_event_dispatcher	$phpbb_dispatcher	Event dispatcher
 	* @return	null
 	*/
-	public function __construct($phpbb_dispatcher)
+	public function __construct(phpbb_event_dispatcher $phpbb_dispatcher)
 	{
 		$this->dispatcher = $phpbb_dispatcher;
 	}
