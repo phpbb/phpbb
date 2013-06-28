@@ -82,16 +82,12 @@ $lang = array_merge($lang, array(
 		'user_group'	=> 'Users &amp; Groups',
 	),
 
-	// With defining 'global' here we are able to specify what is printed out if the permission is within the global scope.
-	'permission_type'	=> array(
-		'u_'			=> 'User permissions',
-		'a_'			=> 'Admin permissions',
-		'm_'			=> 'Moderator permissions',
-		'f_'			=> 'Forum permissions',
-		'global'		=> array(
-			'm_'			=> 'Global moderator permissions',
-		),
-	),
+
+	'ACL_TYPE_USER'				=> 'User permissions',
+	'ACL_TYPE_ADMIN'			=> 'Admin permissions',
+	'ACL_TYPE_MODERATOR'		=> 'Moderator permissions',
+	'ACL_TYPE_FORUM'			=> 'Forum permissions',
+	'ACL_TYPE_GLOBAL_MODERATOR'	=> 'Global moderator permissions',
 ));
 
 // User Permissions
