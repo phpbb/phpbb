@@ -121,7 +121,7 @@ Functional tests
 
 Functional tests test software the way a user would. They simulate a user
 browsing the website, but they do these steps in an automated way.
-phpBB allows you to write such tests. This document will tell you how.
+phpBB allows you to write such tests.
 
 Running
 =======
@@ -148,4 +148,4 @@ More Information
 ================
 
 Further information is available on phpbb wiki:
-http://wiki.phpbb.com/Unit_Tests
+http://wiki.phpbb.com/Automated_Tests
