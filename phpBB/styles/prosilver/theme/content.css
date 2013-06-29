@@ -159,7 +159,7 @@ dl.icon dt .list-inner {
 }
 
 dl.icon dt, dl.icon dd {
-	min-height: 30px;
+	min-height: 35px;
 }
 
 dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
