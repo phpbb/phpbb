@@ -18,6 +18,10 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 {
 	protected $crypto_drivers;
 
+	protected $pw_characters = '0123456789abcdefghijklmnopqrstuvwyzABCDEFGHIJKLMNOPQRSTUVXYZ.,_!?/\\';
+
+	protected $default_pw = 'foobar';
+
 	public function setUp()
 	{
 		global $phpbb_root_path, $phpEx;
@@ -39,10 +43,7 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		{
 			$this->phpbb_container->set($key, $driver);
 		}
-/*
-		$config['allow_avatar_' . get_class($this->avatar_foobar)] = true;
-		$config['allow_avatar_' . get_class($this->avatar_barfoo)] = false;
-*/
+
 		// Set up avatar manager
 		$this->manager = new phpbb_crypto_manager($config, $this->phpbb_container, $this->crypto_drivers);
 	}
@@ -74,10 +75,18 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 	*/
 	public function test_hash_password($type, $prefix, $length)
 	{
-		$hash = $this->manager->hash_password('foobar', $type);
-		preg_match('#^\$([a-zA-Z0-9\\\]*?)\$#', $hash, $match);
-		$this->assertEquals($prefix, $match[1]);
-		$this->assertEquals($length, strlen($hash));
+		$password = $this->default_pw;
+		$time = microtime(true);
+
+		// Limit each test to 1 second
+		while ((microtime(true) - $time) < 1)
+		{
+			$hash = $this->manager->hash_password($password, $type);
+			preg_match('#^\$([a-zA-Z0-9\\\]*?)\$#', $hash, $match);
+			$this->assertEquals($prefix, $match[1]);
+			$this->assertEquals($length, strlen($hash));
+			$password .= $this->pw_characters[mt_rand(0, 66)];
+		}
 	}
 
 	public function check_password_data()
@@ -85,18 +94,18 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		if (version_compare(PHP_VERSION, '5.3.7', '<'))
 		{
 			return array(
-				array('foobar', 'crypto.driver.bcrypt'),
-				array('foobar', 'crypto.driver.salted_md5'),
-				array('barfoo', 'crypto.driver.phpass'),
+				array('crypto.driver.bcrypt'),
+				array('crypto.driver.salted_md5'),
+				array('crypto.driver.phpass'),
 			);
 		}
 		else
 		{
 			return array(
-				array('foobar', 'crypto.driver.bcrypt_2y'),
-				array('barfoo', 'crypto.driver.bcrypt'),
-				array('foobar', 'crypto.driver.salted_md5'),
-				array('barfoo', 'crypto.driver.phpass'),
+				array('crypto.driver.bcrypt_2y'),
+				array('crypto.driver.bcrypt'),
+				array('crypto.driver.salted_md5'),
+				array('crypto.driver.phpass'),
 			);
 		}
 	}
@@ -104,17 +113,17 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 	/**
 	* @dataProvider check_password_data
 	*/
-	public function test_check_password($password, $hash_type)
+	public function test_check_password($hash_type)
 	{
-		$hash = $this->manager->hash_password($password, $hash_type);
-		$test_word = $password;
+		$password = $this->default_pw;
 		$time = microtime(true);
-
 		// Limit each test to 1 second
 		while ((microtime(true) - $time) < 1)
 		{
-			$this->assertEquals($test_word === $password, $this->manager->check_hash($test_word, $hash));
-			$test_word = str_shuffle($test_word);
+			$hash = $this->manager->hash_password($password, $hash_type);
+			$this->assertEquals(true, $this->manager->check_hash($password, $hash));
+			$password .= $this->pw_characters[mt_rand(0, 66)];
+			$this->assertEquals(false, $this->manager->check_hash($password, $hash));
 		}
 	}
 
@@ -173,17 +182,16 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 	*/
 	public function test_combined_hash_password($first_type, $second_type)
 	{
-		$password = 'foobar';
-		$test_word = $password;
-		$hash = $this->manager->hash_password($password, $first_type);
-		$combined_hash = $this->manager->hash_password($hash, $second_type);
-
+		$password = $this->default_pw;
 		$time = microtime(true);
 		// Limit each test to 1 second
 		while ((microtime(true) - $time) < 1)
 		{
-			$this->assertEquals(($test_word === $password), $this->manager->check_hash($test_word, $combined_hash));
-			$test_word = str_shuffle($test_word);
+			$hash = $this->manager->hash_password($password, $first_type);
+			$combined_hash = $this->manager->hash_password($hash, $second_type);
+			$this->assertEquals(true, $this->manager->check_hash($password, $combined_hash));
+			$password .= $this->pw_characters[mt_rand(0, 66)];
+			$this->assertEquals(false, $this->manager->check_hash($password, $combined_hash));
 		}
 	}
 }
