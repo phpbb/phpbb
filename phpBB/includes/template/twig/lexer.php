@@ -20,6 +20,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 	public function tokenize($code, $filename = null)
 	{
 		$valid_starting_tokens = array(
+			// Commented out tokens are handled separately from the main replace
 			/*'BEGIN',
 			'BEGINELSE',
 			'END',*/
@@ -27,9 +28,8 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			'ELSE',
 			'ELSEIF',
 			'ENDIF',
-			'DEFINE',
-			'DEFINE',
-			'UNDEFINE',
+			/*'DEFINE',
+			'UNDEFINE',*/
 			'ENDDEFINE',
 			/*'INCLUDE',
 			'INCLUDEPHP',*/
@@ -42,22 +42,21 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		// Fix our BEGIN statements
 		$code = $this->fix_begin_tokens($code);
 
+		// Fix our IF tokens
+		$code = $this->fix_if_tokens($code);
+
+		// Fix our DEFINE tokens
+		$code = $this->fix_define_tokens($code);
+
 		// Replace <!-- INCLUDE blah.html --> with {% include 'blah.html' %}
 		$code = preg_replace('#<!-- INCLUDE(PHP)? (.*?) -->#', "{% INCLUDE$1 '$2' %}", $code);
-
-		// This strips the $ inside of a tag directly after the token, which was used in <!-- DEFINE $NAME
-		$code = preg_replace('#<!-- DEFINE \$(.*)-->#', '<!-- DEFINE $1-->', $code);
-
-		// This strips the . or $ inside of a tag directly before a variable name, which was used in <!-- IF .blah and <!-- IF $BLAH
-		// In case of .varname, it replaces it with varname|length (as this is how it was treated before)
-		$code = preg_replace_callback('#<!-- IF((.*)[\s][\$|\.]([^\s]+)(.*))-->#', array($this, 'tag_if_cleanup'), $code);
 
 		// Replace all of our starting tokens, <!-- TOKEN --> with Twig style, {% TOKEN %}
 		// This also strips outer parenthesis, <!-- IF (blah) --> becomes <!-- IF blah -->
 		$code = preg_replace('#<!-- (' . implode('|', $valid_starting_tokens) . ')(?: (.*?) ?)?-->#', '{% $1 $2 %}', $code);
 
-		// Replace all of our variables, {VARNAME} or {$VARNAME}, with Twig style, {{ VARNAME }}
-		$code = preg_replace('#{\$?([a-zA-Z0-9_\.]+)}#', '{{ $1 }}', $code);
+		// Replace all of our variables, {VARNAME}, with Twig style, {{ VARNAME }}
+		$code = preg_replace('#{([a-zA-Z0-9_\.]+)}#', '{{ $1 }}', $code);
 
 		return parent::tokenize($code, $filename);
 	}
@@ -68,7 +67,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 	* Not meant to be used outside of this context, public because the anonymous function calls this
 	*
 	* @param string $code
-	* @param array $parent_nodes
+	* @param array $parent_nodes (used in recursion)
 	* @return string
 	*/
 	public function fix_begin_tokens($code, $parent_nodes = array())
@@ -134,19 +133,56 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 	}
 
 	/**
-	* preg_replace_callback to clean up IF statements
+	* Fix IF statements
 	*
-	* This strips the . or $ inside of a tag directly before a variable name.
-	* Was used in <!-- IF .blah or <!-- IF $BLAH
-	*
-	* @param mixed $matches
+	* @param string $code
+	* @return string
 	*/
-	protected function tag_if_cleanup($matches)
+	protected function fix_if_tokens($code)
 	{
-		// Replace $TEST with TEST
-		$matches[1] = preg_replace('#\s\$([a-zA-Z_0-9]+)#', ' $1', $matches[1]);
-		$matches[1] = preg_replace('#\s\.([a-zA-Z_0-9]+)#', ' $1|length', $matches[1]);
+		$callback = function($matches)
+		{
+			// Replace $TEST with definition.TEST
+			$matches[1] = preg_replace('#\s\$([a-zA-Z_0-9]+)#', ' definition.$1', $matches[1]);
 
-		return '<!-- IF ' . $matches[1] . ' -->';
+			// Replace .test with test|length
+			$matches[1] = preg_replace('#\s\.([a-zA-Z_0-9]+)#', ' $1|length', $matches[1]);
+
+			return '<!-- IF ' . $matches[1] . ' -->';
+		};
+
+		return preg_replace_callback('#<!-- IF((.*)[\s][\$|\.]([^\s]+)(.*))-->#', $callback, $code);
+	}
+
+	/**
+	* Fix DEFINE statements and {$VARNAME} variables
+	*
+	* @param string $code
+	* @return string
+	*/
+	protected function fix_define_tokens($code)
+	{
+		/**
+		* Changing $VARNAME to definition.varname because set is only local
+		* context (e.g. DEFINE $TEST will only make $TEST available in current
+		* template and any child templates, but not any parent templates).
+		*
+		* DEFINE handles setting it properly to definition in its node, but the
+		* variables reading FROM it need to be altered to definition.VARNAME
+		*
+		* Setting up definition as a class in the array passed to Twig
+		* ($context) makes set definition.TEST available in the global context
+		*/
+
+		// Replace <!-- DEFINE $NAME with {% DEFINE definition.NAME
+		$code = preg_replace('#<!-- DEFINE \$(.*)-->#', '{% DEFINE $1 %}', $code);
+
+		// Changing UNDEFINE NAME to DEFINE NAME = null to save from creating an extra token parser/node
+		$code = preg_replace('#<!-- UNDEFINE \$(.*)-->#', '{% DEFINE $1= null %}', $code);
+
+		// Replace all of our variables, {$VARNAME}, with Twig style, {{ definition.VARNAME }}
+		$code = preg_replace('#{\$([a-zA-Z0-9_\.]+)}#', '{{ definition.$1 }}', $code);
+
+		return $code;
 	}
 }

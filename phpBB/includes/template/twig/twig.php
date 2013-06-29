@@ -261,14 +261,8 @@ class phpbb_template_twig implements phpbb_template
 			return $result[0];
 		}
 
-		try
-		{
-			$this->twig->display($this->filenames[$handle], $this->get_template_vars());
-		}
-		catch (Twig_Error $e)
-		{
-			throw $e;
-		}
+		$context = &$this->get_template_vars();
+		$this->twig->display($this->filenames[$handle], $context);
 
 		return true;
 	}
@@ -454,7 +448,10 @@ class phpbb_template_twig implements phpbb_template
 		$vars = array_merge(
 			$vars,
 			$this->context->get_rootref(),
-			$this->context->get_tpldata()
+			$this->context->get_tpldata(),
+			array(
+				'definition'	=> new phpbb_template_twig_definition(),
+			)
 		);
 
 		// cleanup
