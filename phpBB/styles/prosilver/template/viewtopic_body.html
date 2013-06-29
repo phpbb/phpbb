@@ -245,12 +245,12 @@
 <!-- IF S_QUICK_REPLY -->
 	<!-- INCLUDE quickreply_editor.html -->
 <!-- ENDIF -->
-<!-- IF S_NUM_POSTS > 1 or PREVIOUS_PAGE or NEXT_PAGE -->
+<!-- IF S_NUM_POSTS > 1 or U_PREVIOUS_PAGE or U_NEXT_PAGE -->
 	<form id="viewtopic" method="post" action="{S_TOPIC_ACTION}">
 
 	<fieldset class="display-options" style="margin-top: 0; ">
-		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
-		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
+		<!-- IF U_PREVIOUS_PAGE --><a href="{U_PREVIOUS_PAGE}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
+		<!-- IF U_NEXT_PAGE --><a href="{U_NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
 		<!-- IF not S_IS_BOT -->
 		<label>{L_DISPLAY_POSTS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label> <label>{S_SELECT_SORT_DIR} <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
