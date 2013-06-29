@@ -475,6 +475,7 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function compile_var_tags(&$text_blocks)
 	{
+		$is_expr = null;
 		$text_blocks = $this->get_varref($text_blocks, $is_expr);
 		$lang_replaced = $this->compile_language_tags($text_blocks);
 
