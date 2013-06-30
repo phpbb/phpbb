@@ -21,6 +21,10 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 
 	public function test_guest_report_post()
 	{
+		$crawler = self::request('GET', 'report.php?f=2&p=1');
+		$this->add_lang('mcp');
+		$this->assertContains($this->lang('USER_CANNOT_REPORT'), $crawler->filter('html')->text());
+
 		$this->set_reporting_guest(1);
 		$crawler = self::request('GET', 'report.php?f=2&p=1');
 		$this->assertContains($this->lang('CONFIRM_CODE'), $crawler->filter('html')->text());
