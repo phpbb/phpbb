@@ -29,13 +29,13 @@ class phpbb_template_twig_node_define extends Twig_Node
 				->subcompile($this->getNode('value'))
 			;
 
-			$compiler->raw(" = ('' === \$value = ob_get_clean()) ? '' : new Twig_Markup(\$value, \$this->env->getCharset())");
+			$compiler->write("\$value = ('' === \$value = ob_get_clean()) ? '' : new Twig_Markup(\$value, \$this->env->getCharset());\n");
 		}
 		else
 		{
 			$compiler
 				->write("\$value = '")
-				->raw($this->getNode('value')->getAttribute('value'))
+				->subcompile($this->getNode('value'))
 				->raw("';\n")
 			;
 		}

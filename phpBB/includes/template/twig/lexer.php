@@ -31,13 +31,20 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			/*'DEFINE',
 			'UNDEFINE',*/
 			'ENDDEFINE',
-			/*'INCLUDE',
-			'INCLUDEPHP',*/
+			'INCLUDE',
+			'INCLUDEPHP',
 			'INCLUDEJS',
 			'PHP',
 			'ENDPHP',
 			'EVENT',
 		);
+
+		// Fix tokens that may have inline variables (e.g. <!-- DEFINE $TEST = '{FOO}')
+		$code = $this->fix_inline_variable_tokens(array(
+			'DEFINE.+=',
+			'INCLUDE',
+			'INCLUDEPHP',
+		), $code);
 
 		// Fix our BEGIN statements
 		$code = $this->fix_begin_tokens($code);
@@ -48,9 +55,6 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		// Fix our DEFINE tokens
 		$code = $this->fix_define_tokens($code);
 
-		// Replace <!-- INCLUDE blah.html --> with {% include 'blah.html' %}
-		$code = preg_replace('#<!-- INCLUDE(PHP)? (.*?) -->#', "{% INCLUDE$1 '$2' %}", $code);
-
 		// Replace all of our starting tokens, <!-- TOKEN --> with Twig style, {% TOKEN %}
 		// This also strips outer parenthesis, <!-- IF (blah) --> becomes <!-- IF blah -->
 		$code = preg_replace('#<!-- (' . implode('|', $valid_starting_tokens) . ')(?: (.*?) ?)?-->#', '{% $1 $2 %}', $code);
@@ -59,6 +63,31 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		$code = preg_replace('#{([a-zA-Z0-9_\.]+)}#', '{{ $1 }}', $code);
 
 		return parent::tokenize($code, $filename);
+	}
+
+	/**
+	* Fix tokens that may have inline variables
+	*
+	* E.g. <!-- INCLUDE {TEST}.html
+	*
+	* @param array $tokens array of tokens to search for (imploded to a regular expression)
+	* @param string $code
+	* @return string
+	*/
+	protected function fix_inline_variable_tokens($tokens, $code)
+	{
+		$callback = function($matches)
+		{
+			// Remove any quotes that may have been used in different implementations
+			// E.g. DEFINE $TEST = 'blah' vs INCLUDE foo
+			// Replace {} with start/end to parse variables (' ~ TEST ~ '.html)
+			$matches[2] = str_replace(array('"', "'", '{', '}'), array('', '', "' ~ ", " ~ '"), $matches[2]);
+
+			// Surround the matches in single quotes ('' ~ TEST ~ '.html')
+			return "<!-- {$matches[1]} '{$matches[2]}' -->";
+		};
+
+		return preg_replace_callback('#<!-- (' . implode('|', $tokens) . ') (.+?) -->#', $callback, $code);
 	}
 
 	/**
@@ -148,10 +177,13 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			// Replace .test with test|length
 			$matches[1] = preg_replace('#\s\.([a-zA-Z_0-9]+)#', ' $1|length', $matches[1]);
 
-			return '<!-- IF ' . $matches[1] . ' -->';
+			// Replace our "div by" with Twig's divisibleby (Twig does not like test names with spaces?)
+			$matches[1] = preg_replace('# div by ([0-9]+)#', ' divisibleby($1)', $matches[1]);
+
+			return '<!-- IF' . $matches[1] . '-->';
 		};
 
-		return preg_replace_callback('#<!-- IF((.*)[\s][\$|\.]([^\s]+)(.*))-->#', $callback, $code);
+		return preg_replace_callback('#<!-- IF((.*)[\s][\$|\.|!]([^\s]+)(.*))-->#', $callback, $code);
 	}
 
 	/**
@@ -182,6 +214,9 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 
 		// Replace all of our variables, {$VARNAME}, with Twig style, {{ definition.VARNAME }}
 		$code = preg_replace('#{\$([a-zA-Z0-9_\.]+)}#', '{{ definition.$1 }}', $code);
+
+		// Replace all of our variables, ~ $VARNAME ~, with Twig style, ~ definition.VARNAME ~
+		$code = preg_replace('#~ \$([a-zA-Z0-9_\.]+) ~#', '~ definition.$1 ~', $code);
 
 		return $code;
 	}
