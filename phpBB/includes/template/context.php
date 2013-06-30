@@ -178,6 +178,11 @@ class phpbb_template_context
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
 			$str[$blocks[$blockcount]][] = $vararray;
+
+			foreach ($str[$blocks[$blockcount]] as &$mod_block)
+			{
+				$mod_block['S_NUM_ROWS'] = $blockcount;
+			}
 		}
 		else
 		{
