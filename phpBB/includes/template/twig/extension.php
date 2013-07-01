@@ -57,6 +57,7 @@ class phpbb_template_twig_extension extends Twig_Extension
     {
         return array(
             new Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
+            new Twig_SimpleFilter('addslashes', 'addslashes'),
 		);
     }
 

@@ -62,8 +62,8 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		// Replace all of our language variables, {L_VARNAME}, with Twig style, {{ lang('NAME') }}
 		$code = preg_replace('#{L_([a-zA-Z0-9_\.]+)}#', '{{ lang(\'$1\') }}', $code);
 
-		// Replace all of our JS escaped language variables, {LA_VARNAME}, with Twig style, {{ lang('NAME')|escape('js') }}
-		$code = preg_replace('#{LA_([a-zA-Z0-9_\.]+)}#', '{{ lang(\'$1\')|escape(\'js\') }}', $code);
+		// Replace all of our escaped language variables, {LA_VARNAME}, with Twig style, {{ lang('NAME')|addslashes }}
+		$code = preg_replace('#{LA_([a-zA-Z0-9_\.]+)}#', '{{ lang(\'$1\')|addslashes }}', $code);
 
 		// Replace all of our variables, {VARNAME}, with Twig style, {{ VARNAME }}
 		$code = preg_replace('#{([a-zA-Z0-9_\.]+)}#', '{{ $1 }}', $code);
