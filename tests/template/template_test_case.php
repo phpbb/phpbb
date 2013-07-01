@@ -105,9 +105,13 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			$this->template->destroy_block_vars($block);
 		}
 
-		foreach ($lang_vars as $name => $value)
+		// Previous functionality was $cachefile (string), which was removed, check to prevent errors
+		if (is_array($lang_vars))
 		{
-			$this->user->lang[$name] = $value;
+			foreach ($lang_vars as $name => $value)
+			{
+				$this->user->lang[$name] = $value;
+			}
 		}
 
 		$expected = str_replace(array("\n", "\r", "\t"), '', $expected);
