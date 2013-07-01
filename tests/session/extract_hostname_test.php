@@ -30,15 +30,15 @@ class phpbb_session_extract_hostname_test extends phpbb_database_test_case
 		return array (
 			// [Input] $host, $server_name_config, $cookie_domain_config, [Expected] $output
 			// If host is ip use that 	ipv4
-			array("127.0.0.1", "skipped.org", "skipped.org", "127.0.0.1"),
+			array('127.0.0.1', 'skipped.org', 'skipped.org', '127.0.0.1'),
 			// If no host but server name matches cookie_domain use that
-			array("", "example.org", "example.org", "example.org"),
+			array('', 'example.org', 'example.org', 'example.org'),
 			// If there is a host uri use that
-			array("example.org", False, False, "example.org"),
-			// "best approach" guessing
-			array("", "example.org", False, "example.org"),
-			array("", False, "127.0.0.1", "127.0.0.1"),
-			array("", False, False, php_uname('n')),
+			array('example.org', false, false, 'example.org'),
+			// 'best approach' guessing
+			array('', 'example.org', false, 'example.org'),
+			array('', false, '127.0.0.1', '127.0.0.1'),
+			array('', false, false, php_uname('n')),
 		);
 	}
 
