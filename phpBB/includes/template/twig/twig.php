@@ -266,7 +266,7 @@ class phpbb_template_twig implements phpbb_template
 		}
 
 		$context = &$this->get_template_vars();
-		$this->twig->display($this->filenames[$handle], $context);
+		$this->twig->display($this->get_filename_from_handle($handle), $context);
 
 		return true;
 	}
@@ -324,20 +324,12 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function assign_display($handle, $template_var = '', $return_content = true)
 	{
-		ob_start();
-		$result = $this->display($handle);
-		$contents = ob_get_clean();
-		if ($result === false)
-		{
-			return false;
-		}
-
 		if ($return_content)
 		{
-			return $contents;
+			return $this->twig->render($this->get_filename_from_handle($handle));
 		}
 
-		$this->assign_var($template_var, $contents);
+		$this->assign_var($template_var, $this->twig->render($this->get_filename_from_handle($handle)));
 
 		return true;
 	}
@@ -447,5 +439,16 @@ class phpbb_template_twig implements phpbb_template
 		unset($vars['.']);
 
 		return $vars;
+	}
+
+	/**
+	* Get a filename from the handle
+	*
+	* @param string $handle
+	* @return string
+	*/
+	protected function get_filename_from_handle($handle)
+	{
+		return (isset($this->filenames[$handle])) ? $this->filenames[$handle] : $handle;
 	}
 }
