@@ -29,7 +29,7 @@ class phpbb_session_extract_page_test extends phpbb_database_test_case
 					'script_path' => '/phpBB/',
 					'root_script_path' => '/phpBB/',
 					'page' => 'index.php',
-					'forum' => 0
+					'forum' => 0,
 				)
 			) ,
 			array(
@@ -44,7 +44,7 @@ class phpbb_session_extract_page_test extends phpbb_database_test_case
 					'script_path' => '/phpBB/',
 					'root_script_path' => '/phpBB/',
 					'page' => 'ucp.php?mode=login',
-					'forum' => 0
+					'forum' => 0,
 				)
 			) ,
 			array(
@@ -59,7 +59,7 @@ class phpbb_session_extract_page_test extends phpbb_database_test_case
 					'script_path' => '/phpBB/',
 					'root_script_path' => '/phpBB/',
 					'page' => 'ucp.php?mode=register',
-					'forum' => 0
+					'forum' => 0,
 				)
 			) ,
 			array(
@@ -74,7 +74,7 @@ class phpbb_session_extract_page_test extends phpbb_database_test_case
 					'script_path' => '/phpBB/',
 					'root_script_path' => '/phpBB/',
 					'page' => 'ucp.php?mode=register',
-					'forum' => 0
+					'forum' => 0,
 				)
 			) ,
 			array(
@@ -90,7 +90,7 @@ class phpbb_session_extract_page_test extends phpbb_database_test_case
 					'script_path' => '/phpBB/adm/',
 					'root_script_path' => '/phpBB/',
 					//'page' => 'adm/index.php',
-					'forum' => 0
+					'forum' => 0,
 				)
 			)
 		);
