@@ -252,7 +252,7 @@ display_reasons($reason_id);
 
 $page_title = ($pm_id) ? $user->lang['REPORT_MESSAGE'] : $user->lang['REPORT_POST'];
 
-if ((isset($captcha) && $captcha->is_solved() === false))
+if (isset($captcha) && $captcha->is_solved() === false)
 {
 	$template->assign_vars(array(
 		'S_CONFIRM_CODE'	=> true,
