@@ -120,15 +120,11 @@ class phpbb_template_twig implements phpbb_template
 			$loader,
 			array(
 				'cache'			=> $this->cachepath,
-				'debug'			=> true, // @todo
-				'auto_reload'	=> true, // @todo
+				'debug'			=> defined('DEBUG'),
+				'auto_reload'	=> (bool) $this->config['load_tplcompile'],
 				'autoescape'	=> false,
 			)
 		);
-
-		// Clear previous cache files (while WIP)
-		// @todo remove
-		$this->clear_cache();
 
 		$this->twig->addExtension(
 			new phpbb_template_twig_extension(
