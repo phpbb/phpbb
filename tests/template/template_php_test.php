@@ -14,7 +14,16 @@ class phpbb_template_template_php_test extends phpbb_template_template_test_case
 {
 	public function test_php()
 	{
+		$template_text = '<!-- PHP -->echo "test";<!-- ENDPHP -->';
+
+		$cache_dir = dirname($this->template->cachepath) . '/';
+		$fp = fopen($cache_dir . 'php.html', 'w');
+		fputs($fp, $template_text);
+		fclose($fp);
+
 		$this->setup_engine(array('tpl_allow_php' => true));
+
+		$this->style->set_custom_style('tests', $cache_dir, array(), '');
 
 		$this->run_template('php.html', array(), array(), array(), 'test');
 	}
