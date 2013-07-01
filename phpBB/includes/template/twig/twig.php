@@ -131,7 +131,11 @@ class phpbb_template_twig implements phpbb_template
 		// @todo remove
 		$this->clear_cache();
 
-		$this->twig->addExtension(new phpbb_template_twig_extension);
+		$this->twig->addExtension(
+			new phpbb_template_twig_extension(
+				$this->user
+			)
+		);
 
 		$lexer = new phpbb_template_twig_lexer($this->twig);
 
@@ -430,27 +434,13 @@ class phpbb_template_twig implements phpbb_template
 	{
 		$vars = array();
 
-		// Work-around for now
-		if (!empty($this->user->lang))
-		{
-			foreach ($this->user->lang as $key => $value)
-			{
-				if (!is_string($value))
-				{
-					continue;
-				}
-
-				$vars['L_' . strtoupper($key)] = $value;
-				$vars['LA_' . strtoupper($key)] = addslashes($value);
-			}
-		}
-
 		$vars = array_merge(
 			$vars,
 			$this->context->get_rootref(),
 			$this->context->get_tpldata(),
 			array(
 				'definition'	=> new phpbb_template_twig_definition(),
+				'user'			=> $this->user,
 			)
 		);
 

@@ -17,11 +17,24 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_template_twig_extension extends Twig_Extension
 {
+	/** @var phpbb_user */
+	protected $user;
+
+	public function __construct($user)
+	{
+		$this->user = $user;
+	}
+
 	public function getName()
 	{
 		return 'phpbb';
 	}
 
+    /**
+     * Returns the token parser instance to add to the existing list.
+     *
+     * @return array An array of Twig_TokenParser instances
+     */
 	public function getTokenParsers()
 	{
 		return array(
@@ -35,6 +48,11 @@ class phpbb_template_twig_extension extends Twig_Extension
 		);
 	}
 
+    /**
+     * Returns a list of filters to add to the existing list.
+     *
+     * @return array An array of filters
+     */
     public function getFilters()
     {
         return array(
@@ -42,6 +60,23 @@ class phpbb_template_twig_extension extends Twig_Extension
 		);
     }
 
+    /**
+     * Returns a list of global functions to add to the existing list.
+     *
+     * @return array An array of global functions
+     */
+    public function getFunctions()
+    {
+        return array(
+            new Twig_SimpleFunction('lang', array($this->user, 'lang')),
+		);
+	}
+
+    /**
+     * Returns a list of operators to add to the existing list.
+     *
+     * @return array An array of operators
+     */
 	public function getOperators()
 	{
 		return array(
