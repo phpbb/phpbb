@@ -182,7 +182,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			$matches[1] = preg_replace('#\s\$([a-zA-Z_0-9]+)#', ' definition.$1', $matches[1]);
 
 			// Replace .test with test|length
-			$matches[1] = preg_replace('#\s\.([a-zA-Z_0-9]+)#', ' $1|length', $matches[1]);
+			$matches[1] = preg_replace('#\s\.([a-zA-Z_0-9\.]+)#', ' $1|length', $matches[1]);
 
 			return '<!-- IF' . $matches[1] . '-->';
 		};
