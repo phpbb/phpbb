@@ -177,11 +177,11 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			// Replace .test with test|length
 			$matches[1] = preg_replace('#\s\.([a-zA-Z_0-9]+)#', ' $1|length', $matches[1]);
 
-			// Replace our "div by" with Twig's divisibleby (Twig does not like test names with spaces?)
-			$matches[1] = preg_replace('# div by ([0-9]+)#', ' divisibleby($1)', $matches[1]);
-
 			return '<!-- IF' . $matches[1] . '-->';
 		};
+
+		// Replace our "div by" with Twig's divisibleby (Twig does not like test names with spaces)
+		$code = preg_replace('# div by ([0-9]+)#', ' divisibleby($1)', $code);
 
 		return preg_replace_callback('#<!-- IF((.*)[\s][\$|\.|!]([^\s]+)(.*))-->#', $callback, $code);
 	}
