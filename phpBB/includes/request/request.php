@@ -79,7 +79,7 @@ class phpbb_request implements phpbb_request_interface
 
 		// simulate request_order = GP
 		$this->original_request = $this->input[phpbb_request_interface::REQUEST];
-		$this->input[phpbb_request_interface::REQUEST] = $this->input[phpbb_request_interface::POST] + $this->input[phpbb_request_interface::GET];
+		$this->input[phpbb_request_interface::REQUEST] = (array)$this->input[phpbb_request_interface::POST] + (array)$this->input[phpbb_request_interface::GET];
 
 		if ($disable_super_globals)
 		{
