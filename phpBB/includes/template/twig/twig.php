@@ -186,7 +186,7 @@ class phpbb_template_twig implements phpbb_template
 		$this->twig->getLoader()->setPaths($style_paths);
 
 		// Core style namespace from phpbb_style::set_style()
-		if ($this->user && ($style_names === array($this->user->style['style_path']) || $style_names[0] == $this->user->style['style_path']))
+		if (isset($this->user->style['style_path']) && ($style_names === array($this->user->style['style_path']) || $style_names[0] == $this->user->style['style_path']))
 		{
 			$this->twig->getLoader()->setPaths($style_paths, 'core');
 		}
