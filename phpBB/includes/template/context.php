@@ -146,6 +146,9 @@ class phpbb_template_context
 				$vararray['S_FIRST_ROW'] = true;
 			}
 
+			// Assign S_BLOCK_NAME
+			$vararray['S_BLOCK_NAME'] = $blocks[$blockcount];
+
 			// Now the tricky part, we always assign S_LAST_ROW and remove the entry before
 			// This is much more clever than going through the complete template data on display (phew)
 			$vararray['S_LAST_ROW'] = true;
@@ -159,6 +162,7 @@ class phpbb_template_context
 			// variable assignments.
 			$str[$blocks[$blockcount]][] = $vararray;
 
+			// Set S_NUM_ROWS
 			foreach ($str[$blocks[$blockcount]] as &$mod_block)
 			{
 				$mod_block['S_NUM_ROWS'] = $blockcount;
@@ -176,6 +180,9 @@ class phpbb_template_context
 				$vararray['S_FIRST_ROW'] = true;
 			}
 
+			// Assign S_BLOCK_NAME
+			$vararray['S_BLOCK_NAME'] = $blocks[$blockcount];
+
 			// We always assign S_LAST_ROW and remove the entry before
 			$vararray['S_LAST_ROW'] = true;
 			if ($s_row_count > 0)
@@ -185,6 +192,12 @@ class phpbb_template_context
 
 			// Add a new iteration to this block with the variable assignments we were given.
 			$this->tpldata[$blockname][] = $vararray;
+
+			// Set S_NUM_ROWS
+			foreach ($this->tpldata[$blockname] as &$mod_block)
+			{
+				$mod_block['S_NUM_ROWS'] = $blockcount;
+			}
 		}
 
 		return true;
@@ -303,6 +316,9 @@ class phpbb_template_context
 				$vararray['S_FIRST_ROW'] = true;
 			}
 
+			// Assign S_BLOCK_NAME
+			$vararray['S_BLOCK_NAME'] = $blockname;
+
 			// Re-position template blocks
 			for ($i = sizeof($block); $i > $key; $i--)
 			{
@@ -314,6 +330,12 @@ class phpbb_template_context
 			// Insert vararray at given position
 			$block[$key] = $vararray;
 			$block[$key]['S_ROW_COUNT'] = $block[$key]['S_ROW_NUM'] = $key;
+
+			// Set S_NUM_ROWS
+			foreach ($this->tpldata[$blockname] as &$mod_block)
+			{
+				$mod_block['S_NUM_ROWS'] = sizeof($this->tpldata[$blockname]);
+			}
 
 			return true;
 		}
