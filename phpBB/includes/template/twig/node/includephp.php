@@ -46,19 +46,17 @@ class phpbb_template_twig_node_includephp extends Twig_Node
             ;
         }
 
-		// Replace variables in the expression
-		$expr = preg_replace('#{{ ([a-zA-Z0-9_]+) }}#', '\' . ((isset($context["$1"])) ? $context["$1"] : null) . \'', $this->getNode('expr')->getAttribute('value'));
-
 		$compiler
-			->write("if (phpbb_is_absolute('$expr')) {\n")
+			->write("\$location = ")
+			->subcompile($this->getNode('expr'))
+			->raw(";\n")
+			->write("if (phpbb_is_absolute(\$location)) {\n")
 			->indent()
-				->write("require('$expr');\n")
+				->write("require(\$location);\n")
 			->outdent()
 			->write("} else {\n")
 			->indent()
-				->write("require(\$this->getEnvironment()->get_phpbb_root_path() . '")
-				->raw($expr)
-				->raw("');\n")
+				->write("require(\$this->getEnvironment()->get_phpbb_root_path() . \$location);\n")
 			->outdent()
 			->write("}\n")
 		;
