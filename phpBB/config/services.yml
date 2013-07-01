@@ -260,7 +260,6 @@ services:
             - %core.php_ext%
             - @config
             - @user
-            - @style.resource_locator
             - @template_context
             - @ext.manager
 

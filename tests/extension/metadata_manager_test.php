@@ -47,7 +47,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->phpEx,
 			$this->config,
 			$this->user,
-			new phpbb_style_resource_locator(),
 			new phpbb_template_context()
 		);
 

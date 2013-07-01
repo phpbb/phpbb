@@ -96,11 +96,10 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
-	* @param phpbb_template_locator $locator template locator
 	* @param phpbb_template_context $context template context
 	* @param phpbb_extension_manager $extension_manager extension manager, if null then template events will not be invoked
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_locator $locator, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
