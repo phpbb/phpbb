@@ -34,14 +34,14 @@ class phpbb_template_twig_node_define extends Twig_Node
 		else
 		{
 			$compiler
-				->write("\$value = '")
+				->write("\$value = ")
 				->subcompile($this->getNode('value'))
-				->raw("';\n")
+				->raw(";\n")
 			;
 		}
 
 		$compiler
-			->raw("\$context['definition']->set('")
+			->write("\$context['definition']->set('")
 			->raw($this->getNode('name')->getAttribute('name'))
 			->raw("', \$value);\n")
 		;
