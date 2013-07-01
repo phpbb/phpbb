@@ -44,6 +44,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			'DEFINE.+=',
 			'INCLUDE',
 			'INCLUDEPHP',
+			'INCLUDEJS',
 		), $code);
 
 		// Fix our BEGIN statements
