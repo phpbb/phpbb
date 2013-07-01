@@ -41,6 +41,12 @@ class phpbb_template_twig implements phpbb_template
 	protected $phpbb_root_path;
 
 	/**
+	* adm relative path
+	* @var string
+	*/
+	protected $adm_relative_path;
+
+	/**
 	* PHP file extension
 	* @var string
 	*/
@@ -92,16 +98,16 @@ class phpbb_template_twig implements phpbb_template
 	/**
 	* Constructor.
 	*
-	* @todo remove unnecessary dependencies
-	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
 	* @param phpbb_template_context $context template context
 	* @param phpbb_extension_manager $extension_manager extension manager, if null then template events will not be invoked
+	* @param string $adm_relative_path relative path to adm directory
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null, $adm_relative_path = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->adm_relative_path = $adm_relative_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
@@ -186,10 +192,9 @@ class phpbb_template_twig implements phpbb_template
 		}
 
 		// Add admin namespace
-		// @todo use phpbb_admin path
-		if (is_dir($this->phpbb_root_path . 'adm/style/'))
+		if (is_dir($this->phpbb_root_path . $this->adm_relative_path . 'style/'))
 		{
-			$this->twig->getLoader()->setPaths($this->phpbb_root_path . 'adm/style/', 'admin');
+			$this->twig->getLoader()->setPaths($this->phpbb_root_path . $this->adm_relative_path . 'style/', 'admin');
 		}
 
 		// Add all namespaces for all extensions

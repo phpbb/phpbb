@@ -262,6 +262,7 @@ services:
             - @user
             - @template_context
             - @ext.manager
+            - %core.adm_relative_path%
 
     template_context:
         class: phpbb_template_context
