@@ -181,7 +181,7 @@ class phpbb_template_context
 			}
 
 			// Assign S_BLOCK_NAME
-			$vararray['S_BLOCK_NAME'] = $blocks[$blockcount];
+			$vararray['S_BLOCK_NAME'] = $blockname;
 
 			// We always assign S_LAST_ROW and remove the entry before
 			$vararray['S_LAST_ROW'] = true;
@@ -196,7 +196,7 @@ class phpbb_template_context
 			// Set S_NUM_ROWS
 			foreach ($this->tpldata[$blockname] as &$mod_block)
 			{
-				$mod_block['S_NUM_ROWS'] = $blockcount;
+				$mod_block['S_NUM_ROWS'] = sizeof($this->tpldata[$blockname]);
 			}
 		}
 
