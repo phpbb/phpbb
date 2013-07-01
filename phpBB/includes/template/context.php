@@ -83,26 +83,6 @@ class phpbb_template_context
 	}
 
 	/**
-	* Get (non-referenced) rootref
-	*
-	* @return array
-	*/
-	public function get_rootref()
-	{
-		return $this->rootref;
-	}
-
-	/**
-	* Get (non-referenced) tpldata
-	*
-	* @return array
-	*/
-	public function get_tpldata()
-	{
-		return $this->tpldata;
-	}
-
-	/**
 	* Returns a reference to template data array.
 	*
 	* This function is public so that template renderer may invoke it.

@@ -432,12 +432,11 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function get_template_vars()
 	{
-		$vars = array();
+		$context_vars = $this->context->get_data_ref();
 
 		$vars = array_merge(
-			$vars,
-			$this->context->get_rootref(),
-			$this->context->get_tpldata(),
+			$context_vars['.'][0], // To get normal vars
+			$context_vars, // To get loops
 			array(
 				'definition'	=> new phpbb_template_twig_definition(),
 				'user'			=> $this->user,
