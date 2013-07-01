@@ -32,8 +32,12 @@ class phpbb_session_extract_hostname_test extends phpbb_database_test_case
 	{
 		return array (
 			// [Input] $host, $server_name_config, $cookie_domain_config, [Expected] $output
-			// If host is ip use that 	ipv4
+			// If host is ip use that
+			//    ipv4
 			array('127.0.0.1', 'skipped.org', 'skipped.org', '127.0.0.1'),
+			//    ipv6
+			array('::1', 'skipped.org', 'skipped.org', ':'),
+			array('2002::3235:51f9', 'skipped.org', 'skipped.org', '2002::3235'),
 			// If no host but server name matches cookie_domain use that
 			array('', 'example.org', 'example.org', 'example.org'),
 			// If there is a host uri use that
@@ -49,8 +53,6 @@ class phpbb_session_extract_hostname_test extends phpbb_database_test_case
 	function test_extract_current_hostname($host, $server_name_config, $cookie_domain_config, $expected)
 	{
 		$output = $this->session_facade->extract_current_hostname(
-			$this->db,
-			$this->session_factory,
 			$host,
 			$server_name_config,
 			$cookie_domain_config
