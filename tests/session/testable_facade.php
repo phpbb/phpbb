@@ -14,16 +14,32 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
  * This class exists to expose session.php's functions in a more testable way.
  *
  * Since many functions in session.php have global variables inside the function,
- * this exposes those functions through a testable facade that uses testable_factory's
- * mock global variables to modify global variables used in the functions.
+ * this exposes those functions through a testable facade that uses 
+ * testable_factory's mock global variables to modify global variables used in 
+ * the functions.
  *
- * This is using the facade pattern to provide a testable "front" to the functions in sessions.php.
+ * This is using the facade pattern to provide a testable "front" to the 
+ * functions in sessions.php.
  *
  */
 class phpbb_session_testable_facade
 {
-	public static function extract_current_page($db, $session_factory, $root_path, $php_self, $query_string, $request_uri) {
-		$session_factory->get_session($db);
+	var $db;
+	var $session_factory;
+
+	function __construct($db, $session_factory) {
+		$this->db = $db;
+		$this->session_factory = $session_factory;
+	}
+
+	function extract_current_page (
+		$root_path,
+		$php_self, 
+		$query_string,
+		$request_uri
+	) 
+	{
+		$this->session_factory->get_session($this->db);
 		global $request;
 		$request->overwrite('PHP_SELF', $php_self, phpbb_request_interface::SERVER);
 		$request->overwrite('QUERY_STRING', $query_string, phpbb_request_interface::SERVER);
@@ -31,28 +47,115 @@ class phpbb_session_testable_facade
 		return phpbb_session::extract_current_page($root_path);
 	}
 
-	public static function extract_current_hostname($db, $session_factory, $host, $server_name_config, $cookie_domain_config) {
-		$session = $session_factory->get_session($db);
+	function extract_current_hostname (
+		$host,
+		$server_name_config,
+		$cookie_domain_config
+	)
+	{
+		$session = $this->session_factory->get_session($this->db);
 		global $config, $request;
 		$config['server_name'] = $server_name_config;
 		$config['cookie_domain'] = $cookie_domain_config;
 		$request->overwrite('SERVER_NAME', $host, phpbb_request_interface::SERVER);
 		$request->overwrite('Host', $host, phpbb_request_interface::SERVER);
-		// Note: There is a php_uname fallthrough in this method that this function doesn't override
+		// Note: There is a php_uname fallthrough in this method
+		//       that this function doesn't override
 		return $session->extract_current_hostname();
 	}
-	// [To be completed]
-	// public static function session_begin($update_session_page = true) {}
-	// public static function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true) {}
-	// public static function session_kill($new_session = true) {}
-	// public static function session_gc() {}
-	// public static function set_cookie($name, $cookiedata, $cookietime) {}
-	// public static function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false) {}
-	// public static function check_dnsbl($mode, $ip = false) {}
-	// public static function set_login_key($user_id = false, $key = false, $user_ip = false) {}
-	// public static function reset_login_keys($user_id = false) {}
-	// public static function validate_referer($check_script_path = false) {}
-	// public static function update_session($session_data, $session_id = null) {}
-	// public static function unset_admin() {}
+
+
+	/** This function has a *lot* of dependencies, so instead of naming them all,
+	 * just ask for overrides */
+	function session_begin (
+		$update_session_page = true,
+		$config_overrides = array(),
+		$request_overrides = array()
+	)
+	{
+		$session = $this->session_factory->get_session($this->db);
+		global $config, $request;
+		$request->merge(phpbb_request_interface::SERVER, $request_overrides);
+		$config = array_merge($config, $config_overrides);
+		return $session->session_begin($update_session_page);
+	}
+
+	function session_create (
+		$user_id = false,
+		$set_admin = false,
+		$persist_login = false,
+		$viewonline = true,
+		$config_overrides = array(),
+		$request_overrides = array(),
+		$bot_overrides = array(),
+		$uri_sid = ""
+	)
+	{
+		$session = $this->session_factory->get_session($this->db);
+		global $config, $request, $cache;
+		$request->merge(phpbb_request_interface::SERVER, $request_overrides);
+		$config = array_merge($config, $config_overrides);
+		// Bots
+		$cache->merge_cache_data(array('_bots' => $bot_overrides));
+		// Uri sid
+		$_GET['sid'] = $uri_sid;
+		return $session->session_create($user_id, $set_admin, $persist_login, $viewonline);
+	}
+
+	function session_kill($new_session = true)
+	{
+		$session = $this->session_factory->get_session($this->db);
+		global $config, $request;
+		
+	}
+	
+	function session_gc() 
+	{
+		$session = $this->session_factory->get_session($this->db);
+		global $config, $request;
+		
+	}
+
+	function set_cookie($name, $cookiedata, $cookietime) 
+	{
+		$session = $this->session_factory->get_session($this->db);
+		global $config, $request;
+		
+	}
+
+	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false) 
+	{
+		$session = $this->session_factory->get_session($this->db);
+		global $config, $request;
+		
+	}
+
+	function check_dnsbl($mode, $ip = false)
+	{
+		$session = $this->session_factory->get_session($this->db);
+		global $config, $request;
+		
+	}
+
+	function set_login_key($user_id = false, $key = false, $user_ip = false) 
+	{
+		$session = $this->session_factory->get_session($this->db);
+		global $config, $request;
+		
+	}
+	
+	function reset_login_keys($user_id = false)
+	{
+		$session = $this->session_factory->get_session($this->db);
+		global $config, $request;
+
+	}
+
+	function validate_referer($check_script_path = false)
+	{
+		$session = $this->session_factory->get_session($this->db);
+		global $config, $request;
+		return $session->validate_referer($check_script_path);
+	}
 }
 

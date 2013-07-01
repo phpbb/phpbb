@@ -13,6 +13,7 @@ class phpbb_session_extract_hostname_test extends phpbb_database_test_case
 {
 	public $session_factory;
 	public $db;
+	public $session_facade;
 
 	public function getDataSet()
 	{
@@ -23,6 +24,8 @@ class phpbb_session_extract_hostname_test extends phpbb_database_test_case
 	{
 		$this->session_factory = new phpbb_session_testable_factory;
 		$this->db = $this->new_dbal();
+		$this->session_facade =
+			new phpbb_session_testable_facade($this->db, $this->session_factory);
 	}
 
 	static public function extract_current_hostname_data()
@@ -45,7 +48,7 @@ class phpbb_session_extract_hostname_test extends phpbb_database_test_case
 	/** @dataProvider extract_current_hostname_data */
 	function test_extract_current_hostname($host, $server_name_config, $cookie_domain_config, $expected)
 	{
-		$output = phpbb_session_testable_facade::extract_current_hostname(
+		$output = $this->session_facade->extract_current_hostname(
 			$this->db,
 			$this->session_factory,
 			$host,

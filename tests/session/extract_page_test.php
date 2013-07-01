@@ -13,6 +13,7 @@ class phpbb_session_extract_page_test extends phpbb_database_test_case
 {
 	public $session_factory;
 	public $db;
+	public $session_facade;
 
 	static public function extract_current_page_data()
 	{
@@ -105,14 +106,14 @@ class phpbb_session_extract_page_test extends phpbb_database_test_case
 	{
 		$this->session_factory = new phpbb_session_testable_factory;
 		$this->db = $this->new_dbal();
+		$this->session_facade =
+			new phpbb_session_testable_facade($this->db, $this->session_factory);
 	}
 
 	/** @dataProvider extract_current_page_data */
 	function test_extract_current_page($root_path, $php_self, $query_string, $request_uri, $expected)
 	{
-		$output = phpbb_session_testable_facade::extract_current_page(
-			$this->db,
-			$this->session_factory,
+		$output = $this->session_facade->extract_current_page(
 			$root_path,
 			$php_self,
 			$query_string,
