@@ -31,8 +31,17 @@ class phpbb_session_testable_facade
 		return phpbb_session::extract_current_page($root_path);
 	}
 
+	public static function extract_current_hostname($db, $session_factory, $host, $server_name_config, $cookie_domain_config) {
+		$session = $session_factory->get_session($db);
+		global $config, $request;
+		$config['server_name'] = $server_name_config;
+		$config['cookie_domain'] = $cookie_domain_config;
+		$request->overwrite('SERVER_NAME', $host, phpbb_request_interface::SERVER);
+		$request->overwrite('Host', $host, phpbb_request_interface::SERVER);
+		// Note: There is a php_uname fallthrough in this method that this function doesn't override
+		return $session->extract_current_hostname();
+	}
 	// [To be completed]
-	// public static function extract_current_hostname() {}
 	// public static function session_begin($update_session_page = true) {}
 	// public static function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true) {}
 	// public static function session_kill($new_session = true) {}
