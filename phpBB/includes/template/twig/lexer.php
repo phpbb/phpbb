@@ -134,10 +134,10 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 				}
 			}
 
-			// Remove all parent nodes, e.g. foo, bar from foo.bar.foobar
+			// Remove all parent nodes, e.g. foo, bar from foo.bar.foobar.VAR
 			foreach ($parent_nodes as $node)
 			{
-				$body = preg_replace('#([^a-zA-Z0-9])' . $node . '\.#', '$1', $body);
+				$body = preg_replace('#([^a-zA-Z0-9_])' . $node . '\.([a-zA-Z0-9_]+)\.#', '$1$2.', $body);
 			}
 
 			// Add current node to list of parent nodes for child nodes
