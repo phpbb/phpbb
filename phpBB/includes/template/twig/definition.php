@@ -47,4 +47,23 @@ class phpbb_template_twig_definition
 
 		return $this;
 	}
+
+	/**
+	* Append to a variable
+	*
+	* @param string $name
+	* @param string $value
+	* @return phpbb_template_twig_definition
+	*/
+	public function append($name, $value)
+	{
+		if (!isset($this->definitions[$name]))
+		{
+			$this->definitions[$name] = '';
+		}
+
+		$this->definitions[$name] .= $value;
+
+		return $this;
+	}
 }
