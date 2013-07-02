@@ -178,7 +178,7 @@ class phpbb_template_twig implements phpbb_template
 	* @param array $style_names List of style names in inheritance tree order
 	* @return phpbb_template $this
 	*/
-	public function set_style_names(array $style_names, $style_paths = array())
+	public function set_style_names(array $style_names, array $style_paths = array())
 	{
 		$this->style_names = $style_names;
 
@@ -290,26 +290,6 @@ class phpbb_template_twig implements phpbb_template
 		}
 
 		return false;
-	}
-
-	/**
-	* Obtains language array.
-	* This is either lang property of $user property, or if
-	* it is not set an empty array.
-	* @return array language entries
-	*/
-	public function get_lang()
-	{
-		if (isset($this->user->lang))
-		{
-			$lang = $this->user->lang;
-		}
-		else
-		{
-			$lang = array();
-		}
-
-		return $lang;
 	}
 
 	/**
