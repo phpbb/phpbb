@@ -52,11 +52,18 @@ class phpbb_template_twig_node_includephp extends Twig_Node
 			->raw(";\n")
 			->write("if (phpbb_is_absolute(\$location)) {\n")
 			->indent()
+				// Absolute path specified
 				->write("require(\$location);\n")
+			->outdent()
+			->write("} else if (file_exists(\$this->getEnvironment()->get_phpbb_root_path() . \$location)) {\n")
+			->indent()
+				// PHP file relative to phpbb_root_path
+				->write("require(\$this->getEnvironment()->get_phpbb_root_path() . \$location);\n")
 			->outdent()
 			->write("} else {\n")
 			->indent()
-				->write("require(\$this->getEnvironment()->get_phpbb_root_path() . \$location);\n")
+				// Local path (behaves like INCLUDE)
+				->write("require(\$this->getEnvironment()->getLoader()->getCacheKey(\$location));\n")
 			->outdent()
 			->write("}\n")
 		;
