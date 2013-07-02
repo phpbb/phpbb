@@ -29,7 +29,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		try
 		{
-			$this->assertTrue($this->template->display($handle, false));
+			$this->template->display($handle, false);
 		}
 		catch (Exception $exception)
 		{
