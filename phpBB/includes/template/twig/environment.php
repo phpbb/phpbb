@@ -132,7 +132,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 	{
 		if (strpos($name, '@') === false)
 		{
-			foreach ($this->namespaceLookUpOrder as $namespace)
+			foreach ($this->getNamespaceLookUpOrder() as $namespace)
 			{
 				try
 				{
