@@ -134,6 +134,7 @@ class phpbb_template_twig implements phpbb_template
 
 		$this->twig->addExtension(
 			new phpbb_template_twig_extension(
+				$this->context,
 				$this->user
 			)
 		);

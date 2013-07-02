@@ -17,11 +17,15 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_template_twig_extension extends Twig_Extension
 {
+	/** @var phpbb_template_context */
+	protected $context;
+
 	/** @var phpbb_user */
 	protected $user;
 
-	public function __construct($user)
+	public function __construct(phpbb_template_context $context, $user)
 	{
+		$this->context = $context;
 		$this->user = $user;
 	}
 
@@ -69,7 +73,7 @@ class phpbb_template_twig_extension extends Twig_Extension
     public function getFunctions()
     {
         return array(
-            new Twig_SimpleFunction('lang', array($this->user, 'lang')),
+            new Twig_SimpleFunction('lang', array($this, 'lang')),
 		);
 	}
 
@@ -139,5 +143,34 @@ class phpbb_template_twig_extension extends Twig_Extension
 		$end = ($end == -1 || $end === null) ? null : $end + 1;
 
 		return twig_slice($env, $item, $start, $end, $preserveKeys);
+	}
+
+	/**
+	* Get output for a language variable (L_FOO, LA_FOO)
+	*
+	* This function checks to see if the language var was outputted to $context
+	* (e.g. in the ACP, L_TITLE)
+	* If not, we return the result of $user->lang()
+	*
+	* @param string $lang name
+	* @return string
+	*/
+	function lang()
+	{
+		$args = func_get_args();
+		$key = $args[0];
+
+		$context = $this->context->get_data_ref();
+		$context_vars = $context['.'][0];
+
+		if (isset($context_vars['L_' . $key]))
+		{
+			return $context_vars['L_' . $key];
+		}
+
+		// LA_ is transformed into lang(\'$1\')|addslashes, so we should not
+		// need to check for it
+
+		return call_user_func_array(array($this->user, 'lang'), $args);
 	}
 }
