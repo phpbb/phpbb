@@ -29,7 +29,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 	/** @var array **/
 	protected $namespaceLookUpOrder = array('__main__');
 
-    public function __construct($phpbb_config, $phpbb_extensions, $phpbb_root_path, Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct($phpbb_config, $phpbb_extensions, $phpbb_root_path, Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 		$this->phpbb_extensions = $phpbb_extensions;
@@ -38,19 +38,20 @@ class phpbb_template_twig_environment extends Twig_Environment
 		return parent::__construct($loader, $options);
 	}
 
-    /**
-     * Gets the cache filename for a given template.
-     *
-     * @param string $name The template name
-     *
-     * @return string The cache file name
-     */
-    public function ignoregetCacheFilename($name)
-    {
-        if (false === $this->cache) {
-            return false;
-        }
-// @todo
+	/**
+	 * Gets the cache filename for a given template.
+	 *
+	 * @param string $name The template name
+	 *
+	 * @return string The cache file name
+	 */
+	public function ignoregetCacheFilename($name)
+	{
+		if (false === $this->cache)
+		{
+			return false;
+		}
+		// @todo
 		$file_path = $this->getLoader()->getCacheKey($name);
 		foreach ($this->getLoader()->getNamespaces() as $namespace)
 		{
@@ -64,9 +65,9 @@ class phpbb_template_twig_environment extends Twig_Environment
 		}
 
 		// We probably should never get here under normal circumstances
-    	return $this->getCache() . '/' . preg_replace('#[^a-zA-Z0-9_/]#', '_', $name) . '.php';
-    	return $this->getCache() . '/' . preg_replace('#[^a-zA-Z0-9_/]#', '_', $name) . '_' . md5($this->getLoader()->getCacheKey($name)) . '.php';
-    }
+		return $this->getCache() . '/' . preg_replace('#[^a-zA-Z0-9_/]#', '_', $name) . '.php';
+		return $this->getCache() . '/' . preg_replace('#[^a-zA-Z0-9_/]#', '_', $name) . '_' . md5($this->getLoader()->getCacheKey($name)) . '.php';
+	}
 
 	/**
 	* Get the list of enabled phpBB extensions
@@ -112,7 +113,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 	* Set the namespace look up order to load templates from
 	*
 	* @param array $namespace
-    * @return Twig_Environment
+	* @return Twig_Environment
 	*/
 	public function setNamespaceLookUpOrder($namespace)
 	{
@@ -121,28 +122,28 @@ class phpbb_template_twig_environment extends Twig_Environment
 		return $this;
 	}
 
-    /**
-     * Loads a template by name.
-     *
-     * @param string  $name  The template name
-     * @param integer $index The index if it is an embedded template
-     *
-     * @return Twig_TemplateInterface A template instance representing the given template name
-     */
-    public function loadTemplate($name, $index = null)
-    {
-    	if (strpos($name, '@') === false)
-    	{
-    		foreach ($this->namespaceLookUpOrder as $namespace)
-    		{
-        		try
-    			{
-    				if ($namespace === '__main__')
-    				{
-    					return parent::loadTemplate($name, $index);
+	/**
+	 * Loads a template by name.
+	 *
+	 * @param string  $name  The template name
+	 * @param integer $index The index if it is an embedded template
+	 *
+	 * @return Twig_TemplateInterface A template instance representing the given template name
+	 */
+	public function loadTemplate($name, $index = null)
+	{
+		if (strpos($name, '@') === false)
+		{
+			foreach ($this->namespaceLookUpOrder as $namespace)
+			{
+				try
+				{
+					if ($namespace === '__main__')
+					{
+						return parent::loadTemplate($name, $index);
 					}
 
-    				return parent::loadTemplate('@' . $namespace . '/' . $name, $index);
+					return parent::loadTemplate('@' . $namespace . '/' . $name, $index);
 				}
 				catch (Twig_Error_Loader $e)
 				{
@@ -154,9 +155,9 @@ class phpbb_template_twig_environment extends Twig_Environment
 		}
 		else
 		{
-    		return parent::loadTemplate($name, $index);
+			return parent::loadTemplate($name, $index);
 		}
-    }
+	}
 
 	/**
 	* recursive helper to set variables into $context so that Twig can properly fetch them for display
