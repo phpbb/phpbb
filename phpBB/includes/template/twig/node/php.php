@@ -12,21 +12,21 @@ class phpbb_template_twig_node_php extends Twig_Node
 	/** @var Twig_Environment */
 	protected $environment;
 
-    public function __construct(Twig_Node_Text $text, phpbb_template_twig_environment $environment, $lineno, $tag = null)
-    {
-    	$this->environment = $environment;
+	public function __construct(Twig_Node_Text $text, phpbb_template_twig_environment $environment, $lineno, $tag = null)
+	{
+		$this->environment = $environment;
 
-        parent::__construct(array('text' => $text), array(), $lineno, $tag);
-    }
+		parent::__construct(array('text' => $text), array(), $lineno, $tag);
+	}
 
-    /**
-     * Compiles the node to PHP.
-     *
-     * @param Twig_Compiler A Twig_Compiler instance
-     */
-    public function compile(Twig_Compiler $compiler)
-    {
-        $compiler->addDebugInfo($this);
+	/**
+	 * Compiles the node to PHP.
+	 *
+	 * @param Twig_Compiler A Twig_Compiler instance
+	 */
+	public function compile(Twig_Compiler $compiler)
+	{
+		$compiler->addDebugInfo($this);
 
 		$config = $this->environment->get_phpbb_config();
 
@@ -42,5 +42,5 @@ class phpbb_template_twig_node_php extends Twig_Node
 		$compiler
 			->raw($this->getNode('text')->getAttribute('data'))
 		;
-    }
+	}
 }

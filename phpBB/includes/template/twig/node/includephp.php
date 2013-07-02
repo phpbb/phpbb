@@ -12,21 +12,21 @@ class phpbb_template_twig_node_includephp extends Twig_Node
 	/** @var Twig_Environment */
 	protected $environment;
 
-    public function __construct(Twig_Node_Expression $expr, phpbb_template_twig_environment $environment, $ignoreMissing = false, $lineno, $tag = null)
-    {
-    	$this->environment = $environment;
+	public function __construct(Twig_Node_Expression $expr, phpbb_template_twig_environment $environment, $ignoreMissing = false, $lineno, $tag = null)
+	{
+		$this->environment = $environment;
 
-        parent::__construct(array('expr' => $expr), array('ignore_missing' => (Boolean) $ignoreMissing), $lineno, $tag);
-    }
+		parent::__construct(array('expr' => $expr), array('ignore_missing' => (Boolean) $ignoreMissing), $lineno, $tag);
+	}
 
-    /**
-     * Compiles the node to PHP.
-     *
-     * @param Twig_Compiler A Twig_Compiler instance
-     */
-    public function compile(Twig_Compiler $compiler)
-    {
-        $compiler->addDebugInfo($this);
+	/**
+	 * Compiles the node to PHP.
+	 *
+	 * @param Twig_Compiler A Twig_Compiler instance
+	 */
+	public function compile(Twig_Compiler $compiler)
+	{
+		$compiler->addDebugInfo($this);
 
 		$config = $this->environment->get_phpbb_config();
 
@@ -39,12 +39,12 @@ class phpbb_template_twig_node_includephp extends Twig_Node
 			return;
 		}
 
-        if ($this->getAttribute('ignore_missing')) {
-            $compiler
-                ->write("try {\n")
-                ->indent()
-            ;
-        }
+		if ($this->getAttribute('ignore_missing')) {
+			$compiler
+				->write("try {\n")
+				->indent()
+			;
+		}
 
 		$compiler
 			->write("\$location = ")
@@ -68,15 +68,15 @@ class phpbb_template_twig_node_includephp extends Twig_Node
 			->write("}\n")
 		;
 
-        if ($this->getAttribute('ignore_missing')) {
-            $compiler
-                ->outdent()
-                ->write("} catch (Twig_Error_Loader \$e) {\n")
-                ->indent()
-                ->write("// ignore missing template\n")
-                ->outdent()
-                ->write("}\n\n")
-            ;
-        }
-    }
+		if ($this->getAttribute('ignore_missing')) {
+			$compiler
+				->outdent()
+				->write("} catch (Twig_Error_Loader \$e) {\n")
+				->indent()
+				->write("// ignore missing template\n")
+				->outdent()
+				->write("}\n\n")
+			;
+		}
+	}
 }

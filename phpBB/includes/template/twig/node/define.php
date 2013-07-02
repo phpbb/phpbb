@@ -9,19 +9,19 @@
 
 class phpbb_template_twig_node_define extends Twig_Node
 {
-    public function __construct($capture, Twig_NodeInterface $name, Twig_NodeInterface $value, $lineno, $tag = null)
-    {
-        parent::__construct(array('name' => $name, 'value' => $value), array('capture' => $capture, 'safe' => false), $lineno, $tag);
-    }
+	public function __construct($capture, Twig_NodeInterface $name, Twig_NodeInterface $value, $lineno, $tag = null)
+	{
+		parent::__construct(array('name' => $name, 'value' => $value), array('capture' => $capture, 'safe' => false), $lineno, $tag);
+	}
 
-    /**
-     * Compiles the node to PHP.
-     *
-     * @param Twig_Compiler A Twig_Compiler instance
-     */
-    public function compile(Twig_Compiler $compiler)
-    {
-        $compiler->addDebugInfo($this);
+	/**
+	 * Compiles the node to PHP.
+	 *
+	 * @param Twig_Compiler A Twig_Compiler instance
+	 */
+	public function compile(Twig_Compiler $compiler)
+	{
+		$compiler->addDebugInfo($this);
 
 		if ($this->getAttribute('capture')) {
 			$compiler
@@ -45,5 +45,5 @@ class phpbb_template_twig_node_define extends Twig_Node
 			->raw($this->getNode('name')->getAttribute('name'))
 			->raw("', \$value);\n")
 		;
-    }
+	}
 }

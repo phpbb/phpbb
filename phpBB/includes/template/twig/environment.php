@@ -29,6 +29,15 @@ class phpbb_template_twig_environment extends Twig_Environment
 	/** @var array **/
 	protected $namespace_look_up_order = array('__main__');
 
+	/**
+	* Constructor
+	*
+	* @param phpbb_config $phpbb_config
+	* @param array $phpbb_extensions Array of enabled extensions (name => path)
+	* @param string $phpbb_root_path
+	* @param Twig_LoaderInterface $loader
+	* @param array $options Array of options to pass to Twig
+	*/
 	public function __construct($phpbb_config, $phpbb_extensions, $phpbb_root_path, Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
@@ -40,6 +49,8 @@ class phpbb_template_twig_environment extends Twig_Environment
 
 	/**
 	* Get the list of enabled phpBB extensions
+	*
+	* Used in EVENT node
 	*
 	* @return array
 	*/
