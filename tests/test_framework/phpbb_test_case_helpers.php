@@ -94,7 +94,10 @@ class phpbb_test_case_helpers
 
 	public function makedirs($path)
 	{
-		mkdir($path, 0777, true);
+		if (!is_dir($path))
+		{
+			mkdir($path, 0777, true);
+		}
 	}
 
 	static public function get_test_config()
