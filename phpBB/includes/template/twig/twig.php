@@ -30,9 +30,12 @@ class phpbb_template_twig implements phpbb_template
 
 	/**
 	* Path of the cache directory for the template
+	*
+	* Cannot be changed during runtime.
+	*
 	* @var string
 	*/
-	public $cachepath = '';
+	private $cachepath = '';
 
 	/**
 	* phpBB root path

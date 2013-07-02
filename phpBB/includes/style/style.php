@@ -160,8 +160,6 @@ class phpbb_style
 			$this->template->set_style_names($names, $appended_paths);
 		}
 
-		//$this->template->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $name) . '_';
-
 		return true;
 	}
 
