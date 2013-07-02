@@ -156,6 +156,7 @@ define('PHYSICAL_LINK', 2);
 define('CONFIRM_REG', 1);
 define('CONFIRM_LOGIN', 2);
 define('CONFIRM_POST', 3);
+define('CONFIRM_REPORT', 4);
 
 // Categories - Attachments
 define('ATTACHMENT_CATEGORY_NONE', 0);
