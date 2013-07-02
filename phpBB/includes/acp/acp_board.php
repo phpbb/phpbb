@@ -660,8 +660,8 @@ class acp_board
 				if ($fields['tpl'])
 				{
 					$template->assign_block_vars('auth_tpl', array(
-						'TPL'	=> $fields['tpl'])
-					);
+						'TPL'	=> $fields['tpl'],
+					));
 				}
 				unset($fields);
 			}
