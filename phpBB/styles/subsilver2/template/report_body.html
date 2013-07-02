@@ -6,6 +6,11 @@
 <tr>
 	<th colspan="2"><!-- IF S_REPORT_POST -->{L_REPORT_POST}<!-- ELSE -->{L_REPORT_MESSAGE}<!-- ENDIF --></th>
 </tr>
+<!-- IF ERROR -->
+	<tr>
+		<td class="row3" colspan="2" align="center"><span class="genmed error">{ERROR}</span></td>
+	</tr>
+<!-- ENDIF -->
 <tr>
 	<td class="row3" colspan="2"><span class="gensmall"><!-- IF S_REPORT_POST -->{L_REPORT_POST_EXPLAIN}<!-- ELSE -->{L_REPORT_MESSAGE_EXPLAIN}<!-- ENDIF --></span></td>
 </tr>
@@ -25,6 +30,9 @@
 	<td class="row1" valign="top"><span class="gen"><b>{L_MORE_INFO}:</b></span><br /><span class="gensmall">{L_CAN_LEAVE_BLANK}</span></td>
 	<td class="row2"><textarea class="post" name="report_text" rows="10" cols="50">{REPORT_TEXT}</textarea></td>
 </tr>
+<!-- IF CAPTCHA_TEMPLATE -->
+			<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
+<!-- ENDIF -->	
 <tr>
 	<td class="cat" colspan="2" align="center"><input type="submit" name="submit" class="btnmain" value="{L_SUBMIT}" />&nbsp;<input type="submit" name="cancel" class="btnlite" value="{L_CANCEL}" /></td>
 </tr>
