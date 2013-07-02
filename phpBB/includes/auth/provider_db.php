@@ -147,7 +147,7 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 		$show_captcha = ($this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']) ||
 			($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']);
 
-		// If there are too much login attempts, we need to check for an confirm image
+		// If there are too many login attempts, we need to check for a confirm image
 		// Every auth module is able to define what to do by itself...
 		if ($show_captcha)
 		{
