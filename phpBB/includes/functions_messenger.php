@@ -232,7 +232,7 @@ class messenger
 				$template_path,
 			);
 		}
-		if (!$template_path)
+		else
 		{
 			$template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
 			$template_path .= $template_lang . '/email';
