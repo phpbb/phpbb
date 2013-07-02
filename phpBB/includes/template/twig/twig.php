@@ -305,7 +305,7 @@ class phpbb_template_twig implements phpbb_template
 	{
 		if ($return_content)
 		{
-			return $this->twig->render($this->get_filename_from_handle($handle));
+			return $this->twig->render($this->get_filename_from_handle($handle), $this->get_template_vars());
 		}
 
 		$this->assign_var($template_var, $this->twig->render($this->get_filename_from_handle($handle, $this->get_template_vars())));
