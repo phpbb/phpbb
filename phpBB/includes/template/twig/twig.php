@@ -172,10 +172,11 @@ class phpbb_template_twig implements phpbb_template
 	}
 
 	/**
-	* Sets the style names corresponding to style hierarchy being compiled
+	* Sets the style names/paths corresponding to style hierarchy being compiled
 	* and/or rendered.
 	*
 	* @param array $style_names List of style names in inheritance tree order
+	* @param array $style_paths List of style paths in inheritance tree order
 	* @return phpbb_template $this
 	*/
 	public function set_style_names(array $style_names, array $style_paths = array())
@@ -241,10 +242,13 @@ class phpbb_template_twig implements phpbb_template
 	* Reset/empty complete block
 	*
 	* @param string $blockname Name of block to destroy
+	* @return phpbb_template $this
 	*/
 	public function destroy_block_vars($blockname)
 	{
-		return $this->context->destroy_block_vars($blockname);
+		$this->context->destroy_block_vars($blockname);
+
+		return $this;
 	}
 
 	/**
@@ -255,7 +259,7 @@ class phpbb_template_twig implements phpbb_template
 	* This function calls hooks.
 	*
 	* @param string $handle Handle to display
-	* @return bool True on success, false on failure
+	* @return phpbb_template $this
 	*/
 	public function display($handle)
 	{
@@ -267,7 +271,7 @@ class phpbb_template_twig implements phpbb_template
 
 		$this->twig->display($this->get_filename_from_handle($handle), $this->get_template_vars());
 
-		return true;
+		return $this;
 	}
 
 	/**
@@ -299,7 +303,7 @@ class phpbb_template_twig implements phpbb_template
 	* @param string $handle Handle to operate on
 	* @param string $template_var Template variable to assign compiled handle to
 	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
-	* @return bool|string false on failure, otherwise if $return_content is true return string of the compiled handle, otherwise return true
+	* @return phpbb_template|string if $return_content is true return string of the compiled handle, otherwise return $this
 	*/
 	public function assign_display($handle, $template_var = '', $return_content = true)
 	{
@@ -310,13 +314,14 @@ class phpbb_template_twig implements phpbb_template
 
 		$this->assign_var($template_var, $this->twig->render($this->get_filename_from_handle($handle, $this->get_template_vars())));
 
-		return true;
+		return $this;
 	}
 
 	/**
 	* Assign key variable pairs from an array
 	*
 	* @param array $vararray A hash of variable name => value pairs
+	* @return phpbb_template $this
 	*/
 	public function assign_vars(array $vararray)
 	{
@@ -324,6 +329,8 @@ class phpbb_template_twig implements phpbb_template
 		{
 			$this->assign_var($key, $val);
 		}
+
+		return $this;
 	}
 
 	/**
@@ -333,10 +340,13 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to assign to variable
+	* @return phpbb_template $this
 	*/
 	public function assign_var($varname, $varval)
 	{
-		return $this->context->assign_var($varname, $varval);
+		$this->context->assign_var($varname, $varval);
+
+		return $this;
 	}
 
 	/**
@@ -346,24 +356,28 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to append to variable
+	* @return phpbb_template $this
 	*/
 	public function append_var($varname, $varval)
 	{
-		return $this->context->append_var($varname, $varval);
+		$this->context->append_var($varname, $varval);
+
+		return $this;
 	}
 
-	// Docstring is copied from phpbb_template_context method with the same name.
 	/**
 	* Assign key variable pairs from an array to a specified block
 	* @param string $blockname Name of block to assign $vararray to
 	* @param array $vararray A hash of variable name => value pairs
+	* @return phpbb_template $this
 	*/
 	public function assign_block_vars($blockname, array $vararray)
 	{
-		return $this->context->assign_block_vars($blockname, $vararray);
+		$this->context->assign_block_vars($blockname, $vararray);
+
+		return $this;
 	}
 
-	// Docstring is copied from phpbb_template_context method with the same name.
 	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
 	*

@@ -17,24 +17,36 @@ if (!defined('IN_PHPBB'))
 
 interface phpbb_template
 {
+
+	/**
+	* Clear the cache
+	*
+	* @return phpbb_template
+	*/
+	public function clear_cache();
+
 	/**
 	* Sets the template filenames for handles.
 	*
 	* @param array $filename_array Should be a hash of handle => filename pairs.
+	* @return phpbb_template $this
 	*/
 	public function set_filenames(array $filename_array);
 
 	/**
-	* Sets the style names corresponding to style hierarchy being compiled
+	* Sets the style names/paths corresponding to style hierarchy being compiled
 	* and/or rendered.
 	*
 	* @param array $style_names List of style names in inheritance tree order
-	* @return null
+	* @param array $style_paths List of style paths in inheritance tree order
+	* @return phpbb_template $this
 	*/
-	public function set_style_names(array $style_names);
+	public function set_style_names(array $style_names, array $style_paths = array());
 
 	/**
 	* Clears all variables and blocks assigned to this template.
+	*
+	* @return phpbb_template $this
 	*/
 	public function destroy();
 
@@ -42,6 +54,7 @@ interface phpbb_template
 	* Reset/empty complete block
 	*
 	* @param string $blockname Name of block to destroy
+	* @return phpbb_template $this
 	*/
 	public function destroy_block_vars($blockname);
 
@@ -53,7 +66,7 @@ interface phpbb_template
 	* This function calls hooks.
 	*
 	* @param string $handle Handle to display
-	* @return bool True on success, false on failure
+	* @return phpbb_template $this
 	*/
 	public function display($handle);
 
@@ -64,7 +77,7 @@ interface phpbb_template
 	* @param string $handle Handle to operate on
 	* @param string $template_var Template variable to assign compiled handle to
 	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
-	* @return bool|string false on failure, otherwise if $return_content is true return string of the compiled handle, otherwise return true
+	* @return phpbb_template|string if $return_content is true return string of the compiled handle, otherwise return $this
 	*/
 	public function assign_display($handle, $template_var = '', $return_content = true);
 
@@ -72,6 +85,7 @@ interface phpbb_template
 	* Assign key variable pairs from an array
 	*
 	* @param array $vararray A hash of variable name => value pairs
+	* @return phpbb_template $this
 	*/
 	public function assign_vars(array $vararray);
 
@@ -82,6 +96,7 @@ interface phpbb_template
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to assign to variable
+	* @return phpbb_template $this
 	*/
 	public function assign_var($varname, $varval);
 
@@ -92,6 +107,7 @@ interface phpbb_template
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to append to variable
+	* @return phpbb_template $this
 	*/
 	public function append_var($varname, $varval);
 
@@ -99,6 +115,7 @@ interface phpbb_template
 	* Assign key variable pairs from an array to a specified block
 	* @param string $blockname Name of block to assign $vararray to
 	* @param array $vararray A hash of variable name => value pairs
+	* @return phpbb_template $this
 	*/
 	public function assign_block_vars($blockname, array $vararray);
 
@@ -130,11 +147,4 @@ interface phpbb_template
 	* @return bool false on error, true on success
 	*/
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert');
-
-	/**
-	* Clear the cache
-	*
-	* @return phpbb_template
-	*/
-	public function clear_cache();
 }
