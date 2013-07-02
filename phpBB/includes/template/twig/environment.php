@@ -39,12 +39,11 @@ class phpbb_template_twig_environment extends Twig_Environment
 	}
 
 	/**
-	 * Gets the cache filename for a given template.
-	 *
-	 * @param string $name The template name
-	 *
-	 * @return string The cache file name
-	 */
+	* Gets the cache filename for a given template.
+	*
+	* @param string $name The template name
+	* @return string The cache file name
+	*/
 	public function ignoregetCacheFilename($name)
 	{
 		if (false === $this->cache)
@@ -127,7 +126,6 @@ class phpbb_template_twig_environment extends Twig_Environment
 	 *
 	 * @param string  $name  The template name
 	 * @param integer $index The index if it is an embedded template
-	 *
 	 * @return Twig_TemplateInterface A template instance representing the given template name
 	 */
 	public function loadTemplate($name, $index = null)
@@ -160,11 +158,12 @@ class phpbb_template_twig_environment extends Twig_Environment
 	}
 
 	/**
-	* recursive helper to set variables into $context so that Twig can properly fetch them for display
+	* Recursive helper to set variables into $context so that Twig can properly fetch them for display
 	*
 	* @param array $data Data to set at the end of the chain
 	* @param array $blocks Array of blocks to loop into still
 	* @param mixed $current_location Current location in $context (recursive!)
+	* @return null
 	*/
 	public function context_recursive_loop_builder($data, $blocks, &$current_location)
 	{
