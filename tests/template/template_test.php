@@ -371,9 +371,11 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 
 	public function test_php()
 	{
+		global $phpbb_root_path;
+
 		$template_text = '<!-- PHP -->echo "test";<!-- ENDPHP -->';
 
-		$cache_dir = dirname($this->template->cachepath) . '/';
+		$cache_dir = dirname($phpbb_root_path . 'cache') . '/';
 		$fp = fopen($cache_dir . 'php.html', 'w');
 		fputs($fp, $template_text);
 		fclose($fp);
