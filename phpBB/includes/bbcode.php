@@ -138,7 +138,7 @@ class bbcode
 			$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, $style_path_provider, $template);
 			$style->set_style();
 			$template->set_filenames(array('bbcode.html' => 'bbcode.html'));
-			$this->template_filename = $style_resource_locator->get_source_file_for_handle('bbcode.html');
+			$this->template_filename = $template->get_source_file_for_handle('bbcode.html');
 		}
 
 		$bbcode_ids = $rowset = $sql = array();

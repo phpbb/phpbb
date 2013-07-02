@@ -444,4 +444,14 @@ class phpbb_template_twig implements phpbb_template
 	{
 		return (isset($this->filenames[$handle])) ? $this->filenames[$handle] : $handle;
 	}
+
+	/**
+	* Get path to template for handle (required for BBCode parser)
+	*
+	* @return string
+	*/
+	public function get_source_file_for_handle($handle)
+	{
+		return $this->twig->getLoader()->getCacheKey($this->get_filename_from_handle($handle));
+	}
 }

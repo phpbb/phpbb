@@ -147,4 +147,11 @@ interface phpbb_template
 	* @return bool false on error, true on success
 	*/
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert');
+
+	/**
+	* Get path to template for handle (required for BBCode parser)
+	*
+	* @return string
+	*/
+	public function get_source_file_for_handle($handle);
 }
