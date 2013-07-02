@@ -27,7 +27,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 	protected $phpbb_root_path;
 
 	/** @var array **/
-	protected $namespaceLookUpOrder = array('__main__');
+	protected $namespace_look_up_order = array('__main__');
 
 	public function __construct($phpbb_config, $phpbb_extensions, $phpbb_root_path, Twig_LoaderInterface $loader = null, $options = array())
 	{
@@ -106,7 +106,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 	*/
 	public function getNamespaceLookUpOrder()
 	{
-		return $this->namespaceLookUpOrder;
+		return $this->namespace_look_up_order;
 	}
 
 	/**
@@ -117,7 +117,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 	*/
 	public function setNamespaceLookUpOrder($namespace)
 	{
-		$this->namespaceLookUpOrder = $namespace;
+		$this->namespace_look_up_order = $namespace;
 
 		return $this;
 	}
