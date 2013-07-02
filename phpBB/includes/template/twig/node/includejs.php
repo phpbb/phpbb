@@ -31,9 +31,17 @@ class phpbb_template_twig_node_includejs extends Twig_Node
 		$config = $this->environment->get_phpbb_config();
 
         $compiler
-			->write("\$context['definition']->append('SCRIPTS', '<script type=\"text/javascript\" src=\"' . ")
+			->write("\$js_file = ")
         	->subcompile($this->getNode('expr'))
-        	->raw(" . '?assets_version=" . $config['assets_version'] . "\"></script>');\n")
+			->raw(";\n")
+			->write("if (!file_exists(\$js_file)) {\n")
+			->indent()
+				->write("\$js_file = \$this->getEnvironment()->getLoader()->getCacheKey(\$js_file);\n")
+			->outdent()
+			->write("}\n")
+			->write("\$context['definition']->append('SCRIPTS', '<script type=\"text/javascript\" src=\"' . ")
+			->raw("\$js_file")
+        	->raw(" . '?assets_version=" . $config['assets_version'] . "\"></script>\n');\n")
         ;
     }
 }
