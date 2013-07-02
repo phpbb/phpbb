@@ -265,8 +265,7 @@ class phpbb_template_twig implements phpbb_template
 			return $result[0];
 		}
 
-		$context = &$this->get_template_vars();
-		$this->twig->display($this->get_filename_from_handle($handle), $context);
+		$this->twig->display($this->get_filename_from_handle($handle), $this->get_template_vars());
 
 		return true;
 	}
@@ -329,7 +328,7 @@ class phpbb_template_twig implements phpbb_template
 			return $this->twig->render($this->get_filename_from_handle($handle));
 		}
 
-		$this->assign_var($template_var, $this->twig->render($this->get_filename_from_handle($handle)));
+		$this->assign_var($template_var, $this->twig->render($this->get_filename_from_handle($handle, $this->get_template_vars())));
 
 		return true;
 	}
