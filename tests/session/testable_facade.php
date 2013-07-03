@@ -102,10 +102,24 @@ class phpbb_session_testable_facade
 		return $session->session_create($user_id, $set_admin, $persist_login, $viewonline);
 	}
 
-	function validate_referer($check_script_path = false)
+	function validate_referer(
+		$check_script_path,
+		$referer,
+		$host,
+		$force_server_vars,
+		$server_port,
+		$server_name,
+		$root_script_path
+	)
 	{
 		$session = $this->session_factory->get_session($this->db);
 		global $config, $request;
+		$session->referer = $referer;
+		$session->page['root_script_path'] = $root_script_path;
+		$session->host = $host;
+		$config['force_server_vars'] = $force_server_vars;
+		$config['server_name'] = $server_name;
+		$request->overwrite('SERVER_PORT', $server_port, phpbb_request_interface::SERVER);
 		return $session->validate_referer($check_script_path);
 	}
 }
