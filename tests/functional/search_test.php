@@ -13,17 +13,19 @@
 abstract class phpbb_functional_search_test extends phpbb_functional_test_case
 {
 
-	protected function search_found()
+	protected function search_found($keywords)
 	{
-		$crawler = self::request('GET', 'search.php?keywords=phpbb3+installation');
+		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);
 		$this->assertEquals(1, $crawler->filter('.postbody')->count());
 		$this->assertEquals(3, $crawler->filter('.posthilit')->count());
 	}
 
-	protected function search_not_found()
+	protected function search_not_found($keywords)
 	{
-		$crawler = self::request('GET', 'search.php?keywords=loremipsumdedo');
+		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);
 		$this->assertEquals(0, $crawler->filter('.postbody')->count());
+		$split_keywords_string = str_replace(array('+', '-'), ' ', $keywords);
+		$this->assertEquals($split_keywords_string, $crawler->filter('#keywords')->attr('value'));
 	}
 
 	public function test_search_backend()
@@ -48,7 +50,7 @@ abstract class phpbb_functional_search_test extends phpbb_functional_test_case
 			try
 			{
 				$crawler->filter('.errorbox')->text();
-				self::markTestSkipped("Search backend is not supported/running");
+				$this->markTestSkipped("Search backend is not supported/running");
 			}
 			catch (InvalidArgumentException $e) {}
 
@@ -56,8 +58,8 @@ abstract class phpbb_functional_search_test extends phpbb_functional_test_case
 		}
 
 		$this->logout();
-		$this->search_found();
-		$this->search_not_found();
+		$this->search_found('phpbb3+installation');
+		$this->search_not_found('loremipsumdedo');
 
 		$this->login();
 		$this->admin_login();
