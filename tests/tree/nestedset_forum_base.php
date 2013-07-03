@@ -59,27 +59,52 @@ class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 		$this->set = new phpbb_tree_nestedset_forum($this->db, $this->lock, 'phpbb_forums');
 
 		$this->set_up_forums();
-
-		$sql = "UPDATE phpbb_forums
-			SET forum_parents = 'a:0:{}'";
-		$this->db->sql_query($sql);
 	}
 
 	protected function set_up_forums()
 	{
-		$this->create_forum('Parent with two flat children');
-		$this->create_forum('Flat child #1', 1);
-		$this->create_forum('Flat child #2', 1);
+		static $forums;
 
-		$this->create_forum('Parent with two nested children');
-		$this->create_forum('Nested child #1', 4);
-		$this->create_forum('Nested child #2', 5);
+		if (empty($forums))
+		{ 
+			$this->create_forum('Parent with two flat children');
+			$this->create_forum('Flat child #1', 1);
+			$this->create_forum('Flat child #2', 1);
 
-		$this->create_forum('Parent with flat and nested children');
-		$this->create_forum('Mixed child #1', 7);
-		$this->create_forum('Mixed child #2', 7);
-		$this->create_forum('Nested child #1 of Mixed child #2', 9);
-		$this->create_forum('Mixed child #3', 7);
+			$this->create_forum('Parent with two nested children');
+			$this->create_forum('Nested child #1', 4);
+			$this->create_forum('Nested child #2', 5);
+
+			$this->create_forum('Parent with flat and nested children');
+			$this->create_forum('Mixed child #1', 7);
+			$this->create_forum('Mixed child #2', 7);
+			$this->create_forum('Nested child #1 of Mixed child #2', 9);
+			$this->create_forum('Mixed child #3', 7);
+
+			// Updating forum_parents column here so it's not empty
+			// This is required, so we can see whether the methods
+			// correctly clear the values. 
+			$sql = "UPDATE phpbb_forums
+				SET forum_parents = 'a:0:{}'";
+			$this->db->sql_query($sql);
+
+			// Copy the forums into a static array, so we can reuse the list later
+			$sql = 'SELECT *
+				FROM phpbb_forums';
+			$result = $this->db->sql_query($sql);
+			$forums = $this->db->sql_fetchrowset($result);
+			$this->db->sql_freeresult($result);
+		}
+		else
+		{
+			$buffer = new phpbb_db_sql_insert_buffer($this->db, 'phpbb_forums');
+			$buffer->insert_all($forums);
+			$buffer->flush();
+
+			$this->database_synchronisation(array(
+				'phpbb_forums'	=> array('forum_id'),
+			));
+		} 
 	}
 
 	protected function create_forum($name, $parent_id = 0)

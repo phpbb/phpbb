@@ -219,15 +219,19 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		self::recreate_database(self::$config);
 
-		if (file_exists($phpbb_root_path . "config.$phpEx"))
+		$config_file = $phpbb_root_path . "config.$phpEx";
+		$config_file_dev = $phpbb_root_path . "config_dev.$phpEx";
+		$config_file_test = $phpbb_root_path . "config_test.$phpEx";
+
+		if (file_exists($config_file))
 		{
-			if (!file_exists($phpbb_root_path . "config_dev.$phpEx"))
+			if (!file_exists($config_file_dev))
 			{
-				rename($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_dev.$phpEx");
+				rename($config_file, $config_file_dev);
 			}
 			else
 			{
-				unlink($phpbb_root_path . "config.$phpEx");
+				unlink($config_file);
 			}
 		}
 
@@ -251,10 +255,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertContains('Welcome to Installation', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=requirements
 		$crawler = self::submit($form);
 		self::assertContains('Installation compatibility', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=database
 		$crawler = self::submit($form);
 		self::assertContains('Database configuration', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
@@ -268,10 +274,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'table_prefix'	=> self::$config['table_prefix'],
 		));
 
+		// install/index.php?mode=install&sub=database
 		$crawler = self::submit($form);
 		self::assertContains('Successful connection', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=administrator
 		$crawler = self::submit($form);
 		self::assertContains('Administrator configuration', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
@@ -282,16 +290,38 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'board_email'	=> 'nobody@example.com',
 		));
 
+		// install/index.php?mode=install&sub=administrator
 		$crawler = self::submit($form);
 		self::assertContains('Tests passed', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
-		$crawler = self::submit($form);
-		self::assertContains('The configuration file has been written.', $crawler->filter('#main')->text());
-		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data(self::$config, self::$config['dbms'], true, true));
-		$form = $crawler->selectButton('submit')->form();
+		// We have to skip install/index.php?mode=install&sub=config_file
+		// because that step will create a config.php file if phpBB has the
+		// permission to do so. We have to create the config file on our own
+		// in order to get the DEBUG constants defined.
+		$config_php_data = phpbb_create_config_file_data(self::$config, self::$config['dbms'], true, true);
+		$config_created = file_put_contents($config_file, $config_php_data) !== false;
+		if (!$config_created)
+		{
+			self::markTestSkipped("Could not write $config_file file.");
+		}
 
-		$crawler = self::submit($form);
+		// We also have to create a install lock that is normally created by
+		// the installer. The file will be removed by the final step of the
+		// installer.
+		$install_lock_file = $phpbb_root_path . 'cache/install_lock';
+		$lock_created = file_put_contents($install_lock_file, '') !== false;
+		if (!$lock_created)
+		{
+			self::markTestSkipped("Could not create $lock_created file.");
+		}
+		@chmod($install_lock_file, 0666);
+
+		// install/index.php?mode=install&sub=advanced
+		$form_data = $form->getValues();
+		unset($form_data['submit']);
+
+		$crawler = self::request('POST', 'install/index.php?mode=install&sub=advanced', $form_data);
 		self::assertContains('The settings on this page are only necessary to set if you know that you require something different from the default.', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
 			'email_enable'		=> true,
@@ -308,14 +338,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'script_path'		=> $parseURL['path'],
 		));
 
+		// install/index.php?mode=install&sub=create_table
 		$crawler = self::submit($form);
 		self::assertContains('The database tables used by phpBB', $crawler->filter('#main')->text());
 		self::assertContains('have been created and populated with some initial data.', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=final
 		$crawler = self::submit($form);
 		self::assertContains('You have successfully installed', $crawler->text());
-		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
+
+		copy($config_file, $config_file_test);
 	}
 
 	static private function recreate_database($config)
@@ -702,5 +735,106 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 
 		return $result;
+	}
+
+	/**
+	* Creates a topic
+	*
+	* Be sure to login before creating
+	*
+	* @param int $forum_id
+	* @param string $subject
+	* @param string $message
+	* @param array $additional_form_data Any additional form data to be sent in the request
+	* @return array post_id, topic_id
+	*/
+	public function create_topic($forum_id, $subject, $message, $additional_form_data = array())
+	{
+		$posting_url = "posting.php?mode=post&f={$forum_id}&sid={$this->sid}";
+
+		$form_data = array_merge(array(
+			'subject'		=> $subject,
+			'message'		=> $message,
+			'post'			=> true,
+		), $additional_form_data);
+
+		return self::submit_post($posting_url, 'POST_TOPIC', $form_data);
+	}
+
+	/**
+	* Creates a post
+	*
+	* Be sure to login before creating
+	*
+	* @param int $forum_id
+	* @param string $subject
+	* @param string $message
+	* @param array $additional_form_data Any additional form data to be sent in the request
+	* @return array post_id, topic_id
+	*/
+	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array())
+	{
+		$posting_url = "posting.php?mode=reply&f={$forum_id}&t={$topic_id}&sid={$this->sid}";
+
+		$form_data = array_merge(array(
+			'subject'		=> $subject,
+			'message'		=> $message,
+			'post'			=> true,
+		), $additional_form_data);
+
+		return self::submit_post($posting_url, 'POST_REPLY', $form_data);
+	}
+
+	/**
+	* Helper for submitting posts
+	*
+	* @param string $posting_url
+	* @param string $posting_contains
+	* @param array $form_data
+	* @return array post_id, topic_id
+	*/
+	protected function submit_post($posting_url, $posting_contains, $form_data)
+	{
+		$this->add_lang('posting');
+
+		$crawler = self::request('GET', $posting_url);
+		$this->assertContains($this->lang($posting_contains), $crawler->filter('html')->text());
+
+		$hidden_fields = array(
+			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
+				return array('name' => $node->getAttribute('name'), 'value' => $node->getAttribute('value'));
+			}),
+		);
+
+		foreach ($hidden_fields as $fields)
+		{
+			foreach($fields as $field)
+			{
+				$form_data[$field['name']] = $field['value'];
+			}
+		}
+
+		// Bypass time restriction that said that if the lastclick time (i.e. time when the form was opened)
+		// is not at least 2 seconds before submission, cancel the form
+		$form_data['lastclick'] = 0;
+
+		// I use a request because the form submission method does not allow you to send data that is not
+		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
+		// Instead, I send it as a request with the submit button "post" set to true.
+		$crawler = self::request('POST', $posting_url, $form_data);
+		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
+
+		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
+
+		$matches = $topic_id = $post_id = false;
+		preg_match_all('#&t=([0-9]+)(&p=([0-9]+))?#', $url, $matches);
+
+		$topic_id = (int) (isset($matches[1][0])) ? $matches[1][0] : 0;
+		$post_id = (int) (isset($matches[3][0])) ? $matches[3][0] : 0;
+
+		return array(
+			'topic_id'	=> $topic_id,
+			'post_id'	=> $post_id,
+		);
 	}
 }

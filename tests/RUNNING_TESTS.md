@@ -50,9 +50,11 @@ Database Tests
 By default all tests requiring a database connection will use sqlite. If you
 do not have sqlite installed the tests will be skipped. If you wish to run the
 tests on a different database you have to create a test_config.php file within
-your tests directory following the same format as phpBB's config.php. An
-example for mysqli can be found below. More information on configuration
-options can be found on the wiki (see below).
+your tests directory following the same format as phpBB's config.php. Testing
+makes use of a seperate database defined in this config file and before running
+the tests each time this database is deleted. An example for mysqli can be
+found below. More information on configuration options can be found on the
+wiki (see below).
 
     <?php
     $dbms = 'phpbb_db_driver_mysqli';
@@ -132,8 +134,36 @@ only want the slow tests, run:
 
     $ phpBB/vendor/bin/phpunit --group slow
 
+Functional tests
+-----------------
+
+Functional tests test software the way a user would. They simulate a user
+browsing the website, but they do these steps in an automated way.
+phpBB allows you to write such tests.
+
+Running
+=======
+
+Running the tests requires your phpBB3 repository to be accessible through a
+local web server. You will need to supply the URL to the webserver in
+the 'tests/test_config.php' file. This is as simple as defining the
+'$phpbb_functional_url' variable, which contains the URL for the directory containing
+the board. Make sure you include the trailing slash. Note that without extensive
+changes to the test framework, you cannot use a board outside of the repository
+on which to run tests.
+
+    $phpbb_functional_url = 'http://localhost/phpBB3/';
+
+To then run the tests, you run PHPUnit, but use the phpunit.xml.functional
+config file instead of the default one. Specify this through the "-c" option:
+
+    $ phpBB/vendor/bin/phpunit -c phpunit.xml.functional
+
+This will change your board's config.php file, but it makes a backup at
+config_dev.php, so you can restore it after the test run is complete.
+
 More Information
 ================
 
 Further information is available on phpbb wiki:
-http://wiki.phpbb.com/Unit_Tests
+http://wiki.phpbb.com/Automated_Tests

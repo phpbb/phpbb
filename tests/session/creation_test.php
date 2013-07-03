@@ -9,7 +9,7 @@
 
 require_once dirname(__FILE__) . '/testable_factory.php';
 
-class phpbb_session_init_test extends phpbb_database_test_case
+class phpbb_session_creation_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
@@ -20,7 +20,20 @@ class phpbb_session_init_test extends phpbb_database_test_case
 
 	public function test_login_session_create()
 	{
+		global $phpbb_container, $phpbb_root_path, $phpEx;
+
 		$db = $this->new_dbal();
+		$config = new phpbb_config(array());
+		$request = $this->getMock('phpbb_request');
+		$user = $this->getMock('phpbb_user');
+
+		$auth_provider = new phpbb_auth_provider_db($db, $config, $request, $user, $phpbb_root_path, $phpEx);
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container->expects($this->any())
+			->method('get')
+			->with('auth.provider.db')
+			->will($this->returnValue($auth_provider));
+
 		$session_factory = new phpbb_session_testable_factory;
 
 		$session = $session_factory->get_session($db);
@@ -34,10 +47,11 @@ class phpbb_session_init_test extends phpbb_database_test_case
 		$this->assertSqlResultEquals(
 			array(array('session_user_id' => 3)),
 			$sql,
-			'Check if exacly one session for user id 3 was created'
+			'Check if exactly one session for user id 3 was created'
 		);
 
-		$cookie_expire = $session->time_now + 31536000; // default is one year
+		$one_year_in_seconds = 365 * 24 * 60 * 60;
+		$cookie_expire = $session->time_now + $one_year_in_seconds;
 
 		$session->check_cookies($this, array(
 			'u' => array(null, $cookie_expire),
