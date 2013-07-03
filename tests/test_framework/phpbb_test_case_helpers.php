@@ -96,6 +96,12 @@ class phpbb_test_case_helpers
 	{
 		if (!is_dir($path))
 		{
+			// Testing
+			if (file_exists($path))
+			{
+				echo $path;
+			}
+
 			mkdir($path, 0777, true);
 		}
 	}
