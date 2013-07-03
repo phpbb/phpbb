@@ -102,55 +102,6 @@ class phpbb_session_testable_facade
 		return $session->session_create($user_id, $set_admin, $persist_login, $viewonline);
 	}
 
-	function session_kill($new_session = true)
-	{
-		$session = $this->session_factory->get_session($this->db);
-		global $config, $request;
-		
-	}
-	
-	function session_gc() 
-	{
-		$session = $this->session_factory->get_session($this->db);
-		global $config, $request;
-		
-	}
-
-	function set_cookie($name, $cookiedata, $cookietime) 
-	{
-		$session = $this->session_factory->get_session($this->db);
-		global $config, $request;
-		
-	}
-
-	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false) 
-	{
-		$session = $this->session_factory->get_session($this->db);
-		global $config, $request;
-		
-	}
-
-	function check_dnsbl($mode, $ip = false)
-	{
-		$session = $this->session_factory->get_session($this->db);
-		global $config, $request;
-		
-	}
-
-	function set_login_key($user_id = false, $key = false, $user_ip = false) 
-	{
-		$session = $this->session_factory->get_session($this->db);
-		global $config, $request;
-		
-	}
-	
-	function reset_login_keys($user_id = false)
-	{
-		$session = $this->session_factory->get_session($this->db);
-		global $config, $request;
-
-	}
-
 	function validate_referer($check_script_path = false)
 	{
 		$session = $this->session_factory->get_session($this->db);
