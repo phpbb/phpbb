@@ -3121,7 +3121,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 
 	if ($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
 	{
-		@fputs($fsock, "GET $directory/$filename HTTP/1.1\r\n");
+		@fputs($fsock, "GET $directory/$filename HTTP/1.0\r\n");
 		@fputs($fsock, "HOST: $host\r\n");
 		@fputs($fsock, "Connection: close\r\n\r\n");
 
