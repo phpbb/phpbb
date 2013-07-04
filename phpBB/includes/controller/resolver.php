@@ -96,7 +96,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 		$controller_dir = explode('_', get_class($controller_object));
 
 		// 0 phpbb, 1 ext, 2 vendor, 3 extension name, ...
-		if ($controller_dir[1] === 'ext')
+		if (isset($controller_dir[3]) && $controller_dir[1] === 'ext')
 		{
 			$controller_style_dir = 'ext/' . $controller_dir[2] . '/' . $controller_dir[3] . '/styles';
 
