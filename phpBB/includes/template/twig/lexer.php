@@ -19,8 +19,9 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 {
 	public function tokenize($code, $filename = null)
 	{
-		$valid_starting_tokens = array(
-			// Commented out tokens are handled separately from the main replace
+		// Our phpBB tags
+		// Commented out tokens are handled separately from the main replace
+		$phpbb_tags = array(
 			/*'BEGIN',
 			'BEGINELSE',
 			'END',*/
@@ -37,6 +38,34 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			'PHP',
 			'ENDPHP',
 			'EVENT',
+		);
+
+		// Twig tag masks
+		$twig_tags = array(
+			'autoescape',
+			'endautoescape',
+			'block',
+			'endblock',
+			'use',
+			'extends',
+			'embed',
+			'filter',
+			'endfilter',
+			'flush',
+			'for',
+			'endfor',
+			'macro',
+			'endmacro',
+			'import',
+			'from',
+			'sandbox',
+			'endsandbox',
+			'set',
+			'endset',
+			'spaceless',
+			'endspaceless',
+			'verbatim',
+			'endverbatim',
 		);
 
 		// Fix tokens that may have inline variables (e.g. <!-- DEFINE $TEST = '{FOO}')
@@ -58,16 +87,22 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 
 		// Replace all of our starting tokens, <!-- TOKEN --> with Twig style, {% TOKEN %}
 		// This also strips outer parenthesis, <!-- IF (blah) --> becomes <!-- IF blah -->
-		$code = preg_replace('#<!-- (' . implode('|', $valid_starting_tokens) . ')(?: (.*?) ?)?-->#', '{% $1 $2 %}', $code);
+		$code = preg_replace('#<!-- (' . implode('|', $phpbb_tags) . ')(?: (.*?) ?)?-->#', '{% $1 $2 %}', $code);
+
+		// Replace all of our twig masks with Twig code (e.g. <!-- BLOCK .+ --> with {% block $1 %})
+		$code = $this->replace_twig_tag_masks($code, $twig_tags);
 
 		// Replace all of our language variables, {L_VARNAME}, with Twig style, {{ lang('NAME') }}
-		$code = preg_replace('#{L_([a-zA-Z0-9_\.]+)}#', '{{ lang(\'$1\') }}', $code);
+		// Appends any filters after lang()
+		$code = preg_replace('#{L_([a-zA-Z0-9_\.]+)(\|[^}]+)?}#', '{{ lang(\'$1\')$2 }}', $code);
 
 		// Replace all of our escaped language variables, {LA_VARNAME}, with Twig style, {{ lang('NAME')|addslashes }}
-		$code = preg_replace('#{LA_([a-zA-Z0-9_\.]+)}#', '{{ lang(\'$1\')|addslashes }}', $code);
+		// Appends any filters after lang(), but before addslashes
+		$code = preg_replace('#{LA_([a-zA-Z0-9_\.]+)(\|[^}]+)?}}#', '{{ lang(\'$1\')$2|addslashes }}', $code);
 
 		// Replace all of our variables, {VARNAME}, with Twig style, {{ VARNAME }}
-		$code = preg_replace('#{([a-zA-Z0-9_\.]+)}#', '{{ $1 }}', $code);
+		// Appends any filters
+		$code = preg_replace('#{([a-zA-Z0-9_\.]+)(\|[^}]+)?}#', '{{ $1$2 }}', $code);
 
 		return parent::tokenize($code, $filename);
 	}
@@ -224,6 +259,35 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 
 		// Replace all of our variables, ~ $VARNAME ~, with Twig style, ~ definition.VARNAME ~
 		$code = preg_replace('#~ \$([a-zA-Z0-9_\.]+) ~#', '~ definition.$1 ~', $code);
+
+		return $code;
+	}
+
+	/**
+	* Replace Twig tag masks with Twig tag calls
+	*
+	* E.g. <!-- BLOCK foo --> with {% block foo %}
+	*
+	* @param string $code
+	* @param array $twig_tags All tags we want to create a mask for
+	* @return string
+	*/
+	protected function replace_twig_tag_masks($code, $twig_tags)
+	{
+		$callback = function ($matches)
+		{
+			$matches[1] = strtolower($matches[1]);
+
+			return "{% {$matches[1]}{$matches[2]}%}";
+		};
+
+		foreach ($twig_tags as &$tag)
+		{
+			$tag = strtoupper($tag);
+		}
+
+		// twig_tags is an array of the twig tags, which are all lowercase, but we use all uppercase tags
+		$code = preg_replace_callback('#<!-- (' . implode('|', $twig_tags) . ')(.*?)-->#',$callback, $code);
 
 		return $code;
 	}
