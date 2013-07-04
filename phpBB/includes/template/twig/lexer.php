@@ -98,7 +98,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 
 		// Replace all of our escaped language variables, {LA_VARNAME}, with Twig style, {{ lang('NAME')|addslashes }}
 		// Appends any filters after lang(), but before addslashes
-		$code = preg_replace('#{LA_([a-zA-Z0-9_\.]+)(\|[^}]+)?}}#', '{{ lang(\'$1\')$2|addslashes }}', $code);
+		$code = preg_replace('#{LA_([a-zA-Z0-9_\.]+)(\|[^}]+)?}#', '{{ lang(\'$1\')$2|addslashes }}', $code);
 
 		// Replace all of our variables, {VARNAME}, with Twig style, {{ VARNAME }}
 		// Appends any filters
