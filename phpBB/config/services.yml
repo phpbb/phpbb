@@ -79,7 +79,7 @@ services:
         arguments:
             - @user
             - @service_container
-            - @ext.finder
+            - @style
 
     cron.task_collection:
         class: phpbb_di_service_collection
