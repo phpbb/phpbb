@@ -455,7 +455,7 @@ class p_master
 	*/
 	function load_active($mode = false, $module_url = false, $execute_module = true)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user, $style;
 
 		$module_path = $this->include_path . $this->p_class;
 		$icat = request_var('icat', '');
@@ -490,6 +490,24 @@ class p_master
 		$class_name = $this->p_name;
 
 		$this->module = new $class_name($this);
+
+		/*
+		* If this is an extension module, we'll try to automatically set
+		* the style paths for the extension (the ext author can change them
+		* if necessary).
+		*/
+		$module_dir = explode('_', get_class($this->module));
+
+		// 0 phpbb, 1 ext, 2 vendor, 3 extension name, ...
+		if (!is_null($this->style) && isset($module_dir[3]) && $module_dir[1] === 'ext')
+		{
+			$module_style_dir = 'ext/' . $module_dir[2] . '/' . $module_dir[3] . '/styles';
+
+			if (is_dir($module_style_dir))
+			{
+				$style->set_style(array($module_style_dir, 'styles'));
+			}
+		}
 
 		// We pre-define the action parameter we are using all over the place
 		if (defined('IN_ADMIN'))
