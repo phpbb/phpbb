@@ -586,45 +586,29 @@ class phpbb_notification_manager
 
 		$subscriptions = array();
 
-		foreach ($this->get_subscription_types() as $group_name => $types)
+		$sql = 'SELECT method, notify, item_type
+			FROM ' . $this->user_notifications_table . '
+			WHERE user_id = ' . (int) $user_id . '
+				AND item_id = 0';
+
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			foreach ($types as $id => $type)
+			if (!$row['notify'])
 			{
-				$sql = 'SELECT method, notify
-					FROM ' . $this->user_notifications_table . '
-					WHERE user_id = ' . (int) $user_id . "
-						AND item_type = '" . $this->db->sql_escape($id) . "'
-						AND item_id = 0";
-				$result = $this->db->sql_query($sql);
-
-				$row = $this->db->sql_fetchrow($result);
-				if (!$row)
-				{
-					// No rows at all, default to ''
-					$subscriptions[$id] = array('');
-				}
-				else
-				{
-					do
-					{
-						if (!$row['notify'])
-						{
-							continue;
-						}
-
-						if (!isset($subscriptions[$id]))
-						{
-							$subscriptions[$id] = array();
-						}
-
-						$subscriptions[$id][] = $row['method'];
-					}
-					while ($row = $this->db->sql_fetchrow($result));
-				}
-
-				$this->db->sql_freeresult($result);
+				continue;
 			}
+
+			if (!isset($subscriptions[$row['item_type']]))
+			{
+				$subscriptions[$row['item_type']] = array();
+			}
+
+			$subscriptions[$row['item_type']][] = $row['method'];
 		}
+
+		$this->db->sql_freeresult($result);
 
 		return $subscriptions;
 	}
