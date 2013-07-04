@@ -126,6 +126,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"101234561\nx\n101234561\nx\n101234561\nx\n1234561\nx\n1\nx\n101\nx\n234\nx\n10\nx\n561\nx\n561",
 			),
 			array(
+				'loop_nested2.html',
+				array(),
+				array('outer' => array(array(), array()), 'outer.middle' => array(array(), array())),
+				array(),
+				"o0o1m01m11",
+			),
+			array(
 				'define.html',
 				array(),
 				array('loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
