@@ -102,7 +102,9 @@ class phpbb_template_twig implements phpbb_template
 	* Constructor.
 	*
 	* @param string $phpbb_root_path phpBB root path
-	* @param user $user current user
+	* @param string $php_ext php extension (typically 'php')
+	* @param phpbb_config $config
+	* @param phpbb_user $user
 	* @param phpbb_template_context $context template context
 	* @param phpbb_extension_manager $extension_manager extension manager, if null then template events will not be invoked
 	* @param string $adm_relative_path relative path to adm directory

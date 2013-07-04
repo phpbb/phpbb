@@ -59,9 +59,9 @@ class phpbb_template_twig_extension extends Twig_Extension
      */
     public function getFilters()
     {
-        return array(
-            new Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
-            new Twig_SimpleFilter('addslashes', 'addslashes'),
+		return array(
+			new Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
+			new Twig_SimpleFilter('addslashes', 'addslashes'),
 		);
     }
 
@@ -72,8 +72,8 @@ class phpbb_template_twig_extension extends Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
-            new Twig_SimpleFunction('lang', array($this, 'lang')),
+		return array(
+			new Twig_SimpleFunction('lang', array($this, 'lang')),
 		);
 	}
 
@@ -86,7 +86,7 @@ class phpbb_template_twig_extension extends Twig_Extension
 	{
 		return array(
 			array(
-                '!' => array('precedence' => 50, 'class' => 'Twig_Node_Expression_Unary_Not'),
+				'!' => array('precedence' => 50, 'class' => 'Twig_Node_Expression_Unary_Not'),
 			),
 			array(
 				// precedence settings are copied from similar operators in Twig core extension
@@ -109,9 +109,9 @@ class phpbb_template_twig_extension extends Twig_Extension
 				'lte' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_LessEqual', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
 				'le' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_LessEqual', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
 
-                'mod' => array('precedence' => 60, 'class' => 'Twig_Node_Expression_Binary_Mod', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
-            ),
-        );
+				'mod' => array('precedence' => 60, 'class' => 'Twig_Node_Expression_Binary_Mod', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
+			),
+		);
     }
 
 	/**
