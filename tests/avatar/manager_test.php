@@ -95,7 +95,6 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 			array(AVATAR_GALLERY, null),
 			array(AVATAR_UPLOAD, null),
 			array(AVATAR_REMOTE, null),
-			array(AVATAR_GALLERY, null),
 		);
 	}
 
@@ -117,7 +116,6 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 			array(AVATAR_GALLERY, 'avatar.driver.local'),
 			array(AVATAR_UPLOAD, 'avatar.driver.upload'),
 			array(AVATAR_REMOTE, 'avatar.driver.remote'),
-			array(AVATAR_GALLERY, 'avatar.driver.local'),
 		);
 	}
 
