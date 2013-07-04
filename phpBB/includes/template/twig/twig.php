@@ -181,9 +181,11 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @param array $style_names List of style names in inheritance tree order
 	* @param array $style_paths List of style paths in inheritance tree order
+	* @param bool $is_core True if the style names are the "core" styles for this page load
+	* 	Core means the main phpBB template files
 	* @return phpbb_template $this
 	*/
-	public function set_style_names(array $style_names, array $style_paths = array())
+	public function set_style_names(array $style_names, array $style_paths, $is_core = false)
 	{
 		$this->style_names = $style_names;
 
@@ -191,7 +193,7 @@ class phpbb_template_twig implements phpbb_template
 		$this->twig->getLoader()->setPaths($style_paths);
 
 		// Core style namespace from phpbb_style::set_style()
-		if (isset($this->user->style['style_path']) && ($style_names === array($this->user->style['style_path']) || $style_names[0] == $this->user->style['style_path']))
+		if ($is_core)
 		{
 			$this->twig->getLoader()->setPaths($style_paths, 'core');
 		}

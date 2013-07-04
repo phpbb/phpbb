@@ -85,28 +85,56 @@ class phpbb_style
 	}
 
 	/**
-	* Set style location based on (current) user's chosen style.
+	* Get the style tree of the style preferred by the current user
+	*
+	* @return array Style tree, most specific first
 	*/
-	public function set_style()
+	public function get_user_style()
 	{
-		$style_path = $this->user->style['style_path'];
-		$style_dirs = ($this->user->style['style_parent_id']) ? array_reverse(explode('/', $this->user->style['style_parent_tree'])) : array();
+		return array_merge(array(
+				$this->user->style['style_path'],
+			),
+			($this->user->style['style_parent_id']) ? array_reverse(explode('/', $this->user->style['style_parent_tree'])) : array()
+		);
+	}
 
-		$names = array($style_path);
-		foreach ($style_dirs as $dir)
-		{
-			$names[] = $dir;
-		}
-		// Add 'all' path, used as last fallback path by events and extensions
-		//$names[] = 'all';
+	/**
+	* Set style location based on (current) user's chosen style.
+	*
+	* @param array $style_directories The directories to add style paths for
+	* 	E.g. array('ext/foo/bar/styles', 'styles')
+	* 	Default: array('styles') (phpBB's style directory)
+	* @return bool true
+	*/
+	public function set_style($style_directories = array('styles'))
+	{
+		$this->names = $this->get_user_style();
 
 		$paths = array();
-		foreach ($names as $name)
+		foreach ($style_directories as $directory)
 		{
-			$paths[] = $this->get_style_path($name);
+			foreach ($this->names as $name)
+			{
+				$path = $this->get_style_path($name, $directory);
+
+				if (is_dir($path))
+				{
+					$paths[] = $path;
+				}
+			}
 		}
 
-		return $this->set_custom_style($style_path, $paths, $names);
+		$this->provider->set_styles($paths);
+		$this->locator->set_paths($this->provider);
+
+		foreach ($paths as &$path)
+		{
+			$path .= '/template/';
+		}
+
+		$this->template->set_style_names($this->names, $paths, ($style_directories === array('styles')));
+
+		return true;
 	}
 
 	/**
@@ -118,6 +146,7 @@ class phpbb_style
 	* @param array or string $paths Array of style paths, relative to current root directory
 	* @param array $names Array of names of templates in inheritance tree order, used by extensions. If empty, $name will be used.
 	* @param string $template_path Path to templates, relative to style directory. False if path should be set to default (templates/).
+	* @return bool true
 	*/
 	public function set_custom_style($name, $paths, $names = array(), $template_path = false)
 	{
@@ -138,27 +167,14 @@ class phpbb_style
 		if ($template_path !== false)
 		{
 			$this->locator->set_template_path($template_path);
-
-			$appended_paths = array();
-			foreach ($paths as $path)
-			{
-				$appended_paths[] = $path . '/' . $template_path;
-			}
-
-			$this->template->set_style_names($names, $appended_paths);
 		}
-		else
+
+		foreach ($paths as &$path)
 		{
-			$this->locator->set_default_template_path();
-
-			$appended_paths = array();
-			foreach ($paths as $path)
-			{
-				$appended_paths[] = $path . '/template/';
-			}
-
-			$this->template->set_style_names($names, $appended_paths);
+			$path .= '/' . (($template_path !== false) ? $template_path : 'template/');
 		}
+
+		$this->template->set_style_names($names, $paths);
 
 		return true;
 	}
@@ -167,11 +183,14 @@ class phpbb_style
 	* Get location of style directory for specific style_path
 	*
 	* @param string $path Style path, such as "prosilver"
+	* @param string $style_base_directory The base directory the style is in
+	* 	E.g. 'styles', 'ext/foo/bar/styles'
+	* 	Default: 'styles'
 	* @return string Path to style directory, relative to current path
 	*/
-	public function get_style_path($path)
+	public function get_style_path($path, $style_base_directory = 'styles')
 	{
-		return $this->phpbb_root_path . 'styles/' . $path;
+		return $this->phpbb_root_path . trim($style_base_directory, '/') . '/' . $path;
 	}
 
 	/**

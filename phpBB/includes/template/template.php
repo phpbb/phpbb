@@ -41,7 +41,7 @@ interface phpbb_template
 	* @param array $style_paths List of style paths in inheritance tree order
 	* @return phpbb_template $this
 	*/
-	public function set_style_names(array $style_names, array $style_paths = array());
+	public function set_style_names(array $style_names, array $style_paths);
 
 	/**
 	* Clears all variables and blocks assigned to this template.
