@@ -5,6 +5,7 @@ imports:
     - { resource: migrator.yml }
     - { resource: avatars.yml }
     - { resource: feed.yml }
+    - { resource: auth_providers.yml }
 
 services:
     auth:

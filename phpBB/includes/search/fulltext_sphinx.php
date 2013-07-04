@@ -611,7 +611,7 @@ class phpbb_search_fulltext_sphinx
 
 		$result_count = $result['total_found'];
 
-		if ($start >= $result_count)
+		if ($result_count && $start >= $result_count)
 		{
 			$start = floor(($result_count - 1) / $per_page) * $per_page;
 
