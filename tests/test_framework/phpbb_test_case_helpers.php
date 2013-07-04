@@ -94,11 +94,6 @@ class phpbb_test_case_helpers
 
 	public function makedirs($path)
 	{
-		if (is_dir($path) || file_exists($path))
-		{
-			var_dump($path);
-			exit;
-		}
 		mkdir($path, 0777, true);
 	}
 
