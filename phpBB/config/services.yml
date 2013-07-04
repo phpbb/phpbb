@@ -68,6 +68,7 @@ services:
     controller.helper:
         class: phpbb_controller_helper
         arguments:
+            - @style
             - @template
             - @user
             - %core.root_path%

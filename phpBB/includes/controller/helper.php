@@ -24,6 +24,12 @@ use Symfony\Component\HttpFoundation\Response;
 class phpbb_controller_helper
 {
 	/**
+	* Style object
+	* @var phpbb_style
+	*/
+	protected $style;
+
+	/**
 	* Template object
 	* @var phpbb_template
 	*/
@@ -50,17 +56,34 @@ class phpbb_controller_helper
 	/**
 	* Constructor
 	*
+	* @param phpbb_style $style Style object
 	* @param phpbb_template $template Template object
 	* @param phpbb_user $user User object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_template $template, phpbb_user $user, $phpbb_root_path, $php_ext)
+	public function __construct(phpbb_style $style, phpbb_template $template, phpbb_user $user, $phpbb_root_path, $php_ext)
 	{
+		$this->style = $style;
 		$this->template = $template;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+	}
+
+	/**
+	* Set style location based on (current) user's chosen style.
+	*
+	* @param array $style_directories The directories to add style paths for
+	* 	E.g. array('ext/foo/bar/styles', 'styles')
+	* 	Default: array('styles') (phpBB's style directory)
+	* @return phpbb_controller_helper $this
+	*/
+	public function set_style($style_base_directory = array('styles'))
+	{
+		$this->style->set_style($style_base_directory);
+
+		return $this;
 	}
 
 	/**
