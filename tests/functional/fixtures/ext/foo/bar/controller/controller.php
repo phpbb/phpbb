@@ -9,8 +9,6 @@ class phpbb_ext_foo_bar_controller
 	{
 		$this->template = $template;
 		$this->helper = $helper;
-
-		$this->helper->set_style(array('ext/foo/bar/styles', 'styles'));
 	}
 
 	public function handle()
