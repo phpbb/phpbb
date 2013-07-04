@@ -132,7 +132,7 @@ class phpbb_template_twig implements phpbb_template
 			array(
 				'cache'			=> $this->cachepath,
 				'debug'			=> defined('DEBUG'),
-				'auto_reload'	=> true,//(bool) $this->config['load_tplcompile'],
+				'auto_reload'	=> (bool) $this->config['load_tplcompile'],
 				'autoescape'	=> false,
 			)
 		);
