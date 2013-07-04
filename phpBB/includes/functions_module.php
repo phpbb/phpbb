@@ -504,7 +504,7 @@ class p_master
 			// 0 phpbb, 1 ext, 2 vendor, 3 extension name, ...
 			if (isset($module_dir[3]) && $module_dir[1] === 'ext')
 			{
-				$module_style_dir = $phpbb_root_path .'ext/' . $module_dir[2] . '/' . $module_dir[3] . '/adm/style';
+				$module_style_dir = $phpbb_root_path . 'ext/' . $module_dir[2] . '/' . $module_dir[3] . '/adm/style';
 
 				if (is_dir($module_style_dir))
 				{
