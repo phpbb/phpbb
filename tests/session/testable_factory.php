@@ -7,6 +7,9 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../mock/container_builder.php';
+require_once dirname(__FILE__) . '/../mock/provider.php';
+
 /**
 * This class exists to setup an instance of phpbb's session class for testing.
 *
@@ -16,6 +19,7 @@
 */
 class phpbb_session_testable_factory
 {
+	protected $container;
 	protected $config_data;
 	protected $cache_data;
 	protected $cookies;
@@ -65,7 +69,7 @@ class phpbb_session_testable_factory
 	public function get_session(phpbb_db_driver $dbal)
 	{
 		// set up all the global variables used by session
-		global $SID, $_SID, $db, $config, $cache, $request;
+		global $SID, $_SID, $db, $config, $cache, $request, $phpbb_container;
 
 		$request = $this->request = new phpbb_mock_request(
 			array(),
@@ -82,6 +86,12 @@ class phpbb_session_testable_factory
 
 		$cache = $this->cache = new phpbb_mock_cache($this->get_cache_data());
 		$SID = $_SID = null;
+
+		$phpbb_container = $this->container = new phpbb_mock_container_builder();
+		$phpbb_container->set(
+			'auth.provider.db',
+			new phpbb_provider()
+		);
 
 		$session = new phpbb_mock_session_testable;
 		return $session;
