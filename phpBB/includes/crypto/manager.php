@@ -75,11 +75,6 @@ class phpbb_crypto_manager
 	*/
 	protected function fill_type_map($hashing_algorithms)
 	{
-		if ($this->type_map !== false)
-		{
-			return;
-		}
-
 		foreach ($hashing_algorithms as $algorithm)
 		{
 			if (!isset($this->type_map[$algorithm->get_prefix()]))
@@ -187,12 +182,6 @@ class phpbb_crypto_manager
 
 	public function check_hash($password, $hash)
 	{
-		if (!$this->type_map)
-		{
-			// This obviously shouldn't happen
-			return false;
-		}
-
 		// First find out what kind of hash we're dealing with
 		$stored_hash_type = $this->get_hashing_algorithm($hash);
 		if ($stored_hash_type == false)
