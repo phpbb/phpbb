@@ -7,6 +7,15 @@
 *
 */
 
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+
 class phpbb_template_twig_tokenparser_include extends Twig_TokenParser_Include
 {
 	/**

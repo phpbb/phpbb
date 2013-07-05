@@ -7,6 +7,15 @@
 *
 */
 
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+
 class phpbb_template_twig_node_php extends Twig_Node
 {
 	/** @var Twig_Environment */
