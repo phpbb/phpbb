@@ -403,7 +403,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 
 		$this->setup_engine(array('tpl_allow_php' => true));
 
-		$this->style->set_custom_style('tests', $cache_dir, array(), '');
+		$this->template->set_custom_style('tests', $cache_dir, array(), '');
 
 		$this->run_template('php.html', array(), array(), array(), 'test');
 	}

@@ -71,7 +71,7 @@ class install_update extends module
 
 	function main($mode, $sub)
 	{
-		global $phpbb_style, $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
+		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
 		global $request, $phpbb_admin_path, $phpbb_adm_relative_path, $phpbb_container;
 
 		// Create a normal container now
@@ -138,7 +138,7 @@ class install_update extends module
 		}
 
 		// Set custom template again. ;)
-		$phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
+		$template->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
 
 		$template->assign_vars(array(
 			'S_USER_LANG'			=> $user->lang['USER_LANG'],

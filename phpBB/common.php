@@ -121,7 +121,6 @@ $phpbb_extension_manager = $phpbb_container->get('ext.manager');
 $phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 
 $template = $phpbb_container->get('template');
-$phpbb_style = $phpbb_container->get('style');
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
