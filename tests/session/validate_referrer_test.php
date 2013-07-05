@@ -37,7 +37,7 @@ class phpbb_session_validate_referrer_test extends phpbb_database_test_case
 			array(false,  '',  $ex,  false,  80, $ex,  '', true),
 			array(false,  $ex, '',   false,  80, $ex,  '', true),
 			// 2 Referrer doesn't match host or server_name
-			array(false,  $alt, $ex,   yes,  80, $ex,  '', false),
+			array(false,  $alt, $ex,   false,  80, $ex,  '', false),
 			// 3 Everything should check out
 			array(false,  $ex, $ex,  false,    80, $ex,  '', true),
 			// 4 Check Script Path
@@ -52,7 +52,7 @@ class phpbb_session_validate_referrer_test extends phpbb_database_test_case
 	}
 
 	/** @dataProvider  referrer_inputs */
-	function test_failing_referrer (
+	function test_referrer_inputs (
 		$check_script_path,
 		$referrer,
 		$host,
