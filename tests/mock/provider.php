@@ -12,12 +12,19 @@
  * sessions.
  */
 class phpbb_provider {
+
 	function autologin()
 	{
 		return array();
 	}
+
 	function kill()
 	{
 
+	}
+
+	function validate_session($data)
+	{
+		return true;
 	}
 }
