@@ -53,12 +53,6 @@ class phpbb_style
 	private $user;
 
 	/**
-	* Style resource locator
-	* @var phpbb_style_resource_locator
-	*/
-	private $locator;
-
-	/**
 	* Style path provider
 	* @var phpbb_style_path_provider
 	*/
@@ -69,17 +63,15 @@ class phpbb_style
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
-	* @param phpbb_style_resource_locator $locator style resource locator
 	* @param phpbb_style_path_provider $provider style path provider
 	* @param phpbb_template $template template
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider, phpbb_template $template)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_style_path_provider_interface $provider, phpbb_template $template)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
-		$this->locator = $locator;
 		$this->provider = $provider;
 		$this->template = $template;
 	}
@@ -130,7 +122,6 @@ class phpbb_style
 		}
 
 		$this->provider->set_styles($paths);
-		$this->locator->set_paths($this->provider);
 
 		foreach ($paths as &$path)
 		{
@@ -167,12 +158,6 @@ class phpbb_style
 		$this->names = $names;
 
 		$this->provider->set_styles($paths);
-		$this->locator->set_paths($this->provider);
-
-		if ($template_path !== false)
-		{
-			$this->locator->set_template_path($template_path);
-		}
 
 		foreach ($paths as &$path)
 		{
@@ -196,44 +181,5 @@ class phpbb_style
 	public function get_style_path($path, $style_base_directory = 'styles')
 	{
 		return $this->phpbb_root_path . trim($style_base_directory, '/') . '/' . $path;
-	}
-
-	/**
-	* Defines a prefix to use for style paths in extensions
-	*
-	* @param string $ext_dir_prefix The prefix including trailing slash
-	* @return null
-	*/
-	public function set_ext_dir_prefix($ext_dir_prefix)
-	{
-		$this->provider->set_ext_dir_prefix($ext_dir_prefix);
-	}
-
-	/**
-	* Locates source file path, accounting for styles tree and verifying that
-	* the path exists.
-	*
-	* @param string or array $files List of files to locate. If there is only
-	*				one file, $files can be a string to make code easier to read.
-	* @param bool $return_default Determines what to return if file does not
-	*				exist. If true, function will return location where file is
-	*				supposed to be. If false, function will return false.
-	* @param bool $return_full_path If true, function will return full path
-	*				to file. If false, function will return file name. This
-	*				parameter can be used to check which one of set of files
-	*				is available.
-	* @return string or boolean Source file path if file exists or $return_default is
-	*				true. False if file does not exist and $return_default is false
-	*/
-	public function locate($files, $return_default = false, $return_full_path = true)
-	{
-		// convert string to array
-		if (is_string($files))
-		{
-			$files = array($files);
-		}
-
-		// use resource locator to find files
-		return $this->locator->get_first_file_location($files, $return_default, $return_full_path);
 	}
 }
