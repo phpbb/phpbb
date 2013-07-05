@@ -30,7 +30,7 @@ class phpbb_template_twig_extension extends Twig_Extension
 	* @param phpbb_user $user
 	* @return phpbb_template_twig_extension
 	*/
-	public function __construct(phpbb_template_context $context, phpbb_user $user)
+	public function __construct(phpbb_template_context $context, $user)
 	{
 		$this->context = $context;
 		$this->user = $user;
