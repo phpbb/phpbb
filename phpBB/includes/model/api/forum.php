@@ -40,13 +40,7 @@ class phpbb_model_api_forum
 	public function get($forum_id){
 		if ($forum_id == 0)
 		{
-			/** @TODO: Implement this in nested sets instead */
-			$sql = 'SELECT *
-					FROM ' . FORUMS_TABLE;
-
-			$query = $this->db->sql_query($sql);
-			$result = $this->db->sql_fetchrowset();
-			$this->db->sql_freeresult($query);
+			$result = $this->nestedset_forum->get_full_tree_data();
 		}
 		else
 		{
@@ -75,9 +69,9 @@ class phpbb_model_api_forum
 	/**
 	 * Adds subforums in the recursive structure. The forum entity currently being added is added to
 	 * the forum entity with the forum_id corresponding to the parent_id
-	 * @param $forum The forum entity to add
-	 * @param $forums An array of forum entities
-	 * @return mixed The new array with subforums added
+	 * @param $forum phpbb_model_entity_forum The forum entity to add
+	 * @param $forums array An array of forum entities
+	 * @return array The new array with subforums added
 	 */
 	public function add_subforum($forum, $forums)
 	{

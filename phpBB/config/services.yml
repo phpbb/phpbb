@@ -246,7 +246,6 @@ services:
         class: phpbb_model_api_forum
         arguments:
             - @tree.nestedset_forum
-            - @dbal.conn
 
     notification_manager:
         class: phpbb\notification\manager
