@@ -139,7 +139,7 @@ class phpbb_template_twig_extension extends Twig_Extension
 	 */
 	function loop_subset(Twig_Environment $env, $item, $start, $end = null, $preserveKeys = false)
 	{
-		// We do almost the same thing as array_slice, except when $end is positive
+		// We do almost the same thing as Twig's slice (array_slice), except when $end is positive
 		if ($end >= 1)
 		{
 			// When end is > 1, subset will end on the last item in an array with the specified $end
