@@ -49,6 +49,14 @@ abstract class phpbb_auth_provider_base implements phpbb_auth_provider_interface
 	/**
 	* {@inheritdoc}
 	*/
+	public function get_acp_template($new_config)
+	{
+		return;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function logout($data, $new_session)
 	{
 		return;

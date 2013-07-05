@@ -72,6 +72,19 @@ interface phpbb_auth_provider_interface
 	public function acp($new);
 
 	/**
+	 * This function updates the template with variables related to the acp
+	 * options with whatever configuraton values are passed to it as an array.
+	 * It then returns the name of the acp file related to this authentication
+	 * provider.
+	 * @param	array	$new_config Contains the new configuration values that
+	 *								have been set in acp_board.
+	 * @return	string|null		Returns null if not implemented or a string
+	 *							containing the name of the acp tempalte file for
+	 *							the authentication provider.
+	 */
+	public function get_acp_template($new_config);
+
+	/**
 	 * Performs additional actions during logout.
 	 *
 	 * @param 	array	$data			An array corresponding to
