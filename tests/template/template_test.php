@@ -516,4 +516,35 @@ EOT
 		$this->template->alter_block_array($alter_block, $vararray, $key, $mode);
 		$this->assertEquals(str_replace(array("\n", "\r", "\t"), '', $expect), str_replace(array("\n", "\r", "\t"), '', $this->display('test')), $description);
 	}
+
+	public function test_more_alter_block_array()
+	{
+		$this->template->set_filenames(array('test' => 'loop_nested.html'));
+
+		$this->template->assign_var('TEST_MORE', true);
+
+		// @todo Change this
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+
+		$expect = 'outer - 0[outer|3]middle - 0[middle|1]outer - 1[outer|3]middle - 0[middle|2]middle - 1[middle|2]outer - 2[outer|3]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring template is built correctly before modification');
+
+		$this->template->alter_block_array('outer', array());
+
+		$expect = 'outer - 0[outer|4]outer - 1[outer|4]middle - 0[middle|1]outer - 2[outer|4]middle - 0[middle|2]middle - 1[middle|2]outer - 3[outer|4]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after insertion');
+
+		$this->template->alter_block_array('outer', array('VARIABLE' => 'test'), 2, 'change');
+
+		$expect = 'outer - 0[outer|4]outer - 1[outer|4]middle - 0[middle|1]outer - 2 - test[outer|4]middle - 0[middle|2]middle - 1[middle|2]outer - 3[outer|4]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after modification');
+	}
 }
