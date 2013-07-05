@@ -37,50 +37,19 @@ class phpbb_session_create_test extends phpbb_database_test_case
 		));
 	}
 
-	static function create_inputs() {
-		return array(
-			array(
-				false,
-				false,
-				false,
-				false,
-				array(),
-				'user agent',
-				'127.0.0.1',
-				self::bot('user agent', 13, '127.0.0.1'),
-				'',
-				function ($test, $output) {
-					$test->assertEquals($output->data['is_bot'], true, "should be a bot");
-				}
-			)
-		);
-	}
-
-	/** @dataProvider  create_inputs */
-	function test_session_create (
-		$user_id = false,
-		$set_admin = false,
-		$persist_login = false,
-		$viewonline = true,
-		array $config_overrides = array(),
-		$user_agent = "",
-		$ip_address = "",
-		array $bot_overrides = array(),
-		$uri_sid = "",
-		$test_function
-	)
+	function test_bot_session ()
 	{
 		$output = $this->session_facade->session_create(
-			$user_id,
-			$set_admin,
-			$persist_login,
-			$viewonline,
-			$config_overrides,
-			$user_agent,
-			$ip_address,
-			$bot_overrides,
-			$uri_sid
+			false,
+			false,
+			false,
+			false,
+			array(),
+			'user agent',
+			'127.0.0.1',
+			self::bot('user agent', 13, '127.0.0.1'),
+			''
 		);
-		$test_function($this, $output);
+		$this->assertEquals($output->data['is_bot'], true, "should be a bot");
 	}
 }
