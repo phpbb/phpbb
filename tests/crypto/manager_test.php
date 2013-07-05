@@ -127,12 +127,35 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		}
 	}
 
+
+	public function check_hash_exceptions_data()
+	{
+		return array(
+			array('foobar', '3858F62230AC3C915F300C664312C63F', false),
+			array('foobar', '$S$b57a939fa4f2c04413a4eea9734a0903647b7adb93181295', false),
+			array('foobar', '$2a\S$kkkkaakdkdiej39023903204j2k3490234jk234j02349', false),
+		);
+	}
+
+	/**
+	* @dataProvider check_hash_exceptions_data
+	*/
+	public function test_check_hash_exceptions($password, $hash, $expected)
+	{
+		$this->assertEquals($expected, $this->manager->check_hash($password, $hash));
+	}
+
 	public function test_hash_password_length()
 	{
 		foreach ($this->crypto_drivers as $driver)
 		{
 			$this->assertEquals(false, $driver->hash('foobar', 'foobar'));
 		}
+	}
+
+	public function test_hash_password_8bit_bcrypt()
+	{
+		$this->assertEquals(false, $this->manager->hash_password('foobar𝄞', 'crypto.driver.bcrypt'));
 	}
 
 	public function test_combined_hash_data()
@@ -151,6 +174,11 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 				array(
 					'crypto.driver.salted_md5',
 					array('crypto.driver.phpass', 'crypto.driver.bcrypt'),
+				),
+				array(
+					'crypto.driver.salted_md5',
+					array('crypto.driver.salted_md5'),
+					false,
 				),
 			);
 		}
@@ -173,6 +201,11 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 					'crypto.driver.salted_md5',
 					array('crypto.driver.bcrypt_2y', 'crypto.driver.bcrypt'),
 				),
+				array(
+					'crypto.driver.salted_md5',
+					array('crypto.driver.salted_md5'),
+					false,
+				),
 			);
 		}
 	}
@@ -180,7 +213,7 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 	/**
 	* @dataProvider test_combined_hash_data
 	*/
-	public function test_combined_hash_password($first_type, $second_type)
+	public function test_combined_hash_password($first_type, $second_type, $expected = true)
 	{
 		$password = $this->default_pw;
 		$time = microtime(true);
@@ -189,9 +222,16 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		{
 			$hash = $this->manager->hash_password($password, $first_type);
 			$combined_hash = $this->manager->hash_password($hash, $second_type);
-			$this->assertEquals(true, $this->manager->check_hash($password, $combined_hash));
+			$this->assertEquals($expected, $this->manager->check_hash($password, $combined_hash));
 			$password .= $this->pw_characters[mt_rand(0, 66)];
 			$this->assertEquals(false, $this->manager->check_hash($password, $combined_hash));
+
+			// If we are expecting the check to fail then there is
+			// no need to run this more than once
+			if (!$expected)
+			{
+				break;
+			}
 		}
 	}
 }
