@@ -555,6 +555,28 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 	}
 
 	/**
+	 * @inheritdoc
+	 */
+	public function get_full_tree_data($order_asc = true)
+	{
+		$rows = array();
+
+		$sql = 'SELECT *
+			FROM ' . $this->table_name .
+				$this->get_sql_where()
+				. ' ORDER BY ' . $this->column_left_id . ' ' . ($order_asc ? 'ASC' : 'DESC');
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$rows[(int) $row[$this->column_item_id]] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $rows;
+	}
+
+	/**
 	* @inheritdoc
 	*/
 	public function get_path_and_subtree_data($item_id, $order_asc = true, $include_item = true)
