@@ -55,7 +55,7 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 		$this->style_provider = new phpbb_style_path_provider();
 		$this->style = new phpbb_style($phpbb_root_path, $phpEx, new phpbb_config(array()), $this->user, $this->style_resource_locator, $this->style_provider, $this->template);
 
-		$helper = new phpbb_controller_helper($this->style, $this->template, $this->user, '', 'php');
+		$helper = new phpbb_controller_helper($this->template, $this->user, '', 'php');
 		$this->assertEquals($helper->url($route, $params, $is_amp, $session_id), $expected);
 	}
 }
