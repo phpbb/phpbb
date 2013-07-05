@@ -237,18 +237,7 @@ services:
             - %core.php_ext%
             - @config
             - @user
-            - @style.path_provider_ext
             - @template
-
-    style.path_provider_ext:
-        class: phpbb_style_extension_path_provider
-        arguments:
-            - @ext.manager
-            - @style.path_provider
-            - %core.root_path%
-
-    style.path_provider:
-        class: phpbb_style_path_provider
 
     template:
         class: phpbb_template_twig

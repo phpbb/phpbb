@@ -53,26 +53,18 @@ class phpbb_style
 	private $user;
 
 	/**
-	* Style path provider
-	* @var phpbb_style_path_provider
-	*/
-	private $provider;
-
-	/**
 	* Constructor.
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
-	* @param phpbb_style_path_provider $provider style path provider
 	* @param phpbb_template $template template
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_style_path_provider_interface $provider, phpbb_template $template)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template $template)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
-		$this->provider = $provider;
 		$this->template = $template;
 	}
 
@@ -121,8 +113,6 @@ class phpbb_style
 			}
 		}
 
-		$this->provider->set_styles($paths);
-
 		foreach ($paths as &$path)
 		{
 			$path .= '/template/';
@@ -156,8 +146,6 @@ class phpbb_style
 			$names = array($name);
 		}
 		$this->names = $names;
-
-		$this->provider->set_styles($paths);
 
 		foreach ($paths as &$path)
 		{
