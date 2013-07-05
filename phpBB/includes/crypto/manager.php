@@ -101,17 +101,18 @@ class phpbb_crypto_manager
 	* @param string $hash Password hash that should be checked
 	*
 	* @return object The hash type object
-	*
-	* @throws RunTimeException If hash type is not supported
 	*/
 	public function get_hashing_algorithm($hash)
 	{
-		// preg_match() will also show hashing algos like $2a\H$, which
-		// is a combination of bcrypt and phpass
+		/*
+		* preg_match() will also show hashing algos like $2a\H$, which
+		* is a combination of bcrypt and phpass. Legacy algorithms
+		* like md5 will not be matched by this and need to be treated
+		* differently.
+		*/
 		if (!preg_match('#^\$([a-zA-Z0-9\\\]*?)\$#', $hash, $match))
 		{
-			// Legacy support needed
-			throw new RunTimeException('NO_LEGACY_SUPPORT');
+			return false;
 		}
 
 		// Be on the lookout for multiple hashing algorithms
@@ -124,15 +125,17 @@ class phpbb_crypto_manager
 			{
 				if (isset($this->type_map["\${$type}\$"]))
 				{
-					while(isset($return_ary[$type]))
+					// we do not support the same hashing
+					// algorithm more than once
+					if (isset($return_ary[$type]))
 					{
-						$type = $type + ' ';
+						return false;
 					}
 					$return_ary[$type] = $this->type_map["\${$type}\$"];
 				}
 				else
 				{
-					throw new \RunTimeException('HASH_TYPE_NOT_SUPPORTED');
+					return false;
 				}
 			}
 			return $return_ary;
@@ -143,7 +146,7 @@ class phpbb_crypto_manager
 		}
 		else
 		{
-			throw new RunTimeException('UNKNOWN_HASH_TYPE');
+			return false;
 		}
 	}
 
@@ -155,8 +158,6 @@ class phpbb_crypto_manager
 	*			none is supplied
 	* @return string|bool Password hash of supplied password or false if
 	*			if something went wrong during hashing
-	*
-	* @throws RunTimeException If hash type is not supported
 	*/
 	public function hash_password($password, $type = '')
 	{
