@@ -85,21 +85,27 @@ class phpbb_session_testable_facade
 		$set_admin = false,
 		$persist_login = false,
 		$viewonline = true,
-		$config_overrides = array(),
-		$request_overrides = array(),
-		$bot_overrides = array(),
+		array $config_overrides = array(),
+		$user_agent,
+		$ip_address,
+		array $bot_overrides = array(),
 		$uri_sid = ""
 	)
 	{
-		$session = $this->session_factory->get_session($this->db);
-		global $config, $request, $cache;
-		$request->merge(phpbb_request_interface::SERVER, $request_overrides);
-		$config = array_merge($config, $config_overrides);
+		$this->session_factory->merge_config_data($config_overrides);
 		// Bots
-		$cache->merge_cache_data(array('_bots' => $bot_overrides));
+		$this->session_factory->merge_cache_data(array('_bots' => $bot_overrides));
+		global $request;
+		$session = $this->session_factory->get_session($this->db);
+		$session->browser = $user_agent;
+		$session->ip = $ip_address;
 		// Uri sid
-		$_GET['sid'] = $uri_sid;
-		return $session->session_create($user_id, $set_admin, $persist_login, $viewonline);
+		if ($uri_sid)
+		{
+			$_GET['sid'] = $uri_sid;
+		}
+		$session->session_create($user_id, $set_admin, $persist_login, $viewonline);
+		return $session;
 	}
 
 	function validate_referer(
