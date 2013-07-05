@@ -144,7 +144,7 @@ class phpbb_template_twig_extension extends Twig_Extension
 		{
 			// When end is > 1, subset will end on the last item in an array with the specified $end
 			// This is different from slice in that it is the number we end on rather than the number
-			//	of items to grab (length)
+			//  of items to grab (length)
 
 			// Start must always be the actual starting number for this calculation (not negative)
 			$start = ($start < 0) ? sizeof($item) + $start : $start;
