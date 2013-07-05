@@ -136,6 +136,7 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 			array('foobar', '$2a\S$kkkkaakdkdiej39023903204j2k3490234jk234j02349', false),
 			array('foobar', '$H$kklk938d023k//k3023', false),
 			array('foobar', '$H$3PtYMgXb39lrIWkgoxYLWtRkZtY3AY/', false),
+			array('foobar', '$2a$kwiweorurlaeirw', false),
 		);
 	}
 
