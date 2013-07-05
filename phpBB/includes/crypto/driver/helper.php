@@ -129,11 +129,11 @@ class phpbb_crypto_driver_helper
 		if (strlen($random) < $length)
 		{
 			$random = '';
-			$random_state = $this->helper->unique_id();
+			$random_state = $this->unique_id();
 
 			for ($i = 0; $i < $length; $i += 16)
 			{
-				$random_state = md5($this->helper->unique_id() . $random_state);
+				$random_state = md5($this->unique_id() . $random_state);
 				$random .= pack('H*', md5($random_state));
 			}
 			$random = substr($random, 0, $length);
