@@ -89,7 +89,7 @@ class phpbb_crypto_manager
 	*/
 	protected function load_crypto_helper()
 	{
-		if ($this->helper === NULL)
+		if ($this->helper === null)
 		{
 			$this->helper = new phpbb_crypto_helper($this, $this->container);
 		}
