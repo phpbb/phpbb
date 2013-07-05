@@ -23,12 +23,24 @@ class phpbb_template_twig_extension extends Twig_Extension
 	/** @var phpbb_user */
 	protected $user;
 
-	public function __construct(phpbb_template_context $context, $user)
+	/**
+	* Constructor
+	*
+	* @param phpbb_template_context $context
+	* @param phpbb_user $user
+	* @return phpbb_template_twig_extension
+	*/
+	public function __construct(phpbb_template_context $context, phpbb_user $user)
 	{
 		$this->context = $context;
 		$this->user = $user;
 	}
 
+	/**
+	* Get the name of this extension
+	*
+	* @return string
+	*/
 	public function getName()
 	{
 		return 'phpbb';
