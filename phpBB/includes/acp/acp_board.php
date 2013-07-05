@@ -489,6 +489,15 @@ class acp_board
 				continue;
 			}
 
+			if ($submit && $config_name == 'default_style' && $config[$config_name] != $cfg_array[$config_name])
+			{
+				// Reset default style for users who use the selected style
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_style = ' . (int) $cfg_array[$config_name] . '
+					WHERE user_style = ' . (int) $config[$config_name];
+				$db->sql_query($sql);
+			}
+
 			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
 
 			if ($config_name == 'email_function_name')

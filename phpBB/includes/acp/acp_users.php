@@ -1681,6 +1681,14 @@ class acp_users
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
+				// Display board default values (which cannot be overwritten) for bots/anonymous users
+				if ($user_row['user_type'] == USER_IGNORE || $user_id == ANONYMOUS)
+				{
+					$data['lang'] = $config['default_lang'];
+					$data['dst'] = $config['board_dst'];
+					$data['tz'] = $config['board_timezone'];
+				}
+
 				$timezone_selects = phpbb_timezone_select($user, $data['tz'], true);
 				$template->assign_vars(array(
 					'S_PREFS'			=> true,
@@ -1721,8 +1729,12 @@ class acp_users
 
 					'S_LANG_OPTIONS'	=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
+
 					'S_TZ_OPTIONS'			=> $timezone_selects['tz_select'],
 					'S_TZ_DATE_OPTIONS'		=> $timezone_selects['tz_dates'],
+
+					'S_IS_BOT'			=> ($user_row['user_type'] == USER_IGNORE && $user_id != ANONYMOUS) ? true : false,
+					'S_IS_ANONYMOUS'	=> ($user_id == ANONYMOUS) ? true : false,
 					)
 				);
 

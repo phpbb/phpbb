@@ -357,7 +357,7 @@ class acp_styles
 
 		// Reset default style for users who use selected styles
 		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_style = 0
+			SET user_style = ' . (int) $this->config['default_style'] . '
 			WHERE user_style IN (' . implode(', ', $ids) . ')';
 		$this->db->sql_query($sql);
 
@@ -521,6 +521,13 @@ class acp_styles
 				{
 					trigger_error($this->user->lang['STYLE_DEFAULT_CHANGE_INACTIVE'] . adm_back_link($update_action), E_USER_WARNING);
 				}
+
+				// Reset default style for users who use selected styles
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_style = ' . (int) $id . '
+					WHERE user_style = ' . (int) $this->config['default_style'];
+				$this->db->sql_query($sql);
+
 				set_config('default_style', $id);
 				$this->cache->purge();
 			}
@@ -1158,7 +1165,14 @@ class acp_styles
 		$style_count = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$style_count[$row['user_style']] = $row['style_count'];
+			if ($this->config['override_user_style'])
+			{
+				$style_count[$this->config['default_style']] = $row['style_count'];
+			}
+			else
+			{
+				$style_count[$row['user_style']] = $row['style_count'];
+			}
 		}
 		$this->db->sql_freeresult($result);
 
