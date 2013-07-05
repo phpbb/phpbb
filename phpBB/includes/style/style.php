@@ -91,11 +91,16 @@ class phpbb_style
 	*/
 	public function get_user_style()
 	{
-		return array_merge(array(
-				$this->user->style['style_path'],
-			),
-			($this->user->style['style_parent_id']) ? array_reverse(explode('/', $this->user->style['style_parent_tree'])) : array()
+		$style_list = array(
+			$this->user->style['style_path'],
 		);
+
+		if ($this->user->style['style_parent_id'])
+		{
+			$style_list = array_merge($style_list, array_reverse(explode('/', $this->user->style['style_parent_tree'])));
+		}
+
+		return $style_list;
 	}
 
 	/**
