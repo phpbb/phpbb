@@ -2289,7 +2289,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	$params = $add_anchor = '';
 
-	if ($post_approval)
+	if ($post_approval && $auth->acl_get('f_read', $data['forum_id']))
 	{
 		$params .= '&amp;t=' . $data['topic_id'];
 

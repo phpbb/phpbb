@@ -239,17 +239,6 @@ if ($user->data['is_bot'])
 	redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 }
 
-// Is the user able to read within this forum?
-if (!$auth->acl_get('f_read', $forum_id))
-{
-	if ($user->data['user_id'] != ANONYMOUS)
-	{
-		trigger_error('USER_CANNOT_READ');
-	}
-
-	login_box('', $user->lang['LOGIN_EXPLAIN_POST']);
-}
-
 // Permission to do the action asked?
 $is_authed = false;
 
@@ -270,10 +259,13 @@ switch ($mode)
 	break;
 
 	case 'quote':
-
 		$post_data['post_edit_locked'] = 0;
+		if ($auth->acl_get('f_reply', $forum_id) && $auth->acl_get('f_read', $forum_id))
+		{
+			$is_authed = true;
+		}
 
-	// no break;
+	break;
 
 	case 'reply':
 		if ($auth->acl_get('f_reply', $forum_id))
@@ -751,7 +743,12 @@ if ($submit || $preview || $refresh)
 	// If replying/quoting and last post id has changed
 	// give user option to continue submit or return to post
 	// notify and show user the post made between his request and the final submit
-	if (($mode == 'reply' || $mode == 'quote') && $post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
+	if (
+		($mode == 'reply' || $mode == 'quote')
+		&& $post_data['topic_cur_post_id']
+		&& $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id']
+		&& $auth->acl_get('f_read', $forum_id)
+	)
 	{
 		// Only do so if it is allowed forum-wide
 		if ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW)
@@ -1127,10 +1124,14 @@ if ($submit || $preview || $refresh)
 			}
 			else
 			{
+				$message = '';
+				if ($auth->acl_get('f_read', $forum_id))
+				{
+					$message = ($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED';
+					$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $redirect_url . '">', '</a>');
+				}
+				
 				meta_refresh(3, $redirect_url);
-
-				$message = ($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED';
-				$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $redirect_url . '">', '</a>');
 			}
 
 			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
@@ -1503,7 +1504,7 @@ make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 // Topic review
 if ($mode == 'reply' || $mode == 'quote')
 {
-	if (topic_review($topic_id, $forum_id))
+	if (topic_review($topic_id, $forum_id) && $auth->acl_get('f_read', $forum_id))
 	{
 		$template->assign_var('S_DISPLAY_REVIEW', true);
 	}
