@@ -24,12 +24,12 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		$phpbb_tags = array(
 			/*'BEGIN',
 			'BEGINELSE',
-			'END',*/
+			'END',
 			'IF',
 			'ELSE',
 			'ELSEIF',
 			'ENDIF',
-			/*'DEFINE',
+			'DEFINE',
 			'UNDEFINE',*/
 			'ENDDEFINE',
 			'INCLUDE',
@@ -44,6 +44,10 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		$twig_tags = array(
 			'autoescape',
 			'endautoescape',
+			'if',
+			'elseif',
+			'else',
+			'endif',
 			'block',
 			'endblock',
 			'use',

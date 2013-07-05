@@ -54,7 +54,6 @@ class phpbb_template_twig_extension extends Twig_Extension
 	public function getTokenParsers()
 	{
 		return array(
-			new phpbb_template_twig_tokenparser_if,
 			new phpbb_template_twig_tokenparser_define,
 			new phpbb_template_twig_tokenparser_include,
 			new phpbb_template_twig_tokenparser_includejs,
