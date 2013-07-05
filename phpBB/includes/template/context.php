@@ -165,7 +165,7 @@ class phpbb_template_context
 			// Set S_NUM_ROWS
 			foreach ($str[$blocks[$blockcount]] as &$mod_block)
 			{
-				$mod_block['S_NUM_ROWS'] = $blockcount;
+				$mod_block['S_NUM_ROWS'] = sizeof($str[$blocks[$blockcount]]);
 			}
 		}
 		else
