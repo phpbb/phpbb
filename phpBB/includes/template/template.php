@@ -485,31 +485,60 @@ class phpbb_template
 	/**
 	* Include JS file
 	*
-	* @param string $file file name
+	* @param mixed $file file name or array of URL components as returned by parse_url()
 	* @param bool $locate True if file needs to be located
 	* @param bool $relative True if path is relative to phpBB root directory. Ignored if $locate == true
 	*/
 	public function _js_include($file, $locate = false, $relative = false)
 	{
+		if (is_array($file))
+		{
+			$path = $file;
+		}
+		else
+		{
+			$path = phpbb_parse_url($file);
+		}
+
+		if (empty($path) || !isset($path['path']))
+		{
+			return;
+		}
+
+		$urlencode = false;
+
 		// Locate file
 		if ($locate)
 		{
-			$located = $this->locator->get_first_file_location(array($file), false, true);
+			$located = $this->locator->get_first_file_location(array($path['path']), false, true);
 			if ($located)
 			{
-				$file = $located;
+				$path['path'] = $located;
+				$urlencode = true;
 			}
 		}
 		else if ($relative)
 		{
-			$file = $this->phpbb_root_path . $file;
+			$path['path'] = $this->phpbb_root_path . $path['path'];
 		}
 
-		$file .= (strpos($file, '?') === false) ? '?' : '&';
-		$file .= 'assets_version=' . $this->config['assets_version'];
+		if (phpbb_is_relative_url($path))
+		{
+			if (!isset($path['query']))
+			{
+				$path['query'] = 'assets_version=' . $this->config['assets_version'];
+			}
+			else if (!preg_match('/(^|[&;])assets_version=/', $path['query']))
+			{
+				$separator = (strpos($path['query'], '&') === false) && (strpos($path['query'], ';') !== false) && preg_match('/^.*=.*;.*=.*$/', $path['query']) ? ';' : '&amp;';
+				$path['query'] .= $separator . 'assets_version=' . $this->config['assets_version'];
+			}
+		}
+
+		$file = phpbb_join_url($path, $urlencode);
 
 		// Add HTML code
-		$code = '<script src="' . htmlspecialchars($file) . '"></script>';
+		$code = '<script src="' . $file . '"></script>' . "\n";
 		$this->context->append_var('SCRIPTS', $code);
 	}
 }

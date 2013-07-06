@@ -2391,6 +2391,117 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 
 // Server functions (building urls, redirecting...)
 
+
+/**
+* Splits URL into components
+*
+* @param string $path URL
+* @return array List of components
+*
+* @see parse_url() in PHP manual
+*/
+function phpbb_parse_url($path)
+{
+	if (version_compare(PHP_VERSION, '5.4.7') < 0 && substr($path, 0, 2) === '//')
+	{
+		// Workaround for PHP 5.4.6 and older bug #62844 - add fake scheme and then remove it
+		$result = parse_url('http:' . $path);
+		if (isset($result['port']))
+		{
+			return false;
+		}
+		unset($result['scheme']);
+		return $result;
+	}
+	return parse_url($path);
+}
+
+/**
+* Joins URL components into URL
+*
+* @param array $components List of components. See parse_url() in PHP manual for components list
+* @param bool $urlencode If true, path will be encoded with rawurlencode()
+* @return string URL
+*/
+function phpbb_join_url($components, $urlencode = false)
+{
+	if ($urlencode && isset($components['path']))
+	{
+		$paths = explode('/', $components['path']);
+		foreach ($paths as &$dir)
+		{
+			$dir = rawurlencode($dir);
+		}
+		$components['path'] = implode('/', $paths);
+	}
+
+	$path = '';
+	if (isset($components['scheme']))
+	{
+		$path = $components['scheme'] === '' ? '//' : $components['scheme'] . '://';
+	}
+
+	if (isset($components['user']) || isset($components['pass']))
+	{
+		if ($path === '' && !isset($components['port']))
+		{
+			$path = '//';
+		}
+		$path .= $components['user'];
+		if (isset($components['pass']))
+		{
+			$path .= ':' . $components['pass'];
+		}
+		$path .= '@';
+	}
+
+	if (isset($components['host']))
+	{
+		if ($path === '' && !isset($components['port']))
+		{
+			$path = '//';
+		}
+		$path .= $components['host'];
+		if (isset($components['port']))
+		{
+			$path .= ':' . $components['port'];
+		}
+	}
+
+	if (isset($components['path']))
+	{
+		$path .= $components['path'];
+	}
+
+	if (isset($components['query']))
+	{
+		$path .= '?' . $components['query'];
+	}
+
+	if (isset($components['fragment']))
+	{
+		$path .= '#' . $components['fragment'];
+	}
+
+	return $path;
+}
+
+/**
+* Check is URL is local and relative
+*
+* @param array $components List of URL components as returned by parse_url()
+* @return bool True if URL is local
+*/
+function phpbb_is_relative_url($components)
+{
+	if (empty($components) || !isset($components['path']))
+	{
+		// Invalid URL
+		return false;
+	}
+	return !isset($components['scheme']) && !isset($components['host']) && substr($components['path'], 0, 1) !== '/';
+}
+
 /**
 * Append session id to url.
 * This function supports hooks.
