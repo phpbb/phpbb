@@ -510,9 +510,12 @@ class acp_permissions
 			trigger_error($user->lang['ONLY_FORUM_DEFINED'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
+		global $phpbb_container;
+		$phpbb_permissions = $phpbb_container->get('acl.permissions');
+
 		$template->assign_vars(array(
 			'S_PERMISSION_DROPDOWN'		=> (sizeof($this->permission_dropdown) > 1) ? $this->build_permission_dropdown($this->permission_dropdown, $permission_type, $permission_scope) : false,
-			'L_PERMISSION_TYPE'			=> $user->lang['ACL_TYPE_' . strtoupper($permission_type)],
+			'L_PERMISSION_TYPE'			=> $phpbb_permissions->get_type_lang($permission_type),
 
 			'U_ACTION'					=> $this->u_action,
 			'S_HIDDEN_FIELDS'			=> $s_hidden_fields)
@@ -589,7 +592,7 @@ class acp_permissions
 	{
 		global $auth, $phpbb_container;
 
-		$permissions = $phpbb_container->get('acl.permissions');
+		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		$s_dropdown_options = '';
 		foreach ($options as $setting)
@@ -600,7 +603,7 @@ class acp_permissions
 			}
 
 			$selected = ($setting == $default_option) ? ' selected="selected"' : '';
-			$l_setting = $permissions->get_lang_type($setting, $permission_scope);
+			$l_setting = $phpbb_permissions->get_type_lang($setting, $permission_scope);
 			$s_dropdown_options .= '<option value="' . $setting . '"' . $selected . '>' . $l_setting . '</option>';
 		}
 

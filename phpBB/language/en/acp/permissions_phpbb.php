@@ -63,7 +63,6 @@ if (empty($lang) || !is_array($lang))
 *	</code>
 */
 
-// Define categories and permission types
 $lang = array_merge($lang, array(
 	'ACL_CAT_ACTIONS'		=> 'Actions',
 	'ACL_CAT_CONTENT'		=> 'Content',
@@ -79,13 +78,6 @@ $lang = array_merge($lang, array(
 	'ACL_CAT_SETTINGS'		=> 'Settings',
 	'ACL_CAT_TOPIC_ACTIONS'	=> 'Topic actions',
 	'ACL_CAT_USER_GROUP'	=> 'Users &amp; Groups',
-
-
-	'ACL_TYPE_USER'				=> 'User permissions',
-	'ACL_TYPE_ADMIN'			=> 'Admin permissions',
-	'ACL_TYPE_MODERATOR'		=> 'Moderator permissions',
-	'ACL_TYPE_FORUM'			=> 'Forum permissions',
-	'ACL_TYPE_GLOBAL_MODERATOR'	=> 'Global moderator permissions',
 ));
 
 // User Permissions

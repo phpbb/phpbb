@@ -86,9 +86,9 @@ class phpbb_permissions
 	/**
 	* Returns the language string of a permission category
 	*
-	* @return	array	Language string
+	* @return	string	Language string
 	*/
-	public function get_lang_category($category)
+	public function get_category_lang($category)
 	{
 		return $this->user->lang($this->categories[$category]);
 	}
@@ -106,17 +106,21 @@ class phpbb_permissions
 	/**
 	* Returns the language string of a permission type
 	*
-	* @return	array	Language string
+	* @return	string	Language string
 	*/
-	public function get_lang_type($type, $scope = false)
+	public function get_type_lang($type, $scope = false)
 	{
 		if ($scope && isset($this->types[$scope][$type]))
 		{
 			$lang_key = $this->types[$scope][$type];
 		}
-		else
+		else if (isset($this->types[$type]))
 		{
 			$lang_key = $this->types[$type];
+		}
+		else
+		{
+			$lang_key = 'ACL_TYPE_' . strtoupper(($scope) ? $scope . '_' . $type : $type);
 		}
 
 		return $this->user->lang($lang_key);
@@ -144,13 +148,33 @@ class phpbb_permissions
 		return $this->permissions;
 	}
 
+	/**
+	* Returns the category of a permission
+	*
+	* @return	string
+	*/
+	public function get_permission_category($permission)
+	{
+		return (isset($this->permissions[$permission]['cat'])) ? $this->permissions[$permission]['cat'] : 'misc';
+	}
+
+	/**
+	* Returns the language string of a permission
+	*
+	* @return	string	Language string
+	*/
+	public function get_permission_lang($permission)
+	{
+		return (isset($this->permissions[$permission]['lang'])) ? $this->user->lang($this->permissions[$permission]['lang']) : $this->user->lang('ACL_' . strtoupper($permission));
+	}
+
 	protected $types = array(
-		'u_'			=> 'ACL_TYPE_USER',
-		'a_'			=> 'ACL_TYPE_ADMIN',
-		'm_'			=> 'ACL_TYPE_MODERATOR',
-		'f_'			=> 'ACL_TYPE_FORUM',
+		'u_'			=> 'ACL_TYPE_U_',
+		'a_'			=> 'ACL_TYPE_A_',
+		'm_'			=> 'ACL_TYPE_M_',
+		'f_'			=> 'ACL_TYPE_F_',
 		'global'		=> array(
-			'm_'			=> 'ACL_TYPE_GLOBAL_MODERATOR',
+			'm_'			=> 'ACL_TYPE_GLOBAL_M_',
 		),
 	);
 

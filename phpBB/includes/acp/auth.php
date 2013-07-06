@@ -261,7 +261,8 @@ class auth_admin extends phpbb_auth
 	*/
 	function display_mask($mode, $permission_type, &$hold_ary, $user_mode = 'user', $local = false, $group_display = true)
 	{
-		global $template, $user, $db, $phpbb_root_path, $phpEx;
+		global $template, $user, $db, $phpbb_root_path, $phpEx, $phpbb_container;
+		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		// Define names for template loops, might be able to be set
 		$tpl_pmask = 'p_mask';
@@ -269,7 +270,7 @@ class auth_admin extends phpbb_auth
 		$tpl_category = 'category';
 		$tpl_mask = 'mask';
 
-		$l_acl_type = (isset($user->lang['ACL_TYPE_' . (($local) ? 'LOCAL' : 'GLOBAL') . '_' . strtoupper($permission_type)])) ? $user->lang['ACL_TYPE_' . (($local) ? 'LOCAL' : 'GLOBAL') . '_' . strtoupper($permission_type)] : 'ACL_TYPE_' . (($local) ? 'LOCAL' : 'GLOBAL') . '_' . strtoupper($permission_type);
+		$l_acl_type = $phpbb_permissions->get_type_lang($permission_type, (($local) ? 'local' : 'global'));
 
 		// Allow trace for viewing permissions and in user mode
 		$show_trace = ($mode == 'view' && $user_mode == 'user') ? true : false;
@@ -1102,7 +1103,7 @@ class auth_admin extends phpbb_auth
 	{
 		global $template, $user, $phpbb_admin_path, $phpEx, $phpbb_container;
 
-		$permissions = $phpbb_container->get('acl.permissions');
+		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		@reset($category_array);
 		while (list($cat, $cat_array) = each($category_array))
@@ -1112,7 +1113,7 @@ class auth_admin extends phpbb_auth
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
 				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false,
 
-				'CAT_NAME'	=> $permissions->get_lang_category($cat),
+				'CAT_NAME'	=> $phpbb_permissions->get_category_lang($cat),
 			));
 
 			/*	Sort permissions by name (more naturaly and user friendly than sorting by a primary key)
@@ -1180,7 +1181,7 @@ class auth_admin extends phpbb_auth
 	{
 		global $user, $phpbb_container;
 
-		$permissions = $phpbb_container->get('acl.permissions');
+		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		foreach ($key_sort_array as $forum_id)
 		{
@@ -1208,7 +1209,7 @@ class auth_admin extends phpbb_auth
 				// Build our categories array
 				if (!isset($categories[$cat]))
 				{
-					$categories[$cat] = $permissions->get_lang_category($cat);
+					$categories[$cat] = $phpbb_permissions->get_category_lang($cat);
 				}
 
 				// Build our content array
