@@ -1541,7 +1541,7 @@ function upload_popup($forum_style = 0)
 */
 function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 {
-	global $user, $db, $auth, $config;
+	global $user, $db, $auth, $config, $request;
 	global $phpbb_root_path, $phpEx;
 
 	// If moderator removing post or user itself removing post, present a confirmation screen
@@ -1586,9 +1586,40 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>');
 			}
 
-			meta_refresh(3, $meta_info);
+
 			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
-			trigger_error($message);
+
+			if($request->is_ajax())
+			{
+				$sql = 'SELECT COUNT(post_id) AS post_count
+				        FROM ' . POSTS_TABLE . '
+				        WHERE forum_id = ' . $forum_id . '
+				        AND topic_id = ' . $topic_id;
+			
+				$result = $db->sql_query($sql);
+
+				$post_count = (int) $db->sql_fetchfield('post_count');
+
+				$refresh_data = array(
+					'time'	=> 3,
+					'url'	=> str_replace('&amp;', '&', $meta_info)
+				);
+
+				$json_response = new phpbb_json_response;
+				$json_response->send(array(
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT' 		=> $message,
+					'AFTER_POST_DELETE'	=> true,
+					'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null,
+					'POSTS_PER_PAGE'	=> $config['posts_per_page'],
+					'POST_COUNT'		=> $post_count
+				));
+			}
+			else
+			{
+				meta_refresh(3, $meta_info);
+				trigger_error($message);
+			}
 		}
 		else
 		{

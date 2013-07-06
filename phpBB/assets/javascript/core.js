@@ -293,8 +293,25 @@ phpbb.ajaxify = function(options) {
 				// callbacks.
 				if (typeof res.MESSAGE_TITLE !== 'undefined') {
 					alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-				} else {
+				} else if (!($(res).find('.divider:last').length > 0)) {
 					dark.fadeOut(phpbb.alertTime);
+				}
+				
+				// Checking weather its returning after post delete
+				// If so fetch first post from next page to load into current page
+				if (($('.active').length > 0) && (typeof res.AFTER_POST_DELETE !== 'undefined')) {
+					var page_number = parseInt($('.active').find('span').html());
+					var posts_exist_beyond = (((res.POST_COUNT + 1) - (page_number * res.POSTS_PER_PAGE)) > 0) ? true : false;
+					if(posts_exist_beyond){
+						var link_parts = $('.active').next('li').find('a').attr('href').split('&start=');
+						$.ajax({
+							url: link_parts[0] + '&start=' + (parseInt(link_parts[1]) - $('.divider').length).toString(),
+							type: 'GET',
+							data: '',
+							success: returnHandler,
+							error: errorHandler
+						});
+					}
 				}
 
 				if (typeof phpbb.ajaxCallbacks[callback] === 'function') {

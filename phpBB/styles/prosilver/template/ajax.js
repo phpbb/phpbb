@@ -107,21 +107,44 @@ phpbb.addAjaxCallback('mark_topics_read', function(res, update_topic_links) {
 });
 
 // This callback finds the post from the delete link, and removes it.
-phpbb.addAjaxCallback('post_delete', function() {
+phpbb.addAjaxCallback('post_delete', function(response) {
 	var el = $(this),
 		postId;
 
 	if (el.attr('data-refresh') === undefined) {
-		postId = el[0].href.split('&p=')[1];
-		var post = el.parents('#p' + postId).css('pointer-events', 'none');
-		if (post.hasClass('bg1') || post.hasClass('bg2')) {
-			var posts1 = post.nextAll('.bg1');
-			post.nextAll('.bg2').removeClass('bg2').addClass('bg1');
-			posts1.removeClass('bg1').addClass('bg2');
+		// Checking weather new post from next page needs to be loaded
+		if ($(response).find('.divider:last').length > 0) {
+			var pg_last_post = $(response).find('.divider:last').prev('div');
+			pg_last_post.insertAfter('.divider:last').fadeIn();
+			$('<hr class="divider">').insertAfter(pg_last_post);
+
+			pg_last_post.find('[data-ajax]').each(function() {
+				var $this = $(this),
+					ajax = $this.attr('data-ajax'),
+					fn;
+				if (ajax !== 'false') {
+					fn = (ajax !== 'true') ? ajax : null;
+					phpbb.ajaxify({
+						selector: this,
+						refresh: $this.attr('data-refresh') !== undefined,
+						callback: fn
+					});
+				}
+			});		
+
+		} else {
+			postId = el[0].href.split('&p=')[1];
+			var post = el.parents('#p' + postId).css('pointer-events', 'none');
+			if (post.hasClass('bg1') || post.hasClass('bg2')) {
+				var posts1 = post.nextAll('.bg1');
+				post.nextAll('.bg2').removeClass('bg2').addClass('bg1');
+				posts1.removeClass('bg1').addClass('bg2');
+			}
+			post.fadeOut(function() {
+				$(this).next('hr').remove();
+				$(this).remove();
+			});
 		}
-		post.fadeOut(function() {
-			$(this).remove();
-		});
 	}
 });
 
