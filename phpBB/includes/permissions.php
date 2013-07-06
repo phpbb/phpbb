@@ -165,7 +165,7 @@ class phpbb_permissions
 	*/
 	public function get_permission_lang($permission)
 	{
-		return (isset($this->permissions[$permission]['lang'])) ? $this->user->lang($this->permissions[$permission]['lang']) : $this->user->lang('ACL_' . strtoupper($permission));
+		return (isset($this->permissions['acl_' . $permission]['lang'])) ? $this->user->lang($this->permissions['acl_' . $permission]['lang']) : $this->user->lang('ACL_' . strtoupper($permission));
 	}
 
 	protected $types = array(
