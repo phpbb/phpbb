@@ -72,7 +72,7 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 	{
 		$return = array();
 
-		if ($method != '')
+		if ($method !== '')
 		{
 			$return[] = array(
 				'item_type'		=> $type,
@@ -83,7 +83,7 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 			);
 		}
 
-		if ($method == 'email' || $method == 'both')
+		if ($method === 'email' || $method === 'both')
 		{
 			$return[] = array(
 				'item_type'		=> $type,
@@ -94,7 +94,7 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 			);
 		}
 
-		if ($method == 'jabber' || $method == 'both')
+		if ($method === 'jabber' || $method === 'both')
 		{
 			$return[] = array(
 				'item_type'		=> $type,
