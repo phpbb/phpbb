@@ -726,6 +726,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
 	}
 
+	/**
+	 * assertNotContains for language strings
+	 *
+	 * @param string $needle Search string
+	 * @param string $haystack Search this
+	 * @param string $message Optional failure message
+	 */
+	public function assertNotContainsLang($needle, $haystack, $message = null)
+	{
+		$this->assertNotContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+	}
+
 	/*
 	* Perform some basic assertions for the page
 	*
