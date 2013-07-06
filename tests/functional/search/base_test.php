@@ -10,7 +10,7 @@
 /**
  * @group functional
  */
-abstract class phpbb_functional_search_test extends phpbb_functional_test_case
+abstract class phpbb_functional_search_base_test extends phpbb_functional_test_case
 {
 	protected function assert_search_found($keywords)
 	{
@@ -47,11 +47,10 @@ abstract class phpbb_functional_search_test extends phpbb_functional_test_case
 			$crawler = self::submit($form);
 
 			// check if search backend is not supported
-			if ($crawler->filter('.errorbox')->count() > 0);
+			if ($crawler->filter('.errorbox')->count() > 0)
 			{
 				$this->markTestSkipped("Search backend is not supported/running");
 			}
-
 			$this->create_search_index();
 		}
 

@@ -7,12 +7,12 @@
  *
  */
 
-require_once dirname(__FILE__) . '/search_test.php';
+require_once dirname(__FILE__) . '/base_test.php';
 
 /**
 * @group functional
 */
-class phpbb_functional_search_native_test extends phpbb_functional_search_test
+class phpbb_functional_search_native_test extends phpbb_functional_search_base_test
 {
 	protected $search_backend;
 
