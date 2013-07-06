@@ -1148,8 +1148,8 @@ class auth_admin extends phpbb_auth
 						'U_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
 						'UA_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
 
-						'PERMISSION'	=> $user->lang['acl_' . $permission]['lang'])
-					);
+						'PERMISSION'	=> $phpbb_permissions->get_permission_lang($permission),
+					));
 				}
 				else
 				{
@@ -1166,8 +1166,8 @@ class auth_admin extends phpbb_auth
 						'U_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
 						'UA_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
 
-						'PERMISSION'	=> $user->lang['acl_' . $permission]['lang'])
-					);
+						'PERMISSION'	=> $phpbb_permissions->get_permission_lang($permission),
+					));
 				}
 			}
 		}
@@ -1196,15 +1196,7 @@ class auth_admin extends phpbb_auth
 			@reset($permissions);
 			while (list($permission, $auth_setting) = each($permissions))
 			{
-				if (!isset($user->lang['acl_' . $permission]))
-				{
-					$user->lang['acl_' . $permission] = array(
-						'cat'	=> 'misc',
-						'lang'	=> '{ acl_' . $permission . ' }'
-					);
-				}
-
-				$cat = $user->lang['acl_' . $permission]['cat'];
+				$cat = $phpbb_permissions->get_permission_category($permission);
 
 				// Build our categories array
 				if (!isset($categories[$cat]))
