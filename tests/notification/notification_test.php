@@ -196,6 +196,17 @@ class phpbb_notification_test extends phpbb_database_test_case
 				}
 			}
 		}
+
+		foreach ($expected_subscriptions as $item_type => $method_array)
+		{
+			foreach ($method_array as $method => $method_data)
+			{
+				foreach ($method_data as $method_data_key => $method_data_value)
+				{
+					$this->assertEquals($expected_subscriptions[$item_type][$method][$method_data_key], $subscriptions[$item_type][$method][$method_data_key]);
+				}
+			}
+		}
 	}
 
 	public function test_subscriptions()
