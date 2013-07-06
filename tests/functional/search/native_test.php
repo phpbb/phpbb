@@ -14,11 +14,5 @@ require_once dirname(__FILE__) . '/base_test.php';
 */
 class phpbb_functional_search_native_test extends phpbb_functional_search_base_test
 {
-	protected $search_backend;
-
-	public function setUp()
-	{
-		parent::setUp();
-		$this->search_backend = 'phpbb_search_fulltext_native';
-	}
+	protected $search_backend = 'phpbb_search_fulltext_native';
 }
