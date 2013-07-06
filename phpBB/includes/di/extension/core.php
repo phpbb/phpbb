@@ -51,7 +51,8 @@ class phpbb_di_extension_core extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
-		if (file_exists($this->root_path . 'install/update/new/config/services.yml'))
+		// If we are in install, try to use the updated version, when available
+		if (defined('IN_INSTALL') && file_exists($this->root_path . 'install/update/new/config/services.yml'))
 		{
 			$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($this->root_path . 'install/update/new/config')));
 			$loader->load('services.yml');
