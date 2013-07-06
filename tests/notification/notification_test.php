@@ -146,6 +146,58 @@ class phpbb_notification_test extends phpbb_database_test_case
 		//get_subscription_methods
 	}
 
+	public function test_get_global_subscriptions()
+	{
+		$expected_subscriptions = array(
+			'NOTIFICATION_GROUP_POSTING'	=> array(
+				'bookmark'	=> array(
+					'id'		=> 'bookmark',
+					'lang'		=> 'NOTIFICATION_TYPE_BOOKMARK',
+					'group'		=> 'NOTIFICATION_GROUP_POSTING',
+				),
+				'post'		=> array(
+					'id'		=> 'post',
+					'lang'		=> 'NOTIFICATION_TYPE_POST',
+					'group'		=> 'NOTIFICATION_GROUP_POSTING',
+				),
+				'quote'		=> array(
+					'id'		=> 'quote',
+					'lang'		=> 'NOTIFICATION_TYPE_QUOTE',
+					'group'		=> 'NOTIFICATION_GROUP_POSTING',
+				),
+				'topic'		=> array(
+					'id'		=> 'topic',
+					'lang'		=> 'NOTIFICATION_TYPE_TOPIC',
+					'group'		=> 'NOTIFICATION_GROUP_POSTING',
+				),
+			),
+			'NOTIFICATION_GROUP_MISCELLANEOUS'	=> array(
+				'test'		=> array(
+					'id'		=> 'test',
+					'lang'		=> 'NOTIFICATION_TYPE_TEST',
+					'group'		=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
+				),
+				'pm'		=> array(
+					'id'		=> 'pm',
+					'lang'		=> 'NOTIFICATION_TYPE_PM',
+					'group'		=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
+				),
+			),
+		);
+
+		$subscriptions = $this->notifications->get_subscription_types();
+		foreach ($subscriptions as $item_type => $method_array)
+		{
+			foreach ($method_array as $method => $method_data)
+			{
+				foreach ($method_data as $method_data_key => $method_data_value)
+				{
+					$this->assertEquals($expected_subscriptions[$item_type][$method][$method_data_key], $subscriptions[$item_type][$method][$method_data_key]);
+				}
+			}
+		}
+	}
+
 	public function test_subscriptions()
 	{
 		$this->notifications->delete_subscription('post', 0, '', 2);
