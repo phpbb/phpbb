@@ -509,11 +509,11 @@ class install_update extends module
 
 				if ($all_up_to_date)
 				{
-					global $phpbb_log, $phpbb_container;
+					global $phpbb_container;
 					$phpbb_log = $phpbb_container->get('log');
 
 					// Add database update to log
-					add_log('admin', 'LOG_UPDATE_PHPBB', $this->current_version, $this->update_to_version);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_UPDATE_PHPBB', time(), array($this->current_version, $this->update_to_version));
 
 					$db->sql_return_on_error(true);
 					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
