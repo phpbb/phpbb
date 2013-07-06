@@ -3,7 +3,7 @@
 *
 * @package migration
 * @copyright (c) 2013 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License v2
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -31,8 +31,11 @@ class phpbb_db_migration_data_310_notification_options_reconvert extends phpbb_d
 
 	/**
 	* Perform the conversion (separate for testability)
+	*
+	* @param phpbb_db_sql_insert_buffer $insert_buffer
+	* @param string $insert_table
 	*/
-	public function perform_conversion($insert_buffer, $insert_table)
+	public function perform_conversion(phpbb_db_sql_insert_buffer $insert_buffer, $insert_table)
 	{
 		$sql = 'DELETE FROM ' . $insert_table;
 		$this->db->sql_query($sql);
@@ -58,7 +61,7 @@ class phpbb_db_migration_data_310_notification_options_reconvert extends phpbb_d
 				$notification_methods[] = 'jabber';
 			}
 
-			// Notifications for  posts
+			// Notifications for posts
 			foreach (array('post', 'topic') as $item_type)
 			{
 				$this->add_method_rows(
@@ -88,6 +91,15 @@ class phpbb_db_migration_data_310_notification_options_reconvert extends phpbb_d
 		$insert_buffer->flush();
 	}
 
+	/**
+	* Insert method rows to DB
+	*
+	* @param phpbb_db_sql_insert_buffer $insert_buffer
+	* @param string $item_type
+	* @param int $item_id
+	* @param int $user_id
+	* @param string $methods
+	*/
 	protected function add_method_rows(phpbb_db_sql_insert_buffer $insert_buffer, $item_type, $item_id, $user_id, array $methods)
 	{
 		$row_base = array(
