@@ -30,6 +30,7 @@ class phpbb_functional_ucp_pm_test extends phpbb_functional_test_case
 		$this->set_allow_pm(0);
 		$crawler = self::request('GET', 'ucp.php');
 		$this->assertNotContainsLang('PRIVATE_MESSAGES', $crawler->filter('html')->text());
+		$this->set_allow_pm(1);
 	}
 
 	protected function set_allow_pm($enable_pm)
