@@ -563,7 +563,7 @@ abstract class phpbb_tree_nestedset implements phpbb_tree_interface
 
 		$sql = 'SELECT *
 			FROM ' . $this->table_name .
-				$this->get_sql_where()
+				' ' . $this->get_sql_where()
 				. ' ORDER BY ' . $this->column_left_id . ' ' . ($order_asc ? 'ASC' : 'DESC');
 		$result = $this->db->sql_query($sql);
 
