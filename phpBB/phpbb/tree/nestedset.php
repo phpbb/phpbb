@@ -557,7 +557,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 
 		$sql = 'SELECT *
 			FROM ' . $this->table_name .
-				$this->get_sql_where()
+				' ' . $this->get_sql_where()
 				. ' ORDER BY ' . $this->column_left_id . ' ' . ($order_asc ? 'ASC' : 'DESC');
 		$result = $this->db->sql_query($sql);
 

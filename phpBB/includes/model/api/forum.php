@@ -24,18 +24,14 @@ class phpbb_model_api_forum
 	/** @var phpbb_tree_nestedset_forum */
 	protected $nestedset_forum;
 
-	/** @var phpbb_db_driver */
-	protected $db;
 	/**
 	 * Constructor
 	 *
 	 * @param phpbb_tree_nestedset_forum $nestedset_forum
 	 */
-	function __construct(phpbb_tree_nestedset_forum $nestedset_forum, phpbb_db_driver $db)
+	function __construct(phpbb_tree_nestedset_forum $nestedset_forum)
 	{
 		$this->nestedset_forum = $nestedset_forum;
-		$this->db = $db;
-
 	}
 	public function get($forum_id){
 		if ($forum_id == 0)

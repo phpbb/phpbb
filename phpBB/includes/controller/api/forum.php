@@ -19,9 +19,9 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 
-use Symfony\Component\HttpFoundation\Response,
-	Symfony\Component\Serializer\Serializer,
-	Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 /**
  * Controller for the api of a phpBB forum
@@ -39,7 +39,7 @@ class phpbb_controller_api_forum
 	/**
 	 * Constructor
 	 *
-	 * @param phpbb_db_driver $db
+	 * @param phpbb_model_api_forum $model
 	 */
 	function __construct(phpbb_model_api_forum $model)
 	{
@@ -53,7 +53,7 @@ class phpbb_controller_api_forum
 	 * Method: GET
 	 *
 	 * @param $forum_id The forum to fetch, 0 fetches everything
-	 * @return Response an array of forums, jsonencoded
+	 * @return Response an array of forums, serialized to json
 	 */
 	public function forums($forum_id)
 	{
