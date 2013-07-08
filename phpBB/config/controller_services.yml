@@ -3,3 +3,8 @@ services:
         class: phpbb_controller_api_forum
         arguments:
             - @model.api.forum
+
+    api.controller.topic:
+        class: phpbb_controller_api_topic
+        arguments:
+            - @model.api.topic

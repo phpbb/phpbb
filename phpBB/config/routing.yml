@@ -13,3 +13,11 @@ api_forums_controller:
     requirements:
         forum_id: \d+
         _method: GET
+
+api_topics_controller:
+    pattern: /api/topics/{forum_id}/{page}
+    defaults: { _controller: api.controller.topic:topics, page: 1 }
+    requirements:
+        forum_id: \d+
+        page: \d+
+        _method: GET

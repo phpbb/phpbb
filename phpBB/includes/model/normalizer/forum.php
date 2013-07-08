@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package entity
+ * @package normalizer
  * @copyright (c) 2013 phpBB Group
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General public License v2
  *
@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 /**
- * Forum enitity
+ * Forum enitity normalizer
  * @package phpBB3
  */
 class phpbb_model_normalizer_forum implements NormalizerInterface

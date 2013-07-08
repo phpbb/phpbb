@@ -12,20 +12,14 @@
  */
 if (!defined('IN_PHPBB'))
 {
-	exit;
+    exit;
 }
 
-
 /**
- * Forum enitity
+ * Topic enitity
  * @package phpBB3
  */
-class phpbb_model_entity_forum extends phpbb_model_entity
+class phpbb_model_entity_topic extends phpbb_model_entity
 {
-	public function __construct($forum)
-    {
-        $this->data['subforums'] = null;
-        parent::__construct($forum);
-    }
 
 }
