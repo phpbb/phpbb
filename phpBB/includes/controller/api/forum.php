@@ -15,10 +15,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-
-
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -29,7 +25,6 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
  */
 class phpbb_controller_api_forum
 {
-
 	/**
 	 * API Model
 	 * @var phpbb_model_api_forum
@@ -52,7 +47,7 @@ class phpbb_controller_api_forum
 	 * Accesible trough /api/forums/{forum_id} (no {forum_id} defaults to 0)
 	 * Method: GET
 	 *
-	 * @param $forum_id The forum to fetch, 0 fetches everything
+	 * @param int $forum_id The forum to fetch, 0 fetches everything
 	 * @return Response an array of forums, serialized to json
 	 */
 	public function forums($forum_id)

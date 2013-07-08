@@ -21,9 +21,11 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_model_entity
 {
-	public function __construct($data)
+	protected $data = array();
+
+	public function __construct($row)
 	{
-		foreach ($data as $field => $value)
+		foreach ($row as $field => $value)
 		{
 			$this->set($field, $value);
 		}
@@ -31,7 +33,7 @@ abstract class phpbb_model_entity
 
 	public function get($field)
 	{
-		return $this->$field;
+		return $this->data[$field];
 	}
 
 	public function set($field, $value)
