@@ -347,6 +347,8 @@ class phpbb_auth_provider_ldap extends phpbb_auth_provider_base
 			'AUTH_LDAP_USER'		=> $new_config['ldap_user'],
 			'AUTH_LDAP_USER_FILTER'	=> $new_config['ldap_user_filter'],
 		));
+
+		return 'auth_provider_ldap.html';
 	}
 
 	/**
