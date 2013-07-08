@@ -14,7 +14,8 @@
  * See interface here:
  *    includes/auth/provider/interface.php
  */
-class phpbb_provider {
+class phpbb_mock_auth_provider implements phpbb_auth_provider_interface
+{
 
 	function init()
 	{

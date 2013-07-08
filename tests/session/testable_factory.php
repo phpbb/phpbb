@@ -8,7 +8,7 @@
 */
 
 require_once dirname(__FILE__) . '/../mock/container_builder.php';
-require_once dirname(__FILE__) . '/../mock/provider.php';
+require_once dirname(__FILE__) . '/../mock/auth_provider.php';
 
 /**
 * This class exists to setup an instance of phpbb's session class for testing.
@@ -90,7 +90,7 @@ class phpbb_session_testable_factory
 		$phpbb_container = $this->container = new phpbb_mock_container_builder();
 		$phpbb_container->set(
 			'auth.provider.db',
-			new phpbb_provider()
+			new phpbb_mock_auth_provider()
 		);
 
 		$session = new phpbb_mock_session_testable;
