@@ -659,7 +659,7 @@ class acp_board
 				if ($auth_tpl)
 				{
 					$template->assign_block_vars('auth_tpl', array(
-						'template_file'	=> $auth_tpl,
+						'TEMPLATE_FILE'	=> $auth_tpl,
 					));
 				}
 			}
