@@ -309,6 +309,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"a\nb\nc\nd",
 			),
 			*/
+			array(
+				'twig.html',
+				array('VARIABLE' => 'FOObar',),
+				array(),
+				array(),
+				"13FOOBAR|foobar",
+			),
 		);
 	}
 
