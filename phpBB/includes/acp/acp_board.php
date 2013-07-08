@@ -655,15 +655,13 @@ class acp_board
 
 			foreach ($auth_providers as $provider)
 			{
-				$fields = $provider->acp($this->new_config);
-
-				if ($fields['tpl'])
+				$auth_tpl = $provider->get_acp_template($this->new_config);
+				if ($auth_tpl)
 				{
 					$template->assign_block_vars('auth_tpl', array(
-						'TPL'	=> $fields['tpl'],
+						'TPL'	=> $provider->get_acp_template($this->new_config),
 					));
 				}
-				unset($fields);
 			}
 		}
 	}

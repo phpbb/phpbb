@@ -37,6 +37,7 @@ class phpbb_auth_provider_ldap extends phpbb_auth_provider_base
 		$this->db = $db;
 		$this->config = $config;
 		$this->user = $user;
+		$this->template = $template;
 	}
 
 	/**
