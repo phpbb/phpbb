@@ -60,16 +60,10 @@ interface phpbb_auth_provider_interface
 	 * This function is used to output any required fields in the authentication
 	 * admin panel. It also defines any required configuration table fields.
 	 *
-	 * @param 	array 	$new 	Contains the new configuration values that have
-	 * 							been set in acp_board.
 	 * @return	array|null	Returns null if not implemented or an array of the
-	 *						form:
-	 *							array(
-	 *								'tpl'		=> string
-	 *								'config' 	=> array
-	 *							)
+	 *						configuration fields of the provider.
 	 */
-	public function acp($new);
+	public function acp();
 
 	/**
 	 * This function updates the template with variables related to the acp

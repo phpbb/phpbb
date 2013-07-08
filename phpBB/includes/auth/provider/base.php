@@ -41,7 +41,7 @@ abstract class phpbb_auth_provider_base implements phpbb_auth_provider_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function acp($new)
+	public function acp()
 	{
 		return;
 	}

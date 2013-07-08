@@ -528,10 +528,10 @@ class acp_board
 			$old_auth_config = array();
 			foreach ($auth_providers as $provider)
 			{
-				if ($fields = $provider->acp($this->new_config))
+				if ($fields = $provider->acp())
 				{
 					// Check if we need to create config fields for this plugin and save config when submit was pressed
-					foreach ($fields['config'] as $field)
+					foreach ($fields as $field)
 					{
 						if (!isset($config[$field]))
 						{
