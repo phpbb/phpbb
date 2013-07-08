@@ -33,11 +33,11 @@ class phpbb_session_create_test extends phpbb_database_test_case
 		return array(array(
 			'bot_agent' => $bot_agent,
 			'user_id' => $user_id,
-			'bot_ip' => $bot_ip
+			'bot_ip' => $bot_ip,
 		));
 	}
 
-	function test_bot_session ()
+	function test_bot_session()
 	{
 		$output = $this->session_facade->session_create(
 			false,
@@ -50,6 +50,6 @@ class phpbb_session_create_test extends phpbb_database_test_case
 			self::bot('user agent', 13, '127.0.0.1'),
 			''
 		);
-		$this->assertEquals($output->data['is_bot'], true, "should be a bot");
+		$this->assertEquals($output->data['is_bot'], true, 'should be a bot');
 	}
 }

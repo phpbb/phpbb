@@ -65,8 +65,16 @@ class phpbb_session_testable_facade
 	}
 
 
-	/** This function has a *lot* of dependencies, so instead of naming them all,
-	 * just ask for overrides */
+	/**
+	 *
+	 * This function has a lot of dependencies, so instead of naming them all,
+	 * just ask for overrides
+	 *
+	 * @param update_session_page Boolean of whether to set page of the session
+	 * @param config_overrides An array of overrides for the global config object
+	 * @param request_overrides An array of overrides for the global request object
+	 * @return boolean False if the user is identified, otherwise true.
+	 */
 	function session_begin (
 		$update_session_page = true,
 		$config_overrides = array(),

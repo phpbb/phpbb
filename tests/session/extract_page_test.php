@@ -15,6 +15,19 @@ class phpbb_session_extract_page_test extends phpbb_database_test_case
 	public $db;
 	public $session_facade;
 
+	public function getDataSet()
+	{
+		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_empty.xml');
+	}
+
+	public function setUp()
+	{
+		$this->session_factory = new phpbb_session_testable_factory;
+		$this->db = $this->new_dbal();
+		$this->session_facade =
+			new phpbb_session_testable_facade($this->db, $this->session_factory);
+	}
+
 	static public function extract_current_page_data()
 	{
 		return array(
@@ -95,19 +108,6 @@ class phpbb_session_extract_page_test extends phpbb_database_test_case
 				)
 			)
 		);
-	}
-
-	public function getDataSet()
-	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_empty.xml');
-	}
-
-	public function setUp()
-	{
-		$this->session_factory = new phpbb_session_testable_factory;
-		$this->db = $this->new_dbal();
-		$this->session_facade =
-			new phpbb_session_testable_facade($this->db, $this->session_factory);
 	}
 
 	/** @dataProvider extract_current_page_data */
