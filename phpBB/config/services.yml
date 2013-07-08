@@ -79,7 +79,7 @@ services:
         arguments:
             - @user
             - @service_container
-            - @ext.finder
+            - @template
 
     cron.task_collection:
         class: phpbb_di_service_collection
@@ -230,40 +230,16 @@ services:
     request:
         class: phpbb_request
 
-    style:
-        class: phpbb_style
-        arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @config
-            - @user
-            - @style.resource_locator
-            - @style.path_provider_ext
-            - @template
-
-    style.resource_locator:
-        class: phpbb_style_resource_locator
-
-    style.path_provider_ext:
-        class: phpbb_style_extension_path_provider
-        arguments:
-            - @ext.manager
-            - @style.path_provider
-            - %core.root_path%
-
-    style.path_provider:
-        class: phpbb_style_path_provider
-
     template:
-        class: phpbb_template
+        class: phpbb_template_twig
         arguments:
             - %core.root_path%
             - %core.php_ext%
             - @config
             - @user
-            - @style.resource_locator
             - @template_context
             - @ext.manager
+            - %core.adm_relative_path%
 
     template_context:
         class: phpbb_template_context
