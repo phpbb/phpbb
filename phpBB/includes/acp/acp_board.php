@@ -659,7 +659,7 @@ class acp_board
 				if ($auth_tpl)
 				{
 					$template->assign_block_vars('auth_tpl', array(
-						'TPL'	=> $provider->get_acp_template($this->new_config),
+						'TPL'	=> $auth_tpl,
 					));
 				}
 			}
