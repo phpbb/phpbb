@@ -24,8 +24,8 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
  */
 class phpbb_session_testable_facade
 {
-	var $db;
-	var $session_factory;
+	protected $db;
+	protected $session_factory;
 
 	function __construct($db, $session_factory) {
 		$this->db = $db;
@@ -59,11 +59,10 @@ class phpbb_session_testable_facade
 		$config['cookie_domain'] = $cookie_domain_config;
 		$request->overwrite('SERVER_NAME', $host, phpbb_request_interface::SERVER);
 		$request->overwrite('Host', $host, phpbb_request_interface::SERVER);
-		// Note: There is a php_uname fallthrough in this method
+		// Note: There is a php_uname function used as a fallthrough
 		//       that this function doesn't override
 		return $session->extract_current_hostname();
 	}
-
 
 	/**
 	 *
