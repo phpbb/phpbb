@@ -86,7 +86,8 @@ class phpbb_permissions
 	/**
 	* Returns the language string of a permission category
 	*
-	* @return	string	Language string
+	* @param	string	$category	Identifier of the category
+	* @return	string		Language string
 	*/
 	public function get_category_lang($category)
 	{
@@ -106,6 +107,8 @@ class phpbb_permissions
 	/**
 	* Returns the language string of a permission type
 	*
+	* @param	string	$type	Identifier of the type
+	* @param	mixed	$scope	Scope of the type (should be 'global', 'local' or false)
 	* @return	string	Language string
 	*/
 	public function get_type_lang($type, $scope = false)
@@ -151,7 +154,8 @@ class phpbb_permissions
 	/**
 	* Returns the category of a permission
 	*
-	* @return	string
+	* @param	string	$permission	Identifier of the permission
+	* @return	string		Returns the category identifier of the permission
 	*/
 	public function get_permission_category($permission)
 	{
@@ -161,6 +165,7 @@ class phpbb_permissions
 	/**
 	* Returns the language string of a permission
 	*
+	* @param	string	$permission	Identifier of the permission
 	* @return	string	Language string
 	*/
 	public function get_permission_lang($permission)
