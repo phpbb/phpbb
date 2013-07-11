@@ -126,11 +126,11 @@ class phpbb_content_visibility
 		else
 		{
 			// The user is just a normal user
-			return "$table_alias{$mode}_visibility = " . ITEM_APPROVED . '
+			return $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
 				AND ' . $db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true);
 		}
 
-		$where_sql .= "($table_alias{$mode}_visibility = " . ITEM_APPROVED . '
+		$where_sql .= '(' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
 			AND ' . $db->sql_in_set($table_alias . 'forum_id', $forum_ids) . '))';
 
 		return $where_sql;
@@ -157,12 +157,12 @@ class phpbb_content_visibility
 
 		if (sizeof($exclude_forum_ids))
 		{
-			$where_sqls[] = '(' . $db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true) . "
-				AND $table_alias{$mode}_visibility = " . ITEM_APPROVED . ')';
+			$where_sqls[] = '(' . $db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true) . '
+				AND ' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . ')';
 		}
 		else
 		{
-			$where_sqls[] = "$table_alias{$mode}_visibility = " . ITEM_APPROVED;
+			$where_sqls[] = $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
 		}
 
 		if (sizeof($approve_forums))
