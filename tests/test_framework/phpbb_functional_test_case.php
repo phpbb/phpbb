@@ -358,6 +358,45 @@ class phpbb_functional_test_case extends phpbb_test_case
 	}
 
 	/**
+	* Creates a new style
+	*
+	* @param string $style_id Style ID
+	* @param string $style_path Style directory
+	* @param string $parent_style_id Parent style id. Default = 1
+	* @param string $parent_style_path Parent style directory. Default = 'prosilver'
+	*/
+	protected function add_style($style_id, $style_path, $parent_style_id = 1, $parent_style_path = 'prosilver')
+	{
+		global $phpbb_root_path;
+
+		$db = $this->get_db();
+		$db->sql_multi_insert(STYLES_TABLE, array(
+			'style_id' => $style_id,
+			'style_name' => $style_path,
+			'style_copyright' => '',
+			'style_active' => 1,
+			'style_path' => $style_path,
+			'bbcode_bitfield' => 'kNg=',
+			'style_parent_id' => $parent_style_id,
+			'style_parent_tree' => $parent_style_path,
+		));
+	}
+
+	/**
+	* Remove temporary style created by add_style()
+	*
+	* @param string $style_id Style ID
+	* @param string $style_path Style directory
+	*/
+	protected function delete_style($style_id, $style_path)
+	{
+		global $phpbb_root_path;
+
+		$db = $this->get_db();
+		$db->sql_query('DELETE FROM ' . STYLES_TABLE . ' WHERE style_id = ' . $style_id);
+	}
+
+	/**
 	* Creates a new user with limited permissions
 	*
 	* @param string $username Also doubles up as the user's password
