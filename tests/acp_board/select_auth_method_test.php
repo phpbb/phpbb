@@ -7,9 +7,9 @@
 *
 */
 
-require_once dirname(__FILE__).'/../../phpBB/includes/acp/acp_board.php';
-require_once dirname(__FILE__).'/auth_provider/invalid.php';
-require_once dirname(__FILE__).'/auth_provider/valid.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/acp/acp_board.php';
+require_once dirname(__FILE__) . '/auth_provider/invalid.php';
+require_once dirname(__FILE__) . '/auth_provider/valid.php';
 
 class phpbb_acp_board_select_auth_method_test extends PHPUnit_Framework_TestCase
 {
