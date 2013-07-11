@@ -14,16 +14,13 @@ class phpbb_functional_forum_style_test extends phpbb_functional_test_case
 {
 	public function test_default_forum_style()
 	{
-		$crawler = $this->request('GET', 'viewtopic.php?t=1&f=2');
-		$this->assert_response_success();
+		$crawler = self::request('GET', 'viewtopic.php?t=1&f=2');
 		$this->assertContains('styles/prosilver/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
 
-		$crawler = $this->request('GET', 'viewtopic.php?t=1');
-		$this->assert_response_success();
+		$crawler = self::request('GET', 'viewtopic.php?t=1');
 		$this->assertContains('styles/prosilver/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
 
-		$crawler = $this->request('GET', 'viewtopic.php?t=1&view=next');
-		$this->assert_response_success();
+		$crawler = self::request('GET', 'viewtopic.php?t=1&view=next');
 		$this->assertContains('styles/prosilver/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
 	}
 
@@ -33,16 +30,13 @@ class phpbb_functional_forum_style_test extends phpbb_functional_test_case
 		$this->add_style(2, 'test_style');
 		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET forum_style = 2 WHERE forum_id = 2');
 
-		$crawler = $this->request('GET', 'viewtopic.php?t=1&f=2');
-		$this->assert_response_success();
+		$crawler = self::request('GET', 'viewtopic.php?t=1&f=2');
 		$this->assertContains('styles/test_style/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
 
-		$crawler = $this->request('GET', 'viewtopic.php?t=1');
-		$this->assert_response_success();
+		$crawler = self::request('GET', 'viewtopic.php?t=1');
 		$this->assertContains('styles/test_style/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
 
-		$crawler = $this->request('GET', 'viewtopic.php?t=1&view=next');
-		$this->assert_response_success();
+		$crawler = self::request('GET', 'viewtopic.php?t=1&view=next');
 		$this->assertContains('styles/test_style/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
 
 		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET forum_style = 0 WHERE forum_id = 2');
