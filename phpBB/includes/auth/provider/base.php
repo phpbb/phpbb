@@ -16,47 +16,47 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
- * Base authentication provider class that all other providers should implement.
- *
- * @package auth
- */
+* Base authentication provider class that all other providers should implement.
+*
+* @package auth
+*/
 abstract class phpbb_auth_provider_base implements phpbb_auth_provider_interface
 {
 	/**
-	 * {@inheritdoc}
-	 */
+	* {@inheritdoc}
+	*/
 	public function init()
 	{
 		return;
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
+	* {@inheritdoc}
+	*/
 	public function autologin()
 	{
 		return;
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
+	* {@inheritdoc}
+	*/
 	public function acp($new)
 	{
 		return;
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
+	* {@inheritdoc}
+	*/
 	public function logout($data, $new_session)
 	{
 		return;
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
+	* {@inheritdoc}
+	*/
 	public function validate_session($user)
 	{
 		return;
