@@ -565,7 +565,7 @@ class phpbb_content_visibility
 		{
 			$sql = 'SELECT topic_type, topic_posts_approved, topic_posts_unapproved, topic_posts_softdeleted, topic_visibility
 				FROM ' . TOPICS_TABLE . '
-				WHERE topic_id = ' . $topic_id;
+				WHERE topic_id = ' . (int) $topic_id;
 			$result = $db->sql_query($sql);
 			$topic_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -583,7 +583,7 @@ class phpbb_content_visibility
 		// Get user post count information
 		$sql = 'SELECT poster_id, COUNT(post_id) AS num_posts
 			FROM ' . POSTS_TABLE . '
-			WHERE topic_id = ' . $topic_id . '
+			WHERE topic_id = ' . (int) $topic_id . '
 				AND post_postcount = 1
 				AND post_visibility = ' . ITEM_APPROVED . '
 			GROUP BY poster_id';
