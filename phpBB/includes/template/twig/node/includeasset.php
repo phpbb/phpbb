@@ -43,7 +43,7 @@ class phpbb_template_twig_node_includeasset extends Twig_Node
 					->write("\$local_file = \$this->getEnvironment()->getLoader()->getCacheKey(\$asset_path);\n")
 					->write("\$asset->set_path(\$local_file, true);\n")
 				->outdent()
-				->write("\$asset->add_assets_version(\$this->getEnvironment()->get_phpbb_config()['assets_version']);\n")
+				->write("\$asset->add_assets_version({$config['assets_version']});\n")
 				->write("\$asset_file = \$asset->get_url();\n")
 				->write("}\n")
 			->outdent()
