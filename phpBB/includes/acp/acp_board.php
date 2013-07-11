@@ -563,6 +563,12 @@ class acp_board
 				if (array_key_exists('auth.provider.' . $method, $auth_providers))
 				{
 					$provider = $auth_providers['auth.provider.' . $method];
+
+					if (!($provider instanceof phpbb_auth_provider_interface))
+					{
+						throw new \RuntimeException($provider . ' must implement phpbb_auth_provider_interface');
+					}
+
 					if ($error = $provider->init())
 					{
 						foreach ($old_auth_config as $config_name => $config_value)
