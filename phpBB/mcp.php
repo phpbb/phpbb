@@ -502,7 +502,7 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 */
 function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 {
-	global $auth, $db, $user, $config;
+	global $auth, $db, $user, $config, $phpbb_container;
 
 	$rowset = array();
 
@@ -532,6 +532,8 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 		WHERE " . $db->sql_in_set('f.forum_id', $forum_id);
 	$result = $db->sql_query($sql);
 
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
@@ -539,7 +541,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 			continue;
 		}
 
-		$row['forum_topics_approved'] = phpbb_content_visibility::get_count('forum_topics', $row, $row['forum_id']);
+		$row['forum_topics_approved'] = $phpbb_content_visibility->get_count('forum_topics', $row, $row['forum_id']);
 
 		$rowset[$row['forum_id']] = $row;
 	}

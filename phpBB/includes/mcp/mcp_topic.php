@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 function mcp_topic_view($id, $mode, $action)
 {
 	global $phpEx, $phpbb_root_path, $config;
-	global $template, $db, $user, $auth, $cache;
+	global $template, $db, $user, $auth, $cache, $phpbb_container;
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
 
@@ -112,10 +112,11 @@ function mcp_topic_view($id, $mode, $action)
 	mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $topic_info['forum_id'], $topic_id, $where_sql);
 
 	$limit_time_sql = ($sort_days) ? 'AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	if ($total == -1)
 	{
-		$total = phpbb_content_visibility::get_count('topic_posts', $topic_info, $topic_info['forum_id']);
+		$total = $phpbb_content_visibility->get_count('topic_posts', $topic_info, $topic_info['forum_id']);
 	}
 
 	$posts_per_page = max(0, request_var('posts_per_page', intval($config['posts_per_page'])));
@@ -139,7 +140,7 @@ function mcp_topic_view($id, $mode, $action)
 		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . '
 			p.topic_id = ' . $topic_id . '
-			AND ' .	phpbb_content_visibility::get_visibility_sql('post', $topic_info['forum_id'], 'p.') . '
+			AND ' .	$phpbb_content_visibility->get_visibility_sql('post', $topic_info['forum_id'], 'p.') . '
 			AND p.poster_id = u.user_id ' .
 			$limit_time_sql . '
 		ORDER BY ' . $sort_order_sql;

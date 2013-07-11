@@ -55,6 +55,8 @@ if (!$topic_id && !$post_id)
 	trigger_error('NO_TOPIC');
 }
 
+$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 // Find topic id if user requested a newer or older topic
 if ($view && !$post_id)
 {
@@ -79,7 +81,7 @@ if ($view && !$post_id)
 		$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_id);
 
 		$topic_last_read = (isset($topic_tracking_info[$topic_id])) ? $topic_tracking_info[$topic_id] : 0;
-		$sql_visibility = phpbb_content_visibility::get_visibility_sql('post', $forum_id);
+		$sql_visibility = $phpbb_content_visibility->get_visibility_sql('post', $forum_id);
 
 		$sql = 'SELECT post_id, topic_id, forum_id
 			FROM ' . POSTS_TABLE . "
@@ -133,7 +135,7 @@ if ($view && !$post_id)
 		}
 		else
 		{
-			$sql_visibility = phpbb_content_visibility::get_visibility_sql('topic', $row['forum_id']);
+			$sql_visibility = $phpbb_content_visibility->get_visibility_sql('topic', $row['forum_id']);
 
 			$sql = 'SELECT topic_id, forum_id
 				FROM ' . TOPICS_TABLE . '
@@ -275,7 +277,7 @@ if ($post_id)
 
 		if ($sort_dir == $check_sort)
 		{
-			$topic_data['prev_posts'] = phpbb_content_visibility::get_count('topic_posts', $topic_data, $forum_id) - 1;
+			$topic_data['prev_posts'] = $phpbb_content_visibility->get_count('topic_posts', $topic_data, $forum_id) - 1;
 		}
 		else
 		{
@@ -284,7 +286,7 @@ if ($post_id)
 	}
 	else
 	{
-		$sql_visibility = phpbb_content_visibility::get_visibility_sql('post', $forum_id, 'p.');
+		$sql_visibility = $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.');
 
 		$sql = 'SELECT COUNT(p.post_id) AS prev_posts
 			FROM ' . POSTS_TABLE . " p
@@ -309,7 +311,7 @@ if ($post_id)
 }
 
 $topic_id = (int) $topic_data['topic_id'];
-$topic_replies = phpbb_content_visibility::get_count('topic_posts', $topic_data, $forum_id) - 1;
+$topic_replies = $phpbb_content_visibility->get_count('topic_posts', $topic_data, $forum_id) - 1;
 
 // Check sticky/announcement time limit
 if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == POST_ANNOUNCE) && $topic_data['topic_time_limit'] && ($topic_data['topic_time'] + $topic_data['topic_time_limit']) < time())
@@ -403,7 +405,7 @@ gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $
 if ($sort_days)
 {
 	$min_post_time = time() - ($sort_days * 86400);
-	$sql_visibility = phpbb_content_visibility::get_visibility_sql('post', $forum_id);
+	$sql_visibility = $phpbb_content_visibility->get_visibility_sql('post', $forum_id);
 
 	$sql = 'SELECT COUNT(post_id) AS num_posts
 		FROM ' . POSTS_TABLE . "
@@ -944,7 +946,7 @@ $bbcode_bitfield = '';
 $i = $i_total = 0;
 
 // Go ahead and pull all data for this topic
-$sql_visibility = phpbb_content_visibility::get_visibility_sql('post', $forum_id, 'p.');
+$sql_visibility = $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.');
 
 $sql = 'SELECT p.post_id
 	FROM ' . POSTS_TABLE . ' p' . (($join_user_sql[$sort_key]) ? ', ' . USERS_TABLE . ' u': '') . "

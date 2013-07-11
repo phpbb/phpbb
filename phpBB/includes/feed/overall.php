@@ -37,7 +37,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		$sql = 'SELECT topic_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_moved_id = 0
-				AND ' . phpbb_content_visibility::get_forums_visibility_sql('topic', $forum_ids) . '
+				AND ' . $this->content_visibility->get_forums_visibility_sql('topic', $forum_ids) . '
 			ORDER BY topic_last_post_time DESC';
 		$result = $this->db->sql_query_limit($sql, $this->num_items);
 
@@ -56,7 +56,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 			return false;
 		}
 
-		$sql_visibility = phpbb_content_visibility::get_visibility_sql('post', array(), 'p.');
+		$sql_visibility = $this->content_visibility->get_visibility_sql('post', array(), 'p.');
 
 		// Get the actual data
 		$this->sql = array(

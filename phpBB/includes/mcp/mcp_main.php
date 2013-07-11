@@ -654,7 +654,7 @@ function mcp_move_topic($topic_ids)
 */
 function mcp_restore_topic($topic_ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
 	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_approve')))
 	{
@@ -678,9 +678,10 @@ function mcp_restore_topic($topic_ids)
 
 		$data = get_topic_data($topic_ids);
 
+		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 		foreach ($data as $topic_id => $row)
 		{
-			$return = phpbb_content_visibility::set_topic_visibility(ITEM_APPROVED, $topic_id, $row['forum_id'], $user->data['user_id'], time(), '');
+			$return = $phpbb_content_visibility->set_topic_visibility(ITEM_APPROVED, $topic_id, $row['forum_id'], $user->data['user_id'], time(), '');
 			if (!empty($return))
 			{
 				add_log('mod', $row['forum_id'], $topic_id, 'LOG_RESTORE_TOPIC', $row['topic_title'], $row['topic_first_poster_name']);
@@ -726,7 +727,7 @@ function mcp_restore_topic($topic_ids)
 */
 function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_topic')
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
 	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_delete')))
 	{
@@ -761,7 +762,8 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 				// Only soft delete non-shadow topics
 				if ($is_soft)
 				{
-					$return = phpbb_content_visibility::set_topic_visibility(ITEM_DELETED, $topic_id, $row['forum_id'], $user->data['user_id'], time(), $soft_delete_reason);
+					$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+					$return = $phpbb_content_visibility->set_topic_visibility(ITEM_DELETED, $topic_id, $row['forum_id'], $user->data['user_id'], time(), $soft_delete_reason);
 					if (!empty($return))
 					{
 						add_log('mod', $row['forum_id'], $topic_id, 'LOG_SOFTDELETE_TOPIC', $row['topic_title'], $row['topic_first_poster_name']);
@@ -854,7 +856,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 */
 function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_post')
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
 	if (!check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_softdelete')))
 	{
@@ -910,9 +912,10 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 			);
 		}
 
+		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 		foreach ($topic_info as $topic_id => $topic_data)
 		{
-			phpbb_content_visibility::set_post_visibility(ITEM_DELETED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), $soft_delete_reason, isset($topic_data['first_post']), isset($topic_data['last_post']));
+			$phpbb_content_visibility->set_post_visibility(ITEM_DELETED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), $soft_delete_reason, isset($topic_data['first_post']), isset($topic_data['last_post']));
 		}
 		$affected_topics = sizeof($topic_info);
 		// None of the topics is really deleted, so a redirect won't hurt much.

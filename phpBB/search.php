@@ -119,6 +119,8 @@ $sort_by_text	= array('a' => $user->lang['SORT_AUTHOR'], 't' => $user->lang['SOR
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
+$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 if ($keywords || $author || $author_id || $search_id || $submit)
 {
 	// clear arrays
@@ -250,8 +252,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$db->sql_freeresult($result);
 
 	// find out in which forums the user is allowed to view posts
-	$m_approve_posts_fid_sql = phpbb_content_visibility::get_global_visibility_sql('post', $ex_fid_ary, 'p.');
-	$m_approve_topics_fid_sql = phpbb_content_visibility::get_global_visibility_sql('topic', $ex_fid_ary, 't.');
+	$m_approve_posts_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('post', $ex_fid_ary, 'p.');
+	$m_approve_topics_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('topic', $ex_fid_ary, 't.');
 
 	if ($reset_search_forum)
 	{
@@ -860,7 +862,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$forum_id = $row['forum_id'];
 			$result_topic_id = $row['topic_id'];
 			$topic_title = censor_text($row['topic_title']);
-			$replies = phpbb_content_visibility::get_count('topic_posts', $row, $forum_id) - 1;
+			$replies = $phpbb_content_visibility->get_count('topic_posts', $row, $forum_id) - 1;
 
 			$view_topic_url_params = "f=$forum_id&amp;t=$result_topic_id" . (($u_hilit) ? "&amp;hilit=$u_hilit" : '');
 			$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params);

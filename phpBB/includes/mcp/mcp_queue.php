@@ -634,9 +634,10 @@ class mcp_queue
 				);
 			}
 
+			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 			foreach ($topic_info as $topic_id => $topic_data)
 			{
-				phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '', isset($topic_data['first_post']), isset($topic_data['last_post']));
+				$phpbb_content_visibility->set_post_visibility(ITEM_APPROVED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '', isset($topic_data['first_post']), isset($topic_data['last_post']));
 			}
 
 			if (sizeof($post_info) >= 1)
@@ -759,7 +760,7 @@ class mcp_queue
 	static public function approve_topics($action, $topic_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $config;
-		global $phpEx, $phpbb_root_path, $request;
+		global $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
 		if (!check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
 		{
@@ -784,9 +785,10 @@ class mcp_queue
 		{
 			$notify_poster = ($action == 'approve' && isset($_REQUEST['notify_poster'])) ? true : false;
 
+			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 			foreach ($topic_info as $topic_id => $topic_data)
 			{
-				phpbb_content_visibility::set_topic_visibility(ITEM_APPROVED, $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '');
+				$phpbb_content_visibility->set_topic_visibility(ITEM_APPROVED, $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '');
 
 				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_data['forum_id']}&amp;t={$topic_id}");
 

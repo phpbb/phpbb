@@ -98,6 +98,8 @@ if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete')) && !$foru
 	trigger_error('NO_FORUM');
 }
 
+$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 // We need to know some basic information in all cases before we do anything.
 switch ($mode)
 {
@@ -128,7 +130,7 @@ switch ($mode)
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
 				AND f.forum_id = t.forum_id
-				AND " . phpbb_content_visibility::get_visibility_sql('topic', $forum_id, 't.');
+				AND " . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
 	break;
 
 	case 'quote':
@@ -157,7 +159,7 @@ switch ($mode)
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
 				AND f.forum_id = t.forum_id
-				AND " . phpbb_content_visibility::get_visibility_sql('post', $forum_id, 'p.');
+				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.');
 	break;
 
 	case 'smilies':
@@ -304,7 +306,7 @@ switch ($mode)
 	break;
 
 	case 'soft_delete':
-		if ($user->data['is_registered'] && phpbb_content_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
+		if ($user->data['is_registered'] && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
 		{
 			$is_authed = true;
 		}
@@ -931,7 +933,7 @@ if ($submit || $preview || $refresh)
 	{
 		$is_first_post = ($post_id == $post_data['topic_first_post_id'] || !$post_data['topic_posts_approved']);
 		$is_last_post = ($post_id == $post_data['topic_last_post_id'] || !$post_data['topic_posts_approved']);
-		$updated_post_data = phpbb_content_visibility::set_post_visibility(ITEM_APPROVED, $post_id, $post_data['topic_id'], $post_data['forum_id'], $user->data['user_id'], time(), '', $is_first_post, $is_last_post);
+		$updated_post_data = $phpbb_content_visibility->set_post_visibility(ITEM_APPROVED, $post_id, $post_data['topic_id'], $post_data['forum_id'], $user->data['user_id'], time(), '', $is_first_post, $is_last_post);
 
 		if (!empty($updated_post_data))
 		{
@@ -1490,7 +1492,7 @@ $template->assign_vars(array(
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
 	'S_SOFTDELETE_CHECKED'		=> ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? ' checked="checked"' : '',
 	'S_DELETE_REASON'			=> ($mode == 'edit' && $auth->acl_get('m_softdelete', $forum_id)) ? true : false,
-	'S_SOFTDELETE_ALLOWED'		=> ($mode == 'edit' && phpbb_content_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
+	'S_SOFTDELETE_ALLOWED'		=> ($mode == 'edit' && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
 	'S_RESTORE_ALLOWED'			=> $auth->acl_get('m_approve', $forum_id),
 	'S_IS_DELETED'				=> ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? true : false,
 	'S_LINKS_ALLOWED'			=> $url_status,

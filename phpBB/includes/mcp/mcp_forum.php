@@ -22,7 +22,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 {
 	global $template, $db, $user, $auth, $cache, $module;
 	global $phpEx, $phpbb_root_path, $config;
-	global $request, $phpbb_dispatcher;
+	global $request, $phpbb_dispatcher, $phpbb_container;
 
 	$user->add_lang(array('viewtopic', 'viewforum'));
 
@@ -152,10 +152,12 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		$read_tracking_join = $read_tracking_select = '';
 	}
 
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 	$sql = 'SELECT t.topic_id
 		FROM ' . TOPICS_TABLE . ' t
 		WHERE t.forum_id = ' . $forum_id . '
-			AND ' . phpbb_content_visibility::get_visibility_sql('topic', $forum_id, 't.') . "
+			AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.') . "
 			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
 	$result = $db->sql_query_limit($sql, $topics_per_page, $start);
@@ -204,7 +206,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$row = &$topic_rows[$topic_id];
 
-		$replies = phpbb_content_visibility::get_count('topic_posts', $row, $forum_id) - 1;
+		$replies = $phpbb_content_visibility->get_count('topic_posts', $row, $forum_id) - 1;
 
 		if ($row['topic_status'] == ITEM_MOVED)
 		{
@@ -249,7 +251,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 			'TOPIC_TYPE'		=> $topic_type,
 			'TOPIC_TITLE'		=> $topic_title,
-			'REPLIES'			=> phpbb_content_visibility::get_count('topic_posts', $row, $row['forum_id']) - 1,
+			'REPLIES'			=> $phpbb_content_visibility->get_count('topic_posts', $row, $row['forum_id']) - 1,
 			'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 			'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
 			'LAST_POST_SUBJECT'	=> $row['topic_last_post_subject'],

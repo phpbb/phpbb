@@ -93,7 +93,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 
 	function get_sql()
 	{
-		$sql_visibility = phpbb_content_visibility::get_visibility_sql('post', $this->forum_id, 'p.'); 
+		$sql_visibility = $this->content_visibility->get_visibility_sql('post', $this->forum_id, 'p.'); 
 
 		$this->sql = array(
 			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .

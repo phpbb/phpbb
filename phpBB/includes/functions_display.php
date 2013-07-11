@@ -22,7 +22,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 {
 	global $db, $auth, $user, $template;
 	global $phpbb_root_path, $phpEx, $config;
-	global $request, $phpbb_dispatcher;
+	global $request, $phpbb_dispatcher, $phpbb_container;
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
@@ -149,6 +149,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$forum_tracking_info = array();
 	$branch_root_id = $root_data['forum_id'];
 
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		/**
@@ -215,8 +217,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 		// Count the difference of real to public topics, so we can display an information to moderators
 		$row['forum_id_unapproved_topics'] = ($auth->acl_get('m_approve', $forum_id) && $row['forum_topics_unapproved']) ? $forum_id : 0;
-		$row['forum_posts'] = phpbb_content_visibility::get_count('forum_posts', $row, $forum_id);
-		$row['forum_topics'] = phpbb_content_visibility::get_count('forum_topics', $row, $forum_id);
+		$row['forum_posts'] = $phpbb_content_visibility->get_count('forum_posts', $row, $forum_id);
+		$row['forum_topics'] = $phpbb_content_visibility->get_count('forum_topics', $row, $forum_id);
 
 		// Display active topics from this forum?
 		if ($show_active && $row['forum_type'] == FORUM_POST && $auth->acl_get('f_read', $forum_id) && ($row['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS))
@@ -1006,7 +1008,7 @@ function display_reasons($reason_id = 0)
 function display_user_activity(&$userdata)
 {
 	global $auth, $template, $db, $user;
-	global $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx, $phpbb_container;
 
 	// Do not display user activity for users having more than 5000 posts...
 	if ($userdata['user_posts'] > 5000)
@@ -1030,12 +1032,14 @@ function display_user_activity(&$userdata)
 	$active_f_row = $active_t_row = array();
 	if (!empty($forum_ary))
 	{
+		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 		// Obtain active forum
 		$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
 			FROM ' . POSTS_TABLE . '
 			WHERE poster_id = ' . $userdata['user_id'] . '
 				AND post_postcount = 1
-				AND ' . phpbb_content_visibility::get_forums_visibility_sql('post', $forum_ary) . '
+				AND ' . $phpbb_content_visibility->get_forums_visibility_sql('post', $forum_ary) . '
 			GROUP BY forum_id
 			ORDER BY num_posts DESC';
 		$result = $db->sql_query_limit($sql, 1);
@@ -1057,7 +1061,7 @@ function display_user_activity(&$userdata)
 			FROM ' . POSTS_TABLE . '
 			WHERE poster_id = ' . $userdata['user_id'] . '
 				AND post_postcount = 1
-				AND ' . phpbb_content_visibility::get_forums_visibility_sql('post', $forum_ary) . '
+				AND ' . $phpbb_content_visibility->get_forums_visibility_sql('post', $forum_ary) . '
 			GROUP BY topic_id
 			ORDER BY num_posts DESC';
 		$result = $db->sql_query_limit($sql, 1);

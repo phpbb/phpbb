@@ -1974,7 +1974,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user, $config, $auth, $request;
+	global $db, $tracking_topics, $user, $config, $auth, $request, $phpbb_container;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
@@ -1999,7 +1999,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 
 	// Handle update of unapproved topics info.
 	// Only update for moderators having m_approve permission for the forum.
-	$sql_update_unapproved = phpbb_content_visibility::get_visibility_sql('topic', $forum_id, 't.');
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+	$sql_update_unapproved = $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
 	$sql_update_unapproved = ($sql_update_unapproved) ? ' AND ' . $sql_update_unapproved : '';
 
 	// Check the forum for any left unread topics.

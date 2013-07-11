@@ -982,13 +982,15 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0, $show_quote_button = true)
 {
 	global $user, $auth, $db, $template, $bbcode, $cache;
-	global $config, $phpbb_root_path, $phpEx;
+	global $config, $phpbb_root_path, $phpEx, $phpbb_container;
+
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	// Go ahead and pull all data for this topic
 	$sql = 'SELECT p.post_id
 		FROM ' . POSTS_TABLE . ' p' . "
 		WHERE p.topic_id = $topic_id
-			AND " . phpbb_content_visibility::get_visibility_sql('post', $forum_id, 'p.') . '
+			AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.') . '
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
 			' . (($mode == 'post_review_edit') ? " AND p.post_id = $cur_post_id" : '') . '
 		ORDER BY p.post_time ';
@@ -1177,7 +1179,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 */
 function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $softdelete_reason = '')
 {
-	global $db, $user, $auth;
+	global $db, $user, $auth, $phpbb_container;
 	global $config, $phpEx, $phpbb_root_path;
 
 	// Specify our post mode
@@ -1224,10 +1226,12 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 		$db->sql_freeresult($result);
 	}
 
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 	// (Soft) delete the post
 	if ($is_soft && ($post_mode != 'delete_topic'))
 	{
-		phpbb_content_visibility::set_post_visibility(ITEM_DELETED, $post_id, $topic_id, $forum_id, $user->data['user_id'], time(), $softdelete_reason, ($data['topic_first_post_id'] == $post_id), ($data['topic_last_post_id'] == $post_id));
+		$phpbb_content_visibility->set_post_visibility(ITEM_DELETED, $post_id, $topic_id, $forum_id, $user->data['user_id'], time(), $softdelete_reason, ($data['topic_first_post_id'] == $post_id), ($data['topic_last_post_id'] == $post_id));
 	}
 	else if (!$is_soft)
 	{
@@ -1264,7 +1268,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			if ($is_soft)
 			{
 				$topic_row = array();
-				phpbb_content_visibility::set_topic_visibility(ITEM_DELETED, $topic_id, $forum_id, $user->data['user_id'], time(), $softdelete_reason);
+				$phpbb_content_visibility->set_topic_visibility(ITEM_DELETED, $topic_id, $forum_id, $user->data['user_id'], time(), $softdelete_reason);
 			}
 			else
 			{
@@ -1353,7 +1357,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 				$sql = 'SELECT MAX(post_id) as last_post_id
 					FROM ' . POSTS_TABLE . "
 					WHERE topic_id = $topic_id
-						AND " . phpbb_content_visibility::get_visibility_sql('post', $forum_id);
+						AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id);
 				$result = $db->sql_query($sql);
 				$next_post_id = (int) $db->sql_fetchfield('last_post_id');
 				$db->sql_freeresult($result);
@@ -1364,7 +1368,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			$sql = 'SELECT post_id
 				FROM ' . POSTS_TABLE . "
 				WHERE topic_id = $topic_id
-					AND " . phpbb_content_visibility::get_visibility_sql('post', $forum_id) . '
+					AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id) . '
 					AND post_time > ' . $data['post_time'] . '
 				ORDER BY post_time ASC';
 			$result = $db->sql_query_limit($sql, 1);
@@ -1379,7 +1383,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 		{
 			if ($data['post_visibility'] == ITEM_APPROVED)
 			{
-				phpbb_content_visibility::remove_post_from_statistic($data, $sql_data);
+				$phpbb_content_visibility->remove_post_from_statistic($data, $sql_data);
 			}
 			else if ($data['post_visibility'] == ITEM_UNAPPROVED)
 			{
@@ -2000,7 +2004,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$is_starter = ($post_mode == 'edit_first_post' || $data['post_visibility'] != ITEM_APPROVED);
 		$is_latest = ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || $data['post_visibility'] != ITEM_APPROVED);
 
-		phpbb_content_visibility::set_post_visibility($post_visibility, $data['post_id'], $data['topic_id'], $data['forum_id'], $user->data['user_id'], time(), '', $is_starter, $is_latest);
+		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+		$phpbb_content_visibility->set_post_visibility($post_visibility, $data['post_id'], $data['topic_id'], $data['forum_id'], $user->data['user_id'], time(), '', $is_starter, $is_latest);
 	}
 	else if ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies']))
 	{

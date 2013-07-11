@@ -246,11 +246,13 @@ $sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_po
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param, $default_sort_days, $default_sort_key, $default_sort_dir);
 
+$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 // Limit topics to certain time frame, obtain correct topic count
 if ($sort_days)
 {
 	$min_post_time = time() - ($sort_days * 86400);
-	$sql_visibility = phpbb_content_visibility::get_visibility_sql('topic', $forum_id);
+	$sql_visibility = $phpbb_content_visibility->get_visibility_sql('topic', $forum_id);
 
 	$sql = 'SELECT COUNT(topic_id) AS num_topics
 		FROM ' . TOPICS_TABLE . "
@@ -274,7 +276,7 @@ if ($sort_days)
 }
 else
 {
-	$topics_count = phpbb_content_visibility::get_count('forum_topics', $forum_data, $forum_id);
+	$topics_count = $phpbb_content_visibility->get_count('forum_topics', $forum_data, $forum_id);
 	$sql_limit_time = '';
 }
 
@@ -371,7 +373,7 @@ $sql_array = array(
 	'LEFT_JOIN'	=> array(),
 );
 
-$sql_approved = phpbb_content_visibility::get_visibility_sql('topic', $forum_id, 't.');
+$sql_approved = $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
 $sql_approved = ($sql_approved) ? ' AND ' . $sql_approved : '';
 
 if ($user->data['is_registered'])
@@ -685,7 +687,7 @@ if (sizeof($topic_list))
 		$s_type_switch_test = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 
 		// Replies
-		$replies = phpbb_content_visibility::get_count('topic_posts', $row, $topic_forum_id) - 1;
+		$replies = $phpbb_content_visibility->get_count('topic_posts', $row, $topic_forum_id) - 1;
 
 		if ($row['topic_status'] == ITEM_MOVED)
 		{
