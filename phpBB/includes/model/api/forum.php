@@ -71,7 +71,7 @@ class phpbb_model_api_forum
 	 */
 	public function add_subforum($forum, $forums)
 	{
-		for ($i = 0; $i < count($forums);$i++)
+		for ($i = 0; $i < count($forums); $i++)
 		{
 			if ($forums[$i]->get('forum_id') == $forum->get('parent_id'))
 			{
