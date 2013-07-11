@@ -40,7 +40,7 @@ class phpbb_template_asset
 		{
 			// Workaround for PHP 5.4.6 and older bug #62844 - add fake scheme and then remove it
 			$this->components = parse_url('http:' . $url);
-			unset($this->components['scheme']);
+			$this->components['scheme'] = '';
 			return;
 		}
 		$this->components = parse_url($url);
@@ -176,8 +176,7 @@ class phpbb_template_asset
 		$query = $this->components['query'];
 		if (!preg_match('/(^|[&;])assets_version=/', $query))
 		{
-			$separator = (strpos($query, '&') === false) && (strpos($query, ';') !== false) && preg_match('/^.*=.*;.*=.*$/', $query) ? ';' : '&amp;';
-			$this->components['query'] = $query . $separator . 'assets_version=' . $version;
+			$this->components['query'] = $query . '&amp;assets_version=' . $version;
 		}
 	}
 }
