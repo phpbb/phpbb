@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Base authentication provider class that all other providers should implement.
+* Base authentication provider class that all other providers should implement
 *
 * @package auth
 */
