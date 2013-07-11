@@ -12,42 +12,34 @@
 */
 class phpbb_functional_forum_style_test extends phpbb_functional_test_case
 {
-	public function test_forum_style()
+	public function test_default_forum_style()
 	{
-		// Test with default style
-		$crawler = $this->request('GET', 'viewtopic.php?t=1&f=2');
-		$this->assert_response_success();
-		$this->assertContains('styles/prosilver/theme/print.css', $this->client->getResponse()->getContent());
+		$crawler = self::request('GET', 'viewtopic.php?t=1&f=2');
+		$this->assertContains('styles/prosilver/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
 
-		$crawler = $this->request('GET', 'viewtopic.php?t=1&f=2&view=next');
-		$this->assert_response_success();
-		$this->assertContains('styles/prosilver/theme/print.css', $this->client->getResponse()->getContent());
+		$crawler = self::request('GET', 'viewtopic.php?t=1');
+		$this->assertContains('styles/prosilver/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
 
-		// Insert new style and change forum style
+		$crawler = self::request('GET', 'viewtopic.php?t=1&view=next');
+		$this->assertContains('styles/prosilver/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
+	}
+
+	public function test_custom_forum_style()
+	{
 		$db = $this->get_db();
-		$db->sql_multi_insert(STYLES_TABLE, array(
-			'style_id' => 2,
-			'style_name' => 'test_style',
-			'style_copyright' => '',
-			'style_active' => 1,
-			'style_path' => 'test_style',
-			'bbcode_bitfield' => 'kNg=',
-			'style_parent_id' => 1,
-			'style_parent_tree' => 'prosilver',
-		));
+		$this->add_style(2, 'test_style');
 		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET forum_style = 2 WHERE forum_id = 2');
 
-		// Test with custom style
-		$crawler = $this->request('GET', 'viewtopic.php?t=1&f=2');
-		$this->assert_response_success();
-		$this->assertContains('styles/test_style/theme/print.css', $this->client->getResponse()->getContent());
+		$crawler = self::request('GET', 'viewtopic.php?t=1&f=2');
+		$this->assertContains('styles/test_style/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
 
-		$crawler = $this->request('GET', 'viewtopic.php?t=1&f=2&view=next');
-		$this->assert_response_success();
-		$this->assertContains('styles/test_style/theme/print.css', $this->client->getResponse()->getContent());
+		$crawler = self::request('GET', 'viewtopic.php?t=1');
+		$this->assertContains('styles/test_style/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
 
-		// Undo changes
+		$crawler = self::request('GET', 'viewtopic.php?t=1&view=next');
+		$this->assertContains('styles/test_style/', $crawler->filter('head > link[rel=stylesheet]')->attr('href'));
+
 		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET forum_style = 0 WHERE forum_id = 2');
-		$db->sql_query('DELETE FROM ' . STYLES_TABLE . ' WHERE style_id = 2');
+		$this->delete_style(2, 'test_style');
 	}
 }
