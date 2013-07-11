@@ -124,6 +124,8 @@ class acp_captcha
 					'CAPTCHA_PREVIEW_TPL'	=> $demo_captcha->get_demo_template($id),
 					'S_CAPTCHA_HAS_CONFIG'	=> $demo_captcha->has_config(),
 					'CAPTCHA_SELECT'		=> $captcha_select,
+
+					'U_ACTION'				=> $this->u_action,
 				));
 			}
 		}

@@ -74,6 +74,21 @@ class phpbb_mock_cache
 		);
 	}
 
+	/**
+	* Obtain disallowed usernames. Input data via standard put method.
+	*/
+	public function obtain_disallowed_usernames()
+	{
+		if (($usernames = $this->get('_disallowed_usernames')) !== false)
+		{
+			return $usernames;
+		}
+		else
+		{
+			return array();
+		}
+	}
+
 	public function set_bots($bots)
 	{
 		$this->data['_bots'] = $bots;

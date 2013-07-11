@@ -423,16 +423,6 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 	$cat_id = (isset($extensions[$file->get('extension')]['display_cat'])) ? $extensions[$file->get('extension')]['display_cat'] : ATTACHMENT_CATEGORY_NONE;
 
-	// Make sure the image category only holds valid images...
-	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && !$file->is_image())
-	{
-		$file->remove();
-
-		// If this error occurs a user tried to exploit an IE Bug by renaming extensions
-		// Since the image category is displaying content inline we need to catch this.
-		trigger_error($user->lang['ATTACHED_IMAGE_NOT_IMAGE']);
-	}
-
 	// Do we have to create a thumbnail?
 	$filedata['thumbnail'] = ($cat_id == ATTACHMENT_CATEGORY_IMAGE && $config['img_create_thumbnail']) ? 1 : 0;
 
@@ -471,6 +461,16 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		$filedata['post_attach'] = false;
 
 		return $filedata;
+	}
+
+	// Make sure the image category only holds valid images...
+	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && !$file->is_image())
+	{
+		$file->remove();
+
+		// If this error occurs a user tried to exploit an IE Bug by renaming extensions
+		// Since the image category is displaying content inline we need to catch this.
+		trigger_error($user->lang['ATTACHED_IMAGE_NOT_IMAGE']);
 	}
 
 	$filedata['filesize'] = $file->get('filesize');

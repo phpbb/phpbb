@@ -1656,7 +1656,9 @@ class install_update extends module
 		{
 			case 'version_info':
 				global $phpbb_root_path, $phpEx;
-				$info = get_remote_file('www.phpbb.com', '/updatecheck', ((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
+
+				$info = get_remote_file('version.phpbb.com', '/phpbb',
+						((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
 
 				if ($info !== false)
 				{

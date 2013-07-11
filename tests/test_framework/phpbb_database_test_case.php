@@ -11,6 +11,8 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 {
 	static private $already_connected;
 
+	private $db_connections;
+
 	protected $test_case_helpers;
 
 	protected $fixture_xml_data;
@@ -28,6 +30,22 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 			'phpbb_database_test_case' => array('already_connected'),
 		);
+
+		$this->db_connections = array();
+	}
+
+	protected function tearDown()
+	{
+		parent::tearDown();
+
+		// Close all database connections from this test
+		if (!empty($this->db_connections))
+		{
+			foreach ($this->db_connections as $db)
+			{
+				$db->sql_close();
+			}
+		}
 	}
 
 	protected function setUp()
@@ -42,6 +60,21 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			$manager->connect();
 			$manager->post_setup_synchronisation($this->fixture_xml_data);
 		}
+	}
+
+	/**
+	* Performs synchronisations for a given table/column set on the database
+	*
+	* @param	array	$table_column_map		Information about the tables/columns to synchronise
+	*
+	* @return null
+	*/
+	protected function database_synchronisation($table_column_map)
+	{
+		$config = $this->get_database_config();
+		$manager = $this->create_connection_manager($config);
+		$manager->connect();
+		$manager->database_synchronisation($table_column_map);
 	}
 
 	public function createXMLDataSet($path)
@@ -122,6 +155,8 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		$dbal = 'dbal_' . $config['dbms'];
 		$db = new $dbal();
 		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
+
+		$this->db_connections[] = $db;
 
 		return $db;
 	}
