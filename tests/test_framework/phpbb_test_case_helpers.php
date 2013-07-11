@@ -155,6 +155,11 @@ class phpbb_test_case_helpers
 			{
 				$config['redis_port'] = $phpbb_redis_port;
 			}
+
+			if (isset($fulltext_sphinx_id))
+			{
+				$config['fulltext_sphinx_id'] = $fulltext_sphinx_id;
+			}
 		}
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
