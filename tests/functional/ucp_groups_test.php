@@ -24,7 +24,7 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 	{
 		$this->add_lang('acp/board');
 
-		$crawler = $this->request('GET', 'adm/index.php?i=board&mode=avatar&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=board&mode=avatar&sid=' . $this->sid);
 		// Check the default entries we should have
 		$this->assertContains($this->lang('ALLOW_REMOTE'), $crawler->text());
 		$this->assertContains($this->lang('ALLOW_AVATARS'), $crawler->text());
@@ -35,7 +35,7 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 		$form['config[allow_avatar_local]']->select(1);
 		$form['config[allow_avatar_remote]']->select(1);
 		$form['config[allow_avatar_remote_upload]']->select(1);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContains($this->lang('CONFIG_UPDATED'), $crawler->text());
 	}
 
@@ -61,11 +61,10 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 		$this->add_lang(array('ucp', 'acp/groups'));
 		$this->enable_all_avatars();
 
-		$crawler = $this->request('GET', $this->get_url() . '&g=5&sid=' . $this->sid);
-		$this->assert_response_success();
+		$crawler = self::request('GET', $this->get_url() . '&g=5&sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form[$form_name]->setValue($input);
-		$crawler = $this->client->submit($form);
+		$crawler = self::submit($form);
 		$this->assertContains($this->lang($expected), $crawler->text());
 	}
 }
