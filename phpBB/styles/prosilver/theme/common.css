@@ -1,4 +1,4 @@
-/* CSS Reset http://meyerweb.com/eric/tools/css/reset/ v2.0 | 20110126
+f/* CSS Reset http://meyerweb.com/eric/tools/css/reset/ v2.0 | 20110126
 ---------------------------------------- */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -360,7 +360,7 @@ ul.rightside {
 ----------------------------------------*/
 ul.linklist.bulletin li:before {
 	display: inline-block;
-	content: '•';
+	content: "\2022";
 	font-size: inherit;
 	line-height: inherit;
 	padding-right: 4px;
