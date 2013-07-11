@@ -109,7 +109,10 @@ function dE(n, s, type) {
 jQuery(document).ready(function() {
 	jQuery('.sub-panels').each(function() {
 
-		var panels = this.getAttribute('data-panels').split(','),
+		var panels = [],
+			childNodes = jQuery('a[data-subpanel]', this).each(function() {
+				panels.push(this.getAttribute('data-subpanel'));
+			}),
 			show_panel = this.getAttribute('data-show-panel');
 
 		if (panels.length) {
