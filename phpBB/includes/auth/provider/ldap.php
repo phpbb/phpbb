@@ -23,7 +23,6 @@ if (!defined('IN_PHPBB'))
  * @package auth
  */
 class phpbb_auth_provider_ldap extends phpbb_auth_provider_base
-	implements phpbb_auth_provider_interface
 {
 	/**
 	 * LDAP Authentication Constructor
