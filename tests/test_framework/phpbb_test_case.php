@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_container.php';
+
 class phpbb_test_case extends PHPUnit_Framework_TestCase
 {
 	protected $test_case_helpers;
@@ -39,5 +41,20 @@ class phpbb_test_case extends PHPUnit_Framework_TestCase
 	public function setExpectedTriggerError($errno, $message = '')
 	{
 		$this->get_test_case_helpers()->setExpectedTriggerError($errno, $message);
+	}
+
+	static public function create_container(array $services = array())
+	{
+		$phpbb_root_path = __DIR__ . '/../../phpBB/';
+		$extensions = array(
+			new phpbb_di_extension_config(__DIR__ . '/../di/fixtures/config.php'),
+			new phpbb_di_extension_core($phpbb_root_path),
+		);
+		$passes = array(
+			new phpbb_di_pass_replace_pass($services),
+		);
+		$container = phpbb_create_compiled_container($extensions, $passes, $phpbb_root_path, 'php');
+
+		return $container;
 	}
 }

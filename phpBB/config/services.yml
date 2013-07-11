@@ -254,14 +254,42 @@ services:
     style.path_provider:
         class: phpbb_style_path_provider
 
+    template.twig.loader:
+        class: Twig_Loader_Filesystem
+        arguments:
+            - ''
+
+    template.twig.extension:
+        class: phpbb_template_twig_extension
+        arguments:
+            - @template_context
+            - @user
+
+    template.twig.lexer:
+        class: phpbb_template_twig_lexer
+        arguments:
+            - @template.twig.environment
+
+    template.twig.environment:
+        class: phpbb_template_twig_environment
+        arguments:
+            - @config
+            - @ext.manager
+            - %core.root_path%
+            - @template.twig.loader
+            - %core.template_options%
+        calls:
+            - [addExtension, [@template.twig.extension]]
+            - [setLexer, [@template.twig.lexer]]
+
     template:
         class: phpbb_template_twig
         arguments:
             - %core.root_path%
-            - %core.php_ext%
             - @config
             - @user
             - @template_context
+            - @template.twig.environment
             - @ext.manager
             - %core.adm_relative_path%
 

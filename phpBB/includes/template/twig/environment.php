@@ -38,10 +38,10 @@ class phpbb_template_twig_environment extends Twig_Environment
 	* @param Twig_LoaderInterface $loader
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct($phpbb_config, $phpbb_extensions, $phpbb_root_path, Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct($phpbb_config, $extension_manager, $phpbb_root_path, Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
-		$this->phpbb_extensions = $phpbb_extensions;
+		$this->phpbb_extensions = $extension_manager ? $extension_manager->all_enabled() : array();
 		$this->phpbb_root_path = $phpbb_root_path;
 
 		return parent::__construct($loader, $options);

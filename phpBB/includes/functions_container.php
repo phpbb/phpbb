@@ -40,6 +40,11 @@ function phpbb_create_container(array $extensions, $phpbb_root_path, $php_ext)
 
 	$container->setParameter('core.root_path', $phpbb_root_path);
 	$container->setParameter('core.php_ext', $php_ext);
+	$container->setParameter('core.template_options', array(
+		'cache'			=> $phpbb_root_path . 'cache/twig/',
+		'debug'			=> defined('DEBUG'),
+		'autoescape'	=> false,
+	));
 
 	return $container;
 }
@@ -60,6 +65,10 @@ function phpbb_create_install_container($phpbb_root_path, $php_ext)
 	$container->setParameter('core.adm_relative_path', $phpbb_adm_relative_path);
 	$container->setParameter('core.php_ext', $php_ext);
 	$container->setParameter('core.table_prefix', '');
+	$container->setParameter('core.template_options', array(
+		'debug'			=> defined('DEBUG'),
+		'autoescape'	=> false,
+	));
 
 	$container->register('dbal.conn')->setSynthetic(true);
 

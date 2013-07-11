@@ -28,3 +28,4 @@ require_once 'test_framework/phpbb_test_case.php';
 require_once 'test_framework/phpbb_database_test_case.php';
 require_once 'test_framework/phpbb_database_test_connection_manager.php';
 require_once 'test_framework/phpbb_functional_test_case.php';
+require_once 'test_framework/phpbb_di_pass_replace_pass.php';
