@@ -13,7 +13,9 @@ require_once dirname(__FILE__) . '/auth_provider/valid.php';
 
 class phpbb_acp_board_select_auth_method_test extends phpbb_test_case
 {
-	public static function function_return()
+	protected $acp_board;
+
+	public static function select_auth_method_data()
 	{
 		return array(
 			array('acp_board_valid', '<option value="acp_board_valid" selected="selected">Acp_board_valid</option>'),
@@ -21,10 +23,7 @@ class phpbb_acp_board_select_auth_method_test extends phpbb_test_case
 		);
 	}
 
-	/**
-	* @dataProvider function_return
-	*/
-	public function test_invalid_provider($selected, $expected)
+	public function setUp()
 	{
 		global $phpbb_container;
 		$phpbb_container = new phpbb_mock_container_builder();
@@ -34,8 +33,14 @@ class phpbb_acp_board_select_auth_method_test extends phpbb_test_case
 				'auth.provider.acp_board_invalid'	=> new phpbb_auth_provider_acp_board_invalid,
 		));
 
-		$acp_board = new acp_board();
+		$this->acp_board = new acp_board();
+	}
 
-		$this->assertEquals($expected, $acp_board->select_auth_method($selected));
+	/**
+	* @dataProvider select_auth_method_data
+	*/
+	public function test_select_auth_method($selected, $expected)
+	{
+		$this->assertEquals($expected, $this->acp_board->select_auth_method($selected));
 	}
 }
