@@ -22,7 +22,8 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-class phpbb_auth_provider_db implements phpbb_auth_provider_interface
+class phpbb_auth_provider_db extends phpbb_auth_provider_base 
+	implements phpbb_auth_provider_interface
 {
 
 	/**
@@ -43,14 +44,6 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function init()
-	{
-		return;
 	}
 
 	/**
@@ -301,37 +294,5 @@ class phpbb_auth_provider_db implements phpbb_auth_provider_interface
 			'error_msg'		=> ($show_captcha) ? 'LOGIN_ERROR_ATTEMPTS' : 'LOGIN_ERROR_PASSWORD',
 			'user_row'		=> $row,
 		);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function autologin()
-	{
-		return;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function acp($new)
-	{
-		return;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function logout($data, $new_session)
-	{
-		return;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function validate_session($user)
-	{
-		return;
 	}
 }

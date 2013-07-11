@@ -20,7 +20,8 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
+class phpbb_auth_provider_apache extends phpbb_auth_provider_base
+	implements phpbb_auth_provider_interface
 {
 	/**
 	 * Apache Authentication Constructor
@@ -255,21 +256,5 @@ class phpbb_auth_provider_apache implements phpbb_auth_provider_interface
 		}
 
 		return false;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function acp($new)
-	{
-		return;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function logout($data, $new_session)
-	{
-		return;
 	}
 }

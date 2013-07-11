@@ -22,7 +22,8 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
+class phpbb_auth_provider_ldap extends phpbb_auth_provider_base
+	implements phpbb_auth_provider_interface
 {
 	/**
 	 * LDAP Authentication Constructor
@@ -286,14 +287,6 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function autologin()
-	{
-		return;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function acp($new)
 	{
 		$tpl = '
@@ -366,21 +359,5 @@ class phpbb_auth_provider_ldap implements phpbb_auth_provider_interface
 	private function ldap_escape($string)
 	{
 		return str_replace(array('*', '\\', '(', ')'), array('\\*', '\\\\', '\\(', '\\)'), $string);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function logout($data, $new_session)
-	{
-		return;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function validate_session($user)
-	{
-		return;
 	}
 }
