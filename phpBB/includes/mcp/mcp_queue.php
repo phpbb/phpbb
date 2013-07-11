@@ -182,8 +182,8 @@ class mcp_queue
 					$template->assign_vars(array(
 						'S_TOPIC_REVIEW'	=> true,
 						'S_BBCODE_ALLOWED'	=> $post_info['enable_bbcode'],
-						'TOPIC_TITLE'		=> $post_info['topic_title'])
-					);
+						'TOPIC_TITLE'		=> $post_info['topic_title'],
+					));
 				}
 
 				$extensions = $attachments = $topic_tracking_info = array();
@@ -246,8 +246,8 @@ class mcp_queue
 						foreach ($attachments as $attachment)
 						{
 							$template->assign_block_vars('attachment', array(
-								'DISPLAY_ATTACHMENT'	=> $attachment)
-							);
+								'DISPLAY_ATTACHMENT'	=> $attachment,
+							));
 						}
 					}
 				}
@@ -922,8 +922,8 @@ class mcp_queue
 			'mode'			=> $mode,
 			'post_id_list'	=> $post_id_list,
 			'action'		=> 'disapprove',
-			'redirect'		=> $redirect)
-		);
+			'redirect'		=> $redirect,
+		));
 
 		$notify_poster = $request->is_set('notify_poster');
 		$disapprove_reason = '';
