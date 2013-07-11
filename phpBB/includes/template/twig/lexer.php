@@ -35,6 +35,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			'INCLUDE',
 			'INCLUDEPHP',
 			'INCLUDEJS',
+			'INCLUDECSS',
 			'PHP',
 			'ENDPHP',
 			'EVENT',
@@ -78,6 +79,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			'INCLUDE',
 			'INCLUDEPHP',
 			'INCLUDEJS',
+			'INCLUDECSS',
 		), $code);
 
 		// Fix our BEGIN statements
