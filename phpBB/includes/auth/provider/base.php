@@ -33,11 +33,6 @@ abstract class phpbb_auth_provider_base implements phpbb_auth_provider_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	abstract public function login($username, $password);
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function autologin()
 	{
 		return;
