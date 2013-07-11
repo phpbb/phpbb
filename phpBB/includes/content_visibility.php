@@ -23,6 +23,59 @@ if (!defined('IN_PHPBB'))
 class phpbb_content_visibility
 {
 	/**
+	* Database object
+	* @var phpbb_db_driver
+	*/
+	protected $this->db;
+
+	/**
+	* User object
+	* @var phpbb_user
+	*/
+	protected $this->user;
+
+	/**
+	* Auth object
+	* @var phpbb_auth
+	*/
+	protected $this->auth;
+
+	/**
+	* phpBB root path
+	* @var string
+	*/
+	protected $phpbb_root_path;
+
+	/**
+	* PHP Extension
+	* @var string
+	*/
+	protected $php_ext;
+
+	/**
+	* Constructor
+	*
+	* @param	phpbb_auth		$this->auth	Auth object
+	* @param	phpbb_db_driver	$this->db		Database object
+	* @param	phpbb_user		$this->user	User object
+	* @param	string		$phpbb_root_path	Root path
+	* @param	string		$php_ext			PHP Extension
+	* @return	null
+	*/
+	public function __construct($this->auth, phpbb_db_driver $this->db, $this->user, $phpbb_root_path, $phpEx, $forums_table, $posts_table, $topics_table, $users_table)
+	{
+		$this->auth = $this->auth;
+		$this->db = $this->db;
+		$this->user = $this->user;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+		$this->forums_table = $forums_table;
+		$this->posts_table = $posts_table;
+		$this->topics_table = $topics_table;
+		$this->users_table = $users_table;
+	}
+
+	/**
 	* Can the current logged-in user soft-delete posts?
 	*
 	* @param $forum_id		int		Forum ID whose permissions to check
@@ -30,15 +83,13 @@ class phpbb_content_visibility
 	* @param $post_locked	bool	Is the post locked?
 	* @return bool
 	*/
-	static function can_soft_delete($forum_id, $poster_id, $post_locked)
+	public function can_soft_delete($forum_id, $poster_id, $post_locked)
 	{
-		global $auth, $user;
-
-		if ($auth->acl_get('m_softdelete', $forum_id))
+		if ($this->auth->acl_get('m_softdelete', $forum_id))
 		{
 			return true;
 		}
-		else if ($auth->acl_get('f_softdelete', $forum_id) && $poster_id == $user->data['user_id'] && !$post_locked)
+		else if ($this->auth->acl_get('f_softdelete', $forum_id) && $poster_id == $this->user->data['user_id'] && !$post_locked)
 		{
 			return true;
 		}
@@ -54,11 +105,9 @@ class phpbb_content_visibility
 	* @param $forum_id		int		The forum id is used for permission checks
 	* @return int	Number of posts/topics the user can see in the topic/forum
 	*/
-	static public function get_count($mode, $data, $forum_id)
+	public function get_count($mode, $data, $forum_id)
 	{
-		global $auth;
-
-		if (!$auth->acl_get('m_approve', $forum_id))
+		if (!$this->auth->acl_get('m_approve', $forum_id))
 		{
 			return (int) $data[$mode . '_approved'];
 		}
@@ -76,11 +125,9 @@ class phpbb_content_visibility
 	* @param $table_alias	string	Table alias to prefix in SQL queries
 	* @return string	The appropriate combination SQL logic for topic/post_visibility
 	*/
-	static public function get_visibility_sql($mode, $forum_id, $table_alias = '')
+	public function get_visibility_sql($mode, $forum_id, $table_alias = '')
 	{
-		global $auth;
-
-		if ($auth->acl_get('m_approve', $forum_id))
+		if ($this->auth->acl_get('m_approve', $forum_id))
 		{
 			return '1 = 1';
 		}
@@ -99,13 +146,11 @@ class phpbb_content_visibility
 	* @param $table_alias	string	Table alias to prefix in SQL queries
 	* @return string	The appropriate combination SQL logic for topic/post_visibility
 	*/
-	static public function get_forums_visibility_sql($mode, $forum_ids = array(), $table_alias = '')
+	public function get_forums_visibility_sql($mode, $forum_ids = array(), $table_alias = '')
 	{
-		global $auth, $db;
-
 		$where_sql = '(';
 
-		$approve_forums = array_intersect($forum_ids, array_keys($auth->acl_getf('m_approve', true)));
+		$approve_forums = array_intersect($forum_ids, array_keys($this->auth->acl_getf('m_approve', true)));
 
 		if (sizeof($approve_forums))
 		{
@@ -115,23 +160,23 @@ class phpbb_content_visibility
 			if (!sizeof($forum_ids))
 			{
 				// The user can see all posts/topics in all specified forums
-				return $db->sql_in_set($table_alias . 'forum_id', $approve_forums);
+				return $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums);
 			}
 			else
 			{
 				// Moderator can view all posts/topics in some forums
-				$where_sql .= $db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ' OR ';
+				$where_sql .= $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ' OR ';
 			}
 		}
 		else
 		{
 			// The user is just a normal user
 			return $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
-				AND ' . $db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true);
+				AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true);
 		}
 
 		$where_sql .= '(' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
-			AND ' . $db->sql_in_set($table_alias . 'forum_id', $forum_ids) . '))';
+			AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids) . '))';
 
 		return $where_sql;
 	}
@@ -147,17 +192,15 @@ class phpbb_content_visibility
 	* @param $table_alias		string	Table alias to prefix in SQL queries
 	* @return string	The appropriate combination SQL logic for topic/post_visibility
 	*/
-	static public function get_global_visibility_sql($mode, $exclude_forum_ids = array(), $table_alias = '')
+	public function get_global_visibility_sql($mode, $exclude_forum_ids = array(), $table_alias = '')
 	{
-		global $auth, $db;
-
 		$where_sqls = array();
 
-		$approve_forums = array_diff(array_keys($auth->acl_getf('m_approve', true)), $exclude_forum_ids);
+		$approve_forums = array_diff(array_keys($this->auth->acl_getf('m_approve', true)), $exclude_forum_ids);
 
 		if (sizeof($exclude_forum_ids))
 		{
-			$where_sqls[] = '(' . $db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true) . '
+			$where_sqls[] = '(' . $this->db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true) . '
 				AND ' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . ')';
 		}
 		else
@@ -167,7 +210,7 @@ class phpbb_content_visibility
 
 		if (sizeof($approve_forums))
 		{
-			$where_sqls[] = $db->sql_in_set($table_alias . 'forum_id', $approve_forums);
+			$where_sqls[] = $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums);
 			return '(' . implode(' OR ', $where_sqls) . ')';
 		}
 
@@ -192,10 +235,8 @@ class phpbb_content_visibility
 	* @param $limit_delete_time	mixed	Limit updating per topic_id to a certain deletion time
 	* @return array		Changed post data, empty array if an error occured.
 	*/
-	static public function set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest, $limit_visibility = false, $limit_delete_time = false)
+	public function set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest, $limit_visibility = false, $limit_delete_time = false)
 	{
-		global $db;
-
 		if (!in_array($visibility, array(ITEM_APPROVED, ITEM_DELETED)))
 		{
 			return array();
@@ -205,7 +246,7 @@ class phpbb_content_visibility
 		{
 			if (is_array($post_id))
 			{
-				$where_sql = $db->sql_in_set('post_id', array_map('intval', $post_id));
+				$where_sql = $this->db->sql_in_set('post_id', array_map('intval', $post_id));
 			}
 			else
 			{
@@ -233,12 +274,12 @@ class phpbb_content_visibility
 		}
 
 		$sql = 'SELECT poster_id, post_id, post_postcount, post_visibility
-			FROM ' . POSTS_TABLE . '
+			FROM ' . $this->posts_table . '
 			WHERE ' . $where_sql;
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
 		$post_ids = $poster_postcounts = $postcounts = $postcount_visibility = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$post_ids[] = (int) $row['post_id'];
 
@@ -263,7 +304,7 @@ class phpbb_content_visibility
 				}
 			}
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if (empty($post_ids))
 		{
@@ -277,10 +318,10 @@ class phpbb_content_visibility
 			'post_delete_reason'	=> truncate_string($reason, 255, 255, false),
 		);
 
-		$sql = 'UPDATE ' . POSTS_TABLE . '
-			SET ' . $db->sql_build_array('UPDATE', $data) . '
-			WHERE ' . $db->sql_in_set('post_id', $post_ids);
-		$db->sql_query($sql);
+		$sql = 'UPDATE ' . $this->posts_table . '
+			SET ' . $this->db->sql_build_array('UPDATE', $data) . '
+			WHERE ' . $this->db->sql_in_set('post_id', $post_ids);
+		$this->db->sql_query($sql);
 
 		// Group the authors by post count, to reduce the number of queries
 		foreach ($poster_postcounts as $poster_id => $num_posts)
@@ -293,24 +334,24 @@ class phpbb_content_visibility
 		{
 			if ($visibility == ITEM_DELETED)
 			{
-				$sql = 'UPDATE ' . USERS_TABLE . '
+				$sql = 'UPDATE ' . $this->users_table . '
 					SET user_posts = 0
-					WHERE ' . $db->sql_in_set('user_id', $poster_ids) . '
+					WHERE ' . $this->db->sql_in_set('user_id', $poster_ids) . '
 						AND user_posts < ' . $num_posts;
-				$db->sql_query($sql);
+				$this->db->sql_query($sql);
 
-				$sql = 'UPDATE ' . USERS_TABLE . '
+				$sql = 'UPDATE ' . $this->users_table . '
 					SET user_posts = user_posts - ' . $num_posts . '
-					WHERE ' . $db->sql_in_set('user_id', $poster_ids) . '
+					WHERE ' . $this->db->sql_in_set('user_id', $poster_ids) . '
 						AND user_posts >= ' . $num_posts;
-				$db->sql_query($sql);
+				$this->db->sql_query($sql);
 			}
 			else
 			{
-				$sql = 'UPDATE ' . USERS_TABLE . '
+				$sql = 'UPDATE ' . $this->users_table . '
 					SET user_posts = user_posts + ' . $num_posts . '
-					WHERE ' . $db->sql_in_set('user_id', $poster_ids);
-				$db->sql_query($sql);
+					WHERE ' . $this->db->sql_in_set('user_id', $poster_ids);
+				$this->db->sql_query($sql);
 			}
 		}
 
@@ -333,8 +374,7 @@ class phpbb_content_visibility
 		{
 			if (!function_exists('sync'))
 			{
-				global $phpEx, $phpbb_root_path;
-				include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+				include($this->phpbb_root_path . 'includes/functions_admin.' . $this->php_ext);
 			}
 
 			// ... so we need to use sync, if the first post is changed.
@@ -409,15 +449,15 @@ class phpbb_content_visibility
 				}
 
 				// Update the number for replies and posts
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
+				$sql = 'UPDATE ' . $this->topics_table . '
 					SET ' . implode(', ', $topic_sql) . '
 					WHERE topic_id = ' . (int) $topic_id;
-				$db->sql_query($sql);
+				$this->db->sql_query($sql);
 
-				$sql = 'UPDATE ' . FORUMS_TABLE . '
+				$sql = 'UPDATE ' . $this->forums_table . '
 					SET ' . implode(', ', $forum_sql) . '
 					WHERE forum_id = ' . (int) $forum_id;
-				$db->sql_query($sql);
+				$this->db->sql_query($sql);
 			}
 		}
 
@@ -445,10 +485,8 @@ class phpbb_content_visibility
 	* @param $force_update_all	bool	Force to update all posts within the topic
 	* @return array		Changed topic data, empty array if an error occured.
 	*/
-	static public function set_topic_visibility($visibility, $topic_id, $forum_id, $user_id, $time, $reason, $force_update_all = false)
+	public function set_topic_visibility($visibility, $topic_id, $forum_id, $user_id, $time, $reason, $force_update_all = false)
 	{
-		global $db;
-
 		if (!in_array($visibility, array(ITEM_APPROVED, ITEM_DELETED)))
 		{
 			return array();
@@ -457,11 +495,11 @@ class phpbb_content_visibility
 		if (!$force_update_all)
 		{
 			$sql = 'SELECT topic_visibility, topic_delete_time
-				FROM ' . TOPICS_TABLE . '
+				FROM ' . $this->topics_table . '
 				WHERE topic_id = ' . (int) $topic_id;
-			$result = $db->sql_query($sql);
-			$original_topic_data = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = $this->db->sql_query($sql);
+			$original_topic_data = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
 
 			if (!$original_topic_data)
 			{
@@ -478,12 +516,12 @@ class phpbb_content_visibility
 			'topic_delete_reason'	=> truncate_string($reason, 255, 255, false),
 		);
 
-		$sql = 'UPDATE ' . TOPICS_TABLE . '
-			SET ' . $db->sql_build_array('UPDATE', $data) . '
+		$sql = 'UPDATE ' . $this->topics_table . '
+			SET ' . $this->db->sql_build_array('UPDATE', $data) . '
 			WHERE topic_id = ' . (int) $topic_id;
-		$db->sql_query($sql);
+		$this->db->sql_query($sql);
 
-		if (!$db->sql_affectedrows())
+		if (!$this->db->sql_affectedrows())
 		{
 			return array();
 		}
@@ -513,15 +551,15 @@ class phpbb_content_visibility
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
 	* @return void
 	*/
-	static public function add_post_to_statistic($data, &$sql_data)
+	public function add_post_to_statistic($data, &$sql_data)
 	{
-		$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_approved = topic_posts_approved + 1';
+		$sql_data[$this->topics_table] = (($sql_data[$this->topics_table]) ? $sql_data[$this->topics_table] . ', ' : '') . 'topic_posts_approved = topic_posts_approved + 1';
 
-		$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_approved = forum_posts_approved + 1';
+		$sql_data[$this->forums_table] = (($sql_data[$this->forums_table]) ? $sql_data[$this->forums_table] . ', ' : '') . 'forum_posts_approved = forum_posts_approved + 1';
 
 		if ($data['post_postcount'])
 		{
-			$sql_data[USERS_TABLE] = (($sql_data[USERS_TABLE]) ? $sql_data[USERS_TABLE] . ', ' : '') . 'user_posts = user_posts + 1';
+			$sql_data[$this->users_table] = (($sql_data[$this->users_table]) ? $sql_data[$this->users_table] . ', ' : '') . 'user_posts = user_posts + 1';
 		}
 
 		set_config_count('num_posts', 1, true);
@@ -534,14 +572,14 @@ class phpbb_content_visibility
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
 	* @return void
 	*/
-	static public function remove_post_from_statistic($data, &$sql_data)
+	public function remove_post_from_statistic($data, &$sql_data)
 	{
-		$sql_data[TOPICS_TABLE] = ((!empty($sql_data[TOPICS_TABLE])) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_approved = topic_posts_approved - 1';
-		$sql_data[FORUMS_TABLE] = ((!empty($sql_data[FORUMS_TABLE])) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_approved = forum_posts_approved - 1';
+		$sql_data[$this->topics_table] = ((!empty($sql_data[$this->topics_table])) ? $sql_data[$this->topics_table] . ', ' : '') . 'topic_posts_approved = topic_posts_approved - 1';
+		$sql_data[$this->forums_table] = ((!empty($sql_data[$this->forums_table])) ? $sql_data[$this->forums_table] . ', ' : '') . 'forum_posts_approved = forum_posts_approved - 1';
 
 		if ($data['post_postcount'])
 		{
-			$sql_data[USERS_TABLE] = ((!empty($sql_data[USERS_TABLE])) ? $sql_data[USERS_TABLE] . ', ' : '') . 'user_posts = user_posts - 1';
+			$sql_data[$this->users_table] = ((!empty($sql_data[$this->users_table])) ? $sql_data[$this->users_table] . ', ' : '') . 'user_posts = user_posts - 1';
 		}
 
 		set_config_count('num_posts', -1, true);
@@ -556,60 +594,58 @@ class phpbb_content_visibility
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
 	* @return void
 	*/
-	static public function remove_topic_from_statistic($topic_id, $forum_id, &$topic_row, &$sql_data)
+	public function remove_topic_from_statistic($topic_id, $forum_id, &$topic_row, &$sql_data)
 	{
-		global $db;
-
 		// Do we need to grab some topic informations?
 		if (!sizeof($topic_row))
 		{
 			$sql = 'SELECT topic_type, topic_posts_approved, topic_posts_unapproved, topic_posts_softdeleted, topic_visibility
-				FROM ' . TOPICS_TABLE . '
+				FROM ' . $this->topics_table . '
 				WHERE topic_id = ' . (int) $topic_id;
-			$result = $db->sql_query($sql);
-			$topic_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = $this->db->sql_query($sql);
+			$topic_row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
 		}
 
 		// If this is an edited topic or the first post the topic gets completely disapproved later on...
-		$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_topics_approved = forum_topics_approved - 1';
-		$sql_data[FORUMS_TABLE] .= ', forum_posts_approved = forum_posts_approved - ' . $topic_row['topic_posts_approved'];
-		$sql_data[FORUMS_TABLE] .= ', forum_posts_unapproved = forum_posts_unapproved - ' . $topic_row['topic_posts_unapproved'];
-		$sql_data[FORUMS_TABLE] .= ', forum_posts_softdeleted = forum_posts_softdeleted - ' . $topic_row['topic_posts_softdeleted'];
+		$sql_data[$this->forums_table] = (($sql_data[$this->forums_table]) ? $sql_data[$this->forums_table] . ', ' : '') . 'forum_topics_approved = forum_topics_approved - 1';
+		$sql_data[$this->forums_table] .= ', forum_posts_approved = forum_posts_approved - ' . $topic_row['topic_posts_approved'];
+		$sql_data[$this->forums_table] .= ', forum_posts_unapproved = forum_posts_unapproved - ' . $topic_row['topic_posts_unapproved'];
+		$sql_data[$this->forums_table] .= ', forum_posts_softdeleted = forum_posts_softdeleted - ' . $topic_row['topic_posts_softdeleted'];
 
 		set_config_count('num_topics', -1, true);
 		set_config_count('num_posts', $topic_row['topic_posts_approved'] * (-1), true);
 
 		// Get user post count information
 		$sql = 'SELECT poster_id, COUNT(post_id) AS num_posts
-			FROM ' . POSTS_TABLE . '
+			FROM ' . $this->posts_table . '
 			WHERE topic_id = ' . (int) $topic_id . '
 				AND post_postcount = 1
 				AND post_visibility = ' . ITEM_APPROVED . '
 			GROUP BY poster_id';
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
 		$postcounts = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$postcounts[(int) $row['num_posts']][] = (int) $row['poster_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		// Decrement users post count
 		foreach ($postcounts as $num_posts => $poster_ids)
 		{
-			$sql = 'UPDATE ' . USERS_TABLE . '
+			$sql = 'UPDATE ' . $this->users_table . '
 				SET user_posts = 0
 				WHERE user_posts < ' . $num_posts . '
-					AND ' . $db->sql_in_set('user_id', $poster_ids);
-			$db->sql_query($sql);
+					AND ' . $this->db->sql_in_set('user_id', $poster_ids);
+			$this->db->sql_query($sql);
 
-			$sql = 'UPDATE ' . USERS_TABLE . '
+			$sql = 'UPDATE ' . $this->users_table . '
 				SET user_posts = user_posts - ' . $num_posts . '
 				WHERE user_posts >= ' . $num_posts . '
-					AND ' . $db->sql_in_set('user_id', $poster_ids);
-			$db->sql_query($sql);
+					AND ' . $this->db->sql_in_set('user_id', $poster_ids);
+			$this->db->sql_query($sql);
 		}
 	}
 }
