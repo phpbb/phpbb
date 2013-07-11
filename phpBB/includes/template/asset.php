@@ -40,12 +40,11 @@ class phpbb_template_asset
 		{
 			// Workaround for PHP 5.4.6 and older bug #62844 - add fake scheme and then remove it
 			$this->components = parse_url('http:' . $url);
-			if (isset($result['port']))
+			if (isset($this->components['port']))
 			{
 				return;
 			}
-			unset($result['scheme']);
-			$this->components = $result;
+			unset($this->components['scheme']);
 			return;
 		}
 		$this->components = parse_url($url);
