@@ -135,10 +135,10 @@ class phpbb_style
 		$new_paths = array();
 		foreach ($paths as $path)
 		{
-			$new_paths = $path . '/template/';
+			$new_paths[] = $path . '/template/';
 		}
 
-		$this->template->set_style_names($this->names, $new_paths1, ($style_directories === array('styles')));
+		$this->template->set_style_names($this->names, $new_paths, ($style_directories === array('styles')));
 
 		return true;
 	}
@@ -178,7 +178,7 @@ class phpbb_style
 		$new_paths = array();
 		foreach ($paths as $path)
 		{
-			$new_paths = $path . '/' . (($template_path !== false) ? $template_path : 'template/');
+			$new_paths[] = $path . '/' . (($template_path !== false) ? $template_path : 'template/');
 		}
 
 		$this->template->set_style_names($names, $new_paths);
