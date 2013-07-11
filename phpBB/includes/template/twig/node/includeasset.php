@@ -48,7 +48,7 @@ class phpbb_template_twig_node_includeasset extends Twig_Node
 				->write("\$argument_string .= '&assets_version=" . $config['assets_version'] . "';\n")
 			->outdent()
 			->write("}\n")
-			->write("if (strpos(\$asset_file, 'http://') !== 0 && strpos(\$asset_file, 'https://') !== 0 && !file_exists(\$asset_file)) {\n")
+			->write("if (strpos(\$asset_file, '//') !== 0 && strpos(\$asset_file, 'http://') !== 0 && strpos(\$asset_file, 'https://') !== 0 && !file_exists(\$asset_file)) {\n")
 			->indent()
 				->write("\$asset_file = \$this->getEnvironment()->getLoader()->getCacheKey(\$asset_file);\n")
 			->outdent()
