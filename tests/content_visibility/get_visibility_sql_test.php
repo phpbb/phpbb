@@ -66,7 +66,7 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 	*/
 	public function test_get_visibility_sql($table, $mode, $forum_id, $table_alias, $permissions, $expected)
 	{
-		global $cache, $db, $auth;
+		global $cache, $db, $auth, $phpbb_root_path, $phpEx;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
@@ -77,10 +77,11 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 			->method('acl_get')
 			->with($this->stringContains('_'), $this->anything())
 			->will($this->returnValueMap($permissions));
+		$content_visibility = new phpbb_content_visibility($auth, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
 
 		$result = $db->sql_query('SELECT ' . $mode . '_id
 			FROM ' . $table . '
-			WHERE ' . phpbb_content_visibility::get_visibility_sql($mode, $forum_id, $table_alias) . '
+			WHERE ' . $content_visibility->get_visibility_sql($mode, $forum_id, $table_alias) . '
 			ORDER BY ' . $mode . '_id ASC');
 
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));

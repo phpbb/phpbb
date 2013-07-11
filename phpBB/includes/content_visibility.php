@@ -26,19 +26,19 @@ class phpbb_content_visibility
 	* Database object
 	* @var phpbb_db_driver
 	*/
-	protected $this->db;
+	protected $db;
 
 	/**
 	* User object
 	* @var phpbb_user
 	*/
-	protected $this->user;
+	protected $user;
 
 	/**
 	* Auth object
 	* @var phpbb_auth
 	*/
-	protected $this->auth;
+	protected $auth;
 
 	/**
 	* phpBB root path
@@ -55,18 +55,18 @@ class phpbb_content_visibility
 	/**
 	* Constructor
 	*
-	* @param	phpbb_auth		$this->auth	Auth object
-	* @param	phpbb_db_driver	$this->db		Database object
-	* @param	phpbb_user		$this->user	User object
+	* @param	phpbb_auth		$auth	Auth object
+	* @param	phpbb_db_driver	$db		Database object
+	* @param	phpbb_user		$user	User object
 	* @param	string		$phpbb_root_path	Root path
 	* @param	string		$php_ext			PHP Extension
 	* @return	null
 	*/
-	public function __construct($this->auth, phpbb_db_driver $this->db, $this->user, $phpbb_root_path, $phpEx, $forums_table, $posts_table, $topics_table, $users_table)
+	public function __construct($auth, phpbb_db_driver $db, $user, $phpbb_root_path, $phpEx, $forums_table, $posts_table, $topics_table, $users_table)
 	{
-		$this->auth = $this->auth;
-		$this->db = $this->db;
-		$this->user = $this->user;
+		$this->auth = $auth;
+		$this->db = $db;
+		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->forums_table = $forums_table;

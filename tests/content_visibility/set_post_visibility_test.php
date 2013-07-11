@@ -115,12 +115,14 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 	*/
 	public function test_set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest, $expected, $expected_topic)
 	{
-		global $cache, $db;
+		global $cache, $db, $auth, $phpbb_root_path, $phpEx;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
+		$auth = $this->getMock('phpbb_auth');
+		$content_visibility = new phpbb_content_visibility($auth, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
 
-		phpbb_content_visibility::set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest);
+		$content_visibility->set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest);
 
 		$result = $db->sql_query('SELECT post_id, post_visibility, post_delete_reason
 			FROM phpbb_posts
