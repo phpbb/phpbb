@@ -11,9 +11,20 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/acp/acp_board.php';
 require_once dirname(__FILE__) . '/auth_provider/invalid.php';
 require_once dirname(__FILE__) . '/auth_provider/valid.php';
 
-class phpbb_acp_board_select_auth_method_test extends PHPUnit_Framework_TestCase
+class phpbb_acp_board_select_auth_method_test extends phpbb_test_case
 {
-	public function test_invalid_provider()
+	public static function function_return()
+	{
+		return array(
+			array('acp_board_valid', '<option value="acp_board_valid" selected="selected">Acp_board_valid</option>'),
+			array('acp_board_invalid', '<option value="acp_board_valid">Acp_board_valid</option>'),
+		);
+	}
+
+	/**
+	* @dataProvider function_return
+	*/
+	public function test_invalid_provider($selected, $expected)
 	{
 		global $phpbb_container;
 		$phpbb_container = new phpbb_mock_container_builder();
@@ -25,10 +36,6 @@ class phpbb_acp_board_select_auth_method_test extends PHPUnit_Framework_TestCase
 
 		$acp_board = new acp_board();
 
-		$expected = '<option value="acp_board_valid" selected="selected">Acp_board_valid</option>';
-		$this->assertEquals($expected, $acp_board->select_auth_method('acp_board_valid'));
-
-		$expected = '<option value="acp_board_valid">Acp_board_valid</option>';
-		$this->assertEquals($expected, $acp_board->select_auth_method('acp_board_invalid'));
+		$this->assertEquals($expected, $acp_board->select_auth_method($selected));
 	}
 }
