@@ -22,7 +22,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		$this->parent_template_path = $this->test_path . '/parent_templates';
 		$this->style_resource_locator = new phpbb_style_resource_locator();
 		$this->style_provider = new phpbb_style_path_provider();
-		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, new phpbb_template_context());
+		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
 		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider, $this->template);
 		$this->style->set_custom_style('tests', array($this->template_path, $this->parent_template_path), array(), '');
 	}
