@@ -38,15 +38,23 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	protected $container;
 
 	/**
+	* phpbb_style object
+	* @var phpbb_style
+	*/
+	protected $style;
+
+	/**
 	* Construct method
 	*
 	* @param phpbb_user $user User Object
 	* @param ContainerInterface $container ContainerInterface object
+	* @param phpbb_style $style
 	*/
-	public function __construct(phpbb_user $user, ContainerInterface $container)
+	public function __construct(phpbb_user $user, ContainerInterface $container, phpbb_style $style = null)
 	{
 		$this->user = $user;
 		$this->container = $container;
+		$this->style = $style;
 	}
 
 	/**
@@ -79,6 +87,24 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 		}
 
 		$controller_object = $this->container->get($service);
+
+		/*
+		* If this is an extension controller, we'll try to automatically set
+		* the style paths for the extension (the ext author can change them
+		* if necessary).
+		*/
+		$controller_dir = explode('_', get_class($controller_object));
+
+		// 0 phpbb, 1 ext, 2 vendor, 3 extension name, ...
+		if (!is_null($this->style) && isset($controller_dir[3]) && $controller_dir[1] === 'ext')
+		{
+			$controller_style_dir = 'ext/' . $controller_dir[2] . '/' . $controller_dir[3] . '/styles';
+
+			if (is_dir($controller_style_dir))
+			{
+				$this->style->set_style(array($controller_style_dir, 'styles'));
+			}
+		}
 
 		return array($controller_object, $method);
 	}
