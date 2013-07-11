@@ -26,19 +26,19 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 			),
 			array(
 				array('TEST' => 2),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?assets_version=0&assets_version=1"></script>',
+				'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?assets_version=0"></script>',
 			),
 			array(
 				array('TEST' => 3),
-			'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?test=1&assets_version=0&assets_version=1"></script>',
+			'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?test=1&assets_version=0"></script>',
 			),
 			array(
 				array('TEST' => 4),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?test=1&amp;assets_version=0&assets_version=1"></script>',
+				'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?test=1&amp;assets_version=0"></script>',
 			),
 			array(
 				array('TEST' => 5),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?test=1;assets_version=0&assets_version=1"></script>',
+				'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?test=1;assets_version=0"></script>',
 			),
 			array(
 				array('TEST' => 6),
@@ -62,19 +62,19 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 			),
 			array(
 				array('TEST' => 11),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/child_only.js?test1=1&amp;test2=2&assets_version=1#test3"></script>',
+				'<script type="text/javascript" src="' . $this->test_path . '/templates/child_only.js?test1=1&amp;test2=2&amp;assets_version=1#test3"></script>',
 			),
 			array(
 				array('TEST' => 12),
-				'<script type="text/javascript" src="' . $this->test_path . '/parent_templates/parent_only.js?test1=1&amp;test2=2&assets_version=1#test3"></script>',
+				'<script type="text/javascript" src="' . $this->test_path . '/parent_templates/parent_only.js?test1=1&amp;test2=2&amp;assets_version=1#test3"></script>',
 			),
 			array(
 				array('TEST' => 13),
-				'<script type="text/javascript" src="' . $this->test_path . '/parent_templates/parent_only.js?test1=1;test2=2&assets_version=1#test3"></script>',
+				'<script type="text/javascript" src="' . $this->test_path . '/parent_templates/parent_only.js?test1=1;test2=2;assets_version=1#test3"></script>',
 			),
 			array(
 				array('TEST' => 14),
-				'<script type="text/javascript" src="' . $this->test_path . '/parent_templates/parent_only.js?test1=&quot;&assets_version=1#test3"></script>',
+				'<script type="text/javascript" src="' . $this->test_path . '/parent_templates/parent_only.js?test1=&quot;&amp;assets_version=1#test3"></script>',
 			),
 			array(
 				array('TEST' => 15),
@@ -82,7 +82,7 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 			),
 			array(
 				array('TEST' => 16),
-				'<script type="text/javascript" src="http://phpbb.com/b.js?c=d&assets_version=1#f"></script>',
+				'<script type="text/javascript" src="http://phpbb.com/b.js?c=d&assets_version=2#f"></script>',
 			),
 			array(
 				array('TEST' => 17),
