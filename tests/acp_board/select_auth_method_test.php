@@ -21,12 +21,14 @@ class phpbb_acp_board_select_auth_method_test extends PHPUnit_Framework_TestCase
 		$phpbb_container->set('auth.provider_collection', array(
 				'auth.provider.acp_board_valid'		=> new phpbb_auth_provider_acp_board_valid,
 				'auth.provider.acp_board_invalid'	=> new phpbb_auth_provider_acp_board_invalid,
-			)
-		);
+		));
 
 		$acp_board = new acp_board();
 
 		$expected = '<option value="acp_board_valid" selected="selected">Acp_board_valid</option>';
 		$this->assertEquals($expected, $acp_board->select_auth_method('acp_board_valid'));
+
+		$expected = '<option value="acp_board_valid">Acp_board_valid</option>';
+		$this->assertEquals($expected, $acp_board->select_auth_method('acp_board_invalid'));
 	}
 }
