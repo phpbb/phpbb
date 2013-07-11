@@ -78,15 +78,15 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 			),
 			array(
 				array('TEST' => 15),
-				'<script type="text/javascript" src="http://phpbb.com/b.js?c=d&assets_version=1#f"></script>',
+				'<script type="text/javascript" src="http://phpbb.com/b.js?c=d#f"></script>',
 			),
 			array(
 				array('TEST' => 16),
-				'<script type="text/javascript" src="http://phpbb.com/b.js?c=d&assets_version=1&assets_version=1#f"></script>',
+				'<script type="text/javascript" src="http://phpbb.com/b.js?c=d&assets_version=1#f"></script>',
 			),
 			array(
 				array('TEST' => 17),
-				'<script type="text/javascript" src="//phpbb.com/b.js?assets_version=1"></script>',
+				'<script type="text/javascript" src="//phpbb.com/b.js"></script>',
 			),
 		);
 	}
