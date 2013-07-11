@@ -130,7 +130,7 @@ class phpbb_template_twig implements phpbb_template
 			$this->phpbb_root_path,
 			$loader,
 			array(
-				'cache'			=> $this->cachepath,
+				'cache'			=> (defined('IN_INSTALL')) ? false : $this->cachepath,
 				'debug'			=> defined('DEBUG'),
 				'auto_reload'	=> (bool) $this->config['load_tplcompile'],
 				'autoescape'	=> false,
