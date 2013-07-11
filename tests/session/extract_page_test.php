@@ -7,25 +7,13 @@
  *
  */
 
-require_once dirname(__FILE__) . '/testable_facade.php';
+require_once dirname(__FILE__) . '/../test_framework/phpbb_session_test_case.php';
 
-class phpbb_session_extract_page_test extends phpbb_database_test_case
+class phpbb_session_extract_page_test extends phpbb_session_test_case
 {
-	public $session_factory;
-	public $db;
-	public $session_facade;
-
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_empty.xml');
-	}
-
-	public function setUp()
-	{
-		$this->session_factory = new phpbb_session_testable_factory;
-		$this->db = $this->new_dbal();
-		$this->session_facade =
-			new phpbb_session_testable_facade($this->db, $this->session_factory);
 	}
 
 	static public function extract_current_page_data()
