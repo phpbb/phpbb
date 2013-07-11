@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\Finder\Finder;
+
 /**
 * Handles avatars selected from the board gallery
 * @package phpBB3
@@ -39,7 +41,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	public function prepare_form($request, $template, $user, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list($user);
-		$category = $request->variable('avatar_local_cat', '');
+		$category = $request->variable('avatar_local_cat', '', true);
 
 		foreach ($avatar_list as $cat => $null)
 		{
@@ -117,7 +119,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	public function process_form($request, $template, $user, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list($user);
-		$category = $request->variable('avatar_local_cat', '');
+		$category = $request->variable('avatar_local_cat', '', true);
 
 		$file = $request->variable('avatar_local_file', '');
 
@@ -134,7 +136,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 		}
 
 		return array(
-			'avatar' => ($category != $user->lang['MAIN']) ? $category . '/' . $file : $file,
+			'avatar' => ($category != $user->lang['MAIN']) ? rawurlencode($category) . '/' . $file : $file,
 			'avatar_width' => $avatar_list[$category][urldecode($file)]['width'],
 			'avatar_height' => $avatar_list[$category][urldecode($file)]['height'],
 		);
@@ -156,12 +158,13 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 		{
 			$avatar_list = array();
 			$path = $this->phpbb_root_path . $this->config['avatar_gallery_path'];
+			$finder = new Finder();
+			$finder->files()->in($path);
 
-			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS), RecursiveIteratorIterator::SELF_FIRST);
-			foreach ($iterator as $file_info)
+			foreach ($finder as $file)
 			{
-				$file_path = $file_info->getPath();
-				$image = $file_info->getFilename();
+				$file_path = $file->getPath();
+				$image = $file->getFilename();
 
 				// Match all images in the gallery folder
 				if (preg_match('#^[^&\'"<>]+\.(?:' . implode('|', $this->allowed_extensions) . ')$#i', $image) && is_file($file_path . '/' . $image))
