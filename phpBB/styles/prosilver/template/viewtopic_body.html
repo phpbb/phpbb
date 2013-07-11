@@ -199,11 +199,13 @@
 
 			<!-- IF postrow.S_DISPLAY_NOTICE --><div class="rules">{L_DOWNLOAD_NOTICE}</div><!-- ENDIF -->
 			<!-- IF postrow.DELETED_MESSAGE or postrow.DELETE_REASON -->
-				<div class="notice post_deleted_msg">{postrow.DELETED_MESSAGE}
+				<div class="notice post_deleted_msg">
+					{postrow.DELETED_MESSAGE}
 					<!-- IF postrow.DELETE_REASON --><br /><strong>{L_REASON}{L_COLON}</strong> <em>{postrow.DELETE_REASON}</em><!-- ENDIF -->
 				</div>
 			<!-- ELSEIF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
-				<div class="notice">{postrow.EDITED_MESSAGE}
+				<div class="notice">
+					{postrow.EDITED_MESSAGE}
 					<!-- IF postrow.EDIT_REASON --><br /><strong>{L_REASON}{L_COLON}</strong> <em>{postrow.EDIT_REASON}</em><!-- ENDIF -->
 				</div>
 			<!-- ENDIF -->
