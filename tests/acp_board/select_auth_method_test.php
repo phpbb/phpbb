@@ -8,6 +8,8 @@
 */
 
 require_once dirname(__FILE__).'/../../phpBB/includes/acp/acp_board.php';
+require_once dirname(__FILE__).'/auth_provider/invalid.php';
+require_once dirname(__FILE__).'/auth_provider/valid.php';
 
 class phpbb_acp_board_select_auth_method_test extends PHPUnit_Framework_TestCase
 {
@@ -27,17 +29,4 @@ class phpbb_acp_board_select_auth_method_test extends PHPUnit_Framework_TestCase
 		$expected = '<option value="acp_board_valid" selected="selected">Acp_board_valid</option>';
 		$this->assertEquals($expected, $acp_board->select_auth_method('acp_board_valid'));
 	}
-}
-
-class phpbb_auth_provider_acp_board_valid extends phpbb_auth_provider_base
-{
-	public function login($username, $password)
-	{
-		return;
-	}
-}
-
-class phpbb_auth_provider_acp_board_invalid
-{
-
 }
