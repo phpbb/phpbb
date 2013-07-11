@@ -57,6 +57,7 @@ class phpbb_template_twig_extension extends Twig_Extension
 			new phpbb_template_twig_tokenparser_define,
 			new phpbb_template_twig_tokenparser_include,
 			new phpbb_template_twig_tokenparser_includejs,
+			new phpbb_template_twig_tokenparser_includecss,
 			new phpbb_template_twig_tokenparser_event,
 			new phpbb_template_twig_tokenparser_includephp,
 			new phpbb_template_twig_tokenparser_php,
