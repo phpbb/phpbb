@@ -358,6 +358,90 @@ class phpbb_functional_test_case extends phpbb_test_case
 	}
 
 	/**
+	* Creates a new style
+	*
+	* @param string $style_id Style ID
+	* @param string $style_path Style directory
+	* @param string $parent_style_id Parent style id. Default = 1
+	* @param string $parent_style_path Parent style directory. Default = 'prosilver'
+	*/
+	protected function add_style($style_id, $style_path, $parent_style_id = 1, $parent_style_path = 'prosilver')
+	{
+		global $phpbb_root_path;
+
+		$db = $this->get_db();
+		$sql = 'INSERT INTO ' . STYLES_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			'style_id' => $style_id,
+			'style_name' => $style_path,
+			'style_copyright' => '',
+			'style_active' => 1,
+			'template_id' => $style_id,
+			'theme_id' => $style_id,
+			'imageset_id' => $style_id,
+		));
+		$db->sql_query($sql);
+
+		$sql = 'INSERT INTO ' . STYLES_IMAGESET_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			'imageset_id' => $style_id,
+			'imageset_name' => $style_path,
+			'imageset_copyright' => '',
+			'imageset_path' => $style_path,
+		));
+		$db->sql_query($sql);
+
+		$sql = 'INSERT INTO ' . STYLES_TEMPLATE_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			'template_id' => $style_id,
+			'template_name' => $style_path,
+			'template_copyright' => '',
+			'template_path' => $style_path,
+			'bbcode_bitfield' => 'kNg=',
+			'template_inherits_id' => $parent_style_id,
+			'template_inherit_path' => $parent_style_path,
+		));
+		$db->sql_query($sql);
+
+		$sql = 'INSERT INTO ' . STYLES_THEME_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			'theme_id' => $style_id,
+			'theme_name' => $style_path,
+			'theme_copyright' => '',
+			'theme_path' => $style_path,
+			'theme_storedb' => 0,
+			'theme_mtime' => 0,
+			'theme_data' => '',
+		));
+		$db->sql_query($sql);
+
+		if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+		{
+			@mkdir($phpbb_root_path . 'styles/' . $style_path, 0777);
+			@mkdir($phpbb_root_path . 'styles/' . $style_path . '/template', 0777);
+		}
+	}
+
+	/**
+	* Remove temporary style created by add_style()
+	*
+	* @param string $style_id Style ID
+	* @param string $style_path Style directory
+	*/
+	protected function delete_style($style_id, $style_path)
+	{
+		global $phpbb_root_path;
+
+		$db = $this->get_db();
+		$db->sql_query('DELETE FROM ' . STYLES_TABLE . ' WHERE style_id = ' . $style_id);
+		$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_TABLE . ' WHERE imageset_id = ' . $style_id);
+		$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
+		$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
+
+		if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+		{
+			@rmdir($phpbb_root_path . 'styles/' . $style_path . '/template');
+			@rmdir($phpbb_root_path . 'styles/' . $style_path);
+		}
+	}
+
+	/**
 	* Creates a new user with limited permissions
 	*
 	* @param string $username Also doubles up as the user's password
