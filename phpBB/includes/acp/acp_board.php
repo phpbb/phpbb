@@ -678,7 +678,7 @@ class acp_board
 		$auth_plugins = array();
 		$auth_providers = $phpbb_container->get('auth.provider_collection');
 
-		foreach($auth_providers as $key => $value)
+		foreach ($auth_providers as $key => $value)
 		{
 			if (!($value instanceof phpbb_auth_provider_interface))
 			{
