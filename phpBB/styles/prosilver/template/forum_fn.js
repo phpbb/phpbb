@@ -117,7 +117,7 @@ jQuery(document).ready(function() {
 
 		if (panels.length) {
 			subPanels(show_panel);
-			jQuery('a[data-subpanel]', this).click(function () {
+			childNodes.click(function () {
 				subPanels(this.getAttribute('data-subpanel'));
 				return false;
 			});
