@@ -513,6 +513,7 @@ function mcp_move_topic($topic_ids)
 			$db->sql_query($sql);
 		}
 
+		$shadow_topics = 0;
 		$forum_ids = array($to_forum_id);
 		foreach ($topic_data as $topic_id => $row)
 		{
