@@ -306,8 +306,12 @@ a#logo:hover {
 ul.linklist {
 	display: block;
 	margin: 0;
-	height: 4%;
-	overflow: hidden;
+}
+
+ul.linklist:after {
+	content: '';
+	display: block;
+	clear: both;
 }
 
 #cp-main .panel {
@@ -476,6 +480,8 @@ dl.details dd {
 	margin-bottom: 5px;
 	float: left;
 	width: 65%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, dl.polls {
@@ -687,28 +693,33 @@ p.rules a {
 	vertical-align: text-bottom;
 }
 
+.icon-notification {
+	position: relative;
+}
+
 #notification_list {
 	display: none;
 	position: absolute;
+	left: 0;
 	width: 330px;
 	z-index: 1;
 	border: 1px solid;
 	box-shadow: 3px 3px 5px darkgray;
 	border-radius: 5px;
-	margin-top: 8px;
+	top: 32px;
 }
 
 #notification_list ul {
 	max-height: 350px;
 	overflow-y: auto;
 	overflow-x: hidden;
+	clear: both;
 }
 
 #notification_list ul li {
-	width: 310px;
 	padding: 10px;
 	margin: 0;
-	float: left;
+	float: none;
 	border-bottom: 1px solid;
 	list-style-type: none;
 	font-size: 0.95em;

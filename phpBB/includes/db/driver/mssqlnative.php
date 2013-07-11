@@ -191,7 +191,7 @@ class result_mssqlnative
 /**
 * @package dbal
 */
-class phpbb_db_driver_mssqlnative extends phpbb_db_driver
+class phpbb_db_driver_mssqlnative extends phpbb_db_driver_mssql_base
 {
 	var $m_insert_id = NULL;
 	var $last_query_text = '';
@@ -254,14 +254,6 @@ class phpbb_db_driver_mssqlnative extends phpbb_db_driver
 		}
 
 		return ($this->sql_server_version) ? 'MSSQL<br />' . $this->sql_server_version : 'MSSQL';
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	public function sql_concatenate($expr1, $expr2)
-	{
-		return $expr1 . ' + ' . $expr2;
 	}
 
 	/**
@@ -334,7 +326,7 @@ class phpbb_db_driver_mssqlnative extends phpbb_db_driver
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl)
+				if ($cache && $cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
@@ -402,7 +394,7 @@ class phpbb_db_driver_mssqlnative extends phpbb_db_driver
 	*/
 	function sql_affectedrows()
 	{
-		return (!empty($this->query_result)) ? @sqlsrv_rows_affected($this->query_result) : false;
+		return ($this->db_connect_id) ? @sqlsrv_rows_affected($this->query_result) : false;
 	}
 
 	/**
@@ -417,7 +409,7 @@ class phpbb_db_driver_mssqlnative extends phpbb_db_driver
 			$query_id = $this->query_result;
 		}
 
-		if ($cache->sql_exists($query_id))
+		if ($cache && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -482,37 +474,12 @@ class phpbb_db_driver_mssqlnative extends phpbb_db_driver
 			return $cache->sql_freeresult($query_id);
 		}
 
-		if (isset($this->open_queries[$query_id]))
+		if (isset($this->open_queries[(int) $query_id]))
 		{
-			unset($this->open_queries[$query_id]);
+			unset($this->open_queries[(int) $query_id]);
 			return @sqlsrv_free_stmt($query_id);
 		}
 		return false;
-	}
-
-	/**
-	* Escape string used in sql query
-	*/
-	function sql_escape($msg)
-	{
-		return str_replace(array("'", "\0"), array("''", ''), $msg);
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_lower_text($column_name)
-	{
-		return "LOWER(SUBSTRING($column_name, 1, DATALENGTH($column_name)))";
-	}
-
-	/**
-	* Build LIKE expression
-	* @access private
-	*/
-	function _sql_like_expression($expression)
-	{
-		return $expression . " ESCAPE '\\'";
 	}
 
 	/**
@@ -558,15 +525,6 @@ class phpbb_db_driver_mssqlnative extends phpbb_db_driver
 		}
 
 		return $error;
-	}
-
-	/**
-	* Build db-specific query data
-	* @access private
-	*/
-	function _sql_custom_build($stage, $data)
-	{
-		return $data;
 	}
 
 	/**

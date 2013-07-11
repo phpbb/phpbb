@@ -85,17 +85,39 @@ class phpbb_controller_helper
 	}
 
 	/**
-	* Easily generate a URL
+	* Generate a URL
 	*
-	* @param array $url_parts Each array element is a 'folder'
-	* 		i.e. array('my', 'ext') maps to ./app.php/my/ext
-	* @param mixed $query The Query string, passed directly into the second
-	*		argument of append_sid()
-	* @return string A URL that has already been run through append_sid()
+	* @param string	$route		The route to travel
+	* @param mixed	$params		String or array of additional url parameters
+	* @param bool	$is_amp		Is url using &amp; (true) or & (false)
+	* @param string	$session_id	Possibility to use a custom session id instead of the global one
+	* @return string The URL already passed through append_sid()
 	*/
-	public function url(array $url_parts, $query = '')
+	public function url($route, $params = false, $is_amp = true, $session_id = false)
 	{
-		return append_sid($this->phpbb_root_path . implode('/', $url_parts), $query);
+		$route_params = '';
+		if (($route_delim = strpos($route, '?')) !== false)
+		{
+			$route_params = substr($route, $route_delim);
+			$route = substr($route, 0, $route_delim);
+		}
+
+		if (is_array($params) && !empty($params))
+		{
+			$params = array_merge(array(
+				'controller' => $route,
+			), $params);
+		}
+		else if (is_string($params) && $params)
+		{
+			$params = 'controller=' . $route . (($is_amp) ? '&amp;' : '&') . $params;
+		}
+		else
+		{
+			$params = array('controller' => $route);
+		}
+
+		return append_sid($this->phpbb_root_path . 'app.' . $this->php_ext . $route_params, $params, $is_amp, $session_id);
 	}
 
 	/**

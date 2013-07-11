@@ -163,9 +163,16 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			$engine = $info['Type'];
 		}
 
-		if ($engine != 'MyISAM')
+		$fulltext_supported =
+			$engine === 'MyISAM' ||
+			// FULLTEXT is supported on InnoDB since MySQL 5.6.4 according to
+			// http://dev.mysql.com/doc/refman/5.6/en/innodb-storage-engine.html
+			$engine === 'InnoDB' &&
+			phpbb_version_compare($this->db->sql_server_info(true), '5.6.4', '>=');
+
+		if (!$fulltext_supported)
 		{
-			return $this->user->lang['FULLTEXT_MYSQL_NOT_MYISAM'];
+			return $this->user->lang['FULLTEXT_MYSQL_NOT_SUPPORTED'];
 		}
 
 		$sql = 'SHOW VARIABLES

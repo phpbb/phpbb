@@ -39,7 +39,7 @@ phpbb.addAjaxCallback('mark_forums_read', function(res) {
 
 	// Mark topics read if we are watching a category and showing active topics
 	if ($('#active_topics').length) {
-		phpbb.ajaxCallbacks['mark_topics_read'].call(this, res, false);
+		phpbb.ajaxCallbacks.mark_topics_read.call(this, res, false);
 	}
 
 	// Update mark forums read links
@@ -75,7 +75,7 @@ phpbb.addAjaxCallback('mark_topics_read', function(res, update_topic_links) {
 	$.each(iconsArray, function(unreadClass, readClass) {
 		$.each(iconsState, function(key, value) {
 			// Only topics can be hot
-			if ((value == '_hot' || value == '_hot_mine') && unreadClass != 'topic_unread') {
+			if ((value === '_hot' || value === '_hot_mine') && unreadClass !== 'topic_unread') {
 				return true;
 			}
 			classMap[unreadClass + value] = readClass + value;
@@ -247,12 +247,21 @@ $('#delete_permanent').click(function () {
 */
 $('#member_search').click(function () {
 	$('#memberlist_search').slideToggle('fast');
-	phpbb.ajax_callbacks['alt_text'].call(this);
+	phpbb.ajax_callbacks.alt_text.call(this);
 	// Focus on the username textbox if it's available and displayed
 	if ($('#memberlist_search').is(':visible')) {
 		$('#username').focus();
 	}
 	return false;
 });
+
+/**
+* Automatically resize textarea
+*/
+$(document).ready(function() {
+	phpbb.resizeTextArea($('textarea:not(#message-box textarea, .no-auto-resize)'), {minHeight: 75, maxHeight: 250});
+	phpbb.resizeTextArea($('#message-box textarea'));
+});
+
 
 })(jQuery); // Avoid conflicts with other libraries

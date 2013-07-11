@@ -66,7 +66,7 @@ class phpbb_hook_finder
 		{
 			while (($file = readdir($dh)) !== false)
 			{
-				if (strpos($file, 'hook_') === 0 && substr($file, -(strlen($this->php_ext) + 1)) === '.' . $this->php_ext)
+				if (strpos($file, 'hook_') === 0 && substr($file, -strlen('.' . $this->php_ext)) === '.' . $this->php_ext)
 				{
 					$hook_files[] = substr($file, 0, -(strlen($this->php_ext) + 1));
 				}

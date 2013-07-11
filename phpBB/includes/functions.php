@@ -846,7 +846,7 @@ function phpbb_is_writable($file)
 */
 function phpbb_is_absolute($path)
 {
-	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:[/\\\]#i', $path))) ? true : false;
+	return (isset($path[0]) && $path[0] == '/' || preg_match('#^[a-z]:[/\\\]#i', $path)) ? true : false;
 }
 
 /**
@@ -1049,31 +1049,33 @@ else
 /**
 * Eliminates useless . and .. components from specified path.
 *
+* Deprecated, use filesystem class instead
+*
 * @param string $path Path to clean
 * @return string Cleaned path
+*
+* @deprecated
 */
 function phpbb_clean_path($path)
 {
-	$exploded = explode('/', $path);
-	$filtered = array();
-	foreach ($exploded as $part)
-	{
-		if ($part === '.' && !empty($filtered))
-		{
-			continue;
-		}
+	global $phpbb_container;
 
-		if ($part === '..' && !empty($filtered) && $filtered[sizeof($filtered) - 1] !== '..')
-		{
-			array_pop($filtered);
-		}
-		else
-		{
-			$filtered[] = $part;
-		}
+	if ($phpbb_container)
+	{
+		$phpbb_filesystem = $phpbb_container->get('filesystem');
 	}
-	$path = implode('/', $filtered);
-	return $path;
+	else
+	{
+		// The container is not yet loaded, use a new instance
+		if (!class_exists('phpbb_filesystem'))
+		{
+			global $phpbb_root_path, $phpEx;
+			require($phpbb_root_path . 'includes/filesystem.' . $phpEx);
+		}
+		$phpbb_filesystem = new phpbb_filesystem();
+	}
+
+	return $phpbb_filesystem->clean_path($path);
 }
 
 // functions used for building option fields
@@ -2344,9 +2346,8 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 		$tpl_prefix . 'BASE_URL'		=> $base_url,
 		'A_' . $tpl_prefix . 'BASE_URL'		=> addslashes($base_url),
 		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-		$tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
-		$tpl_prefix . 'PREV_PAGE'		=> $previous_page,
-		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
+		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
+		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
 		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
 		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
 	);
@@ -2732,7 +2733,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
 	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false || strpos($url, ';') !== false)
 	{
-		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 
 	// Now, also check the protocol and for a valid url the last time...
@@ -2741,7 +2742,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 	if ($url_parts === false || empty($url_parts['scheme']) || !in_array($url_parts['scheme'], $allowed_protocols))
 	{
-		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 
 	if ($return)
@@ -2906,7 +2907,7 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 
 		// For XHTML compatibility we change back & to &amp;
 		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
+			'META' => '<meta http-equiv="refresh" content="' . $time . '; url=' . $url . '" />')
 		);
 	}
 
@@ -3466,6 +3467,7 @@ function login_forum_box($forum_data)
 	page_header($user->lang['LOGIN'], false);
 
 	$template->assign_vars(array(
+		'FORUM_NAME'			=> isset($forum_data['forum_name']) ? $forum_data['forum_name'] : '',
 		'S_LOGIN_ACTION'		=> build_url(array('f')),
 		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])))
 	);
@@ -4183,7 +4185,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 // Handler, header and footer
 
 /**
-* Error and message handler, call with trigger_error if reqd
+* Error and message handler, call with trigger_error if read
 */
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
@@ -5293,7 +5295,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'BOARD_URL'			=> $board_url,
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
-		'L_INDEX'			=> $user->lang['FORUM_INDEX'],
+		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['FORUM_INDEX'],
 		'L_SITE_HOME'		=> ($config['site_home_text'] !== '') ? $config['site_home_text'] : $user->lang['HOME'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 

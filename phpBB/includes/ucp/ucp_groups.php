@@ -212,8 +212,7 @@ class ucp_groups
 									{
 										$messenger->template('group_request', $row['user_lang']);
 
-										$messenger->to($row['user_email'], $row['username']);
-										$messenger->im($row['user_jabber'], $row['username']);
+										$messenger->set_addresses($row);
 
 										$messenger->assign_vars(array(
 											'USERNAME'			=> htmlspecialchars_decode($row['username']),
@@ -417,9 +416,11 @@ class ucp_groups
 
 				if ($group_id)
 				{
-					$sql = 'SELECT *
-						FROM ' . GROUPS_TABLE . "
-						WHERE group_id = $group_id";
+					$sql = 'SELECT g.*, t.teampage_position AS group_teampage
+						FROM ' . GROUPS_TABLE . ' g
+						LEFT JOIN ' . TEAMPAGE_TABLE . ' t
+							ON (t.group_id = g.group_id)
+						WHERE g.group_id = ' . $group_id;
 					$result = $db->sql_query($sql);
 					$group_row = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
@@ -515,6 +516,8 @@ class ucp_groups
 								'receive_pm'	=> isset($_REQUEST['group_receive_pm']) ? 1 : 0,
 								'message_limit'	=> request_var('group_message_limit', 0),
 								'max_recipients'=> request_var('group_max_recipients', 0),
+								'legend'	=> $group_row['group_legend'],
+								'teampage'	=> $group_row['group_teampage'],
 							);
 
 							if ($config['allow_avatar'])
@@ -548,6 +551,9 @@ class ucp_groups
 									$submit_ary['avatar_width'] = 0;
 									$submit_ary['avatar_height'] = 0;
 								}
+
+								// Merge any avatars errors into the primary error array
+								$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
 							}
 
 							if (!check_form_key('ucp_groups'))
@@ -555,11 +561,21 @@ class ucp_groups
 								$error[] = $user->lang['FORM_INVALID'];
 							}
 
+							// Validate submitted colour value
+							if ($colour_error = validate_data($submit_ary, array('colour'	=> array('hex_colour', true))))
+							{
+								// Replace "error" string with its real, localised form
+								$error = array_merge($error, array_map(array(&$user, 'lang'), $colour_error));
+							}
+
 							if (!sizeof($error))
 							{
 								// Only set the rank, colour, etc. if it's changed or if we're adding a new
 								// group. This prevents existing group members being updated if no changes
 								// were made.
+								// However there are some attributes that need to be set everytime,
+								// otherwise the group gets removed from the feature.
+								$set_attributes = array('legend', 'teampage');
 
 								$group_attributes = array();
 								$test_variables = array(
@@ -571,13 +587,14 @@ class ucp_groups
 									'avatar_height'	=> 'int',
 									'receive_pm'	=> 'int',
 									'legend'		=> 'int',
+									'teampage'		=> 'int',
 									'message_limit'	=> 'int',
 									'max_recipients'=> 'int',
 								);
 
 								foreach ($test_variables as $test => $type)
 								{
-									if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || isset($group_attributes['group_avatar']) && strpos($test, 'avatar') === 0))
+									if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || isset($group_attributes['group_avatar']) && strpos($test, 'avatar') === 0 || in_array($test, $set_attributes)))
 									{
 										settype($submit_ary[$test], $type);
 										$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
@@ -587,6 +604,7 @@ class ucp_groups
 								if (!($error = group_create($group_id, $group_type, $group_name, $group_desc, $group_attributes, $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies)))
 								{
 									$cache->destroy('sql', GROUPS_TABLE);
+									$cache->destroy('sql', TEAMPAGE_TABLE);
 
 									$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 									trigger_error($user->lang[$message] . $return_page);
@@ -673,8 +691,11 @@ class ucp_groups
 							}
 						}
 
-						// Merge any avatars errors into the primary error array
-						$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+						if (isset($phpbb_avatar_manager) && !$update)
+						{
+							// Merge any avatars errors into the primary error array
+							$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+						}
 
 						$template->assign_vars(array(
 							'S_EDIT'			=> true,

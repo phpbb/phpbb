@@ -2,7 +2,6 @@
 /**
 *
 * @package testing
-* @version $Id$
 * @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
@@ -86,5 +85,76 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 		);
 
 		$this->assertEquals($expected_settings, $avatar_settings);
+	}
+
+	public function database_row_data()
+	{
+		return array(
+			array(
+				array(
+					'user_avatar'			=> '',
+					'user_avatar_type'		=> '',
+					'user_avatar_width'		=> '',
+					'user_avatar_height'	=> '',
+				),
+				array(
+					'avatar'			=> '',
+					'avatar_type'		=> '',
+					'avatar_width'		=> '',
+					'avatar_height'		=> '',
+				),
+			),
+			array(
+				array(
+					'group_avatar'			=> '',
+					'group_avatar_type'		=> '',
+					'group_avatar_width'	=> '',
+					'group_avatar_height'	=> '',
+				),
+				array(
+					'avatar'			=> '',
+					'avatar_type'		=> '',
+					'avatar_width'		=> '',
+					'avatar_height'		=> '',
+				),
+			),
+			array(
+				array(),
+				array(
+					'avatar'			=> '',
+					'avatar_type'		=> '',
+					'avatar_width'		=> '',
+					'avatar_height'		=> '',
+				),
+			),
+			array(
+				array(
+					'foobar_avatar'			=> '',
+					'foobar_avatar_type'	=> '',
+					'foobar_avatar_width'	=> '',
+					'foobar_avatar_height'	=> '',
+				),
+				array(
+					'foobar_avatar'			=> '',
+					'foobar_avatar_type'	=> '',
+					'foobar_avatar_width'	=> '',
+					'foobar_avatar_height'	=> '',
+				),
+			),
+		);
+	}
+
+	/**
+	* @dataProvider database_row_data
+	*/
+	public function test_clean_row(array $input, array $output)
+	{
+		$cleaned_row = array();
+
+		$cleaned_row = phpbb_avatar_manager::clean_row($input);
+		foreach ($output as $key => $null)
+		{
+			$this->assertArrayHasKey($key, $cleaned_row);
+		}
 	}
 }

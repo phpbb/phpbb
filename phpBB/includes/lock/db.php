@@ -117,6 +117,17 @@ class phpbb_lock_db
 	}
 
 	/**
+	* Does this process own the lock?
+	*
+	* @return	bool			true if lock is owned
+	*							false otherwise
+	*/
+	public function owns_lock()
+	{
+		return (bool) $this->locked;
+	}
+
+	/**
 	* Releases the lock.
 	*
 	* The lock must have been previously obtained, that is, acquire() call

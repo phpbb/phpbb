@@ -258,13 +258,13 @@ class phpbb_search_fulltext_sphinx
 		$config_object = new phpbb_search_sphinx_config($this->config_file_data);
 		$config_data = array(
 			'source source_phpbb_' . $this->id . '_main' => array(
-				array('type',						$this->dbtype),
+				array('type',						$this->dbtype . ' # mysql or pgsql'),
 				// This config value sql_host needs to be changed incase sphinx and sql are on different servers
-				array('sql_host',					$dbhost),
+				array('sql_host',					$dbhost . ' # SQL server host sphinx connects to'),
 				array('sql_user',					$dbuser),
 				array('sql_pass',					$dbpasswd),
 				array('sql_db',						$dbname),
-				array('sql_port',					$dbport),
+				array('sql_port',					$dbport . ' # optional, default is 3306 for mysql and 5432 for pgsql'),
 				array('sql_query_pre',				'SET NAMES \'utf8\''),
 				array('sql_query_pre',				'UPDATE ' . SPHINX_TABLE . ' SET max_doc_id = (SELECT MAX(post_id) FROM ' . POSTS_TABLE . ') WHERE counter_id = 1'),
 				array('sql_query_range',			'SELECT MIN(post_id), MAX(post_id) FROM ' . POSTS_TABLE . ''),
@@ -619,7 +619,7 @@ class phpbb_search_fulltext_sphinx
 
 		$result_count = $result['total_found'];
 
-		if ($start >= $result_count)
+		if ($result_count && $start >= $result_count)
 		{
 			$start = floor(($result_count - 1) / $per_page) * $per_page;
 
@@ -896,11 +896,11 @@ class phpbb_search_fulltext_sphinx
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_port">' . $this->user->lang['FULLTEXT_SPHINX_PORT'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_PORT_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_sphinx_port" type="text" size="4" maxlength="10" name="config[fulltext_sphinx_port]" value="' . $this->config['fulltext_sphinx_port'] . '" /></dd>
+			<dd><input id="fulltext_sphinx_port" type="number" size="4" maxlength="10" name="config[fulltext_sphinx_port]" value="' . $this->config['fulltext_sphinx_port'] . '" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_indexer_mem_limit">' . $this->user->lang['FULLTEXT_SPHINX_INDEXER_MEM_LIMIT'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_INDEXER_MEM_LIMIT_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_sphinx_indexer_mem_limit" type="text" size="4" maxlength="10" name="config[fulltext_sphinx_indexer_mem_limit]" value="' . $this->config['fulltext_sphinx_indexer_mem_limit'] . '" /> ' . $this->user->lang['MIB'] . '</dd>
+			<dd><input id="fulltext_sphinx_indexer_mem_limit" type="number" size="4" maxlength="10" name="config[fulltext_sphinx_indexer_mem_limit]" value="' . $this->config['fulltext_sphinx_indexer_mem_limit'] . '" /> ' . $this->user->lang['MIB'] . '</dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_config_file">' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN'] . '</span></dt>

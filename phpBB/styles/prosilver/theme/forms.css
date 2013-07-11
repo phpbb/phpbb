@@ -286,6 +286,15 @@ textarea.inputbox {
 	width: auto !important;
 }
 
+input[type="search"] {
+	-webkit-appearance: textfield;
+	-webkit-box-sizing: content-box;
+}
+
+input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-results-button, input[type="search"]::-webkit-search-results-decoration {
+	display: none;
+}
+
 /* Form button styles
 ---------------------------------------- */
 input.button1, input.button2 {

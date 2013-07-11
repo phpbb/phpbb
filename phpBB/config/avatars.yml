@@ -4,7 +4,7 @@ services:
         arguments:
             - @config
             - %core.root_path%
-            - .%core.php_ext%
+            - %core.php_ext%
             - @cache.driver
         calls:
             - [set_name, [avatar.driver.gravatar]]
@@ -16,7 +16,7 @@ services:
         arguments:
             - @config
             - %core.root_path%
-            - .%core.php_ext%
+            - %core.php_ext%
             - @cache.driver
         calls:
             - [set_name, [avatar.driver.local]]
@@ -28,7 +28,7 @@ services:
         arguments:
             - @config
             - %core.root_path%
-            - .%core.php_ext%
+            - %core.php_ext%
             - @cache.driver
         calls:
             - [set_name, [avatar.driver.remote]]
@@ -40,7 +40,7 @@ services:
         arguments:
             - @config
             - %core.root_path%
-            - .%core.php_ext%
+            - %core.php_ext%
             - @cache.driver
         calls:
             - [set_name, [avatar.driver.upload]]

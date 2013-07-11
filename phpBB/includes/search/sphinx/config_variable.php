@@ -75,6 +75,6 @@ class phpbb_search_sphinx_config_variable
 	*/
 	function to_string()
 	{
-		return "\t" . $this->name . ' = ' . str_replace("\n", "\\\n", $this->value) . ' ' . $this->comment . "\n";
+		return "\t" . $this->name . ' = ' . str_replace("\n", " \\\n", $this->value) . ' ' . $this->comment . "\n";
 	}
 }

@@ -74,7 +74,7 @@ class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
 
 		if (!function_exists('validate_data'))
 		{
-			require($this->phpbb_root_path . 'includes/functions_user' . $this->php_ext);
+			require($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 
 		$validate_array = validate_data(

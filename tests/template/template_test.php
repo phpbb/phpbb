@@ -133,6 +133,20 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"xyz\nabc\nabc\nbar\nbar\nabc",
 			),
 			array(
+				'define_advanced.html',
+				array(),
+				array('loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
+				array(),
+				"abc\nzxc\ncde\nbcd",
+			),
+			array(
+				'define_unclosed.html',
+				array(),
+				array(),
+				array(),
+				"test",
+			),
+			array(
 				'expressions.html',
 				array(),
 				array(),
@@ -197,8 +211,6 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('loop'),
 				'',
 			),
-			/* Currently fail on develop:
-			http://tracker.phpbb.com/browse/PHPBB3-11323
 			array(
 				'include_define_variable.html',
 				array('VARIABLE' => 'variable.html'),
@@ -213,7 +225,6 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				'value',
 			),
-			*/
 			/* no top level nested loops
 			array(
 				'loop_vars.html',

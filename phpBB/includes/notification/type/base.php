@@ -30,7 +30,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	/** @var phpbb_db_driver */
 	protected $db;
 
-	/** @var phpbb_cache_service */
+	/** @var phpbb_cache_driver_interface */
 	protected $cache;
 
 	/** @var phpbb_template */
@@ -69,10 +69,18 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	public static $notification_option = false;
 
 	/**
+	* The notification_type_id, set upon creation of the class
+	* This is the notification_type_id from the notification_types table
+	*
+	* @var int
+	*/
+	protected $notification_type_id;
+
+	/**
 	* Indentification data
-	* item_type			- Type of the item (translates to the notification type)
-	* item_id			- ID of the item (e.g. post_id, msg_id)
-	* item_parent_id	- Parent item id (ex: for topic => forum_id, for post => topic_id, etc)
+	* notification_type_id	- ID of the item type (auto generated, from notification types table)
+	* item_id				- ID of the item (e.g. post_id, msg_id)
+	* item_parent_id		- Parent item id (ex: for topic => forum_id, for post => topic_id, etc)
 	* user_id
 	* notification_read
 	* notification_time
@@ -124,6 +132,8 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 	public function set_notification_manager(phpbb_notification_manager $notification_manager)
 	{
 		$this->notification_manager = $notification_manager;
+
+		$this->notification_type_id = $this->notification_manager->get_notification_type_id($this->get_type());
 	}
 
 	/**
@@ -211,7 +221,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		// Defaults
 		$this->data = array_merge(array(
 			'item_id'				=> static::get_item_id($type_data),
-			'item_type'	   			=> $this->get_type(),
+			'notification_type_id'	=> $this->notification_type_id,
 			'item_parent_id'		=> static::get_item_parent_id($type_data),
 
 			'notification_time'		=> time(),
@@ -460,7 +470,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 		$this->notification_read = (bool) !$unread;
 
 		$where = array(
-			"item_type = '" . $this->db->sql_escape($this->item_type) . "'",
+			'notification_type_id = ' . (int) $this->notification_type_id,
 			'item_id = ' . (int) $this->item_id,
 			'user_id = ' . (int) $this->user_id,
 		);

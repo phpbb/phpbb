@@ -115,7 +115,7 @@ class acp_inactive
 							{
 								$messenger->template('admin_welcome_activated', $row['user_lang']);
 
-								$messenger->to($row['user_email'], $row['username']);
+								$messenger->set_addresses($row);
 
 								$messenger->anti_abuse_headers($config, $user);
 
@@ -203,8 +203,7 @@ class acp_inactive
 						{
 							$messenger->template('user_remind_inactive', $row['user_lang']);
 
-							$messenger->to($row['user_email'], $row['username']);
-							$messenger->im($row['user_jabber'], $row['username']);
+							$messenger->set_addresses($row);
 
 							$messenger->anti_abuse_headers($config, $user);
 

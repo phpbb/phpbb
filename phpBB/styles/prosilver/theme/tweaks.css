@@ -9,6 +9,10 @@ tweaks required due to its poor CSS support.
 	zoom: 1;
 }
 
+ul.linklist {
+	zoom: 1;
+}
+
 /* Align checkboxes/radio buttons nicely */
 dd label input { 
 	vertical-align: text-bottom; 
@@ -29,4 +33,36 @@ dl.details dd {
 /* Headerbar height fix for IE7 */
 #site-description p {
 	*margin-bottom: 1.0em;
+}
+
+/* Forum list column styles for IE7 */
+dl.icon dt, dl.icon dd {
+	*min-height: 32px;
+}
+
+dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
+	*width: 79px;
+}
+
+dd.lastpost, dd.redirect, dd.moderation, dd.time, dd.info {
+	*width: 249px;
+}
+
+dd.option {
+	*width: 124px;
+}
+
+/* Notifications list for IE7 */
+#notification_list {
+	*left: 0;
+}
+
+#notification_list .header_settings {
+	*position: absolute;
+	*right: 10px;
+	*top: 0;
+}
+
+.icon-notification {
+	*z-index: 2;
 }

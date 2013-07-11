@@ -13,22 +13,24 @@
 		<p>{L_UNAPPROVED_TOTAL}</p>
 
 		<!-- IF .unapproved -->
-			<ul class="topiclist">
+			<ul class="topiclist two-long-columns">
 				<li class="header">
 					<dl>
-						<dt>{L_VIEW_DETAILS}</dt>
+						<dt><div class="list-inner">{L_VIEW_DETAILS}</div></dt>
 						<dd class="moderation"><span>{L_TOPIC} &amp; {L_FORUM}</span></dd>
 					</dl>
 				</li>
 			</ul>
-			<ul class="topiclist cplist">
+			<ul class="topiclist cplist two-long-columns">
 
 			<!-- BEGIN unapproved -->
 			<li class="row<!-- IF unapproved.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl>
 					<dt>
-						<a href="{unapproved.U_POST_DETAILS}" class="topictitle">{unapproved.SUBJECT}</a> {unapproved.ATTACH_ICON_IMG}<br />
-						{L_POSTED} {L_POST_BY_AUTHOR} {unapproved.AUTHOR_FULL} &raquo; {unapproved.POST_TIME}
+						<div class="list-inner">
+							<a href="{unapproved.U_POST_DETAILS}" class="topictitle">{unapproved.SUBJECT}</a> {unapproved.ATTACH_ICON_IMG}<br />
+							{L_POSTED} {L_POST_BY_AUTHOR} {unapproved.AUTHOR_FULL} &raquo; {unapproved.POST_TIME}
+						</div>
 					</dt>
 					<dd class="moderation"><span>
 						{L_TOPIC}{L_COLON} <a href="{unapproved.U_TOPIC}">{unapproved.TOPIC_TITLE}</a> [<a href="{unapproved.U_MCP_TOPIC}">{L_MODERATE}</a>]<br />
@@ -65,22 +67,24 @@
 		<p>{L_REPORTS_TOTAL}</p>
 
 		<!-- IF .report -->
-			<ul class="topiclist">
+			<ul class="topiclist two-long-columns">
 				<li class="header">
 					<dl>
-						<dt>{L_VIEW_DETAILS}</dt>
+						<dt><div class="list-inner">{L_VIEW_DETAILS}</div></dt>
 						<dd class="moderation"><span>{L_REPORTER} &amp; {L_FORUM}</span></dd>
 					</dl>
 				</li>
 			</ul>
-			<ul class="topiclist cplist">
+			<ul class="topiclist cplist two-long-columns">
 
 			<!-- BEGIN report -->
 			<li class="row<!-- IF report.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl>
 					<dt>
-						<a href="{report.U_POST_DETAILS}#reports" class="topictitle">{report.SUBJECT}</a> {report.ATTACH_ICON_IMG}<br />
-						<span>{L_POSTED} {L_POST_BY_AUTHOR} {report.AUTHOR_FULL} &raquo; {report.POST_TIME}</span>
+						<div class="list-inner">
+							<a href="{report.U_POST_DETAILS}#reports" class="topictitle">{report.SUBJECT}</a> {report.ATTACH_ICON_IMG}<br />
+							<span>{L_POSTED} {L_POST_BY_AUTHOR} {report.AUTHOR_FULL} &raquo; {report.POST_TIME}</span>
+						</div>
 					</dt>
 					<dd class="moderation">
 						<span>{L_REPORTED} {L_POST_BY_AUTHOR} {report.REPORTER_FULL} {L_REPORTED_ON_DATE} {report.REPORT_TIME}<br />
@@ -104,23 +108,25 @@
 		<p>{L_PM_REPORTS_TOTAL}</p>
 
 		<!-- IF .pm_report -->
-			<ul class="topiclist">
+			<ul class="topiclist two-long-columns">
 				<li class="header">
 					<dl>
-						<dt>{L_VIEW_DETAILS}</dt>
+						<dt><div class="list-inner">{L_VIEW_DETAILS}</div></dt>
 						<dd class="moderation"><span>{L_REPORTER}</span></dd>
 					</dl>
 				</li>
 			</ul>
-			<ul class="topiclist cplist">
+			<ul class="topiclist cplist two-long-columns">
 
 			<!-- BEGIN pm_report -->
 			<li class="row<!-- IF pm_report.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl>
 					<dt>
-						<a href="{pm_report.U_PM_DETAILS}" class="topictitle">{pm_report.PM_SUBJECT}</a> {pm_report.ATTACH_ICON_IMG}<br />
-						<span>{L_MESSAGE_BY_AUTHOR} {pm_report.PM_AUTHOR_FULL} &raquo; {pm_report.PM_TIME}</span><br />
-						<span>{L_MESSAGE_TO} {pm_report.RECIPIENTS}</span>
+						<div class="list-inner">
+							<a href="{pm_report.U_PM_DETAILS}" class="topictitle">{pm_report.PM_SUBJECT}</a> {pm_report.ATTACH_ICON_IMG}<br />
+							<span>{L_MESSAGE_BY_AUTHOR} {pm_report.PM_AUTHOR_FULL} &raquo; {pm_report.PM_TIME}</span><br />
+							<span>{L_MESSAGE_TO} {pm_report.RECIPIENTS}</span>
+						</div>
 					</dt>
 					<dd class="moderation">
 						<span>{L_REPORTED} {L_POST_BY_AUTHOR} {pm_report.REPORTER_FULL} {L_REPORTED_ON_DATE} {pm_report.REPORT_TIME}</span>

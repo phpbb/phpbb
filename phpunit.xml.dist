@@ -31,15 +31,6 @@
         <whitelist>
             <directory suffix=".php">./phpBB/includes/</directory>
             <exclude>
-                <file>./phpBB/includes/db/firebird.php</file>
-                <file>./phpBB/includes/db/mysql.php</file>
-                <file>./phpBB/includes/db/mysqli.php</file>
-                <file>./phpBB/includes/db/mssql.php</file>
-                <file>./phpBB/includes/db/mssql_odbc.php</file>
-                <file>./phpBB/includes/db/mssqlnative.php</file>
-                <file>./phpBB/includes/db/oracle.php</file>
-                <file>./phpBB/includes/db/postgres.php</file>
-                <file>./phpBB/includes/db/sqlite.php</file>
                 <file>./phpBB/includes/search/fulltext_native.php</file>
                 <file>./phpBB/includes/search/fulltext_mysql.php</file>
                 <directory suffix=".php">./phpBB/includes/captcha/</directory>

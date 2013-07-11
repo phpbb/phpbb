@@ -68,13 +68,20 @@ class acp_styles
 
 		$action = $this->request->variable('action', '');
 		$post_actions = array('install', 'activate', 'deactivate', 'uninstall');
+
+		if ($action && in_array($action, $post_actions) && !check_link_hash($request->variable('hash', ''), $action))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		foreach ($post_actions as $key)
 		{
-			if (isset($_POST[$key]))
+			if ($this->request->is_set_post($key))
 			{
 				$action = $key;
 			}
 		}
+
 		if ($action != '')
 		{
 			$this->s_hidden_fields['action'] = $action;
@@ -921,21 +928,23 @@ class acp_styles
 				'L_ACTION'	=> $this->user->lang['DETAILS']
 			);
 
-			// Activate
+			// Activate/Deactive
+			$action_name = ($style['style_active'] ? 'de' : '') . 'activate';
+
 			$actions[] = array(
-				'U_ACTION'	=> $this->u_action . '&amp;action=' . ($style['style_active'] ? 'de' : '') . 'activate&amp;id=' . $style['style_id'],
+				'U_ACTION'	=> $this->u_action . '&amp;action=' . $action_name . '&amp;hash=' . generate_link_hash($action_name) . '&amp;id=' . $style['style_id'],
 				'L_ACTION'	=> $this->user->lang['STYLE_' . ($style['style_active'] ? 'DE' : '') . 'ACTIVATE']
 			);
 
 /*			// Export
 			$actions[] = array(
-				'U_ACTION'	=> $this->u_action . '&amp;action=export&amp;id=' . $style['style_id'],
+				'U_ACTION'	=> $this->u_action . '&amp;action=export&amp;hash=' . generate_link_hash('export') . '&amp;id=' . $style['style_id'],
 				'L_ACTION'	=> $this->user->lang['EXPORT']
 			); */
 
 			// Uninstall
 			$actions[] = array(
-				'U_ACTION'	=> $this->u_action . '&amp;action=uninstall&amp;id=' . $style['style_id'],
+				'U_ACTION'	=> $this->u_action . '&amp;action=uninstall&amp;hash=' . generate_link_hash('uninstall') . '&amp;id=' . $style['style_id'],
 				'L_ACTION'	=> $this->user->lang['STYLE_UNINSTALL']
 			);
 
@@ -957,7 +966,7 @@ class acp_styles
 			else
 			{
 				$actions[] = array(
-					'U_ACTION'	=> $this->u_action . '&amp;action=install&amp;dir=' . urlencode($style['style_path']),
+					'U_ACTION'	=> $this->u_action . '&amp;action=install&amp;hash=' . generate_link_hash('install') . '&amp;dir=' . urlencode($style['style_path']),
 					'L_ACTION'	=> $this->user->lang['INSTALL_STYLE']
 				);
 			}

@@ -14,7 +14,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class phpbb_controller_test extends phpbb_test_case
+class phpbb_controller_controller_test extends phpbb_test_case
 {
 	public function setUp()
 	{

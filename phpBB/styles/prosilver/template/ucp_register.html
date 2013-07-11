@@ -10,11 +10,6 @@
 		document.forms['register'].change_lang.value = lang_iso;
 		document.forms['register'].submit.click();
 	}
-
-	<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_REFRESH -->
-	onload_functions.push(apply_onkeypress_event);
-	<!-- ENDIF -->
-
 // ]]>
 </script>
 
@@ -36,7 +31,7 @@
 	</dl>
 	<dl>
 		<dt><label for="email">{L_EMAIL_ADDRESS}{L_COLON}</label></dt>
-		<dd><input type="text" tabindex="2" name="email" id="email" size="25" maxlength="100" value="{EMAIL}" class="inputbox autowidth" title="{L_EMAIL_ADDRESS}" /></dd>
+		<dd><input type="email" tabindex="2" name="email" id="email" size="25" maxlength="100" value="{EMAIL}" class="inputbox autowidth" title="{L_EMAIL_ADDRESS}" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="new_password">{L_PASSWORD}{L_COLON}</label><br /><span>{L_PASSWORD_EXPLAIN}</span></dt>
