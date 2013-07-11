@@ -680,7 +680,7 @@ class acp_board
 
 		foreach($auth_providers as $key => $value)
 		{
-			if (!($provider instanceof phpbb_auth_provider_interface))
+			if (!($value instanceof phpbb_auth_provider_interface))
 			{
 				continue;
 			}
