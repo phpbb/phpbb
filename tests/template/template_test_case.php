@@ -33,7 +33,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		}
 		catch (Exception $exception)
 		{
-			// reset output buffering even when an error occured
+			// reset output buffering even when an error occurred
 			// PHPUnit turns trigger_error into exceptions as well
 			ob_end_clean();
 			throw $exception;
