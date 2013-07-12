@@ -230,13 +230,13 @@ services:
             - %core.php_ext%
             - %tables.log%
 
-    model.api.forum:
-        class: phpbb_model_api_forum
+    model.repository.forum:
+        class: phpbb_model_repository_forum
         arguments:
             - @tree.nestedset_forum
 
-    model.api.topic:
-        class: phpbb_model_api_topic
+    model.repository.topic:
+        class: phpbb_model_repository_topic
         arguments:
             - @config
             - @dbal.conn

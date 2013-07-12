@@ -16,10 +16,10 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
- * Topic model
+ * Topic repository
  * @package phpBB3
  */
-class phpbb_model_api_topic
+class phpbb_model_repository_topic
 {
 	/**
 	 * phpBB configuration

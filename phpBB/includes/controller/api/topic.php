@@ -28,24 +28,24 @@ class phpbb_controller_api_topic
 
 	/**
 	 * API Model
-	 * @var phpbb_model_api_topic
+	 * @var phpbb_model_repository_topic
 	 */
-	protected $model;
+	protected $topic_repository;
 
 	/**
 	 * Constructor
 	 *
-	 * @param phpbb_model_api_topic $model
+	 * @param phpbb_model_repository_topic $topic_repository
 	 */
-	function __construct(phpbb_model_api_topic $model)
+	function __construct(phpbb_model_repository_topic $topic_repository)
 	{
-		$this->model = $model;
+		$this->topic_repository = $topic_repository;
 	}
 
 	/**
 	 * Controller method to return a list of topics in a given forum
 	 *
-	 * Accesible trough /api/topics/{forum_id}/{page} (no {page} defaults to 1)
+	 * Accesible trough /api/forums/{forum_id}/topics/{page} (no {page} defaults to 1)
 	 * Method: GET
 	 *
 	 * @param int $forum_id the forum to retrieve topics from
@@ -54,12 +54,21 @@ class phpbb_controller_api_topic
 	 */
 	public function topics($forum_id, $page)
 	{
-		$topics = $this->model->get($forum_id, $page);
+		$topics = $this->topic_repository->get($forum_id, $page);
 
-		$serializer = new Serializer(array(new phpbb_model_normalizer_topic()), array(new JsonEncoder()));
-		$json = $serializer->serialize($topics, 'json');
+		$serializer = new Serializer(array(
+			new phpbb_model_normalizer_api_response(),
+			new phpbb_model_normalizer_topic(),
+		), array(new JsonEncoder()));
 
-		return new Response($json);
+		$response = new phpbb_model_entity_api_response(array(
+			'status' => 200,
+			'data' => $serializer->normalize($topics),
+		));
+
+		$json = $serializer->serialize($response, 'json');
+
+		return new Response($json, $response->get('status'));
 	}
 
 }
