@@ -492,8 +492,8 @@ class acp_permission_roles
 					'S_NO'		=> ($allowed == ACL_NO) ? true : false,
 
 					'FIELD_NAME'	=> $permission,
-					'PERMISSION'	=> $phpbb_permissions->get_permission_lang($permission)
-				);
+					'PERMISSION'	=> $phpbb_permissions->get_permission_lang($permission),
+				));
 			}
 		}
 	}
