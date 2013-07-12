@@ -692,7 +692,7 @@ class mcp_queue
 		{
 			$show_notify = false;
 
-			if ($action == 'approve' && ($config['email_enable'] || $config['jab_enable']))
+			if ($action == 'approve')
 			{
 				foreach ($post_info as $post_data)
 				{
@@ -840,7 +840,7 @@ class mcp_queue
 		{
 			$show_notify = false;
 
-			if ($action == 'approve' && ($config['email_enable'] || $config['jab_enable']))
+			if ($action == 'approve')
 			{
 				foreach ($topic_info as $topic_data)
 				{
