@@ -121,9 +121,12 @@ $phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includ
 $phpbb_class_loader->register();
 
 // Set up container (must be done here because extensions table may not exist)
+$other_config_path = $phpbb_root_path . 'install/update/new/config';
+$config_path = file_exists($other_config_path . 'services.yml') ? $other_config_path : $phpbb_root_path;
+
 $container_extensions = array(
 	new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
-	new phpbb_di_extension_core($phpbb_root_path),
+	new phpbb_di_extension_core($config_path),
 );
 $container_passes = array(
 	new phpbb_di_pass_collection_pass(),

@@ -26,19 +26,19 @@ use Symfony\Component\Config\FileLocator;
 class phpbb_di_extension_core extends Extension
 {
 	/**
-	* phpBB Root path
+	* Config path
 	* @var string
 	*/
-	protected $root_path;
+	protected $config_path;
 
 	/**
 	* Constructor
 	*
-	* @param string $root_path Root path
+	* @param string $config_path Config path
 	*/
-	public function __construct($root_path)
+	public function __construct($config_path)
 	{
-		$this->root_path = $root_path;
+		$this->config_path = $config_path;
 	}
 
 	/**
@@ -51,17 +51,8 @@ class phpbb_di_extension_core extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
-		// If we are in install, try to use the updated version, when available
-		if (defined('IN_INSTALL') && file_exists($this->root_path . 'install/update/new/config/services.yml'))
-		{
-			$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($this->root_path . 'install/update/new/config')));
-			$loader->load('services.yml');
-		}
-		else if (file_exists($this->root_path . 'config/services.yml'))
-		{
-			$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($this->root_path . 'config')));
-			$loader->load('services.yml');
-		}
+		$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($this->config_path)));
+		$loader->load('services.yml');
 	}
 
 	/**
