@@ -93,8 +93,6 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 
 	function get_sql()
 	{
-		$sql_visibility = $this->content_visibility->get_visibility_sql('post', $this->forum_id, 'p.'); 
-
 		$this->sql = array(
 			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
@@ -103,7 +101,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 				USERS_TABLE		=> 'u',
 			),
 			'WHERE'		=> 'p.topic_id = ' . $this->topic_id . '
-								' . (($sql_visibility) ? ' AND ' . $sql_visibility : '') . '
+								AND ' . $this->content_visibility->get_visibility_sql('post', $this->forum_id, 'p.') . '
 								AND p.poster_id = u.user_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
 		);

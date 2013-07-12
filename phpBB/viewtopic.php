@@ -79,14 +79,12 @@ if ($view && !$post_id)
 	{
 		// Get topic tracking info
 		$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_id);
-
 		$topic_last_read = (isset($topic_tracking_info[$topic_id])) ? $topic_tracking_info[$topic_id] : 0;
-		$sql_visibility = $phpbb_content_visibility->get_visibility_sql('post', $forum_id);
 
 		$sql = 'SELECT post_id, topic_id, forum_id
 			FROM ' . POSTS_TABLE . "
 			WHERE topic_id = $topic_id
-				" . (($sql_visibility) ? ' AND ' . $sql_visibility : '') . "
+				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id) . "
 				AND post_time > $topic_last_read
 				AND forum_id = $forum_id
 			ORDER BY post_time ASC";
@@ -135,14 +133,12 @@ if ($view && !$post_id)
 		}
 		else
 		{
-			$sql_visibility = $phpbb_content_visibility->get_visibility_sql('topic', $row['forum_id']);
-
 			$sql = 'SELECT topic_id, forum_id
 				FROM ' . TOPICS_TABLE . '
 				WHERE forum_id = ' . $row['forum_id'] . "
 					AND topic_moved_id = 0
 					AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
-					" . (($sql_visibility) ? ' AND ' . $sql_visibility : '') . "
+					AND " . $phpbb_content_visibility->get_visibility_sql('topic', $row['forum_id']) . "
 				ORDER BY topic_last_post_time $sql_ordering";
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
@@ -286,12 +282,10 @@ if ($post_id)
 	}
 	else
 	{
-		$sql_visibility = $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.');
-
 		$sql = 'SELECT COUNT(p.post_id) AS prev_posts
 			FROM ' . POSTS_TABLE . " p
 			WHERE p.topic_id = {$topic_data['topic_id']}
-				" . (($sql_visibility) ? ' AND ' . $sql_visibility : '');
+				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.');
 
 		if ($sort_dir == 'd')
 		{
@@ -405,13 +399,12 @@ gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $
 if ($sort_days)
 {
 	$min_post_time = time() - ($sort_days * 86400);
-	$sql_visibility = $phpbb_content_visibility->get_visibility_sql('post', $forum_id);
 
 	$sql = 'SELECT COUNT(post_id) AS num_posts
 		FROM ' . POSTS_TABLE . "
 		WHERE topic_id = $topic_id
 			AND post_time >= $min_post_time
-				" . (($sql_visibility) ? ' AND ' . $sql_visibility : '');
+				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id);
 	$result = $db->sql_query($sql);
 	$total_posts = (int) $db->sql_fetchfield('num_posts');
 	$db->sql_freeresult($result);
@@ -946,12 +939,10 @@ $bbcode_bitfield = '';
 $i = $i_total = 0;
 
 // Go ahead and pull all data for this topic
-$sql_visibility = $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.');
-
 $sql = 'SELECT p.post_id
 	FROM ' . POSTS_TABLE . ' p' . (($join_user_sql[$sort_key]) ? ', ' . USERS_TABLE . ' u': '') . "
 	WHERE p.topic_id = $topic_id
-		" . (($sql_visibility) ? ' AND ' . $sql_visibility : '') . "
+		AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.') . "
 		" . (($join_user_sql[$sort_key]) ? 'AND u.user_id = p.poster_id': '') . "
 		$limit_posts_time
 	ORDER BY $sql_sort_order";

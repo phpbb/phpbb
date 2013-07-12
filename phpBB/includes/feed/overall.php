@@ -56,8 +56,6 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 			return false;
 		}
 
-		$sql_visibility = $this->content_visibility->get_visibility_sql('post', array(), 'p.');
-
 		// Get the actual data
 		$this->sql = array(
 			'SELECT'	=>	'f.forum_id, f.forum_name, ' .
@@ -74,7 +72,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 				),
 			),
 			'WHERE'		=> $this->db->sql_in_set('p.topic_id', $topic_ids) . '
-							' . (($sql_visibility) ? ' AND ' . $sql_visibility : '') . '
+							AND ' . $this->content_visibility->get_visibility_sql('post', array(), 'p.') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND u.user_id = p.poster_id',
 			'ORDER_BY'	=> 'p.post_time DESC',

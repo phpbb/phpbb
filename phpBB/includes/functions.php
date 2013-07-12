@@ -2000,8 +2000,6 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 	// Handle update of unapproved topics info.
 	// Only update for moderators having m_approve permission for the forum.
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
-	$sql_update_unapproved = $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
-	$sql_update_unapproved = ($sql_update_unapproved) ? ' AND ' . $sql_update_unapproved : '';
 
 	// Check the forum for any left unread topics.
 	// If there are none, we mark the forum as read.
@@ -2021,8 +2019,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 						AND tt.user_id = ' . $user->data['user_id'] . ')
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
-					AND t.topic_moved_id = 0 ' .
-					$sql_update_unapproved . '
+					AND t.topic_moved_id = 0
+					AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.') . '
 					AND (tt.topic_id IS NULL
 						OR tt.mark_time < t.topic_last_post_time)';
 			$result = $db->sql_query_limit($sql, 1);
@@ -2046,8 +2044,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				FROM ' . TOPICS_TABLE . ' t
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
-					AND t.topic_moved_id = 0 ' .
-					$sql_update_unapproved;
+					AND t.topic_moved_id = 0
+					AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
 			$result = $db->sql_query($sql);
 
 			$check_forum = $tracking_topics['tf'][$forum_id];
