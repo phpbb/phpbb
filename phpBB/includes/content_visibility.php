@@ -62,7 +62,7 @@ class phpbb_content_visibility
 	* @param	string		$php_ext			PHP Extension
 	* @return	null
 	*/
-	public function __construct($auth, phpbb_db_driver $db, $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
+	public function __construct(phpbb_auth $auth, phpbb_db_driver $db, phpbb_user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
 	{
 		$this->auth = $auth;
 		$this->db = $db;

@@ -84,7 +84,7 @@ abstract class phpbb_feed_base
 	* @param string				$phpEx		php file extension
 	* @return	null
 	*/
-	function __construct(phpbb_feed_helper $helper, phpbb_config $config, phpbb_db_driver $db, phpbb_cache_driver_interface $cache, phpbb_user $user, phpbb_auth $auth, $content_visibility, $phpEx)
+	function __construct(phpbb_feed_helper $helper, phpbb_config $config, phpbb_db_driver $db, phpbb_cache_driver_interface $cache, phpbb_user $user, phpbb_auth $auth, phpbb_content_visibility $content_visibility, $phpEx)
 	{
 		$this->config = $config;
 		$this->helper = $helper;
