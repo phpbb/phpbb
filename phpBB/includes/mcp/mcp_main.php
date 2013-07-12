@@ -498,7 +498,6 @@ function mcp_move_topic($topic_ids)
 			$posts_moved_unapproved += $topic_info['topic_posts_unapproved'];
 			$posts_moved_softdeleted += $topic_info['topic_posts_softdeleted'];
 		}
-		$topics_moved = sizeof($topic_data);
 
 		$db->sql_transaction('begin');
 
