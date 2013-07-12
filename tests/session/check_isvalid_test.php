@@ -7,9 +7,10 @@
 *
 */
 
-require_once dirname(__FILE__) . '/testable_factory.php';
+require_once dirname(__FILE__) . '/../test_framework/phpbb_session_test_case.php';
 
-class phpbb_session_check_isvalid_test extends phpbb_database_test_case
+
+class phpbb_session_check_isvalid_test extends phpbb_session_test_case
 {
 	public function getDataSet()
 	{
@@ -18,28 +19,13 @@ class phpbb_session_check_isvalid_test extends phpbb_database_test_case
 
 	protected function access_with($session_id, $user_id, $user_agent, $ip)
 	{
-		global $phpbb_container, $phpbb_root_path, $phpEx;
+		$this->session_factory->merge_test_data($session_id, $user_id, $user_agent, $ip);
 
-		$db = $this->new_dbal();
-		$config = new phpbb_config(array());
-		$request = $this->getMock('phpbb_request');
-		$user = $this->getMock('phpbb_user');
-
-		$auth_provider = new phpbb_auth_provider_db($db, $config, $request, $user, $phpbb_root_path, $phpEx);
-		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
-		$phpbb_container->expects($this->any())
-			->method('get')
-			->with('auth.provider.db')
-			->will($this->returnValue($auth_provider));
-
-		$session_factory = new phpbb_session_testable_factory;
-		$session_factory->merge_test_data($session_id, $user_id, $user_agent, $ip);
-
-		$session = $session_factory->get_session($db);
+		$session = $this->session_factory->get_session($this->db);
 		$session->page = array('page' => 'page', 'forum' => 0);
 
 		$session->session_begin();
-		$session_factory->check($this);
+		$this->session_factory->check($this);
 		return $session;
 	}
 
