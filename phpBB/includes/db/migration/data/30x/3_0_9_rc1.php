@@ -27,8 +27,8 @@ class phpbb_db_migration_data_30x_3_0_9_rc1 extends phpbb_db_migration
 					'COLUMNS' => array(
 						// this column was removed from the database updater
 						// after 3.0.9-RC3 was released. It might still exist
-						// in 3.0.9-RCX installations and has to be dropped in
-						// 3.0.12 after the db_tools class is capable of properly
+						// in 3.0.9-RCX installations and has to be dropped as
+						// soon as the db_tools class is capable of properly
 						// removing a primary key.
 						// 'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
 						'attempt_ip'			=> array('VCHAR:40', ''),
