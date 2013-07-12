@@ -33,7 +33,10 @@ function phpbb_bootstrap_db_connection($config_file)
 	require($config_file);
 	$dbal_driver_class = phpbb_convert_30_dbms_to_31($dbms);
 
-	return new $dbal_driver_class($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, defined('PHPBB_DB_NEW_LINK'));
+	$db = new $dbal_driver_class();
+	$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, defined('PHPBB_DB_NEW_LINK'));
+
+	return $db;
 }
 
 /**
@@ -56,9 +59,10 @@ function phpbb_bootstrap_table_prefix($config_file)
 * Used to bootstrap the container.
 *
 * @param string $config_file
+* @param string $phpbb_root_path
 * @return array enabled extensions
 */
-function phpbb_bootstrap_enabled_exts($config_file)
+function phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path)
 {
 	$db = phpbb_bootstrap_db_connection($config_file);
 	$table_prefix = phpbb_bootstrap_table_prefix($config_file);
@@ -142,7 +146,7 @@ function phpbb_create_install_container($phpbb_root_path, $php_ext)
 */
 function phpbb_create_compiled_container($config_file, array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
-	$installed_exts = phpbb_bootstrap_enabled_exts($config_file);
+	$installed_exts = phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path);
 
 	// Now pass the enabled extension paths into the ext compiler extension
 	$extensions[] = new phpbb_di_extension_ext($installed_exts);
@@ -179,7 +183,7 @@ function phpbb_create_dumped_container($config_file, array $extensions, array $p
 		return new phpbb_cache_container();
 	}
 
-	$container = phpbb_create_compiled_container($extensions, $passes, $phpbb_root_path, $php_ext);
+	$container = phpbb_create_compiled_container($config_file, $extensions, $passes, $phpbb_root_path, $php_ext);
 
 	// Lastly, we create our cached container class
 	$dumper = new PhpDumper($container);
@@ -212,7 +216,7 @@ function phpbb_create_dumped_container($config_file, array $extensions, array $p
 function phpbb_create_dumped_container_unless_debug($config_file, array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
 	$container_factory = defined('DEBUG') ? 'phpbb_create_compiled_container' : 'phpbb_create_dumped_container';
-	return $container_factory($extensions, $passes, $phpbb_root_path, $php_ext);
+	return $container_factory($config_file, $extensions, $passes, $phpbb_root_path, $php_ext);
 }
 
 /**
