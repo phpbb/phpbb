@@ -84,19 +84,19 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 	public function group_avatar_min_max_data()
 	{
 		return array(
-			array('uploadurl', 'foo', 'TOO_SHORT'),
-			array('uploadurl', 'foobar', 'AVATAR_URL_INVALID'),
-			array('uploadurl', str_repeat('f', 256), 'TOO_LONG'),
-			array('remotelink', 'foo', 'TOO_SHORT'),
-			array('remotelink', 'foobar', 'AVATAR_URL_INVALID'),
-			array('remotelink', str_repeat('f', 256), 'TOO_LONG'),
+			array('avatar_driver_upload', 'avatar_upload_url', 'foo', 'AVATAR_URL_INVALID'),
+			array('avatar_driver_upload', 'avatar_upload_url', 'foobar', 'AVATAR_URL_INVALID'),
+			array('avatar_driver_upload', 'avatar_upload_url', 'http://www.phpbb.com/' . str_repeat('f', 240) . '.png', 'TOO_LONG'),
+			array('avatar_driver_remote', 'avatar_remote_url', 'foo', 'AVATAR_URL_INVALID'),
+			array('avatar_driver_remote', 'avatar_remote_url', 'foobar', 'AVATAR_URL_INVALID'),
+			array('avatar_driver_remote', 'avatar_remote_url', 'http://www.phpbb.com/' . str_repeat('f', 240) . '.png', 'TOO_LONG'),
 		);
 	}
 
 	/**
 	* @dataProvider group_avatar_min_max_data
 	*/
-	public function test_group_avatar_min_max($form_name, $input, $expected)
+	public function test_group_avatar_min_max($avatar_type, $form_name, $input, $expected)
 	{
 		$this->login();
 		$this->admin_login();
@@ -105,6 +105,7 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 
 		$crawler = self::request('GET', $this->get_url() . '&g=5&sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$form['avatar_driver']->setValue($avatar_type);
 		$form[$form_name]->setValue($input);
 		$crawler = self::submit($form);
 		$this->assertContains($this->lang($expected), $crawler->text());
