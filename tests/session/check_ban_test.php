@@ -27,7 +27,7 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 			array('Matching values in the database, should be banned',
 				 4, '127.0.0.1', 'bar@example.org', true, /* ?: */ true),
 			array('IP Banned, should be banned',
-			     false, '127.1.1.1', false, falseN, /* ?: */ true),
+			     false, '127.1.1.1', false, false, /* ?: */ true),
 		);
 	}
 
