@@ -108,7 +108,10 @@ class mcp_queue
 					return;
 				}
 
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+				if (!class_exists('messenger'))
+				{
+					include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+				}
 
 				if (!empty($topic_id_list))
 				{
@@ -1042,7 +1045,7 @@ class mcp_queue
 			{
 				if (!function_exists('delete_posts'))
 				{
-					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+					include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 				}
 
 				// We do not check for permissions here, because the moderator allowed approval/disapproval should be allowed to delete the disapproved posts
@@ -1160,7 +1163,10 @@ class mcp_queue
 		}
 		else
 		{
-			include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+			if (!function_exists('display_reasons'))
+			{
+				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+			}
 
 			$show_notify = false;
 
