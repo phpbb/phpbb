@@ -38,14 +38,26 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		// Change the global cache object for this test because
 		// the mock cache object does not hit the database as is
 		// needed for this test.
-		global $cache;
-		$old_cache = $cache;
-		$cache = new phpbb_cache_driver_file();
+		global $cache, $config,  $phpbb_root_path, $php_ext;
+		$cache = new phpbb_cache_service(
+			new phpbb_cache_driver_file(),
+			$config,
+			$this->db,
+			$phpbb_root_path,
+			$php_ext
+		);
 
-		$is_banned =
-			$session->check_ban($user_id, $user_ips, $user_email, $return);
+		try
+		{
+			$is_banned =
+				$session->check_ban($user_id, $user_ips, $user_email, $return);
+		} catch (PHPUnit_Framework_Error_Notice $e)
+		{
+			// User error was triggered, user must have been banned
+			$is_banned = true;
+		}
 		$this->assertEquals($should_be_banned, $is_banned, $test_msg);
 
-		$cache = $old_cache;
+		$cache = new phpbb_mock_cache();
 	}
 }
