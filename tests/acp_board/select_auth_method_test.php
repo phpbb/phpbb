@@ -25,6 +25,8 @@ class phpbb_acp_board_select_auth_method_test extends phpbb_test_case
 
 	public function setUp()
 	{
+		parent::setUp();
+
 		global $phpbb_container;
 		$phpbb_container = new phpbb_mock_container_builder();
 
