@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_template_twig_node_includeasset extends Twig_Node
+abstract class phpbb_template_twig_node_includeasset extends Twig_Node
 {
 	/** @var Twig_Environment */
 	protected $environment;
