@@ -250,7 +250,7 @@ class jabber
 			return true;
 		}
 
-		// Apparently an error occured...
+		// Apparently an error occurred...
 		$this->add_to_log('Error: open_socket() - ' . $errorstr);
 		return false;
 	}
