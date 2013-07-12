@@ -44,7 +44,7 @@ abstract class phpbb_db_migration
 	/** @var string */
 	protected $php_ext;
 
-	/** @var array Errors, if any occured */
+	/** @var array Errors, if any occurred */
 	protected $errors;
 
 	/** @var array List of queries executed through $this->sql_query() */
