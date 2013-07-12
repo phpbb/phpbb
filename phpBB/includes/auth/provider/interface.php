@@ -72,9 +72,14 @@ interface phpbb_auth_provider_interface
 	 * provider.
 	 * @param	array	$new_config Contains the new configuration values that
 	 *								have been set in acp_board.
-	 * @return	string|null		Returns null if not implemented or a string
-	 *							containing the name of the acp tempalte file for
-	 *							the authentication provider.
+	 * @return	array|null		Returns null if not implemented or an array with
+	 *							the template file name and an array of the vars
+	 *							that the template needs that must conform to the
+	 *							following example:
+	 *							array(
+	 *								'TEMPLATE_FILE'	=> string,
+	 *								'TEMPLATE_VARS'	=> array(...),
+	 *							)
 	 */
 	public function get_acp_template($new_config);
 

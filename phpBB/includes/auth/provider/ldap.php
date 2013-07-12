@@ -30,14 +30,12 @@ class phpbb_auth_provider_ldap extends phpbb_auth_provider_base
 	 * @param 	phpbb_db_driver	$db
 	 * @param 	phpbb_config	$config
 	 * @param 	phpbb_user		$user
-	 * @param 	phpbb_template 	$template
 	 */
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_user $user, phpbb_template $template)
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_user $user)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->user = $user;
-		$this->template = $template;
 	}
 
 	/**
@@ -302,18 +300,21 @@ class phpbb_auth_provider_ldap extends phpbb_auth_provider_base
 	 */
 	public function get_acp_template($new_config)
 	{
-		$this->template->assign_vars(array(
-			'AUTH_LDAP_DN'			=> $new_config['ldap_base_dn'],
-			'AUTH_LDAP_EMAIL'		=> $new_config['ldap_email'],
-			'AUTH_LDAP_PASSORD'		=> $new_config['ldap_password'],
-			'AUTH_LDAP_PORT'		=> $new_config['ldap_port'],
-			'AUTH_LDAP_SERVER'		=> $new_config['ldap_server'],
-			'AUTH_LDAP_UID'			=> $new_config['ldap_uid'],
-			'AUTH_LDAP_USER'		=> $new_config['ldap_user'],
-			'AUTH_LDAP_USER_FILTER'	=> $new_config['ldap_user_filter'],
-		));
+		$this->template->assign_vars();
 
-		return 'auth_provider_ldap.html';
+		return array(
+			'TEMPLATE_FILE'	=> 'auth_provider_ldap.html',
+			'TEMPLATE_VARS'	=> array(
+				'AUTH_LDAP_DN'			=> $new_config['ldap_base_dn'],
+				'AUTH_LDAP_EMAIL'		=> $new_config['ldap_email'],
+				'AUTH_LDAP_PASSORD'		=> $new_config['ldap_password'],
+				'AUTH_LDAP_PORT'		=> $new_config['ldap_port'],
+				'AUTH_LDAP_SERVER'		=> $new_config['ldap_server'],
+				'AUTH_LDAP_UID'			=> $new_config['ldap_uid'],
+				'AUTH_LDAP_USER'		=> $new_config['ldap_user'],
+				'AUTH_LDAP_USER_FILTER'	=> $new_config['ldap_user_filter'],
+			),
+		);
 	}
 
 	/**

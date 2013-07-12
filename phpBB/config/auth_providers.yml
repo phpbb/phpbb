@@ -33,6 +33,5 @@ services:
             - @dbal.conn
             - @config
             - @user
-            - @template
         tags:
             - { name: auth.provider }
