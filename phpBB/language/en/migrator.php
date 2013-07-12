@@ -45,7 +45,7 @@ $lang = array_merge($lang, array(
 	'MIGRATION_NOT_FULFILLABLE'			=> 'The migration "%1$s" is not fulfillable, missing migration "%2$s".',
 	'MIGRATION_SCHEMA_DONE'				=> 'Installed Schema: %s',
 
-	'MODULE_ERROR'						=> 'An error occured while creating a module: %s',
+	'MODULE_ERROR'						=> 'An error occurred while creating a module: %s',
 	'MODULE_INFO_FILE_NOT_EXIST'		=> 'A required module info file is missing: %2$s',
 	'MODULE_NOT_EXIST'					=> 'A required module does not exist: %s',
 
