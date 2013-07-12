@@ -32,7 +32,7 @@ class phpbb_template_template_test extends phpbb_test_case
 		}
 		catch (Exception $exception)
 		{
-			// reset the error level even when an error occured
+			// reset the error level even when an error occurred
 			// PHPUnit turns trigger_error into exceptions as well
 			error_reporting($error_level);
 			ob_end_clean();
