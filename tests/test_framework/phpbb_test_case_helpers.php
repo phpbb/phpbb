@@ -94,6 +94,9 @@ class phpbb_test_case_helpers
 
 	public function makedirs($path)
 	{
+		// PHP bug #55124 (fixed in 5.4.0)
+		$path = str_replace('/./', '/', $path);
+
 		mkdir($path, 0777, true);
 	}
 
