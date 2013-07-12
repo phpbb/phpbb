@@ -404,6 +404,12 @@ class phpbb_session
 					$method = basename(trim($config['auth_method']));
 
 					$provider = $phpbb_container->get('auth.provider.' . $method);
+
+					if (!($provider instanceof phpbb_auth_provider_interface))
+					{
+						throw new \RuntimeException($provider . ' must implement phpbb_auth_provider_interface');
+					}
+
 					$ret = $provider->validate_session($this->data);
 					if ($ret !== null && !$ret)
 					{
