@@ -16,10 +16,10 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
- * Forum model
+ * Forum repository
  * @package phpBB3
  */
-class phpbb_model_api_forum
+class phpbb_model_repository_forum
 {
 	/** @var phpbb_tree_nestedset_forum */
 	protected $nestedset_forum;
