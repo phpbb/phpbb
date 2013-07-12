@@ -8,7 +8,7 @@
 *
 */
 
-define('UPDATES_TO_VERSION', '3.0.12-RC1');
+define('UPDATES_TO_VERSION', '3.0.13-dev');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 define('DEBUG_FROM_VERSION', false);
