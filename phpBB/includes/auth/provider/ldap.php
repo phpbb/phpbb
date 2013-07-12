@@ -300,8 +300,6 @@ class phpbb_auth_provider_ldap extends phpbb_auth_provider_base
 	 */
 	public function get_acp_template($new_config)
 	{
-		$this->template->assign_vars();
-
 		return array(
 			'TEMPLATE_FILE'	=> 'auth_provider_ldap.html',
 			'TEMPLATE_VARS'	=> array(
