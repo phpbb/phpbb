@@ -286,48 +286,32 @@ class phpbb_auth_provider_ldap extends phpbb_auth_provider_base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function acp($new)
+
+	public function acp()
 	{
-		$tpl = '
-
-		<dl>
-			<dt><label for="ldap_server">' . $this->user->lang['LDAP_SERVER'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_SERVER_EXPLAIN'] . '</span></dt>
-			<dd><input type="text" id="ldap_server" size="40" name="config[ldap_server]" value="' . $new['ldap_server'] . '" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="ldap_port">' . $this->user->lang['LDAP_PORT'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_PORT_EXPLAIN'] . '</span></dt>
-			<dd><input type="text" id="ldap_port" size="40" name="config[ldap_port]" value="' . $new['ldap_port'] . '" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="ldap_dn">' . $this->user->lang['LDAP_DN'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_DN_EXPLAIN'] . '</span></dt>
-			<dd><input type="text" id="ldap_dn" size="40" name="config[ldap_base_dn]" value="' . $new['ldap_base_dn'] . '" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="ldap_uid">' . $this->user->lang['LDAP_UID'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_UID_EXPLAIN'] . '</span></dt>
-			<dd><input type="text" id="ldap_uid" size="40" name="config[ldap_uid]" value="' . $new['ldap_uid'] . '" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="ldap_user_filter">' . $this->user->lang['LDAP_USER_FILTER'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_USER_FILTER_EXPLAIN'] . '</span></dt>
-			<dd><input type="text" id="ldap_user_filter" size="40" name="config[ldap_user_filter]" value="' . $new['ldap_user_filter'] . '" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="ldap_email">' . $this->user->lang['LDAP_EMAIL'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_EMAIL_EXPLAIN'] . '</span></dt>
-			<dd><input type="email" id="ldap_email" size="40" name="config[ldap_email]" value="' . $new['ldap_email'] . '" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="ldap_user">' . $this->user->lang['LDAP_USER'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_USER_EXPLAIN'] . '</span></dt>
-			<dd><input type="text" id="ldap_user" size="40" name="config[ldap_user]" value="' . $new['ldap_user'] . '" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="ldap_password">' . $this->user->lang['LDAP_PASSWORD'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['LDAP_PASSWORD_EXPLAIN'] . '</span></dt>
-			<dd><input type="password" id="ldap_password" size="40" name="config[ldap_password]" value="' . $new['ldap_password'] . '" autocomplete="off" /></dd>
-		</dl>
-		';
-
 		// These are fields required in the config table
 		return array(
-			'tpl'		=> $tpl,
-			'config'	=> array('ldap_server', 'ldap_port', 'ldap_base_dn', 'ldap_uid', 'ldap_user_filter', 'ldap_email', 'ldap_user', 'ldap_password')
+			'ldap_server', 'ldap_port', 'ldap_base_dn', 'ldap_uid', 'ldap_user_filter', 'ldap_email', 'ldap_user', 'ldap_password',
+		);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_acp_template($new_config)
+	{
+		return array(
+			'TEMPLATE_FILE'	=> 'auth_provider_ldap.html',
+			'TEMPLATE_VARS'	=> array(
+				'AUTH_LDAP_DN'			=> $new_config['ldap_base_dn'],
+				'AUTH_LDAP_EMAIL'		=> $new_config['ldap_email'],
+				'AUTH_LDAP_PASSORD'		=> $new_config['ldap_password'],
+				'AUTH_LDAP_PORT'		=> $new_config['ldap_port'],
+				'AUTH_LDAP_SERVER'		=> $new_config['ldap_server'],
+				'AUTH_LDAP_UID'			=> $new_config['ldap_uid'],
+				'AUTH_LDAP_USER'		=> $new_config['ldap_user'],
+				'AUTH_LDAP_USER_FILTER'	=> $new_config['ldap_user_filter'],
+			),
 		);
 	}
 
