@@ -2413,7 +2413,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
 	global $phpbb_dispatcher;
-	global $request;
+	global $symfony_request;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -2421,7 +2421,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
-	$corrected_root = phpbb_get_web_root_path(phpbb_create_symfony_request($request));
+	$corrected_root = phpbb_get_web_root_path($symfony_request);
 	if ($corrected_root)
 	{
 		$url = $corrected_root . substr($url, strlen($phpbb_root_path));
