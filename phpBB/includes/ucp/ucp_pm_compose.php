@@ -1091,6 +1091,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
 		'U_PROGRESS_BAR'			=> append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup'),
 		'UA_PROGRESS_BAR'			=> addslashes(append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup')),
+
+		'TIMEZONE_OFFSET'			=> $user->timezone->getOffset(new DateTime('UTC')),
 	));
 
 	// Build custom bbcodes array

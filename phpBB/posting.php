@@ -1451,8 +1451,10 @@ $template->assign_vars(array(
 	'S_BBCODE_QUOTE'		=> $quote_status,
 
 	'S_POST_ACTION'			=> $s_action,
-	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
-);
+	'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+
+	'TIMEZONE_OFFSET'		=> $user->timezone->getOffset(new DateTime('UTC')),
+));
 
 /**
 * This event allows you to modify template variables for the posting screen
