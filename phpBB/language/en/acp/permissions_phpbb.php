@@ -176,10 +176,9 @@ $lang = array_merge($lang, array(
 	'acl_m_edit'		=> array('lang' => 'Can edit posts', 'cat' => 'post_actions'),
 	'acl_m_delete'		=> array('lang' => 'Can permanently delete posts', 'cat' => 'post_actions'),
 	'acl_m_softdelete'	=> array('lang' => 'Can soft delete posts<br /><em>Moderators, who have the approve posts permission, can restore soft deleted posts.</em>', 'cat' => 'post_actions'),
-	'acl_m_approve'		=> array('lang' => 'Can approve posts', 'cat' => 'post_actions'),
+	'acl_m_approve'		=> array('lang' => 'Can approve and restore posts', 'cat' => 'post_actions'),
 	'acl_m_report'		=> array('lang' => 'Can close and delete reports', 'cat' => 'post_actions'),
 	'acl_m_chgposter'	=> array('lang' => 'Can change post author', 'cat' => 'post_actions'),
-	'acl_m_restore'		=> array('lang' => 'Can restore deleted posts', 'cat' => 'post_actions'),
 
 	'acl_m_move'	=> array('lang' => 'Can move topics', 'cat' => 'topic_actions'),
 	'acl_m_lock'	=> array('lang' => 'Can lock topics', 'cat' => 'topic_actions'),
