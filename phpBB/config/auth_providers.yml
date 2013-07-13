@@ -35,3 +35,12 @@ services:
             - @user
         tags:
             - { name: auth.provider }
+    auth.provider.oauth:
+        class: phpbb_auth_provider_oauth
+        arguments:
+            - @dbal.conn
+            - @config
+            - @request
+            - @user
+        tags:
+            - { name: auth.provider }
