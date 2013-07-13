@@ -8,3 +8,12 @@ services:
         class: phpbb_controller_api_topic
         arguments:
             - @model.repository.topic
+
+    api.controller.auth:
+        class: phpbb_controller_api_auth
+        arguments:
+            - @model.repository.auth
+            - @user
+            - @controller.helper
+            - @template
+            - @request
