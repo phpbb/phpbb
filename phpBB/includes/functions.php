@@ -3301,8 +3301,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				return;
 			}
 
-			$redirect = meta_refresh(3, $redirect);
-			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
+			redirect($redirect);
 		}
 
 		// Something failed, determine what...

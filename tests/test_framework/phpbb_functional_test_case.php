@@ -610,7 +610,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 		$crawler = self::submit($form, array('username' => $username, 'password' => $username . $username));
-		$this->assertContains($this->lang('LOGIN_REDIRECT'), $crawler->filter('html')->text());
+		$this->assertNotContains($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
 
 		$cookies = self::$cookieJar->all();
 
@@ -629,7 +629,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->add_lang('ucp');
 
 		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
-		$this->assertContains($this->lang('LOGOUT_REDIRECT'), $crawler->filter('#message')->text());
+		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 		unset($this->sid);
 
 	}
@@ -659,7 +659,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			if (strpos($field, 'password_') === 0)
 			{
 				$crawler = self::submit($form, array('username' => $username, $field => $username . $username));
-				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
+				$this->assertContains($this->lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
 
 				$cookies = self::$cookieJar->all();
 
