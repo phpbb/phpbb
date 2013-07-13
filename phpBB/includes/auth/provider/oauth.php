@@ -46,7 +46,9 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*/
 	public function login($username, $password)
 	{
-		if (!$this->request->is_set_post('oauth_service'))
+		// Requst the name of the OAuth service
+		$service = $this->request->variable('oauth_service', '', false, phpbb_request_interface::POST);
+		if ($service === '')
 		{
 			return array(
 				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -55,19 +57,23 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			);
 		}
 
-		$serviceFactory = new \OAuth\ServiceFactory();
-		$uriFactory = new \OAuth\Common\Http\Uri\UriFactory();
-		$currentUri = $uriFactory->createFromSuperGlobalArray((array)$_SERVER);
-		$currentUri->setQuery('');
+		// Get the service credentials for the given service
+		$service_credentials = $this->get_credentials($service);
+
+
+		$service_factory = new \OAuth\ServiceFactory();
+		$uri_factory = new \OAuth\Common\Http\Uri\UriFactory();
+		$current_uri = $uri_factory->createFromSuperGlobalArray((array)$_SERVER);
+		$current_uri->setQuery('');
 
 		// In-memory storage
 		$storage = new Memory();
 
 		// Setup the credentials for the requests
 		$credentials = new Credentials(
-			$servicesCredentials['github']['key'],
-			$servicesCredentials['github']['secret'],
-			$currentUri->getAbsoluteUri()
+			$service_credentials['key'],
+			$service_credentials['secret'],
+			$current_uri->getAbsoluteUri()
 		);
 
 		if ($this->request->is_set('code', phpbb_request_interface::GET))
@@ -83,14 +89,9 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*/
 	protected function get_service_credentials($service)
 	{
-		return $service_credentials[$service];
-	}
-
-	/**
-	*
-	*/
-	public function get_credentials()
-	{
-		return array();
+		return array(
+			'key'		=> $this->config['auth_oauth_' . $service . '_key'],
+			'secret'	=> $this->config['auth_oauth_' . $service . '_secret'],
+		);
 	}
 }
