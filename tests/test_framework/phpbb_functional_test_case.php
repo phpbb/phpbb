@@ -870,6 +870,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* Be sure to login before creating
 	*
 	* @param int $forum_id
+	* @param int $topic_id
 	* @param string $subject
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
@@ -926,18 +927,47 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Instead, I send it as a request with the submit button "post" set to true.
 		$crawler = self::request('POST', $posting_url, $form_data);
 		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
-
 		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
 
-		$matches = $topic_id = $post_id = false;
-		preg_match_all('#&t=([0-9]+)(&p=([0-9]+))?#', $url, $matches);
-
-		$topic_id = (int) (isset($matches[1][0])) ? $matches[1][0] : 0;
-		$post_id = (int) (isset($matches[3][0])) ? $matches[3][0] : 0;
-
 		return array(
-			'topic_id'	=> $topic_id,
-			'post_id'	=> $post_id,
+			'topic_id'	=> $this->get_parameter_from_link($url, 't'),
+			'post_id'	=> $this->get_parameter_from_link($url, 'p'),
 		);
+	}
+
+	/*
+	* Returns the requested parameter from a URL
+	*
+	* @param	string	$url
+	* @param	string	$parameter
+	* @return		string	Value of the parameter in the URL, null if not set
+	*/
+	public function get_parameter_from_link($url, $parameter)
+	{
+		if (strpos($url, '?') === false)
+		{
+			return null;
+		}
+
+		$url_parts = explode('?', $url);
+		if (isset($url_parts[1]))
+		{
+			$url_parameters = $url_parts[1];
+			if (strpos($url_parameters, '#') !== false)
+			{
+				$url_parameters = explode('#', $url_parameters);
+				$url_parameters = $url_parameters[0];
+			}
+
+			foreach (explode('&', $url_parameters) as $url_param)
+			{
+				list($param, $value) = explode('=', $url_param);
+				if ($param == $parameter)
+				{
+					return $value;
+				}
+			}
+		}
+		return null;
 	}
 }

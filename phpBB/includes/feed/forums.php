@@ -49,7 +49,7 @@ class phpbb_feed_forums extends phpbb_feed_base
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.left_id, f.forum_name, f.forum_last_post_time,
 							f.forum_desc, f.forum_desc_bitfield, f.forum_desc_uid, f.forum_desc_options,
-							f.forum_topics, f.forum_posts',
+							f.forum_topics_approved, f.forum_posts_approved',
 			'FROM'		=> array(FORUMS_TABLE => 'f'),
 			'WHERE'		=> 'f.forum_type = ' . FORUM_POST . '
 							AND ' . $this->db->sql_in_set('f.forum_id', $in_fid_ary),
@@ -65,8 +65,8 @@ class phpbb_feed_forums extends phpbb_feed_base
 
 		if ($this->config['feed_item_statistics'])
 		{
-			$item_row['statistics'] = $this->user->lang('TOTAL_TOPICS', (int) $row['forum_topics'])
-				. ' ' . $this->separator_stats . ' ' . $this->user->lang('TOTAL_POSTS_COUNT', (int) $row['forum_posts']);
+			$item_row['statistics'] = $this->user->lang('TOTAL_TOPICS', (int) $row['forum_topics_approved'])
+				. ' ' . $this->separator_stats . ' ' . $this->user->lang('TOTAL_POSTS_COUNT', (int) $row['forum_posts_approved']);
 		}
 	}
 }

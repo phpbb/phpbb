@@ -51,9 +51,9 @@ abstract class phpbb_feed_topic_base extends phpbb_feed_base
 		{
 			$item_row['statistics'] = $this->user->lang['POSTED'] . ' ' . $this->user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
 				. ' ' . $this->separator_stats . ' ' . $this->user->format_date($row[$this->get('published')])
-				. ' ' . $this->separator_stats . ' ' . $this->user->lang['REPLIES'] . ' ' . (($this->is_moderator_approve_forum($row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'])
+				. ' ' . $this->separator_stats . ' ' . $this->user->lang['REPLIES'] . ' ' . $this->content_visibility->get_count('topic_posts', $row, $row['forum_id']) - 1
 				. ' ' . $this->separator_stats . ' ' . $this->user->lang['VIEWS'] . ' ' . $row['topic_views']
-				. (($this->is_moderator_approve_forum($row['forum_id']) && ($row['topic_replies_real'] != $row['topic_replies'])) ? ' ' . $this->separator_stats . ' ' . $this->user->lang['POSTS_UNAPPROVED'] : '');
+				. (($this->is_moderator_approve_forum($row['forum_id']) && $row['topic_posts_unapproved']) ? ' ' . $this->separator_stats . ' ' . $this->user->lang['POSTS_UNAPPROVED'] : '');
 		}
 	}
 }

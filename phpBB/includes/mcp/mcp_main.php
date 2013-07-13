@@ -33,7 +33,7 @@ class mcp_main
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template, $action;
-		global $config, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx, $request;
 
 		$quickmod = ($mode == 'quickmod') ? true : false;
 
@@ -108,27 +108,48 @@ class mcp_main
 			case 'delete_topic':
 				$user->add_lang('viewtopic');
 
-				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
+				// f parameter is not reliable for permission usage, however we just use it to decide
+				// which permission we will check later on. So if it is manipulated, we will still catch it later on.
+				$forum_id = $request->variable('f', 0);
+				$topic_ids = (!$quickmod) ? $request->variable('topic_id_list', array(0)) : array($request->variable('t', 0));
+				$soft_delete = (($request->is_set_post('confirm') && !$request->is_set_post('delete_permanent')) || !$auth->acl_get('m_delete', $forum_id)) ? true : false;
 
 				if (!sizeof($topic_ids))
 				{
 					trigger_error('NO_TOPIC_SELECTED');
 				}
 
-				mcp_delete_topic($topic_ids);
+				mcp_delete_topic($topic_ids, $soft_delete, ($soft_delete) ? $request->variable('delete_reason', '', true) : '');
 			break;
 
 			case 'delete_post':
 				$user->add_lang('posting');
 
-				$post_ids = (!$quickmod) ? request_var('post_id_list', array(0)) : array(request_var('p', 0));
+				// f parameter is not reliable for permission usage, however we just use it to decide
+				// which permission we will check later on. So if it is manipulated, we will still catch it later on.
+				$forum_id = $request->variable('f', 0);
+				$post_ids = (!$quickmod) ? $request->variable('post_id_list', array(0)) : array($request->variable('p', 0));
+				$soft_delete = (($request->is_set_post('confirm') && !$request->is_set_post('delete_permanent')) || !$auth->acl_get('m_delete', $forum_id)) ? true : false;
 
 				if (!sizeof($post_ids))
 				{
 					trigger_error('NO_POST_SELECTED');
 				}
 
-				mcp_delete_post($post_ids);
+				mcp_delete_post($post_ids, $soft_delete, ($soft_delete) ? $request->variable('delete_reason', '', true) : '');
+			break;
+
+			case 'restore_topic':
+				$user->add_lang('posting');
+
+				$topic_ids = (!$quickmod) ? $request->variable('topic_id_list', array(0)) : array($request->variable('t', 0));
+
+				if (!sizeof($topic_ids))
+				{
+					trigger_error('NO_TOPIC_SELECTED');
+				}
+
+				mcp_restore_topic($topic_ids);
 			break;
 		}
 
@@ -455,59 +476,30 @@ function mcp_move_topic($topic_ids)
 		$forum_sync_data[$forum_id] = current($topic_data);
 		$forum_sync_data[$to_forum_id] = $forum_data;
 
-		// Real topics added to target forum
-		$topics_moved = sizeof($topic_data);
-
-		// Approved topics added to target forum
-		$topics_authed_moved = 0;
-
-		// Posts (topic replies + topic post if approved) added to target forum
-		$topic_posts_added = 0;
-
-		// Posts (topic replies + topic post if approved and not global announcement) removed from source forum
-		$topic_posts_removed = 0;
-
-		// Real topics removed from source forum (all topics without global announcements)
-		$topics_removed = 0;
-
-		// Approved topics removed from source forum (except global announcements)
-		$topics_authed_removed = 0;
+		$topics_moved = $topics_moved_unapproved = $topics_moved_softdeleted = 0;
+		$posts_moved = $posts_moved_unapproved = $posts_moved_softdeleted = 0;
 
 		foreach ($topic_data as $topic_id => $topic_info)
 		{
-			if ($topic_info['topic_approved'])
+			if ($topic_info['topic_visibility'] == ITEM_APPROVED)
 			{
-				$topics_authed_moved++;
-				$topic_posts_added++;
+				$topics_moved++;
+			}
+			elseif ($topic_info['topic_visibility'] == ITEM_UNAPPROVED)
+			{
+				$topics_moved_unapproved++;
+			}
+			elseif ($topic_info['topic_visibility'] == ITEM_DELETED)
+			{
+				$topics_moved_softdeleted++;
 			}
 
-			$topic_posts_added += $topic_info['topic_replies'];
-
-			$topics_removed++;
-			$topic_posts_removed += $topic_info['topic_replies'];
-
-			if ($topic_info['topic_approved'])
-			{
-				$topics_authed_removed++;
-				$topic_posts_removed++;
-			}
+			$posts_moved += $topic_info['topic_posts_approved'];
+			$posts_moved_unapproved += $topic_info['topic_posts_unapproved'];
+			$posts_moved_softdeleted += $topic_info['topic_posts_softdeleted'];
 		}
 
 		$db->sql_transaction('begin');
-
-		$sync_sql = array();
-
-		if ($topic_posts_added)
-		{
-			$sync_sql[$to_forum_id][] = 'forum_posts = forum_posts + ' . $topic_posts_added;
-		}
-
-		if ($topics_authed_moved)
-		{
-			$sync_sql[$to_forum_id][] = 'forum_topics = forum_topics + ' . (int) $topics_authed_moved;
-		}
-
-		$sync_sql[$to_forum_id][] = 'forum_topics_real = forum_topics_real + ' . (int) $topics_moved;
 
 		// Move topics, but do not resync yet
 		move_topics($topic_ids, $to_forum_id, false);
@@ -520,6 +512,7 @@ function mcp_move_topic($topic_ids)
 			$db->sql_query($sql);
 		}
 
+		$shadow_topics = 0;
 		$forum_ids = array($to_forum_id);
 		foreach ($topic_data as $topic_id => $row)
 		{
@@ -528,21 +521,22 @@ function mcp_move_topic($topic_ids)
 			add_log('mod', $to_forum_id, $topic_id, 'LOG_MOVE', $row['forum_name'], $forum_data['forum_name']);
 
 			// Leave a redirection if required and only if the topic is visible to users
-			if ($leave_shadow && $row['topic_approved'] && $row['topic_type'] != POST_GLOBAL)
+			if ($leave_shadow && $row['topic_visibility'] == ITEM_APPROVED && $row['topic_type'] != POST_GLOBAL)
 			{
 				$shadow = array(
 					'forum_id'				=>	(int) $row['forum_id'],
 					'icon_id'				=>	(int) $row['icon_id'],
 					'topic_attachment'		=>	(int) $row['topic_attachment'],
-					'topic_approved'		=>	1, // a shadow topic is always approved
+					'topic_visibility'		=>	ITEM_APPROVED, // a shadow topic is always approved
 					'topic_reported'		=>	0, // a shadow topic is never reported
 					'topic_title'			=>	(string) $row['topic_title'],
 					'topic_poster'			=>	(int) $row['topic_poster'],
 					'topic_time'			=>	(int) $row['topic_time'],
 					'topic_time_limit'		=>	(int) $row['topic_time_limit'],
 					'topic_views'			=>	(int) $row['topic_views'],
-					'topic_replies'			=>	(int) $row['topic_replies'],
-					'topic_replies_real'	=>	(int) $row['topic_replies_real'],
+					'topic_posts_approved'	=>	(int) $row['topic_posts_approved'],
+					'topic_posts_unapproved'=>	(int) $row['topic_posts_unapproved'],
+					'topic_posts_softdeleted'=>	(int) $row['topic_posts_softdeleted'],
 					'topic_status'			=>	ITEM_MOVED,
 					'topic_type'			=>	POST_NORMAL,
 					'topic_first_post_id'	=>	(int) $row['topic_first_post_id'],
@@ -568,25 +562,45 @@ function mcp_move_topic($topic_ids)
 				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $shadow));
 
 				// Shadow topics only count on new "topics" and not posts... a shadow topic alone has 0 posts
-				$topics_removed--;
-				$topics_authed_removed--;
+				$shadow_topics++;
 			}
 		}
 		unset($topic_data);
 
-		if ($topic_posts_removed)
+		$sync_sql = array();
+		if ($posts_moved)
 		{
-			$sync_sql[$forum_id][] = 'forum_posts = forum_posts - ' . $topic_posts_removed;
+			$sync_sql[$to_forum_id][] = 'forum_posts_approved = forum_posts_approved + ' . (int) $posts_moved;
+			$sync_sql[$forum_id][] = 'forum_posts_approved = forum_posts_approved - ' . (int) $posts_moved;
+		}
+		if ($posts_moved_unapproved)
+		{
+			$sync_sql[$to_forum_id][] = 'forum_posts_unapproved = forum_posts_unapproved + ' . (int) $posts_moved_unapproved;
+			$sync_sql[$forum_id][] = 'forum_posts_unapproved = forum_posts_unapproved - ' . (int) $posts_moved_unapproved;
+		}
+		if ($posts_moved_softdeleted)
+		{
+			$sync_sql[$to_forum_id][] = 'forum_posts_softdeleted = forum_posts_softdeleted + ' . (int) $posts_moved_softdeleted;
+			$sync_sql[$forum_id][] = 'forum_posts_softdeleted = forum_posts_softdeleted - ' . (int) $posts_moved_softdeleted;
 		}
 
-		if ($topics_removed)
+		if ($topics_moved)
 		{
-			$sync_sql[$forum_id][]	= 'forum_topics_real = forum_topics_real - ' . (int) $topics_removed;
+			$sync_sql[$to_forum_id][] = 'forum_topics_approved = forum_topics_approved + ' . (int) $topics_moved;
+			if ($topics_moved - $shadow_topics > 0)
+			{
+				$sync_sql[$forum_id][] = 'forum_topics_approved = forum_topics_approved - ' . (int) ($topics_moved - $shadow_topics);
+			}
 		}
-
-		if ($topics_authed_removed)
+		if ($topics_moved_unapproved)
 		{
-			$sync_sql[$forum_id][]	= 'forum_topics = forum_topics - ' . (int) $topics_authed_removed;
+			$sync_sql[$to_forum_id][] = 'forum_topics_unapproved = forum_topics_unapproved + ' . (int) $topics_moved_unapproved;
+			$sync_sql[$forum_id][] = 'forum_topics_unapproved = forum_topics_unapproved - ' . (int) $topics_moved_unapproved;
+		}
+		if ($topics_moved_softdeleted)
+		{
+			$sync_sql[$to_forum_id][] = 'forum_topics_softdeleted = forum_topics_softdeleted + ' . (int) $topics_moved_softdeleted;
+			$sync_sql[$forum_id][] = 'forum_topics_softdeleted = forum_topics_softdeleted - ' . (int) $topics_moved_softdeleted;
 		}
 
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_MOVED_SUCCESS' : 'TOPICS_MOVED_SUCCESS';
@@ -636,25 +650,98 @@ function mcp_move_topic($topic_ids)
 }
 
 /**
+* Restore Topics
+*/
+function mcp_restore_topic($topic_ids)
+{
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
+
+	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_approve')))
+	{
+		return;
+	}
+
+	$redirect = $request->variable('redirect', build_url(array('action', 'quickmod')));
+	$forum_id = $request->variable('f', 0);
+
+	$s_hidden_fields = build_hidden_fields(array(
+		'topic_id_list'	=> $topic_ids,
+		'f'				=> $forum_id,
+		'action'		=> 'restore_topic',
+		'redirect'		=> $redirect,
+	));
+	$success_msg = '';
+
+	if (confirm_box(true))
+	{
+		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_RESTORED_SUCCESS' : 'TOPICS_RESTORED_SUCCESS';
+
+		$data = get_topic_data($topic_ids);
+
+		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+		foreach ($data as $topic_id => $row)
+		{
+			$return = $phpbb_content_visibility->set_topic_visibility(ITEM_APPROVED, $topic_id, $row['forum_id'], $user->data['user_id'], time(), '');
+			if (!empty($return))
+			{
+				add_log('mod', $row['forum_id'], $topic_id, 'LOG_RESTORE_TOPIC', $row['topic_title'], $row['topic_first_poster_name']);
+			}
+		}
+	}
+	else
+	{
+		confirm_box(false, (sizeof($topic_ids) == 1) ? 'RESTORE_TOPIC' : 'RESTORE_TOPICS', $s_hidden_fields);
+	}
+
+	$topic_id = $request->variable('t', 0);
+	if (!$request->is_set('quickmod', phpbb_request_interface::REQUEST))
+	{
+		$redirect = $request->variable('redirect', "index.$phpEx");
+		$redirect = reapply_sid($redirect);
+		$redirect_message = 'PAGE';
+	}
+	else if ($topic_id)
+	{
+		$redirect = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id);
+		$redirect_message = 'TOPIC';
+	}
+	else
+	{
+		$redirect = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
+		$redirect_message = 'FORUM';
+	}
+
+	if (!$success_msg)
+	{
+		redirect($redirect);
+	}
+	else
+	{
+		meta_refresh(3, $redirect);
+		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_' . $redirect_message], '<a href="' . $redirect . '">', '</a>'));
+	}
+}
+
+/**
 * Delete Topics
 */
-function mcp_delete_topic($topic_ids)
+function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_topic')
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
 	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_delete')))
 	{
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
-	$forum_id = request_var('f', 0);
+	$redirect = $request->variable('redirect', build_url(array('action', 'quickmod')));
+	$forum_id = $request->variable('f', 0);
 
-	$s_hidden_fields = build_hidden_fields(array(
+	$s_hidden_fields = array(
 		'topic_id_list'	=> $topic_ids,
 		'f'				=> $forum_id,
-		'action'		=> 'delete_topic',
-		'redirect'		=> $redirect)
+		'action'		=> $action,
+		'redirect'		=> $redirect,
 	);
 	$success_msg = '';
 
@@ -672,22 +759,80 @@ function mcp_delete_topic($topic_ids)
 			}
 			else
 			{
-				add_log('mod', $row['forum_id'], $topic_id, 'LOG_DELETE_TOPIC', $row['topic_title'], $row['topic_first_poster_name']);
+				// Only soft delete non-shadow topics
+				if ($is_soft)
+				{
+					$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+					$return = $phpbb_content_visibility->set_topic_visibility(ITEM_DELETED, $topic_id, $row['forum_id'], $user->data['user_id'], time(), $soft_delete_reason);
+					if (!empty($return))
+					{
+						add_log('mod', $row['forum_id'], $topic_id, 'LOG_SOFTDELETE_TOPIC', $row['topic_title'], $row['topic_first_poster_name']);
+					}
+				}
+				else
+				{
+					add_log('mod', $row['forum_id'], $topic_id, 'LOG_DELETE_TOPIC', $row['topic_title'], $row['topic_first_poster_name']);
+				}
 			}
 		}
 
-		$return = delete_topics('topic_id', $topic_ids);
+		if (!$is_soft)
+		{
+			$return = delete_topics('topic_id', $topic_ids);
+		}
 	}
 	else
 	{
-		confirm_box(false, (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS', $s_hidden_fields);
+		global $template;
+
+		$user->add_lang('posting');
+
+		$only_softdeleted = false;
+		if ($auth->acl_get('m_delete', $forum_id) && $auth->acl_get('m_softdelete', $forum_id))
+		{
+			// If there are only soft deleted topics, we display a message why the option is not available
+			$sql = 'SELECT topic_id
+				FROM ' . TOPICS_TABLE . '
+				WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
+					AND topic_visibility <> ' . ITEM_DELETED;
+			$result = $db->sql_query_limit($sql, 1);
+			$only_softdeleted = !$db->sql_fetchfield('topic_id');
+			$db->sql_freeresult($result);
+		}
+
+		$template->assign_vars(array(
+			'S_SOFTDELETED'			=> $only_softdeleted,
+			'S_TOPIC_MODE'			=> true,
+			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
+			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
+			'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
+		));
+
+		$l_confirm = (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS';
+		if ($only_softdeleted)
+		{
+			$l_confirm .= '_PERMANENTLY';
+			$s_hidden_fields['delete_permanent'] = '1';
+		}
+		else if (!$auth->acl_get('m_softdelete', $forum_id))
+		{
+			$s_hidden_fields['delete_permanent'] = '1';
+		}
+
+		confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 	}
 
-	if (!isset($_REQUEST['quickmod']))
+	$topic_id = $request->variable('t', 0);
+	if (!$request->is_set('quickmod', phpbb_request_interface::REQUEST))
 	{
-		$redirect = request_var('redirect', "index.$phpEx");
+		$redirect = $request->variable('redirect', "index.$phpEx");
 		$redirect = reapply_sid($redirect);
 		$redirect_message = 'PAGE';
+	}
+	else if ($is_soft && $topic_id)
+	{
+		$redirect = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id);
+		$redirect_message = 'TOPIC';
 	}
 	else
 	{
@@ -709,27 +854,93 @@ function mcp_delete_topic($topic_ids)
 /**
 * Delete Posts
 */
-function mcp_delete_post($post_ids)
+function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_post')
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
-	if (!check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_delete')))
+	if (!check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_softdelete')))
 	{
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
-	$forum_id = request_var('f', 0);
+	$redirect = $request->variable('redirect', build_url(array('action', 'quickmod')));
+	$forum_id = $request->variable('f', 0);
 
-	$s_hidden_fields = build_hidden_fields(array(
+	$s_hidden_fields = array(
 		'post_id_list'	=> $post_ids,
 		'f'				=> $forum_id,
-		'action'		=> 'delete_post',
-		'redirect'		=> $redirect)
+		'action'		=> $action,
+		'redirect'		=> $redirect,
 	);
 	$success_msg = '';
 
-	if (confirm_box(true))
+	if (confirm_box(true) && $is_soft)
+	{
+		$post_info = get_post_data($post_ids);
+
+		$topic_info = $approve_log = array();
+
+		// Group the posts by topic_id
+		foreach ($post_info as $post_id => $post_data)
+		{
+			if ($post_data['post_visibility'] != ITEM_APPROVED)
+			{
+				continue;
+			}
+			$topic_id = (int) $post_data['topic_id'];
+
+			$topic_info[$topic_id]['posts'][] = (int) $post_id;
+			$topic_info[$topic_id]['forum_id'] = (int) $post_data['forum_id'];
+
+			if ($post_id == $post_data['topic_first_post_id'])
+			{
+				$topic_info[$topic_id]['first_post'] = true;
+			}
+
+			if ($post_id == $post_data['topic_last_post_id'])
+			{
+				$topic_info[$topic_id]['last_post'] = true;
+			}
+
+			$approve_log[] = array(
+				'forum_id'		=> $post_data['forum_id'],
+				'topic_id'		=> $post_data['topic_id'],
+				'post_subject'	=> $post_data['post_subject'],
+				'poster_id'		=> $post_data['poster_id'],
+				'post_username'	=> $post_data['post_username'],
+				'username'		=> $post_data['username'],
+			);
+		}
+
+		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+		foreach ($topic_info as $topic_id => $topic_data)
+		{
+			$phpbb_content_visibility->set_post_visibility(ITEM_DELETED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), $soft_delete_reason, isset($topic_data['first_post']), isset($topic_data['last_post']));
+		}
+		$affected_topics = sizeof($topic_info);
+		// None of the topics is really deleted, so a redirect won't hurt much.
+		$deleted_topics = 0;
+
+		$success_msg = (sizeof($post_info) == 1) ? 'POST_DELETED_SUCCESS' : 'POSTS_DELETED_SUCCESS';
+
+		foreach ($approve_log as $row)
+		{
+			$post_username = ($row['poster_id'] == ANONYMOUS && !empty($row['post_username'])) ? $row['post_username'] : $row['username'];
+			add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_SOFTDELETE_POST', $row['post_subject'], $post_username);
+		}
+
+		$topic_id = $request->variable('t', 0);
+
+		// Return links
+		$return_link = array();
+		if ($affected_topics == 1 && $topic_id)
+		{
+			$return_link[] = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") . '">', '</a>');
+		}
+		$return_link[] = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+
+	}
+	else if (confirm_box(true))
 	{
 		if (!function_exists('delete_posts'))
 		{
@@ -772,7 +983,7 @@ function mcp_delete_post($post_ids)
 		$deleted_topics = ($row = $db->sql_fetchrow($result)) ? ($affected_topics - $row['topics_left']) : $affected_topics;
 		$db->sql_freeresult($result);
 
-		$topic_id = request_var('t', 0);
+		$topic_id = $request->variable('t', 0);
 
 		// Return links
 		$return_link = array();
@@ -810,10 +1021,45 @@ function mcp_delete_post($post_ids)
 	}
 	else
 	{
-		confirm_box(false, (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS', $s_hidden_fields);
+		global $template;
+
+		$user->add_lang('posting');
+
+		$only_softdeleted = false;
+		if ($auth->acl_get('m_delete', $forum_id) && $auth->acl_get('m_softdelete', $forum_id))
+		{
+			// If there are only soft deleted posts, we display a message why the option is not available
+			$sql = 'SELECT post_id
+				FROM ' . POSTS_TABLE . '
+				WHERE ' . $db->sql_in_set('post_id', $post_ids) . '
+					AND post_visibility <> ' . ITEM_DELETED;
+			$result = $db->sql_query_limit($sql, 1);
+			$only_softdeleted = !$db->sql_fetchfield('post_id');
+			$db->sql_freeresult($result);
+		}
+
+		$template->assign_vars(array(
+			'S_SOFTDELETED'			=> $only_softdeleted,
+			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
+			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
+			'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
+		));
+
+		$l_confirm = (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS';
+		if ($only_softdeleted)
+		{
+			$l_confirm .= '_PERMANENTLY';
+			$s_hidden_fields['delete_permanent'] = '1';
+		}
+		else if (!$auth->acl_get('m_softdelete', $forum_id))
+		{
+			$s_hidden_fields['delete_permanent'] = '1';
+		}
+
+		confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = $request->variable('redirect', "index.$phpEx");
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -898,9 +1144,9 @@ function mcp_fork_topic($topic_ids)
 	{
 		$topic_data = get_topic_data($topic_ids, 'f_post');
 
-		$total_posts = 0;
+		$total_topics = $total_topics_unapproved = $total_topics_softdeleted = 0;
+		$total_posts = $total_posts_unapproved = $total_posts_softdeleted = 0;
 		$new_topic_id_list = array();
-
 
 		foreach ($topic_data as $topic_id => $topic_row)
 		{
@@ -932,13 +1178,14 @@ function mcp_fork_topic($topic_ids)
 				'forum_id'					=> (int) $to_forum_id,
 				'icon_id'					=> (int) $topic_row['icon_id'],
 				'topic_attachment'			=> (int) $topic_row['topic_attachment'],
-				'topic_approved'			=> 1,
+				'topic_visibility'			=> (int) $topic_row['topic_visibility'],
 				'topic_reported'			=> 0,
 				'topic_title'				=> (string) $topic_row['topic_title'],
 				'topic_poster'				=> (int) $topic_row['topic_poster'],
 				'topic_time'				=> (int) $topic_row['topic_time'],
-				'topic_replies'				=> (int) $topic_row['topic_replies_real'],
-				'topic_replies_real'		=> (int) $topic_row['topic_replies_real'],
+				'topic_posts_approved'		=> (int) $topic_row['topic_posts_approved'],
+				'topic_posts_unapproved'	=> (int) $topic_row['topic_posts_unapproved'],
+				'topic_posts_softdeleted'	=> (int) $topic_row['topic_posts_softdeleted'],
 				'topic_status'				=> (int) $topic_row['topic_status'],
 				'topic_type'				=> (int) $topic_row['topic_type'],
 				'topic_first_poster_name'	=> (string) $topic_row['topic_first_poster_name'],
@@ -958,6 +1205,19 @@ function mcp_fork_topic($topic_ids)
 			$db->sql_query('INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 			$new_topic_id = $db->sql_nextid();
 			$new_topic_id_list[$topic_id] = $new_topic_id;
+
+			switch ($topic_row['topic_visibility'])
+			{
+				case ITEM_APPROVED:
+					$total_topics++;
+				break;
+				case ITEM_UNAPPROVED:
+					$total_topics_unapproved++;
+				break;
+				case ITEM_DELETED:
+					$total_topics_softdeleted++;
+				break;
+			}
 
 			if ($topic_row['poll_start'])
 			{
@@ -999,7 +1259,6 @@ function mcp_fork_topic($topic_ids)
 				continue;
 			}
 
-			$total_posts += sizeof($post_rows);
 			foreach ($post_rows as $row)
 			{
 				$sql_ary = array(
@@ -1009,7 +1268,7 @@ function mcp_fork_topic($topic_ids)
 					'icon_id'			=> (int) $row['icon_id'],
 					'poster_ip'			=> (string) $row['poster_ip'],
 					'post_time'			=> (int) $row['post_time'],
-					'post_approved'		=> 1,
+					'post_visibility'	=> (int) $row['post_visibility'],
 					'post_reported'		=> 0,
 					'enable_bbcode'		=> (int) $row['enable_bbcode'],
 					'enable_smilies'	=> (int) $row['enable_smilies'],
@@ -1032,6 +1291,19 @@ function mcp_fork_topic($topic_ids)
 
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				$new_post_id = $db->sql_nextid();
+
+				switch ($row['post_visibility'])
+				{
+					case ITEM_APPROVED:
+						$total_posts++;
+					break;
+					case ITEM_UNAPPROVED:
+						$total_posts_unapproved++;
+					break;
+					case ITEM_DELETED:
+						$total_posts_softdeleted++;
+					break;
+				}
 
 				// Copy whether the topic is dotted
 				markread('post', $to_forum_id, $new_topic_id, 0, $row['poster_id']);
@@ -1125,23 +1397,19 @@ function mcp_fork_topic($topic_ids)
 		}
 
 		// Sync new topics, parent forums and board stats
+		$sql = 'UPDATE ' . FORUMS_TABLE . '
+			SET forum_posts_approved = forum_posts_approved + ' . $total_posts . ',
+				forum_posts_unapproved = forum_posts_unapproved + ' . $total_posts_unapproved . ',
+				forum_posts_softdeleted = forum_posts_softdeleted + ' . $total_posts_softdeleted . ',
+				forum_topics_approved = forum_topics_approved + ' . $total_topics . ',
+				forum_topics_unapproved = forum_topics_unapproved + ' . $total_topics_unapproved . ',
+				forum_topics_softdeleted = forum_topics_softdeleted + ' . $total_topics_softdeleted . '
+			WHERE forum_id = ' . $to_forum_id;
+		$db->sql_query($sql);
+
 		sync('topic', 'topic_id', $new_topic_id_list);
-
-		$sync_sql = array();
-
-		$sync_sql[$to_forum_id][]	= 'forum_posts = forum_posts + ' . $total_posts;
-		$sync_sql[$to_forum_id][]	= 'forum_topics = forum_topics + ' . sizeof($new_topic_id_list);
-		$sync_sql[$to_forum_id][]	= 'forum_topics_real = forum_topics_real + ' . sizeof($new_topic_id_list);
-
-		foreach ($sync_sql as $forum_id_key => $array)
-		{
-			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET ' . implode(', ', $array) . '
-				WHERE forum_id = ' . $forum_id_key;
-			$db->sql_query($sql);
-		}
-
 		sync('forum', 'forum_id', $to_forum_id);
+
 		set_config_count('num_topics', sizeof($new_topic_id_list), true);
 		set_config_count('num_posts', $total_posts, true);
 

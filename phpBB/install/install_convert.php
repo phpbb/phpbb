@@ -1464,7 +1464,6 @@ class install_convert extends module
 			$end = ($sync_batch + $batch_size - 1);
 
 			// Sync all topics in batch mode...
-			sync('topic_approved', 'range', 'topic_id BETWEEN ' . $sync_batch . ' AND ' . $end, true, false);
 			sync('topic', 'range', 'topic_id BETWEEN ' . $sync_batch . ' AND ' . $end, true, true);
 
 			$template->assign_block_vars('checks', array(

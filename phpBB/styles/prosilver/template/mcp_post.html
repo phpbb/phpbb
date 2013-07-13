@@ -79,6 +79,17 @@
 				{S_FORM_TOKEN}
 			</p>
 			</form>
+		<!-- ELSEIF S_POST_DELETED -->
+			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
+
+			<p class="rules">
+				<input class="button2" type="submit" value="{L_DELETE}" name="action[disapprove]" /> &nbsp;
+				<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
+				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="unapproved_posts" /><!-- ENDIF -->
+				<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
+				{S_FORM_TOKEN}
+			</p>
+			</form>
 		<!-- ENDIF -->
 
 		<!-- IF S_MESSAGE_REPORTED -->
@@ -98,6 +109,13 @@
 					<dd>{attachment.DISPLAY_ATTACHMENT}</dd>
 				<!-- END attachment -->
 			</dl>
+		<!-- ENDIF -->
+
+		<!-- IF DELETED_MESSAGE or DELETE_REASON -->
+			<div class="notice">
+				{DELETED_MESSAGE}
+				<!-- IF DELETE_REASON --><br /><strong>{L_REASON}{L_COLON}</strong> <em>{DELETE_REASON}</em><!-- ENDIF -->
+			</div>
 		<!-- ENDIF -->
 
 		<!-- IF SIGNATURE -->
