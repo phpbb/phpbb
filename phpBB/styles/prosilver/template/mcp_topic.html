@@ -3,33 +3,24 @@
 <div class="tabs-container">
 <h2><a href="{U_VIEW_TOPIC}">{L_TOPIC}{L_COLON} {TOPIC_TITLE}</a></h2>
 
-<script type="text/javascript">
-// <![CDATA[
-var panels = new Array('display-panel', 'split-panel', 'merge-panel');
-
 <!-- IF S_MERGE_VIEW -->
-	var show_panel = 'merge-panel';
+	<!-- DEFINE $SHOW_PANEL = 'merge-panel' -->
 <!-- ELSEIF S_SPLIT_VIEW -->
-	var show_panel = 'split-panel';
+	<!-- DEFINE $SHOW_PANEL = 'split-panel' -->
 <!-- ELSE -->
-	var show_panel = 'display-panel';
+	<!-- DEFINE $SHOW_PANEL = 'display-panel' -->
 <!-- ENDIF -->
 
-onload_functions.push('subPanels()');
-
-// ]]>
-</script>
-
-<div id="minitabs">
+<div id="minitabs" class="sub-panels" data-show-panel="{$SHOW_PANEL}">
 	<ul>
 		<li id="display-panel-tab"<!-- IF not S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			<a href="#minitabs" onclick="subPanels('display-panel'); return false;"><span>{L_DISPLAY_OPTIONS}</span></a>
+			<a href="#minitabs" data-subpanel="display-panel"><span>{L_DISPLAY_OPTIONS}</span></a>
 		</li>
 		<li id="split-panel-tab">
-			<a href="#minitabs" onclick="subPanels('split-panel'); return false;"><span>{L_SPLIT_TOPIC}</span></a>
+			<a href="#minitabs" data-subpanel="split-panel"><span>{L_SPLIT_TOPIC}</span></a>
 		</li>
 		<li id="merge-panel-tab"<!-- IF S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			<a href="#minitabs" onclick="subPanels('merge-panel'); return false;"><span>{L_MERGE_POSTS}</span></a>
+			<a href="#minitabs" data-subpanel="merge-panel"><span>{L_MERGE_POSTS}</span></a>
 		</li>
 	</ul>
 </div>
