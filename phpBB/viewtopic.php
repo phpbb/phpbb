@@ -828,26 +828,15 @@ if (!empty($topic_data['poll_start']))
 		$poll_total += $poll_option['poll_option_total'];
 	}
 
-	if ($poll_info[0]['bbcode_bitfield'])
-	{
-		$poll_bbcode = new bbcode();
-	}
-	else
-	{
-		$poll_bbcode = false;
+	$parse_bbcode_flags = OPTION_FLAG_SMILIES;
+	
+	if(empty($poll_info[0]['bbcode_bitfield'])){
+		$parse_bbcode_flags |= OPTION_FLAG_BBCODE; 
 	}
 
 	for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
 	{
-		$poll_info[$i]['poll_option_text'] = censor_text($poll_info[$i]['poll_option_text']);
-
-		if ($poll_bbcode !== false)
-		{
-			$poll_bbcode->bbcode_second_pass($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield']);
-		}
-
-		$poll_info[$i]['poll_option_text'] = bbcode_nl2br($poll_info[$i]['poll_option_text']);
-		$poll_info[$i]['poll_option_text'] = smiley_text($poll_info[$i]['poll_option_text']);
+		$poll_info[$i]['poll_option_text'] = generate_text_for_display($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield'], $parse_bbcode_flags, true);
 	}
 
 	$topic_data['poll_title'] = censor_text($topic_data['poll_title']);
