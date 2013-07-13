@@ -365,13 +365,6 @@ class phpbb_session
 		{
 			$this->data = $this->storage->get($this->session_id);
 
-			// retrieve user info if session storage only gets session data
-			if (isset($this->data['session_user_id']) && !isset($this->data['user_id']))
-			{
-				$user_info = $this->storage->get_user_info($this->data['session_user_id']);
-				$this->data = array_merge($this->data, $user_info);
-			}
-
 			// Did the session exist in the DB?
 			if (isset($this->data['user_id']))
 			{
@@ -607,7 +600,7 @@ class phpbb_session
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = $user_id;
 
-			$this->storage->get_user_info($this->cookie_data['u'], true);
+			$this->data = $this->storage->get_user_info($this->cookie_data['u'], true);
 			$bot = false;
 		}
 
