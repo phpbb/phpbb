@@ -31,7 +31,7 @@ class phpbb_mock_auth_provider implements phpbb_auth_provider_interface
 		return array();
 	}
 
-	function acp($new)
+	function acp()
 	{
 		return array();
 	}
@@ -42,6 +42,11 @@ class phpbb_mock_auth_provider implements phpbb_auth_provider_interface
 	}
 
 	function validate_session($user)
+	{
+		return null;
+	}
+
+	public function get_acp_template($new_config)
 	{
 		return null;
 	}
