@@ -87,7 +87,7 @@ class phpbb_auth_oauth_token_storage implements TokenStorageInterface
 		}
 
 		$sql = 'SELECT oauth_token FROM ' . $this->auth_provider_oauth_table .
-			$db->sql_build_array('SELECT', array(
+			$this->db->sql_build_array('SELECT', array(
 				'user_id'			=> $this->user->data['user_id'],
 				'oauth_provider'	=> $this->service_name,
 			));
@@ -139,7 +139,7 @@ class phpbb_auth_oauth_token_storage implements TokenStorageInterface
 		}
 
 		$sql = 'SELECT oauth_token FROM ' . $this->auth_provider_oauth_table .
-			$db->sql_build_array('SELECT', array(
+			$this->db->sql_build_array('SELECT', array(
 				'user_id'			=> $this->user->data['user_id'],
 				'oauth_provider'	=> $this->service_name,
 			));
