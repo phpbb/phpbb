@@ -28,9 +28,16 @@ class phpbb_auth_oauth_token_storage implements TokenStorageInterface
 	/**
 	* Cache driver.
 	*
-	* @var phpbb_cache_driver_interface
+	* @var phpbb_db_driver
 	*/
-	protected $driver;
+	protected $db;
+
+	/**
+	* Name of the OAuth provider
+	*
+	* @var string
+	*/
+	protected $service_name;
 
 	/**
 	* @var object|TokenInterface
@@ -40,11 +47,12 @@ class phpbb_auth_oauth_token_storage implements TokenStorageInterface
 	/**
 	* Creates token storage for phpBB.
 	*
-	* @param phpbb_cache_driver_interface $driver The cache driver
+	* @param phpbb_db_driver	$db
 	*/
-	public function __construct(phpbb_cache_driver_interface $driver)
+	public function __construct(phpbb_db_driver $db, $service_name)
 	{
-		$this->driver = $driver;
+		$this->db = $db;
+		$this->service_name = $service_name;
 	}
 
 	/**

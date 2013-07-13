@@ -54,13 +54,6 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	protected $user;
 
 	/**
-	* Cache driver.
-	*
-	* @var phpbb_cache_driver_interface
-	*/
-	protected $driver;
-
-	/**
 	* Cached service once it has been created
 	*
 	* @var \OAuth\Common\Service\ServiceInterface|null
@@ -81,15 +74,13 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	* @param 	phpbb_config 					$config
 	* @param 	phpbb_request 					$request
 	* @param 	phpbb_user 						$user
-	* @param	phpbb_cache_driver_interface	$driver
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, phpbb_cache_driver_interface $driver)
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;
-		$this->driver = $driver;
 	}
 
 	/**
@@ -186,7 +177,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			return $this->service;
 		}
 
-		$storage = new phpbb_auth_oauth_token_storage($this->driver);
+		$storage = new phpbb_auth_oauth_token_storage($this->db, $service_name);
 
 		$current_uri = $this->get_current_uri();
 
