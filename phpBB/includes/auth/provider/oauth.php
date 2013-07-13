@@ -54,6 +54,13 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	protected $user;
 
 	/**
+	* OAuth token table
+	*
+	* @var string
+	*/
+	protected $auth_provider_oauth_table;
+
+	/**
 	* Cached service once it has been created
 	*
 	* @var \OAuth\Common\Service\ServiceInterface|null
@@ -70,17 +77,19 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	/**
 	* OAuth Authentication Constructor
 	*
-	* @param 	phpbb_db_driver 				$db
-	* @param 	phpbb_config 					$config
-	* @param 	phpbb_request 					$request
-	* @param 	phpbb_user 						$user
+	* @param	phpbb_db_driver $db
+	* @param	phpbb_config 	$config
+	* @param	phpbb_request 	$request
+	* @param	phpbb_user 		$user
+	* @param	string			$auth_provider_oauth_table
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user)
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $auth_provider_oauth_table)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;
+		$this->auth_provider_oauth_table = $auth_provider_oauth_table;
 	}
 
 	/**
@@ -177,7 +186,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			return $this->service;
 		}
 
-		$storage = new phpbb_auth_oauth_token_storage($this->db, $this->user, $service_name);
+		$storage = new phpbb_auth_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_table);
 
 		$current_uri = $this->get_current_uri();
 

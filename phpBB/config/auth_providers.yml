@@ -42,5 +42,6 @@ services:
             - @config
             - @request
             - @user
+            - %tables.auth_provider_oauth%
         tags:
             - { name: auth.provider }

@@ -50,6 +50,13 @@ class phpbb_auth_oauth_token_storage implements TokenStorageInterface
 	protected $service_name;
 
 	/**
+	* OAuth token table
+	*
+	* @var string
+	*/
+	protected $auth_provider_oauth_table;
+
+	/**
 	* @var object|TokenInterface
 	*/
 	protected $cachedToken;
@@ -57,15 +64,17 @@ class phpbb_auth_oauth_token_storage implements TokenStorageInterface
 	/**
 	* Creates token storage for phpBB.
 	*
-	* @param phpbb_db_driver	$db
-	* @param phpbb_user			$user
-	* @param string				$service_name
+	* @param	phpbb_db_driver	$db
+	* @param	phpbb_user		$user
+	* @param	string			$service_name
+	* @param	string			$auth_provider_oauth_table
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_user $user, $service_name)
+	public function __construct(phpbb_db_driver $db, phpbb_user $user, $service_name, $auth_provider_oauth_table)
 	{
 		$this->db = $db;
 		$this->user = $user;
 		$this->service_name = $service_name;
+		$this->auth_provider_oauth_table = $auth_provider_oauth_table;
 	}
 
 	/**
@@ -77,7 +86,7 @@ class phpbb_auth_oauth_token_storage implements TokenStorageInterface
 			return $this->token;
 		}
 
-		$sql = 'SELECT oauth_token FROM ' . AUTH_PROVIDER_OAUTH .
+		$sql = 'SELECT oauth_token FROM ' . $this->auth_provider_oauth_table .
 			$db->sql_build_array('SELECT', array(
 				'user_id'			=> $this->user->data['user_id'],
 				'oauth_provider'	=> $this->service_name,
@@ -111,11 +120,12 @@ class phpbb_auth_oauth_token_storage implements TokenStorageInterface
 	{
 		$this->cachedToken = $token;
 
-		$sql = 'INSERT INTO ' . AUTH_PROVIDER_OAUTH . ' ' . $this->db->sql_build_array('INSERT', array(
-			'user_id'			=> $this->user->data['user_id'],
-			'oauth_provider'	=> $this->service_name,
-			'oauth_token'		=> serialize($token),
-		));
+		$sql = 'INSERT INTO ' . $this->auth_provider_oauth_table . ' ' .
+			$this->db->sql_build_array('INSERT', array(
+				'user_id'			=> $this->user->data['user_id'],
+				'oauth_provider'	=> $this->service_name,
+				'oauth_token'		=> serialize($token),
+			));
 		$this->db->sql_query($sql);
 	}
 
@@ -128,7 +138,7 @@ class phpbb_auth_oauth_token_storage implements TokenStorageInterface
 			return true;
 		}
 
-		$sql = 'SELECT oauth_token FROM ' . AUTH_PROVIDER_OAUTH .
+		$sql = 'SELECT oauth_token FROM ' . $this->auth_provider_oauth_table .
 			$db->sql_build_array('SELECT', array(
 				'user_id'			=> $this->user->data['user_id'],
 				'oauth_provider'	=> $this->service_name,
@@ -152,7 +162,7 @@ class phpbb_auth_oauth_token_storage implements TokenStorageInterface
 	{
 		$this->cachedToken = null;
 
-		$sql = 'DELETE FROM ' . AUTH_PROVIDER_OAUTH . 'WHERE user_id = ' . $this->user->data['user_id'] .
+		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_table . 'WHERE user_id = ' . $this->user->data['user_id'] .
 			' AND oauth_provider = ' . $this->db->sql_escape($this->oauth_provider);
 		$this->db->sql_query($sql);
 	}

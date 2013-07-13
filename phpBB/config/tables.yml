@@ -1,4 +1,5 @@
 parameters:
+    tables.auth_provider_oauth: %core.table_prefix%auth_provider_oauth
     tables.config: %core.table_prefix%config
     tables.config_text: %core.table_prefix%config_text
     tables.ext: %core.table_prefix%ext
