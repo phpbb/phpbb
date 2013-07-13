@@ -66,6 +66,19 @@ services:
             - @dbal.conn
             - %tables.config_text%
 
+    content.visibility:
+        class: phpbb_content_visibility
+        arguments:
+            - @auth
+            - @dbal.conn
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.forums%
+            - %tables.posts%
+            - %tables.topics%
+            - %tables.users%
+
     controller.helper:
         class: phpbb_controller_helper
         arguments:

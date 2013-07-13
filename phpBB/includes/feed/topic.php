@@ -43,7 +43,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 
 	function open()
 	{
-		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_approved, t.topic_title, t.topic_time, t.topic_views, t.topic_replies, t.topic_type
+		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_visibility, t.topic_title, t.topic_time, t.topic_views, t.topic_replies, t.topic_type
 			FROM ' . TOPICS_TABLE . ' t
 			LEFT JOIN ' . FORUMS_TABLE . ' f
 				ON (f.forum_id = t.forum_id)
@@ -94,14 +94,14 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 	function get_sql()
 	{
 		$this->sql = array(
-			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
 				USERS_TABLE		=> 'u',
 			),
 			'WHERE'		=> 'p.topic_id = ' . $this->topic_id . '
-								' . ($this->forum_id && !$this->auth->acl_get('m_approve', $this->forum_id) ? 'AND p.post_approved = 1' : '') . '
+								AND ' . $this->content_visibility->get_visibility_sql('post', $this->forum_id, 'p.') . '
 								AND p.poster_id = u.user_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
 		);

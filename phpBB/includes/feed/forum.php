@@ -90,14 +90,12 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 
 	function get_sql()
 	{
-		$m_approve = ($this->auth->acl_get('m_approve', $this->forum_id)) ? true : false;
-
 		// Determine topics with recent activity
 		$sql = 'SELECT topic_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
 			WHERE forum_id = ' . $this->forum_id . '
 				AND topic_moved_id = 0
-				' . ((!$m_approve) ? 'AND topic_approved = 1' : '') . '
+				AND ' . $this->content_visibility->get_visibility_sql('topic', $this->forum_id) . '
 			ORDER BY topic_last_post_time DESC';
 		$result = $this->db->sql_query_limit($sql, $this->num_items);
 
@@ -117,14 +115,14 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 		}
 
 		$this->sql = array(
-			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
 				USERS_TABLE		=> 'u',
 			),
 			'WHERE'		=> $this->db->sql_in_set('p.topic_id', $topic_ids) . '
-							' . ((!$m_approve) ? 'AND p.post_approved = 1' : '') . '
+							AND ' . $this->content_visibility->get_visibility_sql('post', $this->forum_id, 'p.') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND p.poster_id = u.user_id',
 			'ORDER_BY'	=> 'p.post_time DESC',

@@ -33,17 +33,11 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 			return false;
 		}
 
-		// m_approve forums
-		$fid_m_approve = $this->get_moderator_approve_forums();
-		$sql_m_approve = (!empty($fid_m_approve)) ? 'OR ' . $this->db->sql_in_set('forum_id', $fid_m_approve) : '';
-
 		// Determine topics with recent activity
 		$sql = 'SELECT topic_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('forum_id', $forum_ids) . '
-				AND topic_moved_id = 0
-				AND (topic_approved = 1
-					' . $sql_m_approve . ')
+			WHERE topic_moved_id = 0
+				AND ' . $this->content_visibility->get_forums_visibility_sql('topic', $forum_ids) . '
 			ORDER BY topic_last_post_time DESC';
 		$result = $this->db->sql_query_limit($sql, $this->num_items);
 
@@ -65,7 +59,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		// Get the actual data
 		$this->sql = array(
 			'SELECT'	=>	'f.forum_id, f.forum_name, ' .
-							'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+							'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				USERS_TABLE		=> 'u',
@@ -78,8 +72,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 				),
 			),
 			'WHERE'		=> $this->db->sql_in_set('p.topic_id', $topic_ids) . '
-							AND (p.post_approved = 1
-								' . str_replace('forum_id', 'p.forum_id', $sql_m_approve) . ')
+							AND ' . $this->content_visibility->get_visibility_sql('post', array(), 'p.') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND u.user_id = p.poster_id',
 			'ORDER_BY'	=> 'p.post_time DESC',

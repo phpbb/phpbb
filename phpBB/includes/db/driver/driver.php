@@ -878,7 +878,7 @@ class phpbb_db_driver
 							</div>
 						</div>
 						<div id="page-footer">
-							Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
+							Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
 						</div>
 					</div>
 					</body>
