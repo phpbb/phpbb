@@ -839,17 +839,9 @@ if (!empty($topic_data['poll_start']))
 		$poll_info[$i]['poll_option_text'] = generate_text_for_display($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield'], $parse_bbcode_flags, true);
 	}
 
-	$topic_data['poll_title'] = censor_text($topic_data['poll_title']);
-
-	if ($poll_bbcode !== false)
-	{
-		$poll_bbcode->bbcode_second_pass($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
-	}
-
-	$topic_data['poll_title'] = bbcode_nl2br($topic_data['poll_title']);
-	$topic_data['poll_title'] = smiley_text($topic_data['poll_title']);
-
-	unset($poll_bbcode);
+	$topic_data['poll_title'] = generate_text_for_display($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield'], $parse_bbcode_flags, true);
+	 
+	unset($parse_bbcode_flags);
 
 	foreach ($poll_info as $poll_option)
 	{
