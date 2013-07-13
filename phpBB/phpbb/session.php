@@ -367,12 +367,8 @@ class phpbb_session
 			// retrieve user info if session storage only gets session data
 			if (isset($this->data['session_user_id']) && !isset($this->data['user_id']))
 			{
-				$sql = 'SELECT u.*
-					FROM ' . USERS_TABLE . " u
-					WHERE u.user_id = " . (int) $this->data['session_user_id'];
-				$result = $db->sql_query($sql);
-				$this->data = array_merge($this->data, $db->sql_fetchrow($result));
-				$db->sql_freeresult($result);
+				$user_info = $this->storage->get_user_info($this->data['session_user_id']);
+				$this->data = array_merge($this->data, $user_info);
 			}
 
 			// Did the session exist in the DB?
@@ -462,7 +458,7 @@ class phpbb_session
 
 							$db->sql_return_on_error(true);
 
-							$this->update_session($sql_ary);
+							$result = $this->update_session($sql_ary);
 
 							$db->sql_return_on_error(false);
 
@@ -599,15 +595,10 @@ class phpbb_session
 		// Else if we've been passed a user_id we'll grab data based on that
 		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && !sizeof($this->data))
 		{
-			$sql = 'SELECT u.*
-				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
-				WHERE u.user_id = ' . (int) $this->cookie_data['u'] . '
-					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
-					AND k.user_id = u.user_id
-					AND k.key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
-			$result = $db->sql_query($sql);
-			$this->data = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$this->data = $this->storage->get_user_info_with_key(
+				$this->cookie_data['u'],
+				$this->cookie_data['k']
+			);
 			$bot = false;
 		}
 		else if ($user_id !== false && !sizeof($this->data))
@@ -615,13 +606,7 @@ class phpbb_session
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = $user_id;
 
-			$sql = 'SELECT *
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . (int) $this->cookie_data['u'] . '
-					AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
-			$result = $db->sql_query($sql);
-			$this->data = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$this->storage->get_user_info($this->cookie_data['u'], true);
 			$bot = false;
 		}
 
@@ -645,22 +630,15 @@ class phpbb_session
 
 			if (!$bot)
 			{
-				$sql = 'SELECT *
-					FROM ' . USERS_TABLE . '
-					WHERE user_id = ' . (int) $this->cookie_data['u'];
+				$this->data =
+					$this->storage->get_user_info($this->cookie_data['u']);
 			}
 			else
 			{
 				// We give bots always the same session if it is not yet expired.
-				$sql = 'SELECT u.*, s.*
-					FROM ' . USERS_TABLE . ' u
-					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
-					WHERE u.user_id = ' . (int) $bot;
+				$this->data = $this->storage->get_with_user_id($bot);
 			}
 
-			$result = $db->sql_query($sql);
-			$this->data = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
 		}
 
 		if ($this->data['user_id'] != ANONYMOUS && !$bot)
@@ -1492,9 +1470,6 @@ class phpbb_session
 	public function update_session($session_data, $session_id = null)
 	{
 		$session_id = ($session_id) ? $session_id : $this->session_id;
-
-		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $session_data) . "
-			WHERE session_id = '" . $db->sql_escape($session_id) . "'";
-		$db->sql_query($sql);
+		return $this->storage->update_session($session_data, $session_id);
 	}
 }
