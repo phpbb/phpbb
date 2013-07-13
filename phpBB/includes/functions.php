@@ -5059,7 +5059,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container;
+	global $phpbb_dispatcher, $request, $phpbb_container, $symfony_request;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5219,7 +5219,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// This path is sent with the base template paths in the assign_vars()
 	// call below. We need to correct it in case we are accessing from a
 	// controller because the web paths will be incorrect otherwise.
-	$corrected_path = phpbb_get_web_root_path(phpbb_create_symfony_request($request));
+	$corrected_path = $symfony_request !== null ? phpbb_get_web_root_path($symfony_request) : '';
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 	// Send a proper content-language to the output
