@@ -159,7 +159,7 @@ class filespec
 	*/
 	function is_image($file_path = '')
 	{
-		if (!empty($file_path) && ($this->mimetype === 'application/octetstream' || $this->mimetype === 'application/octet-stream'))
+		if (!empty($file_path))
 		{
 			$guesser = MimeTypeGuesser::getInstance();
 			$this->mimetype = $guesser->guess($file_path);

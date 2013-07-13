@@ -241,7 +241,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			array('txt', 'text/plain', false),
 			array('jpg', 'application/octet-stream', true),
 			array('gif', 'application/octetstream', true),
-			array('png', 'application/mime', false),
+			array('png', 'application/mime', true),
 		);
 	}
 
