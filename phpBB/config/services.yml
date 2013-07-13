@@ -4,6 +4,8 @@ imports:
     - { resource: notifications.yml }
     - { resource: migrator.yml }
     - { resource: avatars.yml }
+    - { resource: feed.yml }
+    - { resource: auth_providers.yml }
 
 services:
     auth:
@@ -64,6 +66,19 @@ services:
             - @dbal.conn
             - %tables.config_text%
 
+    content.visibility:
+        class: phpbb_content_visibility
+        arguments:
+            - @auth
+            - @dbal.conn
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.forums%
+            - %tables.posts%
+            - %tables.topics%
+            - %tables.users%
+
     controller.helper:
         class: phpbb_controller_helper
         arguments:
@@ -77,7 +92,7 @@ services:
         arguments:
             - @user
             - @service_container
-            - @ext.finder
+            - @style
 
     cron.task_collection:
         class: phpbb_di_service_collection
@@ -253,15 +268,15 @@ services:
         class: phpbb_style_path_provider
 
     template:
-        class: phpbb_template
+        class: phpbb_template_twig
         arguments:
             - %core.root_path%
             - %core.php_ext%
             - @config
             - @user
-            - @style.resource_locator
             - @template_context
             - @ext.manager
+            - %core.adm_relative_path%
 
     template_context:
         class: phpbb_template_context

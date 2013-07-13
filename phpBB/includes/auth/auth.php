@@ -927,15 +927,14 @@ class phpbb_auth
 	*/
 	function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)
 	{
-		global $config, $db, $user, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
 
 		$method = trim(basename($config['auth_method']));
-		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-		$method = 'login_' . $method;
-		if (function_exists($method))
+		$provider = $phpbb_container->get('auth.provider.' . $method);
+		if ($provider)
 		{
-			$login = $method($username, $password, $user->ip, $user->browser, $user->forwarded_for);
+			$login = $provider->login($username, $password);
 
 			// If the auth module wants us to create an empty profile do so and then treat the status as LOGIN_SUCCESS
 			if ($login['status'] == LOGIN_SUCCESS_CREATE_PROFILE)

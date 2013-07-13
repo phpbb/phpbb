@@ -340,6 +340,11 @@ span.imageset {
 	padding-left: 16px;
 	padding-top: 14px;
 }
+.imageset.icon_topic_deleted {
+	background-image: url("./images/icon_topic_deleted.png");
+	padding-left: 16px;
+	padding-top: 14px;
+}
 .imageset.icon_topic_unapproved {
 	background-image: url("./images/icon_topic_unapproved.gif");
 	padding-left: 16px;
