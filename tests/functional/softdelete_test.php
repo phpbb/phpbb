@@ -443,6 +443,87 @@ class phpbb_functional_softdelete_test extends phpbb_functional_test_case
 		), 'after restoring #2');
 	}
 
+	public function test_split_topic()
+	{
+		$this->login();
+		$this->load_ids(array(
+			'forums' => array(
+				'Soft Delete #1',
+				'Soft Delete #2',
+			),
+			'topics' => array(
+				'Soft Delete Topic #1',
+			),
+			'posts' => array(
+				'Soft Delete Topic #1',
+				'Re: Soft Delete Topic #1-#2',
+			),
+		));
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
+			'forum_posts_approved'		=> 1,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'],
+		), 'before splitting #1');
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #2'], array(
+			'forum_posts_approved'		=> 0,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 0,
+			'forum_topics_approved'		=> 0,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> 0,
+		), 'before splitting #2');
+
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
+
+		$this->add_lang('mcp');
+		$form = $crawler->selectButton('Go')->eq(2)->form();
+		$form['action']->select('split');
+		$crawler = self::submit($form);
+		$this->assertContainsLang('SPLIT_TOPIC_EXPLAIN', $crawler->text());
+
+		$form = $crawler->selectButton('Submit')->form(array(
+			'subject'			=> 'Soft Delete Topic #2',
+		));
+		$form['to_forum_id']->select($this->data['forums']['Soft Delete #2']);
+		$form['post_id_list'][1]->tick();
+		$crawler = self::submit($form);
+
+		$form = $crawler->selectButton('Yes')->form();
+		$crawler = self::submit($form);
+		$this->assertContainsLang('TOPIC_SPLIT_SUCCESS', $crawler->text());
+
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
+		$this->assertContains('Soft Delete Topic #1', $crawler->filter('h2')->text());
+		$this->assertNotContains('Re: Soft Delete Topic #1-#2', $crawler->text());
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
+			'forum_posts_approved'		=> 1,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 0,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'],
+		), 'after restoring #1');
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #2'], array(
+			'forum_posts_approved'		=> 0,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
+			'forum_topics_approved'		=> 0,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 1,
+			'forum_last_post_id'		=> 0,
+		), 'after restoring #2');
+	}
+
 	public function assert_forum_details($forum_id, $details, $additional_error_message = '')
 	{
 		$this->db = $this->get_db();
