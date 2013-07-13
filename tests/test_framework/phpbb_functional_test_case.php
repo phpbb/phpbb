@@ -629,7 +629,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->add_lang('ucp');
 
 		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
-		$this->assertContains($this->lang('LOGOUT_REDIRECT'), $crawler->filter('#message')->text());
+		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 		unset($this->sid);
 
 	}
