@@ -395,9 +395,12 @@ CREATE TABLE phpbb_forums (
 	forum_topics_per_page INT2 DEFAULT '0' NOT NULL,
 	forum_type INT2 DEFAULT '0' NOT NULL,
 	forum_status INT2 DEFAULT '0' NOT NULL,
-	forum_posts INT4 DEFAULT '0' NOT NULL CHECK (forum_posts >= 0),
-	forum_topics INT4 DEFAULT '0' NOT NULL CHECK (forum_topics >= 0),
-	forum_topics_real INT4 DEFAULT '0' NOT NULL CHECK (forum_topics_real >= 0),
+	forum_posts_approved INT4 DEFAULT '0' NOT NULL CHECK (forum_posts_approved >= 0),
+	forum_posts_unapproved INT4 DEFAULT '0' NOT NULL CHECK (forum_posts_unapproved >= 0),
+	forum_posts_softdeleted INT4 DEFAULT '0' NOT NULL CHECK (forum_posts_softdeleted >= 0),
+	forum_topics_approved INT4 DEFAULT '0' NOT NULL CHECK (forum_topics_approved >= 0),
+	forum_topics_unapproved INT4 DEFAULT '0' NOT NULL CHECK (forum_topics_unapproved >= 0),
+	forum_topics_softdeleted INT4 DEFAULT '0' NOT NULL CHECK (forum_topics_softdeleted >= 0),
 	forum_last_post_id INT4 DEFAULT '0' NOT NULL CHECK (forum_last_post_id >= 0),
 	forum_last_poster_id INT4 DEFAULT '0' NOT NULL CHECK (forum_last_poster_id >= 0),
 	forum_last_post_subject varchar(255) DEFAULT '' NOT NULL,
@@ -694,7 +697,7 @@ CREATE TABLE phpbb_posts (
 	icon_id INT4 DEFAULT '0' NOT NULL CHECK (icon_id >= 0),
 	poster_ip varchar(40) DEFAULT '' NOT NULL,
 	post_time INT4 DEFAULT '0' NOT NULL CHECK (post_time >= 0),
-	post_approved INT2 DEFAULT '1' NOT NULL CHECK (post_approved >= 0),
+	post_visibility INT2 DEFAULT '0' NOT NULL,
 	post_reported INT2 DEFAULT '0' NOT NULL CHECK (post_reported >= 0),
 	enable_bbcode INT2 DEFAULT '1' NOT NULL CHECK (enable_bbcode >= 0),
 	enable_smilies INT2 DEFAULT '1' NOT NULL CHECK (enable_smilies >= 0),
@@ -715,6 +718,9 @@ CREATE TABLE phpbb_posts (
 	post_edit_count INT2 DEFAULT '0' NOT NULL CHECK (post_edit_count >= 0),
 	post_revision_count INT2 DEFAULT '0' NOT NULL CHECK (post_revision_count >= 0),
 	post_edit_locked INT2 DEFAULT '0' NOT NULL CHECK (post_edit_locked >= 0),
+	post_delete_time INT4 DEFAULT '0' NOT NULL CHECK (post_delete_time >= 0),
+	post_delete_reason varchar(255) DEFAULT '' NOT NULL,
+	post_delete_user INT4 DEFAULT '0' NOT NULL CHECK (post_delete_user >= 0),
 	PRIMARY KEY (post_id)
 );
 
@@ -722,7 +728,7 @@ CREATE INDEX phpbb_posts_forum_id ON phpbb_posts (forum_id);
 CREATE INDEX phpbb_posts_topic_id ON phpbb_posts (topic_id);
 CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts (poster_ip);
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id);
-CREATE INDEX phpbb_posts_post_approved ON phpbb_posts (post_approved);
+CREATE INDEX phpbb_posts_post_visibility ON phpbb_posts (post_visibility);
 CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username);
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time);
 
@@ -1119,15 +1125,16 @@ CREATE TABLE phpbb_topics (
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
 	icon_id INT4 DEFAULT '0' NOT NULL CHECK (icon_id >= 0),
 	topic_attachment INT2 DEFAULT '0' NOT NULL CHECK (topic_attachment >= 0),
-	topic_approved INT2 DEFAULT '1' NOT NULL CHECK (topic_approved >= 0),
+	topic_visibility INT2 DEFAULT '0' NOT NULL,
 	topic_reported INT2 DEFAULT '0' NOT NULL CHECK (topic_reported >= 0),
 	topic_title varchar(255) DEFAULT '' NOT NULL,
 	topic_poster INT4 DEFAULT '0' NOT NULL CHECK (topic_poster >= 0),
 	topic_time INT4 DEFAULT '0' NOT NULL CHECK (topic_time >= 0),
 	topic_time_limit INT4 DEFAULT '0' NOT NULL CHECK (topic_time_limit >= 0),
 	topic_views INT4 DEFAULT '0' NOT NULL CHECK (topic_views >= 0),
-	topic_replies INT4 DEFAULT '0' NOT NULL CHECK (topic_replies >= 0),
-	topic_replies_real INT4 DEFAULT '0' NOT NULL CHECK (topic_replies_real >= 0),
+	topic_posts_approved INT4 DEFAULT '0' NOT NULL CHECK (topic_posts_approved >= 0),
+	topic_posts_unapproved INT4 DEFAULT '0' NOT NULL CHECK (topic_posts_unapproved >= 0),
+	topic_posts_softdeleted INT4 DEFAULT '0' NOT NULL CHECK (topic_posts_softdeleted >= 0),
 	topic_status INT2 DEFAULT '0' NOT NULL,
 	topic_type INT2 DEFAULT '0' NOT NULL,
 	topic_first_post_id INT4 DEFAULT '0' NOT NULL CHECK (topic_first_post_id >= 0),
@@ -1149,14 +1156,17 @@ CREATE TABLE phpbb_topics (
 	poll_max_options INT2 DEFAULT '1' NOT NULL,
 	poll_last_vote INT4 DEFAULT '0' NOT NULL CHECK (poll_last_vote >= 0),
 	poll_vote_change INT2 DEFAULT '0' NOT NULL CHECK (poll_vote_change >= 0),
+	topic_delete_time INT4 DEFAULT '0' NOT NULL CHECK (topic_delete_time >= 0),
+	topic_delete_reason varchar(255) DEFAULT '' NOT NULL,
+	topic_delete_user INT4 DEFAULT '0' NOT NULL CHECK (topic_delete_user >= 0),
 	PRIMARY KEY (topic_id)
 );
 
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics (forum_id);
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type);
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics (topic_last_post_time);
-CREATE INDEX phpbb_topics_topic_approved ON phpbb_topics (topic_approved);
-CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics (forum_id, topic_approved, topic_last_post_id);
+CREATE INDEX phpbb_topics_topic_visibility ON phpbb_topics (topic_visibility);
+CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics (forum_id, topic_visibility, topic_last_post_id);
 CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics (forum_id, topic_last_post_time, topic_moved_id);
 
 /*

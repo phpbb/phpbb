@@ -53,7 +53,7 @@ class install_install extends module
 	function main($mode, $sub)
 	{
 		global $lang, $template, $language, $phpbb_root_path, $phpEx;
-		global $phpbb_container, $cache, $phpbb_log;
+		global $phpbb_container, $cache, $phpbb_log, $request;
 
 		switch ($sub)
 		{
@@ -102,6 +102,9 @@ class install_install extends module
 			break;
 
 			case 'final':
+				// Enable super globals to prevent issues with the new phpbb_request object
+				$request->enable_super_globals();
+
 				// Create a normal container now
 				$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 

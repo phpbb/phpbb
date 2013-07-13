@@ -16,6 +16,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	protected $template_path;
 	protected $style_resource_locator;
 	protected $style_provider;
+	protected $user;
 
 	protected $test_path = 'tests/template';
 
@@ -28,11 +29,11 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		try
 		{
-			$this->assertTrue($this->template->display($handle, false));
+			$this->template->display($handle, false);
 		}
 		catch (Exception $exception)
 		{
-			// reset output buffering even when an error occured
+			// reset output buffering even when an error occurred
 			// PHPUnit turns trigger_error into exceptions as well
 			ob_end_clean();
 			throw $exception;
@@ -59,16 +60,17 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 	protected function setup_engine(array $new_config = array())
 	{
-		global $phpbb_root_path, $phpEx, $user;
+		global $phpbb_root_path, $phpEx;
 
 		$defaults = $this->config_defaults();
 		$config = new phpbb_config(array_merge($defaults, $new_config));
+		$this->user = new phpbb_user;
 
 		$this->template_path = $this->test_path . '/templates';
 		$this->style_resource_locator = new phpbb_style_resource_locator();
 		$this->style_provider = new phpbb_style_path_provider();
-		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, new phpbb_template_context());
-		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider, $this->template);
+		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $this->user, new phpbb_template_context());
+		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $this->user, $this->style_resource_locator, $this->style_provider, $this->template);
 		$this->style->set_custom_style('tests', $this->template_path, array(), '');
 	}
 
@@ -77,32 +79,18 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		// Test the engine can be used
 		$this->setup_engine();
 
-		$template_cache_dir = dirname($this->template->cachepath);
-		if (!is_writable($template_cache_dir))
-		{
-			$this->markTestSkipped("Template cache directory ({$template_cache_dir}) is not writable.");
-		}
-
-		foreach (glob($this->template->cachepath . '*') as $file)
-		{
-			unlink($file);
-		}
-
-		$this->setup_engine();
+		$this->template->clear_cache();
 	}
 
 	protected function tearDown()
 	{
-		if (is_object($this->template))
+		if ($this->template)
 		{
-			foreach (glob($this->template->cachepath . '*') as $file)
-			{
-				unlink($file);
-			}
+			$this->template->clear_cache();
 		}
 	}
 
-	protected function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $cache_file)
+	protected function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $lang_vars = array())
 	{
 		$this->template->set_filenames(array('test' => $file));
 		$this->template->assign_vars($vars);
@@ -120,25 +108,17 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			$this->template->destroy_block_vars($block);
 		}
 
-		try
+		// Previous functionality was $cachefile (string), which was removed, check to prevent errors
+		if (is_array($lang_vars))
 		{
-			$this->assertEquals($expected, $this->display('test'), "Testing $file");
-			$this->assertFileExists($cache_file);
-		}
-		catch (ErrorException $e)
-		{
-			if (file_exists($cache_file))
+			foreach ($lang_vars as $name => $value)
 			{
-				copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
+				$this->user->lang[$name] = $value;
 			}
-			throw $e;
 		}
 
-		// For debugging.
-		// When testing eval path the cache file may not exist.
-		if (self::PRESERVE_CACHE && file_exists($cache_file))
-		{
-			copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
-		}
+		$expected = str_replace(array("\n", "\r", "\t"), '', $expected);
+		$output = str_replace(array("\n", "\r", "\t"), '', $this->display('test'));
+		$this->assertEquals($expected, $output, "Testing $file");
 	}
 }

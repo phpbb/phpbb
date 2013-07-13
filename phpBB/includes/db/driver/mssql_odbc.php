@@ -253,7 +253,7 @@ class phpbb_db_driver_mssql_odbc extends phpbb_db_driver_mssql_base
 	* Fetch current row
 	* @note number of bytes returned depends on odbc.defaultlrl php.ini setting. If it is limited to 4K for example only 4K of data is returned max.
 	*/
-	function sql_fetchrow($query_id = false, $debug = false)
+	function sql_fetchrow($query_id = false)
 	{
 		global $cache;
 

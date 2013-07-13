@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_groups">
+		<column>group_name</column>
+		<column>group_desc</column>
+		<row>
+			<value>foobar_group</value>
+			<value>test123</value>
+		</row>
+	</table>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<column>user_occ</column>
+		<column>user_interests</column>
+		<row>
+			<value>1</value>
+			<value>admin</value>
+			<value>admin</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>moderator</value>
+			<value>moderator</value>
+			<value></value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+</dataset>

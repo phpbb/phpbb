@@ -50,15 +50,6 @@ class phpbb_template_template_inheritance_test extends phpbb_template_template_t
 	*/
 	public function test_template($name, $file, array $vars, array $block_vars, array $destroy, $expected)
 	{
-		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
-
-		$this->assertFileNotExists($cache_file);
-
-		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
-
-		// Reset the engine state
-		$this->setup_engine();
-
-		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
+		$this->run_template($file, $vars, $block_vars, $destroy, $expected);
 	}
 }

@@ -77,6 +77,32 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 		}
 		elseif (!empty($this->config['allow_avatar_remote_upload']) && !empty($url))
 		{
+			if (!preg_match('#^(http|https|ftp)://#i', $url))
+			{
+				$url = 'http://' . $url;
+			}
+
+			if (!function_exists('validate_data'))
+			{
+				require($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+			}
+
+			$validate_array = validate_data(
+				array(
+					'url' => $url,
+				),
+				array(
+					'url' => array('string', true, 5, 255),
+				)
+			);
+
+			$error = array_merge($error, $validate_array);
+
+			if (!empty($error))
+			{
+				return false;
+			}
+
 			$file = $upload->remote_upload($url);
 		}
 		else

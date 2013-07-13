@@ -139,7 +139,7 @@ class phpbb_search_fulltext_sphinx
 		{
 			require($this->phpbb_root_path . 'includes/db/db_tools.' . $this->php_ext);
 		}
-		
+
 		// Initialize phpbb_db_tools object
 		$this->db_tools = new phpbb_db_tools($this->db);
 
@@ -274,6 +274,7 @@ class phpbb_search_fulltext_sphinx
 						p.forum_id,
 						p.topic_id,
 						p.poster_id,
+						p.post_visibility,
 						CASE WHEN p.post_id = t.topic_first_post_id THEN 1 ELSE 0 END as topic_first_post,
 						p.post_time,
 						p.post_subject,
@@ -291,6 +292,7 @@ class phpbb_search_fulltext_sphinx
 				array('sql_attr_uint',				'forum_id'),
 				array('sql_attr_uint',				'topic_id'),
 				array('sql_attr_uint',				'poster_id'),
+				array('sql_attr_uint',				'post_visibility'),
 				array('sql_attr_bool',				'topic_first_post'),
 				array('sql_attr_bool',				'deleted'),
 				array('sql_attr_timestamp'	,		'post_time'),
@@ -306,6 +308,7 @@ class phpbb_search_fulltext_sphinx
 						p.forum_id,
 						p.topic_id,
 						p.poster_id,
+						p.post_visibility,
 						CASE WHEN p.post_id = t.topic_first_post_id THEN 1 ELSE 0 END as topic_first_post,
 						p.post_time,
 						p.post_subject,
@@ -445,7 +448,7 @@ class phpbb_search_fulltext_sphinx
 	* @param	string		$sort_dir			is either a or d representing ASC and DESC
 	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
 	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	array		$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	string		$post_visibility	specifies which types of posts the user can view in which forums
 	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
 	* @param	array		$author_ary			an array of author ids if the author should be ignored during the search the array is empty
 	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
@@ -455,7 +458,7 @@ class phpbb_search_fulltext_sphinx
 	* @param	bool		$search_wiki		limit results to wiki posts
 	* @return	boolean|int						total number of results
 	*/
-	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page, $search_wiki)
+	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page, $search_wiki)
 	{
 		// No keywords? No posts.
 		if (!strlen($this->search_query) && !sizeof($author_ary))
@@ -570,10 +573,17 @@ class phpbb_search_fulltext_sphinx
 			$this->sphinx->SetFilter('poster_id', $author_ary);
 		}
 
+
 		if ($search_wiki)
 		{
 			$this->sphinx->SetFilter('post_wiki', 1);
 		}
+
+		// As this is not simply possible at the moment, we limit the result to approved posts.
+		// This will make it impossible for moderators to search unapproved and softdeleted posts,
+		// but at least it will also cause the same for normal users.
+		$this->sphinx->SetFilter('post_visibility', array(ITEM_APPROVED));
+
 
 		if (sizeof($ex_fid_ary))
 		{
@@ -617,7 +627,7 @@ class phpbb_search_fulltext_sphinx
 
 		$result_count = $result['total_found'];
 
-		if ($start >= $result_count)
+		if ($result_count && $start >= $result_count)
 		{
 			$start = floor(($result_count - 1) / $per_page) * $per_page;
 
@@ -669,7 +679,7 @@ class phpbb_search_fulltext_sphinx
 	* @param	string		$sort_dir			is either a or d representing ASC and DESC
 	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
 	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	array		$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	string		$post_visibility	specifies which types of posts the user can view in which forums
 	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
 	* @param	array		$author_ary			an array of author ids
 	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
@@ -679,14 +689,14 @@ class phpbb_search_fulltext_sphinx
 	* @param	bool		$search_wiki		limit results to wiki posts
 	* @return	boolean|int						total number of results
 	*/
-	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page, $search_wiki)
+	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page, $search_wiki)
 	{
 		$this->search_query = '';
 
 		$this->sphinx->SetMatchMode(SPH_MATCH_FULLSCAN);
 		$fields = ($firstpost_only) ? 'firstpost' : 'all';
 		$terms = 'all';
-		return $this->keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, $id_ary, $start, $per_page, $search_wiki);
+		return $this->keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, $id_ary, $start, $per_page, $search_wiki);
 	}
 
 	/**

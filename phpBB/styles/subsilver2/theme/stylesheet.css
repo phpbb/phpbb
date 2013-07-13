@@ -1012,6 +1012,11 @@ a.imageset {
 	padding-left: 19px;
 	padding-top: 18px;
 }
+.imageset.icon_topic_deleted {
+	background-image: url("./images/icon_topic_deleted.png");
+	padding-left: 14px;
+	padding-top: 14px;
+}
 
 
 /* English images for fallback */

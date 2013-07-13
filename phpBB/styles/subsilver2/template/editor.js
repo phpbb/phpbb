@@ -38,6 +38,7 @@ function initInsertions() {
 	}
 
 	var textarea = doc.forms[form_name].elements[text_name];
+	phpbb.applyCodeEditor(textarea);
 
 	if (is_ie && typeof(baseHeight) !== 'number') {
 		textarea.focus();
