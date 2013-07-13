@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/session.php';
+
 /**
 * @ignore
 */
@@ -49,6 +51,7 @@ class phpbb_user extends phpbb_session
 	*/
 	function __construct()
 	{
+		parent::__construct();
 		global $phpbb_root_path;
 
 		$this->lang_path = $phpbb_root_path . 'language/';
