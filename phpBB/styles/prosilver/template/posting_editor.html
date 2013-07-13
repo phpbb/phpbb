@@ -100,6 +100,7 @@
 	<!-- INCLUDE posting_buttons.html -->
 
 	<div id="smiley-box">
+		<div id="smiley-container" style="display: none;">
 		<!-- IF S_SMILIES_ALLOWED and .smiley -->
 			<strong>{L_SMILIES}</strong><br />
 			<!-- BEGIN smiley -->
@@ -109,9 +110,10 @@
 		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED-->
 			<br /><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
 		<!-- ENDIF -->
+		<!-- IF .smiley && BBCODE_STATUS --><hr /><!-- ENDIF -->
+		</div>
 
 		<!-- IF BBCODE_STATUS -->
-		<!-- IF .smiley --><hr /><!-- ENDIF -->
 		{BBCODE_STATUS}<br />
 		<!-- IF S_BBCODE_ALLOWED -->
 			{IMG_STATUS}<br />
