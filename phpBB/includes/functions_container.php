@@ -53,7 +53,7 @@ function phpbb_create_container(array $extensions, $phpbb_root_path, $php_ext)
 */
 function phpbb_create_install_container($phpbb_root_path, $php_ext)
 {
-	$other_config_path = $phpbb_root_path . 'install/update/new/config';
+	$other_config_path = $phpbb_root_path . 'install/update/new/config/';
 	$config_path = file_exists($other_config_path . 'services.yml') ? $other_config_path : $phpbb_root_path . 'config';
 
 	$core = new phpbb_di_extension_core($config_path);
@@ -71,6 +71,30 @@ function phpbb_create_install_container($phpbb_root_path, $php_ext)
 	$container->compile();
 
 	return $container;
+}
+
+/**
+* Create updater container
+*
+* @param string $phpbb_root_path Root path
+* @param string $php_ext PHP Extension
+* @param array $config_path Path to config directory
+* @return ContainerBuilder object (compiled)
+*/
+function phpbb_create_update_container($phpbb_root_path, $php_ext, $config_path)
+{
+	return phpbb_create_compiled_container(
+		array(
+			new phpbb_di_extension_config($phpbb_root_path . 'config.' . $php_ext),
+			new phpbb_di_extension_core($config_path),
+		),
+		array(
+			new phpbb_di_pass_collection_pass(),
+			new phpbb_di_pass_kernel_pass(),
+		),
+		$phpbb_root_path,
+		$php_ext
+	);
 }
 
 /**
