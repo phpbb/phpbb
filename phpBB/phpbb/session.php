@@ -228,6 +228,7 @@ class phpbb_session
 		$this->page					= $this->extract_current_page($phpbb_root_path);
 
 		$this->storage->set_time_now($this->time_now);
+		$this->storage->set_db($db);
 
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])

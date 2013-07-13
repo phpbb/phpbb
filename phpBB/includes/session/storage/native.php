@@ -46,6 +46,11 @@ class phpbb_session_storage_native
 		$this->time_now = $time_now;
 	}
 
+	public function set_db($db)
+	{
+		$this->db = $db;
+	}
+
 	public function create($session_data)
 	{
 		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $session_data);
