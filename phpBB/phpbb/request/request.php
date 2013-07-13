@@ -416,7 +416,7 @@ class phpbb_request implements phpbb_request_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function original_global_values($super_global = phpbb_request_interface::REQUEST)
+	public function get_super_global($super_global = phpbb_request_interface::REQUEST)
 	{
 		return $this->input[$super_global];
 	}

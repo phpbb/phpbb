@@ -145,5 +145,5 @@ interface phpbb_request_interface
 	*
 	* @return	array	The original array of the requested super global.
 	*/
-	public function original_global_values($super_global = phpbb_request_interface::REQUEST);
+	public function get_super_global($super_global = phpbb_request_interface::REQUEST);
 }
