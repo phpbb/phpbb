@@ -412,4 +412,12 @@ class phpbb_request implements phpbb_request_interface
 
 		return $var;
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function original_global_values($super_global = phpbb_request_interface::REQUEST)
+	{
+		return $this->input[$super_global];
+	}
 }
