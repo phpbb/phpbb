@@ -84,7 +84,7 @@ class phpbb_session_storage_native
 				WHERE user_id = ' . (int) $user_id;
 		if ($normal_found_only)
 		{
-			$sql .= 'AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+			$sql .= ' AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		}
 		return $this->query($sql);
 	}
@@ -139,6 +139,14 @@ class phpbb_session_storage_native
 		return true;
 	}
 
+	public function delete_session_user_id($user_id)
+	{
+		$this->update_query('
+			DELETE FROM ' . SESSIONS_TABLE .'
+			WHERE session_user_id = ' . (int) $user_id
+		);
+	}
+
 	public function num_active_sessions()
 	{
 		$sql = 'SELECT COUNT(session_id) AS sessions
@@ -179,4 +187,110 @@ class phpbb_session_storage_native
 				WHERE session_id = '" . $this->db->sql_escape($session_id) . "'";
 		return $this->update_query($sql);
 	}
+
+	public function update_last_visit($time, $user, $page='')
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_lastvisit = ' . (int) $time;
+		if(!empty($page))
+		{
+			$sql .= ", user_lastpage = '" . $this->db->sql_escape($page) . "'";
+		}
+		$sql .=	' WHERE user_id = ' . (int) $user;
+		$this->update_query($sql);
+	}
+
+	public function update_form_salt($salt, $user)
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_form_salt = \'' . $this->db->sql_escape($salt) . '\'
+					WHERE user_id = ' . (int) $user;
+		$this->update_query($sql);
+	}
+
+	public function remove_session_key($user, $key)
+	{
+		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+					WHERE user_id = ' . (int) $user . "
+						AND key_id = '" . $this->db->sql_escape(md5($key)) . "'";
+		$this->update_query($sql);
+
+	}
+
+	public function update_session_key($user, $key, $data)
+	{
+		$sql = 'UPDATE ' . SESSIONS_KEYS_TABLE . '
+				SET ' . $this->db->sql_build_array('UPDATE', $data) . '
+				WHERE user_id = ' . (int) $user . "
+					AND key_id = '" . $this->db->sql_escape(md5($key)) . "'";
+		$this->update_query($sql);
+	}
+
+	public function insert_session_key($data)
+	{
+		$this->update_query(
+			'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $data)
+		);
+	}
+
+	public function cleanup_guest_sessions($session_length)
+	{
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+			WHERE session_user_id = ' . ANONYMOUS . '
+				AND session_time < ' . (int) ($this->time_now - $session_length);
+		$this->update_query($sql);
+	}
+
+	public function cleanup_attempt_table($ip_login_limit_time)
+	{
+		$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
+				WHERE attempt_time < ' . (time() - (int) $ip_login_limit_time);
+		$this->update_query($sql);
+	}
+
+	public function banlist($user_email, $user_ips, $user_id, $cache_ttl)
+	{
+		$where_sql = array();
+		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
+			FROM ' . BANLIST_TABLE . '
+			WHERE ';
+
+		// Determine which entries to check, only return those
+		if ($user_email === false)
+		{
+			$where_sql[] = "ban_email = ''";
+		}
+
+		if ($user_ips === false)
+		{
+			$where_sql[] = "(ban_ip = '' OR ban_exclude = 1)";
+		}
+
+		if ($user_id === false)
+		{
+			$where_sql[] = '(ban_userid = 0 OR ban_exclude = 1)';
+		}
+		else
+		{
+			$cache_ttl = ($user_id == ANONYMOUS) ? 3600 : 0;
+			$_sql = '(ban_userid = ' . $user_id;
+
+			if ($user_email !== false)
+			{
+				$_sql .= " OR ban_email <> ''";
+			}
+
+			if ($user_ips !== false)
+			{
+				$_sql .= " OR ban_ip <> ''";
+			}
+
+			$_sql .= ')';
+
+			$where_sql[] = $_sql;
+		}
+		$sql .= (sizeof($where_sql)) ? implode(' AND ', $where_sql) : '';
+		return $this->db->sql_query($sql, $cache_ttl);
+	}
+
 }

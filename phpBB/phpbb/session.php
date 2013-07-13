@@ -716,10 +716,7 @@ class phpbb_session
 					$this->update_session($sql_ary);
 
 					// Update the last visit time
-					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_lastvisit = ' . (int) $this->data['session_time'] . '
-						WHERE user_id = ' . (int) $this->data['user_id'];
-					$db->sql_query($sql);
+					$this->storage->update_last_visit($this->data['session_time'], $this->data['user_id']);
 				}
 
 				$SID = '?sid=';
@@ -826,10 +823,7 @@ class phpbb_session
 			{
 				$this->data['user_form_salt'] = unique_id();
 				// Update the form key
-				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_form_salt = \'' . $db->sql_escape($this->data['user_form_salt']) . '\'
-					WHERE user_id = ' . (int) $this->data['user_id'];
-				$db->sql_query($sql);
+				$this->storage->update_form_salt($this->data['user_form_salt'], $this->data['user_id']);
 			}
 		}
 		else
@@ -837,10 +831,7 @@ class phpbb_session
 			$this->data['session_time'] = $this->data['session_last_visit'] = $this->time_now;
 
 			// Update the last visit time
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
-				WHERE user_id = ' . (int) $this->data['user_id'];
-			$db->sql_query($sql);
+			$this->storage->update_last_visit($this->data['session_time'], $this->data['user_id']);
 
 			$SID = '?sid=';
 			$_SID = '';
@@ -877,28 +868,17 @@ class phpbb_session
 				$this->data['session_time'] = time();
 			}
 
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
-				WHERE user_id = ' . (int) $this->data['user_id'];
-			$db->sql_query($sql);
+			$this->storage->update_last_visit($this->data['session_time'], $this->data['user_id']);
 
 			if ($this->cookie_data['k'])
 			{
-				$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-					WHERE user_id = ' . (int) $this->data['user_id'] . "
-						AND key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
-				$db->sql_query($sql);
+				$this->storage->remove_session_key($this->data['user_id'], $this->cookie_data['k']);
 			}
 
 			// Reset the data array
 			$this->data = array();
 
-			$sql = 'SELECT *
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . ANONYMOUS;
-			$result = $db->sql_query($sql);
-			$this->data = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$this->data = $this->storage->get_user_info(ANONYMOUS);
 		}
 
 		$cookie_expire = $this->time_now - 31536000;
@@ -941,10 +921,7 @@ class phpbb_session
 		}
 
 		// Firstly, delete guest sessions
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-			WHERE session_user_id = ' . ANONYMOUS . '
-				AND session_time < ' . (int) ($this->time_now - $config['session_length']);
-		$db->sql_query($sql);
+		$this->storage->cleanup_guest_sessions($config['session_length']);
 
 		// Get expired sessions, only most recent for each user
 		$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
@@ -958,10 +935,7 @@ class phpbb_session
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-				WHERE user_id = " . (int) $row['session_user_id'];
-			$db->sql_query($sql);
+			$this->storage->update_last_visit($row['recent_time'], $row['session_page'], $row['session_user_id']);
 
 			$del_user_id[] = (int) $row['session_user_id'];
 			$del_sessions++;
@@ -998,9 +972,7 @@ class phpbb_session
 			$captcha_factory = new phpbb_captcha_factory();
 			$captcha_factory->garbage_collect($config['captcha_plugin']);
 
-			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
-				WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);
-			$db->sql_query($sql);
+			$this->storage->cleanup_attempt_table($config['ip_login_limit_time']);
 		}
 
 		return;
@@ -1047,49 +1019,8 @@ class phpbb_session
 
 		$banned = false;
 		$cache_ttl = 3600;
-		$where_sql = array();
 
-		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
-			FROM ' . BANLIST_TABLE . '
-			WHERE ';
-
-		// Determine which entries to check, only return those
-		if ($user_email === false)
-		{
-			$where_sql[] = "ban_email = ''";
-		}
-
-		if ($user_ips === false)
-		{
-			$where_sql[] = "(ban_ip = '' OR ban_exclude = 1)";
-		}
-
-		if ($user_id === false)
-		{
-			$where_sql[] = '(ban_userid = 0 OR ban_exclude = 1)';
-		}
-		else
-		{
-			$cache_ttl = ($user_id == ANONYMOUS) ? 3600 : 0;
-			$_sql = '(ban_userid = ' . $user_id;
-
-			if ($user_email !== false)
-			{
-				$_sql .= " OR ban_email <> ''";
-			}
-
-			if ($user_ips !== false)
-			{
-				$_sql .= " OR ban_ip <> ''";
-			}
-
-			$_sql .= ')';
-
-			$where_sql[] = $_sql;
-		}
-
-		$sql .= (sizeof($where_sql)) ? implode(' AND ', $where_sql) : '';
-		$result = $db->sql_query($sql, $cache_ttl);
+		$result = $this->storage->banlist($user_email, $user_ips, $user_id, $cache_ttl);
 
 		$ban_triggered_by = 'user';
 		while ($row = $db->sql_fetchrow($result))
@@ -1354,17 +1285,12 @@ class phpbb_session
 
 		if ($key)
 		{
-			$sql = 'UPDATE ' . SESSIONS_KEYS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE user_id = ' . (int) $user_id . "
-					AND key_id = '" . $db->sql_escape(md5($key)) . "'";
+			$this->storage->update_session_key($user_id, $key, $sql_ary);
 		}
 		else
 		{
-			$sql = 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+			$this->storage->insert_session_key($sql_ary);
 		}
-		$db->sql_query($sql);
-
 		$this->cookie_data['k'] = $key_id;
 
 		return false;
@@ -1391,20 +1317,22 @@ class phpbb_session
 
 		if ($row)
 		{
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $row['session_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-				WHERE user_id = " . (int) $user_id;
-			$db->sql_query($sql);
+			$this->storage->update_last_visit(
+				$row['session_time'],
+				$user_id,
+				$row['session_page']
+			);
 		}
 
 		// Let's also clear any current sessions for the specified user_id
 		// If it's the current user then we'll leave this session intact
-		$sql_where = 'session_user_id = ' . (int) $user_id;
-		$sql_where .= ($user_id === (int) $this->data['user_id']) ? " AND session_id <> '" . $db->sql_escape($this->session_id) . "'" : '';
-
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-			WHERE $sql_where";
-		$db->sql_query($sql);
+		if ($user_id === (int) $this->data['user_id'])
+		{
+			$this->storage->delete($this->session_id, $user_id);
+		} else
+		{
+			$this->storage->delete_session_user_id($user_id);
+		}
 
 		// We're changing the password of the current user and they have a key
 		// Lets regenerate it to be safe
