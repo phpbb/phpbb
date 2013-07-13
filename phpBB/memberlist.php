@@ -561,8 +561,7 @@ switch ($mode)
 
 		if ($member['user_sig'])
 		{
-			$member['user_sig'] = generate_text_for_display($member['user_sig'], $member['user_sig_bbcode_uid'], 
-															$member['user_sig_bbcode_bitfield'], OPTION_FLAG_BBCODE || OPTION_FLAG_SMILIES, true);
+			$member['user_sig'] = generate_text_for_display($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield'], OPTION_FLAG_BBCODE || OPTION_FLAG_SMILIES, true);
 		}
 
 		$poster_avatar = phpbb_get_user_avatar($member);
