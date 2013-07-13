@@ -713,7 +713,7 @@ function approve_post($post_id_list, $id, $mode)
 			$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
 		}
 
-		$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
+		$message = $user->lang[$success_msg];
 
 		if ($request->is_ajax())
 		{
@@ -724,6 +724,10 @@ function approve_post($post_id_list, $id, $mode)
 				'REFRESH_DATA'		=> null,
 				'approved'				=> true
 			));
+		}
+		else
+		{
+			$message .= '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
 		}
 
 		trigger_error($message);
