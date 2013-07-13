@@ -50,7 +50,8 @@ class phpbb_captcha_factory
 		{
 			include($phpbb_root_path . "includes/captcha/plugins/{$name}_plugin." . $phpEx);
 		}
-		call_user_func(array($name, 'garbage_collect'), 0);
+		$captcha = new $name;
+		$captcha->garbage_collect('');
 	}
 
 	/**
