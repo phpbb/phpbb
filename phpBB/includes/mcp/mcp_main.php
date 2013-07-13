@@ -1144,9 +1144,9 @@ function mcp_fork_topic($topic_ids)
 	{
 		$topic_data = get_topic_data($topic_ids, 'f_post');
 
-		$total_posts = 0;
+		$total_topics = $total_topics_unapproved = $total_topics_softdeleted = 0;
+		$total_posts = $total_posts_unapproved = $total_posts_softdeleted = 0;
 		$new_topic_id_list = array();
-
 
 		foreach ($topic_data as $topic_id => $topic_row)
 		{
@@ -1178,7 +1178,7 @@ function mcp_fork_topic($topic_ids)
 				'forum_id'					=> (int) $to_forum_id,
 				'icon_id'					=> (int) $topic_row['icon_id'],
 				'topic_attachment'			=> (int) $topic_row['topic_attachment'],
-				'topic_visibility'			=> ITEM_APPROVED,
+				'topic_visibility'			=> (int) $topic_row['topic_visibility'],
 				'topic_reported'			=> 0,
 				'topic_title'				=> (string) $topic_row['topic_title'],
 				'topic_poster'				=> (int) $topic_row['topic_poster'],
@@ -1205,6 +1205,19 @@ function mcp_fork_topic($topic_ids)
 			$db->sql_query('INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 			$new_topic_id = $db->sql_nextid();
 			$new_topic_id_list[$topic_id] = $new_topic_id;
+
+			switch ($topic_row['topic_visibility'])
+			{
+				case ITEM_APPROVED:
+					$total_topics++;
+				break;
+				case ITEM_UNAPPROVED:
+					$total_topics_unapproved++;
+				break;
+				case ITEM_DELETED:
+					$total_topics_softdeleted++;
+				break;
+			}
 
 			if ($topic_row['poll_start'])
 			{
@@ -1246,7 +1259,6 @@ function mcp_fork_topic($topic_ids)
 				continue;
 			}
 
-			$total_posts += sizeof($post_rows);
 			foreach ($post_rows as $row)
 			{
 				$sql_ary = array(
@@ -1256,7 +1268,7 @@ function mcp_fork_topic($topic_ids)
 					'icon_id'			=> (int) $row['icon_id'],
 					'poster_ip'			=> (string) $row['poster_ip'],
 					'post_time'			=> (int) $row['post_time'],
-					'post_visibility'	=> ITEM_APPROVED,
+					'post_visibility'	=> (int) $row['post_visibility'],
 					'post_reported'		=> 0,
 					'enable_bbcode'		=> (int) $row['enable_bbcode'],
 					'enable_smilies'	=> (int) $row['enable_smilies'],
@@ -1279,6 +1291,19 @@ function mcp_fork_topic($topic_ids)
 
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				$new_post_id = $db->sql_nextid();
+
+				switch ($row['post_visibility'])
+				{
+					case ITEM_APPROVED:
+						$total_posts++;
+					break;
+					case ITEM_UNAPPROVED:
+						$total_posts_unapproved++;
+					break;
+					case ITEM_DELETED:
+						$total_posts_softdeleted++;
+					break;
+				}
 
 				// Copy whether the topic is dotted
 				markread('post', $to_forum_id, $new_topic_id, 0, $row['poster_id']);
@@ -1374,7 +1399,11 @@ function mcp_fork_topic($topic_ids)
 		// Sync new topics, parent forums and board stats
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
 			SET forum_posts_approved = forum_posts_approved + ' . $total_posts . ',
-				forum_topics_approved = forum_topics_approved + ' . sizeof($new_topic_id_list) . '
+				forum_posts_unapproved = forum_posts_unapproved + ' . $total_posts_unapproved . ',
+				forum_posts_softdeleted = forum_posts_softdeleted + ' . $total_posts_softdeleted . ',
+				forum_topics_approved = forum_topics_approved + ' . $total_topics . ',
+				forum_topics_unapproved = forum_topics_unapproved + ' . $total_topics_unapproved . ',
+				forum_topics_softdeleted = forum_topics_softdeleted + ' . $total_topics_softdeleted . '
 			WHERE forum_id = ' . $to_forum_id;
 		$db->sql_query($sql);
 
