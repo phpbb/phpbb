@@ -167,6 +167,26 @@ GO
 
 
 /*
+	Table: 'phpbb_api_tokens'
+*/
+CREATE TABLE [phpbb_api_tokens] (
+	[key_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[name] [varchar] (32) DEFAULT ('') NOT NULL ,
+	[token] [varchar] (32) DEFAULT ('') NOT NULL ,
+	[sign_token] [varchar] (32) DEFAULT ('') NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_api_tokens] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_api_tokens] PRIMARY KEY  CLUSTERED 
+	(
+		[key_id]
+	)  ON [PRIMARY] 
+GO
+
+
+/*
 	Table: 'phpbb_banlist'
 */
 CREATE TABLE [phpbb_banlist] (

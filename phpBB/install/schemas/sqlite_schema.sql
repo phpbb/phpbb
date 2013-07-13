@@ -89,6 +89,16 @@ CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users (user_id);
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id);
 CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id);
 
+# Table: 'phpbb_api_tokens'
+CREATE TABLE phpbb_api_tokens (
+	key_id INTEGER PRIMARY KEY NOT NULL ,
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	name varchar(32) NOT NULL DEFAULT '',
+	token varchar(32) NOT NULL DEFAULT '',
+	sign_token varchar(32) NOT NULL DEFAULT ''
+);
+
+
 # Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
 	ban_id INTEGER PRIMARY KEY NOT NULL ,

@@ -1,0 +1,28 @@
+<!-- INCLUDE overall_header.html -->
+
+<form action="{S_AUTH_ACTION}" method="post" name="api_auth">
+	<div class="panel">
+		<div class="inner">
+			<h2>{L_AUTH_TITLE}</h2>
+
+			<p>{L_AUTH_INFORMATION}</p>
+			<fieldset class="fields2">
+				<!-- IF ERROR --><dl><dd class="error">{ERROR}</dd></dl><!-- ENDIF -->
+				<dl>
+					<dt><label for="appname">{L_AUTH_APPNAME}{L_COLON}</label><br /><span>{L_AUTH_APPNAME_EXPLAIN}</span></dt>
+					<dd><input type="text" tabindex="1" name="appname" id="appname" size="25" value="{APPNAME}" class="inputbox autowidth" title="{L_AUTH_APPNAME}" /></dd>
+				</dl>
+			</fieldset>
+			<fieldset class="submit-buttons">
+
+				<input type="hidden" name="token" value="{T_TOKEN}" />
+				<input type="hidden" name="sign_token" value="{T_SIGN_TOKEN}" />
+				<input type="submit" name="confirm" value="{L_AUTH_ALLOW}" class="button2"/>&nbsp;
+				<input type="submit" name="cancel" value="{L_AUTH_DENY}" class="button2"/>
+			</fieldset>
+		</div>
+	</div>
+	{S_FORM_TOKEN}
+</form>
+
+<!-- INCLUDE overall_footer.html -->

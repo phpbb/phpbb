@@ -21,3 +21,28 @@ api_topics_controller:
         forum_id: \d+
         page: \d+
         _method: GET
+
+api_auth_generate_controller:
+    pattern: /api/auth/generatetoken
+    defaults: { _controller: api.controller.auth:generate_token }
+    requirements:
+        _method: GET
+
+api_auth_controller:
+    pattern: /api/auth/{token}/{sign_token}
+    defaults: { _controller: api.controller.auth:auth }
+    requirements:
+        _method: GET
+
+api_auth_allow_controller:
+    pattern: /api/auth/allow
+    defaults: { _controller: api.controller.auth:allow }
+    requirements:
+        _method: POST
+
+api_auth_verify_controller:
+    pattern: /api/auth/verify/{token}/{timestamp}/{hash}
+    defaults: { _controller: api.controller.auth:verify }
+    requirements:
+        _method: GET
+

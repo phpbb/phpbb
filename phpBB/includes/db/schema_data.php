@@ -148,6 +148,17 @@ $schema_data['phpbb_acl_users'] = array(
 	),
 );
 
+$schema_data['phpbb_api_tokens'] = array(
+	'COLUMNS'		=> array(
+		'key_id'			=> array('UINT', NULL, 'auto_increment'),
+		'user_id'			=> array('UINT', 0),
+		'name'				=> array('VCHAR:32', ''),
+		'token'				=> array('VCHAR:32', ''),
+		'sign_token'		=> array('VCHAR:32', ''),
+	),
+	'PRIMARY_KEY'			=> 'key_id',
+);
+
 $schema_data['phpbb_banlist'] = array(
 	'COLUMNS'		=> array(
 		'ban_id'			=> array('UINT', NULL, 'auto_increment'),
