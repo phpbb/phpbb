@@ -39,7 +39,7 @@ class phpbb_template_includephp_test extends phpbb_template_template_test_case
 		$this->assertTrue(phpbb_is_absolute($path_to_php));
 		$template_text = "Path is absolute.\n<!-- INCLUDEPHP $path_to_php -->";
 
-		$cache_dir = dirname($phpbb_root_path . 'cache') . '/';
+		$cache_dir = $phpbb_root_path . 'cache/';
 		$fp = fopen($cache_dir . 'includephp_absolute.html', 'w');
 		fputs($fp, $template_text);
 		fclose($fp);

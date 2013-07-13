@@ -172,7 +172,7 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function set_filenames(array $filename_array)
 	{
-		$this->filenames = array_merge($filename_array, $this->filenames);
+		$this->filenames = array_merge($this->filenames, $filename_array);
 
 		return $this;
 	}
