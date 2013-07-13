@@ -25,7 +25,7 @@ if (!function_exists('phpbb_require_updated'))
 {
 	function phpbb_require_updated($path, $optional = false)
 	{
-		global $phpbb_root_path;
+		global $phpbb_root_path, $table_prefix;
 
 		$new_path = $phpbb_root_path . 'install/update/new/' . $path;
 		$old_path = $phpbb_root_path . $path;
@@ -108,6 +108,7 @@ phpbb_require_updated('includes/functions.' . $phpEx);
 phpbb_require_updated('includes/functions_content.' . $phpEx);
 phpbb_require_updated('includes/functions_container.' . $phpEx);
 
+require($phpbb_root_path . 'config.' . $phpEx);
 phpbb_require_updated('includes/constants.' . $phpEx);
 phpbb_require_updated('includes/utf/utf_tools.' . $phpEx);
 
