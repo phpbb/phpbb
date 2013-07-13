@@ -873,7 +873,7 @@ class mcp_queue
 				$add_message = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $topic_url . '">', '</a>');
 			}
 
-			$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>') . $add_message;
+			$message = $user->lang[$success_msg];
 
 			if ($request->is_ajax())
 			{
@@ -884,6 +884,10 @@ class mcp_queue
 					'REFRESH_DATA'		=> null,
 					'visible'			=> true,
 				));
+			}
+			else
+			{
+				$message .= '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
 			}
 
 			trigger_error($message);
