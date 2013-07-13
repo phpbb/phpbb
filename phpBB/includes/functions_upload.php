@@ -44,6 +44,7 @@ class filespec
 	var $error = array();
 
 	var $upload = '';
+	var $guesser = false;
 
 	/**
 	* File Class
@@ -63,6 +64,7 @@ class filespec
 		$name = trim(utf8_htmlspecialchars(utf8_basename($name)));
 		$this->realname = $this->uploadname = $name;
 		$this->mimetype = $upload_ary['type'];
+		$this->register_mimetype_guesser();
 
 		// Opera adds the name to the mime type
 		$this->mimetype	= (strpos($this->mimetype, '; name') !== false) ? str_replace(strstr($this->mimetype, '; name'), '', $this->mimetype) : $this->mimetype;
@@ -161,8 +163,7 @@ class filespec
 	{
 		if (!empty($file_path))
 		{
-			$guesser = MimeTypeGuesser::getInstance();
-			$this->mimetype = $guesser->guess($file_path);
+			$this->mimetype = $this->guesser->guess($file_path);
 		}
 		return (strpos($this->mimetype, 'image/') === 0);
 	}
@@ -221,20 +222,7 @@ class filespec
 	*/
 	function get_mimetype($filename)
 	{
-		$mimetype = '';
-
-		if (function_exists('mime_content_type'))
-		{
-			$mimetype = mime_content_type($filename);
-		}
-
-		// Some browsers choke on a mimetype of application/octet-stream
-		if (!$mimetype || $mimetype == 'application/octet-stream')
-		{
-			$mimetype = 'application/octetstream';
-		}
-
-		return $mimetype;
+		return $this->guesser->guess($filename);
 	}
 
 	/**
@@ -455,6 +443,23 @@ class filespec
 
 		return true;
 	}
+
+	function register_mimetype_guesser()
+	{
+		if ($this->guesser === false)
+		{
+			if (!class_exists('phpbb_mimetype_guesser'))
+			{
+				global $phpbb_root_path, $phpEx;
+
+				include($phpbb_root_path . '/includes/mimetype_guesser.' . $phpEx);
+			}
+
+
+			$this->guesser = MimeTypeGuesser::getInstance();
+			$this->guesser->register(new phpbb_mimetype_guesser());
+		}
+	}
 }
 
 /**
@@ -659,20 +664,7 @@ class fileupload
 		{
 			$upload['name'] = utf8_basename($source_file);
 			$upload['size'] = 0;
-			$mimetype = '';
-
-			if (function_exists('mime_content_type'))
-			{
-				$mimetype = mime_content_type($source_file);
-			}
-
-			// Some browsers choke on a mimetype of application/octet-stream
-			if (!$mimetype || $mimetype == 'application/octet-stream')
-			{
-				$mimetype = 'application/octetstream';
-			}
-
-			$upload['type'] = $mimetype;
+			$upload['type'] = '';
 		}
 		else
 		{
