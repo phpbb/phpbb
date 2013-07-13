@@ -60,7 +60,7 @@ class phpbb_session_storage_native
 
 	public function get_newest($user_id)
 	{
-		$sql = 'SELECT s.*
+		$sql = 'SELECT *
 			FROM ' . SESSIONS_TABLE . '
 			WHERE session_user_id = ' . (int) $user_id . '
 			ORDER BY session_time DESC';
@@ -78,13 +78,12 @@ class phpbb_session_storage_native
 
 	public function delete($session_id, $user_id = false)
 	{
-		$sql = 'DELETE
-			FROM ' . SESSIONS_TABLE . '
-			WHERE session_id = \'' . $this->db->sql_escape($session_id) . '\'';
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+				WHERE session_id = \'' . $this->db->sql_escape($session_id) . '\' ';
 
 		if ($user_id !== false)
 		{
-			$sql .= 'AND session_user_id = ' . $user_id;
+			$sql .= 'AND session_user_id = ' . (int) $user_id;
 		}
 
 		$result = $this->db->sql_query($sql);
@@ -108,7 +107,7 @@ class phpbb_session_storage_native
 			FROM ' . SESSIONS_TABLE . '
 			WHERE session_time >= ' . ($this->time_now - 60);
 		$result = $this->db->sql_query($sql);
-		$num = (int) $this->db->sql_fetchfield($result);
+		$num = (int) $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
 		return $num;
@@ -121,7 +120,7 @@ class phpbb_session_storage_native
 			WHERE session_user_id = ' . (int) $user_id . '
 				AND session_time >= ' . (int) $min_time;
 		$result = $this->db->sql_query($sql);
-		$num = (int) $this->db->sql_fetchfield($result);
+		$num = (int) $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
 		return $num;
