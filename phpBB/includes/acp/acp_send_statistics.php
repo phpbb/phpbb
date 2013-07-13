@@ -29,7 +29,7 @@ class acp_send_statistics
 	{
 		global $config, $template, $phpbb_admin_path, $phpEx;
 
-		$collect_url = "http://www.phpbb.com/stats/receive_stats.php";
+		$collect_url = "https://www.phpbb.com/stats/receive_stats.php";
 
 		$this->tpl_name = 'acp_send_statistics';
 		$this->page_title = 'ACP_SEND_STATISTICS';
