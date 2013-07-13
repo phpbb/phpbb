@@ -926,10 +926,14 @@ function get_schema_struct()
 	$schemda_data['auth_provider_oauth'] = array(
 		'COLUMNS' => array(
 			'user_id'			=> array('UINT', 0), // phpbb_users.user_id
+			'session_id'		=> array('CHAR:32', ''), // phpbb_sessions.session_id used only when user_id not set
 			'oauth_provider'	=> array('VCHAR'), // Name of the OAuth provider
 			'oauth_token'		=> array('TEXT_UNI'), // Serialized token
 		),
-		'PRIMARY_KEY' => array('user_id', 'oauth_provider'),
+		'KEYS' => array(
+			'user_id'			=> array('INDEX', 'user_id'),
+			'oauth_provider'	=> array('INDEX', 'oauth_provider'),
+		),
 	);
 
 	$schema_data['phpbb_banlist'] = array(
