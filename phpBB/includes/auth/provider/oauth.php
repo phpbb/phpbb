@@ -108,6 +108,19 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			);
 		}
 
+		// Get the service credentials for the given service
+		$service_credentials = $this->get_credentials($service_name);
+
+		// Check that the service has settings
+		if ($service_credentials['key'] == false || $service_credentials['secret'] == false)
+		{
+			return array(
+				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+				'error_msg'		=> 'LOGIN_ERROR_EXTERNAL_AUTH_APACHE',
+				'user_row'		=> array('user_id' => ANONYMOUS),
+			);
+		}
+
 		if ($this->request->is_set('code', phpbb_request_interface::GET))
 		{
 			// Second pass: request access token, authenticate with phpBB
@@ -117,7 +130,16 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	}
 
 	/**
+	* Returns an array containing the service credentials belonging to requested
+	* service.
 	*
+	* @param	string	$service_name	The name of the service
+	* @return	array	An array containing the 'key' and the 'secret' of the
+	*					service in the form:
+	*						array(
+	*							'key'		=> string
+	*							'secret'	=> string
+	*						)
 	*/
 	protected function get_service_credentials($service_name)
 	{
@@ -127,6 +149,12 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		);
 	}
 
+	/**
+	* Returns the cached current_uri object or creates and caches it if it is
+	* not already created
+	*
+	* @return	\OAuth\Common\Http\Uri\UriInterface
+	*/
 	protected function get_current_uri()
 	{
 		if ($this->current_uri)
@@ -145,28 +173,17 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	/**
 	* Returns the cached service object or creates a new one
 	*
-	* @param	string	$service_name	The name of the service
-	* @param	array	$scope			The scope of the request against the api.
+	* @param	string	$service_name			The name of the service
+	* @param	array	$service_credentials	{@see phpbb_auth_provider_oauth::get_service_credentials}
+	* @param	array	$scope					The scope of the request against
+	*											the api.
 	* @return	\OAuth\Common\Service\ServiceInterface
 	*/
-	protected function get_service($service_name, array $scopes = array())
+	protected function get_service($service_name, array $service_credentials, array $scopes = array())
 	{
 		if ($this->service)
 		{
 			return $this->service;
-		}
-
-		// Get the service credentials for the given service
-		$service_credentials = $this->get_credentials($service_name);
-
-		// Check that the service has settings
-		if ($service_credentials['key'] == false || $service_credentials['secret'] == false)
-		{
-			return array(
-				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
-				'error_msg'		=> 'LOGIN_ERROR_EXTERNAL_AUTH_APACHE',
-				'user_row'		=> array('user_id' => ANONYMOUS),
-			);
 		}
 
 		$storage = new phpbb_auth_oauth_token_storage($this->driver);
