@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/session/storage/native.php';
+
 /**
 * @ignore
 */
@@ -32,6 +34,11 @@ class phpbb_session
 	var $load = 0;
 	var $time_now = 0;
 	var $update_session_page = true;
+
+	function __construct()
+	{
+		$this->storage = new phpbb_session_storage_native();
+	}
 
 	/**
 	* Extract current session page
