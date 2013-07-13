@@ -122,7 +122,6 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 				USERS_TABLE		=> 'u',
 			),
 			'WHERE'		=> $this->db->sql_in_set('p.topic_id', $topic_ids) . '
-							' . (($sql_visibility) ? ' AND ' . $sql_visibility : '') . '
 							AND ' . $this->content_visibility->get_visibility_sql('post', $this->forum_id, 'p.') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND p.poster_id = u.user_id',
