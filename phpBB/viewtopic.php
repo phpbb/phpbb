@@ -1385,16 +1385,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	}
 
 	// Parse the message and subject
-	$message = censor_text($row['post_text']);
-
-	// Second parse bbcode here
-	if ($row['bbcode_bitfield'])
-	{
-		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
-	}
-
-	$message = bbcode_nl2br($message);
-	$message = smiley_text($message);
+	$message = generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES, true);
 
 	if (!empty($attachments[$row['post_id']]))
 	{
