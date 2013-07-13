@@ -42,5 +42,6 @@ services:
             - @config
             - @request
             - @user
+            - @cache.driver
         tags:
             - { name: auth.provider }

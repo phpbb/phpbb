@@ -26,19 +26,56 @@ use OAuth\Common\Http\Uri\Uri;
 class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 {
 	/**
+	* Database driver
+	*
+	* @var phpbb_db_driver
+	*/
+	protected $db;
+
+	/**
+	* phpBB config
+	*
+	* @var phpbb_config
+	*/
+	protected $config;
+
+	/**
+	* phpBB request object
+	*
+	* @var phpbb_request
+	*/
+	protected $request;
+
+	/**
+	* phpBB user
+	*
+	* @var phpbb_user
+	*/
+	protected $user;
+
+	/**
+	* Cache driver.
+	*
+	* @var phpbb_cache_driver_interface
+	*/
+	protected $driver;
+
+	/**
 	* OAuth Authentication Constructor
 	*
-	* @param 	phpbb_db_driver 	$db
-	* @param 	phpbb_config 		$config
-	* @param 	phpbb_request 		$request
-	* @param 	phpbb_user 			$user
+	* @param 	phpbb_db_driver 				$db
+	* @param 	phpbb_config 					$config
+	* @param 	phpbb_request 					$request
+	* @param 	phpbb_user 						$user
+	* @param	phpbb_cache_driver_interface	$driver
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user)
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, phpbb_cache_driver_interface $driver)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;
+		$this->driver = $driver;
 	}
 
 	/**
@@ -72,11 +109,11 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		$service_factory = new \OAuth\ServiceFactory();
 		$uri_factory = new \OAuth\Common\Http\Uri\UriFactory();
-		$current_uri = $uri_factory->createFromSuperGlobalArray((array)$_SERVER);
+		$current_uri = $uri_factory->createFromSuperGlobalArray($this->request->get_super_global(phpbb_request_interface::SERVER));
 		$current_uri->setQuery('');
 
 		// In-memory storage
-		$storage = new Memory();
+		$storage = new phpbb_auth_oauth_token_storage($this->driver);
 
 		// Setup the credentials for the requests
 		$credentials = new Credentials(
