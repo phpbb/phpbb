@@ -60,6 +60,15 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		// Get the service credentials for the given service
 		$service_credentials = $this->get_credentials($service);
 
+		// Check that the service has settings
+		if ($service_credentials['key'] == false || $service_credentials['secret'] == false)
+		{
+			return array(
+				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+				'error_msg'		=> 'LOGIN_ERROR_EXTERNAL_AUTH_APACHE',
+				'user_row'		=> array('user_id' => ANONYMOUS),
+			);
+		}
 
 		$service_factory = new \OAuth\ServiceFactory();
 		$uri_factory = new \OAuth\Common\Http\Uri\UriFactory();
