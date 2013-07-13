@@ -524,6 +524,174 @@ class phpbb_functional_softdelete_test extends phpbb_functional_test_case
 		), 'after restoring #2');
 	}
 
+	public function test_move_topic_back()
+	{
+		$this->login();
+		$this->load_ids(array(
+			'forums' => array(
+				'Soft Delete #1',
+				'Soft Delete #2',
+			),
+			'topics' => array(
+				'Soft Delete Topic #1',
+				'Soft Delete Topic #2',
+			),
+			'posts' => array(
+				'Soft Delete Topic #1',
+				'Re: Soft Delete Topic #1-#2',
+			),
+		));
+
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #2']}&sid={$this->sid}");
+
+		$form = $crawler->selectButton('Go')->eq(1)->form();
+		$form['action']->select('move');
+		$crawler = self::submit($form);
+
+		$form = $crawler->selectButton('Yes')->form();
+		$form['to_forum_id']->select($this->data['forums']['Soft Delete #1']);
+		$crawler = self::submit($form);
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
+			'forum_posts_approved'		=> 1,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 1,
+			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'],
+		), 'after moving back');
+	}
+
+	public function test_merge_topics()
+	{
+		$this->login();
+		$this->load_ids(array(
+			'forums' => array(
+				'Soft Delete #1',
+				'Soft Delete #2',
+			),
+			'topics' => array(
+				'Soft Delete Topic #1',
+				'Soft Delete Topic #2',
+			),
+			'posts' => array(
+				'Soft Delete Topic #1',
+				'Re: Soft Delete Topic #1-#2',
+			),
+		));
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
+			'forum_posts_approved'		=> 1,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 1,
+			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'],
+		), 'before merging #1');
+
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #2']}&sid={$this->sid}");
+
+		$this->add_lang('mcp');
+		$form = $crawler->selectButton('Go')->eq(1)->form();
+		$form['action']->select('merge_topic');
+		$crawler = self::submit($form);
+		$this->assertContainsLang('SELECT_MERGE', $crawler->text());
+
+		$crawler = self::request('GET', "mcp.php?f={$this->data['forums']['Soft Delete #1']}&t={$this->data['topics']['Soft Delete Topic #2']}&i=main&mode=forum_view&action=merge_topic&to_topic_id={$this->data['topics']['Soft Delete Topic #1']}");
+		$this->assertContainsLang('MERGE_TOPICS_CONFIRM', $crawler->text());
+
+		$form = $crawler->selectButton('Yes')->form();
+		$crawler = self::submit($form);
+		$this->assertContainsLang('POSTS_MERGED_SUCCESS', $crawler->text());
+
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
+		$this->assertContains('Soft Delete Topic #1', $crawler->filter('h2')->text());
+		$this->assertContainsLang('POST_DELETED', $crawler->filter('body')->text());
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
+			'forum_posts_approved'		=> 1,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'],
+		), 'after merging #1');
+	}
+
+	public function test_fork_topic()
+	{
+		$this->login();
+		$this->load_ids(array(
+			'forums' => array(
+				'Soft Delete #1',
+				'Soft Delete #2',
+			),
+			'topics' => array(
+				'Soft Delete Topic #1',
+			),
+			'posts' => array(
+				'Soft Delete Topic #1',
+				'Re: Soft Delete Topic #1-#2',
+			),
+		));
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
+			'forum_posts_approved'		=> 1,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'],
+		), 'before forking #1');
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #2'], array(
+			'forum_posts_approved'		=> 0,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 0,
+			'forum_topics_approved'		=> 0,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> 0,
+		), 'before forking #2');
+
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
+
+		$this->add_lang('mcp');
+		$form = $crawler->selectButton('Go')->eq(2)->form();
+		$form['action']->select('fork');
+		$crawler = self::submit($form);
+		$this->assertContainsLang('FORK_TOPIC', $crawler->text());
+
+		$form = $crawler->selectButton('Yes')->form();
+		$form['to_forum_id']->select($this->data['forums']['Soft Delete #2']);
+		$crawler = self::submit($form);
+		$this->assertContainsLang('TOPIC_FORKED_SUCCESS', $crawler->text());
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
+			'forum_posts_approved'		=> 1,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'],
+		), 'after forking #1');
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #2'], array(
+			'forum_posts_approved'		=> 1,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'] + 2,
+		), 'after forking #2');
+	}
+
 	public function assert_forum_details($forum_id, $details, $additional_error_message = '')
 	{
 		$this->db = $this->get_db();
