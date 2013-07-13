@@ -92,7 +92,7 @@ services:
         arguments:
             - @user
             - @service_container
-            - @ext.finder
+            - @style
 
     cron.task_collection:
         class: phpbb_di_service_collection
@@ -268,15 +268,15 @@ services:
         class: phpbb_style_path_provider
 
     template:
-        class: phpbb_template
+        class: phpbb_template_twig
         arguments:
             - %core.root_path%
             - %core.php_ext%
             - @config
             - @user
-            - @style.resource_locator
             - @template_context
             - @ext.manager
+            - %core.adm_relative_path%
 
     template_context:
         class: phpbb_template_context

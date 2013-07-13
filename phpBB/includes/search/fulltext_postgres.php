@@ -185,7 +185,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	/**
 	* Checks for correct PostgreSQL version and stores min/max word length in the config
 	*
-	* @return string|bool Language key of the error/incompatiblity occured
+	* @return string|bool Language key of the error/incompatiblity occurred
 	*/
 	public function init()
 	{
