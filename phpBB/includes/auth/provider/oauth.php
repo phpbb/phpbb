@@ -177,7 +177,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			return $this->service;
 		}
 
-		$storage = new phpbb_auth_oauth_token_storage($this->db, $service_name);
+		$storage = new phpbb_auth_oauth_token_storage($this->db, $this->user, $service_name);
 
 		$current_uri = $this->get_current_uri();
 
