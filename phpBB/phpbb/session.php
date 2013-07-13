@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Session class
+* Session class(
 * @package phpBB3
 */
 class phpbb_session
@@ -924,31 +924,17 @@ class phpbb_session
 		$this->storage->cleanup_guest_sessions($config['session_length']);
 
 		// Get expired sessions, only most recent for each user
-		$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
-			FROM ' . SESSIONS_TABLE . '
-			WHERE session_time < ' . ($this->time_now - $config['session_length']) . '
-			GROUP BY session_user_id, session_page';
-		$result = $db->sql_query_limit($sql, $batch_size);
+		$del_user_ids = $this->storage->map_recently_expired($config['session_length'], function($row, $storage) {
+				$storage->update_last_visit($row['recent_time'], $row['session_page'], $row['session_user_id']);
+				return (int) $row['session_user_id'];
+		}, $batch_size);
 
-		$del_user_id = array();
-		$del_sessions = 0;
+		$del_sessions = sizeof($del_user_ids);
 
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$this->storage->update_last_visit($row['recent_time'], $row['session_page'], $row['session_user_id']);
-
-			$del_user_id[] = (int) $row['session_user_id'];
-			$del_sessions++;
-		}
-		$db->sql_freeresult($result);
-
-		if (sizeof($del_user_id))
+		if (sizeof($del_user_ids))
 		{
 			// Delete expired sessions
-			$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-				WHERE ' . $db->sql_in_set('session_user_id', $del_user_id) . '
-					AND session_time < ' . ($this->time_now - $config['session_length']);
-			$db->sql_query($sql);
+			$this->storage->cleanup_expired_sessions($del_user_ids, $config['session_length']);
 		}
 
 		if ($del_sessions < $batch_size)
@@ -959,9 +945,7 @@ class phpbb_session
 
 			if ($config['max_autologin_time'])
 			{
-				$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-					WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
-				$db->sql_query($sql);
+				$this->storage->cleanup_long_sessions($config['max_autologin_time']);
 			}
 
 			// only called from CRON; should be a safe workaround until the infrastructure gets going
@@ -1308,9 +1292,7 @@ class phpbb_session
 
 		$user_id = ($user_id === false) ? (int) $this->data['user_id'] : (int) $user_id;
 
-		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-			WHERE user_id = ' . (int) $user_id;
-		$db->sql_query($sql);
+		$this->storage->remove_session_key($user_id);
 
 		// If the user is logged in, update last visit info first before deleting sessions
 		$row = $this->storage->get_newest($user_id);

@@ -208,13 +208,15 @@ class phpbb_session_storage_native
 		$this->update_query($sql);
 	}
 
-	public function remove_session_key($user, $key)
+	public function remove_session_key($user, $key=false)
 	{
 		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-					WHERE user_id = ' . (int) $user . "
-						AND key_id = '" . $this->db->sql_escape(md5($key)) . "'";
+					WHERE user_id = ' . (int) $user;
+		if ($key !== false)
+		{
+			$sql .= " AND key_id = '" . $this->db->sql_escape(md5($key)) . "'";
+		}
 		$this->update_query($sql);
-
 	}
 
 	public function update_session_key($user, $key, $data)
@@ -238,6 +240,44 @@ class phpbb_session_storage_native
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
 			WHERE session_user_id = ' . ANONYMOUS . '
 				AND session_time < ' . (int) ($this->time_now - $session_length);
+		$this->update_query($sql);
+	}
+
+	public function cleanup_expired_sessions($user_id, $session_length)
+	{
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+				WHERE ' . $this->db->sql_in_set('session_user_id', $user_id) . '
+					AND session_time < ' . ($this->time_now - $session_length);
+		$this->update_query($sql);
+	}
+
+	/** For sessions older than length, run a function and collect results.
+	* @param $session_length Int - How old to search
+	* @param $session_function Callable - Function to run takes $row + $storage, outputs array
+	* @param $batch_size Int - Sql Paging size
+	* @return Array An array containing the results of $session_function
+	*/
+	public function map_recently_expired($session_length, $session_function, $batch_size)
+	{
+		$values = array();
+		$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_time < ' . ($this->time_now - $session_length) . '
+			GROUP BY session_user_id, session_page';
+		$result = $this->db->sql_query_limit($sql, $batch_size);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$values[] = $session_function($row, $this);
+		}
+		$this->db->sql_freeresult($result);
+		return $values;
+	}
+
+	public function cleanup_long_sessions($max_autologin_time)
+	{
+		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+					WHERE last_login < ' . (time() - (86400 * (int) $max_autologin_time));
 		$this->update_query($sql);
 	}
 
@@ -292,5 +332,4 @@ class phpbb_session_storage_native
 		$sql .= (sizeof($where_sql)) ? implode(' AND ', $where_sql) : '';
 		return $this->db->sql_query($sql, $cache_ttl);
 	}
-
 }
