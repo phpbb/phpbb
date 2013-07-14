@@ -5451,8 +5451,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
 		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version'],
-		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js?assets_version=" . $config['assets_version'],
-		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
+		'T_JQUERY_LINK'			=> ($config['allow_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js?assets_version=" . $config['assets_version'],
+		'S_ALLOW_CDN'			=> !empty($config['allow_cdn']),
 
 		'T_THEME_NAME'			=> rawurlencode($user->style['style_path']),
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
