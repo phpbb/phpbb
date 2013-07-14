@@ -14,6 +14,10 @@
     <testsuites>
         <testsuite name="phpBB Test Suite">
             <directory suffix="_test.php">./tests/</directory>
+            <exclude>tests/lint_test.php</exclude>
+        </testsuite>
+        <testsuite name="phpBB Lint Test">
+            <file>tests/lint_test.php</file>
         </testsuite>
     </testsuites>
 
@@ -30,9 +34,10 @@
         </blacklist>
         <whitelist>
             <directory suffix=".php">./phpBB/includes/</directory>
+            <directory suffix=".php">./phpBB/phpbb/</directory>
             <exclude>
-                <file>./phpBB/includes/search/fulltext_native.php</file>
-                <file>./phpBB/includes/search/fulltext_mysql.php</file>
+                <file>./phpBB/phpbb/search/fulltext_native.php</file>
+                <file>./phpBB/phpbb/search/fulltext_mysql.php</file>
                 <directory suffix=".php">./phpBB/includes/captcha/</directory>
             </exclude>
         </whitelist>

@@ -136,8 +136,19 @@
 	<!-- ENDIF -->
 	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-	<!-- IF postrow.S_IGNORE_POST -->
-			<td class="gensmall" colspan="2" height="25" align="center"><!-- IF postrow.S_FIRST_UNREAD --><a name="unread"></a><!-- ENDIF --><a name="p{postrow.POST_ID}"></a>{postrow.L_IGNORE_POST}</td>
+	<!-- IF postrow.S_POST_HIDDEN -->
+			<td class="gensmall" colspan="2" height="25" align="center">
+				<!-- IF postrow.S_FIRST_UNREAD --><a name="unread"></a><!-- ENDIF -->
+				<a name="p{postrow.POST_ID}"></a>
+				<!-- IF postrow.S_POST_HIDDEN -->
+					<!-- IF postrow.S_POST_DELETED -->
+						{postrow.L_POST_DELETED_MESSAGE}
+					<!-- ELSEIF postrow.S_IGNORE_POST -->
+						{postrow.L_IGNORE_POST}
+					<!-- ENDIF -->
+					<br />{postrow.L_POST_DISPLAY}
+				<!-- ENDIF -->
+			</td>
 	<!-- ELSE -->
 
 			<td align="center" valign="middle">
@@ -207,10 +218,14 @@
 				<table width="100%" cellspacing="5">
 				<tr>
 					<td>
-					<!-- IF postrow.S_POST_UNAPPROVED or postrow.S_POST_REPORTED -->
+					<!-- IF postrow.S_POST_UNAPPROVED or postrow.S_POST_DELETED or postrow.S_POST_REPORTED -->
 						<table width="100%" cellspacing="0">
 						<tr>
-							<td class="gensmall"><!-- IF postrow.S_POST_UNAPPROVED --><span class="postapprove">{UNAPPROVED_IMG} <a href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></span><br /> <!-- ENDIF --> <!-- IF postrow.S_POST_REPORTED --><span class="postreported">{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></span><!-- ENDIF --></td>
+							<td class="gensmall">
+								<!-- IF postrow.S_POST_UNAPPROVED --><span class="postapprove">{UNAPPROVED_IMG} <a href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></span><br /> <!-- ENDIF -->
+								<!-- IF postrow.S_POST_DELETED --><span class="postapprove">{DELETED_IMG} <a href="{postrow.U_MCP_RESTORE}">{L_POST_DELETED}</a></span><br /> <!-- ENDIF -->
+								<!-- IF postrow.S_POST_REPORTED --><span class="postreported">{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></span><!-- ENDIF -->
+							</td>
 						</tr>
 						</table>
 
@@ -241,7 +256,22 @@
 						<div class="postbody"><br />_________________<br />{postrow.SIGNATURE}</div>
 					<!-- ENDIF -->
 
-					<!-- IF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
+					<!-- IF postrow.DELETED_MESSAGE or postrow.DELETE_REASON -->
+						<!-- IF postrow.DELETE_REASON -->
+							<br /><br />
+							<table class="tablebg" width="100%" cellspacing="1">
+							<tr>
+								<td class="row3"><span class="gensmall">{postrow.DELETED_MESSAGE}</span></td>
+							</tr>
+							<tr>
+								<td class="row2"><span class="genmed">{postrow.DELETE_REASON}</span></td>
+							</tr>
+							</table>
+						<!-- ELSE -->
+							<br /><br />
+							<span class="gensmall">{postrow.DELETED_MESSAGE}</span>
+						<!-- ENDIF -->
+					<!-- ELSEIF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
 						<!-- IF postrow.EDIT_REASON -->
 							<br /><br />
 							<table class="tablebg" width="100%" cellspacing="1">

@@ -59,7 +59,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 		}
 		if (!class_exists('phpbb_controller_foo'))
 		{
-			include(__DIR__.'/includes/controller/foo.php');
+			include(__DIR__.'/phpbb/controller/foo.php');
 		}
 
 		$resolver = new phpbb_controller_resolver(new phpbb_user, $container);
