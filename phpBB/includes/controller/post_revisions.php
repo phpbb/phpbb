@@ -214,6 +214,10 @@ class phpbb_controller_post_revisions
 		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
 		$revision = !$revision_id ? $post->get_current_revision() : new phpbb_revisions_revision($revision_id, $this->db);
+		if ($revision_id && !$revision->exists())
+		{
+			return $this->helper->error($this->user->lang('NO_REVISION') . '<br /><a href="'. $this->url("post/$id/revisions") . '">' . $this->user->lang('RETURN_REVISION') . '</a>');
+		}
 
 		$this->template->assign_vars(array(
 			'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
@@ -404,10 +408,8 @@ class phpbb_controller_post_revisions
 		{
 			foreach ($post_ids as $post_id => $deleted_revisions_count)
 			{
-				$sql = 'UPDATE ' . POSTS_TABLE . ' SET ' . $this->db->sql_build_array('UPDATE', array(
-						'post_edit_count' => 'post_edit_count - ' . (int) $deleted_revisions_count,
-						'post_revisions_count' => 'post_revisions_count - ' . (int) $deleted_revisions_count,
-					)) . 'WHERE post_id = ' . (int) $post_id;
+				$sql = 'UPDATE ' . POSTS_TABLE . ' SET post_edit_count = post_edit_count - ' . (int) $deleted_revisions_count .
+					' WHERE post_id = ' . (int) $post_id;
 				$result = $this->db->sql_query($sql);
 			}
 		}

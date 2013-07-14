@@ -143,6 +143,12 @@ class phpbb_revisions_revision
 	private $is_protected = false;
 
 	/**
+	 * Whether or not the revision exists in the database
+	 * @bool
+	 */
+	private $exists = false;
+
+	/**
 	* Constructor method
 	*
 	* @param int $revision_id ID of the revision to instantiate
@@ -205,6 +211,7 @@ class phpbb_revisions_revision
 		if (!empty($row))
 		{
 			$this->set_data($row);
+			$this->exists = true;
 		}
 
 		return $this;
@@ -222,7 +229,7 @@ class phpbb_revisions_revision
 		$this->subject = $row['revision_subject'];
 		$this->text_raw = $row['revision_text'];
 		$this->options = (($row['enable_bbcode']) ? OPTION_FLAG_BBCODE : 0) +
-				(($row['enable_smilies']) ? OPTION_FLAG_SMILIES : 0) + 
+				(($row['enable_smilies']) ? OPTION_FLAG_SMILIES : 0) +
 				(($row['enable_magic_url']) ? OPTION_FLAG_LINKS : 0);
 		$this->bitfield = $row['bbcode_bitfield'];
 		$this->uid = $row['bbcode_uid'];
@@ -234,10 +241,10 @@ class phpbb_revisions_revision
 		$this->time = $row['revision_time'];
 		$this->checksum = md5($this->text_raw);
 		$this->reason = $row['revision_reason'];
-		
+
 		$this->user_id = $row['user_id'];
 		$this->username = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
-		
+
 		$this->avatar = $row['user_avatar'];
 		$this->avatar_type = $row['user_avatar_type'];
 		$this->avatar_height = $row['user_avatar_height'];
@@ -490,5 +497,16 @@ class phpbb_revisions_revision
 	public function is_protected()
 	{
 		return (bool) $this->is_protected;
+	}
+
+	/**
+	 * Returns whether or not a revision with $this->revision_id exists in the
+	 * database
+	 *
+	 * @return bool
+	 */
+	public function exists()
+	{
+		return (bool) $this->exists;
 	}
 }
