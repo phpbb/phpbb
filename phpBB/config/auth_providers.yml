@@ -57,100 +57,100 @@ services:
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.bitly:
         class: phpbb_auth_provider_oauth_service_bitly
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.box:
         class: phpbb_auth_provider_oauth_service_box
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.dropbox:
         class: phpbb_auth_provider_oauth_service_dropbox
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.facebook:
         class: phpbb_auth_provider_oauth_service_facebook
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.fitbit:
         class: phpbb_auth_provider_oauth_service_fitbit
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.foursquare:
         class: phpbb_auth_provider_oauth_service_foursquare
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.github:
         class: phpbb_auth_provider_oauth_service_github
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.instagram:
         class: phpbb_auth_provider_oauth_service_instagram
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.linkedin:
         class: phpbb_auth_provider_oauth_service_linkedin
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.microsoft:
         class: phpbb_auth_provider_oauth_service_microsoft
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.paypal:
         class: phpbb_auth_provider_oauth_service_paypal
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.soundclod:
         class: phpbb_auth_provider_oauth_service_soundcloud
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.tumblr:
         class: phpbb_auth_provider_oauth_service_tumblr
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.twitter:
         class: phpbb_auth_provider_oauth_service_twitter
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.vkontakte:
         class: phpbb_auth_provider_oauth_service_vkontakte
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.yammer:
         class: phpbb_auth_provider_oauth_service_yammer
         arguments:
             - @config
         tags:
-            - { tag: auth.provider.oauth.service }
+            - { name: auth.provider.oauth.service }
