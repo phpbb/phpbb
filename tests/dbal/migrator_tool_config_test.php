@@ -7,9 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/migration/tool/config.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/migration/exception.php';
-
 class phpbb_dbal_migrator_tool_config_test extends phpbb_test_case
 {
 	public function setup()
