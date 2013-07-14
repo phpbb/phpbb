@@ -164,7 +164,7 @@ class phpbb_session_storage_native implements phpbb_session_storage
 		$sql = 'SELECT COUNT(session_id) AS sessions
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_user_id = ' . (int) $user_id . '
-					AND session_time >= ' . (int) $this->time_now - $max_time;
+					AND session_time >= ' . (int) ($this->time_now - $max_time);
 		return $this->query($sql);
 	}
 
