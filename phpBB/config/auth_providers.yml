@@ -1,0 +1,37 @@
+services:
+    auth.provider_collection:
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: auth.provider }
+    auth.provider.db:
+        class: phpbb_auth_provider_db
+        arguments:
+            - @dbal.conn
+            - @config
+            - @request
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: auth.provider }
+    auth.provider.apache:
+        class: phpbb_auth_provider_apache
+        arguments:
+            - @dbal.conn
+            - @config
+            - @request
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: auth.provider }
+    auth.provider.ldap:
+        class: phpbb_auth_provider_ldap
+        arguments:
+            - @dbal.conn
+            - @config
+            - @user
+        tags:
+            - { name: auth.provider }

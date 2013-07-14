@@ -21,6 +21,7 @@ if (!defined('IN_PHPBB'))
 class acp_permission_roles
 {
 	var $u_action;
+	protected $auth_admin;
 
 	function main($id, $mode)
 	{
@@ -30,7 +31,7 @@ class acp_permission_roles
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
 
-		$auth_admin = new auth_admin();
+		$this->auth_admin = new auth_admin();
 
 		$user->add_lang('acp/permissions');
 		add_permission_language();
@@ -210,7 +211,7 @@ class acp_permission_roles
 					}
 
 					// Now add the auth settings
-					$auth_admin->acl_set_role($role_id, $auth_settings);
+					$this->auth_admin->acl_set_role($role_id, $auth_settings);
 
 					$role_name = (!empty($user->lang[$role_name])) ? $user->lang[$role_name] : $role_name;
 					add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), $role_name);
@@ -343,7 +344,7 @@ class acp_permission_roles
 				// Get users/groups/forums using this preset...
 				if ($action == 'edit')
 				{
-					$hold_ary = $auth_admin->get_role_mask($role_id);
+					$hold_ary = $this->auth_admin->get_role_mask($role_id);
 
 					if (sizeof($hold_ary))
 					{
@@ -354,7 +355,7 @@ class acp_permission_roles
 							'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $role_name))
 						);
 
-						$auth_admin->display_role_mask($hold_ary);
+						$this->auth_admin->display_role_mask($hold_ary);
 					}
 				}
 
@@ -445,8 +446,8 @@ class acp_permission_roles
 				'S_DISPLAY_ROLE_MASK'	=> true)
 			);
 
-			$hold_ary = $auth_admin->get_role_mask($display_item);
-			$auth_admin->display_role_mask($hold_ary);
+			$hold_ary = $this->auth_admin->get_role_mask($display_item);
+			$this->auth_admin->display_role_mask($hold_ary);
 		}
 	}
 
@@ -462,7 +463,7 @@ class acp_permission_roles
 		$auth_options = array(0 => $auth_options);
 
 		// Making use of auth_admin method here (we do not really want to change two similar code fragments)
-		auth_admin::build_permission_array($auth_options, $content_array, $categories, $key_sort_array);
+		$this->auth_admin->build_permission_array($auth_options, $content_array, $categories, $key_sort_array);
 
 		$content_array = $content_array[0];
 
@@ -500,8 +501,6 @@ class acp_permission_roles
 	{
 		global $db;
 
-		$auth_admin = new auth_admin();
-
 		// Get complete auth array
 		$sql = 'SELECT auth_option, auth_option_id
 			FROM ' . ACL_OPTIONS_TABLE . "
@@ -529,19 +528,19 @@ class acp_permission_roles
 		$db->sql_freeresult($result);
 
 		// Get role assignments
-		$hold_ary = $auth_admin->get_role_mask($role_id);
+		$hold_ary = $this->auth_admin->get_role_mask($role_id);
 
 		// Re-assign permissions
 		foreach ($hold_ary as $forum_id => $forum_ary)
 		{
 			if (isset($forum_ary['users']))
 			{
-				$auth_admin->acl_set('user', $forum_id, $forum_ary['users'], $auth_settings, 0, false);
+				$this->auth_admin->acl_set('user', $forum_id, $forum_ary['users'], $auth_settings, 0, false);
 			}
 
 			if (isset($forum_ary['groups']))
 			{
-				$auth_admin->acl_set('group', $forum_id, $forum_ary['groups'], $auth_settings, 0, false);
+				$this->auth_admin->acl_set('group', $forum_id, $forum_ary['groups'], $auth_settings, 0, false);
 			}
 		}
 
@@ -563,6 +562,6 @@ class acp_permission_roles
 			WHERE role_id = ' . $role_id;
 		$db->sql_query($sql);
 
-		$auth_admin->acl_clear_prefetch();
+		$this->auth_admin->acl_clear_prefetch();
 	}
 }

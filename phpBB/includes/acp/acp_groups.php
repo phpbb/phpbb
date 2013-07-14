@@ -410,7 +410,7 @@ class acp_groups
 					if ($validation_error = validate_data($submit_ary, $validation_checks))
 					{
 						// Replace "error" string with its real, localised form
-						$error = array_merge($error, array_map(array(&$user, 'lang'), $validation_error));
+						$error = array_merge($error, $validation_error);
 					}
 
 					if (!sizeof($error))
@@ -507,6 +507,7 @@ class acp_groups
 
 					if (sizeof($error))
 					{
+						$error = array_map(array(&$user, 'lang'), $error);
 						$group_rank = $submit_ary['rank'];
 
 						$group_desc_data = array(
