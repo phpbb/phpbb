@@ -205,28 +205,36 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	function purge()
 	{
 		// Purge all phpbb cache files
-		$dir = @opendir($this->cache_dir);
-
-		if (!$dir)
+		try 
+		{
+			$iterator = new DirectoryIterator($this->cache_dir);
+		}
+		catch (Exception $e)
 		{
 			return;
 		}
 
-		while (($entry = readdir($dir)) !== false)
+		foreach ($iterator as $fileInfo)
 		{
-			if (strpos($entry, 'container_') !== 0 &&
-				strpos($entry, 'url_matcher') !== 0 &&
-				strpos($entry, 'sql_') !== 0 &&
-				strpos($entry, 'data_') !== 0 &&
-				strpos($entry, 'ctpl_') !== 0 &&
-				strpos($entry, 'tpl_') !== 0)
+			if ($fileInfo->isDot())
 			{
 				continue;
 			}
-
-			$this->remove_file($this->cache_dir . $entry);
+			$filename = $fileInfo->getFilename();
+			if ($fileInfo->isDir())
+			{
+				$this->purge_dir($fileInfo->getPathname());
+			}
+			elseif (strpos($filename, 'container_') === 0 ||
+				strpos($filename, 'url_matcher') === 0 ||
+				strpos($filename, 'sql_') === 0 ||
+				strpos($filename, 'data_') === 0 ||
+				strpos($filename, 'ctpl_') === 0 ||
+				strpos($filename, 'tpl_') === 0)
+			{
+				$this->remove_file($fileInfo->getPathname());
+			}
 		}
-		closedir($dir);
 
 		unset($this->vars);
 		unset($this->var_expires);
@@ -239,6 +247,39 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 		$this->sql_row_pointer = array();
 
 		$this->is_modified = false;
+	}
+
+	/**
+	* Remove directory
+	*/
+	protected function purge_dir($dir)
+	{
+		try 
+		{
+			$iterator = new DirectoryIterator($dir);
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
+
+		foreach ($iterator as $fileInfo)
+		{
+			if ($fileInfo->isDot())
+			{
+				continue;
+			}
+			if ($fileInfo->isDir())
+			{
+				$this->purge_dir($fileInfo->getPathname());
+			}
+			else
+			{
+				$this->remove_file($fileInfo->getPathname());
+			}
+		}
+
+		@rmdir($dir);
 	}
 
 	/**
