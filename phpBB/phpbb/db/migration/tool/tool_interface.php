@@ -12,7 +12,7 @@
 *
 * @package db
 */
-interface phpbb_db_migration_tool_interface
+interface phpbb_db_migration_tool_tool_interface
 {
 	/**
 	* Retrieve a short name used for commands in migrations.

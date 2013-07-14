@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-interface phpbb_auth_provider_interface
+interface phpbb_auth_provider_provider_interface
 {
 	/**
 	 * Checks whether the user is currently identified to the authentication
@@ -98,7 +98,7 @@ interface phpbb_auth_provider_interface
 	 * into phpBB.
 	 *
 	 * @param 	array 	$user
-	 * @return 	boolean	true if the given user is authenticated, false if the 
+	 * @return 	boolean	true if the given user is authenticated, false if the
 	 * 					session should be closed, or null if not implemented.
 	 */
 	public function validate_session($user);

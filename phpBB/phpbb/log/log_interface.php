@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpbb_log
 */
-interface phpbb_log_interface
+interface phpbb_log_log_interface
 {
 	/**
 	* This function returns the state of the log system.

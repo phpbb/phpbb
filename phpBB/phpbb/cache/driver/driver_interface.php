@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package acm
 */
-interface phpbb_cache_driver_interface
+interface phpbb_cache_driver_driver_interface
 {
 	/**
 	* Load global cache

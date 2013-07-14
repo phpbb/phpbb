@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-interface phpbb_tree_interface
+interface phpbb_tree_tree_interface
 {
 	/**
 	* Inserts an item into the database table and into the tree.

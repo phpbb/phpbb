@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Interface for avatar drivers
 * @package phpBB3
 */
-interface phpbb_avatar_driver_interface
+interface phpbb_avatar_driver_driver_interface
 {
 	/**
 	* Returns the name of the driver.

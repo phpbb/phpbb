@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-interface phpbb_groupposition_interface
+interface phpbb_groupposition_groupposition_interface
 {
 	/**
 	* Returns the value for a given group, if the group exists.
@@ -32,7 +32,7 @@ interface phpbb_groupposition_interface
 	public function get_group_value($group_id);
 
 	/**
-	* Get number of groups displayed 
+	* Get number of groups displayed
 	*
 	* @return	int		value of the last item displayed
 	*/

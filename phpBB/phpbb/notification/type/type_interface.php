@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Base notifications interface
 * @package notifications
 */
-interface phpbb_notification_type_interface
+interface phpbb_notification_type_type_interface
 {
 	/**
 	* Get notification type name
@@ -27,7 +27,7 @@ interface phpbb_notification_type_interface
 	* @return string
 	*/
 	public function get_type();
-	
+
 	/**
 	* Set initial data from the database
 	*

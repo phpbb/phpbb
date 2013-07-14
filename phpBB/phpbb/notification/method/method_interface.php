@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Base notifications method interface
 * @package notifications
 */
-interface phpbb_notification_method_interface
+interface phpbb_notification_method_method_interface
 {
 	/**
 	* Get notification method name

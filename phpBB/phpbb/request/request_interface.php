@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpbb_request
 */
-interface phpbb_request_interface
+interface phpbb_request_request_interface
 {
 	/**#@+
 	* Constant identifying the super global with the same name.
