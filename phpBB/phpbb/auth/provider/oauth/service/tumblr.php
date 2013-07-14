@@ -23,6 +23,23 @@ if (!defined('IN_PHPBB'))
 class phpbb_auth_provider_oauth_service_tumblr extends phpbb_auth_provider_oauth_service_base
 {
 	/**
+	* phpBB config
+	*
+	* @var phpbb_config
+	*/
+	protected $config;
+
+	/**
+	* Constructor
+	*
+	* @param	phpbb_config 	$config
+	*/
+	public function __construct(phpbb_config $config)
+	{
+		$this->config = $config;
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function get_service_credentials()
