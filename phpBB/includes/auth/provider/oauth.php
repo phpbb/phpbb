@@ -125,12 +125,20 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		}
 
 		$storage = new phpbb_auth_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_table);
+		$service = $this->get_service($service_name, $storage, $service_credentials, $this->get_scopes($service_name));
 
 		if ($this->request->is_set('code', phpbb_request_interface::GET))
 		{
-			// Second pass: request access token, authenticate with phpBB
+			// This was a callback request from the service provider
+			$service->requestAccessToken( $_GET['code'] );
+
+			// Send a request with it
+			$result = json_decode( $service->request('user/info'), true );
+
 		} else {
-			// First pass: get authorization uri, redirect to service
+			$url = $service->getAuthorizationUri();
+			// TODO: modify $url for the appropriate return points
+			header('Location: ' . $url);
 		}
 	}
 
@@ -205,5 +213,54 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$this->service[$service_name] = $service_factory->createService($service_name, $credentials, $storage, $scopes);
 
 		return $this->service[$service_name];
+	}
+
+	/**
+	* Returns the scopes of the service required for authentication
+	*
+	* @param	string	$service_name
+	* @return	array	An array of the scopes required from the service
+	*/
+	protected function get_scopes($service_name)
+	{
+		$scopes = array();
+
+		switch ($service_name)
+		{
+			case 'GitHub':
+				$scopes[] = 'user';
+				break;
+			case 'google':
+				$scopes[] = 'userinfo_email';
+				$scopes[] = 'userinfo_profile';
+				break;
+			case 'instagram':
+			case 'microsoft':
+				$scopes[] = 'basic';
+				break;
+			case 'linkedin':
+				$scopes[] = 'r_basicprofile';
+				break;
+		}
+
+		return $scopes;
+	}
+
+	/**
+	* Returns the path desired of the service
+	*
+	* @param	string	$service_name
+	* @return	string|UriInterface
+	*/
+	protected function get_path($service_name)
+	{
+		switch ($service_name)
+		{
+			default:
+				$path = '';
+				break;
+		}
+
+		return $path;
 	}
 }
