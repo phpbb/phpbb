@@ -22,5 +22,13 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_auth_provider_oauth_service_amazon extends phpbb_auth_provider_oauth_service_base
 {
-
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_auth_scope()
+	{
+		return array(
+			'profile',
+		);
+	}
 }
