@@ -66,7 +66,7 @@ class phpbb_permissions
 		* @since 3.1-A1
 		*/
 		$vars = array('types', 'categories', 'permissions');
-		extract($phpbb_dispatcher->trigger_event('core.permissions', $vars));
+		extract($phpbb_dispatcher->trigger_event('core.permissions', compact($vars)));
 
 		$this->categories = $categories;
 		$this->types = $types;

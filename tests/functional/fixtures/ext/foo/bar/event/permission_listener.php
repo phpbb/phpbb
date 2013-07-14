@@ -34,7 +34,7 @@ class phpbb_ext_foo_bar_event_permission_listener implements EventSubscriberInte
 	public function add_permissions($event)
 	{
 		$permissions = $event['permissions'];
-		$permissions['u_foo'] = array('lang' => 'ACL_U_FOO', 'cat' => 'misc'),
+		$permissions['u_foo'] = array('lang' => 'ACL_U_FOOBAR', 'cat' => 'post'),
 		$event['permissions'] = $permissions;
 	}
 }
