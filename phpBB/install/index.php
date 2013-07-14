@@ -249,7 +249,11 @@ $phpbb_style_path_provider = new phpbb_style_path_provider();
 $template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
 $phpbb_style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
 $phpbb_style->set_ext_dir_prefix('adm/');
-$phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
+
+$paths = array($phpbb_admin_path . 'style', $phpbb_root_path . 'install/update/new/adm/style');
+$paths = array_filter($paths, 'is_dir');
+$phpbb_style->set_custom_style('admin', $paths, array(), '');
+
 $template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
 
