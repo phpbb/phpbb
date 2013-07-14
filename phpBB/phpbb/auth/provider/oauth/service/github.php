@@ -31,4 +31,15 @@ class phpbb_auth_provider_oauth_service_github extends phpbb_auth_provider_oauth
 			'user',
 		);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_service_credentials()
+	{
+		return array(
+			'key'		=> $this->config['auth_oauth_github_key'],
+			'secret'	=> $this->config['auth_oauth_github_secret'],
+		);
+	}
 }

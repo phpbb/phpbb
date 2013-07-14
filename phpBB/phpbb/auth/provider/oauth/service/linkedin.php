@@ -31,4 +31,15 @@ class phpbb_auth_provider_oauth_service_linkedin extends phpbb_auth_provider_oau
 			'r_basicprofile',
 		);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_service_credentials()
+	{
+		return array(
+			'key'		=> $this->config['auth_oauth_linkedin_key'],
+			'secret'	=> $this->config['auth_oauth_linkedin_secret'],
+		);
+	}
 }

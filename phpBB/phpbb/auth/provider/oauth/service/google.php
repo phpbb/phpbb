@@ -32,4 +32,15 @@ class phpbb_auth_provider_oauth_service_google extends phpbb_auth_provider_oauth
 			'userinfo_profile',
 		);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_service_credentials()
+	{
+		return array(
+			'key'		=> $this->config['auth_oauth_google_key'],
+			'secret'	=> $this->config['auth_oauth_google_secret'],
+		);
+	}
 }

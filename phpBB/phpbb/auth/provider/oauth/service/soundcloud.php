@@ -22,5 +22,14 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_auth_provider_oauth_service_soundcloud extends phpbb_auth_provider_oauth_service_base
 {
-
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_service_credentials()
+	{
+		return array(
+			'key'		=> $this->config['auth_oauth_soundcloud_key'],
+			'secret'	=> $this->config['auth_oauth_soundcloud_secret'],
+		);
+	}
 }

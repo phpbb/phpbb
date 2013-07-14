@@ -33,4 +33,15 @@ class phpbb_auth_provider_oauth_service_paypal extends phpbb_auth_provider_oauth
 			'email',
 		);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_service_credentials()
+	{
+		return array(
+			'key'		=> $this->config['auth_oauth_paypal_key'],
+			'secret'	=> $this->config['auth_oauth_paypal_secret'],
+		);
+	}
 }

@@ -28,4 +28,17 @@ interface phpbb_auth_provider_oauth_service_interface
 	* @return	array	An array of the required scopes
 	*/
 	public function get_auth_scope();
+
+	/**
+	* Returns an array containing the service credentials belonging to requested
+	* service.
+	*
+	* @return	array	An array containing the 'key' and the 'secret' of the
+	*					service in the form:
+	*						array(
+	*							'key'		=> string
+	*							'secret'	=> string
+	*						)
+	*/
+	public function get_service_credentials();
 }

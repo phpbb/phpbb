@@ -31,4 +31,15 @@ class phpbb_auth_provider_oauth_service_amazon extends phpbb_auth_provider_oauth
 			'profile',
 		);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_service_credentials()
+	{
+		return array(
+			'key'		=> $this->config['auth_oauth_amazon_key'],
+			'secret'	=> $this->config['auth_oauth_amazon_secret'],
+		);
+	}
 }
