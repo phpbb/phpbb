@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_template_twig_node_define extends Twig_Node
+class phpbb_template_twig_node_definenode extends Twig_Node
 {
 	public function __construct($capture, Twig_NodeInterface $name, Twig_NodeInterface $value, $lineno, $tag = null)
 	{

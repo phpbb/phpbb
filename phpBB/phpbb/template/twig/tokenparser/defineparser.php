@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_template_twig_tokenparser_define extends Twig_TokenParser
+class phpbb_template_twig_tokenparser_defineparser extends Twig_TokenParser
 {
 	/**
 	 * Parses a token and returns a node.
@@ -46,7 +46,7 @@ class phpbb_template_twig_tokenparser_define extends Twig_TokenParser
 			$stream->expect(Twig_Token::BLOCK_END_TYPE);
 		}
 
-		return new phpbb_template_twig_node_define($capture, $name, $value, $lineno, $this->getTag());
+		return new phpbb_template_twig_node_definenode($capture, $name, $value, $lineno, $this->getTag());
 	}
 
 	public function decideBlockEnd(Twig_Token $token)

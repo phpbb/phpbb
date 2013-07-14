@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_template_twig_node_include extends Twig_Node_Include
+class phpbb_template_twig_node_includenode extends Twig_Node_Include
 {
 	/**
 	 * Compiles the node to PHP.

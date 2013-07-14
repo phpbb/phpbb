@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_template_twig_tokenparser_include extends Twig_TokenParser_Include
+class phpbb_template_twig_tokenparser_includeparser extends Twig_TokenParser_Include
 {
 	/**
 	 * Parses a token and returns a node.
@@ -31,7 +31,7 @@ class phpbb_template_twig_tokenparser_include extends Twig_TokenParser_Include
 
 		list($variables, $only, $ignoreMissing) = $this->parseArguments();
 
-		return new phpbb_template_twig_node_include($expr, $variables, $only, $ignoreMissing, $token->getLine(), $this->getTag());
+		return new phpbb_template_twig_node_includenode($expr, $variables, $only, $ignoreMissing, $token->getLine(), $this->getTag());
 	}
 
 	/**
