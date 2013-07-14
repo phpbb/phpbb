@@ -1435,7 +1435,7 @@ class install_install extends module
 		$db->sql_return_on_error(true);
 
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
-		include_once($phpbb_root_path . 'includes/search/fulltext_native.' . $phpEx);
+		include_once($phpbb_root_path . 'phpbb/search/fulltext_native.' . $phpEx);
 
 		// We need to fill the config to let internal functions correctly work
 		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
@@ -1888,7 +1888,7 @@ class install_install extends module
 	/**
 	* Populate migrations for the installation
 	*
-	* This "installs" all migrations from (root path)/includes/db/migrations/data.
+	* This "installs" all migrations from (root path)/phpbb/db/migrations/data.
 	* "installs" means it adds all migrations to the migrations table, but does not
 	* perform any of the actions in the migrations.
 	*
@@ -1900,7 +1900,7 @@ class install_install extends module
 		$finder = $extension_manager->get_finder();
 
 		$migrations = $finder
-			->core_path('includes/db/migration/data/')
+			->core_path('phpbb/db/migration/data/')
 			->get_classes();
 		$migrator->populate_migrations($migrations);
 	}

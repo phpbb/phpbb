@@ -61,11 +61,6 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 		// Select the search method
 		$search_type = basename($this->config['search_type']);
 
-		if (!class_exists($search_type))
-		{
-			include($this->phpbb_root_path . "includes/search/$search_type." . $this->php_ext);
-		}
-
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;
 		$search = new $search_type($error, $this->phpbb_root_path, $this->php_ext, $this->auth, $this->config, $this->db, $this->user);
@@ -90,7 +85,7 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 		// Select the search method
 		$search_type = basename($this->config['search_type']);
 
-		return file_exists($this->phpbb_root_path . 'includes/search/' . $search_type . '.' . $this->php_ext);
+		return class_exists($search_type);
 	}
 
 	/**
