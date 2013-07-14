@@ -84,7 +84,7 @@ class phpbb_revisions_post
 	* @var int
 	*/
 	private $protected_revision_count;
-	
+
 	/**
 	* Constructor, initialize some class properties
 	*
@@ -224,7 +224,7 @@ class phpbb_revisions_post
 			$row['enable_bbcode'] = $this->post_data['enable_bbcode'];
 			$row['enable_smilies'] = $this->post_data['enable_smilies'];
 			$row['enable_magic_url'] = $this->post_data['enable_magic_url'];
-			
+
 			$rev = new phpbb_revisions_revision($row['revision_id'], $this->db, false);
 			$rev->set_data($row);
 			$this->revisions[$row['revision_id']] = $rev;
@@ -482,6 +482,7 @@ class phpbb_revisions_post
 			'bbcode_uid'			=> $new_revision->get_uid(),
 			'post_edit_reason'		=> $new_revision->get_reason(),
 			'post_revision_count'	=> $this->post_data['post_revision_count'] + 1,
+			'post_edit_count'		=> $this->post_data['post_edit_count'] + 1,
 		);
 
 		$sql = 'UPDATE ' . POSTS_TABLE . '

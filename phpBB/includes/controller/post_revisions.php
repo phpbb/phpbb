@@ -168,7 +168,7 @@ class phpbb_controller_post_revisions
 		$this->template->assign_vars(array(
 			'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
 			'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-			
+
 			'RANK_TITLE'		=> $post_data['rank_title'],
 			'RANK_IMG'			=> $post_data['rank_image'],
 
@@ -218,7 +218,7 @@ class phpbb_controller_post_revisions
 		$this->template->assign_vars(array(
 			'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
 			'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-			
+
 			'RANK_TITLE'		=> $post_data['rank_title'],
 			'RANK_IMG'			=> $post_data['rank_image'],
 
@@ -404,9 +404,10 @@ class phpbb_controller_post_revisions
 		{
 			foreach ($post_ids as $post_id => $deleted_revisions_count)
 			{
-				$sql = 'UPDATE ' . POSTS_TABLE . '
-					SET post_edit_count = post_edit_count - ' . (int) $deleted_revisions_count . '
-					WHERE post_id = ' . (int) $post_id;
+				$sql = 'UPDATE ' . POSTS_TABLE . ' SET ' . $this->db->sql_build_array('UPDATE', array(
+						'post_edit_count' => 'post_edit_count - ' . (int) $deleted_revisions_count,
+						'post_revisions_count' => 'post_revisions_count - ' . (int) $deleted_revisions_count,
+					)) . 'WHERE post_id = ' . (int) $post_id;
 				$result = $this->db->sql_query($sql);
 			}
 		}
@@ -561,13 +562,18 @@ class phpbb_controller_post_revisions
 				)),
 			));
 
+			if (!isset($revisions[$to]))
+			{
+				return $this->helper->error($this->user->lang('ERROR_REVISION_NOT_FOUND') . '<br /><a href="'. $this->url("post/$id/revisions") . '">' . $this->user->lang('RETURN_REVISION') . '</a>', 404);
+			}
+
 			// Compare current post to the revision to which we are going to
 			// restore it
 			$comparison = new phpbb_revisions_comparison($post->get_current_revision(), $revisions[$to]);
 			$this->template->assign_vars(array(
 				'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
 				'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-				
+
 				'RANK_TITLE'		=> $post_data['rank_title'],
 				'RANK_IMG'			=> $post_data['rank_image'],
 
@@ -657,7 +663,7 @@ class phpbb_controller_post_revisions
 		// If either of the above is true, or if the user has moderator
 		// permissions for managing revisions
 		return $this->auth->acl_get('m_revisions') ||
-			$can_view_wiki_revisions || 
+			$can_view_wiki_revisions ||
 			$can_view_own_revisions;
 	}
 
