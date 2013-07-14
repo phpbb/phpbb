@@ -462,7 +462,7 @@ function mcp_move_topic($topic_ids)
 
 	if (!$to_forum_id || $additional_msg)
 	{
-		$request->overwrite('confirm', null, phpbb_request_interface::POST);
+		$request->overwrite('confirm', null, phpbb_request_request_interface::POST);
 		$request->overwrite('confirm_key', null);
 	}
 
@@ -694,7 +694,7 @@ function mcp_restore_topic($topic_ids)
 	}
 
 	$topic_id = $request->variable('t', 0);
-	if (!$request->is_set('quickmod', phpbb_request_interface::REQUEST))
+	if (!$request->is_set('quickmod', phpbb_request_request_interface::REQUEST))
 	{
 		$redirect = $request->variable('redirect', "index.$phpEx");
 		$redirect = reapply_sid($redirect);
@@ -823,7 +823,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 	}
 
 	$topic_id = $request->variable('t', 0);
-	if (!$request->is_set('quickmod', phpbb_request_interface::REQUEST))
+	if (!$request->is_set('quickmod', phpbb_request_request_interface::REQUEST))
 	{
 		$redirect = $request->variable('redirect', "index.$phpEx");
 		$redirect = reapply_sid($redirect);
@@ -1136,7 +1136,7 @@ function mcp_fork_topic($topic_ids)
 
 	if ($additional_msg)
 	{
-		$request->overwrite('confirm', null, phpbb_request_interface::POST);
+		$request->overwrite('confirm', null, phpbb_request_request_interface::POST);
 		$request->overwrite('confirm_key', null);
 	}
 

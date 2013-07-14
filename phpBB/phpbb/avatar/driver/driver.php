@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Base class for avatar drivers
 * @package phpBB3
 */
-abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
+abstract class phpbb_avatar_driver implements phpbb_avatar_driver_driver_interface
 {
 	/**
 	* Avatar driver name
@@ -47,7 +47,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 
 	/**
 	* Cache driver
-	* @var phpbb_cache_driver_interface
+	* @var phpbb_cache_driver_driver_interface
 	*/
 	protected $cache;
 
@@ -73,9 +73,9 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	* @param phpbb_request $request Request object
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
-	* @param phpbb_cache_driver_interface $cache Cache driver
+	* @param phpbb_cache_driver_driver_interface $cache Cache driver
 	*/
-	public function __construct(phpbb_config $config, $phpbb_root_path, $php_ext, phpbb_cache_driver_interface $cache = null)
+	public function __construct(phpbb_config $config, $phpbb_root_path, $php_ext, phpbb_cache_driver_driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;

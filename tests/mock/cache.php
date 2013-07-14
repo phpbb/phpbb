@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_mock_cache implements phpbb_cache_driver_interface
+class phpbb_mock_cache implements phpbb_cache_driver_driver_interface
 {
 	protected $data;
 

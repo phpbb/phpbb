@@ -104,7 +104,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	}
 	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 	{
-		$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+		$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_request_interface::COOKIE);
 		$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 		if (!$user->data['is_registered'])
@@ -1164,7 +1164,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{
-					if ($uid != $user_id || $request->variable('unwatch', '', false, phpbb_request_interface::GET) != $mode)
+					if ($uid != $user_id || $request->variable('unwatch', '', false, phpbb_request_request_interface::GET) != $mode)
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 						$message = $user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
@@ -1229,7 +1229,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{
-					if ($uid != $user_id || $request->variable('watch', '', false, phpbb_request_interface::GET) != $mode)
+					if ($uid != $user_id || $request->variable('watch', '', false, phpbb_request_request_interface::GET) != $mode)
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 						$message = $user->lang['ERR_WATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
@@ -1272,8 +1272,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	}
 	else
 	{
-		if ((isset($_GET['unwatch']) && $request->variable('unwatch', '', false, phpbb_request_interface::GET) == $mode) ||
-			(isset($_GET['watch']) && $request->variable('watch', '', false, phpbb_request_interface::GET) == $mode))
+		if ((isset($_GET['unwatch']) && $request->variable('unwatch', '', false, phpbb_request_request_interface::GET) == $mode) ||
+			(isset($_GET['watch']) && $request->variable('watch', '', false, phpbb_request_request_interface::GET) == $mode))
 		{
 			login_box();
 		}

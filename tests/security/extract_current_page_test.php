@@ -28,7 +28,7 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	{
 		global $request;
 
-		$request->merge(phpbb_request_interface::SERVER, array(
+		$request->merge(phpbb_request_request_interface::SERVER, array(
 			'PHP_SELF'	=> $url,
 			'QUERY_STRING'	=> $query_string,
 		));
@@ -46,7 +46,7 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	{
 		global $request;
 
-		$request->merge(phpbb_request_interface::SERVER, array(
+		$request->merge(phpbb_request_request_interface::SERVER, array(
 			'PHP_SELF'	=> $url,
 			'QUERY_STRING'	=> $query_string,
 		));

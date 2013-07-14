@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_groupposition_legend implements phpbb_groupposition_interface
+class phpbb_groupposition_legend implements phpbb_groupposition_groupposition_interface
 {
 	/**
 	* Group is not displayed

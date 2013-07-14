@@ -35,8 +35,8 @@ class acp_logs
 		$forum_id	= request_var('f', 0);
 		$topic_id	= request_var('t', 0);
 		$start		= request_var('start', 0);
-		$deletemark = $request->variable('delmarked', false, false, phpbb_request_interface::POST);
-		$deleteall	= $request->variable('delall', false, false, phpbb_request_interface::POST);
+		$deletemark = $request->variable('delmarked', false, false, phpbb_request_request_interface::POST);
+		$deleteall	= $request->variable('delall', false, false, phpbb_request_request_interface::POST);
 		$marked		= request_var('mark', array(0));
 
 		// Sort keys

@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-abstract class phpbb_auth_provider_base implements phpbb_auth_provider_interface
+abstract class phpbb_auth_provider_base implements phpbb_auth_provider_provider_interface
 {
 	/**
 	* {@inheritdoc}

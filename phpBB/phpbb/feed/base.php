@@ -34,7 +34,7 @@ abstract class phpbb_feed_base
 	/** @var phpbb_db_driver */
 	protected $db;
 
-	/** @var phpbb_cache_driver_interface */
+	/** @var phpbb_cache_driver_driver_interface */
 	protected $cache;
 
 	/** @var phpbb_user */
@@ -77,14 +77,14 @@ abstract class phpbb_feed_base
 	* @param phpbb_feed_helper $helper Feed helper
 	* @param phpbb_config		$config		Config object
 	* @param phpbb_db_driver	$db			Database connection
-	* @param phpbb_cache_driver_interface	$cache			Cache object
+	* @param phpbb_cache_driver_driver_interface	$cache			Cache object
 	* @param phpbb_user			$user		User object
 	* @param phpbb_auth			$auth		Auth object
 	* @param phpbb_content_visibility	$content_visibility		Auth object
 	* @param string				$phpEx		php file extension
 	* @return	null
 	*/
-	function __construct(phpbb_feed_helper $helper, phpbb_config $config, phpbb_db_driver $db, phpbb_cache_driver_interface $cache, phpbb_user $user, phpbb_auth $auth, phpbb_content_visibility $content_visibility, $phpEx)
+	function __construct(phpbb_feed_helper $helper, phpbb_config $config, phpbb_db_driver $db, phpbb_cache_driver_driver_interface $cache, phpbb_user $user, phpbb_auth $auth, phpbb_content_visibility $content_visibility, $phpEx)
 	{
 		$this->config = $config;
 		$this->helper = $helper;

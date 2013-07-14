@@ -37,9 +37,9 @@ interface phpbb_notification_method_method_interface
 	/**
 	* Add a notification to the queue
 	*
-	* @param phpbb_notification_type_interface $notification
+	* @param phpbb_notification_type_type_interface $notification
 	*/
-	public function add_to_queue(phpbb_notification_type_interface $notification);
+	public function add_to_queue(phpbb_notification_type_type_interface $notification);
 
 	/**
 	* Parse the queue and notify the users

@@ -24,7 +24,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 		// Prepare dependencies for avatar manager and driver
 		$config = new phpbb_config(array());
 		$request = $this->getMock('phpbb_request');
-		$cache = $this->getMock('phpbb_cache_driver_interface');
+		$cache = $this->getMock('phpbb_cache_driver_driver_interface');
 
 		// $this->avatar_foobar will be needed later on
 		$this->avatar_foobar = $this->getMock('phpbb_avatar_driver_foobar', array('get_name'), array($config, $phpbb_root_path, $phpEx, $cache));

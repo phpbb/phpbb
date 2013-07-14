@@ -46,10 +46,10 @@ class phpbb_extension_manager
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
-	* @param phpbb_cache_driver_interface $cache A cache instance or null
+	* @param phpbb_cache_driver_driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, phpbb_filesystem $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, phpbb_filesystem $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', phpbb_cache_driver_driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->container = $container;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -126,7 +126,7 @@ class phpbb_extension_manager
 	* Instantiates the extension meta class for the extension with the given name
 	*
 	* @param string $name The extension name
-	* @return phpbb_extension_interface Instance of the extension meta class or
+	* @return phpbb_extension_extension_interface Instance of the extension meta class or
 	*                     phpbb_extension_base if the class does not exist
 	*/
 	public function get_extension($name)

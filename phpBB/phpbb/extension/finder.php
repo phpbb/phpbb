@@ -57,12 +57,12 @@ class phpbb_extension_finder
 	*            extensions and their locations
 	* @param phpbb_filesystem $filesystem Filesystem instance
 	* @param string $phpbb_root_path Path to the phpbb root directory
-	* @param phpbb_cache_driver_interface $cache A cache instance or null
+	* @param phpbb_cache_driver_driver_interface $cache A cache instance or null
 	* @param string $php_ext php file extension
 	* @param string $cache_name The name of the cache variable, defaults to
 	*                           _ext_finder
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, phpbb_filesystem $filesystem, $phpbb_root_path = '', phpbb_cache_driver_interface $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
+	public function __construct(phpbb_extension_manager $extension_manager, phpbb_filesystem $filesystem, $phpbb_root_path = '', phpbb_cache_driver_driver_interface $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
 	{
 		$this->extension_manager = $extension_manager;
 		$this->filesystem = $filesystem;

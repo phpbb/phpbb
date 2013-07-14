@@ -32,7 +32,7 @@ function set_var(&$result, $var, $type, $multibyte = false)
 
 /**
 * Wrapper function of phpbb_request::variable which exists for backwards compatability.
-* See {@link phpbb_request_interface::variable phpbb_request_interface::variable} for
+* See {@link phpbb_request_request_interface::variable phpbb_request_request_interface::variable} for
 * documentation of this function's use.
 *
 * @deprecated
@@ -40,20 +40,20 @@ function set_var(&$result, $var, $type, $multibyte = false)
 * 										If the value is an array this may be an array of indizes which will give
 * 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
 * 										then specifying array("var", 1) as the name will return "a".
-* 										If you pass an instance of {@link phpbb_request_interface phpbb_request_interface}
+* 										If you pass an instance of {@link phpbb_request_request_interface phpbb_request_interface}
 * 										as this parameter it will overwrite the current request class instance. If you do
 * 										not do so, it will create its own instance (but leave superglobals enabled).
 * @param	mixed			$default	A default value that is returned if the variable was not set.
 * 										This function will always return a value of the same type as the default.
 * @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
 *										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
-* @param	bool			$cookie		This param is mapped to phpbb_request_interface::COOKIE as the last param for
-* 										phpbb_request_interface::variable for backwards compatability reasons.
-* @param	phpbb_request_interface|null|false	If an instance of phpbb_request_interface is given the instance is stored in
+* @param	bool			$cookie		This param is mapped to phpbb_request_request_interface::COOKIE as the last param for
+* 										phpbb_request_request_interface::variable for backwards compatability reasons.
+* @param	phpbb_request_request_interface|null|false	If an instance of phpbb_request_request_interface is given the instance is stored in
 *										a static variable and used for all further calls where this parameters is null. Until
 *										the function is called with an instance it automatically creates a new phpbb_request
 *										instance on every call. By passing false this per-call instantiation can be restored
-*										after having passed in a phpbb_request_interface instance.
+*										after having passed in a phpbb_request_request_interface instance.
 *
 * @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 * 					the same as that of $default. If the variable is not set $default is returned.
@@ -64,7 +64,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 	// the only real code is the function call which maps this function to a method.
 	static $static_request = null;
 
-	if ($request instanceof phpbb_request_interface)
+	if ($request instanceof phpbb_request_request_interface)
 	{
 		$static_request = $request;
 
@@ -93,7 +93,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 		$tmp_request = new phpbb_request(new phpbb_request_type_cast_helper(), false);
 	}
 
-	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? phpbb_request_interface::COOKIE : phpbb_request_interface::REQUEST);
+	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? phpbb_request_request_interface::COOKIE : phpbb_request_request_interface::REQUEST);
 }
 
 /**
@@ -1391,7 +1391,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 			{
-				$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+				$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_request_interface::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 				unset($tracking_topics['tf']);
@@ -1400,7 +1400,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking_topics['l'] = base_convert($post_time - $config['board_startdate'], 10, 36);
 
 				$user->set_cookie('track', tracking_serialize($tracking_topics), $post_time + 31536000);
-				$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking_topics), phpbb_request_interface::COOKIE);
+				$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking_topics), phpbb_request_request_interface::COOKIE);
 
 				unset($tracking_topics);
 
@@ -1503,7 +1503,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_request_interface::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			foreach ($forum_id as $f_id)
@@ -1534,7 +1534,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
-			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
+			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_request_interface::COOKIE);
 
 			unset($tracking);
 		}
@@ -1591,7 +1591,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_request_interface::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			$topic_id36 = base_convert($topic_id, 10, 36);
@@ -1605,7 +1605,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			// If the cookie grows larger than 10000 characters we will remove the smallest value
 			// This can result in old topics being unread - but most of the time it should be accurate...
-			if (strlen($request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE)) > 10000)
+			if (strlen($request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_request_interface::COOKIE)) > 10000)
 			{
 				//echo 'Cookie grown too large' . print_r($tracking, true);
 
@@ -1650,7 +1650,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
-			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
+			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_request_interface::COOKIE);
 		}
 
 		return;
@@ -1788,7 +1788,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 		if (!isset($tracking_topics) || !sizeof($tracking_topics))
 		{
-			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_request_interface::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 		}
 
@@ -1985,7 +1985,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_request_interface::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 			if (!$user->data['is_registered'])
@@ -3094,7 +3094,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		return false;
 	}
 
-	$confirm = ($user->lang['YES'] === $request->variable('confirm', '', true, phpbb_request_interface::POST));
+	$confirm = ($user->lang['YES'] === $request->variable('confirm', '', true, phpbb_request_request_interface::POST));
 
 	if ($check && $confirm)
 	{
@@ -4896,7 +4896,7 @@ function phpbb_http_login($param)
 	$username = null;
 	foreach ($username_keys as $k)
 	{
-		if ($request->is_set($k, phpbb_request_interface::SERVER))
+		if ($request->is_set($k, phpbb_request_request_interface::SERVER))
 		{
 			$username = htmlspecialchars_decode($request->server($k));
 			break;
@@ -4906,7 +4906,7 @@ function phpbb_http_login($param)
 	$password = null;
 	foreach ($password_keys as $k)
 	{
-		if ($request->is_set($k, phpbb_request_interface::SERVER))
+		if ($request->is_set($k, phpbb_request_request_interface::SERVER))
 		{
 			$password = htmlspecialchars_decode($request->server($k));
 			break;
@@ -5013,7 +5013,7 @@ function phpbb_quoteattr($data, $entities = null)
 */
 function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 {
-	$names = $request->variable_names(phpbb_request_interface::GET);
+	$names = $request->variable_names(phpbb_request_request_interface::GET);
 	$hidden = '';
 	foreach ($names as $name)
 	{
@@ -5035,7 +5035,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 		// here. To avoid exposing cookies, skip variables that are
 		// overwritten somewhere other than GET entirely.
 		$value = $request->variable($name, '', true);
-		$get_value = $request->variable($name, '', true, phpbb_request_interface::GET);
+		$get_value = $request->variable($name, '', true, phpbb_request_request_interface::GET);
 		if ($value === $get_value)
 		{
 			$escaped_value = phpbb_quoteattr($value);

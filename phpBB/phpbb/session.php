@@ -243,7 +243,7 @@ class phpbb_session
 			$this->forwarded_for = '';
 		}
 
-		if ($request->is_set($config['cookie_name'] . '_sid', phpbb_request_interface::COOKIE) || $request->is_set($config['cookie_name'] . '_u', phpbb_request_interface::COOKIE))
+		if ($request->is_set($config['cookie_name'] . '_sid', phpbb_request_request_interface::COOKIE) || $request->is_set($config['cookie_name'] . '_u', phpbb_request_request_interface::COOKIE))
 		{
 			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0, false, true);
 			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '', false, true);
@@ -405,9 +405,9 @@ class phpbb_session
 
 					$provider = $phpbb_container->get('auth.provider.' . $method);
 
-					if (!($provider instanceof phpbb_auth_provider_interface))
+					if (!($provider instanceof phpbb_auth_provider_provider_interface))
 					{
-						throw new \RuntimeException($provider . ' must implement phpbb_auth_provider_interface');
+						throw new \RuntimeException($provider . ' must implement phpbb_auth_provider_provider_interface');
 					}
 
 					$ret = $provider->validate_session($this->data);

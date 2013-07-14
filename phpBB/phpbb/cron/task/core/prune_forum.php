@@ -132,15 +132,15 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 
 	/**
 	* Parses parameters found in $request, which is an instance of
-	* phpbb_request_interface.
+	* phpbb_request_request_interface.
 	*
 	* It is expected to have a key f whose value is id of the forum to be pruned.
 	*
-	* @param phpbb_request_interface $request Request object.
+	* @param phpbb_request_request_interface $request Request object.
 	*
 	* @return null
 	*/
-	public function parse_parameters(phpbb_request_interface $request)
+	public function parse_parameters(phpbb_request_request_interface $request)
 	{
 		$this->forum_data = null;
 		if ($request->is_set('f'))

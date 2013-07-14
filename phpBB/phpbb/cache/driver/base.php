@@ -18,6 +18,6 @@ if (!defined('IN_PHPBB'))
 /**
 * @package acm
 */
-abstract class phpbb_cache_driver_base implements phpbb_cache_driver_interface
+abstract class phpbb_cache_driver_base implements phpbb_cache_driver_driver_interface
 {
 }

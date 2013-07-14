@@ -29,23 +29,23 @@ class phpbb_request_deactivated_super_global implements ArrayAccess, Countable, 
 	private $name;
 
 	/**
-	* @var	phpbb_request_interface::POST|GET|REQUEST|COOKIE	Super global constant.
+	* @var	phpbb_request_request_interface::POST|GET|REQUEST|COOKIE	Super global constant.
 	*/
 	private $super_global;
 
 	/**
-	* @var	phpbb_request_interface	The request class instance holding the actual request data.
+	* @var	phpbb_request_request_interface	The request class instance holding the actual request data.
 	*/
 	private $request;
 
 	/**
 	* Constructor generates an error message fitting the super global to be used within the other functions.
 	*
-	* @param	phpbb_request_interface	$request	A request class instance holding the real super global data.
+	* @param	phpbb_request_request_interface	$request	A request class instance holding the real super global data.
 	* @param	string					$name		Name of the super global this is a replacement for - e.g. '_GET'.
-	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global	The variable's super global constant.
+	* @param	phpbb_request_request_interface::POST|GET|REQUEST|COOKIE	$super_global	The variable's super global constant.
 	*/
-	public function __construct(phpbb_request_interface $request, $name, $super_global)
+	public function __construct(phpbb_request_request_interface $request, $name, $super_global)
 	{
 		$this->request = $request;
 		$this->name = $name;

@@ -43,7 +43,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$this->request->expects($this->once())
 			->method('is_set')
 			->with('PHP_AUTH_USER',
-				phpbb_request_interface::SERVER)
+				phpbb_request_request_interface::SERVER)
 			->will($this->returnValue(true));
 		$this->request->expects($this->once())
 			->method('server')
@@ -61,7 +61,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$this->request->expects($this->once())
 			->method('is_set')
 			->with('PHP_AUTH_USER',
-				phpbb_request_interface::SERVER)
+				phpbb_request_request_interface::SERVER)
 			->will($this->returnValue(true));
 		$this->request->expects($this->at(1))
 			->method('server')
@@ -93,7 +93,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$this->request->expects($this->once())
 			->method('is_set')
 			->with('PHP_AUTH_USER',
-				phpbb_request_interface::SERVER)
+				phpbb_request_request_interface::SERVER)
 			->will($this->returnValue(true));
 		$this->request->expects($this->at(1))
 			->method('server')
@@ -194,7 +194,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$this->request->expects($this->once())
 			->method('is_set')
 			->with('PHP_AUTH_USER',
-				phpbb_request_interface::SERVER)
+				phpbb_request_request_interface::SERVER)
 			->will($this->returnValue(true));
 		$this->request->expects($this->once())
 			->method('server')

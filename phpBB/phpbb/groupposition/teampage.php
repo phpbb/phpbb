@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_groupposition_teampage implements phpbb_groupposition_interface
+class phpbb_groupposition_teampage implements phpbb_groupposition_groupposition_interface
 {
 	/**
 	* Group is not displayed
@@ -48,7 +48,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 
 	/**
 	* Cache object
-	* @var phpbb_cache_driver_interface
+	* @var phpbb_cache_driver_driver_interface
 	*/
 	protected $cache;
 
@@ -57,9 +57,9 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_interface
 	*
 	* @param phpbb_db_driver				$db		Database object
 	* @param phpbb_user						$user	User object
-	* @param phpbb_cache_driver_interface	$cache	Cache object
+	* @param phpbb_cache_driver_driver_interface	$cache	Cache object
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_user $user, phpbb_cache_driver_interface $cache)
+	public function __construct(phpbb_db_driver $db, phpbb_user $user, phpbb_cache_driver_driver_interface $cache)
 	{
 		$this->db = $db;
 		$this->user = $user;

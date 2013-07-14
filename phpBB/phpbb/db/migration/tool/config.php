@@ -12,7 +12,7 @@
 *
 * @package db
 */
-class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_interface
+class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_tool_interface
 {
 	/** @var phpbb_config */
 	protected $config;

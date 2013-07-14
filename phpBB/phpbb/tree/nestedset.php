@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-abstract class phpbb_tree_nestedset implements phpbb_tree_interface
+abstract class phpbb_tree_nestedset implements phpbb_tree_tree_interface
 {
 	/** @var phpbb_db_driver */
 	protected $db;

@@ -50,9 +50,9 @@ class phpbb_class_loader
 	* @param string $prefix  Required class name prefix for files to be loaded
 	* @param string $path    Directory to load files from
 	* @param string $php_ext The file extension for PHP files
-	* @param phpbb_cache_driver_interface $cache An implementation of the phpBB cache interface.
+	* @param phpbb_cache_driver_driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function __construct($prefix, $path, $php_ext = 'php', phpbb_cache_driver_interface $cache = null)
+	public function __construct($prefix, $path, $php_ext = 'php', phpbb_cache_driver_driver_interface $cache = null)
 	{
 		$this->prefix = $prefix;
 		$this->path = $path;
@@ -66,9 +66,9 @@ class phpbb_class_loader
 	* the class loader will resolve paths by checking for the existance of every
 	* directory in the class name every time.
 	*
-	* @param phpbb_cache_driver_interface $cache An implementation of the phpBB cache interface.
+	* @param phpbb_cache_driver_driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function set_cache(phpbb_cache_driver_interface $cache = null)
+	public function set_cache(phpbb_cache_driver_driver_interface $cache = null)
 	{
 		if ($cache)
 		{

@@ -139,9 +139,9 @@ switch ($mode)
 		{
 			$set_time = time() - 31536000;
 
-			foreach ($request->variable_names(phpbb_request_interface::COOKIE) as $cookie_name)
+			foreach ($request->variable_names(phpbb_request_request_interface::COOKIE) as $cookie_name)
 			{
-				$cookie_data = $request->variable($cookie_name, '', true, phpbb_request_interface::COOKIE);
+				$cookie_data = $request->variable($cookie_name, '', true, phpbb_request_request_interface::COOKIE);
 
 				// Only delete board cookies, no other ones...
 				if (strpos($cookie_name, $config['cookie_name'] . '_') !== 0)

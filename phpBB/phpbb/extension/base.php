@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 *
 * @package extension
 */
-class phpbb_extension_base implements phpbb_extension_interface
+class phpbb_extension_base implements phpbb_extension_extension_interface
 {
 	/** @var ContainerInterface */
 	protected $container;

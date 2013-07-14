@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpbb_log
 */
-class phpbb_log implements phpbb_log_interface
+class phpbb_log implements phpbb_log_log_interface
 {
 	/**
 	* If set, administrative user profile links will be returned and messages

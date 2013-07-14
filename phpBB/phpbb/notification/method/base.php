@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Base notifications method class
 * @package notifications
 */
-abstract class phpbb_notification_method_base implements phpbb_notification_method_interface
+abstract class phpbb_notification_method_base implements phpbb_notification_method_method_interface
 {
 	/** @var phpbb_notification_manager */
 	protected $notification_manager;
@@ -30,7 +30,7 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	/** @var phpbb_db_driver */
 	protected $db;
 
-	/** @var phpbb_cache_driver_interface */
+	/** @var phpbb_cache_driver_driver_interface */
 	protected $cache;
 
 	/** @var phpbb_template */
@@ -66,7 +66,7 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	* 
 	* @param phpbb_user_loader $user_loader
 	* @param phpbb_db_driver $db
-	* @param phpbb_cache_driver_interface $cache
+	* @param phpbb_cache_driver_driver_interface $cache
 	* @param phpbb_user $user
 	* @param phpbb_auth $auth
 	* @param phpbb_config $config
@@ -74,7 +74,7 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	* @param string $php_ext
 	* @return phpbb_notification_method_base
 	*/
-	public function __construct(phpbb_user_loader $user_loader, phpbb_db_driver $db, phpbb_cache_driver_interface $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
+	public function __construct(phpbb_user_loader $user_loader, phpbb_db_driver $db, phpbb_cache_driver_driver_interface $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;
@@ -99,9 +99,9 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	/**
 	* Add a notification to the queue
 	*
-	* @param phpbb_notification_type_interface $notification
+	* @param phpbb_notification_type_type_interface $notification
 	*/
-	public function add_to_queue(phpbb_notification_type_interface $notification)
+	public function add_to_queue(phpbb_notification_type_type_interface $notification)
 	{
 		$this->queue[] = $notification;
 	}

@@ -34,8 +34,8 @@ class ucp_groups
 		$return_page = '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '">', '</a>');
 
 		$mark_ary	= request_var('mark', array(0));
-		$submit		= $request->variable('submit', false, false, phpbb_request_interface::POST);
-		$delete		= $request->variable('delete', false, false, phpbb_request_interface::POST);
+		$submit		= $request->variable('submit', false, false, phpbb_request_request_interface::POST);
+		$delete		= $request->variable('delete', false, false, phpbb_request_request_interface::POST);
 		$error = $data = array();
 
 		switch ($mode)

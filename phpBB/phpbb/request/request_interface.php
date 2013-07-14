@@ -43,10 +43,10 @@ interface phpbb_request_request_interface
 	* @param	string	$var_name	The name of the variable that shall be overwritten
 	* @param	mixed	$value		The value which the variable shall contain.
 	* 								If this is null the variable will be unset.
-	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
+	* @param	phpbb_request_request_interface::POST|GET|REQUEST|COOKIE	$super_global
 	* 								Specifies which super global shall be changed
 	*/
-	public function overwrite($var_name, $value, $super_global = phpbb_request_interface::REQUEST);
+	public function overwrite($var_name, $value, $super_global = phpbb_request_request_interface::REQUEST);
 
 	/**
 	* Central type safe input handling function.
@@ -60,19 +60,19 @@ interface phpbb_request_request_interface
 	* 										This function will always return a value of the same type as the default.
 	* @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
 	*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
-	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
+	* @param	phpbb_request_request_interface::POST|GET|REQUEST|COOKIE	$super_global
 	* 										Specifies which super global should be used
 	*
 	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 	*					the same as that of $default. If the variable is not set $default is returned.
 	*/
-	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST);
+	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_request_interface::REQUEST);
 
 	/**
 	* Shortcut method to retrieve SERVER variables.
 	*
-	* @param	string|array	$var_name		See phpbb_request_interface::variable
-	* @param	mixed			$default		See phpbb_request_interface::variable
+	* @param	string|array	$var_name		See phpbb_request_request_interface::variable
+	* @param	mixed			$default		See phpbb_request_request_interface::variable
 	*
 	* @return	mixed	The server variable value.
 	*/
@@ -82,7 +82,7 @@ interface phpbb_request_request_interface
 	* Shortcut method to retrieve the value of client HTTP headers.
 	*
 	* @param	string|array	$header_name	The name of the header to retrieve.
-	* @param	mixed			$default		See phpbb_request_interface::variable
+	* @param	mixed			$default		See phpbb_request_request_interface::variable
 	*
 	* @return	mixed	The header value.
 	*/
@@ -105,12 +105,12 @@ interface phpbb_request_request_interface
 	* arrays.
 	*
 	* @param	string	$var	Name of the variable
-	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
+	* @param	phpbb_request_request_interface::POST|GET|REQUEST|COOKIE	$super_global
 	*							Specifies the super global which shall be checked
 	*
 	* @return	bool			True if the variable was sent as input
 	*/
-	public function is_set($var, $super_global = phpbb_request_interface::REQUEST);
+	public function is_set($var, $super_global = phpbb_request_request_interface::REQUEST);
 
 	/**
 	* Checks whether the current request is an AJAX request (XMLHttpRequest)
@@ -129,11 +129,11 @@ interface phpbb_request_request_interface
 	/**
 	* Returns all variable names for a given super global
 	*
-	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
+	* @param	phpbb_request_request_interface::POST|GET|REQUEST|COOKIE	$super_global
 	*					The super global from which names shall be taken
 	*
 	* @return	array	All variable names that are set for the super global.
 	*					Pay attention when using these, they are unsanitised!
 	*/
-	public function variable_names($super_global = phpbb_request_interface::REQUEST);
+	public function variable_names($super_global = phpbb_request_request_interface::REQUEST);
 }

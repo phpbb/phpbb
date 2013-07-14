@@ -2349,7 +2349,7 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 * must be carried through for the moderators table.
 *
 * @param phpbb_db_driver $db Database connection
-* @param phpbb_cache_driver_interface Cache driver
+* @param phpbb_cache_driver_driver_interface Cache driver
 * @param phpbb_auth $auth Authentication object
 * @return null
 */

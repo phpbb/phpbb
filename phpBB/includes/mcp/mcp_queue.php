@@ -946,9 +946,9 @@ class mcp_queue
 			{
 				$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
 
-				$request->overwrite('confirm', null, phpbb_request_interface::POST);
-				$request->overwrite('confirm_key', null, phpbb_request_interface::POST);
-				$request->overwrite('confirm_key', null, phpbb_request_interface::REQUEST);
+				$request->overwrite('confirm', null, phpbb_request_request_interface::POST);
+				$request->overwrite('confirm_key', null, phpbb_request_request_interface::POST);
+				$request->overwrite('confirm_key', null, phpbb_request_request_interface::REQUEST);
 			}
 			else
 			{
