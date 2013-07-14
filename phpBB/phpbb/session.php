@@ -1307,7 +1307,7 @@ class phpbb_session
 			$this->storage->delete($this->session_id, $user_id);
 		} else
 		{
-			$this->storage->delete_session_user_id($user_id);
+			$this->storage->delete_by_user_id($user_id);
 		}
 
 		// We're changing the password of the current user and they have a key
@@ -1374,6 +1374,6 @@ class phpbb_session
 	public function update_session($session_data, $session_id = null)
 	{
 		$session_id = ($session_id) ? $session_id : $this->session_id;
-		return $this->storage->update_session($session_data, $session_id);
+		return $this->storage->update($session_id, $session_data);
 	}
 }

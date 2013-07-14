@@ -63,7 +63,7 @@ class phpbb_session_storage_native
 		$sql = 'UPDATE ' . SESSIONS_TABLE . '
 		 		SET ' . $this->db->sql_build_array('UPDATE', $session_data) . "
 				WHERE session_id = '" . $this->db->sql_escape($session_id) . "'";
-		$this->update_query($sql);
+		return $this->update_query($sql);
 	}
 
 	function get($session_id)
@@ -149,14 +149,6 @@ class phpbb_session_storage_native
 		return true;
 	}
 
-	function delete_session_user_id($user_id)
-	{
-		$this->update_query('
-			DELETE FROM ' . SESSIONS_TABLE .'
-			WHERE session_user_id = ' . (int) $user_id
-		);
-	}
-
 	function num_active_sessions($minutes_considered_active=60)
 	{
 		return $this->query('
@@ -189,14 +181,6 @@ class phpbb_session_storage_native
 				SET session_viewonline = ' . (int) $viewonline . '
 				WHERE session_user_id = ' . $user_id;
 		$this->update_query($sql);
-	}
-
-	function update_session($session_data, $session_id)
-	{
-		$sql = 'UPDATE ' . SESSIONS_TABLE . '
-		 		SET ' . $this->db->sql_build_array('UPDATE', $session_data) . "
-				WHERE session_id = '" . $this->db->sql_escape($session_id) . "'";
-		return $this->update_query($sql);
 	}
 
 	function update_last_visit($time, $user_id, $page='')
