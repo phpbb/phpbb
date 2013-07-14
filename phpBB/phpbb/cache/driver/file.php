@@ -228,9 +228,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 			elseif (strpos($filename, 'container_') === 0 ||
 				strpos($filename, 'url_matcher') === 0 ||
 				strpos($filename, 'sql_') === 0 ||
-				strpos($filename, 'data_') === 0 ||
-				strpos($filename, 'ctpl_') === 0 ||
-				strpos($filename, 'tpl_') === 0)
+				strpos($filename, 'data_') === 0)
 			{
 				$this->remove_file($fileInfo->getPathname());
 			}
