@@ -191,9 +191,6 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			// Recursive...fix any child nodes
 			$body = $parent_class->fix_begin_tokens($body, $parent_nodes);
 
-			// Rename loopname vars
-			$body = str_replace($name . '.', $name . '.', $body);
-
 			// Need the parent variable name
 			array_pop($parent_nodes);
 			$parent = (!empty($parent_nodes)) ? end($parent_nodes) . '.' : '';
