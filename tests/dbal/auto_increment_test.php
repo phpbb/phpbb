@@ -8,7 +8,6 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
 
 class phpbb_dbal_auto_increment_test extends phpbb_database_test_case
 {

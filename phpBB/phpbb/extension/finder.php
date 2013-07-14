@@ -275,7 +275,7 @@ class phpbb_extension_finder
 		$classes = array();
 		foreach ($files as $file => $ext_name)
 		{
-			$file = preg_replace('#^includes/#', '', $file);
+			$file = preg_replace('#^(phpbb|includes)/#', '', $file);
 
 			$classes[] = 'phpbb_' . str_replace('/', '_', substr($file, 0, -strlen('.' . $this->php_ext)));
 		}
@@ -377,7 +377,7 @@ class phpbb_extension_finder
 
 		return $files;
 	}
-	
+
 	/**
 	* Finds all file system entries matching the configured options for one
 	* specific extension
