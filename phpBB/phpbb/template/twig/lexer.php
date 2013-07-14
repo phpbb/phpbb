@@ -200,8 +200,9 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 				$subset = '|subset(' . $subset . ')';
 			}
 
+			$parent = ($parent) ?: 'loops.';
 			// Turn into a Twig for loop
-			return "{% for {$name} in loops.{$parent}{$name}{$subset} %}{$body}{% endfor %}";
+			return "{% for {$name} in {$parent}{$name}{$subset} %}{$body}{% endfor %}";
 		};
 
 		// Replace <!-- BEGINELSE --> correctly, only needs to be done once
@@ -224,7 +225,10 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			// Replace $TEST with definition.TEST
 			$inner = preg_replace('#\s\$([a-zA-Z_0-9]+)#', ' definition.$1', $inner);
 
-			// Replace .test with test|length
+			// Replace .foo with loops.foo|length
+			$inner = preg_replace('#\s\.([a-zA-Z_0-9]+)#', ' loops.$1|length', $inner);
+
+			// Replace .foo.bar with foo.bar|length
 			$inner = preg_replace('#\s\.([a-zA-Z_0-9\.]+)#', ' $1|length', $inner);
 
 			return "<!-- {$matches[1]}IF{$inner}-->";
