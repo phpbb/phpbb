@@ -133,8 +133,13 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			$service->requestAccessToken( $_GET['code'] );
 
 			// Send a request with it
-			$result = json_decode( $service->request('user/info'), true );
+			$path = $this->get_path($service_name);
+			if ($path)
+			{
+				$result = json_decode( $service->request($path), true );
+			}
 
+			// Perform authentication
 		} else {
 			$url = $service->getAuthorizationUri();
 			// TODO: modify $url for the appropriate return points
@@ -250,14 +255,47 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	* Returns the path desired of the service
 	*
 	* @param	string	$service_name
-	* @return	string|UriInterface
+	* @return	string|UriInterface|null	A null return means do not
+	*										request additional information.
 	*/
 	protected function get_path($service_name)
 	{
 		switch ($service_name)
 		{
+			case 'bitly':
+			case 'tumblr':
+				$path = 'user/info';
+				break;
+			case 'box':
+				$path = '/users/me';
+				break;
+			case 'facebook':
+				$path = '/me';
+				break;
+			case 'FitBit':
+				$path = 'user/-/profile.json';
+				break;
+			case 'foursquare':
+			case 'instagram':
+				$path = 'users/self';
+				break;
+			case 'GitHub':
+				$path = 'user/emails';
+				break;
+			case 'google':
+				$path = 'https://www.googleapis.com/oauth2/v1/userinfo';
+				break;
+			case 'linkedin':
+				$path = '/people/~?format=json';
+				break;
+			case 'soundCloud':
+				$path = 'me.json';
+				break;
+			case 'twitter':
+				$path = 'account/verify_credentials.json';
+				break;
 			default:
-				$path = '';
+				$path = null;
 				break;
 		}
 
