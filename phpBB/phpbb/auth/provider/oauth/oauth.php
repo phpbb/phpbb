@@ -124,7 +124,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			);
 		}
 
-		$storage = new phpbb_auth_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_table);
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_table);
 		$service = $this->get_service($service_name, $storage, $service_credentials, $this->get_scopes($service_name));
 
 		if ($this->request->is_set('code', phpbb_request_interface::GET))

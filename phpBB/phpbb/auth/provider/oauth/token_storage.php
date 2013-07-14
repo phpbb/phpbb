@@ -26,7 +26,7 @@ use OAuth\Common\Storage\Exception\TokenNotFoundException;
 *
 * @package auth
 */
-class phpbb_auth_oauth_token_storage implements TokenStorageInterface
+class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 {
 	/**
 	* Cache driver.
