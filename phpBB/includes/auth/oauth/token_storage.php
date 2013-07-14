@@ -196,4 +196,25 @@ class phpbb_auth_oauth_token_storage implements TokenStorageInterface
 
 		$this->db->sql_query($sql);
 	}
+
+	/**
+	* Updates the user_id field in the database assosciated with the token
+	*
+	* @param	int	$user_id
+	*/
+	public function set_user_id($user_id)
+	{
+		if (!$this->cachedToken)
+		{
+			return;
+		}
+
+		$sql = 'UPDATE ' . $this->auth_provider_oauth_table . '
+			SET ' . $db->sql_build_array('UPDATE', array(
+					'user_id' => (int) $user_id
+				)) . '
+				WHERE user_id = ' . $this->user->data['user_id'] . '
+					AND session_id = ' . $this->user->data['session_id'];
+		$this->db->sql_query($sql);
+	}
 }
