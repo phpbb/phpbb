@@ -104,6 +104,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		{
 			return array(
 				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+				// TODO: change error message
 				'error_msg'		=> 'LOGIN_ERROR_EXTERNAL_AUTH_APACHE',
 				'user_row'		=> array('user_id' => ANONYMOUS),
 			);
@@ -117,10 +118,13 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		{
 			return array(
 				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+				// TODO: change error message
 				'error_msg'		=> 'LOGIN_ERROR_EXTERNAL_AUTH_APACHE',
 				'user_row'		=> array('user_id' => ANONYMOUS),
 			);
 		}
+
+		$storage = new phpbb_auth_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_table);
 
 		if ($this->request->is_set('code', phpbb_request_interface::GET))
 		{
@@ -175,19 +179,18 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	* Returns the cached service object or creates a new one
 	*
 	* @param	string	$service_name			The name of the service
+	* @param	phpbb_auth_oauth_token_storage $storage
 	* @param	array	$service_credentials	{@see phpbb_auth_provider_oauth::get_service_credentials}
 	* @param	array	$scope					The scope of the request against
 	*											the api.
 	* @return	\OAuth\Common\Service\ServiceInterface
 	*/
-	protected function get_service($service_name, array $service_credentials, array $scopes = array())
+	protected function get_service($service_name, phpbb_auth_oauth_token_storage $storage, array $service_credentials, array $scopes = array())
 	{
 		if ($this->services[$service_name])
 		{
 			return $this->services[$service_name];
 		}
-
-		$storage = new phpbb_auth_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_table);
 
 		$current_uri = $this->get_current_uri();
 
