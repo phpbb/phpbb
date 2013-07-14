@@ -810,7 +810,7 @@ class phpbb_session
 
 			$num_sessions = $this->storage->num_sessions(
 				$this->data['user_id'],
-				$this->time_now - (max($config['session_length'], $config['form_token_lifetime']))
+				max($config['session_length'], $config['form_token_lifetime'])
 			);
 
 			if ($num_sessions <= 1 || empty($this->data['user_form_salt']))

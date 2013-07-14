@@ -21,7 +21,7 @@ class phpbb_session_storage_native
 	protected $db;
 	protected $time_now;
 
-	public function __construct()
+	function __construct()
 	{
 		global $db;
 		$this->db = $db;
@@ -41,30 +41,32 @@ class phpbb_session_storage_native
 		return $this->db->sql_query($sql);
 	}
 
-	public function set_time_now($time_now)
+	function set_time_now($time_now)
 	{
 		$this->time_now = $time_now;
 	}
 
-	public function set_db($db)
+	function set_db($db)
 	{
 		$this->db = $db;
 	}
 
-	public function create($session_data)
+	function create($session_data)
 	{
-		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $session_data);
+		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' .
+				$this->db->sql_build_array('INSERT', $session_data);
 		$this->update_query($sql);
 	}
 
-	public function update($session_id, $session_data)
+	function update($session_id, $session_data)
 	{
-		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $this->db->sql_build_array('UPDATE', $session_data) . "
-			WHERE session_id = '" . $this->db->sql_escape($session_id) . "'";
+		$sql = 'UPDATE ' . SESSIONS_TABLE . '
+		 		SET ' . $this->db->sql_build_array('UPDATE', $session_data) . "
+				WHERE session_id = '" . $this->db->sql_escape($session_id) . "'";
 		$this->update_query($sql);
 	}
 
-	public function get($session_id)
+	function get($session_id)
 	{
 		$sql = 'SELECT u.*, s.*
 				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
@@ -73,7 +75,7 @@ class phpbb_session_storage_native
 		return $this->query($sql);
 	}
 
-	public function get_with_user_id($user_id)
+	function get_with_user_id($user_id)
 	{
 		$sql = 'SELECT u.*, s.*
 					FROM ' . USERS_TABLE . ' u
@@ -82,7 +84,7 @@ class phpbb_session_storage_native
 		return $this->query($sql);
 	}
 
-	public function get_user_info($user_id, $normal_found_only=false)
+	function get_user_info($user_id, $normal_found_only=false)
 	{
 		$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
@@ -94,32 +96,35 @@ class phpbb_session_storage_native
 		return $this->query($sql);
 	}
 
-	public function get_user_info_with_key($user, $session_key)
+	function get_user_info_with_key($user_id, $session_key)
 	{
 		$sql = 'SELECT u.*
-					FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
-					WHERE u.user_id = ' . (int) $user . '
-						AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
-						AND k.user_id = u.user_id
-						AND k.key_id = '" . $this->db->sql_escape(md5($session_key)) . "'";
+				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
+				WHERE u.user_id = ' . (int) $user_id . '
+					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
+					AND k.user_id = u.user_id
+					AND k.key_id = '" . $this->db->sql_escape(md5($session_key)) . "'";
 		return $this->query($sql);
 	}
 
-	public function get_newest($user_id)
+	function get_newest($user_id)
 	{
 		$sql = 'SELECT *
-			FROM ' . SESSIONS_TABLE . '
-			WHERE session_user_id = ' . (int) $user_id . '
-			ORDER BY session_time DESC';
+				FROM ' . SESSIONS_TABLE . '
+				WHERE session_user_id = ' . (int) $user_id . '
+				ORDER BY session_time DESC';
 		return $this->query($sql);
 	}
 
-	public function delete_by_user_id($user_id)
+	function delete_by_user_id($user_id)
 	{
-		$this->update_query('DELETE FROM ' . SESSIONS_TABLE . ' WHERE session_user_id = ' . (int) $user_id);
+		$this->update_query('
+			DELETE FROM ' . SESSIONS_TABLE . '
+			WHERE session_user_id = ' . (int) $user_id
+		);
 	}
 
-	public function delete($session_id, $user_id = false)
+	function delete($session_id, $user_id = false)
 	{
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
 				WHERE session_id = \'' . $this->db->sql_escape($session_id) . '\' ';
@@ -144,7 +149,7 @@ class phpbb_session_storage_native
 		return true;
 	}
 
-	public function delete_session_user_id($user_id)
+	function delete_session_user_id($user_id)
 	{
 		$this->update_query('
 			DELETE FROM ' . SESSIONS_TABLE .'
@@ -152,40 +157,41 @@ class phpbb_session_storage_native
 		);
 	}
 
-	public function num_active_sessions()
+	function num_active_sessions($minutes_considered_active=60)
+	{
+		return $this->query('
+			SELECT COUNT(session_id) AS sessions
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_time >= ' . ($this->time_now - $minutes_considered_active)
+		);
+	}
+
+	function num_sessions($user_id, $max_time)
 	{
 		$sql = 'SELECT COUNT(session_id) AS sessions
-			FROM ' . SESSIONS_TABLE . '
-			WHERE session_time >= ' . ($this->time_now - 60);
+				FROM ' . SESSIONS_TABLE . '
+				WHERE session_user_id = ' . (int) $user_id . '
+					AND session_time >= ' . (int) $this->time_now - $max_time;
 		return $this->query($sql);
 	}
 
-	public function num_sessions($user_id, $min_time)
-	{
-		$sql = 'SELECT COUNT(session_id) AS sessions
-			FROM ' . SESSIONS_TABLE . '
-			WHERE session_user_id = ' . (int) $user_id . '
-				AND session_time >= ' . (int) $min_time;
-		return $this->query($sql);
-	}
-
-	public function unset_admin($session_id)
+	function unset_admin($session_id)
 	{
 		$sql = 'UPDATE ' . SESSIONS_TABLE . '
-			SET session_admin = 0
-			WHERE session_id = \'' . $this->db->sql_escape($session_id) . '\'';
+				SET session_admin = 0
+				WHERE session_id = \'' . $this->db->sql_escape($session_id) . '\'';
 		$this->update_query($sql);
 	}
 
-	public function set_viewonline($user_id, $viewonline)
+	function set_viewonline($user_id, $viewonline)
 	{
 		$sql = 'UPDATE ' . SESSIONS_TABLE . '
-			SET session_viewonline = ' . (int) $viewonline . '
-			WHERE session_user_id = ' . $user_id;
+				SET session_viewonline = ' . (int) $viewonline . '
+				WHERE session_user_id = ' . $user_id;
 		$this->update_query($sql);
 	}
 
-	public function update_session($session_data, $session_id)
+	function update_session($session_data, $session_id)
 	{
 		$sql = 'UPDATE ' . SESSIONS_TABLE . '
 		 		SET ' . $this->db->sql_build_array('UPDATE', $session_data) . "
@@ -193,7 +199,7 @@ class phpbb_session_storage_native
 		return $this->update_query($sql);
 	}
 
-	public function update_last_visit($time, $user, $page='')
+	function update_last_visit($time, $user_id, $page='')
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_lastvisit = ' . (int) $time;
@@ -201,22 +207,22 @@ class phpbb_session_storage_native
 		{
 			$sql .= ", user_lastpage = '" . $this->db->sql_escape($page) . "'";
 		}
-		$sql .=	' WHERE user_id = ' . (int) $user;
+		$sql .=	' WHERE user_id = ' . (int) $user_id;
 		$this->update_query($sql);
 	}
 
-	public function update_form_salt($salt, $user)
+	function update_form_salt($salt, $user_id)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_form_salt = \'' . $this->db->sql_escape($salt) . '\'
-					WHERE user_id = ' . (int) $user;
+				SET user_form_salt = \'' . $this->db->sql_escape($salt) . '\'
+				WHERE user_id = ' . (int) $user_id;
 		$this->update_query($sql);
 	}
 
-	public function remove_session_key($user, $key=false)
+	function remove_session_key($user_id, $key=false)
 	{
 		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-					WHERE user_id = ' . (int) $user;
+				WHERE user_id = ' . (int) $user_id;
 		if ($key !== false)
 		{
 			$sql .= " AND key_id = '" . $this->db->sql_escape(md5($key)) . "'";
@@ -224,53 +230,57 @@ class phpbb_session_storage_native
 		$this->update_query($sql);
 	}
 
-	public function update_session_key($user, $key, $data)
+	function update_session_key($user_id, $key_id, $data)
 	{
-		$sql = 'UPDATE ' . SESSIONS_KEYS_TABLE . '
-				SET ' . $this->db->sql_build_array('UPDATE', $data) . '
-				WHERE user_id = ' . (int) $user . "
-					AND key_id = '" . $this->db->sql_escape(md5($key)) . "'";
-		$this->update_query($sql);
+		$this->update_query('
+			UPDATE ' . SESSIONS_KEYS_TABLE . '
+			SET ' . $this->db->sql_build_array('UPDATE', $data) . '
+			WHERE user_id = ' . (int) $user_id . "
+				AND key_id = '" . $this->db->sql_escape(md5($key_id)) . "'"
+		);
 	}
 
-	public function insert_session_key($data)
+	function insert_session_key($data)
 	{
 		$this->update_query(
 			'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $data)
 		);
 	}
 
-	public function cleanup_guest_sessions($session_length)
+	function cleanup_guest_sessions($session_length)
 	{
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+		$this->update_query('
+			DELETE FROM ' . SESSIONS_TABLE . '
 			WHERE session_user_id = ' . ANONYMOUS . '
-				AND session_time < ' . (int) ($this->time_now - $session_length);
-		$this->update_query($sql);
+				AND session_time < ' . (int) ($this->time_now - $session_length)
+		);
 	}
 
-	public function cleanup_expired_sessions($user_id, $session_length)
+	function cleanup_expired_sessions($user_id, $session_length)
 	{
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-				WHERE ' . $this->db->sql_in_set('session_user_id', $user_id) . '
-					AND session_time < ' . ($this->time_now - $session_length);
-		$this->update_query($sql);
+		$this->update_query('
+			DELETE FROM ' . SESSIONS_TABLE . '
+			WHERE ' . $this->db->sql_in_set('session_user_id', $user_id) . '
+				AND session_time < ' . ($this->time_now - $session_length)
+		);
 	}
 
 	/** For sessions older than length, run a function and collect results.
 	* @param $session_length Int - How old to search
 	* @param $session_function Callable - Function to run takes $row + $storage, outputs array
 	* @param $batch_size Int - Sql Paging size
-	* @return Array An array containing the results of $session_function
+	* @return Array - An array containing the results of $session_function
 	*/
-	public function map_recently_expired($session_length, $session_function, $batch_size)
+	function map_recently_expired($session_length, $session_function, $batch_size)
 	{
-		$values = array();
-		$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
+		$sql = '
+			SELECT session_user_id, session_page, MAX(session_time) AS recent_time
 			FROM ' . SESSIONS_TABLE . '
 			WHERE session_time < ' . ($this->time_now - $session_length) . '
 			GROUP BY session_user_id, session_page';
 		$result = $this->db->sql_query_limit($sql, $batch_size);
 
+		$values = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$values[] = $session_function($row, $this);
@@ -279,24 +289,25 @@ class phpbb_session_storage_native
 		return $values;
 	}
 
-	public function cleanup_long_sessions($max_autologin_time)
+	function cleanup_long_sessions($max_autologin_time)
 	{
 		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-					WHERE last_login < ' . (time() - (86400 * (int) $max_autologin_time));
+				WHERE last_login < ' . (time() - (86400 * (int) $max_autologin_time));
 		$this->update_query($sql);
 	}
 
-	public function cleanup_attempt_table($ip_login_limit_time)
+	function cleanup_attempt_table($ip_login_limit_time)
 	{
 		$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
 				WHERE attempt_time < ' . (time() - (int) $ip_login_limit_time);
 		$this->update_query($sql);
 	}
 
-	public function banlist($user_email, $user_ips, $user_id, $cache_ttl)
+	function banlist($user_email, $user_ips, $user_id, $cache_ttl)
 	{
 		$where_sql = array();
-		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
+		$sql = '
+			SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
 			FROM ' . BANLIST_TABLE . '
 			WHERE ';
 
