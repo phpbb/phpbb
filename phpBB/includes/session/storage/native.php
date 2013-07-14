@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/interface.php';
+
 /**
 * @ignore
 */
@@ -15,8 +17,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-
-class phpbb_session_storage_native
+class phpbb_session_storage_native implements phpbb_session_storage
 {
 	protected $db;
 	protected $time_now;
@@ -46,7 +47,7 @@ class phpbb_session_storage_native
 		$this->time_now = $time_now;
 	}
 
-	function set_db($db)
+	function set_db(phpbb_db_driver $db)
 	{
 		$this->db = $db;
 	}
