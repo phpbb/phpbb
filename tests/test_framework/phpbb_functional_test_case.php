@@ -219,15 +219,19 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		self::recreate_database(self::$config);
 
-		if (file_exists($phpbb_root_path . "config.$phpEx"))
+		$config_file = $phpbb_root_path . "config.$phpEx";
+		$config_file_dev = $phpbb_root_path . "config_dev.$phpEx";
+		$config_file_test = $phpbb_root_path . "config_test.$phpEx";
+
+		if (file_exists($config_file))
 		{
-			if (!file_exists($phpbb_root_path . "config_dev.$phpEx"))
+			if (!file_exists($config_file_dev))
 			{
-				rename($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_dev.$phpEx");
+				rename($config_file, $config_file_dev);
 			}
 			else
 			{
-				unlink($phpbb_root_path . "config.$phpEx");
+				unlink($config_file);
 			}
 		}
 
@@ -251,10 +255,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertContains('Welcome to Installation', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=requirements
 		$crawler = self::submit($form);
 		self::assertContains('Installation compatibility', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=database
 		$crawler = self::submit($form);
 		self::assertContains('Database configuration', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
@@ -268,10 +274,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'table_prefix'	=> self::$config['table_prefix'],
 		));
 
+		// install/index.php?mode=install&sub=database
 		$crawler = self::submit($form);
 		self::assertContains('Successful connection', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=administrator
 		$crawler = self::submit($form);
 		self::assertContains('Administrator configuration', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
@@ -282,16 +290,38 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'board_email'	=> 'nobody@example.com',
 		));
 
+		// install/index.php?mode=install&sub=administrator
 		$crawler = self::submit($form);
 		self::assertContains('Tests passed', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
-		$crawler = self::submit($form);
-		self::assertContains('The configuration file has been written.', $crawler->filter('#main')->text());
-		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data(self::$config, self::$config['dbms'], true, true));
-		$form = $crawler->selectButton('submit')->form();
+		// We have to skip install/index.php?mode=install&sub=config_file
+		// because that step will create a config.php file if phpBB has the
+		// permission to do so. We have to create the config file on our own
+		// in order to get the DEBUG constants defined.
+		$config_php_data = phpbb_create_config_file_data(self::$config, self::$config['dbms'], true, true);
+		$config_created = file_put_contents($config_file, $config_php_data) !== false;
+		if (!$config_created)
+		{
+			self::markTestSkipped("Could not write $config_file file.");
+		}
 
-		$crawler = self::submit($form);
+		// We also have to create a install lock that is normally created by
+		// the installer. The file will be removed by the final step of the
+		// installer.
+		$install_lock_file = $phpbb_root_path . 'cache/install_lock';
+		$lock_created = file_put_contents($install_lock_file, '') !== false;
+		if (!$lock_created)
+		{
+			self::markTestSkipped("Could not create $lock_created file.");
+		}
+		@chmod($install_lock_file, 0666);
+
+		// install/index.php?mode=install&sub=advanced
+		$form_data = $form->getValues();
+		unset($form_data['submit']);
+
+		$crawler = self::request('POST', 'install/index.php?mode=install&sub=advanced', $form_data);
 		self::assertContains('The settings on this page are only necessary to set if you know that you require something different from the default.', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
 			'email_enable'		=> true,
@@ -308,20 +338,126 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'script_path'		=> $parseURL['path'],
 		));
 
+		// install/index.php?mode=install&sub=create_table
 		$crawler = self::submit($form);
 		self::assertContains('The database tables used by phpBB', $crawler->filter('#main')->text());
 		self::assertContains('have been created and populated with some initial data.', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
+		// install/index.php?mode=install&sub=final
 		$crawler = self::submit($form);
 		self::assertContains('You have successfully installed', $crawler->text());
-		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
+
+		copy($config_file, $config_file_test);
 	}
 
 	static private function recreate_database($config)
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
 		$db_conn_mgr->recreate_db();
+	}
+
+	/**
+	* Creates a new style
+	*
+	* @param string $style_id Style ID
+	* @param string $style_path Style directory
+	* @param string $parent_style_id Parent style id. Default = 1
+	* @param string $parent_style_path Parent style directory. Default = 'prosilver'
+	*/
+	protected function add_style($style_id, $style_path, $parent_style_id = 1, $parent_style_path = 'prosilver')
+	{
+		global $phpbb_root_path;
+
+		$db = $this->get_db();
+		if (version_compare(PHPBB_VERSION, '3.1.0-dev', '<'))
+		{
+			$sql = 'INSERT INTO ' . STYLES_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'style_id' => $style_id,
+				'style_name' => $style_path,
+				'style_copyright' => '',
+				'style_active' => 1,
+				'template_id' => $style_id,
+				'theme_id' => $style_id,
+				'imageset_id' => $style_id,
+			));
+			$db->sql_query($sql);
+
+			$sql = 'INSERT INTO ' . STYLES_IMAGESET_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'imageset_id' => $style_id,
+				'imageset_name' => $style_path,
+				'imageset_copyright' => '',
+				'imageset_path' => $style_path,
+			));
+			$db->sql_query($sql);
+
+			$sql = 'INSERT INTO ' . STYLES_TEMPLATE_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'template_id' => $style_id,
+				'template_name' => $style_path,
+				'template_copyright' => '',
+				'template_path' => $style_path,
+				'bbcode_bitfield' => 'kNg=',
+				'template_inherits_id' => $parent_style_id,
+				'template_inherit_path' => $parent_style_path,
+			));
+			$db->sql_query($sql);
+
+			$sql = 'INSERT INTO ' . STYLES_THEME_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'theme_id' => $style_id,
+				'theme_name' => $style_path,
+				'theme_copyright' => '',
+				'theme_path' => $style_path,
+				'theme_storedb' => 0,
+				'theme_mtime' => 0,
+				'theme_data' => '',
+			));
+			$db->sql_query($sql);
+
+			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			{
+				@mkdir($phpbb_root_path . 'styles/' . $style_path, 0777);
+				@mkdir($phpbb_root_path . 'styles/' . $style_path . '/template', 0777);
+			}
+		}
+		else
+		{
+			$db->sql_multi_insert(STYLES_TABLE, array(
+				'style_id' => $style_id,
+				'style_name' => $style_path,
+				'style_copyright' => '',
+				'style_active' => 1,
+				'style_path' => $style_path,
+				'bbcode_bitfield' => 'kNg=',
+				'style_parent_id' => $parent_style_id,
+				'style_parent_tree' => $parent_style_path,
+			));
+		}
+	}
+
+	/**
+	* Remove temporary style created by add_style()
+	*
+	* @param string $style_id Style ID
+	* @param string $style_path Style directory
+	*/
+	protected function delete_style($style_id, $style_path)
+	{
+		global $phpbb_root_path;
+
+		$db = $this->get_db();
+		$db->sql_query('DELETE FROM ' . STYLES_TABLE . ' WHERE style_id = ' . $style_id);
+		if (version_compare(PHPBB_VERSION, '3.1.0-dev', '<'))
+		{
+			$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_TABLE . ' WHERE imageset_id = ' . $style_id);
+			$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
+			$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
+
+			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			{
+				@rmdir($phpbb_root_path . 'styles/' . $style_path . '/template');
+				@rmdir($phpbb_root_path . 'styles/' . $style_path);
+			}
+		}
 	}
 
 	/**
@@ -474,7 +610,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 		$crawler = self::submit($form, array('username' => $username, 'password' => $username . $username));
-		$this->assertContains($this->lang('LOGIN_REDIRECT'), $crawler->filter('html')->text());
+		$this->assertNotContains($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
 
 		$cookies = self::$cookieJar->all();
 
@@ -493,7 +629,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->add_lang('ucp');
 
 		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
-		$this->assertContains($this->lang('LOGOUT_REDIRECT'), $crawler->filter('#message')->text());
+		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 		unset($this->sid);
 
 	}
@@ -523,7 +659,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			if (strpos($field, 'password_') === 0)
 			{
 				$crawler = self::submit($form, array('username' => $username, $field => $username . $username));
-				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
+				$this->assertContains($this->lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
 
 				$cookies = self::$cookieJar->all();
 
@@ -607,6 +743,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		// Any output before the doc type means there was an error
 		$content = self::$client->getResponse()->getContent();
+		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
 	}
 
@@ -702,5 +839,136 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 
 		return $result;
+	}
+
+	/**
+	* Creates a topic
+	*
+	* Be sure to login before creating
+	*
+	* @param int $forum_id
+	* @param string $subject
+	* @param string $message
+	* @param array $additional_form_data Any additional form data to be sent in the request
+	* @return array post_id, topic_id
+	*/
+	public function create_topic($forum_id, $subject, $message, $additional_form_data = array())
+	{
+		$posting_url = "posting.php?mode=post&f={$forum_id}&sid={$this->sid}";
+
+		$form_data = array_merge(array(
+			'subject'		=> $subject,
+			'message'		=> $message,
+			'post'			=> true,
+		), $additional_form_data);
+
+		return self::submit_post($posting_url, 'POST_TOPIC', $form_data);
+	}
+
+	/**
+	* Creates a post
+	*
+	* Be sure to login before creating
+	*
+	* @param int $forum_id
+	* @param int $topic_id
+	* @param string $subject
+	* @param string $message
+	* @param array $additional_form_data Any additional form data to be sent in the request
+	* @return array post_id, topic_id
+	*/
+	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array())
+	{
+		$posting_url = "posting.php?mode=reply&f={$forum_id}&t={$topic_id}&sid={$this->sid}";
+
+		$form_data = array_merge(array(
+			'subject'		=> $subject,
+			'message'		=> $message,
+			'post'			=> true,
+		), $additional_form_data);
+
+		return self::submit_post($posting_url, 'POST_REPLY', $form_data);
+	}
+
+	/**
+	* Helper for submitting posts
+	*
+	* @param string $posting_url
+	* @param string $posting_contains
+	* @param array $form_data
+	* @return array post_id, topic_id
+	*/
+	protected function submit_post($posting_url, $posting_contains, $form_data)
+	{
+		$this->add_lang('posting');
+
+		$crawler = self::request('GET', $posting_url);
+		$this->assertContains($this->lang($posting_contains), $crawler->filter('html')->text());
+
+		$hidden_fields = array(
+			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
+				return array('name' => $node->getAttribute('name'), 'value' => $node->getAttribute('value'));
+			}),
+		);
+
+		foreach ($hidden_fields as $fields)
+		{
+			foreach($fields as $field)
+			{
+				$form_data[$field['name']] = $field['value'];
+			}
+		}
+
+		// Bypass time restriction that said that if the lastclick time (i.e. time when the form was opened)
+		// is not at least 2 seconds before submission, cancel the form
+		$form_data['lastclick'] = 0;
+
+		// I use a request because the form submission method does not allow you to send data that is not
+		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
+		// Instead, I send it as a request with the submit button "post" set to true.
+		$crawler = self::request('POST', $posting_url, $form_data);
+		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
+		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
+
+		return array(
+			'topic_id'	=> $this->get_parameter_from_link($url, 't'),
+			'post_id'	=> $this->get_parameter_from_link($url, 'p'),
+		);
+	}
+
+	/*
+	* Returns the requested parameter from a URL
+	*
+	* @param	string	$url
+	* @param	string	$parameter
+	* @return		string	Value of the parameter in the URL, null if not set
+	*/
+	public function get_parameter_from_link($url, $parameter)
+	{
+		if (strpos($url, '?') === false)
+		{
+			return null;
+		}
+
+		$url_parts = explode('?', $url);
+		if (isset($url_parts[1]))
+		{
+			$url_parameters = $url_parts[1];
+			if (strpos($url_parameters, '#') !== false)
+			{
+				$url_parameters = explode('#', $url_parameters);
+				$url_parameters = $url_parameters[0];
+			}
+
+			foreach (explode('&', $url_parameters) as $url_param)
+			{
+				list($param, $value) = explode('=', $url_param);
+				if ($param == $parameter)
+				{
+					return $value;
+				}
+			}
+		}
+		return null;
 	}
 }
