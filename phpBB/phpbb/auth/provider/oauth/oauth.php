@@ -148,26 +148,6 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	}
 
 	/**
-	* Returns an array containing the service credentials belonging to requested
-	* service.
-	*
-	* @param	string	$service_name	The name of the service
-	* @return	array	An array containing the 'key' and the 'secret' of the
-	*					service in the form:
-	*						array(
-	*							'key'		=> string
-	*							'secret'	=> string
-	*						)
-	*/
-	protected function get_service_credentials($service_name)
-	{
-		return array(
-			'key'		=> $this->config['auth_oauth_' . $service_name . '_key'],
-			'secret'	=> $this->config['auth_oauth_' . $service_name . '_secret'],
-		);
-	}
-
-	/**
 	* Returns the cached current_uri object or creates and caches it if it is
 	* not already created
 	*
