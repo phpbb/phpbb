@@ -191,20 +191,20 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			// Recursive...fix any child nodes
 			$body = $parent_class->fix_begin_tokens($body, $parent_nodes);
 
-			// Rename loopname vars (to prevent collisions, loop children are named (loop name)_loop_element)
-			$body = str_replace($name . '.', $name . '_loop_element.', $body);
+			// Rename loopname vars
+			$body = str_replace($name . '.', $name . '.', $body);
 
 			// Need the parent variable name
 			array_pop($parent_nodes);
-			$parent = (!empty($parent_nodes)) ? end($parent_nodes) . '_loop_element.' : '';
+			$parent = (!empty($parent_nodes)) ? end($parent_nodes) . '.' : '';
 
 			if ($subset !== '')
 			{
 				$subset = '|subset(' . $subset . ')';
 			}
 
-			// Turn into a Twig for loop, using (loop name)_loop_element for each child
-			return "{% for {$name}_loop_element in {$parent}{$name}{$subset} %}{$body}{% endfor %}";
+			// Turn into a Twig for loop
+			return "{% for {$name} in loops.{$parent}{$name}{$subset} %}{$body}{% endfor %}";
 		};
 
 		// Replace <!-- BEGINELSE --> correctly, only needs to be done once
