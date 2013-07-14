@@ -102,7 +102,7 @@ $phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relati
 $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
 
 // Include files
-phpbb_require_updated('includes/class_loader.' . $phpEx);
+phpbb_require_updated('phpbb/class_loader.' . $phpEx);
 
 phpbb_require_updated('includes/functions.' . $phpEx);
 phpbb_require_updated('includes/functions_content.' . $phpEx);
@@ -116,9 +116,9 @@ phpbb_require_updated('includes/utf/utf_tools.' . $phpEx);
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Setup class loader first
-$phpbb_class_loader_new = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}install/update/new/includes/", $phpEx);
+$phpbb_class_loader_new = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}install/update/new/phpbb/", $phpEx);
 $phpbb_class_loader_new->register();
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", $phpEx);
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
 
 // Set up container (must be done here because extensions table may not exist)
@@ -242,7 +242,7 @@ $phpbb_extension_manager = $phpbb_container->get('ext.manager');
 $finder = $phpbb_extension_manager->get_finder();
 
 $migrations = $finder
-	->core_path('includes/db/migration/data/')
+	->core_path('phpbb/db/migration/data/')
 	->get_classes();
 $migrator->set_migrations($migrations);
 

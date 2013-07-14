@@ -38,7 +38,7 @@ function insert_single(user)
 // ]]>
 </script>
 <!-- ENDIF -->
-<!-- INCLUDEJS template/forum_fn.js -->
+<!-- INCLUDEJS forum_fn.js -->
 <h2 class="solo">{L_FIND_USERNAME}</h2>
 
 <form method="post" action="{S_MODE_ACTION}" id="search_memberlist">
@@ -73,6 +73,10 @@ function insert_single(user)
 	<dl>
 		<dt><label for="msn">{L_MSNM}{L_COLON}</label></dt>
 		<dd><input type="text" name="msn" id="msn" value="{MSNM}" class="inputbox" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="jabber">{L_JABBER}:</label></dt>
+		<dd><input type="text" name="jabber" id="jabber" value="{JABBER}" class="inputbox" /></dd>
 	</dl>
 	</fieldset>
 

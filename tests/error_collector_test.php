@@ -8,7 +8,6 @@
 */
 
 require_once dirname(__FILE__) . '/../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../phpBB/includes/error_collector.php';
 
 class phpbb_error_collector_test extends phpbb_test_case
 {

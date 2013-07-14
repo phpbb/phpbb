@@ -21,6 +21,71 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
+* Get DB connection from config.php.
+*
+* Used to bootstrap the container.
+*
+* @param string $config_file
+* @return phpbb_db_driver
+*/
+function phpbb_bootstrap_db_connection($config_file)
+{
+	require($config_file);
+	$dbal_driver_class = phpbb_convert_30_dbms_to_31($dbms);
+
+	$db = new $dbal_driver_class();
+	$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, defined('PHPBB_DB_NEW_LINK'));
+
+	return $db;
+}
+
+/**
+* Get table prefix from config.php.
+*
+* Used to bootstrap the container.
+*
+* @param string $config_file
+* @return string table prefix
+*/
+function phpbb_bootstrap_table_prefix($config_file)
+{
+	require($config_file);
+	return $table_prefix;
+}
+
+/**
+* Get enabled extensions.
+*
+* Used to bootstrap the container.
+*
+* @param string $config_file
+* @param string $phpbb_root_path
+* @return array enabled extensions
+*/
+function phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path)
+{
+	$db = phpbb_bootstrap_db_connection($config_file);
+	$table_prefix = phpbb_bootstrap_table_prefix($config_file);
+	$extension_table = $table_prefix.'ext';
+
+	$sql = 'SELECT *
+			FROM ' . $extension_table . '
+			WHERE ext_active = 1';
+
+	$result = $db->sql_query($sql);
+	$rows = $db->sql_fetchrowset($result);
+	$db->sql_freeresult($result);
+
+	$exts = array();
+	foreach ($rows as $row)
+	{
+		$exts[$row['ext_name']] = $phpbb_root_path . 'ext/' . $row['ext_name'] . '/';
+	}
+
+	return $exts;
+}
+
+/**
 * Create the ContainerBuilder object
 *
 * @param array $extensions Array of Container extension objects
@@ -106,16 +171,9 @@ function phpbb_create_update_container($phpbb_root_path, $php_ext, $config_path)
 * @param string $php_ext PHP Extension
 * @return ContainerBuilder object (compiled)
 */
-function phpbb_create_compiled_container(array $extensions, array $passes, $phpbb_root_path, $php_ext)
+function phpbb_create_compiled_container($config_file, array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
-	// Create a temporary container for access to the ext.manager service
-	$tmp_container = phpbb_create_container($extensions, $phpbb_root_path, $php_ext);
-	$tmp_container->compile();
-
-	// XXX stop writing to global $cache when
-	// http://tracker.phpbb.com/browse/PHPBB3-11203 is fixed
-	$GLOBALS['cache'] = $tmp_container->get('cache');
-	$installed_exts = $tmp_container->get('ext.manager')->all_enabled();
+	$installed_exts = phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path);
 
 	// Now pass the enabled extension paths into the ext compiler extension
 	$extensions[] = new phpbb_di_extension_ext($installed_exts);
@@ -142,7 +200,7 @@ function phpbb_create_compiled_container(array $extensions, array $passes, $phpb
 * @param string $php_ext PHP Extension
 * @return ContainerBuilder object (compiled)
 */
-function phpbb_create_dumped_container(array $extensions, array $passes, $phpbb_root_path, $php_ext)
+function phpbb_create_dumped_container($config_file, array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
 	// Check for our cached container; if it exists, use it
 	$container_filename = phpbb_container_filename($phpbb_root_path, $php_ext);
@@ -152,7 +210,7 @@ function phpbb_create_dumped_container(array $extensions, array $passes, $phpbb_
 		return new phpbb_cache_container();
 	}
 
-	$container = phpbb_create_compiled_container($extensions, $passes, $phpbb_root_path, $php_ext);
+	$container = phpbb_create_compiled_container($config_file, $extensions, $passes, $phpbb_root_path, $php_ext);
 
 	// Lastly, we create our cached container class
 	$dumper = new PhpDumper($container);
@@ -182,10 +240,10 @@ function phpbb_create_dumped_container(array $extensions, array $passes, $phpbb_
 * @param string $php_ext PHP Extension
 * @return ContainerBuilder object (compiled)
 */
-function phpbb_create_dumped_container_unless_debug(array $extensions, array $passes, $phpbb_root_path, $php_ext)
+function phpbb_create_dumped_container_unless_debug($config_file, array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
 	$container_factory = defined('DEBUG') ? 'phpbb_create_compiled_container' : 'phpbb_create_dumped_container';
-	return $container_factory($extensions, $passes, $phpbb_root_path, $php_ext);
+	return $container_factory($config_file, $extensions, $passes, $phpbb_root_path, $php_ext);
 }
 
 /**
@@ -199,9 +257,11 @@ function phpbb_create_dumped_container_unless_debug(array $extensions, array $pa
 */
 function phpbb_create_default_container($phpbb_root_path, $php_ext)
 {
+	$config_file = $phpbb_root_path . 'config.' . $php_ext;
 	return phpbb_create_dumped_container_unless_debug(
+		$config_file,
 		array(
-			new phpbb_di_extension_config($phpbb_root_path . 'config.' . $php_ext),
+			new phpbb_di_extension_config($config_file),
 			new phpbb_di_extension_core($phpbb_root_path . 'config'),
 		),
 		array(

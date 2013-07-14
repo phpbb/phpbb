@@ -15,14 +15,14 @@ function show_usage()
 	echo "$filename adds repositories of a github network as remotes to a local git repository.\n";
 	echo "\n";
 
-	echo "Usage: [php] $filename -s collaborators|organisation|contributors|network [OPTIONS]\n";
+	echo "Usage: [php] $filename -s collaborators|organisation|contributors|forks [OPTIONS]\n";
 	echo "\n";
 
 	echo "Scopes:\n";
 	echo "  collaborators                 Repositories of people who have push access to the specified repository\n";
 	echo "  contributors                  Repositories of people who have contributed to the specified repository\n";
 	echo "  organisation                  Repositories of members of the organisation at github\n";
-	echo "  network                       All repositories of the whole github network\n";
+	echo "  forks                         All repositories of the whole github network\n";
 	echo "\n";
 
 	echo "Options:\n";
@@ -55,31 +55,31 @@ exit(work($scope, $username, $repository, $developer));
 function work($scope, $username, $repository, $developer)
 {
 	// Get some basic data
-	$network		= get_network($username, $repository);
+	$forks		= get_forks($username, $repository);
 	$collaborators	= get_collaborators($username, $repository);
 
-	if ($network === false || $collaborators === false)
+	if ($forks === false || $collaborators === false)
 	{
-		echo "Error: failed to retrieve network or collaborators\n";
+		echo "Error: failed to retrieve forks or collaborators\n";
 		return 1;
 	}
 
 	switch ($scope)
 	{
 		case 'collaborators':
-			$remotes = array_intersect_key($network, $collaborators);
+			$remotes = array_intersect_key($forks, $collaborators);
 		break;
 
 		case 'organisation':
-			$remotes = array_intersect_key($network, get_organisation_members($username));
+			$remotes = array_intersect_key($forks, get_organisation_members($username));
 		break;
 
 		case 'contributors':
-			$remotes = array_intersect_key($network, get_contributors($username, $repository));
+			$remotes = array_intersect_key($forks, get_contributors($username, $repository));
 		break;
 
-		case 'network':
-			$remotes = $network;
+		case 'forks':
+			$remotes = $forks;
 		break;
 
 		default:
@@ -145,26 +145,66 @@ function get_repository_url($username, $repository, $ssh = false)
 
 function api_request($query)
 {
-	$contents = file_get_contents("http://github.com/api/v2/json/$query");
+	return api_url_request("https://api.github.com/$query?per_page=100");
+}
+
+function api_url_request($url)
+{
+	$contents = file_get_contents($url, false, stream_context_create(array(
+		'http' => array(
+			'header' => "User-Agent: phpBB/1.0\r\n",
+		),
+	)));
+
+	$sub_request_result = array();
+	// Check headers for pagination links
+	if (!empty($http_response_header))
+	{
+		foreach ($http_response_header as $header_element)
+		{
+			// Find Link Header which gives us a link to the next page
+			if (strpos($header_element, 'Link: ') === 0)
+			{
+				list($head, $header_content) = explode(': ', $header_element);
+				foreach (explode(', ', $header_content) as $links)
+				{
+					list($url, $rel) = explode('; ', $links);
+					if ($rel == 'rel="next"')
+					{
+						// Found a next link, follow it and merge the results
+						$sub_request_result = api_url_request(substr($url, 1, -1));
+					}
+				}
+			}
+		}
+	}
+
 	if ($contents === false)
 	{
 		return false;
 	}
-	return json_decode($contents);
+	$contents = json_decode($contents);
+
+	if (isset($contents->message) && strpos($contents->message, 'API Rate Limit') === 0)
+	{
+		throw new RuntimeException('Reached github API Rate Limit. Please try again later' . "\n", 4);
+	}
+
+	return ($sub_request_result) ? array_merge($sub_request_result, $contents) : $contents;
 }
 
 function get_contributors($username, $repository)
 {
-	$request = api_request("repos/show/$username/$repository/contributors");
+	$request = api_request("repos/$username/$repository/stats/contributors");
 	if ($request === false)
 	{
 		return false;
 	}
 
 	$usernames = array();
-	foreach ($request->contributors as $contributor)
+	foreach ($request as $contribution)
 	{
-		$usernames[$contributor->login] = $contributor->login;
+		$usernames[$contribution->author->login] = $contribution->author->login;
 	}
 
 	return $usernames;
@@ -172,14 +212,14 @@ function get_contributors($username, $repository)
 
 function get_organisation_members($username)
 {
-	$request = api_request("organizations/$username/public_members");
+	$request = api_request("orgs/$username/public_members");
 	if ($request === false)
 	{
 		return false;
 	}
 
 	$usernames = array();
-	foreach ($request->users as $member)
+	foreach ($request as $member)
 	{
 		$usernames[$member->login] = $member->login;
 	}
@@ -189,35 +229,35 @@ function get_organisation_members($username)
 
 function get_collaborators($username, $repository)
 {
-	$request = api_request("repos/show/$username/$repository/collaborators");
+	$request = api_request("repos/$username/$repository/collaborators");
 	if ($request === false)
 	{
 		return false;
 	}
 
 	$usernames = array();
-	foreach ($request->collaborators as $collaborator)
+	foreach ($request as $collaborator)
 	{
-		$usernames[$collaborator] = $collaborator;
+		$usernames[$collaborator->login] = $collaborator->login;
 	}
 
 	return $usernames;
 }
 
-function get_network($username, $repository)
+function get_forks($username, $repository)
 {
-	$request = api_request("repos/show/$username/$repository/network");
+	$request = api_request("repos/$username/$repository/forks");
 	if ($request === false)
 	{
 		return false;
 	}
 
 	$usernames = array();
-	foreach ($request->network as $network)
+	foreach ($request as $fork)
 	{
-		$usernames[$network->owner] = array(
-			'username'		=> $network->owner,
-			'repository'	=> $network->name,
+		$usernames[$fork->owner->login] = array(
+			'username'		=> $fork->owner->login,
+			'repository'	=> $fork->name,
 		);
 	}
 

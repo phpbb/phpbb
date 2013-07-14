@@ -40,11 +40,12 @@ class phpbb_di_container_test extends phpbb_test_case
     public function test_phpbb_create_compiled_container()
     {
         $phpbb_root_path = __DIR__ . '/../../phpBB/';
+        $config_file = __DIR__ . '/fixtures/config.php';
         $extensions = array(
             new phpbb_di_extension_config(__DIR__ . '/fixtures/config.php'),
             new phpbb_di_extension_core($phpbb_root_path . 'config'),
         );
-        $container = phpbb_create_compiled_container($extensions, array(), $phpbb_root_path, 'php');
+        $container = phpbb_create_compiled_container($config_file, $extensions, array(), $phpbb_root_path, 'php');
 
         $this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
         $this->assertTrue($container->isFrozen());

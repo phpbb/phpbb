@@ -39,7 +39,6 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 
 		// logout
 		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
-		$this->assertContains($this->lang('LOGOUT_REDIRECT'), $crawler->filter('#message')->text());
 
 		// look for a register link, which should be visible only when logged out
 		$crawler = self::request('GET', 'index.php');

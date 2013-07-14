@@ -32,14 +32,11 @@
 		<!-- END custom_tags -->
 	}
 
-	var panels = new Array('options-panel', 'attach-panel', 'poll-panel');
-	var show_panel = 'options-panel';
-
 	function change_palette()
 	{
 		dE('colour_palette');
 		e = document.getElementById('colour_palette');
-		
+
 		if (e.style.display == 'block')
 		{
 			document.getElementById('bbpalette').value = '{LA_FONT_COLOR_HIDE}';
@@ -52,7 +49,7 @@
 
 // ]]>
 </script>
-<!-- INCLUDEJS template/editor.js -->
+<!-- INCLUDEJS editor.js -->
 
 <!-- IF S_BBCODE_ALLOWED -->
 <div id="colour_palette" style="display: none;">

@@ -16,7 +16,7 @@
 			<!-- IF S_NOTIFY_POSTER -->
 				<input type="checkbox" class="radio" name="notify_poster" checked="checked" /><span class="gen"><!-- IF S_APPROVE -->{L_NOTIFY_POSTER_APPROVAL}<!-- ELSE -->{L_NOTIFY_POSTER_DISAPPROVAL}<!-- ENDIF --></span><br />
 			<!-- ENDIF -->
-			<!-- IF not S_APPROVE -->
+			<!-- IF not S_APPROVE and not S_RESTORE and .reason -->
 				<br />
 				<table border="0" width="90%" cellspacing="2" cellpadding="1">
 				<tr>
