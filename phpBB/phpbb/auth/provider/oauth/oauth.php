@@ -221,37 +221,6 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	}
 
 	/**
-	* Returns the scopes of the service required for authentication
-	*
-	* @param	string	$service_name
-	* @return	array	An array of the scopes required from the service
-	*/
-	protected function get_scopes($service_name)
-	{
-		$scopes = array();
-
-		switch ($service_name)
-		{
-			case 'GitHub':
-				$scopes[] = 'user';
-				break;
-			case 'google':
-				$scopes[] = 'userinfo_email';
-				$scopes[] = 'userinfo_profile';
-				break;
-			case 'instagram':
-			case 'microsoft':
-				$scopes[] = 'basic';
-				break;
-			case 'linkedin':
-				$scopes[] = 'r_basicprofile';
-				break;
-		}
-
-		return $scopes;
-	}
-
-	/**
 	* Returns the path desired of the service
 	*
 	* @param	string	$service_name
