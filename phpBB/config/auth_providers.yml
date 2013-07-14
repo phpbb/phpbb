@@ -43,6 +43,7 @@ services:
             - @request
             - @user
             - %tables.auth_provider_oauth%
+            - @auth.provider.oauth.service_collection
         tags:
             - { name: auth.provider }
     auth.provider.oauth.service_collection:

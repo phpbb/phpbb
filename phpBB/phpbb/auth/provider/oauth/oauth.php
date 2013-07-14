@@ -68,6 +68,13 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	protected $services;
 
 	/**
+	* All OAuth service providers
+	*
+	* @var array Contains phpbb_auth_provider_oauth_service_interface
+	*/
+	protected $service_providers;
+
+	/**
 	* Cached current uri object
 	*
 	* @var \OAuth\Common\Http\Uri\UriInterface|null
@@ -82,14 +89,16 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	* @param	phpbb_request 	$request
 	* @param	phpbb_user 		$user
 	* @param	string			$auth_provider_oauth_table
+	* @param	phpbb_auth_provider_oauth_service_interface	$service_providers
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $auth_provider_oauth_table)
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $auth_provider_oauth_table, phpbb_auth_provider_oauth_service_interface $service_providers)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;
 		$this->auth_provider_oauth_table = $auth_provider_oauth_table;
+		$this->service_providers = $service_providers;
 		$this->services = array();
 	}
 
