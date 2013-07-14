@@ -19,7 +19,7 @@ class phpbb_error_collector
 {
 	var $errors;
 
-	function phpbb_error_collector()
+	function __construct()
 	{
 		$this->errors = array();
 	}
