@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_session_storage_cache_volatile extends phpbb_session_storage_native implements phpbb_session_storage
+class phpbb_session_storage_cache_volatile extends phpbb_session_storage_native implements phpbb_session_storage_interface
 {
 	protected $cache;
 
