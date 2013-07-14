@@ -11,6 +11,11 @@ namespace phpbb\db\migration\data\v310;
 
 class allow_cdn extends phpbb_db_migration
 {
+	public function effectively_installed()
+	{
+		return isset($this->config['allow_cdn']);
+	}
+
 	static public function depends_on()
 	{
 		return array(
