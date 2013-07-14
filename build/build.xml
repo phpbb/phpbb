@@ -171,7 +171,7 @@
 
 		<!-- Install composer dependencies, if there are any. -->
 		<exec dir="."
-			command='php -r "\$j = json_decode(file_get_contents("composer.json")); echo isset(\$j->require);"'
+			command='php -r "\$j = json_decode(file_get_contents(\"composer.json\")); echo isset(\$j->require);"'
 			checkreturn="true"
 			outputProperty='composer-has-dependencies' />
 		<if>
