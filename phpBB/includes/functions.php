@@ -5647,24 +5647,24 @@ function phpbb_convert_30_dbms_to_31($dbms)
 	// true for mysqli class.
 	// However, per the docblock any valid 3.1 driver name should be
 	// recognized by this function, and have priority over 3.0 dbms.
-	if (class_exists('phpbb_db_driver_' . $dbms))
+	if (class_exists('\phpbb\db\driver\\' . $dbms))
 	{
-		return 'phpbb_db_driver_' . $dbms;
+		return '\phpbb\db\driver\\' . $dbms;
 	}
 
 	if (class_exists($dbms))
 	{
-		// Additionally we could check that $dbms extends phpbb_db_driver.
+		// Additionally we could check that $dbms extends phpbb\db\driver\driver.
 		// http://php.net/manual/en/class.reflectionclass.php
 		// Beware of possible performance issues:
 		// http://stackoverflow.com/questions/294582/php-5-reflection-api-performance
 		// We could check for interface implementation in all paths or
-		// only when we do not prepend phpbb_db_driver_.
+		// only when we do not prepend phpbb\db\driver\.
 
 		/*
 		$reflection = new \ReflectionClass($dbms);
 
-		if ($reflection->isSubclassOf('phpbb_db_driver'))
+		if ($reflection->isSubclassOf('phpbb\db\driver\driver'))
 		{
 			return $dbms;
 		}
