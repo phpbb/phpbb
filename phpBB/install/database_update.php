@@ -25,7 +25,7 @@ if (!function_exists('phpbb_require_updated'))
 {
 	function phpbb_require_updated($path, $optional = false)
 	{
-		global $phpbb_root_path;
+		global $phpbb_root_path, $table_prefix;
 
 		$new_path = $phpbb_root_path . 'install/update/new/' . $path;
 		$old_path = $phpbb_root_path . $path;
@@ -108,6 +108,7 @@ phpbb_require_updated('includes/functions.' . $phpEx);
 phpbb_require_updated('includes/functions_content.' . $phpEx);
 phpbb_require_updated('includes/functions_container.' . $phpEx);
 
+require($phpbb_root_path . 'config.' . $phpEx);
 phpbb_require_updated('includes/constants.' . $phpEx);
 phpbb_require_updated('includes/utf/utf_tools.' . $phpEx);
 
@@ -121,8 +122,8 @@ $phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includ
 $phpbb_class_loader->register();
 
 // Set up container (must be done here because extensions table may not exist)
-$other_config_path = $phpbb_root_path . 'install/update/new/config';
-$config_path = file_exists($other_config_path . 'services.yml') ? $other_config_path : $phpbb_root_path;
+$other_config_path = $phpbb_root_path . 'install/update/new/config/';
+$config_path = file_exists($other_config_path . 'services.yml') ? $other_config_path : $phpbb_root_path . 'config/';
 
 $container_extensions = array(
 	new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
@@ -130,7 +131,6 @@ $container_extensions = array(
 );
 $container_passes = array(
 	new phpbb_di_pass_collection_pass(),
-	//new phpbb_di_pass_kernel_pass(),
 );
 $phpbb_container = phpbb_create_container($container_extensions, $phpbb_root_path, $phpEx);
 

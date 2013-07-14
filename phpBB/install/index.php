@@ -28,7 +28,7 @@ if (version_compare(PHP_VERSION, '5.3.3') < 0)
 
 function phpbb_require_updated($path, $optional = false)
 {
-	global $phpbb_root_path;
+	global $phpbb_root_path, $table_prefix;
 
 	$new_path = $phpbb_root_path . 'install/update/new/' . $path;
 	$old_path = $phpbb_root_path . $path;

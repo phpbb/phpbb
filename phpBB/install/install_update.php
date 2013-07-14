@@ -75,7 +75,7 @@ class install_update extends module
 		global $request, $phpbb_admin_path, $phpbb_adm_relative_path, $phpbb_container;
 
 		// Create a normal container now
-		$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+		$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, $phpbb_root_path . 'install/update/new/config');
 
 		// Writes into global $cache
 		$cache = $phpbb_container->get('cache');
@@ -125,7 +125,7 @@ class install_update extends module
 		$config['default_lang'] = $language;
 		$user->data['user_lang'] = $language;
 
-		$user->setup(array('common', 'acp/common', 'acp/board', 'install', 'posting'));
+		$user->add_lang(array('common', 'acp/common', 'acp/board', 'install', 'posting'));
 
 		// Reset the default_lang
 		$config['default_lang'] = $config_default_lang;
@@ -302,30 +302,6 @@ class install_update extends module
 			break;
 
 			case 'update_db':
-
-				// Make sure the database update is valid for the latest version
-				$valid = false;
-				$updates_to_version = '';
-
-				if (file_exists($phpbb_root_path . 'install/database_update.' . $phpEx))
-				{
-					include_once($phpbb_root_path . 'install/database_update.' . $phpEx);
-
-					if ($updates_to_version === $this->update_info['version']['to'])
-					{
-						$valid = true;
-					}
-				}
-
-				// Should not happen at all
-				if (!$valid)
-				{
-					trigger_error($user->lang['DATABASE_UPDATE_INFO_OLD'], E_USER_ERROR);
-				}
-
-				// Just a precaution
-				$cache->purge();
-
 				// Redirect the user to the database update script with some explanations...
 				$template->assign_vars(array(
 					'S_DB_UPDATE'			=> true,
