@@ -222,12 +222,6 @@ class install_update extends module
 
 		if ($this->test_update === false)
 		{
-			// Got the updater template itself updated? If so, we are able to directly use it - but only if all three files are present
-			if (in_array($phpbb_adm_relative_path . 'style/install_update.html', $this->update_info['files']))
-			{
-				$this->tpl_name = '../../install/update/new/adm/style/install_update';
-			}
-
 			// What about the language file? Got it updated?
 			if (in_array('language/en/install.' . $phpEx, $this->update_info['files']))
 			{
@@ -1067,12 +1061,6 @@ class install_update extends module
 		global $phpbb_root_path, $template, $user, $phpbb_adm_relative_path;
 
 		$this->tpl_name = 'install_update_diff';
-
-		// Got the diff template itself updated? If so, we are able to directly use it
-		if (in_array($phpbb_adm_relative_path . 'style/install_update_diff.html', $this->update_info['files']))
-		{
-			$this->tpl_name = '../../install/update/new/adm/style/install_update_diff';
-		}
 
 		$this->page_title = 'VIEWING_FILE_DIFF';
 

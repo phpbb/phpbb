@@ -108,7 +108,7 @@ class phpbb_db_migration_data_30x_3_0_12_rc1 extends phpbb_db_migration
 						WHERE user_id = $bot_user_id";
 					$this->sql_query($sql);
 
-					user_delete('remove', $bot_user_id);
+					user_delete('retain', $bot_user_id);
 				}
 				else
 				{

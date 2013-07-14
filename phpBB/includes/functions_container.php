@@ -148,9 +148,11 @@ function phpbb_create_install_container($phpbb_root_path, $php_ext)
 */
 function phpbb_create_update_container($phpbb_root_path, $php_ext, $config_path)
 {
+	$config_file = $phpbb_root_path . 'config.' . $php_ext;
 	return phpbb_create_compiled_container(
+		$config_file,
 		array(
-			new phpbb_di_extension_config($phpbb_root_path . 'config.' . $php_ext),
+			new phpbb_di_extension_config($config_file),
 			new phpbb_di_extension_core($config_path),
 		),
 		array(
@@ -173,11 +175,6 @@ function phpbb_create_update_container($phpbb_root_path, $php_ext, $config_path)
 */
 function phpbb_create_compiled_container($config_file, array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
-	$installed_exts = phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path);
-
-	// Now pass the enabled extension paths into the ext compiler extension
-	$extensions[] = new phpbb_di_extension_ext($installed_exts);
-
 	// Create the final container to be compiled and cached
 	$container = phpbb_create_container($extensions, $phpbb_root_path, $php_ext);
 
@@ -258,11 +255,14 @@ function phpbb_create_dumped_container_unless_debug($config_file, array $extensi
 function phpbb_create_default_container($phpbb_root_path, $php_ext)
 {
 	$config_file = $phpbb_root_path . 'config.' . $php_ext;
+	$installed_exts = phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path);
+
 	return phpbb_create_dumped_container_unless_debug(
 		$config_file,
 		array(
 			new phpbb_di_extension_config($config_file),
 			new phpbb_di_extension_core($phpbb_root_path . 'config'),
+			new phpbb_di_extension_ext($installed_exts),
 		),
 		array(
 			new phpbb_di_pass_collection_pass(),
