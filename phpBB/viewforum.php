@@ -105,7 +105,7 @@ if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 	if ($forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK)
 	{
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
-			SET forum_posts = forum_posts + 1
+			SET forum_posts_approved = forum_posts_approved + 1
 			WHERE forum_id = ' . $forum_id;
 		$db->sql_query($sql);
 	}

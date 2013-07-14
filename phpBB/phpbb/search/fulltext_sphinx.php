@@ -135,11 +135,6 @@ class phpbb_search_fulltext_sphinx
 		$this->db = $db;
 		$this->auth = $auth;
 
-		if (!class_exists('phpbb_db_tools'))
-		{
-			require($this->phpbb_root_path . 'includes/db/db_tools.' . $this->php_ext);
-		}
-
 		// Initialize phpbb_db_tools object
 		$this->db_tools = new phpbb_db_tools($this->db);
 

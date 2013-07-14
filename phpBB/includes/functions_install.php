@@ -184,12 +184,6 @@ function dbms_select($default = '', $only_20x_options = false)
 */
 function get_tables(&$db)
 {
-	if (!class_exists('phpbb_db_tools'))
-	{
-		global $phpbb_root_path, $phpEx;
-		require($phpbb_root_path . 'includes/db/db_tools.' . $phpEx);
-	}
-
 	$db_tools = new phpbb_db_tools($db);
 
 	return $db_tools->sql_list_tables();

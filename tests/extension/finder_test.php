@@ -36,7 +36,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_suffix_get_classes()
 	{
 		$classes = $this->finder
-			->core_path('includes/default/')
+			->core_path('phpbb/default/')
 			->extension_suffix('_class')
 			->get_classes();
 
@@ -81,7 +81,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_prefix_get_classes()
 	{
 		$classes = $this->finder
-			->core_path('includes/default/')
+			->core_path('phpbb/default/')
 			->extension_prefix('hidden_')
 			->get_classes();
 
@@ -98,7 +98,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_directory_get_classes()
 	{
 		$classes = $this->finder
-			->core_path('includes/default/')
+			->core_path('phpbb/default/')
 			->extension_directory('type')
 			->get_classes();
 
@@ -209,7 +209,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_cached_get_files()
 	{
 		$query = array(
-			'core_path' => 'includes/foo',
+			'core_path' => 'phpbb/foo',
 			'core_suffix' => false,
 			'core_prefix' => false,
 			'core_directory' => 'bar',
