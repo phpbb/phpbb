@@ -108,12 +108,11 @@ Zeta test event in all',
 		$defaults = $this->config_defaults();
 		$config = new phpbb_config(array_merge($defaults, $new_config));
 
-		$container = static::create_container(array(
+		$this->template = static::create_template(array(
 			'config' 		=> $config,
 			'user' 			=> $user,
 			'ext.manager' 	=> $this->extension_manager,
 		));
-		$this->template = $container->get('template');
 
 		$this->style_provider = new phpbb_style_path_provider();
 		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider, $this->template);

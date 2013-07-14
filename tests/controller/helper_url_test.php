@@ -49,15 +49,10 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 
 		$this->user = $this->getMock('phpbb_user');
 
-		$container = static::create_container(array(
-			'config' 	=> new phpbb_config(array()),
-			'user' 		=> $this->user,
-		));
-
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$this->style_resource_locator = new phpbb_style_resource_locator();
 		$this->user = $this->getMock('phpbb_user');
-		$this->template = $container->get('template');
+		$this->template = $this->create_template(array('user' => $this->user));
 		$this->style_resource_locator = new phpbb_style_resource_locator();
 		$this->style_provider = new phpbb_style_path_provider();
 		$this->style = new phpbb_style($phpbb_root_path, $phpEx, new phpbb_config(array()), $this->user, $this->style_resource_locator, $this->style_provider, $this->template);

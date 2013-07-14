@@ -43,18 +43,24 @@ class phpbb_test_case extends PHPUnit_Framework_TestCase
 		$this->get_test_case_helpers()->setExpectedTriggerError($errno, $message);
 	}
 
-	static public function create_container(array $services = array())
+	static public function create_template(array $services = array())
 	{
 		$phpbb_root_path = __DIR__ . '/../../phpBB/';
-		$extensions = array(
-			new phpbb_di_extension_config(__DIR__ . '/../di/fixtures/config.php'),
-			new phpbb_di_extension_core($phpbb_root_path),
-		);
-		$passes = array(
-			new phpbb_di_pass_replace_pass($services),
-		);
-		$container = phpbb_create_compiled_container($extensions, $passes, $phpbb_root_path, 'php');
+		$phpEx = 'php';
 
-		return $container;
+		$config = isset($services['config']) ? $services['config'] : new phpbb_config(array());
+		$user = isset($services['user']) ? $services['user'] : new phpbb_user();
+		$ext_manager = isset($services['ext.manager']) ? $services['ext.manager'] : null;
+		$template_options = array(
+			'debug'			=> true,
+			'autoescape'	=> false,
+		);
+		$template_context = new phpbb_template_context();
+		$twig = new phpbb_template_twig_environment($config, $ext_manager, $phpbb_root_path, new Twig_Loader_Filesystem(''), $template_options);
+		$twig->addExtension(new phpbb_template_twig_extension($template_context, $user));
+		$twig->setLexer(new phpbb_template_twig_lexer($twig));
+		$template = new phpbb_template_twig($phpbb_root_path, $config, $user, $template_context, $twig, $ext_manager);
+
+		return $template;
 	}
 }
