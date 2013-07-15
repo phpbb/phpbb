@@ -30,6 +30,13 @@ interface phpbb_auth_provider_oauth_service_interface
 	public function get_auth_scope();
 
 	/**
+	* Returns the external library service provider once it has been set
+	*
+	* @param	\OAuth\Common\Service\ServiceInterface|null
+	*/
+	public function get_external_service_provider();
+
+	/**
 	* Returns an array containing the service credentials belonging to requested
 	* service.
 	*
@@ -41,4 +48,11 @@ interface phpbb_auth_provider_oauth_service_interface
 	*						)
 	*/
 	public function get_service_credentials();
+
+	/**
+	* Sets the external library service provider
+	*
+	* @param	\OAuth\Common\Service\ServiceInterface	$service
+	*/
+	public function set_external_service_provider(\OAuth\Common\Service\ServiceInterface $service_provider);
 }

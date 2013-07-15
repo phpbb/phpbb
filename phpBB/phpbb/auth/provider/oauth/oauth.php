@@ -128,15 +128,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		if ($this->request->is_set('code', phpbb_request_interface::GET))
 		{
-			// This was a callback request from the service provider
-			$service->requestAccessToken( $_GET['code'] );
-
-			// Send a request with it
-			$path = $this->get_path($service_name);
-			if ($path)
-			{
-				$result = json_decode( $service->request($path), true );
-			}
+			$this->services[$service_name]->set_external_service_provider($service);
+			$result = $this->services[$service_name]->perform_auth_login();
 
 			// Perform authentication
 		} else {
