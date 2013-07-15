@@ -1104,14 +1104,12 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 			$decoded_message = bbcode_nl2br($decoded_message);
 		}
-
-		if ($row['bbcode_bitfield'])
-		{
-			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
-		}
-
-		$message = bbcode_nl2br($message);
-		$message = smiley_text($message, !$row['enable_smilies']);
+		$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0);
+		$parse_flags |= ($row['enable_smilies'] ? OPTION_FLAG_SMILIES : 0);
+		
+		$message = generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags , false);
+		
+		unset($parse_flags);
 
 		if (!empty($attachments[$row['post_id']]))
 		{
