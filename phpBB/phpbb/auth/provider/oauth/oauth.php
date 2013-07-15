@@ -109,7 +109,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	{
 		// Requst the name of the OAuth service
 		$service_name = $this->request->variable('oauth_service', '', false, phpbb_request_interface::POST);
-		if ($service_name === '')
+		$service_name = strtolower($service_name);
+		if ($service_name === '' && isset($this->services[$service_name]))
 		{
 			return array(
 				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -120,18 +121,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		}
 
 		// Get the service credentials for the given service
-		$service_credentials = $this->get_credentials($service_name);
-
-		// Check that the service has settings
-		if ($service_credentials['key'] == false || $service_credentials['secret'] == false)
-		{
-			return array(
-				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
-				// TODO: change error message
-				'error_msg'		=> 'LOGIN_ERROR_EXTERNAL_AUTH_APACHE',
-				'user_row'		=> array('user_id' => ANONYMOUS),
-			);
-		}
+		$service_credentials = $this->services[$service_name]->get_credentials($service_name);
 
 		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_table);
 		$service = $this->get_service($service_name, $storage, $service_credentials, $this->get_scopes($service_name));
