@@ -50,6 +50,13 @@ interface phpbb_auth_provider_oauth_service_interface
 	public function get_service_credentials();
 
 	/**
+	* Returns the results of the authentication in json format
+	*
+	* @return	type	The results of the authentication action in json format.
+	*/
+	public function perform_auth_login();
+
+	/**
 	* Sets the external library service provider
 	*
 	* @param	\OAuth\Common\Service\ServiceInterface	$service
