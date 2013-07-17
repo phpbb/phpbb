@@ -24,6 +24,9 @@ class phpbb_cache_atomic_driver_test extends phpbb_database_test_case
 		if (!extension_loaded('redis'))
 		{
 			self::markTestSkipped('redis extension is not loaded');
+		} else if (!function_exists('pcntl_fork'))
+		{
+			self::markTestSkipped('platform does not support pctl_fork');
 		}
 
 		$config = phpbb_test_case_helpers::get_test_config();
@@ -58,5 +61,6 @@ class phpbb_cache_atomic_driver_test extends phpbb_database_test_case
 			});
 		}
 		$this->assertEquals('child' . 'parent', $this->driver->redis->get($key));
+		$this->driver->redis->delete($key);
 	}
 }
