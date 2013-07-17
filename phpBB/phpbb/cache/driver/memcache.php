@@ -126,4 +126,21 @@ class phpbb_cache_driver_memcache extends phpbb_cache_driver_memory
 	{
 		return $this->memcache->delete($this->key_prefix . $var);
 	}
+	
+	function atomic_operation($key, Closure $operation, $retry_usleep_time = 10000, $retries=0)
+	{
+		if ($retries > 9)
+		{
+			trigger_error('An error occurred processing session data.');
+		}
+		$flags = 0;
+		$cas = null;
+		$val = memcache_get($this->memcache, $this->key_prefix . $key, $flags, $cas);
+		$ret = memcache_cas($this->memcache, $this->key_prefix . $key, $operation($val), $flags, 0, $cas);
+		if ($ret === false)
+		{
+			usleep($retry_usleep_time);
+			self::atomic_operation($key, $operation, $retry_usleep_time, $retries+1);
+		}
+	}
 }
