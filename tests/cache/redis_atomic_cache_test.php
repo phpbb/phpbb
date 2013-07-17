@@ -37,8 +37,7 @@ class phpbb_cache_atomic_driver_test extends phpbb_database_test_case
 
 	public function test_race_condition()
 	{
-		$key = uniqid();
-		// Insert data into cache
+		$key = '_' . uniqid();
 		// fork
 		$child_pid = pcntl_fork();
 		if ($child_pid == 0)
@@ -56,11 +55,14 @@ class phpbb_cache_atomic_driver_test extends phpbb_database_test_case
 			$this->driver = new phpbb_cache_driver_redis(self::$config['host'], self::$config['port']);
 			$this->driver->atomic_operation($key, function ($d) {
 				// Wait so that fork 1 always writes first
-				usleep(1000);
+				usleep(10000);
 				return $d . 'parent';
 			});
 		}
-		$this->assertEquals('child' . 'parent', $this->driver->redis->get($key));
+		// Save result and clean so we don't pollute the cache
+		$result = $this->driver->get($key);
 		$this->driver->redis->delete($key);
+
+		$this->assertEquals('child' . 'parent', $result);
 	}
 }

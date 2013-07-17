@@ -177,7 +177,7 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory implements phpb
 		if ($ret === false)
 		{
 			usleep($retry_usleep_time);
-			self::atomic_operation($key, $operation, $retry_usleep_time = 10000, $retries+1);
+			self::atomic_operation($key, $operation, $retry_usleep_time, $retries+1);
 		}
 	}
 }
