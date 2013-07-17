@@ -78,9 +78,9 @@ class phpbb_cache_atomic_driver_test extends phpbb_database_test_case
 
 	public function test_memcache_race_condition()
 	{
-		if (!extension_loaded('redis'))
+		if (!extension_loaded('memcache'))
 		{
-			self::markTestSkipped('redis extension is not loaded');
+			self::markTestSkipped('memcache extension is not loaded');
 		}
 
 		// Prefix with '_' for certain memory cache operations
