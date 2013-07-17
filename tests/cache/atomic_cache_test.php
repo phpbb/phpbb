@@ -29,11 +29,14 @@ class phpbb_cache_atomic_driver_test extends phpbb_database_test_case
 	{
 		// fork
 		$child_pid = pcntl_fork();
+		// Set a begin time for the race
+		$start_time = microtime() + 20000;
 		if ($child_pid == 0)
 		{
 			// CHILD
 			$driver = new $driver_class($host, $port);
 			// fork 1 writes data
+			usleep($start_time - microtime());
 			$driver->atomic_operation($key, function ($d) {
 				return $d . 'child';
 			});
@@ -42,6 +45,7 @@ class phpbb_cache_atomic_driver_test extends phpbb_database_test_case
 			// PARENT
 			// fork 2 writes data <-- Should fail, re-read and re-write
 			$driver = new $driver_class($host, $port);
+			usleep($start_time - microtime());
 			$driver->atomic_operation($key, function ($d) {
 				// Wait so that fork 1 always writes first
 				usleep(10000);
