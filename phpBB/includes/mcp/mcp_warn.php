@@ -289,19 +289,7 @@ class mcp_warn
 
 		// We want to make the message available here as a reminder
 		// Parse the message and subject
-		$message = censor_text($user_row['post_text']);
-
-		// Second parse bbcode here
-		if ($user_row['bbcode_bitfield'])
-		{
-			include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-
-			$bbcode = new bbcode($user_row['bbcode_bitfield']);
-			$bbcode->bbcode_second_pass($message, $user_row['bbcode_uid'], $user_row['bbcode_bitfield']);
-		}
-
-		$message = bbcode_nl2br($message);
-		$message = smiley_text($message);
+		$message = generate_text_for_display($message, $user_row['bbcode_uid'], $user_row['bbcode_bitfield'], ($user_row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES, true);
 
 		// Generate the appropriate user information for the user we are looking at
 		if (!function_exists('phpbb_get_user_avatar'))
