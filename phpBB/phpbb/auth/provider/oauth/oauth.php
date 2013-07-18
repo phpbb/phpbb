@@ -150,6 +150,33 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
+
+			if (!$row)
+			{
+				// Account not tied to any existing account
+				// TODO: determine action that should occur
+			}
+
+			// Retrieve the user's account
+			$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
+			FROM ' . USERS_TABLE . "
+			WHERE user_id = '" . $this->db->sql_escape($row['user_id']) . "'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			if (!$row)
+			{
+				// TODO: Update exception type and change it to language constant
+				throw new Exception('Invalid entry in ' . $this->auth_provider_oauth_token_account_assoc);
+			}
+
+			// The user is now authenticated and can be logged in
+			return array(
+				'status'		=> LOGIN_SUCCESS,
+				'error_msg'		=> false,
+				'user_row'		=> $row,
+			);
 		} else {
 			$url = $service->getAuthorizationUri();
 			// TODO: modify $url for the appropriate return points
