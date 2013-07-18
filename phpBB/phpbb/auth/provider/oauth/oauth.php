@@ -58,7 +58,14 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*
 	* @var string
 	*/
-	protected $auth_provider_oauth_table;
+	protected $auth_provider_oauth_token_storage_table;
+
+	/**
+	* OAuth account association table
+	*
+	* @var string
+	*/
+	protected $auth_provider_oauth_token_account_assoc;
 
 	/**
 	* Cached services once they has been created
@@ -88,16 +95,18 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	* @param	phpbb_config 	$config
 	* @param	phpbb_request 	$request
 	* @param	phpbb_user 		$user
-	* @param	string			$auth_provider_oauth_table
+	* @param	string			$auth_provider_oauth_token_storage_table
+	* @param	string			$auth_provider_oauth_token_account_assoc
 	* @param	phpbb_auth_provider_oauth_service_interface	$service_providers
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $auth_provider_oauth_table, phpbb_auth_provider_oauth_service_interface $service_providers)
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, phpbb_auth_provider_oauth_service_interface $service_providers)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;
-		$this->auth_provider_oauth_table = $auth_provider_oauth_table;
+		$this->auth_provider_oauth_token_storage_table = $auth_provider_oauth_token_storage_table;
+		$this->auth_provider_oauth_token_account_assoc = $auth_provider_oauth_token_account_assoc;
 		$this->service_providers = $service_providers;
 		$this->services = array();
 	}
@@ -123,15 +132,24 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		// Get the service credentials for the given service
 		$service_credentials = $this->services[$service_name]->get_credentials();
 
-		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_table);
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
 		$service = $this->get_service($service_name, $storage, $service_credentials, $this->services[$service_name]->get_auth_scope());
 
 		if ($this->request->is_set('code', phpbb_request_interface::GET))
 		{
 			$this->services[$service_name]->set_external_service_provider($service);
-			$result = $this->services[$service_name]->perform_auth_login();
+			$unique_id = $this->services[$service_name]->perform_auth_login();
 
-			// Perform authentication
+			// Check to see if this provider is already assosciated with an account
+			$data = array(
+				'oauth_provider'	=> $service_name,
+				'oauth_provider_id'	=> $unique_id
+			);
+			$sql = 'SELECT user_id FROM' . $this->auth_provider_oauth_token_account_assoc . '
+				WHERE ' . $this->db->sql_build_array('SELECT', $data);
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
 		} else {
 			$url = $service->getAuthorizationUri();
 			// TODO: modify $url for the appropriate return points

@@ -42,7 +42,8 @@ services:
             - @config
             - @request
             - @user
-            - %tables.auth_provider_oauth%
+            - %tables.auth_provider_oauth_token_storage%
+            - %tables.auth_provider_oauth_account_assoc%
             - @auth.provider.oauth.service_collection
         tags:
             - { name: auth.provider }
