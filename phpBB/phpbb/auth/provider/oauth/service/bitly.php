@@ -30,13 +30,22 @@ class phpbb_auth_provider_oauth_service_bitly extends phpbb_auth_provider_oauth_
 	protected $config;
 
 	/**
+	* phpBB request
+	*
+	* @var phpbb_request
+	*/
+	protected $request;
+
+	/**
 	* Constructor
 	*
 	* @param	phpbb_config 	$config
+	* @param	phpbb_request 	$request
 	*/
-	public function __construct(phpbb_config $config)
+	public function __construct(phpbb_config $config, phpbb_request $request)
 	{
 		$this->config = $config;
+		$this->request = $request;
 	}
 
 	/**
@@ -48,5 +57,25 @@ class phpbb_auth_provider_oauth_service_bitly extends phpbb_auth_provider_oauth_
 			'key'		=> $this->config['auth_oauth_bitly_key'],
 			'secret'	=> $this->config['auth_oauth_bitly_secret'],
 		);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function perform_auth_login()
+	{
+		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Bitly))
+		{
+			// TODO: make exception class and use language constant
+			throw new Exception('Invalid service provider type');
+		}
+
+		// This was a callback request from bitly, get the token
+		$this->service_provider->requestAccessToken( $this->request->variable('code', '') );
+
+		// Send a request with it
+		$result = json_decode( $this->service_provider->request('user/info'), true );
+
+		// Get the user id
 	}
 }
