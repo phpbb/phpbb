@@ -758,6 +758,10 @@ p.rules a {
 	clear: both;
 }
 
+#notification_list ul li:before, #notification_list ul li:after {
+	display: none;
+}
+
 #notification_list > .header {
 	padding: 0 10px;
 	font-family: Arial, "Helvetica Neue", Helvetica, Arial, sans-serif;
