@@ -52,7 +52,8 @@ interface phpbb_auth_provider_oauth_service_interface
 	/**
 	* Returns the results of the authentication in json format
 	*
-	* @return	type	The results of the authentication action in json format.
+	* @return	string	The unique identifier returned by the service provider
+	*					that is used to authenticate the user with phpBB.
 	*/
 	public function perform_auth_login();
 
