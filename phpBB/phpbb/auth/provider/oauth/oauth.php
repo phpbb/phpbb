@@ -68,13 +68,6 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	protected $auth_provider_oauth_token_account_assoc;
 
 	/**
-	* Cached services once they has been created
-	*
-	* @var array Contains \OAuth\Common\Service\ServiceInterface or null
-	*/
-	protected $services;
-
-	/**
 	* All OAuth service providers
 	*
 	* @var phpbb_di_service_collection Contains phpbb_auth_provider_oauth_service_interface
@@ -108,7 +101,6 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$this->auth_provider_oauth_token_storage_table = $auth_provider_oauth_token_storage_table;
 		$this->auth_provider_oauth_token_account_assoc = $auth_provider_oauth_token_account_assoc;
 		$this->service_providers = $service_providers;
-		$this->services = array();
 	}
 
 	/**
@@ -226,11 +218,6 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*/
 	protected function get_service($service_name, phpbb_auth_oauth_token_storage $storage, array $service_credentials, array $scopes = array())
 	{
-		if ($this->services[$service_name])
-		{
-			return $this->services[$service_name];
-		}
-
 		$current_uri = $this->get_current_uri();
 
 		// Setup the credentials for the requests
@@ -241,8 +228,6 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		);
 
 		$service_factory = new \OAuth\ServiceFactory();
-		$this->service[$service_name] = $service_factory->createService($service_name, $credentials, $storage, $scopes);
-
-		return $this->service[$service_name];
+		return $service_factory->createService($service_name, $credentials, $storage, $scopes);
 	}
 }
