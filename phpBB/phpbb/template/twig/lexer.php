@@ -126,10 +126,14 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 	{
 		$callback = function($matches)
 		{
-			// Remove any quotes that may have been used in different implementations
-			// E.g. DEFINE $TEST = 'blah' vs INCLUDE foo
-			// Replace {} with start/end to parse variables (' ~ TEST ~ '.html)
-			$matches[2] = str_replace(array('"', "'", '{', '}'), array('', '', "' ~ ", " ~ '"), $matches[2]);
+			// Remove matching quotes at the beginning/end if a statement;
+			// E.g. 'asdf'"' -> asdf'"
+			// E.g. "asdf'"" -> asdf'"
+			// E.g. 'asdf'" -> 'asdf'"
+			$matches[2] = preg_replace('#^([\'"])?(.+?)\1$#', '$2', $matches[2]);
+
+			// Replace template variables with start/end to parse variables (' ~ TEST ~ '.html)
+			$matches[2] = preg_replace('#{([a-zA-Z0-9_\.$]+)}#', "'~ \$1 ~'", $matches[2]);
 
 			// Surround the matches in single quotes ('' ~ TEST ~ '.html')
 			return "<!-- {$matches[1]} '{$matches[2]}' -->";
