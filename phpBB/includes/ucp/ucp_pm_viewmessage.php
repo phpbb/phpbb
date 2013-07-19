@@ -76,17 +76,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$user_info = get_user_information($author_id, $message_row);
 
 	// Parse the message and subject
-	$message = censor_text($message_row['message_text']);
-
-	// Second parse bbcode here
-	if ($message_row['bbcode_bitfield'])
-	{
-		$bbcode->bbcode_second_pass($message, $message_row['bbcode_uid'], $message_row['bbcode_bitfield']);
-	}
-
-	// Always process smilies after parsing bbcodes
-	$message = bbcode_nl2br($message);
-	$message = smiley_text($message);
+	$message = generate_text_for_display($message_row['message_text'], $message_row['bbcode_uid'], $message_row['bbcode_bitfield'], ($message_row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES, true);
 
 	// Replace naughty words such as farty pants
 	$message_row['message_subject'] = censor_text($message_row['message_subject']);
@@ -160,21 +150,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// End signature parsing, only if needed
 	if ($signature)
 	{
-		$signature = censor_text($signature);
-
-		if ($user_info['user_sig_bbcode_bitfield'])
-		{
-			if ($bbcode === false)
-			{
-				include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-				$bbcode = new bbcode($user_info['user_sig_bbcode_bitfield']);
-			}
-
-			$bbcode->bbcode_second_pass($signature, $user_info['user_sig_bbcode_uid'], $user_info['user_sig_bbcode_bitfield']);
-		}
-
-		$signature = bbcode_nl2br($signature);
-		$signature = smiley_text($signature);
+		$signature = generate_text_for_display($signature, $user_info['bbcode_uid'], $user_info['bbcode_bitfield'], ($user_info['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES, true);
 	}
 
 	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
