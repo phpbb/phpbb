@@ -77,7 +77,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	/**
 	* All OAuth service providers
 	*
-	* @var array Contains phpbb_auth_provider_oauth_service_interface
+	* @var phpbb_di_service_collection Contains phpbb_auth_provider_oauth_service_interface
 	*/
 	protected $service_providers;
 
@@ -97,9 +97,9 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	* @param	phpbb_user 		$user
 	* @param	string			$auth_provider_oauth_token_storage_table
 	* @param	string			$auth_provider_oauth_token_account_assoc
-	* @param	phpbb_auth_provider_oauth_service_interface	$service_providers
+	* @param	phpbb_di_service_collection	$service_providers Contains phpbb_auth_provider_oauth_service_interface
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, phpbb_auth_provider_oauth_service_interface $service_providers)
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, phpbb_di_service_collection $service_providers)
 	{
 		$this->db = $db;
 		$this->config = $config;
