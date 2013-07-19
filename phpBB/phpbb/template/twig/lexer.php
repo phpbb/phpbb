@@ -226,10 +226,10 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			$inner = preg_replace('#\s\$([a-zA-Z_0-9]+)#', ' definition.$1', $inner);
 
 			// Replace .foo with loops.foo|length
-			$inner = preg_replace('#\s\.([a-zA-Z_0-9]+)#', ' loops.$1|length', $inner);
+			$inner = preg_replace('#\s\.([a-zA-Z_0-9]+) #', ' loops.$1|length ', $inner);
 
 			// Replace .foo.bar with foo.bar|length
-			$inner = preg_replace('#\s\.([a-zA-Z_0-9\.]+)#', ' $1|length', $inner);
+			$inner = preg_replace('#\s\.([a-zA-Z_0-9\.]+) #', ' $1|length ', $inner);
 
 			return "<!-- {$matches[1]}IF{$inner}-->";
 		};
