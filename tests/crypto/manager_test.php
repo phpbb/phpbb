@@ -131,7 +131,7 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 	public function check_hash_exceptions_data()
 	{
 		return array(
-			array('foobar', '3858F62230AC3C915F300C664312C63F', false),
+			array('foobar', '3858f62230ac3c915f300c664312c63f', true),
 			array('foobar', '$S$b57a939fa4f2c04413a4eea9734a0903647b7adb93181295', false),
 			array('foobar', '$2a\S$kkkkaakdkdiej39023903204j2k3490234jk234j02349', false),
 			array('foobar', '$H$kklk938d023k//k3023', false),

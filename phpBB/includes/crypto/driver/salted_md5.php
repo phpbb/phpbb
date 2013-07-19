@@ -82,9 +82,9 @@ class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
 	*/
 	public function check($password, $hash)
 	{
-		if (strlen($hash) != 34)
+		if (strlen($hash) !== 34)
 		{
-			return false;
+			return (md5($password) === $hash) ? true : false;
 		}
 		// No need to check prefix, already did that in manage
 

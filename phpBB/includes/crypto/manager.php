@@ -112,7 +112,7 @@ class phpbb_crypto_manager
 		*/
 		if (!preg_match('#^\$([a-zA-Z0-9\\\]*?)\$#', $hash, $match))
 		{
-			return false;
+			return $this->type_map['$H$'];
 		}
 
 		// Be on the lookout for multiple hashing algorithms
