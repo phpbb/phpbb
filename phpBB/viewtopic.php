@@ -830,7 +830,8 @@ if (!empty($topic_data['poll_start']))
 
 	$parse_bbcode_flags = OPTION_FLAG_SMILIES;
 	
-	if(empty($poll_info[0]['bbcode_bitfield'])){
+	if(empty($poll_info[0]['bbcode_bitfield']))
+	{
 		$parse_bbcode_flags |= OPTION_FLAG_BBCODE; 
 	}
 
