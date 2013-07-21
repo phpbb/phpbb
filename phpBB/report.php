@@ -146,10 +146,13 @@ $s_hidden_fields = '';
 // Submit report?
 if ($submit && $reason_id)
 {
-	$visual_confirmation_response = $captcha->validate();
-	if ($visual_confirmation_response)
+	if (isset($captcha))
 	{
-		$error[] = $visual_confirmation_response;
+		$visual_confirmation_response = $captcha->validate();
+		if ($visual_confirmation_response)
+		{
+			$error[] = $visual_confirmation_response;
+		}
 	}
 
 	$sql = 'SELECT *
