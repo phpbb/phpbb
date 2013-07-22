@@ -13,7 +13,7 @@ class phpbb_session_create_test extends phpbb_session_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_full.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_full.xml');
 	}
 
 	static function bot($bot_agent, $user_id, $bot_ip)

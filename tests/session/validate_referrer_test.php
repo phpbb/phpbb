@@ -13,7 +13,7 @@ class phpbb_session_validate_referrer_test extends phpbb_session_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_empty.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_empty.xml');
 	}
 
 	static function referrer_inputs() {

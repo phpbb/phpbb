@@ -15,7 +15,7 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_garbage.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_garbage.xml');
 	}
 
 	public function setUp()

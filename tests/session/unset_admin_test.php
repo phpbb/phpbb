@@ -13,7 +13,7 @@ class phpbb_session_unset_admin_test extends phpbb_session_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_full.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_full.xml');
 	}
 
 	function get_test_session()
