@@ -9,7 +9,6 @@
 
 require_once dirname(__FILE__) . '/../test_framework/phpbb_session_test_case.php';
 
-
 class phpbb_session_check_isvalid_test extends phpbb_session_test_case
 {
 	public function getDataSet()
