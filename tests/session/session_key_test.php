@@ -16,7 +16,7 @@ class phpbb_session_login_keys_test extends phpbb_session_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_key.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_key.xml');
 	}
 
 	public function test_set_key_manually()

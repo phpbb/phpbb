@@ -13,7 +13,7 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_empty.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_empty.xml');
 	}
 
 	static public function extract_current_page_data()

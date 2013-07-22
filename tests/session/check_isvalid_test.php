@@ -14,7 +14,7 @@ class phpbb_session_check_isvalid_test extends phpbb_session_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_full.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_full.xml');
 	}
 
 	protected function access_with($session_id, $user_id, $user_agent, $ip)

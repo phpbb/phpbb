@@ -13,7 +13,7 @@ class phpbb_session_create_test extends phpbb_session_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/sessions_full.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_full.xml');
 	}
 
 	static function bot($bot_agent, $user_id, $bot_ip)
@@ -38,6 +38,6 @@ class phpbb_session_create_test extends phpbb_session_test_case
 			self::bot('user agent', 13, '127.0.0.1'),
 			''
 		);
-		$this->assertEquals($output->data['is_bot'], true, 'should be a bot');
+		$this->assertEquals(true, $output->data['is_bot'] , 'should be a bot');
 	}
 }
