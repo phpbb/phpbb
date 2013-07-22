@@ -60,7 +60,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 		$this->forum_id = (int) $this->topic_data['forum_id'];
 
 		// Make sure topic is either approved or user authed
-		if (!$this->topic_data['topic_approved'] && !$this->auth->acl_get('m_approve', $this->forum_id))
+		if ($this->topic_data['topic_visibility'] != ITEM_APPROVED && !$this->auth->acl_get('m_approve', $this->forum_id))
 		{
 			trigger_error('SORRY_AUTH_READ');
 		}
