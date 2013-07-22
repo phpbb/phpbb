@@ -25,7 +25,7 @@ class acp_permission_roles
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_container;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -306,7 +306,6 @@ class acp_permission_roles
 					trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				global $phpbb_container;
 				$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 				$template->assign_vars(array(
