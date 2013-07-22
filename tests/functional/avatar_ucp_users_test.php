@@ -59,4 +59,20 @@ class phpbb_functional_avatar_ucp_users_test extends phpbb_functional_common_ava
 	{
 		$this->assert_avatar_submit($expected, $avatar_type, $data);
 	}
+
+	public function test_display_upload_avatar()
+	{
+		$this->assert_avatar_submit('PROFILE_UPDATED',
+			'avatar_driver_upload',
+			array(
+				'avatar_upload_url'	=> 'https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg',
+			)
+		);
+
+		$crawler = self::request('GET', $this->get_url() . '&sid=' . $this->sid);
+		$avatar_link = $crawler->filter('img')->attr('src');
+		$crawler = self::request('GET', $avatar_link . '&sid=' . $this->sid, array(), false);
+		$content = self::$client->getResponse()->getContent();
+		self::assertEquals(false, stripos(trim($content), 'debug'), 'Output contains debug message');
+	}
 }
