@@ -366,7 +366,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					$sql = "SELECT p.post_id
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
-						WHERE t.topic_replies = 0
+						WHERE t.topic_posts_approved = 1
 							AND p.topic_id = t.topic_id
 							$last_post_time
 							AND $m_approve_posts_fid_sql
@@ -378,7 +378,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					$sql = 'SELECT DISTINCT ' . $sort_by_sql[$sort_key] . ", p.topic_id
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
-						WHERE t.topic_replies = 0
+						WHERE t.topic_posts_approved = 1
 							AND t.topic_moved_id = 0
 							AND p.topic_id = t.topic_id
 							$last_post_time
