@@ -2023,7 +2023,6 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 		$parse_flags |= ($row['enable_smilies'] ? OPTION_FLAG_SMILIES : 0);
 		
 		$message = generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags , false);
-		unset($parse_flags);
 
 		$subject = censor_text($subject);
 
