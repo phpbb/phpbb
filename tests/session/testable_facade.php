@@ -77,14 +77,16 @@ class phpbb_session_testable_facade
 	function session_begin (
 		$update_session_page = true,
 		$config_overrides = array(),
-		$request_overrides = array()
+		$request_overrides = array(),
+		$cookies_overrides = array()
 	)
 	{
+		$this->session_factory->merge_config_data($config_overrides);
+		$this->session_factory->merge_server_data($request_overrides);
+		$this->session_factory->set_cookies($cookies_overrides);
 		$session = $this->session_factory->get_session($this->db);
-		global $config, $request;
-		$request->merge(phpbb_request_interface::SERVER, $request_overrides);
-		$config = array_merge($config, $config_overrides);
-		return $session->session_begin($update_session_page);
+		$session->session_begin($update_session_page);
+		return $session;
 	}
 
 	function session_create (
@@ -93,8 +95,8 @@ class phpbb_session_testable_facade
 		$persist_login = false,
 		$viewonline = true,
 		array $config_overrides = array(),
-		$user_agent,
-		$ip_address,
+		$user_agent = 'user agent',
+		$ip_address = '127.0.0.1',
 		array $bot_overrides = array(),
 		$uri_sid = ""
 	)
