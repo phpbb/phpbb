@@ -22,11 +22,10 @@ class phpbb_session_storage_native implements phpbb_session_storage
 	protected $db;
 	protected $time_now;
 
-	function __construct()
+	function __construct($db, $time)
 	{
-		global $db;
 		$this->db = $db;
-		$this->time_now = time();
+		$this->time_now = $time;
 	}
 
 	protected function query($sql)
@@ -127,8 +126,8 @@ class phpbb_session_storage_native implements phpbb_session_storage
 
 	function delete($session_id, $user_id = false)
 	{
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-				WHERE session_id = \'' . $this->db->sql_escape($session_id) . '\' ';
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
+				WHERE session_id = '" . $this->db->sql_escape($session_id) . "' ";
 
 		if ($user_id !== false)
 		{
@@ -170,9 +169,9 @@ class phpbb_session_storage_native implements phpbb_session_storage
 
 	function unset_admin($session_id)
 	{
-		$sql = 'UPDATE ' . SESSIONS_TABLE . '
+		$sql = 'UPDATE ' . SESSIONS_TABLE . "
 				SET session_admin = 0
-				WHERE session_id = \'' . $this->db->sql_escape($session_id) . '\'';
+				WHERE session_id = '" . $this->db->sql_escape($session_id) . "'";
 		$this->update_query($sql);
 	}
 
@@ -180,7 +179,7 @@ class phpbb_session_storage_native implements phpbb_session_storage
 	{
 		$sql = 'UPDATE ' . SESSIONS_TABLE . '
 				SET session_viewonline = ' . (int) $viewonline . '
-				WHERE session_user_id = ' . $user_id;
+				WHERE session_user_id = ' . (int) $user_id;
 		$this->update_query($sql);
 	}
 
@@ -198,9 +197,9 @@ class phpbb_session_storage_native implements phpbb_session_storage
 
 	function update_form_salt($salt, $user_id)
 	{
-		$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_form_salt = \'' . $this->db->sql_escape($salt) . '\'
-				WHERE user_id = ' . (int) $user_id;
+		$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_form_salt = '" . $this->db->sql_escape($salt) . "'
+				WHERE user_id = " . (int) $user_id;
 		$this->update_query($sql);
 	}
 
@@ -314,7 +313,7 @@ class phpbb_session_storage_native implements phpbb_session_storage
 		else
 		{
 			$cache_ttl = ($user_id == ANONYMOUS) ? 3600 : 0;
-			$_sql = '(ban_userid = ' . $user_id;
+			$_sql = '(ban_userid = ' . (int) $user_id;
 
 			if ($user_email !== false)
 			{
