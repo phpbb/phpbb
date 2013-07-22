@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Session class(
+* Session class
 * @package phpBB3
 */
 class phpbb_session
@@ -625,8 +625,7 @@ class phpbb_session
 
 			if (!$bot)
 			{
-				$this->data =
-					$this->storage->get_user_info($this->cookie_data['u']);
+				$this->data = $this->storage->get_user_info($this->cookie_data['u']);
 			}
 			else
 			{
@@ -1306,7 +1305,8 @@ class phpbb_session
 		if ($user_id === (int) $this->data['user_id'])
 		{
 			$this->storage->delete($this->session_id, $user_id);
-		} else
+		}
+		else
 		{
 			$this->storage->delete_by_user_id($user_id);
 		}
