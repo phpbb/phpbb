@@ -403,6 +403,9 @@ function getCaretPosition(txtarea) {
 	$(document).ready(function() {
 		var doc, textarea;
 
+		// show bbcode editor and smilies
+		$('#format-buttons, #smiley-container').css('display', '');
+
 		// find textarea, make sure browser supports necessary functions
 		if (document.forms[form_name]) {
 			doc = document;

@@ -100,6 +100,7 @@
 	<!-- INCLUDE posting_buttons.html -->
 
 	<div id="smiley-box">
+		<div id="smiley-container" style="display: none;">
 		<!-- IF S_SMILIES_ALLOWED and .smiley -->
 			<strong>{L_SMILIES}</strong><br />
 			<!-- BEGIN smiley -->
@@ -109,9 +110,10 @@
 		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED-->
 			<br /><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
 		<!-- ENDIF -->
+		<!-- IF .smiley && BBCODE_STATUS --><hr /><!-- ENDIF -->
+		</div>
 
 		<!-- IF BBCODE_STATUS -->
-		<!-- IF .smiley --><hr /><!-- ENDIF -->
 		{BBCODE_STATUS}<br />
 		<!-- IF S_BBCODE_ALLOWED -->
 			{IMG_STATUS}<br />
@@ -185,7 +187,7 @@
 	<!-- ENDIF -->
 
 	<!-- IF not S_PRIVMSGS and not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
-		<div id="tabs" class="sub-panels" data-show-panel="options-panel">
+		<div id="tabs" class="sub-panels" data-show-panel="options-panel" style="display: none;">
 			<ul>
 				<li id="options-panel-tab" class="activetab"><a href="#tabs" data-subpanel="options-panel"><span>{L_OPTIONS}</span></a></li>
 				<!-- IF S_SHOW_ATTACH_BOX --><li id="attach-panel-tab"><a href="#tabs" data-subpanel="attach-panel"><span>{L_ADD_ATTACHMENT}</span></a></li><!-- ENDIF -->
