@@ -18,6 +18,7 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 
 	static protected $fixtures = array(
 		'foo/bar/language/en/',
+		'foo/bar/event/',
 	);
 
 	static public function setUpBeforeClass()
@@ -75,6 +76,6 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 		$this->assertContains('Can attach files', $crawler->filter('body')->text());
 
 		// language from ext/foo/bar/language/en/permissions_foo.php
-		$this->assertContains('Can view foo', $crawler->filter('body')->text());
+		$this->assertContains('Can view foobar', $crawler->filter('body')->text());
 	}
 }

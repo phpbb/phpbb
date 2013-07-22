@@ -8,6 +8,12 @@ imports:
     - { resource: auth_providers.yml }
 
 services:
+    acl.permissions:
+        class: phpbb_permissions
+        arguments:
+            - @dispatcher
+            - @user
+
     auth:
         class: phpbb_auth
 
