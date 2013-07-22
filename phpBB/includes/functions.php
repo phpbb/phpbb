@@ -3199,7 +3199,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
 	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
-	global $request;
+	global $request, $phpbb_container;
 
 	if (!class_exists('phpbb_captcha_factory', false))
 	{
@@ -3367,11 +3367,21 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$s_hidden_fields['credential'] = $credential;
 	}
 
+	$oauth_login = ($config['auth_method'] == 'oauth') ? true : false;
+
+	if ($oauth_login)
+	{
+		$auth_provider = $phpbb_container->get('auth.provider.oauth');
+		$oauth_box_data = $auth_provider->get_login_data();
+	}
+
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,
+
+		'OAUTH_LOGIN'	=> $oauth_login,
 
 		'U_SEND_PASSWORD' 		=> ($config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') : '',
 		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '',

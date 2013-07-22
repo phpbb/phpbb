@@ -230,4 +230,14 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$service_factory = new \OAuth\ServiceFactory();
 		return $service_factory->createService($service_name, $credentials, $storage, $scopes);
 	}
+
+	/**
+	* Returns an array of login data for all enabled OAuth services.
+	*
+	* @return	array
+	*/
+	public function get_login_data()
+	{
+		return array();
+	}
 }
