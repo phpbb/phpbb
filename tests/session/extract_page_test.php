@@ -32,8 +32,8 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 					'root_script_path' => '/phpBB/',
 					'page' => 'index.php',
 					'forum' => 0,
-				)
-			) ,
+				),
+			),
 			array(
 				'./',
 				'/phpBB/ucp.php',
@@ -47,8 +47,8 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 					'root_script_path' => '/phpBB/',
 					'page' => 'ucp.php?mode=login',
 					'forum' => 0,
-				)
-			) ,
+				),
+			),
 			array(
 				'./',
 				'/phpBB/ucp.php',
@@ -62,8 +62,8 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 					'root_script_path' => '/phpBB/',
 					'page' => 'ucp.php?mode=register',
 					'forum' => 0,
-				)
-			) ,
+				),
+			),
 			array(
 				'./',
 				'/phpBB/ucp.php',
@@ -77,8 +77,8 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 					'root_script_path' => '/phpBB/',
 					'page' => 'ucp.php?mode=register',
 					'forum' => 0,
-				)
-			) ,
+				),
+			),
 			array(
 				'./../',
 				'/phpBB/adm/index.php',
@@ -93,8 +93,8 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 					'root_script_path' => '/phpBB/',
 					//'page' => 'adm/index.php',
 					'forum' => 0,
-				)
-			)
+				),
+			),
 		);
 	}
 

@@ -27,7 +27,8 @@ class phpbb_session_testable_facade
 	protected $db;
 	protected $session_factory;
 
-	function __construct($db, $session_factory) {
+	function __construct($db, $session_factory)
+	{
 		$this->db = $db;
 		$this->session_factory = $session_factory;
 	}

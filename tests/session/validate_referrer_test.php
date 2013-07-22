@@ -52,7 +52,7 @@ class phpbb_session_validate_referrer_test extends phpbb_session_test_case
 	)
 	{
 		// Referrer needs http:// because it's going to get stripped in function.
-		$referrer = $referrer ? 'http://'.$referrer : '';
+		$referrer = $referrer ? 'http://' . $referrer : '';
 		$this->assertEquals(
 			$pass_or_fail,
 			$this->session_facade->validate_referer(
@@ -63,6 +63,7 @@ class phpbb_session_validate_referrer_test extends phpbb_session_test_case
 				$server_port,
 				$server_name,
 				$root_script_path
-		), "referrer should" . ($pass_or_fail? '' : "n't") . " be validated");
+			),
+			"referrer should" . ($pass_or_fail ? '' : "n't") . " be validated");
 	}
 }
