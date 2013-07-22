@@ -109,7 +109,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	public function login($username, $password)
 	{
 		// Temporary workaround for only having one authentication provider available
-		if ($username && $password)
+		if (!$this->request->is_set_post('oauth_service'))
 		{
 			// TODO: Remove before merging
 			global $phpbb_root_path, $phpEx;
