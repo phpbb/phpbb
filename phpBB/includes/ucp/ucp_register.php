@@ -42,6 +42,7 @@ class ucp_register
 		$submit			= $request->is_set_post('submit');
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
+		$form_name = request_var('form_name','');
 
 		if ($agreed)
 		{
@@ -58,7 +59,7 @@ class ucp_register
 
 			if (!validate_language_iso_name($use_lang))
 			{
-				if ($change_lang)
+				if ($change_lang && $form_name === 'ucp_register')
 				{
 					$submit = false;
 
@@ -90,6 +91,7 @@ class ucp_register
 
 			$s_hidden_fields = array(
 				'change_lang'	=> $change_lang,
+				'form_name' => 'ucp_agreement',
 			);
 
 			// If we change the language, we want to pass on some more possible parameter.
@@ -406,6 +408,7 @@ class ucp_register
 		$s_hidden_fields = array(
 			'agreed'		=> 'true',
 			'change_lang'	=> 0,
+			'form_name' => 'ucp_register',
 		);
 
 		if ($config['coppa_enable'])
