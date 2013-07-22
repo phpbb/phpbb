@@ -3373,6 +3373,13 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	{
 		$auth_provider = $phpbb_container->get('auth.provider.oauth');
 		$oauth_box_data = $auth_provider->get_login_data();
+		foreach ($oauth_box_data as $service_name => $data)
+		{
+			$template->assign_block_vars('oauth', array(
+				'SERVICE_NAME'	=> $service_name,
+				'REDIRECT_URL'	=> $data['url'],
+			));
+		}
 	}
 
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
