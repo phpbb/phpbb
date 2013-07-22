@@ -106,32 +106,51 @@ function dE(n, s, type) {
 /**
 * Alternate display of subPanels
 */
-function subPanels(p) {
-	var i, e, t;
+jQuery(document).ready(function() {
+	jQuery('.sub-panels').each(function() {
 
-	if (typeof(p) === 'string') {
-		show_panel = p;
-	}
+		var panels = [],
+			childNodes = jQuery('a[data-subpanel]', this).each(function() {
+				panels.push(this.getAttribute('data-subpanel'));
+			}),
+			show_panel = this.getAttribute('data-show-panel');
 
-	for (i = 0; i < panels.length; i++) {
-		e = document.getElementById(panels[i]);
-		t = document.getElementById(panels[i] + '-tab');
+		if (panels.length) {
+			subPanels(show_panel);
+			childNodes.click(function () {
+				subPanels(this.getAttribute('data-subpanel'));
+				return false;
+			});
+		}
 
-		if (e) {
-			if (panels[i] === show_panel) {
-				e.style.display = 'block';
-				if (t) {
-					t.className = 'activetab';
-				}
-			} else {
-				e.style.display = 'none';
-				if (t) {
-					t.className = '';
+		function subPanels(p) {
+			var i, e, t;
+
+			if (typeof(p) === 'string') {
+				show_panel = p;
+			}
+
+			for (i = 0; i < panels.length; i++) {
+				e = document.getElementById(panels[i]);
+				t = document.getElementById(panels[i] + '-tab');
+
+				if (e) {
+					if (panels[i] === show_panel) {
+						e.style.display = 'block';
+						if (t) {
+							t.className = 'activetab';
+						}
+					} else {
+						e.style.display = 'none';
+						if (t) {
+							t.className = '';
+						}
+					}
 				}
 			}
 		}
-	}
-}
+	});
+});
 
 /**
 * Call print preview
@@ -385,3 +404,22 @@ function apply_onkeypress_event() {
 }
 
 jQuery(document).ready(apply_onkeypress_event);
+
+/**
+* Adjust HTML code for IE8 and older versions
+*/
+(function($) {
+	$(document).ready(function() {
+		var test = document.createElement('div'),
+			oldBrowser = (typeof test.style.borderRadius == 'undefined');
+		delete test;
+
+		if (!oldBrowser) {
+			return;
+		}
+
+		// Fix .linkslist.bulletin lists
+		$('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
+	});
+})(jQuery);
+

@@ -147,7 +147,7 @@ else
 if ($config['enable_post_confirm'] && !$user->data['is_registered'])
 {
 	include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-	$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+	$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 	$captcha->init(CONFIRM_REPORT);
 }
 
@@ -157,10 +157,13 @@ $s_hidden_fields = '';
 // Submit report?
 if ($submit && $reason_id)
 {
-	$visual_confirmation_response = $captcha->validate();
-	if ($visual_confirmation_response)
+	if (isset($captcha))
 	{
-		$error[] = $visual_confirmation_response;
+		$visual_confirmation_response = $captcha->validate();
+		if ($visual_confirmation_response)
+		{
+			$error[] = $visual_confirmation_response;
+		}
 	}
 
 	$sql = 'SELECT *

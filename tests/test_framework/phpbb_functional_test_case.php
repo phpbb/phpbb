@@ -358,6 +358,109 @@ class phpbb_functional_test_case extends phpbb_test_case
 	}
 
 	/**
+	* Creates a new style
+	*
+	* @param string $style_id Style ID
+	* @param string $style_path Style directory
+	* @param string $parent_style_id Parent style id. Default = 1
+	* @param string $parent_style_path Parent style directory. Default = 'prosilver'
+	*/
+	protected function add_style($style_id, $style_path, $parent_style_id = 1, $parent_style_path = 'prosilver')
+	{
+		global $phpbb_root_path;
+
+		$db = $this->get_db();
+		if (version_compare(PHPBB_VERSION, '3.1.0-dev', '<'))
+		{
+			$sql = 'INSERT INTO ' . STYLES_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'style_id' => $style_id,
+				'style_name' => $style_path,
+				'style_copyright' => '',
+				'style_active' => 1,
+				'template_id' => $style_id,
+				'theme_id' => $style_id,
+				'imageset_id' => $style_id,
+			));
+			$db->sql_query($sql);
+
+			$sql = 'INSERT INTO ' . STYLES_IMAGESET_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'imageset_id' => $style_id,
+				'imageset_name' => $style_path,
+				'imageset_copyright' => '',
+				'imageset_path' => $style_path,
+			));
+			$db->sql_query($sql);
+
+			$sql = 'INSERT INTO ' . STYLES_TEMPLATE_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'template_id' => $style_id,
+				'template_name' => $style_path,
+				'template_copyright' => '',
+				'template_path' => $style_path,
+				'bbcode_bitfield' => 'kNg=',
+				'template_inherits_id' => $parent_style_id,
+				'template_inherit_path' => $parent_style_path,
+			));
+			$db->sql_query($sql);
+
+			$sql = 'INSERT INTO ' . STYLES_THEME_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'theme_id' => $style_id,
+				'theme_name' => $style_path,
+				'theme_copyright' => '',
+				'theme_path' => $style_path,
+				'theme_storedb' => 0,
+				'theme_mtime' => 0,
+				'theme_data' => '',
+			));
+			$db->sql_query($sql);
+
+			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			{
+				@mkdir($phpbb_root_path . 'styles/' . $style_path, 0777);
+				@mkdir($phpbb_root_path . 'styles/' . $style_path . '/template', 0777);
+			}
+		}
+		else
+		{
+			$db->sql_multi_insert(STYLES_TABLE, array(
+				'style_id' => $style_id,
+				'style_name' => $style_path,
+				'style_copyright' => '',
+				'style_active' => 1,
+				'style_path' => $style_path,
+				'bbcode_bitfield' => 'kNg=',
+				'style_parent_id' => $parent_style_id,
+				'style_parent_tree' => $parent_style_path,
+			));
+		}
+	}
+
+	/**
+	* Remove temporary style created by add_style()
+	*
+	* @param string $style_id Style ID
+	* @param string $style_path Style directory
+	*/
+	protected function delete_style($style_id, $style_path)
+	{
+		global $phpbb_root_path;
+
+		$db = $this->get_db();
+		$db->sql_query('DELETE FROM ' . STYLES_TABLE . ' WHERE style_id = ' . $style_id);
+		if (version_compare(PHPBB_VERSION, '3.1.0-dev', '<'))
+		{
+			$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_TABLE . ' WHERE imageset_id = ' . $style_id);
+			$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
+			$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
+
+			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			{
+				@rmdir($phpbb_root_path . 'styles/' . $style_path . '/template');
+				@rmdir($phpbb_root_path . 'styles/' . $style_path);
+			}
+		}
+	}
+
+	/**
 	* Creates a new user with limited permissions
 	*
 	* @param string $username Also doubles up as the user's password
@@ -507,7 +610,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 		$crawler = self::submit($form, array('username' => $username, 'password' => $username . $username));
-		$this->assertContains($this->lang('LOGIN_REDIRECT'), $crawler->filter('html')->text());
+		$this->assertNotContains($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
 
 		$cookies = self::$cookieJar->all();
 
@@ -526,7 +629,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->add_lang('ucp');
 
 		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
-		$this->assertContains($this->lang('LOGOUT_REDIRECT'), $crawler->filter('#message')->text());
+		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 		unset($this->sid);
 
 	}
@@ -556,7 +659,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			if (strpos($field, 'password_') === 0)
 			{
 				$crawler = self::submit($form, array('username' => $username, $field => $username . $username));
-				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
+				$this->assertContains($this->lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
 
 				$cookies = self::$cookieJar->all();
 
@@ -640,6 +743,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		// Any output before the doc type means there was an error
 		$content = self::$client->getResponse()->getContent();
+		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
 	}
 
@@ -767,6 +871,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* Be sure to login before creating
 	*
 	* @param int $forum_id
+	* @param int $topic_id
 	* @param string $subject
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
@@ -823,18 +928,47 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Instead, I send it as a request with the submit button "post" set to true.
 		$crawler = self::request('POST', $posting_url, $form_data);
 		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
-
 		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
 
-		$matches = $topic_id = $post_id = false;
-		preg_match_all('#&t=([0-9]+)(&p=([0-9]+))?#', $url, $matches);
-
-		$topic_id = (int) (isset($matches[1][0])) ? $matches[1][0] : 0;
-		$post_id = (int) (isset($matches[3][0])) ? $matches[3][0] : 0;
-
 		return array(
-			'topic_id'	=> $topic_id,
-			'post_id'	=> $post_id,
+			'topic_id'	=> $this->get_parameter_from_link($url, 't'),
+			'post_id'	=> $this->get_parameter_from_link($url, 'p'),
 		);
+	}
+
+	/*
+	* Returns the requested parameter from a URL
+	*
+	* @param	string	$url
+	* @param	string	$parameter
+	* @return		string	Value of the parameter in the URL, null if not set
+	*/
+	public function get_parameter_from_link($url, $parameter)
+	{
+		if (strpos($url, '?') === false)
+		{
+			return null;
+		}
+
+		$url_parts = explode('?', $url);
+		if (isset($url_parts[1]))
+		{
+			$url_parameters = $url_parts[1];
+			if (strpos($url_parameters, '#') !== false)
+			{
+				$url_parameters = explode('#', $url_parameters);
+				$url_parameters = $url_parameters[0];
+			}
+
+			foreach (explode('&', $url_parameters) as $url_param)
+			{
+				list($param, $value) = explode('=', $url_param);
+				if ($param == $parameter)
+				{
+					return $value;
+				}
+			}
+		}
+		return null;
 	}
 }

@@ -7,8 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
-
 class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 {
 	protected $class_loader;
@@ -42,12 +40,11 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->user = new phpbb_user();
 		$this->table_prefix = 'phpbb_';
 
-		$this->template = new phpbb_template(
+		$this->template = new phpbb_template_twig(
 			$this->phpbb_root_path,
 			$this->phpEx,
 			$this->config,
 			$this->user,
-			new phpbb_style_resource_locator(),
 			new phpbb_template_context()
 		);
 

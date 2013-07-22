@@ -7,8 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
-
 /**
 * @group functional
 */

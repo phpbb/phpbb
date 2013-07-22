@@ -528,10 +528,10 @@ class acp_board
 			$old_auth_config = array();
 			foreach ($auth_providers as $provider)
 			{
-				if ($fields = $provider->acp($this->new_config))
+				if ($fields = $provider->acp())
 				{
 					// Check if we need to create config fields for this plugin and save config when submit was pressed
-					foreach ($fields['config'] as $field)
+					foreach ($fields as $field)
 					{
 						if (!isset($config[$field]))
 						{
@@ -655,15 +655,14 @@ class acp_board
 
 			foreach ($auth_providers as $provider)
 			{
-				$fields = $provider->acp($this->new_config);
-
-				if ($fields['tpl'])
+				$auth_tpl = $provider->get_acp_template($this->new_config);
+				if ($auth_tpl)
 				{
+					$template->assign_vars($auth_tpl['TEMPLATE_VARS']);
 					$template->assign_block_vars('auth_tpl', array(
-						'TPL'	=> $fields['tpl'],
+						'TEMPLATE_FILE'	=> $auth_tpl['TEMPLATE_FILE'],
 					));
 				}
-				unset($fields);
 			}
 		}
 	}
@@ -678,8 +677,12 @@ class acp_board
 		$auth_plugins = array();
 		$auth_providers = $phpbb_container->get('auth.provider_collection');
 
-		foreach($auth_providers as $key => $value)
+		foreach ($auth_providers as $key => $value)
 		{
+			if (!($value instanceof phpbb_auth_provider_interface))
+			{
+				continue;
+			}
 			$auth_plugins[] = str_replace('auth.provider.', '', $key);
 		}
 

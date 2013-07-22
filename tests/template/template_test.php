@@ -46,28 +46,42 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array(),
 				array(),
-				'03',
+				'03!false',
 			),
 			array(
 				'if.html',
 				array('S_VALUE' => true),
 				array(),
 				array(),
-				'1',
+				'1!false',
 			),
 			array(
 				'if.html',
 				array('S_VALUE' => true, 'S_OTHER_VALUE' => true),
 				array(),
 				array(),
-				'1',
+				'1!false',
 			),
 			array(
 				'if.html',
 				array('S_VALUE' => false, 'S_OTHER_VALUE' => true),
 				array(),
 				array(),
-				'2',
+				'2!false',
+			),
+			array(
+				'if.html',
+				array('S_TEST' => false),
+				array(),
+				array(),
+				'03false',
+			),
+			array(
+				'if.html',
+				array('S_TEST' => 0),
+				array(),
+				array(),
+				'03!false',
 			),
 			array(
 				'loop.html',
@@ -116,7 +130,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
 				array(),
-				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast\n0 - c\n1 - c\nlast inner\ninner loop",
+				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast\n0 - c\n1 - c\nlast inner",
 			),
 			array(
 				'loop_advanced.html',
@@ -126,11 +140,18 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"101234561\nx\n101234561\nx\n101234561\nx\n1234561\nx\n1\nx\n101\nx\n234\nx\n10\nx\n561\nx\n561",
 			),
 			array(
+				'loop_nested2.html',
+				array(),
+				array('outer' => array(array(), array()), 'outer.middle' => array(array(), array())),
+				array(),
+				"o0o1m01m11",
+			),
+			array(
 				'define.html',
 				array(),
 				array('loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
 				array(),
-				"xyz\nabc\nabc\nbar\nbar\nabc",
+				"xyz\nabc\nabc\nbar\nbar\nabc\ntest!@#$%^&*()_-=+{}[]:;\",<.>/?",
 			),
 			array(
 				'define_advanced.html',
@@ -138,13 +159,6 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
 				array(),
 				"abc\nzxc\ncde\nbcd",
-			),
-			array(
-				'define_unclosed.html',
-				array(),
-				array(),
-				array(),
-				"test",
 			),
 			array(
 				'expressions.html',
@@ -247,21 +261,15 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array(),
 				array(),
-				"{ VARIABLE }\n{ 1_VARIABLE }\n{ VARIABLE }\n{ 1_VARIABLE }",
+				"VARIABLE\n1_VARIABLE\nVARIABLE\n1_VARIABLE",
 			),
 			array(
 				'lang.html',
-				array('L_VARIABLE' => "Value'", 'L_1_VARIABLE' => "1 O'Clock"),
+				array(),
 				array(),
 				array(),
 				"Value'\n1 O'Clock\nValue\'\n1 O\'Clock",
-			),
-			array(
-				'lang.html',
-				array('LA_VARIABLE' => "Value'", 'LA_1_VARIABLE' => "1 O'Clock"),
-				array(),
-				array(),
-				"{ VARIABLE }\n{ 1_VARIABLE }\nValue'\n1 O'Clock",
+				array('VARIABLE' => "Value'", '1_VARIABLE' => "1 O'Clock"),
 			),
 			array(
 				'loop_nested_multilevel_ref.html',
@@ -275,7 +283,6 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array('outer' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'outer.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
 				array(),
-				// I don't completely understand this output, hopefully it's correct
 				"top-level content\nouter x\nouter y\ninner z\nfirst row\n\ninner zz",
 			),
 			array(
@@ -283,7 +290,6 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array('outer' => array(array()), 'outer.middle' => array(array()), 'outer.middle.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
 				array(),
-				// I don't completely understand this output, hopefully it's correct
 				"top-level content\nouter\nmiddle\ninner z\nfirst row of 2 in inner\n\ninner zz",
 			),
 			array(
@@ -303,6 +309,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"a\nb\nc\nd",
 			),
 			*/
+			array(
+				'twig.html',
+				array('VARIABLE' => 'FOObar',),
+				array(),
+				array(),
+				"13FOOBAR|foobar",
+			),
 		);
 	}
 
@@ -313,24 +326,15 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		$this->template->set_filenames(array('test' => $filename));
 		$this->assertFileNotExists($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
 
-		$expecting = sprintf('style resource locator: File for handle test does not exist. Could not find: %s', $this->test_path . '/templates/' . $filename);
-		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
+		$this->setExpectedException('Twig_Error_Loader');
 
 		$this->display('test');
 	}
 
-	public function test_empty_file()
-	{
-		$expecting = 'style resource locator: set_filenames: Empty filename specified for test';
-
-		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
-		$this->template->set_filenames(array('test' => ''));
-	}
 
 	public function test_invalid_handle()
 	{
-		$expecting = 'No file specified for handle test';
-		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
+		$this->setExpectedException('Twig_Error_Loader');
 
 		$this->display('test');
 	}
@@ -338,49 +342,23 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 	/**
 	* @dataProvider template_data
 	*/
-	public function test_template($file, array $vars, array $block_vars, array $destroy, $expected)
+	public function test_template($file, array $vars, array $block_vars, array $destroy, $expected, $lang_vars = array())
 	{
-		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
-
-		$this->assertFileNotExists($cache_file);
-
-		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
-
-		// Reset the engine state
-		$this->setup_engine();
-
-		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
+		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $lang_vars);
 	}
 
-	/**
-	* @dataProvider template_data
-	*/
-	public function test_assign_display($file, array $vars, array $block_vars, array $destroy, $expected)
+	public function test_assign_display()
 	{
+		$this->run_template('basic.html', array(), array(), array(), "pass\npass\npass\n<!-- DUMMY var -->");
+
 		$this->template->set_filenames(array(
-			'test' => $file,
-			'container' => 'variable.html',
+			'test'		=> 'basic.html',
+			'container'	=> 'variable.html',
 		));
-		$this->template->assign_vars($vars);
-
-		foreach ($block_vars as $block => $loops)
-		{
-			foreach ($loops as $_vars)
-			{
-				$this->template->assign_block_vars($block, $_vars);
-			}
-		}
-
-		foreach ($destroy as $block)
-		{
-			$this->template->destroy_block_vars($block);
-		}
-
-		$this->assertEquals($expected, self::trim_template_result($this->template->assign_display('test')), "Testing assign_display($file)");
 
 		$this->template->assign_display('test', 'VARIABLE', false);
 
-		$this->assertEquals($expected, $this->display('container'), "Testing assign_display($file)");
+		$this->assertEquals("pass\npass\npass\n<!-- DUMMY var -->", $this->display('container'), "Testing assign_display($file)");
 	}
 
 	public function test_append_var_without_assign_var()
@@ -391,7 +369,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 
 		$items = array('This ', 'is ', 'a ', 'test');
 		$expecting = implode('', $items);
-		
+
 		foreach ($items as $word)
 		{
 			$this->template->append_var('VARIABLE', $word);
@@ -409,7 +387,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		$start = 'This ';
 		$items = array('is ', 'a ', 'test');
 		$expecting = $start . implode('', $items);
-		
+
 		$this->template->assign_var('VARIABLE', $start);
 		foreach ($items as $word)
 		{
@@ -421,13 +399,20 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 
 	public function test_php()
 	{
+		global $phpbb_root_path;
+
+		$template_text = '<!-- PHP -->echo "test";<!-- ENDPHP -->';
+
+		$cache_dir = $phpbb_root_path . 'cache/';
+		$fp = fopen($cache_dir . 'php.html', 'w');
+		fputs($fp, $template_text);
+		fclose($fp);
+
 		$this->setup_engine(array('tpl_allow_php' => true));
 
-		$cache_file = $this->template->cachepath . 'php.html.php';
+		$this->style->set_custom_style('tests', $cache_dir, array(), '');
 
-		$this->assertFileNotExists($cache_file);
-
-		$this->run_template('php.html', array(), array(), array(), 'test', $cache_file);
+		$this->run_template('php.html', array(), array(), array(), 'test');
 	}
 
 	public function alter_block_array_data()
@@ -533,10 +518,40 @@ EOT
 		$this->template->assign_block_vars('outer.middle', array());
 		$this->template->assign_block_vars('outer.middle', array());
 
-		$this->assertEquals("outer - 0\nmiddle - 0\nmiddle - 1\nouter - 1\nmiddle - 0\nmiddle - 1\nouter - 2\nmiddle - 0\nmiddle - 1", $this->display('test'), 'Ensuring template is built correctly before modification');
+		$this->assertEquals("outer - 0middle - 0middle - 1outer - 1middle - 0middle - 1outer - 2middle - 0middle - 1", $this->display('test'), 'Ensuring template is built correctly before modification');
 
 		$this->template->alter_block_array($alter_block, $vararray, $key, $mode);
-		$this->assertEquals($expect, $this->display('test'), $description);
+		$this->assertEquals(str_replace(array("\n", "\r", "\t"), '', $expect), str_replace(array("\n", "\r", "\t"), '', $this->display('test')), $description);
 	}
 
+	public function test_more_alter_block_array()
+	{
+		$this->template->set_filenames(array('test' => 'loop_nested.html'));
+
+		$this->template->assign_var('TEST_MORE', true);
+
+		// @todo Change this
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+
+		$expect = 'outer - 0[outer|3]middle - 0[middle|1]outer - 1[outer|3]middle - 0[middle|2]middle - 1[middle|2]outer - 2[outer|3]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring template is built correctly before modification');
+
+		$this->template->alter_block_array('outer', array());
+
+		$expect = 'outer - 0[outer|4]outer - 1[outer|4]middle - 0[middle|1]outer - 2[outer|4]middle - 0[middle|2]middle - 1[middle|2]outer - 3[outer|4]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after insertion');
+
+		$this->template->alter_block_array('outer', array('VARIABLE' => 'test'), 2, 'change');
+
+		$expect = 'outer - 0[outer|4]outer - 1[outer|4]middle - 0[middle|1]outer - 2 - test[outer|4]middle - 0[middle|2]middle - 1[middle|2]outer - 3[outer|4]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after modification');
+	}
 }

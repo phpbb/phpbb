@@ -63,9 +63,7 @@ class acp_main
 			if ($action === 'admlogout')
 			{
 				$user->unset_admin();
-				$redirect_url = append_sid("{$phpbb_root_path}index.$phpEx");
-				meta_refresh(3, $redirect_url);
-				trigger_error($user->lang['ADM_LOGGED_OUT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect_url . '">', '</a>'));
+				redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 			}
 
 			if (!confirm_box(true))
@@ -144,14 +142,14 @@ class acp_main
 
 						$sql = 'SELECT COUNT(post_id) AS stat
 							FROM ' . POSTS_TABLE . '
-							WHERE post_approved = 1';
+							WHERE post_visibility = ' . ITEM_APPROVED;
 						$result = $db->sql_query($sql);
 						set_config('num_posts', (int) $db->sql_fetchfield('stat'), true);
 						$db->sql_freeresult($result);
 
 						$sql = 'SELECT COUNT(topic_id) AS stat
 							FROM ' . TOPICS_TABLE . '
-							WHERE topic_approved = 1';
+							WHERE topic_visibility = ' . ITEM_APPROVED;
 						$result = $db->sql_query($sql);
 						set_config('num_topics', (int) $db->sql_fetchfield('stat'), true);
 						$db->sql_freeresult($result);
@@ -232,7 +230,7 @@ class acp_main
 							$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
 								FROM ' . POSTS_TABLE . '
 								WHERE post_id BETWEEN ' . ($start + 1) . ' AND ' . ($start + $step) . '
-									AND post_postcount = 1 AND post_approved = 1
+									AND post_postcount = 1 AND post_visibility = ' . ITEM_APPROVED . '
 								GROUP BY poster_id';
 							$result = $db->sql_query($sql);
 
@@ -430,7 +428,7 @@ class acp_main
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="http://www.phpbb.com/community/viewtopic.php?f=14&amp;t=2152375">', '</a>'),
+				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="https://www.phpbb.com/community/viewtopic.php?f=14&amp;t=2152375">', '</a>'),
 			));
 		}
 
