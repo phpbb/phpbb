@@ -260,6 +260,23 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	/**
 	* {@inheritdoc}
 	*/
+	public function acp()
+	{
+		$ret = array();
+
+		foreach ($this->service_providers as $service_name => $service_provider)
+		{
+			$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
+			$ret[] = 'auth_oauth_' . $actual_name . '_key';
+			$ret[] = 'auth_oauth_' . $actual_name . '_secret';
+		}
+
+		return $ret;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function get_acp_template($new_config)
 	{
 		$ret = array(
