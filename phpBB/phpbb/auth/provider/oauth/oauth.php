@@ -272,7 +272,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		{
 			$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
 			$ret['TEMPLATE_VARS'][$actual_name] = array(
-				'ACTUAL_NAME'	=> 'L_AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name),
+				'ACTUAL_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
 				'KEY'			=> $new_config['auth_oauth_' . $actual_name . '_key'],
 				'NAME'			=> $actual_name,
 				'SECRET'		=> $new_config['auth_oauth_' . $actual_name . '_secret'],
