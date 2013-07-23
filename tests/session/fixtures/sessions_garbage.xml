@@ -8,22 +8,6 @@
 		<column>user_occ</column>
 		<column>user_interests</column>
 		<row>
-			<value>1</value>
-			<value>anonymous</value>
-			<value></value>
-			<value></value>
-			<value></value>
-			<value></value>
-		</row>
-		<row>
-			<value>3</value>
-			<value>foo</value>
-			<value></value>
-			<value></value>
-			<value></value>
-			<value></value>
-		</row>
-		<row>
 			<value>4</value>
 			<value>bar</value>
 			<value></value>
@@ -51,6 +35,24 @@
 			<value>127.0.0.1</value>
 			<value>user agent</value>
 			<value>1</value>
+		</row>
+	</table>
+	<table name="phpbb_login_attempts">
+		<column>attempt_ip</column>
+		<column>attempt_browser</column>
+		<column>attempt_forwarded_for</column>
+		<column>attempt_time</column>
+		<column>user_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<row>
+			<value>127.0.0.1</value>
+			<value>browser</value>
+			<value></value>
+			<value>0001</value>
+			<value>4</value>
+			<value>bar</value>
+			<value>bar</value>
 		</row>
 	</table>
 </dataset>
