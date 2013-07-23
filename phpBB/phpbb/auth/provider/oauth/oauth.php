@@ -106,6 +106,24 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	/**
 	* {@inheritdoc}
 	*/
+	public function init()
+	{
+		// This does not test whether or not the key and secret provided are valid.
+		foreach ($this->service_providers as $service_provider)
+		{
+			$credentials = $service_provider->get_service_credentials();
+
+			if (($credentials['key'] && !$credentials['secret']) || (!$credentials['key'] && $credentials['secret']))
+			{
+				return $this->user->lang['AUTH_PROVIDER_OAUTH_ERROR_ELEMENT_MISSING'];
+			}
+		}
+		return false;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function login($username, $password)
 	{
 		// Temporary workaround for only having one authentication provider available
