@@ -271,9 +271,12 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		foreach ($this->service_providers as $service_name => $service_provider)
 		{
 			$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
-			$ret['TEMPLATE_VARS'][$actual_name] = array();
-			$ret['TEMPLATE_VARS'][$actual_name]['NAME'] = $actual_name;
-			$ret['TEMPLATE_VARS'][$actual_name]['ACTUAL_NAME'] = 'L_AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name);
+			$ret['TEMPLATE_VARS'][$actual_name] = array(
+				'ACTUAL_NAME'	=> 'L_AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name),
+				'KEY'			=> $new_config['auth_oauth_' . $actual_name . '_key'],
+				'NAME'			=> $actual_name,
+				'SECRET'		=> $new_config['auth_oauth_' . $actual_name . '_secret'],
+			);
 		}
 
 		return $ret;
