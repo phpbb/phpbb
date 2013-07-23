@@ -80,6 +80,24 @@ interface phpbb_auth_provider_interface
 	 *								'TEMPLATE_FILE'	=> string,
 	 *								'TEMPLATE_VARS'	=> array(...),
 	 *							)
+	 *							An optional third element may be added to this
+	 *							array: 'BLOCK_VAR_NAME'. If this is present,
+	 *							then it's value should be a string that is used
+	 *							to designate the name of the loop used in the
+	 *							ACP template file. In addition to this, an
+	 *							additional key named 'BLOCK_VARS' is required.
+	 *							This must be an array containing at least one
+	 *							array of variables that will be assigned during
+	 *							the loop in the template. An example of this is
+	 *							presented below:
+	 *							array(
+	 *								'BLOCK_VAR_NAME'	=> string,
+	 *								'BLOCK_VARS'		=> array(
+	 *									'KEY IS UNIMPORTANT' => array(...),
+	 *								),
+	 *								'TEMPLATE_FILE'	=> string,
+	 *								'TEMPLATE_VARS'	=> array(...),
+	 *							)
 	 */
 	public function get_acp_template($new_config);
 

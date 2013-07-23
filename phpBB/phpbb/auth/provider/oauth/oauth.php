@@ -264,6 +264,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	{
 		$ret = array(
 			'BLOCK_VAR_NAME'	=> 'oauth_services',
+			'BLOCK_VARS'		=> array(),
 			'TEMPLATE_FILE'		=> 'auth_provider_oauth.html',
 			'TEMPLATE_VARS'		=> array(),
 		);
@@ -271,7 +272,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		foreach ($this->service_providers as $service_name => $service_provider)
 		{
 			$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
-			$ret['TEMPLATE_VARS'][$actual_name] = array(
+			$ret['BLOCK_VARS'][$actual_name] = array(
 				'ACTUAL_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
 				'KEY'			=> $new_config['auth_oauth_' . $actual_name . '_key'],
 				'NAME'			=> $actual_name,
