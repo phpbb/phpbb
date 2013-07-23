@@ -394,14 +394,13 @@ $lang = array_merge($lang, array(
 
 	'AUTH_METHOD'				=> 'Select an authentication method',
 
+	'AUTH_PROVIDER_OAUTH_EXPLAIN'			=> 'Each OAuth provider requires a unique secret and key in order to authenticate with the external server.<br />These should be supplied by the OAuth service when you register your website with them and should be entered exactly as provided to you.<br />Any service that does not have both a key and a secret entered here will not be available for use by the forum users.',
 	'AUTH_PROVIDER_OAUTH_KEY'				=> 'Key',
-	'AUTH_PROVIDER_OAUTH_KEY_EXPLAIN'		=> '',
 	'AUTH_PROVIDER_OAUTH_SERVICE_BITLY'		=> 'Bitly',
 	'AUTH_PROVIDER_OAUTH_SERVICE_FACEBOOK'	=> 'Facebook',
 	'AUTH_PROVIDER_OAUTH_SERVICE_GOOGLE'	=> 'Google',
 	'AUTH_PROVIDER_OAUTH_TITLE'				=> 'OAuth',
 	'AUTH_PROVIDER_OAUTH_SECRET'			=> 'Secret',
-	'AUTH_PROVIDER_OAUTH_SECRET_EXPLAIN'	=> '',
 
 	'APACHE_SETUP_BEFORE_USE'	=> 'You have to setup apache authentication before you switch phpBB to this authentication method. Keep in mind that the username you use for apache authentication has to be the same as your phpBB username. Apache authentication can only be used with mod_php (not with a CGI version) and safe_mode disabled.',
 
