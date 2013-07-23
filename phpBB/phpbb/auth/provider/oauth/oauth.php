@@ -142,8 +142,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		{
 			return array(
 				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
-				// TODO: change error message
-				'error_msg'		=> 'LOGIN_ERROR_EXTERNAL_AUTH_APACHE',
+				'error_msg'		=> 'LOGIN_ERROR_OAUTH_SERVICE_DOES_NOT_EXIST',
 				'user_row'		=> array('user_id' => ANONYMOUS),
 			);
 		}
