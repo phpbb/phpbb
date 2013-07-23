@@ -1,4 +1,10 @@
 {
+    "repositories": [
+        {
+            "type": "pear",
+            "url": "http://pear.horde.org"
+        }
+    ],
 	"minimum-stability": "beta",
 	"require": {
 		"symfony/config": "2.1.*",
@@ -7,7 +13,8 @@
 		"symfony/http-kernel": "2.1.*",
 		"symfony/routing": "2.1.*",
 		"symfony/yaml": "2.1.*",
-		"twig/twig": "1.13.*"
+		"twig/twig": "1.13.*",
+		"pear-pear.horde.org/horde_text_diff": "2.*"
 	},
 	"require-dev": {
 		"fabpot/goutte": "v0.1.0",
