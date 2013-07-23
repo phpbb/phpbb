@@ -15,6 +15,7 @@
 		<testsuite name="phpBB Test Suite">
 			<directory suffix="_test.php">../tests/</directory>
 			<exclude>tests/functional</exclude>
+			<exclude>tests/lint_test.php</exclude>
 		</testsuite>
 		<testsuite name="phpBB Functional Tests">
 			<directory suffix="_test.php" phpVersion="5.3.19" phpVersionOperator=">=">../tests/functional</directory>

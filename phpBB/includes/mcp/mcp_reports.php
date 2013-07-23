@@ -187,7 +187,7 @@ class mcp_reports
 					'S_CLOSE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
-					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
+					'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == POST_UNAPPROVED),
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_USER_NOTES'			=> true,
 
@@ -292,11 +292,11 @@ class mcp_reports
 
 					$global_id = $forum_list[0];
 
-					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
+					$sql = 'SELECT SUM(forum_topics_approved) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . '
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
 					$result = $db->sql_query($sql);
-					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
+					$forum_info['forum_topics_approved'] = (int) $db->sql_fetchfield('sum_forum_topics');
 					$db->sql_freeresult($result);
 				}
 				else
@@ -328,7 +328,7 @@ class mcp_reports
 				$sort_by_sql = $sort_order_sql = array();
 				mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
-				$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
+				$forum_topics = ($total == -1) ? $forum_info['forum_topics_approved'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND r.report_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 				if ($mode == 'reports')

@@ -96,6 +96,7 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 
 		// Container
 		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->set('content.visibility', new phpbb_content_visibility($auth, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
 
 		$user_loader = new phpbb_user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
 

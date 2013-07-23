@@ -8,6 +8,12 @@ imports:
     - { resource: auth_providers.yml }
 
 services:
+    acl.permissions:
+        class: phpbb_permissions
+        arguments:
+            - @dispatcher
+            - @user
+
     auth:
         class: phpbb_auth
 
@@ -66,6 +72,19 @@ services:
             - @dbal.conn
             - %tables.config_text%
 
+    content.visibility:
+        class: phpbb_content_visibility
+        arguments:
+            - @auth
+            - @dbal.conn
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.forums%
+            - %tables.posts%
+            - %tables.topics%
+            - %tables.users%
+
     controller.helper:
         class: phpbb_controller_helper
         arguments:
@@ -113,7 +132,6 @@ services:
             - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
 
     dbal.tools:
-        file: %core.root_path%includes/db/db_tools.%core.php_ext%
         class: phpbb_db_tools
         arguments:
             - @dbal.conn
@@ -226,6 +244,9 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+
+    php_ini:
+        class: phpbb_php_ini
 
     request:
         class: phpbb_request

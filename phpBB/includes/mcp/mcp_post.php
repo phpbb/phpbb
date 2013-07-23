@@ -174,6 +174,33 @@ function mcp_post_details($id, $mode, $action)
 		}
 	}
 
+	// Deleting information
+	if ($post_info['post_visibility'] == ITEM_DELETED && $post_info['post_delete_user'])
+	{
+		// User having deleted the post also being the post author?
+		if (!$post_info['post_delete_user'] || $post_info['post_delete_user'] == $post_info['poster_id'])
+		{
+			$display_username = get_username_string('full', $post_info['poster_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']);
+		}
+		else
+		{
+			$sql = 'SELECT user_id, username, user_colour
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . (int) $post_info['post_delete_user'];
+			$result = $db->sql_query($sql);
+			$user_delete_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			$display_username = get_username_string('full', $post_info['post_delete_user'], $user_delete_row['username'], $user_delete_row['user_colour']);
+		}
+
+		$user->add_lang('viewtopic');
+		$l_deleted_by = $user->lang('DELETED_INFORMATION', $display_username, $user->format_date($post_info['post_delete_time'], false, true));
+	}
+	else
+	{
+		$l_deleted_by = '';
+	}
+
 	$template->assign_vars(array(
 		'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1&amp;mode=post_details", // Use this for mode paramaters
 		'U_POST_ACTION'			=> "$url&amp;i=$id&amp;mode=post_details", // Use this for action parameters
@@ -185,10 +212,13 @@ function mcp_post_details($id, $mode, $action)
 		'S_CAN_DELETE_POST'		=> $auth->acl_get('m_delete', $post_info['forum_id']),
 
 		'S_POST_REPORTED'		=> ($post_info['post_reported']) ? true : false,
-		'S_POST_UNAPPROVED'		=> (!$post_info['post_approved']) ? true : false,
+		'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED) ? true : false,
+		'S_POST_DELETED'		=> ($post_info['post_visibility'] == ITEM_DELETED) ? true : false,
 		'S_POST_LOCKED'			=> ($post_info['post_edit_locked']) ? true : false,
 		'S_USER_NOTES'			=> true,
 		'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
+		'DELETED_MESSAGE'		=> $l_deleted_by,
+		'DELETE_REASON'			=> $post_info['post_delete_reason'],
 
 		'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
 		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp_chgposter&amp;field=username&amp;select_single=true'),
@@ -205,6 +235,7 @@ function mcp_post_details($id, $mode, $action)
 		'RETURN_FORUM'			=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
 		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
 		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
+		'DELETED_IMG'			=> $user->img('icon_topic_deleted', $user->lang['POST_DELETED']),
 		'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
 		'SEARCH_IMG'			=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
@@ -415,7 +446,7 @@ function change_poster(&$post_info, $userdata)
 	}
 
 	// Adjust post counts... only if the post is approved (else, it was not added the users post count anyway)
-	if ($post_info['post_postcount'] && $post_info['post_approved'])
+	if ($post_info['post_postcount'] && $post_info['post_visibility'] == ITEM_APPROVED)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts - 1

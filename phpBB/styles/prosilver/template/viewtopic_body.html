@@ -114,19 +114,30 @@
 
 <!-- BEGIN postrow -->
 	<!-- IF postrow.S_FIRST_UNREAD --><a id="unread"></a><!-- ENDIF -->
-	<div id="p{postrow.POST_ID}" class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF postrow.S_UNREAD_POST --> unreadpost<!-- ENDIF --><!-- IF postrow.S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_IGNORE_POST --> online<!-- ENDIF -->">
+	<div id="p{postrow.POST_ID}" class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF postrow.S_UNREAD_POST --> unreadpost<!-- ENDIF --><!-- IF postrow.S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF postrow.S_POST_DELETED --> deleted<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> online<!-- ENDIF -->">
 		<div class="inner">
 
 		<div class="postbody">
-			<!-- IF postrow.S_IGNORE_POST -->
-				<div class="ignore">{postrow.L_IGNORE_POST}</div>
-			<!-- ELSE -->
+			<!-- IF postrow.S_POST_HIDDEN -->
+				<!-- IF postrow.S_POST_DELETED -->
+					<div class="ignore" id="post_hidden{postrow.POST_ID}">
+						{postrow.L_POST_DELETED_MESSAGE}<br />
+						{postrow.L_POST_DISPLAY}
+					</div>
+				<!-- ELSEIF postrow.S_IGNORE_POST -->
+					<div class="ignore" id="post_hidden{postrow.POST_ID}">
+						{postrow.L_IGNORE_POST}<br />
+						{postrow.L_POST_DISPLAY}
+					</div>
+				<!-- ENDIF -->
+			<!-- ENDIF -->
+			<div id="post_content{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
 
 		<!-- IF not S_IS_BOT -->
 			<!-- IF postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE -->
 				<ul class="profile-icons">
 					<!-- IF postrow.U_EDIT --><li class="edit-icon"><a href="{postrow.U_EDIT}" title="{L_EDIT_POST}"><span>{L_EDIT_POST}</span></a></li><!-- ENDIF -->
-					<!-- IF postrow.U_DELETE --><li class="delete-icon"><a href="{postrow.U_DELETE}" title="{L_DELETE_POST}" data-ajax="post_delete"<!-- IF postrow.POST_NUMBER == 1 --> data-refresh="true"<!-- ENDIF -->><span>{L_DELETE_POST}</span></a></li><!-- ENDIF -->
+					<!-- IF postrow.U_DELETE --><li class="delete-icon"><a href="{postrow.U_DELETE}" title="{L_DELETE_POST}"><span>{L_DELETE_POST}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_REPORT --><li class="report-icon"><a href="{postrow.U_REPORT}" title="{L_REPORT_POST}"><span>{L_REPORT_POST}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_WARN --><li class="warn-icon"><a href="{postrow.U_WARN}" title="{L_WARN_USER}"><span>{L_WARN_USER}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_INFO --><li class="info-icon"><a href="{postrow.U_INFO}" title="{L_INFORMATION}"><span>{L_INFORMATION}</span></a></li><!-- ENDIF -->
@@ -138,8 +149,8 @@
 			<h3 <!-- IF postrow.S_FIRST_ROW -->class="first"<!-- ENDIF -->><!-- IF postrow.POST_ICON_IMG --><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="" /> <!-- ENDIF --><a href="#p{postrow.POST_ID}">{postrow.POST_SUBJECT}</a></h3>
 			<p class="author"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><!-- ENDIF -->{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; {postrow.POST_DATE} </p>
 
-			<!-- IF postrow.S_POST_UNAPPROVED or postrow.S_POST_REPORTED -->
-			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}" data-ajax="post_approve">
+			<!-- IF postrow.S_POST_UNAPPROVED or postrow.S_POST_DELETED or postrow.S_POST_REPORTED -->
+			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
 				<p class="rules">
 					<!-- IF postrow.S_POST_UNAPPROVED -->
 						{UNAPPROVED_IMG} <strong>{L_POST_UNAPPROVED}</strong>
@@ -147,8 +158,18 @@
 						<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
 						<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
 						{S_FORM_TOKEN}
-					<br /><!-- ENDIF -->
-					<!-- IF postrow.S_POST_REPORTED -->{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a><!-- ENDIF -->
+						<br />
+					<!-- ELSEIF postrow.S_POST_DELETED -->
+						{DELETED_IMG} <strong>{L_POST_DELETED}</strong>
+						<input class="button2" type="submit" value="{L_DELETE}" name="action[disapprove]" />
+						<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
+						<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
+						{S_FORM_TOKEN}
+						<br />
+					<!-- ENDIF -->
+					<!-- IF postrow.S_POST_REPORTED -->
+						{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a>
+					<!-- ENDIF -->
 				</p>
 			</form>
 			<!-- ENDIF -->
@@ -177,20 +198,25 @@
 			<!-- ENDIF -->
 
 			<!-- IF postrow.S_DISPLAY_NOTICE --><div class="rules">{L_DOWNLOAD_NOTICE}</div><!-- ENDIF -->
-			<!-- IF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
-				<div class="notice">{postrow.EDITED_MESSAGE}
+			<!-- IF postrow.DELETED_MESSAGE or postrow.DELETE_REASON -->
+				<div class="notice post_deleted_msg">
+					{postrow.DELETED_MESSAGE}
+					<!-- IF postrow.DELETE_REASON --><br /><strong>{L_REASON}{L_COLON}</strong> <em>{postrow.DELETE_REASON}</em><!-- ENDIF -->
+				</div>
+			<!-- ELSEIF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
+				<div class="notice">
+					{postrow.EDITED_MESSAGE}
 					<!-- IF postrow.EDIT_REASON --><br /><strong>{L_REASON}{L_COLON}</strong> <em>{postrow.EDIT_REASON}</em><!-- ENDIF -->
 				</div>
 			<!-- ENDIF -->
 
 			<!-- IF postrow.BUMPED_MESSAGE --><div class="notice"><br /><br />{postrow.BUMPED_MESSAGE}</div><!-- ENDIF -->
 			<!-- IF postrow.SIGNATURE --><div id="sig{postrow.POST_ID}" class="signature">{postrow.SIGNATURE}</div><!-- ENDIF -->
-		<!-- ENDIF -->
+			</div>
 
 		</div>
 
-		<!-- IF not postrow.S_IGNORE_POST -->
-			<dl class="postprofile" id="profile{postrow.POST_ID}">
+		<dl class="postprofile" id="profile{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
 			<dt>
 				<!-- IF postrow.POSTER_AVATAR -->
 					<!-- IF postrow.U_POST_AUTHOR --><a href="{postrow.U_POST_AUTHOR}">{postrow.POSTER_AVATAR}</a><!-- ELSE -->{postrow.POSTER_AVATAR}<!-- ENDIF --><br />
@@ -233,7 +259,6 @@
 		<!-- ENDIF -->
 
 		</dl>
-	<!-- ENDIF -->
 
 		<div class="back2top"><a href="#wrap" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a></div>
 

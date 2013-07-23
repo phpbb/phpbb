@@ -356,6 +356,38 @@ ul.rightside {
 	text-align: right;
 }
 
+/* Bulletin icons for list items
+----------------------------------------*/
+ul.linklist.bulletin li:before {
+	display: inline-block;
+	content: "\2022";
+	font-size: inherit;
+	line-height: inherit;
+	padding-right: 4px;
+}
+
+ul.linklist.bulletin li:first-child:before, ul.linklist.bulletin li.rightside:last-child:before {
+	display: none;
+}
+
+ul.linklist.bulletin li.no-bulletin:before {
+	display: none;
+}
+
+.icon-notification:before, ul.linklist.bulletin li.icon-notification:before, .icon-notification:after {
+	display: inline;
+	font: inherit;
+}
+
+.icon-notification:before, ul.linklist.bulletin li.icon-notification:before {
+	content: '[';
+	padding-right: 0;
+}
+
+.icon-notification:after {
+	content: ']';
+}
+
 /* Table styles
 ----------------------------------------*/
 table.table1 {
@@ -724,6 +756,10 @@ p.rules a {
 	list-style-type: none;
 	font-size: 0.95em;
 	clear: both;
+}
+
+#notification_list ul li:before, #notification_list ul li:after {
+	display: none;
 }
 
 #notification_list > .header {
