@@ -256,4 +256,26 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		return $login_data;
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_acp_template($new_config)
+	{
+		$ret = array(
+			'BLOCK_VAR_NAME'	=> 'oauth_services',
+			'TEMPLATE_FILE'		=> 'auth_provider_oauth.html',
+			'TEMPLATE_VARS'		=> array(),
+		);
+
+		foreach ($this->service_providers as $service_name => $service_provider)
+		{
+			$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
+			$ret['TEMPLATE_VARS'][$actual_name] = array();
+			$ret['TEMPLATE_VARS'][$actual_name]['NAME'] = $actual_name;
+			$ret['TEMPLATE_VARS'][$actual_name]['ACTUAL_NAME'] = 'L_AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name);
+		}
+
+		return $ret;
+	}
 }

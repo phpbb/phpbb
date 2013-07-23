@@ -394,6 +394,15 @@ $lang = array_merge($lang, array(
 
 	'AUTH_METHOD'				=> 'Select an authentication method',
 
+	'AUTH_PROVIDER_OAUTH_KEY'				=> 'Key',
+	'AUTH_PROVIDER_OAUTH_KEY_EXPLAIN'		=> '',
+	'AUTH_PROVIDER_OAUTH_SERVICE_BITLY'		=> 'Bitly',
+	'AUTH_PROVIDER_OAUTH_SERVICE_FACEBOOK'	=> 'Facebook',
+	'AUTH_PROVIDER_OAUTH_SERVICE_GOOGLE'	=> 'Google',
+	'AUTH_PROVIDER_OAUTH_TITLE'				=> 'OAuth',
+	'AUTH_PROVIDER_OAUTH_SECRET'			=> 'Secret',
+	'AUTH_PROVIDER_OAUTH_SECRET_EXPLAIN'	=> '',
+
 	'APACHE_SETUP_BEFORE_USE'	=> 'You have to setup apache authentication before you switch phpBB to this authentication method. Keep in mind that the username you use for apache authentication has to be the same as your phpBB username. Apache authentication can only be used with mod_php (not with a CGI version) and safe_mode disabled.',
 
 	'LDAP_DN'						=> 'LDAP base <var>dn</var>',
