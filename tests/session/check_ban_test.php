@@ -13,6 +13,8 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 {
 	protected $user_id = 4;
 	protected $key_id = 4;
+	protected $session;
+	protected $backup_cache;
 
 	public function getDataSet()
 	{
@@ -31,14 +33,16 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		);
 	}
 
-	/** @dataProvider check_banned_data */
-	public function test_check_is_banned($test_msg, $user_id, $user_ips, $user_email, $return, $should_be_banned)
+	public function setUp()
 	{
-		$session = $this->session_factory->get_session($this->db);
-		// Change the global cache object for this test because
-		// the mock cache object does not hit the database as is
-		// needed for this test.
+		parent::setUp();
+		// Get session here so that config is mocked correctly
+		$this->session = $this->session_factory->get_session($this->db);
 		global $cache, $config, $phpbb_root_path, $phpEx;
+		$this->backup_cache = $cache;
+		// Change the global cache object for this test because
+		// the mock cache object does not hit the database as is needed
+		// for this test.
 		$cache = new phpbb_cache_service(
 			new phpbb_cache_driver_file(),
 			$config,
@@ -46,17 +50,29 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 			$phpbb_root_path,
 			$phpEx
 		);
+	}
 
+	public function tearDown()
+	{
+		parent::tearDown();
+		// Set cache back to what it was before the test changed it
+		global $cache;
+		$cache = $this->backup_cache;
+	}
+
+	/** @dataProvider check_banned_data */
+	public function test_check_is_banned($test_msg, $user_id, $user_ips, $user_email, $return, $should_be_banned)
+	{
 		try
 		{
-			$is_banned = $session->check_ban($user_id, $user_ips, $user_email, $return);
-		} catch (PHPUnit_Framework_Error_Notice $e)
+			$is_banned = $this->session->check_ban($user_id, $user_ips, $user_email, $return);
+		}
+		catch (PHPUnit_Framework_Error_Notice $e)
 		{
 			// User error was triggered, user must have been banned
 			$is_banned = true;
 		}
-		$this->assertEquals($should_be_banned, $is_banned, $test_msg);
 
-		$cache = new phpbb_mock_cache();
+		$this->assertEquals($should_be_banned, $is_banned, $test_msg);
 	}
 }
