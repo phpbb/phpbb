@@ -3,8 +3,116 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "6e6125b88160e28568edcb9fd007abed",
+    "hash": "afaf970fac7244510e4bff84fc3c8e99",
     "packages": [
+        {
+            "name": "pear-pear.horde.org/Horde_Exception",
+            "version": "2.0.3",
+            "dist": {
+                "type": "file",
+                "url": "http://pear.horde.org/get/Horde_Exception-2.0.3.tgz",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "pear-pear.horde.org/horde_translation": "<3.0.0.0",
+                "php": ">=5.3.0.0"
+            },
+            "replace": {
+                "pear-horde/horde_exception": "== 2.0.3.0"
+            },
+            "type": "pear-library",
+            "autoload": {
+                "classmap": [
+                    ""
+                ]
+            },
+            "include-path": [
+                "/"
+            ],
+            "description": "This class provides the default exception handlers for the Horde Application Framework."
+        },
+        {
+            "name": "pear-pear.horde.org/Horde_Text_Diff",
+            "version": "2.0.2",
+            "dist": {
+                "type": "file",
+                "url": "http://pear.horde.org/get/Horde_Text_Diff-2.0.2.tgz",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "pear-pear.horde.org/horde_exception": "<3.0.0.0",
+                "pear-pear.horde.org/horde_util": "<3.0.0.0",
+                "php": ">=5.3.0.0"
+            },
+            "replace": {
+                "pear-horde/horde_text_diff": "== 2.0.2.0"
+            },
+            "type": "pear-library",
+            "autoload": {
+                "classmap": [
+                    ""
+                ]
+            },
+            "include-path": [
+                "/"
+            ],
+            "description": "A text-based diff engine and renderers for multiple diff output formats."
+        },
+        {
+            "name": "pear-pear.horde.org/Horde_Translation",
+            "version": "2.0.1",
+            "dist": {
+                "type": "file",
+                "url": "http://pear.horde.org/get/Horde_Translation-2.0.1.tgz",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "php": ">=5.3.0.0"
+            },
+            "replace": {
+                "pear-horde/horde_translation": "== 2.0.1.0"
+            },
+            "type": "pear-library",
+            "autoload": {
+                "classmap": [
+                    ""
+                ]
+            },
+            "include-path": [
+                "/"
+            ],
+            "description": "Translation wrappers."
+        },
+        {
+            "name": "pear-pear.horde.org/Horde_Util",
+            "version": "2.3.0",
+            "dist": {
+                "type": "file",
+                "url": "http://pear.horde.org/get/Horde_Util-2.3.0.tgz",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "ext-dom": "*",
+                "php": ">=5.3.0.0"
+            },
+            "replace": {
+                "pear-horde/horde_util": "== 2.3.0.0"
+            },
+            "type": "pear-library",
+            "autoload": {
+                "classmap": [
+                    ""
+                ]
+            },
+            "include-path": [
+                "/"
+            ],
+            "description": "These classes provide functionality useful for all kind of applications."
+        },
         {
             "name": "symfony/config",
             "version": "v2.1.11",
@@ -29,7 +137,6 @@
                     "Symfony\\Component\\Config": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -79,7 +186,6 @@
                     "Symfony\\Component\\DependencyInjection": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -128,7 +234,6 @@
                     "Symfony\\Component\\EventDispatcher": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -171,7 +276,6 @@
                     "SessionHandlerInterface": "Symfony/Component/HttpFoundation/Resources/stubs"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -233,7 +337,6 @@
                     "Symfony\\Component\\HttpKernel": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -286,7 +389,6 @@
                     "Symfony\\Component\\Routing": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -328,7 +430,6 @@
                     "Symfony\\Component\\Yaml": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -374,7 +475,6 @@
                     "Twig_": "lib/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3"
             ],
