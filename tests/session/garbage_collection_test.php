@@ -24,29 +24,19 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 		$this->session = $this->session_factory->get_session($this->db);
 	}
 
-	protected function assert_sessions_equal($expected, $msg)
-	{
-		$sql = 'SELECT session_id, session_user_id
-				FROM phpbb_sessions
-				ORDER BY session_user_id';
-
-		$this->assertSqlResultEquals($expected, $sql, $msg);
-	}
-
 	public function test_cleanup_all()
 	{
-		$this->assert_sessions_equal(
+		$this->check_sessions_equals(
 			array(
-				array
-				(
+				array(
 					'session_id' => 'anon_session00000000000000000000',
 					'session_user_id' => 1,
 				),
-				array
-				(
+				array(
 					'session_id' => 'bar_session000000000000000000000',
 					'session_user_id' => 4,
-				)),
+				),
+			),
 			'Before test, should have some sessions.'
 		);
 		// Set session length so it clears all
@@ -55,7 +45,7 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 		// There is an error unless the captcha plugin is set
 		$config['captcha_plugin'] = 'phpbb_captcha_nogd';
 		$this->session->session_gc();
-		$this->assert_sessions_equal(
+		$this->check_sessions_equals(
 			array(),
 			'After setting session time to 0, should remove all.'
 		);

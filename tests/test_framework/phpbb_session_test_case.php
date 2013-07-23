@@ -24,4 +24,13 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 		$this->session_facade =
 			new phpbb_session_testable_facade($this->db, $this->session_factory);
 	}
+
+	protected function check_sessions_equals($expected_sessions, $message)
+	{
+		$sql = 'SELECT session_id, session_user_id
+				FROM phpbb_sessions
+				ORDER BY session_user_id';
+
+		$this->assertSqlResultEquals($expected_sessions, $sql, $message);
+	}
 }

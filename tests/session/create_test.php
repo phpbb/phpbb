@@ -38,6 +38,6 @@ class phpbb_session_create_test extends phpbb_session_test_case
 			self::bot('user agent', 13, '127.0.0.1'),
 			''
 		);
-		$this->assertEquals(true, $output->data['is_bot'] , 'should be a bot');
+		$this->assertEquals(true, $output->data['is_bot'], 'should be a bot');
 	}
 }
