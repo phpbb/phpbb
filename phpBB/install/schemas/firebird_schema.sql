@@ -128,6 +128,27 @@ CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users(user_id);;
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users(auth_option_id);;
 CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users(auth_role_id);;
 
+# Table: 'phpbb_oauth_tokens'
+CREATE TABLE phpbb_oauth_tokens (
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	session_id CHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	provider VARCHAR(255) CHARACTER SET NONE NOT NULL,
+	oauth_token BLOB SUB_TYPE TEXT CHARACTER SET UTF8 NOT NULL
+);;
+
+CREATE INDEX phpbb_oauth_tokens_user_id ON phpbb_oauth_tokens(user_id);;
+CREATE INDEX phpbb_oauth_tokens_provider ON phpbb_oauth_tokens(oauth_provider);;
+
+# Table: 'phpbb_oauth_accounts'
+CREATE TABLE phpbb_oauth_accounts (
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	provider VARCHAR(255) CHARACTER SET NONE NOT NULL,
+	oauth_provider_id BLOB SUB_TYPE TEXT CHARACTER SET UTF8 NOT NULL
+);;
+
+ALTER TABLE phpbb_oauth_accounts ADD PRIMARY KEY (user_id, provider);;
+
+
 # Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
 	ban_id INTEGER NOT NULL,

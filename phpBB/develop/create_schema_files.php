@@ -923,28 +923,28 @@ function get_schema_struct()
 		),
 	);
 
-	$schemda_data['auth_provider_oauth_token_storage'] = array(
+	$schema_data['phpbb_oauth_tokens'] = array(
 		'COLUMNS' => array(
 			'user_id'			=> array('UINT', 0), // phpbb_users.user_id
 			'session_id'		=> array('CHAR:32', ''), // phpbb_sessions.session_id used only when user_id not set
-			'oauth_provider'	=> array('VCHAR'), // Name of the OAuth provider
+			'provider'	=> array('VCHAR'), // Name of the OAuth provider
 			'oauth_token'		=> array('TEXT_UNI'), // Serialized token
 		),
 		'KEYS' => array(
 			'user_id'			=> array('INDEX', 'user_id'),
-			'oauth_provider'	=> array('INDEX', 'oauth_provider'),
+			'provider'	=> array('INDEX', 'oauth_provider'),
 		),
 	);
 
-	$schemda_data['auth_provider_oauth_account_assoc'] = array(
+	$schema_data['phpbb_oauth_accounts'] = array(
 		'COLUMNS' => array(
 			'user_id'			=> array('UINT', 0),
-			'oauth_provider'	=> array('VCHAR'),
+			'provider'	=> array('VCHAR'),
 			'oauth_provider_id'	=> array('TEXT_UNI'),
 		),
 		'PRIMARY_KEY' => array(
 			'user_id',
-			'oauth_provider',
+			'provider',
 		),
 	);
 

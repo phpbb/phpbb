@@ -1,6 +1,6 @@
 parameters:
-    tables.auth_provider_oauth_token_storage: %core.table_prefix%auth_provider_oauth_token_storage
-    tables.auth_provider_oauth_account_assoc: %core.table_prefix%auth_provider_oauth_account_assoc
+    tables.auth_provider_oauth_token_storage: %core.table_prefix%oauth_token
+    tables.auth_provider_oauth_account_assoc: %core.table_prefix%oauth_accounts
     tables.config: %core.table_prefix%config
     tables.config_text: %core.table_prefix%config_text
     tables.ext: %core.table_prefix%ext

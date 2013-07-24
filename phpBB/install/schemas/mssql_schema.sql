@@ -167,6 +167,43 @@ GO
 
 
 /*
+	Table: 'phpbb_oauth_tokens'
+*/
+CREATE TABLE [phpbb_oauth_tokens] (
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[session_id] [char] (32) DEFAULT ('') NOT NULL ,
+	[provider] [varchar] (255) NOT NULL ,
+	[oauth_token] [varchar] (4000) NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE  INDEX [user_id] ON [phpbb_oauth_tokens]([user_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [provider] ON [phpbb_oauth_tokens]([oauth_provider]) ON [PRIMARY]
+GO
+
+
+/*
+	Table: 'phpbb_oauth_accounts'
+*/
+CREATE TABLE [phpbb_oauth_accounts] (
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[provider] [varchar] (255) NOT NULL ,
+	[oauth_provider_id] [varchar] (4000) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_oauth_accounts] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_oauth_accounts] PRIMARY KEY  CLUSTERED 
+	(
+		[user_id],
+		[provider]
+	)  ON [PRIMARY] 
+GO
+
+
+/*
 	Table: 'phpbb_banlist'
 */
 CREATE TABLE [phpbb_banlist] (

@@ -89,6 +89,26 @@ CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users (user_id);
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id);
 CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id);
 
+# Table: 'phpbb_oauth_tokens'
+CREATE TABLE phpbb_oauth_tokens (
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	session_id char(32) NOT NULL DEFAULT '',
+	provider varchar(255) NOT NULL ,
+	oauth_token text(65535) NOT NULL 
+);
+
+CREATE INDEX phpbb_oauth_tokens_user_id ON phpbb_oauth_tokens (user_id);
+CREATE INDEX phpbb_oauth_tokens_provider ON phpbb_oauth_tokens (oauth_provider);
+
+# Table: 'phpbb_oauth_accounts'
+CREATE TABLE phpbb_oauth_accounts (
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	provider varchar(255) NOT NULL ,
+	oauth_provider_id text(65535) NOT NULL ,
+	PRIMARY KEY (user_id, provider)
+);
+
+
 # Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
 	ban_id INTEGER PRIMARY KEY NOT NULL ,
