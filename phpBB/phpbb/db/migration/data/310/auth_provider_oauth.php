@@ -18,7 +18,7 @@ class phpbb_db_migration_data_310_auth_provider_oauth extends phpbb_db_migration
 	{
 		return array(
 			'add_tables'	=> array(
-				$this->table_prefix . 'oauth_token'	=> array(
+				$this->table_prefix . 'oauth_tokens'	=> array(
 					'COLUMNS' => array(
 						'user_id'			=> array('UINT', 0), // phpbb_users.user_id
 						'session_id'		=> array('CHAR:32', ''), // phpbb_sessions.session_id used only when user_id not set

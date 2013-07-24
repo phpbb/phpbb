@@ -1,5 +1,5 @@
 parameters:
-    tables.auth_provider_oauth_token_storage: %core.table_prefix%oauth_token
+    tables.auth_provider_oauth_token_storage: %core.table_prefix%oauth_tokens
     tables.auth_provider_oauth_account_assoc: %core.table_prefix%oauth_accounts
     tables.config: %core.table_prefix%config
     tables.config_text: %core.table_prefix%config_text
