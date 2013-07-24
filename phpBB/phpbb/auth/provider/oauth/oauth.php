@@ -171,7 +171,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 			if (!$row)
 			{
-				// The user does not yet exist, ask if they wish to register the account
+				// The user does not yet exist, ask to link or create profile
 				return array(
 					'status'		=> LOGIN_SUCCESS_LINK_PROFILE,
 					'error_msg'		=> 'LOGIN_OAUTH_ACCOUNT_NOT_LINKED',
