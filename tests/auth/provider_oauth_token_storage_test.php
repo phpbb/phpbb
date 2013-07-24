@@ -88,12 +88,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$this->assertEquals( 'param', $extraParams['extra'] );
 		$this->assertEquals( 'access', $this->token_storage->retrieveAccessToken()->getAccessToken() );
 
-		// Test that the token is stored in the database
-		$sql = 'SELECT oauth_token FROM phpbb_oauth_tokens 
-			WHERE session_id = \'' . $this->session_id . '\'';
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
+		$row = $this->get_token_row_by_session_id($this->session_id);
 
 		// The token is serialized before stored in the database
 		$this->assertEquals(serialize($token), $row['oauth_token']);
@@ -111,6 +106,25 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 	public function test_set_user_id()
 	{
+		$token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') );
+		$this->token_storage->storeAccessToken($token);
 
+		$new_user_id = ANONYMOUS + 1;
+		$this->token_storage->set_user_id($new_user_id);
+
+		$row = $this->get_token_row_by_session_id($this->session_id);
+		$this->assertEquals($new_user_id, $row['user_id']);
+	}
+
+	protected function get_token_row_by_session_id($session_id)
+	{
+		// Test that the token is stored in the database
+		$sql = 'SELECT * FROM phpbb_oauth_tokens 
+			WHERE session_id = \'' . $session_id . '\'';
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return $row;
 	}
 }
