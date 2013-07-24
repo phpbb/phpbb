@@ -27,6 +27,9 @@ class ucp_login_link
 
 	function main($id, $mode)
 	{
+		global $config, $phpbb_container, $request, $template;
 
+		$auth_provider = 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
+		$auth_provider = $phpbb_container->get($auth_provider);
 	}
 }
