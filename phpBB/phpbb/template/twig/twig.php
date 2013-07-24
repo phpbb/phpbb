@@ -196,6 +196,12 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function set_style($style_directories = array('styles'))
 	{
+		if ($style_directories !== array('styles') && $this->twig->getLoader()->getPaths('core') === array())
+		{
+			// We should set up the core styles path since not already setup
+			$this->set_style();
+		}
+
 		$names = $this->get_user_style();
 
 		$paths = array();
@@ -203,7 +209,7 @@ class phpbb_template_twig implements phpbb_template
 		{
 			foreach ($names as $name)
 			{
-				$path = $this->get_style_path($name, $directory);
+				$path = $this->get_style_path($name, $directory) . 'template/';
 
 				if (is_dir($path))
 				{
@@ -212,13 +218,15 @@ class phpbb_template_twig implements phpbb_template
 			}
 		}
 
-		$new_paths = array();
-		foreach ($paths as $path)
+		// If we're setting up the main phpBB styles directory and the core
+		// namespace isn't setup yet, we will set it up now
+		if ($style_directories === array('styles') && $this->twig->getLoader()->getPaths('core') === array())
 		{
-			$new_paths[] = $path . '/template/';
+			// Set up the core style paths namespace
+			$this->twig->getLoader()->setPaths($paths, 'core');
 		}
 
-		$this->set_style_names($names, $new_paths, ($style_directories === array('styles')));
+		$this->set_style_names($names, $paths);
 
 		return true;
 	}
@@ -263,20 +271,12 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @param array $style_names List of style names in inheritance tree order
 	* @param array $style_paths List of style paths in inheritance tree order
-	* @param bool $is_core True if the style names are the "core" styles for this page load
-	* 	Core means the main phpBB template files
 	* @return phpbb_template $this
 	*/
-	public function set_style_names(array $style_names, array $style_paths, $is_core = false)
+	public function set_style_names(array $style_names, array $style_paths)
 	{
 		// Set as __main__ namespace
 		$this->twig->getLoader()->setPaths($style_paths);
-
-		// Core style namespace from this::set_style()
-		if ($is_core)
-		{
-			$this->twig->getLoader()->setPaths($style_paths, 'core');
-		}
 
 		// Add admin namespace
 		if (is_dir($this->phpbb_root_path . $this->adm_relative_path . 'style/'))
@@ -552,6 +552,6 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	protected function get_style_path($path, $style_base_directory = 'styles')
 	{
-		return $this->phpbb_root_path . trim($style_base_directory, '/') . '/' . $path;
+		return $this->phpbb_root_path . trim($style_base_directory, '/') . '/' . rtrim($path, '/') . '/';
 	}
 }
