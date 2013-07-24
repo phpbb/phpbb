@@ -191,7 +191,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		if ($this->user->data['user_id'] == ANONYMOUS)
 		{
-			$sql .= ' AND session_id = ' . $this->user->data['session_id'];
+			$sql .= ' AND session_id = \'' . $this->user->data['session_id'] . '\'';
 		}
 
 		$this->db->sql_query($sql);
@@ -210,11 +210,11 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 		}
 
 		$sql = 'UPDATE ' . $this->auth_provider_oauth_table . '
-			SET ' . $db->sql_build_array('UPDATE', array(
+			SET ' . $this->db->sql_build_array('UPDATE', array(
 					'user_id' => (int) $user_id
 				)) . '
 				WHERE user_id = ' . $this->user->data['user_id'] . '
-					AND session_id = ' . $this->user->data['session_id'];
+					AND session_id = \'' . $this->user->data['session_id'] . '\'';
 		$this->db->sql_query($sql);
 	}
 }
