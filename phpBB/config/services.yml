@@ -258,12 +258,8 @@ services:
             - %core.php_ext%
             - @config
             - @user
-            - @style.resource_locator
             - @style.path_provider_ext
             - @template
-
-    style.resource_locator:
-        class: phpbb_style_resource_locator
 
     style.path_provider_ext:
         class: phpbb_style_extension_path_provider
