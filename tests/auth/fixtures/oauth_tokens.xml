@@ -5,20 +5,5 @@
 		<column>session_id</column>
 		<column>provider</column>
 		<column>oauth_token</column>
-		<row>
-			<value>1</value>
-			<value>foobar</value>
-			<value>foobar</value>
-			<value>$H$9E45lK6J8nLTSm9oJE5aNCSTFK9wqa/</value>
-			<value>0</value>
-			<value>0</value>
-			<value>example@example.com</value>
-			<value>0</value>
-			<value>0</value>
-			<value></value>
-			<value></value>
-			<value></value>
-			<value></value>
-		</row>
 	</table>
 </dataset>
