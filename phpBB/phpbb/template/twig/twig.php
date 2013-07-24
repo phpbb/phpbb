@@ -75,16 +75,6 @@ class phpbb_template_twig implements phpbb_template
 	protected $extension_manager;
 
 	/**
-	* Name of the style that the template being compiled and/or rendered
-	* belongs to, and its parents, in inheritance tree order.
-	*
-	* Used to invoke style-specific template events.
-	*
-	* @var array
-	*/
-	protected $style_names;
-
-	/**
 	* Twig Environment
 	*
 	* @var Twig_Environment
@@ -206,12 +196,12 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function set_style($style_directories = array('styles'))
 	{
-		$this->names = $this->get_user_style();
+		$names = $this->get_user_style();
 
 		$paths = array();
 		foreach ($style_directories as $directory)
 		{
-			foreach ($this->names as $name)
+			foreach ($names as $name)
 			{
 				$path = $this->get_style_path($name, $directory);
 
@@ -228,7 +218,7 @@ class phpbb_template_twig implements phpbb_template
 			$new_paths[] = $path . '/template/';
 		}
 
-		$this->set_style_names($this->names, $new_paths, ($style_directories === array('styles')));
+		$this->set_style_names($names, $new_paths, ($style_directories === array('styles')));
 
 		return true;
 	}
@@ -255,7 +245,6 @@ class phpbb_template_twig implements phpbb_template
 		{
 			$names = array($name);
 		}
-		$this->names = $names;
 
 		$new_paths = array();
 		foreach ($paths as $path)
@@ -280,8 +269,6 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function set_style_names(array $style_names, array $style_paths, $is_core = false)
 	{
-		$this->style_names = $style_names;
-
 		// Set as __main__ namespace
 		$this->twig->getLoader()->setPaths($style_paths);
 
