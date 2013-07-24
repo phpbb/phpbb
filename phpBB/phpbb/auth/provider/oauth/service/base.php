@@ -50,6 +50,6 @@ abstract class phpbb_auth_provider_oauth_service_base implements phpbb_auth_prov
 	*/
 	public function set_external_service_provider(\OAuth\Common\Service\ServiceInterface $service_provider)
 	{
-		$this->service_provider = $service;
+		$this->service_provider = $service_provider;
 	}
 }

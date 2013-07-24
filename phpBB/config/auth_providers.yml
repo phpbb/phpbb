@@ -64,11 +64,13 @@ services:
         class: phpbb_auth_provider_oauth_service_facebook
         arguments:
             - @config
+            - @request
         tags:
             - { name: auth.provider.oauth.service }
     auth.provider.oauth.service.google:
         class: phpbb_auth_provider_oauth_service_google
         arguments:
             - @config
+            - @request
         tags:
             - { name: auth.provider.oauth.service }

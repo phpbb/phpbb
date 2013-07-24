@@ -30,13 +30,22 @@ class phpbb_auth_provider_oauth_service_facebook extends phpbb_auth_provider_oau
 	protected $config;
 
 	/**
+	* phpBB request
+	*
+	* @var phpbb_request
+	*/
+	protected $request;
+
+	/**
 	* Constructor
 	*
 	* @param	phpbb_config 	$config
+	* @param	phpbb_request 	$request
 	*/
-	public function __construct(phpbb_config $config)
+	public function __construct(phpbb_config $config, phpbb_request $request)
 	{
 		$this->config = $config;
+		$this->request = $request;
 	}
 
 	/**
