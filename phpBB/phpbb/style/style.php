@@ -53,26 +53,18 @@ class phpbb_style
 	private $user;
 
 	/**
-	* Style path provider
-	* @var phpbb_style_path_provider
-	*/
-	private $provider;
-
-	/**
 	* Constructor.
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
-	* @param phpbb_style_path_provider $provider style path provider
 	* @param phpbb_template $template template
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_style_path_provider_interface $provider, phpbb_template $template)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template $template)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
-		$this->provider = $provider;
 		$this->template = $template;
 	}
 
@@ -121,8 +113,6 @@ class phpbb_style
 			}
 		}
 
-		$this->provider->set_styles($paths);
-
 		$new_paths = array();
 		foreach ($paths as $path)
 		{
@@ -158,8 +148,6 @@ class phpbb_style
 		}
 		$this->names = $names;
 
-		$this->provider->set_styles($paths);
-
 		$new_paths = array();
 		foreach ($paths as $path)
 		{
@@ -183,16 +171,5 @@ class phpbb_style
 	public function get_style_path($path, $style_base_directory = 'styles')
 	{
 		return $this->phpbb_root_path . trim($style_base_directory, '/') . '/' . $path;
-	}
-
-	/**
-	* Defines a prefix to use for style paths in extensions
-	*
-	* @param string $ext_dir_prefix The prefix including trailing slash
-	* @return null
-	*/
-	public function set_ext_dir_prefix($ext_dir_prefix)
-	{
-		$this->provider->set_ext_dir_prefix($ext_dir_prefix);
 	}
 }

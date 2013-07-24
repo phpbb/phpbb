@@ -14,8 +14,6 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	protected $style;
 	protected $template;
 	protected $template_path;
-	protected $style_resource_locator;
-	protected $style_provider;
 	protected $user;
 
 	protected $test_path = 'tests/template';
@@ -67,10 +65,8 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$this->user = new phpbb_user;
 
 		$this->template_path = $this->test_path . '/templates';
-		$this->style_resource_locator = new phpbb_style_resource_locator();
-		$this->style_provider = new phpbb_style_path_provider();
 		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $this->user, new phpbb_template_context());
-		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $this->user, $this->style_resource_locator, $this->style_provider, $this->template);
+		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $this->user, $this->template);
 		$this->style->set_custom_style('tests', $this->template_path, array(), '');
 	}
 

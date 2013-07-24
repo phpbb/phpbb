@@ -212,10 +212,8 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
-$phpbb_style_path_provider = new phpbb_style_path_provider();
 $template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
-$phpbb_style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_path_provider, $template);
-$phpbb_style->set_ext_dir_prefix('adm/');
+$phpbb_style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $template);
 $phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
 $template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
