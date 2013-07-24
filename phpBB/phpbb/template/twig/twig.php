@@ -282,7 +282,7 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function destroy()
 	{
-		$this->context = array();
+		$this->context->clear();
 
 		return $this;
 	}
