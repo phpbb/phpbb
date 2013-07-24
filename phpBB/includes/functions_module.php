@@ -508,7 +508,7 @@ class p_master
 
 				if (is_dir($module_style_dir))
 				{
-					$template->set_custom_style('admin', array($module_style_dir, $phpbb_admin_path . 'style'), '');
+					$template->set_custom_style('admin', array($module_style_dir, $phpbb_admin_path . 'style'));
 				}
 			}
 

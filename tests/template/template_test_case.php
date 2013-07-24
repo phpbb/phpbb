@@ -65,7 +65,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$this->template_path = $this->test_path . '/templates';
 		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $this->user, new phpbb_template_context());
-		$this->template->set_custom_style('tests', $this->template_path, '');
+		$this->template->set_custom_style('tests', $this->template_path);
 	}
 
 	protected function setUp()

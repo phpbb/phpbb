@@ -225,7 +225,7 @@ class phpbb_template_twig implements phpbb_template
 			$this->twig->getLoader()->setPaths($paths, 'core');
 		}
 
-		$this->set_custom_style($names, $paths, '');
+		$this->set_custom_style($names, $paths);
 
 		return $this;
 	}
@@ -237,10 +237,9 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @param string|array $names Array of names or string of name of template(s) in inheritance tree order, used by extensions.
 	* @param array or string $paths Array of style paths, relative to current root directory
-	* @param string $template_path Path to templates, relative to style directory. Default (template/).
 	* @return phpbb_template $this
 	*/
-	public function set_custom_style($names, $paths, $template_path = 'template/')
+	public function set_custom_style($names, $paths)
 	{
 		if (is_string($paths))
 		{
@@ -252,14 +251,8 @@ class phpbb_template_twig implements phpbb_template
 			$names = array($names);
 		}
 
-		$style_paths = array();
-		foreach ($paths as $path)
-		{
-			$style_paths[] = $path . '/' . ltrim($template_path, '/');
-		}
-
 		// Set as __main__ namespace
-		$this->twig->getLoader()->setPaths($style_paths);
+		$this->twig->getLoader()->setPaths($paths);
 
 		// Add all namespaces for all extensions
 		if ($this->extension_manager instanceof phpbb_extension_manager)

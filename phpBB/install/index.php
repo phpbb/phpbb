@@ -213,7 +213,7 @@ $config = new phpbb_config(array(
 ));
 
 $template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
-$template->set_custom_style('admin', $phpbb_admin_path . 'style', '');
+$template->set_custom_style('admin', $phpbb_admin_path . 'style');
 $template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
 

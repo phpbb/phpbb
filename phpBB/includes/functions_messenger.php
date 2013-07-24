@@ -660,7 +660,7 @@ class messenger
 	{
 		$this->setup_template();
 
-		$this->template->set_custom_style($path_name, $paths, '');
+		$this->template->set_custom_style($path_name, $paths);
 	}
 }
 

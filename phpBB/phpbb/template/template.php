@@ -57,10 +57,9 @@ interface phpbb_template
 	*
 	* @param string|array $names Array of names or string of name of template(s) in inheritance tree order, used by extensions.
 	* @param array or string $paths Array of style paths, relative to current root directory
-	* @param string $template_path Path to templates, relative to style directory. Default (template/).
 	* @return phpbb_template $this
 	*/
-	public function set_custom_style($names, $paths, $template_path = 'template/');
+	public function set_custom_style($names, $paths);
 
 	/**
 	* Clears all variables and blocks assigned to this template.

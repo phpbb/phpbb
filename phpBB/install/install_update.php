@@ -138,7 +138,7 @@ class install_update extends module
 		}
 
 		// Set custom template again. ;)
-		$template->set_custom_style('admin', $phpbb_admin_path . 'style', '');
+		$template->set_custom_style('admin', $phpbb_admin_path . 'style');
 
 		$template->assign_vars(array(
 			'S_USER_LANG'			=> $user->lang['USER_LANG'],
