@@ -163,7 +163,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 				'provider'	=> $service_name,
 				'oauth_provider_id'	=> $unique_id
 			);
-			$sql = 'SELECT user_id FROM' . $this->auth_provider_oauth_token_account_assoc . '
+			$sql = 'SELECT user_id FROM ' . $this->auth_provider_oauth_token_account_assoc . '
 				WHERE ' . $this->db->sql_build_array('SELECT', $data);
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
