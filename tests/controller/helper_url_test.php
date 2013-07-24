@@ -50,7 +50,6 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$this->user = $this->getMock('phpbb_user');
 		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $this->user, new phpbb_template_context());
-		$this->style = new phpbb_style($phpbb_root_path, $phpEx, new phpbb_config(array()), $this->user, $this->template);
 
 		$helper = new phpbb_controller_helper($this->template, $this->user, '', 'php');
 		$this->assertEquals($helper->url($route, $params, $is_amp, $session_id), $expected);

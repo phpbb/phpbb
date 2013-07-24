@@ -178,6 +178,97 @@ class phpbb_template_twig implements phpbb_template
 	}
 
 	/**
+	* Get the style tree of the style preferred by the current user
+	*
+	* @return array Style tree, most specific first
+	*/
+	public function get_user_style()
+	{
+		$style_list = array(
+			$this->user->style['style_path'],
+		);
+
+		if ($this->user->style['style_parent_id'])
+		{
+			$style_list = array_merge($style_list, array_reverse(explode('/', $this->user->style['style_parent_tree'])));
+		}
+
+		return $style_list;
+	}
+
+	/**
+	* Set style location based on (current) user's chosen style.
+	*
+	* @param array $style_directories The directories to add style paths for
+	* 	E.g. array('ext/foo/bar/styles', 'styles')
+	* 	Default: array('styles') (phpBB's style directory)
+	* @return bool true
+	*/
+	public function set_style($style_directories = array('styles'))
+	{
+		$this->names = $this->get_user_style();
+
+		$paths = array();
+		foreach ($style_directories as $directory)
+		{
+			foreach ($this->names as $name)
+			{
+				$path = $this->get_style_path($name, $directory);
+
+				if (is_dir($path))
+				{
+					$paths[] = $path;
+				}
+			}
+		}
+
+		$new_paths = array();
+		foreach ($paths as $path)
+		{
+			$new_paths[] = $path . '/template/';
+		}
+
+		$this->set_style_names($this->names, $new_paths, ($style_directories === array('styles')));
+
+		return true;
+	}
+
+	/**
+	* Set custom style location (able to use directory outside of phpBB).
+	*
+	* Note: Templates are still compiled to phpBB's cache directory.
+	*
+	* @param string $name Name of style, used for cache prefix. Examples: "admin", "prosilver"
+	* @param array or string $paths Array of style paths, relative to current root directory
+	* @param array $names Array of names of templates in inheritance tree order, used by extensions. If empty, $name will be used.
+	* @param string $template_path Path to templates, relative to style directory. False if path should be set to default (templates/).
+	* @return bool true
+	*/
+	public function set_custom_style($name, $paths, $names = array(), $template_path = false)
+	{
+		if (is_string($paths))
+		{
+			$paths = array($paths);
+		}
+
+		if (empty($names))
+		{
+			$names = array($name);
+		}
+		$this->names = $names;
+
+		$new_paths = array();
+		foreach ($paths as $path)
+		{
+			$new_paths[] = $path . '/' . (($template_path !== false) ? $template_path : 'template/');
+		}
+
+		$this->set_style_names($names, $new_paths);
+
+		return true;
+	}
+
+	/**
 	* Sets the style names/paths corresponding to style hierarchy being compiled
 	* and/or rendered.
 	*
@@ -194,7 +285,7 @@ class phpbb_template_twig implements phpbb_template
 		// Set as __main__ namespace
 		$this->twig->getLoader()->setPaths($style_paths);
 
-		// Core style namespace from phpbb_style::set_style()
+		// Core style namespace from this::set_style()
 		if ($is_core)
 		{
 			$this->twig->getLoader()->setPaths($style_paths, 'core');
@@ -461,5 +552,19 @@ class phpbb_template_twig implements phpbb_template
 	public function get_source_file_for_handle($handle)
 	{
 		return $this->twig->getLoader()->getCacheKey($this->get_filename_from_handle($handle));
+	}
+
+	/**
+	* Get location of style directory for specific style_path
+	*
+	* @param string $path Style path, such as "prosilver"
+	* @param string $style_base_directory The base directory the style is in
+	* 	E.g. 'styles', 'ext/foo/bar/styles'
+	* 	Default: 'styles'
+	* @return string Path to style directory, relative to current path
+	*/
+	protected function get_style_path($path, $style_base_directory = 'styles')
+	{
+		return $this->phpbb_root_path . trim($style_base_directory, '/') . '/' . $path;
 	}
 }

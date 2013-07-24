@@ -98,7 +98,7 @@ services:
         arguments:
             - @user
             - @service_container
-            - @style
+            - @template
 
     cron.task_collection:
         class: phpbb_di_service_collection
@@ -250,15 +250,6 @@ services:
 
     request:
         class: phpbb_request
-
-    style:
-        class: phpbb_style
-        arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @config
-            - @user
-            - @template
 
     template:
         class: phpbb_template_twig
