@@ -45,6 +45,11 @@ interface phpbb_auth_provider_interface
 	 *							'error_msg' => string
 	 *							'user_row' => array
 	 *						)
+	 *					A fourth key of the array may be present 'redirect_data'
+	 *					This key is only used when 'status' is equal to
+	 *					LOGIN_SUCCESS_LINK_PROFILE and it's value is an
+	 *					associative array that is turned into GET variables on
+	 *					the redirect url.
 	 */
 	public function login($username, $password);
 

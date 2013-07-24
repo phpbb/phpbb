@@ -970,6 +970,21 @@ class phpbb_auth
 				);
 			}
 
+			// If the auth provider wants us to link an empty account do so and redirect
+			if ($login['status'] == LOGIN_SUCCESS_LINK_PROFILE)
+			{
+				// If this status exists a fourth field is in the $login array called 'redirect_data'
+				// This data is passed along as GET data to the next page allow the account to be linked
+				$url = 'ucp.php?mode=login_link';
+
+				foreach ($login['redirect_data'] as $key => $value)
+				{
+					$url .= '&' . $key . '=' . $value;
+				}
+
+				redirect($url);
+			}
+
 			// If login succeeded, we will log the user in... else we pass the login array through...
 			if ($login['status'] == LOGIN_SUCCESS)
 			{
