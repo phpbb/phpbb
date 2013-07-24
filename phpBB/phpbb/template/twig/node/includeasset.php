@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_template_twig_node_includeasset extends Twig_Node
+abstract class phpbb_template_twig_node_includeasset extends Twig_Node
 {
 	/** @var Twig_Environment */
 	protected $environment;
@@ -57,4 +57,19 @@ class phpbb_template_twig_node_includeasset extends Twig_Node
 			->raw("\n');\n")
 		;
 	}
+
+	/**
+	* Get the definition name
+	*
+	* @return string (e.g. 'SCRIPTS')
+	*/
+	abstract public function get_definition_name();
+
+	/**
+	* Append the output code for the asset
+	*
+	* @param Twig_Compiler A Twig_Compiler instance
+	* @return null
+	*/
+	abstract protected function append_asset(Twig_Compiler $compiler);
 }
