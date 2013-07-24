@@ -206,9 +206,10 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	* Returns the cached current_uri object or creates and caches it if it is
 	* not already created
 	*
+	* @param	string	$service_name			The name of the service
 	* @return	\OAuth\Common\Http\Uri\UriInterface
 	*/
-	protected function get_current_uri()
+	protected function get_current_uri($service_name)
 	{
 		if ($this->current_uri)
 		{
@@ -217,7 +218,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		$uri_factory = new \OAuth\Common\Http\Uri\UriFactory();
 		$current_uri = $uri_factory->createFromSuperGlobalArray($this->request->get_super_global(phpbb_request_interface::SERVER));
-		$current_uri->setQuery('?mode=login&login=external&oauth_service=google');
+		$current_uri->setQuery('mode=login&login=external&oauth_service=' . $service_name);
 
 		$this->current_uri = $current_uri;
 		return $current_uri;
@@ -235,7 +236,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*/
 	protected function get_service($service_name, phpbb_auth_provider_oauth_token_storage $storage, array $service_credentials, array $scopes = array())
 	{
-		$current_uri = $this->get_current_uri();
+		$current_uri = $this->get_current_uri($service_name);
 
 		// Setup the credentials for the requests
 		$credentials = new Credentials(
