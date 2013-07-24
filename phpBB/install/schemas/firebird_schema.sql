@@ -137,7 +137,7 @@ CREATE TABLE phpbb_oauth_tokens (
 );;
 
 CREATE INDEX phpbb_oauth_tokens_user_id ON phpbb_oauth_tokens(user_id);;
-CREATE INDEX phpbb_oauth_tokens_provider ON phpbb_oauth_tokens(oauth_provider);;
+CREATE INDEX phpbb_oauth_tokens_provider ON phpbb_oauth_tokens(provider);;
 
 # Table: 'phpbb_oauth_accounts'
 CREATE TABLE phpbb_oauth_accounts (

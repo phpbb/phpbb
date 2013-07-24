@@ -932,7 +932,7 @@ function get_schema_struct()
 		),
 		'KEYS' => array(
 			'user_id'			=> array('INDEX', 'user_id'),
-			'provider'			=> array('INDEX', 'oauth_provider'),
+			'provider'			=> array('INDEX', 'provider'),
 		),
 	);
 

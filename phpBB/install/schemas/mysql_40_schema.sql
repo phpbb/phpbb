@@ -97,7 +97,7 @@ CREATE TABLE phpbb_oauth_tokens (
 	provider varbinary(255) DEFAULT '' NOT NULL,
 	oauth_token blob NOT NULL,
 	KEY user_id (user_id),
-	KEY provider (oauth_provider)
+	KEY provider (provider)
 );
 
 

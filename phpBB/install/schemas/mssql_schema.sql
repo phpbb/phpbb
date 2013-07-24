@@ -180,7 +180,7 @@ GO
 CREATE  INDEX [user_id] ON [phpbb_oauth_tokens]([user_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [provider] ON [phpbb_oauth_tokens]([oauth_provider]) ON [PRIMARY]
+CREATE  INDEX [provider] ON [phpbb_oauth_tokens]([provider]) ON [PRIMARY]
 GO
 
 

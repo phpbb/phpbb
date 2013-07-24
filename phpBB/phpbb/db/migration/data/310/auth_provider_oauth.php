@@ -27,7 +27,7 @@ class phpbb_db_migration_data_310_auth_provider_oauth extends phpbb_db_migration
 					),
 					'KEYS' => array(
 						'user_id'			=> array('INDEX', 'user_id'),
-						'provider'			=> array('INDEX', 'oauth_provider'),
+						'provider'			=> array('INDEX', 'provider'),
 					),
 				),
 				$this->table_prefix . 'oauth_accounts'	=> array(

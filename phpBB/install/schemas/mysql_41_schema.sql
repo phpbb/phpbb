@@ -97,7 +97,7 @@ CREATE TABLE phpbb_oauth_tokens (
 	provider varchar(255) DEFAULT '' NOT NULL,
 	oauth_token text NOT NULL,
 	KEY user_id (user_id),
-	KEY provider (oauth_provider)
+	KEY provider (provider)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
