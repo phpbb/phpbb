@@ -44,12 +44,6 @@ class phpbb_template_twig implements phpbb_template
 	protected $phpbb_root_path;
 
 	/**
-	* adm relative path
-	* @var string
-	*/
-	protected $adm_relative_path;
-
-	/**
 	* PHP file extension
 	* @var string
 	*/
@@ -102,7 +96,6 @@ class phpbb_template_twig implements phpbb_template
 	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null, $adm_relative_path = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->adm_relative_path = $adm_relative_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
@@ -137,6 +130,12 @@ class phpbb_template_twig implements phpbb_template
 		$lexer = new phpbb_template_twig_lexer($this->twig);
 
 		$this->twig->setLexer($lexer);
+
+		// Add admin namespace
+		if ($adm_relative_path !== null && is_dir($this->phpbb_root_path . $adm_relative_path . 'style/'))
+		{
+			$this->twig->getLoader()->setPaths($this->phpbb_root_path . $adm_relative_path . 'style/', 'admin');
+		}
 	}
 
 	/**
@@ -276,12 +275,6 @@ class phpbb_template_twig implements phpbb_template
 	{
 		// Set as __main__ namespace
 		$this->twig->getLoader()->setPaths($style_paths);
-
-		// Add admin namespace
-		if (is_dir($this->phpbb_root_path . $this->adm_relative_path . 'style/'))
-		{
-			$this->twig->getLoader()->setPaths($this->phpbb_root_path . $this->adm_relative_path . 'style/', 'admin');
-		}
 
 		// Add all namespaces for all extensions
 		if ($this->extension_manager instanceof phpbb_extension_manager)
