@@ -464,7 +464,7 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @return array
 	*/
-	public function get_template_vars()
+	protected function get_template_vars()
 	{
 		$context_vars = $this->context->get_data_ref();
 
