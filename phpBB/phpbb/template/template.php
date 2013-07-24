@@ -46,7 +46,7 @@ interface phpbb_template
 	* @param array $style_directories The directories to add style paths for
 	* 	E.g. array('ext/foo/bar/styles', 'styles')
 	* 	Default: array('styles') (phpBB's style directory)
-	* @return bool true
+	* @return phpbb_template $this
 	*/
 	public function set_style($style_directories = array('styles'));
 
@@ -59,7 +59,7 @@ interface phpbb_template
 	* @param array or string $paths Array of style paths, relative to current root directory
 	* @param array $names Array of names of templates in inheritance tree order, used by extensions. If empty, $name will be used.
 	* @param string $template_path Path to templates, relative to style directory. False if path should be set to default (templates/).
-	* @return bool true
+	* @return phpbb_template $this
 	*/
 	public function set_custom_style($name, $paths, $names = array(), $template_path = false);
 
