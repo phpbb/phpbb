@@ -1381,9 +1381,8 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// End signature parsing, only if needed
 	if ($user_cache[$poster_id]['sig'] && $row['enable_sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
-		$parse_flags = phpbb_optionset(OPTION_FLAG_SMILIES, true, 0);
-		$parse_flags = phpbb_optionset(OPTION_FLAG_BBCODE, $user_cache[$poster_id]['sig_bbcode_bitfield'], $parse_flag);
-		$user_cache[$poster_id]['sig'] = generate_text_for_display($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $parse_flags, true);
+		$parse_flags = ($user_cache[$poster_id]['sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+		$user_cache[$poster_id]['sig'] = generate_text_for_display($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield'],  $parse_flags, true);
 	}
 
 	// Parse the message and subject
