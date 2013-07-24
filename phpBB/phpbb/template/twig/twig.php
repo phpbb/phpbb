@@ -225,7 +225,7 @@ class phpbb_template_twig implements phpbb_template
 			$this->twig->getLoader()->setPaths($paths, 'core');
 		}
 
-		$this->set_style_names($names, $paths);
+		$this->set_custom_style($names, $paths, '');
 
 		return $this;
 	}
@@ -247,39 +247,24 @@ class phpbb_template_twig implements phpbb_template
 			$paths = array($paths);
 		}
 
-		if (!is_array($names))
+		if (is_string($names))
 		{
 			$names = array($names);
 		}
 
-		$new_paths = array();
+		$style_paths = array();
 		foreach ($paths as $path)
 		{
-			$new_paths[] = $path . '/' . ltrim($template_path, '/');
+			$style_paths[] = $path . '/' . ltrim($template_path, '/');
 		}
 
-		$this->set_style_names($names, $new_paths);
-
-		return $this;
-	}
-
-	/**
-	* Sets the style names/paths corresponding to style hierarchy being compiled
-	* and/or rendered.
-	*
-	* @param array $style_names List of style names in inheritance tree order
-	* @param array $style_paths List of style paths in inheritance tree order
-	* @return phpbb_template $this
-	*/
-	public function set_style_names(array $style_names, array $style_paths)
-	{
 		// Set as __main__ namespace
 		$this->twig->getLoader()->setPaths($style_paths);
 
 		// Add all namespaces for all extensions
 		if ($this->extension_manager instanceof phpbb_extension_manager)
 		{
-			$style_names[] = 'all';
+			$names[] = 'all';
 
 			foreach ($this->extension_manager->all_enabled() as $ext_namespace => $ext_path)
 			{
@@ -287,7 +272,7 @@ class phpbb_template_twig implements phpbb_template
 				$namespace = str_replace('/', '_', $ext_namespace);
 				$paths = array();
 
-				foreach ($style_names as $style_name)
+				foreach ($names as $style_name)
 				{
 					$ext_style_path = $ext_path . 'styles/' . $style_name . '/template';
 

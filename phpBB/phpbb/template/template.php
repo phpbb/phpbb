@@ -63,16 +63,6 @@ interface phpbb_template
 	public function set_custom_style($names, $paths, $template_path = 'template/');
 
 	/**
-	* Sets the style names/paths corresponding to style hierarchy being compiled
-	* and/or rendered.
-	*
-	* @param array $style_names List of style names in inheritance tree order
-	* @param array $style_paths List of style paths in inheritance tree order
-	* @return phpbb_template $this
-	*/
-	public function set_style_names(array $style_names, array $style_paths);
-
-	/**
 	* Clears all variables and blocks assigned to this template.
 	*
 	* @return phpbb_template $this
