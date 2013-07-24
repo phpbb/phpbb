@@ -94,9 +94,26 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$this->assertEquals(serialize($token), $row['oauth_token']);
 	}
 
-	public function test_hasAccessToken()
+	public static function hasAccessToken_data()
 	{
+		return array(
+			array(null, false),
+			array(new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') ), true),
+		);
+	}
 
+	/**
+	* @dataProvider hasAccessToken_data
+	*/
+	public function test_hasAccessToken($token, $expected)
+	{
+		if ($token)
+		{
+			$this->token_storage->storeAccessToken($token);
+		}
+
+		$has_access_token = $this->token_storage->hasAccessToken();
+		$this->assertEquals($expected, $has_access_token);
 	}
 
 	public function test_clearToken()
