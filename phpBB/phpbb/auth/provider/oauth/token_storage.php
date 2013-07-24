@@ -83,7 +83,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	public function retrieveAccessToken()
 	{
 		if( $this->cachedToken instanceOf TokenInterface ) {
-			return $this->token;
+			return $this->cachedToken;
 		}
 
 		$data = array(
