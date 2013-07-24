@@ -236,22 +236,21 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* Note: Templates are still compiled to phpBB's cache directory.
 	*
-	* @param string $name Name of style, used for cache prefix. Examples: "admin", "prosilver"
+	* @param string|array $names Array of names or string of name of template(s) in inheritance tree order, used by extensions.
 	* @param array or string $paths Array of style paths, relative to current root directory
-	* @param array $names Array of names of templates in inheritance tree order, used by extensions. If empty, $name will be used.
 	* @param string $template_path Path to templates, relative to style directory. False if path should be set to default (templates/).
 	* @return phpbb_template $this
 	*/
-	public function set_custom_style($name, $paths, $names = array(), $template_path = false)
+	public function set_custom_style($names, $paths, $template_path = false)
 	{
 		if (is_string($paths))
 		{
 			$paths = array($paths);
 		}
 
-		if (empty($names))
+		if (!is_array($names))
 		{
-			$names = array($name);
+			$names = array($names);
 		}
 
 		$new_paths = array();

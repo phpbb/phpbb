@@ -21,6 +21,6 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		$this->template_path = $this->test_path . '/templates';
 		$this->parent_template_path = $this->test_path . '/parent_templates';
 		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
-		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path), array(), '');
+		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path), '');
 	}
 }

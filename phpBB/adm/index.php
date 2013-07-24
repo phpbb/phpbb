@@ -50,7 +50,7 @@ $module_id		= request_var('i', '');
 $mode			= request_var('mode', '');
 
 // Set custom style for admin area
-$template->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
+$template->set_custom_style('admin', $phpbb_admin_path . 'style', '');
 $template->assign_var('T_ASSETS_PATH', $phpbb_root_path . 'assets');
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
 

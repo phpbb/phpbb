@@ -107,6 +107,6 @@ Zeta test event in all',
 			dirname(__FILE__) . "/datasets/$dataset/"
 		);
 		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context, $this->extension_manager);
-		$this->template->set_custom_style('silver', array($this->template_path), $style_names, '');
+		$this->template->set_custom_style(((!empty($style_names)) ? $style_names : 'silver'), array($this->template_path), '');
 	}
 }
