@@ -194,8 +194,8 @@ CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id);
 CREATE TABLE phpbb_oauth_tokens (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	session_id char(32) DEFAULT '' NOT NULL,
-	provider varchar(255) NOT NULL,
-	oauth_token varchar(4000) NOT NULL
+	provider varchar(255) DEFAULT '' NOT NULL,
+	oauth_token varchar(4000) DEFAULT '' NOT NULL
 );
 
 CREATE INDEX phpbb_oauth_tokens_user_id ON phpbb_oauth_tokens (user_id);
@@ -206,8 +206,8 @@ CREATE INDEX phpbb_oauth_tokens_provider ON phpbb_oauth_tokens (oauth_provider);
 */
 CREATE TABLE phpbb_oauth_accounts (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
-	provider varchar(255) NOT NULL,
-	oauth_provider_id varchar(4000) NOT NULL,
+	provider varchar(255) DEFAULT '' NOT NULL,
+	oauth_provider_id varchar(4000) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id, provider)
 );
 

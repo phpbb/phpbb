@@ -94,7 +94,7 @@ CREATE TABLE phpbb_acl_users (
 CREATE TABLE phpbb_oauth_tokens (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	session_id binary(32) DEFAULT '' NOT NULL,
-	provider varbinary(255) NOT NULL,
+	provider varbinary(255) DEFAULT '' NOT NULL,
 	oauth_token blob NOT NULL,
 	KEY user_id (user_id),
 	KEY provider (oauth_provider)
@@ -104,7 +104,7 @@ CREATE TABLE phpbb_oauth_tokens (
 # Table: 'phpbb_oauth_accounts'
 CREATE TABLE phpbb_oauth_accounts (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	provider varbinary(255) NOT NULL,
+	provider varbinary(255) DEFAULT '' NOT NULL,
 	oauth_provider_id blob NOT NULL,
 	PRIMARY KEY (user_id, provider)
 );

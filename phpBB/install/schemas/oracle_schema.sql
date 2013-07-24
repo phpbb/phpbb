@@ -216,8 +216,8 @@ CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id)
 CREATE TABLE phpbb_oauth_tokens (
 	user_id number(8) DEFAULT '0' NOT NULL,
 	session_id char(32) DEFAULT '' ,
-	provider varchar2(255) NOT NULL,
-	oauth_token clob NOT NULL
+	provider varchar2(255) DEFAULT '' ,
+	oauth_token clob DEFAULT '' 
 )
 /
 
@@ -231,8 +231,8 @@ CREATE INDEX phpbb_oauth_tokens_provider ON phpbb_oauth_tokens (oauth_provider)
 */
 CREATE TABLE phpbb_oauth_accounts (
 	user_id number(8) DEFAULT '0' NOT NULL,
-	provider varchar2(255) NOT NULL,
-	oauth_provider_id clob NOT NULL,
+	provider varchar2(255) DEFAULT '' ,
+	oauth_provider_id clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_oauth_accounts PRIMARY KEY (user_id, provider)
 )
 /
