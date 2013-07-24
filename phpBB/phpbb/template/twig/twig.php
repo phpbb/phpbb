@@ -241,15 +241,8 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function set_custom_style($names, $paths)
 	{
-		if (is_string($paths))
-		{
-			$paths = array($paths);
-		}
-
-		if (is_string($names))
-		{
-			$names = array($names);
-		}
+		$paths = (is_string($paths)) ? array($paths) : $paths;
+		$names = (is_string($names)) ? array($names) : $names;
 
 		// Set as __main__ namespace
 		$this->twig->getLoader()->setPaths($paths);
