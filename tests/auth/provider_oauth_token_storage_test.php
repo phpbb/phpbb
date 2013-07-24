@@ -118,7 +118,14 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 	public function test_clearToken()
 	{
+		$token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') );
+		$this->token_storage->storeAccessToken($token);
 
+		$this->token_storage->clearToken();
+		
+		$this->assertFalse($this->token_storage->hasAccessToken());
+		$row = $this->get_token_row_by_session_id($this->session_id());
+		$this->assertFalse($row);
 	}
 
 	public function test_set_user_id()
