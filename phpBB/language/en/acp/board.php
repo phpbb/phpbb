@@ -91,6 +91,8 @@ $lang = array_merge($lang, array(
 	'ALLOW_SIG_SMILIES'			=> 'Allow use of smilies in user signatures',
 	'ALLOW_SMILIES'				=> 'Allow smilies',
 	'ALLOW_TOPIC_NOTIFY'		=> 'Allow subscribing to topics',
+	'BOARD_API'					=> 'API',
+	'BOARD_API_EXPLAIN'			=> 'Enable the API for all users.',
 	'BOARD_PM'					=> 'Private messaging',
 	'BOARD_PM_EXPLAIN'			=> 'Enable private messaging for all users.',
 ));

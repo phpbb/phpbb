@@ -196,6 +196,7 @@ class permissions
 
 	protected $permissions = array(
 		// User Permissions
+		'acl_u_api'			=> array('lang' => 'ACL_U_API', 'cat' => 'profile'),
 		'u_viewprofile'	=> array('lang' => 'ACL_U_VIEWPROFILE', 'cat' => 'profile'),
 		'u_chgname'		=> array('lang' => 'ACL_U_CHGNAME', 'cat' => 'profile'),
 		'u_chgpasswd'	=> array('lang' => 'ACL_U_CHGPASSWD', 'cat' => 'profile'),

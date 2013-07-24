@@ -1,0 +1,49 @@
+<!-- INCLUDE ucp_header.html -->
+
+<form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
+
+<h2>{L_TITLE}</h2>
+<div class="panel">
+	<div class="inner">
+
+	<fieldset>
+	<!-- IF .errors -->
+	<p class="error">
+		<!-- BEGIN errors -->
+			{errors} <br />
+		<!-- END errors -->
+	</p>
+	<!-- ENDIF -->
+
+	<p>{L_PROFILE_API_KEYS}</p><br />
+	<table cellspacing="1" class="table1">
+	<thead>
+	<tr>
+		<th>{L_MARK}</th>
+		<th>{L_API_KEY_NAME}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN apikeys -->
+		<!-- IF apikeys.S_ROW_COUNT is even --><tr class="bg1"><!-- ELSE --><tr class="bg2"><!-- ENDIF -->
+			<td style="text-align: center"><input type="checkbox" name="keys[]" value="{apikeys.KEY}" id="{apikeys.KEY_NAME}"/></td>
+			<td><label for="{apikeys.KEY_NAME}">{apikeys.KEY_NAME}</label></td>
+		</tr>
+	<!-- BEGINELSE -->
+		<tr><td colspan="2" class="bg1" style="text-align: center">{L_PROFILE_NO_API_KEYS}</td></tr>
+	<!-- END apikeys -->
+	</tbody>
+	</table>
+	</fieldset>
+	</div>
+</div>
+
+<!-- IF .apikeys -->
+	<fieldset class="submit-buttons">
+		{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_DELETE}" class="button1" />
+		{S_FORM_TOKEN}
+	</fieldset>
+<!-- ENDIF -->
+</form>
+
+<!-- INCLUDE ucp_footer.html -->

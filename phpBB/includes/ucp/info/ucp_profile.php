@@ -24,6 +24,7 @@ class ucp_profile_info
 				'avatar'		=> array('title' => 'UCP_PROFILE_AVATAR', 'auth' => 'cfg_allow_avatar', 'cat' => array('UCP_PROFILE')),
 				'reg_details'	=> array('title' => 'UCP_PROFILE_REG_DETAILS', 'auth' => '', 'cat' => array('UCP_PROFILE')),
 				'autologin_keys'=> array('title' => 'UCP_PROFILE_AUTOLOGIN_KEYS', 'auth' => '', 'cat' => array('UCP_PROFILE')),
+				'api_keys'		=> array('title' => 'UCP_PROFILE_API_KEYS', 'auth' => 'acl_u_api && cfg_allow_api', 'cat' => array('UCP_PROFILE')),
 			),
 		);
 	}
