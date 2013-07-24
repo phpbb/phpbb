@@ -272,11 +272,12 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			$credentials = $service_provider->get_service_credentials();
 			if ($credentials['key'] && $credentials['secret'])
 			{
-				$login_data[$service_provider] = array();
-
-				// Build the redirect url for the box
-				$redirect_url = build_url(false) . '&oauth_service=' . $service_name;
-				$login_data[$service_provider]['url'] = redirect($redirect_url, true);
+				$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
+				$redirect_url = build_url(false) . '&login=external&oauth_service=' . $actual_name;
+				$login_data[$service_name] = array(
+					'REDIRECT_URL'	=> redirect($redirect_url, true),
+					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
+				);
 			}
 		}
 
