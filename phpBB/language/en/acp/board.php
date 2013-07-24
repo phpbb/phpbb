@@ -397,9 +397,6 @@ $lang = array_merge($lang, array(
 	'AUTH_PROVIDER_OAUTH_ERROR_ELEMENT_MISSING'	=> 'Both the key and secret of each enabled OAuth service provider must be provided. Only one was provided for an OAuth service provider.',
 	'AUTH_PROVIDER_OAUTH_EXPLAIN'				=> 'Each OAuth provider requires a unique secret and key in order to authenticate with the external server.<br />These should be supplied by the OAuth service when you register your website with them and should be entered exactly as provided to you.<br />Any service that does not have both a key and a secret entered here will not be available for use by the forum users.',
 	'AUTH_PROVIDER_OAUTH_KEY'					=> 'Key',
-	'AUTH_PROVIDER_OAUTH_SERVICE_BITLY'			=> 'Bitly',
-	'AUTH_PROVIDER_OAUTH_SERVICE_FACEBOOK'		=> 'Facebook',
-	'AUTH_PROVIDER_OAUTH_SERVICE_GOOGLE'		=> 'Google',
 	'AUTH_PROVIDER_OAUTH_TITLE'					=> 'OAuth',
 	'AUTH_PROVIDER_OAUTH_SECRET'				=> 'Secret',
 
