@@ -12,8 +12,10 @@ use OAuth\OAuth2\Token\StdOAuth2Token;
 class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_case
 {
 	protected $db;
+	protected $service_name;
 	protected $session_id;
 	protected $token_storage;
+	protected $token_storage_table;
 	protected $user;
 
 	protected function setup()
@@ -24,8 +26,8 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 		$this->db = $this->new_dbal();
 		$this->user = $this->getMock('phpbb_user');
-		$service_name = 'auth.provider.oauth.service.testing';
-		$token_storage_table = 'phpbb_oauth_tokens';
+		$this->service_name = 'auth.provider.oauth.service.testing';
+		$this->token_storage_table = 'phpbb_oauth_tokens';
 
 		// Give the user a session_id that we will remember
 		$this->session_id = '12345';
@@ -34,7 +36,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		// Set the user id to anonymous
 		$this->user->data['user_id'] = ANONYMOUS;
 
-		$this->token_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $token_storage_table);
+		$this->token_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->service_name, $this->token_storage_table);
 	}
 
 	public function getDataSet()
@@ -42,9 +44,38 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/oauth_tokens.xml');
 	}
 
-	public function test_retrieveAccessToken()
+	public static function retrieveAccessToken_data()
 	{
+		return array(
+			array(null, new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param')), null),
+			array(new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') ), null, null),
+			array(null, null, 'OAuth\Common\Storage\Exception\TokenNotFoundException'),
+		);
+	}
 
+	/**
+	* @dataProvider retrieveAccessToken_data
+	*/
+	public function test_retrieveAccessToken($cache_token, $db_token, $exception)
+	{
+		if ($db_token)
+		{
+			$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->service_name, $this->token_storage_table);
+			$temp_storage->storeAccessToken($db_token);
+			unset($temp_storage);
+			$token = $db_token;
+		}
+
+		if ($cache_token)
+		{
+			$this->token_storage->storeAccessToken($cache_token);
+			$token = $cache_token;
+		}
+
+		$this->setExpectedException($exception);
+
+        $stored_token = $this->token_storage->retrieveAccessToken();
+        $this->assertEquals($token, $stored_token);
 	}
 
 	public function test_storeAccessToken()
