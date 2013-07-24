@@ -479,7 +479,7 @@ dl.codebox dt {
 	border-bottom-color:  #CCCCCC;
 }
 
-dl.codebox code {
+dl.codebox pre {
 	color: #2E8B57;
 }
 

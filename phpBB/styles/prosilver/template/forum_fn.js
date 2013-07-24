@@ -187,7 +187,7 @@ function displayBlocks(c, e, t) {
 
 function selectCode(a) {
 	// Get ID of code block
-	var e = a.parentNode.parentNode.getElementsByTagName('CODE')[0];
+	var e = a.parentNode.parentNode.getElementsByTagName('PRE')[0];
 	var s, r;
 
 	// Not IE and IE9+
@@ -205,7 +205,8 @@ function selectCode(a) {
 			}
 
 			r = document.createRange();
-			r.selectNodeContents(e);
+			r.setStart(e.firstChild, 0);
+			r.setEnd(e.lastChild, e.lastChild.textContent.length);
 			s.removeAllRanges();
 			s.addRange(r);
 		}

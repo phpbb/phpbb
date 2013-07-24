@@ -491,7 +491,7 @@ blockquote dl.codebox {
 	margin-left: 0;
 }
 
-dl.codebox code {
+dl.codebox pre {
 	/* Also see tweaks.css */
 	overflow: auto;
 	display: block;
