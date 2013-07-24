@@ -88,7 +88,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		$data = array(
 			'user_id'			=> $this->user->data['user_id'],
-			'oauth_provider'	=> $this->service_name,
+			'provider'	=> $this->service_name,
 		);
 
 		if ($this->user->data['user_id'] == ANONYMOUS)
@@ -131,7 +131,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		$data = array(
 			'user_id'			=> $this->user->data['user_id'],
-			'oauth_provider'	=> $this->service_name,
+			'provider'	=> $this->service_name,
 			'oauth_token'		=> serialize($token),
 		);
 
@@ -156,7 +156,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		$data = array(
 			'user_id'			=> $this->user->data['user_id'],
-			'oauth_provider'	=> $this->service_name,
+			'provider'	=> $this->service_name,
 		);
 
 		if ($this->user->data['user_id'] == ANONYMOUS)
@@ -187,7 +187,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_table . '
 			WHERE user_id = ' . $this->user->data['user_id'] . '
-				AND oauth_provider = ' . $this->db->sql_escape($this->oauth_provider);
+				AND provider = ' . $this->db->sql_escape($this->oauth_provider);
 
 		if ($this->user->data['user_id'] == ANONYMOUS)
 		{
