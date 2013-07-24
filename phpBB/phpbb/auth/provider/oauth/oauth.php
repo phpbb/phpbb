@@ -171,8 +171,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 			if (!$row)
 			{
-				// Account not tied to any existing account
-				// TODO: determine action that should occur
+				// The user does not yet exist, ask if they wish to register the account
+				throw new Exception($unique_id);
 			}
 
 			// Retrieve the user's account
@@ -188,6 +188,9 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 				// TODO: Update exception type and change it to language constant
 				throw new Exception('Invalid entry in ' . $this->auth_provider_oauth_token_account_assoc);
 			}
+
+			// Update token storage to store the user_id
+			$storage->set_user_id($row['user_id']);
 
 			// The user is now authenticated and can be logged in
 			return array(
