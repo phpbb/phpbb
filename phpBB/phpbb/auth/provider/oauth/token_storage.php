@@ -187,7 +187,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_table . '
 			WHERE user_id = ' . $this->user->data['user_id'] . '
-				AND provider = \'' . $this->db->sql_escape($this->oauth_provider) . '\'';
+				AND provider = \'' . $this->db->sql_escape($this->service_name) . '\'';
 
 		if ($this->user->data['user_id'] == ANONYMOUS)
 		{
