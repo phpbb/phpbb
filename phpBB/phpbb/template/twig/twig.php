@@ -238,10 +238,10 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @param string|array $names Array of names or string of name of template(s) in inheritance tree order, used by extensions.
 	* @param array or string $paths Array of style paths, relative to current root directory
-	* @param string $template_path Path to templates, relative to style directory. False if path should be set to default (templates/).
+	* @param string $template_path Path to templates, relative to style directory. Default (template/).
 	* @return phpbb_template $this
 	*/
-	public function set_custom_style($names, $paths, $template_path = false)
+	public function set_custom_style($names, $paths, $template_path = 'template/')
 	{
 		if (is_string($paths))
 		{
@@ -256,7 +256,7 @@ class phpbb_template_twig implements phpbb_template
 		$new_paths = array();
 		foreach ($paths as $path)
 		{
-			$new_paths[] = $path . '/' . (($template_path !== false) ? $template_path : 'template/');
+			$new_paths[] = $path . '/' . ltrim($template_path, '/');
 		}
 
 		$this->set_style_names($names, $new_paths);
