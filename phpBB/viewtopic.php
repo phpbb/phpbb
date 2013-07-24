@@ -830,7 +830,7 @@ if (!empty($topic_data['poll_start']))
 
 	$parse_bbcode_flags = OPTION_FLAG_SMILIES;
 	
-	if(empty($poll_info[0]['bbcode_bitfield']))
+	if (empty($poll_info[0]['bbcode_bitfield']))
 	{
 		$parse_bbcode_flags |= OPTION_FLAG_BBCODE; 
 	}
@@ -841,8 +841,6 @@ if (!empty($topic_data['poll_start']))
 	}
 
 	$topic_data['poll_title'] = generate_text_for_display($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield'], $parse_bbcode_flags, true);
-	 
-	unset($parse_bbcode_flags);
 
 	foreach ($poll_info as $poll_option)
 	{
