@@ -127,7 +127,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	public function login($username, $password)
 	{
 		// Temporary workaround for only having one authentication provider available
-		if (!$this->request->is_set_post('oauth_service'))
+		if (!$this->request->is_set('oauth_service'))
 		{
 			// TODO: Remove before merging
 			global $phpbb_root_path, $phpEx;
@@ -136,9 +136,9 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		}
 
 		// Requst the name of the OAuth service
-		$service_name = $this->request->variable('oauth_service', '', false, phpbb_request_interface::POST);
-		$service_name = strtolower($service_name);
-		if ($service_name === '' || !array_key_exists($service_name, $this->service_providers))
+		$service_name_original = $this->request->variable('oauth_service', '', false);
+		$service_name = 'auth.provider.oauth.service.' . strtolower($service_name_original);
+		if ($service_name_original === '' || !array_key_exists($service_name, $this->service_providers))
 		{
 			return array(
 				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -148,10 +148,10 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		}
 
 		// Get the service credentials for the given service
-		$service_credentials = $this->service_providers[$service_name]->get_credentials();
+		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 
 		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
-		$service = $this->get_service($service_name, $storage, $service_credentials, $this->service_providers[$service_name]->get_auth_scope());
+		$service = $this->get_service($service_name_original, $storage, $service_credentials, $this->service_providers[$service_name]->get_auth_scope());
 
 		if ($this->request->is_set('code', phpbb_request_interface::GET))
 		{
@@ -217,7 +217,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		$uri_factory = new \OAuth\Common\Http\Uri\UriFactory();
 		$current_uri = $uri_factory->createFromSuperGlobalArray($this->request->get_super_global(phpbb_request_interface::SERVER));
-		$current_uri->setQuery('');
+		$current_uri->setQuery('?mode=login&login=external&oauth_service=google');
 
 		$this->current_uri = $current_uri;
 		return $current_uri;
@@ -233,7 +233,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*											the api.
 	* @return	\OAuth\Common\Service\ServiceInterface
 	*/
-	protected function get_service($service_name, phpbb_auth_oauth_token_storage $storage, array $service_credentials, array $scopes = array())
+	protected function get_service($service_name, phpbb_auth_provider_oauth_token_storage $storage, array $service_credentials, array $scopes = array())
 	{
 		$current_uri = $this->get_current_uri();
 
@@ -245,7 +245,15 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		);
 
 		$service_factory = new \OAuth\ServiceFactory();
-		return $service_factory->createService($service_name, $credentials, $storage, $scopes);
+		$service = $service_factory->createService($service_name, $credentials, $storage, $scopes);
+
+		if (!$service)
+		{
+			// Update to an actual error message
+			throw new Exception('Service not created: ' . $service_name);
+		}
+
+		return $service;
 	}
 
 	/**
