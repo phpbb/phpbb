@@ -40,4 +40,12 @@ class phpbb_db_migration_data_310_api extends phpbb_db_migration
 			),
 		);
 	}
+
+	public function update_data()
+	{
+		return array(
+			array('config.add', array('allow_api', 0)),
+			array('permission.add', array('u_api')),
+		);
+	}
 }
