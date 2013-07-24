@@ -141,7 +141,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 		}
 
 		$sql = 'INSERT INTO ' . $this->auth_provider_oauth_table . '
-			WHERE ' . $this->db->sql_build_array('INSERT', $data);
+			' . $this->db->sql_build_array('INSERT', $data);
 		$this->db->sql_query($sql);
 	}
 
