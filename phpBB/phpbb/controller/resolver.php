@@ -48,7 +48,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	*
 	* @param phpbb_user $user User Object
 	* @param ContainerInterface $container ContainerInterface object
-	* @param phpbb_template_interface $template
+	* @param phpbb_template $template
 	*/
 	public function __construct(phpbb_user $user, ContainerInterface $container, phpbb_template $template = null)
 	{
