@@ -80,6 +80,15 @@ switch ($mode)
 		login_box(request_var('redirect', "index.$phpEx"));
 	break;
 
+	case 'login_link':
+		if ($user->data['is_registered'])
+		{
+			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+		}
+
+		$module->load('ucp', 'login_link');
+	break;
+
 	case 'logout':
 		if ($user->data['user_id'] != ANONYMOUS && $request->is_set('sid') && $request->variable('sid', '') === $user->session_id)
 		{
