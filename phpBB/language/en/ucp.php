@@ -270,6 +270,7 @@ $lang = array_merge($lang, array(
 	'LINK_REMOTE_SIZE'			=> 'Avatar dimensions',
 	'LINK_REMOTE_SIZE_EXPLAIN'	=> 'Specify the width and height of the avatar, leave blank to attempt automatic verification.',
 	'LOGIN_EXPLAIN_UCP'			=> 'Please login in order to access the User Control Panel.',
+	'LOGIN_LINK'				=> 'Link or Register Your External Account with phpBB',
 	'LOGIN_KEY'					=> 'Login Key',
 	'LOGIN_TIME'				=> 'Login Time',
 	'LOGIN_REDIRECT'			=> 'You have been successfully logged in.',
@@ -480,6 +481,7 @@ $lang = array_merge($lang, array(
 	'UCP_EMAIL_ACTIVATE'		=> 'Please note that you will need to enter a valid email address before your account is activated. You will receive an email at the address you provide that contains an account activation link.',
 	'UCP_ICQ'					=> 'ICQ number',
 	'UCP_JABBER'				=> 'Jabber address',
+	'UCP_LOGIN_LINK'			=> 'Set up an external account',
 
 	'UCP_MAIN'					=> 'Overview',
 	'UCP_MAIN_ATTACHMENTS'		=> 'Manage attachments',

@@ -87,6 +87,7 @@ switch ($mode)
 		}
 
 		$module->load('ucp', 'login_link');
+		$module->display($user->lang['UCP_LOGIN_LINK']);
 	break;
 
 	case 'logout':

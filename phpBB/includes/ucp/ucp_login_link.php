@@ -31,5 +31,8 @@ class ucp_login_link
 
 		$auth_provider = 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
 		$auth_provider = $phpbb_container->get($auth_provider);
+
+		$this->tpl_name = 'ucp_login_link';
+		$this->page_title = 'UCP_LOGIN_LINK';
 	}
 }
