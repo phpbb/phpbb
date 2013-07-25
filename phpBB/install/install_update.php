@@ -239,7 +239,7 @@ class install_update extends module
 				// this is the user's language.. just merge it
 				$user->lang = array_merge($user->lang, $lang);
 			}
-			if (in_array('language/en/install.' . $phpEx, $this->update_info['files']))
+			if ($language != 'en' && in_array('language/en/install.' . $phpEx, $this->update_info['files']))
 			{
 				$lang = array();
 				include($this->new_location . 'language/en/install.' . $phpEx);
