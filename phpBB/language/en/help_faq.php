@@ -333,7 +333,7 @@ $help = array(
 	),
 	array(
 		0 => 'Why isn’t X feature available?',
-		1 => 'This software was written by and licensed through phpBB Group. If you believe a feature needs to be added, or you want to report a bug, please visit the phpBB <a href="http://area51.phpbb.com/">Area51</a> website, where you will find resources to do so.'
+		1 => 'This software was written by and licensed through phpBB Group. If you believe a feature needs to be added please visit the <a href="https://www.phpbb.com/ideas/">phpBB Ideas Centre</a>, where you can upvote existing ideas or suggest new features.'
 	),
 	array(
 		0 => 'Who do I contact about abusive and/or legal matters related to this board?',
