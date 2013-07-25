@@ -5,6 +5,40 @@
 
 	<h2>{SITENAME} - {L_LOGIN_LINK}</h2>
 
+	<p>{L_LOGIN_LINK_EXPLAIN}</p>
+
+	<div class="content">
+		<h2>{L_REGISTER}</h2>
+	</div>
+
+	<div class="content">
+		<h2>{L_LOGIN}</h2>
+
+		<form action="{LOGIN_ACTION}" method="post" id="login">
+			<fieldset class="fields1">
+				<!-- IF LOGIN_ERROR --><div class="error">{LOGIN_ERROR}</div><!-- ENDIF -->
+				<dl>
+					<dt><label for="{USERNAME_CREDENTIAL}">{L_USERNAME}{L_COLON}</label></dt>
+					<dd><input type="text" tabindex="1" name="{USERNAME_CREDENTIAL}" id="{USERNAME_CREDENTIAL}" size="25" value="{LOGIN_USERNAME}" class="inputbox autowidth" /></dd>
+				</dl>
+				<dl>
+					<dt><label for="{PASSWORD_CREDENTIAL}">{L_PASSWORD}{L_COLON}</label></dt>
+					<dd><input type="password" tabindex="2" id="{PASSWORD_CREDENTIAL}" name="{PASSWORD_CREDENTIAL}" size="25" class="inputbox autowidth" /></dd>
+				</dl>
+				<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
+					<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
+					<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
+				<!-- ENDIF -->
+
+				{S_LOGIN_REDIRECT}
+				<dl>
+					<dt>&nbsp;</dt>
+					<dd>{S_HIDDEN_FIELDS}<input type="submit" name="login" tabindex="6" value="{L_LOGIN}" class="button1" /></dd>
+				</dl>
+			</fieldset>
+		</form>
+	</div>
+
 	</div>
 </div>
 

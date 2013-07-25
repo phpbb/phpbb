@@ -271,6 +271,7 @@ $lang = array_merge($lang, array(
 	'LINK_REMOTE_SIZE_EXPLAIN'	=> 'Specify the width and height of the avatar, leave blank to attempt automatic verification.',
 	'LOGIN_EXPLAIN_UCP'			=> 'Please login in order to access the User Control Panel.',
 	'LOGIN_LINK'				=> 'Link or Register Your External Account with phpBB',
+	'LOGIN_LINK_EXPLAIN'		=> 'You have attempted to login with an external service that is not yet connected to an account on these forums. You may now either link this account to an existing account or you may create a new account.',
 	'LOGIN_KEY'					=> 'Login Key',
 	'LOGIN_TIME'				=> 'Login Time',
 	'LOGIN_REDIRECT'			=> 'You have been successfully logged in.',
