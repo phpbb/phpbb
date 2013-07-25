@@ -204,7 +204,7 @@ class install_update extends module
 		}
 
 		// Check if the update files stored are for the latest version...
-		if ($this->latest_version != $this->update_info['version']['to'])
+		if (phpbb_version_compare($this->latest_version, $this->update_info['version']['to'], '>'))
 		{
 			$this->unequal_version = true;
 
