@@ -78,18 +78,18 @@ class phpbb_session_storage_native implements phpbb_session_storage
 	function get_with_user_id($user_id)
 	{
 		$sql = 'SELECT u.*, s.*
-					FROM ' . USERS_TABLE . ' u
+				FROM ' . USERS_TABLE . ' u
 					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
-					WHERE u.user_id = ' . (int) $user_id;
+				WHERE u.user_id = ' . (int) $user_id;
 		return $this->query($sql);
 	}
 
-	function get_user_info($user_id, $normal_found_only=false)
+	function get_user_info($user_id, $normal_founder_only=false)
 	{
 		$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . (int) $user_id;
-		if ($normal_found_only)
+		if ($normal_founder_only)
 		{
 			$sql .= ' AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		}
@@ -127,11 +127,11 @@ class phpbb_session_storage_native implements phpbb_session_storage
 	function delete($session_id, $user_id = false)
 	{
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-				WHERE session_id = '" . $this->db->sql_escape($session_id) . "' ";
+				WHERE session_id = '" . $this->db->sql_escape($session_id) . "'";
 
 		if ($user_id !== false)
 		{
-			$sql .= 'AND session_user_id = ' . (int) $user_id;
+			$sql .= ' AND session_user_id = ' . (int) $user_id;
 		}
 
 		$result = $this->db->sql_query($sql);
@@ -149,7 +149,7 @@ class phpbb_session_storage_native implements phpbb_session_storage
 		return true;
 	}
 
-	function num_active_sessions($minutes_considered_active=60)
+	function num_active_sessions($minutes_considered_active)
 	{
 		return $this->query('
 			SELECT COUNT(session_id) AS sessions
@@ -240,13 +240,16 @@ class phpbb_session_storage_native implements phpbb_session_storage
 		);
 	}
 
-	function cleanup_expired_sessions($user_id, $session_length)
+	function cleanup_expired_sessions(array $user_ids, $session_length)
 	{
-		$this->update_query('
-			DELETE FROM ' . SESSIONS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('session_user_id', $user_id) . '
-				AND session_time < ' . ($this->time_now - $session_length)
-		);
+		if (sizeof($user_ids))
+		{
+			$this->update_query('
+				DELETE FROM ' . SESSIONS_TABLE . '
+				WHERE ' . $this->db->sql_in_set('session_user_id', $user_ids) . '
+					AND session_time < ' . ($this->time_now - $session_length)
+			);
+		}
 	}
 
 	/** For sessions older than length, run a function and collect results.

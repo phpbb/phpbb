@@ -56,11 +56,11 @@ interface phpbb_session_storage
 
 	/** Get user information from user_id
 	 * @param int $user_id
-	 * @param bool $normal_found_only Only gather if
+	 * @param bool $normal_founder_only Only gather if
 	 *        user is a USER_NORMAL or USER_FOUNDER
 	 * @return mixed
 	 */
-	function get_user_info($user_id, $normal_found_only=false);
+	function get_user_info($user_id, $normal_founder_only=false);
 
 	/** Get user information with user_id and session_key
 	 * @param int $user_id
@@ -92,7 +92,7 @@ interface phpbb_session_storage
 	 *         where active within the last $minutes_considered_active
 	 *		   (default: 60)
 	 */
-	function num_active_sessions($minutes_considered_active=60);
+	function num_active_sessions($minutes_considered_active);
 
 	/** Return count of sessions associated with user_id within max_time
 	 * @param $user_id
@@ -150,10 +150,13 @@ interface phpbb_session_storage
 	function cleanup_guest_sessions($session_length);
 
 	/** Remove from storage all sessions older than session_length
-	 * @param int $user_id
+	 *
+	 * If $user_ids is empty, nothing happens.
+	 *
+	 * @param array $user_ids
 	 * @param int $session_length (in seconds) remove sessions older than time - session_legnth
 	 */
-	function cleanup_expired_sessions($user_id, $session_length);
+	function cleanup_expired_sessions(array $user_ids, $session_length);
 
 	/** For sessions older than length, run a function and collect results.
 	 * @param int $session_length how old to search

@@ -754,7 +754,7 @@ class phpbb_session
 			// Limit new sessions in 1 minute period (if required)
 			if (empty($this->data['session_time']) && $config['active_sessions'])
 			{
-				$num_sessions = $this->storage->num_active_sessions();
+				$num_sessions = $this->storage->num_active_sessions(60);
 
 				if ((int) $num_sessions > (int) $config['active_sessions'])
 				{
@@ -808,9 +808,10 @@ class phpbb_session
 
 			unset($cookie_expire);
 
+			$timeframe_to_search = max($config['session_length'], $config['form_token_lifetime']);
 			$num_sessions = $this->storage->num_sessions(
 				$this->data['user_id'],
-				max($config['session_length'], $config['form_token_lifetime'])
+				$timeframe_to_search
 			);
 
 			if ($num_sessions <= 1 || empty($this->data['user_form_salt']))
@@ -923,15 +924,10 @@ class phpbb_session
 				return (int) $row['session_user_id'];
 		}, $batch_size);
 
-		$del_sessions = sizeof($del_user_ids);
+        // Delete expired sessions
+        $this->storage->cleanup_expired_sessions($del_user_ids, $config['session_length']);
 
-		if (sizeof($del_user_ids))
-		{
-			// Delete expired sessions
-			$this->storage->cleanup_expired_sessions($del_user_ids, $config['session_length']);
-		}
-
-		if ($del_sessions < $batch_size)
+		if (sizeof($del_user_ids) < $batch_size)
 		{
 			// Less than 10 users, update gc timer ... else we want gc
 			// called again to delete other sessions
