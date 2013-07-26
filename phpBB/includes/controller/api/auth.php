@@ -75,28 +75,28 @@ class phpbb_controller_api_auth
 		$this->user->add_lang('api');
 	}
 
-	public function generate_token()
+	public function generate_key()
 	{
-		$tokens = array(
-			'auth_token' => $this->auth_repository->generate_token(),
-			'sign_token' => $this->auth_repository->generate_token(),
+		$keys = array(
+			'auth_key' => $this->auth_repository->generate_key(),
+			'sign_key' => $this->auth_repository->generate_key(),
 		);
 
 		$response = new phpbb_model_entity_api_response(array(
 			'status' => 200,
-			'data' => $tokens,
+			'data' => $keys,
 		));
 
 		$serializer = new Serializer(array(new phpbb_model_normalizer_api_response()), array(new JsonEncoder()));
 		return new Response($serializer->serialize($response, 'json'), $response->get('status'));
 	}
 
-	public function auth($token, $sign_token)
+	public function auth($key, $sign_key)
 	{
 		$this->template->assign_vars(array(
 			'S_AUTH_ACTION' => 'app.php?controller=api/auth/allow',
-			'T_TOKEN' => $token,
-			'T_SIGN_TOKEN' => $sign_token,
+			'T_KEY' => $key,
+			'T_SIGN_KEY' => $sign_key,
 		));
 
 		add_form_key('api_auth');
@@ -117,29 +117,29 @@ class phpbb_controller_api_auth
 			redirect(generate_board_url());
 		}
 
-		$token = $this->request->variable('token', '');
-		$sign_token = $this->request->variable('sign_token', '');
+		$key = $this->request->variable('key', '');
+		$sign_key = $this->request->variable('sign_key', '');
 		$appname = $this->request->variable('appname', '');
 
 		if (empty($appname))
 		{
-			return $this->helper->error($this->user->lang['AUTH_MISSING_NAME'] . ' <a href="app.php?controller=api/auth/' . $token . '/' . $sign_token .'">' .
+			return $this->helper->error($this->user->lang['AUTH_MISSING_NAME'] . ' <a href="app.php?controller=api/auth/' . $key . '/' . $sign_key .'">' .
 			$this->user->lang['AUTH_RETURN'] . '</a>');
 		}
 
-		if (strlen($token) != 32 || strlen($sign_token) != 32)
+		if (strlen($key) != 32 || strlen($sign_key) != 32)
 		{
-			return $this->helper->error($this->user->lang['AUTH_TOKEN_ERROR']);
+			return $this->helper->error($this->user->lang['AUTH_KEY_ERROR']);
 		}
 
-		$this->auth_repository->allow($token, $sign_token, $this->user->data['user_id'], $appname);
+		$this->auth_repository->allow($key, $sign_key, $this->user->data['user_id'], $appname);
 		return new Response();
 
 	}
 
-	public function verify($token, $timestamp, $hash)
+	public function verify($key, $timestamp, $hash)
 	{
-		$is_verified = $this->auth_repository->verify($token, $timestamp, $hash);
+		$is_verified = $this->auth_repository->verify($key, $timestamp, $hash);
 
 		$response = new phpbb_model_entity_api_response(array(
 			'status' => 200,
