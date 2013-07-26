@@ -2534,7 +2534,7 @@ function group_delete($group_id, $group_name = false)
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
-	global $db, $auth;
+	global $db, $auth, $phpbb_container;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -2621,6 +2621,20 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
 	group_update_listings($group_id);
+
+	if ($pending)
+	{
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+		foreach ($add_id_ary as $user_id)
+		{
+			$phpbb_notifications->add_notifications('group_request', array(
+				'group_id'		=> $group_id,
+				'user_id'		=> $user_id,
+				'group_name'	=> $group_name,
+			));
+		}
+	}
 
 	// Return false - no error
 	return false;

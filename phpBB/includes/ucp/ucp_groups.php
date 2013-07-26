@@ -197,13 +197,6 @@ class ucp_groups
 								else
 								{
 									group_user_add($group_id, $user->data['user_id'], false, false, false, 0, 1);
-
-									$phpbb_notifications = $phpbb_container->get('notification_manager');
-
-									$phpbb_notifications->add_notifications('group_request', array_merge(
-										$group_row[$group_id],
-										array('user_id' => $user->data['user_id'])
-									));
 								}
 
 								add_log('user', $user->data['user_id'], 'LOG_USER_GROUP_JOIN' . (($group_row[$group_id]['group_type'] == GROUP_FREE) ? '' : '_PENDING'), $group_row[$group_id]['group_name']);
