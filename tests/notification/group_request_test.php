@@ -48,6 +48,8 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$phpbb_log = new phpbb_log_null();
 
+		// Now on to the actual test
+
 		$this->assertEquals(1, $this->notifications->get_notification_type_id('group_request'));
 
 		$group_id = false;
@@ -55,9 +57,6 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 
 		// Add user 1 as group leader
 		group_user_add($group_id, 2, false, false, false, true, false);
-
-		// Add notifications for group requests for user 1
-		//$this->notifications->add_subscription('group_request', 0, '', 2);
 
 		// Add user 2 as pending
 		group_user_add($group_id, 3, false, false, false, false, true);
