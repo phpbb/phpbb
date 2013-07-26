@@ -757,7 +757,7 @@ class ucp_profile
 					{
 						if (!empty($keys))
 						{
-							$sql = 'DELETE FROM ' . API_TOKENS_TABLE . '
+							$sql = 'DELETE FROM ' . API_KEYS_TABLE . '
 								WHERE user_id = ' . (int) $user->data['user_id'] . '
 								AND ' . $db->sql_in_set('key_id', $keys) ;
 
@@ -774,7 +774,7 @@ class ucp_profile
 				}
 
 				$sql = 'SELECT key_id, name
-					FROM ' . API_TOKENS_TABLE . '
+					FROM ' . API_KEYS_TABLE . '
 					WHERE user_id = ' . (int) $user->data['user_id'];
 
 				$result = $db->sql_query($sql);

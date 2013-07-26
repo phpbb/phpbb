@@ -49,5 +49,5 @@ $lang = array_merge($lang, array(
 	'AUTH_RETURN'				=> 'Return to authentication.',
 	'COLON'						=> ':',
 	'AUTH_FORM_ERROR'			=> 'Invalid form.',
-	'AUTH_TOKEN_ERROR'			=> 'Invalid token.',
+	'AUTH_KEY_ERROR'			=> 'Invalid key.',
 ));

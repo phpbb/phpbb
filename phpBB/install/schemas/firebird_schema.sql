@@ -128,26 +128,26 @@ CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users(user_id);;
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users(auth_option_id);;
 CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users(auth_role_id);;
 
-# Table: 'phpbb_api_tokens'
-CREATE TABLE phpbb_api_tokens (
+# Table: 'phpbb_api_keys'
+CREATE TABLE phpbb_api_keys (
 	key_id INTEGER NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
 	name VARCHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	token VARCHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	sign_token VARCHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL
+	key VARCHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	sign_key VARCHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL
 );;
 
-ALTER TABLE phpbb_api_tokens ADD PRIMARY KEY (key_id);;
+ALTER TABLE phpbb_api_keys ADD PRIMARY KEY (key_id);;
 
 
-CREATE GENERATOR phpbb_api_tokens_gen;;
-SET GENERATOR phpbb_api_tokens_gen TO 0;;
+CREATE GENERATOR phpbb_api_keys_gen;;
+SET GENERATOR phpbb_api_keys_gen TO 0;;
 
-CREATE TRIGGER t_phpbb_api_tokens FOR phpbb_api_tokens
+CREATE TRIGGER t_phpbb_api_keys FOR phpbb_api_keys
 BEFORE INSERT
 AS
 BEGIN
-	NEW.key_id = GEN_ID(phpbb_api_tokens_gen, 1);
+	NEW.key_id = GEN_ID(phpbb_api_keys_gen, 1);
 END;;
 
 

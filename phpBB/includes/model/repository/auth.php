@@ -43,48 +43,48 @@ class phpbb_model_repository_auth
 		$this->db = $db;
 	}
 
-	public function generate_token()
+	public function generate_key()
 	{
 		$chars = '0123456789abcdefghijklmnopqrstyvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-		$token = '';
+		$key = '';
 		for($i = 0; $i < 32; $i++)
 		{
 			$chars = str_shuffle($chars);
-			$token .= substr($chars, mt_rand(0, 61), 1);
+			$key .= substr($chars, mt_rand(0, 61), 1);
 		}
 
-		return $token;
+		return $key;
 	}
 
-	public function allow($token, $sign_token, $user_id, $name)
+	public function allow($key, $sign_key, $user_id, $name)
 	{
-		$sql = 'INSERT INTO ' . API_TOKENS_TABLE
-			. " (user_id, name, token, sign_token) VALUES (' " . $user_id
+		$sql = 'INSERT INTO ' . API_KEYS_TABLE
+			. " (user_id, name, key, sign_key) VALUES (' " . $user_id
 			. "', '" . $this->db->sql_escape($name)
-			. "', '" . $this->db->sql_escape($token)
-			. "', '" . $this->db->sql_escape($sign_token) . "')";
+			. "', '" . $this->db->sql_escape($key)
+			. "', '" . $this->db->sql_escape($sign_key) . "')";
 
 		$this->db->sql_query($sql);
 	}
 
-	public function verify($token, $timestamp, $hash)
+	public function verify($key, $timestamp, $hash)
 	{
-		$sql = 'SELECT sign_token
-				FROM ' . API_TOKENS_TABLE
-			. " WHERE token = '" . $this->db->sql_escape($token) . "'";
+		$sql = 'SELECT sign_key
+				FROM ' . API_KEYS_TABLE
+			. " WHERE token = '" . $this->db->sql_escape($key) . "'";
 
 		$result = $this->db->sql_query($sql);
 
 		$row = $this->db->sql_fetchrow($result);
-		$sign_token = $row['sign_token'];
+		$sign_key = $row['sign_key'];
 
-		if (empty($sign_token))
+		if (empty($sign_key))
 		{
 			return false;
 		}
 
-		$test_hash = hash_hmac('sha256', 'api/auth/verify/' . $token . '/' . $timestamp, $sign_token);
+		$test_hash = hash_hmac('sha256', 'api/auth/verify/' . $key . '/' . $timestamp, $sign_key);
 
 		if ($hash == $test_hash)
 		{

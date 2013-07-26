@@ -923,13 +923,13 @@ function get_schema_struct()
 		),
 	);
 
-	$schema_data['phpbb_api_tokens'] = array(
+	$schema_data['phpbb_api_keys'] = array(
 		'COLUMNS'		=> array(
 			'key_id'			=> array('UINT', NULL, 'auto_increment'),
 			'user_id'			=> array('UINT', 0),
 			'name'				=> array('VCHAR:32', ''),
-			'token'				=> array('VCHAR:32', ''),
-			'sign_token'		=> array('VCHAR:32', ''),
+			'key'				=> array('VCHAR:32', ''),
+			'sign_key'		=> array('VCHAR:32', ''),
 		),
 		'PRIMARY_KEY'			=> 'key_id',
 	);

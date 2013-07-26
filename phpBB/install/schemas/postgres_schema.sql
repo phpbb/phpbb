@@ -189,16 +189,16 @@ CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id);
 CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id);
 
 /*
-	Table: 'phpbb_api_tokens'
+	Table: 'phpbb_api_keys'
 */
-CREATE SEQUENCE phpbb_api_tokens_seq;
+CREATE SEQUENCE phpbb_api_keys_seq;
 
-CREATE TABLE phpbb_api_tokens (
-	key_id INT4 DEFAULT nextval('phpbb_api_tokens_seq'),
+CREATE TABLE phpbb_api_keys (
+	key_id INT4 DEFAULT nextval('phpbb_api_keys_seq'),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	name varchar(32) DEFAULT '' NOT NULL,
-	token varchar(32) DEFAULT '' NOT NULL,
-	sign_token varchar(32) DEFAULT '' NOT NULL,
+	key varchar(32) DEFAULT '' NOT NULL,
+	sign_key varchar(32) DEFAULT '' NOT NULL,
 	PRIMARY KEY (key_id)
 );
 
