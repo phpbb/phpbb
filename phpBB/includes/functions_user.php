@@ -2635,7 +2635,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 */
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
-	global $db, $auth, $config, $phpbb_dispatcher;
+	global $db, $auth, $config, $phpbb_dispatcher, $phpbb_container;
 
 	if ($config['coppa_enable'])
 	{
@@ -2769,6 +2769,10 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	group_update_listings($group_id);
 
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+	$phpbb_notifications->delete_notifications('group_request', $user_id_ary, $group_id);
+
 	// Return false - no error
 	return false;
 }
@@ -2858,7 +2862,7 @@ function remove_default_rank($group_id, $user_ids)
 */
 function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $group_attributes = false)
 {
-	global $db, $auth, $phpbb_root_path, $phpEx, $config;
+	global $db, $auth, $phpbb_root_path, $phpEx, $config, $phpbb_container;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -2950,6 +2954,10 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			}
 
 			$messenger->save_queue();
+
+			$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+			$phpbb_notifications->delete_notifications('group_request', $user_id_ary, $group_id);
 
 			$log = 'LOG_USERS_APPROVED';
 		break;
