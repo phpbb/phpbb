@@ -21,14 +21,14 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 	public function test_get_notification_type_id()
 	{
 		// They should be inserted the first time
-		$this->assertEquals(1, $this->notifications->get_notification_type_id('post'));
-		$this->assertEquals(2, $this->notifications->get_notification_type_id('quote'));
-		$this->assertEquals(3, $this->notifications->get_notification_type_id('test'));
+		$post_type_id = $this->notifications->get_notification_type_id('post');
+		$quote_type_id = $this->notifications->get_notification_type_id('quote');
+		$test_type_id = $this->notifications->get_notification_type_id('test');
 
 		$this->assertEquals(array(
-				'test'	=> 3,
-				'quote'	=> 2,
-				'post'	=> 1,
+				'test'	=> $test_type_id,
+				'quote'	=> $quote_type_id,
+				'post'	=> $post_type_id,
 			),
 			$this->notifications->get_notification_type_ids(array(
 				'test',
@@ -36,11 +36,11 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 				'post',
 			)
 		));
-		$this->assertEquals(2, $this->notifications->get_notification_type_id('quote'));
+		$this->assertEquals($quote_type_id, $this->notifications->get_notification_type_id('quote'));
 
 		try
 		{
-			$this->assertEquals(3, $this->notifications->get_notification_type_id('fail'));
+			$this->assertEquals(false, $this->notifications->get_notification_type_id('fail'));
 
 			$this->fail('Non-existent type should throw an exception');
 		}

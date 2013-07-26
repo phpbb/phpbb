@@ -50,8 +50,6 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 
 		// Now on to the actual test
 
-		$this->assertEquals(1, $this->notifications->get_notification_type_id('group_request'));
-
 		$group_id = false;
 		group_create($group_id, GROUP_OPEN, 'test', 'test group', array());
 
@@ -68,7 +66,6 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 
 		$expected = array(
 			1 => array(
-				'notification_type_id'	=> 1,
 				'item_id'				=> 3, // user_id of requesting join
 				'item_parent_id'		=> $group_id,
 				'user_id'	   			=> 2,
