@@ -94,15 +94,10 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		}
 
 		$this->notifications->set_var('notification_types', $types);
-	}
 
-	protected function tearDown()
-	{
 		$this->db->sql_query('DELETE FROM phpbb_notification_types');
 		$this->db->sql_query('DELETE FROM phpbb_notifications');
 		$this->db->sql_query('DELETE FROM phpbb_user_notifications');
-
-		parent::tearDown();
 	}
 
 	protected function build_type($type)

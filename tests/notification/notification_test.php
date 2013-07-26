@@ -165,8 +165,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 		));
 
 		$expected = array(
-			1 => array(
-				'notification_type_id'	=> 4,
+			array(
 				'item_id'			=> 1,
 				'item_parent_id'	=> 1,
 				'user_id'	   		=> 0,
@@ -174,8 +173,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 				'notification_time'	   			=> 1349413321,
 				'notification_data'			   	=> array(),
 			),
-			2 => array(
-				'notification_type_id'	=> 4,
+			array(
 				'item_id'			=> 2,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -183,8 +181,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 				'notification_time'	   			=> 1349413322,
 				'notification_data'				=> array(),
 			),
-			3 => array(
-				'notification_type_id'	=> 4,
+			array(
 				'item_id'			=> 3,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -192,8 +189,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 				'notification_time'	   			=> 1349413323,
 				'notification_data'			   	=> array(),
 			),
-			4 => array(
-				'notification_type_id'	=> 3,
+			array(
 				'item_id'			=> 4,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -208,8 +204,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 					'forum_name'	=> 'Your first forum',
 				),
 			),
-			5 => array(
-				'notification_type_id'	=> 2,
+			array(
 				'item_id'			=> 5,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -228,18 +223,15 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 
 		$this->assertEquals(sizeof($expected), $notifications['unread_count']);
 
-		$notifications = $notifications['notifications'];
-
-		foreach ($expected as $notification_id => $notification_data)
+		$i = 0;
+		foreach ($notifications['notifications'] as $notification)
 		{
-			//echo $notifications[$notification_id];
-
-			$this->assertEquals($notification_id, $notifications[$notification_id]->notification_id, 'notification_id');
-
-			foreach ($notification_data as $key => $value)
+			foreach ($expected[$i] as $notification_data)
 			{
-				$this->assertEquals($value, $notifications[$notification_id]->$key, $key . ' ' . $notification_id);
+				$this->assertEquals($value, $notification->$key, $key . ' ' . $i);
 			}
+
+			$i++;
 		}
 
 		// Now test updating -------------------------------
@@ -271,8 +263,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 		));
 
 		$expected = array(
-			1 => array(
-				'notification_type_id'	=> 4,
+			array(
 				'item_id'			=> 1,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -280,8 +271,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 				'notification_time'	=> 1349413321,
 				'notification_data'	=> array(),
 			),
-			2 => array(
-				'notification_type_id'	=> 4,
+			array(
 				'item_id'			=> 2,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -289,7 +279,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 				'notification_time'	=> 1349413322,
 				'notification_data'	=> array(),
 			),
-			3 => array(
+			array(
 				'notification_type_id'	=> 4,
 				'item_id'			=> 3,
 				'item_parent_id'	=> 2,
@@ -298,8 +288,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 				'notification_time'	=> 1234,
 				'notification_data'	=> array(),
 			),
-			4 => array(
-				'notification_type_id'	=> 3,
+			array(
 				'item_id'			=> 4,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -314,8 +303,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 					'forum_name'	=> 'Your first forum',
 				),
 			),
-			5 => array(
-				'notification_type_id'	=> 2,
+			array(
 				'item_id'			=> 5,
 				'item_parent_id'	=> 2,
 				'user_id'	   		=> 0,
@@ -334,18 +322,16 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 
 		$this->assertEquals(sizeof($expected), $notifications['unread_count']);
 
-		$notifications = $notifications['notifications'];
-
-		foreach ($expected as $notification_id => $notification_data)
+		$i = 0;
+		foreach ($notifications['notifications'] as $notification)
 		{
-			//echo $notifications[$notification_id];
-
-			$this->assertEquals($notification_id, $notifications[$notification_id]->notification_id, 'notification_id');
-
-			foreach ($notification_data as $key => $value)
+			foreach ($expected[$i] as $notification_data)
 			{
-				$this->assertEquals($value, $notifications[$notification_id]->$key, $key . ' ' . $notification_id);
+				$this->assertEquals($value, $notification->$key, $key . ' ' . $i);
 			}
+
+			$i++;
 		}
+
 	}
 }

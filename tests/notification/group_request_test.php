@@ -65,7 +65,7 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 		));
 
 		$expected = array(
-			1 => array(
+			array(
 				'item_id'				=> 3, // user_id of requesting join
 				'item_parent_id'		=> $group_id,
 				'user_id'	   			=> 2,
@@ -78,16 +78,16 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 
 		$this->assertEquals(sizeof($expected), $notifications['unread_count']);
 
-		$notifications = $notifications['notifications'];
-
-		foreach ($expected as $notification_id => $notification_data)
+		$i = 0;
+		foreach ($notifications['notifications'] as $notification)
 		{
-			$this->assertEquals($notification_id, $notifications[$notification_id]->notification_id, 'notification_id');
-
-			foreach ($notification_data as $key => $value)
+			foreach ($expected[$i] as $notification_data)
 			{
-				$this->assertEquals($value, $notifications[$notification_id]->$key, $key . ' ' . $notification_id);
+				$this->assertEquals($value, $notification->$key, $key . ' ' . $i);
 			}
+
+			$i++;
 		}
+
 	}
 }
