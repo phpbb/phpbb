@@ -533,12 +533,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$cache = new phpbb_mock_null_cache;
 
 		$cache_driver = new phpbb_cache_driver_null();
-		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
-		$phpbb_container
-			->expects($this->any())
-			->method('get')
-			->with('cache.driver')
-			->will($this->returnValue($cache_driver));
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->set('cache.driver', $cache_driver);
+		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
 
 		if (!function_exists('utf_clean_string'))
 		{
