@@ -30,9 +30,9 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 	{
 		global $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_log;
 
-		include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-		include($phpbb_root_path . 'includes/functions_content.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 
 		set_config(false, false, false, $this->config);
 
