@@ -217,7 +217,7 @@ CREATE TABLE phpbb_api_keys (
 	key_id number(8) NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
 	name varchar2(32) DEFAULT '' ,
-	key varchar2(32) DEFAULT '' ,
+	auth_key varchar2(32) DEFAULT '' ,
 	sign_key varchar2(32) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_api_keys PRIMARY KEY (key_id)
 )

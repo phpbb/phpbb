@@ -75,7 +75,7 @@ class phpbb_controller_api_auth
 		$this->user->add_lang('api');
 	}
 
-	public function generate_key()
+	public function generate_keys()
 	{
 		$keys = array(
 			'auth_key' => $this->auth_repository->generate_key(),
@@ -91,11 +91,11 @@ class phpbb_controller_api_auth
 		return new Response($serializer->serialize($response, 'json'), $response->get('status'));
 	}
 
-	public function auth($key, $sign_key)
+	public function auth($auth_key, $sign_key)
 	{
 		$this->template->assign_vars(array(
 			'S_AUTH_ACTION' => 'app.php?controller=api/auth/allow',
-			'T_KEY' => $key,
+			'T_AUTH_KEY' => $auth_key,
 			'T_SIGN_KEY' => $sign_key,
 		));
 
@@ -117,22 +117,22 @@ class phpbb_controller_api_auth
 			redirect(generate_board_url());
 		}
 
-		$key = $this->request->variable('key', '');
+		$auth_key = $this->request->variable('auth_key', '');
 		$sign_key = $this->request->variable('sign_key', '');
 		$appname = $this->request->variable('appname', '');
 
 		if (empty($appname))
 		{
-			return $this->helper->error($this->user->lang['AUTH_MISSING_NAME'] . ' <a href="app.php?controller=api/auth/' . $key . '/' . $sign_key .'">' .
+			return $this->helper->error($this->user->lang['AUTH_MISSING_NAME'] . ' <a href="app.php?controller=api/auth/' . $auth_key . '/' . $sign_key .'">' .
 			$this->user->lang['AUTH_RETURN'] . '</a>');
 		}
 
-		if (strlen($key) != 32 || strlen($sign_key) != 32)
+		if (strlen($auth_key) != 32 || strlen($sign_key) != 32)
 		{
 			return $this->helper->error($this->user->lang['AUTH_KEY_ERROR']);
 		}
 
-		$this->auth_repository->allow($key, $sign_key, $this->user->data['user_id'], $appname);
+		$this->auth_repository->allow($auth_key, $sign_key, $this->user->data['user_id'], $appname);
 		return new Response();
 
 	}

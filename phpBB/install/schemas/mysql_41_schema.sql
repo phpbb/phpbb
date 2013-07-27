@@ -95,7 +95,7 @@ CREATE TABLE phpbb_api_keys (
 	key_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	name varchar(32) DEFAULT '' NOT NULL,
-	key varchar(32) DEFAULT '' NOT NULL,
+	auth_key varchar(32) DEFAULT '' NOT NULL,
 	sign_key varchar(32) DEFAULT '' NOT NULL,
 	PRIMARY KEY (key_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
