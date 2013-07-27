@@ -414,7 +414,7 @@ $lang = array_merge($lang, array(
 		2	=> '<strong>%d</strong> Notifications',
 	),
 	'NOTIFICATION_BOOKMARK'				=> '%1$s replied to the topic "%2$s" you have bookmarked.',
-	'NOTIFICATION_GROUP_REQUEST'		=> '%1$s is requesting to join the group you manage, %2$s.',
+	'NOTIFICATION_GROUP_REQUEST'		=> '%1$s is requesting to join the group %2$s.',
 	'NOTIFICATION_PM'					=> '%1$s sent you a Private Message "%2$s".',
 	'NOTIFICATION_POST'					=> '%1$s replied to the topic "%2$s".',
 	'NOTIFICATION_POST_APPROVED'		=> 'Your post was approved "%2$s".',
