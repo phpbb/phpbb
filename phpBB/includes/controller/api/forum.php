@@ -32,13 +32,21 @@ class phpbb_controller_api_forum
 	protected $forum_repository;
 
 	/**
+	 * Config object
+	 * @var phpbb_config_db
+	 */
+	protected $config;
+
+	/**
 	 * Constructor
 	 *
 	 * @param phpbb_model_repository_forum $forum_repository
+	 * @param phpbb_config_db $config
 	 */
-	function __construct(phpbb_model_repository_forum $forum_repository)
+	function __construct(phpbb_model_repository_forum $forum_repository, phpbb_config_db $config)
 	{
 		$this->forum_repository = $forum_repository;
+		$this->config = $config;
 	}
 
 	/**
@@ -52,12 +60,21 @@ class phpbb_controller_api_forum
 	 */
 	public function forums($forum_id)
 	{
-		$forums = $this->forum_repository->get($forum_id);
-
 		$serializer = new Serializer(array(
 			new phpbb_model_normalizer_api_response(),
 			new phpbb_model_normalizer_forum(),
 		), array(new JsonEncoder()));
+
+		if (!$this->config['allow_api'])
+		{
+			$response = new phpbb_model_entity_api_response(array(
+				'status' => 500,
+				'data' => 'The API is not enabled on this board',
+			));
+			return new Response($serializer->serialize($response, 'json'), $response->get('status'));
+		}
+
+		$forums = $this->forum_repository->get($forum_id);
 
 		$response = new phpbb_model_entity_api_response(array(
 			'status' => 200,

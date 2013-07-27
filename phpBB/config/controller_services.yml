@@ -3,11 +3,13 @@ services:
         class: phpbb_controller_api_forum
         arguments:
             - @model.repository.forum
+            - @config
 
     api.controller.topic:
         class: phpbb_controller_api_topic
         arguments:
             - @model.repository.topic
+            - @config
 
     api.controller.auth:
         class: phpbb_controller_api_auth
@@ -17,3 +19,4 @@ services:
             - @controller.helper
             - @template
             - @request
+            - @config
