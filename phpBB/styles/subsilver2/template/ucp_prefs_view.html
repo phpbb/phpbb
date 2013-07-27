@@ -9,6 +9,7 @@
 		<td class="row3" colspan="2" align="center"><span class="gensmall error">{ERROR}</span></td>
 	</tr>
 <!-- ENDIF -->
+<!-- EVENT ucp_prefs_view_radio_buttons_before -->
 <tr>
 	<td class="row1" width="50%"><b class="genmed">{L_VIEW_IMAGES}{L_COLON}</b></td>
 	<td class="row2"><input type="radio" class="radio" name="images" value="1"<!-- IF S_IMAGES --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" class="radio" name="images" value="0"<!-- IF not S_IMAGES --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_NO}</span></td>
@@ -35,9 +36,11 @@
 		<td class="row2"><input type="radio" class="radio" name="wordcensor" value="1"<!-- IF S_DISABLE_CENSORS --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" class="radio" name="wordcensor" value="0"<!-- IF not S_DISABLE_CENSORS --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_NO}</span></td>
 	</tr>
 <!-- ENDIF -->
+<!-- EVENT ucp_prefs_view_radio_buttons_after -->
 <tr>
 	<td colspan="2" class="spacer"></td>
 </tr>
+<!-- EVENT ucp_prefs_view_select_menu_before -->
 <tr>
 	<td class="row1" width="50%"><b class="genmed">{L_VIEW_TOPICS_DAYS}{L_COLON}</b></td>
 	<td class="row2">{S_TOPIC_SORT_DAYS}</td>
@@ -65,6 +68,7 @@
 	<td class="row1" width="50%"><b class="genmed">{L_VIEW_POSTS_DIR}{L_COLON}</b></td>
 	<td class="row2">{S_POST_SORT_DIR}</td>
 </tr>
+<!-- EVENT ucp_prefs_view_select_menu_after -->
 <tr>
 	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
 </tr>
