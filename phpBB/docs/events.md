@@ -119,6 +119,20 @@ ucp_pm_viewmessage_print_head_append
 * Location: styles/prosilver/template/ucp_pm_viewmessage_print.html
 * Purpose: Add asset calls directly before the `</head>` tag of the Print PM screen
 
+ucp_prefs_personal_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_personal.html
+    + styles/subsilver2/template/ucp_prefs_personal.html
+* Purpose: Add user options to the top of the Edit Global Settings screen
+
+ucp_prefs_personal_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_personal.html
+    + styles/subsilver2/template/ucp_prefs_personal.html
+* Purpose: Add user options to the bottom of the Edit Global Settings screen
+
 viewtopic_print_head_append
 ===
 * Location: styles/prosilver/template/viewtopic_print.html
