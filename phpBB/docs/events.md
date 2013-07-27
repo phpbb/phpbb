@@ -133,6 +133,20 @@ ucp_prefs_personal_after
     + styles/subsilver2/template/ucp_prefs_personal.html
 * Purpose: Add user options to the bottom of the Edit Global Settings screen
 
+ucp_prefs_post_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_post.html
+    + styles/subsilver2/template/ucp_prefs_post.html
+* Purpose: Add user options to the top of the Edit Posting Defaults screen
+
+ucp_prefs_post_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_post.html
+    + styles/subsilver2/template/ucp_prefs_post.html
+* Purpose: Add user options to the bottom of the Edit Posting Defaults screen
+
 ucp_prefs_view_radio_buttons_before
 ===
 * Locations:
