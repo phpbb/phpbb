@@ -2929,11 +2929,10 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 					AND ' . $db->sql_in_set('ug.user_id', $user_id_ary);
 			$result = $db->sql_query($sql);
 
-			$user_id_ary = $email_users = array();
+			$user_id_ary = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$user_id_ary[] = $row['user_id'];
-				$email_users[] = $row;
 			}
 			$db->sql_freeresult($result);
 
@@ -2948,29 +2947,13 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 					AND " . $db->sql_in_set('user_id', $user_id_ary);
 			$db->sql_query($sql);
 
-			// Send approved email to users...
-			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-			$messenger = new messenger();
-
-			foreach ($email_users as $row)
-			{
-				$messenger->template('group_approved', $row['user_lang']);
-
-				$messenger->set_addresses($row);
-
-				$messenger->assign_vars(array(
-					'USERNAME'		=> htmlspecialchars_decode($row['username']),
-					'GROUP_NAME'	=> htmlspecialchars_decode($group_name),
-					'U_GROUP'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=membership")
-				);
-
-				$messenger->send($row['user_notify_type']);
-			}
-
-			$messenger->save_queue();
-
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
+			$phpbb_notifications->add_notifications('group_request_approved', array(
+				'user_ids'		=> $user_id_ary,
+				'group_id'		=> $group_id,
+				'group_name'	=> $group_name,
+			));
 			$phpbb_notifications->delete_notifications('group_request', $user_id_ary, $group_id);
 
 			$log = 'LOG_USERS_APPROVED';
