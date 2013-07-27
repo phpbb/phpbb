@@ -234,6 +234,20 @@ class ucp_prefs
 					'wordcensor'	=> request_var('wordcensor', (bool) $user->optionget('viewcensors')),
 				);
 
+				/**
+				* Add UCP edit display options data before they are assigned to the template or submitted
+				*
+				* To assign data to the template, use $template->assign_vars()
+				*
+				* @event core.ucp_prefs_view_data
+				* @var	bool	submit		Do we display the form only
+				*							or did the user press submit
+				* @var	array	data		Array with current ucp options data
+				* @since 3.1-A1
+				*/
+				$vars = array('submit', 'data');
+				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_view_data', compact($vars)));
+
 				if ($submit)
 				{
 					$error = validate_data($data, array(
@@ -271,6 +285,17 @@ class ucp_prefs
 							'user_topic_show_days'	=> $data['topic_st'],
 							'user_post_show_days'	=> $data['post_st'],
 						);
+
+						/**
+						* Update UCP edit display options data on form submit
+						*
+						* @event core.ucp_prefs_view_update_data
+						* @var	array	data		Submitted display options data
+						* @var	array	sql_ary		Display options data we udpate
+						* @since 3.1-A1
+						*/
+						$vars = array('data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_view_update_data', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
