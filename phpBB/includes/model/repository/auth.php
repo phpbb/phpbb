@@ -57,22 +57,22 @@ class phpbb_model_repository_auth
 		return $key;
 	}
 
-	public function allow($key, $sign_key, $user_id, $name)
+	public function allow($auth_key, $sign_key, $user_id, $name)
 	{
 		$sql = 'INSERT INTO ' . API_KEYS_TABLE
-			. " (user_id, name, key, sign_key) VALUES (' " . $user_id
+			. " (user_id, name, auth_key, sign_key) VALUES (' " . $user_id
 			. "', '" . $this->db->sql_escape($name)
-			. "', '" . $this->db->sql_escape($key)
+			. "', '" . $this->db->sql_escape($auth_key)
 			. "', '" . $this->db->sql_escape($sign_key) . "')";
 
 		$this->db->sql_query($sql);
 	}
 
-	public function verify($key, $timestamp, $hash)
+	public function verify($auth_key, $timestamp, $hash)
 	{
 		$sql = 'SELECT sign_key
 				FROM ' . API_KEYS_TABLE
-			. " WHERE token = '" . $this->db->sql_escape($key) . "'";
+			. " WHERE auth_key = '" . $this->db->sql_escape($auth_key) . "'";
 
 		$result = $this->db->sql_query($sql);
 
@@ -84,7 +84,7 @@ class phpbb_model_repository_auth
 			return false;
 		}
 
-		$test_hash = hash_hmac('sha256', 'api/auth/verify/' . $key . '/' . $timestamp, $sign_key);
+		$test_hash = hash_hmac('sha256', 'api/auth/verify/' . $auth_key . '/' . $timestamp, $sign_key);
 
 		if ($hash == $test_hash)
 		{

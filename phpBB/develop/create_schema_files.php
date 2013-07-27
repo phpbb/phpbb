@@ -928,7 +928,7 @@ function get_schema_struct()
 			'key_id'			=> array('UINT', NULL, 'auto_increment'),
 			'user_id'			=> array('UINT', 0),
 			'name'				=> array('VCHAR:32', ''),
-			'key'				=> array('VCHAR:32', ''),
+			'auth_key'				=> array('VCHAR:32', ''),
 			'sign_key'		=> array('VCHAR:32', ''),
 		),
 		'PRIMARY_KEY'			=> 'key_id',

@@ -94,7 +94,7 @@ CREATE TABLE phpbb_api_keys (
 	key_id INTEGER PRIMARY KEY NOT NULL ,
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	name varchar(32) NOT NULL DEFAULT '',
-	key varchar(32) NOT NULL DEFAULT '',
+	auth_key varchar(32) NOT NULL DEFAULT '',
 	sign_key varchar(32) NOT NULL DEFAULT ''
 );
 

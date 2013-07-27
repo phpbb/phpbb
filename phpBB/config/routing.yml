@@ -24,12 +24,12 @@ api_topics_controller:
 
 api_auth_generate_controller:
     pattern: /api/auth/generatekeys
-    defaults: { _controller: api.controller.auth:generate_key }
+    defaults: { _controller: api.controller.auth:generate_keys }
     requirements:
         _method: GET
 
 api_auth_controller:
-    pattern: /api/auth/{key}/{sign_key}
+    pattern: /api/auth/{auth_key}/{sign_key}
     defaults: { _controller: api.controller.auth:auth }
     requirements:
         _method: GET
@@ -41,7 +41,7 @@ api_auth_allow_controller:
         _method: POST
 
 api_auth_verify_controller:
-    pattern: /api/auth/verify/{key}/{timestamp}/{hash}
+    pattern: /api/auth/verify/{auth_key}/{timestamp}/{hash}
     defaults: { _controller: api.controller.auth:verify }
     requirements:
         _method: GET
