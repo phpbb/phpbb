@@ -385,6 +385,20 @@ class ucp_prefs
 				);
 				add_form_key('ucp_prefs_post');
 
+				/**
+				* Add UCP edit posting defaults data before they are assigned to the template or submitted
+				*
+				* To assign data to the template, use $template->assign_vars()
+				*
+				* @event core.ucp_prefs_post_data
+				* @var	bool	submit		Do we display the form only
+				*							or did the user press submit
+				* @var	array	data		Array with current ucp options data
+				* @since 3.1-A1
+				*/
+				$vars = array('submit', 'data');
+				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_post_data', compact($vars)));
+
 				if ($submit)
 				{
 					if (check_form_key('ucp_prefs_post'))
@@ -397,6 +411,17 @@ class ucp_prefs
 							'user_options'	=> $user->data['user_options'],
 							'user_notify'	=> $data['notify'],
 						);
+
+						/**
+						* Update UCP edit posting defaults data on form submit
+						*
+						* @event core.ucp_prefs_post_update_data
+						* @var	array	data		Submitted display options data
+						* @var	array	sql_ary		Display options data we udpate
+						* @since 3.1-A1
+						*/
+						$vars = array('data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_post_update_data', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
