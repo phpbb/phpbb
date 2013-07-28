@@ -160,79 +160,64 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 			'post_time'		=> 1349413326,
 		));
 
-		$notifications = $this->notifications->load_notifications(array(
-			'count_unread'	=> true,
-		));
-
-		$expected = array(
+		$this->assert_notifications(
 			array(
-				'item_id'			=> 1,
-				'item_parent_id'	=> 1,
-				'user_id'	   		=> 0,
-				'notification_read'				=> 0,
-				'notification_time'	   			=> 1349413321,
-				'notification_data'			   	=> array(),
-			),
-			array(
-				'item_id'			=> 2,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'				=> 0,
-				'notification_time'	   			=> 1349413322,
-				'notification_data'				=> array(),
-			),
-			array(
-				'item_id'			=> 3,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'				=> 0,
-				'notification_time'	   			=> 1349413323,
-				'notification_data'			   	=> array(),
-			),
-			array(
-				'item_id'			=> 4,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'				=> 0,
-				'notification_time'	   			=> 1349413324,
-				'notification_data'			   	=> array(
-					'poster_id'		=> 2,
-					'topic_title'	=> 'test-title',
-					'post_subject'	=> 'Re: test-title',
-					'post_username'	=> '',
-					'forum_id'		=> 2,
-					'forum_name'	=> 'Your first forum',
+				array(
+					'item_id'			=> 1,
+					'item_parent_id'	=> 1,
+					'user_id'	   		=> 0,
+					'notification_read'				=> 0,
+					'notification_time'	   			=> 1349413321,
+					'notification_data'			   	=> array(),
 				),
-			),
-			array(
-				'item_id'			=> 5,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'				=> 0,
-				'notification_time'	   			=> 1349413325,
-				'notification_data'			   	=> array(
-					'poster_id'		=> 2,
-					'topic_title'	=> 'test-title',
-					'post_subject'	=> 'Re: test-title',
-					'post_username'	=> '',
-					'forum_id'		=> 2,
-					'forum_name'	=> 'Your first forum',
+				array(
+					'item_id'			=> 2,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'				=> 0,
+					'notification_time'	   			=> 1349413322,
+					'notification_data'				=> array(),
 				),
-			),
+				array(
+					'item_id'			=> 3,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'				=> 0,
+					'notification_time'	   			=> 1349413323,
+					'notification_data'			   	=> array(),
+				),
+				array(
+					'item_id'			=> 4,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'				=> 0,
+					'notification_time'	   			=> 1349413324,
+					'notification_data'			   	=> array(
+						'poster_id'		=> 2,
+						'topic_title'	=> 'test-title',
+						'post_subject'	=> 'Re: test-title',
+						'post_username'	=> '',
+						'forum_id'		=> 2,
+						'forum_name'	=> 'Your first forum',
+					),
+				),
+				array(
+					'item_id'			=> 5,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'				=> 0,
+					'notification_time'	   			=> 1349413325,
+					'notification_data'			   	=> array(
+						'poster_id'		=> 2,
+						'topic_title'	=> 'test-title',
+						'post_subject'	=> 'Re: test-title',
+						'post_username'	=> '',
+						'forum_id'		=> 2,
+						'forum_name'	=> 'Your first forum',
+					),
+				),
+			)
 		);
-
-		$this->assertEquals(sizeof($expected), $notifications['unread_count']);
-
-		$i = 0;
-		foreach ($notifications['notifications'] as $notification)
-		{
-			foreach ($expected[$i] as $notification_data)
-			{
-				$this->assertEquals($value, $notification->$key, $key . ' ' . $i);
-			}
-
-			$i++;
-		}
 
 		// Now test updating -------------------------------
 
@@ -258,80 +243,63 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 			'forum_name'	=> 'Your second forum', // change forum_name
 		));
 
-		$notifications = $this->notifications->load_notifications(array(
-			'count_unread'	=> true,
-		));
-
-		$expected = array(
+		$this->assert_notifications(
 			array(
-				'item_id'			=> 1,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'	=> 0,
-				'notification_time'	=> 1349413321,
-				'notification_data'	=> array(),
-			),
-			array(
-				'item_id'			=> 2,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'	=> 0,
-				'notification_time'	=> 1349413322,
-				'notification_data'	=> array(),
-			),
-			array(
-				'notification_type_id'	=> 4,
-				'item_id'			=> 3,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'	=> 0,
-				'notification_time'	=> 1234,
-				'notification_data'	=> array(),
-			),
-			array(
-				'item_id'			=> 4,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'	=> 0,
-				'notification_time'	=> 1349413324,
-				'notification_data'	=> array(
-					'poster_id'		=> 2,
-					'topic_title'	=> 'test-title',
-					'post_subject'	=> 'Re: test-title',
-					'post_username'	=> '',
-					'forum_id'		=> 2,
-					'forum_name'	=> 'Your first forum',
+				array(
+					'item_id'			=> 3,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'	=> 0,
+					'notification_time'	=> 1234,
+					'notification_data'	=> array(),
 				),
-			),
-			array(
-				'item_id'			=> 5,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'	=> 0,
-				'notification_time'	=> 1349413325,
-				'notification_data'	=> array(
-					'poster_id'		=> 2,
-					'topic_title'	=> 'test-title2',
-					'post_subject'	=> 'Re: test-title2',
-					'post_username'	=> '',
-					'forum_id'		=> 3,
-					'forum_name'	=> 'Your second forum',
+				array(
+					'item_id'			=> 1,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'	=> 0,
+					'notification_time'	=> 1349413321,
+					'notification_data'	=> array(),
 				),
-			),
+				array(
+					'item_id'			=> 2,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'	=> 0,
+					'notification_time'	=> 1349413322,
+					'notification_data'	=> array(),
+				),
+				array(
+					'item_id'			=> 4,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'	=> 0,
+					'notification_time'	=> 1349413324,
+					'notification_data'	=> array(
+						'poster_id'		=> 2,
+						'topic_title'	=> 'test-title',
+						'post_subject'	=> 'Re: test-title',
+						'post_username'	=> '',
+						'forum_id'		=> 2,
+						'forum_name'	=> 'Your first forum',
+					),
+				),
+				array(
+					'item_id'			=> 5,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'	=> 0,
+					'notification_time'	=> 1349413325,
+					'notification_data'	=> array(
+						'poster_id'		=> 2,
+						'topic_title'	=> 'test-title2',
+						'post_subject'	=> 'Re: test-title2',
+						'post_username'	=> '',
+						'forum_id'		=> 3,
+						'forum_name'	=> 'Your second forum',
+					),
+				),
+			)
 		);
-
-		$this->assertEquals(sizeof($expected), $notifications['unread_count']);
-
-		$i = 0;
-		foreach ($notifications['notifications'] as $notification)
-		{
-			foreach ($expected[$i] as $notification_data)
-			{
-				$this->assertEquals($value, $notification->$key, $key . ' ' . $i);
-			}
-
-			$i++;
-		}
-
 	}
 }

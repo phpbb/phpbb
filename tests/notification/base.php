@@ -106,4 +106,26 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 
 		return new $type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_notifications', 'phpbb_user_notifications');
 	}
+
+	protected function assert_notifications($expected, $options = array())
+	{
+		$notifications = $this->notifications->load_notifications(array_merge(array(
+			'count_unread'	=> true,
+			'order_by'		=> 'notification_time',
+			'order_dir'		=> 'ASC',
+		), $options));
+
+		$this->assertEquals(sizeof($expected), $notifications['unread_count']);
+
+		$i = 0;
+		foreach ($notifications['notifications'] as $notification)
+		{
+			foreach ($expected[$i] as $key => $value)
+			{
+				$this->assertEquals($value, $notification->$key, $i . ' ' . $key);
+			}
+
+			$i++;
+		}
+	}
 }
