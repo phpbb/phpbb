@@ -236,7 +236,8 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		// Replace our "div by" with Twig's divisibleby (Twig does not like test names with spaces)
 		$code = preg_replace('# div by ([0-9]+)#', ' divisibleby($1)', $code);
 
-		return preg_replace_callback('#<!-- (ELSE)?IF((.*)[\s][\$|\.|!]([^\s]+)(.*))-->#', $callback, $code);
+		// (ELSE)?\s?IF; match IF|ELSEIF|ELSE IF; replace ELSE IF with ELSEIF
+	   	return preg_replace_callback('#<!-- (ELSE)?\s?IF(.+?)-->#', $callback, $code);
 	}
 
 	/**

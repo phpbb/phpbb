@@ -64,6 +64,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			),
 			array(
 				'if.html',
+				array('S_OTHER_OTHER_VALUE' => true),
+				array(),
+				array(),
+				'|S_OTHER_OTHER_VALUE|!false',
+			),
+			array(
+				'if.html',
 				array('S_VALUE' => false, 'S_OTHER_VALUE' => true),
 				array(),
 				array(),
