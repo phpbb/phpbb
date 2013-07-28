@@ -53,41 +53,28 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 		$group_id = false;
 		group_create($group_id, GROUP_OPEN, 'test', 'test group', array());
 
-		// Add user 1 as group leader
+		// Add user 2 as group leader
 		group_user_add($group_id, 2, false, false, false, true, false);
 
-		// Add user 2 as pending
+		// Add user 3 as pending
 		group_user_add($group_id, 3, false, false, false, false, true);
 
-		$notifications = $this->notifications->load_notifications(array(
-			'count_unread'	=> true,
-			'user_id'		=> 2,
-		));
-
-		$expected = array(
+		$this->assert_notifications(
 			array(
-				'item_id'				=> 3, // user_id of requesting join
-				'item_parent_id'		=> $group_id,
-				'user_id'	   			=> 2,
-				'notification_read'		=> 0,
-				'notification_data'	   	=> array(
-					'group_name'			=> 'test',
+				// user 3 pending notification
+				array(
+					'item_id'				=> 3, // user_id of requesting join
+					'item_parent_id'		=> $group_id,
+					'user_id'	   			=> 2,
+					'notification_read'		=> 0,
+					'notification_data'	   	=> array(
+						'group_name'			=> 'test',
+					),
 				),
 			),
+			array(
+				'user_id'		=> 2,
+			)
 		);
-
-		$this->assertEquals(sizeof($expected), $notifications['unread_count']);
-
-		$i = 0;
-		foreach ($notifications['notifications'] as $notification)
-		{
-			foreach ($expected[$i] as $notification_data)
-			{
-				$this->assertEquals($value, $notification->$key, $key . ' ' . $i);
-			}
-
-			$i++;
-		}
-
 	}
 }
