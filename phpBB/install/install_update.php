@@ -39,7 +39,7 @@ if (!empty($setmodules))
 		'module_filename'	=> substr(basename(__FILE__), 0, -strlen($phpEx)-1),
 		'module_order'		=> 30,
 		'module_subs'		=> '',
-		'module_stages'		=> array('INTRO', 'VERSION_CHECK', 'UPDATE_DB', 'FILE_CHECK', 'UPDATE_FILES'),
+		'module_stages'		=> array('INTRO', 'VERSION_CHECK', 'FILE_CHECK', 'UPDATE_FILES', 'UPDATE_DB'),
 		'module_reqs'		=> ''
 	);
 }
@@ -73,6 +73,11 @@ class install_update extends module
 	{
 		global $phpbb_style, $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
 		global $request, $phpbb_admin_path, $phpbb_adm_relative_path, $phpbb_container;
+
+		// We must enable super globals, otherwise creating a new instance of the request class,
+		// using the new container with a dbal connection will fail with the following PHP Notice:
+		// Object of class phpbb_request_deactivated_super_global could not be converted to int
+		$request->enable_super_globals();
 
 		// Create a normal container now
 		$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, $phpbb_root_path . 'install/update/new/config');
@@ -138,7 +143,9 @@ class install_update extends module
 		}
 
 		// Set custom template again. ;)
-		$phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
+		$paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
+		$paths = array_filter($paths, 'is_dir');
+		$phpbb_style->set_custom_style('admin', $paths, array(), '');
 
 		$template->assign_vars(array(
 			'S_USER_LANG'			=> $user->lang['USER_LANG'],
@@ -267,15 +274,14 @@ class install_update extends module
 				$this->page_title = 'STAGE_VERSION_CHECK';
 
 				$template->assign_vars(array(
-					'S_UP_TO_DATE'		=> $up_to_date,
 					'S_VERSION_CHECK'	=> true,
 
-					'U_ACTION'				=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check"),
-					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_db"),
+					'U_ACTION'			=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check"),
 
+					'S_UP_TO_DATE'		=> $up_to_date,
 					'LATEST_VERSION'	=> $this->latest_version,
-					'CURRENT_VERSION'	=> $this->current_version)
-				);
+					'CURRENT_VERSION'	=> $this->current_version,
+				));
 
 				// Print out version the update package updates to
 				if ($this->unequal_version)
@@ -303,6 +309,7 @@ class install_update extends module
 					'U_DB_UPDATE'			=> append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=1&amp;language=' . $user->data['user_lang']),
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_db"),
 					'U_ACTION'				=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check"),
+					'L_EVERYTHING_UP_TO_DATE'	=> $user->lang('EVERYTHING_UP_TO_DATE', append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'), append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . $phpbb_adm_relative_path . 'index.php%3Fi=send_statistics%26mode=send_statistics')),
 				));
 
 			break;
@@ -470,12 +477,22 @@ class install_update extends module
 				$template->assign_vars(array(
 					'S_FILE_CHECK'			=> true,
 					'S_ALL_UP_TO_DATE'		=> $all_up_to_date,
-					'L_ALL_FILES_UP_TO_DATE'	=> $user->lang('ALL_FILES_UP_TO_DATE', append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'), append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . $phpbb_adm_relative_path . 'index.php%3Fi=send_statistics%26mode=send_statistics')),
 					'S_VERSION_UP_TO_DATE'	=> $up_to_date,
+					'S_UP_TO_DATE'			=> $up_to_date,
 					'U_ACTION'				=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check"),
 					'U_UPDATE_ACTION'		=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_files"),
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_db"),
 				));
+
+				// Since some people try to update to RC releases, but phpBB.com tells them the last version is the version they currently run
+				// we are faced with the updater thinking the database schema is up-to-date; which it is, but should be updated none-the-less
+				// We now try to cope with this by triggering the update process
+				if (version_compare(str_replace('rc', 'RC', strtolower($this->current_version)), str_replace('rc', 'RC', strtolower($this->update_info['version']['to'])), '<'))
+				{
+					$template->assign_vars(array(
+						'S_UP_TO_DATE'		=> false,
+					));
+				}
 
 				if ($all_up_to_date)
 				{

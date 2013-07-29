@@ -110,6 +110,7 @@ phpbb_require_updated('includes/functions_container.' . $phpEx);
 
 require($phpbb_root_path . 'config.' . $phpEx);
 phpbb_require_updated('includes/constants.' . $phpEx);
+phpbb_include_updated('includes/utf/utf_normalizer.' . $phpEx);
 phpbb_require_updated('includes/utf/utf_tools.' . $phpEx);
 
 // Set PHP error handler to ours
@@ -305,7 +306,7 @@ echo $user->lang['DATABASE_UPDATE_COMPLETE'] . '<br />';
 if ($request->variable('type', 0))
 {
 	echo $user->lang['INLINE_UPDATE_SUCCESSFUL'] . '<br /><br />';
-	echo '<a href="' . append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update&amp;sub=file_check&amp;language=' . $request->variable('language', 'en')) . '" class="button1">' . $user->lang['CONTINUE_UPDATE_NOW'] . '</a>';
+	echo '<a href="' . append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update&amp;sub=update_db&amp;language=' . $request->variable('language', 'en')) . '" class="button1">' . $user->lang['CONTINUE_UPDATE_NOW'] . '</a>';
 }
 else
 {
