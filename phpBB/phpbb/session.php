@@ -7,8 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/session/storage/native.php';
-
 /**
 * @ignore
 */

@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 /**
  * Class phpbb_session_storage
  */
-interface phpbb_session_storage
+interface phpbb_session_storage_interface
 {
 	/** Update the time used in session storage
 	 *
