@@ -4,6 +4,8 @@ services:
         arguments:
             - @model.repository.forum
             - @config
+            - @model.repository.auth
+            - @request
 
     api.controller.topic:
         class: phpbb_controller_api_topic
