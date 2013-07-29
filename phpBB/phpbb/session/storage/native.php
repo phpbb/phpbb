@@ -214,7 +214,7 @@ class phpbb_session_storage_native implements phpbb_session_storage
 		$this->update_query($sql);
 	}
 
-	function update_session_key($user_id, $key_id, $data)
+	function update_session_key($user_id, $key_id, array $data)
 	{
 		$this->update_query('
 			UPDATE ' . SESSIONS_KEYS_TABLE . '
@@ -276,7 +276,7 @@ class phpbb_session_storage_native implements phpbb_session_storage
 		return $values;
 	}
 
-	function cleanup_long_sessions($max_autologin_time)
+	function cleanup_long_session_keys($max_autologin_time)
 	{
 		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
 				WHERE last_login < ' . (time() - (86400 * (int) $max_autologin_time));
