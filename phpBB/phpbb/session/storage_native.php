@@ -15,7 +15,12 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_session_storage_native implements phpbb_session_storage_interface
+class phpbb_session_storage_native implements
+										phpbb_session_storage_interface,
+										phpbb_session_banlist_interface,
+										phpbb_session_keys_interface,
+										phpbb_session_cleanup_interface,
+										phpbb_session_user_interface
 {
 	protected $db;
 	protected $time_now;
