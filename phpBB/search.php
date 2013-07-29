@@ -687,6 +687,18 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 			}
 
+			/**
+			* Event to modify the SQL query before the topic data is retrieved
+			*
+			* @event core.search_get_topic_data
+			* @var	string	sql_select		The SQL SELECT string used by search to get topic data
+			* @var	string	sql_from		The SQL FROM string used by search to get topic data
+			* @var	string	sql_where		The SQL WHERE string used by search to get topic data
+			* @since 3.1-A1
+			*/
+			$vars = array('sql_select', 'sql_from', 'sql_where');
+			extract($phpbb_dispatcher->trigger_event('core.search_get_topic_data', compact($vars)));
+
 			$sql = "SELECT $sql_select
 				FROM $sql_from
 				WHERE $sql_where";
@@ -989,7 +1001,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				);
 			}
 
-			$template->assign_block_vars('searchresults', array_merge($tpl_ary, array(
+			$tpl_ary = array_merge($tpl_ary, array(
 				'FORUM_ID'			=> $forum_id,
 				'TOPIC_ID'			=> $result_topic_id,
 				'POST_ID'			=> ($show_results == 'posts') ? $row['post_id'] : false,
@@ -1001,8 +1013,21 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				'U_VIEW_TOPIC'		=> $view_topic_url,
 				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
-				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '')
+				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '',
 			));
+
+			/**
+			* Modify the topic data before it is assigned to the template
+			*
+			* @event core.search_modify_tpl_ary
+			* @var	array	row			Array with topic data
+			* @var	array	tpl_ary		Template block array with topic data
+			* @since 3.1-A1
+			*/
+			$vars = array('row', 'tpl_ary');
+			extract($phpbb_dispatcher->trigger_event('core.search_modify_tpl_ary', compact($vars)));
+
+			$template->assign_block_vars('searchresults', $tpl_ary);
 
 			if ($show_results == 'topics')
 			{
