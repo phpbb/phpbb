@@ -57,7 +57,6 @@ class install_update extends module
 	var $new_location;
 	var $latest_version;
 	var $current_version;
-	var $unequal_version;
 
 	var $update_to_version;
 
@@ -82,7 +81,6 @@ class install_update extends module
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
-		$this->unequal_version = false;
 
 		$this->old_location = $phpbb_root_path . 'install/update/old/';
 		$this->new_location = $phpbb_root_path . 'install/update/new/';
@@ -192,8 +190,6 @@ class install_update extends module
 		// Check if the update files are actually meant to update from the current version
 		if ($this->current_version != $this->update_info['version']['from'])
 		{
-			$this->unequal_version = true;
-
 			$template->assign_vars(array(
 				'S_ERROR'	=> true,
 				'ERROR_MSG'	=> sprintf($user->lang['INCOMPATIBLE_UPDATE_FILES'], $this->current_version, $this->update_info['version']['from'], $this->update_info['version']['to']),
@@ -201,10 +197,8 @@ class install_update extends module
 		}
 
 		// Check if the update files stored are for the latest version...
-		if (phpbb_version_compare($this->latest_version, $this->update_info['version']['to'], '>'))
+		if (version_compare(strtolower($this->latest_version), strtolower($this->update_info['version']['to']), '>'))
 		{
-			$this->unequal_version = true;
-
 			$template->assign_vars(array(
 				'S_WARNING'		=> true,
 				'WARNING_MSG'	=> sprintf($user->lang['OLD_UPDATE_FILES'], $this->update_info['version']['from'], $this->update_info['version']['to'], $this->latest_version))
@@ -291,7 +285,7 @@ class install_update extends module
 				);
 
 				// Print out version the update package updates to
-				if ($this->unequal_version)
+				if ($this->latest_version != $this->update_info['version']['to'])
 				{
 					$template->assign_var('PACKAGE_VERSION', $this->update_info['version']['to']);
 				}
