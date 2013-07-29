@@ -177,8 +177,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 					'error_msg'		=> 'LOGIN_OAUTH_ACCOUNT_NOT_LINKED',
 					'user_row'		=> array(),
 					'redirect_data'	=> array(
-						'auth_provider'	=> 'oauth',
-						'oauth_service'	=> $service_name_original,
+						'auth_provider'				=> 'oauth',
+						'login_link_oauth_service'	=> $service_name_original,
 					),
 				);
 			}
@@ -384,11 +384,30 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
 
 		// Check for an access token, they should have one
-		if (!$storage->has_access_token_by_sesion())
+		if (!$storage->has_access_token_by_session())
 		{
 			return 'LOGIN_LINK_ERROR_OAUTH_NO_ACCESS_TOKEN';
 		}
 
-		$token = $storage->retrieve_access_token_by_session();
+		// Prepare for an authentication request
+		$this->get_current_uri(strtolower($link_data['oauth_service']));
+		$this->current_uri->setQuery('mode=login_link&login_link_oauth_service=' . $service_name);
+		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
+		$scopes = $this->service_providers[$service_name]->get_auth_scope();
+		$service = $this->get_service($service_name, $storage, $service_credentials, $scopes);
+		$this->service_providers[$service_name]->set_external_service_provider($service);
+
+		// The user has already authenticated successfully, request to authenticate again
+		$unique_id = $this->service_providers[$service_name]->perform_auth_login();
+
+		// Insert into table, they will be able to log in after this
+		$data = array(
+			'user_id'			=> $this->user->data['user_id'],
+			'provider'			=> strtolower($link_data['oauth_service']),
+			'oauth_provider_id'	=> $unique_id,
+		);
+		$sql = 'INSERT INTO ' . $this->auth_provider_oauth_token_account_assoc . '
+			' . $this->db->sql_build_array('INSERT', $data);
+		$this->db->sql_query($sql);
 	}
 }
