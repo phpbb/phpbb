@@ -81,8 +81,26 @@ class phpbb_auth_provider_oauth_service_google extends phpbb_auth_provider_oauth
 			throw new Exception('Invalid service provider type');
 		}
 
-		// This was a callback request from bitly, get the token
+		// This was a callback request, get the token
 		$this->service_provider->requestAccessToken( $this->request->variable('code', '') );
+
+		// Send a request with it
+		$result = json_decode( $this->service_provider->request('https://www.googleapis.com/oauth2/v1/userinfo'), true );
+
+		// Return the unique identifier returned from bitly
+		return $result['id'];
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function perform_auth_link()
+	{
+		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Google))
+		{
+			// TODO: make exception class and use language constant
+			throw new Exception('Invalid service provider type');
+		}
 
 		// Send a request with it
 		$result = json_decode( $this->service_provider->request('https://www.googleapis.com/oauth2/v1/userinfo'), true );

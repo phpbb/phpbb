@@ -59,11 +59,19 @@ class ucp_login_link
 		{
 			if ($request->is_set_post('login'))
 			{
+				$login_username = $request->variable('login_username', '', false, phpbb_request_interface::POST);
+				$login_password = $request->untrimmed_variable('login_password', '', true, phpbb_request_interface::POST);
+
+				$login_result = $auth_provider->login($login_username, $login_password);
+
 				// We only care if there is or is not an error
-				$login_error = $this->perform_login_action();
+				$login_error = $this->process_login_result($login_result);
 
 				if (!$login_error)
 				{
+					// Give the user_id to the data
+					$data['user_id'] = $login_result['user_row']['user_id'];
+
 					// The user is now logged in, attempt to link the user to the external account
 					$result = $auth_provider->link_account($data);
 
@@ -71,6 +79,9 @@ class ucp_login_link
 					{
 						$login_link_error = $user->lang[$result];
 					} else {
+						// Finish login
+						$result = $user->session_create($login_result['user_row']['user_id'], false, false, true);
+
 						// Perform a redirect as the account has been linked
 						$this->perform_redirect();
 					}
@@ -117,13 +128,9 @@ class ucp_login_link
 		return $login_link_data;
 	}
 
-	protected function perform_login_action()
+	protected function process_login_result($result)
 	{
-		global $auth, $config, $request, $template, $user;
-		$login_username = $request->variable('login_username', '', false, phpbb_request_interface::POST);
-		$login_password = $request->untrimmed_variable('login_password', '', true, phpbb_request_interface::POST);
-
-		$result = $auth->login($login_username, $login_password);
+		global $config, $request, $template, $user;
 
 		$login_error = null;
 
