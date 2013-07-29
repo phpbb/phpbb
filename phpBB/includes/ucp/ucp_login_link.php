@@ -27,10 +27,23 @@ class ucp_login_link
 
 	function main($id, $mode)
 	{
-		global $config, $phpbb_container, $request, $template;
+		global $config, $phpbb_container, $request, $template, $user;
 
 		$auth_provider = 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
 		$auth_provider = $phpbb_container->get($auth_provider);
+
+		// Initialize necessary variables
+		$login_link_error = null;
+
+		// Ensure the person was sent here with login_link data
+		$data = $request->variable('login_link', array());
+
+		if (empty($data))
+		{
+			$login_link_error = $user->lang['LOGIN_LINK_NO_DATA_PROVIDED'];
+		} else {
+
+		}
 
 		// Process POST and GET data
 		$login_error = false;
@@ -38,6 +51,7 @@ class ucp_login_link
 
 		// Common template elements
 		$template->assign_vars(array(
+			'LOGIN_LINK_ERROR'		=> $login_link_error,
 			'PASSWORD_CREDENTIAL'	=> 'password',
 			'USERNAME_CREDENTIAL'	=> 'username',
 		));
