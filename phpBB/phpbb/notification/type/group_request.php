@@ -82,7 +82,7 @@ class phpbb_notification_type_group_request extends phpbb_notification_type_base
 		$user_ids = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$user_ids[] = $row['user_id'];
+			$user_ids[] = (int) $row['user_id'];
 		}
 		$this->db->sql_freeresult($result);
 
