@@ -409,5 +409,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$sql = 'INSERT INTO ' . $this->auth_provider_oauth_token_account_assoc . '
 			' . $this->db->sql_build_array('INSERT', $data);
 		$this->db->sql_query($sql);
+
+		// Update token storage to store the user_id
+		$storage->set_user_id($link_data['user_id']);
 	}
 }
