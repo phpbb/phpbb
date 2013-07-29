@@ -272,6 +272,7 @@ $lang = array_merge($lang, array(
 	'LOGIN_EXPLAIN_UCP'			=> 'Please login in order to access the User Control Panel.',
 	'LOGIN_LINK'					=> 'Link or Register Your External Account with phpBB',
 	'LOGIN_LINK_EXPLAIN'			=> 'You have attempted to login with an external service that is not yet connected to an account on these forums. You may now either link this account to an existing account or you may create a new account.',
+	'LOGIN_LINK_MISSING_DATA'		=> 'Data that is necessary to link your account with an external service is not available. Please restart the login process.',
 	'LOGIN_LINK_NO_DATA_PROVIDED'	=> 'No data has been provided to this page to link an external account to a forum account. Please contact the board administrator if you continue to experience problems.',
 	'LOGIN_KEY'					=> 'Login Key',
 	'LOGIN_TIME'				=> 'Login Time',

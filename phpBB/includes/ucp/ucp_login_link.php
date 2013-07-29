@@ -33,7 +33,9 @@ class ucp_login_link
 		$auth_provider = $phpbb_container->get($auth_provider);
 
 		// Initialize necessary variables
+		$login_error = null;
 		$login_link_error = null;
+		$login_username = null;
 
 		// Build the data array
 		$data = $this->get_login_link_data_array();
@@ -45,10 +47,14 @@ class ucp_login_link
 		}
 
 		// Have the authentication provider check that all necessary data is available
-
+		$result = $auth_provider->login_link_has_necessary_data($data);
+		if ($result !== null)
+		{
+			$login_link_error = $user->lang[$result];
+		}
 
 		// Perform link action if there is no error
-		if (!login_link_error)
+		if (!$login_link_error)
 		{
 			if ($request->is_set_post('login'))
 			{
@@ -143,7 +149,8 @@ class ucp_login_link
 		{
 			if (strpos($var_name, 'login_link_') === 0)
 			{
-				$login_link_data[$var_name] = $request->variable($var_name, '', false, phpbb_request_interface::GET);
+				$key_name = str_replace('login_link_', '', $var_name);
+				$login_link_data[$key_name] = $request->variable($var_name, '', false, phpbb_request_interface::GET);
 			}
 		}
 

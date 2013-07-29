@@ -337,4 +337,22 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		return $ret;
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function login_link_has_necessary_data($login_link_data)
+	{
+		if (empty($login_link_data))
+		{
+			return 'LOGIN_LINK_NO_DATA_PROVIDED';
+		}
+
+		if (!array_key_exists('oauth_service', $login_link_data) || !$login_link_data['oauth_service'])
+		{
+			return 'LOGIN_LINK_MISSING_DATA';
+		}
+
+		return null;
+	}
 }
