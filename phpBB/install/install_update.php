@@ -313,6 +313,11 @@ class install_update extends module
 					'L_EVERYTHING_UP_TO_DATE'	=> $user->lang('EVERYTHING_UP_TO_DATE', append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'), append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . $phpbb_adm_relative_path . 'index.php%3Fi=send_statistics%26mode=send_statistics')),
 				));
 
+				// Do not display incompatible package note after successful update
+				if ($config['version'] == $this->update_info['version']['to'])
+				{
+					$template->assign_var('S_ERROR', false);
+				}
 			break;
 
 			case 'file_check':
