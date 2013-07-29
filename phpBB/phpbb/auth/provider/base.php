@@ -69,4 +69,20 @@ abstract class phpbb_auth_provider_base implements phpbb_auth_provider_interface
 	{
 		return;
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function login_link_has_necessary_data($login_link_data)
+	{
+		return;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function link_account(array $link_data)
+	{
+		return;
+	}
 }

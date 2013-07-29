@@ -125,4 +125,24 @@ interface phpbb_auth_provider_interface
 	 * 					session should be closed, or null if not implemented.
 	 */
 	public function validate_session($user);
+
+	/**
+	* Checks to see if $login_link_data contains all information except for the
+	* user_id of an account needed to successfully link an external account to
+	* a forum account.
+	*
+	* @param	array	$link_data	Any data needed to link a phpBB account to
+	*								an external account.
+	* @return	string|null	Returns a string with a language constant if there
+	*						is data missing or null if there is no error.
+	*/
+	public function login_link_has_necessary_data($login_link_data);
+
+	/**
+	* Links an external account to a phpBB account.
+	*
+	* @param	array	$link_data	Any data needed to link a phpBB account to
+	*								an external account.
+	*/
+	public function link_account(array $link_data);
 }
