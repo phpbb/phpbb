@@ -94,7 +94,7 @@ class phpbb_auth_provider_oauth_service_google extends phpbb_auth_provider_oauth
 	/**
 	* {@inheritdoc}
 	*/
-	public function perform_auth_link()
+	public function perform_token_auth()
 	{
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Google))
 		{

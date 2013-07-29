@@ -79,4 +79,22 @@ class phpbb_auth_provider_oauth_service_bitly extends phpbb_auth_provider_oauth_
 		// Return the unique identifier returned from bitly
 		return $result['data']['login'];
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function perform_token_auth()
+	{
+		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Bitly))
+		{
+			// TODO: make exception class and use language constant
+			throw new Exception('Invalid service provider type');
+		}
+
+		// Send a request with it
+		$result = json_decode( $this->service_provider->request('user/info'), true );
+
+		// Return the unique identifier returned from bitly
+		return $result['data']['login'];
+	}
 }

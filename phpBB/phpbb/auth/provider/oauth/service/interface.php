@@ -58,6 +58,15 @@ interface phpbb_auth_provider_oauth_service_interface
 	public function perform_auth_login();
 
 	/**
+	* Returns the results of the authentication in json format
+	* Use this function when the user already has an access token
+	*
+	* @return	string	The unique identifier returned by the service provider
+	*					that is used to authenticate the user with phpBB.
+	*/
+	public function perform_token_auth();
+
+	/**
 	* Sets the external library service provider
 	*
 	* @param	\OAuth\Common\Service\ServiceInterface	$service

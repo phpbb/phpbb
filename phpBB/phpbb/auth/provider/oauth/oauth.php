@@ -398,7 +398,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$this->service_providers[$service_name]->set_external_service_provider($service);
 
 		// The user has already authenticated successfully, request to authenticate again
-		$unique_id = $this->service_providers[$service_name]->perform_auth_link();
+		$unique_id = $this->service_providers[$service_name]->perform_token_auth();
 
 		// Insert into table, they will be able to log in after this
 		$data = array(
