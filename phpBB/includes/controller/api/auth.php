@@ -165,7 +165,7 @@ class phpbb_controller_api_auth
 
 	}
 
-	public function verify($key, $timestamp, $hash)
+	public function verify($auth_key, $serial, $hash)
 	{
 		$serializer = new Serializer(array(new phpbb_model_normalizer_api_response()), array(new JsonEncoder()));
 		if (!$this->config['allow_api'])
@@ -177,7 +177,7 @@ class phpbb_controller_api_auth
 			return new Response($serializer->serialize($response, 'json'), $response->get('status'));
 		}
 
-		$is_verified = $this->auth_repository->verify($key, $timestamp, $hash);
+		$is_verified = $this->auth_repository->verify($auth_key, $serial, $hash);
 
 		$response = new phpbb_model_entity_api_response(array(
 			'status' => 200,

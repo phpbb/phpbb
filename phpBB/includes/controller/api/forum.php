@@ -38,15 +38,31 @@ class phpbb_controller_api_forum
 	protected $config;
 
 	/**
+	 * Auth repository object
+	 * @var phpbb_model_repository_auth
+	 */
+	protected $auth_repository;
+
+	/**
+	 * Request object
+	 * @var phpbb_request
+	 */
+	protected $request;
+
+	/**
 	 * Constructor
 	 *
 	 * @param phpbb_model_repository_forum $forum_repository
 	 * @param phpbb_config_db $config
+	 * @param phpbb_model_repository_auth $auth_repository
+	 * @param phpbb_request $request
 	 */
-	function __construct(phpbb_model_repository_forum $forum_repository, phpbb_config_db $config)
+	function __construct(phpbb_model_repository_forum $forum_repository, phpbb_config_db $config, phpbb_model_repository_auth $auth_repository, phpbb_request $request)
 	{
 		$this->forum_repository = $forum_repository;
 		$this->config = $config;
+		$this->auth_repository = $auth_repository;
+		$this->request = $request;
 	}
 
 	/**
@@ -65,21 +81,32 @@ class phpbb_controller_api_forum
 			new phpbb_model_normalizer_forum(),
 		), array(new JsonEncoder()));
 
-		if (!$this->config['allow_api'])
+		$auth_key = $this->request->variable('auth_key', 'guest');
+		$serial = $this->request->variable('serial', -1);
+		$hash = $this->request->variable('hash', '');
+
+		if ($forum_id == 0)
 		{
-			$response = new phpbb_model_entity_api_response(array(
-				'status' => 500,
-				'data' => 'The API is not enabled on this board',
-			));
-			return new Response($serializer->serialize($response, 'json'), $response->get('status'));
+			$authed = $this->auth_repository->auth('api/forums', $auth_key, $serial, $hash, '');
+		}
+		else
+		{
+			$authed = $this->auth_repository->auth('api/forums', $auth_key, $serial, $hash, '');
 		}
 
-		$forums = $this->forum_repository->get($forum_id);
+		if ($authed === true)
+		{
+			$forums = $this->forum_repository->get($forum_id);
 
-		$response = new phpbb_model_entity_api_response(array(
-			'status' => 200,
-			'data' => $serializer->normalize($forums),
-		));
+			$response = new phpbb_model_entity_api_response(array(
+				'status' => 200,
+				'data' => $serializer->normalize($forums),
+			));
+		}
+		else
+		{
+			$response = $authed;
+		}
 
 		$json = $serializer->serialize($response, 'json');
 

@@ -41,7 +41,7 @@ api_auth_allow_controller:
         _method: POST
 
 api_auth_verify_controller:
-    pattern: /api/auth/verify/{auth_key}/{timestamp}/{hash}
+    pattern: /api/auth/verify/{auth_key}/{serial}/{hash}
     defaults: { _controller: api.controller.auth:verify }
     requirements:
         _method: GET
