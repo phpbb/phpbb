@@ -398,7 +398,7 @@ $lang = array_merge($lang, array(
 
 	'DATABASE_TYPE'						=> 'Database type',
 	'DATABASE_UPDATE_COMPLETE'			=> 'Database updater has completed!',
-	'DATABASE_UPDATE_CONTINUE'			=> 'Continue database update.',
+	'DATABASE_UPDATE_CONTINUE'			=> 'Continue database update',
 	'DATABASE_UPDATE_INFO_OLD'			=> 'The database update file within the install directory is outdated. Please make sure you uploaded the correct version of the file.',
 	'DATABASE_UPDATE_NOT_COMPLETED'		=> 'The database update has not yet completed.',
 	'DELETE_USER_REMOVE'				=> 'Delete user and remove posts',
