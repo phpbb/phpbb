@@ -78,6 +78,32 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$this->assertEquals($token, $stored_token);
 	}
 
+	/**
+	* @dataProvider retrieveAccessToken_data
+	*/
+	public function test_retrieve_access_token_by_session($cache_token, $db_token, $exception)
+	{
+		if ($db_token)
+		{
+			$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->service_name, $this->token_storage_table);
+			$temp_storage->storeAccessToken($db_token);
+			unset($temp_storage);
+			$token = $db_token;
+		}
+
+		if ($cache_token)
+		{
+			$this->token_storage->storeAccessToken($cache_token);
+			$token = $cache_token;
+		}
+
+		$this->setExpectedException($exception);
+
+		$stored_token = $this->token_storage->retrieve_access_token_by_session();
+		$this->assertEquals($token, $stored_token);
+	}
+
+
 	public function test_storeAccessToken()
 	{
 		$token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') );
@@ -113,6 +139,20 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		}
 
 		$has_access_token = $this->token_storage->hasAccessToken();
+		$this->assertEquals($expected, $has_access_token);
+	}
+
+	/**
+	* @dataProvider hasAccessToken_data
+	*/
+	public function test_has_access_token_by_session($token, $expected)
+	{
+		if ($token)
+		{
+			$this->token_storage->storeAccessToken($token);
+		}
+
+		$has_access_token = $this->token_storage->has_access_token_by_session();
 		$this->assertEquals($expected, $has_access_token);
 	}
 
