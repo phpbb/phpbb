@@ -43,16 +43,16 @@ class ucp_login_link
 			$login_link_error = $user->lang['LOGIN_LINK_NO_DATA_PROVIDED'];
 		}
 
+		// Use the auth_provider requested even if different from configured
+		$auth_provider = 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
+		$auth_provider = $phpbb_container->get($auth_provider);
+
 		// Have the authentication provider check that all necessary data is available
 		$result = $auth_provider->login_link_has_necessary_data($data);
 		if ($result !== null)
 		{
 			$login_link_error = $user->lang[$result];
 		}
-
-		// Use the auth_provider requested even if different from configured
-		$auth_provider = 'auth_provider.' . (array_key_exists('auth_provider', $data)) ? $data['auth_provider'] : $config['auth_method'];
-		$auth_provider = $phpbb_container->get($auth_provider);
 
 		// Perform link action if there is no error
 		if (!$login_link_error)
@@ -72,6 +72,7 @@ class ucp_login_link
 						$login_link_error = $user->lang[$result];
 					} else {
 						// Perform a redirect as the account has been linked
+						$this->perform_redirect();
 					}
 				}
 			}
@@ -120,7 +121,7 @@ class ucp_login_link
 	{
 		global $auth, $config, $request, $template, $user;
 		$login_username = $request->variable('login_username', '', false, phpbb_request_interface::POST);
-		$login_password = $request->untrimmed_variable('password', '', true, phpbb_request_interface::POST);
+		$login_password = $request->untrimmed_variable('login_password', '', true, phpbb_request_interface::POST);
 
 		$result = $auth->login($login_username, $login_password);
 
@@ -173,5 +174,11 @@ class ucp_login_link
 		}
 
 		return $login_error;
+	}
+
+	protected function perform_redirect()
+	{
+		// TODO: Make redirect to same page as login would have
+		redirect('index.php');
 	}
 }
