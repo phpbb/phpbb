@@ -44,6 +44,11 @@ class phpbb_session_storage_native implements phpbb_session_storage_interface
 		$this->time_now = $time_now;
 	}
 
+	/** Update the database used in session storage
+	 *
+	 * @param phpbb_db_driver $db Driver to use in queries
+	 * @return null
+	 */
 	function set_db(phpbb_db_driver $db)
 	{
 		$this->db = $db;

@@ -27,13 +27,6 @@ interface phpbb_session_storage_interface
 	*/
 	function set_time_now($time_now);
 
-	/** Update the database used in session storage
-	*
-	* @param phpbb_db_driver $db Driver to use in queries
-	* @return null
-	*/
-	function set_db(phpbb_db_driver $db);
-
 	/** Create a session in storage using data
 	*
 	* @param array $session_data Data to insert in storage
