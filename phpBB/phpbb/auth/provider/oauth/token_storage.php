@@ -96,30 +96,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 			$data['session_id']	= $this->user->data['session_id'];
 		}
 
-		$sql = 'SELECT oauth_token FROM ' . $this->auth_provider_oauth_table . '
-			WHERE ' . $this->db->sql_build_array('SELECT', $data);
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		if (!$row)
-		{
-			// TODO: translate
-			throw new TokenNotFoundException('Token not stored');
-		}
-
-		$token = unserialize($row['oauth_token']);
-
-		// Ensure that the token was serialized/unserialized correctly
-		if (!($token instanceof TokenInterface))
-		{
-			$this->clearToken();
-			// TODO: translate
-			throw new TokenNotFoundException('Token not stored correctly');
-		}
-
-		$this->cachedToken = $token;
-		return $token;
+		return $this->_retrieve_access_token($data);
 	}
 
 	/**
@@ -164,11 +141,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 			$data['session_id']	= $this->user->data['session_id'];
 		}
 
-		$sql = 'SELECT oauth_token FROM ' . $this->auth_provider_oauth_table . '
-			WHERE ' . $this->db->sql_build_array('SELECT', $data);
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
+		$row = $this->_has_acess_token($data);
 
 		if (!$row)
 		{
@@ -216,5 +189,97 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 				WHERE user_id = ' . $this->user->data['user_id'] . '
 					AND session_id = \'' . $this->user->data['session_id'] . '\'';
 		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Checks to see if an access token exists solely by the session_id of the user
+	*
+	* @return	bool	true if they have token, false if they don't
+	*/
+	public function has_access_token_by_session()
+	{
+		if( $this->cachedToken ) {
+			return true;
+		}
+
+		$data = array(
+			'session_id'	=> $this->user->data['session_id'],
+			'provider'		=> $this->service_name,
+		);
+
+		$row = $this->_has_acess_token($data);
+
+		if (!$row)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	* A helper function that performs the query for has access token functions
+	*
+	* @param	array	$data
+	* @return	mixed
+	*/
+	protected function _has_acess_token($data)
+	{
+		$sql = 'SELECT oauth_token FROM ' . $this->auth_provider_oauth_table . '
+			WHERE ' . $this->db->sql_build_array('SELECT', $data);
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return $row;
+	}
+
+	public function retrieve_access_token_by_session()
+	{
+		if( $this->cachedToken instanceOf TokenInterface ) {
+			return $this->cachedToken;
+		}
+
+		$data = array(
+			'session_id'	=> $this->user->data['session_id'],
+			'provider'	=> $this->service_name,
+		);
+
+		return $this->_retrieve_access_token($data);
+	}
+
+	/**
+	* A helper function that performs the query for retrieve access token functions
+	* Also checks if the token is a valid token
+	*
+	* @param	array	$data
+	* @return	mixed
+	*/
+	protected function _retrieve_access_token($data)
+	{
+		$sql = 'SELECT oauth_token FROM ' . $this->auth_provider_oauth_table . '
+			WHERE ' . $this->db->sql_build_array('SELECT', $data);
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (!$row)
+		{
+			// TODO: translate
+			throw new TokenNotFoundException('Token not stored');
+		}
+
+		$token = unserialize($row['oauth_token']);
+
+		// Ensure that the token was serialized/unserialized correctly
+		if (!($token instanceof TokenInterface))
+		{
+			$this->clearToken();
+			// TODO: translate
+			throw new TokenNotFoundException('Token not stored correctly');
+		}
+
+		$this->cachedToken = $token;
+		return $token;
 	}
 }

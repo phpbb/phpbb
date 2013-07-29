@@ -355,4 +355,40 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		return null;
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function link_account(array $link_data)
+	{
+		// We must have an oauth_service listed, check for it two ways
+		if (!array_key_exists('oauth_service', $link_data) || !$link_data['oauth_service'])
+		{
+			if (!$link_data['oauth_service'] && $this->request->is_set('oauth_service'))
+			{
+				$link_data['oauth_service'] = $this->request->variable('oauth_service', '');
+			}
+
+			if (!$link_data['oauth_service'])
+			{
+				return 'LOGIN_LINK_MISSING_DATA';
+			}
+		}
+
+		$service_name = 'auth.provider.oauth.service.' . strtolower($link_data['oauth_service']);
+		if (!array_key_exists($service_name, $this->service_providers))
+		{
+			return 'LOGIN_ERROR_OAUTH_SERVICE_DOES_NOT_EXIST';
+		}
+
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
+
+		// Check for an access token, they should have one
+		if (!$storage->has_access_token_by_sesion())
+		{
+			return 'LOGIN_LINK_ERROR_OAUTH_NO_ACCESS_TOKEN';
+		}
+
+		$token = $storage->retrieve_access_token_by_session();
+	}
 }
