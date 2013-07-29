@@ -8,6 +8,12 @@ imports:
     - { resource: auth_providers.yml }
 
 services:
+    acl.permissions:
+        class: phpbb_permissions
+        arguments:
+            - @dispatcher
+            - @user
+
     auth:
         class: phpbb_auth
 
@@ -238,6 +244,9 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+
+    php_ini:
+        class: phpbb_php_ini
 
     request:
         class: phpbb_request

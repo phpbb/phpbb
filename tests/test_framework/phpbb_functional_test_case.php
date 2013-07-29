@@ -747,6 +747,27 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
 	}
 
+	/*
+	* Perform some basic assertions for an xml page
+	*
+	* Checks for debug/error output before the actual page content and the status code
+	*
+	* @param mixed $status_code		Expected status code, false to disable check
+	* @return null
+	*/
+	static public function assert_response_xml($status_code = 200)
+	{
+		if ($status_code !== false)
+		{
+			self::assert_response_status_code($status_code);
+		}
+
+		// Any output before the xml opening means there was an error
+		$content = self::$client->getResponse()->getContent();
+		self::assertNotContains('[phpBB Debug]', $content);
+		self::assertStringStartsWith('<?xml', trim($content), 'Output found before XML specification.');
+	}
+
 	/**
 	* Heuristic function to check that the response is success.
 	*

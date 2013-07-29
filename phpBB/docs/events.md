@@ -114,6 +114,24 @@ simple_footer_after
 * Location: styles/prosilver/template/simple_footer.html
 * Purpose: Add content directly prior to the `</body>` tag of the simple footer
 
+topiclist_row_prepend
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/search_results.html
+    + styles/subsilver2/template/viewforum_body.html
+* Purpose: Add content into topic rows (inside the elements containing topic titles)
+
+topiclist_row_append
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/search_results.html
+    + styles/subsilver2/template/viewforum_body.html
+* Purpose: Add content into topic rows (inside the elements containing topic titles)
+
 ucp_pm_viewmessage_print_head_append
 ===
 * Location: styles/prosilver/template/ucp_pm_viewmessage_print.html

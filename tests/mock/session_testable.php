@@ -58,5 +58,9 @@ class phpbb_mock_session_testable extends phpbb_session
 			}
 		}
 	}
+
+	public function setup()
+	{
+	}
 }
 

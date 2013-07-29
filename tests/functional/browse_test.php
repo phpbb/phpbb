@@ -29,4 +29,11 @@ class phpbb_functional_browse_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'viewtopic.php?t=1');
 		$this->assertGreaterThan(0, $crawler->filter('.postbody')->count());
 	}
+
+	public function test_feed()
+	{
+		$crawler = self::request('GET', 'feed.php', array(), false);
+		self::assert_response_xml();
+		$this->assertGreaterThan(0, $crawler->filter('entry')->count());
+	}
 }
