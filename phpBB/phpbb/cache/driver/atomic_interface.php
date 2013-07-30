@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
  *
  * @package acm
  */
-interface phpbb_cache_driver_atomic_interface
+interface phpbb_cache_driver_atomic_interface extends phpbb_cache_driver_interface
 {
 	/** This function performs an operation with data
 	 *  using some sort of mechanism to prevent data loss-
