@@ -1415,5 +1415,3 @@ function get_schema_struct()
 
 	return $schema_data;
 }
-
-?>
