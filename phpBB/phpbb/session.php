@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+require_once dirname(__FILE__) . '/session/storage_cache.php';
+
 /**
 * Session class
 * @package phpBB3
@@ -36,7 +38,7 @@ class phpbb_session
 	function __construct()
 	{
 		global $db;
-		$this->storage = new phpbb_session_storage_native($db, time());
+		$this->storage = new phpbb_session_storage_storage_cache(new phpbb_cache_driver_redis(), $db, time());
 	}
 
 	/**
