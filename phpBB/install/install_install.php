@@ -1485,10 +1485,16 @@ class install_install extends module
 			foreach ($this->module_categories[$module_class] as $cat_name => $subs)
 			{
 				$basename = '';
+				$module_auth = '';
 				// Check if this sub-category has a basename. If it has, use it.
 				if (isset($this->module_categories_basenames[$cat_name]))
 				{
 					$basename = $this->module_categories_basenames[$cat_name];
+				}
+				// Check if this sub-category has a module_auth. If it has, use it.
+				if (isset($this->module_categories_auth[$cat_name]))
+				{
+					$module_auth = $this->module_categories_auth[$cat_name];
 				}
 				$module_data = array(
 					'module_basename'	=> $basename,
@@ -1498,7 +1504,7 @@ class install_install extends module
 					'module_class'		=> $module_class,
 					'module_langname'	=> $cat_name,
 					'module_mode'		=> '',
-					'module_auth'		=> '',
+					'module_auth'		=> $module_auth,
 				);
 
 				// Add category
@@ -2157,6 +2163,10 @@ class install_install extends module
 	);
 	var $module_categories_basenames = array(
 		'UCP_PM' => 'ucp_pm',
+	);
+
+	var $module_categories_auth = array(
+		'UCP_PM' => 'cfg_allow_privmsg',
 	);
 
 	var $module_extras = array(
