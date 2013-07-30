@@ -89,8 +89,6 @@ class ucp_login_link
 			}
 		}
 
-		$register_link = redirect('ucp.php?mode=register', true);
-
 		$template->assign_vars(array(
 			// Common template elements
 			'LOGIN_LINK_ERROR'		=> $login_link_error,
@@ -98,7 +96,7 @@ class ucp_login_link
 			'USERNAME_CREDENTIAL'	=> 'login_username',
 
 			// Registration elements
-			'REGISTER_LINK'	=>	$register_link,
+			'REGISTER_ACTION'	=> $this->get_register_redirect($data),
 
 			// Login elements
 			'LOGIN_ERROR'		=> $login_error,
@@ -107,6 +105,20 @@ class ucp_login_link
 
 		$this->tpl_name = 'ucp_login_link';
 		$this->page_title = 'UCP_LOGIN_LINK';
+	}
+
+	protected function get_register_redirect($data)
+	{
+		global $config, $phpbb_root_path, $phpEx, $request;
+
+		$params = 'mode=register&login_link=1&auth_provider=' . $request->variable('auth_provider', $config['auth_method']);
+
+		foreach ($data as $key => $value)
+		{
+			$params .= '&login_link_' . $key . '=' . $value;
+		}
+
+		return append_sid("{$phpbb_root_path}ucp.$phpEx", $params);
 	}
 
 	protected function get_login_link_data_array()
