@@ -828,7 +828,7 @@ if (!empty($topic_data['poll_start']))
 		$poll_total += $poll_option['poll_option_total'];
 	}
 
-	$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+	$parse_flags = ($poll_info[0]['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
 
 	for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
 	{
