@@ -214,7 +214,13 @@ $config = new phpbb_config(array(
 
 $phpbb_style_resource_locator = new phpbb_style_resource_locator();
 $phpbb_style_path_provider = new phpbb_style_path_provider();
-$template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
+
+$template_context = new phpbb_template_context();
+$twig = new phpbb_template_twig_environment($config, null, $phpbb_root_path, new Twig_Loader_Filesystem(''), array('autoescape'	=> false));
+$twig->addExtension(new phpbb_template_twig_extension($template_context, $user));
+$twig->setLexer(new phpbb_template_twig_lexer($twig));
+
+$template = new phpbb_template_twig($phpbb_root_path, $config, $user, $template_context, $twig);
 $phpbb_style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
 $phpbb_style->set_ext_dir_prefix('adm/');
 $phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');

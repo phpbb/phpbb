@@ -50,12 +50,6 @@ class phpbb_template_twig implements phpbb_template
 	protected $adm_relative_path;
 
 	/**
-	* PHP file extension
-	* @var string
-	*/
-	protected $php_ext;
-
-	/**
 	* phpBB config instance
 	* @var phpbb_config
 	*/
@@ -102,51 +96,27 @@ class phpbb_template_twig implements phpbb_template
 	* Constructor.
 	*
 	* @param string $phpbb_root_path phpBB root path
-	* @param string $php_ext php extension (typically 'php')
 	* @param phpbb_config $config
 	* @param phpbb_user $user
 	* @param phpbb_template_context $context template context
 	* @param phpbb_extension_manager $extension_manager extension manager, if null then template events will not be invoked
 	* @param string $adm_relative_path relative path to adm directory
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null, $adm_relative_path = null)
+	public function __construct($phpbb_root_path, $config, $user, phpbb_template_context $context, phpbb_template_twig_environment $twig, phpbb_extension_manager $extension_manager = null, $adm_relative_path = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->adm_relative_path = $adm_relative_path;
-		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
 		$this->context = $context;
+		$this->twig = $twig;
 		$this->extension_manager = $extension_manager;
+		$this->adm_relative_path = $adm_relative_path;
+
+		if ($this->config['load_tplcompile']) {
+			$this->twig->enableAutoReload();
+		}
 
 		$this->cachepath = $phpbb_root_path . 'cache/twig/';
-
-		// Initiate the loader, __main__ namespace paths will be setup later in set_style_names()
-		$loader = new Twig_Loader_Filesystem('');
-
-		$this->twig = new phpbb_template_twig_environment(
-			$this->config,
-			($this->extension_manager) ? $this->extension_manager->all_enabled() : array(),
-			$this->phpbb_root_path,
-			$loader,
-			array(
-				'cache'			=> (defined('IN_INSTALL')) ? false : $this->cachepath,
-				'debug'			=> defined('DEBUG'),
-				'auto_reload'	=> (bool) $this->config['load_tplcompile'],
-				'autoescape'	=> false,
-			)
-		);
-
-		$this->twig->addExtension(
-			new phpbb_template_twig_extension(
-				$this->context,
-				$this->user
-			)
-		);
-
-		$lexer = new phpbb_template_twig_lexer($this->twig);
-
-		$this->twig->setLexer($lexer);
 	}
 
 	/**
@@ -241,6 +211,7 @@ class phpbb_template_twig implements phpbb_template
 	*/
 	public function destroy()
 	{
+		// @todo this looks wrong
 		$this->context = array();
 
 		return $this;

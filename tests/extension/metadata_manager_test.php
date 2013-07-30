@@ -40,13 +40,10 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->user = new phpbb_user();
 		$this->table_prefix = 'phpbb_';
 
-		$this->template = new phpbb_template_twig(
-			$this->phpbb_root_path,
-			$this->phpEx,
-			$this->config,
-			$this->user,
-			new phpbb_template_context()
-		);
+		$this->template = phpbb_test_case::create_template(array(
+			'config' 	=> $this->config,
+			'user' 		=> $this->user,
+		));
 
 		$this->migrator = new phpbb_db_migrator(
 			$this->config,

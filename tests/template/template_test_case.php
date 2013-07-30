@@ -66,10 +66,14 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$config = new phpbb_config(array_merge($defaults, $new_config));
 		$this->user = new phpbb_user;
 
+		$this->template = static::create_template(array(
+			'config' 	=> $config,
+			'user' 		=> $this->user,
+		));
+
 		$this->template_path = $this->test_path . '/templates';
 		$this->style_resource_locator = new phpbb_style_resource_locator();
 		$this->style_provider = new phpbb_style_path_provider();
-		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $this->user, new phpbb_template_context());
 		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $this->user, $this->style_resource_locator, $this->style_provider, $this->template);
 		$this->style->set_custom_style('tests', $this->template_path, array(), '');
 	}

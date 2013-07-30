@@ -650,7 +650,12 @@ class messenger
 			return;
 		}
 
-		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context(), $phpbb_extension_manager);
+		$template_context = new phpbb_template_context();
+		$twig = new phpbb_template_twig_environment($config, null, $phpbb_root_path, new Twig_Loader_Filesystem(''), array('autoescape'	=> false));
+		$twig->addExtension(new phpbb_template_twig_extension($template_context, $user));
+		$twig->setLexer(new phpbb_template_twig_lexer($twig));
+
+		$this->template = new phpbb_template_twig($phpbb_root_path, $config, $user, new phpbb_template_context(), $twig, $phpbb_extension_manager);
 	}
 
 	/**
