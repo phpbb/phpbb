@@ -249,6 +249,10 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 	/**
 	* Remove directory
+	*
+	* @param string $dir Directory to remove
+	*
+	* @return null
 	*/
 	protected function remove_dir($dir)
 	{
@@ -267,6 +271,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 			{
 				continue;
 			}
+
 			if ($fileInfo->isDir())
 			{
 				$this->remove_dir($fileInfo->getPathname());
