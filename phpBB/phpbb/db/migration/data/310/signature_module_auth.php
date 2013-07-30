@@ -17,7 +17,7 @@ class phpbb_db_migration_data_310_signature_module_auth extends phpbb_db_migrati
 				AND module_basename = 'ucp_profile'
 				AND module_mode = 'signature'";
 		$result = $this->db->sql_query($sql);
-		$module_auth = $this->db_sql_fetchfield('module_auth');
+		$module_auth = $this->db->sql_fetchfield('module_auth');
 		$this->db->sql_freeresult($result);
 
 		return $module_auth === 'acl_u_sig' || $module_auth === false;
