@@ -70,13 +70,13 @@ class phpbb_auth_provider_oauth_service_facebook extends phpbb_auth_provider_oau
 			throw new Exception('Invalid service provider type');
 		}
 
-		// This was a callback request from bitly, get the token
+		// This was a callback request, get the token
 		$this->service_provider->requestAccessToken( $this->request->variable('code', '') );
 
 		// Send a request with it
 		$result = json_decode( $this->service_provider->request('/me'), true );
 
-		// Return the unique identifier returned from bitly
+		// Return the unique identifier
 		return $result['id'];
 	}
 
@@ -94,7 +94,7 @@ class phpbb_auth_provider_oauth_service_facebook extends phpbb_auth_provider_oau
 		// Send a request with it
 		$result = json_decode( $this->service_provider->request('/me'), true );
 
-		// Return the unique identifier returned from bitly
+		// Return the unique identifier
 		return $result['id'];
 	}
 }

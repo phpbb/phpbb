@@ -87,7 +87,7 @@ interface phpbb_auth_provider_interface
 	 *							)
 	 *							An optional third element may be added to this
 	 *							array: 'BLOCK_VAR_NAME'. If this is present,
-	 *							then it's value should be a string that is used
+	 *							then its value should be a string that is used
 	 *							to designate the name of the loop used in the
 	 *							ACP template file. In addition to this, an
 	 *							additional key named 'BLOCK_VARS' is required.
