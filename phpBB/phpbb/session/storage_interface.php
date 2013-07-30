@@ -56,6 +56,8 @@ interface phpbb_session_storage_interface
 	*/
 	function delete($session_id, $user_id = false);
 
+	// Functions below involving user_ids
+
 	/** Count number of active sessions on board
 	*
 	* @param int $minutes_considered_active
@@ -71,21 +73,32 @@ interface phpbb_session_storage_interface
 	*/
 	function unset_admin($session_id);
 
-	/** Set last active session time and page for sessions with user_id
-	*
-	* @param int $time time to set
-	* @param int $user_id user_id for sessions to change
-	* @param string $page page to update as well
-	* 		  (false or '' to not update) (default: '')
-	* @return null
-	*/
-	function update_last_visit($time, $user_id, $page='');
 
-	/** Update form salt for user_id
-	*
-	* @param string $salt
-	* @param int $user_id
-	* @return null
-	*/
-	function update_form_salt($salt, $user_id);
+	/** Get sessions associated with user_id sorted by newest
+	 *
+	 * @param int $user_id
+	 * @return array session data
+	 */
+	function get_newest($user_id);
+
+	/** Delete all session associated with user_id
+	 *
+	 * @param int $user_id
+	 */
+	function delete_by_user_id($user_id);
+
+	/** Return count of sessions associated with user_id within max_time
+	 *
+	 * @param int $user_id
+	 * @param int $max_time
+	 * @return int number of sessions for user_id within max_time
+	 */
+	function num_sessions($user_id, $max_time);
+
+	/** Get session & user data associated with user_id
+	 *
+	 * @param int $user_id
+	 * @return array
+	 */
+	function get_with_user_id($user_id);
 }
