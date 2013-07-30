@@ -223,7 +223,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 			$filename = $fileInfo->getFilename();
 			if ($fileInfo->isDir())
 			{
-				$this->purge_dir($fileInfo->getPathname());
+				$this->remove_dir($fileInfo->getPathname());
 			}
 			elseif (strpos($filename, 'container_') === 0 ||
 				strpos($filename, 'url_matcher') === 0 ||
@@ -250,7 +250,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	/**
 	* Remove directory
 	*/
-	protected function purge_dir($dir)
+	protected function remove_dir($dir)
 	{
 		try 
 		{
@@ -269,7 +269,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 			}
 			if ($fileInfo->isDir())
 			{
-				$this->purge_dir($fileInfo->getPathname());
+				$this->remove_dir($fileInfo->getPathname());
 			}
 			else
 			{
