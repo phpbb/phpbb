@@ -141,14 +141,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 			$data['session_id']	= $this->user->data['session_id'];
 		}
 
-		$row = $this->_has_acess_token($data);
-
-		if (!$row)
-		{
-			return false;
-		}
-
-		return true;
+		return $this->_has_acess_token($data);
 	}
 
 	/**
@@ -207,7 +200,18 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 			'provider'		=> $this->service_name,
 		);
 
-		$row = $this->_has_acess_token($data);
+		return $this->_has_acess_token($data);
+	}
+
+	/**
+	* A helper function that performs the query for has access token functions
+	*
+	* @param	array	$data
+	* @return	bool
+	*/
+	protected function _has_acess_token($data)
+	{
+		$row = $this->get_access_token_row($data);
 
 		if (!$row)
 		{
@@ -215,23 +219,6 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 		}
 
 		return true;
-	}
-
-	/**
-	* A helper function that performs the query for has access token functions
-	*
-	* @param	array	$data
-	* @return	mixed
-	*/
-	protected function _has_acess_token($data)
-	{
-		$sql = 'SELECT oauth_token FROM ' . $this->auth_provider_oauth_table . '
-			WHERE ' . $this->db->sql_build_array('SELECT', $data);
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		return $row;
 	}
 
 	public function retrieve_access_token_by_session()
@@ -257,11 +244,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*/
 	protected function _retrieve_access_token($data)
 	{
-		$sql = 'SELECT oauth_token FROM ' . $this->auth_provider_oauth_table . '
-			WHERE ' . $this->db->sql_build_array('SELECT', $data);
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
+		$row = $this->get_access_token_row($data);
 
 		if (!$row)
 		{
@@ -281,5 +264,22 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		$this->cachedToken = $token;
 		return $token;
+	}
+
+	/**
+	* A helper function that performs the query for retrieving an access token
+	*
+	* @param	array	$data
+	* @return	mixed
+	*/
+	protected function get_access_token_row($data)
+	{
+		$sql = 'SELECT oauth_token FROM ' . $this->auth_provider_oauth_table . '
+			WHERE ' . $this->db->sql_build_array('SELECT', $data);
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return $row;
 	}
 }
