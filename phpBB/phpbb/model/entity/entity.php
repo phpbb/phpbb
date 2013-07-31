@@ -38,6 +38,6 @@ abstract class phpbb_model_entity
 
 	public function set($field, $value)
 	{
-		$this->$field = $value;
+		$this->data[$field] = $value;
 	}
 }
