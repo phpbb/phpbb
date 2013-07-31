@@ -28,6 +28,7 @@ class ucp_login_link
 	function main($id, $mode)
 	{
 		global $config, $phpbb_container, $request, $template, $user;
+		global $phpbb_root_path, $phpEx;
 
 		// Initialize necessary variables
 		$login_error = null;
@@ -94,7 +95,7 @@ class ucp_login_link
 			'LOGIN_LINK_ERROR'		=> $login_link_error,
 			'PASSWORD_CREDENTIAL'	=> 'login_password',
 			'USERNAME_CREDENTIAL'	=> 'login_username',
-			'S_HIDDEN_FIELDS'		=> $this->get_hidden_fields(),
+			'S_HIDDEN_FIELDS'		=> $this->get_hidden_fields($data),
 
 			// Registration elements
 			'REGISTER_ACTION'	=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
@@ -108,10 +109,8 @@ class ucp_login_link
 		$this->page_title = 'UCP_LOGIN_LINK';
 	}
 
-	protected function get_register_hidden_fields($data)
+	protected function get_hidden_fields($data)
 	{
-		global $config, $phpbb_root_path, $phpEx, $request;
-
 		$fields = array();
 
 		foreach ($data as $key => $value)
@@ -119,7 +118,7 @@ class ucp_login_link
 			$fields['login_link_' . $key] = $value;
 		}
 
-		return build_hidden_fields($s_hidden_fields);
+		return build_hidden_fields($fields);
 	}
 
 	protected function get_login_link_data_array()
