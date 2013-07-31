@@ -3,8 +3,57 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "6e6125b88160e28568edcb9fd007abed",
+    "hash": "df3056aa5b354333182aca2f8ba53e89",
     "packages": [
+        {
+            "name": "swiftmailer/swiftmailer",
+            "version": "v5.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/swiftmailer/swiftmailer.git",
+                "reference": "v5.0.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/v5.0.1",
+                "reference": "v5.0.1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.1-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "lib/swift_required.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Chris Corbyn"
+                }
+            ],
+            "description": "Swiftmailer, free feature-rich PHP mailer",
+            "homepage": "http://swiftmailer.org",
+            "keywords": [
+                "mail",
+                "mailer"
+            ],
+            "time": "2013-06-17 13:32:32"
+        },
         {
             "name": "symfony/config",
             "version": "v2.1.11",
@@ -29,7 +78,6 @@
                     "Symfony\\Component\\Config": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -79,7 +127,6 @@
                     "Symfony\\Component\\DependencyInjection": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -128,7 +175,6 @@
                     "Symfony\\Component\\EventDispatcher": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -171,7 +217,6 @@
                     "SessionHandlerInterface": "Symfony/Component/HttpFoundation/Resources/stubs"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -233,7 +278,6 @@
                     "Symfony\\Component\\HttpKernel": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -286,7 +330,6 @@
                     "Symfony\\Component\\Routing": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -328,7 +371,6 @@
                     "Symfony\\Component\\Yaml": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -374,7 +416,6 @@
                     "Twig_": "lib/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3"
             ],
