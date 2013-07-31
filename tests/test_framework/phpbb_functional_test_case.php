@@ -729,9 +729,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	 * assertNotContains for language strings
 	 *
-	 * @param string $needle Search string
-	 * @param string $haystack Search this
-	 * @param string $message Optional failure message
+	 * @param string $needle	Search string
+	 * @param string $haystack	Search this
+	 * @param string $message	Optional failure message
 	 */
 	public function assertNotContainsLang($needle, $haystack, $message = null)
 	{
