@@ -63,28 +63,27 @@ class phpbb_controller_api_topic
 	public function topics($forum_id, $page)
 	{
 		$serializer = new Serializer(array(
-			new phpbb_model_normalizer_api_response(),
 			new phpbb_model_normalizer_topic(),
 		), array(new JsonEncoder()));
 
 		if (!$this->config['allow_api'])
 		{
-			$response = new phpbb_model_entity_api_response(array(
+			$response = array(
 				'status' => 500,
 				'data' => 'The API is not enabled on this board',
-			));
-			return new Response($serializer->serialize($response, 'json'), $response->get('status'));
+			);
+			return new Response($serializer->serialize($response, 'json'), $response['status']);
 		}
 		$topics = $this->topic_repository->get($forum_id, $page);
 
-		$response = new phpbb_model_entity_api_response(array(
+		$response = array(
 			'status' => 200,
 			'data' => $serializer->normalize($topics),
-		));
+		);
 
 		$json = $serializer->serialize($response, 'json');
 
-		return new Response($json, $response->get('status'));
+		return new Response($json, $response['status']);
 	}
 
 }

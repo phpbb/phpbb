@@ -45,20 +45,6 @@ class phpbb_model_repository_auth
 		$this->db = $db;
 	}
 
-	public function generate_key()
-	{
-		$chars = '0123456789abcdefghijklmnopqrstyvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-		$key = '';
-		for($i = 0; $i < 32; $i++)
-		{
-			$chars = str_shuffle($chars);
-			$key .= substr($chars, mt_rand(0, 61), 1);
-		}
-
-		return $key;
-	}
-
 	public function allow($auth_key, $sign_key, $user_id, $name)
 	{
 		$sql = 'INSERT INTO ' . API_KEYS_TABLE
@@ -106,8 +92,8 @@ class phpbb_model_repository_auth
 	 * @param $serial
 	 * @param $hash
 	 * @param $permission String The permission to check for
-	 * @param bool $api_response Weather or not to return a boolean or a api_response object on failure
-	 * @return phpbb_model_entity_api_response|bool
+	 * @param bool $api_response Weather or not to return a boolean or a response array on failure
+	 * @return array|bool
 	 */
 	public function auth($request, $auth_key, $serial, $hash, $permission, $api_response = true)
 	{
@@ -115,10 +101,10 @@ class phpbb_model_repository_auth
 		{
 			if ($api_response)
 			{
-				$response = new phpbb_model_entity_api_response(array(
+				$response = array(
 					'status' => 500,
 					'data' => 'The API is not enabled on this board',
-				));
+				);
 				return $response;
 			}
 			else
@@ -143,10 +129,10 @@ class phpbb_model_repository_auth
 			{
 				if ($api_response)
 				{
-					$response = new phpbb_model_entity_api_response(array(
+					$response = array(
 						'status' => 401,
 						'data' => 'The user has not authenticated this application',
-					));
+					);
 					return $response;
 				}
 				else
@@ -163,10 +149,10 @@ class phpbb_model_repository_auth
 			{
 				if ($api_response)
 				{
-					$response = new phpbb_model_entity_api_response(array(
+					$response = array(
 						'status' => 400,
 						'data' => 'Invalid hash',
-					));
+					);
 					return $response;
 				}
 				else

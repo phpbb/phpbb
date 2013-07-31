@@ -153,8 +153,8 @@ $schema_data['phpbb_api_keys'] = array(
 		'key_id'			=> array('UINT', NULL, 'auto_increment'),
 		'user_id'			=> array('UINT', 0),
 		'name'				=> array('VCHAR:32', ''),
-		'auth_key'				=> array('VCHAR:32', ''),
-		'sign_key'		=> array('VCHAR:32', ''),
+		'auth_key'				=> array('VCHAR:16', ''),
+		'sign_key'		=> array('VCHAR:16', ''),
 	),
 	'PRIMARY_KEY'			=> 'key_id',
 );

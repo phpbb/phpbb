@@ -77,7 +77,6 @@ class phpbb_controller_api_forum
 	public function forums($forum_id)
 	{
 		$serializer = new Serializer(array(
-			new phpbb_model_normalizer_api_response(),
 			new phpbb_model_normalizer_forum(),
 		), array(new JsonEncoder()));
 
@@ -91,17 +90,17 @@ class phpbb_controller_api_forum
 		}
 		else
 		{
-			$authed = $this->auth_repository->auth('api/forums', $auth_key, $serial, $hash, '');
+			$authed = $this->auth_repository->auth('api/forums/' . $forum_id, $auth_key, $serial, $hash, '');
 		}
 
 		if ($authed === true)
 		{
 			$forums = $this->forum_repository->get($forum_id);
 
-			$response = new phpbb_model_entity_api_response(array(
+			$response = array(
 				'status' => 200,
 				'data' => $serializer->normalize($forums),
-			));
+			);
 		}
 		else
 		{
@@ -110,7 +109,7 @@ class phpbb_controller_api_forum
 
 		$json = $serializer->serialize($response, 'json');
 
-		return new Response($json, $response->get('status'));
+		return new Response($json, $response['status']);
 	}
 
 }

@@ -61,6 +61,7 @@ class phpbb_controller_api_auth
 	 */
 	protected $config;
 
+
 	/**
 	 * Constructor
 	 *
@@ -85,28 +86,28 @@ class phpbb_controller_api_auth
 
 	public function generate_keys()
 	{
-		$serializer = new Serializer(array(new phpbb_model_normalizer_api_response()), array(new JsonEncoder()));
+		$serializer = new Serializer(array(), array(new JsonEncoder()));
 		if (!$this->config['allow_api'])
 		{
-			$response = new phpbb_model_entity_api_response(array(
+			$response = array(
 				'status' => 500,
 				'data' => 'The API is not enabled on this board',
-			));
-			return new Response($serializer->serialize($response, 'json'), $response->get('status'));
+			);
+			return new Response($serializer->serialize($response, 'json'), $response['status']);
 		}
 
 		$keys = array(
-			'auth_key' => $this->auth_repository->generate_key(),
-			'sign_key' => $this->auth_repository->generate_key(),
+			'auth_key' => unique_id(),
+			'sign_key' => unique_id(),
 		);
 
-		$response = new phpbb_model_entity_api_response(array(
+		$response = array(
 			'status' => 200,
 			'data' => $keys,
-		));
+		);
 
 
-		return new Response($serializer->serialize($response, 'json'), $response->get('status'));
+		return new Response($serializer->serialize($response, 'json'), $response['status']);
 	}
 
 	public function auth($auth_key, $sign_key)
@@ -116,8 +117,10 @@ class phpbb_controller_api_auth
 			return $this->helper->error($this->user->lang('API_NOT_ENABLED'));
 		}
 
+		$url = $this->helper->url('api/auth/allow');
+
 		$this->template->assign_vars(array(
-			'S_AUTH_ACTION' => 'app.php?controller=api/auth/allow',
+			'S_AUTH_ACTION' => $url,
 			'T_AUTH_KEY' => $auth_key,
 			'T_SIGN_KEY' => $sign_key,
 		));
@@ -151,11 +154,15 @@ class phpbb_controller_api_auth
 
 		if (empty($appname))
 		{
-			return $this->helper->error($this->user->lang['AUTH_MISSING_NAME'] . ' <a href="app.php?controller=api/auth/' . $auth_key . '/' . $sign_key .'">' .
+			$url = $this->helper->url('api/auth', array(
+				'auth_key' => $auth_key,
+				'sign_key' => $sign_key,
+			));
+			return $this->helper->error($this->user->lang['AUTH_MISSING_NAME'] . ' <a href="' . $url . '">' .
 			$this->user->lang['AUTH_RETURN'] . '</a>');
 		}
 
-		if (strlen($auth_key) != 32 || strlen($sign_key) != 32)
+		if (strlen($auth_key) != 16 || strlen($sign_key) != 16)
 		{
 			return $this->helper->error($this->user->lang['AUTH_KEY_ERROR']);
 		}
@@ -167,25 +174,25 @@ class phpbb_controller_api_auth
 
 	public function verify($auth_key, $serial, $hash)
 	{
-		$serializer = new Serializer(array(new phpbb_model_normalizer_api_response()), array(new JsonEncoder()));
+		$serializer = new Serializer(array(), array(new JsonEncoder()));
 		if (!$this->config['allow_api'])
 		{
-			$response = new phpbb_model_entity_api_response(array(
+			$response = array(
 				'status' => 500,
 				'data' => 'The API is not enabled on this board',
-			));
-			return new Response($serializer->serialize($response, 'json'), $response->get('status'));
+			);
+			return new Response($serializer->serialize($response, 'json'), $response['status']);
 		}
 
 		$is_verified = $this->auth_repository->verify($auth_key, $serial, $hash);
 
-		$response = new phpbb_model_entity_api_response(array(
+		$response = array(
 			'status' => 200,
 			'data' => array(
 				'valid'	=> $is_verified,
 			),
-		));
+		);
 
-		return new Response($serializer->serialize($response, 'json'), $response->get('status'));
+		return new Response($serializer->serialize($response, 'json'), $response['status']);
 	}
 }
