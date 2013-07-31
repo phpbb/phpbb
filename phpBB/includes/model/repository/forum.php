@@ -33,7 +33,9 @@ class phpbb_model_repository_forum
 	{
 		$this->nestedset_forum = $nestedset_forum;
 	}
-	public function get($forum_id){
+
+	public function get($forum_id)
+	{
 		if ($forum_id == 0)
 		{
 			$result = $this->nestedset_forum->get_full_tree_data();

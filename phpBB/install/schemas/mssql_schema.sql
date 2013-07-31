@@ -173,8 +173,8 @@ CREATE TABLE [phpbb_api_keys] (
 	[key_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[name] [varchar] (32) DEFAULT ('') NOT NULL ,
-	[auth_key] [varchar] (32) DEFAULT ('') NOT NULL ,
-	[sign_key] [varchar] (32) DEFAULT ('') NOT NULL 
+	[auth_key] [varchar] (16) DEFAULT ('') NOT NULL ,
+	[sign_key] [varchar] (16) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 
