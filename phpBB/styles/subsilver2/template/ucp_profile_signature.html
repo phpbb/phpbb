@@ -1,5 +1,12 @@
 <!-- INCLUDE ucp_header.html -->
 
+<script type="text/javascript">
+// <![CDATA[
+	var form_name = 'ucp';
+	var text_name = 'signature';
+// ]]>
+</script>
+
 <!-- DEFINE $S_SIGNATURE = 1 -->
 <table class="tablebg" width="100%" cellspacing="1">
 <tr>
@@ -18,20 +25,10 @@
 <!-- ENDIF -->
 
 <tr>
-	<td colspan="2" class="row2">
-		<script type="text/javascript">
-		// <![CDATA[
-			var form_name = 'ucp';
-			var text_name = 'signature';
-		// ]]>
-		</script>
-		<!-- IF S_SMILIES_ALLOWED -->
-		<table cellspacing="0">
-		<tr>
-			<td class="row1" width="22%" valign="top" style="border-right:1px solid #a9b8c2">
-			{L_SIGNATURE_EXPLAIN}
-			<!-- IF .smiley -->
-			<table width="100%" cellspacing="5" cellpadding="0" border="0" align="center">
+	<!-- IF S_SMILIES_ALLOWED -->
+	<td class="row1" width="22%" valign="top">
+		{L_SIGNATURE_EXPLAIN}
+		<table width="100%" cellspacing="5" cellpadding="0" border="0" align="center">
 			<tr>
 				<td class="gensmall" align="center"><b>{L_SMILIES}</b></td>
 			</tr>
@@ -47,11 +44,13 @@
 				<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a></td>
 			</tr>
 			<!-- ENDIF -->
-			</table>
-			<!-- ENDIF -->
-		</td>
-		<td class="row2">
-		<!-- ENDIF -->
+		</table>
+	</td>
+	<td class="row2">
+	<!-- ELSE -->
+	<td class="row2" colspan="2">
+	<!-- ENDIF -->
+
 		<table cellspacing="0" cellpadding="2" border="0" width="99%">
 		<!-- INCLUDE posting_buttons.html -->
 		<tr>
@@ -75,11 +74,6 @@
 		</tr>
 		<!-- ENDIF -->
 		</table>
-		<!-- IF S_SMILIES_ALLOWED -->
-		</td>
-		</tr>
-		</table>
-		<!-- ENDIF -->
 	</td>
 </tr>
 <tr>
