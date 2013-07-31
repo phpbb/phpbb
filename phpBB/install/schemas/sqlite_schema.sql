@@ -94,7 +94,7 @@ CREATE TABLE phpbb_oauth_tokens (
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	session_id char(32) NOT NULL DEFAULT '',
 	provider varchar(255) NOT NULL DEFAULT '',
-	oauth_token text(65535) NOT NULL DEFAULT ''
+	oauth_token mediumtext(16777215) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_oauth_tokens_user_id ON phpbb_oauth_tokens (user_id);

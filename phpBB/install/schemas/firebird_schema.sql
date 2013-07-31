@@ -133,7 +133,7 @@ CREATE TABLE phpbb_oauth_tokens (
 	user_id INTEGER DEFAULT 0 NOT NULL,
 	session_id CHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	provider VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	oauth_token BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
+	oauth_token BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL
 );;
 
 CREATE INDEX phpbb_oauth_tokens_user_id ON phpbb_oauth_tokens(user_id);;

@@ -95,7 +95,7 @@ CREATE TABLE phpbb_oauth_tokens (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	session_id binary(32) DEFAULT '' NOT NULL,
 	provider varbinary(255) DEFAULT '' NOT NULL,
-	oauth_token blob NOT NULL,
+	oauth_token mediumblob NOT NULL,
 	KEY user_id (user_id),
 	KEY provider (provider)
 );

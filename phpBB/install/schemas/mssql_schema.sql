@@ -173,8 +173,8 @@ CREATE TABLE [phpbb_oauth_tokens] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[session_id] [char] (32) DEFAULT ('') NOT NULL ,
 	[provider] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[oauth_token] [varchar] (4000) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
+	[oauth_token] [text] DEFAULT ('') NOT NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
 CREATE  INDEX [user_id] ON [phpbb_oauth_tokens]([user_id]) ON [PRIMARY]
