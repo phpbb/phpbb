@@ -27,7 +27,7 @@ class ucp_register
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
-		global $request;
+		global $request, $phpbb_container;
 
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE)
@@ -78,10 +78,27 @@ class ucp_register
 			}
 		}
 
-
 		$cp = new custom_profile();
 
 		$error = $cp_data = $cp_error = array();
+
+		// Handle login_link data added to $_hidden_fields
+		$login_link_data = $this->get_login_link_data_array();
+
+		if ($login_link_data !== array())
+		{
+			// Confirm that we have all necessary data
+			$auth_provider = 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
+			$auth_provider = $phpbb_container->get($auth_provider);
+
+			$result = $auth_provider->login_link_has_necessary_data($data);
+			if ($result !== null)
+			{
+				$error[] = $user->lang[$result];
+			}
+
+			$s_hidden_fields = array_merge($s_hidden_fields, $login_link_data);
+		}
 
 		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
 		{
@@ -398,6 +415,19 @@ class ucp_register
 					}
 				}
 
+				// Perform account linking if necessary
+				if ($login_link_data !== array())
+				{
+					$login_link_data['user_id'] = $user_id;
+
+					$result = $auth_provider->link_account($login_link_data);
+
+					if ($result)
+					{
+						$message = $message . '<br /><br />' . $user->lang[$result];
+					}
+				}
+
 				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
 			}
@@ -473,5 +503,23 @@ class ucp_register
 		//
 		$this->tpl_name = 'ucp_register';
 		$this->page_title = 'UCP_REGISTRATION';
+	}
+
+	protected function get_login_link_data_array()
+	{
+		global $request;
+
+		$var_names = $request->variable_names(phpbb_request_interface::POST);
+		$login_link_data = array();
+
+		foreach ($var_names as $var_name)
+		{
+			if (strpos($var_name, 'login_link_') === 0)
+			{
+				$login_link_data[$var_name] = $request->variable($var_name, '', false, phpbb_request_interface::POST);
+			}
+		}
+
+		return $login_link_data;
 	}
 }
