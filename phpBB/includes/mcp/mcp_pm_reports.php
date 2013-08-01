@@ -115,7 +115,8 @@ class mcp_pm_reports
 				}
 
 				// Process message, leave it uncensored
-				$message = generate_text_for_display($pm_info['message_text'], $pm_info['bbcode_uid'], $pm_info['bbcode_bitfield'], ($pm_info['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES, false);
+				$parse_flags = ($pm_info['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+				$message = generate_text_for_display($pm_info['message_text'], $pm_info['bbcode_uid'], $pm_info['bbcode_bitfield'], $parse_flags, false);
 
 				$report['report_text'] = make_clickable(bbcode_nl2br($report['report_text']));
 
