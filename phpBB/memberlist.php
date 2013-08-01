@@ -995,6 +995,28 @@ switch ($mode)
 
 	case 'group':
 	default:
+        if ($request->is_ajax())
+        {
+            $partial = request_var("partial", "");
+            if (!$partial)
+            {
+                exit_handler();
+                exit();
+            }
+            $sql="SELECT username_clean".
+                    " FROM ". USERS_TABLE .
+                    " WHERE username_clean LIKE '$partial%'";
+            $result = $db->sql_query($sql);
+            $final_ary=array();
+            while ($row = $db->sql_fetchrow($result))
+            {
+                array_push($final_ary, $row['username_clean']);
+            }
+            echo json_encode($final_ary);
+            exit_handler();
+            exit();
+        }
+
 		// The basic memberlist
 		$page_title = $user->lang['MEMBERLIST'];
 		$template_html = 'memberlist_body.html';

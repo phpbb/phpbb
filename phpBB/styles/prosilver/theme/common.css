@@ -641,6 +641,31 @@ li.pagination ul {
 	opacity: 0.5;
 }
 
+/*phpBB Suggest styles
+ --------------------------------------- */
+.phpbb-suggest
+{
+    position: absolute;
+    display: none;
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0px;
+    background-color: white;
+    border: 1px blue solid;
+}
+
+.phpbb-suggest li
+{
+    padding: 5px;
+}
+
+.phpbb-suggest-select
+{
+    color: white;
+    background-color: #CADCEB;
+}
+
+
 /* Miscellaneous styles
 ---------------------------------------- */
 #forum-permissions {
