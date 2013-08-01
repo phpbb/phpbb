@@ -213,7 +213,8 @@ function mcp_topic_view($id, $mode, $action)
 		$message = $row['post_text'];
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_info['topic_title'];
 
-		$message = generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES, false);
+		$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+		$message = generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, false);
 
 		if (!empty($attachments[$row['post_id']]))
 		{
