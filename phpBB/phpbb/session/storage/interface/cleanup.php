@@ -16,9 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Interface phpbb_session_cleanup_interface
+* Interface phpbb_session_storage_interface_cleanup
 */
-interface phpbb_session_cleanup_interface
+interface phpbb_session_storage_interface_cleanup
 {
 	function cleanup_guest_sessions($session_length);
 

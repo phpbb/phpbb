@@ -16,9 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Interface phpbb_session_keys_interface
+* Interface phpbb_session_storage_interface_keys
 */
-interface phpbb_session_keys_interface
+interface phpbb_session_storage_interface_keys
 {
 	/** Get user information with user_id and session_key
 	*

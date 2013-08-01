@@ -16,11 +16,11 @@ if (!defined('IN_PHPBB'))
 }
 
 class phpbb_session_storage_native implements
-										phpbb_session_storage_interface,
-										phpbb_session_banlist_interface,
-										phpbb_session_keys_interface,
-										phpbb_session_cleanup_interface,
-										phpbb_session_user_interface
+										phpbb_session_storage_interface_session,
+										phpbb_session_storage_interface_banlist,
+										phpbb_session_storage_interface_keys,
+										phpbb_session_storage_interface_cleanup,
+										phpbb_session_storage_interface_user
 {
 	protected $db;
 	protected $time_now;

@@ -16,9 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Interface phpbb_session_storage_interface
+* Interface phpbb_session_storage_interface_session
 */
-interface phpbb_session_storage_interface
+interface phpbb_session_storage_interface_session
 {
 	/** Update the time used in session storage
 	*
