@@ -35,11 +35,11 @@ interface phpbb_session_storage_interface_cleanup
 	/** For sessions older than length, run a function and collect results.
 	*
 	* @param int $session_length how old to search
-	* @param Callable $session_function function to run takes $row + $storage, outputs array
+	* @param Closure $session_function function to run takes $row, outputs array
 	* @param int $batch_size Sql Paging size
 	* @return array an array containing the results of $session_function
 	*/
-	function map_recently_expired($session_length, $session_function, $batch_size);
+	function map_recently_expired($session_length, Closure $session_function, $batch_size);
 
 	/** Delete sessions longer than max_autologin_time
 	*

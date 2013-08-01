@@ -262,11 +262,11 @@ class phpbb_session_storage_native implements
 
 	/** For sessions older than length, run a function and collect results.
 	* @param $session_length Int - How old to search
-	* @param $session_function Callable - Function to run takes $row + $storage, outputs array
+	* @param $session_function Callable - Function to run takes $row, outputs array
 	* @param $batch_size Int - Sql Paging size
 	* @return Array - An array containing the results of $session_function
 	*/
-	function map_recently_expired($session_length, $session_function, $batch_size)
+	function map_recently_expired($session_length, Closure $session_function, $batch_size)
 	{
 		$sql = '
 			SELECT session_user_id, session_page, MAX(session_time) AS recent_time
@@ -278,7 +278,7 @@ class phpbb_session_storage_native implements
 		$values = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$values[] = $session_function($row, $this);
+			$values[] = $session_function($row);
 		}
 		$this->db->sql_freeresult($result);
 		return $values;

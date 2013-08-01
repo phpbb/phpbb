@@ -935,9 +935,9 @@ class phpbb_session
 		$this->db_cleanup->cleanup_guest_sessions($config['session_length']);
 
 		// Get expired sessions, only most recent for each user
-		$user_storage = $this->db_user;
-		$del_user_ids = $this->db_cleanup->map_recently_expired($config['session_length'], function($row, $storage) use ($user_storage) {
-				$user_storage->update_last_visit($row['recent_time'], $row['session_page'], $row['session_user_id']);
+		$db_user = $this->db_user;
+		$del_user_ids = $this->db_cleanup->map_recently_expired($config['session_length'], function($row) use ($db_user) {
+				$db_user->update_last_visit($row['recent_time'], $row['session_page'], $row['session_user_id']);
 				return (int) $row['session_user_id'];
 		}, $batch_size);
 
