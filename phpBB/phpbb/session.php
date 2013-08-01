@@ -50,11 +50,11 @@ class phpbb_session
 	{
 		global $db;
 		$native_storage = new phpbb_session_storage_native($db, time());
-		$this->db_session = $db_session != null ? $db_session : $native_storage;
-		$this->db_user    = $db_user 	!= null ? $db_user 	  : $native_storage;
-		$this->db_keys 	  = $db_keys 	!= null	? $db_keys	  : $native_storage;
-		$this->db_banlist = $db_banlist != null ? $db_banlist : $native_storage;
-		$this->db_cleanup = $db_cleanup != null ? $db_cleanup : $native_storage;
+		$this->db_session = is_null($db_session)  ? $native_storage : $db_session;
+		$this->db_user    = is_null($db_user)     ? $native_storage : $db_user;
+		$this->db_keys 	  = is_null($db_keys)     ? $native_storage : $db_keys;
+		$this->db_banlist = is_null($db_banlist)  ? $native_storage : $db_banlist;
+		$this->db_cleanup = is_null( $db_cleanup) ? $native_storage : $db_cleanup;
 	}
 
 	/**
@@ -952,7 +952,7 @@ class phpbb_session
 
 			if ($config['max_autologin_time'])
 			{
-				$this->db_session->cleanup_long_sessions($config['max_autologin_time']);
+				$this->db_session->cleanup_long_session_keys($config['max_autologin_time']);
 			}
 
 			// only called from CRON; should be a safe workaround until the infrastructure gets going

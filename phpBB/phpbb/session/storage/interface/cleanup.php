@@ -20,6 +20,12 @@ if (!defined('IN_PHPBB'))
 */
 interface phpbb_session_storage_interface_cleanup
 {
+
+	/** Remove from storage all guest sessions older than session_length
+	 *
+	 * @param int $session_length (in seconds) remove sessions older than time - session_length
+	 * @return null
+	 */
 	function cleanup_guest_sessions($session_length);
 
 	/** Remove from storage all sessions older than session_length
