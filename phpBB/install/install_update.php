@@ -57,7 +57,6 @@ class install_update extends module
 	var $new_location;
 	var $latest_version;
 	var $current_version;
-	var $unequal_version;
 
 	var $update_to_version;
 
@@ -72,11 +71,16 @@ class install_update extends module
 	function main($mode, $sub)
 	{
 		global $phpbb_style, $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
-		global $request, $phpbb_admin_path, $phpbb_adm_relative_path;
+		global $request, $phpbb_admin_path, $phpbb_adm_relative_path, $phpbb_container;
+
+		// Create a normal container now
+		$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+
+		// Writes into global $cache
+		$cache = $phpbb_container->get('cache');
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
-		$this->unequal_version = false;
 
 		$this->old_location = $phpbb_root_path . 'install/update/old/';
 		$this->new_location = $phpbb_root_path . 'install/update/new/';
@@ -186,8 +190,6 @@ class install_update extends module
 		// Check if the update files are actually meant to update from the current version
 		if ($this->current_version != $this->update_info['version']['from'])
 		{
-			$this->unequal_version = true;
-
 			$template->assign_vars(array(
 				'S_ERROR'	=> true,
 				'ERROR_MSG'	=> sprintf($user->lang['INCOMPATIBLE_UPDATE_FILES'], $this->current_version, $this->update_info['version']['from'], $this->update_info['version']['to']),
@@ -195,10 +197,8 @@ class install_update extends module
 		}
 
 		// Check if the update files stored are for the latest version...
-		if ($this->latest_version != $this->update_info['version']['to'])
+		if (version_compare(strtolower($this->latest_version), strtolower($this->update_info['version']['to']), '>'))
 		{
-			$this->unequal_version = true;
-
 			$template->assign_vars(array(
 				'S_WARNING'		=> true,
 				'WARNING_MSG'	=> sprintf($user->lang['OLD_UPDATE_FILES'], $this->update_info['version']['from'], $this->update_info['version']['to'], $this->latest_version))
@@ -223,7 +223,14 @@ class install_update extends module
 			}
 
 			// What about the language file? Got it updated?
-			if (in_array('language/en/install.' . $phpEx, $this->update_info['files']))
+			if (in_array('language/' . $language . '/install.' . $phpEx, $this->update_info['files']))
+			{
+				$lang = array();
+				include($this->new_location . 'language/' . $language . '/install.' . $phpEx);
+				// this is the user's language.. just merge it
+				$user->lang = array_merge($user->lang, $lang);
+			}
+			if ($language != 'en' && in_array('language/en/install.' . $phpEx, $this->update_info['files']))
 			{
 				$lang = array();
 				include($this->new_location . 'language/en/install.' . $phpEx);
@@ -278,7 +285,7 @@ class install_update extends module
 				);
 
 				// Print out version the update package updates to
-				if ($this->unequal_version)
+				if ($this->latest_version != $this->update_info['version']['to'])
 				{
 					$template->assign_var('PACKAGE_VERSION', $this->update_info['version']['to']);
 				}
@@ -1612,7 +1619,9 @@ class install_update extends module
 		{
 			case 'version_info':
 				global $phpbb_root_path, $phpEx;
-				$info = get_remote_file('www.phpbb.com', '/updatecheck', ((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
+
+				$info = get_remote_file('version.phpbb.com', '/phpbb',
+						((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
 
 				if ($info !== false)
 				{

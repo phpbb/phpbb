@@ -78,7 +78,7 @@ $phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relati
 $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
 
 // Include essential scripts
-require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
+require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
@@ -90,9 +90,9 @@ include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
 // Setup class loader first
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
 // Set up container
@@ -214,7 +214,7 @@ $config = new phpbb_config(array(
 
 $phpbb_style_resource_locator = new phpbb_style_resource_locator();
 $phpbb_style_path_provider = new phpbb_style_path_provider();
-$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, new phpbb_template_context());
+$template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
 $phpbb_style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
 $phpbb_style->set_ext_dir_prefix('adm/');
 $phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
@@ -373,6 +373,7 @@ class module
 			'L_SKIP'				=> $lang['SKIP'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
 			'T_IMAGE_PATH'			=> htmlspecialchars($phpbb_admin_path) . 'images/',
+			'T_JQUERY_LINK'			=> $phpbb_root_path . 'assets/javascript/jquery.js',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_FLOW_BEGIN'	=> ($lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
@@ -666,6 +667,21 @@ class module
 		{
 			case 'text':
 			case 'password':
+			// HTML5 text-like input types
+			case 'color':
+			case 'date':
+			case 'time':
+			case 'datetime':
+			case 'datetime-local':
+			case 'email':
+			case 'month':
+			case 'number':
+			case 'range':
+			case 'search':
+			case 'tel':
+			case 'url':
+			case 'week':
+
 				$size = (int) $tpl_type[1];
 				$maxlength = (int) $tpl_type[2];
 

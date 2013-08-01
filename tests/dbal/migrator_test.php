@@ -8,10 +8,6 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/migrator.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/migration/migration.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
-
 require_once dirname(__FILE__) . '/migration/dummy.php';
 require_once dirname(__FILE__) . '/migration/unfulfillable.php';
 require_once dirname(__FILE__) . '/migration/if.php';
@@ -55,14 +51,18 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			'phpbb_',
 			$tools
 		);
+
+		$container = new phpbb_mock_container_builder();
+		$container->set('migrator', $migrator);
+
 		$this->extension_manager = new phpbb_extension_manager(
-			new phpbb_mock_container_builder(),
+			$container,
 			$this->db,
 			$this->config,
-			$this->migrator,
+			new phpbb_filesystem(),
 			'phpbb_ext',
 			dirname(__FILE__) . '/../../phpBB/',
-			'.php',
+			'php',
 			null
 		);
 	}
@@ -144,15 +144,8 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$this->migrator->update();
 		}
 
-		if ($migrator_test_if_true_failed)
-		{
-			$this->fail('True test failed');
-		}
-
-		if ($migrator_test_if_false_failed)
-		{
-			$this->fail('False test failed');
-		}
+		$this->assertFalse($migrator_test_if_true_failed, 'True test failed');
+		$this->assertFalse($migrator_test_if_false_failed, 'False test failed');
 	}
 
 	public function test_recall()

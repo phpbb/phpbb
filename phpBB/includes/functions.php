@@ -846,7 +846,7 @@ function phpbb_is_writable($file)
 */
 function phpbb_is_absolute($path)
 {
-	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:[/\\\]#i', $path))) ? true : false;
+	return (isset($path[0]) && $path[0] == '/' || preg_match('#^[a-z]:[/\\\]#i', $path)) ? true : false;
 }
 
 /**
@@ -1049,31 +1049,33 @@ else
 /**
 * Eliminates useless . and .. components from specified path.
 *
+* Deprecated, use filesystem class instead
+*
 * @param string $path Path to clean
 * @return string Cleaned path
+*
+* @deprecated
 */
 function phpbb_clean_path($path)
 {
-	$exploded = explode('/', $path);
-	$filtered = array();
-	foreach ($exploded as $part)
-	{
-		if ($part === '.' && !empty($filtered))
-		{
-			continue;
-		}
+	global $phpbb_container;
 
-		if ($part === '..' && !empty($filtered) && $filtered[sizeof($filtered) - 1] !== '..')
-		{
-			array_pop($filtered);
-		}
-		else
-		{
-			$filtered[] = $part;
-		}
+	if ($phpbb_container)
+	{
+		$phpbb_filesystem = $phpbb_container->get('filesystem');
 	}
-	$path = implode('/', $filtered);
-	return $path;
+	else
+	{
+		// The container is not yet loaded, use a new instance
+		if (!class_exists('phpbb_filesystem'))
+		{
+			global $phpbb_root_path, $phpEx;
+			require($phpbb_root_path . 'includes/filesystem.' . $phpEx);
+		}
+		$phpbb_filesystem = new phpbb_filesystem();
+	}
+
+	return $phpbb_filesystem->clean_path($path);
 }
 
 // functions used for building option fields
@@ -1972,7 +1974,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user, $config, $auth, $request;
+	global $db, $tracking_topics, $user, $config, $auth, $request, $phpbb_container;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
@@ -1997,7 +1999,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 
 	// Handle update of unapproved topics info.
 	// Only update for moderators having m_approve permission for the forum.
-	$sql_update_unapproved = ($auth->acl_get('m_approve', $forum_id)) ? '': 'AND t.topic_approved = 1';
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	// Check the forum for any left unread topics.
 	// If there are none, we mark the forum as read.
@@ -2017,8 +2019,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 						AND tt.user_id = ' . $user->data['user_id'] . ')
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
-					AND t.topic_moved_id = 0 ' .
-					$sql_update_unapproved . '
+					AND t.topic_moved_id = 0
+					AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.') . '
 					AND (tt.topic_id IS NULL
 						OR tt.mark_time < t.topic_last_post_time)';
 			$result = $db->sql_query_limit($sql, 1);
@@ -2042,8 +2044,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				FROM ' . TOPICS_TABLE . ' t
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
-					AND t.topic_moved_id = 0 ' .
-					$sql_update_unapproved;
+					AND t.topic_moved_id = 0
+					AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
 			$result = $db->sql_query($sql);
 
 			$check_forum = $tracking_topics['tf'][$forum_id];
@@ -2343,9 +2345,8 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 		$tpl_prefix . 'BASE_URL'		=> $base_url,
 		'A_' . $tpl_prefix . 'BASE_URL'		=> addslashes($base_url),
 		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-		$tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
-		$tpl_prefix . 'PREV_PAGE'		=> $previous_page,
-		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
+		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
+		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
 		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
 		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
 	);
@@ -2731,7 +2732,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
 	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false || strpos($url, ';') !== false)
 	{
-		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 
 	// Now, also check the protocol and for a valid url the last time...
@@ -2740,7 +2741,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 	if ($url_parts === false || empty($url_parts['scheme']) || !in_array($url_parts['scheme'], $allowed_protocols))
 	{
-		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 
 	if ($return)
@@ -2905,7 +2906,7 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 
 		// For XHTML compatibility we change back & to &amp;
 		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
+			'META' => '<meta http-equiv="refresh" content="' . $time . '; url=' . $url . '" />')
 		);
 	}
 
@@ -3300,8 +3301,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				return;
 			}
 
-			$redirect = meta_refresh(3, $redirect);
-			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
+			redirect($redirect);
 		}
 
 		// Something failed, determine what...
@@ -3465,6 +3465,7 @@ function login_forum_box($forum_data)
 	page_header($user->lang['LOGIN'], false);
 
 	$template->assign_vars(array(
+		'FORUM_NAME'			=> isset($forum_data['forum_name']) ? $forum_data['forum_name'] : '',
 		'S_LOGIN_ACTION'		=> build_url(array('f')),
 		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])))
 	);
@@ -4182,7 +4183,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 // Handler, header and footer
 
 /**
-* Error and message handler, call with trigger_error if reqd
+* Error and message handler, call with trigger_error if read
 */
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {

@@ -44,8 +44,11 @@ if (!defined('PHPBB_INSTALLED'))
 	// Replace any number of consecutive backslashes and/or slashes with a single slash
 	// (could happen on some proxy setups and/or Windows servers)
 	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
+
 	// Eliminate . and .. from the path
-	$script_path = phpbb_clean_path($script_path);
+	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
+	$phpbb_filesystem = new phpbb_filesystem();
+	$script_path = $phpbb_filesystem->clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 
@@ -68,7 +71,7 @@ $phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relati
 $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
 
 // Include files
-require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
+require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
@@ -82,9 +85,9 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Setup class loader first
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
 // Set up container

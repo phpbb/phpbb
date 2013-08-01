@@ -6,6 +6,7 @@
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_extension_finder_test extends phpbb_test_case
 {
@@ -35,7 +36,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_suffix_get_classes()
 	{
 		$classes = $this->finder
-			->core_path('includes/default/')
+			->core_path('phpbb/default/')
 			->extension_suffix('_class')
 			->get_classes();
 
@@ -66,7 +67,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_prefix_get_directories()
 	{
 		$dirs = $this->finder
-            ->prefix('t')
+            ->prefix('ty')
 			->get_directories();
 
 		sort($dirs);
@@ -80,7 +81,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_prefix_get_classes()
 	{
 		$classes = $this->finder
-			->core_path('includes/default/')
+			->core_path('phpbb/default/')
 			->extension_prefix('hidden_')
 			->get_classes();
 
@@ -97,7 +98,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_directory_get_classes()
 	{
 		$classes = $this->finder
-			->core_path('includes/default/')
+			->core_path('phpbb/default/')
 			->extension_directory('type')
 			->get_classes();
 
@@ -142,13 +143,45 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		);
 	}
 
+	public function test_uncleansub_directory_get_classes()
+	{
+		$classes = $this->finder
+			->directory('/sub/../sub/type')
+			->get_classes();
+
+		sort($classes);
+		$this->assertEquals(
+			array(
+				'phpbb_ext_foo_sub_type_alternative',
+			),
+			$classes
+		);
+	}
+
+	public function test_find_from_extension()
+	{
+		$files = $this->finder
+			->extension_directory('/type')
+			->find_from_extension('foo', dirname(__FILE__) . '/ext/foo/');
+		$classes = $this->finder->get_classes_from_files($files);
+
+		sort($classes);
+		$this->assertEquals(
+			array(
+				'phpbb_ext_foo_type_alternative',
+				'phpbb_ext_foo_type_dummy_empty',
+			),
+			$classes
+		);
+	}
+
 	/**
 	* These do not work because of changes with PHPBB3-11386
 	* They do not seem neccessary to me, so I am commenting them out for now
 	public function test_get_classes_create_cache()
 	{
 		$cache = new phpbb_mock_cache;
-		$finder = new phpbb_extension_finder($this->extension_manager, dirname(__FILE__) . '/', $cache, '.php', '_custom_cache_name');
+		$finder = new phpbb_extension_finder($this->extension_manager, new phpbb_filesystem(), dirname(__FILE__) . '/', $cache, 'php', '_custom_cache_name');
 		$files = $finder->suffix('_class.php')->get_files();
 
 		$expected_files = array(
@@ -176,7 +209,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_cached_get_files()
 	{
 		$query = array(
-			'core_path' => 'includes/foo',
+			'core_path' => 'phpbb/foo',
 			'core_suffix' => false,
 			'core_prefix' => false,
 			'core_directory' => 'bar',
@@ -188,6 +221,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		$finder = new phpbb_extension_finder(
 			$this->extension_manager,
+			new phpbb_filesystem(),
 			dirname(__FILE__) . '/',
 			new phpbb_mock_cache(array(
 				'_ext_finder' => array(

@@ -127,8 +127,10 @@ phpbb.addAjaxCallback('activate_deactivate', function(res) {
  * The removes the parent row of the link or form that triggered the callback,
  * and is good for stuff like the removal of forums.
  */
-phpbb.addAjaxCallback('row_delete', function() {
-	$(this).parents('tr').remove();
+phpbb.addAjaxCallback('row_delete', function(res) {
+	if (res.SUCCESS !== false) {
+		$(this).parents('tr').remove();
+	}
 });
 
 
@@ -148,6 +150,12 @@ $('[data-ajax]').each(function() {
 	}
 });
 
+/**
+* Automatically resize textarea
+*/
+$(document).ready(function() {
+	phpbb.resizeTextArea($('textarea:not(.no-auto-resize)'), {minHeight: 75});
+});
 
 
 })(jQuery); // Avoid conflicts with other libraries

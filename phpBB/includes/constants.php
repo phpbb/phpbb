@@ -87,6 +87,10 @@ define('ITEM_UNLOCKED', 0);
 define('ITEM_LOCKED', 1);
 define('ITEM_MOVED', 2);
 
+define('ITEM_UNAPPROVED', 0); // => has not yet been approved
+define('ITEM_APPROVED', 1); // => has been approved, and has not been soft deleted
+define('ITEM_DELETED', 2); // => has been soft deleted
+
 // Forum Flags
 define('FORUM_FLAG_LINK_TRACK', 1);
 define('FORUM_FLAG_PRUNE_POLL', 2);
@@ -156,6 +160,7 @@ define('PHYSICAL_LINK', 2);
 define('CONFIRM_REG', 1);
 define('CONFIRM_LOGIN', 2);
 define('CONFIRM_POST', 3);
+define('CONFIRM_REPORT', 4);
 
 // Categories - Attachments
 define('ATTACHMENT_CATEGORY_NONE', 0);

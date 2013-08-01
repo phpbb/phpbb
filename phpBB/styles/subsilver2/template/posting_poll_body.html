@@ -15,11 +15,11 @@
 </tr>
 <tr>
 	<td class="row1"><b class="genmed">{L_POLL_MAX_OPTIONS}{L_COLON}</b><br /><span class="gensmall">{L_POLL_MAX_OPTIONS_EXPLAIN}</span></td>
-	<td class="row2"><input class="post" type="text" name="poll_max_options" size="3" maxlength="3" value="{POLL_MAX_OPTIONS}" /></td>
+	<td class="row2"><input class="post" type="number" min="1" max="999" name="poll_max_options" size="3" maxlength="3" value="{POLL_MAX_OPTIONS}" /></td>
 </tr>
 <tr>
 	<td class="row1"><b class="genmed">{L_POLL_FOR}{L_COLON}</b></td>
-	<td class="row2"><input class="post" type="text" name="poll_length" size="3" maxlength="3" value="{POLL_LENGTH}" />&nbsp;<b class="gen">{L_DAYS}</b> <span class="gensmall">{L_POLL_FOR_EXPLAIN}</span></td>
+	<td class="row2"><input class="post" type="number" min="0" max="999" name="poll_length" size="3" maxlength="3" value="{POLL_LENGTH}" />&nbsp;<b class="gen">{L_DAYS}</b> <span class="gensmall">{L_POLL_FOR_EXPLAIN}</span></td>
 </tr>
 <!-- IF S_POLL_VOTE_CHANGE -->
 	<tr>

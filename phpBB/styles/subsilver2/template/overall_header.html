@@ -132,6 +132,8 @@ function marklist(id, name, state)
 
 <!-- EVENT overall_header_head_append -->
 
+{$STYLESHEETS}
+
 </head>
 <body class="{S_CONTENT_DIRECTION}">
 
@@ -152,8 +154,8 @@ function marklist(id, name, state)
 		<table width="100%" cellspacing="0">
 		<tr>
 			<td class="genmed">
-				<!-- IF S_NOTIFICATIONS_DISPLAY -->
-					[ <a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a> ] &bull;
+				<!-- IF S_NOTIFICATIONS_DISPLAY and not S_IS_BOT and S_USER_LOGGED_IN -->
+					[ <a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a> ]&nbsp;
 					<div id="notification_list" class="notification_list">
 						<div class="row1 header">
 							{L_NOTIFICATIONS}

@@ -347,7 +347,7 @@ class acp_users
 
 								$messenger->template($email_template, $user_row['user_lang']);
 
-								$messenger->to($user_row['user_email'], $user_row['username']);
+								$messenger->set_addresses($user_row);
 
 								$messenger->anti_abuse_headers($config, $user);
 
@@ -402,7 +402,7 @@ class acp_users
 
 									$messenger->template('admin_welcome_activated', $user_row['user_lang']);
 
-									$messenger->to($user_row['user_email'], $user_row['username']);
+									$messenger->set_addresses($user_row);
 
 									$messenger->anti_abuse_headers($config, $user);
 
@@ -624,29 +624,31 @@ class acp_users
 							$topic_id_ary = $move_topic_ary = $move_post_ary = $new_topic_id_ary = array();
 							$forum_id_ary = array($new_forum_id);
 
-							$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
+							$sql = 'SELECT topic_id, post_visibility, COUNT(post_id) AS total_posts
 								FROM ' . POSTS_TABLE . "
 								WHERE poster_id = $user_id
 									AND forum_id <> $new_forum_id
-								GROUP BY topic_id";
+								GROUP BY topic_id, post_visibility";
 							$result = $db->sql_query($sql);
 
 							while ($row = $db->sql_fetchrow($result))
 							{
-								$topic_id_ary[$row['topic_id']] = $row['total_posts'];
+								$topic_id_ary[$row['topic_id']][$row['post_visibility']] = $row['total_posts'];
 							}
 							$db->sql_freeresult($result);
 
 							if (sizeof($topic_id_ary))
 							{
-								$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real, topic_attachment
+								$sql = 'SELECT topic_id, forum_id, topic_title, topic_posts_approved, topic_posts_unapproved, topic_posts_softdeleted, topic_attachment
 									FROM ' . TOPICS_TABLE . '
 									WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
 								$result = $db->sql_query($sql);
 
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
+									if ($topic_id_ary[$row['topic_id']][ITEM_APPROVED] == $row['topic_posts_approved']
+									 && $topic_id_ary[$row['topic_id']][ITEM_UNAPPROVED] == $row['topic_posts_unapproved']
+									 && $topic_id_ary[$row['topic_id']][ITEM_DELETED] == $row['topic_posts_softdeleted'])
 									{
 										$move_topic_ary[] = $row['topic_id'];
 									}
@@ -679,7 +681,7 @@ class acp_users
 										'topic_time'				=> time(),
 										'forum_id' 					=> $new_forum_id,
 										'icon_id'					=> 0,
-										'topic_approved'			=> 1,
+										'topic_visibility'			=> ITEM_APPROVED,
 										'topic_title' 				=> $post_ary['title'],
 										'topic_first_poster_name'	=> $user_row['username'],
 										'topic_type'				=> POST_NORMAL,
@@ -1036,7 +1038,7 @@ class acp_users
 				$sql = 'SELECT COUNT(post_id) as posts_in_queue
 					FROM ' . POSTS_TABLE . '
 					WHERE poster_id = ' . $user_id . '
-						AND post_approved = 0';
+						AND post_visibility = ' . ITEM_UNAPPROVED;
 				$result = $db->sql_query($sql);
 				$user_row['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 				$db->sql_freeresult($result);

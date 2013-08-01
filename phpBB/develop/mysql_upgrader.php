@@ -149,7 +149,8 @@ foreach ($schema_data as $table_name => $table_data)
 			list($orig_column_type, $column_length) = explode(':', $column_data[0]);
 			$column_type = sprintf($dbms_type_map['mysql_41'][$orig_column_type . ':'], $column_length);
 
-			if (isset($dbms_type_map['mysql_40'][$orig_column_type . ':']['limit'][0]))
+			if (isset($dbms_type_map['mysql_40'][$orig_column_type . ':']['limit']) &&
+				isset($dbms_type_map['mysql_40'][$orig_column_type . ':']['limit'][0]))
 			{
 				switch ($dbms_type_map['mysql_40'][$orig_column_type . ':']['limit'][0])
 				{
@@ -552,9 +553,12 @@ function get_schema_struct()
 			'forum_topics_per_page'	=> array('TINT:4', 0),
 			'forum_type'			=> array('TINT:4', 0),
 			'forum_status'			=> array('TINT:4', 0),
-			'forum_posts'			=> array('UINT', 0),
-			'forum_topics'			=> array('UINT', 0),
-			'forum_topics_real'		=> array('UINT', 0),
+			'forum_posts_approved'		=> array('UINT', 0),
+			'forum_posts_unapproved'	=> array('UINT', 0),
+			'forum_posts_softdeleted'	=> array('UINT', 0),
+			'forum_topics_approved'		=> array('UINT', 0),
+			'forum_topics_unapproved'	=> array('UINT', 0),
+			'forum_topics_softdeleted'	=> array('UINT', 0),
 			'forum_last_post_id'	=> array('UINT', 0),
 			'forum_last_poster_id'	=> array('UINT', 0),
 			'forum_last_post_subject' => array('STEXT_UNI', ''),
@@ -695,6 +699,24 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_login_attempts'] = array(
+		'COLUMNS'		=> array(
+			'attempt_ip'			=> array('VCHAR:40', ''),
+			'attempt_browser'		=> array('VCHAR:150', ''),
+			'attempt_forwarded_for'	=> array('VCHAR:255', ''),
+			'attempt_time'			=> array('TIMESTAMP', 0),
+			'user_id'				=> array('UINT', 0),
+			'username'				=> array('VCHAR_UNI:255', 0),
+			'username_clean'		=> array('VCHAR_CI', 0),
+		),
+		'KEYS'			=> array(
+			'att_ip'				=> array('INDEX', array('attempt_ip', 'attempt_time')),
+			'att_for'		=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
+			'att_time'				=> array('INDEX', array('attempt_time')),
+			'user_id'					=> array('INDEX', 'user_id'),
+		),
+	);
+
 	$schema_data['phpbb_moderator_cache'] = array(
 		'COLUMNS'		=> array(
 			'forum_id'				=> array('UINT', 0),
@@ -768,7 +790,7 @@ function get_schema_struct()
 			'icon_id'				=> array('UINT', 0),
 			'poster_ip'				=> array('VCHAR:40', ''),
 			'post_time'				=> array('TIMESTAMP', 0),
-			'post_approved'			=> array('BOOL', 1),
+			'post_visibility'		=> array('TINT:3', 0),
 			'post_reported'			=> array('BOOL', 0),
 			'enable_bbcode'			=> array('BOOL', 1),
 			'enable_smilies'		=> array('BOOL', 1),
@@ -794,7 +816,7 @@ function get_schema_struct()
 			'topic_id'				=> array('INDEX', 'topic_id'),
 			'poster_ip'				=> array('INDEX', 'poster_ip'),
 			'poster_id'				=> array('INDEX', 'poster_id'),
-			'post_approved'			=> array('INDEX', 'post_approved'),
+			'post_visibility'		=> array('INDEX', 'post_visibility'),
 			'post_username'			=> array('INDEX', 'post_username'),
 			'tid_post_time'			=> array('INDEX', array('topic_id', 'post_time')),
 		),
@@ -898,6 +920,7 @@ function get_schema_struct()
 			'field_default_value'	=> array('VCHAR_UNI', ''),
 			'field_validation'		=> array('VCHAR_UNI:20', ''),
 			'field_required'		=> array('BOOL', 0),
+			'field_show_novalue'	=> array('BOOL', 0),
 			'field_show_on_reg'		=> array('BOOL', 0),
 			'field_show_on_vt'		=> array('BOOL', 0),
 			'field_show_profile'	=> array('BOOL', 0),
@@ -1107,15 +1130,16 @@ function get_schema_struct()
 			'forum_id'					=> array('UINT', 0),
 			'icon_id'					=> array('UINT', 0),
 			'topic_attachment'			=> array('BOOL', 0),
-			'topic_approved'			=> array('BOOL', 1),
+			'topic_visibility'			=> array('TINT:3', 0),
 			'topic_reported'			=> array('BOOL', 0),
 			'topic_title'				=> array('STEXT_UNI', '', 'true_sort'),
 			'topic_poster'				=> array('UINT', 0),
 			'topic_time'				=> array('TIMESTAMP', 0),
 			'topic_time_limit'			=> array('TIMESTAMP', 0),
 			'topic_views'				=> array('UINT', 0),
-			'topic_replies'				=> array('UINT', 0),
-			'topic_replies_real'		=> array('UINT', 0),
+			'topic_posts_approved'		=> array('UINT', 0),
+			'topic_posts_unapproved'	=> array('UINT', 0),
+			'topic_posts_softdeleted'	=> array('UINT', 0),
 			'topic_status'				=> array('TINT:3', 0),
 			'topic_type'				=> array('TINT:3', 0),
 			'topic_first_post_id'		=> array('UINT', 0),
@@ -1143,8 +1167,8 @@ function get_schema_struct()
 			'forum_id'			=> array('INDEX', 'forum_id'),
 			'forum_id_type'		=> array('INDEX', array('forum_id', 'topic_type')),
 			'last_post_time'	=> array('INDEX', 'topic_last_post_time'),
-			'topic_approved'	=> array('INDEX', 'topic_approved'),
-			'forum_appr_last'	=> array('INDEX', array('forum_id', 'topic_approved', 'topic_last_post_id')),
+			'topic_visibility'	=> array('INDEX', 'topic_visibility'),
+			'forum_appr_last'	=> array('INDEX', array('forum_id', 'topic_visibility', 'topic_last_post_id')),
 			'fid_time_moved'	=> array('INDEX', array('forum_id', 'topic_last_post_time', 'topic_moved_id')),
 		),
 	);

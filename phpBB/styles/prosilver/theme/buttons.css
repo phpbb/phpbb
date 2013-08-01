@@ -97,6 +97,11 @@ a.sendemail {
 	padding: 1px 0 0 17px;
 }
 
+ul.linklist.bulletin li.icon-home:before, ul.linklist.bulletin li.icon-ucp:before,
+ul.linklist.bulletin li.icon-bookmark:before, ul.linklist.bulletin li.icon-bump:before, ul.linklist.bulletin li.icon-subscribe:before, ul.linklist.bulletin li.icon-unsubscribe:before {
+	display: none;
+}
+
 /* Poster profile icons
 ----------------------------------------*/
 ul.profile-icons {

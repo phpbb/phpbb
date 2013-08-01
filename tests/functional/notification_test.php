@@ -40,10 +40,9 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 	public function test_user_subscriptions($checkbox_name, $expected_status)
 	{
 		$this->login();
-		$crawler = $this->request('GET', 'ucp.php?i=ucp_notifications&mode=notification_options');
-		$this->assert_response_success();
+		$crawler = self::request('GET', 'ucp.php?i=ucp_notifications&mode=notification_options');
 
-		$cplist = $crawler->filter('.cplist');
+		$cplist = $crawler->filter('.table1');
 		if ($expected_status)
 		{
 			$this->assert_checkbox_is_checked($cplist, $checkbox_name);

@@ -175,8 +175,7 @@ class ucp_profile
 								while ($row = $db->sql_fetchrow($result))
 								{
 									$messenger->template('admin_activate', $row['user_lang']);
-									$messenger->to($row['user_email'], $row['username']);
-									$messenger->im($row['user_jabber'], $row['username']);
+									$messenger->set_addresses($row);
 
 									$messenger->assign_vars(array(
 										'USERNAME'			=> htmlspecialchars_decode($data['username']),
@@ -546,6 +545,9 @@ class ucp_profile
 
 				// Build custom bbcodes array
 				display_custom_bbcodes();
+
+				// Generate smiley listing
+				generate_smilies('inline', 0);
 
 			break;
 

@@ -29,6 +29,11 @@ class ucp_remind
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $template;
 
+		if (!$config['allow_password_reset'])
+		{
+			trigger_error($user->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'));
+		}
+
 		$username	= request_var('username', '', true);
 		$email		= strtolower(request_var('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
@@ -94,8 +99,7 @@ class ucp_remind
 
 			$messenger->template('user_activate_passwd', $user_row['user_lang']);
 
-			$messenger->to($user_row['user_email'], $user_row['username']);
-			$messenger->im($user_row['user_jabber'], $user_row['username']);
+			$messenger->set_addresses($user_row);
 
 			$messenger->assign_vars(array(
 				'USERNAME'		=> htmlspecialchars_decode($user_row['username']),

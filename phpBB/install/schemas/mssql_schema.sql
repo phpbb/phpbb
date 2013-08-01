@@ -459,9 +459,12 @@ CREATE TABLE [phpbb_forums] (
 	[forum_topics_per_page] [int] DEFAULT (0) NOT NULL ,
 	[forum_type] [int] DEFAULT (0) NOT NULL ,
 	[forum_status] [int] DEFAULT (0) NOT NULL ,
-	[forum_posts] [int] DEFAULT (0) NOT NULL ,
-	[forum_topics] [int] DEFAULT (0) NOT NULL ,
-	[forum_topics_real] [int] DEFAULT (0) NOT NULL ,
+	[forum_posts_approved] [int] DEFAULT (0) NOT NULL ,
+	[forum_posts_unapproved] [int] DEFAULT (0) NOT NULL ,
+	[forum_posts_softdeleted] [int] DEFAULT (0) NOT NULL ,
+	[forum_topics_approved] [int] DEFAULT (0) NOT NULL ,
+	[forum_topics_unapproved] [int] DEFAULT (0) NOT NULL ,
+	[forum_topics_softdeleted] [int] DEFAULT (0) NOT NULL ,
 	[forum_last_post_id] [int] DEFAULT (0) NOT NULL ,
 	[forum_last_poster_id] [int] DEFAULT (0) NOT NULL ,
 	[forum_last_post_subject] [varchar] (255) DEFAULT ('') NOT NULL ,
@@ -793,7 +796,8 @@ GO
 	Table: 'phpbb_notification_types'
 */
 CREATE TABLE [phpbb_notification_types] (
-	[notification_type] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[notification_type_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[notification_type_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[notification_type_enabled] [int] DEFAULT (1) NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -801,9 +805,11 @@ GO
 ALTER TABLE [phpbb_notification_types] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_notification_types] PRIMARY KEY  CLUSTERED 
 	(
-		[notification_type],
-		[notification_type_enabled]
+		[notification_type_id]
 	)  ON [PRIMARY] 
+GO
+
+CREATE  UNIQUE  INDEX [type] ON [phpbb_notification_types]([notification_type_name]) ON [PRIMARY]
 GO
 
 
@@ -812,7 +818,7 @@ GO
 */
 CREATE TABLE [phpbb_notifications] (
 	[notification_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[item_type] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[notification_type_id] [int] DEFAULT (0) NOT NULL ,
 	[item_id] [int] DEFAULT (0) NOT NULL ,
 	[item_parent_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
@@ -829,7 +835,7 @@ ALTER TABLE [phpbb_notifications] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-CREATE  INDEX [item_ident] ON [phpbb_notifications]([item_type], [item_id]) ON [PRIMARY]
+CREATE  INDEX [item_ident] ON [phpbb_notifications]([notification_type_id], [item_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [user] ON [phpbb_notifications]([user_id], [notification_read]) ON [PRIMARY]
@@ -886,7 +892,7 @@ CREATE TABLE [phpbb_posts] (
 	[icon_id] [int] DEFAULT (0) NOT NULL ,
 	[poster_ip] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[post_time] [int] DEFAULT (0) NOT NULL ,
-	[post_approved] [int] DEFAULT (1) NOT NULL ,
+	[post_visibility] [int] DEFAULT (0) NOT NULL ,
 	[post_reported] [int] DEFAULT (0) NOT NULL ,
 	[enable_bbcode] [int] DEFAULT (1) NOT NULL ,
 	[enable_smilies] [int] DEFAULT (1) NOT NULL ,
@@ -904,7 +910,10 @@ CREATE TABLE [phpbb_posts] (
 	[post_edit_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[post_edit_user] [int] DEFAULT (0) NOT NULL ,
 	[post_edit_count] [int] DEFAULT (0) NOT NULL ,
-	[post_edit_locked] [int] DEFAULT (0) NOT NULL 
+	[post_edit_locked] [int] DEFAULT (0) NOT NULL ,
+	[post_delete_time] [int] DEFAULT (0) NOT NULL ,
+	[post_delete_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[post_delete_user] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -927,7 +936,7 @@ GO
 CREATE  INDEX [poster_id] ON [phpbb_posts]([poster_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [post_approved] ON [phpbb_posts]([post_approved]) ON [PRIMARY]
+CREATE  INDEX [post_visibility] ON [phpbb_posts]([post_visibility]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [post_username] ON [phpbb_posts]([post_username]) ON [PRIMARY]
@@ -1460,15 +1469,16 @@ CREATE TABLE [phpbb_topics] (
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[icon_id] [int] DEFAULT (0) NOT NULL ,
 	[topic_attachment] [int] DEFAULT (0) NOT NULL ,
-	[topic_approved] [int] DEFAULT (1) NOT NULL ,
+	[topic_visibility] [int] DEFAULT (0) NOT NULL ,
 	[topic_reported] [int] DEFAULT (0) NOT NULL ,
 	[topic_title] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[topic_poster] [int] DEFAULT (0) NOT NULL ,
 	[topic_time] [int] DEFAULT (0) NOT NULL ,
 	[topic_time_limit] [int] DEFAULT (0) NOT NULL ,
 	[topic_views] [int] DEFAULT (0) NOT NULL ,
-	[topic_replies] [int] DEFAULT (0) NOT NULL ,
-	[topic_replies_real] [int] DEFAULT (0) NOT NULL ,
+	[topic_posts_approved] [int] DEFAULT (0) NOT NULL ,
+	[topic_posts_unapproved] [int] DEFAULT (0) NOT NULL ,
+	[topic_posts_softdeleted] [int] DEFAULT (0) NOT NULL ,
 	[topic_status] [int] DEFAULT (0) NOT NULL ,
 	[topic_type] [int] DEFAULT (0) NOT NULL ,
 	[topic_first_post_id] [int] DEFAULT (0) NOT NULL ,
@@ -1489,7 +1499,10 @@ CREATE TABLE [phpbb_topics] (
 	[poll_length] [int] DEFAULT (0) NOT NULL ,
 	[poll_max_options] [int] DEFAULT (1) NOT NULL ,
 	[poll_last_vote] [int] DEFAULT (0) NOT NULL ,
-	[poll_vote_change] [int] DEFAULT (0) NOT NULL 
+	[poll_vote_change] [int] DEFAULT (0) NOT NULL ,
+	[topic_delete_time] [int] DEFAULT (0) NOT NULL ,
+	[topic_delete_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[topic_delete_user] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1509,10 +1522,10 @@ GO
 CREATE  INDEX [last_post_time] ON [phpbb_topics]([topic_last_post_time]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [topic_approved] ON [phpbb_topics]([topic_approved]) ON [PRIMARY]
+CREATE  INDEX [topic_visibility] ON [phpbb_topics]([topic_visibility]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [forum_appr_last] ON [phpbb_topics]([forum_id], [topic_approved], [topic_last_post_id]) ON [PRIMARY]
+CREATE  INDEX [forum_appr_last] ON [phpbb_topics]([forum_id], [topic_visibility], [topic_last_post_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [fid_time_moved] ON [phpbb_topics]([forum_id], [topic_last_post_time], [topic_moved_id]) ON [PRIMARY]

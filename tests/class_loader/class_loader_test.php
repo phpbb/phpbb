@@ -30,9 +30,9 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 	public function test_resolve_path()
 	{
 		$prefix = dirname(__FILE__) . '/';
-		$class_loader = new phpbb_class_loader('phpbb_', $prefix . 'includes/');
+		$class_loader = new phpbb_class_loader('phpbb_', $prefix . 'phpbb/');
 
-		$prefix .= 'includes/';
+		$prefix .= 'phpbb/';
 
 		$this->assertEquals(
 			'',
@@ -71,10 +71,10 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 		$cache = new phpbb_mock_cache($cache_map);
 
 		$prefix = dirname(__FILE__) . '/';
-		$class_loader = new phpbb_class_loader('phpbb_', $prefix . 'includes/', '.php', $cache);
-		$class_loader_ext = new phpbb_class_loader('phpbb_ext_', $prefix . 'includes/', '.php', $cache);
+		$class_loader = new phpbb_class_loader('phpbb_', $prefix . 'phpbb/', 'php', $cache);
+		$class_loader_ext = new phpbb_class_loader('phpbb_ext_', $prefix . 'phpbb/', 'php', $cache);
 
-		$prefix .= 'includes/';
+		$prefix .= 'phpbb/';
 
 		$this->assertEquals(
 			$prefix . 'dir/class_name.php',

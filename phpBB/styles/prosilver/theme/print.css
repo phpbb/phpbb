@@ -136,4 +136,4 @@ div.spacer { clear: both; }
 /* Accessibility tweaks: Mozilla.org */
 .skip_link { display: none; }
 
-dl.codebox dt { display: none; }
+.codebox p { display: none; }

@@ -78,12 +78,12 @@ function work($pull_id, $remote)
 			add_remote($pull_user, 'phpbb3');
 			run("git fetch $pull_user");
 			run("git merge --no-ff $pull_user/$pull_branch");
-			run("phpunit");
+			run("phpBB/vendor/bin/phpunit");
 
 			run("git checkout develop");
 			run("git pull $remote develop");
 			run("git merge --no-ff develop-olympus");
-			run("phpunit");
+			run("phpBB/vendor/bin/phpunit");
 		break;
 
 		case 'develop':
@@ -93,7 +93,7 @@ function work($pull_id, $remote)
 			add_remote($pull_user, 'phpbb3');
 			run("git fetch $pull_user");
 			run("git merge --no-ff $pull_user/$pull_branch");
-			run("phpunit");
+			run("phpBB/vendor/bin/phpunit");
 		break;
 
 		default:
@@ -124,19 +124,34 @@ function get_repository_url($username, $repository, $ssh = false)
 
 function api_request($query)
 {
-	$contents = file_get_contents("http://github.com/api/v2/json/$query");
+	return api_url_request("https://api.github.com/$query?per_page=100");
+}
+
+function api_url_request($url)
+{
+	$contents = file_get_contents($url, false, stream_context_create(array(
+		'http' => array(
+			'header' => "User-Agent: phpBB/1.0\r\n",
+		),
+	)));
 
 	if ($contents === false)
 	{
 		throw new RuntimeException("Error: failed to retrieve pull request data\n", 4);
 	}
+	$contents = json_decode($contents);
 
-	return json_decode($contents);
+	if (isset($contents->message) && strpos($contents->message, 'API Rate Limit') === 0)
+	{
+		throw new RuntimeException('Reached github API Rate Limit. Please try again later' . "\n", 4);
+	}
+
+	return $contents;
 }
 
 function get_pull($username, $repository, $pull_id)
 {
-	$request = api_request("pulls/$username/$repository/$pull_id");
+	$request = api_request("repos/$username/$repository/pulls/$pull_id");
 
 	$pull = $request->pull;
 

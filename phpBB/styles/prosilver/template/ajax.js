@@ -126,11 +126,19 @@ phpbb.addAjaxCallback('post_delete', function() {
 });
 
 // This callback removes the approve / disapprove div or link.
-phpbb.addAjaxCallback('post_approve', function(res) {
-	var remove = (res.approved) ? $(this) : $(this).parents('.post');
+phpbb.addAjaxCallback('post_visibility', function(res) {
+	var remove = (res.visible) ? $(this) : $(this).parents('.post');
 	$(remove).css('pointer-events', 'none').fadeOut(function() {
 		$(this).remove();
 	});
+
+	if (res.visible)
+	{
+		// Remove the "Deleted by" message from the post on restoring.
+		remove.parents('.post').find('.post_deleted_msg').css('pointer-events', 'none').fadeOut(function() {
+			$(this).remove();
+		});
+	}
 });
 
 // This removes the parent row of the link or form that fired the callback.
@@ -178,6 +186,20 @@ $('#qr_full_editor').click(function() {
 });
 
 
+/**
+ * Make the display post links to use JS
+ */
+$('.display_post').click(function(e) {
+	// Do not follow the link
+	e.preventDefault();
+
+	var post_id = $(this).attr('data-post-id');
+	$('#post_content' + post_id).show();
+	$('#profile' + post_id).show();
+	$('#post_hidden' + post_id).hide();
+});
+
+
 
 /**
  * This AJAXifies the quick-mod tools. The reason it cannot be a standard
@@ -208,6 +230,14 @@ $('#quick-mod-select').change(function () {
 	$('#quickmodform').submit();
 });
 
+$('#delete_permanent').click(function () {
+	if ($(this).attr('checked')) {
+		$('#delete_reason').hide();
+	} else {
+		$('#delete_reason').show();
+	}
+});
+
 /**
 * Toggle the member search panel in memberlist.php.
 *
@@ -224,5 +254,14 @@ $('#member_search').click(function () {
 	}
 	return false;
 });
+
+/**
+* Automatically resize textarea
+*/
+$(document).ready(function() {
+	phpbb.resizeTextArea($('textarea:not(#message-box textarea, .no-auto-resize)'), {minHeight: 75, maxHeight: 250});
+	phpbb.resizeTextArea($('#message-box textarea'));
+});
+
 
 })(jQuery); // Avoid conflicts with other libraries

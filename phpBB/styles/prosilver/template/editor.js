@@ -298,9 +298,12 @@ function storeCaret(textEl) {
 * Color pallette
 */
 function colorPalette(dir, width, height) {
-	var r = 0, g = 0, b = 0;
-	var numberList = new Array(6);
-	var color = '';
+	var r = 0, 
+		g = 0, 
+		b = 0,
+		numberList = new Array(6),
+		color = '',
+		html = '';
 
 	numberList[0] = '00';
 	numberList[1] = '40';
@@ -308,36 +311,45 @@ function colorPalette(dir, width, height) {
 	numberList[3] = 'BF';
 	numberList[4] = 'FF';
 
-	document.writeln('<table cellspacing="1" cellpadding="0" border="0">');
+	html += '<table cellspacing="1" cellpadding="0" border="0">';
 
 	for (r = 0; r < 5; r++) {
-		if (dir === 'h') {
-			document.writeln('<tr>');
+		if (dir == 'h') {
+			html += '<tr>';
 		}
 
 		for (g = 0; g < 5; g++) {
-			if (dir === 'v') {
-				document.writeln('<tr>');
+			if (dir == 'v') {
+				html += '<tr>';
 			}
 
 			for (b = 0; b < 5; b++) {
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
-				document.write('<td bgcolor="#' + color + '" style="width: ' + width + 'px; height: ' + height + 'px;">');
-				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
-				document.writeln('</td>');
+				html += '<td bgcolor="#' + color + '" style="width: ' + width + 'px; height: ' + height + 'px;">';
+				html += '<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" style="display: block; width: ' + width + 'px; height: ' + height + 'px; " alt="#' + color + '" title="#' + color + '"></a>';
+				html += '</td>';
 			}
 
-			if (dir === 'v') {
-				document.writeln('</tr>');
+			if (dir == 'v') {
+				html += '</tr>';
 			}
 		}
 
-		if (dir === 'h') {
-			document.writeln('</tr>');
+		if (dir == 'h') {
+			html += '</tr>';
 		}
 	}
-	document.writeln('</table>');
+	html += '</table>';
+	return html;
 }
+
+(function($) {
+	$(document).ready(function() {
+		$('#color_palette_placeholder').each(function() {
+			$(this).html(colorPalette('h', 15, 12));
+		});
+	});
+})(jQuery);
 
 /**
 * Caret Position object
@@ -382,3 +394,29 @@ function getCaretPosition(txtarea) {
 
 	return caretPos;
 }
+
+/**
+* Allow to use tab character when typing code
+* Keep indentation of last line of code when typing code
+*/
+(function($) {
+	$(document).ready(function() {
+		var doc, textarea;
+
+		// find textarea, make sure browser supports necessary functions
+		if (document.forms[form_name]) {
+			doc = document;
+		} else {
+			doc = opener.document;
+		}
+
+		if (!doc.forms[form_name]) {
+			return;
+		}
+
+		textarea = doc.forms[form_name].elements[text_name];
+
+		phpbb.applyCodeEditor(textarea);
+	});
+})(jQuery);
+

@@ -40,10 +40,14 @@
 				<td class="row1" width="25" align="center"><!-- IF topicrow.TOPIC_ICON_IMG --><img src="{T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}" width="{topicrow.TOPIC_ICON_IMG_WIDTH}" height="{topicrow.TOPIC_ICON_IMG_HEIGHT}" alt="" title="" /><!-- ENDIF --></td>
 			<!-- ENDIF -->
 			<td class="row1">
+				<!-- EVENT topiclist_row_prepend -->
 				<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="imageset">{NEWEST_POST_IMG}</a><!-- ENDIF -->
 				{topicrow.ATTACH_ICON_IMG} <!-- IF topicrow.S_HAS_POLL or topicrow.S_TOPIC_MOVED --><b>{topicrow.TOPIC_TYPE}</b> <!-- ENDIF --><a title="{L_POSTED}{L_COLON} {topicrow.FIRST_POST_TIME}" href="{topicrow.U_VIEW_TOPIC}"class="topictitle">{topicrow.TOPIC_TITLE}</a>
 				<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
-					<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{UNAPPROVED_IMG}</a>&nbsp;
+					<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{topicrow.UNAPPROVED_IMG}</a>&nbsp;
+				<!-- ENDIF -->
+				<!-- IF topicrow.S_TOPIC_DELETED -->
+					<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{DELETED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
 				<!-- IF topicrow.S_TOPIC_REPORTED -->
 					<a href="{topicrow.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
@@ -60,6 +64,7 @@
 					<!-- END pagination -->
 					] </p>
 				<!-- ENDIF -->
+				<!-- EVENT topiclist_row_append -->
 			</td>
 			<td class="row2" width="130" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR_FULL}</p></td>
 			<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
@@ -200,10 +205,14 @@
 					<td class="row1" width="25" align="center"><!-- IF topicrow.TOPIC_ICON_IMG --><img src="{T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}" width="{topicrow.TOPIC_ICON_IMG_WIDTH}" height="{topicrow.TOPIC_ICON_IMG_HEIGHT}" alt="" title="" /><!-- ENDIF --></td>
 				<!-- ENDIF -->
 				<td class="row1">
+					<!-- EVENT topiclist_row_prepend -->
 					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="imageset">{NEWEST_POST_IMG}</a><!-- ENDIF -->
 					{topicrow.ATTACH_ICON_IMG} <!-- IF topicrow.S_HAS_POLL or topicrow.S_TOPIC_MOVED --><b>{topicrow.TOPIC_TYPE}</b> <!-- ENDIF --><a title="{L_POSTED}{L_COLON} {topicrow.FIRST_POST_TIME}" href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
 					<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 						<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{topicrow.UNAPPROVED_IMG}</a>&nbsp;
+					<!-- ENDIF -->
+					<!-- IF topicrow.S_TOPIC_DELETED -->
+						<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{DELETED_IMG}</a>&nbsp;
 					<!-- ENDIF -->
 					<!-- IF topicrow.S_TOPIC_REPORTED -->
 						<a href="{topicrow.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
@@ -221,6 +230,7 @@
 						] </p>
 					<!-- ENDIF -->
 					<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --><p class="gensmall">{L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a></p><!-- ENDIF -->
+					<!-- EVENT topiclist_row_append -->
 				</td>
 				<td class="row2" width="130" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR_FULL}</p></td>
 				<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>

@@ -11,7 +11,6 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_admin.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
 require_once dirname(__FILE__) . '/../mock/user.php';
 require_once dirname(__FILE__) . '/../mock/cache.php';
 
@@ -22,7 +21,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/full_log.xml');
 	}
 
-	public static function test_view_log_function_data()
+	public static function view_log_function_data()
 	{
 		global $phpEx, $phpbb_dispatcher;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
@@ -296,7 +295,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 	}
 
 	/**
-	* @dataProvider test_view_log_function_data
+	* @dataProvider view_log_function_data
 	*/
 	public function test_view_log_function($expected, $expected_returned, $mode, $log_count, $limit = 5, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_id ASC', $keywords = '')
 	{

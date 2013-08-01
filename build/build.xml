@@ -56,7 +56,8 @@
 
 	<target name="test" depends="clean,prepare,composer">
 		<exec dir="."
-			command="phpunit --log-junit build/logs/phpunit.xml
+			command="phpBB/vendor/bin/phpunit
+			--log-junit build/logs/phpunit.xml
 			--coverage-clover build/logs/clover.xml
 			--coverage-html build/coverage"
 			passthru="true" />
@@ -64,7 +65,8 @@
 
 	<target name="test-slow" depends="clean,prepare,composer">
 		<exec dir="."
-			command="phpunit --log-junit build/logs/phpunit.xml
+			command="phpBB/vendor/bin/phpunit
+			--log-junit build/logs/phpunit.xml
 			--configuration phpunit.xml.all
 			--group slow
 			--coverage-clover build/logs/clover-slow.xml
@@ -167,26 +169,42 @@
 			command="git archive ${revision} | tar -xf - -C ../${dir}"
 			checkreturn="true" />
 
-		<!--
-			If composer.phar exists in this version of the tree, also export
-			it into ${dir}, install dependencies, then delete it again.
-		-->
-		<exec dir="."
-			command="git ls-tree ${revision} composer.phar"
+		<!-- Install composer dependencies, if there are any. -->
+		<exec dir="${dir}"
+			command='php -r "\$j = json_decode(file_get_contents(\"composer.json\")); echo isset(\$j->require);"'
 			checkreturn="true"
-			outputProperty='composer-ls-tree-output' />
+			outputProperty='composer-has-dependencies' />
 		<if>
-			<not><equals arg1="${composer-ls-tree-output}" arg2="" trim="true" /></not>
+			<equals arg1="${composer-has-dependencies}" arg2="1" trim="true" />
 			<then>
+				<!-- We have non-dev composer dependencies -->
 				<exec dir="."
-					command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
-					checkreturn="true" />
-				<exec dir="${dir}"
-					command="php composer.phar install"
+					command="git ls-tree ${revision} composer.phar"
 					checkreturn="true"
-					passthru="true" />
-				<delete file="${dir}/composer.phar" />
+					outputProperty='composer-ls-tree-output' />
+				<if>
+					<equals arg1="${composer-ls-tree-output}" arg2="" trim="true" />
+					<then>
+						<fail message="There are composer dependencies, but composer.phar is missing." />
+					</then>
+					<else>
+						<!-- Export the phar, install dependencies, delete phar. -->
+						<exec dir="."
+							command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
+							checkreturn="true" />
+						<exec dir="${dir}"
+							command="php composer.phar install"
+							checkreturn="true"
+							passthru="true" />
+						<delete file="${dir}/composer.phar" />
+					</else>
+				</if>
 			</then>
+			<else>
+				<!-- We do not have composer dependencies, do not ship composer files -->
+				<delete file="${dir}/composer.json" />
+				<delete file="${dir}/composer.lock" />
+			</else>
 		</if>
 
 		<delete file="${dir}/config.php" />

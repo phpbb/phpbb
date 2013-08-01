@@ -376,7 +376,7 @@ switch ($mode)
 						$messenger->subject(htmlspecialchars_decode($subject));
 
 						$messenger->replyto($user->data['user_email']);
-						$messenger->im($row['user_jabber'], $row['username']);
+						$messenger->set_addresses($row);
 
 						$messenger->assign_vars(array(
 							'BOARD_CONTACT'	=> $config['board_contact'],
@@ -561,17 +561,8 @@ switch ($mode)
 
 		if ($member['user_sig'])
 		{
-			$member['user_sig'] = censor_text($member['user_sig']);
-
-			if ($member['user_sig_bbcode_bitfield'])
-			{
-				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-				$bbcode = new bbcode();
-				$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
-			}
-
-			$member['user_sig'] = bbcode_nl2br($member['user_sig']);
-			$member['user_sig'] = smiley_text($member['user_sig']);
+			$parse_flags = ($member['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+			$member['user_sig'] = generate_text_for_display($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield'], $parse_flags, true);
 		}
 
 		$poster_avatar = phpbb_get_user_avatar($member);
@@ -638,7 +629,7 @@ switch ($mode)
 			$sql = 'SELECT COUNT(post_id) as posts_in_queue
 				FROM ' . POSTS_TABLE . '
 				WHERE poster_id = ' . $user_id . '
-					AND post_approved = 0';
+					AND post_visibility = ' . ITEM_UNAPPROVED;
 			$result = $db->sql_query($sql);
 			$member['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 			$db->sql_freeresult($result);

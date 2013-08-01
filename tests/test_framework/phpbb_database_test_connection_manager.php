@@ -142,6 +142,28 @@ class phpbb_database_test_connection_manager
 		}
 
 		$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+		switch ($this->config['dbms'])
+		{
+			case 'phpbb_db_driver_mysql':
+			case 'phpbb_db_driver_mysqli':
+				$this->pdo->exec('SET NAMES utf8');
+
+				/*
+				* The phpBB MySQL drivers set the STRICT_ALL_TABLES and
+				* STRICT_TRANS_TABLES flags/modes, so as a minimum requirement
+				* we want to make sure those are set for the PDO side of the
+				* test suite.
+				*
+				* The TRADITIONAL flag implies STRICT_ALL_TABLES and
+				* STRICT_TRANS_TABLES as well as other useful strictness flags
+				* the phpBB MySQL driver does not set.
+				*/
+				$this->pdo->exec("SET SESSION sql_mode='TRADITIONAL'");
+			break;
+
+			default:
+		}
 	}
 
 	/**
@@ -458,11 +480,32 @@ class phpbb_database_test_connection_manager
 	*/
 	public function post_setup_synchronisation($xml_data_set)
 	{
+		$table_names = $xml_data_set->getTableNames();
+
+		$tables = array();
+		foreach ($table_names as $table)
+		{
+			$tables[$table] = $xml_data_set->getTableMetaData($table)->getColumns();
+		}
+
+		$this->database_synchronisation($tables);
+	}
+
+	/**
+	* Performs synchronisations on the database after a fixture has been loaded
+	*
+	* @param	array	$table_column_map		Array of tables/columns to synchronise
+	*											array(table1 => array(column1, column2))
+	*
+	* @return null
+	*/
+	public function database_synchronisation($table_column_map)
+	{
 		$this->ensure_connected(__METHOD__);
 		$queries = array();
 
-		// Get escaped versions of the table names used in the fixture
-		$table_names = array_map(array($this->pdo, 'PDO::quote'), $xml_data_set->getTableNames());
+		// Get escaped versions of the table names to synchronise
+		$table_names = array_map(array($this->pdo, 'PDO::quote'), array_keys($table_column_map));
 
 		switch ($this->config['dbms'])
 		{
@@ -519,7 +562,7 @@ class phpbb_database_test_connection_manager
 				while ($row = $result->fetch(PDO::FETCH_ASSOC))
 				{
 					// Get the columns used in the fixture for this table
-					$column_names = $xml_data_set->getTableMetaData($row['table_name'])->getColumns();
+					$column_names = $table_column_map[$row['table_name']];
 
 					// Skip sequences that weren't specified in the fixture
 					if (!in_array($row['column_name'], $column_names))

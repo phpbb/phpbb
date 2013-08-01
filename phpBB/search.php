@@ -119,6 +119,8 @@ $sort_by_text	= array('a' => $user->lang['SORT_AUTHOR'], 't' => $user->lang['SOR
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
+$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 if ($keywords || $author || $author_id || $search_id || $submit)
 {
 	// clear arrays
@@ -249,22 +251,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	$db->sql_freeresult($result);
 
-	// find out in which forums the user is allowed to view approved posts
-	if ($auth->acl_get('m_approve'))
-	{
-		$m_approve_fid_ary = array(-1);
-		$m_approve_fid_sql = '';
-	}
-	else if ($auth->acl_getf_global('m_approve'))
-	{
-		$m_approve_fid_ary = array_diff(array_keys($auth->acl_getf('!m_approve', true)), $ex_fid_ary);
-		$m_approve_fid_sql = ' AND (p.post_approved = 1' . ((sizeof($m_approve_fid_ary)) ? ' OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) : '') . ')';
-	}
-	else
-	{
-		$m_approve_fid_ary = array();
-		$m_approve_fid_sql = ' AND p.post_approved = 1';
-	}
+	// find out in which forums the user is allowed to view posts
+	$m_approve_posts_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('post', $ex_fid_ary, 'p.');
+	$m_approve_topics_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('topic', $ex_fid_ary, 't.');
 
 	if ($reset_search_forum)
 	{
@@ -342,7 +331,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					FROM ' . TOPICS_TABLE . " t
 					WHERE t.topic_moved_id = 0
 						$last_post_time_sql
-						" . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
+						AND " . $m_approve_topics_fid_sql . '
 						' . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . '
 					ORDER BY t.topic_last_post_time DESC';
 				$field = 'topic_id';
@@ -377,10 +366,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					$sql = "SELECT p.post_id
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
-						WHERE t.topic_replies = 0
+						WHERE t.topic_posts_approved = 1
 							AND p.topic_id = t.topic_id
 							$last_post_time
-							$m_approve_fid_sql
+							AND $m_approve_posts_fid_sql
 							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 							$sql_sort";
 					$field = 'post_id';
@@ -389,11 +378,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					$sql = 'SELECT DISTINCT ' . $sort_by_sql[$sort_key] . ", p.topic_id
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
-						WHERE t.topic_replies = 0
+						WHERE t.topic_posts_approved = 1
 							AND t.topic_moved_id = 0
 							AND p.topic_id = t.topic_id
 							$last_post_time
-							$m_approve_fid_sql
+							AND $m_approve_topics_fid_sql
 							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'topic_id';
@@ -409,7 +398,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
 				$sql_where = 'AND t.topic_moved_id = 0
-					' . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
+					AND ' . $m_approve_topics_fid_sql . '
 					' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '');
 
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -432,9 +421,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					$sql = 'SELECT p.post_id
 						FROM ' . POSTS_TABLE . ' p
-						WHERE p.post_time > ' . $user->data['user_lastvisit'] . "
-							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
+						WHERE p.post_time > ' . $user->data['user_lastvisit'] . '
+							AND ' . $m_approve_posts_fid_sql . '
+							' . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'post_id';
 				}
@@ -444,7 +433,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE t.topic_last_post_time > ' . $user->data['user_lastvisit'] . '
 							AND t.topic_moved_id = 0
-							' . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
+							AND ' . $m_approve_topics_fid_sql . '
 							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 /*
@@ -456,8 +445,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						WHERE p.post_time > ' . $user->data['user_lastvisit'] . '
 							AND t.topic_id = p.topic_id
 							AND t.topic_moved_id = 0
-							' . $m_approve_fid_sql . '
-							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
+							AND ' . $m_approve_topics_fid_sql . "
 						GROUP BY t.topic_id
 						$sql_sort";
 */
@@ -533,17 +521,16 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	// make sure that some arrays are always in the same order
 	sort($ex_fid_ary);
-	sort($m_approve_fid_ary);
 	sort($author_id_ary);
 
 	if ($search->get_search_query())
 	{
-		$total_match_count = $search->keyword_search($show_results, $search_fields, $search_terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page);
+		$total_match_count = $search->keyword_search($show_results, $search_fields, $search_terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_posts_fid_sql, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page);
 	}
 	else if (sizeof($author_id_ary))
 	{
 		$firstpost_only = ($search_fields === 'firstpost' || $search_fields == 'titleonly') ? true : false;
-		$total_match_count = $search->author_search($show_results, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page);
+		$total_match_count = $search->author_search($show_results, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_posts_fid_sql, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page);
 	}
 
 	// For some searches we need to print out the "no results" page directly to allow re-sorting/refining the search options.
@@ -558,7 +545,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	{
 		$sql_where .= $db->sql_in_set(($show_results == 'posts') ? 'p.post_id' : 't.topic_id', $id_ary);
 		$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . ' OR f.forum_id IS NULL)' : '';
-		$sql_where .= ($show_results == 'posts') ? $m_approve_fid_sql : str_replace(array('p.post_approved', 'p.forum_id'), array('t.topic_approved', 't.forum_id'), $m_approve_fid_sql);
+		$sql_where .= ' AND ' . (($show_results == 'posts') ? $m_approve_posts_fid_sql : $m_approve_topics_fid_sql);
 	}
 
 	if ($show_results == 'posts')
@@ -638,6 +625,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'NEWEST_POST_IMG'	=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
 		'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
 		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
+		'DELETED_IMG'		=> $user->img('icon_topic_deleted', 'TOPIC_DELETED'),
 		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 
 		'U_SEARCH_WORDS'	=> $u_search,
@@ -698,6 +686,18 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 			}
+
+			/**
+			* Event to modify the SQL query before the topic data is retrieved
+			*
+			* @event core.search_get_topic_data
+			* @var	string	sql_select		The SQL SELECT string used by search to get topic data
+			* @var	string	sql_from		The SQL FROM string used by search to get topic data
+			* @var	string	sql_where		The SQL WHERE string used by search to get topic data
+			* @since 3.1-A1
+			*/
+			$vars = array('sql_select', 'sql_from', 'sql_where');
+			extract($phpbb_dispatcher->trigger_event('core.search_get_topic_data', compact($vars)));
 
 			$sql = "SELECT $sql_select
 				FROM $sql_from
@@ -874,11 +874,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$forum_id = $row['forum_id'];
 			$result_topic_id = $row['topic_id'];
 			$topic_title = censor_text($row['topic_title']);
+			$replies = $phpbb_content_visibility->get_count('topic_posts', $row, $forum_id) - 1;
 
 			$view_topic_url_params = "f=$forum_id&amp;t=$result_topic_id" . (($u_hilit) ? "&amp;hilit=$u_hilit" : '');
 			$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params);
-
-			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
 			if ($show_results == 'topics')
 			{
@@ -892,9 +891,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$unread_topic = (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false;
 
-				$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
-				$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
+				$topic_unapproved = ($row['topic_visibility'] == ITEM_UNAPPROVED && $auth->acl_get('m_approve', $forum_id)) ? true : false;
+				$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_posts_unapproved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
+				$topic_deleted = $row['topic_visibility'] == ITEM_DELETED;
 				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$result_topic_id", true, $user->session_id) : '';
+				$u_mcp_queue = (!$u_mcp_queue && $topic_deleted) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;mode=deleted_topics&amp;t=$result_topic_id", true, $user->session_id) : '';
 
 				$row['topic_title'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $row['topic_title']);
 
@@ -929,6 +930,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $forum_id)) ? true : false,
 					'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 					'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
+					'S_TOPIC_DELETED'		=> $topic_deleted,
 
 					'U_LAST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;p=' . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'],
 					'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
@@ -999,7 +1001,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				);
 			}
 
-			$template->assign_block_vars('searchresults', array_merge($tpl_ary, array(
+			$tpl_ary = array_merge($tpl_ary, array(
 				'FORUM_ID'			=> $forum_id,
 				'TOPIC_ID'			=> $result_topic_id,
 				'POST_ID'			=> ($show_results == 'posts') ? $row['post_id'] : false,
@@ -1011,8 +1013,21 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				'U_VIEW_TOPIC'		=> $view_topic_url,
 				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
-				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '')
+				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '',
 			));
+
+			/**
+			* Modify the topic data before it is assigned to the template
+			*
+			* @event core.search_modify_tpl_ary
+			* @var	array	row			Array with topic data
+			* @var	array	tpl_ary		Template block array with topic data
+			* @since 3.1-A1
+			*/
+			$vars = array('row', 'tpl_ary');
+			extract($phpbb_dispatcher->trigger_event('core.search_modify_tpl_ary', compact($vars)));
+
+			$template->assign_block_vars('searchresults', $tpl_ary);
 
 			if ($show_results == 'topics')
 			{

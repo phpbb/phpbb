@@ -520,9 +520,12 @@ CREATE TABLE phpbb_forums (
 	forum_topics_per_page number(4) DEFAULT '0' NOT NULL,
 	forum_type number(4) DEFAULT '0' NOT NULL,
 	forum_status number(4) DEFAULT '0' NOT NULL,
-	forum_posts number(8) DEFAULT '0' NOT NULL,
-	forum_topics number(8) DEFAULT '0' NOT NULL,
-	forum_topics_real number(8) DEFAULT '0' NOT NULL,
+	forum_posts_approved number(8) DEFAULT '0' NOT NULL,
+	forum_posts_unapproved number(8) DEFAULT '0' NOT NULL,
+	forum_posts_softdeleted number(8) DEFAULT '0' NOT NULL,
+	forum_topics_approved number(8) DEFAULT '0' NOT NULL,
+	forum_topics_unapproved number(8) DEFAULT '0' NOT NULL,
+	forum_topics_softdeleted number(8) DEFAULT '0' NOT NULL,
 	forum_last_post_id number(8) DEFAULT '0' NOT NULL,
 	forum_last_poster_id number(8) DEFAULT '0' NOT NULL,
 	forum_last_post_subject varchar2(765) DEFAULT '' ,
@@ -870,10 +873,28 @@ END;
 	Table: 'phpbb_notification_types'
 */
 CREATE TABLE phpbb_notification_types (
-	notification_type varchar2(255) DEFAULT '' ,
+	notification_type_id number(4) NOT NULL,
+	notification_type_name varchar2(255) DEFAULT '' ,
 	notification_type_enabled number(1) DEFAULT '1' NOT NULL,
-	CONSTRAINT pk_phpbb_notification_types PRIMARY KEY (notification_type, notification_type_enabled)
+	CONSTRAINT pk_phpbb_notification_types PRIMARY KEY (notification_type_id),
+	CONSTRAINT u_phpbb_type UNIQUE (notification_type_name)
 )
+/
+
+
+CREATE SEQUENCE phpbb_notification_types_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_notification_types
+BEFORE INSERT ON phpbb_notification_types
+FOR EACH ROW WHEN (
+	new.notification_type_id IS NULL OR new.notification_type_id = 0
+)
+BEGIN
+	SELECT phpbb_notification_types_seq.nextval
+	INTO :new.notification_type_id
+	FROM dual;
+END;
 /
 
 
@@ -881,8 +902,8 @@ CREATE TABLE phpbb_notification_types (
 	Table: 'phpbb_notifications'
 */
 CREATE TABLE phpbb_notifications (
-	notification_id number(8) NOT NULL,
-	item_type varchar2(255) DEFAULT '' ,
+	notification_id number(10) NOT NULL,
+	notification_type_id number(4) DEFAULT '0' NOT NULL,
 	item_id number(8) DEFAULT '0' NOT NULL,
 	item_parent_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
@@ -893,7 +914,7 @@ CREATE TABLE phpbb_notifications (
 )
 /
 
-CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (item_type, item_id)
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (notification_type_id, item_id)
 /
 CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read)
 /
@@ -959,7 +980,7 @@ CREATE TABLE phpbb_posts (
 	icon_id number(8) DEFAULT '0' NOT NULL,
 	poster_ip varchar2(40) DEFAULT '' ,
 	post_time number(11) DEFAULT '0' NOT NULL,
-	post_approved number(1) DEFAULT '1' NOT NULL,
+	post_visibility number(3) DEFAULT '0' NOT NULL,
 	post_reported number(1) DEFAULT '0' NOT NULL,
 	enable_bbcode number(1) DEFAULT '1' NOT NULL,
 	enable_smilies number(1) DEFAULT '1' NOT NULL,
@@ -978,6 +999,9 @@ CREATE TABLE phpbb_posts (
 	post_edit_user number(8) DEFAULT '0' NOT NULL,
 	post_edit_count number(4) DEFAULT '0' NOT NULL,
 	post_edit_locked number(1) DEFAULT '0' NOT NULL,
+	post_delete_time number(11) DEFAULT '0' NOT NULL,
+	post_delete_reason varchar2(765) DEFAULT '' ,
+	post_delete_user number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_posts PRIMARY KEY (post_id)
 )
 /
@@ -990,7 +1014,7 @@ CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts (poster_ip)
 /
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id)
 /
-CREATE INDEX phpbb_posts_post_approved ON phpbb_posts (post_approved)
+CREATE INDEX phpbb_posts_post_visibility ON phpbb_posts (post_visibility)
 /
 CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username)
 /
@@ -1589,15 +1613,16 @@ CREATE TABLE phpbb_topics (
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	icon_id number(8) DEFAULT '0' NOT NULL,
 	topic_attachment number(1) DEFAULT '0' NOT NULL,
-	topic_approved number(1) DEFAULT '1' NOT NULL,
+	topic_visibility number(3) DEFAULT '0' NOT NULL,
 	topic_reported number(1) DEFAULT '0' NOT NULL,
 	topic_title varchar2(765) DEFAULT '' ,
 	topic_poster number(8) DEFAULT '0' NOT NULL,
 	topic_time number(11) DEFAULT '0' NOT NULL,
 	topic_time_limit number(11) DEFAULT '0' NOT NULL,
 	topic_views number(8) DEFAULT '0' NOT NULL,
-	topic_replies number(8) DEFAULT '0' NOT NULL,
-	topic_replies_real number(8) DEFAULT '0' NOT NULL,
+	topic_posts_approved number(8) DEFAULT '0' NOT NULL,
+	topic_posts_unapproved number(8) DEFAULT '0' NOT NULL,
+	topic_posts_softdeleted number(8) DEFAULT '0' NOT NULL,
 	topic_status number(3) DEFAULT '0' NOT NULL,
 	topic_type number(3) DEFAULT '0' NOT NULL,
 	topic_first_post_id number(8) DEFAULT '0' NOT NULL,
@@ -1619,6 +1644,9 @@ CREATE TABLE phpbb_topics (
 	poll_max_options number(4) DEFAULT '1' NOT NULL,
 	poll_last_vote number(11) DEFAULT '0' NOT NULL,
 	poll_vote_change number(1) DEFAULT '0' NOT NULL,
+	topic_delete_time number(11) DEFAULT '0' NOT NULL,
+	topic_delete_reason varchar2(765) DEFAULT '' ,
+	topic_delete_user number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_topics PRIMARY KEY (topic_id)
 )
 /
@@ -1629,9 +1657,9 @@ CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type)
 /
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics (topic_last_post_time)
 /
-CREATE INDEX phpbb_topics_topic_approved ON phpbb_topics (topic_approved)
+CREATE INDEX phpbb_topics_topic_visibility ON phpbb_topics (topic_visibility)
 /
-CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics (forum_id, topic_approved, topic_last_post_id)
+CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics (forum_id, topic_visibility, topic_last_post_id)
 /
 CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics (forum_id, topic_last_post_time, topic_moved_id)
 /

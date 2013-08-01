@@ -1464,7 +1464,6 @@ class install_convert extends module
 			$end = ($sync_batch + $batch_size - 1);
 
 			// Sync all topics in batch mode...
-			sync('topic_approved', 'range', 'topic_id BETWEEN ' . $sync_batch . ' AND ' . $end, true, false);
 			sync('topic', 'range', 'topic_id BETWEEN ' . $sync_batch . ' AND ' . $end, true, true);
 
 			$template->assign_block_vars('checks', array(
@@ -2065,7 +2064,7 @@ class install_convert extends module
 			// Because we should not rely on correct settings, we simply use the relative path here directly.
 			$template->assign_vars(array(
 				'S_REFRESH'	=> true,
-				'META'		=> '<meta http-equiv="refresh" content="5;url=' . $url . '" />')
+				'META'		=> '<meta http-equiv="refresh" content="5; url=' . $url . '" />')
 			);
 		}
 	}
