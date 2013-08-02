@@ -278,7 +278,11 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*/
 	public function get_login_data()
 	{
-		$login_data = array();
+		$login_data = array(
+			'TEMPLATE_FILE'		=> 'login_body_oauth.html',
+			'BLOCK_VAR_NAME'	=> 'oauth',
+			'BLOCK_VARS'		=> array(),
+		);
 
 		foreach ($this->service_providers as $service_name => $service_provider)
 		{
@@ -288,7 +292,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			{
 				$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
 				$redirect_url = build_url(false) . '&login=external&oauth_service=' . $actual_name;
-				$login_data[$service_name] = array(
+				$login_data['BLOCK_VARS'][$service_name] = array(
 					'REDIRECT_URL'	=> redirect($redirect_url, true),
 					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
 				);

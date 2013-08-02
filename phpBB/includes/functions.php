@@ -3379,7 +3379,10 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 		if (isset($auth_provider_data['BLOCK_VAR_NAME']))
 		{
-			$template->assign_block_vars($auth_provider_data['BLOCK_VAR_NAME'], $auth_provider_data['BLOCK_VARS']);
+			foreach ($auth_provider_data['BLOCK_VARS'] as $block_vars)
+			{
+				$template->assign_block_vars($auth_provider_data['BLOCK_VAR_NAME'], $block_vars);
+			}
 		}
 
 		$template->assign_vars(array(
@@ -3387,25 +3390,11 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		));
 	}
 
-	$oauth_login = ($config['auth_method'] == 'oauth') ? true : false;
-
-	if ($oauth_login)
-	{
-		$auth_provider = $phpbb_container->get('auth.provider.oauth');
-		$oauth_box_data = $auth_provider->get_login_data();
-		foreach ($oauth_box_data as $data)
-		{
-			$template->assign_block_vars('oauth', $data);
-		}
-	}
-
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,
-
-		'OAUTH_LOGIN'	=> $oauth_login,
 
 		'U_SEND_PASSWORD' 		=> ($config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') : '',
 		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '',

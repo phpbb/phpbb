@@ -46,16 +46,11 @@
 			<dd>{S_HIDDEN_FIELDS}<input type="submit" name="login" tabindex="6" value="{L_LOGIN}" class="button1" /></dd>
 		</dl>
 		</fieldset>
-	</div><!-- IF OAUTH_LOGIN -->
+	</div>
 
-	<div class="content">
-	<!-- BEGIN oauth -->
-		<dl>
-			<dt>&nbsp;</dt>
-			<dd><a href="{oauth.REDIRECT_URL}" class="button2">{oauth.SERVICE_NAME}</a></dd>
-		</dl>
-	<!-- END oauth -->
-	</div><!-- ENDIF -->
+	<!-- IF PROVIDER_TEMPLATE_FILE -->
+		<!-- INCLUDE {PROVIDER_TEMPLATE_FILE} -->
+	<!-- ENDIF -->
 	</div>
 </div>
 
