@@ -75,6 +75,13 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	protected $service_providers;
 
 	/**
+	* Users table
+	*
+	* @var string
+	*/
+	protected $users_table;
+
+	/**
 	* Cached current uri object
 	*
 	* @var \OAuth\Common\Http\Uri\UriInterface|null
@@ -91,8 +98,9 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	* @param	string			$auth_provider_oauth_token_storage_table
 	* @param	string			$auth_provider_oauth_token_account_assoc
 	* @param	phpbb_di_service_collection	$service_providers Contains phpbb_auth_provider_oauth_service_interface
+	* @param	string			$users)table
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, phpbb_di_service_collection $service_providers)
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, phpbb_di_service_collection $service_providers, $users_table)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -101,6 +109,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$this->auth_provider_oauth_token_storage_table = $auth_provider_oauth_token_storage_table;
 		$this->auth_provider_oauth_token_account_assoc = $auth_provider_oauth_token_account_assoc;
 		$this->service_providers = $service_providers;
+		$this->users_table = $users_table;
 	}
 
 	/**
@@ -184,7 +193,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 			// Retrieve the user's account
 			$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
-			FROM ' . USERS_TABLE . "
+			FROM ' . $this->users_table . "
 			WHERE user_id = '" . $this->db->sql_escape($row['user_id']) . "'";
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
