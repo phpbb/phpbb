@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Bitly OAuth service
+* Base OAuth abstract class that all OAuth services should implement
 *
 * @package auth
 */
