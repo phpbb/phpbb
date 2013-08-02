@@ -73,16 +73,14 @@ memberlist_view_user_statistics_after
 * Locations:
     + styles/prosilver/template/memberlist_view.html
     + styles/subsilver2/template/memberlist_view.html
-* Purpose: Add entries to the bottom of the user statistics part of any user
-profile
+* Purpose: Add entries after the user statistics part of any user profile
 
 memberlist_view_user_statistics_before
 ===
 * Locations:
     + styles/prosilver/template/memberlist_view.html
     + styles/subsilver2/template/memberlist_view.html
-* Purpose: Add entries to the top of the user statistics part of any user
-profile
+* Purpose: Add entries before the user statistics part of any user profile
 
 overall_footer_after
 ===
