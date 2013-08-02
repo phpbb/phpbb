@@ -11,7 +11,7 @@ class phpbb_db_migration_data_30x_3_0_4_rc1 extends phpbb_db_migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.0.4-rc1', '>=');
+		return version_compare($this->config['version'], '3.0.4-RC1', '>=');
 	}
 
 	static public function depends_on()
@@ -76,7 +76,7 @@ class phpbb_db_migration_data_30x_3_0_4_rc1 extends phpbb_db_migration
 		return array(
 			array('custom', array(array(&$this, 'update_custom_profile_fields'))),
 
-			array('config.update', array('version', '3.0.4-rc1')),
+			array('config.update', array('version', '3.0.4-RC1')),
 		);
 	}
 
