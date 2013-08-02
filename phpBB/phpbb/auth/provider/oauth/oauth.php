@@ -419,4 +419,18 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		// Update token storage to store the user_id
 		$storage->set_user_id($link_data['user_id']);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function logout($data, $new_session)
+	{
+		// Clear all tokens belonging to the user
+		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_token_storage_table . "
+			WHERE session_id = '" . $this->db->sql_escape($this->user->session_id) . "'
+				AND user_id = " . (int) $this->user->data['user_id'];
+		$this->db->sql_query($sql);
+
+		return;
+	}
 }
