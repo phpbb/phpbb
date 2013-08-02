@@ -274,9 +274,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	}
 
 	/**
-	* Returns an array of login data for all enabled OAuth services.
-	*
-	* @return	array
+	* {@inheritdoc}
 	*/
 	public function get_login_data()
 	{

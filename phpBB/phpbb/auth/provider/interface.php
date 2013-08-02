@@ -107,6 +107,27 @@ interface phpbb_auth_provider_interface
 	public function get_acp_template($new_config);
 
 	/**
+	* Returns an array of data necessary to build custom elements on the login
+	* form.
+	*
+	* @return	array|null	If this function is not implemented on an auth
+	*						provider then it returns null. If it is implemented
+	*						it will return an array of up to four elements of
+	*						which only 'TEMPLATE_FILE'. If 'BLOCK_VAR_NAME' is
+	*						present then 'BLOCK_VARS' must also be present in
+	*						the array. The fourth element 'VARS' is also
+	*						optional. The array, with all four elements present
+	*						looks like the following:
+	*						array(
+	*							'TEMPLATE_FILE'		=> string,
+	*							'BLOCK_VAR_NAME'	=> string,
+	*							'BLOCK_VARS'		=> array(...),
+	*							'VARS'				=> array(...),
+	*						)
+	*/
+	public function get_login_data();
+
+	/**
 	 * Performs additional actions during logout.
 	 *
 	 * @param 	array	$data			An array corresponding to

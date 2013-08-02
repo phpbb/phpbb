@@ -3367,6 +3367,26 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$s_hidden_fields['credential'] = $credential;
 	}
 
+	$auth_provider = $phpbb_container->get('auth.provider.' . $config['auth_method']);
+
+	$auth_provider_data = $auth_provider->get_login_data();
+	if ($auth_provider_data)
+	{
+		if (isset($auth_provider_data['VARS']))
+		{
+			$template->assign_vars($auth_provider_data['VARS']);
+		}
+
+		if (isset($auth_provider_data['BLOCK_VAR_NAME']))
+		{
+			$template->assign_block_vars($auth_provider_data['BLOCK_VAR_NAME'], $auth_provider_data['BLOCK_VARS']);
+		}
+
+		$template->assign_vars(array(
+			'PROVIDER_TEMPLATE_FILE' => $auth_provider_data['TEMPLATE_FILE'],
+		));
+	}
+
 	$oauth_login = ($config['auth_method'] == 'oauth') ? true : false;
 
 	if ($oauth_login)
