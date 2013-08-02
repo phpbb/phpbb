@@ -165,14 +165,14 @@ topiclist_row_append
 ucp_pm_viewmessage_custom_fields_after
 ===
 * Location: styles/prosilver/template/ucp_pm_viewmessage.html
-* Purpose: Add data after the custom fields, under the username and avatar
-next to every private message in prosilver
+* Purpose: Add data after the custom fields on the user profile when viewing
+a private message
 
 ucp_pm_viewmessage_custom_fields_before
 ===
 * Location: styles/prosilver/template/ucp_pm_viewmessage.html
-* Purpose: Add data before the custom fields, under the username and avatar
-next to every private message in prosilver
+* Purpose: Add data before the custom fields on the user profile when viewing
+a private message
 
 ucp_pm_viewmessage_print_head_append
 ===
@@ -214,16 +214,16 @@ viewtopic_body_postrow_custom_fields_after
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
-* Purpose: Add data after the postrow custom fields, under the username and
-avatar next to every post.
+* Purpose: Add data after the custom fields on the user profile when viewing
+a post
 
 viewtopic_body_postrow_custom_fields_before
 ===
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
-* Purpose: Add data before the postrow custom fields, under the username and
-avatar next to every post.
+* Purpose: Add data before the custom fields on the user profile when viewing
+a post
 
 viewtopic_topic_title_prepend
 ===
