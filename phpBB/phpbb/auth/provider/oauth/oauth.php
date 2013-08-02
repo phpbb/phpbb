@@ -149,7 +149,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 
 		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
-		$query = 'mode=login&login=external&oauth_service=' . $service_name;
+		$query = 'mode=login&login=external&oauth_service=' . $service_name_original;
 		$service = $this->get_service($service_name_original, $storage, $service_credentials, $this->service_providers[$service_name]->get_auth_scope(), $query);
 
 		if ($this->request->is_set('code', phpbb_request_interface::GET))
@@ -399,7 +399,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		// Prepare for an authentication request
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 		$scopes = $this->service_providers[$service_name]->get_auth_scope();
-		$query =  'mode=login_link&login_link_oauth_service=' . $service_name;
+		$query =  'mode=login_link&login_link_oauth_service=' . strtolower($link_data['oauth_service']);
 		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $scopes, $query);
 		$this->service_providers[$service_name]->set_external_service_provider($service);
 
