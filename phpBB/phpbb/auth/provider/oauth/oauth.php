@@ -129,8 +129,6 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		// Temporary workaround for only having one authentication provider available
 		if (!$this->request->is_set('oauth_service'))
 		{
-			// TODO: Remove before merging
-			global $phpbb_root_path, $phpEx;
 			$provider = new phpbb_auth_provider_db($this->db, $this->config, $this->request, $this->user, $phpbb_root_path, $phpEx);
 			return $provider->login($username, $password);
 		}
@@ -151,7 +149,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 
 		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
-		$service = $this->get_service($service_name_original, $storage, $service_credentials, $this->service_providers[$service_name]->get_auth_scope());
+		$query = 'mode=login&login=external&oauth_service=' . $service_name;
+		$service = $this->get_service($service_name_original, $storage, $service_credentials, $this->service_providers[$service_name]->get_auth_scope(), $query);
 
 		if ($this->request->is_set('code', phpbb_request_interface::GET))
 		{
@@ -215,39 +214,45 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 	/**
 	* Returns the cached current_uri object or creates and caches it if it is
-	* not already created
+	* not already created. In each case the query string is updated based on
+	* the $query parameter.
 	*
-	* @param	string	$service_name			The name of the service
+	* @param	string	$service_name	The name of the service
+	* @param	string	$query			The query string of the current_uri
+	*									used in redirects
 	* @return	\OAuth\Common\Http\Uri\UriInterface
 	*/
-	protected function get_current_uri($service_name)
+	protected function get_current_uri($service_name, $query)
 	{
 		if ($this->current_uri)
 		{
+			$this->current_uri->setQuery($query);
 			return $this->current_uri;
 		}
 
 		$uri_factory = new \OAuth\Common\Http\Uri\UriFactory();
 		$current_uri = $uri_factory->createFromSuperGlobalArray($this->request->get_super_global(phpbb_request_interface::SERVER));
-		$current_uri->setQuery('mode=login&login=external&oauth_service=' . $service_name);
+		$current_uri->setQuery($query);
 
 		$this->current_uri = $current_uri;
 		return $current_uri;
 	}
 
 	/**
-	* Returns the cached service object or creates a new one
+	* Returns a new service object
 	*
 	* @param	string	$service_name			The name of the service
 	* @param	phpbb_auth_oauth_token_storage $storage
 	* @param	array	$service_credentials	{@see phpbb_auth_provider_oauth::get_service_credentials}
 	* @param	array	$scope					The scope of the request against
 	*											the api.
+	* @param	string	$query					The query string of the
+	*											current_uri used in redirection
 	* @return	\OAuth\Common\Service\ServiceInterface
 	*/
-	protected function get_service($service_name, phpbb_auth_provider_oauth_token_storage $storage, array $service_credentials, array $scopes = array())
+	protected function get_service($service_name, phpbb_auth_provider_oauth_token_storage $storage, array $service_credentials, array $scopes = array(), $query)
 	{
-		$current_uri = $this->get_current_uri($service_name);
+		$current_uri = $this->get_current_uri($service_name, $query);
 
 		// Setup the credentials for the requests
 		$credentials = new Credentials(
@@ -390,11 +395,10 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		}
 
 		// Prepare for an authentication request
-		$this->get_current_uri(strtolower($link_data['oauth_service']));
-		$this->current_uri->setQuery('mode=login_link&login_link_oauth_service=' . $service_name);
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 		$scopes = $this->service_providers[$service_name]->get_auth_scope();
-		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $scopes);
+		$query =  'mode=login_link&login_link_oauth_service=' . $service_name;
+		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $scopes, $query);
 		$this->service_providers[$service_name]->set_external_service_provider($service);
 
 		// The user has already authenticated successfully, request to authenticate again
