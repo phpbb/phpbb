@@ -33,16 +33,20 @@ class phpbb_model_repository_auth
 	/** @var phpbb_db_driver */
 	protected $db;
 
+	/** @var phpbb_auth */
+	protected $auth;
+
 	/**
 	 * Constructor
 	 *
 	 * @param phpbb_config $config
 	 * @param phpbb_db_driver $db
 	 */
-	function __construct(phpbb_config $config, phpbb_db_driver $db)
+	function __construct(phpbb_config $config, phpbb_db_driver $db, phpbb_auth $auth)
 	{
 		$this->config = $config;
 		$this->db = $db;
+		$this->auth = $auth;
 	}
 
 	public function allow($auth_key, $sign_key, $user_id, $name)
@@ -91,11 +95,10 @@ class phpbb_model_repository_auth
 	 * @param $auth_key
 	 * @param $serial
 	 * @param $hash
-	 * @param $permission String The permission to check for
 	 * @param bool $api_response Weather or not to return a boolean or a response array on failure
-	 * @return array|bool
+	 * @return array|int
 	 */
-	public function auth($request, $auth_key, $serial, $hash, $permission, $api_response = true)
+	public function auth($request, $auth_key, $serial, $hash,  $api_response = true)
 	{
 		if (!$this->config['allow_api'])
 		{
@@ -141,6 +144,7 @@ class phpbb_model_repository_auth
 				}
 			}
 
+			// This probably needs to be changed before release
 			$request .= '&auth_key=' . $auth_key . '&serial=' . $serial;
 
 			$test_hash = hash_hmac('sha256', $request, $sign_key);
@@ -160,12 +164,62 @@ class phpbb_model_repository_auth
 					return false;
 				}
 			}
+
+			$userdata = $this->auth->obtain_user_data($user_id);
+			$this->auth->acl($userdata);
+
+			if ($this->auth->acl_get('u_api'))
+			{
+				return $user_id;
+			}
+			else
+			{
+				if ($api_response)
+				{
+					$response = array(
+						'status' => 403,
+						'data' => 'User has no permission to use the API',
+					);
+					return $response;
+				}
+				else
+				{
+					return false;
+				}
+			}
 		}
 		else
 		{
-			$user_id = 1;
-		}
+			$userdata = $this->auth->obtain_user_data(ANONYMOUS);
+			$this->auth->acl($userdata);
 
-		return true; // temporary
+			if ($this->auth->acl_get('u_api'))
+			{
+				return ANONYMOUS;
+			}
+			else
+			{
+				if ($api_response)
+				{
+					$response = array(
+						'status' => 403,
+						'data' => 'User has no permission to use the API',
+					);
+					return $response;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	public function has_permission($user_id, $permission, $forum_id = 0)
+	{
+		$userdata = $this->auth->obtain_user_data($user_id);
+		$this->auth->acl($userdata);
+
+		return $this->auth->acl_get($permission, $forum_id);
 	}
 }
