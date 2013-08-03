@@ -2,8 +2,15 @@
 {$VALUE}
 <!-- DEFINE $VALUE = 'abc' -->
 {$VALUE}
+<!-- IF $VALUE != 'abc' -->
+$VALUE != 'abc'
+<!-- ELSEIF $VALUE == 'abc' -->
+$VALUE == 'abc'
+<!-- ENDIF -->
 <!-- INCLUDE define_include.html -->
 {$INCLUDED_VALUE}
 {$VALUE}
 <!-- UNDEFINE $VALUE -->
+{$VALUE}
+<!-- DEFINE $VALUE = 'test!@#$%^&*()_-=+{}[]:;",<.>/?' -->
 {$VALUE}

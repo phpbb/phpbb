@@ -642,13 +642,13 @@ blockquote.uncited {
 }
 
 /* Code block */
-dl.codebox {
+.codebox {
 	padding: 3px;
 	border: 1px solid transparent;
 	font-size: 1em;
 }
 
-dl.codebox dt {
+.codebox p {
 	text-transform: uppercase;
 	border-bottom: 1px solid transparent;
 	margin-bottom: 3px;
@@ -657,11 +657,11 @@ dl.codebox dt {
 	display: block;
 }
 
-blockquote dl.codebox {
+blockquote .codebox {
 	margin-left: 0;
 }
 
-dl.codebox code {
+.codebox code {
 	/* Also see tweaks.css */
 	overflow: auto;
 	display: block;

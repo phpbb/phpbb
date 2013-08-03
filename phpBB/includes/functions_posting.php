@@ -2055,6 +2055,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 	}
 
+	$first_post_has_topic_info = ($post_mode == 'edit_first_post' &&
+			(($post_visibility == ITEM_DELETED && $data['topic_posts_softdeleted'] == 1) ||
+			($post_visibility == ITEM_UNAPPROVED && $data['topic_posts_unapproved'] == 1) ||
+			($post_visibility == ITEM_APPROVED && $data['topic_posts_approved'] == 1)));
 	// Fix the post's and topic's visibility and first/last post information, when the post is edited
 	if (($post_mode != 'post' && $post_mode != 'reply') && $data['post_visibility'] != $post_visibility)
 	{
@@ -2067,7 +2071,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 		$phpbb_content_visibility->set_post_visibility($post_visibility, $data['post_id'], $data['topic_id'], $data['forum_id'], $user->data['user_id'], time(), '', $is_starter, $is_latest);
 	}
-	else if ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies']))
+	else if ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || $first_post_has_topic_info)
 	{
 		if ($post_visibility == ITEM_APPROVED || $data['topic_visibility'] == $post_visibility)
 		{
