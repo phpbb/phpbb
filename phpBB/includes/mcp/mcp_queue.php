@@ -206,17 +206,8 @@ class mcp_queue
 				$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
 
 				// Process message, leave it uncensored
-				$message = $post_info['post_text'];
-
-				if ($post_info['bbcode_bitfield'])
-				{
-					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-					$bbcode = new bbcode($post_info['bbcode_bitfield']);
-					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
-				}
-
-				$message = bbcode_nl2br($message);
-				$message = smiley_text($message);
+				$parse_flags = ($post_info['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+				$message = generate_text_for_display($post_info['post_text'], $post_info['bbcode_uid'], $post_info['bbcode_bitfield'], $parse_flags, false);
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 				{
