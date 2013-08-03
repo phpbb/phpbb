@@ -78,7 +78,6 @@ class phpbb_db_migration_data_310_revisions extends phpbb_db_migration
 			array('permission.add', array('m_revisions', false)),
 			array('permission.add', array('m_delete_revisions', false)),
 			array('permission.add', array('m_protect_revisions', false)),
-			array('permission.add', array('a_revisions', true, 'a_attach')),
 
 			array('permission.permission_unset', array('ROLE_FORUM_STANDARD', 'f_revisions')),
 			array('permission.permission_unset', array('ROLE_FORUM_STANDARD', 'f_wiki_create')),
