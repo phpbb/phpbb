@@ -1093,13 +1093,12 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 		$poster_id		= $row['user_id'];
 		$post_subject	= $row['post_subject'];
-		$message		= censor_text($row['post_text']);
 
 		$decoded_message = false;
 
 		if ($show_quote_button && $auth->acl_get('f_reply', $forum_id))
 		{
-			$decoded_message = $message;
+			$decoded_message = censor_text($row['post_text']);
 			decode_message($decoded_message, $row['bbcode_uid']);
 
 			$decoded_message = bbcode_nl2br($decoded_message);
@@ -1107,8 +1106,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 		$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0);
 		$parse_flags |= ($row['enable_smilies'] ? OPTION_FLAG_SMILIES : 0);
-		// Do not censor text because it has already been censored before
-		$message = generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, false);
+		$message = generate_text_for_display($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, true);
 
 		if (!empty($attachments[$row['post_id']]))
 		{
