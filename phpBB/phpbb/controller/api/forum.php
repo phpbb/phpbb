@@ -86,16 +86,17 @@ class phpbb_controller_api_forum
 
 		if ($forum_id == 0)
 		{
-			$authed = $this->auth_repository->auth('api/forums', $auth_key, $serial, $hash, '');
+			$user_id = $this->auth_repository->auth('api/forums', $auth_key, $serial, $hash);
 		}
 		else
 		{
-			$authed = $this->auth_repository->auth('api/forums/' . $forum_id, $auth_key, $serial, $hash, '');
+			$user_id = $this->auth_repository->auth('api/forums/' . $forum_id, $auth_key, $serial, $hash);
 		}
 
-		if ($authed === true)
+		if (is_int($user_id))
 		{
-			$forums = $this->forum_repository->get($forum_id);
+
+			$forums = $this->forum_repository->get($forum_id, $user_id);
 
 			$response = array(
 				'status' => 200,
@@ -104,7 +105,7 @@ class phpbb_controller_api_forum
 		}
 		else
 		{
-			$response = $authed;
+			$response = $user_id;
 		}
 
 		$json = $serializer->serialize($response, 'json');

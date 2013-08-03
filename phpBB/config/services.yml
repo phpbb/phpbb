@@ -234,6 +234,7 @@ services:
         class: phpbb_model_repository_forum
         arguments:
             - @tree.nestedset_forum
+            - @model.repository.auth
 
     model.repository.topic:
         class: phpbb_model_repository_topic
@@ -246,6 +247,7 @@ services:
         arguments:
             - @config
             - @dbal.conn
+            - @auth
 
     notification_manager:
         class: phpbb_notification_manager
