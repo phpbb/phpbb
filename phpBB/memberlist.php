@@ -998,17 +998,17 @@ switch ($mode)
 		if ($request->is_ajax())
 		{
 			$usernames = array();
-			$partial = $request->variable('partial', '', true);
+			$username_beginning = $request->variable('partial', '', true);
 			if ($partial !== '')
 			{
-				$sql = 'SELECT username_clean
-						FROM ' . USERS_TABLE . "
-						WHERE username_clean LIKE '$partial%'
-						ORDER BY username_clean ASC";
+				$sql = 'SELECT username
+						FROM ' . USERS_TABLE . '
+						WHERE username_clean ' . $db->sql_like_expression(utf8_clean_string($username_beginning) . $db->any_char) . '
+						ORDER BY username_clean ASC';
 				$result = $db->sql_query($sql);
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$usernames[] = $row['username_clean'];
+					$usernames[] = $row['username'];
 				}
 				$db->sql_freeresult($result);
 			}
