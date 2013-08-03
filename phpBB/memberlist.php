@@ -995,27 +995,27 @@ switch ($mode)
 
 	case 'group':
 	default:
-        if ($request->is_ajax())
-        {
-            $partial = request_var("partial", "");
-            if (!$partial)
-            {
-                exit_handler();
-                exit();
-            }
-            $sql="SELECT username_clean".
-                    " FROM ". USERS_TABLE .
-                    " WHERE username_clean LIKE '$partial%'";
-            $result = $db->sql_query($sql);
-            $final_ary=array();
-            while ($row = $db->sql_fetchrow($result))
-            {
-                array_push($final_ary, $row['username_clean']);
-            }
-            echo json_encode($final_ary);
-            exit_handler();
-            exit();
-        }
+		if ($request->is_ajax())
+		{
+			$usernames = array();
+			$username_beginning = $request->variable('partial', '', true);
+			if ($partial !== '')
+			{
+				$sql = 'SELECT username
+						FROM ' . USERS_TABLE . '
+						WHERE username_clean ' . $db->sql_like_expression(utf8_clean_string($username_beginning) . $db->any_char) . '
+						ORDER BY username_clean ASC';
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$usernames[] = $row['username'];
+				}
+				$db->sql_freeresult($result);
+			}
+
+			$json_response = new phpbb_json_response;
+			$json_response->send($usernames);
+		}
 
 		// The basic memberlist
 		$page_title = $user->lang['MEMBERLIST'];
