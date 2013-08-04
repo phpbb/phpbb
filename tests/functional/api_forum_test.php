@@ -12,74 +12,88 @@
  */
 class phpbb_functional_api_forum_test extends phpbb_functional_test_case
 {
-	public function test_all_forums_json()
+
+	public function setUp()
 	{
-		$crawler = $this->request('GET', 'app.php?controller=api/forums');
+		parent::setUp();
 
-		$decoded = json_decode($crawler->text());
+		$db = $this->get_db();
 
-		$this->assertEquals(1, $decoded[0]->forum_id);
-		$this->assertEquals(0, $decoded[0]->parent_id);
-		$this->assertEquals('Your first category', $decoded[0]->forum_name);
-		$this->assertEmpty($decoded[0]->forum_desc);
-		$this->assertEmpty($decoded[0]->forum_link);
-		$this->assertEmpty($decoded[0]->forum_image);
-		$this->assertEmpty($decoded[0]->forum_rules);
-		$this->assertEmpty($decoded[0]->forum_rules_link);
-		$this->assertEquals(0, $decoded[0]->forum_type);
-		$this->assertEquals(1, $decoded[0]->forum_posts);
-		$this->assertEquals(1, $decoded[0]->forum_topics);
-		$this->assertEquals(1, $decoded[0]->forum_topics_real);
-		$this->assertEquals(1, $decoded[0]->forum_last_post_id);
-		$this->assertEquals(2, $decoded[0]->forum_last_poster_id);
-		$this->assertEmpty($decoded[0]->forum_last_post_subject);
-		$this->assertEquals('admin', $decoded[0]->forum_last_poster_name);
-		$this->assertEquals('aa0000', $decoded[0]->forum_last_poster_colour);
-		$this->assertNotNull($decoded[0]->subforums);
+		$db->sql_query("UPDATE phpbb_config
+			SET config_value = 1
+			WHERE config_name = 'allow_api'");
 
-		$this->assertEquals(2, $decoded[0]->subforums[0]->forum_id);
-		$this->assertEquals(1, $decoded[0]->subforums[0]->parent_id);
-		$this->assertEquals('Your first forum', $decoded[0]->subforums[0]->forum_name);
-		$this->assertEquals('Description of your first forum.', $decoded[0]->subforums[0]->forum_desc);
-		$this->assertEmpty($decoded[0]->subforums[0]->forum_link);
-		$this->assertEmpty($decoded[0]->subforums[0]->forum_image);
-		$this->assertEmpty($decoded[0]->subforums[0]->forum_rules);
-		$this->assertEmpty($decoded[0]->subforums[0]->forum_rules_link);
-		$this->assertEquals(1, $decoded[0]->subforums[0]->forum_type);
-		$this->assertEquals(1, $decoded[0]->subforums[0]->forum_posts);
-		$this->assertEquals(1, $decoded[0]->subforums[0]->forum_topics);
-		$this->assertEquals(1, $decoded[0]->subforums[0]->forum_topics_real);
-		$this->assertEquals(1, $decoded[0]->subforums[0]->forum_last_post_id);
-		$this->assertEquals(2, $decoded[0]->subforums[0]->forum_last_poster_id);
-		$this->assertEquals('Welcome to phpBB3', $decoded[0]->subforums[0]->forum_last_post_subject);
-		$this->assertEquals('admin', $decoded[0]->subforums[0]->forum_last_poster_name);
-		$this->assertEquals('aa0000', $decoded[0]->subforums[0]->forum_last_poster_colour);
-		$this->assertNull($decoded[0]->subforums[0]->subforums);
+		$db->sql_query("INSERT INTO phpbb_acl_users
+			VALUES (1, 0, 89, 5, 1)");
+
 	}
 
-	public function test_single_forum_json()
+	public function test_all_forums_guest_json()
 	{
-		$crawler = $this->request('GET', 'app.php?controller=api/forums/2');
+		$crawler = $this->request('GET', 'app.php?controller=api/forums', array(), false);
+
+		$decoded = json_decode($crawler->text());
+		$this->assertEquals(200, $decoded->status);
+		$this->assertEquals(1, $decoded->data[0]->forum_id);
+		$this->assertEquals(0, $decoded->data[0]->parent_id);
+		$this->assertEquals('Your first category', $decoded->data[0]->forum_name);
+		$this->assertEmpty($decoded->data[0]->forum_desc);
+		$this->assertEmpty($decoded->data[0]->forum_link);
+		$this->assertEmpty($decoded->data[0]->forum_image);
+		$this->assertEmpty($decoded->data[0]->forum_rules);
+		$this->assertEmpty($decoded->data[0]->forum_rules_link);
+		$this->assertEquals(0, $decoded->data[0]->forum_type);
+		$this->assertEquals(0, $decoded->data[0]->forum_posts_approved);
+		$this->assertEquals(0, $decoded->data[0]->forum_topics_approved);
+		$this->assertEquals(1, $decoded->data[0]->forum_last_post_id);
+		$this->assertEquals(2, $decoded->data[0]->forum_last_poster_id);
+		$this->assertEmpty($decoded->data[0]->forum_last_post_subject);
+		$this->assertEquals('admin', $decoded->data[0]->forum_last_poster_name);
+		$this->assertEquals('aa0000', $decoded->data[0]->forum_last_poster_colour);
+		$this->assertNotNull($decoded->data[0]->subforums);
+
+		$this->assertEquals(2, $decoded->data[0]->subforums[0]->forum_id);
+		$this->assertEquals(1, $decoded->data[0]->subforums[0]->parent_id);
+		$this->assertEquals('Your first forum', $decoded->data[0]->subforums[0]->forum_name);
+		$this->assertEquals('Description of your first forum.', $decoded->data[0]->subforums[0]->forum_desc);
+		$this->assertEmpty($decoded->data[0]->subforums[0]->forum_link);
+		$this->assertEmpty($decoded->data[0]->subforums[0]->forum_image);
+		$this->assertEmpty($decoded->data[0]->subforums[0]->forum_rules);
+		$this->assertEmpty($decoded->data[0]->subforums[0]->forum_rules_link);
+		$this->assertEquals(1, $decoded->data[0]->subforums[0]->forum_type);
+		$this->assertEquals(1, $decoded->data[0]->subforums[0]->forum_posts_approved);
+		$this->assertEquals(1, $decoded->data[0]->subforums[0]->forum_topics_approved);
+		$this->assertEquals(1, $decoded->data[0]->subforums[0]->forum_last_post_id);
+		$this->assertEquals(2, $decoded->data[0]->subforums[0]->forum_last_poster_id);
+		$this->assertEquals('Welcome to phpBB3', $decoded->data[0]->subforums[0]->forum_last_post_subject);
+		$this->assertEquals('admin', $decoded->data[0]->subforums[0]->forum_last_poster_name);
+		$this->assertEquals('aa0000', $decoded->data[0]->subforums[0]->forum_last_poster_colour);
+		$this->assertNull($decoded->data[0]->subforums[0]->subforums);
+	}
+
+	public function test_single_forum_guest_json()
+	{
+		$crawler = $this->request('GET', 'app.php?controller=api/forums/2', array(), false);
 
 		$decoded = json_decode($crawler->text());
 
-		$this->assertEquals(2, $decoded[0]->forum_id);
-		$this->assertEquals(1, $decoded[0]->parent_id);
-		$this->assertEquals('Your first forum', $decoded[0]->forum_name);
-		$this->assertEquals('Description of your first forum.', $decoded[0]->forum_desc);
-		$this->assertEmpty($decoded[0]->forum_link);
-		$this->assertEmpty($decoded[0]->forum_image);
-		$this->assertEmpty($decoded[0]->forum_rules);
-		$this->assertEmpty($decoded[0]->forum_rules_link);
-		$this->assertEquals(1, $decoded[0]->forum_type);
-		$this->assertEquals(1, $decoded[0]->forum_posts);
-		$this->assertEquals(1, $decoded[0]->forum_topics);
-		$this->assertEquals(1, $decoded[0]->forum_topics_real);
-		$this->assertEquals(1, $decoded[0]->forum_last_post_id);
-		$this->assertEquals(2, $decoded[0]->forum_last_poster_id);
-		$this->assertEquals('Welcome to phpBB3', $decoded[0]->forum_last_post_subject);
-		$this->assertEquals('admin', $decoded[0]->forum_last_poster_name);
-		$this->assertEquals('aa0000', $decoded[0]->forum_last_poster_colour);
-		$this->assertNull($decoded[0]->subforums);
+		$this->assertEquals(200, $decoded->status);
+		$this->assertEquals(2, $decoded->data[0]->forum_id);
+		$this->assertEquals(1, $decoded->data[0]->parent_id);
+		$this->assertEquals('Your first forum', $decoded->data[0]->forum_name);
+		$this->assertEquals('Description of your first forum.', $decoded->data[0]->forum_desc);
+		$this->assertEmpty($decoded->data[0]->forum_link);
+		$this->assertEmpty($decoded->data[0]->forum_image);
+		$this->assertEmpty($decoded->data[0]->forum_rules);
+		$this->assertEmpty($decoded->data[0]->forum_rules_link);
+		$this->assertEquals(1, $decoded->data[0]->forum_type);
+		$this->assertEquals(1, $decoded->data[0]->forum_posts_approved);
+		$this->assertEquals(1, $decoded->data[0]->forum_topics_approved);
+		$this->assertEquals(1, $decoded->data[0]->forum_last_post_id);
+		$this->assertEquals(2, $decoded->data[0]->forum_last_poster_id);
+		$this->assertEquals('Welcome to phpBB3', $decoded->data[0]->forum_last_post_subject);
+		$this->assertEquals('admin', $decoded->data[0]->forum_last_poster_name);
+		$this->assertEquals('aa0000', $decoded->data[0]->forum_last_poster_colour);
+		$this->assertNull($decoded->data[0]->subforums);
 	}
 }
