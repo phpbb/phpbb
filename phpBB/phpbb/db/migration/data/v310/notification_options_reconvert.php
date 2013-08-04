@@ -23,12 +23,19 @@ class notification_options_reconvert extends \phpbb\db\migration\migration
 		);
 	}
 
-	public function convert_notifications()
+	public function convert_notifications($start)
 	{
 		$insert_table = $this->table_prefix . 'user_notifications';
 		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $insert_table);
 
-		$this->perform_conversion($insert_buffer, $insert_table);
+		$start = (int) $start;
+		if ($start == 0)
+		{
+			$sql = 'DELETE FROM ' . $insert_table;
+			$this->db->sql_query($sql);
+		}
+
+		return $this->perform_conversion($insert_buffer, $insert_table, $start);
 	}
 
 	/**
@@ -37,17 +44,19 @@ class notification_options_reconvert extends \phpbb\db\migration\migration
 	* @param \phpbb\db\sql_insert_buffer $insert_buffer
 	* @param string $insert_table
 	*/
-	public function perform_conversion(\phpbb\db\sql_insert_buffer $insert_buffer, $insert_table)
+	public function perform_conversion(\phpbb\db\sql_insert_buffer $insert_buffer, $insert_table, $start)
 	{
-		$sql = 'DELETE FROM ' . $insert_table;
-		$this->db->sql_query($sql);
+		$limit = 250;
+		$converted_users = 0;
 
 		$sql = 'SELECT user_id, user_notify_type, user_notify_pm
-			FROM ' . USERS_TABLE;
-		$result = $this->db->sql_query($sql);
+			FROM ' . USERS_TABLE . '
+			ORDER BY user_id';
+		$result = $this->db->sql_query_limit($sql, $limit, $start);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
+			$converted_users++;
 			$notification_methods = array();
 
 			// In-board notification
@@ -91,6 +100,14 @@ class notification_options_reconvert extends \phpbb\db\migration\migration
 		$this->db->sql_freeresult($result);
 
 		$insert_buffer->flush();
+
+		if ($converted_users < $limit)
+		{
+			// No more users left, we are done...
+			return;
+		}
+
+		return $start + $limit;
 	}
 
 	/**
