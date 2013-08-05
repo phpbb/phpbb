@@ -44,14 +44,14 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 	public function test_invalid_extension()
 	{
 		$upload = new fileupload('', array('jpg'), 100);
-		$file = $upload->remote_upload('http://example.com/image.gif');
+		$file = $upload->remote_upload(self::$root_url . 'develop/blank.gif');
 		$this->assertEquals('URL_INVALID', $file->error[0]);
 	}
 
-	public function test_non_existant()
+	public function test_empty_file()
 	{
 		$upload = new fileupload('', array('jpg'), 100);
-		$file = $upload->remote_upload('http://example.com/image.jpg');
+		$file = $upload->remote_upload(self::$root_url . 'develop/blank.jpg');
 		$this->assertEquals('EMPTY_REMOTE_DATA', $file->error[0]);
 	}
 
