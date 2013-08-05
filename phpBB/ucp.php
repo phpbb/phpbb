@@ -21,7 +21,7 @@ require($phpbb_root_path . 'includes/functions_module.' . $phpEx);
 $id 	= request_var('i', '');
 $mode	= request_var('mode', '');
 
-if (in_array($mode, array('login', 'logout', 'confirm', 'sendpassword', 'activate')))
+if (in_array($mode, array('login', 'login_link', 'logout', 'confirm', 'sendpassword', 'activate')))
 {
 	define('IN_LOGIN', true);
 }
