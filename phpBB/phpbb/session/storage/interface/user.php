@@ -29,13 +29,6 @@ interface phpbb_session_storage_interface_user
 	*/
 	function get_user_info($user_id, $normal_founder_only = false);
 
-	/** Set user session visibility
-	*
-	* @param int $user_id sessions with user_id to change
-	* @param bool $viewonline true: set visible, false: set invisible
-	*/
-	function set_viewonline($user_id, $viewonline);
-
 	/** Set last active session time and page for sessions with user_id
 	 *
 	 * @param int $time time to set

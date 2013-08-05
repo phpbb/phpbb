@@ -51,4 +51,11 @@ interface phpbb_session_storage_interface_keys
 	* @return null
 	*/
 	function insert_session_key($data);
+
+	/** Delete sessions longer than max_autologin_time
+	*
+	* @param int $max_autologin_time (in seconds)
+	* @return null
+	*/
+	function cleanup_long_session_keys($max_autologin_time);
 }

@@ -932,17 +932,17 @@ class phpbb_session
 		}
 
 		// Firstly, delete guest sessions
-		$this->db_cleanup->cleanup_guest_sessions($config['session_length']);
+		$this->db_session->cleanup_guest_sessions($config['session_length']);
 
 		// Get expired sessions, only most recent for each user
 		$db_user = $this->db_user;
-		$del_user_ids = $this->db_cleanup->map_recently_expired($config['session_length'], function($row) use ($db_user) {
+		$del_user_ids = $this->db_session->map_recently_expired($config['session_length'], function($row) use ($db_user) {
 				$db_user->update_last_visit($row['recent_time'], $row['session_page'], $row['session_user_id']);
 				return (int) $row['session_user_id'];
 		}, $batch_size);
 
         // Delete expired sessions
-        $this->db_cleanup->cleanup_expired_sessions($del_user_ids, $config['session_length']);
+        $this->db_session->cleanup_expired_sessions($del_user_ids, $config['session_length']);
 
 		if (sizeof($del_user_ids) < $batch_size)
 		{
@@ -952,7 +952,7 @@ class phpbb_session
 
 			if ($config['max_autologin_time'])
 			{
-				$this->db_session->cleanup_long_session_keys($config['max_autologin_time']);
+				$this->db_keys->cleanup_long_session_keys($config['max_autologin_time']);
 			}
 
 			// only called from CRON; should be a safe workaround until the infrastructure gets going
@@ -1377,6 +1377,12 @@ class phpbb_session
 	function unset_admin()
 	{
 		$this->db_session->unset_admin($this->session_id);
+	}
+
+	function set_viewonline($viewonline)
+	{
+		$this->db_session->set_viewonline($this->data['user_id'], $viewonline);
+		$this->data['session_viewonline'] = $viewonline;
 	}
 
 	/**

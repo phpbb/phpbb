@@ -101,4 +101,39 @@ interface phpbb_session_storage_interface_session
 	 * @return array
 	 */
 	function get_with_user_id($user_id);
+
+	/** Set user session visibility
+	*
+	* @param int $user_id sessions with user_id to change
+	* @param bool $viewonline true: set visible, false: set invisible
+	*/
+	function set_viewonline($user_id, $viewonline);
+
+	// Cleanup functions
+
+	/** Remove from storage all guest sessions older than session_length
+	*
+	* @param int $session_length (in seconds) remove sessions older than time - session_length
+	* @return null
+	*/
+	function cleanup_guest_sessions($session_length);
+
+	/** Remove from storage all sessions older than session_length
+	*
+	* If $user_ids is empty, nothing happens.
+	*
+	* @param array $user_ids
+	* @param int $session_length (in seconds) remove sessions older than time - session_length
+	* @return null
+	*/
+	function cleanup_expired_sessions(array $user_ids, $session_length);
+
+	/** For sessions older than length, run a function and collect results.
+	*
+	* @param int $session_length how old to search
+	* @param Closure $session_function function to run takes $row, outputs array
+	* @param int $batch_size Sql Paging size
+	* @return array an array containing the results of $session_function
+	*/
+	function map_recently_expired($session_length, Closure $session_function, $batch_size);
 }
