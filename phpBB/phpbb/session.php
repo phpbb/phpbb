@@ -1498,6 +1498,16 @@ class phpbb_session
 		$db->sql_query($sql);
 	}
 
+	function set_viewonline($viewonline)
+	{
+		global $db;
+		$sql = 'UPDATE ' . SESSIONS_TABLE . '
+                SET session_viewonline = ' . (int) $viewonline . '
+                WHERE session_user_id = ' . (int) $this->data['user_id'];
+		$db->sql_query($sql);
+		$this->data['session_viewonline'] = $viewonline;
+	}
+
 	function delete_session($session_id, $user_id = false)
 	{
 		global $db;
