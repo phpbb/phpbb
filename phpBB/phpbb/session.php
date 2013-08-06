@@ -1497,6 +1497,19 @@ class phpbb_session
 			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'';
 		$db->sql_query($sql);
 	}
+	
+	function get_user_online_time($user_id)
+	{
+		global $db;
+		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
+			FROM ' . SESSIONS_TABLE . "
+			WHERE session_user_id = $user_id
+			GROUP BY session_user_id";
+		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		return $row;
+	}
 
 	function set_viewonline($viewonline)
 	{
