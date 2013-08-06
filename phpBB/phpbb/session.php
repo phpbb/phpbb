@@ -1498,6 +1498,26 @@ class phpbb_session
 		$db->sql_query($sql);
 	}
 
+	function delete_session($session_id, $user_id = false)
+	{
+		global $db;
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
+                WHERE session_id = '" . $db->sql_escape($session_id) . "'";
+
+		if ($user_id !== false)
+		{
+			$sql .= ' AND session_user_id = ' . (int)$user_id;
+		}
+
+		$result = $db->sql_query($sql);
+
+		if (!$result || !$db->sql_affectedrows()) {
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 	* Update the session data
 	*
