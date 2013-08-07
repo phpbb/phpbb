@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit backupGlobals="true"
+         backupStaticAttributes="true"
+         colors="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         bootstrap="tests/bootstrap.php"
+>
+
+    <testsuites>
+        <testsuite name="phpBB Test Suite">
+            <directory prefix="api" suffix="_test.php">./tests/functional/</directory>
+            <exclude>tests/lint_test.php</exclude>
+        </testsuite>
+        <testsuite name="phpBB Lint Test">
+            <file>tests/lint_test.php</file>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <blacklist>
+            <directory>./tests/</directory>
+        </blacklist>
+        <whitelist>
+            <directory suffix=".php">./phpBB/includes/</directory>
+            <directory suffix=".php">./phpBB/phpbb/</directory>
+            <exclude>
+                <file>./phpBB/phpbb/search/fulltext_native.php</file>
+                <file>./phpBB/phpbb/search/fulltext_mysql.php</file>
+                <directory suffix=".php">./phpBB/includes/captcha/</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>

@@ -32,9 +32,11 @@ class client
 	{
 		$json = $this->request('auth/verify', array());
 
+		echo $json;
+
 		$response = json_decode($json);
 
-		if($response->data->valid == true)
+		if($response->data->valid === true)
 		{
 			$keys = file_get_contents($this->key_store);
 			$keyarr = explode('|', $keys);
@@ -65,22 +67,27 @@ class client
 			$request .= '/' . $param;
 		}
 
-		$keys = file_get_contents($this->key_store);
-		$keyarr = explode('|', $keys);
+		if (!isset($_POST['guest']))
+		{
+			$keys = file_get_contents($this->key_store);
+			$keyarr = explode('|', $keys);
 
-		$request .=  '&auth_key=' . $keyarr[0] . '&serial=' . $keyarr[3];
+			$requesttohash = $request . 'auth_key=' . $keyarr[0] . '&serial=' . $keyarr[3];
 
-		$hash = hash_hmac('sha256', $request, $keyarr[1]);
+			$hash = hash_hmac('sha256', $requesttohash, $keyarr[1]);
 
-		$request .= '&hash=' . $hash;
+			$request .= '&auth_key=' . $keyarr[0] . '&serial=' . $keyarr[3];
 
-		$keyarr[3] = $keyarr[3] + 1;
+			$request .= '&hash=' . $hash;
 
-		$keys = implode('|', $keyarr);
+			$keyarr[3] = $keyarr[3] + 1;
 
-		$keys_file = fopen($this->key_store, 'w');
-		fwrite($keys_file, $keys);
-		fclose($keys_file);
+			$keys = implode('|', $keyarr);
+
+			$keys_file = fopen($this->key_store, 'w');
+			fwrite($keys_file, $keys);
+			fclose($keys_file);
+		}
 
 		echo 'Made Request: ' . $this->api_url . $request . '<br /><br />';
 

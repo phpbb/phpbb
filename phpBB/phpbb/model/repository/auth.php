@@ -41,6 +41,7 @@ class phpbb_model_repository_auth
 	 *
 	 * @param phpbb_config $config
 	 * @param phpbb_db_driver $db
+	 * @param phpbb_auth $auth
 	 */
 	function __construct(phpbb_config $config, phpbb_db_driver $db, phpbb_auth $auth)
 	{
@@ -58,34 +59,6 @@ class phpbb_model_repository_auth
 			. "', '" . $this->db->sql_escape($sign_key) . "')";
 
 		$this->db->sql_query($sql);
-	}
-
-	public function verify($auth_key, $serial, $hash)
-	{
-		$sql = 'SELECT sign_key
-				FROM ' . API_KEYS_TABLE
-			. " WHERE auth_key = '" . $this->db->sql_escape($auth_key) . "'";
-
-		$result = $this->db->sql_query($sql);
-
-		$row = $this->db->sql_fetchrow($result);
-		$sign_key = $row['sign_key'];
-
-		if (empty($sign_key))
-		{
-			return false;
-		}
-
-		$test_hash = hash_hmac('sha256', 'api/auth/verify/' . $auth_key . '/' . $serial, $sign_key);
-
-		if ($hash == $test_hash)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
 	}
 
 	/**
@@ -106,7 +79,10 @@ class phpbb_model_repository_auth
 			{
 				$response = array(
 					'status' => 500,
-					'data' => 'The API is not enabled on this board',
+					'data' => array(
+						'error' => 'The API is not enabled on this board',
+						'valid' => false,
+					),
 				);
 				return $response;
 			}
@@ -126,7 +102,7 @@ class phpbb_model_repository_auth
 
 			$row = $this->db->sql_fetchrow($result);
 			$sign_key = $row['sign_key'];
-			$user_id = $row['user_id'];
+			$user_id = (int) $row['user_id'];
 
 			if (empty($sign_key))
 			{
@@ -134,7 +110,10 @@ class phpbb_model_repository_auth
 				{
 					$response = array(
 						'status' => 401,
-						'data' => 'The user has not authenticated this application',
+						'data' => array(
+							'error' => 'The user has not authenticated this application',
+							'valid' => false,
+						),
 					);
 					return $response;
 				}
@@ -145,7 +124,7 @@ class phpbb_model_repository_auth
 			}
 
 			// This probably needs to be changed before release
-			$request .= '&auth_key=' . $auth_key . '&serial=' . $serial;
+			$request .= 'auth_key=' . $auth_key . '&serial=' . $serial;
 
 			$test_hash = hash_hmac('sha256', $request, $sign_key);
 
@@ -155,7 +134,10 @@ class phpbb_model_repository_auth
 				{
 					$response = array(
 						'status' => 400,
-						'data' => 'Invalid hash',
+						'data' => array(
+							'error' => 'Invalid hash',
+							'valid' => false,
+						),
 					);
 					return $response;
 				}
@@ -178,7 +160,10 @@ class phpbb_model_repository_auth
 				{
 					$response = array(
 						'status' => 403,
-						'data' => 'User has no permission to use the API',
+						'data' => array(
+							'error' => 'User has no permission to use the API',
+							'valid' => false,
+						),
 					);
 					return $response;
 				}
@@ -203,7 +188,10 @@ class phpbb_model_repository_auth
 				{
 					$response = array(
 						'status' => 403,
-						'data' => 'User has no permission to use the API',
+						'data' => array(
+							'error' => 'User has no permission to use the API',
+							'valid' => false,
+						),
 					);
 					return $response;
 				}

@@ -31,6 +31,7 @@ if (!isset($_GET['mode']))
 			echo '<form action="api.php" method="POST">';
 			echo 'Method: <input name="method" /><br />';
 			echo 'Parameters (split by |): <input name="parameters"/><br />';
+			echo 'Guest: <input type="checkbox" name="guest"/><br />';
 			echo '<input type="submit" /> </form>';
 		}
 	}
