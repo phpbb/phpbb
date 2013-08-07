@@ -1565,6 +1565,29 @@ class phpbb_session
 
 		$db->sql_query($sql);
 	}
+	
+	public function restore_session()
+	{
+		global $db;
+		$reinsert_ary = array(
+			'session_id'			=> (string) $this->session_id,
+			'session_page'			=> (string) substr($this->page['page'], 0, 199),
+			'session_forum_id'		=> $this->page['forum'],
+			'session_user_id'		=> (int) $this->data['user_id'],
+			'session_start'			=> (int) $this->data['session_start'],
+			'session_last_visit'	=> (int) $this->data['session_last_visit'],
+			'session_time'			=> (int) $this->time_now,
+			'session_browser'		=> (string) trim(substr($this->browser, 0, 149)),
+			'session_forwarded_for'	=> (string) $this->forwarded_for,
+			'session_ip'			=> (string) $this->ip,
+			'session_autologin'		=> (int) $this->data['session_autologin'],
+			'session_admin'			=> 1,
+			'session_viewonline'	=> (int) $this->data['session_viewonline'],
+		);
+
+		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $reinsert_ary);
+		$db->sql_query($sql);
+	}
 
 	public function get_newest_session($user_id)
 	{

@@ -391,24 +391,7 @@ class acp_main
 						}
 
 						// let's restore the admin session
-						$reinsert_ary = array(
-								'session_id'			=> (string) $user->session_id,
-								'session_page'			=> (string) substr($user->page['page'], 0, 199),
-								'session_forum_id'		=> $user->page['forum'],
-								'session_user_id'		=> (int) $user->data['user_id'],
-								'session_start'			=> (int) $user->data['session_start'],
-								'session_last_visit'	=> (int) $user->data['session_last_visit'],
-								'session_time'			=> (int) $user->time_now,
-								'session_browser'		=> (string) trim(substr($user->browser, 0, 149)),
-								'session_forwarded_for'	=> (string) $user->forwarded_for,
-								'session_ip'			=> (string) $user->ip,
-								'session_autologin'		=> (int) $user->data['session_autologin'],
-								'session_admin'			=> 1,
-								'session_viewonline'	=> (int) $user->data['session_viewonline'],
-						);
-
-						$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $reinsert_ary);
-						$db->sql_query($sql);
+						$user->restore_session();
 
 						add_log('admin', 'LOG_PURGE_SESSIONS');
 
