@@ -101,14 +101,8 @@ class acp_users
 		}
 
 		// Generate content for all modes
-		$sql = 'SELECT u.*, s.*
-			FROM ' . USERS_TABLE . ' u
-				LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
-			WHERE u.user_id = ' . $user_id . '
-			ORDER BY s.session_time DESC';
-		$result = $db->sql_query_limit($sql, 1);
-		$user_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$session = new phpbb_session();
+		$user_row = $session->get_newest_session($user_id);
 
 		if (!$user_row)
 		{
@@ -978,12 +972,8 @@ class acp_users
 
 				if ($config['load_onlinetrack'])
 				{
-					$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
-						FROM ' . SESSIONS_TABLE . "
-						WHERE session_user_id = $user_id";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$session = new phpbb_session();
+					$row = $session->get_user_online_time($user_id);
 
 					$user_row['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
 					$user_row['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] : 0;
@@ -1611,11 +1601,8 @@ class acp_users
 									'session_viewonline'	=> ($user_auth->acl_get('u_hideonline')) ? $sql_ary['user_allow_viewonline'] : true,
 								);
 
-								$sql = 'UPDATE ' . SESSIONS_TABLE . '
-									SET ' . $db->sql_build_array('UPDATE', $session_sql_ary) . "
-									WHERE session_user_id = $user_id";
-								$db->sql_query($sql);
-
+								$session = new phpbb_session();
+								$session->update_session($session_sql_ary, false, $user_id);
 								unset($user_auth);
 							}
 						}
@@ -2205,15 +2192,9 @@ class acp_users
 
 							$error = array();
 
-							// The delete action was successful - therefore update the user row...
-							$sql = 'SELECT u.*, s.*
-								FROM ' . USERS_TABLE . ' u
-									LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
-								WHERE u.user_id = ' . $user_id . '
-								ORDER BY s.session_time DESC';
-							$result = $db->sql_query_limit($sql, 1);
-							$user_row = $db->sql_fetchrow($result);
-							$db->sql_freeresult($result);
+							// The delete action was successful - therefore update the user_row var
+							$session = new phpbb_session();
+							$user_row = $session->get_newest_session($user_id);
 						}
 						else
 						{

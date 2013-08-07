@@ -1546,15 +1546,37 @@ class phpbb_session
 	*
 	* @param array $session_data associative array of session keys to be updated
 	* @param string $session_id optional session_id, defaults to current user's session_id
+	* @param string $user_id optional if given, update all user's sessions
 	*/
-	public function update_session($session_data, $session_id = null)
+	public function update_session($session_data, $session_id = null, $user_id = null)
 	{
 		global $db;
 
-		$session_id = ($session_id) ? $session_id : $this->session_id;
+		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $session_data);
+		if (is_null($session_id) && !is_null($user_id))
+		{
+			$sql .= ' WHERE session_user_id = ' . $db->sql_escape($user_id) ;
+		}
+		else
+		{
+			$session_id = ($session_id) ? $session_id : $this->session_id;
+			$sql .= " WHERE session_id = '" . $db->sql_escape($session_id) . "'";
+		}
 
-		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $session_data) . "
-			WHERE session_id = '" . $db->sql_escape($session_id) . "'";
 		$db->sql_query($sql);
+	}
+
+	public function get_newest_session($user_id)
+	{
+		global $db;
+		$sql = 'SELECT u.*, s.*
+				FROM ' . USERS_TABLE . ' u
+					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
+				WHERE u.user_id = ' . $user_id . '
+				ORDER BY s.session_time DESC';
+		$result = $db->sql_query_limit($sql, 1);
+		$user_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		return $user_row;
 	}
 }
