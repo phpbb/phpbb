@@ -1523,6 +1523,7 @@ class phpbb_session
 
 	/**
 	* Delete session data
+	* Delete session, user id, users id array
 	*
 	* @param bool|string   $session_id optional if given, id to delete
 	* @param array|string 	$user_id    optional if given, only delete
@@ -1566,6 +1567,22 @@ class phpbb_session
 		}
 
 		return true;
+	}
+	
+	function delete_all_sessions()
+	{
+		global $db;
+		switch ($db->sql_layer)
+		{
+			case 'sqlite':
+			case 'firebird':
+				$db->sql_query("DELETE FROM " . SESSIONS_TABLE);
+				break;
+
+			default:
+				$db->sql_query("TRUNCATE TABLE " . SESSIONS_TABLE);
+				break;
+		}
 	}
 
 	/**

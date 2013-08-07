@@ -373,22 +373,21 @@ class acp_main
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						$tables = array(CONFIRM_TABLE, SESSIONS_TABLE);
-
-						foreach ($tables as $table)
+						switch ($db->sql_layer)
 						{
-							switch ($db->sql_layer)
-							{
-								case 'sqlite':
-								case 'firebird':
-									$db->sql_query("DELETE FROM $table");
-								break;
+							case 'sqlite':
+							case 'firebird':
+								$db->sql_query("DELETE FROM " . CONFIRM_TABLE);
+							break;
 
-								default:
-									$db->sql_query("TRUNCATE TABLE $table");
-								break;
-							}
+							default:
+								$db->sql_query("TRUNCATE TABLE " . CONFIRM_TABLE);
+							break;
 						}
+
+						// Delete all sessions
+						$session = new phpbb_session();
+						$session->delete_all_sessions();
 
 						// let's restore the admin session
 						$user->restore_session();
