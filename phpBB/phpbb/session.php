@@ -1521,15 +1521,42 @@ class phpbb_session
 		$this->data['session_viewonline'] = $viewonline;
 	}
 
-	function delete_session($session_id, $user_id = false)
+	/**
+	* Delete session data
+	*
+	* @param bool|string   $session_id optional if given, id to delete
+	* @param array|string 	$user_id    optional if given, only delete
+	* 											this or these user's sessions
+	*
+	* @throws InvalidArgumentException Thrown if neither args are given
+	* @return bool True if rows were deleted
+	*/
+	function delete_session($session_id = false, $user_id = false)
 	{
 		global $db;
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-                WHERE session_id = '" . $db->sql_escape($session_id) . "'";
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE;
+
+		if ($session_id !== false)
+		{
+			$sql .= " WHERE session_id = '" . $db->sql_escape($session_id) . "'";
+		}
 
 		if ($user_id !== false)
 		{
-			$sql .= ' AND session_user_id = ' . (int)$user_id;
+			$sql .= ($session_id !== false) ? ' AND ' : ' WHERE ';
+			if (is_numeric($user_id))
+			{
+				$sql .= ' session_user_id = ' . (int) $user_id;
+			}
+			else
+			{
+				$sql .= $db->sql_in_set('session_user_id', $user_id);
+			}
+		}
+
+		if ($session_id === false && $user_id === false)
+		{
+			throw new InvalidArgumentException("Need either session or user_id");
 		}
 
 		$result = $db->sql_query($sql);

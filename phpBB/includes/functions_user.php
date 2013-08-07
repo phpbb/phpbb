@@ -599,9 +599,8 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$db->sql_query($sql);
 
 	// Delete the user_id from the session table
-	$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-		WHERE ' . $db->sql_in_set('session_user_id', $user_ids);
-	$db->sql_query($sql);
+	$session = new phpbb_session();
+	$session->delete_session(false, $user_ids);
 
 	// Clean the private messages tables from the user
 	if (!function_exists('phpbb_delete_user_pms'))
@@ -1090,27 +1089,24 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 						WHERE ' . $db->sql_in_set('user_email', $banlist_ary_sql);
 					$result = $db->sql_query($sql);
 
-					$sql_in = array();
+					$user_ids = array();
 
 					if ($row = $db->sql_fetchrow($result))
 					{
 						do
 						{
-							$sql_in[] = $row['user_id'];
+							$user_ids[] = $row['user_id'];
 						}
 						while ($row = $db->sql_fetchrow($result));
-
-						$sql_where = 'WHERE ' . $db->sql_in_set('session_user_id', $sql_in);
 					}
 					$db->sql_freeresult($result);
 				break;
 			}
 
-			if (isset($sql_where) && $sql_where)
+			if (isset($user_ids) && $user_ids)
 			{
-				$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-					$sql_where";
-				$db->sql_query($sql);
+				$session = new phpbb_session();
+				$session->delete_session(false, $user_ids);
 
 				if ($mode == 'user')
 				{
