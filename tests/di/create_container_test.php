@@ -17,7 +17,7 @@ class phpbb_di_container_test extends phpbb_test_case
         $phpbb_root_path = __DIR__ . '/../../phpBB/';
         $extensions = array(
             new phpbb_di_extension_config(__DIR__ . '/fixtures/config.php'),
-            new phpbb_di_extension_core($phpbb_root_path),
+            new phpbb_di_extension_core($phpbb_root_path . 'config'),
         );
         $container = phpbb_create_container($extensions, $phpbb_root_path, 'php');
 
@@ -29,7 +29,7 @@ class phpbb_di_container_test extends phpbb_test_case
         $phpbb_root_path = __DIR__ . '/../../phpBB/';
         $extensions = array(
             new phpbb_di_extension_config(__DIR__ . '/fixtures/config.php'),
-            new phpbb_di_extension_core($phpbb_root_path),
+            new phpbb_di_extension_core($phpbb_root_path . 'config'),
         );
         $container = phpbb_create_install_container($phpbb_root_path, 'php');
 
@@ -43,7 +43,7 @@ class phpbb_di_container_test extends phpbb_test_case
         $config_file = __DIR__ . '/fixtures/config.php';
         $extensions = array(
             new phpbb_di_extension_config(__DIR__ . '/fixtures/config.php'),
-            new phpbb_di_extension_core($phpbb_root_path),
+            new phpbb_di_extension_core($phpbb_root_path . 'config'),
         );
         $container = phpbb_create_compiled_container($config_file, $extensions, array(), $phpbb_root_path, 'php');
 

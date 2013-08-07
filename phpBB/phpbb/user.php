@@ -590,6 +590,13 @@ class phpbb_user extends phpbb_session
 				$language_filename = $lang_path . $this->lang_name . '/' . $filename . '.' . $phpEx;
 			}
 
+			// If we are in install, try to use the updated version, when available
+			$install_language_filename = str_replace('language/', 'install/update/new/language/', $language_filename);
+			if (defined('IN_INSTALL') && file_exists($install_language_filename))
+			{
+				$language_filename = $install_language_filename;
+			}
+
 			if (!file_exists($language_filename))
 			{
 				global $config;
