@@ -172,26 +172,43 @@ class phpbb_controller_api_auth
 
 	}
 
-	public function verify($auth_key, $serial, $hash)
+	public function verify()
 	{
 		$serializer = new Serializer(array(), array(new JsonEncoder()));
-		if (!$this->config['allow_api'])
+
+		$auth_key = $this->request->variable('auth_key', 'guest');
+		$serial = $this->request->variable('serial', -1);
+		$hash = $this->request->variable('hash', '');
+
+		$user_id = $this->auth_repository->auth('api/auth/verify', $auth_key, $serial, $hash);
+
+		if (is_int($user_id))
 		{
-			$response = array(
-				'status' => 500,
-				'data' => 'The API is not enabled on this board',
-			);
-			return new Response($serializer->serialize($response, 'json'), $response['status']);
+			if ($user_id == ANONYMOUS)
+			{
+				$response = array(
+					'status' => 200,
+					'data' => array(
+						'valid'	=> true,
+						'usertype' => 'guest',
+					),
+				);
+			}
+			else
+			{
+				$response = array(
+					'status' => 200,
+					'data' => array(
+						'valid'	=> true,
+						'usertype' => 'member',
+					),
+				);
+			}
 		}
-
-		$is_verified = $this->auth_repository->verify($auth_key, $serial, $hash);
-
-		$response = array(
-			'status' => 200,
-			'data' => array(
-				'valid'	=> $is_verified,
-			),
-		);
+		else
+		{
+			$response = $user_id;
+		}
 
 		return new Response($serializer->serialize($response, 'json'), $response['status']);
 	}
