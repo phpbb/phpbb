@@ -1511,6 +1511,25 @@ class phpbb_session
 		return $row;
 	}
 
+	function map_users_online($user_list, $session_length, Closure $function)
+	{
+		global $db;
+		$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
+				FROM ' . SESSIONS_TABLE . '
+				WHERE session_time >= ' . (time() - $session_length) . '
+					AND ' . $db->sql_in_set('session_user_id', $user_list) . '
+				GROUP BY session_user_id';
+		$result = $db->sql_query($sql);
+
+		$results = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$results[] = $function($row);
+		}
+		$db->sql_freeresult($result);
+		return $results;
+	}
+
 	function set_viewonline($viewonline)
 	{
 		global $db;
