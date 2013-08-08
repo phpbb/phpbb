@@ -49,8 +49,23 @@ class phpbb_db_migration_data_310_auth_provider_oauth extends phpbb_db_migration
 	{
 		return array(
 			'drop_tables'	=> array(
-				$this->table_prefix . 'auth_provider_oauth',
+				$this->table_prefix . 'oauth_tokens',
+				$this->table_prefix . 'oauth_accounts',
 			),
+		);
+	}
+
+	public function update_data()
+	{
+		return array(
+			array('module.add', array(
+				'ucp',
+				'UCP_AUTH_LINK',
+				array(
+					'module_basename'	=> 'ucp_auth_link',
+					'modes'				=> array('auth_link'),
+				),
+			)),
 		);
 	}
 }
