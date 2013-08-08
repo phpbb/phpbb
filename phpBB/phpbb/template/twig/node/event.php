@@ -18,6 +18,11 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_template_twig_node_event extends Twig_Node
 {
+	/** 
+	 * The subdirectory in which all template event files must be placed
+	 */
+	const TEMPLATE_EVENTS_SUBDIRECTORY = 'events/';
+
 	/** @var Twig_Environment */
 	protected $environment;
 
@@ -50,19 +55,19 @@ class phpbb_template_twig_node_event extends Twig_Node
 				//  slower, but makes developing extensions easier (no need to
 				//  purge the cache when a new event template file is added)
 		        $compiler
-		            ->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
+		            ->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/" . self::TEMPLATE_EVENTS_SUBDIRECTORY . "{$location}.html')) {\n")
 		            ->indent()
 		        ;
 			}
 
-			if (defined('DEBUG') || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . $location . '.html'))
+			if (defined('DEBUG') || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . self::TEMPLATE_EVENTS_SUBDIRECTORY . $location . '.html'))
 			{
 				$compiler
 					->write("\$previous_look_up_order = \$this->env->getNamespaceLookUpOrder();\n")
 
 					// We set the namespace lookup order to be this extension first, then the main path
 					->write("\$this->env->setNamespaceLookUpOrder(array('{$ext_namespace}', '__main__'));\n")
-					->write("\$this->env->loadTemplate('@{$ext_namespace}/{$location}.html')->display(\$context);\n")
+					->write("\$this->env->loadTemplate('@{$ext_namespace}/" . self::TEMPLATE_EVENTS_SUBDIRECTORY . "{$location}.html')->display(\$context);\n")
 					->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n")
 				;
 			}
