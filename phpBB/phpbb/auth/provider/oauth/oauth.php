@@ -442,4 +442,14 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		return;
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_auth_link_data()
+	{
+		return array(
+			'TEMPLATE_FILE'	=> 'ucp_auth_link_oauth.html',
+		);
+	}
 }

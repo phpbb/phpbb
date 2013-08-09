@@ -30,6 +30,7 @@ class ucp_auth_link
 		if ($provider_data === null)
 		{
 			// does not support this page, throw error?
+			throw new Exception('TEMPORARY EXCEPTION');
 		}
 
 		$error = array();
@@ -54,6 +55,8 @@ class ucp_auth_link
 		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 		$template->assign_vars(array(
+			'PROVIDER_TEMPLATE_FILE'	=> $provider_data['TEMPLATE_FILE'],
+
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> $this->u_action,
 		));
