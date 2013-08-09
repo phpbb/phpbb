@@ -429,15 +429,15 @@ class phpbb_template_twig implements phpbb_template
 
 		$vars = array_merge(
 			$context_vars['.'][0], // To get normal vars
-			$context_vars, // To get loops
 			array(
 				'definition'	=> new phpbb_template_twig_definition(),
 				'user'			=> $this->user,
+				'loops'			=> $context_vars, // To get loops
 			)
 		);
 
 		// cleanup
-		unset($vars['.']);
+		unset($vars['loops']['.']);
 
 		return $vars;
 	}

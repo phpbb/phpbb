@@ -191,20 +191,18 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			// Recursive...fix any child nodes
 			$body = $parent_class->fix_begin_tokens($body, $parent_nodes);
 
-			// Rename loopname vars (to prevent collisions, loop children are named (loop name)_loop_element)
-			$body = str_replace($name . '.', $name . '_loop_element.', $body);
-
 			// Need the parent variable name
 			array_pop($parent_nodes);
-			$parent = (!empty($parent_nodes)) ? end($parent_nodes) . '_loop_element.' : '';
+			$parent = (!empty($parent_nodes)) ? end($parent_nodes) . '.' : '';
 
 			if ($subset !== '')
 			{
 				$subset = '|subset(' . $subset . ')';
 			}
 
-			// Turn into a Twig for loop, using (loop name)_loop_element for each child
-			return "{% for {$name}_loop_element in {$parent}{$name}{$subset} %}{$body}{% endfor %}";
+			$parent = ($parent) ?: 'loops.';
+			// Turn into a Twig for loop
+			return "{% for {$name} in {$parent}{$name}{$subset} %}{$body}{% endfor %}";
 		};
 
 		// Replace <!-- BEGINELSE --> correctly, only needs to be done once
@@ -227,8 +225,11 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			// Replace $TEST with definition.TEST
 			$inner = preg_replace('#\s\$([a-zA-Z_0-9]+)#', ' definition.$1', $inner);
 
-			// Replace .test with test|length
-			$inner = preg_replace('#\s\.([a-zA-Z_0-9\.]+)#', ' $1|length', $inner);
+			// Replace .foo with loops.foo|length
+			$inner = preg_replace('#\s\.([a-zA-Z_0-9]+)([^a-zA-Z_0-9\.])#', ' loops.$1|length$2', $inner);
+
+			// Replace .foo.bar with foo.bar|length
+			$inner = preg_replace('#\s\.([a-zA-Z_0-9\.]+)([^a-zA-Z_0-9\.])#', ' $1|length$2', $inner);
 
 			return "<!-- {$matches[1]}IF{$inner}-->";
 		};
