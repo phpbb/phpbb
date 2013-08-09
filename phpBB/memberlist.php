@@ -536,8 +536,7 @@ switch ($mode)
 
 		if ($config['load_onlinetrack'])
 		{
-			$session = new phpbb_session();
-			$row = $session->get_user_online_time($user_id);
+			$row = $user->get_user_online_time($user_id);
 
 			$member['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
 			$member['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] :	0;
@@ -1504,8 +1503,7 @@ switch ($mode)
 		{
 			// Session time?! Session time...
 			$session_times = array();
-			$session = new phpbb_session();
-			$session->map_users_online(
+			$user->map_users_online(
 				$user_list,
 				$config['session_length'],
 				function($row) use ($session_times) {

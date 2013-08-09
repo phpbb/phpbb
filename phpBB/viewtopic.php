@@ -1266,8 +1266,7 @@ if ($config['load_onlinetrack'] && sizeof($id_cache))
 		return $active && $visible;
 	};
 
-	$session = new phpbb_session();
-	$session->map_certain_users_with_time($id_cache, function ($row) use ($user_cache, $user_is_online) {
+	$user->map_certain_users_with_time($id_cache, function ($row) use ($user_cache, $user_is_online) {
 		$user_cache[$row['session_user_id']]['online'] = $user_is_online($row['online_time'], $row['viewonline']);
 	});
 }

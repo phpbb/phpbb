@@ -599,8 +599,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$db->sql_query($sql);
 
 	// Delete the user_id from the session table
-	$session = new phpbb_session();
-	$session->delete_session(false, $user_ids);
+	$user->delete_session(false, $user_ids);
 
 	// Clean the private messages tables from the user
 	if (!function_exists('phpbb_delete_user_pms'))
@@ -1105,8 +1104,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 			if (isset($user_ids) && $user_ids)
 			{
-				$session = new phpbb_session();
-				$session->delete_session(false, $user_ids);
+				$user->delete_session(false, $user_ids);
 
 				if ($mode == 'user')
 				{

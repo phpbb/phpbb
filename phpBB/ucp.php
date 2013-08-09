@@ -271,8 +271,7 @@ if ($module->is_active('zebra', 'friends'))
 {
 	// Output listing of friends online
 	$update_time = $config['load_online_time'] * 60;
-	$session = new phpbb_session();
-	$session->map_friends_online($user->data['user_id'], function ($row) use ($update_time, $auth, $template) {
+	$user->map_friends_online($user->data['user_id'], function ($row) use ($update_time, $auth, $template) {
 		$which = (time() - $update_time < $row['online_time'] && ($row['viewonline'] || $auth->acl_get('u_viewonline'))) ? 'online' : 'offline';
 		$template->assign_block_vars("friends_{$which}", array(
 				'USER_ID'		=> $row['user_id'],

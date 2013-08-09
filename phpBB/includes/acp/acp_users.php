@@ -101,8 +101,7 @@ class acp_users
 		}
 
 		// Generate content for all modes
-		$session = new phpbb_session();
-		$user_row = $session->get_newest_session($user_id);
+		$user_row = $user->get_newest_session($user_id);
 
 		if (!$user_row)
 		{
@@ -972,8 +971,7 @@ class acp_users
 
 				if ($config['load_onlinetrack'])
 				{
-					$session = new phpbb_session();
-					$row = $session->get_user_online_time($user_id);
+					$row = $user->get_user_online_time($user_id);
 
 					$user_row['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
 					$user_row['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] : 0;
@@ -1601,8 +1599,7 @@ class acp_users
 									'session_viewonline'	=> ($user_auth->acl_get('u_hideonline')) ? $sql_ary['user_allow_viewonline'] : true,
 								);
 
-								$session = new phpbb_session();
-								$session->update_session($session_sql_ary, false, $user_id);
+								$user->update_session($session_sql_ary, false, $user_id);
 								unset($user_auth);
 							}
 						}
@@ -2193,8 +2190,7 @@ class acp_users
 							$error = array();
 
 							// The delete action was successful - therefore update the user_row var
-							$session = new phpbb_session();
-							$user_row = $session->get_newest_session($user_id);
+							$user_row = $user->get_newest_session($user_id);
 						}
 						else
 						{

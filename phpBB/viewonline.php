@@ -55,8 +55,7 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 {
 	include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-	$session = new phpbb_session();
-	$user_ip = $session->get_user_ip_from_session($session_id);
+	$user_ip = $user->get_user_ip_from_session($session_id);
 
 	if ($user_ip != null)
 	{
@@ -91,11 +90,11 @@ $guest_counter = 0;
 // Get number of online guests (if we do not display them)
 if (!$show_guests)
 {
-	$guest_counter = phpbb_session::obtain_guest_count();
+	$guest_counter = $user->obtain_guest_count();
 }
 
 // Get user list
-$users = phpbb_session::get_users_online(
+$users = $user->get_users_online(
 	$show_guests,
 	time() - ($config['load_online_time'] * 60),
 	$order_by,

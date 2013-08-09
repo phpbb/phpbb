@@ -1708,7 +1708,7 @@ class phpbb_session
 	* @param string $item The name of the item which is stored in the session table as session_{$item}_id
 	* @return int The number of active distinct guest sessions
 	*/
-	static function obtain_guest_count($item_id = 0, $item = 'forum')
+	function obtain_guest_count($item_id = 0, $item = 'forum')
 	{
 		global $db, $config;
 
@@ -1750,7 +1750,7 @@ class phpbb_session
 		return $guests_online;
 	}
 
-	static function get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher)
+	function get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher)
 	{
 		global $db;
 
@@ -1796,7 +1796,7 @@ class phpbb_session
 	 * @param string $item The name of the item which is stored in the session table as session_{$item}_id
 	 * @return array An array containing the ids of online, hidden and visible users, as well as statistical info
 	 */
-	static function obtain_users_online($item_id = 0, $item = 'forum')
+	function obtain_users_online($item_id = 0, $item = 'forum')
 	{
 		global $db, $config;
 
@@ -1853,7 +1853,7 @@ class phpbb_session
 		return $online_users;
 	}
 
-	static function map_friends_online($user_id, Closure $function)
+	function map_friends_online($user_id, Closure $function)
 	{
 		global $db;
 		$sql_ary = array(

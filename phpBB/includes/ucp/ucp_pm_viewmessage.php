@@ -333,8 +333,7 @@ function get_user_information($user_id, $user_row)
 	// Generate online information for user
 	if ($config['load_onlinetrack'])
 	{
-		$session = new phpbb_session();
-		$row = $session->get_user_online_time($user_id);
+		$row = $user->get_user_online_time($user_id);
 
 		$update_time = $config['load_online_time'] * 60;
 		if ($row)

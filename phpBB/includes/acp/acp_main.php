@@ -386,8 +386,7 @@ class acp_main
 						}
 
 						// Delete all sessions
-						$session = new phpbb_session();
-						$session->delete_all_sessions();
+						$user->delete_all_sessions();
 
 						// let's restore the admin session
 						$user->restore_session();

@@ -4456,7 +4456,8 @@ function phpbb_filter_root_path($errfile)
 */
 function obtain_guest_count($item_id = 0, $item = 'forum')
 {
-	return phpbb_session::obtain_guest_count($item_id, $item);
+	$session = new phpbb_session();
+	return $session->obtain_guest_count($item_id, $item);
 }
 
 /**
@@ -4467,7 +4468,8 @@ function obtain_guest_count($item_id = 0, $item = 'forum')
 */
 function obtain_users_online($item_id = 0, $item = 'forum')
 {
-	return phpbb_session::obtain_users_online($item_id, $item);
+	$session = new phpbb_session();
+	return $session->obtain_users_online($item_id, $item);
 }
 
 /**
