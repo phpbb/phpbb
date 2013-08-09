@@ -542,7 +542,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	$vars = array('text', 'uid', 'bitfield', 'flags');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_after', compact($vars)));
 
-	return;
+	return $message_parser->warn_msg;
 }
 
 /**
