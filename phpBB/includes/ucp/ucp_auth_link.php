@@ -21,7 +21,16 @@ class ucp_auth_link
 
 	public function main($id, $mode)
 	{
-		global $template, $phpbb_container;
+		global $config, $request, $template, $phpbb_container;
+
+		$auth_provider = $phpbb_container->get('auth.provider.' . $config['auth_method']);
+
+		// confirm that the auth provider supports this page
+		$provider_data = $auth_provider->get_auth_link_data();
+		if ($provider_data === null)
+		{
+			// does not support this page, throw error?
+		}
 
 		$error = array();
 		$s_hidden_fields = array();

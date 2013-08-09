@@ -65,6 +65,14 @@ abstract class phpbb_auth_provider_base implements phpbb_auth_provider_interface
 	/**
 	* {@inheritdoc}
 	*/
+	public function get_auth_link_data()
+	{
+		return;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function logout($data, $new_session)
 	{
 		return;
