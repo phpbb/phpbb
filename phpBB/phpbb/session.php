@@ -1852,4 +1852,43 @@ class phpbb_session
 
 		return $online_users;
 	}
+
+	static function map_friends_online($user_id, Closure $function)
+	{
+		global $db;
+		$sql_ary = array(
+			'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
+
+			'FROM'		=> array(
+				USERS_TABLE		=> 'u',
+				ZEBRA_TABLE		=> 'z',
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(SESSIONS_TABLE => 's'),
+					'ON'	=> 's.session_user_id = z.zebra_id',
+				),
+			),
+
+			'WHERE'		=> 'z.user_id = ' . $user_id . '
+			AND z.friend = 1
+			AND u.user_id = z.zebra_id',
+
+			'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username_clean, u.user_colour, u.username',
+
+			'ORDER_BY'	=> 'u.username_clean ASC',
+		);
+
+		$sql = $db->sql_build_query('SELECT_DISTINCT', $sql_ary);
+		$result = $db->sql_query($sql);
+
+		$output = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$output[] = $function($row);
+		}
+		$db->sql_freeresult($result);
+		return $output;
+	}
 }
