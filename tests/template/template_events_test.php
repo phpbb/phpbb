@@ -80,6 +80,16 @@ Zeta test event in all',
 				array(),
 'two in silver in omega',
 			),
+			array(
+				'EVENT in loop',
+				'ext_trivial',
+				array('silver'),
+				'event_loop.html',
+				array(),
+				array('event_loop' => array(array(), array(), array())),
+				array(),
+				'event_loop0|event_loop1|event_loop2',
+			),
 		);
 	}
 
