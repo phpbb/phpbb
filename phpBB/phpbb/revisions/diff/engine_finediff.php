@@ -32,7 +32,7 @@ class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_b
 	{
 		if (!class_exists('FineDiff'))
 		{
-			require($this->phpbb_root_path . 'includes/revisions/finediff.' . $this->phpEx);
+			require($this->phpbb_root_path . 'phpbb/revisions/finediff.' . $this->phpEx);
 		}
 		switch ($granularity)
 		{
@@ -131,7 +131,7 @@ class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_b
 	{
 		if (!class_exists('FineDiff'))
 		{
-			require($this->phpbb_root_path . 'includes/revisions/finediff.' . $this->phpEx);
+			require($this->phpbb_root_path . 'phpbb/revisions/finediff.' . $this->phpEx);
 		}
 		$this->diff = new FineDiff($this->from, $this->to, $this->granularity);
 	}
