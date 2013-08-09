@@ -1254,18 +1254,22 @@ if ($config['load_cpf_viewtopic'])
 // Generate online information for user
 if ($config['load_onlinetrack'] && sizeof($id_cache))
 {
-	$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
-		FROM ' . SESSIONS_TABLE . '
-		WHERE ' . $db->sql_in_set('session_user_id', $id_cache) . '
-		GROUP BY session_user_id';
-	$result = $db->sql_query($sql);
-
 	$update_time = $config['load_online_time'] * 60;
-	while ($row = $db->sql_fetchrow($result))
+	// Create a anonymous closure function
+	// that takes an online time, and checks auth to see if user should be
+	// displayed online.
+	$user_is_online = function ($online_time, $viewonline) use ($update_time, $auth)
 	{
-		$user_cache[$row['session_user_id']]['online'] = (time() - $update_time < $row['online_time'] && (($row['viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
-	}
-	$db->sql_freeresult($result);
+		$active = time() - $update_time < $online_time;
+		$visible = $viewonline || $auth->acl_get('u_viewonline');
+		// True if should be displayed online, otherwise false
+		return $active && $visible;
+	};
+
+	$session = new phpbb_session();
+	$session->map_certain_users_with_time($id_cache, function ($row) use ($user_cache, $user_is_online) {
+		$user_cache[$row['session_user_id']]['online'] = $user_is_online($row['online_time'], $row['viewonline']);
+	});
 }
 unset($id_cache);
 
