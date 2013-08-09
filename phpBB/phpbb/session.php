@@ -1684,6 +1684,24 @@ class phpbb_session
 		return $user_row;
 	}
 
+	public function get_user_ip_from_session($session_id)
+	{
+		global $db;
+		$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
+		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
+		WHERE s.session_id = '" . $db->sql_escape($session_id) . "'
+			AND	u.user_id = s.session_user_id";
+		$result = $db->sql_query($sql);
+
+		$output = null;
+		if ($current_user = $db->sql_fetchrow($result))
+		{
+			$output = $current_user['session_ip'];
+		}
+		$db->sql_freeresult($result);
+		return $output;
+	}
+
 	/**
 	* Queries the session table to get information about online guests
 	* @param int $item_id Limits the search to the item with this id
@@ -1730,6 +1748,46 @@ class phpbb_session
 		$db->sql_freeresult($result);
 
 		return $guests_online;
+	}
+
+	static function get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher)
+	{
+		global $db;
+
+		$sql_ary = array(
+			'SELECT'	=> '
+				u.user_id,
+				u.username,
+				u.username_clean,
+				u.user_type,
+				u.user_colour,
+				s.session_id,
+				s.session_time,
+				s.session_page,
+				s.session_ip,
+				s.session_browser,
+				s.session_viewonline,
+				s.session_forum_id',
+			'FROM'		=> array(
+				USERS_TABLE		=> 'u',
+				SESSIONS_TABLE	=> 's',
+			),
+			'WHERE'		=> 'u.user_id = s.session_user_id
+			AND s.session_time >= ' . $online_time .
+			((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : ''),
+			'ORDER_BY'	=> $order_by,
+		);
+		$vars = array('sql_ary', 'show_guests');
+		extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
+
+		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
+		$users = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$users[] = $row;
+		}
+		$db->sql_freeresult($result);
+		return $users;
 	}
 
 	/**
