@@ -948,7 +948,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
 		// Instead, I send it as a request with the submit button "post" set to true.
 		$crawler = self::request('POST', $posting_url, $form_data);
-		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
+
+		// If we are editing a post, we want to check for the correct language
+		// string on the success page.
+		$assertLang = (stripos($posting_url, 'mode=edit') !== false) ? 'POST_EDITED' : 'POST_STORED';
+		$this->assertContains($this->lang($assertLang), $crawler->filter('html')->text());
 		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
 
 		return array(
