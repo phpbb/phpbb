@@ -483,7 +483,7 @@ class mcp_queue
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list) . '
 							AND topic_visibility = ' . $visibility_const . "
 							AND topic_delete_user <> 0
-AND (							AND (t.topic_poster = ' . (int) $user->data['user_id'] . '
+							AND (t.topic_poster = " . (int) $user->data['user_id'] . '
 								OR  ' . $db->sql_in_set('t.forum_id', get_forum_list('f_read_other', true, true), false, true) . ")
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
