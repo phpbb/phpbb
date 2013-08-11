@@ -20,7 +20,7 @@ class phpbb_db_migration_data_310_ucp_pm_module_auth extends phpbb_db_migration
 		$module_auth = $this->db->sql_fetchfield('module_auth');
 		$this->db->sql_freeresult($result);
 
-		return $module_auth === 'cfg_allow_privmsg';
+		return $module_auth === 'cfg_allow_privmsg' || $module_auth === false;
 	}
 
 	static public function depends_on()
