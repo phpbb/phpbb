@@ -705,7 +705,7 @@ p.post-notice:before {
 	pointer-events: none;
 }
 
-form p.post-notice strong {
+form > p.post-notice strong {
 	line-height: 20px;
 }
 
