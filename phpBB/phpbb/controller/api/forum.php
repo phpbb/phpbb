@@ -57,7 +57,8 @@ class phpbb_controller_api_forum
 	 * @param phpbb_model_repository_auth $auth_repository
 	 * @param phpbb_request $request
 	 */
-	function __construct(phpbb_model_repository_forum $forum_repository, phpbb_config_db $config, phpbb_model_repository_auth $auth_repository, phpbb_request $request)
+	function __construct(phpbb_model_repository_forum $forum_repository, phpbb_config_db $config,
+						 phpbb_model_repository_auth $auth_repository, phpbb_request $request)
 	{
 		$this->forum_repository = $forum_repository;
 		$this->config = $config;
@@ -84,18 +85,11 @@ class phpbb_controller_api_forum
 		$serial = $this->request->variable('serial', -1);
 		$hash = $this->request->variable('hash', '');
 
-		if ($forum_id == 0)
-		{
-			$user_id = $this->auth_repository->auth('api/forums', $auth_key, $serial, $hash);
-		}
-		else
-		{
-			$user_id = $this->auth_repository->auth('api/forums/' . $forum_id, $auth_key, $serial, $hash);
-		}
+		$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/forums/' .
+			$forum_id), $auth_key, $serial, $hash, $forum_id);
 
 		if (is_int($user_id))
 		{
-
 			$forums = $this->forum_repository->get($forum_id, $user_id);
 
 			$response = array(

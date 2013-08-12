@@ -234,7 +234,7 @@ services:
         class: phpbb_model_repository_forum
         arguments:
             - @tree.nestedset_forum
-            - @model.repository.auth
+            - @auth
 
     model.repository.topic:
         class: phpbb_model_repository_topic

@@ -39,15 +39,32 @@ class phpbb_controller_api_topic
 	protected $config;
 
 	/**
+	 * Auth repository object
+	 * @var phpbb_model_repository_auth
+	 */
+	protected $auth_repository;
+
+	/**
+	 * Request object
+	 * @var phpbb_request
+	 */
+	protected $request;
+
+	/**
 	 * Constructor
 	 *
 	 * @param phpbb_model_repository_topic $topic_repository
 	 * @param phpbb_config_db $config
+	 * @param phpbb_model_repository_auth $auth_repository
+	 * @param phpbb_request $request
 	 */
-	function __construct(phpbb_model_repository_topic $topic_repository, phpbb_config_db $config)
+	function __construct(phpbb_model_repository_topic $topic_repository, phpbb_config_db $config,
+						 phpbb_model_repository_auth $auth_repository, phpbb_request $request)
 	{
 		$this->topic_repository = $topic_repository;
 		$this->config = $config;
+		$this->request = $request;
+		$this->auth_repository = $auth_repository;
 	}
 
 	/**
@@ -62,24 +79,32 @@ class phpbb_controller_api_topic
 	 */
 	public function topics($forum_id, $page)
 	{
+
+
+		$auth_key = $this->request->variable('auth_key', 'guest');
+		$serial = $this->request->variable('serial', -1);
+		$hash = $this->request->variable('hash', '');
+
+		$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/forums/' .
+			$forum_id . '/' . $page), $auth_key, $serial, $hash, $forum_id);
+
 		$serializer = new Serializer(array(
 			new phpbb_model_normalizer_topic(),
 		), array(new JsonEncoder()));
 
-		if (!$this->config['allow_api'])
+		if (is_int($user_id))
 		{
-			$response = array(
-				'status' => 500,
-				'data' => 'The API is not enabled on this board',
-			);
-			return new Response($serializer->serialize($response, 'json'), $response['status']);
-		}
-		$topics = $this->topic_repository->get($forum_id, $page);
+			$topics = $this->topic_repository->get($forum_id, $page);
 
-		$response = array(
-			'status' => 200,
-			'data' => $serializer->normalize($topics),
-		);
+			$response = array(
+				'status' => 200,
+				'data' => $serializer->normalize($topics),
+			);
+		}
+		else
+		{
+			$response = $user_id;
+		}
 
 		$json = $serializer->serialize($response, 'json');
 

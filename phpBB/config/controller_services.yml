@@ -12,6 +12,8 @@ services:
         arguments:
             - @model.repository.topic
             - @config
+            - @model.repository.auth
+            - @request
 
     api.controller.auth:
         class: phpbb_controller_api_auth
@@ -22,3 +24,4 @@ services:
             - @template
             - @request
             - @config
+            - @auth
