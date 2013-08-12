@@ -23,23 +23,23 @@ class ucp_auth_link
 	{
 		global $config, $request, $template, $phpbb_container;
 
+		$error = array();
+
 		$auth_provider = $phpbb_container->get('auth.provider.' . $config['auth_method']);
 
 		// confirm that the auth provider supports this page
 		$provider_data = $auth_provider->get_auth_link_data();
 		if ($provider_data === null)
 		{
-			// does not support this page, throw error?
-			throw new Exception('TEMPORARY EXCEPTION');
+			$error[] = 'UCP_AUTH_LINK_NOT_SUPPORTED';
 		}
 
-		$error = array();
 		$s_hidden_fields = array();
 		add_form_key('ucp_auth_link');
 
 		$submit	= $request->variable('submit', false, false, phpbb_request_interface::POST);
 
-		if ($submit)
+		if (!sizeof($error) && $submit)
 		{
 			if (!check_form_key('ucp_reg_details'))
 			{
@@ -55,6 +55,8 @@ class ucp_auth_link
 		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 		$template->assign_vars(array(
+			'ERROR'	=> $this->build_error_text($error),
+
 			'PROVIDER_TEMPLATE_FILE'	=> $provider_data['TEMPLATE_FILE'],
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
@@ -63,5 +65,21 @@ class ucp_auth_link
 
 		$this->tpl_name = 'ucp_auth_link';
 		$this->page_title = 'UCP_AUTH_LINK';
+	}
+
+	private function build_error_text(array $errors)
+	{
+		global $user;
+
+		// Replace all errors that are language constants
+		foreach ($errors as $key => $error)
+		{
+			if (isset($user->lang[$error]))
+			{
+				$errors[$key] = $user->lang($error);
+			}
+		}
+
+		return implode('<br />', $errors);
 	}
 }
