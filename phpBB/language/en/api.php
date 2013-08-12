@@ -40,6 +40,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'API_NOT_ENABLED'			=> 'The API is not enabled on this board.',
+	'API_NO_PERMISSION'			=> 'You don\'t have permission to use the API.',
 
 	'AUTH_TITLE'				=> 'Authentication request',
 	'AUTH_INFORMATION'			=> 'An application wants to access your account.',

@@ -24,19 +24,19 @@ class phpbb_model_repository_forum
 	/** @var phpbb_tree_nestedset_forum */
 	protected $nestedset_forum;
 
-	/** @var phpbb_model_repository_auth */
-	protected $auth_repository;
+	/** @var phpbb_auth */
+	protected $auth;
 
 	/**
 	 * Constructor
 	 *
 	 * @param phpbb_tree_nestedset_forum $nestedset_forum
-	 * @param phpbb_model_repository_auth $auth_repository
+	 * @param phpbb_auth $auth
 	 */
-	function __construct(phpbb_tree_nestedset_forum $nestedset_forum, phpbb_model_repository_auth $auth_repository)
+	function __construct(phpbb_tree_nestedset_forum $nestedset_forum, phpbb_auth $auth)
 	{
 		$this->nestedset_forum = $nestedset_forum;
-		$this->auth_repository = $auth_repository;
+		$this->auth = $auth;
 	}
 
 	public function get($forum_id, $user_id)
@@ -50,13 +50,16 @@ class phpbb_model_repository_forum
 			$result = $this->nestedset_forum->get_subtree_data($forum_id);
 		}
 
+		$userdata = $this->auth->obtain_user_data($user_id);
+		$this->auth->acl($userdata);
+
 		$forums = array();
 		foreach ($result as $row)
 		{
 			$forum = new phpbb_model_entity_forum($row);
 
 			$fid = $forum->get('forum_id');
-			if (!$this->auth_repository->has_permission($user_id, 'f_read', $fid))
+			if (!$this->auth->acl_get('f_read', $fid))
 			{
 				continue;
 			}
