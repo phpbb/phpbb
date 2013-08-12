@@ -452,7 +452,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		// Get all external accounts tied to the current user
 		$data = array(
-			'user_id' => $user->data['user_id'],
+			'user_id' => $this->user->data['user_id'],
 		);
 		$sql = 'SELECT oauth_provider_id, provider FROM ' . $this->auth_provider_oauth_token_account_assoc . '
 			WHERE ' . $this->db->sql_build_array('SELECT', $data);
@@ -462,9 +462,9 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		$oauth_user_ids = array();
 
-		if ($row !== false && !empty($rows))
+		if ($rows !== false && !empty($rows))
 		{
-			foreach ($row as $row)
+			foreach ($rows as $row)
 			{
 				$oauth_user_ids[$row['provider']] = $row['oauth_provider_id'];
 			}

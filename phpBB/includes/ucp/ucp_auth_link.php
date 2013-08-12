@@ -52,6 +52,19 @@ class ucp_auth_link
 			}
 		}
 
+		if (isset($provider_data['VARS']))
+		{
+			$template->assign_vars($provider_data['VARS']);
+		}
+
+		if (isset($provider_data['BLOCK_VAR_NAME']))
+		{
+			foreach ($provider_data['BLOCK_VARS'] as $block_vars)
+			{
+				$template->assign_block_vars($provider_data['BLOCK_VAR_NAME'], $block_vars);
+			}
+		}
+
 		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 		$template->assign_vars(array(
