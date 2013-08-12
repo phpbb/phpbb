@@ -10,7 +10,7 @@
 				</dl>
 				<dl>
 					<dt>&nbsp;</dt>
-					<dd>{S_HIDDEN_FIELDS}<input type="submit" name="unlink" tabindex="6" value="{L_UNLINK}" class="button1" /></dd>
+					<dd><input type="submit" name="unlink" tabindex="6" value="{L_UNLINK}" class="button1" /></dd>
 				</dl>
 			<!-- ELSE -->
 				<dl>
@@ -18,10 +18,11 @@
 				</dl>
 				<dl>
 					<dt>&nbsp;</dt>
-					<dd>{S_HIDDEN_FIELDS}<input type="submit" name="link" tabindex="6" value="{L_LINK}" class="button1" /></dd>
+					<dd><input type="submit" name="link" tabindex="6" value="{L_LINK}" class="button1" /></dd>
 				</dl>
 			<!-- ENDIF-->
 		</fieldset>
+		{oauth.HIDDEN_FIELDS}
 		{S_HIDDEN_FIELDS}
 		{S_FORM_TOKEN}
 	</form>

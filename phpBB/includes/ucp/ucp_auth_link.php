@@ -54,6 +54,13 @@ class ucp_auth_link
 
 		if (isset($provider_data['VARS']))
 		{
+			// Handle hidden fields separately
+			if (isset($provider_data['VARS']['HIDDEN_FIELDS']))
+			{
+				$s_hidden_fields = array_merge($s_hidden_fields, $provider_data['VARS']['HIDDEN_FIELDS']);
+				unset($provider_data['VARS']['HIDDEN_FIELDS']);
+			}
+
 			$template->assign_vars($provider_data['VARS']);
 		}
 
@@ -61,6 +68,12 @@ class ucp_auth_link
 		{
 			foreach ($provider_data['BLOCK_VARS'] as $block_vars)
 			{
+				// See if there are additional hidden fields. This should be an associative array
+				if (isset($block_vars['HIDDEN_FIELDS']))
+				{
+					$block_vars['HIDDEN_FIELDS'] = build_hidden_fields($block_vars['HIDDEN_FIELDS']);
+				}
+
 				$template->assign_block_vars($provider_data['BLOCK_VAR_NAME'], $block_vars);
 			}
 		}

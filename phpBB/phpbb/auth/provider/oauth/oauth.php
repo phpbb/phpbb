@@ -481,6 +481,10 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 				$redirect_url = build_url(false) . '&login=external&oauth_service=' . $actual_name;
 
 				$block_vars[$service_name] = array(
+					'HIDDEN_FIELDS'	=> array(
+						'oauth_service' => $actual_name,
+					),
+
 					'REDIRECT_URL'	=> redirect($redirect_url, true),
 					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
 					'UNIQUE_ID'		=> (isset($oauth_user_ids[$actual_name])) ? $oauth_user_ids[$actual_name] : null,
