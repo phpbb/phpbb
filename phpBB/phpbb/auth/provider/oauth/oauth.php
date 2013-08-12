@@ -448,7 +448,50 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*/
 	public function get_auth_link_data()
 	{
+		$block_vars = array();
+
+		// Get all external accounts tied to the current user
+		$data = array(
+			'user_id' => $user->data['user_id'],
+		);
+		$sql = 'SELECT oauth_provider_id, provider FROM ' . $this->auth_provider_oauth_token_account_assoc . '
+			WHERE ' . $this->db->sql_build_array('SELECT', $data);
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$oauth_user_ids = array();
+
+		if ($row !== false && !empty($rows))
+		{
+			foreach ($row as $row)
+			{
+				$oauth_user_ids[$row['provider']] = $row['oauth_provider_id'];
+			}
+		}
+		unset($rows);
+
+		foreach ($this->service_providers as $service_name => $service_provider)
+		{
+			// Only include data if the credentials are set
+			$credentials = $service_provider->get_service_credentials();
+			if ($credentials['key'] && $credentials['secret'])
+			{
+				$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
+				$redirect_url = build_url(false) . '&login=external&oauth_service=' . $actual_name;
+
+				$block_vars[$service_name] = array(
+					'REDIRECT_URL'	=> redirect($redirect_url, true),
+					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
+					'UNIQUE_ID'		=> (isset($oauth_user_ids[$actual_name])) ? $oauth_user_ids[$actual_name] : null,
+				);
+			}
+		}
+
 		return array(
+			'BLOCK_VAR_NAME'	=> 'oauth',
+			'BLOCK_VARS'		=> $block_vars,
+
 			'TEMPLATE_FILE'	=> 'ucp_auth_link_oauth.html',
 		);
 	}
