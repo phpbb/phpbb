@@ -32,33 +32,3 @@ ul.profile-icons li.edit-icon	{ width: 42px; height: 20px; }
 	padding-left: 58px;
 	padding-top: 58px;
 }
-.imageset.button_pm_forward {
-	background-image: url("./button_pm_forward.gif");
-	padding-left: 96px;
-	padding-top: 25px;
-}
-.imageset.button_pm_new {
-	background-image: url("./button_pm_new.gif");
-	padding-left: 84px;
-	padding-top: 25px;
-}
-.imageset.button_pm_reply {
-	background-image: url("./button_pm_reply.gif");
-	padding-left: 96px;
-	padding-top: 25px;
-}
-.imageset.button_topic_locked {
-	background-image: url("./button_topic_locked.gif");
-	padding-left: 88px;
-	padding-top: 25px;
-}
-.imageset.button_topic_new {
-	background-image: url("./button_topic_new.gif");
-	padding-left: 96px;
-	padding-top: 25px;
-}
-.imageset.button_topic_reply {
-	background-image: url("./button_topic_reply.gif");
-	padding-left: 96px;
-	padding-top: 25px;
-}
