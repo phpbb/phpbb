@@ -554,7 +554,7 @@ class phpbb_content_visibility
 	*
 	* @param $data			array	Contains information from the topics table about given topic
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
-	* @return void
+	* @return null
 	*/
 	public function add_post_to_statistic($data, &$sql_data)
 	{
@@ -575,7 +575,7 @@ class phpbb_content_visibility
 	*
 	* @param $data			array	Contains information from the topics table about given topic
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
-	* @return void
+	* @return null
 	*/
 	public function remove_post_from_statistic($data, &$sql_data)
 	{
@@ -597,7 +597,7 @@ class phpbb_content_visibility
 	* @param $forum_id		int		Forum where the topic is found
 	* @param $topic_row		array	Contains information from the topic, may be empty at call time
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
-	* @return void
+	* @return null
 	*/
 	public function remove_topic_from_statistic($topic_id, $forum_id, &$topic_row, &$sql_data)
 	{
