@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Post quoting notifications class
-* This class handles notifications for quoting users in a post
+* This class handles notifications for users being quoted in a post
 *
 * @package notifications
 */
