@@ -14,11 +14,19 @@ api_forums_controller:
         forum_id: \d+
         _method: GET
 
-api_topics_controller:
+api_topics_list_controller:
     pattern: /api/forums/{forum_id}/topics/{page}
     defaults: { _controller: api.controller.forum:topics, page: 1 }
     requirements:
         forum_id: \d+
+        page: \d+
+        _method: GET
+
+api_topic_controller:
+    pattern: /api/topic/{topic_id}/{page}
+    defaults: { _controller: api.controller.topic:topic, page: 1 }
+    requirements:
+        topic_id: \d+
         page: \d+
         _method: GET
 

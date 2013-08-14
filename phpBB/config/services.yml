@@ -238,6 +238,13 @@ services:
             - @config
             - @dbal.conn
 
+    model.repository.topic:
+        class: phpbb_model_repository_topic
+        arguments:
+            - @auth
+            - @config
+            - @dbal.conn
+
     model.repository.auth:
         class: phpbb_model_repository_auth
         arguments:
