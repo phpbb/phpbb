@@ -58,7 +58,7 @@ class ucp_auth_link
 				// Tell the provider that the method is auth_link not login_link
 				$link_data['link_method'] = 'auth_link';
 
-				if ($request->variable('link', null, false, phpbb_request_interface::POST))
+				if ($request->variable('link', 0, false, phpbb_request_interface::POST))
 				{
 					$error[] = $auth_provider->link_account($link_data);
 				}

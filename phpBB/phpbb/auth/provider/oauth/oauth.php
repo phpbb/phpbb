@@ -391,10 +391,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		// We must have an oauth_service listed, check for it two ways
 		if (!array_key_exists('oauth_service', $link_data) || !$link_data['oauth_service'])
 		{
-			if (!$link_data['oauth_service'] && $this->request->is_set('oauth_service'))
-			{
-				$link_data['oauth_service'] = $this->request->variable('oauth_service', '');
-			}
+			$link_data['oauth_service'] = $this->request->variable('oauth_service', false);
 
 			if (!$link_data['oauth_service'])
 			{
@@ -452,7 +449,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	protected function link_account_auth_link(array $link_data, $service_name)
 	{
 		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
-		$query = 'i=ucp_auth_link&mode=auth_link&link=1&login_link_oauth_service=' . strtolower($link_data['oauth_service']);
+		$query = 'i=ucp_auth_link&mode=auth_link&link=1&oauth_service=' . strtolower($link_data['oauth_service']);
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 		$scopes = $this->service_providers[$service_name]->get_auth_scope();
 		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $scopes, $query);
@@ -464,7 +461,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 			// Insert into table, they will be able to log in after this
 			$data = array(
-				'user_id'			=> $link_data['user_id'],
+				'user_id'			=> $this->user->data['user_id'],
 				'provider'			=> strtolower($link_data['oauth_service']),
 				'oauth_provider_id'	=> $unique_id,
 			);
