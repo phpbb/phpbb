@@ -28,15 +28,28 @@ class phpbb_model_repository_forum
 	protected $auth;
 
 	/**
+	 * phpBB configuration
+	 * @var phpbb_config
+	 */
+	protected $config;
+
+	/** @var phpbb_db_driver */
+	protected $db;
+
+	/**
 	 * Constructor
 	 *
 	 * @param phpbb_tree_nestedset_forum $nestedset_forum
 	 * @param phpbb_auth $auth
+	 * @param phpbb_config $config
+	 * @param phpbb_db_driver $db
 	 */
-	function __construct(phpbb_tree_nestedset_forum $nestedset_forum, phpbb_auth $auth)
+	function __construct(phpbb_tree_nestedset_forum $nestedset_forum, phpbb_auth $auth, phpbb_config $config, phpbb_db_driver $db)
 	{
 		$this->nestedset_forum = $nestedset_forum;
 		$this->auth = $auth;
+		$this->config = $config;
+		$this->db = $db;
 	}
 
 	public function get($forum_id, $user_id)
@@ -74,6 +87,33 @@ class phpbb_model_repository_forum
 			}
 		}
 		return $forums;
+	}
+
+	/**
+	 * Get a list of topics in the given forum
+	 * @param $forum_id int The forum id to get the topics from
+	 * @param $page int the page
+	 * @return array An array of topics
+	 */
+	public function get_topics($forum_id, $page)
+	{
+		$topic_limit = $this->config['topics_per_page'];
+
+		$sql = 'SELECT *
+			FROM ' . TOPICS_TABLE . '
+			WHERE forum_id = ' . (int)$forum_id . '
+			ORDER BY topic_id DESC';
+
+		$result = $this->db->sql_query_limit($sql, $topic_limit, $topic_limit * ($page - 1));
+
+		$topics = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$topics[] = new phpbb_model_entity_topic($row);
+		}
+		$this->db->sql_freeresult($result);
+
+		return $topics;
 	}
 
 	/** @TODO: Something for nestedset? */

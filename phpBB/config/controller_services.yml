@@ -7,14 +7,6 @@ services:
             - @model.repository.auth
             - @request
 
-    api.controller.topic:
-        class: phpbb_controller_api_topic
-        arguments:
-            - @model.repository.topic
-            - @config
-            - @model.repository.auth
-            - @request
-
     api.controller.auth:
         class: phpbb_controller_api_auth
         arguments:

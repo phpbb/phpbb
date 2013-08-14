@@ -16,7 +16,7 @@ api_forums_controller:
 
 api_topics_controller:
     pattern: /api/forums/{forum_id}/topics/{page}
-    defaults: { _controller: api.controller.topic:topics, page: 1 }
+    defaults: { _controller: api.controller.forum:topics, page: 1 }
     requirements:
         forum_id: \d+
         page: \d+
