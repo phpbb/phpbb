@@ -487,9 +487,6 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			);
 
 			$this->link_account_perform_link($data);
-
-			// Update token storage to store the user_id
-			$storage->set_user_id($link_data['user_id']);
 		} else {
 			$url = $service->getAuthorizationUri();
 			header('Location: ' . $url);
