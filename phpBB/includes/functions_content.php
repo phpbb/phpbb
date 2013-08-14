@@ -481,6 +481,8 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 * For parsing custom parsed text to be stored within the database.
 * This function additionally returns the uid and bitfield that needs to be stored.
 * Expects $text to be the value directly from request_var() and in it's non-parsed form
+*
+* @return array	An array of string with the errors that occurred while parsing
 */
 function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
 {
