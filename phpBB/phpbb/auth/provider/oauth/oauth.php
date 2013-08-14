@@ -391,7 +391,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		// We must have an oauth_service listed, check for it two ways
 		if (!array_key_exists('oauth_service', $link_data) || !$link_data['oauth_service'])
 		{
-			$link_data['oauth_service'] = $this->request->variable('oauth_service', false);
+			$link_data['oauth_service'] = $this->request->variable('oauth_service', '');
 
 			if (!$link_data['oauth_service'])
 			{
