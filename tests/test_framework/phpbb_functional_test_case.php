@@ -596,9 +596,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	/**
 	* Creates a topic
-	* 
+	*
 	* Be sure to login before creating
-	* 
+	*
 	* @param int $forum_id
 	* @param string $subject
 	* @param string $message
@@ -620,9 +620,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	/**
 	* Creates a post
-	* 
+	*
 	* Be sure to login before creating
-	* 
+	*
 	* @param int $forum_id
 	* @param int $topic_id
 	* @param string $subject
