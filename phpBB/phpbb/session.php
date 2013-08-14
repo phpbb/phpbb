@@ -1489,6 +1489,9 @@ class phpbb_session
 	}
 
 
+	/**
+ 	* Remove admin privileges on the current session
+	*/
 	function unset_admin()
 	{
 		global $db;
@@ -1498,6 +1501,13 @@ class phpbb_session
 		$db->sql_query($sql);
 	}
 	
+	/**
+	* Get the longest session, and visibility for $user_id
+	*
+	* @param int 	$user_id	User id
+	*
+	* @return array Array containing user_id, online_time, viewonline
+	*/
 	function get_user_online_time($user_id)
 	{
 		global $db;
@@ -1511,6 +1521,16 @@ class phpbb_session
 		return $row;
 	}
 
+	/**
+	* Map over users in list within the last $session_length using $function
+	*
+	* @param          $user_list 		-- List of users to map over
+	* @param          $session_length 	-- get users within the last number of seconds
+	* @param callable $function		    -- function used in mapping over users.
+	*										 should take a ($row) param containing user_id & $session_time
+	*
+	* @return array -- Array of function results
+	*/
 	function map_users_online($user_list, $session_length, Closure $function)
 	{
 		global $db;
@@ -1530,6 +1550,14 @@ class phpbb_session
 		return $results;
 	}
 
+	/**
+	* Map over users in list using $function
+	* @param          $user_list -- List of users to map over
+	* @param callable $function -- Fucntion used in mapping over users
+ 	*								 should take a ($row) param containing user_id & $session_time
+	*
+	* @return array
+	*/
 	function map_certain_users_with_time($user_list, Closure $function)
 	{
 		global $db;
@@ -1548,6 +1576,11 @@ class phpbb_session
 		return $results;
 	}
 
+	/**
+	* Set visibility for all current user's sessions.
+	*
+	* @param $viewonline
+	*/
 	function set_viewonline($viewonline)
 	{
 		global $db;
@@ -1560,7 +1593,6 @@ class phpbb_session
 
 	/**
 	* Delete session data
-	* Delete session, user id, users id array
 	*
 	* @param bool|string   $session_id optional if given, id to delete
 	* @param array|string 	$user_id    optional if given, only delete
@@ -1605,7 +1637,10 @@ class phpbb_session
 
 		return true;
 	}
-	
+
+	/**
+	* Completely delete all session data being used for phpbb
+	*/
 	function delete_all_sessions()
 	{
 		global $db;
@@ -1646,7 +1681,10 @@ class phpbb_session
 
 		$db->sql_query($sql);
 	}
-	
+
+	/**
+	* Re-store all session data in this session back into storage
+	*/
 	public function restore_session()
 	{
 		global $db;
@@ -1670,6 +1708,13 @@ class phpbb_session
 		$db->sql_query($sql);
 	}
 
+	/**
+	* Get newest user and session data for this $user_id
+	*
+	* @param $user_id -- user id to get user and session data for
+	*
+	* @return user and session data as an array
+	*/
 	public function get_newest_session($user_id)
 	{
 		global $db;
@@ -1684,6 +1729,13 @@ class phpbb_session
 		return $user_row;
 	}
 
+	/**
+	* Get ip address from session_id
+	*
+	* @param $session_id
+	*
+    * @return null|string -- Either the ip address or null if none found
+	*/
 	public function get_user_ip_from_session($session_id)
 	{
 		global $db;
@@ -1704,8 +1756,10 @@ class phpbb_session
 
 	/**
 	* Queries the session table to get information about online guests
+	*
 	* @param int $item_id Limits the search to the item with this id
 	* @param string $item The name of the item which is stored in the session table as session_{$item}_id
+	*
 	* @return int The number of active distinct guest sessions
 	*/
 	function obtain_guest_count($item_id = 0, $item = 'forum')
@@ -1750,6 +1804,16 @@ class phpbb_session
 		return $guests_online;
 	}
 
+	/**
+	* Get a list of all users active after online_time.
+	*
+	* @param $show_guests			Include anonymous users
+	* @param $online_time			Include sessions active in a time greater than this
+	* @param $order_by				order_by sql
+	* @param $phpbb_dispatcher
+	*
+	* @return array				List of all rows containing users that matched
+	*/
 	function get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher)
 	{
 		global $db;
@@ -1791,11 +1855,13 @@ class phpbb_session
 	}
 
 	/**
-	 * Queries the session table to get information about online users
-	 * @param int $item_id Limits the search to the item with this id
-	 * @param string $item The name of the item which is stored in the session table as session_{$item}_id
-	 * @return array An array containing the ids of online, hidden and visible users, as well as statistical info
-	 */
+	* Queries the session table to get information about online users
+	*
+	* @param int $item_id Limits the search to the item with this id
+	* @param string $item The name of the item which is stored in the session table as session_{$item}_id
+	*
+	* @return array An array containing the ids of online, hidden and visible users, as well as statistical info
+	*/
 	function obtain_users_online($item_id = 0, $item = 'forum')
 	{
 		global $db, $config;
@@ -1853,6 +1919,15 @@ class phpbb_session
 		return $online_users;
 	}
 
+	/**
+	* Map over all friends of user with user_id
+	*
+	* @param          $user_id		user_id of who we should find friends to map over
+	* @param callable $function	function to map with
+	* 									(function should take $user param containing friend of user)
+	*
+	* @return array	Array containing results of the function
+	*/
 	function map_friends_online($user_id, Closure $function)
 	{
 		global $db;
