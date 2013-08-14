@@ -405,10 +405,18 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			return 'LOGIN_LINK_ERROR_OAUTH_NO_ACCESS_TOKEN';
 		}
 
+		// Prepare the query string
+		if ($this->request->variable('mode', 'login_link'))
+		{
+			$query = 'mode=login_link';
+		} else {
+			$query = 'i=ucp_auth_link&mode=auth_link';
+		}
+		$query .= '&login_link_oauth_service=' . strtolower($link_data['oauth_service']);
+
 		// Prepare for an authentication request
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 		$scopes = $this->service_providers[$service_name]->get_auth_scope();
-		$query =  'mode=login_link&login_link_oauth_service=' . strtolower($link_data['oauth_service']);
 		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $scopes, $query);
 		$this->service_providers[$service_name]->set_external_service_provider($service);
 
@@ -462,7 +470,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		$oauth_user_ids = array();
 
-		if ($rows !== false && !empty($rows))
+		if ($rows !== false && sizeof($rows))
 		{
 			foreach ($rows as $row)
 			{
@@ -478,14 +486,13 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			if ($credentials['key'] && $credentials['secret'])
 			{
 				$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
-				$redirect_url = build_url(false) . '&login=external&oauth_service=' . $actual_name;
 
 				$block_vars[$service_name] = array(
 					'HIDDEN_FIELDS'	=> array(
+						'link'			=> (!isset($oauth_user_ids[$actual_name])),
 						'oauth_service' => $actual_name,
 					),
 
-					'REDIRECT_URL'	=> redirect($redirect_url, true),
 					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
 					'UNIQUE_ID'		=> (isset($oauth_user_ids[$actual_name])) ? $oauth_user_ids[$actual_name] : null,
 				);

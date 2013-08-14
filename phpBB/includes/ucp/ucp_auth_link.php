@@ -48,7 +48,20 @@ class ucp_auth_link
 
 			if (!sizeof($error))
 			{
+				// Any post data could be necessary for auth (un)linking
+				$link_data = $request->get_super_global(phpbb_request_interface::POST);
 
+				// The current user_id is also necessary
+				$link_data['user_id'] = $user->data['user_id'];
+
+				if ($request->variable('link', false, false, phpbb_request_interface::POST))
+				{
+					$error[] = $auth_provider->link_account($link_data);
+				}
+				else
+				{
+					$error[] = $auth_provider->unlink_account($link_data);
+				}
 			}
 		}
 
