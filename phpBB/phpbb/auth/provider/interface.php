@@ -168,6 +168,26 @@ interface phpbb_auth_provider_interface
 	public function link_account(array $link_data);
 
 	/**
+	* Returns an array of data necessary to build the ucp_auth_link page
+	*
+	* @return	array|null	If this function is not implemented on an auth
+	*						provider then it returns null. If it is implemented
+	*						it will return an array of up to four elements of
+	*						which only 'TEMPLATE_FILE'. If 'BLOCK_VAR_NAME' is
+	*						present then 'BLOCK_VARS' must also be present in
+	*						the array. The fourth element 'VARS' is also
+	*						optional. The array, with all four elements present
+	*						looks like the following:
+	*						array(
+	*							'TEMPLATE_FILE'		=> string,
+	*							'BLOCK_VAR_NAME'	=> string,
+	*							'BLOCK_VARS'		=> array(...),
+	*							'VARS'				=> array(...),
+	*						)
+	*/
+	public function get_auth_link_data();
+
+	/**
 	* Unlinks an external account from a phpBB account.
 	*
 	* @param	array	$link_data	Any data needed to unlink a phpBB account
