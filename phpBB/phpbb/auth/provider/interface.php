@@ -166,4 +166,12 @@ interface phpbb_auth_provider_interface
 	*								an external account.
 	*/
 	public function link_account(array $link_data);
+
+	/**
+	* Unlinks an external account from a phpBB account.
+	*
+	* @param	array	$link_data	Any data needed to unlink a phpBB account
+	*								from a phpbb account.
+	*/
+	public function unlink_account(array $link_data);
 }
