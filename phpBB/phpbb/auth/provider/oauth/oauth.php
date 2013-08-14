@@ -575,4 +575,29 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			'TEMPLATE_FILE'	=> 'ucp_auth_link_oauth.html',
 		);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function unlink_account(array $link_data)
+	{
+		if (!array_key_exists('oauth_service', $link_data) || !$link_data['oauth_service'])
+		{
+			return 'LOGIN_LINK_MISSING_DATA';
+		}
+
+		// Remove the link
+		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_token_account_assoc . "
+			WHERE provider = '" . $this->db->sql_escape($link_data['oauth_service']) . "'
+				AND user_id = " . (int) $this->user->data['user_id'];
+		$this->db->sql_query($sql);
+
+		// Clear all tokens belonging to the user on this servce
+		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_token_storage_table . "
+			WHERE user_id = " . (int) $this->user->data['user_id'] . "
+				AND provider = '" . $this->db->sql_escape($link_data['oauth_service']) . "'";
+		$this->db->sql_query($sql);
+
+		return;
+	}
 }
