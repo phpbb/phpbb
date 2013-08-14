@@ -408,8 +408,17 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			return 'LOGIN_ERROR_OAUTH_SERVICE_DOES_NOT_EXIST';
 		}
 
-		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
+		switch ($link_data['link_method'])
+		{
+			case 'auth_link':
+				return $this->link_account_auth_link($link_data, $service_name);
+			case 'login_link':
+				return $this->link_account_login_link($link_data, $service_name);
+		}
+	}
 
+	protected function link_account_login_link(array $link_data, $service_name)
+	{
 		// Check for an access token, they should have one
 		if (!$storage->has_access_token_by_session())
 		{
@@ -417,13 +426,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		}
 
 		// Prepare the query string
-		if ($this->request->variable('mode', 'login_link'))
-		{
-			$query = 'mode=login_link';
-		} else {
-			$query = 'i=ucp_auth_link&mode=auth_link';
-		}
-		$query .= '&login_link_oauth_service=' . strtolower($link_data['oauth_service']);
+		$query = 'mode=login_link&login_link_oauth_service=' . strtolower($link_data['oauth_service']);
 
 		// Prepare for an authentication request
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
@@ -440,12 +443,47 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			'provider'			=> strtolower($link_data['oauth_service']),
 			'oauth_provider_id'	=> $unique_id,
 		);
+
+		$this->link_account_perform_link($data);
+		// Update token storage to store the user_id
+		$storage->set_user_id($link_data['user_id']);
+	}
+
+	protected function link_account_auth_link(array $link_data, $service_name)
+	{
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
+		$query = 'i=ucp_auth_link&mode=auth_link&link=1&login_link_oauth_service=' . strtolower($link_data['oauth_service']);
+		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
+		$scopes = $this->service_providers[$service_name]->get_auth_scope();
+		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $scopes, $query);
+
+		if ($this->request->is_set('code', phpbb_request_interface::GET))
+		{
+			$this->service_providers[$service_name]->set_external_service_provider($service);
+			$unique_id = $this->service_providers[$service_name]->perform_auth_login();
+
+			// Insert into table, they will be able to log in after this
+			$data = array(
+				'user_id'			=> $link_data['user_id'],
+				'provider'			=> strtolower($link_data['oauth_service']),
+				'oauth_provider_id'	=> $unique_id,
+			);
+
+			$this->link_account_perform_link($data);
+
+			// Update token storage to store the user_id
+			$storage->set_user_id($link_data['user_id']);
+		} else {
+			$url = $service->getAuthorizationUri();
+			header('Location: ' . $url);
+		}
+	}
+
+	protected function link_account_perform_link($data)
+	{
 		$sql = 'INSERT INTO ' . $this->auth_provider_oauth_token_account_assoc . '
 			' . $this->db->sql_build_array('INSERT', $data);
 		$this->db->sql_query($sql);
-
-		// Update token storage to store the user_id
-		$storage->set_user_id($link_data['user_id']);
 	}
 
 	/**

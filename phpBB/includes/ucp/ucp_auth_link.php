@@ -39,6 +39,7 @@ class ucp_auth_link
 
 		$submit	= $request->variable('submit', false, false, phpbb_request_interface::POST);
 
+		// This path is only for primary actions
 		if (!sizeof($error) && $submit)
 		{
 			if (!check_form_key('ucp_auth_link'))
@@ -57,7 +58,7 @@ class ucp_auth_link
 				// Tell the provider that the method is auth_link not login_link
 				$link_data['link_method'] = 'auth_link';
 
-				if ($request->variable('link', null))
+				if ($request->variable('link', null, false, phpbb_request_interface::POST))
 				{
 					$error[] = $auth_provider->link_account($link_data);
 				}
@@ -66,6 +67,17 @@ class ucp_auth_link
 					$error[] = $auth_provider->unlink_account($link_data);
 				}
 			}
+		}
+
+		// In some cases, an request to an external server may be required in
+		// these cases, the GET parameter 'link' should exist and should be true
+		if ($request->variable('link', false))
+		{
+			// In this case the link data should only be populated with the
+			// link_method as the provider dictates how data is returned to it.
+			$link_data = array('link_method' => 'auth_link');
+
+			$error[] = $auth_provider->link_account($link_data);
 		}
 
 		if (isset($provider_data['VARS']))
