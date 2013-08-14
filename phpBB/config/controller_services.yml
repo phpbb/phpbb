@@ -17,3 +17,10 @@ services:
             - @request
             - @config
             - @auth
+
+    api.controller.topic:
+            class: phpbb_controller_api_topic
+            arguments:
+                - @model.repository.topic
+                - @model.repository.auth
+                - @request
