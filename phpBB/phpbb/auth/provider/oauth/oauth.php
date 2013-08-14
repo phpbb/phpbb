@@ -414,6 +414,15 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		}
 	}
 
+	/**
+	* Performs the account linking for login_link
+	*
+	* @param	array	$link_data		The same variable given to {@see phpbb_auth_provider_interface::link_account}
+	* @param	string	$service_name	The name of the service being used in
+	*									linking.
+	* @return	string|null	Returns a language constant (string) if an error is
+	*						encountered, or null on success.
+	*/
 	protected function link_account_login_link(array $link_data, $service_name)
 	{
 		// Check for an access token, they should have one
@@ -446,6 +455,15 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$storage->set_user_id($link_data['user_id']);
 	}
 
+	/**
+	* Performs the account linking for login_link
+	*
+	* @param	array	$link_data		The same variable given to {@see phpbb_auth_provider_interface::link_account}
+	* @param	string	$service_name	The name of the service being used in
+	*									linking.
+	* @return	string|null	Returns a language constant (string) if an error is
+	*						encountered, or null on success.
+	*/
 	protected function link_account_auth_link(array $link_data, $service_name)
 	{
 		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
@@ -476,7 +494,12 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		}
 	}
 
-	protected function link_account_perform_link($data)
+	/**
+	* Performs the query that inserts an account link
+	*
+	* @param	array	$data	This array is passed to db->sql_build_array
+	*/
+	protected function link_account_perform_link(array $data)
 	{
 		$sql = 'INSERT INTO ' . $this->auth_provider_oauth_token_account_assoc . '
 			' . $this->db->sql_build_array('INSERT', $data);
