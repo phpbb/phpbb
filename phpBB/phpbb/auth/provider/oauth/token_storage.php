@@ -110,12 +110,8 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 			'user_id'		=> $this->user->data['user_id'],
 			'provider'		=> $this->service_name,
 			'oauth_token'	=> serialize($token),
+			'session_id'	=> $this->user->data['session_id'],
 		);
-
-		if ($this->user->data['user_id'] == ANONYMOUS)
-		{
-			$data['session_id']	= $this->user->data['session_id'];
-		}
 
 		$sql = 'INSERT INTO ' . $this->auth_provider_oauth_table . '
 			' . $this->db->sql_build_array('INSERT', $data);
