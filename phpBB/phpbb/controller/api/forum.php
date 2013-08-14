@@ -107,4 +107,46 @@ class phpbb_controller_api_forum
 		return new Response($json, $response['status']);
 	}
 
+	/**
+	 * Controller method to return a list of topics in a given forum
+	 *
+	 * Accesible trough /api/forums/{forum_id}/topics/{page} (no {page} defaults to 1)
+	 * Method: GET
+	 *
+	 * @param int $forum_id the forum to retrieve topics from
+	 * @param int $page the page to get
+	 * @return Response an array of topics, serialized to json
+	 */
+	public function topics($forum_id, $page)
+	{
+		$auth_key = $this->request->variable('auth_key', 'guest');
+		$serial = $this->request->variable('serial', -1);
+		$hash = $this->request->variable('hash', '');
+
+		$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/forums/' .
+			$forum_id . '/' . $page), $auth_key, $serial, $hash, $forum_id);
+
+		$serializer = new Serializer(array(
+			new phpbb_model_normalizer_topic(),
+		), array(new JsonEncoder()));
+
+		if (is_int($user_id))
+		{
+			$topics = $this->forum_repository->get_topics($forum_id, $page);
+
+			$response = array(
+				'status' => 200,
+				'data' => $serializer->normalize($topics),
+			);
+		}
+		else
+		{
+			$response = $user_id;
+		}
+
+		$json = $serializer->serialize($response, 'json');
+
+		return new Response($json, $response['status']);
+	}
+
 }

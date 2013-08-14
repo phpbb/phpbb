@@ -235,10 +235,6 @@ services:
         arguments:
             - @tree.nestedset_forum
             - @auth
-
-    model.repository.topic:
-        class: phpbb_model_repository_topic
-        arguments:
             - @config
             - @dbal.conn
 
