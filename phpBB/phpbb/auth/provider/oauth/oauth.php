@@ -425,6 +425,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*/
 	protected function link_account_login_link(array $link_data, $service_name)
 	{
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
+
 		// Check for an access token, they should have one
 		if (!$storage->has_access_token_by_session())
 		{
@@ -593,10 +595,9 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$this->db->sql_query($sql);
 
 		// Clear all tokens belonging to the user on this servce
-		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_token_storage_table . "
-			WHERE user_id = " . (int) $this->user->data['user_id'] . "
-				AND provider = '" . $this->db->sql_escape($link_data['oauth_service']) . "'";
-		$this->db->sql_query($sql);
+		$service_name = 'auth.provider.oauth.service.' . strtolower($link_data['oauth_service']);
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
+		$storage->clearToken();
 
 		return;
 	}
