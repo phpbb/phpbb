@@ -73,6 +73,9 @@ class ucp_login_link
 					// Give the user_id to the data
 					$data['user_id'] = $login_result['user_row']['user_id'];
 
+					// Set the link_method to login_link
+					$data['link_method'] = 'login_link';
+
 					// The user is now logged in, attempt to link the user to the external account
 					$result = $auth_provider->link_account($data);
 

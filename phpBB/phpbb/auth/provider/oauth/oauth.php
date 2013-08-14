@@ -364,7 +364,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			return 'LOGIN_LINK_NO_DATA_PROVIDED';
 		}
 
-		if (!array_key_exists('oauth_service', $login_link_data) || !$login_link_data['oauth_service'])
+		if (!array_key_exists('oauth_service', $login_link_data) || !$login_link_data['oauth_service'] ||
+			!array_key_exists('link_method', $login_link_data) || !$login_link_data['link_method'])
 		{
 			return 'LOGIN_LINK_MISSING_DATA';
 		}
@@ -377,6 +378,16 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*/
 	public function link_account(array $link_data)
 	{
+		// Check for a valid link method (auth_link or login_link)
+		if (!array_key_exists('link_method', $link_data) ||
+			!in_array($link_data['link_method'], array(
+				'auth_link',
+				'login_link',
+			)))
+		{
+			return 'LOGIN_LINK_MISSING_DATA';
+		}
+
 		// We must have an oauth_service listed, check for it two ways
 		if (!array_key_exists('oauth_service', $link_data) || !$link_data['oauth_service'])
 		{
