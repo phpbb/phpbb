@@ -21,7 +21,7 @@ class ucp_auth_link
 
 	public function main($id, $mode)
 	{
-		global $config, $request, $template, $phpbb_container;
+		global $config, $request, $template, $phpbb_container, $user;
 
 		$error = array();
 
@@ -41,7 +41,7 @@ class ucp_auth_link
 
 		if (!sizeof($error) && $submit)
 		{
-			if (!check_form_key('ucp_reg_details'))
+			if (!check_form_key('ucp_auth_link'))
 			{
 				$error[] = 'FORM_INVALID';
 			}
