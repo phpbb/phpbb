@@ -593,4 +593,135 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		self::assertEquals($status_code, self::$client->getResponse()->getStatus());
 	}
+
+	/**
+	* Creates a topic
+	*
+	* Be sure to login before creating
+	*
+	* @param int $forum_id
+	* @param string $subject
+	* @param string $message
+	* @param array $additional_form_data Any additional form data to be sent in the request
+	* @return array post_id, topic_id
+	*/
+	public function create_topic($forum_id, $subject, $message, $additional_form_data = array())
+	{
+		$posting_url = "posting.php?mode=post&f={$forum_id}&sid={$this->sid}";
+
+		$form_data = array_merge(array(
+			'subject'		=> $subject,
+			'message'		=> $message,
+			'post'			=> true,
+		), $additional_form_data);
+
+		return self::submit_post($posting_url, 'POST_TOPIC', $form_data);
+	}
+
+	/**
+	* Creates a post
+	*
+	* Be sure to login before creating
+	*
+	* @param int $forum_id
+	* @param int $topic_id
+	* @param string $subject
+	* @param string $message
+	* @param array $additional_form_data Any additional form data to be sent in the request
+	* @return array post_id, topic_id
+	*/
+	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array())
+	{
+		$posting_url = "posting.php?mode=reply&f={$forum_id}&t={$topic_id}&sid={$this->sid}";
+
+		$form_data = array_merge(array(
+			'subject'		=> $subject,
+			'message'		=> $message,
+			'post'			=> true,
+		), $additional_form_data);
+
+		return self::submit_post($posting_url, 'POST_REPLY', $form_data);
+	}
+
+	/**
+	* Helper for submitting posts
+	*
+	* @param string $posting_url
+	* @param string $posting_contains
+	* @param array $form_data
+	* @return array post_id, topic_id
+	*/
+	protected function submit_post($posting_url, $posting_contains, $form_data)
+	{
+		$this->add_lang('posting');
+
+		$crawler = self::request('GET', $posting_url);
+		$this->assertContains($this->lang($posting_contains), $crawler->filter('html')->text());
+
+		$hidden_fields = array(
+			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
+				return array('name' => $node->getAttribute('name'), 'value' => $node->getAttribute('value'));
+			}),
+		);
+
+		foreach ($hidden_fields as $fields)
+		{
+			foreach($fields as $field)
+			{
+				$form_data[$field['name']] = $field['value'];
+			}
+		}
+
+		// Bypass time restriction that said that if the lastclick time (i.e. time when the form was opened)
+		// is not at least 2 seconds before submission, cancel the form
+		$form_data['lastclick'] = 0;
+
+		// I use a request because the form submission method does not allow you to send data that is not
+		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
+		// Instead, I send it as a request with the submit button "post" set to true.
+		$crawler = self::request('POST', $posting_url, $form_data);
+		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
+		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
+
+		return array(
+			'topic_id'	=> $this->get_parameter_from_link($url, 't'),
+			'post_id'	=> $this->get_parameter_from_link($url, 'p'),
+		);
+	}
+
+	/**
+	* Returns the requested parameter from a URL
+	*
+	* @param	string	$url
+	* @param	string	$parameter
+	* @return		string	Value of the parameter in the URL, null if not set
+	*/
+	public function get_parameter_from_link($url, $parameter)
+	{
+		if (strpos($url, '?') === false)
+		{
+			return null;
+		}
+
+		$url_parts = explode('?', $url);
+		if (isset($url_parts[1]))
+		{
+			$url_parameters = $url_parts[1];
+			if (strpos($url_parameters, '#') !== false)
+			{
+				$url_parameters = explode('#', $url_parameters);
+				$url_parameters = $url_parameters[0];
+			}
+
+			foreach (explode('&', $url_parameters) as $url_param)
+			{
+				list($param, $value) = explode('=', $url_param);
+				if ($param == $parameter)
+				{
+					return $value;
+				}
+			}
+		}
+		return null;
+	}
 }
