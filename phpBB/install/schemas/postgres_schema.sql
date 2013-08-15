@@ -199,6 +199,7 @@ CREATE TABLE phpbb_api_keys (
 	name varchar(32) DEFAULT '' NOT NULL,
 	auth_key varchar(16) DEFAULT '' NOT NULL,
 	sign_key varchar(16) DEFAULT '' NOT NULL,
+	serial INT4 DEFAULT '0' NOT NULL CHECK (serial >= 0),
 	PRIMARY KEY (key_id)
 );
 

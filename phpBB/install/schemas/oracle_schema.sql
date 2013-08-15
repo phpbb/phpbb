@@ -219,6 +219,7 @@ CREATE TABLE phpbb_api_keys (
 	name varchar2(32) DEFAULT '' ,
 	auth_key varchar2(16) DEFAULT '' ,
 	sign_key varchar2(16) DEFAULT '' ,
+	serial number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_api_keys PRIMARY KEY (key_id)
 )
 /

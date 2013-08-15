@@ -65,9 +65,10 @@ class phpbb_model_repository_auth
 	 * Verifies a request
 	 *
 	 * @param $request String The request url, for example api/forums/2....
-	 * @param $auth_key
+	 * @param string $auth_key
 	 * @param $serial
 	 * @param $hash
+	 * @param int $forum_id
 	 * @return array|int
 	 */
 	public function auth($request = null, $auth_key = 'guest', $serial = null, $hash = null, $forum_id = 0)
@@ -86,7 +87,7 @@ class phpbb_model_repository_auth
 
 		if ($auth_key != 'guest')
 		{
-			$sql = 'SELECT sign_key, user_id
+			$sql = 'SELECT sign_key, user_id, serial
 					FROM ' . API_KEYS_TABLE
 				. " WHERE auth_key = '" . $this->db->sql_escape($auth_key) . "'";
 
@@ -95,6 +96,7 @@ class phpbb_model_repository_auth
 			$row = $this->db->sql_fetchrow($result);
 			$sign_key = $row['sign_key'];
 			$user_id = (int) $row['user_id'];
+			$dbserial =  (int) $row['serial'];
 
 			if (empty($sign_key))
 			{
@@ -125,6 +127,18 @@ class phpbb_model_repository_auth
 				return $response;
 			}
 
+			if ($serial <= $dbserial)
+			{
+				$response = array(
+					'status' => 400,
+					'data' => array(
+						'error' => 'Invalid serial',
+						'valid' => false,
+					),
+				);
+				return $response;
+			}
+
 			$userdata = $this->auth->obtain_user_data($user_id);
 			$this->auth->acl($userdata);
 
@@ -144,6 +158,12 @@ class phpbb_model_repository_auth
 						return $response;
 					}
 				}
+
+				$sql = 'UPDATE ' . API_KEYS_TABLE
+					. ' SET serial = ' . $this->db->sql_escape($serial)
+					. " WHERE user_id = '" . $user_id . "'";
+				$this->db->sql_query($sql);
+
 				return $user_id;
 			}
 			else
