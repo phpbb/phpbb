@@ -81,6 +81,9 @@ class ucp_auth_link
 			$link_data = array('link_method' => 'auth_link');
 
 			$error[] = $auth_provider->link_account($link_data);
+
+			// Template data may have changed, get new data
+			$provider_data = $auth_provider->get_auth_link_data();
 		}
 
 		if (isset($provider_data['VARS']))
