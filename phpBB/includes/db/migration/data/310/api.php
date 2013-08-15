@@ -25,6 +25,7 @@ class phpbb_db_migration_data_310_api extends phpbb_db_migration
 						'name'				=> array('VCHAR', ''),
 						'auth_key'			=> array('VCHAR:16', ''),
 						'sign_key'			=> array('VCHAR:16', ''),
+						'serial'			=> array('UINT', 0),
 					),
 					'PRIMARY_KEY'			=> 'key_id',
 				),

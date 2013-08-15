@@ -97,6 +97,7 @@ CREATE TABLE phpbb_api_keys (
 	name varbinary(32) DEFAULT '' NOT NULL,
 	auth_key varbinary(16) DEFAULT '' NOT NULL,
 	sign_key varbinary(16) DEFAULT '' NOT NULL,
+	serial mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (key_id)
 );
 
