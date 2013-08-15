@@ -47,25 +47,16 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	public static function retrieveAccessToken_data()
 	{
 		return array(
-			array(null, new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param')), null),
-			array(new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') ), null, null),
-			array(null, null, 'OAuth\Common\Storage\Exception\TokenNotFoundException'),
+			array(new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param')), null),
+			array(null, 'OAuth\Common\Storage\Exception\TokenNotFoundException'),
 		);
 	}
 
 	/**
 	* @dataProvider retrieveAccessToken_data
 	*/
-	public function test_retrieveAccessToken($cache_token, $db_token, $exception)
+	public function test_retrieveAccessToken($cache_token, $exception)
 	{
-		if ($db_token)
-		{
-			$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->service_name, $this->token_storage_table);
-			$temp_storage->storeAccessToken($db_token);
-			unset($temp_storage);
-			$token = $db_token;
-		}
-
 		if ($cache_token)
 		{
 			$this->token_storage->storeAccessToken($cache_token);
@@ -76,6 +67,20 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 		$stored_token = $this->token_storage->retrieveAccessToken();
 		$this->assertEquals($token, $stored_token);
+	}
+
+	public function test_retrieveAccessToken_from_db()
+	{
+		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
+
+		// Store a token in the database
+		$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->service_name, $this->token_storage_table);
+		$temp_storage->storeAccessToken($expected_token);
+		unset($temp_storage);
+
+		// Test to see if the token can be retrieved
+		$stored_token = $this->token_storage->retrieveAccessToken();
+		$this->assertEquals($expected_token, $stored_token);
 	}
 
 	/**
