@@ -86,16 +86,8 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	/**
 	* @dataProvider retrieveAccessToken_data
 	*/
-	public function test_retrieve_access_token_by_session($cache_token, $db_token, $exception)
+	public function test_retrieve_access_token_by_session($cache_token, $exception)
 	{
-		if ($db_token)
-		{
-			$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->service_name, $this->token_storage_table);
-			$temp_storage->storeAccessToken($db_token);
-			unset($temp_storage);
-			$token = $db_token;
-		}
-
 		if ($cache_token)
 		{
 			$this->token_storage->storeAccessToken($cache_token);
@@ -108,6 +100,19 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$this->assertEquals($token, $stored_token);
 	}
 
+	public function test_retrieve_access_token_by_session_from_db()
+	{
+		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
+
+		// Store a token in the database
+		$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->service_name, $this->token_storage_table);
+		$temp_storage->storeAccessToken($expected_token);
+		unset($temp_storage);
+
+		// Test to see if the token can be retrieved
+		$stored_token = $this->token_storage->retrieve_access_token_by_session();
+		$this->assertEquals($expected_token, $stored_token);
+	}
 
 	public function test_storeAccessToken()
 	{
@@ -122,7 +127,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$row = $this->get_token_row_by_session_id($this->session_id);
 
 		// The token is serialized before stored in the database
-		$this->assertEquals(serialize($token), $row['oauth_token']);
+		$this->assertEquals($this->token_storage->json_encode_token($token), $row['oauth_token']);
 	}
 
 	public static function hasAccessToken_data()

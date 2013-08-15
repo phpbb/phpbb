@@ -16,6 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 
+use OAuth\OAuth1\Token\StdOAuth1Token;
 use OAuth\Common\Token\TokenInterface;
 use OAuth\Common\Storage\TokenStorageInterface;
 use OAuth\Common\Storage\Exception\StorageException;
@@ -109,7 +110,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 		$data = array(
 			'user_id'		=> $this->user->data['user_id'],
 			'provider'		=> $this->service_name,
-			'oauth_token'	=> serialize($token),
+			'oauth_token'	=> $this->json_encode_token($token),
 			'session_id'	=> $this->user->data['session_id'],
 		);
 
@@ -248,7 +249,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 			throw new TokenNotFoundException('Token not stored');
 		}
 
-		$token = unserialize($row['oauth_token']);
+		$token = $this->json_decode_token($row['oauth_token']);
 
 		// Ensure that the token was serialized/unserialized correctly
 		if (!($token instanceof TokenInterface))
@@ -277,5 +278,57 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 		$this->db->sql_freeresult($result);
 
 		return $row;
+	}
+
+	public function json_encode_token(TokenInterface $token)
+	{
+		$members = array(
+			'accessToken'	=> $token->getAccessToken(),
+			'endOfLife'		=> $token->getEndOfLife(),
+			'extraParams'	=> $token->getExtraParams(),
+			'refreshToken'	=> $token->getRefreshToken(),
+
+			'token_class'	=> get_class($token),
+		);
+
+		// Handle additional data needed for OAuth1 tokens
+		if ($token instanceof StdOAuth1Token)
+		{
+			$members['requestToken']		= $token->getRequestToken();
+			$members['requestTokenSecret']	= $token->getRequestTokenSecret();
+			$members['accessTokenSecret']	= $token->getAccessTokenSecret();
+		}
+
+		return json_encode($members);
+	}
+
+	public function json_decode_token($json)
+	{
+		$token_data = json_decode($json, true);
+
+		if ($token_data === null)
+		{
+			throw new TokenNotFoundException('Token not stored correctly');
+		}
+
+		$token_class	= $token_data['token_class'];
+		$access_token	= $token_data['accessToken'];
+		$refresh_token	= $token_data['refreshToken'];
+		$endOfLife		= $token_data['endOfLife'];
+		$extra_params	= $token_data['extraParams'];
+
+		// Create the token
+		$token = new $token_class($access_token, $refresh_token, TokenInterface::EOL_NEVER_EXPIRES, $extra_params);
+		$token->setEndOfLife($endOfLife);
+
+		// Handle OAuth 1.0 specific elements
+		if ($token instanceof StdOAuth1Token)
+		{
+			$token->setRequestToken($token_data['requestToken']);
+			$token->setRequestTokenSecret($token_data['requestTokenSecret']);
+			$token->setAccessTokenSecret($token_data['accessTokenSecret']);
+		}
+
+		return $token;
 	}
 }
