@@ -48,6 +48,9 @@ class ucp_login_link
 		$auth_provider = 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
 		$auth_provider = $phpbb_container->get($auth_provider);
 
+		// Set the link_method to login_link
+		$data['link_method'] = 'login_link';
+
 		// Have the authentication provider check that all necessary data is available
 		$result = $auth_provider->login_link_has_necessary_data($data);
 		if ($result !== null)
@@ -72,9 +75,6 @@ class ucp_login_link
 				{
 					// Give the user_id to the data
 					$data['user_id'] = $login_result['user_row']['user_id'];
-
-					// Set the link_method to login_link
-					$data['link_method'] = 'login_link';
 
 					// The user is now logged in, attempt to link the user to the external account
 					$result = $auth_provider->link_account($data);
