@@ -5721,3 +5721,14 @@ function phpbb_create_symfony_request(phpbb_request $request)
 
 	return new Request($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
 }
+
+/**
+ * Gets the url for the root board path
+ *
+ * @return If use of the board path url is permitted, a board url will be returned. Otherwise the root path will be returned
+ */
+function phpbb_get_root_url_path()
+{
+	global $phpbb_root_path;
+	return (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+}
