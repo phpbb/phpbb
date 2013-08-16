@@ -728,7 +728,7 @@ $sql = 'SELECT *
 $sql_ary = array(
 	'somedata'		=&gt; $my_string,
 	'otherdata'		=&gt; $an_int,
-	'moredata'		=&gt; $another_int
+	'moredata'		=&gt; $another_int,
 );
 
 $db-&gt;sql_query('INSERT INTO ' . SOME_TABLE . ' ' . $db-&gt;sql_build_array('INSERT', $sql_ary));
@@ -740,7 +740,7 @@ $db-&gt;sql_query('INSERT INTO ' . SOME_TABLE . ' ' . $db-&gt;sql_build_array('I
 $sql_ary = array(
 	'somedata'		=&gt; $my_string,
 	'otherdata'		=&gt; $an_int,
-	'moredata'		=&gt; $another_int
+	'moredata'		=&gt; $another_int,
 );
 
 $sql = 'UPDATE ' . SOME_TABLE . '
@@ -833,20 +833,20 @@ $sql_array = array(
 
 	'FROM'		=&gt; array(
 		FORUMS_WATCH_TABLE	=&gt; 'fw',
-		FORUMS_TABLE		=&gt; 'f'
+		FORUMS_TABLE		=&gt; 'f',
 	),
 
 	'LEFT_JOIN'	=&gt; array(
 		array(
 			'FROM'	=&gt; array(FORUMS_TRACK_TABLE =&gt; 'ft'),
-			'ON'	=&gt; 'ft.user_id = ' . $user-&gt;data['user_id'] . ' AND ft.forum_id = f.forum_id'
-		)
+			'ON'	=&gt; 'ft.user_id = ' . $user-&gt;data['user_id'] . ' AND ft.forum_id = f.forum_id',
+		),
 	),
 
 	'WHERE'		=&gt; 'fw.user_id = ' . $user-&gt;data['user_id'] . '
 		AND f.forum_id = fw.forum_id',
 
-	'ORDER_BY'	=&gt; 'left_id'
+	'ORDER_BY'	=&gt; 'left_id',
 );
 
 $sql = $db-&gt;sql_build_query('SELECT', $sql_array);
@@ -860,13 +860,13 @@ $sql_array = array(
 
 	'FROM'		=&gt; array(
 		FORUMS_WATCH_TABLE	=&gt; 'fw',
-		FORUMS_TABLE		=&gt; 'f'
+		FORUMS_TABLE		=&gt; 'f',
 	),
 
 	'WHERE'		=&gt; 'fw.user_id = ' . $user-&gt;data['user_id'] . '
 		AND f.forum_id = fw.forum_id',
 
-	'ORDER_BY'	=&gt; 'left_id'
+	'ORDER_BY'	=&gt; 'left_id',
 );
 
 if ($config['load_db_lastread'])
@@ -874,8 +874,8 @@ if ($config['load_db_lastread'])
 	$sql_array['LEFT_JOIN'] = array(
 		array(
 			'FROM'	=&gt; array(FORUMS_TRACK_TABLE =&gt; 'ft'),
-			'ON'	=&gt; 'ft.user_id = ' . $user-&gt;data['user_id'] . ' AND ft.forum_id = f.forum_id'
-		)
+			'ON'	=&gt; 'ft.user_id = ' . $user-&gt;data['user_id'] . ' AND ft.forum_id = f.forum_id',
+		),
 	);
 
 	$sql_array['SELECT'] .= ', ft.mark_time ';
