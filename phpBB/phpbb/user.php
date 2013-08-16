@@ -145,6 +145,9 @@ class phpbb_user extends phpbb_session
 		* 						'ext_name' => (string) [extension name],
 		* 						'lang_set' => (string|array) [language files],
 		* 					)
+		* 					For performance reasons, only load translations
+		* 					that are absolutely needed globally using this
+		* 					event. Use local events otherwise.
 		* @var	mixed	style_id			Style we are going to display
 		* @since 3.1-A1
 		*/
