@@ -536,12 +536,7 @@ switch ($mode)
 
 		if ($config['load_onlinetrack'])
 		{
-			$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
-				FROM ' . SESSIONS_TABLE . "
-				WHERE session_user_id = $user_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$row = $user->get_user_online_time($user_id);
 
 			$member['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
 			$member['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] :	0;
@@ -561,17 +556,8 @@ switch ($mode)
 
 		if ($member['user_sig'])
 		{
-			$member['user_sig'] = censor_text($member['user_sig']);
-
-			if ($member['user_sig_bbcode_bitfield'])
-			{
-				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-				$bbcode = new bbcode();
-				$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
-			}
-
-			$member['user_sig'] = bbcode_nl2br($member['user_sig']);
-			$member['user_sig'] = smiley_text($member['user_sig']);
+			$parse_flags = ($member['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+			$member['user_sig'] = generate_text_for_display($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield'], $parse_flags, true);
 		}
 
 		$poster_avatar = phpbb_get_user_avatar($member);
@@ -1516,19 +1502,13 @@ switch ($mode)
 		if (sizeof($user_list))
 		{
 			// Session time?! Session time...
-			$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
-				FROM ' . SESSIONS_TABLE . '
-				WHERE session_time >= ' . (time() - $config['session_length']) . '
-					AND ' . $db->sql_in_set('session_user_id', $user_list) . '
-				GROUP BY session_user_id';
-			$result = $db->sql_query($sql);
-
 			$session_times = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$session_times[$row['session_user_id']] = $row['session_time'];
-			}
-			$db->sql_freeresult($result);
+			$user->map_users_online(
+				$user_list,
+				$config['session_length'],
+				function($row) use ($session_times) {
+					$session_times[$row['session_user_id']] = $row['session_time'];
+			});
 
 			// Do the SQL thang
 			if ($mode == 'group')

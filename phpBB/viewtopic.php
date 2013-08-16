@@ -832,39 +832,14 @@ if (!empty($topic_data['poll_start']))
 		$poll_total += $poll_option['poll_option_total'];
 	}
 
-	if ($poll_info[0]['bbcode_bitfield'])
-	{
-		$poll_bbcode = new bbcode();
-	}
-	else
-	{
-		$poll_bbcode = false;
-	}
+	$parse_flags = ($poll_info[0]['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
 
 	for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
 	{
-		$poll_info[$i]['poll_option_text'] = censor_text($poll_info[$i]['poll_option_text']);
-
-		if ($poll_bbcode !== false)
-		{
-			$poll_bbcode->bbcode_second_pass($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield']);
-		}
-
-		$poll_info[$i]['poll_option_text'] = bbcode_nl2br($poll_info[$i]['poll_option_text']);
-		$poll_info[$i]['poll_option_text'] = smiley_text($poll_info[$i]['poll_option_text']);
+		$poll_info[$i]['poll_option_text'] = generate_text_for_display($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield'], $parse_flags, true);
 	}
 
-	$topic_data['poll_title'] = censor_text($topic_data['poll_title']);
-
-	if ($poll_bbcode !== false)
-	{
-		$poll_bbcode->bbcode_second_pass($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
-	}
-
-	$topic_data['poll_title'] = bbcode_nl2br($topic_data['poll_title']);
-	$topic_data['poll_title'] = smiley_text($topic_data['poll_title']);
-
-	unset($poll_bbcode);
+	$topic_data['poll_title'] = generate_text_for_display($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield'], $parse_flags, true);
 
 	foreach ($poll_info as $poll_option)
 	{
@@ -1279,18 +1254,21 @@ if ($config['load_cpf_viewtopic'])
 // Generate online information for user
 if ($config['load_onlinetrack'] && sizeof($id_cache))
 {
-	$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
-		FROM ' . SESSIONS_TABLE . '
-		WHERE ' . $db->sql_in_set('session_user_id', $id_cache) . '
-		GROUP BY session_user_id';
-	$result = $db->sql_query($sql);
-
 	$update_time = $config['load_online_time'] * 60;
-	while ($row = $db->sql_fetchrow($result))
+	// Create a anonymous closure function
+	// that takes an online time, and checks auth to see if user should be
+	// displayed online.
+	$user_is_online = function ($online_time, $viewonline) use ($update_time, $auth)
 	{
-		$user_cache[$row['session_user_id']]['online'] = (time() - $update_time < $row['online_time'] && (($row['viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
-	}
-	$db->sql_freeresult($result);
+		$active = time() - $update_time < $online_time;
+		$visible = $viewonline || $auth->acl_get('u_viewonline');
+		// True if should be displayed online, otherwise false
+		return $active && $visible;
+	};
+
+	$user->map_certain_users_with_time($id_cache, function ($row) use ($user_cache, $user_is_online) {
+		$user_cache[$row['session_user_id']]['online'] = $user_is_online($row['online_time'], $row['viewonline']);
+	});
 }
 unset($id_cache);
 
@@ -1406,29 +1384,13 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// End signature parsing, only if needed
 	if ($user_cache[$poster_id]['sig'] && $row['enable_sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
-		$user_cache[$poster_id]['sig'] = censor_text($user_cache[$poster_id]['sig']);
-
-		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
-		{
-			$bbcode->bbcode_second_pass($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield']);
-		}
-
-		$user_cache[$poster_id]['sig'] = bbcode_nl2br($user_cache[$poster_id]['sig']);
-		$user_cache[$poster_id]['sig'] = smiley_text($user_cache[$poster_id]['sig']);
-		$user_cache[$poster_id]['sig_parsed'] = true;
+		$parse_flags = ($user_cache[$poster_id]['sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+		$user_cache[$poster_id]['sig'] = generate_text_for_display($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield'],  $parse_flags, true);
 	}
 
 	// Parse the message and subject
-	$message = censor_text($row['post_text']);
-
-	// Second parse bbcode here
-	if ($row['bbcode_bitfield'])
-	{
-		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
-	}
-
-	$message = bbcode_nl2br($message);
-	$message = smiley_text($message);
+	$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+	$message = generate_text_for_display($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, true);
 
 	if (!empty($attachments[$row['post_id']]))
 	{

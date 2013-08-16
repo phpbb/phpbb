@@ -9,7 +9,6 @@
 
 require_once dirname(__FILE__) . '/../test_framework/phpbb_session_test_case.php';
 
-
 class phpbb_session_check_isvalid_test extends phpbb_session_test_case
 {
 	public function getDataSet()
@@ -29,21 +28,12 @@ class phpbb_session_check_isvalid_test extends phpbb_session_test_case
 		return $session;
 	}
 
-	protected function check_session_equals($expected_sessions, $message)
-	{
-		$sql = 'SELECT session_id, session_user_id
-				FROM phpbb_sessions
-				ORDER BY session_user_id';
-
-		$this->assertSqlResultEquals($expected_sessions, $sql, $message);
-	}
-
 	public function test_session_valid_session_exists()
 	{
 		$session = $this->access_with('bar_session000000000000000000000', '4', 'user agent', '127.0.0.1');
 		$session->check_cookies($this, array());
 
-		$this->check_session_equals(array(
+		$this->check_sessions_equals(array(
 				array('session_id' => 'anon_session00000000000000000000', 'session_user_id' => 1),
 				array('session_id' => 'bar_session000000000000000000000', 'session_user_id' => 4),
 			),
@@ -60,7 +50,7 @@ class phpbb_session_check_isvalid_test extends phpbb_session_test_case
 			'sid' => array($session->session_id, null),
 		));
 
-		$this->check_session_equals(array(
+		$this->check_sessions_equals(array(
 				array('session_id' => $session->session_id, 'session_user_id' => 1), // use generated SID
 				array('session_id' => 'bar_session000000000000000000000', 'session_user_id' => 4),
 			),

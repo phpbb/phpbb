@@ -11,7 +11,7 @@ class phpbb_db_migration_data_30x_3_0_7_rc2 extends phpbb_db_migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.0.7-rc2', '>=');
+		return version_compare($this->config['version'], '3.0.7-RC2', '>=');
 	}
 
 	static public function depends_on()
@@ -24,7 +24,7 @@ class phpbb_db_migration_data_30x_3_0_7_rc2 extends phpbb_db_migration
 		return array(
 			array('custom', array(array(&$this, 'update_email_hash'))),
 
-			array('config.update', array('version', '3.0.7-rc2')),
+			array('config.update', array('version', '3.0.7-RC2')),
 		);
 	}
 

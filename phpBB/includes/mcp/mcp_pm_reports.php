@@ -115,17 +115,9 @@ class mcp_pm_reports
 				}
 
 				// Process message, leave it uncensored
-				$message = $pm_info['message_text'];
+				$parse_flags = ($pm_info['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+				$message = generate_text_for_display($pm_info['message_text'], $pm_info['bbcode_uid'], $pm_info['bbcode_bitfield'], $parse_flags, false);
 
-				if ($pm_info['bbcode_bitfield'])
-				{
-					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-					$bbcode = new bbcode($pm_info['bbcode_bitfield']);
-					$bbcode->bbcode_second_pass($message, $pm_info['bbcode_uid'], $pm_info['bbcode_bitfield']);
-				}
-
-				$message = bbcode_nl2br($message);
-				$message = smiley_text($message);
 				$report['report_text'] = make_clickable(bbcode_nl2br($report['report_text']));
 
 				if ($pm_info['message_attachment'] && $auth->acl_get('u_pm_download'))

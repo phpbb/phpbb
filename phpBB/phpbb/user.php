@@ -36,6 +36,9 @@ class phpbb_user extends phpbb_session
 	const VIEWONLINE_VISIBLE = 1;
 
 
+	const VIEWONLINE_HIDDEN = 0;
+	const VIEWONLINE_VISIBLE = 1;
+
 	/**
 	* DateTimeZone object holding the timezone of the user
 	*/
