@@ -2343,7 +2343,6 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 
 	$template_array = array(
 		$tpl_prefix . 'BASE_URL'		=> $base_url,
-		'A_' . $tpl_prefix . 'BASE_URL'		=> addslashes($base_url),
 		$tpl_prefix . 'PER_PAGE'		=> $per_page,
 		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
 		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
@@ -2383,7 +2382,7 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 	$template->assign_vars(array(
 		'PER_PAGE'		=> $per_page,
 		'ON_PAGE'		=> $on_page,
-		'A_BASE_URL'	=> addslashes($base_url),
+		'BASE_URL'		=> $base_url,
 	));
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));

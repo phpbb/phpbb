@@ -25,8 +25,19 @@ function popup(url, width, height, name) {
 /**
 * Jump to page
 */
-function jumpto() {
-	var page = prompt(jump_page, on_page);
+function jumpto(item) {
+	if (!item || !item.length) {
+		item = $('a.pagination-trigger[data-lang-jump-page]');
+		if (!item.length) {
+			return;
+		}
+	}
+
+	var jump_page = item.attr('data-lang-jump-page'),
+		on_page = item.attr('data-on-page'),
+		per_page = item.attr('data-per-page'),
+		base_url = item.attr('data-base-url'),
+		page = prompt(jump_page, on_page);
 
 	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0) {
 		if (base_url.indexOf('?') === -1) {
@@ -305,6 +316,11 @@ jQuery(document).ready(apply_onkeypress_event);
 		// Reset avatar dimensions when changing URL or EMAIL
 		$('input[data-reset-on-edit]').bind('keyup', function() {
 			$(this.getAttribute('data-reset-on-edit')).val('');
+		});
+
+		// Pagination
+		$('a.pagination-trigger').click(function() {
+			jumpto($(this));
 		});
 
 		// Adjust HTML code for IE8 and older versions		
