@@ -302,6 +302,11 @@ jQuery(document).ready(apply_onkeypress_event);
 			$('#' + this.getAttribute('data-focus')).focus();
 		});
 
+		// Reset avatar dimensions when changing URL or EMAIL
+		$('input[data-reset-on-edit]').bind('keyup', function() {
+			$(this.getAttribute('data-reset-on-edit')).val('');
+		});
+
 		// Adjust HTML code for IE8 and older versions		
 		var test = document.createElement('div'),
 			oldBrowser = (typeof test.style.borderRadius == 'undefined');
