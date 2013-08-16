@@ -82,34 +82,9 @@
 				<param name="src" value="{_file.U_DOWNLOAD_LINK}" />
 				<param name="autostart" value="false" />
 				<param name="controls" value="ImageWindow" />
-				<param name="console" value="ctrls_{_file.ATTACH_ID}" />
 				<param name="prefetch" value="false" />
-				<embed name="rmstream_{_file.ATTACH_ID}" type="audio/x-pn-realaudio-plugin" src="{_file.U_DOWNLOAD_LINK}" width="0" height="0" autostart="false" controls="ImageWindow" console="ctrls_{_file.ATTACH_ID}" prefetch="false"></embed>
+				<embed name="rmstream_{_file.ATTACH_ID}" type="audio/x-pn-realaudio-plugin" src="{_file.U_DOWNLOAD_LINK}" width="200" height="50" autostart="false" controls="ImageWindow" prefetch="false"></embed>
 			</object>
-			<br />
-			<object id="ctrls_{_file.ATTACH_ID}" classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="36">
-				<param name="controls" value="ControlPanel" />
-				<param name="console" value="ctrls_{_file.ATTACH_ID}" />
-				<embed name="ctrls_{_file.ATTACH_ID}" type="audio/x-pn-realaudio-plugin" width="200" height="36" controls="ControlPanel" console="ctrls_{_file.ATTACH_ID}"></embed>
-			</object>
-
-			<script type="text/javascript">
-			// <![CDATA[
-				if (document.rmstream_{_file.ATTACH_ID}.GetClipWidth)
-				{
-					while (!document.rmstream_{_file.ATTACH_ID}.GetClipWidth())
-					{
-					}
-
-					var width = document.rmstream_{_file.ATTACH_ID}.GetClipWidth();
-					var height = document.rmstream_{_file.ATTACH_ID}.GetClipHeight();
-
-					document.rmstream_{_file.ATTACH_ID}.width = width;
-					document.rmstream_{_file.ATTACH_ID}.height = height;
-					document.ctrls_{_file.ATTACH_ID}.width = width;
-				}
-			// ]]>
-			</script>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_WM_FILE or _file.S_RM_FILE or _file.S_FLASH_FILE or _file.S_QUICKTIME_FILE -->
