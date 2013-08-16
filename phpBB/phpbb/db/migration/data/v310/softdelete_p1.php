@@ -147,7 +147,7 @@ class softdelete_p1 extends \phpbb\db\migration\migration
 	{
 		$start = (int) $start;
 		$limit = 10;
-		$i = 0;
+		$converted_forums = 0;
 
 		$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS sum_topics, SUM(topic_posts_approved) AS sum_posts_approved, SUM(topic_posts_unapproved) AS sum_posts_unapproved
 			FROM ' . $this->table_prefix . 'topics
@@ -157,7 +157,7 @@ class softdelete_p1 extends \phpbb\db\migration\migration
 		$update_forums = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$i++;
+			$converted_forums++;
 
 			$forum_id = (int) $row['forum_id'];
 			if (!isset($update_forums[$forum_id]))
@@ -185,8 +185,7 @@ class softdelete_p1 extends \phpbb\db\migration\migration
 			$this->sql_query($sql);
 		}
 
-
-		if ($i < $limit)
+		if ($converted_forums < $limit)
 		{
 			// There are no more topics, we are done
 			return;
