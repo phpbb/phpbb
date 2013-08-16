@@ -125,15 +125,20 @@ class softdelete_p1 extends \phpbb\db\migration\migration
 
 	public function update_topics_post_counts()
 	{
+		/*
+		* Using sql_case here, to avoid "BIGINT UNSIGNED value is out of range" errors.
+		* As we update all topics in 2 queries, one broken topic would stop the conversion
+		* for all topics and the surpressed error will cause the admin to not even notice it.
+		*/
 		$sql = 'UPDATE ' . $this->table_prefix . 'topics
 			SET topic_posts_approved = topic_replies + 1,
-				topic_posts_unapproved = topic_replies_real - topic_replies
+				topic_posts_unapproved = ' . $this->db->sql_case('topic_replies_real > topic_replies', 'topic_replies_real - topic_replies', '0') . '
 			WHERE topic_visibility = ' . ITEM_APPROVED;
 		$this->sql_query($sql);
 
 		$sql = 'UPDATE ' . $this->table_prefix . 'topics
 			SET topic_posts_approved = 0,
-				topic_posts_unapproved = (topic_replies_real - topic_replies) + 1
+				topic_posts_unapproved = (' . $this->db->sql_case('topic_replies_real > topic_replies', 'topic_replies_real - topic_replies', '0') . ') + 1
 			WHERE topic_visibility = ' . ITEM_UNAPPROVED;
 		$this->sql_query($sql);
 	}
@@ -141,13 +146,13 @@ class softdelete_p1 extends \phpbb\db\migration\migration
 	public function update_forums_topic_and_post_counts($start)
 	{
 		$start = (int) $start;
-		$limit = 2;
+		$limit = 10;
 		$i = 0;
 
 		$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS sum_topics, SUM(topic_posts_approved) AS sum_posts_approved, SUM(topic_posts_unapproved) AS sum_posts_unapproved
 			FROM ' . $this->table_prefix . 'topics
 			GROUP BY forum_id, topic_visibility';
-		$result = $this->db->sql_query_limit($sql, $start, $limit);
+		$result = $this->db->sql_query_limit($sql, $limit, $start);
 
 		$update_forums = array();
 		while ($row = $this->db->sql_fetchrow($result))
