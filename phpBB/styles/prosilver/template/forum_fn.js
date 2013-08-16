@@ -323,6 +323,12 @@ jQuery(document).ready(apply_onkeypress_event);
 			jumpto($(this));
 		});
 
+		// PM popup
+		$('body[data-popup-pm-url]').each(function() {
+			var url = this.getAttribute('data-popup-pm-url');
+			window.open(url.replace(/&amp;/g, '&'), '_phpbbprivmsg', 'height=225,resizable=yes,scrollbars=yes, width=400');
+		});
+
 		// Adjust HTML code for IE8 and older versions		
 		var test = document.createElement('div'),
 			oldBrowser = (typeof test.style.borderRadius == 'undefined');

@@ -24,17 +24,6 @@
 	Modified by:
 -->
 
-<script type="text/javascript">
-// <![CDATA[
-
-	<!-- IF S_USER_PM_POPUP and S_NEW_PM -->
-		var url = '{UA_POPUP_PM}';
-		window.open(url.replace(/&amp;/g, '&'), '_phpbbprivmsg', 'height=225,resizable=yes,scrollbars=yes, width=400');
-	<!-- ENDIF -->
-
-// ]]>
-</script>
-
 <link href="{T_THEME_PATH}/print.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="print" title="printonly" />
 <link href="{T_STYLESHEET_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
 <link href="{T_STYLESHEET_LANG_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
@@ -47,12 +36,16 @@
 	<link href="{T_THEME_PATH}/tweaks.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen, projection" />
 <![endif]-->
 
+<!-- IF S_USER_PM_POPUP and S_NEW_PM -->
+	{% set body_attributes %}{{ body_attributes }} data-popup-pm-url="{{ U_POPUP_PM|e('html_attr') }}"{% endset %}
+<!-- ENDIF -->
+
 <!-- EVENT overall_header_head_append -->
 
 {$STYLESHEETS}
 
 </head>
-<body id="phpbb" class="section-{SCRIPT_NAME} {S_CONTENT_DIRECTION}">
+<body id="phpbb" class="section-{SCRIPT_NAME} {S_CONTENT_DIRECTION}"{{ body_attributes }}>
 
 <div id="wrap">
 	<a id="top" accesskey="t"></a>
