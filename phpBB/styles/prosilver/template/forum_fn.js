@@ -293,20 +293,23 @@ function apply_onkeypress_event() {
 jQuery(document).ready(apply_onkeypress_event);
 
 /**
-* Adjust HTML code for IE8 and older versions
+* Run onload functions
 */
 (function($) {
 	$(document).ready(function() {
+		// Focus forms
+		$('form[data-focus]:first').each(function() {
+			$('#' + this.getAttribute('data-focus')).focus();
+		});
+
+		// Adjust HTML code for IE8 and older versions		
 		var test = document.createElement('div'),
 			oldBrowser = (typeof test.style.borderRadius == 'undefined');
 		delete test;
 
-		if (!oldBrowser) {
-			return;
+		if (oldBrowser) {
+			// Fix .linkslist.bulletin lists
+			$('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
 		}
-
-		// Fix .linkslist.bulletin lists
-		$('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
 	});
 })(jQuery);
-
