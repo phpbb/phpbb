@@ -1402,6 +1402,11 @@ class phpbb_session
 		return $row;
 	}
 
+	/**
+	 * Set visibility for all current user's sessions.
+	 *
+	 * @param $viewonline
+	 */
 	function set_viewonline($viewonline)
 	{
 		$this->db_session->set_viewonline($this->data['user_id'], $viewonline);
@@ -1461,21 +1466,6 @@ class phpbb_session
 		}
 		$db->sql_freeresult($result);
 		return $results;
-	}
-
-	/**
-	* Set visibility for all current user's sessions.
-	*
-	* @param $viewonline
-	*/
-	function set_viewonline($viewonline)
-	{
-		global $db;
-		$sql = 'UPDATE ' . SESSIONS_TABLE . '
-                SET session_viewonline = ' . (int) $viewonline . '
-                WHERE session_user_id = ' . (int) $this->data['user_id'];
-		$db->sql_query($sql);
-		$this->data['session_viewonline'] = $viewonline;
 	}
 
 	/**
