@@ -1,6 +1,4 @@
-					{% set l_jump_page %}{L_JUMP_PAGE}{L_COLON}{% endset %}
-
-					<a href="#" class="pagination-trigger" title="{L_JUMP_TO_PAGE}" data-lang-jump-page="{{ l_jump_page|e('html_attr') }}" data-on-page="{ON_PAGE}" data-per-page="{PER_PAGE}" data-base-url="{{ BASE_URL|e('html_attr') }}">{{ PAGE_NUMBER }}</a> &bull;
+					<a href="#" class="pagination-trigger" title="{L_JUMP_TO_PAGE}" data-lang-jump-page="{L_JUMP_PAGE|e('html_attr')}{L_COLON}" data-on-page="{ON_PAGE}" data-per-page="{PER_PAGE}" data-base-url="{BASE_URL|e('html_attr')}">{PAGE_NUMBER}</a> &bull;
 					<ul>
 					<!-- BEGIN pagination -->
 						<!-- IF pagination.S_IS_PREV -->

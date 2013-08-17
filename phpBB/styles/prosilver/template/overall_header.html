@@ -37,7 +37,7 @@
 <![endif]-->
 
 <!-- IF S_USER_PM_POPUP and S_NEW_PM -->
-	{% set body_attributes %}{{ body_attributes }} data-popup-pm-url="{{ U_POPUP_PM|e('html_attr') }}"{% endset %}
+	{% set body_attributes %}{{ body_attributes }} data-popup-pm-url="{U_POPUP_PM|e('html_attr')}"{% endset %}
 <!-- ENDIF -->
 
 <!-- EVENT overall_header_head_append -->

@@ -23,7 +23,7 @@
 <script type="text/javascript">
 // <![CDATA[
 <!-- IF S_USER_PM_POPUP and S_NEW_PM -->
-	popup('{{ U_POPUP_PM|e('js') }}', 400, 225, '_phpbbprivmsg');
+	popup('{U_POPUP_PM|e('js')}', 400, 225, '_phpbbprivmsg');
 <!-- ENDIF -->
 
 function popup(url, width, height, name)
@@ -41,7 +41,7 @@ function jumpto()
 {
 	var page = prompt('{LA_JUMP_PAGE}{L_COLON}', '{ON_PAGE}');
 	var per_page = '{PER_PAGE}';
-	var base_url = '{{ BASE_URL|e('js') }}';
+	var base_url = '{BASE_URL|e('js')}';
 
 	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0)
 	{
