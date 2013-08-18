@@ -296,7 +296,7 @@ p.topicdetails {
 	color: green;
 }
 
-.offline, .error {
+.offline, .error, .inactive {
 	color: red;
 }
 
