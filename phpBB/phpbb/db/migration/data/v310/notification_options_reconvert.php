@@ -19,21 +19,21 @@ class notification_options_reconvert extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
+			array('custom', array(array($this, 'purge_notifications'))),
 			array('custom', array(array($this, 'convert_notifications'))),
 		);
+	}
+
+	public function purge_notifications()
+	{
+		$sql = 'DELETE FROM ' . $insert_table;
+		$this->sql_query($sql);
 	}
 
 	public function convert_notifications($start)
 	{
 		$insert_table = $this->table_prefix . 'user_notifications';
 		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $insert_table);
-
-		$start = (int) $start;
-		if ($start == 0)
-		{
-			$sql = 'DELETE FROM ' . $insert_table;
-			$this->db->sql_query($sql);
-		}
 
 		return $this->perform_conversion($insert_buffer, $insert_table, $start);
 	}
