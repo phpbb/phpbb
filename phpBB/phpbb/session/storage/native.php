@@ -44,6 +44,26 @@ class phpbb_session_storage_native implements
 		return $this->db->sql_query($sql);
 	}
 
+	protected function map_query($sql, $function, $batch_size=null)
+	{
+		if (is_null($batch_size))
+		{
+			$result = $this->db->sql_query($sql);
+		}
+		else
+		{
+			$result = $this->db->sql_query_limit($sql, $batch_size);
+		}
+
+		$results = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$results[] = $function($row);
+		}
+		$this->db->sql_freeresult($result);
+		return $results;
+	}
+
 	function set_time_now($time_now)
 	{
 		$this->time_now = $time_now;
@@ -284,15 +304,8 @@ class phpbb_session_storage_native implements
 			FROM ' . SESSIONS_TABLE . '
 			WHERE session_time < ' . ($this->time_now - $session_length) . '
 			GROUP BY session_user_id, session_page';
-		$result = $this->db->sql_query_limit($sql, $batch_size);
 
-		$values = array();
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$values[] = $session_function($row);
-		}
-		$this->db->sql_freeresult($result);
-		return $values;
+		return $this->map_query($sql, $session_function, $batch_size);
 	}
 
 	function cleanup_long_session_keys($max_autologin_time)
@@ -597,15 +610,7 @@ class phpbb_session_storage_native implements
 				WHERE session_time >= ' . (time() - $session_length) . '
 					AND ' . $this->db->sql_in_set('session_user_id', $user_list) . '
 				GROUP BY session_user_id';
-		$result = $this->db->sql_query($sql);
-
-		$results = array();
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$results[] = $function($row);
-		}
-		$this->db->sql_freeresult($result);
-		return $results;
+		return $this->map_query($sql, $function);
 	}
 
 	/**
@@ -622,15 +627,7 @@ class phpbb_session_storage_native implements
 		FROM ' . SESSIONS_TABLE . '
 		WHERE ' . $this->db->sql_in_set('session_user_id', $user_list) . '
 		GROUP BY session_user_id';
-		$result = $this->db->sql_query($sql);
-
-		$results = array();
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$results[] = $function($row);
-		}
-		$this->db->sql_freeresult($result);
-		return $results;
+		return $this->map_query($sql, $function);
 	}
 
 	/**
@@ -669,15 +666,7 @@ class phpbb_session_storage_native implements
 		);
 
 		$sql = $this->db->sql_build_query('SELECT_DISTINCT', $sql_ary);
-		$result = $this->db->sql_query($sql);
-
-		$output = array();
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$output[] = $function($row);
-		}
-		$this->db->sql_freeresult($result);
-		return $output;
+		return $this->map_query($sql, $function);
 	}
 
 	/**
