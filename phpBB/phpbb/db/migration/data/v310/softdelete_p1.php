@@ -126,7 +126,7 @@ class softdelete_p1 extends \phpbb\db\migration\migration
 	public function update_topics_post_counts()
 	{
 		/*
-		* Using sql_case here, to avoid "BIGINT UNSIGNED value is out of range" errors.
+		* Using sql_case here to avoid "BIGINT UNSIGNED value is out of range" errors.
 		* As we update all topics in 2 queries, one broken topic would stop the conversion
 		* for all topics and the surpressed error will cause the admin to not even notice it.
 		*/
