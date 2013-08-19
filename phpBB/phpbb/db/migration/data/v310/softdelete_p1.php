@@ -151,7 +151,8 @@ class softdelete_p1 extends \phpbb\db\migration\migration
 
 		$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS sum_topics, SUM(topic_posts_approved) AS sum_posts_approved, SUM(topic_posts_unapproved) AS sum_posts_unapproved
 			FROM ' . $this->table_prefix . 'topics
-			GROUP BY forum_id, topic_visibility';
+			GROUP BY forum_id, topic_visibility
+			ORDER BY forum_id, topic_visibility';
 		$result = $this->db->sql_query_limit($sql, $limit, $start);
 
 		$update_forums = array();
