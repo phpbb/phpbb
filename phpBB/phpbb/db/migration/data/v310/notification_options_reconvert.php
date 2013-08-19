@@ -26,31 +26,31 @@ class notification_options_reconvert extends \phpbb\db\migration\migration
 
 	public function purge_notifications()
 	{
-		$sql = 'DELETE FROM ' . $insert_table;
+		$sql = 'DELETE FROM ' . $this->table_prefix . 'user_notifications';
 		$this->sql_query($sql);
 	}
 
 	public function convert_notifications($start)
 	{
-		$insert_table = $this->table_prefix . 'user_notifications';
-		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $insert_table);
+		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $this->table_prefix . 'user_notifications');
 
-		return $this->perform_conversion($insert_buffer, $insert_table, $start);
+		return $this->perform_conversion($insert_buffer, $start);
 	}
 
 	/**
 	* Perform the conversion (separate for testability)
 	*
-	* @param \phpbb\db\sql_insert_buffer $insert_buffer
-	* @param string $insert_table
+	* @param \phpbb\db\sql_insert_buffer		$insert_buffer
+	* @param int			$start		Start of staggering step
+	* @return		mixed		int start of the next step, null if the end was reached
 	*/
-	public function perform_conversion(\phpbb\db\sql_insert_buffer $insert_buffer, $insert_table, $start)
+	public function perform_conversion(\phpbb\db\sql_insert_buffer $insert_buffer, $start)
 	{
 		$limit = 250;
 		$converted_users = 0;
 
 		$sql = 'SELECT user_id, user_notify_type, user_notify_pm
-			FROM ' . USERS_TABLE . '
+			FROM ' . $this->table_prefix . 'users
 			ORDER BY user_id';
 		$result = $this->db->sql_query_limit($sql, $limit, $start);
 
