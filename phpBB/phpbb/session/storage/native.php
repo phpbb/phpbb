@@ -33,7 +33,7 @@ class phpbb_session_storage_native implements
 
 	protected function query($sql)
 	{
-		$result = $this->db->sql_query($sql);
+		$result = $this->db->sql_query_limit($sql, 1);
 		$data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 		return $data;
@@ -42,6 +42,18 @@ class phpbb_session_storage_native implements
 	protected function update_query($sql)
 	{
 		return $this->db->sql_query($sql);
+	}
+
+	protected function query_return_all($sql)
+	{
+		$result = $this->db->sql_query($sql);
+		$data = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$data[] = $row;
+		}
+		$this->db->sql_freeresult($result);
+		return $data;
 	}
 
 	protected function map_query($sql, $function, $batch_size=null)
@@ -425,10 +437,7 @@ class phpbb_session_storage_native implements
 					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
 				WHERE u.user_id = ' . $user_id . '
 				ORDER BY s.session_time DESC';
-		$result = $this->db->sql_query_limit($sql, 1);
-		$user_row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-		return $user_row;
+		return $this->query($sql);
 	}
 
 	/**
@@ -583,14 +592,8 @@ class phpbb_session_storage_native implements
 		$vars = array('sql_ary', 'show_guests');
 		extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
 
-		$result = $this->db->sql_query($this->db->sql_build_query('SELECT', $sql_ary));
-		$users = array();
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$users[] = $row;
-		}
-		$this->db->sql_freeresult($result);
-		return $users;
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
+		return $this->query_return_all($sql);
 	}
 
 	/**
@@ -682,9 +685,6 @@ class phpbb_session_storage_native implements
 			FROM ' . SESSIONS_TABLE . "
 			WHERE session_user_id = $user_id
 			GROUP BY session_user_id";
-		$result = $this->db->sql_query_limit($sql, 1);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-		return $row;
+		return $this->query($sql);
 	}
 }
