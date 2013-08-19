@@ -132,25 +132,36 @@ class phpbb_session_storage_native implements
 		);
 	}
 
-	function delete($session_id, $user_id = false)
+	function delete($session_id = false, $user_id = false)
 	{
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-				WHERE session_id = '" . $this->db->sql_escape($session_id) . "'";
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE;
 
-		if ($user_id !== false)
+		if ($session_id !== false)
 		{
-			$sql .= ' AND session_user_id = ' . (int) $user_id;
+			$sql .= " WHERE session_id = '" . $this->db->sql_escape($session_id) . "'";
+		}
+
+		if (is_numeric($user_id) || is_array($user_id))
+		{
+			$sql .= ($session_id !== false) ? ' AND ' : ' WHERE ';
+			if (is_numeric($user_id))
+			{
+				$sql .= ' session_user_id = ' . (int) $user_id;
+			}
+			else
+			{
+				$sql .= $this->db->sql_in_set('session_user_id', $user_id);
+			}
+		}
+
+		if ($session_id === false && $user_id === false)
+		{
+			throw new InvalidArgumentException("Need either session or user_id");
 		}
 
 		$result = $this->db->sql_query($sql);
 
-		if (!$result)
-		{
-			return false;
-		}
-
-		if (!$this->db->sql_affectedrows())
-		{
+		if (!$result || !$this->db->sql_affectedrows()) {
 			return false;
 		}
 
@@ -342,5 +353,349 @@ class phpbb_session_storage_native implements
 		}
 		$sql .= (sizeof($where_sql)) ? implode(' AND ', $where_sql) : '';
 		return $this->db->sql_query($sql, $cache_ttl);
+	}
+
+
+	/**
+	 * Completely delete all session data being used for phpbb
+	 */
+	function delete_all_sessions()
+	{
+		switch ($this->db->sql_layer)
+		{
+			case 'sqlite':
+			case 'firebird':
+				$this->db->sql_query("DELETE FROM " . SESSIONS_TABLE);
+				break;
+
+			default:
+				$this->db->sql_query("TRUNCATE TABLE " . SESSIONS_TABLE);
+				break;
+		}
+	}
+
+	/**
+	 * Get ip address from session_id
+	 *
+	 * @param $session_id
+	 *
+	 * @return null|string -- Either the ip address or null if none found
+	 */
+	public function get_user_ip_from_session($session_id)
+	{
+		$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
+		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
+		WHERE s.session_id = '" . $this->db->sql_escape($session_id) . "'
+			AND	u.user_id = s.session_user_id";
+		$result = $this->db->sql_query($sql);
+
+		$output = null;
+		if ($current_user = $this->db->sql_fetchrow($result))
+		{
+			$output = $current_user['session_ip'];
+		}
+		$this->db->sql_freeresult($result);
+		return $output;
+	}
+
+	/**
+	 * Get newest user and session data for this $user_id
+	 *
+	 * @param $user_id -- user id to get user and session data for
+	 *
+	 * @return user and session data as an array
+	 */
+	public function get_newest_session($user_id)
+	{
+		$sql = 'SELECT u.*, s.*
+				FROM ' . USERS_TABLE . ' u
+					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
+				WHERE u.user_id = ' . $user_id . '
+				ORDER BY s.session_time DESC';
+		$result = $this->db->sql_query_limit($sql, 1);
+		$user_row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+		return $user_row;
+	}
+
+	/**
+	 * Queries the session table to get information about online users
+	 *
+	 * @param int    $item_id Limits the search to the item with this id
+	 * @param string $item    The name of the item which is stored in the session table as session_{$item}_id
+	 *
+	 * @return array An array containing the ids of online, hidden and visible users, as well as statistical info
+	 */
+	function obtain_users_online($item_id = 0, $item = 'forum')
+	{
+		global $config;
+
+		$reading_sql = '';
+		if ($item_id !== 0)
+		{
+			$reading_sql = ' AND s.session_' . $item . '_id = ' . (int) $item_id;
+		}
+
+		$online_users = array(
+			'online_users'			=> array(),
+			'hidden_users'			=> array(),
+			'total_online'			=> 0,
+			'visible_online'		=> 0,
+			'hidden_online'			=> 0,
+			'guests_online'			=> 0,
+		);
+
+		if ($config['load_online_guests'])
+		{
+			$online_users['guests_online'] = obtain_guest_count($item_id, $item);
+		}
+
+		// a little discrete magic to cache this for 30 seconds
+		$time = (time() - (intval($config['load_online_time']) * 60));
+
+		$sql = 'SELECT s.session_user_id, s.session_ip, s.session_viewonline
+		FROM ' . SESSIONS_TABLE . ' s
+		WHERE s.session_time >= ' . ($time - ((int) ($time % 30))) .
+			$reading_sql .
+			' AND s.session_user_id <> ' . ANONYMOUS;
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			// Skip multiple sessions for one user
+			if (!isset($online_users['online_users'][$row['session_user_id']]))
+			{
+				$online_users['online_users'][$row['session_user_id']] = (int) $row['session_user_id'];
+				if ($row['session_viewonline'])
+				{
+					$online_users['visible_online']++;
+				}
+				else
+				{
+					$online_users['hidden_users'][$row['session_user_id']] = (int) $row['session_user_id'];
+					$online_users['hidden_online']++;
+				}
+			}
+		}
+		$online_users['total_online'] = $online_users['guests_online'] + $online_users['visible_online'] + $online_users['hidden_online'];
+		$this->db->sql_freeresult($result);
+
+		return $online_users;
+	}
+
+	/**
+	 * Queries the session table to get information about online guests
+	 *
+	 * @param int    $item_id Limits the search to the item with this id
+	 * @param string $item    The name of the item which is stored in the session table as session_{$item}_id
+	 *
+	 * @return int The number of active distinct guest sessions
+	 */
+	function obtain_guest_count($item_id = 0, $item = 'forum')
+	{
+		global $config;
+		if ($item_id)
+		{
+			$reading_sql = ' AND s.session_' . $item . '_id = ' . (int) $item_id;
+		}
+		else
+		{
+			$reading_sql = '';
+		}
+		$time = (time() - (intval($config['load_online_time']) * 60));
+
+		// Get number of online guests
+
+		if ($this->db->sql_layer === 'sqlite')
+		{
+			$sql = 'SELECT COUNT(session_ip) as num_guests
+			FROM (
+				SELECT DISTINCT s.session_ip
+				FROM ' . SESSIONS_TABLE . ' s
+				WHERE s.session_user_id = ' . ANONYMOUS . '
+					AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
+				$reading_sql .
+				')';
+		}
+		else
+		{
+			$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
+			FROM ' . SESSIONS_TABLE . ' s
+			WHERE s.session_user_id = ' . ANONYMOUS . '
+				AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
+				$reading_sql;
+		}
+		$result = $this->db->sql_query($sql);
+		$guests_online = (int) $this->db->sql_fetchfield('num_guests');
+		$this->db->sql_freeresult($result);
+
+		return $guests_online;
+	}
+
+	/**
+	 * Get a list of all users active after online_time.
+	 *
+	 * @param $show_guests             Include anonymous users
+	 * @param $online_time             Include sessions active in a time greater than this
+	 * @param $order_by                order_by sql
+	 * @param $phpbb_dispatcher
+	 *
+	 * @return array                List of all rows containing users that matched
+	 */
+	function get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher)
+	{
+		$sql_ary = array(
+			'SELECT'	=> '
+				u.user_id,
+				u.username,
+				u.username_clean,
+				u.user_type,
+				u.user_colour,
+				s.session_id,
+				s.session_time,
+				s.session_page,
+				s.session_ip,
+				s.session_browser,
+				s.session_viewonline,
+				s.session_forum_id',
+			'FROM'		=> array(
+				USERS_TABLE		=> 'u',
+				SESSIONS_TABLE	=> 's',
+			),
+			'WHERE'		=> 'u.user_id = s.session_user_id
+			AND s.session_time >= ' . $online_time .
+			((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : ''),
+			'ORDER_BY'	=> $order_by,
+		);
+		$vars = array('sql_ary', 'show_guests');
+		extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
+
+		$result = $this->db->sql_query($this->db->sql_build_query('SELECT', $sql_ary));
+		$users = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$users[] = $row;
+		}
+		$this->db->sql_freeresult($result);
+		return $users;
+	}
+
+	/**
+	 * Map over users in list within the last $session_length using $function
+	 *
+	 * @param          $user_list              -- List of users to map over
+	 * @param          $session_length         -- get users within the last number of seconds
+	 * @param callable $function               -- function used in mapping over users.
+	 *                                         should take a ($row) param containing user_id & $session_time
+	 *
+	 * @return array -- Array of function results
+	 */
+	function map_users_online($user_list, $session_length, Closure $function)
+	{
+		$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
+				FROM ' . SESSIONS_TABLE . '
+				WHERE session_time >= ' . (time() - $session_length) . '
+					AND ' . $this->db->sql_in_set('session_user_id', $user_list) . '
+				GROUP BY session_user_id';
+		$result = $this->db->sql_query($sql);
+
+		$results = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$results[] = $function($row);
+		}
+		$this->db->sql_freeresult($result);
+		return $results;
+	}
+
+	/**
+	 * Map over users in list using $function
+	 * @param          $user_list      -- List of users to map over
+	 * @param callable $function       -- Function used in mapping over users
+	 *                                 should take a ($row) param containing user_id & $session_time
+	 *
+	 * @return array
+	 */
+	function map_certain_users_with_time($user_list, Closure $function)
+	{
+		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
+		FROM ' . SESSIONS_TABLE . '
+		WHERE ' . $this->db->sql_in_set('session_user_id', $user_list) . '
+		GROUP BY session_user_id';
+		$result = $this->db->sql_query($sql);
+
+		$results = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$results[] = $function($row);
+		}
+		$this->db->sql_freeresult($result);
+		return $results;
+	}
+
+	/**
+	 * Map over all friends of user with user_id
+	 *
+	 * @param          $user_id        user_id of who we should find friends to map over
+	 * @param callable $function       function to map with
+	 *                                    (function should take $user param containing friend of user)
+	 *
+	 * @return array    Array containing results of the function
+	 */
+	function map_friends_online($user_id, Closure $function)
+	{
+		$sql_ary = array(
+			'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
+
+			'FROM'		=> array(
+				USERS_TABLE		=> 'u',
+				ZEBRA_TABLE		=> 'z',
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(SESSIONS_TABLE => 's'),
+					'ON'	=> 's.session_user_id = z.zebra_id',
+				),
+			),
+
+			'WHERE'		=> 'z.user_id = ' . $user_id . '
+			AND z.friend = 1
+			AND u.user_id = z.zebra_id',
+
+			'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username_clean, u.user_colour, u.username',
+
+			'ORDER_BY'	=> 'u.username_clean ASC',
+		);
+
+		$sql = $this->db->sql_build_query('SELECT_DISTINCT', $sql_ary);
+		$result = $this->db->sql_query($sql);
+
+		$output = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$output[] = $function($row);
+		}
+		$this->db->sql_freeresult($result);
+		return $output;
+	}
+
+	/**
+	 * Get the longest session, and visibility for $user_id
+	 *
+	 * @param int $user_id    User id
+	 *
+	 * @return array Array containing user_id, online_time, viewonline
+	 */
+	function get_user_online_time($user_id)
+	{
+		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
+			FROM ' . SESSIONS_TABLE . "
+			WHERE session_user_id = $user_id
+			GROUP BY session_user_id";
+		$result = $this->db->sql_query_limit($sql, 1);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+		return $row;
 	}
 }

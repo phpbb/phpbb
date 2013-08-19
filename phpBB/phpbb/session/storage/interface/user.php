@@ -46,4 +46,15 @@ interface phpbb_session_storage_interface_user
 	 * @return null
 	 */
 	function update_form_salt($salt, $user_id);
+
+	/**
+	 * Map over all friends of user with user_id
+	 *
+	 * @param          $user_id		user_id of who we should find friends to map over
+	 * @param callable $function	function to map with
+	 * 									(function should take $user param containing friend of user)
+	 *
+	 * @return array	Array containing results of the function
+	 */
+	function map_friends_online($user_id, Closure $function);
 }

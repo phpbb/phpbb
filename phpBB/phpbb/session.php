@@ -1373,7 +1373,6 @@ class phpbb_session
 		return true;
 	}
 
-
 	/**
  	* Remove admin privileges on the current session
 	*/
@@ -1382,189 +1381,52 @@ class phpbb_session
 		$this->db_session->unset_admin($this->session_id);
 	}
 	
-	/**
-	* Get the longest session, and visibility for $user_id
-	*
-	* @param int 	$user_id	User id
-	*
-	* @return array Array containing user_id, online_time, viewonline
-	*/
 	function get_user_online_time($user_id)
 	{
-		global $db;
-		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
-			FROM ' . SESSIONS_TABLE . "
-			WHERE session_user_id = $user_id
-			GROUP BY session_user_id";
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		return $row;
+		return $this->db_session->get_user_online_time($user_id);
 	}
 
-	/**
-	 * Set visibility for all current user's sessions.
-	 *
-	 * @param $viewonline
-	 */
 	function set_viewonline($viewonline)
 	{
 		$this->db_session->set_viewonline($this->data['user_id'], $viewonline);
 		$this->data['session_viewonline'] = $viewonline;
 	}
 
-	/**
-	* Map over users in list within the last $session_length using $function
-	*
-	* @param          $user_list 		-- List of users to map over
-	* @param          $session_length 	-- get users within the last number of seconds
-	* @param callable $function		    -- function used in mapping over users.
-	*										 should take a ($row) param containing user_id & $session_time
-	*
-	* @return array -- Array of function results
-	*/
 	function map_users_online($user_list, $session_length, Closure $function)
 	{
-		global $db;
-		$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
-				FROM ' . SESSIONS_TABLE . '
-				WHERE session_time >= ' . (time() - $session_length) . '
-					AND ' . $db->sql_in_set('session_user_id', $user_list) . '
-				GROUP BY session_user_id';
-		$result = $db->sql_query($sql);
-
-		$results = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$results[] = $function($row);
-		}
-		$db->sql_freeresult($result);
-		return $results;
+		return $this->db_session->map_users_online($user_list, $session_length, $function);
 	}
 
-	/**
-	* Map over users in list using $function
-	* @param          $user_list -- List of users to map over
-	* @param callable $function -- Fucntion used in mapping over users
- 	*								 should take a ($row) param containing user_id & $session_time
-	*
-	* @return array
-	*/
 	function map_certain_users_with_time($user_list, Closure $function)
 	{
-		global $db;
-		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
-		FROM ' . SESSIONS_TABLE . '
-		WHERE ' . $db->sql_in_set('session_user_id', $user_list) . '
-		GROUP BY session_user_id';
-		$result = $db->sql_query($sql);
-
-		$results = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$results[] = $function($row);
-		}
-		$db->sql_freeresult($result);
-		return $results;
+		return $this->db_session->map_certain_users_with_time($user_list, $function);
 	}
 
-	/**
-	* Delete session data
-	*
-	* @param bool|string   $session_id optional if given, id to delete
-	* @param array|string 	$user_id    optional if given, only delete
-	* 											this or these user's sessions
-	*
-	* @throws InvalidArgumentException Thrown if neither args are given
-	* @return bool True if rows were deleted
-	*/
 	function delete_session($session_id = false, $user_id = false)
 	{
-		global $db;
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE;
-
-		if ($session_id !== false)
-		{
-			$sql .= " WHERE session_id = '" . $db->sql_escape($session_id) . "'";
-		}
-
-		if ($user_id !== false)
-		{
-			$sql .= ($session_id !== false) ? ' AND ' : ' WHERE ';
-			if (is_numeric($user_id))
-			{
-				$sql .= ' session_user_id = ' . (int) $user_id;
-			}
-			else
-			{
-				$sql .= $db->sql_in_set('session_user_id', $user_id);
-			}
-		}
-
-		if ($session_id === false && $user_id === false)
-		{
-			throw new InvalidArgumentException("Need either session or user_id");
-		}
-
-		$result = $db->sql_query($sql);
-
-		if (!$result || !$db->sql_affectedrows()) {
-			return false;
-		}
-
-		return true;
+		return $this->db_session->delete($session_id, $user_id);
 	}
 
-	/**
-	* Completely delete all session data being used for phpbb
-	*/
 	function delete_all_sessions()
 	{
-		global $db;
-		switch ($db->sql_layer)
-		{
-			case 'sqlite':
-			case 'firebird':
-				$db->sql_query("DELETE FROM " . SESSIONS_TABLE);
-				break;
-
-			default:
-				$db->sql_query("TRUNCATE TABLE " . SESSIONS_TABLE);
-				break;
-		}
+		$this->db_session->delete_all_sessions();
 	}
 
-	/**
-	* Update the session data
-	*
-	* @param array $session_data associative array of session keys to be updated
-	* @param string $session_id optional session_id, defaults to current user's session_id
-	* @param string $user_id optional if given, update all user's sessions
-	*/
-	public function update_session($session_data, $session_id = null, $user_id = null)
+	function update_session($session_data, $session_id = null, $user_id = null)
 	{
-		global $db;
-
-		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $session_data);
 		if (is_null($session_id) && !is_null($user_id))
 		{
-			$sql .= ' WHERE session_user_id = ' . $db->sql_escape($user_id) ;
+			$session_id = $this->db_session->get_newest_session($user_id);
+			$this->db_session->update($session_id, $session_data);
 		}
 		else
 		{
-			$session_id = ($session_id) ? $session_id : $this->session_id;
-			$sql .= " WHERE session_id = '" . $db->sql_escape($session_id) . "'";
+			$this->db_session->update($session_id, $session_data);
 		}
-
-		$db->sql_query($sql);
 	}
 
-	/**
-	* Re-store all session data in this session back into storage
-	*/
-	public function restore_session()
+	function restore_session()
 	{
-		global $db;
 		$reinsert_ary = array(
 			'session_id'			=> (string) $this->session_id,
 			'session_page'			=> (string) substr($this->page['page'], 0, 199),
@@ -1581,266 +1443,37 @@ class phpbb_session
 			'session_viewonline'	=> (int) $this->data['session_viewonline'],
 		);
 
-		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $reinsert_ary);
-		$db->sql_query($sql);
+		$this->db_session->update($reinsert_ary['session_id'], $reinsert_ary);
 	}
 
-	/**
-	* Get newest user and session data for this $user_id
-	*
-	* @param $user_id -- user id to get user and session data for
-	*
-	* @return user and session data as an array
-	*/
-	public function get_newest_session($user_id)
+	function get_newest_session($user_id)
 	{
-		global $db;
-		$sql = 'SELECT u.*, s.*
-				FROM ' . USERS_TABLE . ' u
-					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
-				WHERE u.user_id = ' . $user_id . '
-				ORDER BY s.session_time DESC';
-		$result = $db->sql_query_limit($sql, 1);
-		$user_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		return $user_row;
+		return $this->db_session->get_newest_session($user_id);
 	}
 
-	/**
-	* Get ip address from session_id
-	*
-	* @param $session_id
-	*
-    * @return null|string -- Either the ip address or null if none found
-	*/
-	public function get_user_ip_from_session($session_id)
+	function get_user_ip_from_session($session_id)
 	{
-		global $db;
-		$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
-		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
-		WHERE s.session_id = '" . $db->sql_escape($session_id) . "'
-			AND	u.user_id = s.session_user_id";
-		$result = $db->sql_query($sql);
-
-		$output = null;
-		if ($current_user = $db->sql_fetchrow($result))
-		{
-			$output = $current_user['session_ip'];
-		}
-		$db->sql_freeresult($result);
-		return $output;
+		return $this->db_session->get_user_ip_from_session($session_id);
 	}
 
-	/**
-	* Queries the session table to get information about online guests
-	*
-	* @param int $item_id Limits the search to the item with this id
-	* @param string $item The name of the item which is stored in the session table as session_{$item}_id
-	*
-	* @return int The number of active distinct guest sessions
-	*/
 	function obtain_guest_count($item_id = 0, $item = 'forum')
 	{
-		global $db, $config;
-
-		if ($item_id)
-		{
-			$reading_sql = ' AND s.session_' . $item . '_id = ' . (int) $item_id;
-		}
-		else
-		{
-			$reading_sql = '';
-		}
-		$time = (time() - (intval($config['load_online_time']) * 60));
-
-		// Get number of online guests
-
-		if ($db->sql_layer === 'sqlite')
-		{
-			$sql = 'SELECT COUNT(session_ip) as num_guests
-			FROM (
-				SELECT DISTINCT s.session_ip
-				FROM ' . SESSIONS_TABLE . ' s
-				WHERE s.session_user_id = ' . ANONYMOUS . '
-					AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
-				$reading_sql .
-				')';
-		}
-		else
-		{
-			$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
-			FROM ' . SESSIONS_TABLE . ' s
-			WHERE s.session_user_id = ' . ANONYMOUS . '
-				AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
-				$reading_sql;
-		}
-		$result = $db->sql_query($sql);
-		$guests_online = (int) $db->sql_fetchfield('num_guests');
-		$db->sql_freeresult($result);
-
-		return $guests_online;
+		return $this->db_session->obtain_guest_count($item_id, $item);
 	}
 
-	/**
-	* Get a list of all users active after online_time.
-	*
-	* @param $show_guests			Include anonymous users
-	* @param $online_time			Include sessions active in a time greater than this
-	* @param $order_by				order_by sql
-	* @param $phpbb_dispatcher
-	*
-	* @return array				List of all rows containing users that matched
-	*/
 	function get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher)
 	{
-		global $db;
-
-		$sql_ary = array(
-			'SELECT'	=> '
-				u.user_id,
-				u.username,
-				u.username_clean,
-				u.user_type,
-				u.user_colour,
-				s.session_id,
-				s.session_time,
-				s.session_page,
-				s.session_ip,
-				s.session_browser,
-				s.session_viewonline,
-				s.session_forum_id',
-			'FROM'		=> array(
-				USERS_TABLE		=> 'u',
-				SESSIONS_TABLE	=> 's',
-			),
-			'WHERE'		=> 'u.user_id = s.session_user_id
-			AND s.session_time >= ' . $online_time .
-			((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : ''),
-			'ORDER_BY'	=> $order_by,
-		);
-		$vars = array('sql_ary', 'show_guests');
-		extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
-
-		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
-		$users = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$users[] = $row;
-		}
-		$db->sql_freeresult($result);
-		return $users;
+		return $this->db_session->get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher);
 	}
 
-	/**
-	* Queries the session table to get information about online users
-	*
-	* @param int $item_id Limits the search to the item with this id
-	* @param string $item The name of the item which is stored in the session table as session_{$item}_id
-	*
-	* @return array An array containing the ids of online, hidden and visible users, as well as statistical info
-	*/
 	function obtain_users_online($item_id = 0, $item = 'forum')
 	{
-		global $db, $config;
-
-		$reading_sql = '';
-		if ($item_id !== 0)
-		{
-			$reading_sql = ' AND s.session_' . $item . '_id = ' . (int) $item_id;
-		}
-
-		$online_users = array(
-			'online_users'			=> array(),
-			'hidden_users'			=> array(),
-			'total_online'			=> 0,
-			'visible_online'		=> 0,
-			'hidden_online'			=> 0,
-			'guests_online'			=> 0,
-		);
-
-		if ($config['load_online_guests'])
-		{
-			$online_users['guests_online'] = obtain_guest_count($item_id, $item);
-		}
-
-		// a little discrete magic to cache this for 30 seconds
-		$time = (time() - (intval($config['load_online_time']) * 60));
-
-		$sql = 'SELECT s.session_user_id, s.session_ip, s.session_viewonline
-		FROM ' . SESSIONS_TABLE . ' s
-		WHERE s.session_time >= ' . ($time - ((int) ($time % 30))) .
-			$reading_sql .
-			' AND s.session_user_id <> ' . ANONYMOUS;
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			// Skip multiple sessions for one user
-			if (!isset($online_users['online_users'][$row['session_user_id']]))
-			{
-				$online_users['online_users'][$row['session_user_id']] = (int) $row['session_user_id'];
-				if ($row['session_viewonline'])
-				{
-					$online_users['visible_online']++;
-				}
-				else
-				{
-					$online_users['hidden_users'][$row['session_user_id']] = (int) $row['session_user_id'];
-					$online_users['hidden_online']++;
-				}
-			}
-		}
-		$online_users['total_online'] = $online_users['guests_online'] + $online_users['visible_online'] + $online_users['hidden_online'];
-		$db->sql_freeresult($result);
-
-		return $online_users;
+		return $this->db_user->obtain_users_online($item_id, $item);
 	}
 
-	/**
-	* Map over all friends of user with user_id
-	*
-	* @param          $user_id		user_id of who we should find friends to map over
-	* @param callable $function	function to map with
-	* 									(function should take $user param containing friend of user)
-	*
-	* @return array	Array containing results of the function
-	*/
+
 	function map_friends_online($user_id, Closure $function)
 	{
-		global $db;
-		$sql_ary = array(
-			'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
-
-			'FROM'		=> array(
-				USERS_TABLE		=> 'u',
-				ZEBRA_TABLE		=> 'z',
-			),
-
-			'LEFT_JOIN'	=> array(
-				array(
-					'FROM'	=> array(SESSIONS_TABLE => 's'),
-					'ON'	=> 's.session_user_id = z.zebra_id',
-				),
-			),
-
-			'WHERE'		=> 'z.user_id = ' . $user_id . '
-			AND z.friend = 1
-			AND u.user_id = z.zebra_id',
-
-			'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username_clean, u.user_colour, u.username',
-
-			'ORDER_BY'	=> 'u.username_clean ASC',
-		);
-
-		$sql = $db->sql_build_query('SELECT_DISTINCT', $sql_ary);
-		$result = $db->sql_query($sql);
-
-		$output = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$output[] = $function($row);
-		}
-		$db->sql_freeresult($result);
-		return $output;
+		return $this->db_session->map_friends_online($user_id, $function);
 	}
 }
