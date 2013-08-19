@@ -11,7 +11,7 @@ class phpbb_db_migration_data_30x_3_0_5 extends phpbb_db_migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.0.5', '>=');
+		return phpbb_version_compare($this->config['version'], '3.0.5', '>=');
 	}
 
 	static public function depends_on()
