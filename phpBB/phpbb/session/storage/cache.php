@@ -16,15 +16,21 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_session_storage_storage_cache implements phpbb_session_storage_interface_session
+class phpbb_session_storage_cache implements phpbb_session_storage_interface_session
 {
+	public $time_now;
+	public $db_user;
 	protected $cache;
-	const all_caches_key = 'ALL_SESSIONS';
+	const all_sessions_key = 'ALL_SESSIONS';
 	const user_id_prefix = 'SESSION_USER_';
 
-	function __construct(phpbb_cache_driver_atomic_interface $cache_driver, $db, $time)
+	function __construct(
+		phpbb_cache_driver_atomic_interface $cache_driver,
+		phpbb_session_storage_interface_user $db_user,
+		$time)
 	{
-		parent::__construct($db, $time);
+		$this->db_user = $db_user;
+		$this->set_time_now($time);
 		$this->cache = $cache_driver;
 	}
 
@@ -79,7 +85,12 @@ class phpbb_session_storage_storage_cache implements phpbb_session_storage_inter
 		return $this->cache->get($session_id);
 	}
 
-	function delete($session_id, $user_id = false)
+	function get_user_sessions($user_id)
+	{
+		return $this->cache->get(self::user_id_prefix . $user_id);
+	}
+
+	function delete($session_id = false, $user_id = false)
 	{
 		if ($user_id !== false)
 		{
@@ -108,7 +119,7 @@ class phpbb_session_storage_storage_cache implements phpbb_session_storage_inter
 		// - Check expire date
 		// - Put in key
 		// - Use this key until it expires (every minute or w/e)
-		return $this->get_all(self::all_caches_key);
+		return $this->get_all(self::all_sessions_key);
 	}
 
 	function unset_admin($session_id)
@@ -130,7 +141,12 @@ class phpbb_session_storage_storage_cache implements phpbb_session_storage_inter
 	 */
 	function set_time_now($time_now)
 	{
-		// TODO: Implement set_time_now() method.
+		$this->time_now = $time_now;
+	}
+
+	// Compatibility with the native drivers
+	function set_db($db)
+	{
 	}
 
 	/**
@@ -138,7 +154,12 @@ class phpbb_session_storage_storage_cache implements phpbb_session_storage_inter
 	 */
 	function delete_all_sessions()
 	{
-		// TODO: Implement delete_all_sessions() method.
+		$this->cache->atomic_operation(self::all_sessions_key,
+			function ($session)
+			{
+				$this->delete($session['session_id']);
+			}
+		);
 	}
 
 	/**
@@ -150,7 +171,12 @@ class phpbb_session_storage_storage_cache implements phpbb_session_storage_inter
 	 */
 	public function get_user_ip_from_session($session_id)
 	{
-		// TODO: Implement get_user_ip_from_session() method.
+		$session = $this->get($session_id);
+		if (!is_null($session) && array_key_exists('session_ip', $session))
+		{
+			return $session['session_ip'];
+		}
+		return null;
 	}
 
 	/**
@@ -162,7 +188,26 @@ class phpbb_session_storage_storage_cache implements phpbb_session_storage_inter
 	 */
 	public function get_newest_session($user_id)
 	{
-		// TODO: Implement get_newest_session() method.
+		$sessions = $this->get_user_sessions($user_id);
+		$newest = null;
+		$newest_time = 0;
+		if (is_array($sessions))
+		{
+			foreach($sessions as $session)
+			{
+				if ($session['session_time'] > $newest_time)
+				{
+					$newest = $session;
+					$newest_time = $newest['session_time'];
+				}
+			}
+		}
+		if (is_array($newest))
+		{
+			$user_data = $this->db_user->get_user_info($user_id);
+			return array_merge($newest, $user_data);
+		}
+		return null;
 	}
 
 	/**
@@ -174,7 +219,34 @@ class phpbb_session_storage_storage_cache implements phpbb_session_storage_inter
 	 */
 	function get_user_online_time($user_id)
 	{
-		// TODO: Implement get_user_online_time() method.
+		$sessions = $this->get_user_sessions($user_id);
+		$longest = null;
+		$longest_time = 0;
+		$viewonline = true;
+		if (is_array($sessions))
+		{
+			foreach($sessions as $session)
+			{
+				$session_time = ($session['session_time'] - $session['session_start']);
+				// Set visible to false if this session or a previous session is hidden
+				$viewonline = ($session['session_viewonline'] && $viewonline);
+				if ($session_time > $longest_time)
+				{
+					$longest = $session;
+					$longest_time = $session_time;
+				}
+			}
+		}
+		if (is_array($longest))
+		{
+			return array(
+				'user_id' => $user_id,
+				'online_time' => $longest_time,
+				'viewonline' => $viewonline,
+			);
+		}
+		return null;
+
 	}
 
 	/**
@@ -329,4 +401,5 @@ class phpbb_session_storage_storage_cache implements phpbb_session_storage_inter
 	function map_recently_expired($session_length, Closure $session_function, $batch_size)
 	{
 		// TODO: Implement map_recently_expired() method.
-}}
+	}
+}
