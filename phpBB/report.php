@@ -139,9 +139,10 @@ else
 	
 	$reported_post_text 				= $report_data['message_text'];
 	$reported_post_bitfield				= $report_data['bbcode_bitfield'];
-	$reported_post_enable_bbcode		= $report_data['reported_post_enable_bbcode'];
-	$reported_post_enable_smilies		= $report_data['reported_post_enable_smilies'];
-	$reported_post_enable_magic_url		= $report_data['reported_post_enable_magic_url'];
+	$reported_post_uid					= $report_data['bbcode_uid'];
+	$reported_post_enable_bbcode		= $report_data['enable_bbcode'];
+	$reported_post_enable_smilies		= $report_data['enable_smilies'];
+	$reported_post_enable_magic_url		= $report_data['enable_magic_url'];
 }
 
 if ($config['enable_post_confirm'] && !$user->data['is_registered'])

@@ -16,9 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Interface phpbb_session_banlist_interface
+* Interface phpbb_session_storage_interface_banlist
 */
-interface phpbb_session_banlist_interface
+interface phpbb_session_storage_interface_banlist
 {
 	/** Gather a list of banned users
 	*

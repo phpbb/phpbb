@@ -223,19 +223,20 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 	{
 		$callback = function($matches)
 		{
+			$inner = $matches[2];
 			// Replace $TEST with definition.TEST
-			$matches[1] = preg_replace('#\s\$([a-zA-Z_0-9]+)#', ' definition.$1', $matches[1]);
+			$inner = preg_replace('#\s\$([a-zA-Z_0-9]+)#', ' definition.$1', $inner);
 
 			// Replace .test with test|length
-			$matches[1] = preg_replace('#\s\.([a-zA-Z_0-9\.]+)#', ' $1|length', $matches[1]);
+			$inner = preg_replace('#\s\.([a-zA-Z_0-9\.]+)#', ' $1|length', $inner);
 
-			return '<!-- IF' . $matches[1] . '-->';
+			return "<!-- {$matches[1]}IF{$inner}-->";
 		};
 
 		// Replace our "div by" with Twig's divisibleby (Twig does not like test names with spaces)
 		$code = preg_replace('# div by ([0-9]+)#', ' divisibleby($1)', $code);
 
-		return preg_replace_callback('#<!-- IF((.*)[\s][\$|\.|!]([^\s]+)(.*))-->#', $callback, $code);
+		return preg_replace_callback('#<!-- (ELSE)?IF((.*)[\s][\$|\.|!]([^\s]+)(.*))-->#', $callback, $code);
 	}
 
 	/**

@@ -33,7 +33,7 @@ class phpbb_session_testable_facade
 		$this->session_factory = $session_factory;
 	}
 
-	function extract_current_page (
+	function extract_current_page(
 		$root_path,
 		$php_self, 
 		$query_string,
@@ -48,7 +48,7 @@ class phpbb_session_testable_facade
 		return phpbb_session::extract_current_page($root_path);
 	}
 
-	function extract_current_hostname (
+	function extract_current_hostname(
 		$host,
 		$server_name_config,
 		$cookie_domain_config
@@ -75,7 +75,7 @@ class phpbb_session_testable_facade
 	 * @param request_overrides An array of overrides for the global request object
 	 * @return boolean False if the user is identified, otherwise true.
 	 */
-	function session_begin (
+	function session_begin(
 		$update_session_page = true,
 		$config_overrides = array(),
 		$request_overrides = array(),
@@ -90,7 +90,7 @@ class phpbb_session_testable_facade
 		return $session;
 	}
 
-	function session_create (
+	function session_create(
 		$user_id = false,
 		$set_admin = false,
 		$persist_login = false,

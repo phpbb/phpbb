@@ -15,8 +15,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-require_once dirname(__FILE__) . '/session/storage_cache.php';
-
 /**
 * Session class
 * @package phpBB3
@@ -35,10 +33,28 @@ class phpbb_session
 	var $time_now = 0;
 	var $update_session_page = true;
 
-	function __construct()
+	var $db_session;
+	var $db_user;
+	var $db_keys;
+	var $db_banlist;
+	var $db_cleanup;
+
+	function __construct
+	(
+		phpbb_session_storage_interface_session $db_session = null,
+		phpbb_session_storage_interface_banlist $db_banlist = null,
+		phpbb_session_storage_interface_cleanup $db_cleanup = null,
+		phpbb_session_storage_interface_user $db_user = null,
+		phpbb_session_storage_interface_keys $db_keys = null
+	)
 	{
 		global $db;
-		$this->storage = new phpbb_session_storage_storage_cache(new phpbb_cache_driver_redis(), $db, time());
+		$native_storage = new phpbb_session_storage_native($db, time());
+		$this->db_session = is_null($db_session)  ? $native_storage : $db_session;
+		$this->db_user    = is_null($db_user)     ? $native_storage : $db_user;
+		$this->db_keys 	  = is_null($db_keys)     ? $native_storage : $db_keys;
+		$this->db_banlist = is_null($db_banlist)  ? $native_storage : $db_banlist;
+		$this->db_cleanup = is_null( $db_cleanup) ? $native_storage : $db_cleanup;
 	}
 
 	/**
@@ -228,8 +244,8 @@ class phpbb_session
 		$this->host					= $this->extract_current_hostname();
 		$this->page					= $this->extract_current_page($phpbb_root_path);
 
-		$this->storage->set_time_now($this->time_now);
-		$this->storage->set_db($db);
+		$this->db_session->set_time_now($this->time_now);
+		$this->db_session->set_db($db);
 
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])
@@ -364,7 +380,7 @@ class phpbb_session
 		// if session id is set
 		if (!empty($this->session_id))
 		{
-			$this->data = $this->storage->get($this->session_id);
+			$this->data = $this->db_session->get($this->session_id);
 
 			// Did the session exist in the DB?
 			if (isset($this->data['user_id']))
@@ -590,7 +606,7 @@ class phpbb_session
 		// Else if we've been passed a user_id we'll grab data based on that
 		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && !sizeof($this->data))
 		{
-			$this->data = $this->storage->get_user_info_with_key(
+			$this->data = $this->db_keys->get_user_info_with_key(
 				$this->cookie_data['u'],
 				$this->cookie_data['k']
 			);
@@ -601,7 +617,7 @@ class phpbb_session
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = $user_id;
 
-			$this->data = $this->storage->get_user_info($this->cookie_data['u'], true);
+			$this->data = $this->db_user->get_user_info($this->cookie_data['u'], true);
 			$bot = false;
 		}
 
@@ -625,12 +641,12 @@ class phpbb_session
 
 			if (!$bot)
 			{
-				$this->data = $this->storage->get_user_info($this->cookie_data['u']);
+				$this->data = $this->db_user->get_user_info($this->cookie_data['u']);
 			}
 			else
 			{
 				// We give bots always the same session if it is not yet expired.
-				$this->data = $this->storage->get_with_user_id($bot);
+				$this->data = $this->db_session->get_with_user_id($bot);
 			}
 
 		}
@@ -710,7 +726,7 @@ class phpbb_session
 					$this->update_session($sql_ary);
 
 					// Update the last visit time
-					$this->storage->update_last_visit($this->data['session_time'], $this->data['user_id']);
+					$this->db_user->update_last_visit($this->data['session_time'], $this->data['user_id']);
 				}
 
 				$SID = '?sid=';
@@ -720,7 +736,7 @@ class phpbb_session
 			else
 			{
 				// If the ip and browser does not match make sure we only have one bot assigned to one session
-				$this->storage->delete_by_user_id($this->data['user_id']);
+				$this->db_session->delete_by_user_id($this->data['user_id']);
 			}
 		}
 
@@ -749,12 +765,12 @@ class phpbb_session
 
 		$db->sql_return_on_error(true);
 
-		if (!defined('IN_ERROR_HANDLER') && (!$this->session_id || !$this->storage->delete($this->session_id, ANONYMOUS)))
+		if (!defined('IN_ERROR_HANDLER') && (!$this->session_id || !$this->db_session->delete($this->session_id, ANONYMOUS)))
 		{
 			// Limit new sessions in 1 minute period (if required)
 			if (empty($this->data['session_time']) && $config['active_sessions'])
 			{
-				$num_sessions = $this->storage->num_active_sessions(60);
+				$num_sessions = $this->db_session->num_active_sessions(60);
 
 				if ((int) $num_sessions > (int) $config['active_sessions'])
 				{
@@ -783,7 +799,7 @@ class phpbb_session
 		$sql_ary['session_page'] = (string) substr($this->page['page'], 0, 199);
 		$sql_ary['session_forum_id'] = $this->page['forum'];
 
-		$this->storage->create($sql_ary);
+		$this->db_session->create($sql_ary);
 
 		$db->sql_return_on_error(false);
 
@@ -809,7 +825,7 @@ class phpbb_session
 			unset($cookie_expire);
 
 			$timeframe_to_search = max($config['session_length'], $config['form_token_lifetime']);
-			$num_sessions = $this->storage->num_sessions(
+			$num_sessions = $this->db_session->num_sessions(
 				$this->data['user_id'],
 				$timeframe_to_search
 			);
@@ -818,7 +834,7 @@ class phpbb_session
 			{
 				$this->data['user_form_salt'] = unique_id();
 				// Update the form key
-				$this->storage->update_form_salt($this->data['user_form_salt'], $this->data['user_id']);
+				$this->db_user->update_form_salt($this->data['user_form_salt'], $this->data['user_id']);
 			}
 		}
 		else
@@ -826,7 +842,7 @@ class phpbb_session
 			$this->data['session_time'] = $this->data['session_last_visit'] = $this->time_now;
 
 			// Update the last visit time
-			$this->storage->update_last_visit($this->data['session_time'], $this->data['user_id']);
+			$this->db_user->update_last_visit($this->data['session_time'], $this->data['user_id']);
 
 			$SID = '?sid=';
 			$_SID = '';
@@ -847,7 +863,7 @@ class phpbb_session
 	{
 		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx, $phpbb_container;
 
-		$this->storage->delete($this->session_id, $this->data['user_id']);
+		$this->db_session->delete($this->session_id, $this->data['user_id']);
 
 		// Allow connecting logout with external auth method logout
 		$method = basename(trim($config['auth_method']));
@@ -863,17 +879,17 @@ class phpbb_session
 				$this->data['session_time'] = time();
 			}
 
-			$this->storage->update_last_visit($this->data['session_time'], $this->data['user_id']);
+			$this->db_user->update_last_visit($this->data['session_time'], $this->data['user_id']);
 
 			if ($this->cookie_data['k'])
 			{
-				$this->storage->remove_session_key($this->data['user_id'], $this->cookie_data['k']);
+				$this->db_keys->remove_session_key($this->data['user_id'], $this->cookie_data['k']);
 			}
 
 			// Reset the data array
 			$this->data = array();
 
-			$this->data = $this->storage->get_user_info(ANONYMOUS);
+			$this->data = $this->db_user->get_user_info(ANONYMOUS);
 		}
 
 		$cookie_expire = $this->time_now - 31536000;
@@ -916,16 +932,17 @@ class phpbb_session
 		}
 
 		// Firstly, delete guest sessions
-		$this->storage->cleanup_guest_sessions($config['session_length']);
+		$this->db_session->cleanup_guest_sessions($config['session_length']);
 
 		// Get expired sessions, only most recent for each user
-		$del_user_ids = $this->storage->map_recently_expired($config['session_length'], function($row, $storage) {
-				$storage->update_last_visit($row['recent_time'], $row['session_page'], $row['session_user_id']);
+		$db_user = $this->db_user;
+		$del_user_ids = $this->db_session->map_recently_expired($config['session_length'], function($row) use ($db_user) {
+				$db_user->update_last_visit($row['recent_time'], $row['session_page'], $row['session_user_id']);
 				return (int) $row['session_user_id'];
 		}, $batch_size);
 
         // Delete expired sessions
-        $this->storage->cleanup_expired_sessions($del_user_ids, $config['session_length']);
+        $this->db_session->cleanup_expired_sessions($del_user_ids, $config['session_length']);
 
 		if (sizeof($del_user_ids) < $batch_size)
 		{
@@ -935,7 +952,7 @@ class phpbb_session
 
 			if ($config['max_autologin_time'])
 			{
-				$this->storage->cleanup_long_sessions($config['max_autologin_time']);
+				$this->db_keys->cleanup_long_session_keys($config['max_autologin_time']);
 			}
 
 			// only called from CRON; should be a safe workaround until the infrastructure gets going
@@ -946,7 +963,7 @@ class phpbb_session
 			$captcha_factory = new phpbb_captcha_factory();
 			$captcha_factory->garbage_collect($config['captcha_plugin']);
 
-			$this->storage->cleanup_attempt_table($config['ip_login_limit_time']);
+			$this->db_cleanup->cleanup_attempt_table($config['ip_login_limit_time']);
 		}
 
 		return;
@@ -994,7 +1011,7 @@ class phpbb_session
 		$banned = false;
 		$cache_ttl = 3600;
 
-		$result = $this->storage->banlist($user_email, $user_ips, $user_id, $cache_ttl);
+		$result = $this->db_banlist->banlist($user_email, $user_ips, $user_id, $cache_ttl);
 
 		$ban_triggered_by = 'user';
 		while ($row = $db->sql_fetchrow($result))
@@ -1259,11 +1276,11 @@ class phpbb_session
 
 		if ($key)
 		{
-			$this->storage->update_session_key($user_id, $key, $sql_ary);
+			$this->db_keys->update_session_key($user_id, $key, $sql_ary);
 		}
 		else
 		{
-			$this->storage->insert_session_key($sql_ary);
+			$this->db_keys->insert_session_key($sql_ary);
 		}
 		$this->cookie_data['k'] = $key_id;
 
@@ -1282,14 +1299,14 @@ class phpbb_session
 
 		$user_id = ($user_id === false) ? (int) $this->data['user_id'] : (int) $user_id;
 
-		$this->storage->remove_session_key($user_id);
+		$this->db_keys->remove_session_key($user_id);
 
 		// If the user is logged in, update last visit info first before deleting sessions
-		$row = $this->storage->get_newest($user_id);
+		$row = $this->db_session->get_newest($user_id);
 
 		if ($row)
 		{
-			$this->storage->update_last_visit(
+			$this->db_user->update_last_visit(
 				$row['session_time'],
 				$user_id,
 				$row['session_page']
@@ -1300,11 +1317,11 @@ class phpbb_session
 		// If it's the current user then we'll leave this session intact
 		if ($user_id === (int) $this->data['user_id'])
 		{
-			$this->storage->delete($this->session_id, $user_id);
+			$this->db_session->delete($this->session_id, $user_id);
 		}
 		else
 		{
-			$this->storage->delete_by_user_id($user_id);
+			$this->db_session->delete_by_user_id($user_id);
 		}
 
 		// We're changing the password of the current user and they have a key
@@ -1356,21 +1373,107 @@ class phpbb_session
 		return true;
 	}
 
-
+	/**
+ 	* Remove admin privileges on the current session
+	*/
 	function unset_admin()
 	{
-		$this->storage->unset_admin($this->session_id);
+		$this->db_session->unset_admin($this->session_id);
+	}
+	
+	function get_user_online_time($user_id)
+	{
+		return $this->db_session->get_user_online_time($user_id);
 	}
 
-	/**
-	* Update the session data
-	*
-	* @param array $session_data associative array of session keys to be updated
-	* @param string $session_id optional session_id, defaults to current user's session_id
-	*/
-	public function update_session($session_data, $session_id = null)
+	function set_viewonline($viewonline)
 	{
-		$session_id = ($session_id) ? $session_id : $this->session_id;
-		return $this->storage->update($session_id, $session_data);
+		$this->db_session->set_viewonline($this->data['user_id'], $viewonline);
+		$this->data['session_viewonline'] = $viewonline;
+	}
+
+	function map_users_online($user_list, $session_length, Closure $function)
+	{
+		return $this->db_session->map_users_online($user_list, $session_length, $function);
+	}
+
+	function map_certain_users_with_time($user_list, Closure $function)
+	{
+		return $this->db_session->map_certain_users_with_time($user_list, $function);
+	}
+
+	function delete_session($session_id = false, $user_id = false)
+	{
+		return $this->db_session->delete($session_id, $user_id);
+	}
+
+	function delete_all_sessions()
+	{
+		$this->db_session->delete_all_sessions();
+	}
+
+	function update_session($session_data, $session_id = null, $user_id = null)
+	{
+		if (is_null($session_id) && !is_null($user_id))
+		{
+			$session_id = $this->db_session->get_newest_session($user_id);
+			$this->db_session->update($session_id, $session_data);
+		}
+		else
+		{
+			$this->db_session->update($session_id, $session_data);
+		}
+	}
+
+	function restore_session()
+	{
+		$reinsert_ary = array(
+			'session_id'			=> (string) $this->session_id,
+			'session_page'			=> (string) substr($this->page['page'], 0, 199),
+			'session_forum_id'		=> $this->page['forum'],
+			'session_user_id'		=> (int) $this->data['user_id'],
+			'session_start'			=> (int) $this->data['session_start'],
+			'session_last_visit'	=> (int) $this->data['session_last_visit'],
+			'session_time'			=> (int) $this->time_now,
+			'session_browser'		=> (string) trim(substr($this->browser, 0, 149)),
+			'session_forwarded_for'	=> (string) $this->forwarded_for,
+			'session_ip'			=> (string) $this->ip,
+			'session_autologin'		=> (int) $this->data['session_autologin'],
+			'session_admin'			=> 1,
+			'session_viewonline'	=> (int) $this->data['session_viewonline'],
+		);
+
+		$this->db_session->update($reinsert_ary['session_id'], $reinsert_ary);
+	}
+
+	function get_newest_session($user_id)
+	{
+		return $this->db_session->get_newest_session($user_id);
+	}
+
+	function get_user_ip_from_session($session_id)
+	{
+		return $this->db_session->get_user_ip_from_session($session_id);
+	}
+
+	function obtain_guest_count($item_id = 0, $item = 'forum')
+	{
+		return $this->db_session->obtain_guest_count($item_id, $item);
+	}
+
+	function get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher)
+	{
+		return $this->db_session->get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher);
+	}
+
+	function obtain_users_online($item_id = 0, $item = 'forum')
+	{
+		return $this->db_user->obtain_users_online($item_id, $item);
+	}
+
+
+	function map_friends_online($user_id, Closure $function)
+	{
+		return $this->db_session->map_friends_online($user_id, $function);
 	}
 }

@@ -16,9 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Interface phpbb_session_user_interface
+* Interface phpbb_session_storage_interface_user
 */
-interface phpbb_session_user_interface
+interface phpbb_session_storage_interface_user
 {
 	/** Get user information from user_id
 	*
@@ -28,13 +28,6 @@ interface phpbb_session_user_interface
 	* @return mixed
 	*/
 	function get_user_info($user_id, $normal_founder_only = false);
-
-	/** Set user session visibility
-	*
-	* @param int $user_id sessions with user_id to change
-	* @param bool $viewonline true: set visible, false: set invisible
-	*/
-	function set_viewonline($user_id, $viewonline);
 
 	/** Set last active session time and page for sessions with user_id
 	 *
@@ -53,4 +46,15 @@ interface phpbb_session_user_interface
 	 * @return null
 	 */
 	function update_form_salt($salt, $user_id);
+
+	/**
+	 * Map over all friends of user with user_id
+	 *
+	 * @param          $user_id		user_id of who we should find friends to map over
+	 * @param callable $function	function to map with
+	 * 									(function should take $user param containing friend of user)
+	 *
+	 * @return array	Array containing results of the function
+	 */
+	function map_friends_online($user_id, Closure $function);
 }

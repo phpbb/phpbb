@@ -16,7 +16,8 @@ class phpbb_session_validate_referrer_test extends phpbb_session_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_empty.xml');
 	}
 
-	static function referrer_inputs() {
+	static function referrer_inputs()
+	{
 		$ex = "example.org";
 		$alt = "example.com";
 		return array(
@@ -39,8 +40,8 @@ class phpbb_session_validate_referrer_test extends phpbb_session_test_case
 		);
 	}
 
-	/** @dataProvider  referrer_inputs */
-	function test_referrer_inputs (
+	/** @dataProvider referrer_inputs */
+	function test_referrer_inputs(
 		$check_script_path,
 		$referrer,
 		$host,

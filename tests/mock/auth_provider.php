@@ -20,10 +20,10 @@ class phpbb_mock_auth_provider implements phpbb_auth_provider_interface
 	function login($username, $password)
 	{
 		return array(
-			 'status' => "",
-			 'error_msg' => "",
-			 'user_row' => "",
-			);
+			'status' => "",
+			'error_msg' => "",
+			'user_row' => "",
+		);
 	}
 
 	function autologin()
