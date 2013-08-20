@@ -63,15 +63,14 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 
 	protected function user_key($user_id)
 	{
-		return self::user_id_prefix.$user_id;
+		return self::user_id_prefix . $user_id;
 	}
 
 	function create($session_data)
 	{
-		$user_key = self::user_key($session_data['session_user_id']);
 		$id = $session_data['session_id'];
 
-		$this->add_to($user_key, $id);
+		$this->add_to($this->user_key($session_data['session_user_id']), $id);
 		$this->cache->put($id, $session_data);
 	}
 
@@ -87,7 +86,7 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 
 	function get_user_sessions($user_id)
 	{
-		return $this->cache->get(self::user_id_prefix . $user_id);
+		return $this->cache->get($this->user_key($user_id));
 	}
 
 	function delete($session_id = false, $user_id = false)
@@ -227,13 +226,13 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 		{
 			foreach($sessions as $session)
 			{
-				$session_time = ($session['session_time'] - $session['session_start']);
+				$session_length = ($session['session_time'] - $session['session_start']);
 				// Set visible to false if this session or a previous session is hidden
 				$viewonline = ($session['session_viewonline'] && $viewonline);
-				if ($session_time > $longest_time)
+				if ($session_length > $longest_time)
 				{
 					$longest = $session;
-					$longest_time = $session_time;
+					$longest_time = $session_length;
 				}
 			}
 		}
@@ -246,7 +245,6 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 			);
 		}
 		return null;
-
 	}
 
 	/**
@@ -272,7 +270,9 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 	 */
 	function obtain_guest_count($item_id = 0, $item = 'forum')
 	{
-		// TODO: Implement obtain_guest_count() method.
+		return array_sum($this->map_recently_expired(INF, function($session) {
+			return 1;
+		}, ANONYMOUS));
 	}
 
 	/**
@@ -325,7 +325,7 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 	 */
 	function get_newest($user_id)
 	{
-		// TODO: Implement get_newest() method.
+		return $this->get_newest_session($user_id);
 	}
 
 	/** Delete all session associated with user_id
@@ -334,7 +334,7 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 	 */
 	function delete_by_user_id($user_id)
 	{
-		// TODO: Implement delete_by_user_id() method.
+		$this->cleanup_expired_sessions(array($user_id), INF);
 	}
 
 	/** Return count of sessions associated with user_id within max_time
@@ -345,7 +345,9 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 	 */
 	function num_sessions($user_id, $max_time)
 	{
-		// TODO: Implement num_sessions() method.
+		return array_sum($this->map_recently_expired($max_time, function($session) {
+			return 1;
+		}, $user_id));
 	}
 
 	/** Get session & user data associated with user_id
@@ -355,7 +357,7 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 	 */
 	function get_with_user_id($user_id)
 	{
-		// TODO: Implement get_with_user_id() method.
+		return $this->get_newest_session($user_id);
 	}
 
 	/** Set user session visibility
@@ -375,7 +377,12 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 	 */
 	function cleanup_guest_sessions($session_length)
 	{
-		// TODO: Implement cleanup_guest_sessions() method.
+		$this->map_recently_expired($session_length, function ($session) {
+			if($session['user_id'] == ANONYMOUS)
+			{
+				$this->delete($session['session_id']);
+			}
+		});
 	}
 
 	/** Remove from storage all sessions older than session_length
@@ -388,18 +395,46 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 	 */
 	function cleanup_expired_sessions(array $user_ids, $session_length)
 	{
-		// TODO: Implement cleanup_expired_sessions() method.
+		foreach($user_ids as $user_id)
+		{
+			$this->map_recently_expired($session_length, function ($session) use ($user_ids) {
+				if (in_array($session['session_user_id'], $user_ids))
+				{
+					$this->delete($session['session_id']);
+				}
+			}, 99, $user_id);
+		}
 	}
 
 	/** For sessions older than length, run a function and collect results.
 	 *
-	 * @param int     $session_length   how old to search
+	 * @param int     $current_session_length   how old to search
 	 * @param Closure $session_function function to run takes $row, outputs array
 	 * @param int     $batch_size       Sql Paging size
+	 * @param int	  $user_id			(Optional) If given, only map over this users sessions
 	 * @return array an array containing the results of $session_function
 	 */
-	function map_recently_expired($session_length, Closure $session_function, $batch_size)
+	function map_recently_expired($session_length, Closure $session_function, $batch_size = 99, $user_id = false)
 	{
-		// TODO: Implement map_recently_expired() method.
+		if ($user_id === false)
+		{
+			$sessions = $this->cache->get(self::all_sessions_key);
+		}
+		else
+		{
+			$sessions = $this->get_user_sessions($user_id);
+		}
+		$results = array();
+		if (is_array($sessions)) {
+			foreach($sessions as $session)
+			{
+				$current_session_length = ($session['session_time'] - $session['session_start']);
+				if ($current_session_length > $session_length)
+				{
+					$results[] = $session_function($session);
+				}
+			}
+		}
+		return $results;
 	}
 }

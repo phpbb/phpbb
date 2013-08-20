@@ -149,11 +149,7 @@ class phpbb_session_storage_native implements
 
 	function get_newest($user_id)
 	{
-		$sql = 'SELECT *
-				FROM ' . SESSIONS_TABLE . '
-				WHERE session_user_id = ' . (int) $user_id . '
-				ORDER BY session_time DESC';
-		return $this->query($sql);
+		return $this->get_newest_session($user_id);
 	}
 
 	function delete_by_user_id($user_id)
