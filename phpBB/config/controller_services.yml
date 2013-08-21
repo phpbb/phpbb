@@ -24,3 +24,6 @@ services:
                 - @model.repository.topic
                 - @model.repository.auth
                 - @request
+                - @config
+                - %core.root_path%
+                - %core.php_ext%

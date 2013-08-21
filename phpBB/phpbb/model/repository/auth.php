@@ -110,8 +110,15 @@ class phpbb_model_repository_auth
 				return $response;
 			}
 
-			// This probably needs to be changed before release
-			$request .= 'auth_key=' . $auth_key . '&serial=' . $serial;
+			if (is_array($request))
+			{
+				$request = implode('/', $request);
+			}
+			else
+			{
+				// This probably needs to be changed before release
+				$request .= 'auth_key=' . $auth_key . '&serial=' . $serial;
+			}
 
 			$test_hash = hash_hmac('sha256', $request, $sign_key);
 
