@@ -26,6 +26,9 @@ abstract class phpbb_crypto_driver_base implements phpbb_crypto_driver_interface
 	/** @var phpbb_crypto_driver_helper */
 	protected $helper;
 
+	/** @var driver name */
+	protected $name;
+
 	/**
 	* Constructor of crypto driver object
 	*
@@ -43,5 +46,23 @@ abstract class phpbb_crypto_driver_base implements phpbb_crypto_driver_interface
 	public function is_supported()
 	{
 		return true;
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function get_name()
+	{
+		return $this->name;
+	}
+
+	/**
+	* Set driver name
+	*
+	* @param string $name Driver name
+	*/
+	public function set_name($name)
+	{
+		$this->name = $name;
 	}
 }

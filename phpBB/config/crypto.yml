@@ -3,6 +3,8 @@ services:
         class: phpbb_crypto_driver_bcrypt
         arguments:
             - @config
+        calls:
+            - [set_name, [crypto.driver.bcrypt]]
         tags:
             - { name: crypto.driver }
 
@@ -10,6 +12,8 @@ services:
         class: phpbb_crypto_driver_bcrypt_2y
         arguments:
             - @config
+        calls:
+            - [set_name, [crypto.driver.bcrypt_2y]]
         tags:
             - { name: crypto.driver }
 
@@ -17,6 +21,8 @@ services:
         class: phpbb_crypto_driver_salted_md5
         arguments:
             - @config
+        calls:
+            - [set_name, [crypto.driver.salted_md5]]
         tags:
             - { name: crypto.driver }
 
@@ -24,6 +30,8 @@ services:
         class: phpbb_crypto_driver_phpass
         arguments:
             - @config
+        calls:
+            - [set_name, [crypto.driver.phpass]]
         tags:
             - { name: crypto.driver }
 
