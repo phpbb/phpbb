@@ -244,6 +244,9 @@ services:
             - @auth
             - @config
             - @dbal.conn
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
 
     model.repository.auth:
         class: phpbb_model_repository_auth

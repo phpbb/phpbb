@@ -54,3 +54,8 @@ api_auth_verify_controller:
     requirements:
         _method: GET
 
+api_post_topic_controller:
+    pattern: /api/topic/new
+    defaults: { _controller: api.controller.topic:new_topic }
+    requirements:
+        _method: POST
