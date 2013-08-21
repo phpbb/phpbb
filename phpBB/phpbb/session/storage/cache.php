@@ -34,24 +34,52 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 		$this->cache = $cache_driver;
 	}
 
-	protected function add_to($key, $session_id)
+	protected function add_session_to_user($session)
 	{
+		$session_id   = $session['session_id'];
+		$session_time = $session['session_time'];
+		$key = $this->user_key($session['session_user_id']);
 		$this->cache->atomic_operation($key,
-			function ($sessions) use ($session_id)
+			function ($sessions) use ($session_id, $session_time)
 			{
-				$sessions[] = $session_id = 1;
+				$sessions[$session_id] = $session_time;
 				return $sessions;
 			}
 		);
 	}
 
-	protected function remove_from($key, $session_id)
+	protected function remove_session_from_user($user_id, $session_id)
 	{
+		$key = $this->user_key($user_id);
 		$this->cache->atomic_operation($key,
 			function ($sessions) use ($session_id)
 			{
 				unset($sessions[$session_id]);
 				return $sessions;
+			}
+		);
+	}
+
+	protected function add_session_to_allsessions($session)
+	{
+		$session_id   = $session['session_id'];
+		$session_time = $session['session_time'];
+		$this->cache->atomic_operation(self::all_sessions_key,
+			function ($all_sessions) use ($session_id, $session_time)
+			{
+				$all_sessions[$session_id] = $session_time;
+				return $all_sessions;
+			}
+		);
+	}
+
+	protected function remove_session_from_allsessions($session_id)
+	{
+		$this->cache->atomic_operation(self::all_sessions_key,
+			function ($all_sessions) use ($session_id)
+			{
+				unset($all_sessions[$session_id]);
+				return $all_sessions;
 			}
 		);
 	}
@@ -70,7 +98,8 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 	{
 		$id = $session_data['session_id'];
 
-		$this->add_to($this->user_key($session_data['session_user_id']), $id);
+		$this->add_session_to_user($session_data);
+		$this->add_session_to_allsessions($session_data);
 		$this->cache->put($id, $session_data);
 	}
 
@@ -105,20 +134,20 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 			$session = $this->cache->get($session_id);
 			$user_id = $session['session_user_id'];
 		}
-		$this->remove_from($this->user_key($user_id), $session_id);
+		$this->remove_session_from_user($this->user_key($user_id), $session_id);
+		$this->remove_session_from_allsessions($session_id);
 		$this->cache->destroy($session_id);
 	}
 
 	function num_active_sessions($minutes_considered_active)
 	{
-		// Doesn't actually use minutes_considered_active, just
-		//   counts and hopes garbage collection is working properly
-		// Alternate not-implemented-yet solution:
-		// - Go through sessions in all_sessions_key
-		// - Check expire date
-		// - Put in key
-		// - Use this key until it expires (every minute or w/e)
-		return $this->get_all(self::all_sessions_key);
+		// Go through all_sessions and add up num_active_sessions
+		$sessions = $this->cache->get(self::all_sessions_key);
+		$initial = 0;
+		return array_reduce(array_values($sessions), function ($time, $result) use ($minutes_considered_active) {
+			// Add 1 to result and return if time is within minutes_considered_active. Otherwise add 0 and return.
+			return $result + ($time < $minutes_considered_active);
+		}, $initial);
 	}
 
 	function unset_admin($session_id)
@@ -153,12 +182,14 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 	 */
 	function delete_all_sessions()
 	{
-		$this->cache->atomic_operation(self::all_sessions_key,
-			function ($session)
+		$this->cache->atomic_operation(self::all_sessions_key, function ($sessions) {
+			foreach(array_keys($sessions) as $session_id)
 			{
-				$this->delete($session['session_id']);
+				$this->delete($session_id);
+				unset($sessions[$session_id]);
 			}
-		);
+			return $sessions;
+		});
 	}
 
 	/**
@@ -176,6 +207,25 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 			return $session['session_ip'];
 		}
 		return null;
+	}
+
+	public function get_newest_session_id($user_id)
+	{
+		$sessions = $this->get_user_sessions($user_id);
+		$newest = null;
+		$newest_time = 0;
+		if (is_array($sessions))
+		{
+			foreach($sessions as $session)
+			{
+				if ($session['session_time'] > $newest_time)
+				{
+					$newest = $session;
+					$newest_time = $newest['session_time'];
+				}
+			}
+		}
+		return $newest;
 	}
 
 	/**
@@ -367,7 +417,11 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 	 */
 	function set_viewonline($user_id, $viewonline)
 	{
-		// TODO: Implement set_viewonline() method.
+		$session_id = $this->get_newest_session_id($user_id);
+		$this->cache->atomic_operation($session_id, function ($session) use ($viewonline) {
+			$session['viewonline'] = $viewonline;
+			return $session;
+		});
 	}
 
 	/** Remove from storage all guest sessions older than session_length
@@ -426,12 +480,12 @@ class phpbb_session_storage_cache implements phpbb_session_storage_interface_ses
 		}
 		$results = array();
 		if (is_array($sessions)) {
-			foreach($sessions as $session)
+			foreach($sessions as $session_id => $session_time)
 			{
-				$current_session_length = ($session['session_time'] - $session['session_start']);
+				$current_session_length = (time() - $session_time);
 				if ($current_session_length > $session_length)
 				{
-					$results[] = $session_function($session);
+					$results[] = $session_function($this->get($session_id));
 				}
 			}
 		}
