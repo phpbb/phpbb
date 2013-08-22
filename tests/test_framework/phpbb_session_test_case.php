@@ -27,10 +27,32 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 
 	protected function check_sessions_equals($expected_sessions, $message)
 	{
-		$sql = 'SELECT session_id, session_user_id
-				FROM phpbb_sessions
-				ORDER BY session_user_id';
+		$session = new phpbb_session();
+		if (is_a($this->db_session, 'phpbb_session_storage_native'))
+		{
+			$sql = 'SELECT session_id, session_user_id
+					FROM phpbb_sessions
+					ORDER BY session_user_id';
 
-		$this->assertSqlResultEquals($expected_sessions, $sql, $message);
+			$this->assertSqlResultEquals($expected_sessions, $sql, $message);
+		}
+		else
+		{
+			$user_ids = array();
+			$sessions =  $session->db_session->map_all(
+				function ($session) use ($user_ids)
+				{
+					$user_id = $session['session_user_id'];
+					if (!in_array($user_id, $user_ids))
+					{
+						$user_ids[] = $user_id;
+						return array($session['session_id'], $user_id);
+					}
+					return null;
+				}
+			);
+			$sessions = array_filter($sessions, 'is_array');
+			$this->assert_array_content_equals($expected_sessions, $sessions, $message);
+		}
 	}
 }

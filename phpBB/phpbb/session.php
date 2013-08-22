@@ -249,6 +249,10 @@ class phpbb_session
 
 		$this->db_session->set_time_now($this->time_now);
 		$this->db_session->set_db($db);
+		$this->db_user->set_db($db);
+		$this->db_keys->set_db($db);
+		$this->db_banlist->set_db($db);
+		$this->db_cleanup->set_db($db);
 
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])
