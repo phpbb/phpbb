@@ -2212,8 +2212,12 @@ function tracking_unserialize($string, $max_depth = 3)
 *
 * @param object $template the template object
 * @param string $base_url is url prepended to all links generated within the function
+*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
+*							for the page. Also be sure to specify the pagination path information into the start_name argument
 * @param string $block_var_name is the name assigned to the pagination data block within the template (example: <!-- BEGIN pagination -->)
 * @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
+*							If you use page numbers inside your controller route, start name should be the string
+*							that should be removed for the first page (example: /page/%d)
 * @param int $num_items the total number of items, posts, etc., used to determine the number of pages to produce
 * @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
 * @param int $start_item the item which should be considered currently active, used to determine the page we're on
@@ -2234,6 +2238,7 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 
 	$on_page = floor($start_item / $per_page) + 1;
 	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
+	$page_in_route = strpos($start_name, '%d') !== false;
 
 	if ($reverse_count)
 	{
@@ -2263,9 +2268,18 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 
 	if ($on_page != 1)
 	{
+		if ($page_in_route)
+		{
+			$page_url = ($on_page - 2 > 0) ? sprintf($base_url, (int) $on_page - 2) : str_replace($start_name, '', $base_url);
+		}
+		else
+		{
+			$page_url = $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page);
+		}
+
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page),
+			'PAGE_URL'		=> $page_url,
 			'S_IS_CURRENT'	=> false,
 			'S_IS_PREV'		=> true,
 			'S_IS_NEXT'		=> false,
@@ -2279,7 +2293,14 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	$at_page = 1;
 	do
 	{
-		$page_url = $base_url . (($at_page == 1) ? '' : $url_delim . $start_name . '=' . (($at_page - 1) * $per_page));
+		if ($page_in_route)
+		{
+			$page_url = ($at_page != 1) ? sprintf($base_url, $at_page) : str_replace($start_name, '', $base_url);
+		}
+		else
+		{
+			$page_url = $base_url . (($at_page == 1) ? '' : $url_delim . $start_name . '=' . (($at_page - 1) * $per_page));
+		}
 
 		// We decide whether to display the ellipsis during the loop. The ellipsis is always
 		// displayed as either the second or penultimate item in the list. So are we at either
@@ -2317,9 +2338,18 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 
 	if ($on_page != $total_pages)
 	{
+		if ($page_in_route)
+		{
+			$page_url = sprintf($base_url, $on_page);
+		}
+		else
+		{
+			$page_url = $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page);
+		}
+
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page),
+			'PAGE_URL'		=> $page_url,
 			'S_IS_CURRENT'	=> false,
 			'S_IS_PREV'		=> false,
 			'S_IS_NEXT'		=> true,
@@ -2344,13 +2374,22 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	}
 	$tpl_prefix = ($tpl_prefix == 'PAGINATION') ? '' : $tpl_prefix . '_';
 
-	$previous_page = ($on_page != 1) ? $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page) : '';
+	if ($page_in_route)
+	{
+		$previous_page = ($on_page > 2) ? sprintf($base_url, $on_page - 2) : str_replace($start_name, '', $base_url);
+		$next_page = sprintf($base_url, $on_page);
+	}
+	else
+	{
+		$previous_page = $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page);
+		$next_page = $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page);
+	}
 
 	$template_array = array(
 		$tpl_prefix . 'BASE_URL'		=> $base_url,
 		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
-		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
+		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page != 1) ? $previous_page : '',
+		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $next_page : '',
 		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
 		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
 	);
