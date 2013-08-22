@@ -40,7 +40,7 @@ if (!defined('PHPBB_ACM_MEMCACHE'))
 * ACM for Memcached
 * @package acm
 */
-class phpbb_cache_driver_memcache extends phpbb_cache_driver_memory
+class phpbb_cache_driver_memcache extends phpbb_cache_driver_memory implements phpbb_cache_driver_atomic_interface
 {
 	var $extension = 'memcache';
 
