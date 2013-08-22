@@ -10,7 +10,7 @@
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../template/template_test_case.php';
 
-class phpbb_pagination_start_parameter_test extends phpbb_template_template_test_case
+class phpbb_pagination_generate_template_test extends phpbb_template_template_test_case
 {
 	protected $test_path = 'tests/pagination';
 
