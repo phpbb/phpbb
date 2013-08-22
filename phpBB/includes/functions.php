@@ -2266,20 +2266,21 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 		$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
 	}
 
+	$u_previous_page = $u_next_page = '';
 	if ($on_page != 1)
 	{
 		if ($page_in_route)
 		{
-			$page_url = ($on_page - 2 > 0) ? sprintf($base_url, (int) $on_page - 2) : str_replace($start_name, '', $base_url);
+			$u_previous_page = ($on_page > 2) ? sprintf($base_url, (int) $on_page - 1) : str_replace($start_name, '', $base_url);
 		}
 		else
 		{
-			$page_url = $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page);
+			$u_previous_page = ($on_page > 2) ? $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page) : $base_url;
 		}
 
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $page_url,
+			'PAGE_URL'		=> $u_previous_page,
 			'S_IS_CURRENT'	=> false,
 			'S_IS_PREV'		=> true,
 			'S_IS_NEXT'		=> false,
@@ -2295,7 +2296,7 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	{
 		if ($page_in_route)
 		{
-			$page_url = ($at_page != 1) ? sprintf($base_url, $at_page) : str_replace($start_name, '', $base_url);
+			$page_url = ($at_page > 1) ? sprintf($base_url, $at_page) : str_replace($start_name, '', $base_url);
 		}
 		else
 		{
@@ -2340,16 +2341,16 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	{
 		if ($page_in_route)
 		{
-			$page_url = sprintf($base_url, $on_page);
+			$u_next_page = sprintf($base_url, $on_page + 1);
 		}
 		else
 		{
-			$page_url = $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page);
+			$u_next_page = $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page);
 		}
 
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $page_url,
+			'PAGE_URL'		=> $u_next_page,
 			'S_IS_CURRENT'	=> false,
 			'S_IS_PREV'		=> false,
 			'S_IS_NEXT'		=> true,
@@ -2374,22 +2375,11 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	}
 	$tpl_prefix = ($tpl_prefix == 'PAGINATION') ? '' : $tpl_prefix . '_';
 
-	if ($page_in_route)
-	{
-		$previous_page = ($on_page > 2) ? sprintf($base_url, $on_page - 2) : str_replace($start_name, '', $base_url);
-		$next_page = sprintf($base_url, $on_page);
-	}
-	else
-	{
-		$previous_page = $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page);
-		$next_page = $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page);
-	}
-
 	$template_array = array(
 		$tpl_prefix . 'BASE_URL'		=> $base_url,
 		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page != 1) ? $previous_page : '',
-		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $next_page : '',
+		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page != 1) ? $u_previous_page : '',
+		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $u_next_page : '',
 		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
 		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
 	);
