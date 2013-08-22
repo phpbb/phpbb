@@ -106,7 +106,7 @@ class phpbb_session_storage_native implements
 		return $this->update_query($sql);
 	}
 
-	function get($session_id)
+	function get_session($session_id)
 	{
 		$sql = 'SELECT u.*, s.*
 				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
@@ -316,6 +316,15 @@ class phpbb_session_storage_native implements
 		return $this->map_query($sql, $session_function, $batch_size);
 	}
 
+	function map_all(Closure $function, $batch_size=25)
+	{
+		$sql = '
+			SELECT *
+			FROM ' . SESSIONS_TABLE;
+
+		return $this->map_query($sql, $function, $batch_size);
+	}
+
 	function cleanup_long_session_keys($max_autologin_time)
 	{
 		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
@@ -502,7 +511,9 @@ class phpbb_session_storage_native implements
 	}
 
 	/**
-	 * Queries the session table to get information about online guests
+	 * Queries the session table to get information about online guests.
+	 *
+	 * If item_id is 0, don't restrict search based on item.
 	 *
 	 * @param int    $item_id Limits the search to the item with this id
 	 * @param string $item    The name of the item which is stored in the session table as session_{$item}_id

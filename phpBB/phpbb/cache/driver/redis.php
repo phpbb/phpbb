@@ -170,15 +170,29 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory implements phpb
 			trigger_error('An error occurred processing session data.');
 		}
 		$this->redis->watch($key);
-		$value = $operation($this->redis->get($key));
+		$data = $this->redis->get($key);
+		if ($data === false)
+		{
+			return;
+		}
+		if (is_null($data))
+		{
+			$data = array();
+		}
 		$ret = $this->redis->multi()
-						->set($key, $value)
+						->set($key, $operation($data))
 						->exec();
 		if ($ret === false)
 		{
 			usleep($retry_usleep_time);
-			self::atomic_operation($key, $operation, $retry_usleep_time, $retries+1);
+			$this->atomic_operation($key, $operation, $retry_usleep_time, $retries+1);
 		}
+		$this->redis->unwatch();
+	}
+
+	function _isset($key)
+	{
+		return $this->redis->exists($key);
 	}
 }
 

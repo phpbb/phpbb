@@ -47,7 +47,7 @@ interface phpbb_session_storage_interface_session
 	* @param int $session_id
 	* @return array
 	*/
-	function get($session_id);
+	function get_session($session_id);
 
 	/**
 	* Delete session data

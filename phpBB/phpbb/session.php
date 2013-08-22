@@ -383,7 +383,7 @@ class phpbb_session
 		// if session id is set
 		if (!empty($this->session_id))
 		{
-			$this->data = $this->db_session->get($this->session_id);
+			$this->data = $this->db_session->get_session($this->session_id);
 
 			// Did the session exist in the DB?
 			if (isset($this->data['user_id']))
@@ -1478,5 +1478,36 @@ class phpbb_session
 	function map_friends_online($user_id, Closure $function)
 	{
 		return $this->db_session->map_friends_online($user_id, $function);
+	}
+
+	/**
+	* Synchronize
+	* This function goes through ALL the sessions in the session sql table
+	* and replaces it into whatever db_session driver you are using.
+	*
+	* Then it goes through and does the reverse.
+	*
+	* Only syncs if the db_session driver is not native.
+	*
+	* Written for testing purposes only.
+	*/
+	function db_synchronize()
+	{
+		if (!is_a($this->db_session, 'phpbb_session_storage_native'))
+		{
+			global $db;
+			$native_storage = new phpbb_session_storage_native($db, time());
+			$db_session = $this->db_session;
+			$native_storage->map_all(function ($session) use ($db_session) {
+				$db_session->create($session);
+			});
+			$db_session->map_all(function ($session) use ($native_storage) {
+				$exists = $native_storage->get_session($session['session_id']);
+				if (empty($exists))
+				{
+					$native_storage->create($session);
+				}
+			});
+		}
 	}
 }

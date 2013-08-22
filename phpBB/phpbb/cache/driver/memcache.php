@@ -135,12 +135,16 @@ class phpbb_cache_driver_memcache extends phpbb_cache_driver_memory
 		}
 		$flags = 0;
 		$cas = null;
-		$val = memcache_get($this->memcache, $this->key_prefix . $key, $flags, $cas);
-		$ret = memcache_cas($this->memcache, $this->key_prefix . $key, $operation($val), $flags, 0, $cas);
+		$data = memcache_get($this->memcache, $this->key_prefix . $key, $flags, $cas);
+		if ($data === false)
+		{
+			return;
+		}
+		$ret = memcache_cas($this->memcache, $this->key_prefix . $key, $operation($data), $flags, 0, $cas);
 		if ($ret === false)
 		{
 			usleep($retry_usleep_time);
-			self::atomic_operation($key, $operation, $retry_usleep_time, $retries+1);
+			$this->atomic_operation($key, $operation, $retry_usleep_time, $retries+1);
 		}
 	}
 }
