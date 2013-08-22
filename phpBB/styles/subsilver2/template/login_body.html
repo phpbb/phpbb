@@ -61,6 +61,9 @@
 				<td><input type="checkbox" class="radio" name="viewonline" tabindex="4" /> <span class="gensmall">{L_HIDE_ME}</span></td>
 			</tr>
 		<!-- ENDIF -->
+		<!-- IF not S_ADMIN_AUTH and PROVIDER_TEMPLATE_FILE -->
+			<!-- INCLUDE {PROVIDER_TEMPLATE_FILE} -->
+		<!-- ENDIF -->
 		</table>
 	</td>
 </tr>
