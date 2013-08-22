@@ -17,46 +17,24 @@ class phpbb_cache_atomic_driver_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
 	}
 
-	static public function setUpBeforeClass()
+	function run_race($key, $driver_class, $host, $port)
 	{
-		if (!function_exists('pcntl_fork'))
-		{
-			self::markTestSkipped('platform does not support pctl_fork');
-		}
-	}
+		$driver1 = new $driver_class($host, $port);
+		$driver2 = new $driver_class($host, $port);
+		$race_condition_data_written = false;
 
-	static function run_race($key, $driver_class, $host, $port)
-	{
-		// fork process into parent and child
-		$process_id = pcntl_fork();
-		$is_child_process = $process_id == 0;
-		// Set a begin time for the race
-		$start_time = microtime() + 20000;
-		if ($is_child_process)
-		{
-			// CHILD FORK
-			$driver = new $driver_class($host, $port);
-			// wait to start race
-			usleep($start_time - microtime());
-			// read & write data
-			$driver->atomic_operation($key, function ($data) {
-				return $data . 'child';
-			});
-			// Child ends execution, parent will continue with control flow
-			exit;
-		} else {
-			// PARENT FORK
-			$driver = new $driver_class($host, $port);
-			// wait to start race
-			usleep($start_time - microtime());
-			// read & write data <-- should fail, re-read and re-write
-			$driver->atomic_operation($key, function ($data) {
-				// wait so that child always writes first
-				usleep(10000);
-				return $data . 'parent';
-			});
-			return $driver->get($key);
-		}
+		$driver1->atomic_operation($key, function ($data) use ($key, $driver2, &$race_condition_data_written) {
+			// Set key inside atomic_operation so that a race condition occurs
+			//  (change happened while atomic_operation was occurring)
+			//  (only write once otherwise we'll never have a chance to do the atomic_operation)
+			if(!$race_condition_data_written)
+			{
+				$driver2->_write($key, 'first');
+				$race_condition_data_written = true;
+			}
+
+			return $data . 'second';
+		});
 	}
 
 	public function test_redis_race_condition()
@@ -73,11 +51,13 @@ class phpbb_cache_atomic_driver_test extends phpbb_database_test_case
 		// Prefix with '_' because certain memory cache
 		//        operations don't actually hit cache otherwise
 		$key = uniqid('_');
-		$result = self::run_race($key, 'phpbb_cache_driver_redis', $host, $port);
 		$driver = new phpbb_cache_driver_redis($host, $port);
+		// Atomic operation needs key written first
+		$driver->put($key, '_');
+		$this->run_race($key, 'phpbb_cache_driver_redis', $host, $port);
+		$result = $driver->redis->get($key);
 		$driver->redis->delete($key);
-
-		$this->assertEquals('child' . 'parent', $result);
+		$this->assertEquals('first' . 'second', $result);
 	}
 
 	public function test_memcache_race_condition()
@@ -91,14 +71,11 @@ class phpbb_cache_atomic_driver_test extends phpbb_database_test_case
 		//        operations don't actually hit cache otherwise
 		$key = uniqid('_');
 		$driver = new phpbb_cache_driver_memcache();
-		// Memcache needs key set before atomic_operations
-		$driver->put($key, "");
-		// Wait a bit to make sure that key is saved before continuing
-		usleep(10000);
-
-		$result = self::run_race($key, 'phpbb_cache_driver_memcache', null, null);
-		$driver->memcache->delete($driver->key_prefix . $key);
-
-		$this->assertEquals('child' . 'parent', $result);
+		// Atomic operation needs key written first
+		$driver->put($key, '_');
+		$this->run_race($key, 'phpbb_cache_driver_memcache', null, null);
+		$result = $driver->memcache->get($key);
+		$driver->memcache->delete($key);
+		$this->assertEquals('first' . 'second', $result);
 	}
 }
