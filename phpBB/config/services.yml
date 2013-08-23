@@ -122,13 +122,6 @@ services:
             - @config
             - @dbal.conn
 
-    crypto.manager:
-        class: phpbb_crypto_manager
-        arguments:
-            - @config
-            - @service_container
-            - @crypto.driver_collection
-
     dispatcher:
         class: phpbb_event_dispatcher
         arguments:

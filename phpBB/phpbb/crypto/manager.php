@@ -58,11 +58,11 @@ class phpbb_crypto_manager
 	*
 	* @param phpbb_config $config phpBB configuration
 	*/
-	public function __construct($config, $container, $hashing_algorithms)
+	public function __construct($config, $container, $hashing_algorithms, $default)
 	{
 		$this->config = $config;
 		$this->container = $container;
-		$this->type = 'crypto.driver.bcrypt_2y'; // might want to make this flexible
+		$this->type = $default;
 
 		$this->fill_type_map($hashing_algorithms);
 		$this->load_crypto_helper();

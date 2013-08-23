@@ -41,11 +41,12 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 
 		foreach ($this->crypto_drivers as $key => $driver)
 		{
+			$driver->set_name($key);
 			$this->phpbb_container->set($key, $driver);
 		}
 
 		// Set up avatar manager
-		$this->manager = new phpbb_crypto_manager($config, $this->phpbb_container, $this->crypto_drivers);
+		$this->manager = new phpbb_crypto_manager($config, $this->phpbb_container, $this->crypto_drivers, 'crypto.driver.bcrypt_2y');
 	}
 
 	public function hash_password_data()

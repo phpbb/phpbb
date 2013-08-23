@@ -1,3 +1,6 @@
+parameters:
+    password_hashing.algorithm: crypto.driver.bcrypt_2y
+
 services:
     crypto.driver.bcrypt:
         class: phpbb_crypto_driver_bcrypt
@@ -41,3 +44,11 @@ services:
             - @service_container
         tags:
             - { name: service_collection, tag: crypto.driver }
+
+    crypto.manager:
+        class: phpbb_crypto_manager
+        arguments:
+            - @config
+            - @service_container
+            - @crypto.driver_collection
+            - %password_hashing.algorithm%
