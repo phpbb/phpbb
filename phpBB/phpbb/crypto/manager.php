@@ -196,9 +196,13 @@ class phpbb_crypto_manager
 			return $this->helper->check_combined_hash($password, $stored_hash_type, $hash);
 		}
 
-		if ($stored_hash_type->get_type() !== $this->type)
+		if ($stored_hash_type->get_name() !== $this->type)
 		{
 			$this->convert_flag = true;
+		}
+		else
+		{
+			$this->convert_flag = false;
 		}
 
 		return $stored_hash_type->check($password, $hash);

@@ -126,6 +126,9 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 			$password .= $this->pw_characters[mt_rand(0, 66)];
 			$this->assertEquals(false, $this->manager->check_hash($password, $hash));
 		}
+
+		// Check if convert_flag is correctly set
+		$this->assertEquals(($hash_type !== 'crypto.driver.bcrypt_2y'), $this->manager->convert_flag);
 	}
 
 
