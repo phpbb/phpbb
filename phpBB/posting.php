@@ -1131,8 +1131,13 @@ if ($submit || $preview || $refresh)
 				$data['topic_replies'] = $post_data['topic_replies'];
 			}
 
+			// Only supply the username, when it is a guest posting or we edit and it was supplied,
+			// otherwise post_data might hold data of the post we quote, in which case
+			// username is the original poster, not the current one. See: PHPBB3-11769
+			$post_author_name = ((!$user->data['is_registered'] || $mode == 'edit') && $post_data['username']) ? $post_data['username'] : '';
+
 			// The last parameter tells submit_post if search indexer has to be run
-			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
+			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_author_name, $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
 
 			if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === true) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 			{
