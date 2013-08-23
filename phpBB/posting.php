@@ -1131,9 +1131,10 @@ if ($submit || $preview || $refresh)
 				$data['topic_replies'] = $post_data['topic_replies'];
 			}
 
-			// Only supply the username, when it is a guest posting or we edit and it was supplied,
-			// otherwise post_data might hold data of the post we quote, in which case
-			// username is the original poster, not the current one. See: PHPBB3-11769
+			// Only return the username when it is either a guest posting or we are editing a post and
+			// the username was supplied; otherwise post_data might hold the data of the post that is
+			// being quoted (which could result in the username being returned being that of the quoted
+			// post's poster, not the poster of the current post). See: PHPBB3-11769 for more information.
 			$post_author_name = ((!$user->data['is_registered'] || $mode == 'edit') && $post_data['username']) ? $post_data['username'] : '';
 
 			// The last parameter tells submit_post if search indexer has to be run
