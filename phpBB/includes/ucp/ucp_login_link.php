@@ -200,7 +200,6 @@ class ucp_login_link
 
 	protected function perform_redirect()
 	{
-		// TODO: Make redirect to same page as login would have
 		redirect('index.php');
 	}
 }

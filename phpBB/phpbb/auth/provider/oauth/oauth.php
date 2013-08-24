@@ -201,8 +201,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 			if (!$row)
 			{
-				// TODO: Update exception type and change it to language constant
-				throw new Exception('Invalid entry in ' . $this->auth_provider_oauth_token_account_assoc);
+				throw new Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_ENTRY');
 			}
 
 			// Update token storage to store the user_id
@@ -216,7 +215,6 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			);
 		} else {
 			$url = $service->getAuthorizationUri();
-			// TODO: modify $url for the appropriate return points
 			header('Location: ' . $url);
 		}
 	}

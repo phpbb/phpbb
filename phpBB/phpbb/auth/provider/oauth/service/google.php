@@ -77,8 +77,7 @@ class phpbb_auth_provider_oauth_service_google extends phpbb_auth_provider_oauth
 	{
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Google))
 		{
-			// TODO: make exception class and use language constant
-			throw new Exception('Invalid service provider type');
+			throw new Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
 		}
 
 		// This was a callback request, get the token
@@ -98,8 +97,7 @@ class phpbb_auth_provider_oauth_service_google extends phpbb_auth_provider_oauth
 	{
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Google))
 		{
-			// TODO: make exception class and use language constant
-			throw new Exception('Invalid service provider type');
+			throw new Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
 		}
 
 		// Send a request with it

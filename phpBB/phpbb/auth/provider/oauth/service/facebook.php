@@ -67,7 +67,7 @@ class phpbb_auth_provider_oauth_service_facebook extends phpbb_auth_provider_oau
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Facebook))
 		{
 			// TODO: make exception class and use language constant
-			throw new Exception('Invalid service provider type');
+			throw new Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
 		}
 
 		// This was a callback request, get the token
