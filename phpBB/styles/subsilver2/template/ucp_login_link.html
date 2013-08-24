@@ -1,0 +1,74 @@
+<!-- INCLUDE overall_header.html -->
+
+<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th>{SITENAME} - {L_LOGIN_LINK}</th>
+	</tr>
+
+	<tr>
+		<td class="row1" align="center"><span class="genmed">{L_LOGIN_LINK_EXPLAIN}</span></td>
+	</tr>
+
+	<!-- IF LOGIN_LINK_ERROR -->
+		<tr>
+			<td class="row1" align="center"><span class="genmed error">{LOGIN_LINK_ERROR}</span></td>
+		</tr>
+	<!-- ENDIF -->
+
+	<tr>
+		<td class="row1">
+			<form action="{REGISTER_ACTION}" method="post" id="register">
+				<table width="100%" cellspacing="1">
+					<tr>
+						<th colspan="2">{L_REGISTER}</th>
+					</tr>
+
+					<tr>
+						<td>{S_HIDDEN_FIELDS}<input type="submit" name="register" tabindex="6" value="{L_REGISTER}" class="button1" /></td>
+					</tr>
+				</table>
+			</form>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="row1">
+			<form action="{LOGIN_ACTION}" method="post" id="login">
+				<table width="100%" cellspacing="1">
+					<tr>
+						<th colspan="2">{L_LOGIN}</th>
+					</tr>
+
+					<!-- IF LOGIN_ERROR -->
+						<tr>
+							<td class="row1" align="center" colspan="2"><span class="genmed error">{LOGIN_ERROR}</span></td>
+						</tr>
+					<!-- ENDIF -->
+
+					<tr>
+						<td><label for="{USERNAME_CREDENTIAL}">{L_USERNAME}{L_COLON}</label></td>
+						<td><input type="text" tabindex="1" name="{USERNAME_CREDENTIAL}" id="{USERNAME_CREDENTIAL}" size="25" value="{LOGIN_USERNAME}" class="inputbox autowidth" /></td>
+					</tr>
+
+					<tr>
+						<td><label for="{PASSWORD_CREDENTIAL}">{L_PASSWORD}{L_COLON}</label></td>
+						<td><input type="password" tabindex="2" id="{PASSWORD_CREDENTIAL}" name="{PASSWORD_CREDENTIAL}" size="25" class="inputbox autowidth" /></td>
+					</tr>
+
+					<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
+						<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
+						<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
+					<!-- ENDIF -->
+
+					{S_LOGIN_REDIRECT}
+					<tr>
+						<td>&nbsp;</td>
+						<td>{S_HIDDEN_FIELDS}<input type="submit" name="login" tabindex="6" value="{L_LOGIN}" class="button1" /></td>
+					</tr>
+				</table>
+			</form>
+		</td>
+	</tr>
+</table>
+
+<!-- INCLUDE overall_footer.html -->
