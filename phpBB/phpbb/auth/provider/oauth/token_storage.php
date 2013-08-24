@@ -245,8 +245,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		if (!$row)
 		{
-			// TODO: translate
-			throw new TokenNotFoundException('Token not stored');
+			throw new TokenNotFoundException('AUTH_PROVIDER_OAUTH_TOKEN_ERROR_NOT_STORED');
 		}
 
 		$token = $this->json_decode_token($row['oauth_token']);
@@ -255,8 +254,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 		if (!($token instanceof TokenInterface))
 		{
 			$this->clearToken();
-			// TODO: translate
-			throw new TokenNotFoundException('Token not stored correctly');
+			throw new TokenNotFoundException('AUTH_PROVIDER_OAUTH_TOKEN_ERROR_INCORRECTLY_STORED');
 		}
 
 		$this->cachedToken = $token;
