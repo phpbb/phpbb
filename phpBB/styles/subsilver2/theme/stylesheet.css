@@ -535,6 +535,9 @@ input.radio {
 	border-style: none;
 }
 
+input:focus, select:focus, textarea:focus {
+	outline-style: none;
+}
 
 /* BBCode
  ------------ */
