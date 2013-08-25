@@ -89,6 +89,20 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	protected $current_uri;
 
 	/**
+	* phpBB root path
+	*
+	* @var string
+	*/
+	protected $phpbb_root_path;
+
+	/**
+	* PHP extenstion
+	*
+	* @var string
+	*/
+	protected $php_ext;
+
+	/**
 	* OAuth Authentication Constructor
 	*
 	* @param	phpbb_db_driver $db
@@ -98,9 +112,11 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	* @param	string			$auth_provider_oauth_token_storage_table
 	* @param	string			$auth_provider_oauth_token_account_assoc
 	* @param	phpbb_di_service_collection	$service_providers Contains phpbb_auth_provider_oauth_service_interface
-	* @param	string			$users)table
+	* @param	string			$users_table
+	* @param	string			$phpbb_root_path
+	* @param	string			$php_ext
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, phpbb_di_service_collection $service_providers, $users_table)
+	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, phpbb_di_service_collection $service_providers, $users_table, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -110,6 +126,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		$this->auth_provider_oauth_token_account_assoc = $auth_provider_oauth_token_account_assoc;
 		$this->service_providers = $service_providers;
 		$this->users_table = $users_table;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -138,7 +156,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		// Temporary workaround for only having one authentication provider available
 		if (!$this->request->is_set('oauth_service'))
 		{
-			$provider = new phpbb_auth_provider_db($this->db, $this->config, $this->request, $this->user, $phpbb_root_path, $phpEx);
+			$provider = new phpbb_auth_provider_db($this->db, $this->config, $this->request, $this->user, $this->phpbb_root_path, $this->php_ext);
 			return $provider->login($username, $password);
 		}
 
