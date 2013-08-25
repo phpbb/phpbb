@@ -506,6 +506,12 @@ class ucp_register
 		$this->page_title = 'UCP_REGISTRATION';
 	}
 
+	/**
+	* Creates the login_link data array
+	*
+	* @return	array	Returns an array of all POST paramaters whose names
+	*					begin with 'login_link_'
+	*/
 	protected function get_login_link_data_array()
 	{
 		global $request;
@@ -525,6 +531,13 @@ class ucp_register
 		return $login_link_data;
 	}
 
+	/**
+	* Prepends they key names of an associative array with 'login_link_' for
+	* inclusion on the page as hidden fields.
+	*
+	* @param	array	$data	The array to be modified
+	* @return	array	The modified array
+	*/
 	protected function get_login_link_data_for_hidden_fields($data)
 	{
 		$new_data = array();

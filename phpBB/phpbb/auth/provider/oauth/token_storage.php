@@ -301,7 +301,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		if ($token_data === null)
 		{
-			throw new TokenNotFoundException('Token not stored correctly');
+			throw new TokenNotFoundException('AUTH_PROVIDER_OAUTH_TOKEN_ERROR_INCORRECTLY_STORED');
 		}
 
 		$token_class	= $token_data['token_class'];
