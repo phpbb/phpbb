@@ -66,7 +66,7 @@ class phpbb_auth_provider_oauth_service_facebook extends phpbb_auth_provider_oau
 	{
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Facebook))
 		{
-			throw new Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
+			throw new phpbb_auth_provider_oauth_service_exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
 		}
 
 		// This was a callback request, get the token
@@ -86,7 +86,7 @@ class phpbb_auth_provider_oauth_service_facebook extends phpbb_auth_provider_oau
 	{
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Facebook))
 		{
-			throw new Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
+			throw new phpbb_auth_provider_oauth_service_exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
 		}
 
 		// Send a request with it

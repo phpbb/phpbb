@@ -67,7 +67,7 @@ class phpbb_auth_provider_oauth_service_bitly extends phpbb_auth_provider_oauth_
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Bitly))
 		{
 			// TODO: make exception class and use language constant
-			throw new Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
+			throw new phpbb_auth_provider_oauth_service_exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
 		}
 
 		// This was a callback request from bitly, get the token
@@ -87,7 +87,7 @@ class phpbb_auth_provider_oauth_service_bitly extends phpbb_auth_provider_oauth_
 	{
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Bitly))
 		{
-			throw new Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
+			throw new phpbb_auth_provider_oauth_service_exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
 		}
 
 		// Send a request with it
