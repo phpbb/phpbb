@@ -45,9 +45,9 @@ interface phpbb_auth_provider_interface
 	 *							'error_msg' => string
 	 *							'user_row' => array
 	 *						)
-	 *					A fourth key of the array may be present 'redirect_data'
-	 *					This key is only used when 'status' is equal to
-	 *					LOGIN_SUCCESS_LINK_PROFILE and it's value is an
+	 *					A fourth key of the array may be present:
+	 *					'redirect_data'	This key is only used when 'status' is
+	 *					equal to LOGIN_SUCCESS_LINK_PROFILE and its value is an
 	 *					associative array that is turned into GET variables on
 	 *					the redirect url.
 	 */
@@ -89,7 +89,7 @@ interface phpbb_auth_provider_interface
 	 *							array: 'BLOCK_VAR_NAME'. If this is present,
 	 *							then its value should be a string that is used
 	 *							to designate the name of the loop used in the
-	 *							ACP template file. In addition to this, an
+	 *							ACP template file. When this is present, an
 	 *							additional key named 'BLOCK_VARS' is required.
 	 *							This must be an array containing at least one
 	 *							array of variables that will be assigned during

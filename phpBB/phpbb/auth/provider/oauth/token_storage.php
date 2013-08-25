@@ -83,7 +83,8 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*/
 	public function retrieveAccessToken()
 	{
-		if( $this->cachedToken instanceOf TokenInterface ) {
+		if ($this->cachedToken instanceOf TokenInterface)
+		{
 			return $this->cachedToken;
 		}
 
@@ -92,7 +93,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 			'provider'	=> $this->service_name,
 		);
 
-		if ($this->user->data['user_id'] == ANONYMOUS)
+		if ($this->user->data['user_id'] === ANONYMOUS)
 		{
 			$data['session_id']	= $this->user->data['session_id'];
 		}
@@ -124,7 +125,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*/
 	public function hasAccessToken()
 	{
-		if( $this->cachedToken ) {
+		if ($this->cachedToken) {
 			return true;
 		}
 
@@ -133,7 +134,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 			'provider'	=> $this->service_name,
 		);
 
-		if ($this->user->data['user_id'] == ANONYMOUS)
+		if ($this->user->data['user_id'] === ANONYMOUS)
 		{
 			$data['session_id']	= $this->user->data['session_id'];
 		}
@@ -149,12 +150,12 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 		$this->cachedToken = null;
 
 		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_table . '
-			WHERE user_id = ' . $this->user->data['user_id'] . '
-				AND provider = \'' . $this->db->sql_escape($this->service_name) . '\'';
+			WHERE user_id = ' . $this->user->data['user_id'] . "
+				AND provider = '" . $this->db->sql_escape($this->service_name) . "'";
 
-		if ($this->user->data['user_id'] == ANONYMOUS)
+		if ($this->user->data['user_id'] === ANONYMOUS)
 		{
-			$sql .= ' AND session_id = \'' . $this->user->data['session_id'] . '\'';
+			$sql .= " AND session_id = '" . $this->user->data['session_id'] . "'";
 		}
 
 		$this->db->sql_query($sql);
@@ -176,8 +177,8 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 			SET ' . $this->db->sql_build_array('UPDATE', array(
 					'user_id' => (int) $user_id
 				)) . '
-				WHERE user_id = ' . $this->user->data['user_id'] . '
-					AND session_id = \'' . $this->user->data['session_id'] . '\'';
+				WHERE user_id = ' . $this->user->data['user_id'] . "
+					AND session_id = '" . $this->user->data['session_id'] . "'";
 		$this->db->sql_query($sql);
 	}
 
@@ -188,7 +189,8 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*/
 	public function has_access_token_by_session()
 	{
-		if( $this->cachedToken ) {
+		if ($this->cachedToken)
+		{
 			return true;
 		}
 
@@ -208,19 +210,12 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*/
 	protected function _has_acess_token($data)
 	{
-		$row = $this->get_access_token_row($data);
-
-		if (!$row)
-		{
-			return false;
-		}
-
-		return true;
+		return (bool) $this->get_access_token_row($data);
 	}
 
 	public function retrieve_access_token_by_session()
 	{
-		if( $this->cachedToken instanceOf TokenInterface ) {
+		if ($this->cachedToken instanceOf TokenInterface) {
 			return $this->cachedToken;
 		}
 

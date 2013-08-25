@@ -71,10 +71,10 @@ class phpbb_auth_provider_oauth_service_bitly extends phpbb_auth_provider_oauth_
 		}
 
 		// This was a callback request from bitly, get the token
-		$this->service_provider->requestAccessToken( $this->request->variable('code', '') );
+		$this->service_provider->requestAccessToken($this->request->variable('code', ''));
 
 		// Send a request with it
-		$result = json_decode( $this->service_provider->request('user/info'), true );
+		$result = json_decode($this->service_provider->request('user/info'), true);
 
 		// Return the unique identifier returned from bitly
 		return $result['data']['login'];
@@ -91,7 +91,7 @@ class phpbb_auth_provider_oauth_service_bitly extends phpbb_auth_provider_oauth_
 		}
 
 		// Send a request with it
-		$result = json_decode( $this->service_provider->request('user/info'), true );
+		$result = json_decode($this->service_provider->request('user/info'), true);
 
 		// Return the unique identifier returned from bitly
 		return $result['data']['login'];

@@ -211,8 +211,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 			// Retrieve the user's account
 			$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
-			FROM ' . $this->users_table . "
-			WHERE user_id = '" . $this->db->sql_escape($row['user_id']) . "'";
+			FROM ' . $this->users_table . '
+			WHERE user_id = ' . (int) $row['user_id'];
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
@@ -231,7 +231,9 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 				'error_msg'		=> false,
 				'user_row'		=> $row,
 			);
-		} else {
+		}
+		else
+		{
 			$url = $service->getAuthorizationUri();
 			header('Location: ' . $url);
 		}
@@ -291,8 +293,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		if (!$service)
 		{
-			// Update to an actual error message
-			throw new Exception('Service not created: ' . $service_name);
+			throw new Exception('AUTH_PROVIDER_OAUTH_ERROR_SERVICE_NOT_CREATED');
 		}
 
 		return $service;
@@ -474,7 +475,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	}
 
 	/**
-	* Performs the account linking for login_link
+	* Performs the account linking for auth_link
 	*
 	* @param	array	$link_data		The same variable given to {@see phpbb_auth_provider_interface::link_account}
 	* @param	string	$service_name	The name of the service being used in
@@ -503,7 +504,9 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 			);
 
 			$this->link_account_perform_link($data);
-		} else {
+		}
+		else
+		{
 			$url = $service->getAuthorizationUri();
 			header('Location: ' . $url);
 		}

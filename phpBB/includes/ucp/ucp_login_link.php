@@ -91,7 +91,9 @@ class ucp_login_link
 					if ($result)
 					{
 						$login_link_error = $user->lang[$result];
-					} else {
+					}
+					else
+					{
 						// Finish login
 						$result = $user->session_create($login_result['user_row']['user_id'], false, false, true);
 

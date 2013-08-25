@@ -17,8 +17,17 @@ if (!defined('IN_PHPBB'))
 
 class ucp_auth_link
 {
+	/**
+	* @var string
+	*/
 	public $u_action;
 
+	/**
+	* Generates the ucp_auth_link page and handles the auth link process
+	*
+	* @param	int		$id
+	* @param	string	$mode
+	*/
 	public function main($id, $mode)
 	{
 		global $config, $request, $template, $phpbb_container, $user;
@@ -72,7 +81,7 @@ class ucp_auth_link
 			}
 		}
 
-		// In some cases, an request to an external server may be required in
+		// In some cases, a request to an external server may be required. In
 		// these cases, the GET parameter 'link' should exist and should be true
 		if ($request->variable('link', false))
 		{
@@ -114,8 +123,11 @@ class ucp_auth_link
 
 		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
+		// Replace "error" strings with their real, localised form
+		$error = array_map(array($user, 'lang'), $error);
+
 		$template->assign_vars(array(
-			'ERROR'	=> $this->build_error_text($error),
+			'ERROR'	=> $error,
 
 			'PROVIDER_TEMPLATE_FILE'	=> $provider_data['TEMPLATE_FILE'],
 
@@ -125,21 +137,5 @@ class ucp_auth_link
 
 		$this->tpl_name = 'ucp_auth_link';
 		$this->page_title = 'UCP_AUTH_LINK';
-	}
-
-	private function build_error_text(array $errors)
-	{
-		global $user;
-
-		// Replace all errors that are language constants
-		foreach ($errors as $key => $error)
-		{
-			if (isset($user->lang[$error]))
-			{
-				$errors[$key] = $user->lang($error);
-			}
-		}
-
-		return implode('<br />', $errors);
 	}
 }

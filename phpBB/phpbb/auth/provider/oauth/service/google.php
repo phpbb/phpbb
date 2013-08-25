@@ -81,10 +81,10 @@ class phpbb_auth_provider_oauth_service_google extends phpbb_auth_provider_oauth
 		}
 
 		// This was a callback request, get the token
-		$this->service_provider->requestAccessToken( $this->request->variable('code', '') );
+		$this->service_provider->requestAccessToken($this->request->variable('code', ''));
 
 		// Send a request with it
-		$result = json_decode( $this->service_provider->request('https://www.googleapis.com/oauth2/v1/userinfo'), true );
+		$result = json_decode($this->service_provider->request('https://www.googleapis.com/oauth2/v1/userinfo'), true);
 
 		// Return the unique identifier
 		return $result['id'];
@@ -101,7 +101,7 @@ class phpbb_auth_provider_oauth_service_google extends phpbb_auth_provider_oauth
 		}
 
 		// Send a request with it
-		$result = json_decode( $this->service_provider->request('https://www.googleapis.com/oauth2/v1/userinfo'), true );
+		$result = json_decode($this->service_provider->request('https://www.googleapis.com/oauth2/v1/userinfo'), true);
 
 		// Return the unique identifier
 		return $result['id'];
