@@ -23,8 +23,17 @@ if (!defined('IN_PHPBB'))
 */
 class ucp_login_link
 {
-	var $u_action;
+	/**
+	* @var	string
+	*/
+	public $u_action;
 
+	/**
+	* Generates the ucp_login_link page and handles login link process
+	*
+	* @param	int		$id
+	* @param	string	$mode
+	*/
 	function main($id, $mode)
 	{
 		global $config, $phpbb_container, $request, $template, $user;
@@ -112,6 +121,14 @@ class ucp_login_link
 		$this->page_title = 'UCP_LOGIN_LINK';
 	}
 
+	/**
+	* Builds the hidden fields string from the data array.
+	*
+	* @param	array	$data	This function only includes data in the array
+	*							that has a key that begins with 'login_link_'
+	* @return	string	A string of hidden fields that can be included in the
+	*					template
+	*/
 	protected function get_hidden_fields($data)
 	{
 		$fields = array();
@@ -124,6 +141,12 @@ class ucp_login_link
 		return build_hidden_fields($fields);
 	}
 
+	/**
+	* Builds the login_link data array
+	*
+	* @return	array	All login_link data. This is all GET data whose names
+	*					begin with 'login_link_'
+	*/
 	protected function get_login_link_data_array()
 	{
 		global $request;
@@ -143,6 +166,13 @@ class ucp_login_link
 		return $login_link_data;
 	}
 
+	/**
+	* Processes the result array from the login process
+	* @param	array	$result	The login result array
+	* @return	string|null	If there was an error in the process, a string is
+	*						returned. If the login was successful, then null is
+	*						returned.
+	*/
 	protected function process_login_result($result)
 	{
 		global $config, $request, $template, $user;
@@ -198,8 +228,13 @@ class ucp_login_link
 		return $login_error;
 	}
 
+	/**
+	* Performs a post login redirect
+	*/
 	protected function perform_redirect()
 	{
-		redirect('index.php');
+		global $phpEx;
+		$url = append_sid('index.' . $phpEx);
+		redirect($url);
 	}
 }
