@@ -1,8 +1,8 @@
 <?php
 /**
 *
-* @package controller
-* @copyright (c) 2012 phpBB Group
+* @package auth
+* @copyright (c) 2013 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -17,7 +17,8 @@ if (!defined('IN_PHPBB'))
 
 /**
 * OAuth service exception class
-* @package phpBB3
+*
+* @package auth
 */
 class phpbb_auth_provider_oauth_service_exception extends RuntimeException
 {
