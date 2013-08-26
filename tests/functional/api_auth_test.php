@@ -23,8 +23,14 @@ class phpbb_functional_api_auth_test extends phpbb_functional_test_case
 			SET config_value = 1
 			WHERE config_name = 'allow_api'");
 
+		$result = $db->sql_query("SELECT auth_option_id
+		FROM phpbb_acl_options
+		WHERE auth_option = 'u_api'");
+
+		$id = $db->sql_fetchrow($result);
+
 		$db->sql_query("INSERT INTO phpbb_acl_users
-			VALUES (2, 0, 89, 5, 1)");
+			VALUES (1, 0, " . (int) $id->auth_option_id . ", 5, 1)");
 
 	}
 
