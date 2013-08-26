@@ -791,11 +791,6 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_subject ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_subject))");
 		}
 
-		if (!isset($this->stats['post_text']))
-		{
-			$this->db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_text ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_text))");
-		}
-
 		if (!isset($this->stats['post_content']))
 		{
 			$this->db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_content ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_subject || ' ' || post_text))");
@@ -829,11 +824,6 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->db->sql_query('DROP INDEX ' . $this->stats['post_subject']['relname']);
 		}
 
-		if (isset($this->stats['post_text']))
-		{
-			$this->db->sql_query('DROP INDEX ' . $this->stats['post_text']['relname']);
-		}
-
 		if (isset($this->stats['post_content']))
 		{
 			$this->db->sql_query('DROP INDEX ' . $this->stats['post_content']['relname']);
@@ -854,7 +844,7 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->get_stats();
 		}
 
-		return (isset($this->stats['post_text']) && isset($this->stats['post_subject']) && isset($this->stats['post_content'])) ? true : false;
+		return (isset($this->stats['post_subject']) && isset($this->stats['post_content'])) ? true : false;
 	}
 
 	/**
@@ -896,11 +886,7 @@ class fulltext_postgres extends \phpbb\search\base
 			// deal with older PostgreSQL versions which didn't use Index_type
 			if (strpos($row['indexdef'], 'to_tsvector') !== false)
 			{
-				if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_text' || $row['relname'] == POSTS_TABLE . '_post_text')
-				{
-					$this->stats['post_text'] = $row;
-				}
-				else if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_subject' || $row['relname'] == POSTS_TABLE . '_post_subject')
+				if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_subject' || $row['relname'] == POSTS_TABLE . '_post_subject')
 				{
 					$this->stats['post_subject'] = $row;
 				}
