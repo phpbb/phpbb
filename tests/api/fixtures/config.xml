@@ -30,12 +30,14 @@
         <column>name</column>
         <column>auth_key</column>
         <column>sign_key</column>
+        <column>serial</column>
         <row>
             <value>1</value>
             <value>2</value>
             <value>test</value>
             <value>aaaaaaaaaaaaaaaa</value>
             <value>bbbbbbbbbbbbbbbb</value>
+            <value>0</value>
         </row>
     </table>
 </dataset>
