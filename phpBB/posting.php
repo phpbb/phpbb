@@ -52,7 +52,7 @@ $current_time = time();
 
 /**
 * This event allows you to alter the above parameters, such as submit and mode
-* 
+*
 * Note: $refresh must be true to retain previously submitted form data.
 *
 * Note: The template class will not work properly until $user->setup() is
@@ -755,7 +755,7 @@ if ($submit || $preview || $refresh)
 				'poll_start' 		=> 0,
 				'poll_length'		=> 0,
 				'poll_last_vote'	=> 0,
-				'poll_max_options'	=> 0,
+				'poll_max_options'	=> 1,
 				'poll_vote_change'	=> 0
 			);
 
@@ -766,7 +766,8 @@ if ($submit || $preview || $refresh)
 		}
 
 		$post_data['poll_title'] = $post_data['poll_option_text'] = '';
-		$post_data['poll_vote_change'] = $post_data['poll_max_options'] = $post_data['poll_length'] = 0;
+		$post_data['poll_vote_change'] = $post_data['poll_length'] = 0;
+		$post_data['poll_max_options'] = 1;
 	}
 	else
 	{
@@ -985,7 +986,7 @@ if ($submit || $preview || $refresh)
 		$poll = array(
 			'poll_title'		=> '',
 			'poll_length'		=> 0,
-			'poll_max_options'	=> 0,
+			'poll_max_options'	=> 1,
 			'poll_option_text'	=> '',
 			'poll_start'		=> 0,
 			'poll_last_vote'	=> 0,
@@ -995,7 +996,8 @@ if ($submit || $preview || $refresh)
 
 		$post_data['poll_options'] = array();
 		$post_data['poll_title'] = '';
-		$post_data['poll_start'] = $post_data['poll_length'] = $post_data['poll_max_options'] = $post_data['poll_last_vote'] = $post_data['poll_vote_change'] = 0;
+		$post_data['poll_start'] = $post_data['poll_length'] = $post_data['poll_last_vote'] = $post_data['poll_vote_change'] = 0;
+		$post_data['poll_max_options'] = 1;
 	}
 	else if (!$auth->acl_get('f_poll', $forum_id) && ($mode == 'edit') && ($post_id == $post_data['topic_first_post_id']) && ($original_poll_data['poll_title'] != ''))
 	{
