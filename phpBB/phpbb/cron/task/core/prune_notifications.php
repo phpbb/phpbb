@@ -38,9 +38,7 @@ class phpbb_cron_task_core_prune_notifications extends phpbb_cron_task_base
 	}
 
 	/**
-	* Runs this cron task.
-	*
-	* @return null
+	* {@inheritdoc}
 	*/
 	public function run()
 	{
@@ -50,9 +48,7 @@ class phpbb_cron_task_core_prune_notifications extends phpbb_cron_task_base
 	}
 
 	/**
-	* Returns whether this cron task can run, given current board configuration.=
-	*
-	* @return bool
+	* {@inheritdoc}
 	*/
 	public function is_runnable()
 	{
@@ -60,13 +56,7 @@ class phpbb_cron_task_core_prune_notifications extends phpbb_cron_task_base
 	}
 
 	/**
-	* Returns whether this cron task should run now, because enough time
-	* has passed since it was last run.
-	*
-	* The interval between prune notifications is specified in board
-	* configuration.
-	*
-	* @return bool
+	* {@inheritdoc}
 	*/
 	public function should_run()
 	{
