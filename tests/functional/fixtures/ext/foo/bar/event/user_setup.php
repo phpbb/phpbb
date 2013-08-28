@@ -22,19 +22,22 @@ if (!defined('IN_PHPBB'))
 */
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class phpbb_ext_foo_bar_event_permission_listener implements EventSubscriberInterface
+class phpbb_ext_foo_bar_event_user_setup implements EventSubscriberInterface
 {
 	static public function getSubscribedEvents()
 	{
 		return array(
-			'core.permissions'	=> 'add_permissions',
+			'core.user_setup'	=> 'add_global_translations',
 		);
 	}
 
-	public function add_permissions($event)
+	public function add_global_translations($event)
 	{
-		$permissions = $event['permissions'];
-		$permissions['u_foo'] = array('lang' => 'ACL_U_FOOBAR', 'cat' => 'post');
-		$event['permissions'] = $permissions;
+		$lang_set_ext = $event['lang_set_ext'];
+		$lang_set_ext[] = array(
+			'ext_name' => 'foo/bar',
+			'lang_set' => 'foo_global',
+		);
+		$event['lang_set_ext'] = $lang_set_ext;
 	}
 }

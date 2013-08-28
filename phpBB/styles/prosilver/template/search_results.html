@@ -63,6 +63,7 @@
 					<dt <!-- IF searchresults.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
 						<div class="list-inner">
 
+							<!-- EVENT topiclist_row_prepend -->
 							<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF -->
 							<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a> {searchresults.ATTACH_ICON_IMG}
 							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED --><a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a> <!-- ENDIF -->
@@ -83,6 +84,7 @@
 							</div>
 							<!-- ENDIF -->
 							{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} &raquo; {searchresults.FIRST_POST_TIME} &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
+							<!-- EVENT topiclist_row_append -->
 
 						</div>
 					</dt>
@@ -174,20 +176,7 @@
 			{SEARCH_MATCHES}
 			<!-- IF .pagination -->
 				&bull;
-				<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull;
-				<ul>
-				<!-- BEGIN pagination -->
-					<!-- IF pagination.S_IS_PREV -->
-					<!-- ELSEIF pagination.S_IS_CURRENT -->
-					<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
-					<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
-					<li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
-					<!-- ELSEIF pagination.S_IS_NEXT -->
-					<!-- ELSE -->
-					<li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
-					<!-- ENDIF -->
-				<!-- END pagination -->
-				</ul>
+				<!-- INCLUDE pagination.html -->
 			<!-- ELSE -->
 				{PAGE_NUMBER}
 			<!-- ENDIF -->

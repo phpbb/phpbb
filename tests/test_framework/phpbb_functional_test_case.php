@@ -957,7 +957,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 	}
 
-	/*
+	/**
 	* Returns the requested parameter from a URL
 	*
 	* @param	string	$url
