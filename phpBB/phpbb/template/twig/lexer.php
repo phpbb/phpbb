@@ -221,6 +221,12 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 	*/
 	protected function fix_if_tokens($code)
 	{
+		// Replace ELSE IF with ELSEIF
+		$code = preg_replace('#<!-- ELSE IF (.+?) -->#', '<!-- ELSEIF $1 -->', $code);
+
+		// Replace our "div by" with Twig's divisibleby (Twig does not like test names with spaces)
+		$code = preg_replace('# div by ([0-9]+)#', ' divisibleby($1)', $code);
+
 		$callback = function($matches)
 		{
 			$inner = $matches[2];
@@ -233,11 +239,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			return "<!-- {$matches[1]}IF{$inner}-->";
 		};
 
-		// Replace our "div by" with Twig's divisibleby (Twig does not like test names with spaces)
-		$code = preg_replace('# div by ([0-9]+)#', ' divisibleby($1)', $code);
-
-		// (ELSE)?\s?IF; match IF|ELSEIF|ELSE IF; replace ELSE IF with ELSEIF
-		return preg_replace_callback('#<!-- (ELSE)?\s?IF(.+?)-->#', $callback, $code);
+		return preg_replace_callback('#<!-- (ELSE)?IF((.*)[\s][\$|\.|!]([^\s]+)(.*))-->#', $callback, $code);
 	}
 
 	/**
