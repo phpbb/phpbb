@@ -19,15 +19,8 @@ if (!defined('IN_PHPBB'))
 * Twig Template class.
 * @package phpBB3
 */
-class phpbb_template_twig implements phpbb_template
+class phpbb_template_twig extends phpbb_template_base
 {
-	/**
-	* Template context.
-	* Stores template data used during template rendering.
-	* @var phpbb_template_context
-	*/
-	protected $context;
-
 	/**
 	* Path of the cache directory for the template
 	*
@@ -74,13 +67,6 @@ class phpbb_template_twig implements phpbb_template
 	* @var Twig_Environment
 	*/
 	protected $twig;
-
-	/**
-	* Array of filenames assigned to set_filenames
-	*
-	* @var array
-	*/
-	protected $filenames = array();
 
 	/**
 	* Constructor.
@@ -149,19 +135,6 @@ class phpbb_template_twig implements phpbb_template
 		{
 			$this->twig->clearCacheFiles();
 		}
-
-		return $this;
-	}
-
-	/**
-	* Sets the template filenames for handles.
-	*
-	* @param array $filename_array Should be a hash of handle => filename pairs.
-	* @return phpbb_template $this
-	*/
-	public function set_filenames(array $filename_array)
-	{
-		$this->filenames = array_merge($this->filenames, $filename_array);
 
 		return $this;
 	}
@@ -276,31 +249,6 @@ class phpbb_template_twig implements phpbb_template
 	}
 
 	/**
-	* Clears all variables and blocks assigned to this template.
-	*
-	* @return phpbb_template $this
-	*/
-	public function destroy()
-	{
-		$this->context->clear();
-
-		return $this;
-	}
-
-	/**
-	* Reset/empty complete block
-	*
-	* @param string $blockname Name of block to destroy
-	* @return phpbb_template $this
-	*/
-	public function destroy_block_vars($blockname)
-	{
-		$this->context->destroy_block_vars($blockname);
-
-		return $this;
-	}
-
-	/**
 	* Display a template for provided handle.
 	*
 	* The template will be loaded and compiled, if necessary, first.
@@ -321,28 +269,6 @@ class phpbb_template_twig implements phpbb_template
 		$this->twig->display($this->get_filename_from_handle($handle), $this->get_template_vars());
 
 		return $this;
-	}
-
-	/**
-	* Calls hook if any is defined.
-	*
-	* @param string $handle Template handle being displayed.
-	* @param string $method Method name of the caller.
-	*/
-	protected function call_hook($handle, $method)
-	{
-		global $phpbb_hook;
-
-		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, $method), $handle, $this))
-		{
-			if ($phpbb_hook->hook_return(array(__CLASS__, $method)))
-			{
-				$result = $phpbb_hook->hook_return_result(array(__CLASS__, $method));
-				return array($result);
-			}
-		}
-
-		return false;
 	}
 
 	/**
@@ -367,99 +293,6 @@ class phpbb_template_twig implements phpbb_template
 	}
 
 	/**
-	* Assign key variable pairs from an array
-	*
-	* @param array $vararray A hash of variable name => value pairs
-	* @return phpbb_template $this
-	*/
-	public function assign_vars(array $vararray)
-	{
-		foreach ($vararray as $key => $val)
-		{
-			$this->assign_var($key, $val);
-		}
-
-		return $this;
-	}
-
-	/**
-	* Assign a single scalar value to a single key.
-	*
-	* Value can be a string, an integer or a boolean.
-	*
-	* @param string $varname Variable name
-	* @param string $varval Value to assign to variable
-	* @return phpbb_template $this
-	*/
-	public function assign_var($varname, $varval)
-	{
-		$this->context->assign_var($varname, $varval);
-
-		return $this;
-	}
-
-	/**
-	* Append text to the string value stored in a key.
-	*
-	* Text is appended using the string concatenation operator (.).
-	*
-	* @param string $varname Variable name
-	* @param string $varval Value to append to variable
-	* @return phpbb_template $this
-	*/
-	public function append_var($varname, $varval)
-	{
-		$this->context->append_var($varname, $varval);
-
-		return $this;
-	}
-
-	/**
-	* Assign key variable pairs from an array to a specified block
-	* @param string $blockname Name of block to assign $vararray to
-	* @param array $vararray A hash of variable name => value pairs
-	* @return phpbb_template $this
-	*/
-	public function assign_block_vars($blockname, array $vararray)
-	{
-		$this->context->assign_block_vars($blockname, $vararray);
-
-		return $this;
-	}
-
-	/**
-	* Change already assigned key variable pair (one-dimensional - single loop entry)
-	*
-	* An example of how to use this function:
-	* {@example alter_block_array.php}
-	*
-	* @param	string	$blockname	the blockname, for example 'loop'
-	* @param	array	$vararray	the var array to insert/add or merge
-	* @param	mixed	$key		Key to search for
-	*
-	* array: KEY => VALUE [the key/value pair to search for within the loop to determine the correct position]
-	*
-	* int: Position [the position to change or insert at directly given]
-	*
-	* If key is false the position is set to 0
-	* If key is true the position is set to the last entry
-	*
-	* @param	string	$mode		Mode to execute (valid modes are 'insert' and 'change')
-	*
-	*	If insert, the vararray is inserted at the given position (position counting from zero).
-	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new value).
-	*
-	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
-	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
-	*
-	* @return bool false on error, true on success
-	*/
-	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
-	{
-		return $this->context->alter_block_array($blockname, $vararray, $key, $mode);
-	}
-
-	/**
 	* Get template vars in a format Twig will use (from the context)
 	*
 	* @return array
@@ -481,17 +314,6 @@ class phpbb_template_twig implements phpbb_template
 		unset($vars['loops']['.']);
 
 		return $vars;
-	}
-
-	/**
-	* Get a filename from the handle
-	*
-	* @param string $handle
-	* @return string
-	*/
-	protected function get_filename_from_handle($handle)
-	{
-		return (isset($this->filenames[$handle])) ? $this->filenames[$handle] : $handle;
 	}
 
 	/**
