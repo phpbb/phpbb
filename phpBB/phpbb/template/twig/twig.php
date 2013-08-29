@@ -19,15 +19,8 @@ if (!defined('IN_PHPBB'))
 * Twig Template class.
 * @package phpBB3
 */
-class phpbb_template_twig implements phpbb_template
+class phpbb_template_twig extends phpbb_template_base
 {
-	/**
-	* Template context.
-	* Stores template data used during template rendering.
-	* @var phpbb_template_context
-	*/
-	protected $context;
-
 	/**
 	* Path of the cache directory for the template
 	*
@@ -42,12 +35,6 @@ class phpbb_template_twig implements phpbb_template
 	* @var string
 	*/
 	protected $phpbb_root_path;
-
-	/**
-	* adm relative path
-	* @var string
-	*/
-	protected $adm_relative_path;
 
 	/**
 	* PHP file extension
@@ -75,28 +62,11 @@ class phpbb_template_twig implements phpbb_template
 	protected $extension_manager;
 
 	/**
-	* Name of the style that the template being compiled and/or rendered
-	* belongs to, and its parents, in inheritance tree order.
-	*
-	* Used to invoke style-specific template events.
-	*
-	* @var array
-	*/
-	protected $style_names;
-
-	/**
 	* Twig Environment
 	*
 	* @var Twig_Environment
 	*/
 	protected $twig;
-
-	/**
-	* Array of filenames assigned to set_filenames
-	*
-	* @var array
-	*/
-	protected $filenames = array();
 
 	/**
 	* Constructor.
@@ -112,7 +82,6 @@ class phpbb_template_twig implements phpbb_template
 	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null, $adm_relative_path = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->adm_relative_path = $adm_relative_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->user = $user;
@@ -147,6 +116,12 @@ class phpbb_template_twig implements phpbb_template
 		$lexer = new phpbb_template_twig_lexer($this->twig);
 
 		$this->twig->setLexer($lexer);
+
+		// Add admin namespace
+		if ($adm_relative_path !== null && is_dir($this->phpbb_root_path . $adm_relative_path . 'style/'))
+		{
+			$this->twig->getLoader()->setPaths($this->phpbb_root_path . $adm_relative_path . 'style/', 'admin');
+		}
 	}
 
 	/**
@@ -165,51 +140,90 @@ class phpbb_template_twig implements phpbb_template
 	}
 
 	/**
-	* Sets the template filenames for handles.
+	* Get the style tree of the style preferred by the current user
 	*
-	* @param array $filename_array Should be a hash of handle => filename pairs.
+	* @return array Style tree, most specific first
+	*/
+	public function get_user_style()
+	{
+		$style_list = array(
+			$this->user->style['style_path'],
+		);
+
+		if ($this->user->style['style_parent_id'])
+		{
+			$style_list = array_merge($style_list, array_reverse(explode('/', $this->user->style['style_parent_tree'])));
+		}
+
+		return $style_list;
+	}
+
+	/**
+	* Set style location based on (current) user's chosen style.
+	*
+	* @param array $style_directories The directories to add style paths for
+	* 	E.g. array('ext/foo/bar/styles', 'styles')
+	* 	Default: array('styles') (phpBB's style directory)
 	* @return phpbb_template $this
 	*/
-	public function set_filenames(array $filename_array)
+	public function set_style($style_directories = array('styles'))
 	{
-		$this->filenames = array_merge($this->filenames, $filename_array);
+		if ($style_directories !== array('styles') && $this->twig->getLoader()->getPaths('core') === array())
+		{
+			// We should set up the core styles path since not already setup
+			$this->set_style();
+		}
+
+		$names = $this->get_user_style();
+
+		$paths = array();
+		foreach ($style_directories as $directory)
+		{
+			foreach ($names as $name)
+			{
+				$path = $this->phpbb_root_path . trim($directory, '/') . "/{$name}/template/";
+
+				if (is_dir($path))
+				{
+					$paths[] = $path;
+				}
+			}
+		}
+
+		// If we're setting up the main phpBB styles directory and the core
+		// namespace isn't setup yet, we will set it up now
+		if ($style_directories === array('styles') && $this->twig->getLoader()->getPaths('core') === array())
+		{
+			// Set up the core style paths namespace
+			$this->twig->getLoader()->setPaths($paths, 'core');
+		}
+
+		$this->set_custom_style($names, $paths);
 
 		return $this;
 	}
 
 	/**
-	* Sets the style names/paths corresponding to style hierarchy being compiled
-	* and/or rendered.
+	* Set custom style location (able to use directory outside of phpBB).
 	*
-	* @param array $style_names List of style names in inheritance tree order
-	* @param array $style_paths List of style paths in inheritance tree order
-	* @param bool $is_core True if the style names are the "core" styles for this page load
-	* 	Core means the main phpBB template files
+	* Note: Templates are still compiled to phpBB's cache directory.
+	*
+	* @param string|array $names Array of names or string of name of template(s) in inheritance tree order, used by extensions.
+	* @param string|array or string $paths Array of style paths, relative to current root directory
 	* @return phpbb_template $this
 	*/
-	public function set_style_names(array $style_names, array $style_paths, $is_core = false)
+	public function set_custom_style($names, $paths)
 	{
-		$this->style_names = $style_names;
+		$paths = (is_string($paths)) ? array($paths) : $paths;
+		$names = (is_string($names)) ? array($names) : $names;
 
 		// Set as __main__ namespace
-		$this->twig->getLoader()->setPaths($style_paths);
-
-		// Core style namespace from phpbb_style::set_style()
-		if ($is_core)
-		{
-			$this->twig->getLoader()->setPaths($style_paths, 'core');
-		}
-
-		// Add admin namespace
-		if (is_dir($this->phpbb_root_path . $this->adm_relative_path . 'style/'))
-		{
-			$this->twig->getLoader()->setPaths($this->phpbb_root_path . $this->adm_relative_path . 'style/', 'admin');
-		}
+		$this->twig->getLoader()->setPaths($paths);
 
 		// Add all namespaces for all extensions
 		if ($this->extension_manager instanceof phpbb_extension_manager)
 		{
-			$style_names[] = 'all';
+			$names[] = 'all';
 
 			foreach ($this->extension_manager->all_enabled() as $ext_namespace => $ext_path)
 			{
@@ -217,7 +231,7 @@ class phpbb_template_twig implements phpbb_template
 				$namespace = str_replace('/', '_', $ext_namespace);
 				$paths = array();
 
-				foreach ($style_names as $style_name)
+				foreach ($names as $style_name)
 				{
 					$ext_style_path = $ext_path . 'styles/' . $style_name . '/template';
 
@@ -230,31 +244,6 @@ class phpbb_template_twig implements phpbb_template
 				$this->twig->getLoader()->setPaths($paths, $namespace);
 			}
 		}
-
-		return $this;
-	}
-
-	/**
-	* Clears all variables and blocks assigned to this template.
-	*
-	* @return phpbb_template $this
-	*/
-	public function destroy()
-	{
-		$this->context = array();
-
-		return $this;
-	}
-
-	/**
-	* Reset/empty complete block
-	*
-	* @param string $blockname Name of block to destroy
-	* @return phpbb_template $this
-	*/
-	public function destroy_block_vars($blockname)
-	{
-		$this->context->destroy_block_vars($blockname);
 
 		return $this;
 	}
@@ -283,28 +272,6 @@ class phpbb_template_twig implements phpbb_template
 	}
 
 	/**
-	* Calls hook if any is defined.
-	*
-	* @param string $handle Template handle being displayed.
-	* @param string $method Method name of the caller.
-	*/
-	protected function call_hook($handle, $method)
-	{
-		global $phpbb_hook;
-
-		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, $method), $handle, $this))
-		{
-			if ($phpbb_hook->hook_return(array(__CLASS__, $method)))
-			{
-				$result = $phpbb_hook->hook_return_result(array(__CLASS__, $method));
-				return array($result);
-			}
-		}
-
-		return false;
-	}
-
-	/**
 	* Display the handle and assign the output to a template variable
 	* or return the compiled result.
 	*
@@ -326,104 +293,11 @@ class phpbb_template_twig implements phpbb_template
 	}
 
 	/**
-	* Assign key variable pairs from an array
-	*
-	* @param array $vararray A hash of variable name => value pairs
-	* @return phpbb_template $this
-	*/
-	public function assign_vars(array $vararray)
-	{
-		foreach ($vararray as $key => $val)
-		{
-			$this->assign_var($key, $val);
-		}
-
-		return $this;
-	}
-
-	/**
-	* Assign a single scalar value to a single key.
-	*
-	* Value can be a string, an integer or a boolean.
-	*
-	* @param string $varname Variable name
-	* @param string $varval Value to assign to variable
-	* @return phpbb_template $this
-	*/
-	public function assign_var($varname, $varval)
-	{
-		$this->context->assign_var($varname, $varval);
-
-		return $this;
-	}
-
-	/**
-	* Append text to the string value stored in a key.
-	*
-	* Text is appended using the string concatenation operator (.).
-	*
-	* @param string $varname Variable name
-	* @param string $varval Value to append to variable
-	* @return phpbb_template $this
-	*/
-	public function append_var($varname, $varval)
-	{
-		$this->context->append_var($varname, $varval);
-
-		return $this;
-	}
-
-	/**
-	* Assign key variable pairs from an array to a specified block
-	* @param string $blockname Name of block to assign $vararray to
-	* @param array $vararray A hash of variable name => value pairs
-	* @return phpbb_template $this
-	*/
-	public function assign_block_vars($blockname, array $vararray)
-	{
-		$this->context->assign_block_vars($blockname, $vararray);
-
-		return $this;
-	}
-
-	/**
-	* Change already assigned key variable pair (one-dimensional - single loop entry)
-	*
-	* An example of how to use this function:
-	* {@example alter_block_array.php}
-	*
-	* @param	string	$blockname	the blockname, for example 'loop'
-	* @param	array	$vararray	the var array to insert/add or merge
-	* @param	mixed	$key		Key to search for
-	*
-	* array: KEY => VALUE [the key/value pair to search for within the loop to determine the correct position]
-	*
-	* int: Position [the position to change or insert at directly given]
-	*
-	* If key is false the position is set to 0
-	* If key is true the position is set to the last entry
-	*
-	* @param	string	$mode		Mode to execute (valid modes are 'insert' and 'change')
-	*
-	*	If insert, the vararray is inserted at the given position (position counting from zero).
-	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new value).
-	*
-	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
-	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
-	*
-	* @return bool false on error, true on success
-	*/
-	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
-	{
-		return $this->context->alter_block_array($blockname, $vararray, $key, $mode);
-	}
-
-	/**
 	* Get template vars in a format Twig will use (from the context)
 	*
 	* @return array
 	*/
-	public function get_template_vars()
+	protected function get_template_vars()
 	{
 		$context_vars = $this->context->get_data_ref();
 
@@ -440,17 +314,6 @@ class phpbb_template_twig implements phpbb_template
 		unset($vars['loops']['.']);
 
 		return $vars;
-	}
-
-	/**
-	* Get a filename from the handle
-	*
-	* @param string $handle
-	* @return string
-	*/
-	protected function get_filename_from_handle($handle)
-	{
-		return (isset($this->filenames[$handle])) ? $this->filenames[$handle] : $handle;
 	}
 
 	/**
