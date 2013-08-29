@@ -140,13 +140,37 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 	}
 
 	function test_obtain_guest_count()
-	{}
+	{
+		$this->assertEquals(
+			1,
+			$this->session->db_session->obtain_guest_count()
+		);
+	}
 
-	function test_get_users_online()
-	{}
+	function test_get_user_list()
+	{
+		global $phpbb_dispatcher;
+		$sessions =
+			$this->session->db_session->get_user_list(true, 60, 'session_time', $phpbb_dispatcher);
+		$this->assertEquals(2, count($sessions));
+		$this->assert_array_content_equals(
+			array('user_id', 'username', 'username_clean',
+				'user_type', 'user_colour', 'session_id',
+				'session_time', 'session_page', 'session_ip',
+				'session_browser', 'session_viewonline',
+				'session_forum_id',),
+			array_keys($sessions[0])
+		);
+	}
 
 	function test_map_users_online()
-	{}
+	{
+		$this->assert_array_content_equals(
+			array(),
+			$this->session->db_session->map_users_online(
+				array(self::annon_id), 60, function ($s) {return $s;})
+		);
+	}
 
 	function test_map_certain_users_with_time()
 	{}
@@ -184,17 +208,68 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 	}
 
 	function test_get_with_user_id()
-	{}
+	{
+		$session =
+			$this->session->db_session->get_with_user_id(ANONYMOUS);
+		$this->assertEquals(
+			self::annon_id,
+			$session['session_id']
+		);
+		$number_of_keys = 88;
+		$this->assertEquals($number_of_keys, count(array_keys($session)));
+	}
 
 	function test_set_viewonline()
-	{}
+	{
+		$session = $this->session->db_session->get(self::annon_id);
+		$this->assertEquals(1, $session['session_viewonline']);
+		$this->session->db_session->set_viewonline(ANONYMOUS, 0);
+		$session = $this->session->db_session->get(self::annon_id);
+		$this->assertEquals(0, $session['session_viewonline']);
+	}
 
 	function test_cleanup_guest_sessions()
-	{}
+	{
+		$year_in_seconds = 60 * 60 * 24 * 365;
+		$this->session->db_session->update(
+			self::annon_id,
+			array('session_time' => time() - $year_in_seconds)
+		);
+		$this->session->db_session->cleanup_guest_sessions(60);
+		$this->assertEquals(
+			0,
+			$this->session->db_session->obtain_guest_count()
+		);
+	}
 
 	function test_cleanup_expired_sessions()
-	{}
+	{
+		$year_in_seconds = 60 * 60 * 24 * 365;
+		$this->session->db_session->update(
+			self::annon_id,
+			array('session_time' => time() - $year_in_seconds)
+		);
+		$this->session->db_session->cleanup_expired_sessions(array(ANONYMOUS), 60);
+		$this->assertEquals(
+			0,
+			$this->session->db_session->obtain_guest_count()
+		);
+	}
 
 	function test_map_recently_expired()
-	{}
+	{
+		$year_in_seconds = 60 * 60 * 24 * 365;
+		$this->session->db_session->update(
+			self::annon_id,
+			array('session_time' => time() - $year_in_seconds)
+		);
+		$this->assert_array_content_equals(
+			array(ANONYMOUS),
+			$this->session->db_session->map_recently_expired(
+				60,
+				function ($s) {return $s['session_user_id'];},
+				25
+			)
+		);
+	}
 }
