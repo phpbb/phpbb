@@ -11,6 +11,8 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 {
 	var $session;
 	const annon_id = 'anon_session00000000000000000000';
+	const bar_id = 'bar_session000000000000000000000';
+	var $set_time = 0;
 
 	public function getDataSet()
 	{
@@ -22,6 +24,15 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 		parent::setUp();
 		$this->session = new phpbb_session();
 		$this->session->db_session->set_db($this->new_dbal());
+		$this->set_time = time();
+		// Update time stamps on all sessions
+		foreach(array(self::annon_id, self::bar_id) as $session_id)
+		{
+			$this->session->db_session->update(
+				$session_id,
+				array('session_time' => $this->set_time)
+			);
+		}
 	}
 
 	function test_create_session()
@@ -96,7 +107,7 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 			array
 			(
 				'session_user_id' => ANONYMOUS,
-				'online_time' => 0,
+				'online_time' => $this->set_time,
 				'viewonline' => 1,
 			),
 			$online_time
@@ -105,17 +116,27 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 
 	function test_num_active_sessions()
 	{
-		// 0 Because the mock data doesn't include session times.
 		$this->assertEquals(
-		0,
+		2,
 		$this->session->db_session->num_active_sessions(60)
 	);
 	}
 
-	function test_get_user_list()
+	function test_get_users_online_totals()
 	{
-		$sessions = $this->session->db_session->get_user_list();
-		$this->assertNotEquals(0, $sessions);
+		$sessions = $this->session->db_session->get_users_online_totals();
+		$this->assertEquals(
+			array
+			(
+				'online_users' => array('4' => 4),
+				'hidden_users' => array(),
+				'total_online' => 1,
+				'visible_online' => 1,
+				'hidden_online' => 0,
+				'guests_online' => 0,
+			),
+			$sessions
+		);
 	}
 
 	function test_obtain_guest_count()
@@ -156,9 +177,8 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 
 	function test_num_sessions()
 	{
-		// 0 Because the mock data doesn't include session times.
 		$this->assertEquals(
-			0,
+			1,
 			$this->session->db_session->num_sessions(ANONYMOUS, 60)
 		);
 	}
