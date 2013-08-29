@@ -1461,14 +1461,32 @@ class phpbb_session
 		return $this->db_session->obtain_guest_count($item_id, $item);
 	}
 
-	function get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher)
+	/**
+	* Get a list of all users active after online_time.
+	*
+	* @param $show_guests			Include anonymous users
+	* @param $online_time			Include sessions active in a time greater than this
+	* @param $order_by				order_by sql
+	* @param $phpbb_dispatcher
+	*
+	* @return array				List of all rows containing users that matched
+	*/
+	function get_user_list($show_guests, $online_time, $order_by, $phpbb_dispatcher)
 	{
-		return $this->db_session->get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher);
+		return $this->db_session->get_user_list($show_guests, $online_time, $order_by, $phpbb_dispatcher);
 	}
 
-	function obtain_users_online($item_id = 0, $item = 'forum')
+	/**
+	* Queries the session table to get information about online users
+	*
+	* @param int $item_id Limits the search to the item with this id
+	* @param string $item The name of the item which is stored in the session table as session_{$item}_id
+	*
+	* @return array An array containing the ids of online, hidden and visible users, as well as statistical info
+	*/
+	function get_users_online_totals($item_id = 0, $item = 'forum')
 	{
-		return $this->db_user->obtain_users_online($item_id, $item);
+		return $this->db_user->get_users_online_totals($item_id, $item);
 	}
 
 
