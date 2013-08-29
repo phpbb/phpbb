@@ -1814,7 +1814,7 @@ class phpbb_session
 	*
 	* @return array				List of all rows containing users that matched
 	*/
-	function get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher)
+	function get_user_list($show_guests, $online_time, $order_by, $phpbb_dispatcher)
 	{
 		global $db;
 
@@ -1862,7 +1862,7 @@ class phpbb_session
 	*
 	* @return array An array containing the ids of online, hidden and visible users, as well as statistical info
 	*/
-	function obtain_users_online($item_id = 0, $item = 'forum')
+	function get_users_online_totals($item_id = 0, $item = 'forum')
 	{
 		global $db, $config;
 

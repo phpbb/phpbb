@@ -4469,7 +4469,7 @@ function obtain_guest_count($item_id = 0, $item = 'forum')
 function obtain_users_online($item_id = 0, $item = 'forum')
 {
 	$session = new phpbb_session();
-	return $session->obtain_users_online($item_id, $item);
+	return $session->get_users_online_totals($item_id, $item);
 }
 
 /**
