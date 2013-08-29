@@ -51,7 +51,7 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 		$this->assertEquals(1, $results['session_admin']);
 	}
 
-	function test_get_session()
+	function test_get()
 	{
 		$results = $this->session->db_session->get(self::annon_id);
 		$this->assertEquals(0, $results['session_admin']);
@@ -90,7 +90,18 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 	}
 
 	function test_get_user_online_time()
-	{}
+	{
+		$online_time = $this->session->db_session->get_user_online_time(ANONYMOUS);
+		$this->assert_array_content_equals(
+			array
+			(
+				'session_user_id' => ANONYMOUS,
+				'online_time' => 0,
+				'viewonline' => 1,
+			),
+			$online_time
+		);
+	}
 
 	function test_num_active_sessions()
 	{
@@ -101,8 +112,11 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 	);
 	}
 
-	function test_obtain_users_online()
-	{}
+	function test_get_user_list()
+	{
+		$sessions = $this->session->db_session->get_user_list();
+		$this->assertNotEquals(0, $sessions);
+	}
 
 	function test_obtain_guest_count()
 	{}
