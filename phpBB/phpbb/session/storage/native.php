@@ -202,11 +202,12 @@ class phpbb_session_storage_native implements
 
 	function num_active_sessions($minutes_considered_active)
 	{
-		return $this->query('
+		$results = $this->query('
 			SELECT COUNT(session_id) AS sessions
 			FROM ' . SESSIONS_TABLE . '
 			WHERE session_time >= ' . ($this->time_now - $minutes_considered_active)
 		);
+		return $results['sessions'];
 	}
 
 	function num_sessions($user_id, $max_time)
@@ -215,7 +216,8 @@ class phpbb_session_storage_native implements
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_user_id = ' . (int) $user_id . '
 					AND session_time >= ' . (int) ($this->time_now - $max_time);
-		return $this->query($sql);
+		$results =  $this->query($sql);
+		return $results['sessions'];
 	}
 
 	function unset_admin($session_id)
@@ -435,7 +437,7 @@ class phpbb_session_storage_native implements
 		$sql = 'SELECT u.*, s.*
 				FROM ' . USERS_TABLE . ' u
 					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
-				WHERE u.user_id = ' . $user_id . '
+				WHERE u.user_id = ' . (int) $user_id . '
 				ORDER BY s.session_time DESC';
 		return $this->query($sql);
 	}
@@ -448,7 +450,7 @@ class phpbb_session_storage_native implements
 	 *
 	 * @return array An array containing the ids of online, hidden and visible users, as well as statistical info
 	 */
-	function obtain_users_online($item_id = 0, $item = 'forum')
+	function get_users_online_totals($item_id = 0, $item = 'forum')
 	{
 		global $config;
 
@@ -564,7 +566,7 @@ class phpbb_session_storage_native implements
 	 *
 	 * @return array                List of all rows containing users that matched
 	 */
-	function get_users_online($show_guests, $online_time, $order_by, $phpbb_dispatcher)
+	function get_user_list($show_guests, $online_time, $order_by, $phpbb_dispatcher)
 	{
 		$sql_ary = array(
 			'SELECT'	=> '

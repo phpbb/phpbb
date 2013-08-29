@@ -94,7 +94,7 @@ if (!$show_guests)
 }
 
 // Get user list
-$users = $user->get_users_online(
+$users = $user->get_user_list(
 	$show_guests,
 	time() - ($config['load_online_time'] * 60),
 	$order_by,
