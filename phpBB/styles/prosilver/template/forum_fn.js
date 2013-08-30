@@ -277,8 +277,6 @@ function phpbb_check_key(event) {
 
 /**
 * Apply onkeypress event for forcing default submit button on ENTER key press
-* The jQuery snippet used is based on http://greatwebguy.com/programming/dom/default-html-button-submit-on-enter-with-jquery/
-* The non-jQuery code is a mimick of the jQuery code ;)
 */
 function apply_onkeypress_event() {
 	jQuery('form input[type=text], form input[type=password]').on('keypress', function (e) {
