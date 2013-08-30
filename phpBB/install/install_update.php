@@ -70,7 +70,7 @@ class install_update extends module
 
 	function main($mode, $sub)
 	{
-		global $phpbb_style, $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
+		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
 		global $request, $phpbb_admin_path, $phpbb_adm_relative_path, $phpbb_container;
 
 		// We must enable super globals, otherwise creating a new instance of the request class,
@@ -143,7 +143,7 @@ class install_update extends module
 		// Set custom template again. ;)
 		$paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
 		$paths = array_filter($paths, 'is_dir');
-		$phpbb_style->set_custom_style('admin', $paths, array(), '');
+		$template->set_custom_style('admin', $paths);
 
 		$template->assign_vars(array(
 			'S_USER_LANG'			=> $user->lang['USER_LANG'],
