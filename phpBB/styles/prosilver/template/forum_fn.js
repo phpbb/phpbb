@@ -362,6 +362,52 @@ function im_contact(address)
 }
 
 /**
+* Functions for user search popup
+*/
+function insert_user(formId, value)
+{
+	var form = jQuery(formId),
+		formName = form.attr('data-form-name'),
+		fieldName = form.attr('data-field-name'),
+		item = opener.document.forms[formName][fieldName];
+
+	if (item.value.length && item.type == 'textarea') {
+		value = item.value + "\n" + value;
+	}
+
+	item.value = value;
+}
+
+function insert_marked_users(formId, users)
+{
+	if (typeof(users.length) == "undefined")
+	{
+		if (users.checked)
+		{
+			insert_user(formId, users.value);
+		}
+	}
+	else if (users.length > 0)
+	{
+		for (i = 0; i < users.length; i++)
+		{
+			if (users[i].checked)
+			{
+				insert_user(formId, users[i].value);
+			}
+		}
+	}
+
+	self.close();
+}
+
+function insert_single_user(formId, user)
+{
+	insert_user(formId, user);
+	self.close();
+}
+
+/**
 * Run onload functions
 */
 (function($) {
