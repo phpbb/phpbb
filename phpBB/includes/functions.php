@@ -2413,7 +2413,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
 	global $phpbb_dispatcher;
-	global $symfony_request;
+	global $symfony_request, $phpbb_root_path;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -2421,10 +2421,10 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
-	$corrected_root = $symfony_request !== null ? phpbb_get_web_root_path($symfony_request) : '';
-	if ($corrected_root)
+	$corrected_path = $symfony_request !== null ? phpbb_get_web_root_path($symfony_request, $phpbb_root_path) : '';
+	if ($corrected_path)
 	{
-		$url = $corrected_root . substr($url, strlen($phpbb_root_path));
+		$url = substr($corrected_path . $url, strlen($phpbb_root_path));
 	}
 
 	$append_sid_overwrite = false;
@@ -5218,7 +5218,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// This path is sent with the base template paths in the assign_vars()
 	// call below. We need to correct it in case we are accessing from a
 	// controller because the web paths will be incorrect otherwise.
-	$corrected_path = $symfony_request !== null ? phpbb_get_web_root_path($symfony_request) : '';
+	$corrected_path = $symfony_request !== null ? phpbb_get_web_root_path($symfony_request, $phpbb_root_path) : '';
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 	// Send a proper content-language to the output
@@ -5731,7 +5731,7 @@ function phpbb_create_symfony_request(phpbb_request $request)
 *
 * @param Request $symfony_request Symfony Request object
 */
-function phpbb_get_web_root_path(Request $symfony_request)
+function phpbb_get_web_root_path(Request $symfony_request, $phpbb_root_path = '')
 {
 	static $path;
 	if (null !== $path)
@@ -5740,23 +5740,13 @@ function phpbb_get_web_root_path(Request $symfony_request)
 	}
 
 	$path_info = $symfony_request->getPathInfo();
-
-	// When no path is given (i.e. REQUEST_URI = "./app.php") path info from
-	// the Symfony Request object is "/". However, that is the same as when
-	// the REQUEST_URI is "./app.php/". So we want to correct the path when
-	// we have a trailing slash in the REQUEST_URI, but not when we don't.
-	$request_uri = $symfony_request->server->get('REQUEST_URI');
-	$trailing_slash = substr($request_uri, -1) === '/';
-
-	// If pathinfo is / and we do not have a trailing slash in the REQUEST_URI
-	if (!$trailing_slash && '/' === $path_info)
+	if ($path_info === '/')
 	{
-		$path = '';
+		$path = $phpbb_root_path;
 		return $path;
 	}
 
 	$corrections = substr_count($path_info, '/');
-	$path = str_repeat('../', $corrections);
-
+	$path = $phpbb_root_path . str_repeat('../', $corrections);
 	return $path;
 }
