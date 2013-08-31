@@ -38,7 +38,7 @@ class ucp_register
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
 		$coppa			= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
-		$agreed			= (int) $request->variable('agreed', false);
+		$agreed			= $request->variable('agreed', false);
 		$submit			= $request->is_set_post('submit');
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
@@ -63,7 +63,7 @@ class ucp_register
 					$submit = false;
 
 					// Setting back agreed to let the user view the agreement in his/her language
-					$agreed = ($request->variable('change_lang', false)) ? 0 : $agreed;
+					$agreed = false;
 				}
 
 				$user->lang_name = $user_lang = $use_lang;
@@ -89,7 +89,7 @@ class ucp_register
 			$add_coppa = ($coppa !== false) ? '&amp;coppa=' . $coppa : '';
 
 			$s_hidden_fields = array(
-				'change_lang'	=> $change_lang,
+				'change_lang'	=> '',
 			);
 
 			// If we change the language, we want to pass on some more possible parameter.

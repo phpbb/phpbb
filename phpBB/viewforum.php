@@ -105,7 +105,7 @@ if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 	if ($forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK)
 	{
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
-			SET forum_posts = forum_posts + 1
+			SET forum_posts_approved = forum_posts_approved + 1
 			WHERE forum_id = ' . $forum_id;
 		$db->sql_query($sql);
 	}
@@ -372,6 +372,16 @@ $sql_array = array(
 	'LEFT_JOIN'	=> array(),
 );
 
+/**
+* Event to modify the SQL query before the topic data is retrieved
+*
+* @event core.viewforum_get_topic_data
+* @var	array	sql_array		The SQL array to get the data of all topics
+* @since 3.1-A1
+*/
+$vars = array('sql_array');
+extract($phpbb_dispatcher->trigger_event('core.viewforum_get_topic_data', compact($vars)));
+
 $sql_approved = ' AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
 
 if ($user->data['is_registered'])
@@ -554,6 +564,17 @@ if (sizeof($shadow_topic_list))
 	$sql = 'SELECT *
 		FROM ' . TOPICS_TABLE . '
 		WHERE ' . $db->sql_in_set('topic_id', array_keys($shadow_topic_list));
+
+	/**
+	* Event to modify the SQL query before the shadowtopic data is retrieved
+	*
+	* @event core.viewforum_get_shadowtopic_data
+	* @var	string	sql		The SQL string to get the data of any shadowtopics
+	* @since 3.1-A1
+	*/
+	$vars = array('sql');
+	extract($phpbb_dispatcher->trigger_event('core.viewforum_get_shadowtopic_data', compact($vars)));
+
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
