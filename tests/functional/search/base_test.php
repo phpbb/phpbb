@@ -33,6 +33,11 @@ abstract class phpbb_functional_search_base_test extends phpbb_functional_test_c
 
 	public function test_search_backend()
 	{
+		if ($this->search_backend == 'phpbb_search_fulltext_sphinx')
+		{
+			$this->markTestIncomplete('Sphinx Tests are not supported');
+		}
+
 		$this->login();
 		$this->admin_login();
 
