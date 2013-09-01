@@ -23,21 +23,12 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	{
 		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);
 		$this->assertEquals(0, $crawler->filter('.postbody')->count());
-		if ($this->search_backend == 'phpbb_search_fulltext_native' || $this->search_backend == 'phpbb_search_fulltext_postgres')
-		{
-			$this->markTestIncomplete('Native and Postgres search when fails doesn\'t show the search query');
-		}
 		$split_keywords_string = str_replace(array('+', '-'), ' ', $keywords);
 		$this->assertEquals($split_keywords_string, $crawler->filter('#keywords')->attr('value'));
 	}
 
 	public function test_search_backend()
 	{
-		if ($this->search_backend == 'phpbb_search_fulltext_sphinx')
-		{
-			$this->markTestIncomplete('Sphinx Tests are not supported');
-		}
-
 		$this->login();
 		$this->admin_login();
 
