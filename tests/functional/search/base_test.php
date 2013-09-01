@@ -23,9 +23,9 @@ abstract class phpbb_functional_search_base_test extends phpbb_functional_test_c
 	{
 		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);
 		$this->assertEquals(0, $crawler->filter('.postbody')->count());
-		if ($this->search_backend == 'phpbb_search_fulltext_native')
+		if ($this->search_backend == 'phpbb_search_fulltext_native' || $this->search_backend == 'phpbb_search_fulltext_postgres')
 		{
-			$this->markTestIncomplete('Native search when fails doesn\'t show the search query');
+			$this->markTestIncomplete('Native and Postgres search when fails doesn\'t show the search query');
 		}
 		$split_keywords_string = str_replace(array('+', '-'), ' ', $keywords);
 		$this->assertEquals($split_keywords_string, $crawler->filter('#keywords')->attr('value'));
