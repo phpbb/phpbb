@@ -62,6 +62,7 @@ $lang = array_merge($lang, array(
 
 // User Permissions
 $lang = array_merge($lang, array(
+	'ACL_U_API'			=> 'Can access the API',
 	'ACL_U_VIEWPROFILE'	=> 'Can view profiles, memberlist and online list',
 	'ACL_U_CHGNAME'		=> 'Can change username',
 	'ACL_U_CHGPASSWD'	=> 'Can change password',

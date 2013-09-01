@@ -211,6 +211,37 @@ CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id)
 /
 
 /*
+	Table: 'phpbb_api_keys'
+*/
+CREATE TABLE phpbb_api_keys (
+	key_id number(8) NOT NULL,
+	user_id number(8) DEFAULT '0' NOT NULL,
+	name varchar2(32) DEFAULT '' ,
+	auth_key varchar2(16) DEFAULT '' ,
+	sign_key varchar2(16) DEFAULT '' ,
+	serial number(8) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_api_keys PRIMARY KEY (key_id)
+)
+/
+
+
+CREATE SEQUENCE phpbb_api_keys_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_api_keys
+BEFORE INSERT ON phpbb_api_keys
+FOR EACH ROW WHEN (
+	new.key_id IS NULL OR new.key_id = 0
+)
+BEGIN
+	SELECT phpbb_api_keys_seq.nextval
+	INTO :new.key_id
+	FROM dual;
+END;
+/
+
+
+/*
 	Table: 'phpbb_banlist'
 */
 CREATE TABLE phpbb_banlist (

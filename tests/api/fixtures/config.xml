@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+    <table name="phpbb_config">
+        <column>config_name</column>
+        <column>config_value</column>
+        <column>is_dynamic</column>
+        <row>
+            <value>allow_api</value>
+            <value>1</value>
+            <value>0</value>
+        </row>
+    </table>
+        <table name="phpbb_acl_options">
+        <column>auth_option_id</column>
+        <column>auth_option</column>
+        <column>is_global</column>
+        <column>is_local</column>
+        <column>founder_only</column>
+        <row>
+            <value>89</value>
+            <value>u_api</value>
+            <value>1</value>
+            <value>0</value>
+            <value>0</value>
+        </row>
+    </table>
+    <table name="phpbb_api_keys">
+        <column>key_id</column>
+        <column>user_id</column>
+        <column>name</column>
+        <column>auth_key</column>
+        <column>sign_key</column>
+        <column>serial</column>
+        <row>
+            <value>1</value>
+            <value>2</value>
+            <value>test</value>
+            <value>aaaaaaaaaaaaaaaa</value>
+            <value>bbbbbbbbbbbbbbbb</value>
+            <value>0</value>
+        </row>
+    </table>
+</dataset>

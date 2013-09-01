@@ -7,3 +7,55 @@
 # The above will be accessed via app.php?controller=foo and it will
 # instantiate the "foo_service" service and call the "method" method.
 #
+api_forums_controller:
+    pattern: /api/forums/{forum_id}
+    defaults: { _controller: api.controller.forum:forums, forum_id: 0 }
+    requirements:
+        forum_id: \d+
+        _method: GET
+
+api_topics_list_controller:
+    pattern: /api/forums/{forum_id}/topics/{page}
+    defaults: { _controller: api.controller.forum:topics, page: 1 }
+    requirements:
+        forum_id: \d+
+        page: \d+
+        _method: GET
+
+api_topic_controller:
+    pattern: /api/topic/{topic_id}/{page}
+    defaults: { _controller: api.controller.topic:topic, page: 1 }
+    requirements:
+        topic_id: \d+
+        page: \d+
+        _method: GET
+
+api_auth_generate_controller:
+    pattern: /api/auth/generatekeys
+    defaults: { _controller: api.controller.auth:generate_keys }
+    requirements:
+        _method: GET
+
+api_auth_controller:
+    pattern: /api/auth/{auth_key}/{sign_key}
+    defaults: { _controller: api.controller.auth:auth }
+    requirements:
+        _method: GET
+
+api_auth_allow_controller:
+    pattern: /api/auth/allow
+    defaults: { _controller: api.controller.auth:allow }
+    requirements:
+        _method: POST
+
+api_auth_verify_controller:
+    pattern: /api/auth/verify
+    defaults: { _controller: api.controller.auth:verify }
+    requirements:
+        _method: GET
+
+api_post_controller:
+    pattern: /api/post
+    defaults: { _controller: api.controller.post:new_post }
+    requirements:
+        _method: POST

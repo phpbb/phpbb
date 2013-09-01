@@ -167,6 +167,27 @@ GO
 
 
 /*
+	Table: 'phpbb_api_keys'
+*/
+CREATE TABLE [phpbb_api_keys] (
+	[key_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[name] [varchar] (32) DEFAULT ('') NOT NULL ,
+	[auth_key] [varchar] (16) DEFAULT ('') NOT NULL ,
+	[sign_key] [varchar] (16) DEFAULT ('') NOT NULL ,
+	[serial] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_api_keys] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_api_keys] PRIMARY KEY  CLUSTERED 
+	(
+		[key_id]
+	)  ON [PRIMARY] 
+GO
+
+
+/*
 	Table: 'phpbb_banlist'
 */
 CREATE TABLE [phpbb_banlist] (

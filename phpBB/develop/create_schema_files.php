@@ -923,6 +923,18 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_api_keys'] = array(
+		'COLUMNS'		=> array(
+			'key_id'			=> array('UINT', NULL, 'auto_increment'),
+			'user_id'			=> array('UINT', 0),
+			'name'				=> array('VCHAR:32', ''),
+			'auth_key'				=> array('VCHAR:16', ''),
+			'sign_key'		=> array('VCHAR:16', ''),
+			'serial'			=> array('UINT', 0),
+		),
+		'PRIMARY_KEY'			=> 'key_id',
+	);
+
 	$schema_data['phpbb_banlist'] = array(
 		'COLUMNS'		=> array(
 			'ban_id'			=> array('UINT', NULL, 'auto_increment'),

@@ -1,0 +1,38 @@
+services:
+    api.controller.forum:
+        class: phpbb_controller_api_forum
+        arguments:
+            - @model.repository.forum
+            - @config
+            - @model.repository.auth
+            - @request
+
+    api.controller.auth:
+        class: phpbb_controller_api_auth
+        arguments:
+            - @model.repository.auth
+            - @user
+            - @controller.helper
+            - @template
+            - @request
+            - @config
+            - @auth
+
+    api.controller.topic:
+            class: phpbb_controller_api_topic
+            arguments:
+                - @model.repository.topic
+                - @model.repository.post
+                - @model.repository.auth
+                - @request
+                - @config
+
+    api.controller.post:
+            class: phpbb_controller_api_post
+            arguments:
+                - @model.repository.post
+                - @model.repository.auth
+                - @request
+                - @config
+                - %core.root_path%
+                - %core.php_ext%

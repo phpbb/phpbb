@@ -84,6 +84,8 @@ $lang = array_merge($lang, array(
 	'ALLOW_PM'						=> 'Allow users to send you private messages',
 	'ALLOW_PM_EXPLAIN'				=> 'Note that administrators and moderators will always be able to send you messages.',
 	'ALREADY_ACTIVATED'				=> 'You have already activated your account.',
+	'API_KEY_NAME'					=> 'API key name',
+	'API_KEYS_DELETED'				=> 'The selected API keys were successfully deleted.',
 	'ATTACHMENTS_EXPLAIN'			=> 'This is a list of attachments you have made in posts to this board.',
 	'ATTACHMENTS_DELETED'			=> 'Attachments successfully deleted.',
 	'ATTACHMENT_DELETED'			=> 'Attachment successfully deleted.',
@@ -346,6 +348,7 @@ $lang = array_merge($lang, array(
 	'NO_AUTHOR'						=> 'No author defined for this message',
 	'NO_AVATAR_CATEGORY'			=> 'None',
 
+	'NO_AUTH_API'					=> 'You are not authorised to use the API.',
 	'NO_AUTH_DELETE_MESSAGE'		=> 'You are not authorised to delete private messages.',
 	'NO_AUTH_EDIT_MESSAGE'			=> 'You are not authorised to edit private messages.',
 	'NO_AUTH_FORWARD_MESSAGE'		=> 'You are not authorised to forward private messages.',
@@ -357,6 +360,8 @@ $lang = array_merge($lang, array(
 	'NO_AUTH_READ_REMOVED_MESSAGE'	=> 'You are not able to read this message because it was removed by the author.',
 	'NO_AUTH_SEND_MESSAGE'			=> 'You are not authorised to send private messages.',
 	'NO_AUTH_SIGNATURE'				=> 'You are not authorised to define a signature.',
+
+	'NO_API'						=> 'The API is not enabled on this board.',
 
 	'NO_BCC_RECIPIENT'			=> 'None',
 	'NO_BOOKMARKS'				=> 'You have no bookmarks.',
@@ -414,6 +419,8 @@ $lang = array_merge($lang, array(
 	'PREFERENCES_UPDATED'		=> 'Your preferences have been updated.',
 	'PROFILE_INFO_NOTICE'		=> 'Please note that this information may be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
 	'PROFILE_UPDATED'			=> 'Your profile has been updated.',
+	'PROFILE_API_KEYS'			=> 'API keys are keys for applications you have given permissions to access the board on your behalf. Here you can manage your keys in case you want to revoke permission for an application.',
+	'PROFILE_NO_API_KEYS'		=> 'There are no API keys.',
 	'PROFILE_AUTOLOGIN_KEYS'	=> 'The "Remember Me" login keys automatically log you in when you visit the board. If you logout, the remember me login key is deleted only on the computer you are using to logout. Here you can see remember login keys created on other computers you used to access this site.',
 	'PROFILE_NO_AUTOLOGIN_KEYS'	=> 'There are no saved "Remember Me" login keys.',
 
@@ -516,6 +523,7 @@ $lang = array_merge($lang, array(
 	'UCP_PROFILE_REG_DETAILS'	=> 'Edit account settings',
 	'UCP_PROFILE_SIGNATURE'		=> 'Edit signature',
 	'UCP_PROFILE_AUTOLOGIN_KEYS'=> 'Edit "Remember Me" login keys',
+	'UCP_PROFILE_API_KEYS'		=> 'Edit API keys',
 
 	'UCP_USERGROUPS'			=> 'Usergroups',
 	'UCP_USERGROUPS_MEMBER'		=> 'Edit memberships',

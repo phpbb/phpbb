@@ -189,6 +189,22 @@ CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id);
 CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id);
 
 /*
+	Table: 'phpbb_api_keys'
+*/
+CREATE SEQUENCE phpbb_api_keys_seq;
+
+CREATE TABLE phpbb_api_keys (
+	key_id INT4 DEFAULT nextval('phpbb_api_keys_seq'),
+	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	name varchar(32) DEFAULT '' NOT NULL,
+	auth_key varchar(16) DEFAULT '' NOT NULL,
+	sign_key varchar(16) DEFAULT '' NOT NULL,
+	serial INT4 DEFAULT '0' NOT NULL CHECK (serial >= 0),
+	PRIMARY KEY (key_id)
+);
+
+
+/*
 	Table: 'phpbb_banlist'
 */
 CREATE SEQUENCE phpbb_banlist_seq;

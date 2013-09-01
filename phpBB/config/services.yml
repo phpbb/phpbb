@@ -6,6 +6,7 @@ imports:
     - { resource: avatars.yml }
     - { resource: feed.yml }
     - { resource: auth_providers.yml }
+    - { resource: controller_services.yml }
 
 services:
     acl.permissions:
@@ -229,6 +230,39 @@ services:
             - %core.php_ext%
             - %tables.log%
 
+    model.repository.auth:
+        class: phpbb_model_repository_auth
+        arguments:
+            - @config
+            - @dbal.conn
+            - @auth
+
+    model.repository.forum:
+        class: phpbb_model_repository_forum
+        arguments:
+            - @tree.nestedset_forum
+            - @auth
+            - @config
+            - @dbal.conn
+
+    model.repository.post:
+        class: phpbb_model_repository_post
+        arguments:
+            - @auth
+            - @config
+            - @dbal.conn
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+
+    model.repository.topic:
+        class: phpbb_model_repository_topic
+        arguments:
+            - @auth
+            - @config
+            - @dbal.conn
+            - @user
+
     notification_manager:
         class: phpbb_notification_manager
         arguments:
@@ -264,6 +298,13 @@ services:
 
     template_context:
         class: phpbb_template_context
+
+    tree.nestedset_forum:
+        class: phpbb_tree_nestedset_forum
+        arguments:
+            - @dbal.conn
+            - @cron.lock_db
+            - %tables.forums%
 
     user:
         class: phpbb_user
