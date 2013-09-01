@@ -7,7 +7,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/base_test.php';
+require_once dirname(__FILE__) . '/base.php';
 
 /**
 * @group functional
