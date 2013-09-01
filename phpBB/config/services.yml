@@ -230,6 +230,13 @@ services:
             - %core.php_ext%
             - %tables.log%
 
+    model.repository.auth:
+        class: phpbb_model_repository_auth
+        arguments:
+            - @config
+            - @dbal.conn
+            - @auth
+
     model.repository.forum:
         class: phpbb_model_repository_forum
         arguments:
@@ -238,8 +245,8 @@ services:
             - @config
             - @dbal.conn
 
-    model.repository.topic:
-        class: phpbb_model_repository_topic
+    model.repository.post:
+        class: phpbb_model_repository_post
         arguments:
             - @auth
             - @config
@@ -248,12 +255,13 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
-    model.repository.auth:
-        class: phpbb_model_repository_auth
+    model.repository.topic:
+        class: phpbb_model_repository_topic
         arguments:
+            - @auth
             - @config
             - @dbal.conn
-            - @auth
+            - @user
 
     notification_manager:
         class: phpbb_notification_manager

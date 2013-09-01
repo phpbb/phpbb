@@ -22,6 +22,15 @@ services:
             class: phpbb_controller_api_topic
             arguments:
                 - @model.repository.topic
+                - @model.repository.post
+                - @model.repository.auth
+                - @request
+                - @config
+
+    api.controller.post:
+            class: phpbb_controller_api_post
+            arguments:
+                - @model.repository.post
                 - @model.repository.auth
                 - @request
                 - @config
