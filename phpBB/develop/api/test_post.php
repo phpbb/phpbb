@@ -2,12 +2,13 @@
 
 $request = array(
 	'auth_key' => '0d2206b9114e99d0',
-	'serial' => 67,
+	'serial' => 78,
 
 	'username' => '',
 	'topic_type' => 0,
 
 	'forum_id' => 2,
+	'topic_id' => 22,
 	'icon_id' => 0,
 
 	'enable_bbcode' => true,
@@ -15,9 +16,9 @@ $request = array(
 	'enable_urls' => true,
 	'enable_sig' => true,
 
-	'message' => '',
+	'message' => 'test',
 
-	'topic_title' => '',
+	'topic_title' => 'test',
 
 	'notify' => false,
 );
@@ -37,6 +38,6 @@ $options = array(
 	),
 );
 $context  = stream_context_create($options);
-$result = file_get_contents('http://localhost/phpBB/phpBB/app.php?controller=api/topic/new', false, $context);
+$result = file_get_contents('http://localhost/phpBB/phpBB/app.php?controller=api/post', false, $context);
 
 echo $result;
