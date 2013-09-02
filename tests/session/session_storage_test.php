@@ -16,7 +16,7 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/../fixtures/sessions_full.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_full.xml');
 	}
 
 	public function setUp()
