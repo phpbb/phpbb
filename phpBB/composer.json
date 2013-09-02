@@ -1,7 +1,7 @@
 {
 	"minimum-stability": "beta",
 	"require": {
-		"lusitanian/oauth": "0.1.*@dev",
+		"lusitanian/oauth": "0.2.*",
 		"symfony/config": "2.1.*",
 		"symfony/dependency-injection": "2.1.*",
 		"symfony/event-dispatcher": "2.1.*",

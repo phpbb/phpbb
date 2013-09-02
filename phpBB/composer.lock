@@ -3,27 +3,33 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "2b416686326d0308f977924abc825639",
+    "hash": "1be626fe7a2e4d450a6e8d67b9a31fb4",
     "packages": [
         {
             "name": "lusitanian/oauth",
-            "version": "dev-master",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Lusitanian/PHPoAuthLib.git",
-                "reference": "b7e96d0c36f17aa8a217b6be897363bb2cc93286"
+                "reference": "00c667d93058e983fc1b7d3d1cebdb1bc03fb043"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Lusitanian/PHPoAuthLib/zipball/b7e96d0c36f17aa8a217b6be897363bb2cc93286",
-                "reference": "b7e96d0c36f17aa8a217b6be897363bb2cc93286",
+                "url": "https://api.github.com/repos/Lusitanian/PHPoAuthLib/zipball/00c667d93058e983fc1b7d3d1cebdb1bc03fb043",
+                "reference": "00c667d93058e983fc1b7d3d1cebdb1bc03fb043",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "require-dev": {
+                "phpunit/phpunit": "3.7.*",
+                "predis/predis": "0.8.*@dev",
                 "symfony/http-foundation": "~2.1"
+            },
+            "suggest": {
+                "predis/predis": "Allows using the Redis storage backend.",
+                "symfony/http-foundation": "Allows using the Symfony Session storage backend."
             },
             "type": "library",
             "extra": {
@@ -33,7 +39,8 @@
             },
             "autoload": {
                 "psr-0": {
-                    "OAuth": "src"
+                    "OAuth": "src",
+                    "OAuth\\Unit": "tests"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -47,7 +54,9 @@
                 },
                 {
                     "name": "Pieter Hordijk",
-                    "email": "info@pieterhordijk.com"
+                    "email": "info@pieterhordijk.com",
+                    "homepage": "https://pieterhordijk.com",
+                    "role": "developer"
                 }
             ],
             "description": "PHP 5.3+ oAuth 1/2 Library",
@@ -57,7 +66,7 @@
                 "oauth",
                 "security"
             ],
-            "time": "2013-07-12 12:56:37"
+            "time": "2013-08-29 21:40:04"
         },
         {
             "name": "symfony/config",
@@ -199,17 +208,17 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v2.1.11",
+            "version": "v2.1.12",
             "target-dir": "Symfony/Component/HttpFoundation",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpFoundation.git",
-                "reference": "v2.1.11"
+                "reference": "79fd1ab0b85e782d342e83799b39b729fd1a30ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/v2.1.11",
-                "reference": "v2.1.11",
+                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/79fd1ab0b85e782d342e83799b39b729fd1a30ee",
+                "reference": "79fd1ab0b85e782d342e83799b39b729fd1a30ee",
                 "shasum": ""
             },
             "require": {
@@ -222,6 +231,7 @@
                     "SessionHandlerInterface": "Symfony/Component/HttpFoundation/Resources/stubs"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -237,7 +247,7 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "http://symfony.com",
-            "time": "2013-05-26 18:42:07"
+            "time": "2013-08-07 13:58:42"
         },
         {
             "name": "symfony/http-kernel",
@@ -1288,9 +1298,9 @@
 
     ],
     "minimum-stability": "beta",
-    "stability-flags": {
-        "lusitanian/oauth": 20
-    },
+    "stability-flags": [
+
+    ],
     "platform": [
 
     ],
