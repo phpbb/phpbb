@@ -417,7 +417,7 @@ class ucp_register
 				}
 
 				// Perform account linking if necessary
-				if ($login_link_data !== array())
+				if (!empty($login_link_data))
 				{
 					$login_link_data['user_id'] = $user_id;
 

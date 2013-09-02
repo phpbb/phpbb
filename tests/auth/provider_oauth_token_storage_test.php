@@ -197,7 +197,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	{
 		// Test that the token is stored in the database
 		$sql = 'SELECT * FROM phpbb_oauth_tokens 
-			WHERE session_id = \'' . $session_id . '\'';
+			WHERE session_id = \'' . $this->db->sql_escape($session_id) . '\'';
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
