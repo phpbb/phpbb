@@ -31,6 +31,7 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 	protected $db;
 	protected $time_now;
 	protected $redis;
+	const all_sessions = "ALL_SESSIONS";
 
 	function __construct($db, $time)
 	{
@@ -79,36 +80,45 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 		$this->redis->delete($session_id);
 	}
 
-	/**
-	 * Completely delete all session data being used for phpbb
-	 */
+	protected function get_all_users()
+	{
+		return $this->redis->zrange(self::all_sessions, 0, -1);
+	}
+
+	protected function add_to_all_users($expire, $value)
+	{
+		$this->redis->zadd(self::all_sessions, $expire, $value);
+	}
+
+	protected function remove_from_all_users($value)
+	{
+		$this->redis->zrem(self::all_sessions, $value);
+	}
+
 	function delete_all_sessions()
 	{
-		// TODO: Implement delete_all_sessions() method.
+		foreach($this->get_all_users() as $user)
+		{
+			$this->redis->del($user);
+		}
+		$this->redis->del(self::all_sessions);
 	}
 
-	/**
-	 * Get ip address from session_id
-	 *
-	 * @param $session_id
-	 *
-	 * @return null|string -- Either the ip address or null if none found
-	 */
-	public function get_user_ip_from_session($session_id)
+	function get_user_ip_from_session($session_id)
 	{
-		// TODO: Implement get_user_ip_from_session() method.
+		$session = $this->redis->get($session_id);
+		return $session['session_ip'];
 	}
 
-	/**
-	 * Get newest user and session data for this $user_id
-	 *
-	 * @param $user_id -- user id to get user and session data for
-	 *
-	 * @return user and session data as an array
-	 */
-	public function get_newest_session($user_id)
+	function get_newest_session($user_id)
 	{
-		// TODO: Implement get_newest_session() method.
+		$session = $this->redis->zRevRangeByScore(
+			"USER_{$user_id}",
+			'+inf',
+			'-inf',
+			array('limit' => array(0, 1))
+		);
+		return $session[0];
 	}
 
 	/**
