@@ -145,13 +145,31 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	/**
 	* {@inheritdoc}
 	*/
-	public function clearToken()
+	public function clearToken($service)
 	{
 		$this->cachedToken = null;
 
 		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_table . '
 			WHERE user_id = ' . $this->user->data['user_id'] . "
-				AND provider = '" . $this->db->sql_escape($this->service_name) . "'";
+				AND provider = '" . $this->db->sql_escape($service) . "'";
+
+		if ($this->user->data['user_id'] === ANONYMOUS)
+		{
+			$sql .= " AND session_id = '" . $this->user->data['session_id'] . "'";
+		}
+
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function clearAllTokens()
+	{
+		$this->cachedToken = null;
+
+		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_table . '
+			WHERE user_id = ' . $this->user->data['user_id'];
 
 		if ($this->user->data['user_id'] === ANONYMOUS)
 		{

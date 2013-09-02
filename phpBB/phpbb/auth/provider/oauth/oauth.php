@@ -613,7 +613,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		// Clear all tokens belonging to the user on this servce
 		$service_name = 'auth.provider.oauth.service.' . strtolower($link_data['oauth_service']);
 		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
-		$storage->clearToken();
+		$storage->clearToken($service_name);
 
 		return;
 	}
