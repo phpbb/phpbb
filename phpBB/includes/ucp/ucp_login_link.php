@@ -155,12 +155,13 @@ class ucp_login_link
 
 		$var_names = $request->variable_names(phpbb_request_interface::GET);
 		$login_link_data = array();
+		$string_start_length = strlen('login_link_');
 
 		foreach ($var_names as $var_name)
 		{
 			if (strpos($var_name, 'login_link_') === 0)
 			{
-				$key_name = str_replace('login_link_', '', $var_name);
+				$key_name = substr($var_name, $string_start_length);
 				$login_link_data[$key_name] = $request->variable($var_name, '', false, phpbb_request_interface::GET);
 			}
 		}
