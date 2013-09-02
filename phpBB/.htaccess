@@ -15,8 +15,8 @@ RewriteEngine on
 #
 # The following 3 lines will rewrite URLs passed through the front controller
 # to not require app.php in the actual URL. In other words, a controller is
-# by default accessed at /app.php/my/controller, but can also be accessible
-# at /my/controller
+# by default accessed at /app.php/my/controller, but can also be accessed at
+# /my/controller
 #
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
