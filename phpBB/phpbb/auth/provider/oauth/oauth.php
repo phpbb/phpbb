@@ -531,7 +531,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	{
 		// Clear all tokens belonging to the user
 		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table);
-		$stroage->clearAllTokens();
+		$storage->clearAllTokens();
 
 		return;
 	}
