@@ -130,7 +130,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			// E.g. 'asdf'"' -> asdf'"
 			// E.g. "asdf'"" -> asdf'"
 			// E.g. 'asdf'" -> 'asdf'"
-			$matches[2] = preg_replace('#^([\'"])?(.+?)\1$#', '$2', $matches[2]);
+			$matches[2] = preg_replace('#^([\'"])?(.*?)\1$#', '$2', $matches[2]);
 
 			// Replace template variables with start/end to parse variables (' ~ TEST ~ '.html)
 			$matches[2] = preg_replace('#{([a-zA-Z0-9_\.$]+)}#', "'~ \$1 ~'", $matches[2]);
