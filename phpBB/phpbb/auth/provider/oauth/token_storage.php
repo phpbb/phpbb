@@ -74,6 +74,8 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*/
 	public function retrieveAccessToken($service)
 	{
+		$service = $this->get_service_name_for_db($service);
+
 		if ($this->cachedToken instanceOf TokenInterface)
 		{
 			return $this->cachedToken;
@@ -97,6 +99,8 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*/
 	public function storeAccessToken($service, TokenInterface $token)
 	{
+		$service = $this->get_service_name_for_db($service);
+
 		$this->cachedToken = $token;
 
 		$data = array(
@@ -116,6 +120,8 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*/
 	public function hasAccessToken($service)
 	{
+		$service = $this->get_service_name_for_db($service);
+
 		if ($this->cachedToken) {
 			return true;
 		}
@@ -138,6 +144,8 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*/
 	public function clearToken($service)
 	{
+		$service = $this->get_service_name_for_db($service);
+
 		$this->cachedToken = null;
 
 		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_table . '
@@ -198,6 +206,8 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*/
 	public function has_access_token_by_session($service)
 	{
+		$service = $this->get_service_name_for_db($service);
+
 		if ($this->cachedToken)
 		{
 			return true;
@@ -224,6 +234,8 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 	public function retrieve_access_token_by_session($service)
 	{
+		$service = $this->get_service_name_for_db($service);
+
 		if ($this->cachedToken instanceOf TokenInterface) {
 			return $this->cachedToken;
 		}
@@ -332,5 +344,23 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 		}
 
 		return $token;
+	}
+
+	/**
+	* Returns the name of the service as it must be stored in the database.
+	*
+	* @param	string	$service	The name of the OAuth service
+	* @return	string	The name of the OAuth service as it needs to be stored
+	*					in the database.
+	*/
+	protected function get_service_name_for_db($service)
+	{
+		// Enforce the naming convention for oauth services
+		if (strpos($service, 'auth.provider.oauth.service.') !== 0)
+		{
+			$service = 'auth.provider.oauth.service.' . strtolower($service);
+		}
+
+		return $service;
 	}
 }
