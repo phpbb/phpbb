@@ -1135,7 +1135,7 @@ if ($submit || $preview || $refresh)
 			// the username was supplied; otherwise post_data might hold the data of the post that is
 			// being quoted (which could result in the username being returned being that of the quoted
 			// post's poster, not the poster of the current post). See: PHPBB3-11769 for more information.
-			$post_author_name = ((!$user->data['is_registered'] || $mode == 'edit') && $post_data['username']) ? $post_data['username'] : '';
+			$post_author_name = ((!$user->data['is_registered'] || $mode == 'edit') && $post_data['username'] !== '') ? $post_data['username'] : '';
 
 			// The last parameter tells submit_post if search indexer has to be run
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_author_name, $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
