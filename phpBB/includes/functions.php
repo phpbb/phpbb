@@ -5747,6 +5747,14 @@ function phpbb_get_web_root_path(Request $symfony_request, $phpbb_root_path = ''
 	}
 
 	$corrections = substr_count($path_info, '/');
+
+	// When URL Rewriting is enabled, app.php is optional. We have to
+	// correct for it not being there
+	if (strpos($symfony_request->getRequestUri(), $symfony_request->getScriptName()) === false)
+	{
+		$corrections -= 1;
+	}
+
 	$path = $phpbb_root_path . str_repeat('../', $corrections);
 	return $path;
 }
