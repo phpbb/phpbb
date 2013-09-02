@@ -2604,7 +2604,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// Send Notifications
 	if (($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_approval)
 	{
-		$username = ($username) ? $username : $user->data['username'];
+		// If a username was supplied or the poster is a guest, we will use the supplied username.
+		// Doing it this way we can use "...post by guest-username..." in notifications when
+		// "guest-username" is supplied or ommit the username if it is not.
+		$username = ($username !== '' || !$user->data['is_registered']) ? $username : $user->data['username'];
 		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id'], $username);
 	}
 
