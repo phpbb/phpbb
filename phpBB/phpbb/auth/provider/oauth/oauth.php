@@ -530,10 +530,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	public function logout($data, $new_session)
 	{
 		// Clear all tokens belonging to the user
-		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_token_storage_table . "
-			WHERE session_id = '" . $this->db->sql_escape($this->user->session_id) . "'
-				AND user_id = " . (int) $this->user->data['user_id'];
-		$this->db->sql_query($sql);
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, '', $this->auth_provider_oauth_token_storage_table);
+		$stroage->clearAllTokens();
 
 		return;
 	}
