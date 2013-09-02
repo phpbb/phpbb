@@ -1,8 +1,4 @@
 <IfModule mod_rewrite.c>
-#
-# Uncomment the following line if you will be using any of the URL
-# rewriting below.
-#
 RewriteEngine on
 
 #
