@@ -211,8 +211,8 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 			// Retrieve the user's account
 			$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
-			FROM ' . $this->users_table . '
-			WHERE user_id = ' . (int) $row['user_id'];
+				FROM ' . $this->users_table . '
+					WHERE user_id = ' . (int) $row['user_id'];
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
@@ -545,7 +545,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		// Get all external accounts tied to the current user
 		$data = array(
-			'user_id' => $this->user->data['user_id'],
+			'user_id' => (int) $this->user->data['user_id'],
 		);
 		$sql = 'SELECT oauth_provider_id, provider FROM ' . $this->auth_provider_oauth_token_account_assoc . '
 			WHERE ' . $this->db->sql_build_array('SELECT', $data);

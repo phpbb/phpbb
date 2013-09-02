@@ -977,7 +977,7 @@ class phpbb_auth
 				// This data is passed along as GET data to the next page allow the account to be linked
 
 				$params = array('mode' => 'login_link');
-				$url = append_sid('ucp.' . $phpEx, array_merge($params, $login['redirect_data']));
+				$url = append_sid($phpbb_root_path . 'ucp.' . $phpEx, array_merge($params, $login['redirect_data']));
 
 				redirect($url);
 			}

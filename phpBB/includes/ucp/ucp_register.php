@@ -86,7 +86,7 @@ class ucp_register
 		// Handle login_link data added to $_hidden_fields
 		$login_link_data = $this->get_login_link_data_array();
 
-		if ($login_link_data !== array())
+		if (!empty($login_link_data))
 		{
 			// Confirm that we have all necessary data
 			$auth_provider = 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
@@ -518,12 +518,13 @@ class ucp_register
 
 		$var_names = $request->variable_names(phpbb_request_interface::POST);
 		$login_link_data = array();
+		$string_start_length = strlen('login_link_');
 
 		foreach ($var_names as $var_name)
 		{
 			if (strpos($var_name, 'login_link_') === 0)
 			{
-				$key_name = str_replace('login_link_', '', $var_name);
+				$key_name = substr($var_name, $string_start_length);
 				$login_link_data[$key_name] = $request->variable($var_name, '', false, phpbb_request_interface::POST);
 			}
 		}
