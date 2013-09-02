@@ -125,6 +125,7 @@ class ucp_auth_link
 
 		// Replace "error" strings with their real, localised form
 		$error = array_map(array($user, 'lang'), $error);
+		$error = implode('<br />', $error);
 
 		$template->assign_vars(array(
 			'ERROR'	=> $error,
