@@ -36,6 +36,12 @@ class phpbb_controller_helper
 	protected $user;
 
 	/**
+	* Request object
+	* @var phpbb_request
+	*/
+	protected $request;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -55,10 +61,11 @@ class phpbb_controller_helper
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_template $template, phpbb_user $user, $phpbb_root_path, $php_ext)
+	public function __construct(phpbb_template $template, phpbb_user $user, phpbb_request $request, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
+		$this->request = $request;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -102,22 +109,16 @@ class phpbb_controller_helper
 			$route = substr($route, 0, $route_delim);
 		}
 
-		if (is_array($params) && !empty($params))
-		{
-			$params = array_merge(array(
-				'controller' => $route,
-			), $params);
-		}
-		else if (is_string($params) && $params)
-		{
-			$params = 'controller=' . $route . (($is_amp) ? '&amp;' : '&') . $params;
-		}
-		else
-		{
-			$params = array('controller' => $route);
-		}
+		$request_uri = $this->request->variable('REQUEST_URI', '', false, phpbb_request::SERVER);
+		$script_name = $this->request->variable('SCRIPT_NAME', '', false, phpbb_request::SERVER);
 
-		return append_sid($this->phpbb_root_path . 'app.' . $this->php_ext . $route_params, $params, $is_amp, $session_id);
+		// If the app.php file is being used (no rewrite) keep it in the URL.
+		// Otherwise, don't include it.
+		$route_prefix = $this->phpbb_root_path;
+		$parts = explode('/', $script_name);
+		$route_prefix .= strpos($request_uri, $script_name) === 0 ? array_pop($parts) . '/' : '';
+
+		return append_sid($route_prefix . "$route" . $route_params, $params, $is_amp, $session_id);
 	}
 
 	/**
