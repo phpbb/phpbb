@@ -44,13 +44,6 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	protected $user;
 
 	/**
-	* Name of the OAuth provider
-	*
-	* @var string
-	*/
-	protected $service_name;
-
-	/**
 	* OAuth token table
 	*
 	* @var string
@@ -67,21 +60,19 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*
 	* @param	phpbb_db_driver	$db
 	* @param	phpbb_user		$user
-	* @param	string			$service_name
 	* @param	string			$auth_provider_oauth_table
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_user $user, $service_name, $auth_provider_oauth_table)
+	public function __construct(phpbb_db_driver $db, phpbb_user $user, $auth_provider_oauth_table)
 	{
 		$this->db = $db;
 		$this->user = $user;
-		$this->service_name = $service_name;
 		$this->auth_provider_oauth_table = $auth_provider_oauth_table;
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function retrieveAccessToken()
+	public function retrieveAccessToken($service)
 	{
 		if ($this->cachedToken instanceOf TokenInterface)
 		{
@@ -90,7 +81,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		$data = array(
 			'user_id'	=> $this->user->data['user_id'],
-			'provider'	=> $this->service_name,
+			'provider'	=> $service,
 		);
 
 		if ($this->user->data['user_id'] === ANONYMOUS)
@@ -104,13 +95,13 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	/**
 	* {@inheritdoc}
 	*/
-	public function storeAccessToken(TokenInterface $token)
+	public function storeAccessToken($service, TokenInterface $token)
 	{
 		$this->cachedToken = $token;
 
 		$data = array(
 			'user_id'		=> $this->user->data['user_id'],
-			'provider'		=> $this->service_name,
+			'provider'		=> $service,
 			'oauth_token'	=> $this->json_encode_token($token),
 			'session_id'	=> $this->user->data['session_id'],
 		);
@@ -123,7 +114,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	/**
 	* {@inheritdoc}
 	*/
-	public function hasAccessToken()
+	public function hasAccessToken($service)
 	{
 		if ($this->cachedToken) {
 			return true;
@@ -131,7 +122,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		$data = array(
 			'user_id'	=> $this->user->data['user_id'],
-			'provider'	=> $this->service_name,
+			'provider'	=> $service,
 		);
 
 		if ($this->user->data['user_id'] === ANONYMOUS)
@@ -205,7 +196,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	*
 	* @return	bool	true if they have token, false if they don't
 	*/
-	public function has_access_token_by_session()
+	public function has_access_token_by_session($service)
 	{
 		if ($this->cachedToken)
 		{
@@ -214,7 +205,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		$data = array(
 			'session_id'	=> $this->user->data['session_id'],
-			'provider'		=> $this->service_name,
+			'provider'		=> $service,
 		);
 
 		return $this->_has_acess_token($data);
@@ -231,7 +222,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 		return (bool) $this->get_access_token_row($data);
 	}
 
-	public function retrieve_access_token_by_session()
+	public function retrieve_access_token_by_session($service)
 	{
 		if ($this->cachedToken instanceOf TokenInterface) {
 			return $this->cachedToken;
@@ -239,7 +230,7 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 
 		$data = array(
 			'session_id'	=> $this->user->data['session_id'],
-			'provider'	=> $this->service_name,
+			'provider'	=> $service,
 		);
 
 		return $this->_retrieve_access_token($data);

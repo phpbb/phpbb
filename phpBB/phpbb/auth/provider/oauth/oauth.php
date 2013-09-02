@@ -175,7 +175,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 		// Get the service credentials for the given service
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 
-		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table);
 		$query = 'mode=login&login=external&oauth_service=' . $service_name_original;
 		$service = $this->get_service($service_name_original, $storage, $service_credentials, $this->service_providers[$service_name]->get_auth_scope(), $query);
 
@@ -442,10 +442,10 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*/
 	protected function link_account_login_link(array $link_data, $service_name)
 	{
-		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table);
 
 		// Check for an access token, they should have one
-		if (!$storage->has_access_token_by_session())
+		if (!$storage->has_access_token_by_session($service_name))
 		{
 			return 'LOGIN_LINK_ERROR_OAUTH_NO_ACCESS_TOKEN';
 		}
@@ -485,7 +485,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	*/
 	protected function link_account_auth_link(array $link_data, $service_name)
 	{
-		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table);
 		$query = 'i=ucp_auth_link&mode=auth_link&link=1&oauth_service=' . strtolower($link_data['oauth_service']);
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 		$scopes = $this->service_providers[$service_name]->get_auth_scope();
@@ -530,7 +530,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 	public function logout($data, $new_session)
 	{
 		// Clear all tokens belonging to the user
-		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, '', $this->auth_provider_oauth_token_storage_table);
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table);
 		$stroage->clearAllTokens();
 
 		return;
@@ -610,7 +610,7 @@ class phpbb_auth_provider_oauth extends phpbb_auth_provider_base
 
 		// Clear all tokens belonging to the user on this servce
 		$service_name = 'auth.provider.oauth.service.' . strtolower($link_data['oauth_service']);
-		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $service_name, $this->auth_provider_oauth_token_storage_table);
+		$storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table);
 		$storage->clearToken($service_name);
 
 		return;

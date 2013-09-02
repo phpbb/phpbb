@@ -36,7 +36,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		// Set the user id to anonymous
 		$this->user->data['user_id'] = ANONYMOUS;
 
-		$this->token_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->service_name, $this->token_storage_table);
+		$this->token_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->token_storage_table);
 	}
 
 	public function getDataSet()
@@ -59,13 +59,13 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	{
 		if ($cache_token)
 		{
-			$this->token_storage->storeAccessToken($cache_token);
+			$this->token_storage->storeAccessToken($this->service_name, $cache_token);
 			$token = $cache_token;
 		}
 
 		$this->setExpectedException($exception);
 
-		$stored_token = $this->token_storage->retrieveAccessToken();
+		$stored_token = $this->token_storage->retrieveAccessToken($this->service_name);
 		$this->assertEquals($token, $stored_token);
 	}
 
@@ -74,12 +74,12 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
 
 		// Store a token in the database
-		$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->service_name, $this->token_storage_table);
-		$temp_storage->storeAccessToken($expected_token);
+		$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->token_storage_table);
+		$temp_storage->storeAccessToken($this->service_name, $expected_token);
 		unset($temp_storage);
 
 		// Test to see if the token can be retrieved
-		$stored_token = $this->token_storage->retrieveAccessToken();
+		$stored_token = $this->token_storage->retrieveAccessToken($this->service_name);
 		$this->assertEquals($expected_token, $stored_token);
 	}
 
@@ -90,13 +90,13 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	{
 		if ($cache_token)
 		{
-			$this->token_storage->storeAccessToken($cache_token);
+			$this->token_storage->storeAccessToken($this->service_name, $cache_token);
 			$token = $cache_token;
 		}
 
 		$this->setExpectedException($exception);
 
-		$stored_token = $this->token_storage->retrieve_access_token_by_session();
+		$stored_token = $this->token_storage->retrieve_access_token_by_session($this->service_name);
 		$this->assertEquals($token, $stored_token);
 	}
 
@@ -105,24 +105,24 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
 
 		// Store a token in the database
-		$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->service_name, $this->token_storage_table);
-		$temp_storage->storeAccessToken($expected_token);
+		$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user,  $this->token_storage_table);
+		$temp_storage->storeAccessToken($this->service_name, $expected_token);
 		unset($temp_storage);
 
 		// Test to see if the token can be retrieved
-		$stored_token = $this->token_storage->retrieve_access_token_by_session();
+		$stored_token = $this->token_storage->retrieve_access_token_by_session($this->service_name);
 		$this->assertEquals($expected_token, $stored_token);
 	}
 
 	public function test_storeAccessToken()
 	{
 		$token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') );
-		$this->token_storage->storeAccessToken($token);
+		$this->token_storage->storeAccessToken($this->service_name, $token);
 
 		// Confirm that the token is cached
-		$extraParams = $this->token_storage->retrieveAccessToken()->getExtraParams();
+		$extraParams = $this->token_storage->retrieveAccessToken($this->service_name)->getExtraParams();
 		$this->assertEquals( 'param', $extraParams['extra'] );
-		$this->assertEquals( 'access', $this->token_storage->retrieveAccessToken()->getAccessToken() );
+		$this->assertEquals( 'access', $this->token_storage->retrieveAccessToken($this->service_name)->getAccessToken() );
 
 		$row = $this->get_token_row_by_session_id($this->session_id);
 
@@ -145,10 +145,10 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	{
 		if ($token)
 		{
-			$this->token_storage->storeAccessToken($token);
+			$this->token_storage->storeAccessToken($this->service_name, $token);
 		}
 
-		$has_access_token = $this->token_storage->hasAccessToken();
+		$has_access_token = $this->token_storage->hasAccessToken($this->service_name);
 		$this->assertEquals($expected, $has_access_token);
 	}
 
@@ -159,32 +159,32 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	{
 		if ($token)
 		{
-			$this->token_storage->storeAccessToken($token);
+			$this->token_storage->storeAccessToken($this->service_name, $token);
 		}
 
-		$has_access_token = $this->token_storage->has_access_token_by_session();
+		$has_access_token = $this->token_storage->has_access_token_by_session($this->service_name);
 		$this->assertEquals($expected, $has_access_token);
 	}
 
 	public function test_clearToken()
 	{
 		$token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') );
-		$this->token_storage->storeAccessToken($token);
+		$this->token_storage->storeAccessToken($this->service_name, $token);
 
-		$this->token_storage->clearToken();
+		$this->token_storage->clearToken($this->service_name);
 
 		// Check that the database has been cleared
 		$row = $this->get_token_row_by_session_id($this->session_id);
 		$this->assertFalse($row);
 
 		// Check that the token is no longer in memory
-		$this->assertFalse($this->token_storage->hasAccessToken());
+		$this->assertFalse($this->token_storage->hasAccessToken($this->service_name));
 	}
 
 	public function test_set_user_id()
 	{
 		$token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') );
-		$this->token_storage->storeAccessToken($token);
+		$this->token_storage->storeAccessToken($this->service_name, $token);
 
 		$new_user_id = ANONYMOUS + 1;
 		$this->token_storage->set_user_id($new_user_id);
