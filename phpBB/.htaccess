@@ -13,10 +13,10 @@ RewriteEngine on
 #RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
 
 #
-# Uncomment the following 3 lines if you want to rewrite URLs passed through
-# the front controller to not use app.php in the actual URL. In other words,
-# a controller is by default accessed at /app.php/my/controller, but will then
-# be accessible at either /app.php/my/controller or just /my/controller
+# The following 3 lines will rewrite URLs passed through the front controller
+# to not require app.php in the actual URL. In other words, a controller is
+# by default accessed at /app.php/my/controller, but can also be accessible
+# at /my/controller
 #
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
