@@ -55,6 +55,8 @@ class phpbb_session
 		$this->db_keys 	  = is_null($db_keys)     ? $native_storage : $db_keys;
 		$this->db_banlist = is_null($db_banlist)  ? $native_storage : $db_banlist;
 		$this->db_cleanup = is_null( $db_cleanup) ? $native_storage : $db_cleanup;
+
+		$this->db_session = new phpbb_session_storage_redis($native_storage, time());
 	}
 
 	/**
