@@ -40,7 +40,7 @@ if (!defined('PHPBB_ACM_MEMCACHE'))
 * ACM for Memcached
 * @package acm
 */
-class phpbb_cache_driver_memcache extends phpbb_cache_driver_memory
+class phpbb_cache_driver_memcache extends phpbb_cache_driver_memory implements phpbb_cache_driver_atomic_interface
 {
 	var $extension = 'memcache';
 
@@ -125,5 +125,26 @@ class phpbb_cache_driver_memcache extends phpbb_cache_driver_memory
 	function _delete($var)
 	{
 		return $this->memcache->delete($this->key_prefix . $var);
+	}
+	
+	function atomic_operation($key, Closure $operation, $retry_usleep_time = 10000, $retries=0)
+	{
+		if ($retries > 9)
+		{
+			trigger_error('An error occurred processing session data.');
+		}
+		$flags = 0;
+		$cas = null;
+		$data = memcache_get($this->memcache, $this->key_prefix . $key, $flags, $cas);
+		if ($data === false)
+		{
+			return;
+		}
+		$ret = memcache_cas($this->memcache, $this->key_prefix . $key, $operation($data), $flags, 0, $cas);
+		if ($ret === false)
+		{
+			usleep($retry_usleep_time);
+			$this->atomic_operation($key, $operation, $retry_usleep_time, $retries+1);
+		}
 	}
 }

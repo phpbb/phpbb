@@ -43,9 +43,12 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	public function test_obtain_guest_count($forum_id, $expected)
 	{
 		$this->db->sql_query('DELETE FROM phpbb_sessions');
+		$session = new phpbb_session();
+		$session->delete_all_sessions();
 
 		$time = time();
 		$this->create_guest_sessions($time);
+		$session->db_synchronize();
 		$this->assertEquals($expected, obtain_guest_count($forum_id));
 	}
 
@@ -183,8 +186,8 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	protected function create_guest_sessions($time)
 	{
 		$this->add_session(1, '0001', '192.168.0.1', 0, true, $time);
-		$this->add_session(1, '0002', '192.168.0.2', 1, true, $time);
-		$this->add_session(1, '0003', '192.168.0.3', 0, true, $time, 10);
+		$this->add_session(1, '0002', '192.168.0.2', 0, true, $time, 10);
+		$this->add_session(1, '0003', '192.168.0.3', 1, true, $time);
 		$this->add_session(1, '0004', '192.168.0.4', 1, true, $time, 10);
 	}
 

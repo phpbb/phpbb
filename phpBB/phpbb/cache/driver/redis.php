@@ -33,7 +33,7 @@ if (!defined('PHPBB_ACM_REDIS_HOST'))
 *
 * @package acm
 */
-class phpbb_cache_driver_redis extends phpbb_cache_driver_memory
+class phpbb_cache_driver_redis extends phpbb_cache_driver_memory implements phpbb_cache_driver_atomic_interface
 {
 	var $extension = 'redis';
 
@@ -161,6 +161,38 @@ class phpbb_cache_driver_redis extends phpbb_cache_driver_memory
 			return true;
 		}
 		return false;
+	}
+
+	function atomic_operation($key, Closure $operation, $retry_usleep_time = 10000, $retries=0)
+	{
+		if ($retries > 9)
+		{
+			trigger_error('An error occurred processing session data.');
+		}
+		$this->redis->watch($key);
+		$data = $this->redis->get($key);
+		if ($data === false)
+		{
+			return;
+		}
+		if (is_null($data))
+		{
+			$data = array();
+		}
+		$ret = $this->redis->multi()
+						->set($key, $operation($data))
+						->exec();
+		if ($ret === false)
+		{
+			usleep($retry_usleep_time);
+			$this->atomic_operation($key, $operation, $retry_usleep_time, $retries+1);
+		}
+		$this->redis->unwatch();
+	}
+
+	function _isset($key)
+	{
+		return $this->redis->exists($key);
 	}
 }
 
