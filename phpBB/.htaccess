@@ -3,7 +3,7 @@
 # Uncomment the following line if you will be using any of the URL
 # rewriting below.
 #
-#RewriteEngine on
+RewriteEngine on
 
 #
 # Uncomment the statement below if you want to make use of
@@ -18,9 +18,9 @@
 # a controller is by default accessed at /app.php/my/controller, but will then
 # be accessible at either /app.php/my/controller or just /my/controller
 #
-#RewriteCond %{REQUEST_FILENAME} !-f
-#RewriteCond %{REQUEST_FILENAME} !-d
-#RewriteRule ^(.*)$ app.php [QSA,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ app.php [QSA,L]
 
 #
 # If symbolic links are not already being followed,
