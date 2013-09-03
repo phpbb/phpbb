@@ -90,6 +90,7 @@ services:
         arguments:
             - @template
             - @user
+            - @request
             - %core.root_path%
             - %core.php_ext%
 
