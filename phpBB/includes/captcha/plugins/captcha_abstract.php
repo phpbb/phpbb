@@ -155,7 +155,7 @@ class phpbb_captcha_plugins_captcha_abstract
 		$sql = 'SELECT DISTINCT c.session_id
 				FROM ' . CONFIRM_TABLE . ' c
 				WHERE c.session_id IS NULL' .
-				((empty($type)) ? '' : ' AND c.confirm_type = ' . (int)$type);
+				((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))

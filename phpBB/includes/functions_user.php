@@ -1102,7 +1102,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				break;
 			}
 
-			if (isset($user_ids) && $user_ids)
+			if (!empty($user_ids))
 			{
 				$user->delete_session(false, $user_ids);
 

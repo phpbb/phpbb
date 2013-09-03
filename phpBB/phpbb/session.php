@@ -1512,9 +1512,9 @@ class phpbb_session
 	{
 		global $db;
 		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
-			FROM ' . SESSIONS_TABLE . "
-			WHERE session_user_id = $user_id
-			GROUP BY session_user_id";
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_user_id = ' . (int) $user_id . '
+			GROUP BY session_user_id';
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -1536,7 +1536,7 @@ class phpbb_session
 		global $db;
 		$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
 				FROM ' . SESSIONS_TABLE . '
-				WHERE session_time >= ' . (time() - $session_length) . '
+				WHERE session_time >= ' . (time() -  (int) $session_length) . '
 					AND ' . $db->sql_in_set('session_user_id', $user_list) . '
 				GROUP BY session_user_id';
 		$result = $db->sql_query($sql);
@@ -1553,7 +1553,7 @@ class phpbb_session
 	/**
 	* Map over users in list using $function
 	* @param          $user_list -- List of users to map over
-	* @param callable $function -- Fucntion used in mapping over users
+	* @param callable $function  -- Function used in mapping over users
  	*								 should take a ($row) param containing user_id & $session_time
 	*
 	* @return array
@@ -1562,9 +1562,9 @@ class phpbb_session
 	{
 		global $db;
 		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
-		FROM ' . SESSIONS_TABLE . '
-		WHERE ' . $db->sql_in_set('session_user_id', $user_list) . '
-		GROUP BY session_user_id';
+				FROM ' . SESSIONS_TABLE . '
+				WHERE ' . $db->sql_in_set('session_user_id', $user_list) . '
+				GROUP BY session_user_id';
 		$result = $db->sql_query($sql);
 
 		$results = array();
@@ -1585,8 +1585,8 @@ class phpbb_session
 	{
 		global $db;
 		$sql = 'UPDATE ' . SESSIONS_TABLE . '
-                SET session_viewonline = ' . (int) $viewonline . '
-                WHERE session_user_id = ' . (int) $this->data['user_id'];
+				SET session_viewonline = ' . (int) $viewonline . '
+				WHERE session_user_id = ' . (int) $this->data['user_id'];
 		$db->sql_query($sql);
 		$this->data['session_viewonline'] = $viewonline;
 	}
@@ -1671,7 +1671,7 @@ class phpbb_session
 		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $session_data);
 		if (is_null($session_id) && !is_null($user_id))
 		{
-			$sql .= ' WHERE session_user_id = ' . $db->sql_escape($user_id) ;
+			$sql .= ' WHERE session_user_id = ' . (int) $user_id ;
 		}
 		else
 		{
@@ -1700,7 +1700,7 @@ class phpbb_session
 			'session_forwarded_for'	=> (string) $this->forwarded_for,
 			'session_ip'			=> (string) $this->ip,
 			'session_autologin'		=> (int) $this->data['session_autologin'],
-			'session_admin'			=> 1,
+			'session_admin'			=> (int) $this->data['session_admin'],
 			'session_viewonline'	=> (int) $this->data['session_viewonline'],
 		);
 
@@ -1721,7 +1721,7 @@ class phpbb_session
 		$sql = 'SELECT u.*, s.*
 				FROM ' . USERS_TABLE . ' u
 					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
-				WHERE u.user_id = ' . $user_id . '
+				WHERE u.user_id = ' . (int) $user_id . '
 				ORDER BY s.session_time DESC';
 		$result = $db->sql_query_limit($sql, 1);
 		$user_row = $db->sql_fetchrow($result);
@@ -1768,7 +1768,7 @@ class phpbb_session
 
 		if ($item_id)
 		{
-			$reading_sql = ' AND s.session_' . $item . '_id = ' . (int) $item_id;
+			$reading_sql = ' AND s.session_' . $db->sql_escape($item) . '_id = ' . (int) $item_id;
 		}
 		else
 		{
@@ -1780,7 +1780,7 @@ class phpbb_session
 
 		if ($db->sql_layer === 'sqlite')
 		{
-			$sql = 'SELECT COUNT(session_ip) as num_guests
+			$sql = 'SELECT COUNT(s.session_ip) as num_guests
 			FROM (
 				SELECT DISTINCT s.session_ip
 				FROM ' . SESSIONS_TABLE . ' s
@@ -1837,9 +1837,9 @@ class phpbb_session
 				SESSIONS_TABLE	=> 's',
 			),
 			'WHERE'		=> 'u.user_id = s.session_user_id
-			AND s.session_time >= ' . $online_time .
-			((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : ''),
-			'ORDER_BY'	=> $order_by,
+			 AND s.session_time >= ' . (int) $online_time .
+			 ((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : ''),
+			'ORDER_BY'	=> $db->sql_escape($order_by),
 		);
 		$vars = array('sql_ary', 'show_guests');
 		extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
@@ -1869,7 +1869,7 @@ class phpbb_session
 		$reading_sql = '';
 		if ($item_id !== 0)
 		{
-			$reading_sql = ' AND s.session_' . $item . '_id = ' . (int) $item_id;
+			$reading_sql = ' AND s.session_' . $db->sql_escape($item) . '_id = ' . (int) $item_id;
 		}
 
 		$online_users = array(
@@ -1946,9 +1946,9 @@ class phpbb_session
 				),
 			),
 
-			'WHERE'		=> 'z.user_id = ' . $user_id . '
-			AND z.friend = 1
-			AND u.user_id = z.zebra_id',
+			'WHERE'		=> 'z.user_id = ' . (int) $user_id . '
+			 AND z.friend = 1
+			 AND u.user_id = z.zebra_id',
 
 			'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username_clean, u.user_colour, u.username',
 

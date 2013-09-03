@@ -377,11 +377,11 @@ class acp_main
 						{
 							case 'sqlite':
 							case 'firebird':
-								$db->sql_query("DELETE FROM " . CONFIRM_TABLE);
+								$db->sql_query('DELETE FROM ' . CONFIRM_TABLE);
 							break;
 
 							default:
-								$db->sql_query("TRUNCATE TABLE " . CONFIRM_TABLE);
+								$db->sql_query('TRUNCATE TABLE ' . CONFIRM_TABLE);
 							break;
 						}
 

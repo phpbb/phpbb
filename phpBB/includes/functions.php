@@ -4450,6 +4450,9 @@ function phpbb_filter_root_path($errfile)
 
 /**
 * Queries the session table to get information about online guests
+*
+* @deprecated (Use direct calls instead)
+*
 * @param int $item_id Limits the search to the item with this id
 * @param string $item The name of the item which is stored in the session table as session_{$item}_id
 * @return int The number of active distinct guest sessions
@@ -4462,6 +4465,9 @@ function obtain_guest_count($item_id = 0, $item = 'forum')
 
 /**
 * Queries the session table to get information about online users
+*
+* @deprecated (Use direct calls instead)
+*
 * @param int $item_id Limits the search to the item with this id
 * @param string $item The name of the item which is stored in the session table as session_{$item}_id
 * @return array An array containing the ids of online, hidden and visible users, as well as statistical info
