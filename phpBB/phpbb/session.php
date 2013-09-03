@@ -1495,6 +1495,7 @@ class phpbb_session
 	function unset_admin()
 	{
 		global $db;
+		
 		$sql = 'UPDATE ' . SESSIONS_TABLE . '
 			SET session_admin = 0
 			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'';
@@ -1511,6 +1512,7 @@ class phpbb_session
 	function get_user_online_time($user_id)
 	{
 		global $db;
+		
 		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
 			FROM ' . SESSIONS_TABLE . '
 			WHERE session_user_id = ' . (int) $user_id . '
@@ -1534,6 +1536,7 @@ class phpbb_session
 	function map_users_online($user_list, $session_length, Closure $function)
 	{
 		global $db;
+		
 		$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_time >= ' . (time() -  (int) $session_length) . '
@@ -1561,6 +1564,7 @@ class phpbb_session
 	function map_certain_users_with_time($user_list, Closure $function)
 	{
 		global $db;
+		
 		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
 				FROM ' . SESSIONS_TABLE . '
 				WHERE ' . $db->sql_in_set('session_user_id', $user_list) . '
@@ -1584,6 +1588,7 @@ class phpbb_session
 	function set_viewonline($viewonline)
 	{
 		global $db;
+		
 		$sql = 'UPDATE ' . SESSIONS_TABLE . '
 				SET session_viewonline = ' . (int) $viewonline . '
 				WHERE session_user_id = ' . (int) $this->data['user_id'];
@@ -1604,6 +1609,7 @@ class phpbb_session
 	function delete_session($session_id = false, $user_id = false)
 	{
 		global $db;
+		
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE;
 
 		if ($session_id !== false)
@@ -1718,6 +1724,7 @@ class phpbb_session
 	public function get_newest_session($user_id)
 	{
 		global $db;
+		
 		$sql = 'SELECT u.*, s.*
 				FROM ' . USERS_TABLE . ' u
 					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
@@ -1739,6 +1746,7 @@ class phpbb_session
 	public function get_user_ip_from_session($session_id)
 	{
 		global $db;
+		
 		$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
 		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
 		WHERE s.session_id = '" . $db->sql_escape($session_id) . "'
@@ -1931,6 +1939,7 @@ class phpbb_session
 	function map_friends_online($user_id, Closure $function)
 	{
 		global $db;
+		
 		$sql_ary = array(
 			'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
 
