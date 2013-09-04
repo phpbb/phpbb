@@ -93,31 +93,9 @@ class phpbb_controller_api_post
 		$serializer = new Serializer(array(
 		), array(new JsonEncoder()));
 
+		$request = json_decode(html_entity_decode($this->request->variable('data', '')), true);
+
 		$hash = $this->request->variable('hash', '');
-
-
-		$request = array(
-			'auth_key' => $this->request->variable('auth_key', 'guest'),
-			'serial' => $this->request->variable('serial', -1),
-
-			'username' => $this->request->variable('username', ''),
-			'topic_type' => $this->request->variable('topic_type', POST_NORMAL),
-
-			'forum_id' => $this->request->variable('forum_id', 0),
-			'topic_id' => $this->request->variable('topic_id', 0),
-			'icon_id' => $this->request->variable('icon_id', 0),
-
-			'enable_bbcode' => $this->request->variable('enable_bbcode', true),
-			'enable_smilies' => $this->request->variable('enable_smilies', true),
-			'enable_urls' => $this->request->variable('enable_urls', true),
-			'enable_sig' => $this->request->variable('enable_sig', true),
-
-			'message' => $this->request->variable('message', '', true),
-
-			'topic_title' => $this->request->variable('topic_title', '', true),
-
-			'notify' => $this->request->variable('notify', false),
-		);
 
 		if (!function_exists('validate_string'))
 		{
@@ -150,7 +128,26 @@ class phpbb_controller_api_post
 
 		if (is_int($user_id))
 		{
-			$response = $this->post_repository->new_post($request, $user_id);
+			$post = $this->post_repository->new_post($request, $user_id);
+
+			if(is_int($post['post_id']))
+			{
+				$response = array(
+					'status' => 200,
+					'data' => array(
+						'post_id' => $post['post_id'],
+					),
+				);
+			}
+			else
+			{
+				$response = array(
+					'status' => 500,
+					'data' => array(
+						'error' => 'Something went wrong', // @ToDo: Figure out something better
+					),
+				);
+			}
 		}
 		else
 		{

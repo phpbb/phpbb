@@ -1,14 +1,14 @@
 <?php
 
-$request = array(
+$data = array(
 	'auth_key' => '0d2206b9114e99d0',
-	'serial' => 78,
+	'serial' => 81,
 
 	'username' => '',
 	'topic_type' => 0,
 
 	'forum_id' => 2,
-	'topic_id' => 22,
+	'topic_id' => 0,
 	'icon_id' => 0,
 
 	'enable_bbcode' => true,
@@ -16,18 +16,20 @@ $request = array(
 	'enable_urls' => true,
 	'enable_sig' => true,
 
-	'message' => 'test',
+	'message' => 'tesasdasdt 元気ですか？',
 
-	'topic_title' => 'test',
+	'topic_title' => 'teasdasdasww22st',
 
 	'notify' => false,
 );
 
-$imploded_request = implode('/', $request);
+$imploded_request = implode('/', $data);
 
 $hash = hash_hmac('sha256', $imploded_request, 'b758239365974841');
 
 $request['hash'] = $hash;
+
+$request['data'] = json_encode($data);
 
 $options = array(
 	'http' => array(
