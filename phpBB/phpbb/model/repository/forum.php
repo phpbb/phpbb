@@ -72,7 +72,7 @@ class phpbb_model_repository_forum
 			$forum = new phpbb_model_entity_forum($row);
 
 			$fid = $forum->get('forum_id');
-			if (!$this->auth->acl_get('f_read', $fid))
+			if (!$this->auth->acl_get('f_list', $fid))
 			{
 				continue;
 			}
