@@ -1,0 +1,25 @@
+<script type="text/javascript">
+// <![CDATA[
+
+onload_functions.push(function() {
+	$('#avatar_gravatar_email').bind('keyup', function () {
+		$('#avatar_gravatar_width').val('');
+		$('#avatar_gravatar_height').val('');
+		$('#avatar_gravatar_email').unbind('keyup');
+	});
+});
+
+// ]]>
+</script>
+
+<dl>
+	<dt><label for="avatar_gravatar_email">{L_GRAVATAR_AVATAR_EMAIL}{L_COLON}</label><br /><span>{L_GRAVATAR_AVATAR_EMAIL_EXPLAIN}</span></dt>
+	<dd><input type="email" name="avatar_gravatar_email" id="avatar_gravatar_email" value="{AVATAR_GRAVATAR_EMAIL}" class="inputbox" /></dd>
+</dl>
+<dl>
+	<dt><label for="avatar_gravatar_width">{L_GRAVATAR_AVATAR_SIZE}{L_COLON}</label><br /><span>{L_GRAVATAR_AVATAR_SIZE_EXPLAIN}</span></dt>
+	<dd>
+		<label for="avatar_gravatar_width"><input type="text" name="avatar_gravatar_width" id="avatar_gravatar_width" size="3" value="{AVATAR_GRAVATAR_WIDTH}" class="inputbox autowidth" /> {L_PIXEL}</label> &times;&nbsp; 
+		<label for="avatar_gravatar_height"><input type="text" name="avatar_gravatar_height" id="avatar_gravatar_height" size="3" value="{AVATAR_GRAVATAR_HEIGHT}" class="inputbox autowidth" /> {L_PIXEL}</label>
+	</dd>
+</dl>

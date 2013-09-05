@@ -9,7 +9,6 @@
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_container.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/dbal.php';
 
 class phpbb_di_container_test extends phpbb_test_case
 {
@@ -18,7 +17,7 @@ class phpbb_di_container_test extends phpbb_test_case
         $phpbb_root_path = __DIR__ . '/../../phpBB/';
         $extensions = array(
             new phpbb_di_extension_config(__DIR__ . '/fixtures/config.php'),
-            new phpbb_di_extension_core($phpbb_root_path),
+            new phpbb_di_extension_core($phpbb_root_path . 'config'),
         );
         $container = phpbb_create_container($extensions, $phpbb_root_path, 'php');
 
@@ -30,7 +29,7 @@ class phpbb_di_container_test extends phpbb_test_case
         $phpbb_root_path = __DIR__ . '/../../phpBB/';
         $extensions = array(
             new phpbb_di_extension_config(__DIR__ . '/fixtures/config.php'),
-            new phpbb_di_extension_core($phpbb_root_path),
+            new phpbb_di_extension_core($phpbb_root_path . 'config'),
         );
         $container = phpbb_create_install_container($phpbb_root_path, 'php');
 
@@ -41,18 +40,19 @@ class phpbb_di_container_test extends phpbb_test_case
     public function test_phpbb_create_compiled_container()
     {
         $phpbb_root_path = __DIR__ . '/../../phpBB/';
+        $config_file = __DIR__ . '/fixtures/config.php';
         $extensions = array(
             new phpbb_di_extension_config(__DIR__ . '/fixtures/config.php'),
-            new phpbb_di_extension_core($phpbb_root_path),
+            new phpbb_di_extension_core($phpbb_root_path . 'config'),
         );
-        $container = phpbb_create_compiled_container($extensions, array(), $phpbb_root_path, 'php');
+        $container = phpbb_create_compiled_container($config_file, $extensions, array(), $phpbb_root_path, 'php');
 
         $this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
         $this->assertTrue($container->isFrozen());
     }
 }
 
-class dbal_container_mock extends dbal
+class phpbb_db_driver_container_mock extends phpbb_db_driver
 {
     public function sql_connect()
     {

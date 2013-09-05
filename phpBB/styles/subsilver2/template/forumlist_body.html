@@ -61,9 +61,17 @@
 			<td class="row2" align="center" nowrap="nowrap">
 				<!-- IF forumrow.LAST_POST_TIME -->
 					<!-- IF forumrow.S_DISPLAY_SUBJECT -->
+						<!-- EVENT forumlist_body_last_post_title_prepend -->
 						<p class="topicdetails"><a href="{forumrow.U_LAST_POST}" title="{forumrow.LAST_POST_SUBJECT}" class="lastsubject">{forumrow.LAST_POST_SUBJECT_TRUNCATED}</a></p>
 					<!-- ENDIF -->
-					<p class="topicdetails"><!-- IF forumrow.U_UNAPPROVED_TOPICS --><a href="{forumrow.U_UNAPPROVED_TOPICS}" class="imageset">{UNAPPROVED_IMG}</a>&nbsp;<!-- ENDIF -->{forumrow.LAST_POST_TIME}</p>
+					<p class="topicdetails">
+						<!-- IF forumrow.U_UNAPPROVED_TOPICS -->
+							<a href="{forumrow.U_UNAPPROVED_TOPICS}" class="imageset">{UNAPPROVED_IMG}</a>&nbsp;
+						<!-- ELSEIF forumrow.U_UNAPPROVED_POSTS -->
+							<a href="{forumrow.U_UNAPPROVED_POSTS}" class="imageset">{UNAPPROVED_POST_IMG}</a>&nbsp;
+						<!-- ENDIF -->
+						{forumrow.LAST_POST_TIME}
+					</p>
 					<p class="topicdetails">{forumrow.LAST_POSTER_FULL}
 						<!-- IF not S_IS_BOT --><a href="{forumrow.U_LAST_POST}" class="imageset">{LAST_POST_IMG}</a><!-- ENDIF -->
 					</p>

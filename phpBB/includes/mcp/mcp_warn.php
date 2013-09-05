@@ -289,28 +289,17 @@ class mcp_warn
 
 		// We want to make the message available here as a reminder
 		// Parse the message and subject
-		$message = censor_text($user_row['post_text']);
-
-		// Second parse bbcode here
-		if ($user_row['bbcode_bitfield'])
-		{
-			include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-
-			$bbcode = new bbcode($user_row['bbcode_bitfield']);
-			$bbcode->bbcode_second_pass($message, $user_row['bbcode_uid'], $user_row['bbcode_bitfield']);
-		}
-
-		$message = bbcode_nl2br($message);
-		$message = smiley_text($message);
+		$parse_flags = OPTION_FLAG_SMILIES | ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0);
+		$message = generate_text_for_display($user_row['post_text'], $user_row['bbcode_uid'], $user_row['bbcode_bitfield'], $parse_flags, true);
 
 		// Generate the appropriate user information for the user we are looking at
-		if (!function_exists('get_user_avatar'))
+		if (!function_exists('phpbb_get_user_avatar'))
 		{
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
 
 		get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img, $rank_img_src);
-		$avatar_img = get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']);
+		$avatar_img = phpbb_get_user_avatar($user_row);
 
 		$template->assign_vars(array(
 			'U_POST_ACTION'		=> $this->u_action,
@@ -409,13 +398,13 @@ class mcp_warn
 		}
 
 		// Generate the appropriate user information for the user we are looking at
-		if (!function_exists('get_user_avatar'))
+		if (!function_exists('phpbb_get_user_avatar'))
 		{
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
 
 		get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img, $rank_img_src);
-		$avatar_img = get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']);
+		$avatar_img = phpbb_get_user_avatar($user_row);
 
 		// OK, they didn't submit a warning so lets build the page for them to do so
 		$template->assign_vars(array(

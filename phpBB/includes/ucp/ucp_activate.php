@@ -50,7 +50,7 @@ class ucp_activate
 			trigger_error('ALREADY_ACTIVATED');
 		}
 
-		if (($user_row['user_inactive_reason'] ==  INACTIVE_MANUAL) || $user_row['user_actkey'] != $key)
+		if ($user_row['user_inactive_reason'] == INACTIVE_MANUAL || $user_row['user_actkey'] !== $key)
 		{
 			trigger_error('WRONG_ACTIVATION');
 		}
@@ -114,7 +114,7 @@ class ucp_activate
 
 			$messenger->template('admin_welcome_activated', $user_row['user_lang']);
 
-			$messenger->to($user_row['user_email'], $user_row['username']);
+			$messenger->set_addresses($user_row);
 
 			$messenger->anti_abuse_headers($config, $user);
 

@@ -18,6 +18,56 @@ class phpbb_test_case_helpers
 		$this->test_case = $test_case;
 	}
 
+	/**
+	* This should only be called once before the tests are run.
+	* This is used to copy the fixtures to the phpBB install
+	*/
+	public function copy_ext_fixtures($fixtures_dir, $fixtures)
+	{
+		global $phpbb_root_path;
+
+		if (file_exists($phpbb_root_path . 'ext/'))
+		{
+			// First, move any extensions setup on the board to a temp directory
+			$this->copy_dir($phpbb_root_path . 'ext/', $phpbb_root_path . 'store/temp_ext/');
+
+			// Then empty the ext/ directory on the board (for accurate test cases)
+			$this->empty_dir($phpbb_root_path . 'ext/');
+		}
+
+		// Copy our ext/ files from the test case to the board
+		foreach ($fixtures as $fixture)
+		{
+			$this->copy_dir($fixtures_dir . $fixture, $phpbb_root_path . 'ext/' . $fixture);
+		}
+	}
+
+	/**
+	* This should only be called once after the tests are run.
+	* This is used to remove the fixtures from the phpBB install
+	*/
+	public function restore_original_ext_dir()
+	{
+		global $phpbb_root_path;
+
+		// Remove all of the files we copied from test ext -> board ext
+		$this->empty_dir($phpbb_root_path . 'ext/');
+
+		// Copy back the board installed extensions from the temp directory
+		if (file_exists($phpbb_root_path . 'store/temp_ext/'))
+		{
+			$this->copy_dir($phpbb_root_path . 'store/temp_ext/', $phpbb_root_path . 'ext/');
+
+			// Remove all of the files we copied from board ext -> temp_ext
+			$this->empty_dir($phpbb_root_path . 'store/temp_ext/');
+		}
+
+		if (file_exists($phpbb_root_path . 'store/temp_ext/'))
+		{
+			$this->empty_dir($phpbb_root_path . 'store/temp_ext/');
+		}
+	}
+
 	public function setExpectedTriggerError($errno, $message = '')
 	{
 		$exceptionName = '';
@@ -44,6 +94,9 @@ class phpbb_test_case_helpers
 
 	public function makedirs($path)
 	{
+		// PHP bug #55124 (fixed in 5.4.0)
+		$path = str_replace('/./', '/', $path);
+
 		mkdir($path, 0777, true);
 	}
 
@@ -54,7 +107,7 @@ class phpbb_test_case_helpers
 		if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
 		{
 			$config = array_merge($config, array(
-				'dbms'		=> 'sqlite',
+				'dbms'		=> 'phpbb_db_driver_sqlite',
 				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite2', // filename
 				'dbport'	=> '',
 				'dbname'	=> '',
@@ -77,8 +130,13 @@ class phpbb_test_case_helpers
 		{
 			include($test_config);
 
+			if (!function_exists('phpbb_convert_30_dbms_to_31'))
+			{
+				require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+			}
+
 			$config = array_merge($config, array(
-				'dbms'		=> $dbms,
+				'dbms'		=> phpbb_convert_30_dbms_to_31($dbms),
 				'dbhost'	=> $dbhost,
 				'dbport'	=> $dbport,
 				'dbname'	=> $dbname,
@@ -104,8 +162,13 @@ class phpbb_test_case_helpers
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
 		{
+			if (!function_exists('phpbb_convert_30_dbms_to_31'))
+			{
+				require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+			}
+
 			$config = array_merge($config, array(
-				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? $_SERVER['PHPBB_TEST_DBMS'] : '',
+				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? phpbb_convert_30_dbms_to_31($_SERVER['PHPBB_TEST_DBMS']) : '',
 				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
 				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
 				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
@@ -190,27 +253,6 @@ class phpbb_test_case_helpers
 		}
 
 		return $copied_files;
-	}
-
-	/**
-	* Remove files/directories that are listed in an array
-	* Designed for use with $this->copy_dir()
-	*
-	* @param array $file_list
-	*/
-	public function remove_files($file_list)
-	{
-		foreach ($file_list as $file)
-		{
-			if (is_dir($file))
-			{
-				rmdir($file);
-			}
-			else
-			{
-				unlink($file);
-			}
-		}
 	}
 
 	/**

@@ -21,10 +21,8 @@ $user->session_begin(false);
 $auth->acl($user->data);
 $user->setup();
 
-$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : './';
-
 // Set custom template for admin area
-$phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', '');
+$template->set_custom_style('adm', $phpbb_admin_path . 'style');
 
 $template->set_filenames(array(
 	'body' => 'colour_swatch.html')

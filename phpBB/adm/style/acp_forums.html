@@ -152,7 +152,7 @@
 	</dl>
 	<dl>
 		<dt><label for="forum_desc">{L_FORUM_DESC}{L_COLON}</label><br /><span>{L_FORUM_DESC_EXPLAIN}</span></dt>
-		<dd><textarea id="forum_desc" name="forum_desc" rows="5" cols="45">{FORUM_DESC}</textarea></dd>
+		<dd><textarea id="forum_desc" name="forum_desc" rows="5" cols="45" data-bbcode="true">{FORUM_DESC}</textarea></dd>
 		<dd><label><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
 			<label><input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
 			<label><input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label></dd>
@@ -239,8 +239,9 @@
 		</dl>
 		<dl>
 			<dt><label for="topics_per_page">{L_FORUM_TOPICS_PAGE}{L_COLON}</label><br /><span>{L_FORUM_TOPICS_PAGE_EXPLAIN}</span></dt>
-			<dd><input type="text" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" size="4" maxlength="4" /></dd>
+			<dd><input type="number" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" size="4" maxlength="4" min="0" max="9999" /></dd>
 		</dl>
+		<!-- EVENT acp_forums_normal_settings_append -->
 		</fieldset>
 
 		<fieldset>
@@ -252,15 +253,15 @@
 		</dl>
 		<dl>
 			<dt><label for="prune_freq">{L_AUTO_PRUNE_FREQ}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_FREQ_EXPLAIN}</span></dt>
-			<dd><input type="text" id="prune_freq" name="prune_freq" value="{PRUNE_FREQ}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="number" id="prune_freq" name="prune_freq" value="{PRUNE_FREQ}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_days">{L_AUTO_PRUNE_DAYS}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_DAYS_EXPLAIN}</span></dt>
-			<dd><input type="text" id="prune_days" name="prune_days" value="{PRUNE_DAYS}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="number" id="prune_days" name="prune_days" value="{PRUNE_DAYS}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_viewed">{L_AUTO_PRUNE_VIEWED}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_VIEWED_EXPLAIN}</span></dt>
-			<dd><input type="text" id="prune_viewed" name="prune_viewed" value="{PRUNE_VIEWED}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="number" id="prune_viewed" name="prune_viewed" value="{PRUNE_VIEWED}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_old_polls">{L_PRUNE_OLD_POLLS}{L_COLON}</label><br /><span>{L_PRUNE_OLD_POLLS_EXPLAIN}</span></dt>
@@ -315,7 +316,7 @@
 	<!-- ENDIF -->
 		<dl>
 			<dt><label for="forum_rules">{L_FORUM_RULES}{L_COLON}</label><br /><span>{L_FORUM_RULES_EXPLAIN}</span></dt>
-			<dd><textarea id="forum_rules" name="forum_rules" rows="4" cols="70">{FORUM_RULES_PLAIN}</textarea></dd>
+			<dd><textarea id="forum_rules" name="forum_rules" rows="4" cols="70" data-bbcode="true">{FORUM_RULES_PLAIN}</textarea></dd>
 			<dd><label><input type="checkbox" class="radio" name="rules_parse_bbcode"<!-- IF S_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
 				<label><input type="checkbox" class="radio" name="rules_parse_smilies"<!-- IF S_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
 				<label><input type="checkbox" class="radio" name="rules_parse_urls"<!-- IF S_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label></dd>
@@ -436,7 +437,7 @@
 		</div>
 	<!-- ENDIF -->
 
-	<p><strong>{NAVIGATION}<!-- IF S_NO_FORUMS --> [<a href="{U_EDIT}">{L_EDIT}</a> | <a href="{U_DELETE}">{L_DELETE}</a><!-- IF not S_LINK --> | <a href="{U_SYNC}">{L_RESYNC}</a><!-- ENDIF --->]<!-- ENDIF --></strong></p>
+	<p><strong>{NAVIGATION}<!-- IF S_NO_FORUMS --> [<a href="{U_EDIT}">{L_EDIT}</a> | <a href="{U_DELETE}">{L_DELETE}</a><!-- IF not S_LINK --> | <a href="{U_SYNC}">{L_RESYNC}</a><!-- ENDIF -->]<!-- ENDIF --></strong></p>
 
 	<!-- IF .forums -->
 		<table cellspacing="1">

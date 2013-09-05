@@ -105,7 +105,7 @@ if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 	if ($forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK)
 	{
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
-			SET forum_posts = forum_posts + 1
+			SET forum_posts_approved = forum_posts_approved + 1
 			WHERE forum_id = ' . $forum_id;
 		$db->sql_query($sql);
 	}
@@ -181,6 +181,20 @@ if ($mark_read == 'topics')
 	$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 	meta_refresh(3, $redirect_url);
 
+	if ($request->is_ajax())
+	{
+		// Tell the ajax script what language vars and URL need to be replaced
+		$data = array(
+			'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
+			'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+			'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . "&f=$forum_id&mark=topics&mark_time=" . time()) : '',
+			'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+			'MESSAGE_TEXT'		=> $user->lang['TOPICS_MARKED']
+		);
+		$json_response = new phpbb_json_response();
+		$json_response->send($data);
+	}
+
 	trigger_error($user->lang['TOPICS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
 }
 
@@ -227,14 +241,14 @@ gen_forum_auth_level('forum', $forum_id, $forum_data['forum_status']);
 $limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 
 $sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
-$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
+$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_posts_approved + t.topic_posts_unapproved + t.topic_posts_softdeleted' : 't.topic_posts_approved'), 's' => 't.topic_title', 'v' => 't.topic_views');
 
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param, $default_sort_days, $default_sort_key, $default_sort_dir);
 
+$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 // Limit topics to certain time frame, obtain correct topic count
-// global announcements must not be counted, normal announcements have to
-// be counted, as forum_topics(_real) includes them
 if ($sort_days)
 {
 	$min_post_time = time() - ($sort_days * 86400);
@@ -245,7 +259,7 @@ if ($sort_days)
 			AND (topic_last_post_time >= $min_post_time
 				OR topic_type = " . POST_ANNOUNCE . '
 				OR topic_type = ' . POST_GLOBAL . ')
-		' . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND topic_approved = 1');
+			AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id);
 	$result = $db->sql_query($sql);
 	$topics_count = (int) $db->sql_fetchfield('num_topics');
 	$db->sql_freeresult($result);
@@ -261,7 +275,7 @@ if ($sort_days)
 }
 else
 {
-	$topics_count = ($auth->acl_get('m_approve', $forum_id)) ? $forum_data['forum_topics_real'] : $forum_data['forum_topics'];
+	$topics_count = $phpbb_content_visibility->get_count('forum_topics', $forum_data, $forum_id);
 	$sql_limit_time = '';
 }
 
@@ -311,6 +325,7 @@ $template->assign_vars(array(
 	'FOLDER_MOVED_IMG'			=> $user->img('topic_moved', 'TOPIC_MOVED'),
 	'REPORTED_IMG'				=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
 	'UNAPPROVED_IMG'			=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
+	'DELETED_IMG'				=> $user->img('icon_topic_deleted', 'TOPIC_DELETED'),
 	'GOTO_PAGE_IMG'				=> $user->img('icon_post_target', 'GOTO_PAGE'),
 
 	'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
@@ -357,7 +372,17 @@ $sql_array = array(
 	'LEFT_JOIN'	=> array(),
 );
 
-$sql_approved = ($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
+/**
+* Event to modify the SQL query before the topic data is retrieved
+*
+* @event core.viewforum_get_topic_data
+* @var	array	sql_array		The SQL array to get the data of all topics
+* @since 3.1-A1
+*/
+$vars = array('sql_array');
+extract($phpbb_dispatcher->trigger_event('core.viewforum_get_topic_data', compact($vars)));
+
+$sql_approved = ' AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
 
 if ($user->data['is_registered'])
 {
@@ -408,9 +433,9 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (!$row['topic_approved'] && !$auth->acl_get('m_approve', $row['forum_id']))
+		if ($row['topic_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
 		{
-			// Do not display announcements that are waiting for approval.
+			// Do not display announcements that are waiting for approval or soft deleted.
 			continue;
 		}
 
@@ -539,6 +564,17 @@ if (sizeof($shadow_topic_list))
 	$sql = 'SELECT *
 		FROM ' . TOPICS_TABLE . '
 		WHERE ' . $db->sql_in_set('topic_id', array_keys($shadow_topic_list));
+
+	/**
+	* Event to modify the SQL query before the shadowtopic data is retrieved
+	*
+	* @event core.viewforum_get_shadowtopic_data
+	* @var	string	sql		The SQL string to get the data of any shadowtopics
+	* @since 3.1-A1
+	*/
+	$vars = array('sql');
+	extract($phpbb_dispatcher->trigger_event('core.viewforum_get_shadowtopic_data', compact($vars)));
+
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -669,7 +705,7 @@ if (sizeof($topic_list))
 		$s_type_switch_test = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 
 		// Replies
-		$replies = ($auth->acl_get('m_approve', $topic_forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+		$replies = $phpbb_content_visibility->get_count('topic_posts', $row, $topic_forum_id) - 1;
 
 		if ($row['topic_status'] == ITEM_MOVED)
 		{
@@ -689,9 +725,12 @@ if (sizeof($topic_list))
 		$view_topic_url_params = 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id;
 		$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params);
 
-		$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
-		$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
+		$topic_unapproved = ($row['topic_visibility'] == ITEM_UNAPPROVED && $auth->acl_get('m_approve', $row['forum_id']));
+		$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_posts_unapproved'] && $auth->acl_get('m_approve', $row['forum_id']));
+		$topic_deleted = $row['topic_visibility'] == ITEM_DELETED;
+
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id", true, $user->session_id) : '';
+		$u_mcp_queue = (!$u_mcp_queue && $topic_deleted) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=deleted_topics&amp;t=' . $topic_id, true, $user->session_id) : $u_mcp_queue;
 
 		// Send vars to template
 		$topic_row = array(
@@ -730,6 +769,7 @@ if (sizeof($topic_list))
 			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $row['forum_id'])) ? true : false,
 			'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 			'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
+			'S_TOPIC_DELETED'		=> $topic_deleted,
 			'S_HAS_POLL'			=> ($row['poll_start']) ? true : false,
 			'S_POST_ANNOUNCE'		=> ($row['topic_type'] == POST_ANNOUNCE) ? true : false,
 			'S_POST_GLOBAL'			=> ($row['topic_type'] == POST_GLOBAL) ? true : false,

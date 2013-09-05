@@ -24,6 +24,8 @@ if (!defined('IN_PHPBB'))
 include($phpbb_root_path . 'config.' . $phpEx);
 unset($dbpasswd);
 
+$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
 /**
 * $convertor_data provides some basic information about this convertor which is
 * used on the initial list of convertors and to populate the default settings
@@ -495,8 +497,9 @@ if (!$get_info)
 				array('topic_title',			'topics.topic_title',				'phpbb_set_encoding'),
 				array('topic_time',				'topics.topic_time',				''),
 				array('topic_views',			'topics.topic_views',				''),
-				array('topic_replies',			'topics.topic_replies',				''),
-				array('topic_replies_real',		'topics.topic_replies',				''),
+				array('topic_posts_approved',	'topics.topic_replies + 1',			''),
+				array('topic_posts_unapproved',	0,									''),
+				array('topic_posts_softdeleted',0,									''),
 				array('topic_last_post_id',		'topics.topic_last_post_id',		''),
 				array('topic_status',			'topics.topic_status',				'is_topic_locked'),
 				array('topic_moved_id',			0,									''),
@@ -528,8 +531,9 @@ if (!$get_info)
 				array('topic_title',			'topics.topic_title',				'phpbb_set_encoding'),
 				array('topic_time',				'topics.topic_time',				''),
 				array('topic_views',			'topics.topic_views',				''),
-				array('topic_replies',			'topics.topic_replies',				''),
-				array('topic_replies_real',		'topics.topic_replies',				''),
+				array('topic_posts_approved',	'topics.topic_replies + 1',			''),
+				array('topic_posts_unapproved',	0,									''),
+				array('topic_posts_softdeleted',0,									''),
 				array('topic_last_post_id',		'topics.topic_last_post_id',		''),
 				array('topic_status',			ITEM_MOVED,							''),
 				array('topic_moved_id',			'topics.topic_moved_id',			''),

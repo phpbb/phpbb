@@ -52,12 +52,13 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $language, $phpbb_root_path, $cache;
+		global $lang, $template, $language, $phpbb_root_path, $phpEx;
+		global $phpbb_container, $cache, $phpbb_log, $request;
 
 		switch ($sub)
 		{
 			case 'intro':
-				$cache->purge();
+				$phpbb_container->get('cache.driver')->purge();
 
 				$this->page_title = $lang['SUB_INTRO'];
 
@@ -101,12 +102,23 @@ class install_install extends module
 			break;
 
 			case 'final':
+				// Enable super globals to prevent issues with the new phpbb_request object
+				$request->enable_super_globals();
+
+				// Create a normal container now
+				$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+
+				// Sets the global variables
+				$cache = $phpbb_container->get('cache');
+				$phpbb_log = $phpbb_container->get('log');
+
 				$this->build_search_index($mode, $sub);
 				$this->add_modules($mode, $sub);
 				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
 				$this->disable_avatars_if_unwritable();
+				$this->populate_migrations($phpbb_container->get('ext.manager'), $phpbb_container->get('migrator'));
 
 				// Remove the lock file
 				@unlink($phpbb_root_path . 'cache/install_lock');
@@ -1013,8 +1025,8 @@ class install_install extends module
 			}
 
 			// Replace backslashes and doubled slashes (could happen on some proxy setups)
-			$name = str_replace(array('\\', '//', '/install'), '/', $name);
-			$data['script_path'] = trim(dirname($name));
+			$name = str_replace(array('\\', '//'), '/', $name);
+			$data['script_path'] = trim(dirname(dirname($name)));
 		}
 
 		foreach ($this->advanced_config_options as $config_key => $vars)
@@ -1118,11 +1130,8 @@ class install_install extends module
 
 		$dbms = $available_dbms[$data['dbms']]['DRIVER'];
 
-		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-
 		// Instantiate the database
-		$db = new $sql_db();
+		$db = new $dbms();
 		$db->sql_connect($data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], false, false);
 
 		// NOTE: trigger_error does not work here.
@@ -1418,18 +1427,15 @@ class install_install extends module
 
 		$dbms = $available_dbms[$data['dbms']]['DRIVER'];
 
-		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-
 		// Instantiate the database
-		$db = new $sql_db();
+		$db = new $dbms();
 		$db->sql_connect($data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], false, false);
 
 		// NOTE: trigger_error does not work here.
 		$db->sql_return_on_error(true);
 
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
-		include_once($phpbb_root_path . 'includes/search/fulltext_native.' . $phpEx);
+		include_once($phpbb_root_path . 'phpbb/search/fulltext_native.' . $phpEx);
 
 		// We need to fill the config to let internal functions correctly work
 		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
@@ -1455,12 +1461,12 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config;
+		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config, $phpbb_container;
 
 		// modules require an extension manager
 		if (empty($phpbb_extension_manager))
 		{
-			$phpbb_extension_manager = new phpbb_extension_manager($db, $config, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+			$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 		}
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
@@ -1813,7 +1819,7 @@ class install_install extends module
 	*/
 	function email_admin($mode, $sub)
 	{
-		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpEx;
+		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$this->page_title = $lang['STAGE_FINAL'];
 
@@ -1860,7 +1866,7 @@ class install_install extends module
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
 			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], $config['version'], append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=convert&amp;language=' . $data['language']), '../docs/README.html'),
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
-			'U_ACTION'	=> append_sid($phpbb_root_path . 'adm/index.' . $phpEx, 'i=send_statistics&amp;mode=send_statistics'),
+			'U_ACTION'	=> append_sid($phpbb_admin_path . 'index.' . $phpEx, 'i=send_statistics&amp;mode=send_statistics'),
 		));
 	}
 
@@ -1877,6 +1883,26 @@ class install_install extends module
 			set_config('allow_avatar', 0);
 			set_config('allow_avatar_upload', 0);
 		}
+	}
+
+	/**
+	* Populate migrations for the installation
+	*
+	* This "installs" all migrations from (root path)/phpbb/db/migrations/data.
+	* "installs" means it adds all migrations to the migrations table, but does not
+	* perform any of the actions in the migrations.
+	*
+	* @param phpbb_extension_manager $extension_manager
+	* @param phpbb_db_migrator $migrator
+	*/
+	function populate_migrations($extension_manager, $migrator)
+	{
+		$finder = $extension_manager->get_finder();
+
+		$migrations = $finder
+			->core_path('phpbb/db/migration/data/')
+			->get_classes();
+		$migrator->populate_migrations($migrations);
 	}
 
 	/**
@@ -1954,7 +1980,7 @@ class install_install extends module
 		'admin_name'			=> array('lang' => 'ADMIN_USERNAME',			'type' => 'text:25:100', 'explain' => true),
 		'admin_pass1'			=> array('lang' => 'ADMIN_PASSWORD',			'type' => 'password:25:100', 'explain' => true),
 		'admin_pass2'			=> array('lang' => 'ADMIN_PASSWORD_CONFIRM',	'type' => 'password:25:100', 'explain' => false),
-		'board_email'			=> array('lang' => 'CONTACT_EMAIL',				'type' => 'text:25:100', 'explain' => false),
+		'board_email'			=> array('lang' => 'CONTACT_EMAIL',				'type' => 'email:25:100', 'explain' => false),
 	);
 	var $advanced_config_options = array(
 		'legend1'				=> 'ACP_EMAIL_SETTINGS',
@@ -2095,9 +2121,10 @@ class install_install extends module
 				'ACP_PERMISSION_ROLES',
 				'ACP_PERMISSION_MASKS',
 			),
-			'ACP_CAT_STYLES'		=> array(
+			'ACP_CAT_CUSTOMISE'		=> array(
 				'ACP_STYLE_MANAGEMENT',
-				'ACP_STYLE_COMPONENTS',
+				'ACP_EXTENSION_MANAGEMENT',
+				'ACP_LANGUAGE',
 			),
 			'ACP_CAT_MAINTENANCE'	=> array(
 				'ACP_FORUM_LOGS',

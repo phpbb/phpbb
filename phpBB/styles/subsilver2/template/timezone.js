@@ -1,19 +1,21 @@
 (function($) { // Avoid conflicts with other libraries
 
+"use strict";
+
 $('#tz_date').change(function() {
-	phpbb.timezone_switch_date(false);
+	phpbb.timezoneSwitchDate(false);
 });
 
 $('#tz_select_date_suggest').click(function(){
-	phpbb.timezone_preselect_select(true);
+	phpbb.timezonePreselectSelect(true);
 });
 
 $(document).ready(
-	phpbb.timezone_enable_date_selection
+	phpbb.timezoneEnableDateSelection
 );
 
 $(document).ready(
-	phpbb.timezone_preselect_select($('#tz_select_date_suggest').attr('data-is-registration') == 'true')
+	phpbb.timezonePreselectSelect($('#tz_select_date_suggest').attr('timezone-preselect') == 'true')
 );
 
 })(jQuery); // Avoid conflicts with other libraries

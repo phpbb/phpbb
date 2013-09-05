@@ -154,6 +154,14 @@ CREATE TABLE phpbb_config (
 
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic);
 
+# Table: 'phpbb_config_text'
+CREATE TABLE phpbb_config_text (
+	config_name varchar(255) NOT NULL DEFAULT '',
+	config_value mediumtext(16777215) NOT NULL DEFAULT '',
+	PRIMARY KEY (config_name)
+);
+
+
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
 	confirm_id char(32) NOT NULL DEFAULT '',
@@ -242,9 +250,12 @@ CREATE TABLE phpbb_forums (
 	forum_topics_per_page tinyint(4) NOT NULL DEFAULT '0',
 	forum_type tinyint(4) NOT NULL DEFAULT '0',
 	forum_status tinyint(4) NOT NULL DEFAULT '0',
-	forum_posts INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	forum_topics INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	forum_topics_real INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	forum_posts_approved INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	forum_posts_unapproved INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	forum_posts_softdeleted INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	forum_topics_approved INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	forum_topics_unapproved INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	forum_topics_softdeleted INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	forum_last_post_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	forum_last_poster_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	forum_last_post_subject text(65535) NOT NULL DEFAULT '',
@@ -309,7 +320,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varchar(8) NOT NULL DEFAULT '',
 	group_display INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_avatar varchar(255) NOT NULL DEFAULT '',
-	group_avatar_type tinyint(2) NOT NULL DEFAULT '0',
+	group_avatar_type varchar(255) NOT NULL DEFAULT '',
 	group_avatar_width INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_avatar_height INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_rank INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -318,8 +329,7 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_message_limit INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_max_recipients INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	group_teampage INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_groups_group_legend_name ON phpbb_groups (group_legend, group_name);
@@ -398,6 +408,19 @@ CREATE TABLE phpbb_moderator_cache (
 CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache (display_on_index);
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id);
 
+# Table: 'phpbb_migrations'
+CREATE TABLE phpbb_migrations (
+	migration_name varchar(255) NOT NULL DEFAULT '',
+	migration_depends_on text(65535) NOT NULL DEFAULT '',
+	migration_schema_done INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	migration_data_done INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	migration_data_state text(65535) NOT NULL DEFAULT '',
+	migration_start_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	migration_end_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	PRIMARY KEY (migration_name)
+);
+
+
 # Table: 'phpbb_modules'
 CREATE TABLE phpbb_modules (
 	module_id INTEGER PRIMARY KEY NOT NULL ,
@@ -416,6 +439,30 @@ CREATE TABLE phpbb_modules (
 CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules (left_id, right_id);
 CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules (module_enabled);
 CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id);
+
+# Table: 'phpbb_notification_types'
+CREATE TABLE phpbb_notification_types (
+	notification_type_id INTEGER PRIMARY KEY NOT NULL ,
+	notification_type_name varchar(255) NOT NULL DEFAULT '',
+	notification_type_enabled INTEGER UNSIGNED NOT NULL DEFAULT '1'
+);
+
+CREATE UNIQUE INDEX phpbb_notification_types_type ON phpbb_notification_types (notification_type_name);
+
+# Table: 'phpbb_notifications'
+CREATE TABLE phpbb_notifications (
+	notification_id INTEGER PRIMARY KEY NOT NULL ,
+	notification_type_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	item_parent_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	notification_read INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	notification_time INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	notification_data text(65535) NOT NULL DEFAULT ''
+);
+
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (notification_type_id, item_id);
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read);
 
 # Table: 'phpbb_poll_options'
 CREATE TABLE phpbb_poll_options (
@@ -449,7 +496,7 @@ CREATE TABLE phpbb_posts (
 	icon_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	poster_ip varchar(40) NOT NULL DEFAULT '',
 	post_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	post_approved INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	post_visibility tinyint(3) NOT NULL DEFAULT '0',
 	post_reported INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	enable_bbcode INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	enable_smilies INTEGER UNSIGNED NOT NULL DEFAULT '1',
@@ -467,14 +514,17 @@ CREATE TABLE phpbb_posts (
 	post_edit_reason text(65535) NOT NULL DEFAULT '',
 	post_edit_user INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_edit_count INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	post_edit_locked INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	post_edit_locked INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	post_delete_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	post_delete_reason text(65535) NOT NULL DEFAULT '',
+	post_delete_user INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_posts_forum_id ON phpbb_posts (forum_id);
 CREATE INDEX phpbb_posts_topic_id ON phpbb_posts (topic_id);
 CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts (poster_ip);
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id);
-CREATE INDEX phpbb_posts_post_approved ON phpbb_posts (post_approved);
+CREATE INDEX phpbb_posts_post_visibility ON phpbb_posts (post_visibility);
 CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username);
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time);
 
@@ -630,8 +680,11 @@ CREATE TABLE phpbb_reports (
 	report_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_text mediumtext(16777215) NOT NULL DEFAULT '',
 	reported_post_text mediumtext(16777215) NOT NULL DEFAULT '',
+	reported_post_uid varchar(8) NOT NULL DEFAULT '',
 	reported_post_bitfield varchar(255) NOT NULL DEFAULT '',
-	reported_post_uid varchar(8) NOT NULL DEFAULT ''
+	reported_post_enable_magic_url INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	reported_post_enable_smilies INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	reported_post_enable_bbcode INTEGER UNSIGNED NOT NULL DEFAULT '1'
 );
 
 CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);
@@ -748,21 +801,32 @@ CREATE TABLE phpbb_styles (
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
 
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id INTEGER PRIMARY KEY NOT NULL ,
+	group_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	teampage_name varchar(255) NOT NULL DEFAULT '',
+	teampage_position INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	teampage_parent INTEGER UNSIGNED NOT NULL DEFAULT '0'
+);
+
+
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
 	topic_id INTEGER PRIMARY KEY NOT NULL ,
 	forum_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	icon_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	topic_attachment INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	topic_approved INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	topic_visibility tinyint(3) NOT NULL DEFAULT '0',
 	topic_reported INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	topic_title text(65535) NOT NULL DEFAULT '',
 	topic_poster INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	topic_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	topic_time_limit INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	topic_views INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	topic_replies INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	topic_replies_real INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	topic_posts_approved INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	topic_posts_unapproved INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	topic_posts_softdeleted INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	topic_status tinyint(3) NOT NULL DEFAULT '0',
 	topic_type tinyint(3) NOT NULL DEFAULT '0',
 	topic_first_post_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -783,14 +847,17 @@ CREATE TABLE phpbb_topics (
 	poll_length INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	poll_max_options tinyint(4) NOT NULL DEFAULT '1',
 	poll_last_vote INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	poll_vote_change INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	poll_vote_change INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	topic_delete_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	topic_delete_reason text(65535) NOT NULL DEFAULT '',
+	topic_delete_user INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics (forum_id);
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type);
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics (topic_last_post_time);
-CREATE INDEX phpbb_topics_topic_approved ON phpbb_topics (topic_approved);
-CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics (forum_id, topic_approved, topic_last_post_id);
+CREATE INDEX phpbb_topics_topic_visibility ON phpbb_topics (topic_visibility);
+CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics (forum_id, topic_visibility, topic_last_post_id);
 CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics (forum_id, topic_last_post_time, topic_moved_id);
 
 # Table: 'phpbb_topics_track'
@@ -824,6 +891,16 @@ CREATE TABLE phpbb_topics_watch (
 CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch (topic_id);
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch (user_id);
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status);
+
+# Table: 'phpbb_user_notifications'
+CREATE TABLE phpbb_user_notifications (
+	item_type varchar(255) NOT NULL DEFAULT '',
+	item_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	method varchar(255) NOT NULL DEFAULT '',
+	notify INTEGER UNSIGNED NOT NULL DEFAULT '1'
+);
+
 
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
@@ -893,7 +970,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_options INTEGER UNSIGNED NOT NULL DEFAULT '230271',
 	user_avatar varchar(255) NOT NULL DEFAULT '',
-	user_avatar_type tinyint(2) NOT NULL DEFAULT '0',
+	user_avatar_type varchar(255) NOT NULL DEFAULT '',
 	user_avatar_width INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_avatar_height INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_sig mediumtext(16777215) NOT NULL DEFAULT '',

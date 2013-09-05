@@ -19,9 +19,7 @@ class phpbb_template_subdir_includephp_from_subdir_test extends phpbb_template_t
 	{
 		$this->setup_engine(array('tpl_allow_php' => true));
 
-		$cache_file = $this->template->cachepath . 'includephp_relative.html.php';
-
-		$this->run_template('includephp_relative.html', array(), array(), array(), "Path is relative to board root.\ntesting included php", $cache_file);
+		$this->run_template('includephp_relative.html', array(), array(), array(), "Path is relative to board root.\ntesting included php");
 
 		$this->template->set_filenames(array('test' => 'includephp_relative.html'));
 		$this->assertEquals("Path is relative to board root.\ntesting included php", $this->display('test'), "Testing INCLUDEPHP");

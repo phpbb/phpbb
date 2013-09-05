@@ -60,73 +60,42 @@
 	</tr>
 	<tr>
 		<td class="row1" width="35%"><label>{L_CURRENT_IMAGE}{L_COLON}</label><br /><span>{L_AVATAR_EXPLAIN}</span></td>
-		<td class="row2">{AVATAR_IMAGE}<br /><br /><input type="checkbox" class="radio" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></td>
+		<td class="row2">{AVATAR_IMAGE}<br /><br /><input type="checkbox" class="radio" name="avatar_delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></td>
 	</tr>
-	<!-- IF not S_IN_AVATAR_GALLERY -->
-		<!-- IF S_UPLOAD_AVATAR_FILE -->
-			<tr>
-				<td class="row1" width="35%"><label for="uploadfile">{L_UPLOAD_AVATAR_FILE}{L_COLON}</label></td>
-				<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_MAX_FILESIZE}" /><input type="file" id="uploadfile" name="uploadfile" /></td>
-			</tr>
-		<!-- ENDIF -->
-		<!-- IF S_UPLOAD_AVATAR_URL -->
-			<tr>
-				<td class="row1" width="35%"><label for="uploadurl">{L_UPLOAD_AVATAR_URL}{L_COLON}</label><br /><span>{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
-				<td class="row2"><input name="uploadurl" type="text" id="uploadurl" value="" /></td>
-			</tr>
-		<!-- ENDIF -->
-		<!-- IF S_LINK_AVATAR -->
-		<tr>
-			<td class="row1" width="35%"><label for="remotelink">{L_LINK_REMOTE_AVATAR}{L_COLON}</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
-			<td class="row2"><input name="remotelink" type="text" id="remotelink" value="" /></td>
-		</tr>
-		<tr>
-			<td class="row1" width="35%"><label for="width">{L_LINK_REMOTE_SIZE}{L_COLON}</label><br /><span>{L_LINK_REMOTE_SIZE_EXPLAIN}</span></td>
-			<td class="row2"><input name="width" type="text" id="width" size="3" value="{AVATAR_WIDTH}" /> <span>px X </span> <input type="text" name="height" size="3" value="{AVATAR_HEIGHT}" /> <span>px</span></td>
-		</tr>
-		<!-- ENDIF -->
-		<!-- IF S_DISPLAY_GALLERY -->
-			<tr>
-				<td class="row1" width="35%"><label>{L_AVATAR_GALLERY}{L_COLON}</label></td>
-				<td class="row2"><input class="btnmain" type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" /></td>
-			</tr>
-		<!-- ENDIF -->
-	<!-- ELSE -->
-
-		<tr>
-			<th colspan="2">{L_AVATAR_GALLERY}</th>
-		</tr>
-		<tr>
-			<td class="row1" width="35%"><label for="category">{L_AVATAR_CATEGORY}{L_COLON}</label></td>
-			<td class="row2"><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="btnmain" type="submit" value="{L_GO}" name="display_gallery" /></td>
-		</tr>
-		<tr>
-			<td class="row1" width="35%">
-				<table cellspacing="1">
-				<!-- BEGIN avatar_row -->
-				<tr>
-					<!-- BEGIN avatar_column -->
-						<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
-					<!-- END avatar_column -->
-				</tr>
-				<tr>
-					<!-- BEGIN avatar_option_column -->
-						<td class="row2" style="text-align: center;"><input type="radio" class="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
-					<!-- END avatar_option_column -->
-				</tr>
-				<!-- END avatar_row -->
-				</table>
-			</td>
-			<td class="row2"><input class="btnmain" type="submit" name="cancel" value="{L_CANCEL}" /></td>
-		</tr>
-
-	<!-- ENDIF -->
+<!-- IF not S_AVATARS_ENABLED -->
+	<tr>
+		<td class="row3" colspan="2" align="center">{L_AVATAR_FEATURES_DISABLED}</td>
+	</tr>
+<!-- ENDIF -->
+	<tr>
+		<th colspan="2">{L_AVATAR_SELECT}</th>
+	</tr>
+	<tr>
+		<td class="row1" width="35%"><b class="genmed">{L_AVATAR_TYPE}{L_COLON}</b></td>
+		<td class="row2">
+			<select name="avatar_driver" id="avatar_driver">
+				<option value="">{L_NO_AVATAR_CATEGORY}</option>
+				<!-- BEGIN avatar_drivers -->
+				<option value="{avatar_drivers.DRIVER}"<!-- IF avatar_drivers.SELECTED --> selected="selected"<!-- ENDIF -->>{avatar_drivers.L_TITLE}</option>
+				<!-- END avatar_drivers -->
+			</select></td>
+	</tr>
+<!-- BEGIN avatar_drivers -->
+	<tr class="avatar_option_{avatar_drivers.DRIVER}">
+		<td class="row1" width="35%" colspan="2"><noscript><b class="genmed">{avatar_drivers.L_TITLE} </b><br /></noscript>{avatar_drivers.L_EXPLAIN}</span></td>
+	</tr>
+	<tr class="avatar_option_{avatar_drivers.DRIVER}">
+		<td colspan="2" style="padding: 0">{avatar_drivers.OUTPUT}</td>
+	</tr>
+<!-- END avatar_drivers -->
 
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
 		<input class="btnmain" type="reset" id="reset" name="reset" value="{L_RESET}" /></td>
 	</tr>
 	</table>
+
+<!-- INCLUDEJS avatars.js -->
 
 <!-- ELSEIF S_LIST -->
 

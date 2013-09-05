@@ -46,7 +46,7 @@ function send_avatar_to_browser($file, $browser)
 		$image_data = @getimagesize($file_path);
 		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
 
-		if (strpos(strtolower($browser), 'msie') !== false && strpos(strtolower($browser), 'msie 8.0') === false)
+		if ((strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($browser, 7))
 		{
 			header('Content-Disposition: attachment; ' . header_filename($file));
 
@@ -174,10 +174,9 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	header('Pragma: public');
 
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
-	$is_ie8 = (strpos(strtolower($user->browser), 'msie 8.0') !== false);
 	header('Content-Type: ' . $attachment['mimetype']);
 
-	if ($is_ie8)
+	if (phpbb_is_greater_ie_version($user->browser, 7))
 	{
 		header('X-Content-Type-Options: nosniff');
 	}
@@ -189,7 +188,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 	else
 	{
-		if (empty($user->browser) || (!$is_ie8 && (strpos(strtolower($user->browser), 'msie') !== false)))
+		if (empty($user->browser) || ((strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($user->browser, 7)))
 		{
 			header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
 			if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie 6.0') !== false))
@@ -200,7 +199,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		else
 		{
 			header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
-			if ($is_ie8 && (strpos($attachment['mimetype'], 'image') !== 0))
+			if (phpbb_is_greater_ie_version($user->browser, 7) && (strpos($attachment['mimetype'], 'image') !== 0))
 			{
 				header('X-Download-Options: noopen');
 			}
@@ -410,7 +409,8 @@ function set_modified_headers($stamp, $browser)
 
 	// let's see if we have to send the file at all
 	$last_load 	=  $request->header('Modified-Since') ? strtotime(trim($request->header('Modified-Since'))) : false;
-	if ((strpos(strtolower($browser), 'msie 6.0') === false) && (strpos(strtolower($browser), 'msie 8.0') === false))
+
+	if (strpos(strtolower($browser), 'msie 6.0') === false && !phpbb_is_greater_ie_version($browser, 7))
 	{
 		if ($last_load !== false && $last_load >= $stamp)
 		{
@@ -596,7 +596,7 @@ function phpbb_parse_range_request($request_array, $filesize)
 /**
 * Increments the download count of all provided attachments
 *
-* @param dbal $db The database object
+* @param phpbb_db_driver $db The database object
 * @param array|int $ids The attach_id of each attachment
 *
 * @return null
@@ -617,7 +617,7 @@ function phpbb_increment_downloads($db, $ids)
 /**
 * Handles authentication when downloading attachments from a post or topic
 *
-* @param dbal $db The database object
+* @param phpbb_db_driver $db The database object
 * @param phpbb_auth $auth The authentication object
 * @param int $topic_id The id of the topic that we are downloading from
 *
@@ -625,7 +625,7 @@ function phpbb_increment_downloads($db, $ids)
 */
 function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 {
-	$sql = 'SELECT t.forum_id, f.forum_password, f.parent_id
+	$sql = 'SELECT t.forum_id, f.forum_name, f.forum_password, f.parent_id
 		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 		WHERE t.topic_id = " . (int) $topic_id . "
 			AND t.forum_id = f.forum_id";
@@ -651,7 +651,7 @@ function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 /**
 * Handles authentication when downloading attachments from PMs
 *
-* @param dbal $db The database object
+* @param phpbb_db_driver $db The database object
 * @param phpbb_auth $auth The authentication object
 * @param int $user_id The user id
 * @param int $msg_id The id of the PM that we are downloading from
@@ -678,7 +678,7 @@ function phpbb_download_handle_pm_auth($db, $auth, $user_id, $msg_id)
 /**
 * Checks whether a user can download from a particular PM
 *
-* @param dbal $db The database object
+* @param phpbb_db_driver $db The database object
 * @param int $user_id The user id
 * @param int $msg_id The id of the PM that we are downloading from
 *
@@ -720,4 +720,25 @@ function phpbb_download_clean_filename($filename)
 	$filename = preg_replace("/%(\w{2})/", '_', $filename);
 
 	return $filename;
+}
+
+/**
+* Check if the browser is internet explorer version 7+
+*
+* @param string $user_agent	User agent HTTP header
+* @param int $version IE version to check against
+*
+* @return bool true if internet explorer version is greater than $version
+*/
+function phpbb_is_greater_ie_version($user_agent, $version)
+{
+	if (preg_match('/msie (\d+)/', strtolower($user_agent), $matches))
+	{
+		$ie_version = (int) $matches[1];
+		return ($ie_version > $version);
+	}
+	else
+	{
+		return false;
+	}
 }

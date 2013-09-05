@@ -6,6 +6,8 @@ services:
             - %core.php_ext%
             - @config
             - @dbal.conn
+        calls:
+            - [set_name, [cron.task.core.prune_all_forums]]
         tags:
             - { name: cron.task }
 
@@ -16,6 +18,8 @@ services:
             - %core.php_ext%
             - @config
             - @dbal.conn
+        calls:
+            - [set_name, [cron.task.core.prune_forum]]
         tags:
             - { name: cron.task }
 
@@ -25,6 +29,8 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - @config
+        calls:
+            - [set_name, [cron.task.core.queue]]
         tags:
             - { name: cron.task }
 
@@ -33,6 +39,8 @@ services:
         arguments:
             - @config
             - @cache.driver
+        calls:
+            - [set_name, [cron.task.core.tidy_cache]]
         tags:
             - { name: cron.task }
 
@@ -42,6 +50,8 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - @config
+        calls:
+            - [set_name, [cron.task.core.tidy_database]]
         tags:
             - { name: cron.task }
 
@@ -54,6 +64,8 @@ services:
             - @config
             - @dbal.conn
             - @user
+        calls:
+            - [set_name, [cron.task.core.tidy_search]]
         tags:
             - { name: cron.task }
 
@@ -62,6 +74,8 @@ services:
         arguments:
             - @config
             - @user
+        calls:
+            - [set_name, [cron.task.core.tidy_sessions]]
         tags:
             - { name: cron.task }
 
@@ -71,5 +85,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - @config
+        calls:
+            - [set_name, [cron.task.core.tidy_warnings]]
         tags:
             - { name: cron.task }

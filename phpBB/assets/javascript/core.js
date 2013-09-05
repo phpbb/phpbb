@@ -1,5 +1,5 @@
 var phpbb = {};
-phpbb.alert_time = 100;
+phpbb.alertTime = 100;
 
 (function($) {  // Avoid conflicts with other libraries
 
@@ -12,35 +12,42 @@ var keymap = {
 };
 
 var dark = $('#darkenwrapper');
-var loading_alert = $('#loadingalert');
+var loadingAlert = $('#loadingalert');
+var phpbbAlertTimer = null;
 
 
 /**
- * Display a loading screen.
+ * Display a loading screen
  *
- * @returns object Returns loading_alert.
+ * @returns object Returns loadingAlert.
  */
-phpbb.loading_alert = function() {
-	if (dark.is(':visible'))
-	{
-		loading_alert.fadeIn(phpbb.alert_time);
-	}
-	else
-	{
-		loading_alert.show();
-		dark.fadeIn(phpbb.alert_time, function() {
+phpbb.loadingAlert = function() {
+	if (dark.is(':visible')) {
+		loadingAlert.fadeIn(phpbb.alertTime);
+	} else {
+		loadingAlert.show();
+		dark.fadeIn(phpbb.alertTime, function() {
 			// Wait five seconds and display an error if nothing has been returned by then.
-			setTimeout(function() {
-				if (loading_alert.is(':visible'))
-				{
+			phpbbAlertTimer = setTimeout(function() {
+				if (loadingAlert.is(':visible')) {
 					phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
 				}
 			}, 5000);
 		});
 	}
 
-	return loading_alert;
-}
+	return loadingAlert;
+};
+
+/**
+ * Clear loading alert timeout
+*/
+phpbb.clearLoadingTimeout = function() {
+	if (phpbbAlertTimer !== null) {
+		clearTimeout(phpbbAlertTimer);
+		phpbbAlertTimer = null;
+	}
+};
 
 /**
  * Display a simple alert similar to JSs native alert().
@@ -50,7 +57,7 @@ phpbb.loading_alert = function() {
  * @param string title Title of the message, eg "Information" (HTML).
  * @param string msg Message to display (HTML).
  * @param bool fadedark Remove the dark background when done? Defaults
- * 	to yes.
+ *     to yes.
  *
  * @returns object Returns the div created.
  */
@@ -67,7 +74,7 @@ phpbb.alert = function(title, msg, fadedark) {
 
 		div.find('.alert_close').unbind('click');
 		fade = (typeof fadedark !== 'undefined' && !fadedark) ? div : dark;
-		fade.fadeOut(phpbb.alert_time, function() {
+		fade.fadeOut(phpbb.alertTime, function() {
 			div.hide();
 		});
 
@@ -90,27 +97,22 @@ phpbb.alert = function(title, msg, fadedark) {
 		e.preventDefault();
 	});
 
-	if (loading_alert.is(':visible'))
-	{
-		loading_alert.fadeOut(phpbb.alert_time, function() {
+	if (loadingAlert.is(':visible')) {
+		loadingAlert.fadeOut(phpbb.alertTime, function() {
 			dark.append(div);
-			div.fadeIn(phpbb.alert_time);
+			div.fadeIn(phpbb.alertTime);
 		});
-	}
-	else if (dark.is(':visible'))
-	{
+	} else if (dark.is(':visible')) {
 		dark.append(div);
-		div.fadeIn(phpbb.alert_time);
-	}
-	else
-	{
+		div.fadeIn(phpbb.alertTime);
+	} else {
 		dark.append(div);
 		div.show();
-		dark.fadeIn(phpbb.alert_time);
+		dark.fadeIn(phpbb.alertTime);
 	}
 
 	return div;
-}
+};
 
 /**
  * Display a simple yes / no box to the user.
@@ -119,9 +121,9 @@ phpbb.alert = function(title, msg, fadedark) {
  *
  * @param string msg Message to display (HTML).
  * @param function callback Callback. Bool param, whether the user pressed
- * 	yes or no (or whatever their language is).
+ *     yes or no (or whatever their language is).
  * @param bool fadedark Remove the dark background when done? Defaults
- * 	to yes.
+ *     to yes.
  *
  * @returns object Returns the div created.
  */
@@ -133,13 +135,13 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		e.stopPropagation();
 	});
 
-	var click_handler = function(e) {
-		var res = this.className === 'button1';
+	var clickHandler = function(e) {
+		var res = this.name === 'confirm';
 		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
-		fade.fadeOut(phpbb.alert_time, function() {
+		fade.fadeOut(phpbb.alertTime, function() {
 			div.hide();
 		});
-		div.find('input[type="button"]').unbind('click', click_handler);
+		div.find('input[type="button"]').unbind('click', clickHandler);
 		callback(res);
 
 		if (e) {
@@ -147,11 +149,11 @@ phpbb.confirm = function(msg, callback, fadedark) {
 			e.stopPropagation();
 		}
 	};
-	div.find('input[type="button"]').one('click', click_handler);
+	div.find('input[type="button"]').one('click', clickHandler);
 
 	dark.one('click', function(e) {
 		div.find('.alert_close').unbind('click');
-		dark.fadeOut(phpbb.alert_time, function() {
+		dark.fadeOut(phpbb.alertTime, function() {
 			div.hide();
 		});
 		callback(false);
@@ -162,11 +164,11 @@ phpbb.confirm = function(msg, callback, fadedark) {
 
 	$(document).bind('keydown', function(e) {
 		if (e.keyCode === keymap.ENTER) {
-			$('input[type="button"].button1').trigger('click');
+			$('input[name="confirm"]').trigger('click');
 			e.preventDefault();
 			e.stopPropagation();
 		} else if (e.keyCode === keymap.ESC) {
-			$('input[type="button"].button2').trigger('click');
+			$('input[name="cancel"]').trigger('click');
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -174,7 +176,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 
 	div.find('.alert_close').one('click', function(e) {
 		var fade = (typeof fadedark !== 'undefined' && fadedark) ? div : dark;
-		fade.fadeOut(phpbb.alert_time, function() {
+		fade.fadeOut(phpbb.alertTime, function() {
 			div.hide();
 		});
 		callback(false);
@@ -182,27 +184,22 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		e.preventDefault();
 	});
 
-	if (loading_alert.is(':visible'))
-	{
-		loading_alert.fadeOut(phpbb.alert_time, function() {
+	if (loadingAlert.is(':visible')) {
+		loadingAlert.fadeOut(phpbb.alertTime, function() {
 			dark.append(div);
-			div.fadeIn(phpbb.alert_time);
+			div.fadeIn(phpbb.alertTime);
 		});
-	}
-	else if (dark.is(':visible'))
-	{
+	} else if (dark.is(':visible')) {
 		dark.append(div);
-		div.fadeIn(phpbb.alert_time);
-	}
-	else
-	{
+		div.fadeIn(phpbb.alertTime);
+	} else {
 		dark.append(div);
 		div.show();
-		dark.fadeIn(phpbb.alert_time);
+		dark.fadeIn(phpbb.alertTime);
 	}
 
 	return div;
-}
+};
 
 /**
  * Turn a querystring into an array.
@@ -210,17 +207,16 @@ phpbb.confirm = function(msg, callback, fadedark) {
  * @argument string string The querystring to parse.
  * @returns object The object created.
  */
-phpbb.parse_querystring = function(string) {
+phpbb.parseQuerystring = function(string) {
 	var params = {}, i, split;
 
 	string = string.split('&');
-	for (i = 0; i < string.length; i++)
-	{
+	for (i = 0; i < string.length; i++) {
 		split = string[i].split('=');
 		params[split[0]] = decodeURIComponent(split[1]);
 	}
 	return params;
-}
+};
 
 
 /**
@@ -236,25 +232,44 @@ phpbb.parse_querystring = function(string) {
  *
  * @param object options Options.
  * @param bool/function refresh If we are sent back a refresh, should it be
- * 	acted upon? This can either be true / false / a function.
+ *     acted upon? This can either be true / false / a function.
  * @param function callback Callback to call on completion of event. Has
- * 	three parameters: the element that the event was evoked from, the JSON
- * 	that was returned and (if it is a form) the form action.
+ *     three parameters: the element that the event was evoked from, the JSON
+ *     that was returned and (if it is a form) the form action.
  */
 phpbb.ajaxify = function(options) {
 	var elements = $(options.selector),
 		refresh = options.refresh,
 		callback = options.callback,
 		overlay = (typeof options.overlay !== 'undefined') ? options.overlay : true,
-		is_form = elements.is('form'),
-		event_name = is_form ? 'submit' : 'click';
+		isForm = elements.is('form'),
+		eventName = isForm ? 'submit' : 'click';
 
-	elements.bind(event_name, function(event) {
+	elements.bind(eventName, function(event) {
 		var action, method, data, submit, that = this, $this = $(this);
 
-		if ($this.find('input[type="submit"][data-clicked]').attr('data-ajax') === 'false')
-		{
+		if ($this.find('input[type="submit"][data-clicked]').attr('data-ajax') === 'false') {
 			return;
+		}
+
+		/**
+		 * Handler for AJAX errors
+		 */
+		function errorHandler(jqXHR, textStatus, errorThrown) {
+			if (console && console.log) {
+				console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown);
+			}
+			phpbb.clearLoadingTimeout();
+			var errorText = false;
+			if (typeof errorThrown === 'string' && errorThrown.length > 0) {
+				errorText = errorThrown;
+			}
+			else {
+				errorText = dark.attr('data-ajax-error-text-' + textStatus);
+				if (typeof errorText !== 'string' || !errorText.length) 
+					errorText = dark.attr('data-ajax-error-text');
+			}
+			phpbb.alert(dark.attr('data-ajax-error-title'), errorText);
 		}
 
 		/**
@@ -267,110 +282,81 @@ phpbb.ajaxify = function(options) {
 		 *
 		 * @param object res The object sent back by the server.
 		 */
-		function return_handler(res)
-		{
+		function returnHandler(res) {
 			var alert;
 
+			phpbb.clearLoadingTimeout();
+
 			// Is a confirmation required?
-			if (typeof res.S_CONFIRM_ACTION === 'undefined')
-			{
+			if (typeof res.S_CONFIRM_ACTION === 'undefined') {
 				// If a confirmation is not required, display an alert and call the
 				// callbacks.
-				if (typeof res.MESSAGE_TITLE !== 'undefined')
-				{
+				if (typeof res.MESSAGE_TITLE !== 'undefined') {
 					alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-				}
-				else
-				{
-					dark.fadeOut(phpbb.alert_time);
+				} else {
+					dark.fadeOut(phpbb.alertTime);
 				}
 
-				if (typeof phpbb.ajax_callbacks[callback] === 'function')
-				{
-					phpbb.ajax_callbacks[callback].call(that, res);
+				if (typeof phpbb.ajaxCallbacks[callback] === 'function') {
+					phpbb.ajaxCallbacks[callback].call(that, res);
 				}
 
 				// If the server says to refresh the page, check whether the page should
 				// be refreshed and refresh page after specified time if required.
-				if (res.REFRESH_DATA)
-				{
-					if (typeof refresh === 'function')
-					{
+				if (res.REFRESH_DATA) {
+					if (typeof refresh === 'function') {
 						refresh = refresh(res.REFRESH_DATA.url);
-					}
-					else if (typeof refresh !== 'boolean')
-					{
+					} else if (typeof refresh !== 'boolean') {
 						refresh = false;
 					}
 
 					setTimeout(function() {
-						if (refresh)
-						{
+						if (refresh) {
 							window.location = res.REFRESH_DATA.url;
 						}
 
 						// Hide the alert even if we refresh the page, in case the user
 						// presses the back button.
-						dark.fadeOut(phpbb.alert_time, function() {
+						dark.fadeOut(phpbb.alertTime, function() {
 							alert.hide();
 						});
 					}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 				}
-			}
-			else
-			{
-				// If confirmation is required, display a diologue to the user.
-				phpbb.confirm(res.MESSAGE_TEXT, function(del) {
-					if (del)
-					{
-						phpbb.loading_alert();
+			} else {
+				// If confirmation is required, display a dialog to the user.
+				phpbb.confirm(res.MESSAGE_BODY, function(del) {
+					if (del) {
+						phpbb.loadingAlert();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
 						$.ajax({
 							url: res.S_CONFIRM_ACTION,
 							type: 'POST',
 							data: data + '&confirm=' + res.YES_VALUE,
-							success: return_handler,
-							error: error_handler
+							success: returnHandler,
+							error: errorHandler
 						});
 					}
 				}, false);
 			}
 		}
 
-		function error_handler()
-		{
-			var alert;
-
-			alert = phpbb.alert(dark.attr('data-ajax-error-title'), dark.attr('data-ajax-error-text'));
-
-			setTimeout(function () {
-				dark.fadeOut(phpbb.alert_time, function() {
-					alert.hide();
-				});
-			}, 5000);
-		}
-
 		// If the element is a form, POST must be used and some extra data must
 		// be taken from the form.
-		var run_filter = (typeof options.filter === 'function');
+		var runFilter = (typeof options.filter === 'function');
 
-		if (is_form)
-		{
+		if (isForm) {
 			action = $this.attr('action').replace('&amp;', '&');
 			data = $this.serializeArray();
 			method = $this.attr('method') || 'GET';
 
-			if ($this.find('input[type="submit"][data-clicked]'))
-			{
+			if ($this.find('input[type="submit"][data-clicked]')) {
 				submit = $this.find('input[type="submit"][data-clicked]');
 				data.push({
 					name: submit.attr('name'),
 					value: submit.val()
 				});
 			}
-		}
-		else
-		{
+		} else {
 			action = this.href;
 			data = null;
 			method = 'GET';
@@ -378,28 +364,26 @@ phpbb.ajaxify = function(options) {
 
 		// If filter function returns false, cancel the AJAX functionality,
 		// and return true (meaning that the HTTP request will be sent normally).
-		if (run_filter && !options.filter.call(this, data))
-		{
+		if (runFilter && !options.filter.call(this, data)) {
 			return;
 		}
 
-		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') == 'true'))
-		{
-			phpbb.loading_alert();
+		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') === 'true')) {
+			phpbb.loadingAlert();
 		}
 
 		$.ajax({
 			url: action,
 			type: method,
 			data: data,
-			success: return_handler,
-			error: error_handler
+			success: returnHandler,
+			error: errorHandler
 		});
 
 		event.preventDefault();
 	});
 
-	if (is_form) {
+	if (isForm) {
 		elements.find('input:submit').click(function () {
 			var $this = $(this);
 
@@ -409,15 +393,15 @@ phpbb.ajaxify = function(options) {
 	}
 
 	return this;
-}
+};
 
 /**
 * Hide the optgroups that are not the selected timezone
 *
-* @param	bool	keep_selection		Shall we keep the value selected, or shall the user be forced to repick one.
+* @param	bool	keepSelection		Shall we keep the value selected, or shall the user be forced to repick one.
 */
-phpbb.timezone_switch_date = function(keep_selection) {
-	if ($('#timezone_copy').length == 0) {
+phpbb.timezoneSwitchDate = function(keepSelection) {
+	if ($('#timezone_copy').length === 0) {
 		// We make a backup of the original dropdown, so we can remove optgroups
 		// instead of setting display to none, because IE and chrome will not
 		// hide options inside of optgroups and selects via css
@@ -427,50 +411,52 @@ phpbb.timezone_switch_date = function(keep_selection) {
 		$('#timezone').replaceWith($('#timezone_copy').clone().attr('id', 'timezone').css('display', 'block').attr('name', 'tz'));
 	}
 
-	if ($('#tz_date').val() != '') {
+	if ($('#tz_date').val() !== '') {
 		$('#timezone > optgroup').remove(":not([label='" + $('#tz_date').val() + "'])");
 	}
 
-	if ($('#tz_date').val() == $('#tz_select_date_suggest').attr('data-suggested-tz')) {
+	if ($('#tz_date').val() === $('#tz_select_date_suggest').attr('data-suggested-tz')) {
 		$('#tz_select_date_suggest').css('display', 'none');
 	} else {
 		$('#tz_select_date_suggest').css('display', 'inline');
 	}
 
-	if ($("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option").size() == 1) {
+	if ($("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option").size() === 1) {
 		// If there is only one timezone for the selected date, we just select that automatically.
 		$("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option:first").attr('selected', true);
-		keep_selection = true;
+		keepSelection = true;
 	}
 
-	if (typeof keep_selection !== 'undefined' && !keep_selection) {
-		$('#timezone > option:first').attr('selected', true);
+	if (typeof keepSelection !== 'undefined' && !keepSelection) {
+		var timezoneOptions = $('#timezone > optgroup option');
+		if (timezoneOptions.filter(':selected').length <= 0) {
+			timezoneOptions.filter(':first').attr('selected', true);
+		}
 	}
-}
+};
 
 /**
 * Display the date/time select
 */
-phpbb.timezone_enable_date_selection = function() {
+phpbb.timezoneEnableDateSelection = function() {
 	$('#tz_select_date').css('display', 'block');
-}
+};
 
 /**
 * Preselect a date/time or suggest one, if it is not picked.
 *
-* @param	bool	force_selector		Shall we select the suggestion?
+* @param	bool	forceSelector		Shall we select the suggestion?
 */
-phpbb.timezone_preselect_select = function(force_selector) {
+phpbb.timezonePreselectSelect = function(forceSelector) {
 
 	// The offset returned here is in minutes and negated.
 	// http://www.w3schools.com/jsref/jsref_getTimezoneOffset.asp
 	var offset = (new Date()).getTimezoneOffset();
+	var sign = '-';
 
 	if (offset < 0) {
-		var sign = '+';
+		sign = '+';
 		offset = -offset;
-	} else {
-		var sign = '-';
 	}
 
 	var minutes = offset % 60;
@@ -489,21 +475,22 @@ phpbb.timezone_preselect_select = function(force_selector) {
 	}
 
 	var prefix = 'GMT' + sign + hours + ':' + minutes;
-	var prefix_length = prefix.length;
-	var selector_options = $('#tz_date > option');
+	var prefixLength = prefix.length;
+	var selectorOptions = $('#tz_date > option');
+	var i;
 
-	for (var i = 0; i < selector_options.length; ++i) {
-		var option = selector_options[i];
+	for (i = 0; i < selectorOptions.length; ++i) {
+		var option = selectorOptions[i];
 
-		if (option.value.substring(0, prefix_length) == prefix) {
-			if ($('#tz_date').val() != option.value && !force_selector) {
+		if (option.value.substring(0, prefixLength) === prefix) {
+			if ($('#tz_date').val() !== option.value && !forceSelector) {
 				// We do not select the option for the user, but notify him,
 				// that we would suggest a different setting.
-				phpbb.timezone_switch_date(true);
+				phpbb.timezoneSwitchDate(true);
 				$('#tz_select_date_suggest').css('display', 'inline');
 			} else {
 				option.selected = true;
-				phpbb.timezone_switch_date(!force_selector);
+				phpbb.timezoneSwitchDate(!forceSelector);
 				$('#tz_select_date_suggest').css('display', 'none');
 			}
 
@@ -515,9 +502,22 @@ phpbb.timezone_preselect_select = function(force_selector) {
 			return;
 		}
 	}
-}
+};
 
-phpbb.ajax_callbacks = {};
+// Toggle notification list
+$('#notification_list_button').click(function(e) {
+	$('#notification_list').toggle();
+	e.preventDefault();
+});
+$('#phpbb').click(function(e) {
+    var target = $(e.target);
+
+    if (!target.is('#notification_list') && !target.is('#notification_list_button') && !target.parents().is('#notification_list')) {
+        $('#notification_list').hide();
+    }
+});
+
+phpbb.ajaxCallbacks = {};
 
 /**
  * Adds an AJAX callback to be used by phpbb.ajaxify.
@@ -527,14 +527,12 @@ phpbb.ajax_callbacks = {};
  * @param string id The name of the callback.
  * @param function callback The callback to be called.
  */
-phpbb.add_ajax_callback = function(id, callback)
-{
-	if (typeof callback === 'function')
-	{
-		phpbb.ajax_callbacks[id] = callback;
+phpbb.addAjaxCallback = function(id, callback) {
+	if (typeof callback === 'function') {
+		phpbb.ajaxCallbacks[id] = callback;
 	}
 	return this;
-}
+};
 
 
 /**
@@ -542,14 +540,14 @@ phpbb.add_ajax_callback = function(id, callback)
  * the alt-text data attribute, and replaces the text in the attribute with the
  * current text so that the process can be repeated.
  */
-phpbb.add_ajax_callback('alt_text', function() {
+phpbb.addAjaxCallback('alt_text', function() {
 	var el = $(this),
-		alt_text;
+		altText;
 
-	alt_text = el.attr('data-alt-text');
+	altText = el.attr('data-alt-text');
 	el.attr('data-alt-text', el.text());
-	el.attr('title', alt_text);
-	el.text(alt_text);
+	el.attr('title', altText);
+	el.text(altText);
 });
 
 /**
@@ -561,28 +559,283 @@ phpbb.add_ajax_callback('alt_text', function() {
  * Additionally it replaces the class of the link's parent
  * and changes the link itself.
  */
-phpbb.add_ajax_callback('toggle_link', function() {
+phpbb.addAjaxCallback('toggle_link', function() {
 	var el = $(this),
-		toggle_text,
-		toggle_url,
-		toggle_class;
+		toggleText,
+		toggleUrl,
+		toggleClass;
 
 	// Toggle link text
 
-	toggle_text = el.attr('data-toggle-text');
+	toggleText = el.attr('data-toggle-text');
 	el.attr('data-toggle-text', el.text());
-	el.attr('title', toggle_text);
-	el.text(toggle_text);
+	el.attr('title', toggleText);
+	el.text(toggleText);
 
 	// Toggle link url
-	toggle_url = el.attr('data-toggle-url');
+	toggleUrl = el.attr('data-toggle-url');
 	el.attr('data-toggle-url', el.attr('href'));
-	el.attr('href', toggle_url);
+	el.attr('href', toggleUrl);
 
 	// Toggle class of link parent
-	toggle_class = el.attr('data-toggle-class');
+	toggleClass = el.attr('data-toggle-class');
 	el.attr('data-toggle-class', el.parent().attr('class'));
-	el.parent().attr('class', toggle_class);
+	el.parent().attr('class', toggleClass);
+});
+
+/**
+* Automatically resize textarea
+*
+* This function automatically resizes textarea elements when user
+* types text.
+*
+* @param {jQuery} items jQuery object(s) to resize
+* @param {object} options Optional parameter that adjusts default
+* 	configuration. See configuration variable
+*
+* Optional parameters:
+*	minWindowHeight {number} Minimum browser window height when textareas are resized. Default = 500
+*	minHeight {number} Minimum height of textarea. Default = 200
+*	maxHeight {number} Maximum height of textarea. Default = 500
+*	heightDiff {number} Minimum difference between window and textarea height. Default = 200
+*	resizeCallback {function} Function to call after resizing textarea
+*	resetCallback {function} Function to call when resize has been canceled
+
+*		Callback function format: function(item) {}
+*			this points to DOM object
+*			item is a jQuery object, same as this
+*/
+phpbb.resizeTextArea = function(items, options) {
+	// Configuration
+	var configuration = {
+		minWindowHeight: 500,
+		minHeight: 200,
+		maxHeight: 500,
+		heightDiff: 200,
+		resizeCallback: function(item) { },
+		resetCallback: function(item) { }
+	};
+
+	if (arguments.length > 1)
+	{
+		configuration = $.extend(configuration, options);
+	}
+
+	function resetAutoResize(item) 
+	{
+		var $item = $(item);
+		if ($item.hasClass('auto-resized'))
+		{
+			$(item).css({height: '', resize: ''}).removeClass('auto-resized');
+			configuration.resetCallback.call(item, $item);
+		}
+	}
+
+	function autoResize(item) 
+	{
+		function setHeight(height)
+		{
+			$item.css({height: height + 'px', resize: 'none'}).addClass('auto-resized');
+			configuration.resizeCallback.call(item, $item);
+		}
+
+		var windowHeight = $(window).height();
+
+		if (windowHeight < configuration.minWindowHeight)
+		{
+			resetAutoResize(item);
+			return;
+		}
+
+		var maxHeight = Math.min(Math.max(windowHeight - configuration.heightDiff, configuration.minHeight), configuration.maxHeight),
+			$item = $(item),
+			height = parseInt($item.height()),
+			scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
+
+		if (height > maxHeight)
+		{
+			setHeight(maxHeight);
+		}
+		else if (scrollHeight > (height + 5))
+		{
+			setHeight(Math.min(maxHeight, scrollHeight));
+		}
+	}
+
+	items.bind('focus change keyup', function() {
+		$(this).each(function() {
+			autoResize(this);
+		});
+	}).change();
+
+	$(window).resize(function() {
+		items.each(function() {
+			if ($(this).hasClass('auto-resized'))
+			{
+				autoResize(this);
+			}
+		});
+	});
+};
+
+/**
+* Check if cursor in textarea is currently inside a bbcode tag
+*
+* @param {object} textarea Textarea DOM object
+* @param {Array} startTags List of start tags to look for
+*		For example, Array('[code]', '[code=')
+* @param {Array} endTags List of end tags to look for
+*		For example, Array('[/code]')
+*
+* @return {boolean} True if cursor is in bbcode tag
+*/
+phpbb.inBBCodeTag = function(textarea, startTags, endTags) {
+	var start = textarea.selectionStart,
+		lastEnd = -1,
+		lastStart = -1,
+		i, index, value;
+
+	if (typeof start !== 'number') {
+		return false;
+	}
+
+	value = textarea.value.toLowerCase();
+
+	for (i = 0; i < startTags.length; i++) {
+		var tagLength = startTags[i].length;
+		if (start >= tagLength) {
+			index = value.lastIndexOf(startTags[i], start - tagLength);
+			lastStart = Math.max(lastStart, index);
+		}
+	}
+	if (lastStart == -1) return false;
+
+	if (start > 0) {
+		for (i = 0; i < endTags.length; i++) {
+			index = value.lastIndexOf(endTags[i], start - 1);
+			lastEnd = Math.max(lastEnd, index);
+		}
+	}
+
+	return (lastEnd < lastStart);
+}
+
+
+/**
+* Adjust textarea to manage code bbcode
+*
+* This function allows to use tab characters when typing code
+* and keeps indentation of previous line of code when adding new
+* line while typing code.
+*
+* Editor's functionality is changed only when cursor is between
+* [code] and [/code] bbcode tags.
+*
+* @param {object} textarea Textarea DOM object to apply editor to
+*/
+phpbb.applyCodeEditor = function(textarea) {
+	// list of allowed start and end bbcode code tags, in lower case
+	var startTags = ['[code]', '[code='],
+		startTagsEnd = ']',
+		endTags = ['[/code]'];
+
+	if (!textarea || typeof textarea.selectionStart !== 'number') {
+		return;
+	}
+
+	if ($(textarea).data('code-editor') === true) {
+		return;
+	}
+
+	function inTag() {
+		return phpbb.inBBCodeTag(textarea, startTags, endTags);
+	}
+
+	/**
+	* Get line of text before cursor
+	*
+	* @param {boolean} stripCodeStart If true, only part of line
+	*		after [code] tag will be returned.
+	*
+	* @return {string} Line of text
+	*/
+	function getLastLine(stripCodeStart) {
+		var start = textarea.selectionStart,
+			value = textarea.value,
+			index = value.lastIndexOf("\n", start - 1);
+
+		value = value.substring(index + 1, start);
+
+		if (stripCodeStart) {
+			for (var i = 0; i < startTags.length; i++) {
+				index = value.lastIndexOf(startTags[i]);
+				if (index >= 0) {
+					var tagLength = startTags[i].length;
+
+					value = value.substring(index + tagLength);
+					if (startTags[i].lastIndexOf(startTagsEnd) != tagLength) {
+						index = value.indexOf(startTagsEnd);
+
+						if (index >= 0) {
+							value = value.substr(index + 1);
+						}
+					}
+				}
+			}
+		}
+
+		return value;
+	}
+
+	/**
+	* Append text at cursor position
+	*
+	* @param {string} Text Text to append
+	*/
+	function appendText(text) {
+		var start = textarea.selectionStart,
+			end = textarea.selectionEnd,
+			value = textarea.value;
+
+		textarea.value = value.substr(0, start) + text + value.substr(end);
+		textarea.selectionStart = textarea.selectionEnd = start + text.length;
+	}
+
+	$(textarea).data('code-editor', true).on('keydown', function(event) {
+		var key = event.keyCode || event.which;
+
+		// intercept tabs
+		if (key == 9) {
+			if (inTag()) {
+				appendText("\t");
+				event.preventDefault();
+				return;
+			}
+		}
+
+		// intercept new line characters
+		if (key == 13) {
+			if (inTag()) {
+				var lastLine = getLastLine(true),
+					code = '' + /^\s*/g.exec(lastLine);
+
+				if (code.length > 0) {
+					appendText("\n" + code);
+					event.preventDefault();
+					return;
+				}
+			}
+		}
+	});
+};
+
+/**
+* Apply code editor to all textarea elements with data-bbcode attribute
+*/
+$(document).ready(function() {
+	$('textarea[data-bbcode]').each(function() {
+		phpbb.applyCodeEditor(this);
+	});
 });
 
 })(jQuery); // Avoid conflicts with other libraries

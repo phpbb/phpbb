@@ -158,6 +158,7 @@ if ($quickmod)
 		case 'move':
 		case 'delete_post':
 		case 'delete_topic':
+		case 'restore_topic':
 			$module->load('mcp', 'main', 'quickmod');
 			return;
 		break;
@@ -182,7 +183,7 @@ if ($quickmod)
 		break;
 
 		default:
-			trigger_error("$action not allowed as quickmod", E_USER_ERROR);
+			trigger_error($user->lang('QUICKMOD_ACTION_NOT_ALLOWED', $action), E_USER_ERROR);
 		break;
 	}
 }
@@ -199,7 +200,7 @@ if (!$post_id)
 	$module->set_display('warn', 'warn_post', false);
 }
 
-if ($mode == '' || $mode == 'unapproved_topics' || $mode == 'unapproved_posts')
+if ($mode == '' || $mode == 'unapproved_topics' || $mode == 'unapproved_posts' || $mode == 'deleted_topics' || $mode == 'deleted_posts')
 {
 	$module->set_display('queue', 'approve_details', false);
 }
@@ -483,7 +484,7 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 			continue;
 		}
 
-		if (!$row['post_approved'] && !$auth->acl_get('m_approve', $row['forum_id']))
+		if ($row['post_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
 		{
 			// Moderators without the permission to approve post should at least not see them. ;)
 			continue;
@@ -501,7 +502,7 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 */
 function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 {
-	global $auth, $db, $user, $config;
+	global $auth, $db, $user, $config, $phpbb_container;
 
 	$rowset = array();
 
@@ -531,6 +532,8 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 		WHERE " . $db->sql_in_set('f.forum_id', $forum_id);
 	$result = $db->sql_query($sql);
 
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
@@ -538,10 +541,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 			continue;
 		}
 
-		if ($auth->acl_get('m_approve', $row['forum_id']))
-		{
-			$row['forum_topics'] = $row['forum_topics_real'];
-		}
+		$row['forum_topics_approved'] = $phpbb_content_visibility->get_count('forum_topics', $row, $row['forum_id']);
 
 		$rowset[$row['forum_id']] = $row;
 	}
@@ -619,7 +619,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			if (!$auth->acl_get('m_approve', $forum_id))
 			{
-				$sql .= 'AND topic_approved = 1';
+				$sql .= 'AND topic_visibility = ' . ITEM_APPROVED;
 			}
 		break;
 
@@ -635,11 +635,13 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			if (!$auth->acl_get('m_approve', $forum_id))
 			{
-				$sql .= 'AND post_approved = 1';
+				$sql .= 'AND post_visibility = ' . ITEM_APPROVED;
 			}
 		break;
 
 		case 'unapproved_posts':
+		case 'deleted_posts':
+			$visibility_const = ($mode == 'unapproved_posts') ? ITEM_UNAPPROVED : ITEM_DELETED;
 			$type = 'posts';
 			$default_key = 't';
 			$default_dir = 'd';
@@ -648,9 +650,9 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(p.post_id) AS total
 				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 				$where_sql " . $db->sql_in_set('p.forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND p.post_approved = 0
+					AND p.post_visibility = ' . $visibility_const . '
 					AND t.topic_id = p.topic_id
-					AND t.topic_first_post_id <> p.post_id';
+					AND t.topic_visibility <> p.post_visibility';
 
 			if ($min_time)
 			{
@@ -659,6 +661,8 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 		break;
 
 		case 'unapproved_topics':
+		case 'deleted_topics':
+			$visibility_const = ($mode == 'unapproved_topics') ? ITEM_UNAPPROVED : ITEM_DELETED;
 			$type = 'topics';
 			$default_key = 't';
 			$default_dir = 'd';
@@ -666,7 +670,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
 				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND topic_approved = 0';
+					AND topic_visibility = ' . $visibility_const;
 
 			if ($min_time)
 			{
@@ -748,7 +752,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'tt' => $user->lang['TOPIC_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
 
-			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'tt' => 't.topic_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_replies_real' : 't.topic_replies'), 's' => 't.topic_title', 'v' => 't.topic_views');
+			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'tt' => 't.topic_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_posts_approved + t.topic_posts_unapproved + t.topic_posts_softdeleted' : 't.topic_posts_approved'), 's' => 't.topic_title', 'v' => 't.topic_views');
 			$limit_time_sql = ($min_time) ? "AND t.topic_last_post_time >= $min_time" : '';
 		break;
 
@@ -796,7 +800,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days)
 	);
 
-	if (($sort_days && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts')) || $where_sql != 'WHERE')
+	if (($sort_days && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts', 'deleted_topics', 'deleted_posts')) || $where_sql != 'WHERE')
 	{
 		$result = $db->sql_query($sql);
 		$total = (int) $db->sql_fetchfield('total');

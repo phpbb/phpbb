@@ -71,21 +71,28 @@ switch ($mode)
 		$page_title = $user->lang['THE_TEAM'];
 		$template_html = 'memberlist_leaders.html';
 
+		$sql = 'SELECT *
+			FROM ' . TEAMPAGE_TABLE . '
+			ORDER BY teampage_position ASC';
+		$result = $db->sql_query($sql, 3600);
+		$teampage_data = $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
 		$sql_ary = array(
-			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour, g.group_type, g.group_teampage, ug.user_id as ug_user_id',
+			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id, t.teampage_id',
 
 			'FROM'		=> array(GROUPS_TABLE => 'g'),
 
 			'LEFT_JOIN'	=> array(
 				array(
+					'FROM'	=> array(TEAMPAGE_TABLE => 't'),
+					'ON'	=> 't.group_id = g.group_id',
+				),
+				array(
 					'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
 					'ON'	=> 'ug.group_id = g.group_id AND ug.user_pending = 0 AND ug.user_id = ' . (int) $user->data['user_id'],
 				),
 			),
-
-			'WHERE'		=> '',
-
-			'ORDER_BY'	=> 'g.group_teampage ASC',
 		);
 
 		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
@@ -104,7 +111,7 @@ switch ($mode)
 				$row['u_group'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']);
 			}
 
-			if ($row['group_teampage'])
+			if ($row['teampage_id'])
 			{
 				// Only put groups into the array we want to display.
 				// We are fetching all groups, to ensure we got all data for default groups.
@@ -139,7 +146,7 @@ switch ($mode)
 
 		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
-		$user_ary = array();
+		$user_ary = $user_ids = $group_users = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$row['forums'] = '';
@@ -150,11 +157,13 @@ switch ($mode)
 		}
 		$db->sql_freeresult($result);
 
-		if ($config['teampage_forums'])
+		$user_ids = array_unique($user_ids);
+
+		if (!empty($user_ids) && $config['teampage_forums'])
 		{
 			$template->assign_var('S_DISPLAY_MODERATOR_FORUMS', true);
 			// Get all moderators
-			$perm_ary = $auth->acl_get_list(array_unique($user_ids), array('m_'), false);
+			$perm_ary = $auth->acl_get_list($user_ids, array('m_'), false);
 
 			foreach ($perm_ary as $forum_id => $forum_ary)
 			{
@@ -204,10 +213,26 @@ switch ($mode)
 			}
 		}
 
-		foreach ($groups_ary as $group_id => $group_data)
+		$parent_team = 0;
+		foreach ($teampage_data as $team_data)
 		{
-			if ($group_data['group_teampage'])
+			// If this team entry has no group, it's a category
+			if (!$team_data['group_id'])
 			{
+				$template->assign_block_vars('group', array(
+					'GROUP_NAME'  => $team_data['teampage_name'],
+				));
+
+				$parent_team = (int) $team_data['teampage_id'];
+				continue;
+			}
+
+			$group_data = $groups_ary[(int) $team_data['group_id']];
+			$group_id = (int) $team_data['group_id'];
+
+			if (!$team_data['teampage_parent'])
+			{
+				// If the group does not have a parent category, we display the groupname as category
 				$template->assign_block_vars('group', array(
 					'GROUP_NAME'	=> $group_data['group_name'],
 					'GROUP_COLOR'	=> $group_data['group_colour'],
@@ -223,7 +248,7 @@ switch ($mode)
 					if (isset($user_ary[$user_id]))
 					{
 						$row = $user_ary[$user_id];
-						if ($config['teampage_memberships'] == 1 && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['group_teampage'])
+						if ($config['teampage_memberships'] == 1 && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['teampage_id'])
 						{
 							// Display users in their primary group, instead of the first group, when it is displayed on the teampage.
 							continue;
@@ -351,7 +376,7 @@ switch ($mode)
 						$messenger->subject(htmlspecialchars_decode($subject));
 
 						$messenger->replyto($user->data['user_email']);
-						$messenger->im($row['user_jabber'], $row['username']);
+						$messenger->set_addresses($row);
 
 						$messenger->assign_vars(array(
 							'BOARD_CONTACT'	=> $config['board_contact'],
@@ -536,20 +561,11 @@ switch ($mode)
 
 		if ($member['user_sig'])
 		{
-			$member['user_sig'] = censor_text($member['user_sig']);
-
-			if ($member['user_sig_bbcode_bitfield'])
-			{
-				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-				$bbcode = new bbcode();
-				$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
-			}
-
-			$member['user_sig'] = bbcode_nl2br($member['user_sig']);
-			$member['user_sig'] = smiley_text($member['user_sig']);
+			$parse_flags = ($member['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+			$member['user_sig'] = generate_text_for_display($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield'], $parse_flags, true);
 		}
 
-		$poster_avatar = get_user_avatar($member['user_avatar'], $member['user_avatar_type'], $member['user_avatar_width'], $member['user_avatar_height']);
+		$poster_avatar = phpbb_get_user_avatar($member);
 
 		// We need to check if the modules 'zebra' ('friends' & 'foes' mode),  'notes' ('user_notes' mode) and  'warn' ('warn_user' mode) are accessible to decide if we can display appropriate links
 		$zebra_enabled = $friends_enabled = $foes_enabled = $user_notes_enabled = $warn_user_enabled = false;
@@ -613,7 +629,7 @@ switch ($mode)
 			$sql = 'SELECT COUNT(post_id) as posts_in_queue
 				FROM ' . POSTS_TABLE . '
 				WHERE poster_id = ' . $user_id . '
-					AND post_approved = 0';
+					AND post_visibility = ' . ITEM_UNAPPROVED;
 			$result = $db->sql_query($sql);
 			$member['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 			$db->sql_freeresult($result);
@@ -649,7 +665,7 @@ switch ($mode)
 			'S_GROUP_OPTIONS'	=> $group_options,
 			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && sizeof($profile_fields['row'])) ? true : false,
 
-			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
+			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_USER_BAN'			=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_MCP_QUEUE'			=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
 
@@ -1033,7 +1049,7 @@ switch ($mode)
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
-		if (($mode == 'searchuser' || sizeof(array_intersect($request->variable_names(phpbb_request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
+		if ((($mode == '' || $mode == 'searchuser') || sizeof(array_intersect($request->variable_names(phpbb_request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$username	= request_var('username', '', true);
 			$email		= strtolower(request_var('email', ''));
@@ -1234,8 +1250,7 @@ switch ($mode)
 				break;
 			}
 
-			// Misusing the avatar function for displaying group avatars...
-			$avatar_img = get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR');
+			$avatar_img = phpbb_get_group_avatar($group_row);
 
 			// ... same for group rank
 			$rank_title = $rank_img = $rank_img_src = '';
@@ -1388,7 +1403,7 @@ switch ($mode)
 		}
 
 		// Some search user specific data
-		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
+		if (($mode == '' || $mode == 'searchuser') && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$group_selected = request_var('search_group_id', 0);
 			$s_group_select = '<option value="0"' . ((!$group_selected) ? ' selected="selected"' : '') . '>&nbsp;</option>';
@@ -1459,7 +1474,7 @@ switch ($mode)
 				'S_IP_SEARCH_ALLOWED'	=> ($auth->acl_getf_global('m_info')) ? true : false,
 				'S_EMAIL_SEARCH_ALLOWED'=> ($auth->acl_get('a_user')) ? true : false,
 				'S_IN_SEARCH_POPUP'		=> ($form && $field) ? true : false,
-				'S_SEARCH_USER'			=> true,
+				'S_SEARCH_USER'			=> ($mode == 'searchuser' || ($mode == '' && $submit)),
 				'S_FORM_NAME'			=> $form,
 				'S_FIELD_NAME'			=> $field,
 				'S_SELECT_SINGLE'		=> $select_single,
@@ -1611,7 +1626,7 @@ switch ($mode)
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
 			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser' . (($start) ? "&amp;start=$start" : '') . (!empty($params) ? '&amp;' . implode('&amp;', $params) : '')) : '',
-			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser') ? $u_hide_find_member : '',
+			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser' || ($mode == '' && $submit)) ? $u_hide_find_member : '',
 			'U_SORT_USERNAME'		=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_FROM'			=> $sort_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_JOINED'			=> $sort_url . '&amp;sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'),
@@ -1751,7 +1766,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 		'A_USERNAME'		=> addslashes(get_username_string('username', $user_id, $username, $data['user_colour'])),
 
-		'AVATAR_IMG'		=> get_user_avatar($data['user_avatar'], $data['user_avatar_type'], $data['user_avatar_width'], $data['user_avatar_height']),
+		'AVATAR_IMG'		=> phpbb_get_user_avatar($data),
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $rank_img,

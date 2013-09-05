@@ -38,10 +38,16 @@ class phpbb_compress_test extends phpbb_test_case
 		$phpbb_root_path = '';
 
 		$this->path = dirname(__FILE__) . '/fixtures/';
+	}
 
-		if (!@extension_loaded('zlib') || !@extension_loaded('bz2'))
+	protected function check_extensions($extensions)
+	{
+		foreach ($extensions as $extension)
 		{
-			$this->markTestSkipped('PHP needs to be compiled with --with-zlib and --with-bz2 in order to run these tests');
+			if (!@extension_loaded($extension))
+			{
+				$this->markTestSkipped("$extension extension is not loaded");
+			}
 		}
 	}
 
@@ -114,17 +120,18 @@ class phpbb_compress_test extends phpbb_test_case
 	public function tar_archive_list()
 	{
 		return array(
-			array('archive.tar', '.tar'),
-			array('archive.tar.gz', '.tar.gz'),
-			array('archive.tar.bz2', '.tar.bz2'),
+			array('archive.tar', '.tar', array()),
+			array('archive.tar.gz', '.tar.gz', array('zlib')),
+			array('archive.tar.bz2', '.tar.bz2', array('bz2')),
 		);
 	}
 
 	/**
 	 * @dataProvider tar_archive_list
 	 */
-	public function test_extract_tar($filename, $type)
+	public function test_extract_tar($filename, $type, $extensions)
 	{
+		$this->check_extensions($extensions);
 		$compress = new compress_tar('r', $this->path . $filename);
 		$compress->extract('tests/compress/' . self::EXTRACT_DIR);
 		$this->valid_extraction();
@@ -141,8 +148,10 @@ class phpbb_compress_test extends phpbb_test_case
 	 * @depends test_extract_tar
 	 * @dataProvider tar_archive_list
 	 */
-	public function test_compress_tar($filename, $type)
+	public function test_compress_tar($filename, $type, $extensions)
 	{
+		$this->check_extensions($extensions);
+
 		$tar = dirname(__FILE__) . self::ARCHIVE_DIR . $filename;
 		$compress = new compress_tar('w', $tar);
 		$this->archive_files($compress);
@@ -160,6 +169,8 @@ class phpbb_compress_test extends phpbb_test_case
 	 */
 	public function test_compress_zip()
 	{
+		$this->check_extensions(array('zlib'));
+
 		$zip =  dirname(__FILE__) . self::ARCHIVE_DIR . 'archive.zip';
 		$compress = new compress_zip('w', $zip);
 		$this->archive_files($compress);

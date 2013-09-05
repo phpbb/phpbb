@@ -76,17 +76,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$user_info = get_user_information($author_id, $message_row);
 
 	// Parse the message and subject
-	$message = censor_text($message_row['message_text']);
-
-	// Second parse bbcode here
-	if ($message_row['bbcode_bitfield'])
-	{
-		$bbcode->bbcode_second_pass($message, $message_row['bbcode_uid'], $message_row['bbcode_bitfield']);
-	}
-
-	// Always process smilies after parsing bbcodes
-	$message = bbcode_nl2br($message);
-	$message = smiley_text($message);
+	$parse_flags = ($message_row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+	$message = generate_text_for_display($message_row['message_text'], $message_row['bbcode_uid'], $message_row['bbcode_bitfield'], $parse_flags, true);
 
 	// Replace naughty words such as farty pants
 	$message_row['message_subject'] = censor_text($message_row['message_subject']);
@@ -94,8 +85,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Editing information
 	if ($message_row['message_edit_count'] && $config['display_last_edited'])
 	{
-		$l_edit_time_total = ($message_row['message_edit_count'] == 1) ? $user->lang['EDITED_TIME_TOTAL'] : $user->lang['EDITED_TIMES_TOTAL'];
-		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, (!$message_row['message_edit_user']) ? $message_row['username'] : $message_row['message_edit_user'], $user->format_date($message_row['message_edit_time'], false, true), $message_row['message_edit_count']);
+		$l_edited_by = '<br /><br />' . $user->lang('EDITED_TIMES_TOTAL', (int) $message_row['message_edit_count'], (!$message_row['message_edit_user']) ? $message_row['username'] : $message_row['message_edit_user'], $user->format_date($message_row['message_edit_time'], false, true));
 	}
 	else
 	{
@@ -161,21 +151,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// End signature parsing, only if needed
 	if ($signature)
 	{
-		$signature = censor_text($signature);
-
-		if ($user_info['user_sig_bbcode_bitfield'])
-		{
-			if ($bbcode === false)
-			{
-				include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-				$bbcode = new bbcode($user_info['user_sig_bbcode_bitfield']);
-			}
-
-			$bbcode->bbcode_second_pass($signature, $user_info['user_sig_bbcode_uid'], $user_info['user_sig_bbcode_bitfield']);
-		}
-
-		$signature = bbcode_nl2br($signature);
-		$signature = smiley_text($signature);
+		$parse_flags = ($user_info['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+		$signature = generate_text_for_display($signature, $user_info['user_sig_bbcode_uid'], $user_info['user_sig_bbcode_bitfield'], $parse_flags, true);
 	}
 
 	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
@@ -371,12 +348,12 @@ function get_user_information($user_id, $user_row)
 		}
 	}
 
-	if (!function_exists('get_user_avatar'))
+	if (!function_exists('phpbb_get_user_avatar'))
 	{
 		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	}
 
-	$user_row['avatar'] = ($user->optionget('viewavatars')) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '';
+	$user_row['avatar'] = ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '';
 
 	get_user_rank($user_row['user_rank'], $user_row['user_posts'], $user_row['rank_title'], $user_row['rank_image'], $user_row['rank_image_src']);
 

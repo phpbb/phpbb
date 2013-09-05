@@ -19,7 +19,7 @@
 	<!-- IF SEARCH_MATCHES -->
 		<div class="search-box">
 			<!-- IF SEARCH_IN_RESULTS -->
-				<label for="add_keywords">{L_SEARCH_IN_RESULTS}{L_COLON} <input type="text" name="add_keywords" id="add_keywords" value="" class="inputbox narrow" /></label>
+				<label for="add_keywords">{L_SEARCH_IN_RESULTS}{L_COLON} <input type="search" name="add_keywords" id="add_keywords" value="" class="inputbox narrow" /></label>
 				<input class="button2" type="submit" name="submit" value="{L_SEARCH}" />
 			<!-- ENDIF -->
 		</div>
@@ -48,7 +48,7 @@
 		<ul class="topiclist">
 			<li class="header">
 				<dl class="icon">
-					<dt>{L_TOPICS}</dt>
+					<dt><div class="list-inner">{L_TOPICS}</div></dt>
 					<dd class="posts">{L_REPLIES}</dd>
 					<dd class="views">{L_VIEWS}</dd>
 					<dd class="lastpost"><span>{L_LAST_POST}</span></dd>
@@ -60,26 +60,33 @@
 		<!-- BEGIN searchresults -->
 			<li class="row<!-- IF searchresults.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl class="icon {searchresults.TOPIC_IMG_STYLE}">
-					<dt <!-- IF searchresults.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF -->>
-						<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF -->
-						<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a> {searchresults.ATTACH_ICON_IMG}
-						<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED --><a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a> <!-- ENDIF -->
-						<!-- IF searchresults.S_TOPIC_REPORTED --><a href="{searchresults.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
-						<!-- IF .searchresults.pagination -->
-						<div class="pagination">
-							<ul>
-							<!-- BEGIN pagination -->
-								<!-- IF searchresults.pagination.S_IS_PREV -->
-								<!-- ELSEIF searchresults.pagination.S_IS_CURRENT --><li class="active"><span>{searchresults.pagination.PAGE_NUMBER}</span></li>
-								<!-- ELSEIF searchresults.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
-								<!-- ELSEIF searchresults.pagination.S_IS_NEXT -->
-								<!-- ELSE --><li><a href="{searchresults.pagination.PAGE_URL}">{searchresults.pagination.PAGE_NUMBER}</a></li>
-								<!-- ENDIF -->
-							<!-- END pagination -->
-							</ul>
+					<dt <!-- IF searchresults.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
+						<div class="list-inner">
+
+							<!-- EVENT topiclist_row_prepend -->
+							<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF -->
+							<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a> {searchresults.ATTACH_ICON_IMG}
+							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED --><a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a> <!-- ENDIF -->
+							<!-- IF searchresults.S_TOPIC_DELETED --><a href="{searchresults.U_MCP_QUEUE}">{DELETED_IMG}</a> <!-- ENDIF -->
+							<!-- IF searchresults.S_TOPIC_REPORTED --><a href="{searchresults.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
+							<!-- IF .searchresults.pagination -->
+							<div class="pagination">
+								<ul>
+								<!-- BEGIN pagination -->
+									<!-- IF searchresults.pagination.S_IS_PREV -->
+									<!-- ELSEIF searchresults.pagination.S_IS_CURRENT --><li class="active"><span>{searchresults.pagination.PAGE_NUMBER}</span></li>
+									<!-- ELSEIF searchresults.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+									<!-- ELSEIF searchresults.pagination.S_IS_NEXT -->
+									<!-- ELSE --><li><a href="{searchresults.pagination.PAGE_URL}">{searchresults.pagination.PAGE_NUMBER}</a></li>
+									<!-- ENDIF -->
+								<!-- END pagination -->
+								</ul>
+							</div>
+							<!-- ENDIF -->
+							{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} &raquo; {searchresults.FIRST_POST_TIME} &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
+							<!-- EVENT topiclist_row_append -->
+
 						</div>
-						<!-- ENDIF -->
-						{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} &raquo; {searchresults.FIRST_POST_TIME} &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
 					</dt>
 					<dd class="posts">{searchresults.TOPIC_REPLIES}</dd>
 					<dd class="views">{searchresults.TOPIC_VIEWS}</dd>
@@ -150,8 +157,8 @@
 	<form method="post" action="{S_SEARCH_ACTION}">
 
 	<fieldset class="display-options">
-		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
-		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
+		<!-- IF U_PREVIOUS_PAGE --><a href="{U_PREVIOUS_PAGE}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
+		<!-- IF U_NEXT_PAGE --><a href="{U_NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
 		<!-- IF S_SELECT_SORT_DAYS or S_SELECT_SORT_KEY -->
 			<label><!-- IF S_SHOW_TOPICS -->{L_DISPLAY_POSTS}<!-- ELSE -->{L_SORT_BY}</label><label><!-- ENDIF --> {S_SELECT_SORT_DAYS}<!-- IF S_SELECT_SORT_KEY --></label> <label>{S_SELECT_SORT_KEY}</label>
 			<label>{S_SELECT_SORT_DIR}<!-- ENDIF --> <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
@@ -169,20 +176,7 @@
 			{SEARCH_MATCHES}
 			<!-- IF .pagination -->
 				&bull;
-				<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull;
-				<ul>
-				<!-- BEGIN pagination -->
-					<!-- IF pagination.S_IS_PREV -->
-					<!-- ELSEIF pagination.S_IS_CURRENT -->
-					<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
-					<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
-					<li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
-					<!-- ELSEIF pagination.S_IS_NEXT -->
-					<!-- ELSE -->
-					<li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
-					<!-- ENDIF -->
-				<!-- END pagination -->
-				</ul>
+				<!-- INCLUDE pagination.html -->
 			<!-- ELSE -->
 				{PAGE_NUMBER}
 			<!-- ENDIF -->

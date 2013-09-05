@@ -14,40 +14,57 @@
 .buttons div {
 	float: left;
 	margin: 0 5px 0 0;
-	background-position: 0 100%;
 }
 
 /* Rolloff state */
 .buttons div a {
-	display: block;
-	width: 100%;
-	height: 100%;
-	background-position: 0 0;
+	display: inline-block;
+	line-height: 17.5px;
+	height: 18px;
+	font-size: 13px;
+	white-space: nowrap;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	background: transparent none 0 0 repeat-x;
+	padding: 2px 22px 2px 8px;
+	font-family: Verdana, Arial, Helvetica;
 	position: relative;
-	overflow: hidden;
+	text-decoration: none !important;
+	outline-style: none !important;
+	vertical-align: bottom;
+	*padding-right: 8px;
 }
 
-/* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
-/*.buttons div span		{ display: none; }*/
-/*.buttons div a:hover	{ background-image: none; }*/
-.buttons div span			{ position: absolute; width: 100%; height: 100%; cursor: pointer;}
-.buttons div a:hover span	{ background-position: 0 100%; }
+.buttons div span { display: none; }
+
+.buttons div a:after {
+	content: '';
+	display: block;
+	position: absolute;
+	top: 50%;
+	right: 6px;
+	width: 12px;
+	height: 12px;
+	margin-top: -6px;
+	background: transparent 0 0 no-repeat;
+}
+
+.buttons div a:hover:after {
+	background-position: 0 -20px;
+}
 
 /* Big button images */
-.reply-icon span	{ background: transparent none 0 0 no-repeat; }
-.post-icon span		{ background: transparent none 0 0 no-repeat; }
-.locked-icon span	{ background: transparent none 0 0 no-repeat; }
-.pmreply-icon span	{ background: none 0 0 no-repeat; }
-.newpm-icon span 	{ background: none 0 0 no-repeat; }
-.forwardpm-icon span 	{ background: none 0 0 no-repeat; }
+.buttons div.reply-icon a:after, .buttons div.pmreply-icon a:after { background-position: -20px 0; }
+.buttons div.reply-icon a:hover:after, .buttons div.pmreply-icon a:hover:after	{ background-position: -20px -20px; }
 
-/* Set big button dimensions */
-.buttons div.reply-icon		{ width: 96px; height: 25px; }
-.buttons div.post-icon		{ width: 96px; height: 25px; }
-.buttons div.locked-icon	{ width: 88px; height: 25px; }
-.buttons div.pmreply-icon	{ width: 96px; height: 25px; }
-.buttons div.newpm-icon		{ width: 84px; height: 25px; }
-.buttons div.forwardpm-icon	{ width: 96px; height: 25px; }
+.buttons div.post-icon a:after, .buttons div.newpm-icon a:after	{ background-position: 0 0; }
+.buttons div.post-icon a:hover:after, .buttons div.newpm-icon a:hover:after	{ background-position: 0 -20px; }
+
+.buttons div.locked-icon a:after	{ background-position: -60px 0; }
+.buttons div.locked-icon a:hover:after	{ background-position: -60px -20px; }
+
+.buttons div.forwardpm-icon a:after	{ background-position: -40px 0; }
+.buttons div.forwardpm-icon a:hover:after	{ background-position: -40px -20px; }
 
 /* Sub-header (navigation bar)
 --------------------------------------------- */
@@ -78,6 +95,11 @@ a.sendemail {
 	background-repeat: no-repeat;
 	background-image: none;
 	padding: 1px 0 0 17px;
+}
+
+ul.linklist.bulletin li.icon-home:before, ul.linklist.bulletin li.icon-ucp:before,
+ul.linklist.bulletin li.icon-bookmark:before, ul.linklist.bulletin li.icon-bump:before, ul.linklist.bulletin li.icon-subscribe:before, ul.linklist.bulletin li.icon-unsubscribe:before {
+	display: none;
 }
 
 /* Poster profile icons

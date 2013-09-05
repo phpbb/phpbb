@@ -222,6 +222,15 @@ ALTER TABLE phpbb_config ADD PRIMARY KEY (config_name);;
 
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config(is_dynamic);;
 
+# Table: 'phpbb_config_text'
+CREATE TABLE phpbb_config_text (
+	config_name VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	config_value BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL
+);;
+
+ALTER TABLE phpbb_config_text ADD PRIMARY KEY (config_name);;
+
+
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
 	confirm_id CHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
@@ -363,9 +372,12 @@ CREATE TABLE phpbb_forums (
 	forum_topics_per_page INTEGER DEFAULT 0 NOT NULL,
 	forum_type INTEGER DEFAULT 0 NOT NULL,
 	forum_status INTEGER DEFAULT 0 NOT NULL,
-	forum_posts INTEGER DEFAULT 0 NOT NULL,
-	forum_topics INTEGER DEFAULT 0 NOT NULL,
-	forum_topics_real INTEGER DEFAULT 0 NOT NULL,
+	forum_posts_approved INTEGER DEFAULT 0 NOT NULL,
+	forum_posts_unapproved INTEGER DEFAULT 0 NOT NULL,
+	forum_posts_softdeleted INTEGER DEFAULT 0 NOT NULL,
+	forum_topics_approved INTEGER DEFAULT 0 NOT NULL,
+	forum_topics_unapproved INTEGER DEFAULT 0 NOT NULL,
+	forum_topics_softdeleted INTEGER DEFAULT 0 NOT NULL,
 	forum_last_post_id INTEGER DEFAULT 0 NOT NULL,
 	forum_last_poster_id INTEGER DEFAULT 0 NOT NULL,
 	forum_last_post_subject VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
@@ -445,7 +457,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	group_display INTEGER DEFAULT 0 NOT NULL,
 	group_avatar VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	group_avatar_type INTEGER DEFAULT 0 NOT NULL,
+	group_avatar_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	group_avatar_width INTEGER DEFAULT 0 NOT NULL,
 	group_avatar_height INTEGER DEFAULT 0 NOT NULL,
 	group_rank INTEGER DEFAULT 0 NOT NULL,
@@ -454,8 +466,7 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm INTEGER DEFAULT 0 NOT NULL,
 	group_message_limit INTEGER DEFAULT 0 NOT NULL,
 	group_max_recipients INTEGER DEFAULT 0 NOT NULL,
-	group_legend INTEGER DEFAULT 0 NOT NULL,
-	group_teampage INTEGER DEFAULT 0 NOT NULL
+	group_legend INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_groups ADD PRIMARY KEY (group_id);;
@@ -586,6 +597,20 @@ CREATE TABLE phpbb_moderator_cache (
 CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache(display_on_index);;
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache(forum_id);;
 
+# Table: 'phpbb_migrations'
+CREATE TABLE phpbb_migrations (
+	migration_name VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	migration_depends_on BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL,
+	migration_schema_done INTEGER DEFAULT 0 NOT NULL,
+	migration_data_done INTEGER DEFAULT 0 NOT NULL,
+	migration_data_state BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL,
+	migration_start_time INTEGER DEFAULT 0 NOT NULL,
+	migration_end_time INTEGER DEFAULT 0 NOT NULL
+);;
+
+ALTER TABLE phpbb_migrations ADD PRIMARY KEY (migration_name);;
+
+
 # Table: 'phpbb_modules'
 CREATE TABLE phpbb_modules (
 	module_id INTEGER NOT NULL,
@@ -615,6 +640,56 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.module_id = GEN_ID(phpbb_modules_gen, 1);
+END;;
+
+
+# Table: 'phpbb_notification_types'
+CREATE TABLE phpbb_notification_types (
+	notification_type_id INTEGER NOT NULL,
+	notification_type_name VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notification_type_enabled INTEGER DEFAULT 1 NOT NULL
+);;
+
+ALTER TABLE phpbb_notification_types ADD PRIMARY KEY (notification_type_id);;
+
+CREATE UNIQUE INDEX phpbb_notification_types_type ON phpbb_notification_types(notification_type_name);;
+
+CREATE GENERATOR phpbb_notification_types_gen;;
+SET GENERATOR phpbb_notification_types_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_notification_types FOR phpbb_notification_types
+BEFORE INSERT
+AS
+BEGIN
+	NEW.notification_type_id = GEN_ID(phpbb_notification_types_gen, 1);
+END;;
+
+
+# Table: 'phpbb_notifications'
+CREATE TABLE phpbb_notifications (
+	notification_id INTEGER NOT NULL,
+	notification_type_id INTEGER DEFAULT 0 NOT NULL,
+	item_id INTEGER DEFAULT 0 NOT NULL,
+	item_parent_id INTEGER DEFAULT 0 NOT NULL,
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	notification_read INTEGER DEFAULT 0 NOT NULL,
+	notification_time INTEGER DEFAULT 1 NOT NULL,
+	notification_data BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
+);;
+
+ALTER TABLE phpbb_notifications ADD PRIMARY KEY (notification_id);;
+
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications(notification_type_id, item_id);;
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications(user_id, notification_read);;
+
+CREATE GENERATOR phpbb_notifications_gen;;
+SET GENERATOR phpbb_notifications_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_notifications FOR phpbb_notifications
+BEFORE INSERT
+AS
+BEGIN
+	NEW.notification_id = GEN_ID(phpbb_notifications_gen, 1);
 END;;
 
 
@@ -650,7 +725,7 @@ CREATE TABLE phpbb_posts (
 	icon_id INTEGER DEFAULT 0 NOT NULL,
 	poster_ip VARCHAR(40) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	post_time INTEGER DEFAULT 0 NOT NULL,
-	post_approved INTEGER DEFAULT 1 NOT NULL,
+	post_visibility INTEGER DEFAULT 0 NOT NULL,
 	post_reported INTEGER DEFAULT 0 NOT NULL,
 	enable_bbcode INTEGER DEFAULT 1 NOT NULL,
 	enable_smilies INTEGER DEFAULT 1 NOT NULL,
@@ -668,7 +743,10 @@ CREATE TABLE phpbb_posts (
 	post_edit_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	post_edit_user INTEGER DEFAULT 0 NOT NULL,
 	post_edit_count INTEGER DEFAULT 0 NOT NULL,
-	post_edit_locked INTEGER DEFAULT 0 NOT NULL
+	post_edit_locked INTEGER DEFAULT 0 NOT NULL,
+	post_delete_time INTEGER DEFAULT 0 NOT NULL,
+	post_delete_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	post_delete_user INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_posts ADD PRIMARY KEY (post_id);;
@@ -677,7 +755,7 @@ CREATE INDEX phpbb_posts_forum_id ON phpbb_posts(forum_id);;
 CREATE INDEX phpbb_posts_topic_id ON phpbb_posts(topic_id);;
 CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts(poster_ip);;
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts(poster_id);;
-CREATE INDEX phpbb_posts_post_approved ON phpbb_posts(post_approved);;
+CREATE INDEX phpbb_posts_post_visibility ON phpbb_posts(post_visibility);;
 CREATE INDEX phpbb_posts_post_username ON phpbb_posts(post_username);;
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts(topic_id, post_time);;
 
@@ -912,8 +990,11 @@ CREATE TABLE phpbb_reports (
 	report_time INTEGER DEFAULT 0 NOT NULL,
 	report_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
 	reported_post_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
+	reported_post_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	reported_post_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	reported_post_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL
+	reported_post_enable_magic_url INTEGER DEFAULT 1 NOT NULL,
+	reported_post_enable_smilies INTEGER DEFAULT 1 NOT NULL,
+	reported_post_enable_bbcode INTEGER DEFAULT 1 NOT NULL
 );;
 
 ALTER TABLE phpbb_reports ADD PRIMARY KEY (report_id);;
@@ -1111,21 +1192,45 @@ BEGIN
 END;;
 
 
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id INTEGER NOT NULL,
+	group_id INTEGER DEFAULT 0 NOT NULL,
+	teampage_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	teampage_position INTEGER DEFAULT 0 NOT NULL,
+	teampage_parent INTEGER DEFAULT 0 NOT NULL
+);;
+
+ALTER TABLE phpbb_teampage ADD PRIMARY KEY (teampage_id);;
+
+
+CREATE GENERATOR phpbb_teampage_gen;;
+SET GENERATOR phpbb_teampage_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_teampage FOR phpbb_teampage
+BEFORE INSERT
+AS
+BEGIN
+	NEW.teampage_id = GEN_ID(phpbb_teampage_gen, 1);
+END;;
+
+
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
 	topic_id INTEGER NOT NULL,
 	forum_id INTEGER DEFAULT 0 NOT NULL,
 	icon_id INTEGER DEFAULT 0 NOT NULL,
 	topic_attachment INTEGER DEFAULT 0 NOT NULL,
-	topic_approved INTEGER DEFAULT 1 NOT NULL,
+	topic_visibility INTEGER DEFAULT 0 NOT NULL,
 	topic_reported INTEGER DEFAULT 0 NOT NULL,
 	topic_title VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	topic_poster INTEGER DEFAULT 0 NOT NULL,
 	topic_time INTEGER DEFAULT 0 NOT NULL,
 	topic_time_limit INTEGER DEFAULT 0 NOT NULL,
 	topic_views INTEGER DEFAULT 0 NOT NULL,
-	topic_replies INTEGER DEFAULT 0 NOT NULL,
-	topic_replies_real INTEGER DEFAULT 0 NOT NULL,
+	topic_posts_approved INTEGER DEFAULT 0 NOT NULL,
+	topic_posts_unapproved INTEGER DEFAULT 0 NOT NULL,
+	topic_posts_softdeleted INTEGER DEFAULT 0 NOT NULL,
 	topic_status INTEGER DEFAULT 0 NOT NULL,
 	topic_type INTEGER DEFAULT 0 NOT NULL,
 	topic_first_post_id INTEGER DEFAULT 0 NOT NULL,
@@ -1146,7 +1251,10 @@ CREATE TABLE phpbb_topics (
 	poll_length INTEGER DEFAULT 0 NOT NULL,
 	poll_max_options INTEGER DEFAULT 1 NOT NULL,
 	poll_last_vote INTEGER DEFAULT 0 NOT NULL,
-	poll_vote_change INTEGER DEFAULT 0 NOT NULL
+	poll_vote_change INTEGER DEFAULT 0 NOT NULL,
+	topic_delete_time INTEGER DEFAULT 0 NOT NULL,
+	topic_delete_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	topic_delete_user INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_topics ADD PRIMARY KEY (topic_id);;
@@ -1154,8 +1262,8 @@ ALTER TABLE phpbb_topics ADD PRIMARY KEY (topic_id);;
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics(forum_id);;
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics(forum_id, topic_type);;
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics(topic_last_post_time);;
-CREATE INDEX phpbb_topics_topic_approved ON phpbb_topics(topic_approved);;
-CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics(forum_id, topic_approved, topic_last_post_id);;
+CREATE INDEX phpbb_topics_topic_visibility ON phpbb_topics(topic_visibility);;
+CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics(forum_id, topic_visibility, topic_last_post_id);;
 CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics(forum_id, topic_last_post_time, topic_moved_id);;
 
 CREATE GENERATOR phpbb_topics_gen;;
@@ -1202,6 +1310,16 @@ CREATE TABLE phpbb_topics_watch (
 CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch(topic_id);;
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch(user_id);;
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch(notify_status);;
+
+# Table: 'phpbb_user_notifications'
+CREATE TABLE phpbb_user_notifications (
+	item_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	item_id INTEGER DEFAULT 0 NOT NULL,
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	method VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	notify INTEGER DEFAULT 1 NOT NULL
+);;
+
 
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
@@ -1271,7 +1389,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail INTEGER DEFAULT 1 NOT NULL,
 	user_options INTEGER DEFAULT 230271 NOT NULL,
 	user_avatar VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_avatar_type INTEGER DEFAULT 0 NOT NULL,
+	user_avatar_type VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	user_avatar_width INTEGER DEFAULT 0 NOT NULL,
 	user_avatar_height INTEGER DEFAULT 0 NOT NULL,
 	user_sig BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,

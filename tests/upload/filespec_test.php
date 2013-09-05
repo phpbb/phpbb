@@ -205,8 +205,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	 */
 	public function test_get_extension($filename, $expected)
 	{
-		$filespec = $this->get_filespec();
-		$this->assertEquals($expected, $filespec->get_extension($filename));
+		$this->assertEquals($expected, filespec::get_extension($filename));
 	}
 
 	public function is_image_variables()

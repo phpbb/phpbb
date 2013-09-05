@@ -22,7 +22,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 {
 	global $db, $auth, $user, $template;
 	global $phpbb_root_path, $phpEx, $config;
-	global $request, $phpbb_dispatcher;
+	global $request, $phpbb_dispatcher, $phpbb_container;
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
@@ -60,6 +60,20 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		if (check_link_hash(request_var('hash', ''), 'global'))
 		{
 			markread('all', false, false, request_var('mark_time', 0));
+
+			if ($request->is_ajax())
+			{
+				// Tell the ajax script what language vars and URL need to be replaced
+				$data = array(
+					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
+					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&mark=forums&mark_time=' . time()) : '',
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
+				);
+				$json_response = new phpbb_json_response();
+				$json_response->send($data);
+			}
 
 			trigger_error(
 				$user->lang['FORUMS_MARKED'] . '<br /><br />' .
@@ -135,6 +149,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$forum_tracking_info = array();
 	$branch_root_id = $root_data['forum_id'];
 
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		/**
@@ -199,9 +215,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$forum_tracking_info[$forum_id] = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate']) : $user->data['user_lastmark'];
 		}
 
-		// Count the difference of real to public topics, so we can display an information to moderators
-		$row['forum_id_unapproved_topics'] = ($auth->acl_get('m_approve', $forum_id) && ($row['forum_topics_real'] != $row['forum_topics'])) ? $forum_id : 0;
-		$row['forum_topics'] = ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
+		// Lets check whether there are unapproved topics/posts, so we can display an information to moderators
+		$row['forum_id_unapproved_topics'] = ($auth->acl_get('m_approve', $forum_id) && $row['forum_topics_unapproved']) ? $forum_id : 0;
+		$row['forum_id_unapproved_posts'] = ($auth->acl_get('m_approve', $forum_id) && $row['forum_posts_unapproved']) ? $forum_id : 0;
+		$row['forum_posts'] = $phpbb_content_visibility->get_count('forum_posts', $row, $forum_id);
+		$row['forum_topics'] = $phpbb_content_visibility->get_count('forum_topics', $row, $forum_id);
 
 		// Display active topics from this forum?
 		if ($show_active && $row['forum_type'] == FORUM_POST && $auth->acl_get('f_read', $forum_id) && ($row['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS))
@@ -264,6 +282,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$forum_rows[$parent_id]['forum_id_unapproved_topics'] = $forum_id;
 			}
 
+			if (!$forum_rows[$parent_id]['forum_id_unapproved_posts'] && $row['forum_id_unapproved_posts'])
+			{
+				$forum_rows[$parent_id]['forum_id_unapproved_posts'] = $forum_id;
+			}
+
 			$forum_rows[$parent_id]['forum_topics'] += $row['forum_topics'];
 
 			// Do not list redirects in LINK Forums as Posts.
@@ -312,6 +335,20 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			markread('topics', $forum_ids, false, request_var('mark_time', 0));
 			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
+
+			if ($request->is_ajax())
+			{
+				// Tell the ajax script what language vars and URL need to be replaced
+				$data = array(
+					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
+					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&f=' . $root_data['forum_id'] . '&mark=forums&mark_time=' . time()) : '',
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
+				);
+				$json_response = new phpbb_json_response();
+				$json_response->send($data);
+			}
 
 			trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
 		}
@@ -517,6 +554,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'L_MODERATOR_STR'		=> $l_moderator,
 
 			'U_UNAPPROVED_TOPICS'	=> ($row['forum_id_unapproved_topics']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_topics&amp;f=' . $row['forum_id_unapproved_topics']) : '',
+			'U_UNAPPROVED_POSTS'	=> ($row['forum_id_unapproved_posts']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_posts&amp;f=' . $row['forum_id_unapproved_posts']) : '',
 			'U_VIEWFORUM'		=> $u_viewforum,
 			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'U_LAST_POST'		=> $last_post_url,
@@ -556,6 +594,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
 		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'TOPICS_UNAPPROVED'),
+		'UNAPPROVED_POST_IMG'	=> $user->img('icon_topic_unapproved', 'POSTS_UNAPPROVED'),
 	));
 
 	if ($return_moderators)
@@ -787,7 +826,7 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 		($auth->acl_get('f_post', $forum_id) && !$locked) ? $user->lang['RULES_POST_CAN'] : $user->lang['RULES_POST_CANNOT'],
 		($auth->acl_get('f_reply', $forum_id) && !$locked) ? $user->lang['RULES_REPLY_CAN'] : $user->lang['RULES_REPLY_CANNOT'],
 		($user->data['is_registered'] && $auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
-		($user->data['is_registered'] && $auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
+		($user->data['is_registered'] && ($auth->acl_gets('f_delete', 'm_delete', $forum_id) || $auth->acl_gets('f_softdelete', 'm_softdelete', $forum_id)) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
 	);
 
 	if ($config['allow_attachments'])
@@ -977,7 +1016,7 @@ function display_reasons($reason_id = 0)
 function display_user_activity(&$userdata)
 {
 	global $auth, $template, $db, $user;
-	global $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx, $phpbb_container;
 
 	// Do not display user activity for users having more than 5000 posts...
 	if ($userdata['user_posts'] > 5000)
@@ -987,73 +1026,65 @@ function display_user_activity(&$userdata)
 
 	$forum_ary = array();
 
-	// Do not include those forums the user is not having read access to...
-	$forum_read_ary = $auth->acl_getf('!f_read');
-
-	foreach ($forum_read_ary as $forum_id => $not_allowed)
+	$forum_read_ary = $auth->acl_getf('f_read');
+	foreach ($forum_read_ary as $forum_id => $allowed)
 	{
-		if ($not_allowed['f_read'])
+		if ($allowed['f_read'])
 		{
 			$forum_ary[] = (int) $forum_id;
 		}
 	}
 
-	$forum_ary = array_unique($forum_ary);
-	$forum_sql = (sizeof($forum_ary)) ? 'AND ' . $db->sql_in_set('forum_id', $forum_ary, true) : '';
+	$forum_ary = array_diff($forum_ary, $user->get_passworded_forums());
 
-	$fid_m_approve = $auth->acl_getf('m_approve', true);
-	$sql_m_approve = (!empty($fid_m_approve)) ? 'OR ' . $db->sql_in_set('forum_id', array_keys($fid_m_approve)) : '';
-
-	// Obtain active forum
-	$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
-		FROM ' . POSTS_TABLE . '
-		WHERE poster_id = ' . $userdata['user_id'] . "
-			AND post_postcount = 1
-			AND (post_approved = 1
-				$sql_m_approve)
-			$forum_sql
-		GROUP BY forum_id
-		ORDER BY num_posts DESC";
-	$result = $db->sql_query_limit($sql, 1);
-	$active_f_row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	if (!empty($active_f_row))
+	$active_f_row = $active_t_row = array();
+	if (!empty($forum_ary))
 	{
-		$sql = 'SELECT forum_name
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id = ' . $active_f_row['forum_id'];
-		$result = $db->sql_query($sql, 3600);
-		$active_f_row['forum_name'] = (string) $db->sql_fetchfield('forum_name');
+		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
+		// Obtain active forum
+		$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
+			FROM ' . POSTS_TABLE . '
+			WHERE poster_id = ' . $userdata['user_id'] . '
+				AND post_postcount = 1
+				AND ' . $phpbb_content_visibility->get_forums_visibility_sql('post', $forum_ary) . '
+			GROUP BY forum_id
+			ORDER BY num_posts DESC';
+		$result = $db->sql_query_limit($sql, 1);
+		$active_f_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
-	}
 
-	// Obtain active topic
-	// We need to exclude passworded forums here so we do not leak the topic title
-	$forum_ary_topic = array_unique(array_merge($forum_ary, $user->get_passworded_forums()));
-	$forum_sql_topic = (!empty($forum_ary_topic)) ? 'AND ' . $db->sql_in_set('forum_id', $forum_ary_topic, true) : '';
+		if (!empty($active_f_row))
+		{
+			$sql = 'SELECT forum_name
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_id = ' . $active_f_row['forum_id'];
+			$result = $db->sql_query($sql, 3600);
+			$active_f_row['forum_name'] = (string) $db->sql_fetchfield('forum_name');
+			$db->sql_freeresult($result);
+		}
 
-	$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
-		FROM ' . POSTS_TABLE . '
-		WHERE poster_id = ' . $userdata['user_id'] . "
-			AND post_postcount = 1
-			AND (post_approved = 1
-				$sql_m_approve)
-			$forum_sql_topic
-		GROUP BY topic_id
-		ORDER BY num_posts DESC";
-	$result = $db->sql_query_limit($sql, 1);
-	$active_t_row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	if (!empty($active_t_row))
-	{
-		$sql = 'SELECT topic_title
-			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id = ' . $active_t_row['topic_id'];
-		$result = $db->sql_query($sql);
-		$active_t_row['topic_title'] = (string) $db->sql_fetchfield('topic_title');
+		// Obtain active topic
+		$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
+			FROM ' . POSTS_TABLE . '
+			WHERE poster_id = ' . $userdata['user_id'] . '
+				AND post_postcount = 1
+				AND ' . $phpbb_content_visibility->get_forums_visibility_sql('post', $forum_ary) . '
+			GROUP BY topic_id
+			ORDER BY num_posts DESC';
+		$result = $db->sql_query_limit($sql, 1);
+		$active_t_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
+
+		if (!empty($active_t_row))
+		{
+			$sql = 'SELECT topic_title
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id = ' . $active_t_row['topic_id'];
+			$result = $db->sql_query($sql);
+			$active_t_row['topic_title'] = (string) $db->sql_fetchfield('topic_title');
+			$db->sql_freeresult($result);
+		}
 	}
 
 	$userdata['active_t_row'] = $active_t_row;
@@ -1313,79 +1344,87 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 /**
 * Get user avatar
 *
-* @param string $avatar Users assigned avatar name
-* @param int $avatar_type Type of avatar
-* @param string $avatar_width Width of users avatar
-* @param string $avatar_height Height of users avatar
+* @param array $user_row Row from the users table
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
 * @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
 *
-* @return string Avatar image
+* @return string Avatar html
 */
-function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR', $ignore_config = false)
+function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false)
 {
-	global $user, $config, $phpbb_root_path, $phpEx;
-	global $phpbb_dispatcher;
+	$row = phpbb_avatar_manager::clean_row($user_row);
+	return phpbb_get_avatar($row, $alt, $ignore_config);
+}
 
-	$overwrite_avatar = '';
+/**
+* Get group avatar
+*
+* @param array $group_row Row from the groups table
+* @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+*
+* @return string Avatar html
+*/
+function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
+{
+	$row = phpbb_avatar_manager::clean_row($user_row);
+	return phpbb_get_avatar($row, $alt, $ignore_config);
+}
 
-	/**
-	* Overwrite users avatar
-	*
-	* @event core.display_custom_bbcodes_modify_row
-	* @var	string	avatar			Users assigned avatar name
-	* @var	int		avatar_type		Type of avatar
-	* @var	string	avatar_width	Width of users avatar
-	* @var	string	avatar_height	Height of users avatar
-	* @var	string	alt				Language string for alt tag within image
-	*								Can be a language key or text
-	* @var	bool	ignore_config	Ignores config and force displaying avatar
-	* @var	string	overwrite_avatar	If set, this string will be the avatar
-	* @since 3.1-A1
-	*/
-	$vars = array('avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'alt', 'ignore_config', 'overwrite_avatar');
-	extract($phpbb_dispatcher->trigger_event('core.user_get_avatar', compact($vars)));
+/**
+* Get avatar
+*
+* @param array $row Row cleaned by phpbb_avatar_driver::clean_row
+* @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+*
+* @return string Avatar html
+*/
+function phpbb_get_avatar($row, $alt, $ignore_config = false)
+{
+	global $user, $config, $cache, $phpbb_root_path, $phpEx;
+	global $request;
+	global $phpbb_container;
 
-	if ($overwrite_avatar)
-	{
-		return $overwrite_avatar;
-	}
-
-	if (empty($avatar) || !$avatar_type || (!$config['allow_avatar'] && !$ignore_config))
+	if (!$config['allow_avatar'] && !$ignore_config)
 	{
 		return '';
 	}
 
-	$avatar_img = '';
+	$avatar_data = array(
+		'src' => $row['avatar'],
+		'width' => $row['avatar_width'],
+		'height' => $row['avatar_height'],
+	);
 
-	switch ($avatar_type)
+	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+	$driver = $phpbb_avatar_manager->get_driver($row['avatar_type'], $ignore_config);
+	$html = '';
+
+	if ($driver)
 	{
-		case AVATAR_UPLOAD:
-			if (!$config['allow_avatar_upload'] && !$ignore_config)
-			{
-				return '';
-			}
-			$avatar_img = $phpbb_root_path . "download/file.$phpEx?avatar=";
-		break;
+		$html = $driver->get_custom_html($user, $row, $alt);
+		if (!empty($html))
+		{
+			return $html;
+		}
 
-		case AVATAR_GALLERY:
-			if (!$config['allow_avatar_local'] && !$ignore_config)
-			{
-				return '';
-			}
-			$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
-		break;
-
-		case AVATAR_REMOTE:
-			if (!$config['allow_avatar_remote'] && !$ignore_config)
-			{
-				return '';
-			}
-		break;
+		$avatar_data = $driver->get_data($row, $ignore_config);
+	}
+	else
+	{
+		$avatar_data['src'] = '';
 	}
 
-	$avatar_img .= $avatar;
-	return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $avatar_width . '" height="' . $avatar_height . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+	if (!empty($avatar_data['src']))
+	{
+		$html = '<img src="' . $avatar_data['src'] . '" ' .
+			($avatar_data['width'] ? ('width="' . $avatar_data['width'] . '" ') : '') .
+			($avatar_data['height'] ? ('height="' . $avatar_data['height'] . '" ') : '') .
+			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+	}
+
+	return $html;
 }
 
 /**

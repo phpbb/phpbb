@@ -87,6 +87,10 @@ define('ITEM_UNLOCKED', 0);
 define('ITEM_LOCKED', 1);
 define('ITEM_MOVED', 2);
 
+define('ITEM_UNAPPROVED', 0); // => has not yet been approved
+define('ITEM_APPROVED', 1); // => has been approved, and has not been soft deleted
+define('ITEM_DELETED', 2); // => has been soft deleted
+
 // Forum Flags
 define('FORUM_FLAG_LINK_TRACK', 1);
 define('FORUM_FLAG_PRUNE_POLL', 2);
@@ -156,6 +160,7 @@ define('PHYSICAL_LINK', 2);
 define('CONFIRM_REG', 1);
 define('CONFIRM_LOGIN', 2);
 define('CONFIRM_POST', 3);
+define('CONFIRM_REPORT', 4);
 
 // Categories - Attachments
 define('ATTACHMENT_CATEGORY_NONE', 0);
@@ -237,8 +242,11 @@ define('ICONS_TABLE',				$table_prefix . 'icons');
 define('LANG_TABLE',				$table_prefix . 'lang');
 define('LOG_TABLE',					$table_prefix . 'log');
 define('LOGIN_ATTEMPT_TABLE',		$table_prefix . 'login_attempts');
+define('MIGRATIONS_TABLE',			$table_prefix . 'migrations');
 define('MODERATOR_CACHE_TABLE',		$table_prefix . 'moderator_cache');
 define('MODULES_TABLE',				$table_prefix . 'modules');
+define('NOTIFICATION_TYPES_TABLE',	$table_prefix . 'notification_types');
+define('NOTIFICATIONS_TABLE',		$table_prefix . 'notifications');
 define('POLL_OPTIONS_TABLE',		$table_prefix . 'poll_options');
 define('POLL_VOTES_TABLE',			$table_prefix . 'poll_votes');
 define('POSTS_TABLE',				$table_prefix . 'posts');
@@ -267,11 +275,13 @@ define('STYLES_TEMPLATE_DATA_TABLE',$table_prefix . 'styles_template_data');
 define('STYLES_THEME_TABLE',		$table_prefix . 'styles_theme');
 define('STYLES_IMAGESET_TABLE',		$table_prefix . 'styles_imageset');
 define('STYLES_IMAGESET_DATA_TABLE',$table_prefix . 'styles_imageset_data');
+define('TEAMPAGE_TABLE',			$table_prefix . 'teampage');
 define('TOPICS_TABLE',				$table_prefix . 'topics');
 define('TOPICS_POSTED_TABLE',		$table_prefix . 'topics_posted');
 define('TOPICS_TRACK_TABLE',		$table_prefix . 'topics_track');
 define('TOPICS_WATCH_TABLE',		$table_prefix . 'topics_watch');
 define('USER_GROUP_TABLE',			$table_prefix . 'user_group');
+define('USER_NOTIFICATIONS_TABLE',	$table_prefix . 'user_notifications');
 define('USERS_TABLE',				$table_prefix . 'users');
 define('WARNINGS_TABLE',			$table_prefix . 'warnings');
 define('WORDS_TABLE',				$table_prefix . 'words');

@@ -5,7 +5,7 @@
 <meta name="keywords" content="" />
 <meta name="description" content="" />
 {META}
-<title><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
+<title><!-- IF UNREAD_NOTIFICATIONS_COUNT -->({UNREAD_NOTIFICATIONS_COUNT}) <!-- ENDIF --><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
 
 <!-- IF S_ENABLE_FEEDS -->
 	<!-- IF S_ENABLE_FEEDS_OVERALL --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {SITENAME}" href="{U_FEED}" /><!-- ENDIF -->
@@ -129,6 +129,11 @@ function marklist(id, name, state)
 
 // ]]>
 </script>
+
+<!-- EVENT overall_header_head_append -->
+
+{$STYLESHEETS}
+
 </head>
 <body class="{S_CONTENT_DIRECTION}">
 
@@ -149,9 +154,49 @@ function marklist(id, name, state)
 		<table width="100%" cellspacing="0">
 		<tr>
 			<td class="genmed">
+				<!-- IF S_NOTIFICATIONS_DISPLAY and not S_IS_BOT and S_USER_LOGGED_IN -->
+					[ <a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a> ]&nbsp;
+					<div id="notification_list" class="notification_list">
+						<div class="row1 header">
+							{L_NOTIFICATIONS}
+							<span class="header_settings"><a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a></span>
+						</div>
+
+						<div class="notification_scroll">
+							<table class="tablebg" width="310px" cellspacing="1">
+								<!-- BEGIN notifications -->
+									<tr class="row<!-- IF notifications.UNREAD -->2<!-- ELSE -->1<!-- ENDIF -->">
+										<!-- IF notifications.AVATAR -->
+											<td width="50px">
+												{notifications.AVATAR}
+											</td>
+											<td valign="top">
+										<!-- ELSE -->
+											<td colspan="2" valign="top">
+										<!-- ENDIF -->
+											<div class="notification_title">
+												<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
+													{notifications.FORMATTED_TITLE}
+												<!-- IF notifications.URL --></a><!-- ENDIF -->
+													<br />&raquo; {notifications.TIME}
+												<!-- IF not notifications.URL and notifications.UNREAD -->
+													<br /><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a>
+												<!-- ENDIF -->
+											</div>
+										</td>
+				   					</tr>
+				   				<!-- END notifications -->
+				   			</table>
+				   		</div>
+
+						<div class="row1 footer">
+							<a href="{U_VIEW_ALL_NOTIFICATIONS}"><span>{L_SEE_ALL}</span></a>
+						</div>
+					</div>
+				<!-- ENDIF -->
 				<!-- IF not S_IS_BOT --><a href="{U_LOGIN_LOGOUT}"><img src="{T_THEME_PATH}/images/icon_mini_login.gif" width="12" height="13" alt="*" /> {L_LOGIN_LOGOUT}</a>&nbsp;<!-- ENDIF -->
 				<!-- IF U_RESTORE_PERMISSIONS --> &nbsp;<a href="{U_RESTORE_PERMISSIONS}"><img src="{T_THEME_PATH}/images/icon_mini_login.gif" width="12" height="13" alt="*" /> {L_RESTORE_PERMISSIONS}</a><!-- ENDIF -->
-				<!-- IF S_BOARD_DISABLED and S_USER_LOGGED_IN --> &nbsp;<span style="color: red;">{L_BOARD_DISABLED}</span><!-- ENDIF -->
+				<!-- IF S_BOARD_DISABLED and S_USER_LOGGED_IN --> &nbsp;<span class="error">{L_BOARD_DISABLED}</span><!-- ENDIF -->
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_USER_LOGGED_IN -->
 						<!-- IF S_DISPLAY_PM --> &nbsp;<a href="{U_PRIVATEMSGS}"><img src="{T_THEME_PATH}/images/icon_mini_message.gif" width="12" height="13" alt="*" /> {PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a><!-- ENDIF -->

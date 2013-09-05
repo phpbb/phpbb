@@ -21,11 +21,11 @@
 <!-- END bool -->
 
 <!-- BEGIN int -->
-<input type="text" class="inputbox autowidth" name="{int.FIELD_IDENT}" id="{int.FIELD_IDENT}" size="{int.FIELD_LENGTH}" value="{int.FIELD_VALUE}" />
+<input type="number" min="{int.FIELD_MINLEN}" max="{int.FIELD_MAXLEN}" class="inputbox autowidth" name="{int.FIELD_IDENT}" id="{int.FIELD_IDENT}" size="{int.FIELD_LENGTH}" value="{int.FIELD_VALUE}" />
 <!-- END int -->
 
 <!-- BEGIN date -->
-<label for="{date.FIELD_IDENT}_day">{L_DAY}{L_COLON} <select name="{date.FIELD_IDENT}_day" id="{date.FIELD_IDENT}_day">{date.S_DAY_OPTIONS}</select></label> 
-<label for="{date.FIELD_IDENT}_month">{L_MONTH}{L_COLON} <select name="{date.FIELD_IDENT}_month" id="{date.FIELD_IDENT}_month">{date.S_MONTH_OPTIONS}</select></label> 
+<label for="{date.FIELD_IDENT}_day">{L_DAY}{L_COLON} <select name="{date.FIELD_IDENT}_day" id="{date.FIELD_IDENT}_day">{date.S_DAY_OPTIONS}</select></label>
+<label for="{date.FIELD_IDENT}_month">{L_MONTH}{L_COLON} <select name="{date.FIELD_IDENT}_month" id="{date.FIELD_IDENT}_month">{date.S_MONTH_OPTIONS}</select></label>
 <label for="{date.FIELD_IDENT}_year">{L_YEAR}{L_COLON} <select name="{date.FIELD_IDENT}_year" id="{date.FIELD_IDENT}_year">{date.S_YEAR_OPTIONS}</select></label>
 <!-- END date -->

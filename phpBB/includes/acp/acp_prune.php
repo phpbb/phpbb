@@ -331,7 +331,7 @@ class acp_prune
 			$s_find_active_time .= '<option value="' . $key . '">' . $value . '</option>';
 		}
 
-		$s_group_list = '';
+		$s_group_list = '<option value="0"></option>';
 		$sql = 'SELECT group_id, group_name
 			FROM ' . GROUPS_TABLE . '
 			WHERE group_type <> ' . GROUP_SPECIAL . '
@@ -340,7 +340,7 @@ class acp_prune
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</select>';
+			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
 		$db->sql_freeresult($result);
 
@@ -491,11 +491,12 @@ class acp_prune
 
 		if ($group_id)
 		{
-			$sql = 'SELECT user_id
-				FROM ' . USER_GROUP_TABLE . '
-				WHERE group_id = ' . (int) $group_id . '
-					AND user_pending = 0
-					AND ' . $db->sql_in_set('user_id', $user_ids, false, true);
+			$sql = 'SELECT u.user_id, u.username
+				FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
+				WHERE ug.group_id = ' . (int) $group_id . '
+					AND ug.user_pending = 0
+					AND ' . $db->sql_in_set('ug.user_id', $user_ids, false, true) . '
+					AND u.user_id = ug.user_id';
 			$result = $db->sql_query($sql);
 
 			// we're performing an intersection operation, so all the relevant users
@@ -504,24 +505,19 @@ class acp_prune
 			$user_ids = $usernames = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$user_ids[] = $row['poster_id'];
+				$user_ids[] = $row['user_id'];
+				$usernames[$row['user_id']] = $row['username'];
 			}
 			$db->sql_freeresult($result);
-
-			// only get usernames if they are needed (not part of some later query)
-			if (!$posts_on_queue)
-			{
-				// this is an additional query aginst the users table
-				user_get_id_name($user_ids, $usernames);
-			}
 		}
 
 		if ($posts_on_queue)
 		{
-			$sql = 'SELECT poster_id, COUNT(post_id) AS queue_posts
-				FROM ' . POSTS_TABLE . '
-				WHERE ' . $db->sql_in_set('poster_id', $user_ids, false, true) . '
-				GROUP BY poster_id
+			$sql = 'SELECT u.user_id, u.username, COUNT(p.post_id) AS queue_posts
+				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+				WHERE ' . $db->sql_in_set('p.poster_id', $user_ids, false, true) . '
+					AND u.user_id = p.poster_id
+				GROUP BY p.poster_id
 				HAVING queue_posts ' . $key_match[$queue_select] . ' ' . $posts_on_queue;
 			$result = $db->sql_query($result);
 
@@ -529,12 +525,10 @@ class acp_prune
 			$user_ids = $usernames = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$user_ids[] = $row['poster_id'];
+				$user_ids[] = $row['user_id'];
+				$usernames[$row['user_id']] = $row['username'];
 			}
 			$db->sql_freeresult($result);
-
-			// do an additional query to get the correct set of usernames
-			user_get_id_name($user_ids, $usernames);
 		}
 	}
 }

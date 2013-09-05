@@ -332,6 +332,17 @@ CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic)
 /
 
 /*
+	Table: 'phpbb_config_text'
+*/
+CREATE TABLE phpbb_config_text (
+	config_name varchar2(255) DEFAULT '' ,
+	config_value clob DEFAULT '' ,
+	CONSTRAINT pk_phpbb_config_text PRIMARY KEY (config_name)
+)
+/
+
+
+/*
 	Table: 'phpbb_confirm'
 */
 CREATE TABLE phpbb_confirm (
@@ -509,9 +520,12 @@ CREATE TABLE phpbb_forums (
 	forum_topics_per_page number(4) DEFAULT '0' NOT NULL,
 	forum_type number(4) DEFAULT '0' NOT NULL,
 	forum_status number(4) DEFAULT '0' NOT NULL,
-	forum_posts number(8) DEFAULT '0' NOT NULL,
-	forum_topics number(8) DEFAULT '0' NOT NULL,
-	forum_topics_real number(8) DEFAULT '0' NOT NULL,
+	forum_posts_approved number(8) DEFAULT '0' NOT NULL,
+	forum_posts_unapproved number(8) DEFAULT '0' NOT NULL,
+	forum_posts_softdeleted number(8) DEFAULT '0' NOT NULL,
+	forum_topics_approved number(8) DEFAULT '0' NOT NULL,
+	forum_topics_unapproved number(8) DEFAULT '0' NOT NULL,
+	forum_topics_softdeleted number(8) DEFAULT '0' NOT NULL,
 	forum_last_post_id number(8) DEFAULT '0' NOT NULL,
 	forum_last_poster_id number(8) DEFAULT '0' NOT NULL,
 	forum_last_post_subject varchar2(765) DEFAULT '' ,
@@ -610,7 +624,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varchar2(8) DEFAULT '' ,
 	group_display number(1) DEFAULT '0' NOT NULL,
 	group_avatar varchar2(255) DEFAULT '' ,
-	group_avatar_type number(2) DEFAULT '0' NOT NULL,
+	group_avatar_type varchar2(255) DEFAULT '' ,
 	group_avatar_width number(4) DEFAULT '0' NOT NULL,
 	group_avatar_height number(4) DEFAULT '0' NOT NULL,
 	group_rank number(8) DEFAULT '0' NOT NULL,
@@ -620,7 +634,6 @@ CREATE TABLE phpbb_groups (
 	group_message_limit number(8) DEFAULT '0' NOT NULL,
 	group_max_recipients number(8) DEFAULT '0' NOT NULL,
 	group_legend number(8) DEFAULT '0' NOT NULL,
-	group_teampage number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_groups PRIMARY KEY (group_id)
 )
 /
@@ -799,6 +812,22 @@ CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id)
 /
 
 /*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE phpbb_migrations (
+	migration_name varchar2(255) DEFAULT '' ,
+	migration_depends_on clob DEFAULT '' ,
+	migration_schema_done number(1) DEFAULT '0' NOT NULL,
+	migration_data_done number(1) DEFAULT '0' NOT NULL,
+	migration_data_state clob DEFAULT '' ,
+	migration_start_time number(11) DEFAULT '0' NOT NULL,
+	migration_end_time number(11) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_migrations PRIMARY KEY (migration_name)
+)
+/
+
+
+/*
 	Table: 'phpbb_modules'
 */
 CREATE TABLE phpbb_modules (
@@ -835,6 +864,72 @@ FOR EACH ROW WHEN (
 BEGIN
 	SELECT phpbb_modules_seq.nextval
 	INTO :new.module_id
+	FROM dual;
+END;
+/
+
+
+/*
+	Table: 'phpbb_notification_types'
+*/
+CREATE TABLE phpbb_notification_types (
+	notification_type_id number(4) NOT NULL,
+	notification_type_name varchar2(255) DEFAULT '' ,
+	notification_type_enabled number(1) DEFAULT '1' NOT NULL,
+	CONSTRAINT pk_phpbb_notification_types PRIMARY KEY (notification_type_id),
+	CONSTRAINT u_phpbb_type UNIQUE (notification_type_name)
+)
+/
+
+
+CREATE SEQUENCE phpbb_notification_types_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_notification_types
+BEFORE INSERT ON phpbb_notification_types
+FOR EACH ROW WHEN (
+	new.notification_type_id IS NULL OR new.notification_type_id = 0
+)
+BEGIN
+	SELECT phpbb_notification_types_seq.nextval
+	INTO :new.notification_type_id
+	FROM dual;
+END;
+/
+
+
+/*
+	Table: 'phpbb_notifications'
+*/
+CREATE TABLE phpbb_notifications (
+	notification_id number(10) NOT NULL,
+	notification_type_id number(4) DEFAULT '0' NOT NULL,
+	item_id number(8) DEFAULT '0' NOT NULL,
+	item_parent_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(8) DEFAULT '0' NOT NULL,
+	notification_read number(1) DEFAULT '0' NOT NULL,
+	notification_time number(11) DEFAULT '1' NOT NULL,
+	notification_data clob DEFAULT '' ,
+	CONSTRAINT pk_phpbb_notifications PRIMARY KEY (notification_id)
+)
+/
+
+CREATE INDEX phpbb_notifications_item_ident ON phpbb_notifications (notification_type_id, item_id)
+/
+CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notification_read)
+/
+
+CREATE SEQUENCE phpbb_notifications_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_notifications
+BEFORE INSERT ON phpbb_notifications
+FOR EACH ROW WHEN (
+	new.notification_id IS NULL OR new.notification_id = 0
+)
+BEGIN
+	SELECT phpbb_notifications_seq.nextval
+	INTO :new.notification_id
 	FROM dual;
 END;
 /
@@ -885,7 +980,7 @@ CREATE TABLE phpbb_posts (
 	icon_id number(8) DEFAULT '0' NOT NULL,
 	poster_ip varchar2(40) DEFAULT '' ,
 	post_time number(11) DEFAULT '0' NOT NULL,
-	post_approved number(1) DEFAULT '1' NOT NULL,
+	post_visibility number(3) DEFAULT '0' NOT NULL,
 	post_reported number(1) DEFAULT '0' NOT NULL,
 	enable_bbcode number(1) DEFAULT '1' NOT NULL,
 	enable_smilies number(1) DEFAULT '1' NOT NULL,
@@ -904,6 +999,9 @@ CREATE TABLE phpbb_posts (
 	post_edit_user number(8) DEFAULT '0' NOT NULL,
 	post_edit_count number(4) DEFAULT '0' NOT NULL,
 	post_edit_locked number(1) DEFAULT '0' NOT NULL,
+	post_delete_time number(11) DEFAULT '0' NOT NULL,
+	post_delete_reason varchar2(765) DEFAULT '' ,
+	post_delete_user number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_posts PRIMARY KEY (post_id)
 )
 /
@@ -916,7 +1014,7 @@ CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts (poster_ip)
 /
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id)
 /
-CREATE INDEX phpbb_posts_post_approved ON phpbb_posts (post_approved)
+CREATE INDEX phpbb_posts_post_visibility ON phpbb_posts (post_visibility)
 /
 CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username)
 /
@@ -1216,8 +1314,11 @@ CREATE TABLE phpbb_reports (
 	report_time number(11) DEFAULT '0' NOT NULL,
 	report_text clob DEFAULT '' ,
 	reported_post_text clob DEFAULT '' ,
-	reported_post_bitfield varchar2(255) DEFAULT '' ,
 	reported_post_uid varchar2(8) DEFAULT '' ,
+	reported_post_bitfield varchar2(255) DEFAULT '' ,
+	reported_post_enable_magic_url number(1) DEFAULT '1' NOT NULL,
+	reported_post_enable_smilies number(1) DEFAULT '1' NOT NULL,
+	reported_post_enable_bbcode number(1) DEFAULT '1' NOT NULL,
 	CONSTRAINT pk_phpbb_reports PRIMARY KEY (report_id)
 )
 /
@@ -1475,6 +1576,36 @@ END;
 
 
 /*
+	Table: 'phpbb_teampage'
+*/
+CREATE TABLE phpbb_teampage (
+	teampage_id number(8) NOT NULL,
+	group_id number(8) DEFAULT '0' NOT NULL,
+	teampage_name varchar2(765) DEFAULT '' ,
+	teampage_position number(8) DEFAULT '0' NOT NULL,
+	teampage_parent number(8) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_teampage PRIMARY KEY (teampage_id)
+)
+/
+
+
+CREATE SEQUENCE phpbb_teampage_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_teampage
+BEFORE INSERT ON phpbb_teampage
+FOR EACH ROW WHEN (
+	new.teampage_id IS NULL OR new.teampage_id = 0
+)
+BEGIN
+	SELECT phpbb_teampage_seq.nextval
+	INTO :new.teampage_id
+	FROM dual;
+END;
+/
+
+
+/*
 	Table: 'phpbb_topics'
 */
 CREATE TABLE phpbb_topics (
@@ -1482,15 +1613,16 @@ CREATE TABLE phpbb_topics (
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	icon_id number(8) DEFAULT '0' NOT NULL,
 	topic_attachment number(1) DEFAULT '0' NOT NULL,
-	topic_approved number(1) DEFAULT '1' NOT NULL,
+	topic_visibility number(3) DEFAULT '0' NOT NULL,
 	topic_reported number(1) DEFAULT '0' NOT NULL,
 	topic_title varchar2(765) DEFAULT '' ,
 	topic_poster number(8) DEFAULT '0' NOT NULL,
 	topic_time number(11) DEFAULT '0' NOT NULL,
 	topic_time_limit number(11) DEFAULT '0' NOT NULL,
 	topic_views number(8) DEFAULT '0' NOT NULL,
-	topic_replies number(8) DEFAULT '0' NOT NULL,
-	topic_replies_real number(8) DEFAULT '0' NOT NULL,
+	topic_posts_approved number(8) DEFAULT '0' NOT NULL,
+	topic_posts_unapproved number(8) DEFAULT '0' NOT NULL,
+	topic_posts_softdeleted number(8) DEFAULT '0' NOT NULL,
 	topic_status number(3) DEFAULT '0' NOT NULL,
 	topic_type number(3) DEFAULT '0' NOT NULL,
 	topic_first_post_id number(8) DEFAULT '0' NOT NULL,
@@ -1512,6 +1644,9 @@ CREATE TABLE phpbb_topics (
 	poll_max_options number(4) DEFAULT '1' NOT NULL,
 	poll_last_vote number(11) DEFAULT '0' NOT NULL,
 	poll_vote_change number(1) DEFAULT '0' NOT NULL,
+	topic_delete_time number(11) DEFAULT '0' NOT NULL,
+	topic_delete_reason varchar2(765) DEFAULT '' ,
+	topic_delete_user number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_topics PRIMARY KEY (topic_id)
 )
 /
@@ -1522,9 +1657,9 @@ CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type)
 /
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics (topic_last_post_time)
 /
-CREATE INDEX phpbb_topics_topic_approved ON phpbb_topics (topic_approved)
+CREATE INDEX phpbb_topics_topic_visibility ON phpbb_topics (topic_visibility)
 /
-CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics (forum_id, topic_approved, topic_last_post_id)
+CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics (forum_id, topic_visibility, topic_last_post_id)
 /
 CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics (forum_id, topic_last_post_time, topic_moved_id)
 /
@@ -1590,6 +1725,19 @@ CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch (user_id)
 /
 CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status)
 /
+
+/*
+	Table: 'phpbb_user_notifications'
+*/
+CREATE TABLE phpbb_user_notifications (
+	item_type varchar2(255) DEFAULT '' ,
+	item_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(8) DEFAULT '0' NOT NULL,
+	method varchar2(255) DEFAULT '' ,
+	notify number(1) DEFAULT '1' NOT NULL
+)
+/
+
 
 /*
 	Table: 'phpbb_user_group'
@@ -1667,7 +1815,7 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail number(1) DEFAULT '1' NOT NULL,
 	user_options number(11) DEFAULT '230271' NOT NULL,
 	user_avatar varchar2(255) DEFAULT '' ,
-	user_avatar_type number(2) DEFAULT '0' NOT NULL,
+	user_avatar_type varchar2(255) DEFAULT '' ,
 	user_avatar_width number(4) DEFAULT '0' NOT NULL,
 	user_avatar_height number(4) DEFAULT '0' NOT NULL,
 	user_sig clob DEFAULT '' ,

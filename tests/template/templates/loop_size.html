@@ -22,18 +22,18 @@
 	! empty
 <!-- ENDIF -->
 
-<!-- IF .loop -->
+<!-- IF .test_loop -->
 	loop
 <!-- ENDIF -->
 
-<!-- IF .loop == 0 -->
+<!-- IF .test_loop == 0 -->
 	loop = 0
 <!-- ENDIF -->
 
-<!-- IF ! .loop -->
+<!-- IF ! .test_loop -->
 	! loop
 <!-- ENDIF -->
 
-<!-- BEGIN loop -->
+<!-- BEGIN test_loop -->
 	in loop
-<!-- END -->
+<!-- END test_loop -->

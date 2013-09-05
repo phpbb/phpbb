@@ -28,7 +28,7 @@ if (version_compare(PHP_VERSION, '5.3.3') < 0)
 
 function phpbb_require_updated($path, $optional = false)
 {
-	global $phpbb_root_path;
+	global $phpbb_root_path, $table_prefix;
 
 	$new_path = $phpbb_root_path . 'install/update/new/' . $path;
 	$old_path = $phpbb_root_path . $path;
@@ -40,6 +40,23 @@ function phpbb_require_updated($path, $optional = false)
 	else if (!$optional || file_exists($old_path))
 	{
 		require($old_path);
+	}
+}
+
+function phpbb_include_updated($path, $optional = false)
+{
+	global $phpbb_root_path;
+
+	$new_path = $phpbb_root_path . 'install/update/new/' . $path;
+	$old_path = $phpbb_root_path . $path;
+
+	if (file_exists($new_path))
+	{
+		include($new_path);
+	}
+	else if (!$optional || file_exists($old_path))
+	{
+		include($old_path);
 	}
 }
 
@@ -73,22 +90,29 @@ else
 }
 @ini_set('memory_limit', $mem_limit);
 
-// Include essential scripts
-require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
+// In case $phpbb_adm_relative_path is not set (in case of an update), use the default.
+$phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relative_path : 'adm/';
+$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
 
-require($phpbb_root_path . 'includes/functions.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
+// Include essential scripts
+phpbb_require_updated('phpbb/class_loader.' . $phpEx);
+
+phpbb_require_updated('includes/functions.' . $phpEx);
+phpbb_require_updated('includes/functions_container.' . $phpEx);
 
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
-include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
+phpbb_include_updated('includes/functions_admin.' . $phpEx);
+phpbb_include_updated('includes/utf/utf_normalizer.' . $phpEx);
+phpbb_include_updated('includes/utf/utf_tools.' . $phpEx);
+phpbb_require_updated('includes/functions_install.' . $phpEx);
 
 // Setup class loader first
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
+$phpbb_class_loader_new = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}install/update/new/phpbb/", $phpEx);
+$phpbb_class_loader_new->register();
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
 // Set up container
@@ -97,9 +121,6 @@ $phpbb_container = phpbb_create_install_container($phpbb_root_path, $phpEx);
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
-// set up caching
-$cache = $phpbb_container->get('cache');
-
 $phpbb_dispatcher = $phpbb_container->get('dispatcher');
 $request	= $phpbb_container->get('request');
 
@@ -107,7 +128,7 @@ $request	= $phpbb_container->get('request');
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Try and load an appropriate language if required
-$language = basename(request_var('language', ''));
+$language = basename($request->variable('language', ''));
 
 if ($request->header('Accept-Language') && !$language)
 {
@@ -166,11 +187,23 @@ if (!file_exists($phpbb_root_path . 'language/' . $language) || !is_dir($phpbb_r
 }
 
 // And finally, load the relevant language files
-include($phpbb_root_path . 'language/' . $language . '/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/acp/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/acp/board.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/posting.' . $phpEx);
+$load_lang_files = array('common', 'acp/common', 'acp/board', 'install', 'posting');
+$new_path = $phpbb_root_path . 'install/update/new/language/' . $language . '/';
+$old_path = $phpbb_root_path . 'language/' . $language . '/';
+
+// NOTE: we can not use "phpbb_include_updated" as the files uses vars which would be required
+// to be global while loading.
+foreach ($load_lang_files as $lang_file)
+{
+	if (file_exists($new_path . $lang_file . '.' . $phpEx))
+	{
+		include($new_path . $lang_file . '.' . $phpEx);
+	}
+	else
+	{
+		include($old_path . $lang_file . '.' . $phpEx);
+	}
+}
 
 // usually we would need every single constant here - and it would be consistent. For 3.0.x, use a dirty hack... :(
 
@@ -180,8 +213,8 @@ define('CHMOD_READ', 4);
 define('CHMOD_WRITE', 2);
 define('CHMOD_EXECUTE', 1);
 
-$mode = request_var('mode', 'overview');
-$sub = request_var('sub', '');
+$mode = $request->variable('mode', 'overview');
+$sub = $request->variable('sub', '');
 
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
@@ -195,7 +228,8 @@ if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
 	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
-	foreach ($cache->obtain_hooks() as $hook)
+	$phpbb_hook_finder = $phpbb_container->get('hook_finder');
+	foreach ($phpbb_hook_finder->find() as $hook)
 	{
 		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 	}
@@ -210,14 +244,13 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
-$phpbb_style_resource_locator = new phpbb_style_resource_locator();
-$phpbb_style_path_provider = new phpbb_style_path_provider();
-$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, new phpbb_template_context());
-$phpbb_style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
-$phpbb_style->set_ext_dir_prefix('adm/');
-$phpbb_style->set_custom_style('admin', '../adm/style', '');
+$template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
+$paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
+$paths = array_filter($paths, 'is_dir');
+$template->set_custom_style('adm', $paths);
+
 $template->assign_var('T_ASSETS_PATH', '../assets');
-$template->assign_var('T_TEMPLATE_PATH', '../adm/style');
+$template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
 
 $install = new module();
 
@@ -361,7 +394,7 @@ class module
 		}
 
 		define('HEADER_INC', true);
-		global $template, $lang, $stage, $phpbb_root_path;
+		global $template, $lang, $stage, $phpbb_root_path, $phpbb_admin_path;
 
 		$template->assign_vars(array(
 			'L_CHANGE'				=> $lang['CHANGE'],
@@ -370,7 +403,8 @@ class module
 			'L_SELECT_LANG'			=> $lang['SELECT_LANG'],
 			'L_SKIP'				=> $lang['SKIP'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
-			'T_IMAGE_PATH'			=> $phpbb_root_path . 'adm/images/',
+			'T_IMAGE_PATH'			=> htmlspecialchars($phpbb_admin_path) . 'images/',
+			'T_JQUERY_LINK'			=> $phpbb_root_path . 'assets/javascript/jquery.js',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_FLOW_BEGIN'	=> ($lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
@@ -551,7 +585,7 @@ class module
 	*/
 	function error($error, $line, $file, $skip = false)
 	{
-		global $lang, $db, $template;
+		global $lang, $db, $template, $phpbb_admin_path;
 
 		if ($skip)
 		{
@@ -573,7 +607,7 @@ class module
 		echo '<head>';
 		echo '<meta charset="utf-8">';
 		echo '<title>' . $lang['INST_ERR_FATAL'] . '</title>';
-		echo '<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
+		echo '<link href="' . htmlspecialchars($phpbb_admin_path) . 'style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
 		echo '</head>';
 		echo '<body id="errorpage">';
 		echo '<div id="wrap">';
@@ -664,6 +698,21 @@ class module
 		{
 			case 'text':
 			case 'password':
+			// HTML5 text-like input types
+			case 'color':
+			case 'date':
+			case 'time':
+			case 'datetime':
+			case 'datetime-local':
+			case 'email':
+			case 'month':
+			case 'number':
+			case 'range':
+			case 'search':
+			case 'tel':
+			case 'url':
+			case 'week':
+
 				$size = (int) $tpl_type[1];
 				$maxlength = (int) $tpl_type[2];
 

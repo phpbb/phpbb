@@ -618,7 +618,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 */
 function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true, $call_delete_posts = true)
 {
-	global $db, $config;
+	global $db, $config, $phpbb_container;
 
 	$approved_topics = 0;
 	$forum_ids = $topic_ids = array();
@@ -644,7 +644,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		'posts' => ($call_delete_posts) ? delete_posts($where_type, $where_ids, false, true, $post_count_sync, false) : 0,
 	);
 
-	$sql = 'SELECT topic_id, forum_id, topic_approved, topic_moved_id
+	$sql = 'SELECT topic_id, forum_id, topic_visibility, topic_moved_id
 		FROM ' . TOPICS_TABLE . '
 		WHERE ' . $where_clause;
 	$result = $db->sql_query($sql);
@@ -654,7 +654,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		$forum_ids[] = $row['forum_id'];
 		$topic_ids[] = $row['topic_id'];
 
-		if ($row['topic_approved'] && !$row['topic_moved_id'])
+		if ($row['topic_visibility'] == ITEM_APPROVED && !$row['topic_moved_id'])
 		{
 			$approved_topics++;
 		}
@@ -715,6 +715,14 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		set_config_count('num_topics', $approved_topics * (-1), true);
 	}
 
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+	$phpbb_notifications->delete_notifications(array(
+		'topic',
+		'approve_topic',
+		'topic_in_queue',
+	), $topic_ids);
+
 	return $return;
 }
 
@@ -723,7 +731,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 */
 function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true, $call_delete_topics = true)
 {
-	global $db, $config, $phpbb_root_path, $phpEx, $auth, $user;
+	global $db, $config, $phpbb_root_path, $phpEx, $auth, $user, $phpbb_container;
 
 	if ($where_type === 'range')
 	{
@@ -767,7 +775,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	$approved_posts = 0;
 	$post_ids = $topic_ids = $forum_ids = $post_counts = $remove_topics = array();
 
-	$sql = 'SELECT post_id, poster_id, post_approved, post_postcount, topic_id, forum_id
+	$sql = 'SELECT post_id, poster_id, post_visibility, post_postcount, topic_id, forum_id
 		FROM ' . POSTS_TABLE . '
 		WHERE ' . $where_clause;
 	$result = $db->sql_query($sql);
@@ -779,12 +787,12 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		$topic_ids[] = (int) $row['topic_id'];
 		$forum_ids[] = (int) $row['forum_id'];
 
-		if ($row['post_postcount'] && $post_count_sync && $row['post_approved'])
+		if ($row['post_postcount'] && $post_count_sync && $row['post_visibility'] == ITEM_APPROVED)
 		{
 			$post_counts[$row['poster_id']] = (!empty($post_counts[$row['poster_id']])) ? $post_counts[$row['poster_id']] + 1 : 1;
 		}
 
-		if ($row['post_approved'])
+		if ($row['post_visibility'] == ITEM_APPROVED)
 		{
 			$approved_posts++;
 		}
@@ -881,7 +889,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		sync('forum', 'forum_id', $forum_ids, true, true);
 	}
 
-	if ($approved_posts)
+	if ($approved_posts && $post_count_sync)
 	{
 		set_config_count('num_posts', $approved_posts * (-1), true);
 	}
@@ -891,6 +899,16 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	{
 		delete_topics('topic_id', $remove_topics, $auto_sync, $post_count_sync, false);
 	}
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+	$phpbb_notifications->delete_notifications(array(
+		'quote',
+		'bookmark',
+		'post',
+		'approve_post',
+		'post_in_queue',
+	), $post_ids);
 
 	return sizeof($post_ids);
 }
@@ -1274,7 +1292,7 @@ function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 * - forum				Resync complete forum
 * - topic				Resync topics
 * - topic_moved			Removes topic shadows that would be in the same forum as the topic they link to
-* - topic_approved		Resyncs the topic_approved flag according to the status of the first post
+* - topic_visibility	Resyncs the topic_visibility flag according to the status of the first post
 * - post_reported		Resyncs the post_reported flag, relying on actual reports
 * - topic_reported		Resyncs the topic_reported flag, relying on post_reported flags
 * - post_attachement	Same as post_reported, but with attachment flags
@@ -1294,7 +1312,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		$where_ids = ($where_ids) ? array((int) $where_ids) : array();
 	}
 
-	if ($mode == 'forum' || $mode == 'topic' || $mode == 'topic_approved' || $mode == 'topic_reported' || $mode == 'post_reported')
+	if ($mode == 'forum' || $mode == 'topic' || $mode == 'topic_visibility' || $mode == 'topic_reported' || $mode == 'post_reported')
 	{
 		if (!$where_type)
 		{
@@ -1380,43 +1398,55 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$db->sql_transaction('commit');
 			break;
 
-		case 'topic_approved':
+		case 'topic_visibility':
 
 			$db->sql_transaction('begin');
-			switch ($db->sql_layer)
+
+			$sql = 'SELECT t.topic_id, p.post_visibility
+				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+				$where_sql_and p.topic_id = t.topic_id
+					AND p.post_visibility = " . ITEM_APPROVED;
+			$result = $db->sql_query($sql);
+
+			$topics_approved = array();
+			while ($row = $db->sql_fetchrow($result))
 			{
-				case 'mysql4':
-				case 'mysqli':
-					$sql = 'UPDATE ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-						SET t.topic_approved = p.post_approved
-						$where_sql_and t.topic_first_post_id = p.post_id";
-					$db->sql_query($sql);
-				break;
+				$topics_approved[] = (int) $row['topic_id'];
+			}
+			$db->sql_freeresult($result);
 
-				default:
-					$sql = 'SELECT t.topic_id, p.post_approved
-						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-						$where_sql_and p.post_id = t.topic_first_post_id
-							AND p.post_approved <> t.topic_approved";
-					$result = $db->sql_query($sql);
+			$sql = 'SELECT t.topic_id, p.post_visibility
+				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+				$where_sql_and " . $db->sql_in_set('t.topic_id', $topics_approved, true, true) . '
+					AND p.topic_id = t.topic_id
+					AND p.post_visibility = ' . ITEM_DELETED;
+			$result = $db->sql_query($sql);
 
-					$topic_ids = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$topic_ids[] = $row['topic_id'];
-					}
-					$db->sql_freeresult($result);
+			$topics_softdeleted = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$topics_softdeleted[] = (int) $row['topic_id'];
+			}
+			$db->sql_freeresult($result);
 
-					if (!sizeof($topic_ids))
-					{
-						return;
-					}
+			$topics_softdeleted = array_diff($topics_softdeleted, $topics_approved);
+			$topics_not_unapproved = array_merge($topics_softdeleted, $topics_approved);
 
+			$update_ary = array(
+				ITEM_UNAPPROVED	=> (!empty($topics_not_unapproved)) ? $where_sql_and . ' ' . $db->sql_in_set('topic_id', $topics_not_unapproved, true) : '',
+				ITEM_APPROVED	=> (!empty($topics_approved)) ? ' WHERE ' . $db->sql_in_set('topic_id', $topics_approved) : '',
+				ITEM_DELETED	=> (!empty($topics_softdeleted)) ? ' WHERE ' . $db->sql_in_set('topic_id', $topics_softdeleted) : '',
+			);
+
+			foreach ($topic_visiblities as $visibility => $sql_where)
+			{
+				if ($sql_where)
+				{
 					$sql = 'UPDATE ' . TOPICS_TABLE . '
-						SET topic_approved = 1 - topic_approved
-						WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
+						SET topic_visibility = ' . $visibility . '
+						' . $sql_where;
 					$db->sql_query($sql);
-				break;
+				}
 			}
 
 			$db->sql_transaction('commit');
@@ -1657,9 +1687,12 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$forum_data[$forum_id] = $row;
 				if ($sync_extra)
 				{
-					$forum_data[$forum_id]['posts'] = 0;
-					$forum_data[$forum_id]['topics'] = 0;
-					$forum_data[$forum_id]['topics_real'] = 0;
+					$forum_data[$forum_id]['posts_approved'] = 0;
+					$forum_data[$forum_id]['posts_unapproved'] = 0;
+					$forum_data[$forum_id]['posts_softdeleted'] = 0;
+					$forum_data[$forum_id]['topics_approved'] = 0;
+					$forum_data[$forum_id]['topics_unapproved'] = 0;
+					$forum_data[$forum_id]['topics_softdeleted'] = 0;
 				}
 				$forum_data[$forum_id]['last_post_id'] = 0;
 				$forum_data[$forum_id]['last_post_subject'] = '';
@@ -1680,20 +1713,27 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// 2: Get topic counts for each forum (optional)
 			if ($sync_extra)
 			{
-				$sql = 'SELECT forum_id, topic_approved, COUNT(topic_id) AS forum_topics
+				$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS total_topics
 					FROM ' . TOPICS_TABLE . '
 					WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
-					GROUP BY forum_id, topic_approved';
+					GROUP BY forum_id, topic_visibility';
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$forum_id = (int) $row['forum_id'];
-					$forum_data[$forum_id]['topics_real'] += $row['forum_topics'];
 
-					if ($row['topic_approved'])
+					if ($row['topic_visibility'] == ITEM_APPROVED)
 					{
-						$forum_data[$forum_id]['topics'] = $row['forum_topics'];
+						$forum_data[$forum_id]['topics_approved'] = $row['total_topics'];
+					}
+					else if ($row['topic_visibility'] == ITEM_UNAPPROVED)
+					{
+						$forum_data[$forum_id]['topics_unapproved'] = $row['total_topics'];
+					}
+					else if ($row['topic_visibility'] == ITEM_DELETED)
+					{
+						$forum_data[$forum_id]['topics_softdeleted'] = $row['total_topics'];
 					}
 				}
 				$db->sql_freeresult($result);
@@ -1704,18 +1744,16 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			{
 				if (sizeof($forum_ids) == 1)
 				{
-					$sql = 'SELECT SUM(t.topic_replies + 1) AS forum_posts
+					$sql = 'SELECT SUM(t.topic_posts_approved) AS forum_posts_approved, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-							AND t.topic_approved = 1
 							AND t.topic_status <> ' . ITEM_MOVED;
 				}
 				else
 				{
-					$sql = 'SELECT t.forum_id, SUM(t.topic_replies + 1) AS forum_posts
+					$sql = 'SELECT t.forum_id, SUM(t.topic_posts_approved) AS forum_posts_approved, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-							AND t.topic_approved = 1
 							AND t.topic_status <> ' . ITEM_MOVED . '
 						GROUP BY t.forum_id';
 				}
@@ -1726,7 +1764,9 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				{
 					$forum_id = (sizeof($forum_ids) == 1) ? (int) $forum_ids[0] : (int) $row['forum_id'];
 
-					$forum_data[$forum_id]['posts'] = (int) $row['forum_posts'];
+					$forum_data[$forum_id]['posts_approved'] = (int) $row['forum_posts_approved'];
+					$forum_data[$forum_id]['posts_unapproved'] = (int) $row['forum_posts_unapproved'];
+					$forum_data[$forum_id]['posts_softdeleted'] = (int) $row['forum_posts_softdeleted'];
 				}
 				$db->sql_freeresult($result);
 			}
@@ -1737,14 +1777,14 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$sql = 'SELECT MAX(t.topic_last_post_id) as last_post_id
 					FROM ' . TOPICS_TABLE . ' t
 					WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-						AND t.topic_approved = 1';
+						AND t.topic_visibility = ' . ITEM_APPROVED;
 			}
 			else
 			{
 				$sql = 'SELECT t.forum_id, MAX(t.topic_last_post_id) as last_post_id
 					FROM ' . TOPICS_TABLE . ' t
 					WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-						AND t.topic_approved = 1
+						AND t.topic_visibility = ' . ITEM_APPROVED . '
 					GROUP BY t.forum_id';
 			}
 
@@ -1807,7 +1847,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			if ($sync_extra)
 			{
-				array_push($fieldnames, 'posts', 'topics', 'topics_real');
+				array_push($fieldnames, 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'topics_approved', 'topics_unapproved', 'topics_softdeleted');
 			}
 
 			foreach ($forum_data as $forum_id => $row)
@@ -1842,11 +1882,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			break;
 
 		case 'topic':
-			$topic_data = $post_ids = $approved_unapproved_ids = $resync_forums = $delete_topics = $delete_posts = $moved_topics = array();
+			$topic_data = $post_ids = $resync_forums = $delete_topics = $delete_posts = $moved_topics = array();
 
 			$db->sql_transaction('begin');
 
-			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_approved, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_replies, t.topic_replies_real, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
+			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_visibility, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
 				FROM ' . TOPICS_TABLE . " t
 				$where_sql";
 			$result = $db->sql_query($sql);
@@ -1861,8 +1901,10 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 				$topic_id = (int) $row['topic_id'];
 				$topic_data[$topic_id] = $row;
-				$topic_data[$topic_id]['replies_real'] = -1;
-				$topic_data[$topic_id]['replies'] = 0;
+				$topic_data[$topic_id]['visibility'] = ITEM_UNAPPROVED;
+				$topic_data[$topic_id]['posts_approved'] = 0;
+				$topic_data[$topic_id]['posts_unapproved'] = 0;
+				$topic_data[$topic_id]['posts_softdeleted'] = 0;
 				$topic_data[$topic_id]['first_post_id'] = 0;
 				$topic_data[$topic_id]['last_post_id'] = 0;
 				unset($topic_data[$topic_id]['topic_id']);
@@ -1879,11 +1921,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$db->sql_freeresult($result);
 
 			// Use "t" as table alias because of the $where_sql clause
-			// NOTE: 't.post_approved' in the GROUP BY is causing a major slowdown.
-			$sql = 'SELECT t.topic_id, t.post_approved, COUNT(t.post_id) AS total_posts, MIN(t.post_id) AS first_post_id, MAX(t.post_id) AS last_post_id
+			// NOTE: 't.post_visibility' in the GROUP BY is causing a major slowdown.
+			$sql = 'SELECT t.topic_id, t.post_visibility, COUNT(t.post_id) AS total_posts, MIN(t.post_id) AS first_post_id, MAX(t.post_id) AS last_post_id
 				FROM ' . POSTS_TABLE . " t
 				$where_sql
-				GROUP BY t.topic_id, t.post_approved";
+				GROUP BY t.topic_id, t.post_visibility";
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1904,13 +1946,37 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					// When we'll be done, only topics with no posts will remain
 					unset($delete_topics[$topic_id]);
 
-					$topic_data[$topic_id]['replies_real'] += $row['total_posts'];
-					$topic_data[$topic_id]['first_post_id'] = (!$topic_data[$topic_id]['first_post_id']) ? $row['first_post_id'] : min($topic_data[$topic_id]['first_post_id'], $row['first_post_id']);
-
-					if ($row['post_approved'] || !$topic_data[$topic_id]['last_post_id'])
+					if ($row['post_visibility'] == ITEM_APPROVED)
 					{
-						$topic_data[$topic_id]['replies'] = $row['total_posts'] - 1;
+						$topic_data[$topic_id]['posts_approved'] = $row['total_posts'];
+					}
+					else if ($row['post_visibility'] == ITEM_UNAPPROVED)
+					{
+						$topic_data[$topic_id]['posts_unapproved'] = $row['total_posts'];
+					}
+					else if ($row['post_visibility'] == ITEM_DELETED)
+					{
+						$topic_data[$topic_id]['posts_softdeleted'] = $row['total_posts'];
+					}
+
+					if ($row['post_visibility'] == ITEM_APPROVED)
+					{
+						$topic_data[$topic_id]['visibility'] = ITEM_APPROVED;
+						$topic_data[$topic_id]['first_post_id'] = $row['first_post_id'];
 						$topic_data[$topic_id]['last_post_id'] = $row['last_post_id'];
+					}
+					else if ($topic_data[$topic_id]['visibility'] != ITEM_APPROVED)
+					{
+						// If there is no approved post, we take the min/max of the other visibilities
+						// for the last and first post info, because it is only visible to moderators anyway
+						$topic_data[$topic_id]['first_post_id'] = (!empty($topic_data[$topic_id]['first_post_id'])) ? min($topic_data[$topic_id]['first_post_id'], $row['first_post_id']) : $row['first_post_id'];
+						$topic_data[$topic_id]['last_post_id'] = max($topic_data[$topic_id]['last_post_id'], $row['last_post_id']);
+
+						if ($topic_data[$topic_id]['visibility'] == ITEM_UNAPPROVED)
+						{
+							// Soft delete status is stronger than unapproved.
+							$topic_data[$topic_id]['visibility'] = $row['post_visibility'];
+						}
 					}
 				}
 			}
@@ -1952,7 +2018,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($delete_topics, $delete_topic_ids);
 			}
 
-			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
+			$sql = 'SELECT p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 					AND u.user_id = p.poster_id';
@@ -1965,10 +2031,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 				if ($row['post_id'] == $topic_data[$topic_id]['first_post_id'])
 				{
-					if ($topic_data[$topic_id]['topic_approved'] != $row['post_approved'])
-					{
-						$approved_unapproved_ids[] = $topic_id;
-					}
 					$topic_data[$topic_id]['time'] = $row['post_time'];
 					$topic_data[$topic_id]['poster'] = $row['poster_id'];
 					$topic_data[$topic_id]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
@@ -2029,7 +2091,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$sync_shadow_topics = array();
 				if (sizeof($post_ids))
 				{
-					$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
+					$sql = 'SELECT p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
 						FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 						WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 							AND u.user_id = p.poster_id';
@@ -2096,18 +2158,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($sync_shadow_topics, $shadow_topic_data);
 			}
 
-			// approved becomes unapproved, and vice-versa
-			if (sizeof($approved_unapproved_ids))
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_approved = 1 - topic_approved
-					WHERE ' . $db->sql_in_set('topic_id', $approved_unapproved_ids);
-				$db->sql_query($sql);
-			}
-			unset($approved_unapproved_ids);
-
 			// These are fields that will be synchronised
-			$fieldnames = array('time', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+			$fieldnames = array('time', 'visibility', 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
 
 			if ($sync_extra)
 			{
@@ -2292,13 +2344,17 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 }
 
 /**
-* Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
-* and group names must be carried through for the moderators table
+* Cache moderators. Called whenever permissions are changed
+* via admin_permissions. Changes of usernames and group names
+* must be carried through for the moderators table.
+*
+* @param phpbb_db_driver $db Database connection
+* @param phpbb_cache_driver_interface Cache driver
+* @param phpbb_auth $auth Authentication object
+* @return null
 */
-function cache_moderators()
+function phpbb_cache_moderators($db, $cache, $auth)
 {
-	global $db, $cache, $auth, $phpbb_root_path, $phpEx;
-
 	// Remove cached sql results
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
@@ -2469,283 +2525,60 @@ function cache_moderators()
 }
 
 /**
-* View log
-* If $log_count is set to false, we will skip counting all entries in the database.
+* Cache moderators. Called whenever permissions are changed
+* via admin_permissions. Changes of usernames and group names
+* must be carried through for the moderators table.
+*
+* @deprecated 3.1
+* @return null
 */
-function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC', $keywords = '')
+function cache_moderators()
 {
-	global $db, $user, $auth, $phpEx, $phpbb_root_path, $phpbb_admin_path;
-
-	$topic_id_list = $reportee_id_list = $is_auth = $is_mod = array();
-
-	$profile_url = (defined('IN_ADMIN')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview') : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile');
-
-	switch ($mode)
-	{
-		case 'admin':
-			$log_type = LOG_ADMIN;
-			$sql_forum = '';
-		break;
-
-		case 'mod':
-			$log_type = LOG_MOD;
-			$sql_forum = '';
-
-			if ($topic_id)
-			{
-				$sql_forum = 'AND l.topic_id = ' . (int) $topic_id;
-			}
-			else if (is_array($forum_id))
-			{
-				$sql_forum = 'AND ' . $db->sql_in_set('l.forum_id', array_map('intval', $forum_id));
-			}
-			else if ($forum_id)
-			{
-				$sql_forum = 'AND l.forum_id = ' . (int) $forum_id;
-			}
-		break;
-
-		case 'user':
-			$log_type = LOG_USERS;
-			$sql_forum = 'AND l.reportee_id = ' . (int) $user_id;
-		break;
-
-		case 'users':
-			$log_type = LOG_USERS;
-			$sql_forum = '';
-		break;
-
-		case 'critical':
-			$log_type = LOG_CRITICAL;
-			$sql_forum = '';
-		break;
-
-		default:
-			return;
-	}
-
-	// Use no preg_quote for $keywords because this would lead to sole backslashes being added
-	// We also use an OR connection here for spaces and the | string. Currently, regex is not supported for searching (but may come later).
-	$keywords = preg_split('#[\s|]+#u', utf8_strtolower($keywords), 0, PREG_SPLIT_NO_EMPTY);
-	$sql_keywords = '';
-
-	if (!empty($keywords))
-	{
-		$keywords_pattern = array();
-
-		// Build pattern and keywords...
-		for ($i = 0, $num_keywords = sizeof($keywords); $i < $num_keywords; $i++)
-		{
-			$keywords_pattern[] = preg_quote($keywords[$i], '#');
-			$keywords[$i] = $db->sql_like_expression($db->any_char . $keywords[$i] . $db->any_char);
-		}
-
-		$keywords_pattern = '#' . implode('|', $keywords_pattern) . '#ui';
-
-		$operations = array();
-		foreach ($user->lang as $key => $value)
-		{
-			if (substr($key, 0, 4) == 'LOG_' && preg_match($keywords_pattern, $value))
-			{
-				$operations[] = $key;
-			}
-		}
-
-		$sql_keywords = 'AND (';
-		if (!empty($operations))
-		{
-			$sql_keywords .= $db->sql_in_set('l.log_operation', $operations) . ' OR ';
-		}
-		$sql_lower = $db->sql_lower_text('l.log_data');
-		$sql_keywords .= "$sql_lower " . implode(" OR $sql_lower ", $keywords) . ')';
-	}
-
-	if ($log_count !== false)
-	{
-		$sql = 'SELECT COUNT(l.log_id) AS total_entries
-			FROM ' . LOG_TABLE . ' l, ' . USERS_TABLE . " u
-			WHERE l.log_type = $log_type
-				AND l.user_id = u.user_id
-				AND l.log_time >= $limit_days
-				$sql_keywords
-				$sql_forum";
-		$result = $db->sql_query($sql);
-		$log_count = (int) $db->sql_fetchfield('total_entries');
-		$db->sql_freeresult($result);
-	}
-
-	// $log_count may be false here if false was passed in for it,
-	// because in this case we did not run the COUNT() query above.
-	// If we ran the COUNT() query and it returned zero rows, return;
-	// otherwise query for logs below.
-	if ($log_count === 0)
-	{
-		// Save the queries, because there are no logs to display
-		return 0;
-	}
-
-	if ($offset >= $log_count)
-	{
-		$offset = ($offset - $limit < 0) ? 0 : $offset - $limit;
-	}
-
-	$sql = "SELECT l.*, u.username, u.username_clean, u.user_colour
-		FROM " . LOG_TABLE . " l, " . USERS_TABLE . " u
-		WHERE l.log_type = $log_type
-			AND u.user_id = l.user_id
-			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') . "
-			$sql_keywords
-			$sql_forum
-		ORDER BY $sort_by";
-	$result = $db->sql_query_limit($sql, $limit, $offset);
-
-	$i = 0;
-	$log = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if ($row['topic_id'])
-		{
-			$topic_id_list[] = $row['topic_id'];
-		}
-
-		if ($row['reportee_id'])
-		{
-			$reportee_id_list[] = $row['reportee_id'];
-		}
-
-		$log[$i] = array(
-			'id'				=> $row['log_id'],
-
-			'reportee_id'			=> $row['reportee_id'],
-			'reportee_username'		=> '',
-			'reportee_username_full'=> '',
-
-			'user_id'			=> $row['user_id'],
-			'username'			=> $row['username'],
-			'username_full'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, $profile_url),
-
-			'ip'				=> $row['log_ip'],
-			'time'				=> $row['log_time'],
-			'forum_id'			=> $row['forum_id'],
-			'topic_id'			=> $row['topic_id'],
-
-			'viewforum'			=> ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : false,
-			'action'			=> (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
-		);
-
-		if (!empty($row['log_data']))
-		{
-			$log_data_ary = @unserialize($row['log_data']);
-			$log_data_ary = ($log_data_ary === false) ? array() : $log_data_ary;
-
-			if (isset($user->lang[$row['log_operation']]))
-			{
-				// Check if there are more occurrences of % than arguments, if there are we fill out the arguments array
-				// It doesn't matter if we add more arguments than placeholders
-				if ((substr_count($log[$i]['action'], '%') - sizeof($log_data_ary)) > 0)
-				{
-					$log_data_ary = array_merge($log_data_ary, array_fill(0, substr_count($log[$i]['action'], '%') - sizeof($log_data_ary), ''));
-				}
-
-				$log[$i]['action'] = vsprintf($log[$i]['action'], $log_data_ary);
-
-				// If within the admin panel we do not censor text out
-				if (defined('IN_ADMIN'))
-				{
-					$log[$i]['action'] = bbcode_nl2br($log[$i]['action']);
-				}
-				else
-				{
-					$log[$i]['action'] = bbcode_nl2br(censor_text($log[$i]['action']));
-				}
-			}
-			else if (!empty($log_data_ary))
-			{
-				$log[$i]['action'] .= '<br />' . implode('', $log_data_ary);
-			}
-
-			/* Apply make_clickable... has to be seen if it is for good. :/
-			// Seems to be not for the moment, reconsider later...
-			$log[$i]['action'] = make_clickable($log[$i]['action']);
-			*/
-		}
-
-		$i++;
-	}
-	$db->sql_freeresult($result);
-
-	if (sizeof($topic_id_list))
-	{
-		$topic_id_list = array_unique($topic_id_list);
-
-		// This query is not really needed if move_topics() updates the forum_id field,
-		// although it's also used to determine if the topic still exists in the database
-		$sql = 'SELECT topic_id, forum_id
-			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', array_map('intval', $topic_id_list));
-		$result = $db->sql_query($sql);
-
-		$default_forum_id = 0;
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if ($auth->acl_get('f_read', $row['forum_id']))
-			{
-				$is_auth[$row['topic_id']] = $row['forum_id'];
-			}
-
-			if ($auth->acl_gets('a_', 'm_', $row['forum_id']))
-			{
-				$is_mod[$row['topic_id']] = $row['forum_id'];
-			}
-		}
-		$db->sql_freeresult($result);
-
-		foreach ($log as $key => $row)
-		{
-			$log[$key]['viewtopic'] = (isset($is_auth[$row['topic_id']])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $is_auth[$row['topic_id']] . '&amp;t=' . $row['topic_id']) : false;
-			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $user->session_id) : false;
-		}
-	}
-
-	if (sizeof($reportee_id_list))
-	{
-		$reportee_id_list = array_unique($reportee_id_list);
-		$reportee_names_list = array();
-
-		$sql = 'SELECT user_id, username, user_colour
-			FROM ' . USERS_TABLE . '
-			WHERE ' . $db->sql_in_set('user_id', $reportee_id_list);
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$reportee_names_list[$row['user_id']] = $row;
-		}
-		$db->sql_freeresult($result);
-
-		foreach ($log as $key => $row)
-		{
-			if (!isset($reportee_names_list[$row['reportee_id']]))
-			{
-				continue;
-			}
-
-			$log[$key]['reportee_username'] = $reportee_names_list[$row['reportee_id']]['username'];
-			$log[$key]['reportee_username_full'] = get_username_string('full', $row['reportee_id'], $reportee_names_list[$row['reportee_id']]['username'], $reportee_names_list[$row['reportee_id']]['user_colour'], false, $profile_url);
-		}
-	}
-
-	return $offset;
+	global $db, $cache, $auth;
+	return phpbb_cache_moderators($db, $cache, $auth);
 }
 
 /**
-* Update foes - remove moderators and administrators from foe lists...
+* View log
+*
+* @param	string	$mode			The mode defines which log_type is used and from which log the entry is retrieved
+* @param	array	&$log			The result array with the logs
+* @param	mixed	&$log_count		If $log_count is set to false, we will skip counting all entries in the database.
+*									Otherwise an integer with the number of total matching entries is returned.
+* @param	int		$limit			Limit the number of entries that are returned
+* @param	int		$offset			Offset when fetching the log entries, f.e. when paginating
+* @param	mixed	$forum_id		Restrict the log entries to the given forum_id (can also be an array of forum_ids)
+* @param	int		$topic_id		Restrict the log entries to the given topic_id
+* @param	int		$user_id		Restrict the log entries to the given user_id
+* @param	int		$log_time		Only get log entries newer than the given timestamp
+* @param	string	$sort_by		SQL order option, e.g. 'l.log_time DESC'
+* @param	string	$keywords		Will only return log entries that have the keywords in log_operation or log_data
+*
+* @return	int				Returns the offset of the last valid page, if the specified offset was invalid (too high)
 */
-function update_foes($group_id = false, $user_id = false)
+function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC', $keywords = '')
 {
-	global $db, $auth;
+	global $phpbb_log;
 
+	$count_logs = ($log_count !== false);
+
+	$log = $phpbb_log->get_logs($mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $limit_days, $sort_by, $keywords);
+	$log_count = $phpbb_log->get_log_count();
+
+	return $phpbb_log->get_valid_offset();
+}
+
+/**
+* Removes moderators and administrators from foe lists.
+*
+* @param phpbb_db_driver $db Database connection
+* @param phpbb_auth $auth Authentication object
+* @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
+* @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
+* @return null
+*/
+function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
+{
 	// update foes for some user
 	if (is_array($user_id) && sizeof($user_id))
 	{
@@ -2852,6 +2685,20 @@ function update_foes($group_id = false, $user_id = false)
 		$db->sql_query($sql);
 	}
 	unset($perms);
+}
+
+/**
+* Removes moderators and administrators from foe lists.
+*
+* @deprecated 3.1
+* @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
+* @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
+* @return null
+*/
+function update_foes($group_id = false, $user_id = false)
+{
+	global $db, $auth;
+	return phpbb_update_foes($db, $auth, $group_id, $user_id);
 }
 
 /**
@@ -3086,7 +2933,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 
 	if ($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
 	{
-		@fputs($fsock, "GET $directory/$filename HTTP/1.1\r\n");
+		@fputs($fsock, "GET $directory/$filename HTTP/1.0\r\n");
 		@fputs($fsock, "HOST: $host\r\n");
 		@fputs($fsock, "Connection: close\r\n\r\n");
 
@@ -3227,38 +3074,29 @@ function tidy_database()
 */
 function add_permission_language()
 {
-	global $user, $phpEx;
+	global $user, $phpEx, $phpbb_extension_manager;
 
-	// First of all, our own file. We need to include it as the first file because it presets all relevant variables.
-	$user->add_lang('acp/permissions_phpbb');
+	// add permission language files from extensions
+	$finder = $phpbb_extension_manager->get_finder();
 
-	$files_to_add = array();
+	$lang_files = $finder
+		->prefix('permissions_')
+		->suffix(".$phpEx")
+		->core_path('language/' . $user->lang_name . '/')
+		->extension_directory('/language/' . $user->lang_name)
+		->find();
 
-	// Now search in acp and mods folder for permissions_ files.
-	foreach (array('acp/', 'mods/') as $path)
+	foreach ($lang_files as $lang_file => $ext_name)
 	{
-		$dh = @opendir($user->lang_path . $user->lang_name . '/' . $path);
-
-		if ($dh)
+		if ($ext_name === '/')
 		{
-			while (($file = readdir($dh)) !== false)
-			{
-				if ($file !== 'permissions_phpbb.' . $phpEx && strpos($file, 'permissions_') === 0 && substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx)
-				{
-					$files_to_add[] = $path . substr($file, 0, -(strlen($phpEx) + 1));
-				}
-			}
-			closedir($dh);
+			$user->add_lang($lang_file);
+		}
+		else
+		{
+			$user->add_lang_ext($ext_name, $lang_file);
 		}
 	}
-
-	if (!sizeof($files_to_add))
-	{
-		return false;
-	}
-
-	$user->add_lang($files_to_add);
-	return true;
 }
 
 /**
@@ -3284,7 +3122,7 @@ function obtain_latest_version_info($force_update = false, $warn_fail = false, $
 		$info = get_remote_file('version.phpbb.com', '/phpbb',
 				((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
 
-		if ($info === false)
+		if (empty($info))
 		{
 			$cache->destroy('versioncheck');
 			if ($warn_fail)

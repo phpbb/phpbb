@@ -4,11 +4,18 @@
 <!-- IF U_MCP --><p>{CURRENT_TIME} <br />[&nbsp;<a href="{U_MCP}">{L_MCP}</a>&nbsp;]</p><!-- ELSEIF S_USER_LOGGED_IN --><p>{CURRENT_TIME}</p><!-- ENDIF -->
 
 <!-- IF S_DISPLAY_SEARCH or (S_USER_LOGGED_IN and not S_IS_BOT) -->
-<ul class="linklist">
+<ul class="linklist bulletin">
 	<!-- IF S_DISPLAY_SEARCH -->
-		<li><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a><!-- IF S_LOAD_UNREADS --> &bull; <a href="{U_SEARCH_UNREAD}">{L_SEARCH_UNREAD}</a><!-- ENDIF --><!-- IF S_USER_LOGGED_IN --> &bull; <a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a><!-- ENDIF --> &bull; <a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></li>
+		<li><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a></li>
+		<!-- IF S_LOAD_UNREADS --> 
+			<li><a href="{U_SEARCH_UNREAD}">{L_SEARCH_UNREAD}</a></li>
+		<!-- ENDIF -->
+		<!-- IF S_USER_LOGGED_IN -->
+			<li><a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a></li>
+		<!-- ENDIF -->
+		<li><a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></li>
 	<!-- ENDIF -->
-	<!-- IF not S_IS_BOT and U_MARK_FORUMS --><li class="rightside"><a href="{U_MARK_FORUMS}" accesskey="m" data-ajax="true">{L_MARK_FORUMS_READ}</a></li><!-- ENDIF -->
+	<!-- IF not S_IS_BOT and U_MARK_FORUMS --><li class="rightside"><a href="{U_MARK_FORUMS}" accesskey="m" data-ajax="mark_forums_read" data-overlay="false">{L_MARK_FORUMS_READ}</a></li><!-- ENDIF -->
 </ul>
 <!-- ENDIF -->
 
@@ -28,6 +35,8 @@
 		</fieldset>
 	</form>
 <!-- ENDIF -->
+
+<!-- EVENT index_body_stat_blocks_before -->
 
 <!-- IF S_DISPLAY_ONLINE_LIST -->
 	<!-- IF U_VIEWONLINE --><h3><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h3><!-- ELSE --><h3>{L_WHO_IS_ONLINE}</h3><!-- ENDIF -->

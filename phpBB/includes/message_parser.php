@@ -702,17 +702,6 @@ class bbcode_firstpass extends bbcode
 	{
 		global $config, $user;
 
-		/**
-		* If you change this code, make sure the cases described within the following reports are still working:
-		* #3572 - [quote="[test]test"]test [ test[/quote] - (correct: parsed)
-		* #14667 - [quote]test[/quote] test ] and [ test [quote]test[/quote] (correct: parsed)
-		* #14770 - [quote="["]test[/quote] (correct: parsed)
-		* [quote="[i]test[/i]"]test[/quote] (correct: parsed)
-		* [quote="[quote]test[/quote]"]test[/quote] (correct: parsed - Username displayed as [quote]test[/quote])
-		* #20735 - [quote]test[/[/b]quote] test [/quote][/quote] test - (correct: quoted: "test[/[/b]quote] test" / non-quoted: "[/quote] test" - also failed if layout distorted)
-		* #40565 - [quote="a"]a[/quote][quote="a]a[/quote] (correct: first quote tag parsed, second quote tag unparsed)
-		*/
-
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
 
 		if (!$in)

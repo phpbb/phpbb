@@ -44,8 +44,11 @@ if (!defined('PHPBB_INSTALLED'))
 	// Replace any number of consecutive backslashes and/or slashes with a single slash
 	// (could happen on some proxy setups and/or Windows servers)
 	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
+
 	// Eliminate . and .. from the path
-	$script_path = phpbb_clean_path($script_path);
+	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
+	$phpbb_filesystem = new phpbb_filesystem();
+	$script_path = $phpbb_filesystem->clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 
@@ -63,39 +66,32 @@ if (!defined('PHPBB_INSTALLED'))
 	exit;
 }
 
+// In case $phpbb_adm_relative_path is not set (in case of an update), use the default.
+$phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relative_path : 'adm/';
+$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
+
 // Include files
-require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
+require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
 
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
-require($phpbb_root_path . 'includes/db/' . ltrim($dbms, 'dbal_') . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Setup class loader first
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", ".$phpEx");
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", ".$phpEx");
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
 // Set up container
-$phpbb_container = phpbb_create_dumped_container_unless_debug(
-	array(
-		new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
-		new phpbb_di_extension_core($phpbb_root_path),
-	),
-	array(
-		new phpbb_di_pass_collection_pass(),
-		new phpbb_di_pass_kernel_pass(),
-	),
-	$phpbb_root_path,
-	$phpEx
-);
+$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
@@ -113,23 +109,28 @@ $db			= $phpbb_container->get('dbal.conn');
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
+// Create a Symfony Request object from our phpbb_request object
+$symfony_request = phpbb_create_symfony_request($request);
+
 // Grab global variables, re-cache if necessary
 $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
+
+$phpbb_log = $phpbb_container->get('log');
 
 // load extensions
 $phpbb_extension_manager = $phpbb_container->get('ext.manager');
 $phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 
 $template = $phpbb_container->get('template');
-$phpbb_style = $phpbb_container->get('style');
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 $phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('phpbb_template', 'display')));
+$phpbb_hook_finder = $phpbb_container->get('hook_finder');
 
-foreach ($cache->obtain_hooks() as $hook)
+foreach ($phpbb_hook_finder->find() as $hook)
 {
 	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 }

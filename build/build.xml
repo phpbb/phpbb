@@ -2,17 +2,16 @@
 
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
-	<property name="newversion" value="3.0.11" />
-	<property name="prevversion" value="3.0.10" />
-	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7, 3.0.7-PL1, 3.0.8, 3.0.9, 3.0.11-RC1, 3.0.11-RC2" />
+	<property name="newversion" value="3.1.0-dev" />
+	<property name="prevversion" value="3.0.11" />
+	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7, 3.0.7-PL1, 3.0.8, 3.0.9, 3.0.10" />
 	<!-- no configuration should be needed beyond this point -->
 
 	<property name="oldversions" value="${olderversions}, ${prevversion}" />
 	<property name="versions" value="${oldversions}, ${newversion}" />
 
 	<!-- These are the main targets which you will probably want to use -->
-	<target name="package" depends="clean,prepare,composer,create-package" />
-	<target name="all" depends="clean,prepare,composer,test,docs,create-package" />
+	<target name="all" depends="clean,prepare,composer,test,docs,package" />
 	<target name="build" depends="clean,prepare,composer,test,docs" />
 
 	<target name="prepare">
@@ -43,15 +42,22 @@
 		<delete dir="build/save" />
 	</target>
 
-	<target name="composer" depends="clean,prepare">
-		<exec dir="./phpBB/"
-			command="php ../composer.phar install"
+	<!--
+		This target basically just runs composer in the phpBB tree to ensure
+		all dependencies are loaded. Additional development dependencies are
+		loaded because testing framework may depend on them.
+	-->
+	<target name="composer">
+		<exec dir="phpBB"
+			command="php ../composer.phar install --dev"
+			checkreturn="true"
 			passthru="true" />
 	</target>
 
 	<target name="test" depends="clean,prepare,composer">
 		<exec dir="."
-			command="phpunit --log-junit build/logs/phpunit.xml
+			command="phpBB/vendor/bin/phpunit
+			--log-junit build/logs/phpunit.xml
 			--coverage-clover build/logs/clover.xml
 			--coverage-html build/coverage"
 			passthru="true" />
@@ -59,7 +65,8 @@
 
 	<target name="test-slow" depends="clean,prepare,composer">
 		<exec dir="."
-			command="phpunit --log-junit build/logs/phpunit.xml
+			command="phpBB/vendor/bin/phpunit
+			--log-junit build/logs/phpunit.xml
 			--configuration phpunit.xml.all
 			--group slow
 			--coverage-clover build/logs/clover-slow.xml
@@ -122,7 +129,7 @@
 
 	</target>
 
-	<target name="create-package" depends="prepare-new-version,old-version-diffs">
+	<target name="package" depends="clean,prepare,prepare-new-version,old-version-diffs">
 		<exec dir="build" command="php -f package.php '${versions}' > logs/package.log" escape="false" />
 		<exec dir="build" command="php -f build_diff.php '${prevversion}' '${newversion}' > logs/build_diff.log" escape="false" />
 
@@ -162,9 +169,43 @@
 			command="git archive ${revision} | tar -xf - -C ../${dir}"
 			checkreturn="true" />
 
+		<!-- Install composer dependencies, if there are any. -->
 		<exec dir="${dir}"
-			command="php ../composer.phar install"
-			passthru="true" />
+			command='php -r "\$j = json_decode(file_get_contents(\"composer.json\")); echo isset(\$j->require);"'
+			checkreturn="true"
+			outputProperty='composer-has-dependencies' />
+		<if>
+			<equals arg1="${composer-has-dependencies}" arg2="1" trim="true" />
+			<then>
+				<!-- We have non-dev composer dependencies -->
+				<exec dir="."
+					command="git ls-tree ${revision} composer.phar"
+					checkreturn="true"
+					outputProperty='composer-ls-tree-output' />
+				<if>
+					<equals arg1="${composer-ls-tree-output}" arg2="" trim="true" />
+					<then>
+						<fail message="There are composer dependencies, but composer.phar is missing." />
+					</then>
+					<else>
+						<!-- Export the phar, install dependencies, delete phar. -->
+						<exec dir="."
+							command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
+							checkreturn="true" />
+						<exec dir="${dir}"
+							command="php composer.phar install"
+							checkreturn="true"
+							passthru="true" />
+						<delete file="${dir}/composer.phar" />
+					</else>
+				</if>
+			</then>
+			<else>
+				<!-- We do not have composer dependencies, do not ship composer files -->
+				<delete file="${dir}/composer.json" />
+				<delete file="${dir}/composer.lock" />
+			</else>
+		</if>
 
 		<delete file="${dir}/config.php" />
 		<delete dir="${dir}/develop" />
@@ -187,6 +228,7 @@
 		<delete dir="${dir}/files" />
 		<delete dir="${dir}/install" />
 		<delete dir="${dir}/store" />
+		<delete dir="${dir}/vendor" />
 	</target>
 
 </project>

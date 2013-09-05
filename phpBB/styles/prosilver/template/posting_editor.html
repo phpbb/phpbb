@@ -1,9 +1,3 @@
-<script type="text/javascript">
-// <![CDATA[
-	onload_functions.push(apply_onkeypress_event);
-// ]]>
-</script>
-
 <fieldset class="fields1">
 	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
 
@@ -73,14 +67,6 @@
 		<!-- ENDIF -->
 
 		<div class="clear"></div>
-
-	<!-- ENDIF -->
-
-	<!-- IF S_DELETE_ALLOWED -->
-	<dl>
-		<dt><label for="delete">{L_DELETE_POST}{L_COLON}</label></dt>
-		<dd><label for="delete"><input type="checkbox" name="delete" id="delete" /> {L_DELETE_POST_WARN}</label></dd>
-	</dl>
 	<!-- ENDIF -->
 
 	<!-- IF S_SHOW_TOPIC_ICONS or S_SHOW_PM_ICONS -->
@@ -199,11 +185,11 @@
 	<!-- ENDIF -->
 
 	<!-- IF not S_PRIVMSGS and not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
-		<div id="tabs">
+		<div id="tabs" class="sub-panels" data-show-panel="options-panel">
 			<ul>
-				<li id="options-panel-tab" class="activetab"><a href="#tabs" onclick="subPanels('options-panel'); return false;"><span>{L_OPTIONS}</span></a></li>
-				<!-- IF S_SHOW_ATTACH_BOX --><li id="attach-panel-tab"><a href="#tabs" onclick="subPanels('attach-panel'); return false;"><span>{L_ADD_ATTACHMENT}</span></a></li><!-- ENDIF -->
-				<!-- IF S_SHOW_POLL_BOX || S_POLL_DELETE --><li id="poll-panel-tab"><a href="#tabs" onclick="subPanels('poll-panel'); return false;"><span>{L_ADD_POLL}</span></a></li><!-- ENDIF -->
+				<li id="options-panel-tab" class="activetab"><a href="#tabs" data-subpanel="options-panel"><span>{L_OPTIONS}</span></a></li>
+				<!-- IF S_SHOW_ATTACH_BOX --><li id="attach-panel-tab"><a href="#tabs" data-subpanel="attach-panel"><span>{L_ADD_ATTACHMENT}</span></a></li><!-- ENDIF -->
+				<!-- IF S_SHOW_POLL_BOX || S_POLL_DELETE --><li id="poll-panel-tab"><a href="#tabs" data-subpanel="poll-panel"><span>{L_ADD_POLL}</span></a></li><!-- ENDIF -->
 			</ul>
 		</div>
 	<!-- ENDIF -->
@@ -213,6 +199,7 @@
 		<div class="inner">
 
 		<fieldset class="fields1">
+			<!-- EVENT posting_editor_options_prepend -->
 			<!-- IF S_BBCODE_ALLOWED -->
 				<div><label for="disable_bbcode"><input type="checkbox" name="disable_bbcode" id="disable_bbcode"{S_BBCODE_CHECKED} /> {L_DISABLE_BBCODE}</label></div>
 			<!-- ENDIF -->
@@ -249,9 +236,20 @@
 			<!-- IF S_TOPIC_TYPE_ANNOUNCE or S_TOPIC_TYPE_STICKY -->
 			<dl>
 				<dt><label for="topic_time_limit">{L_STICK_TOPIC_FOR}{L_COLON}</label></dt>
-				<dd><label for="topic_time_limit"><input type="text" name="topic_time_limit" id="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" class="inputbox autowidth" /> {L_DAYS}</label></dd>
+				<dd><label for="topic_time_limit"><input type="number" min="0" max="999" name="topic_time_limit" id="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" class="inputbox autowidth" /> {L_DAYS}</label></dd>
 				<dd>{L_STICK_TOPIC_FOR_EXPLAIN}</dd>
 			</dl>
+			<!-- ENDIF -->
+
+			<!-- IF S_SOFTDELETE_ALLOWED or S_DELETE_ALLOWED -->
+				<hr class="dashed" />
+				<dl>
+					<dt><label for="delete">{L_DELETE_POST}{L_COLON}</label></dt>
+					<dd><label for="delete"><input type="checkbox" name="delete" id="delete" {S_SOFTDELETE_CHECKED} /> {L_DELETE_POST_WARN}</label></dd>
+					<!-- IF S_DELETE_ALLOWED and S_SOFTDELETE_ALLOWED -->
+						<dd><label for="delete_permanent"><input type="checkbox" name="delete_permanent" id="delete_permanent" /> {L_DELETE_POST_PERMANENTLY}</label></dd>
+					<!-- ENDIF -->
+				</dl>
 			<!-- ENDIF -->
 
 			<!-- IF S_EDIT_REASON -->

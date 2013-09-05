@@ -206,7 +206,7 @@ class acp_forums
 							($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 						{
 							copy_forum_permissions($forum_perm_from, $forum_data['forum_id'], ($action == 'edit') ? true : false);
-							cache_moderators();
+							phpbb_cache_moderators($db, $cache, $auth);
 							$copied_permissions = true;
 						}
 /* Commented out because of questionable UI workflow - re-visit for 3.0.7
@@ -266,7 +266,7 @@ class acp_forums
 					add_log('admin', 'LOG_FORUM_' . strtoupper($action), $row['forum_name'], $move_forum_name);
 					$cache->destroy('sql', FORUMS_TABLE);
 				}
-				
+
 				if ($request->is_ajax())
 				{
 					$json_response = new phpbb_json_response;
@@ -283,7 +283,7 @@ class acp_forums
 
 				@set_time_limit(0);
 
-				$sql = 'SELECT forum_name, forum_topics_real
+				$sql = 'SELECT forum_name, (forum_topics_approved + forum_topics_unapproved + forum_topics_softdeleted) AS total_topics
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
 				$result = $db->sql_query($sql);
@@ -295,7 +295,7 @@ class acp_forums
 					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
-				if ($row['forum_topics_real'])
+				if ($row['total_topics'])
 				{
 					$sql = 'SELECT MIN(topic_id) as min_topic_id, MAX(topic_id) as max_topic_id
 						FROM ' . TOPICS_TABLE . '
@@ -314,7 +314,6 @@ class acp_forums
 					$end = $start + $batch_size;
 
 					// Sync all topics in batch mode...
-					sync('topic_approved', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, false);
 					sync('topic', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, true);
 
 					if ($end < $row2['max_topic_id'])
@@ -330,15 +329,15 @@ class acp_forums
 
 						$start += $batch_size;
 
-						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync&amp;start=$start&amp;topics_done=$topics_done&amp;total={$row['forum_topics_real']}";
+						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync&amp;start=$start&amp;topics_done=$topics_done&amp;total={$row['total_topics']}";
 
 						meta_refresh(0, $url);
 
 						$template->assign_vars(array(
-							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['forum_topics_real']}",
-							'UA_PROGRESS_BAR'		=> addslashes($this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['forum_topics_real']}"),
+							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}",
+							'UA_PROGRESS_BAR'		=> addslashes($this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}"),
 							'S_CONTINUE_SYNC'		=> true,
-							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $topics_done, $row['forum_topics_real']))
+							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $topics_done, $row['total_topics']))
 						);
 
 						return;
@@ -352,7 +351,7 @@ class acp_forums
 					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
 					'UA_PROGRESS_BAR'		=> addslashes($this->u_action . '&amp;action=progress_bar'),
 					'S_CONTINUE_SYNC'		=> true,
-					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['forum_topics_real']))
+					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['total_topics']))
 				);
 
 				return;
@@ -768,7 +767,7 @@ class acp_forums
 				if (!empty($forum_perm_from) && $forum_perm_from != $forum_id)
 				{
 					copy_forum_permissions($forum_perm_from, $forum_id, true);
-					cache_moderators();
+					phpbb_cache_moderators($db, $cache, $auth);
 					$auth->acl_clear_prefetch();
 					$cache->destroy('sql', FORUMS_TABLE);
 
@@ -857,8 +856,8 @@ class acp_forums
 					'FORUM_IMAGE_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 					'FORUM_NAME'		=> $row['forum_name'],
 					'FORUM_DESCRIPTION'	=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
-					'FORUM_TOPICS'		=> $row['forum_topics'],
-					'FORUM_POSTS'		=> $row['forum_posts'],
+					'FORUM_TOPICS'		=> $row['forum_topics_approved'],
+					'FORUM_POSTS'		=> $row['forum_posts_approved'],
 
 					'S_FORUM_LINK'		=> ($forum_type == FORUM_LINK) ? true : false,
 					'S_FORUM_POST'		=> ($forum_type == FORUM_POST) ? true : false,
@@ -1144,7 +1143,8 @@ class acp_forums
 					return array($user->lang['NO_FORUM_ACTION']);
 				}
 
-				$forum_data_sql['forum_posts'] = $forum_data_sql['forum_topics'] = $forum_data_sql['forum_topics_real'] = $forum_data_sql['forum_last_post_id'] = $forum_data_sql['forum_last_poster_id'] = $forum_data_sql['forum_last_post_time'] = 0;
+				$forum_data_sql['forum_posts_approved'] = $forum_data_sql['forum_posts_unapproved'] = $forum_data_sql['forum_posts_softdeleted'] = $forum_data_sql['forum_topics_approved'] = $forum_data_sql['forum_topics_unapproved'] = $forum_data_sql['forum_topics_softdeleted'] = 0;
+				$forum_data_sql['forum_last_post_id'] = $forum_data_sql['forum_last_poster_id'] = $forum_data_sql['forum_last_post_time'] = 0;
 				$forum_data_sql['forum_last_poster_name'] = $forum_data_sql['forum_last_poster_colour'] = '';
 			}
 			else if ($row['forum_type'] == FORUM_CAT && $forum_data_sql['forum_type'] == FORUM_LINK)
@@ -1264,9 +1264,12 @@ class acp_forums
 			else if ($row['forum_type'] == FORUM_CAT && $forum_data_sql['forum_type'] == FORUM_POST)
 			{
 				// Changing a category to a forum? Reset the data (you can't post directly in a cat, you must use a forum)
-				$forum_data_sql['forum_posts'] = 0;
-				$forum_data_sql['forum_topics'] = 0;
-				$forum_data_sql['forum_topics_real'] = 0;
+				$forum_data_sql['forum_posts_approved'] = 0;
+				$forum_data_sql['forum_posts_unapproved'] = 0;
+				$forum_data_sql['forum_posts_softdeleted'] = 0;
+				$forum_data_sql['forum_topics_approved'] = 0;
+				$forum_data_sql['forum_topics_unapproved'] = 0;
+				$forum_data_sql['forum_topics_softdeleted'] = 0;
 				$forum_data_sql['forum_last_post_id'] = 0;
 				$forum_data_sql['forum_last_post_subject'] = '';
 				$forum_data_sql['forum_last_post_time'] = 0;
@@ -1793,7 +1796,7 @@ class acp_forums
 			FROM ' . POSTS_TABLE . '
 			WHERE forum_id = ' . $forum_id . '
 				AND post_postcount = 1
-				AND post_approved = 1';
+				AND post_visibility = ' . ITEM_APPROVED;
 		$result = $db->sql_query($sql);
 
 		$post_counts = array();
@@ -1931,7 +1934,7 @@ class acp_forums
 		// Make sure the overall post/topic count is correct...
 		$sql = 'SELECT COUNT(post_id) AS stat
 			FROM ' . POSTS_TABLE . '
-			WHERE post_approved = 1';
+			WHERE post_visibility = ' . ITEM_APPROVED;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -1940,7 +1943,7 @@ class acp_forums
 
 		$sql = 'SELECT COUNT(topic_id) AS stat
 			FROM ' . TOPICS_TABLE . '
-			WHERE topic_approved = 1';
+			WHERE topic_visibility = ' . ITEM_APPROVED;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);

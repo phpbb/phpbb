@@ -26,7 +26,7 @@ class ucp_prefs
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = $data = array();
@@ -46,8 +46,6 @@ class ucp_prefs
 					'viewemail'		=> request_var('viewemail', (bool) $user->data['user_allow_viewemail']),
 					'massemail'		=> request_var('massemail', (bool) $user->data['user_allow_massemail']),
 					'hideonline'	=> request_var('hideonline', (bool) !$user->data['user_allow_viewonline']),
-					'notifypm'		=> request_var('notifypm', (bool) $user->data['user_notify_pm']),
-					'popuppm'		=> request_var('popuppm', (bool) $user->optionget('popuppm')),
 					'allowpm'		=> request_var('allowpm', (bool) $user->data['user_allow_pm']),
 				);
 
@@ -56,6 +54,20 @@ class ucp_prefs
 					// Jabber isnt enabled, or no jabber field filled in. Update the users table to be sure its correct.
 					$data['notifymethod'] = NOTIFY_BOTH;
 				}
+
+				/**
+				* Add UCP edit global settings data before they are assigned to the template or submitted
+				*
+				* To assign data to the template, use $template->assign_vars()
+				*
+				* @event core.ucp_prefs_personal_data
+				* @var	bool	submit		Do we display the form only
+				*							or did the user press submit
+				* @var	array	data		Array with current ucp options data
+				* @since 3.1-A1
+				*/
+				$vars = array('submit', 'data');
+				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_personal_data', compact($vars)));
 
 				if ($submit)
 				{
@@ -81,15 +93,12 @@ class ucp_prefs
 
 					if (!sizeof($error))
 					{
-						$user->optionset('popuppm', $data['popuppm']);
-
 						$sql_ary = array(
 							'user_allow_pm'			=> $data['allowpm'],
 							'user_allow_viewemail'	=> $data['viewemail'],
 							'user_allow_massemail'	=> $data['massemail'],
 							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$data['hideonline'] : $user->data['user_allow_viewonline'],
 							'user_notify_type'		=> $data['notifymethod'],
-							'user_notify_pm'		=> $data['notifypm'],
 							'user_options'			=> $user->data['user_options'],
 
 							'user_dateformat'		=> $data['dateformat'],
@@ -97,6 +106,17 @@ class ucp_prefs
 							'user_timezone'			=> $data['tz'],
 							'user_style'			=> $data['style'],
 						);
+
+						/**
+						* Update UCP edit global settings data on form submit
+						*
+						* @event core.ucp_prefs_personal_update_data
+						* @var	array	data		Submitted display options data
+						* @var	array	sql_ary		Display options data we udpate
+						* @since 3.1-A1
+						*/
+						$vars = array('data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_personal_update_data', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
@@ -172,8 +192,6 @@ class ucp_prefs
 					'S_MASS_EMAIL'		=> $data['massemail'],
 					'S_ALLOW_PM'		=> $data['allowpm'],
 					'S_HIDE_ONLINE'		=> $data['hideonline'],
-					'S_NOTIFY_PM'		=> $data['notifypm'],
-					'S_POPUP_PM'		=> $data['popuppm'],
 
 					'DATE_FORMAT'			=> $data['dateformat'],
 					'A_DATE_FORMAT'			=> addslashes($data['dateformat']),
@@ -216,6 +234,20 @@ class ucp_prefs
 					'wordcensor'	=> request_var('wordcensor', (bool) $user->optionget('viewcensors')),
 				);
 
+				/**
+				* Add UCP edit display options data before they are assigned to the template or submitted
+				*
+				* To assign data to the template, use $template->assign_vars()
+				*
+				* @event core.ucp_prefs_view_data
+				* @var	bool	submit		Do we display the form only
+				*							or did the user press submit
+				* @var	array	data		Array with current ucp options data
+				* @since 3.1-A1
+				*/
+				$vars = array('submit', 'data');
+				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_view_data', compact($vars)));
+
 				if ($submit)
 				{
 					$error = validate_data($data, array(
@@ -254,6 +286,17 @@ class ucp_prefs
 							'user_post_show_days'	=> $data['post_st'],
 						);
 
+						/**
+						* Update UCP edit display options data on form submit
+						*
+						* @event core.ucp_prefs_view_update_data
+						* @var	array	data		Submitted display options data
+						* @var	array	sql_ary		Display options data we udpate
+						* @since 3.1-A1
+						*/
+						$vars = array('data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_view_update_data', compact($vars)));
+
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . $user->data['user_id'];
@@ -274,7 +317,7 @@ class ucp_prefs
 				$limit_topic_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 
 				$sort_by_topic_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
-				$sort_by_topic_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
+				$sort_by_topic_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_posts_approved', 's' => 't.topic_title', 'v' => 't.topic_views');
 
 				// Post ordering options
 				$limit_post_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
@@ -342,6 +385,20 @@ class ucp_prefs
 				);
 				add_form_key('ucp_prefs_post');
 
+				/**
+				* Add UCP edit posting defaults data before they are assigned to the template or submitted
+				*
+				* To assign data to the template, use $template->assign_vars()
+				*
+				* @event core.ucp_prefs_post_data
+				* @var	bool	submit		Do we display the form only
+				*							or did the user press submit
+				* @var	array	data		Array with current ucp options data
+				* @since 3.1-A1
+				*/
+				$vars = array('submit', 'data');
+				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_post_data', compact($vars)));
+
 				if ($submit)
 				{
 					if (check_form_key('ucp_prefs_post'))
@@ -354,6 +411,17 @@ class ucp_prefs
 							'user_options'	=> $user->data['user_options'],
 							'user_notify'	=> $data['notify'],
 						);
+
+						/**
+						* Update UCP edit posting defaults data on form submit
+						*
+						* @event core.ucp_prefs_post_update_data
+						* @var	array	data		Submitted display options data
+						* @var	array	sql_ary		Display options data we udpate
+						* @since 3.1-A1
+						*/
+						$vars = array('data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_post_update_data', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '

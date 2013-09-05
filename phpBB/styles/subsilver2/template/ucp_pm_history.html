@@ -25,7 +25,7 @@
 				</tr>
 				</table>
 			</td>
-			<td width="100%"<!-- IF history_row.S_CURRENT_MSG --> style="background-color:lightblue"<!-- ENDIF -->>
+			<td width="100%"<!-- IF history_row.S_CURRENT_MSG --> class="current"<!-- ENDIF -->>
 				<div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};"><b>{L_PM_SUBJECT}{L_COLON}</b>&nbsp;{history_row.SUBJECT}</div><div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><b>{L_FOLDER}{L_COLON}</b>&nbsp;{history_row.FOLDER}</div>
 			</td>
 		</tr>
@@ -37,7 +37,7 @@
 					<td valign="top">
 						<table width="100%" cellspacing="0" cellpadding="2">
 						<tr>
-							<td><div class="postbody">{history_row.MESSAGE}</div><div id="message_{history_row.MSG_ID}" style="display: none;">{history_row.DECODED_MESSAGE}</div></td>
+							<td><div class="postbody"><!-- IF history_row.MESSAGE -->{history_row.MESSAGE}<!-- ELSE --><span class="error">{L_MESSAGE_REMOVED_FROM_OUTBOX}</span><!-- ENDIF --></div><div id="message_{history_row.MSG_ID}" style="display: none;">{history_row.DECODED_MESSAGE}</div></td>
 						</tr>
 						</table>
 					</td>

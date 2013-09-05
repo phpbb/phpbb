@@ -181,7 +181,7 @@ p.datetime {
 p.searchbar {
 	padding: 2px 0;
 	white-space: nowrap;
-} 
+}
 
 p.searchbarreg {
 	margin: 0;
@@ -292,7 +292,11 @@ p.topicdetails {
 	text-decoration: none;
 }
 
-.error {
+.online {
+	color: green;
+}
+
+.offline, .error, .inactive {
 	color: red;
 }
 
@@ -358,6 +362,10 @@ td.profile {
 
 .spacer {
 	background-color: #D1D7DC;
+}
+
+.current {
+	background-color: lightblue;
 }
 
 hr {
@@ -464,7 +472,7 @@ textarea {
 	background-color: #FAFAFA;
 	color: #333333;
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1.3em; 
+	font-size: 1.3em;
 	line-height: 1.4em;
 	font-weight: normal;
 	border: 1px solid #A9B8C2;
@@ -985,6 +993,11 @@ a.imageset {
 	padding-left: 19px;
 	padding-top: 18px;
 }
+.imageset.icon_topic_deleted {
+	background-image: url("./images/icon_topic_deleted.png");
+	padding-left: 14px;
+	padding-top: 14px;
+}
 
 
 /* English images for fallback */
@@ -1140,4 +1153,53 @@ a.imageset {
 .rtl .imageset.icon_topic_latest, .rtl .imageset.icon_topic_newest {
 	padding-right: 18px;
 	padding-left: 0;
+}
+
+#notification_list {
+	display: none;
+	position: absolute;
+	width: 310px;
+	z-index: 1;
+	box-shadow: 3px 3px 5px darkgray;
+}
+
+#notification_list .notification_scroll {
+	max-height: 350px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+#notification_list .notification_title {
+	padding: 5px;
+}
+
+#notification_list .header {
+	width: 298px;
+	padding: 5px;
+	font-weight: bold;
+	border: 1px solid #A9B8C2;
+	border-bottom: 0;
+}
+
+#notification_list > .header > .header_settings {
+	float: right;
+	font-weight: normal;
+	text-transform: none;
+}
+
+#notification_list .footer {
+	width: 300px;
+	text-align: center;
+	font-size: 1.2em;
+	border: 1px solid #A9B8C2;
+	border-top: 0;
+}
+
+.notification_list img {
+	max-width: 50px;
+	max-height: 50px;
+}
+
+#notification_list .footer > a {
+	display: block;
 }
