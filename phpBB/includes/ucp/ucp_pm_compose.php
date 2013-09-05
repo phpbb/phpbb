@@ -1229,7 +1229,8 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 				AND (user_type = ' . USER_INACTIVE . '
 					AND user_inactive_reason = ' . INACTIVE_MANUAL . ')';
 
-		if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+		$can_ignore_allow_pm = ($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'));
+		if (!$can_ignore_allow_pm)
 		{
 			$sql .= ' OR user_allow_pm = 0';
 		}
@@ -1239,7 +1240,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		$removed_no_pm = $removed_no_permission = false;
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_') && !$row['user_allow_pm'])
+			if (!$can_ignore_allow_pm && !$row['user_allow_pm'])
 			{
 				$removed_no_pm = true;
 			}
