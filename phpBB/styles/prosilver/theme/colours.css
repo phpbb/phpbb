@@ -214,10 +214,23 @@ div.rules {
 	color: #BC2A4D;
 }
 
-p.rules {
+p.post-notice {
 	background-color: #ECD5D8;
 	background-image: none;
 }
+
+p.post-notice.deleted:before { 
+	background-image: url("./images/icon_topic_deleted.png");
+}
+
+p.post-notice.unapproved:before { 
+	background-image: url("./images/icon_topic_unapproved.gif");
+}
+
+p.post-notice.reported:before, p.post-notice.error:before { 
+	background-image: url("./images/icon_topic_reported.gif");
+}
+
 
 /*
 --------------------------------------------------------------

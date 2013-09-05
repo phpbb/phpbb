@@ -14,7 +14,7 @@
 			<h3>{L_REPORT_REASON}{L_COLON} {REPORT_REASON_TITLE}</h3>
 			<p class="author">{L_REPORTED} {L_POST_BY_AUTHOR} {REPORTER_FULL} &laquo; {REPORT_DATE}</p>
 		<!-- IF not S_POST_REPORTED -->
-			<p class="rules">{L_REPORT_CLOSED}</p>
+			<p class="post-notice reported">{L_REPORT_CLOSED}</p>
 		<!-- ENDIF -->
 			<div class="content">
 			<!-- IF REPORT_TEXT -->
@@ -71,7 +71,7 @@
 		<!-- IF S_POST_UNAPPROVED -->
 			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
 
-			<p class="rules">
+			<p class="post-notice unapproved">
 				<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" /> &nbsp;
 				<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
 				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="unapproved_posts" /><!-- ENDIF -->
@@ -82,7 +82,7 @@
 		<!-- ELSEIF S_POST_DELETED -->
 			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
 
-			<p class="rules">
+			<p class="post-notice deleted">
 				<input class="button2" type="submit" value="{L_DELETE}" name="action[disapprove]" /> &nbsp;
 				<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
 				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="unapproved_posts" /><!-- ENDIF -->
@@ -93,7 +93,7 @@
 		<!-- ENDIF -->
 
 		<!-- IF S_MESSAGE_REPORTED -->
-			<p class="rules">
+			<p class="post-notice reported">
 				{REPORTED_IMG} <a href="{U_MCP_REPORT}"><strong>{L_MESSAGE_REPORTED}</strong></a>
 			</p>
 		<!-- ENDIF -->
