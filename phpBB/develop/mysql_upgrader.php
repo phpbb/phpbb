@@ -56,7 +56,7 @@ echo "USE $dbname;$newline$newline";
 
 @set_time_limit(0);
 
-require($phpbb_root_path . 'phpbb/db/schema_data.' . $phpEx);
+require($phpbb_root_path . 'includes/db/schema_data.' . $phpEx);
 require($phpbb_root_path . 'phpbb/db/tools.' . $phpEx);
 
 $dbms_type_map = phpbb_db_tools::get_dbms_type_map();
