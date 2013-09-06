@@ -5750,7 +5750,7 @@ function phpbb_get_web_root_path(Request $symfony_request, $phpbb_root_path = ''
 	$corrections = substr_count($path_info, '/');
 
 	// We need to account for whether or not app.php is in the URL
-	if (strpos($symfony_request->server->get('REQUEST_URI', ''), 'app.' . $phpEx) !== false)
+	if (strpos($symfony_request->server->get('REQUEST_URI', ''), 'app.' . $phpEx . '/') === false)
 	{
 		$corrections -= 1;
 	}
