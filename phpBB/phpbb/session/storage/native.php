@@ -322,6 +322,12 @@ class phpbb_session_storage_native implements
 		return $this->map_query($sql, $session_function, $batch_size);
 	}
 
+	function map_all(Closure $function, $batch_size=25)
+	{
+		$sessions_table = SESSIONS_TABLE;
+		return $this->map_query("SELECT * FROM $sessions_table", $function, $batch_size);
+	}
+
 	function cleanup_long_session_keys($max_autologin_time)
 	{
 		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '

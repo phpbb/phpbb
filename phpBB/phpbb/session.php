@@ -57,6 +57,7 @@ class phpbb_session
 		$this->db_cleanup = is_null( $db_cleanup) ? $native_storage : $db_cleanup;
 
 		$this->db_session = new phpbb_session_storage_redis($native_storage, time());
+		$this->db_session->set_db($db);
 	}
 
 	/**
@@ -1495,5 +1496,32 @@ class phpbb_session
 	function map_friends_online($user_id, Closure $function)
 	{
 		return $this->db_session->map_friends_online($user_id, $function);
+	}
+
+	/**
+	 * Synchronize
+	 * This function goes through ALL the sessions in the session sql table
+	 * and replaces it into whatever db_session driver you are using.
+	 *
+	 * Then it goes through and does the reverse.
+	 *
+	 * Only syncs if the db_session driver is not native.
+	 *
+	 * Written for testing purposes only.
+	 */
+	function db_synchronize()
+	{
+		if (!is_a($this->db_session, 'phpbb_session_storage_native'))
+		{
+			global $db;
+			$native_storage = new phpbb_session_storage_native($db, time());
+			$db_session = $this->db_session;
+			$native_storage->map_all(function ($session) use ($db_session) {
+				$db_session->create($session);
+			});
+			$db_session->map_all(function ($session) use ($native_storage) {
+				$native_storage->update($session['session_id'], $session);
+			});
+		}
 	}
 }
