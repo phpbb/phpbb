@@ -5733,7 +5733,7 @@ function phpbb_create_symfony_request(phpbb_request $request)
 */
 function phpbb_get_web_root_path(Request $symfony_request, $phpbb_root_path = '')
 {
-	global $config, $phpEx, $request;
+	global $phpEx;
 	static $path;
 	if (null !== $path)
 	{
