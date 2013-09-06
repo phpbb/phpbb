@@ -661,7 +661,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$hidden_fields = array(
 			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
-				return array('name' => $node->getAttribute('name'), 'value' => $node->getAttribute('value'));
+				return array('name' => $node->attr('name'), 'value' => $node->attr('value'));
 			}),
 		);
 
