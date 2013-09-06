@@ -85,7 +85,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function request($method, $path, $form_data = array(), $assert_response_html = true)
 	{
-		$crawler = self::$client->request($method, self::$root_url . $path, $form_data);
+		$url = self::fix_url(self::$root_url . $path);
+		$crawler = self::$client->request($method, $url, $form_data);
 
 		if ($assert_response_html)
 		{
@@ -93,6 +94,105 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 
 		return $crawler;
+	}
+
+	/**
+	* Removes unnecessary ../ and ./ from URL
+	*
+	* @param string $url URL to fix
+	* @return string
+	*/
+	static public function fix_url($url)
+	{
+		$parts = parse_url($url);
+		if (!isset($parts['path']))
+		{
+			return $url;
+		}
+
+		$path = explode('/', $parts['path']);
+		$new_path = array();
+		foreach ($path as $dir)
+		{
+			switch ($dir)
+			{
+				case '.':
+					break;
+				case '..':
+					array_pop($new_path);
+					break;
+				default:
+					$new_path[] = $dir;
+			}
+		}
+		$new_path = implode('/', $new_path);
+
+		if ($new_path === $path)
+		{
+			return $url;
+		}
+		$parts['path'] = $new_path;
+
+		return self::join_url($parts);
+	}
+
+	/**
+	* Convert URL components into string
+	*
+	* @param array $components URL components
+	* @return string URL
+	*/
+	static public function join_url($components)
+	{
+		$path = '';
+		if (isset($components['scheme']))
+		{
+			$path = $components['scheme'] === '' ? '//' : $components['scheme'] . '://';
+		}
+
+		if (isset($components['user']) || isset($components['pass']))
+		{
+			if ($path === '' && !isset($components['port']))
+			{
+				$path = '//';
+			}
+			$path .= $components['user'];
+			if (isset($components['pass']))
+			{
+				$path .= ':' . $components['pass'];
+			}
+			$path .= '@';
+		}
+
+		if (isset($components['host']))
+		{
+			if ($path === '' && !isset($components['port']))
+			{
+				$path = '//';
+			}
+			$path .= $components['host'];
+			if (isset($components['port']))
+			{
+				$path .= ':' . $components['port'];
+			}
+		}
+
+		if (isset($components['path']))
+		{
+			$path .= $components['path'];
+		}
+
+		if (isset($components['query']))
+		{
+			$path .= '?' . $components['query'];
+		}
+
+		if (isset($components['fragment']))
+		{
+			$path .= '#' . $components['fragment'];
+		}
+
+		return $path;
 	}
 
 	/**
