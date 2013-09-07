@@ -1539,7 +1539,7 @@ class phpbb_session
 		
 		$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
 				FROM ' . SESSIONS_TABLE . '
-				WHERE session_time >= ' . (time() -  (int) $session_length) . '
+				WHERE session_time >= ' . (time() - (int) $session_length) . '
 					AND ' . $db->sql_in_set('session_user_id', $user_list) . '
 				GROUP BY session_user_id';
 		$result = $db->sql_query($sql);
