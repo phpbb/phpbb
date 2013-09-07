@@ -2,12 +2,12 @@
 	"minimum-stability": "beta",
 	"require": {
 		"lusitanian/oauth": "0.2.*",
-		"symfony/config": "2.1.*",
-		"symfony/dependency-injection": "2.1.*",
-		"symfony/event-dispatcher": "2.1.*",
-		"symfony/http-kernel": "2.1.*",
-		"symfony/routing": "2.1.*",
-		"symfony/yaml": "2.1.*",
+		"symfony/config": "2.3.*",
+		"symfony/dependency-injection": "2.3.*",
+		"symfony/event-dispatcher": "2.3.*",
+		"symfony/http-kernel": "2.3.*",
+		"symfony/routing": "2.3.*",
+		"symfony/yaml": "2.3.*",
 		"twig/twig": "1.13.*"
 	},
 	"require-dev": {

@@ -455,7 +455,7 @@ class p_master
 	*/
 	function load_active($mode = false, $module_url = false, $execute_module = true)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user, $phpbb_style;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user, $template;
 
 		$module_path = $this->include_path . $this->p_class;
 		$icat = request_var('icat', '');
@@ -508,7 +508,7 @@ class p_master
 
 				if (is_dir($module_style_dir))
 				{
-					$phpbb_style->set_custom_style('admin', array($module_style_dir, $phpbb_admin_path . 'style'), array(), '');
+					$template->set_custom_style('adm', array($module_style_dir, $phpbb_admin_path . 'style'));
 				}
 			}
 
@@ -537,7 +537,7 @@ class p_master
 
 				if (is_dir($phpbb_root_path . $module_style_dir))
 				{
-					$phpbb_style->set_style(array($module_style_dir, 'styles'));
+					$template->set_style(array($module_style_dir, 'styles'));
 				}
 			}
 

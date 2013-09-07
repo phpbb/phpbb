@@ -170,7 +170,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_search_load'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_anon_lastread', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_birthdays', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_memberlist', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_profile', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_pm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewprofile', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewtopic', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread', '1');

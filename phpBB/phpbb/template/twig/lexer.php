@@ -126,10 +126,14 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 	{
 		$callback = function($matches)
 		{
-			// Remove any quotes that may have been used in different implementations
-			// E.g. DEFINE $TEST = 'blah' vs INCLUDE foo
-			// Replace {} with start/end to parse variables (' ~ TEST ~ '.html)
-			$matches[2] = str_replace(array('"', "'", '{', '}'), array('', '', "' ~ ", " ~ '"), $matches[2]);
+			// Remove matching quotes at the beginning/end if a statement;
+			// E.g. 'asdf'"' -> asdf'"
+			// E.g. "asdf'"" -> asdf'"
+			// E.g. 'asdf'" -> 'asdf'"
+			$matches[2] = preg_replace('#^([\'"])?(.*?)\1$#', '$2', $matches[2]);
+
+			// Replace template variables with start/end to parse variables (' ~ TEST ~ '.html)
+			$matches[2] = preg_replace('#{([a-zA-Z0-9_\.$]+)}#', "'~ \$1 ~'", $matches[2]);
 
 			// Surround the matches in single quotes ('' ~ TEST ~ '.html')
 			return "<!-- {$matches[1]} '{$matches[2]}' -->";
@@ -187,20 +191,18 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			// Recursive...fix any child nodes
 			$body = $parent_class->fix_begin_tokens($body, $parent_nodes);
 
-			// Rename loopname vars (to prevent collisions, loop children are named (loop name)_loop_element)
-			$body = str_replace($name . '.', $name . '_loop_element.', $body);
-
 			// Need the parent variable name
 			array_pop($parent_nodes);
-			$parent = (!empty($parent_nodes)) ? end($parent_nodes) . '_loop_element.' : '';
+			$parent = (!empty($parent_nodes)) ? end($parent_nodes) . '.' : '';
 
 			if ($subset !== '')
 			{
 				$subset = '|subset(' . $subset . ')';
 			}
 
-			// Turn into a Twig for loop, using (loop name)_loop_element for each child
-			return "{% for {$name}_loop_element in {$parent}{$name}{$subset} %}{$body}{% endfor %}";
+			$parent = ($parent) ?: 'loops.';
+			// Turn into a Twig for loop
+			return "{% for {$name} in {$parent}{$name}{$subset} %}{$body}{% endfor %}";
 		};
 
 		// Replace <!-- BEGINELSE --> correctly, only needs to be done once
@@ -217,21 +219,28 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 	*/
 	protected function fix_if_tokens($code)
 	{
-		$callback = function($matches)
-		{
-			// Replace $TEST with definition.TEST
-			$matches[1] = preg_replace('#\s\$([a-zA-Z_0-9]+)#', ' definition.$1', $matches[1]);
-
-			// Replace .test with test|length
-			$matches[1] = preg_replace('#\s\.([a-zA-Z_0-9\.]+)#', ' $1|length', $matches[1]);
-
-			return '<!-- IF' . $matches[1] . '-->';
-		};
+		// Replace ELSE IF with ELSEIF
+		$code = preg_replace('#<!-- ELSE IF (.+?) -->#', '<!-- ELSEIF $1 -->', $code);
 
 		// Replace our "div by" with Twig's divisibleby (Twig does not like test names with spaces)
 		$code = preg_replace('# div by ([0-9]+)#', ' divisibleby($1)', $code);
 
-		return preg_replace_callback('#<!-- IF((.*)[\s][\$|\.|!]([^\s]+)(.*))-->#', $callback, $code);
+		$callback = function($matches)
+		{
+			$inner = $matches[2];
+			// Replace $TEST with definition.TEST
+			$inner = preg_replace('#\s\$([a-zA-Z_0-9]+)#', ' definition.$1', $inner);
+
+			// Replace .foo with loops.foo|length
+			$inner = preg_replace('#\s\.([a-zA-Z_0-9]+)([^a-zA-Z_0-9\.])#', ' loops.$1|length$2', $inner);
+
+			// Replace .foo.bar with foo.bar|length
+			$inner = preg_replace('#\s\.([a-zA-Z_0-9\.]+)([^a-zA-Z_0-9\.])#', ' $1|length$2', $inner);
+
+			return "<!-- {$matches[1]}IF{$inner}-->";
+		};
+
+		return preg_replace_callback('#<!-- (ELSE)?IF((.*)[\s][\$|\.|!]([^\s]+)(.*))-->#', $callback, $code);
 	}
 
 	/**

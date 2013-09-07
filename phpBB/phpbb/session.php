@@ -1022,7 +1022,8 @@ class phpbb_session
 			{
 				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
 			}
-			phpbb_captcha_factory::garbage_collect($config['captcha_plugin']);
+			$captcha_factory = new phpbb_captcha_factory();
+			$captcha_factory->garbage_collect($config['captcha_plugin']);
 
 			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
 				WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);

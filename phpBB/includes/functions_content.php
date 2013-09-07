@@ -413,7 +413,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	static $bbcode;
 	global $phpbb_dispatcher;
 
-	if (!$text)
+	if ($text === '')
 	{
 		return '';
 	}
@@ -505,7 +505,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	$uid = $bitfield = '';
 	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
 
-	if (!$text)
+	if ($text === '')
 	{
 		return;
 	}

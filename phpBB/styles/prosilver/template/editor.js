@@ -301,7 +301,7 @@ function colorPalette(dir, width, height) {
 	var r = 0, 
 		g = 0, 
 		b = 0,
-		numberList = new Array(6);
+		numberList = new Array(6),
 		color = '',
 		html = '';
 

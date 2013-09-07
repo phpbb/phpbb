@@ -1095,25 +1095,20 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 		$poster_id		= $row['user_id'];
 		$post_subject	= $row['post_subject'];
-		$message		= censor_text($row['post_text']);
 
 		$decoded_message = false;
 
 		if ($show_quote_button && $auth->acl_get('f_reply', $forum_id))
 		{
-			$decoded_message = $message;
+			$decoded_message = censor_text($row['post_text']);
 			decode_message($decoded_message, $row['bbcode_uid']);
 
 			$decoded_message = bbcode_nl2br($decoded_message);
 		}
 
-		if ($row['bbcode_bitfield'])
-		{
-			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
-		}
-
-		$message = bbcode_nl2br($message);
-		$message = smiley_text($message, !$row['enable_smilies']);
+		$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0);
+		$parse_flags |= ($row['enable_smilies'] ? OPTION_FLAG_SMILIES : 0);
+		$message = generate_text_for_display($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, true);
 
 		if (!empty($attachments[$row['post_id']]))
 		{
@@ -1995,6 +1990,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 	}
 
+	$first_post_has_topic_info = ($post_mode == 'edit_first_post' &&
+			(($post_visibility == ITEM_DELETED && $data['topic_posts_softdeleted'] == 1) ||
+			($post_visibility == ITEM_UNAPPROVED && $data['topic_posts_unapproved'] == 1) ||
+			($post_visibility == ITEM_APPROVED && $data['topic_posts_approved'] == 1)));
 	// Fix the post's and topic's visibility and first/last post information, when the post is edited
 	if (($post_mode != 'post' && $post_mode != 'reply') && $data['post_visibility'] != $post_visibility)
 	{
@@ -2007,7 +2006,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 		$phpbb_content_visibility->set_post_visibility($post_visibility, $data['post_id'], $data['topic_id'], $data['forum_id'], $user->data['user_id'], time(), '', $is_starter, $is_latest);
 	}
-	else if ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies']))
+	else if ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || $first_post_has_topic_info)
 	{
 		if ($post_visibility == ITEM_APPROVED || $data['topic_visibility'] == $post_visibility)
 		{
@@ -2166,6 +2165,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		update_forum_tracking_info($data['forum_id'], $forum_last_post_time, $f_mark_time, false);
 	}
+
+	// If a username was supplied or the poster is a guest, we will use the supplied username.
+	// Doing it this way we can use "...post by guest-username..." in notifications when
+	// "guest-username" is supplied or ommit the username if it is not.
+	$username = ($username !== '' || !$user->data['is_registered']) ? $username : $user->data['username'];
 
 	// Send Notifications
 	$notification_data = array_merge($data, array(

@@ -1,12 +1,30 @@
+<IfModule mod_rewrite.c>
+RewriteEngine on
+
 #
 # Uncomment the statement below if you want to make use of
 # HTTP authentication and it does not already work.
 # This could be required if you are for example using PHP via Apache CGI.
 #
-#<IfModule mod_rewrite.c>
-#RewriteEngine on
 #RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
-#</IfModule>
+
+#
+# The following 3 lines will rewrite URLs passed through the front controller
+# to not require app.php in the actual URL. In other words, a controller is
+# by default accessed at /app.php/my/controller, but can also be accessed at
+# /my/controller
+#
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ app.php [QSA,L]
+
+#
+# If symbolic links are not already being followed,
+# uncomment the line below.
+# http://anothersysadmin.wordpress.com/2008/06/10/mod_rewrite-forbidden-403-with-apache-228/
+#
+#Options +FollowSymLinks
+</IfModule>
 
 <Files "config.php">
 Order Allow,Deny
