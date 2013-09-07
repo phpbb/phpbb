@@ -1826,9 +1826,8 @@ class phpbb_session
 	{
 		global $db;
 
-		$sql_ary = array(
-			'SELECT'	=> '
-				u.user_id,
+		$sql_ary = array('SELECT' =>
+				'u.user_id,
 				u.username,
 				u.username_clean,
 				u.user_type,
@@ -1840,7 +1839,7 @@ class phpbb_session
 				s.session_browser,
 				s.session_viewonline,
 				s.session_forum_id',
-			'FROM'		=> array(
+			'FROM' => array(
 				USERS_TABLE		=> 'u',
 				SESSIONS_TABLE	=> 's',
 			),
