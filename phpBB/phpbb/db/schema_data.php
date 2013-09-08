@@ -1105,6 +1105,7 @@ $schema_data['phpbb_users'] = array(
 		'user_inactive_reason'		=> array('TINT:2', 0),
 		'user_inactive_time'		=> array('TIMESTAMP', 0),
 		'user_posts'				=> array('UINT', 0),
+		'user_topics'				=> array('UINT', 0),
 		'user_lang'					=> array('VCHAR:30', ''),
 		'user_timezone'				=> array('VCHAR:100', 'UTC'),
 		'user_dateformat'			=> array('VCHAR_UNI:30', 'd M Y H:i'),

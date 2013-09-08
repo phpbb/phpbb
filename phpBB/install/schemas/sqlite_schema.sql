@@ -943,6 +943,7 @@ CREATE TABLE phpbb_users (
 	user_inactive_reason tinyint(2) NOT NULL DEFAULT '0',
 	user_inactive_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_posts INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_topics INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_lang varchar(30) NOT NULL DEFAULT '',
 	user_timezone varchar(100) NOT NULL DEFAULT 'UTC',
 	user_dateformat varchar(30) NOT NULL DEFAULT 'd M Y H:i',
