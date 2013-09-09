@@ -47,16 +47,39 @@ class phpbb_filesystem
 	}
 
 	/**
+	* Update a path to the correct relative root path
+	*
+	* This replaces $phpbb_root_path . some_url with
+	*	get_web_root_path() . some_url OR if $phpbb_root_path
+	*	is not at the beginning of $path, just prepends the
+	*	web root path
+	*
+	* @param Request $symfony_request Symfony Request object
+	* @return string
+	*/
+	public function update_web_root_path($path, Request $symfony_request = null)
+	{
+		$web_root_path = $this->get_web_root_path($symfony_request);
+
+		if (strpos($path, $this->phpbb_root_path) === 0)
+		{
+			$path = substr($path, strlen($this->phpbb_root_path));
+		}
+
+		return $web_root_path . $path;
+	}
+
+	/**
 	* Get a relative root path from the current URL
 	*
 	* @param Request $symfony_request Symfony Request object
 	* @return string
 	*/
-	function get_web_root_path(Request $symfony_request = null)
+	public function get_web_root_path(Request $symfony_request = null)
 	{
 		if ($symfony_request === null)
 		{
-			return '';
+			return $this->phpbb_root_path;
 		}
 
 		static $path;
@@ -68,8 +91,7 @@ class phpbb_filesystem
 		$path_info = $symfony_request->getPathInfo();
 		if ($path_info === '/')
 		{
-			$path = $this->phpbb_root_path;
-			return $path;
+			return $path = $this->phpbb_root_path;
 		}
 
 		$path_info = $this->clean_path($path_info);
@@ -84,9 +106,7 @@ class phpbb_filesystem
 			$corrections -= 1;
 		}
 
-		$path = $this->phpbb_root_path . str_repeat('../', $corrections);
-
-		return $path;
+		return $path = $this->phpbb_root_path . str_repeat('../', $corrections);
 	}
 
 	/**

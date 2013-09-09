@@ -2419,12 +2419,9 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
+	// Update the root path with the correct relative web path
 	$phpbb_filesystem = $phpbb_container->get('filesystem');
-	$corrected_path = $phpbb_filesystem->get_web_root_path($symfony_request);
-	if ($corrected_path)
-	{
-		$url = substr($corrected_path . $url, strlen($phpbb_root_path));
-	}
+	$url = $phpbb_filesystem->update_web_root_path($url, $symfony_request);
 
 	$append_sid_overwrite = false;
 
