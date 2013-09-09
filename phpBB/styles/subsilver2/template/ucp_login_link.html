@@ -24,7 +24,7 @@
 					</tr>
 
 					<tr>
-						<td>{S_HIDDEN_FIELDS}<input type="submit" name="register" tabindex="6" value="{L_REGISTER}" class="button1" /></td>
+						<td>{S_HIDDEN_FIELDS}<input type="submit" name="register" tabindex="1" value="{L_REGISTER}" class="button1" /></td>
 					</tr>
 				</table>
 			</form>
@@ -47,23 +47,23 @@
 
 					<tr>
 						<td><label for="{USERNAME_CREDENTIAL}">{L_USERNAME}{L_COLON}</label></td>
-						<td><input type="text" tabindex="1" name="{USERNAME_CREDENTIAL}" id="{USERNAME_CREDENTIAL}" size="25" value="{LOGIN_USERNAME}" class="inputbox autowidth" /></td>
+						<td><input type="text" tabindex="2" name="{USERNAME_CREDENTIAL}" id="{USERNAME_CREDENTIAL}" size="25" value="{LOGIN_USERNAME}" class="inputbox autowidth" /></td>
 					</tr>
 
 					<tr>
 						<td><label for="{PASSWORD_CREDENTIAL}">{L_PASSWORD}{L_COLON}</label></td>
-						<td><input type="password" tabindex="2" id="{PASSWORD_CREDENTIAL}" name="{PASSWORD_CREDENTIAL}" size="25" class="inputbox autowidth" /></td>
+						<td><input type="password" tabindex="3" id="{PASSWORD_CREDENTIAL}" name="{PASSWORD_CREDENTIAL}" size="25" class="inputbox autowidth" /></td>
 					</tr>
 
 					<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
-						<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
+						<!-- DEFINE $CAPTCHA_TAB_INDEX = 4 -->
 						<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
 					<!-- ENDIF -->
 
 					{S_LOGIN_REDIRECT}
 					<tr>
 						<td>&nbsp;</td>
-						<td>{S_HIDDEN_FIELDS}<input type="submit" name="login" tabindex="6" value="{L_LOGIN}" class="button1" /></td>
+						<td>{S_HIDDEN_FIELDS}<input type="submit" name="login" tabindex="5" value="{L_LOGIN}" class="button1" /></td>
 					</tr>
 				</table>
 			</form>
