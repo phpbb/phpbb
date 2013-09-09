@@ -161,6 +161,9 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			$subset = trim(substr($matches[2], 1, -1)); // Remove parenthesis
 			$body = $matches[3];
 
+			// Replace <!-- BEGINELSE -->
+			$body = str_replace('<!-- BEGINELSE -->', '{% else %}', $body);
+
 			// Is the designer wanting to call another loop in a loop?
 			// <!-- BEGIN loop -->
 			// <!-- BEGIN !loop2 -->
@@ -204,9 +207,6 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			// Turn into a Twig for loop
 			return "{% for {$name} in {$parent}{$name}{$subset} %}{$body}{% endfor %}";
 		};
-
-		// Replace <!-- BEGINELSE --> correctly, only needs to be done once
-		$code = str_replace('<!-- BEGINELSE -->', '{% else %}', $code);
 
 		return preg_replace_callback('#<!-- BEGIN ([!a-zA-Z0-9_]+)(\([0-9,\-]+\))? -->(.+?)<!-- END \1 -->#s', $callback, $code);
 	}
