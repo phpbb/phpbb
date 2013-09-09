@@ -47,7 +47,7 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 		$this->session->session_gc();
 		$this->check_sessions_equals(
 			array(),
-			'After setting session time to 0, should remove all.'
+			'After setting session session_length to 0, should remove all.'
 		);
 	}
 }

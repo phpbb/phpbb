@@ -15,6 +15,7 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 	protected $session_factory;
 	protected $session_facade;
 	protected $db;
+	protected $session;
 
 	function setUp()
 	{
@@ -23,17 +24,19 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 		$this->db = $this->new_dbal();
 		$this->session_facade =
 			new phpbb_session_testable_facade($this->db, $this->session_factory);
-		$session = $this->session_factory->get_session($this->db);
-		$session->delete_all_sessions();
-		$session->db_synchronize();
+		$this->session = $this->session_factory->get_session($this->db);
+		$this->session->delete_all_sessions();
+		$this->session->db_synchronize();
 	}
 
 	protected function check_sessions_equals($expected_sessions, $message)
 	{
-		$sql = 'SELECT session_id, session_user_id
-				FROM phpbb_sessions
-				ORDER BY session_user_id';
-
-		$this->assertSqlResultEquals($expected_sessions, $sql, $message);
+		$allowed_keys = array('session_id', 'sessions_user_id');
+		$sessions = $this->session->db_session->map_all(
+			function ($session) use ($allowed_keys) {
+				return array_intersect_key($session, array_flip($allowed_keys));
+			}
+		);
+		$this->assert_array_content_equals($expected_sessions, $sessions, $message);
 	}
 }

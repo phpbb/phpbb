@@ -93,10 +93,17 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 		$this->remove_from($this->user_key($user), $value);
 	}
 
+	protected function update_expires($session_id, $session_user, $expires)
+	{
+		// Works because Redis zadd command updates score if already exists
+		$this->add_to_all_users($expires, $session_id);
+		$this->add_to_user($session_user, $expires, $session_id);
+	}
+
 	function create($session_data)
 	{
 		$id = $session_data['session_id'];
-		$expire = $session_data['session_expire'];
+		$expire = $session_data['session_time'];
 		$user = $session_data['session_user_id'];
 		$this->redis->set($id, $session_data);
 		$this->add_to_all_users($expire, $id);
@@ -132,12 +139,28 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 
 	function update($session_id, $session_data_to_change)
 	{
+		$update_session_time = false;
+		$update_session_time_user = false;
 		$this->atomic_operation($session_id,
-			function($session_data) use ($session_data_to_change)
+			function($session_data) use ($session_data_to_change, &$update_session_time, &$update_session_time_user)
 			{
-				return array_merge($session_data, $session_data_to_change);
+				// If session time is updated, other procedures may need to be run as well
+				if (array_key_exists('session_time', $session_data_to_change) &&
+					is_int($session_data_to_change['session_time']))
+				{
+					$update_session_time = $session_data_to_change['session_time'];
+					$update_session_time_user = $session_data['session_user_id'];
+				}
+				return $session_data_to_change + $session_data;
 			}
 		);
+		// Procedure cannot be combined inside the atomic_operation
+		// because storage engines often cannot execute commands while they are
+		// performing atomic operations.
+		if ($update_session_time !== false && $update_session_time_user !== false)
+		{
+			$this->update_expires($session_id, $update_session_time_user, $update_session_time);
+		}
 	}
 
 	function get($session_id)
@@ -234,7 +257,7 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 			'-inf',
 			array('limit' => array(0, 1))
 		);
-		return $this->get_session_data($session[0]);
+		return $session[0];
 	}
 
 	function get_newest_session($user_id)
@@ -274,7 +297,7 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 
 	function num_active_sessions($minutes_considered_active)
 	{
-		return $this->redis->zCount(self::all_sessions, time()-$minutes_considered_active, '+inf');
+		return $this->redis->zCount(self::all_sessions, $this->time_now - $minutes_considered_active, '+inf');
 	}
 
 	function get_users_online_totals($item_id = 0, $item = 'forum')
@@ -282,7 +305,7 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 		global $config;
 		$time = (time() - (intval($config['load_online_time']) * 60));
 		$time = ($time - ((int) ($time % 30)));
-		$sessions = $this->get_all($time);
+		$sessions = $this->get_all_non_guests($time);
 
 		$online_users = array(
 			'online_users'			=> array(),
@@ -331,7 +354,7 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 			function ($session) use ($item_id, $item)
 			{
 				if ($session['session_viewonline'] &&
-					($item_id === 0 || $session["session_${item}_id"] == $item_id))
+					(!$item_id || $session["session_${item}_id"] == $item_id))
 				{
 					return $session['session_ip'];
 				}
@@ -339,6 +362,9 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 			},
 			$this->get_all_guests($rounded_time_to_search)
 		);
+
+		$guest_sessions = array_filter($guest_sessions, 'is_string');
+
 		// Return a count of the guest sessions with unique ip addresses
 		return count(array_unique($guest_sessions));
 	}
@@ -346,9 +372,17 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 	function get_user_list($show_guests, $online_time, $order_by, $phpbb_dispatcher)
 	{
 		$time = $this->time_now - $online_time;
-		$sessions = $this->get_all($time);
-			//$show_guests ? $this->get_all($time) : $this->get_all_non_guests($time);
+		$sessions = $this->get_all_ids($time);
 
+		if (!$show_guests)
+		{
+			$sessions = array_filter($sessions,
+				function ($session) {
+					return $session['session_user_id'] != ANONYMOUS;
+				});
+		}
+
+		return array_map(array($this, 'get'), $sessions);
 		// Sort sessions by order_by
 		/*$order_by = trim(substr($order_by, 0, strlen($order_by)-3)); // Remove DEC or ASC
 		uasort($sessions,
@@ -357,13 +391,11 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 				return $a[$order_by] < $b[$order_by];
 			}
 		);*/
-
-		return $sessions;
 	}
 
 	function map_users_online($user_list, $session_length, Closure $function)
 	{
-		$this->map_recently_expired($session_length,
+		return $this->map_recently_expired($session_length,
 			function($session) use ($user_list, $function)
 			{
 				if (in_array($session['session_user_id'], $user_list) )
@@ -417,7 +449,7 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 
 	function set_viewonline($user_id, $viewonline)
 	{
-		$this->update($this->get_newest_session($user_id), array('session_viewonline'=>$viewonline));
+		$this->update($this->get_newest_session_id($user_id), array('session_viewonline'=>$viewonline));
 	}
 
 	function cleanup_guest_sessions($session_length)
@@ -438,15 +470,13 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 	{
 		$host = $this;
 		$this->map_recently_expired($session_length,
-			function($session_id) use ($user_ids, $host)
+			function($session) use ($user_ids, $host)
 			{
-				if (in_array($session_id, $user_ids) )
+				if (in_array($session['session_user_id'], $user_ids) )
 				{
-					$host->delete($session_id);
+					$host->delete($session['session_id']);
 				}
-			},
-			99,
-			true
+			}
 		);
 	}
 

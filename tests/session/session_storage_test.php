@@ -7,7 +7,7 @@
  *
  */
 
-class phpbb_storage_db_session extends phpbb_database_test_case
+class phpbb_storage_db_session extends phpbb_session_test_case
 {
 	var $session;
 	const annon_id = 'anon_session00000000000000000000';
@@ -54,10 +54,7 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 
 	function test_update_session()
 	{
-		$data = array(
-			'session_admin' => 1
-		);
-		$this->session->db_session->update(self::annon_id, $data);
+		$this->session->db_session->update(self::annon_id, array('session_admin' => 1));
 		$results = $this->session->db_session->get(self::annon_id);
 		$this->assertEquals(1, $results['session_admin']);
 	}
@@ -153,13 +150,16 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 		$sessions =
 			$this->session->db_session->get_user_list(true, 60, 'session_time', $phpbb_dispatcher);
 		$this->assertEquals(2, count($sessions));
+		// All that is important is that both arrays
+		// contain certain keys
+		$important_keys = array('user_id', 'username', 'username_clean',
+			'user_type', 'user_colour', 'session_id',
+			'session_time', 'session_page', 'session_ip',
+			'session_browser', 'session_viewonline',
+			'session_forum_id',);
 		$this->assert_array_content_equals(
-			array('user_id', 'username', 'username_clean',
-				'user_type', 'user_colour', 'session_id',
-				'session_time', 'session_page', 'session_ip',
-				'session_browser', 'session_viewonline',
-				'session_forum_id',),
-			array_keys($sessions[0])
+			$important_keys,
+			array_intersect($important_keys, array_keys($sessions[0]))
 		);
 	}
 
