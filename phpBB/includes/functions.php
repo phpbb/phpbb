@@ -7,8 +7,6 @@
 *
 */
 
-use Symfony\Component\HttpFoundation\Request;
-
 /**
 * @ignore
 */
@@ -2413,7 +2411,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
 	global $phpbb_dispatcher;
-	global $symfony_request, $phpbb_root_path;
+	global $symfony_request, $phpbb_root_path, $phpbb_container;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -2421,7 +2419,8 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
-	$corrected_path = $symfony_request !== null ? phpbb_get_web_root_path($symfony_request, $phpbb_root_path) : '';
+	$phpbb_filesystem = $phpbb_container->get('filesystem');
+	$corrected_path = $phpbb_filesystem->get_web_root_path($symfony_request);
 	if ($corrected_path)
 	{
 		$url = substr($corrected_path . $url, strlen($phpbb_root_path));
@@ -5218,7 +5217,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// This path is sent with the base template paths in the assign_vars()
 	// call below. We need to correct it in case we are accessing from a
 	// controller because the web paths will be incorrect otherwise.
-	$corrected_path = $symfony_request !== null ? phpbb_get_web_root_path($symfony_request, $phpbb_root_path) : '';
+	$phpbb_filesystem = $phpbb_container->get('filesystem');
+	$corrected_path = $phpbb_filesystem->get_web_root_path($symfony_request);
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 	// Send a proper content-language to the output
@@ -5724,43 +5724,4 @@ function phpbb_create_symfony_request(phpbb_request $request)
 
 	$symfony_request = new Request($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
 	return $symfony_request;
-}
-
-/**
-* Get a relative root path from the current URL
-*
-* @param Request $symfony_request Symfony Request object
-*/
-function phpbb_get_web_root_path(Request $symfony_request, $phpbb_root_path = '')
-{
-	global $phpbb_container;
-
-	static $path;
-	if (null !== $path)
-	{
-		return $path;
-	}
-
-	$path_info = $symfony_request->getPathInfo();
-	if ($path_info === '/')
-	{
-		$path = $phpbb_root_path;
-		return $path;
-	}
-
-	$filesystem = $phpbb_container->get('filesystem');
-	$path_info = $filesystem->clean_path($path_info);
-
-	// Do not count / at start of path
-	$corrections = substr_count(substr($path_info, 1), '/');
-
-	// When URL Rewriting is enabled, app.php is optional. We have to
-	// correct for it not being there
-	if (strpos($symfony_request->getRequestUri(), $symfony_request->getScriptName()) === false)
-	{
-		$corrections -= 1;
-	}
-
-	$path = $phpbb_root_path . str_repeat('../', $corrections);
-	return $path;
 }

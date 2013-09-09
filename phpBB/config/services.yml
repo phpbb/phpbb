@@ -169,6 +169,8 @@ services:
 
     filesystem:
         class: phpbb_filesystem
+        arguments:
+            - %core.root_path%
 
     groupposition.legend:
         class: phpbb_groupposition_legend

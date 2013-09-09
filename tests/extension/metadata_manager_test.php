@@ -65,7 +65,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$container,
 			$this->db,
 			$this->config,
-			new phpbb_filesystem(),
+			new phpbb_filesystem($this->phpbb_root_path),
 			'phpbb_ext',
 			$this->phpbb_root_path,
 			$this->phpEx,
