@@ -262,7 +262,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 	*/
 	public function test_delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason, $expected_posts, $expected_topic, $expected_forum)
 	{
-		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_root_path, $phpEx;
+		global $auth, $cache, $config, $db, $phpbb_root_path, $phpEx;
 
 		$config['search_type'] = 'phpbb_mock_search';
 		$cache = new phpbb_mock_cache;
@@ -279,9 +279,8 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 			)));
 		$user = $this->getMock('phpbb_user');
 
-		$phpbb_container = new phpbb_mock_container_builder();
-		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
-		$phpbb_container->set('content.visibility', new phpbb_content_visibility($auth, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
+		$this->phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
+		$this->phpbb_container->set('content.visibility', new phpbb_content_visibility($auth, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
 
 		delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason);
 

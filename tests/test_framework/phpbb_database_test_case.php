@@ -17,9 +17,20 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	protected $fixture_xml_data;
 
+	protected $phpbb_container;
+
 	public function __construct($name = NULL, array $data = array(), $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
+	
+		global $phpbb_container, $phpbb_root_path;
+
+		// Setup the container for global usage
+		$this->phpbb_container = $phpbb_container = new phpbb_mock_container_builder();
+
+		// Set some commonly needed systems up
+		$phpbb_container->set('filesystem', new phpbb_filesystem($phpbb_root_path));
+
 		$this->backupStaticAttributesBlacklist += array(
 			'PHP_CodeCoverage' => array('instance'),
 			'PHP_CodeCoverage_Filter' => array('instance'),
