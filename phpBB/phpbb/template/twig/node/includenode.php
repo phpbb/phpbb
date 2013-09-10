@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig\node;
+
 /**
 * @ignore
 */
@@ -16,14 +18,14 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_template_twig_node_includenode extends Twig_Node_Include
+class includenode extends \Twig_Node_Include
 {
 	/**
 	 * Compiles the node to PHP.
 	 *
 	 * @param Twig_Compiler A Twig_Compiler instance
 	 */
-	public function compile(Twig_Compiler $compiler)
+	public function compile(\Twig_Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);
 

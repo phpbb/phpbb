@@ -56,11 +56,11 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 		global $phpbb_container, $phpbb_root_path, $phpEx;
 
 		$db = $this->new_dbal();
-		$config = new phpbb_config(array());
-		$request = $this->getMock('phpbb_request');
-		$user = $this->getMock('phpbb_user');
+		$config = new \phpbb\config\config(array());
+		$request = $this->getMock('\phpbb\request\request');
+		$user = $this->getMock('\phpbb\user');
 
-		$auth_provider = new phpbb_auth_provider_db($db, $config, $request, $user, $phpbb_root_path, $phpEx);
+		$auth_provider = new \phpbb\auth\provider\db($db, $config, $request, $user, $phpbb_root_path, $phpEx);
 		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container->expects($this->any())
 			->method('get')

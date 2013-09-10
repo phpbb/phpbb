@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Database Abstraction Layer
 * @package dbal
 */
-class phpbb_db_driver
+class driver
 {
 	var $db_connect_id;
 	var $query_result;
@@ -272,7 +274,7 @@ class phpbb_db_driver
 	* Correctly adjust LIKE expression for special characters
 	* Some DBMS are handling them in a different way
 	*
-	* @param string $expression The expression to use. Every wildcard is escaped, except $this->any_char and $this->one_char
+	* @param string $expression The expression to use. Every wildcard is escaped, \except $this->any_char and $this->one_char
 	* @return string LIKE expression including the keyword!
 	*/
 	function sql_like_expression($expression)
@@ -450,7 +452,7 @@ class phpbb_db_driver
 	* @param	string	$field				name of the sql column that shall be compared
 	* @param	array	$array				array of values that are allowed (IN) or not allowed (NOT IN)
 	* @param	bool	$negate				true for NOT IN (), false for IN () (default)
-	* @param	bool	$allow_empty_set	If true, allow $array to be empty, this function will return 1=1 or 1=0 then. Default to false.
+	* @param	bool	$allow_empty_set	If true, \allow $array to be empty, this function will return 1=1 or 1=0 then. Default to false.
 	*/
 	function sql_in_set($field, $array, $negate = false, $allow_empty_set = false)
 	{

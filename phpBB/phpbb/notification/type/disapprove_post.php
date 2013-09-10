@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\type;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notification_type_disapprove_post extends phpbb_notification_type_approve_post
+class disapprove_post extends \phpbb\notification\type\approve_post
 {
 	/**
 	* Get notification type name

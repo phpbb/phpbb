@@ -27,15 +27,15 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		$skip_add_log = true;
 
 		$db = $this->db = $this->new_dbal();
-		$this->cache = new phpbb_cache_service(new phpbb_cache_driver_null(), new phpbb_config(array()), $this->db, $phpbb_root_path, $phpEx);
-		$user = $this->user = new phpbb_user();
+		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\null(), new \phpbb\config\config(array()), $this->db, $phpbb_root_path, $phpEx);
+		$user = $this->user = new \phpbb\user();
 
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$auth = $this->getMock('phpbb_auth');
-		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$auth = $this->getMock('\phpbb\auth\auth');
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
-		$this->tool = new phpbb_db_migration_tool_module($this->db, $this->cache, $this->user, $phpbb_root_path, $phpEx, 'phpbb_modules');
+		$this->tool = new \phpbb\db\migration\tool\module($this->db, $this->cache, $this->user, $phpbb_root_path, $phpEx, 'phpbb_modules');
 	}
 
 	public function exists_data()

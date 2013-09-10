@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\style;
+
 /**
 * @ignore
 */
@@ -30,7 +32,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_style_resource_locator implements phpbb_template_locator
+class resource_locator implements \phpbb\template\locator
 {
 	/**
 	* Paths to style directories.

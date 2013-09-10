@@ -34,8 +34,8 @@ class ucp_groups
 		$return_page = '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '">', '</a>');
 
 		$mark_ary	= request_var('mark', array(0));
-		$submit		= $request->variable('submit', false, false, phpbb_request_request_interface::POST);
-		$delete		= $request->variable('delete', false, false, phpbb_request_request_interface::POST);
+		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
+		$delete		= $request->variable('delete', false, false, \phpbb\request\request_interface::POST);
 		$error = $data = array();
 
 		switch ($mode)
@@ -496,7 +496,7 @@ class ucp_groups
 							$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 							// This is normalised data, without the group_ prefix
-							$avatar_data = phpbb_avatar_manager::clean_row($group_row);
+							$avatar_data = \phpbb\avatar\manager::clean_row($group_row);
 						}
 
 						// Did we submit?

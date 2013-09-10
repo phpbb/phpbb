@@ -27,17 +27,17 @@ class phpbb_notification_test extends phpbb_database_test_case
 		include_once(__DIR__ . '/ext/test/notification/type/test.' . $phpEx);
 
 		$this->db = $this->new_dbal();
-		$this->config = new phpbb_config(array(
+		$this->config = new \phpbb\config\config(array(
 			'allow_privmsg'			=> true,
 			'allow_bookmarks'		=> true,
 			'allow_topic_notify'	=> true,
 			'allow_forum_notify'	=> true,
 		));
-		$this->user = new phpbb_user();
-		$this->user_loader = new phpbb_user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
+		$this->user = new \phpbb\user();
+		$this->user_loader = new \phpbb\user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$this->auth = new phpbb_mock_notifications_auth();
-		$this->cache = new phpbb_cache_service(
-			new phpbb_cache_driver_null(),
+		$this->cache = new \phpbb\cache\service(
+			new \phpbb\cache\driver\null(),
 			$this->config,
 			$this->db,
 			$phpbb_root_path,

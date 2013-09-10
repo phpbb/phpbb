@@ -19,7 +19,7 @@ class phpbb_dbal_concatenate_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 
 		$sql = 'SELECT config_name, ' . $db->sql_concatenate('config_name', "'" . $db->sql_escape('append') . "'") . ' AS string
-			FROM phpbb_config';
+			FROM \phpbb\config\config';
 		$result = $db->sql_query($sql);
 
 		$db->sql_return_on_error(false);
@@ -43,7 +43,7 @@ class phpbb_dbal_concatenate_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 
 		$sql = 'SELECT config_name, ' . $db->sql_concatenate('config_name', 'config_value') . ' AS string
-			FROM phpbb_config';
+			FROM \phpbb\config\config';
 		$result = $db->sql_query($sql);
 
 		$db->sql_return_on_error(false);

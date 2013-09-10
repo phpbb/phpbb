@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_30x_3_0_4_rc1 extends phpbb_db_migration
+namespace phpbb\db\migration\datax;
+
+class 3_0_4_rc1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -82,7 +84,7 @@ class phpbb_db_migration_data_30x_3_0_4_rc1 extends phpbb_db_migration
 
 	public function update_custom_profile_fields()
 	{
-		// Update the Custom Profile Fields based on previous settings to the new format
+		// Update the Custom Profile Fields based on previous settings to the new \format
 		$sql = 'SELECT field_id, field_required, field_show_on_reg, field_hide
 				FROM ' . PROFILE_FIELDS_TABLE;
 		$result = $this->db->sql_query($sql);

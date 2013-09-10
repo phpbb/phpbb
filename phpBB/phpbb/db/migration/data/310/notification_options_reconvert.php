@@ -7,11 +7,13 @@
 *
 */
 
-class phpbb_db_migration_data_310_notification_options_reconvert extends phpbb_db_migration
+namespace phpbb\db\migration\data0;
+
+class notification_options_reconvert extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_310_notifications_schema_fix');
+		return array('\phpbb\db\migration\data0\notifications_schema_fix');
 	}
 
 	public function update_data()
@@ -24,7 +26,7 @@ class phpbb_db_migration_data_310_notification_options_reconvert extends phpbb_d
 	public function convert_notifications()
 	{
 		$insert_table = $this->table_prefix . 'user_notifications';
-		$insert_buffer = new phpbb_db_sql_insert_buffer($this->db, $insert_table);
+		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $insert_table);
 
 		$this->perform_conversion($insert_buffer, $insert_table);
 	}
@@ -32,10 +34,10 @@ class phpbb_db_migration_data_310_notification_options_reconvert extends phpbb_d
 	/**
 	* Perform the conversion (separate for testability)
 	*
-	* @param phpbb_db_sql_insert_buffer $insert_buffer
+	* @param \phpbb\db\sql_insert_buffer $insert_buffer
 	* @param string $insert_table
 	*/
-	public function perform_conversion(phpbb_db_sql_insert_buffer $insert_buffer, $insert_table)
+	public function perform_conversion(\phpbb\db\sql_insert_buffer $insert_buffer, $insert_table)
 	{
 		$sql = 'DELETE FROM ' . $insert_table;
 		$this->db->sql_query($sql);
@@ -94,13 +96,13 @@ class phpbb_db_migration_data_310_notification_options_reconvert extends phpbb_d
 	/**
 	* Insert method rows to DB
 	*
-	* @param phpbb_db_sql_insert_buffer $insert_buffer
+	* @param \phpbb\db\sql_insert_buffer $insert_buffer
 	* @param string $item_type
 	* @param int $item_id
 	* @param int $user_id
 	* @param string $methods
 	*/
-	protected function add_method_rows(phpbb_db_sql_insert_buffer $insert_buffer, $item_type, $item_id, $user_id, array $methods)
+	protected function add_method_rows(\phpbb\db\sql_insert_buffer $insert_buffer, $item_type, $item_id, $user_id, array $methods)
 	{
 		$row_base = array(
 			'item_type'		=> $item_type,

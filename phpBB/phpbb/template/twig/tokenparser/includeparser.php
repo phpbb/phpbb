@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig\tokenparser;
+
 /**
 * @ignore
 */
@@ -16,7 +18,7 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_template_twig_tokenparser_includeparser extends Twig_TokenParser_Include
+class includeparser extends \Twig_TokenParser_Include
 {
 	/**
 	 * Parses a token and returns a node.
@@ -25,13 +27,13 @@ class phpbb_template_twig_tokenparser_includeparser extends Twig_TokenParser_Inc
 	 *
 	 * @return Twig_NodeInterface A Twig_NodeInterface instance
 	 */
-	public function parse(Twig_Token $token)
+	public function parse(\Twig_Token $token)
 	{
 		$expr = $this->parser->getExpressionParser()->parseExpression();
 
 		list($variables, $only, $ignoreMissing) = $this->parseArguments();
 
-		return new phpbb_template_twig_node_includenode($expr, $variables, $only, $ignoreMissing, $token->getLine(), $this->getTag());
+		return new \phpbb\template\twig\node\includenode($expr, $variables, $only, $ignoreMissing, $token->getLine(), $this->getTag());
 	}
 
 	/**

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template;
+
 /**
 * @ignore
 */
@@ -33,7 +35,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-interface phpbb_template_locator
+interface locator
 {
 	/**
 	* Sets the template filenames for handles. $filename_array

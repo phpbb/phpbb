@@ -22,9 +22,9 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 			->will($this->returnArgument(0));
 
 		// Prepare dependencies for avatar manager and driver
-		$config = new phpbb_config(array());
-		$request = $this->getMock('phpbb_request');
-		$cache = $this->getMock('phpbb_cache_driver_driver_interface');
+		$config = new \phpbb\config\config(array());
+		$request = $this->getMock('\phpbb\request\request');
+		$cache = $this->getMock('\phpbb\cache\driver\driver_interface');
 
 		// $this->avatar_foobar will be needed later on
 		$this->avatar_foobar = $this->getMock('phpbb_avatar_driver_foobar', array('get_name'), array($config, $phpbb_root_path, $phpEx, $cache));
@@ -52,7 +52,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 		$config['allow_avatar_' . get_class($this->avatar_barfoo)] = false;
 
 		// Set up avatar manager
-		$this->manager = new phpbb_avatar_manager($config, $avatar_drivers, $this->phpbb_container);
+		$this->manager = new \phpbb\avatar\manager($config, $avatar_drivers, $this->phpbb_container);
 	}
 
 	protected function avatar_drivers()
@@ -203,7 +203,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 	{
 		$cleaned_row = array();
 
-		$cleaned_row = phpbb_avatar_manager::clean_row($input);
+		$cleaned_row = \phpbb\avatar\manager::clean_row($input);
 		foreach ($output as $key => $null)
 		{
 			$this->assertArrayHasKey($key, $cleaned_row);
@@ -222,7 +222,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 
 	public function test_localize_errors()
 	{
-		$user = $this->getMock('phpbb_user');
+		$user = $this->getMock('\phpbb\user');
 		$lang_array = array(
 			array('FOOBAR_OFF', 'foobar_off'),
 			array('FOOBAR_EXPLAIN', 'FOOBAR_EXPLAIN %s'),

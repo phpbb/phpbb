@@ -2348,9 +2348,9 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 * via admin_permissions. Changes of usernames and group names
 * must be carried through for the moderators table.
 *
-* @param phpbb_db_driver $db Database connection
-* @param phpbb_cache_driver_driver_interface Cache driver
-* @param phpbb_auth $auth Authentication object
+* @param \phpbb\db\driver\driver $db Database connection
+* @param \phpbb\cache\driver\driver_interface Cache driver
+* @param \phpbb\auth\auth $auth Authentication object
 * @return null
 */
 function phpbb_cache_moderators($db, $cache, $auth)
@@ -2571,8 +2571,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 /**
 * Removes moderators and administrators from foe lists.
 *
-* @param phpbb_db_driver $db Database connection
-* @param phpbb_auth $auth Authentication object
+* @param \phpbb\db\driver\driver $db Database connection
+* @param \phpbb\auth\auth $auth Authentication object
 * @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
 * @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
 * @return null

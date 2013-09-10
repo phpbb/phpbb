@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\type;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notification_type_quote extends phpbb_notification_type_post
+class quote extends \phpbb\notification\type\post
 {
 	/**
 	* Get notification type name
@@ -131,7 +133,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			// Do not create a new notification
+			// Do not create a new \notification
 			unset($notify_users[$row['user_id']]);
 
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);
@@ -166,7 +168,7 @@ class phpbb_notification_type_quote extends phpbb_notification_type_post
 		}
 		$this->db->sql_freeresult($result);
 
-		// Find the new users to notify
+		// Find the new \users to notify
 		$notifications = $this->find_users_for_notification($post);
 
 		// Find the notifications we must delete

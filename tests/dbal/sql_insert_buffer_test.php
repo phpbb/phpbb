@@ -17,7 +17,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->buffer = new phpbb_db_sql_insert_buffer($this->db, 'phpbb_config', 2);
+		$this->buffer = new \phpbb\db\sql_insert_buffer($this->db, '\phpbb\config\config', 2);
 		$this->assert_config_count(2);
 	}
 
@@ -81,7 +81,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 	protected function assert_config_count($num_configs)
 	{
 		$sql = 'SELECT COUNT(*) AS num_configs
-			FROM phpbb_config';
+			FROM \phpbb\config\config';
 		$result = $this->db->sql_query($sql);
 		$this->assertEquals($num_configs, $this->db->sql_fetchfield('num_configs'));
 		$this->db->sql_freeresult($result);

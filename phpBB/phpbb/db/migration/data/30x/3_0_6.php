@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_30x_3_0_6 extends phpbb_db_migration
+namespace phpbb\db\migration\datax;
+
+class 3_0_6 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{

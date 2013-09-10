@@ -28,12 +28,12 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	{
 		global $request;
 
-		$request->merge(phpbb_request_request_interface::SERVER, array(
+		$request->merge(\phpbb\request\request_interface::SERVER, array(
 			'PHP_SELF'	=> $url,
 			'QUERY_STRING'	=> $query_string,
 		));
 
-		$result = phpbb_session::extract_current_page('./');
+		$result = \phpbb\session::extract_current_page('./');
 
 		$label = 'Running extract_current_page on ' . $query_string . ' with PHP_SELF filled.';
 		$this->assertEquals($expected, $result['query_string'], $label);
@@ -46,12 +46,12 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	{
 		global $request;
 
-		$request->merge(phpbb_request_request_interface::SERVER, array(
+		$request->merge(\phpbb\request\request_interface::SERVER, array(
 			'PHP_SELF'	=> $url,
 			'QUERY_STRING'	=> $query_string,
 		));
 
-		$result = phpbb_session::extract_current_page('./');
+		$result = \phpbb\session::extract_current_page('./');
 
 		$label = 'Running extract_current_page on ' . $query_string . ' with REQUEST_URI filled.';
 		$this->assertEquals($expected, $result['query_string'], $label);

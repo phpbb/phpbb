@@ -1,6 +1,6 @@
 <?php
 
-class phpbb_ext_vendor_moo_ext extends phpbb_extension_base
+class phpbb_ext_vendor_moo_ext extends \phpbb\extension\base
 {
 	static public $purged;
 

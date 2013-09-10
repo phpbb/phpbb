@@ -7,12 +7,14 @@
 *
 */
 
+namespace phpbb\db\migration\tool;
+
 /**
 * Migration tool interface
 *
 * @package db
 */
-interface phpbb_db_migration_tool_tool_interface
+interface tool_interface
 {
 	/**
 	* Retrieve a short name used for commands in migrations.

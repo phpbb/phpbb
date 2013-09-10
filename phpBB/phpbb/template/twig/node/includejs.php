@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_template_twig_node_includejs extends phpbb_template_twig_node_includeasset
+namespace phpbb\template\twig\node;
+
+class includejs extends \phpbb\template\twig\node\includeasset
 {
 	public function get_definition_name()
 	{
@@ -19,7 +21,7 @@ class phpbb_template_twig_node_includejs extends phpbb_template_twig_node_includ
 	 *
 	 * @param Twig_Compiler A Twig_Compiler instance
 	 */
-	protected function append_asset(Twig_Compiler $compiler)
+	protected function append_asset(\Twig_Compiler $compiler)
 	{
 		$config = $this->environment->get_phpbb_config();
 

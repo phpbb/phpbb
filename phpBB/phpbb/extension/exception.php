@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\extension;
+
 /**
 * @ignore
 */
@@ -18,7 +20,7 @@ if (!defined('IN_PHPBB'))
 /**
  * Exception class for metadata
  */
-class phpbb_extension_exception extends UnexpectedValueException
+class exception extends \UnexpectedValueException
 {
 	public function __toString()
 	{

@@ -1,6 +1,6 @@
 services:
     avatar.driver.gravatar:
-        class: phpbb_avatar_driver_gravatar
+        class: phpbb\avatar\driver\gravatar
         arguments:
             - @config
             - %core.root_path%
@@ -12,7 +12,7 @@ services:
             - { name: avatar.driver }
 
     avatar.driver.local:
-        class: phpbb_avatar_driver_local
+        class: phpbb\avatar\driver\local
         arguments:
             - @config
             - %core.root_path%
@@ -24,7 +24,7 @@ services:
             - { name: avatar.driver }
 
     avatar.driver.remote:
-        class: phpbb_avatar_driver_remote
+        class: phpbb\avatar\driver\remote
         arguments:
             - @config
             - %core.root_path%
@@ -36,7 +36,7 @@ services:
             - { name: avatar.driver }
 
     avatar.driver.upload:
-        class: phpbb_avatar_driver_upload
+        class: phpbb\avatar\driver\upload
         arguments:
             - @config
             - %core.root_path%
@@ -48,7 +48,7 @@ services:
             - { name: avatar.driver }
 
     avatar.driver_collection:
-        class: phpbb_di_service_collection
+        class: phpbb\di\service_collection
         arguments:
             - @service_container
         tags:

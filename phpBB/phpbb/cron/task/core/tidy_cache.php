@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cron\task\core;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_cron_task_core_tidy_cache extends phpbb_cron_task_base
+class tidy_cache extends \phpbb\cron\task\base
 {
 	protected $config;
 	protected $cache;
@@ -28,10 +30,10 @@ class phpbb_cron_task_core_tidy_cache extends phpbb_cron_task_base
 	/**
 	* Constructor.
 	*
-	* @param phpbb_config $config The config
-	* @param phpbb_cache_driver_driver_interface $cache The cache driver
+	* @param \phpbb\config\config $config The config
+	* @param \phpbb\cache\driver\driver_interface $cache The cache driver
 	*/
-	public function __construct(phpbb_config $config, phpbb_cache_driver_driver_interface $cache)
+	public function __construct(\phpbb\config\config $config, \phpbb\cache\driver\driver_interface $cache)
 	{
 		$this->config = $config;
 		$this->cache = $cache;

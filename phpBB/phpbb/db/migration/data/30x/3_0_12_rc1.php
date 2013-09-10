@@ -7,9 +7,11 @@
 *
 */
 
+namespace phpbb\db\migration\datax;
+
 /** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 **/
 
-class phpbb_db_migration_data_30x_3_0_12_rc1 extends phpbb_db_migration
+class 3_0_12_rc1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{

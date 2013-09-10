@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_310_boardindex extends phpbb_db_migration
+namespace phpbb\db\migration\data0;
+
+class boardindex extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{

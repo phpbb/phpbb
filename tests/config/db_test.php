@@ -24,7 +24,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 
 		$this->cache = new phpbb_mock_cache;
 		$this->db = $this->new_dbal();
-		$this->config = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
+		$this->config = new \phpbb\config\db($this->db, $this->cache, '\phpbb\config\config');
 	}
 
 	public function test_load_config()
@@ -36,7 +36,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 	public function test_load_cached()
 	{
 		$cache = new phpbb_mock_cache(array('config' => array('x' => 'y')));
-		$this->config = new phpbb_config_db($this->db, $cache, 'phpbb_config');
+		$this->config = new \phpbb\config\db($this->db, $cache, '\phpbb\config\config');
 
 		$this->assertTrue(!isset($this->config['foo']));
 		$this->assertEquals('42', $this->config['bar']);
@@ -49,7 +49,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->config['foo'] = 'x'; // temporary set
 		$this->assertEquals('x', $this->config['foo']);
 
-		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
+		$config2 = new \phpbb\config\db($this->db, $this->cache, '\phpbb\config\config');
 		$this->assertEquals('23', $config2['foo']);
 	}
 
@@ -59,7 +59,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->assertEquals('17', $this->config['foo']);
 
 		// re-read config and populate cache
-		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
+		$config2 = new \phpbb\config\db($this->db, $this->cache, '\phpbb\config\config');
 		$this->cache->checkVar($this, 'config', array('foo' => '17'));
 	}
 
@@ -68,7 +68,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->config->set('bar', '17', false);
 
 		// re-read config and populate cache
-		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
+		$config2 = new \phpbb\config\db($this->db, $this->cache, '\phpbb\config\config');
 		$this->cache->checkVar($this, 'config', array('foo' => '23'));
 	}
 
@@ -78,7 +78,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->assertEquals('5', $this->config['foobar']);
 
 		// re-read config and populate cache
-		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
+		$config2 = new \phpbb\config\db($this->db, $this->cache, '\phpbb\config\config');
 		$this->cache->checkVar($this, 'config', array('foo' => '23', 'foobar' => '5'));
 	}
 
@@ -88,7 +88,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->assertEquals('5', $this->config['foobar']);
 
 		// re-read config and populate cache
-		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
+		$config2 = new \phpbb\config\db($this->db, $this->cache, '\phpbb\config\config');
 		$this->cache->checkVar($this, 'config', array('foo' => '23'));
 	}
 
@@ -133,7 +133,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 
 		// re-read config and populate cache
 		$cache2 = new phpbb_mock_cache;
-		$config2 = new phpbb_config_db($this->db, $cache2, 'phpbb_config');
+		$config2 = new \phpbb\config\db($this->db, $cache2, '\phpbb\config\config');
 		$cache2->checkVarUnset($this, 'foo');
 		$this->assertFalse(isset($config2['foo']));
 	}

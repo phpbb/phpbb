@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\feed;
+
 /**
 * @ignore
 */
@@ -19,12 +21,12 @@ if (!defined('IN_PHPBB'))
 * Class with some helpful functions used in feeds
 * @package phpBB3
 */
-class phpbb_feed_helper
+class helper
 {
-	/** @var phpbb_config */
+	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var phpbb_user */
+	/** @var \phpbb\user */
 	protected $user;
 
 	/** @var string */
@@ -33,12 +35,12 @@ class phpbb_feed_helper
 	/**
 	* Constructor
 	*
-	* @param	phpbb_config	$config		Config object
-	* @param	phpbb_user		$user		User object
+	* @param	\phpbb\config\config	$config		Config object
+	* @param	\phpbb\user		$user		User object
 	* @param	string	$phpbb_root_path	Root path
 	* @return	null
 	*/
-	public function __construct(phpbb_config $config, phpbb_user $user, $phpbb_root_path)
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user, $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->user = $user;

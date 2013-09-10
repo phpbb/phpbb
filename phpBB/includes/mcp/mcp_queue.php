@@ -738,7 +738,7 @@ class mcp_queue
 
 			if ($request->is_ajax())
 			{
-				$json_response = new phpbb_json_response;
+				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
 					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
 					'MESSAGE_TEXT'		=> $message,
@@ -886,7 +886,7 @@ class mcp_queue
 
 			if ($request->is_ajax())
 			{
-				$json_response = new phpbb_json_response;
+				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
 					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
 					'MESSAGE_TEXT'		=> $message,
@@ -946,9 +946,9 @@ class mcp_queue
 			{
 				$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
 
-				$request->overwrite('confirm', null, phpbb_request_request_interface::POST);
-				$request->overwrite('confirm_key', null, phpbb_request_request_interface::POST);
-				$request->overwrite('confirm_key', null, phpbb_request_request_interface::REQUEST);
+				$request->overwrite('confirm', null, \phpbb\request\request_interface::POST);
+				$request->overwrite('confirm_key', null, \phpbb\request\request_interface::POST);
+				$request->overwrite('confirm_key', null, \phpbb\request\request_interface::REQUEST);
 			}
 			else
 			{
@@ -1221,7 +1221,7 @@ class mcp_queue
 
 			if ($request->is_ajax())
 			{
-				$json_response = new phpbb_json_response;
+				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
 					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
 					'MESSAGE_TEXT'		=> $message,

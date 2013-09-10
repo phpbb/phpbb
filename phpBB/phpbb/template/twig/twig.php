@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig;
+
 /**
 * @ignore
 */
@@ -19,12 +21,12 @@ if (!defined('IN_PHPBB'))
 * Twig Template class.
 * @package phpBB3
 */
-class phpbb_template_twig implements phpbb_template
+class twig implements \phpbb\template\template
 {
 	/**
 	* Template context.
 	* Stores template data used during template rendering.
-	* @var phpbb_template_context
+	* @var \phpbb\template\context
 	*/
 	protected $context;
 
@@ -57,20 +59,20 @@ class phpbb_template_twig implements phpbb_template
 
 	/**
 	* phpBB config instance
-	* @var phpbb_config
+	* @var \phpbb\config\config
 	*/
 	protected $config;
 
 	/**
 	* Current user
-	* @var phpbb_user
+	* @var \phpbb\user
 	*/
 	protected $user;
 
 	/**
 	* Extension manager.
 	*
-	* @var phpbb_extension_manager
+	* @var \phpbb\extension\manager
 	*/
 	protected $extension_manager;
 
@@ -103,13 +105,13 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext php extension (typically 'php')
-	* @param phpbb_config $config
-	* @param phpbb_user $user
-	* @param phpbb_template_context $context template context
-	* @param phpbb_extension_manager $extension_manager extension manager, if null then template events will not be invoked
+	* @param \phpbb\config\config $config
+	* @param \phpbb\user $user
+	* @param \phpbb\template\context $context template context
+	* @param \phpbb\extension\manager $extension_manager extension manager, if null then template events will not be invoked
 	* @param string $adm_relative_path relative path to adm directory
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null, $adm_relative_path = null)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, \phpbb\template\context $context, \phpbb\extension\manager $extension_manager = null, $adm_relative_path = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->adm_relative_path = $adm_relative_path;
@@ -122,9 +124,9 @@ class phpbb_template_twig implements phpbb_template
 		$this->cachepath = $phpbb_root_path . 'cache/twig/';
 
 		// Initiate the loader, __main__ namespace paths will be setup later in set_style_names()
-		$loader = new Twig_Loader_Filesystem('');
+		$loader = new \Twig_Loader_Filesystem('');
 
-		$this->twig = new phpbb_template_twig_environment(
+		$this->twig = new \phpbb\template\twig\environment(
 			$this->config,
 			($this->extension_manager) ? $this->extension_manager->all_enabled() : array(),
 			$this->phpbb_root_path,
@@ -138,13 +140,13 @@ class phpbb_template_twig implements phpbb_template
 		);
 
 		$this->twig->addExtension(
-			new phpbb_template_twig_extension(
+			new \phpbb\template\twig\extension(
 				$this->context,
 				$this->user
 			)
 		);
 
-		$lexer = new phpbb_template_twig_lexer($this->twig);
+		$lexer = new \phpbb\template\twig\lexer($this->twig);
 
 		$this->twig->setLexer($lexer);
 	}
@@ -152,7 +154,7 @@ class phpbb_template_twig implements phpbb_template
 	/**
 	* Clear the cache
 	*
-	* @return phpbb_template
+	* @return \phpbb\template\template
 	*/
 	public function clear_cache()
 	{
@@ -168,7 +170,7 @@ class phpbb_template_twig implements phpbb_template
 	* Sets the template filenames for handles.
 	*
 	* @param array $filename_array Should be a hash of handle => filename pairs.
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function set_filenames(array $filename_array)
 	{
@@ -185,7 +187,7 @@ class phpbb_template_twig implements phpbb_template
 	* @param array $style_paths List of style paths in inheritance tree order
 	* @param bool $is_core True if the style names are the "core" styles for this page load
 	* 	Core means the main phpBB template files
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function set_style_names(array $style_names, array $style_paths, $is_core = false)
 	{
@@ -194,7 +196,7 @@ class phpbb_template_twig implements phpbb_template
 		// Set as __main__ namespace
 		$this->twig->getLoader()->setPaths($style_paths);
 
-		// Core style namespace from phpbb_style::set_style()
+		// Core style namespace from \phpbb\style\style::set_style()
 		if ($is_core)
 		{
 			$this->twig->getLoader()->setPaths($style_paths, 'core');
@@ -207,7 +209,7 @@ class phpbb_template_twig implements phpbb_template
 		}
 
 		// Add all namespaces for all extensions
-		if ($this->extension_manager instanceof phpbb_extension_manager)
+		if ($this->extension_manager instanceof \phpbb\extension\manager)
 		{
 			$style_names[] = 'all';
 
@@ -237,7 +239,7 @@ class phpbb_template_twig implements phpbb_template
 	/**
 	* Clears all variables and blocks assigned to this template.
 	*
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function destroy()
 	{
@@ -250,7 +252,7 @@ class phpbb_template_twig implements phpbb_template
 	* Reset/empty complete block
 	*
 	* @param string $blockname Name of block to destroy
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function destroy_block_vars($blockname)
 	{
@@ -267,7 +269,7 @@ class phpbb_template_twig implements phpbb_template
 	* This function calls hooks.
 	*
 	* @param string $handle Handle to display
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function display($handle)
 	{
@@ -311,7 +313,7 @@ class phpbb_template_twig implements phpbb_template
 	* @param string $handle Handle to operate on
 	* @param string $template_var Template variable to assign compiled handle to
 	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
-	* @return phpbb_template|string if $return_content is true return string of the compiled handle, otherwise return $this
+	* @return \phpbb\template\template|string if $return_content is true return string of the compiled handle, otherwise return $this
 	*/
 	public function assign_display($handle, $template_var = '', $return_content = true)
 	{
@@ -329,7 +331,7 @@ class phpbb_template_twig implements phpbb_template
 	* Assign key variable pairs from an array
 	*
 	* @param array $vararray A hash of variable name => value pairs
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function assign_vars(array $vararray)
 	{
@@ -348,7 +350,7 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to assign to variable
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function assign_var($varname, $varval)
 	{
@@ -364,7 +366,7 @@ class phpbb_template_twig implements phpbb_template
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to append to variable
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function append_var($varname, $varval)
 	{
@@ -377,7 +379,7 @@ class phpbb_template_twig implements phpbb_template
 	* Assign key variable pairs from an array to a specified block
 	* @param string $blockname Name of block to assign $vararray to
 	* @param array $vararray A hash of variable name => value pairs
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function assign_block_vars($blockname, array $vararray)
 	{
@@ -406,7 +408,7 @@ class phpbb_template_twig implements phpbb_template
 	* @param	string	$mode		Mode to execute (valid modes are 'insert' and 'change')
 	*
 	*	If insert, the vararray is inserted at the given position (position counting from zero).
-	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new value).
+	*	If change, the current block gets merged with the vararray (resulting in new \key/value pairs be added and existing keys be replaced by the new \value).
 	*
 	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
@@ -431,7 +433,7 @@ class phpbb_template_twig implements phpbb_template
 			$context_vars['.'][0], // To get normal vars
 			$context_vars, // To get loops
 			array(
-				'definition'	=> new phpbb_template_twig_definition(),
+				'definition'	=> new \phpbb\template\twig\definition(),
 				'user'			=> $this->user,
 			)
 		);

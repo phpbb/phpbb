@@ -1,6 +1,6 @@
 services:
     migrator:
-        class: phpbb_db_migrator
+        class: phpbb\db\migrator
         arguments:
             - @config
             - @dbal.conn
@@ -12,21 +12,21 @@ services:
             - @migrator.tool_collection
 
     migrator.tool_collection:
-        class: phpbb_di_service_collection
+        class: phpbb\di\service_collection
         arguments:
             - @service_container
         tags:
             - { name: service_collection, tag: migrator.tool }
 
     migrator.tool.config:
-        class: phpbb_db_migration_tool_config
+        class: phpbb\db\migration\tool\config
         arguments:
             - @config
         tags:
             - { name: migrator.tool }
 
     migrator.tool.module:
-        class: phpbb_db_migration_tool_module
+        class: phpbb\db\migration\tool\module
         arguments:
             - @dbal.conn
             - @cache
@@ -38,7 +38,7 @@ services:
             - { name: migrator.tool }
 
     migrator.tool.permission:
-        class: phpbb_db_migration_tool_permission
+        class: phpbb\db\migration\tool\permission
         arguments:
             - @dbal.conn
             - @cache

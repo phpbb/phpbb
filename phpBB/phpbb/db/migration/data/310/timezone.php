@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_310_timezone extends phpbb_db_migration
+namespace phpbb\db\migration\data0;
+
+class timezone extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -63,12 +65,12 @@ class phpbb_db_migration_data_310_timezone extends phpbb_db_migration
 	}
 
 	/**
-	* Determine the new timezone for a given phpBB 3.0 timezone and
+	* Determine the new \timezone for a given phpBB 3.0 timezone and
 	* "Daylight Saving Time" option
 	*
 	*	@param	$timezone	float	Users timezone in 3.0
 	*	@param	$dst		int		Users daylight saving time
-	*	@return		string		Users new php Timezone which is used since 3.1
+	*	@return		string		Users new \php Timezone which is used since 3.1
 	*/
 	public function convert_phpbb30_timezone($timezone, $dst)
 	{

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig\node;
+
 /**
 * @ignore
 */
@@ -16,9 +18,9 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_template_twig_node_definenode extends Twig_Node
+class definenode extends \Twig_Node
 {
-	public function __construct($capture, Twig_NodeInterface $name, Twig_NodeInterface $value, $lineno, $tag = null)
+	public function __construct($capture, \Twig_NodeInterface $name, \Twig_NodeInterface $value, $lineno, $tag = null)
 	{
 		parent::__construct(array('name' => $name, 'value' => $value), array('capture' => $capture, 'safe' => false), $lineno, $tag);
 	}
@@ -28,7 +30,7 @@ class phpbb_template_twig_node_definenode extends Twig_Node
 	 *
 	 * @param Twig_Compiler A Twig_Compiler instance
 	 */
-	public function compile(Twig_Compiler $compiler)
+	public function compile(\Twig_Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);
 
@@ -38,7 +40,7 @@ class phpbb_template_twig_node_definenode extends Twig_Node
 				->subcompile($this->getNode('value'))
 			;
 
-			$compiler->write("\$value = ('' === \$value = ob_get_clean()) ? '' : new Twig_Markup(\$value, \$this->env->getCharset());\n");
+			$compiler->write("\$value = ('' === \$value = ob_get_clean()) ? '' : new \Twig_Markup(\$value, \$this->env->getCharset());\n");
 		}
 		else
 		{

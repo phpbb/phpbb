@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\extension;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package extension
 */
-interface phpbb_extension_extension_interface
+interface extension_interface
 {
 	/**
 	* enable_step is executed on enabling an extension until it returns false.

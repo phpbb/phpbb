@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\style;
+
 /**
 * @ignore
 */
@@ -22,7 +24,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-interface phpbb_style_path_provider_interface extends Traversable
+interface path_provider_interface extends \Traversable
 {
 	/**
 	* Defines a prefix to use for style paths in extensions

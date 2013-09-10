@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\method;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Base notifications method interface
 * @package notifications
 */
-interface phpbb_notification_method_method_interface
+interface method_interface
 {
 	/**
 	* Get notification method name
@@ -37,9 +39,9 @@ interface phpbb_notification_method_method_interface
 	/**
 	* Add a notification to the queue
 	*
-	* @param phpbb_notification_type_type_interface $notification
+	* @param \phpbb\notification\type\type_interface $notification
 	*/
-	public function add_to_queue(phpbb_notification_type_type_interface $notification);
+	public function add_to_queue(\phpbb\notification\type\type_interface $notification);
 
 	/**
 	* Parse the queue and notify the users

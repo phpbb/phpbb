@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cache\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * ACM File Based Caching
 * @package acm
 */
-class phpbb_cache_driver_file extends phpbb_cache_driver_base
+class file extends \phpbb\cache\driver\base
 {
 	var $vars = array();
 	var $var_expires = array();
@@ -369,7 +371,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_save(phpbb_db_driver $db, $query, $query_result, $ttl)
+	function sql_save(\phpbb\db\driver\driver $db, $query, $query_result, $ttl)
 	{
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
@@ -651,7 +653,7 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 
 		$file = "{$this->cache_dir}$filename.$phpEx";
 
-		$lock = new phpbb_lock_flock($file);
+		$lock = new \phpbb\lock\flock($file);
 		$lock->acquire();
 
 		if ($handle = @fopen($file, 'wb'))

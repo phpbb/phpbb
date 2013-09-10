@@ -453,7 +453,7 @@ function get_schema_struct()
 		),
 	);
 
-	$schema_data['phpbb_config'] = array(
+	$schema_data['\phpbb\config\config'] = array(
 		'COLUMNS'		=> array(
 			'config_name'		=> array('VCHAR', ''),
 			'config_value'		=> array('VCHAR_UNI', ''),
@@ -674,7 +674,7 @@ function get_schema_struct()
 		),
 	);
 
-	$schema_data['phpbb_log'] = array(
+	$schema_data['\phpbb\log\log'] = array(
 		'COLUMNS'		=> array(
 			'log_id'				=> array('UINT', NULL, 'auto_increment'),
 			'log_type'				=> array('TINT:4', 0),

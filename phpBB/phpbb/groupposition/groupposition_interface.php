@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\groupposition;
+
 /**
 * @ignore
 */
@@ -22,7 +24,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-interface phpbb_groupposition_groupposition_interface
+interface groupposition_interface
 {
 	/**
 	* Returns the value for a given group, if the group exists.

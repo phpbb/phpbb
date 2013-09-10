@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\type;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notification_type_post extends phpbb_notification_type_base
+class post extends \phpbb\notification\type\base
 {
 	/**
 	* Get notification type name
@@ -147,7 +149,7 @@ class phpbb_notification_type_post extends phpbb_notification_type_base
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			// Do not create a new notification
+			// Do not create a new \notification
 			unset($notify_users[$row['user_id']]);
 
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);

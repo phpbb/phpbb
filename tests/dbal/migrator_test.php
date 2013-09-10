@@ -33,15 +33,15 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->db_tools = new phpbb_db_tools($this->db);
+		$this->db_tools = new \phpbb\db\tools($this->db);
 
-		$this->config = new phpbb_config_db($this->db, new phpbb_mock_cache, 'phpbb_config');
+		$this->config = new \phpbb\config\db($this->db, new phpbb_mock_cache, '\phpbb\config\config');
 
 		$tools = array(
-			new phpbb_db_migration_tool_config($this->config),
+			new \phpbb\db\migration\tool\config($this->config),
 		);
 
-		$this->migrator = new phpbb_db_migrator(
+		$this->migrator = new \phpbb\db\migrator(
 			$this->config,
 			$this->db,
 			$this->db_tools,
@@ -55,11 +55,11 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);
 
-		$this->extension_manager = new phpbb_extension_manager(
+		$this->extension_manager = new \phpbb\extension\manager(
 			$container,
 			$this->db,
 			$this->config,
-			new phpbb_filesystem(),
+			new \phpbb\filesystem(),
 			'phpbb_ext',
 			dirname(__FILE__) . '/../../phpBB/',
 			'php',
@@ -91,7 +91,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->assertSqlResultEquals(
 			array(array('extra_column' => '1')),
-			"SELECT extra_column FROM phpbb_config WHERE config_name = 'foo'",
+			"SELECT extra_column FROM \phpbb\config\config WHERE config_name = 'foo'",
 			'Dummy migration created extra_column with value 1 in all rows.'
 		);
 
@@ -107,7 +107,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		);
 
 		// cleanup
-		$this->db_tools->sql_column_remove('phpbb_config', 'extra_column');
+		$this->db_tools->sql_column_remove('\phpbb\config\config', 'extra_column');
 	}
 
 	public function test_unfulfillable()
@@ -123,11 +123,11 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->assertSqlResultEquals(
 			array(array('extra_column' => '1')),
-			"SELECT extra_column FROM phpbb_config WHERE config_name = 'foo'",
+			"SELECT extra_column FROM \phpbb\config\config WHERE config_name = 'foo'",
 			'Dummy migration was run, even though an unfulfillable migration was found.'
 		);
 
-		$this->db_tools->sql_column_remove('phpbb_config', 'extra_column');
+		$this->db_tools->sql_column_remove('\phpbb\config\config', 'extra_column');
 	}
 
 	public function test_if()
@@ -192,7 +192,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->assertSqlResultEquals(
 			array(array('bar_column' => '1')),
-			"SELECT bar_column FROM phpbb_config WHERE config_name = 'foo'",
+			"SELECT bar_column FROM \phpbb\config\config WHERE config_name = 'foo'",
 			'Installing revert migration failed to create bar_column.'
 		);
 
@@ -208,7 +208,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->assertFalse(isset($this->config['foobartest']));
 
-		$sql = 'SELECT * FROM phpbb_config';
+		$sql = 'SELECT * FROM \phpbb\config\config';
 		$result = $this->db->sql_query_limit($sql, 1);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -232,12 +232,12 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 				$this->migrator->update();
 			}
 		}
-		catch (phpbb_db_migration_exception $e) {}
+		catch (\phpbb\db\migration\exception $e) {}
 
 		// Failure should have caused an automatic roll-back, so this should not exist.
 		$this->assertFalse(isset($this->config['foobar3']));
 
-		$sql = 'SELECT * FROM phpbb_config';
+		$sql = 'SELECT * FROM \phpbb\config\config';
 		$result = $this->db->sql_query_limit($sql, 1);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);

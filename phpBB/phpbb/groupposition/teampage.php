@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\groupposition;
+
 /**
 * @ignore
 */
@@ -22,7 +24,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_groupposition_teampage implements phpbb_groupposition_groupposition_interface
+class teampage implements \phpbb\groupposition\groupposition_interface
 {
 	/**
 	* Group is not displayed
@@ -36,30 +38,30 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_groupposition_
 
 	/**
 	* Database object
-	* @var phpbb_db_driver
+	* @var \phpbb\db\driver\driver
 	*/
 	protected $db;
 
 	/**
 	* User object
-	* @var phpbb_user
+	* @var \phpbb\user
 	*/
 	protected $user;
 
 	/**
 	* Cache object
-	* @var phpbb_cache_driver_driver_interface
+	* @var \phpbb\cache\driver\driver_interface
 	*/
 	protected $cache;
 
 	/**
 	* Constructor
 	*
-	* @param phpbb_db_driver				$db		Database object
-	* @param phpbb_user						$user	User object
-	* @param phpbb_cache_driver_driver_interface	$cache	Cache object
+	* @param \phpbb\db\driver\driver				$db		Database object
+	* @param \phpbb\user						$user	User object
+	* @param \phpbb\cache\driver\driver_interface	$cache	Cache object
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_user $user, phpbb_cache_driver_driver_interface $cache)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\user $user, \phpbb\cache\driver\driver_interface $cache)
 	{
 		$this->db = $db;
 		$this->user = $user;
@@ -86,7 +88,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_groupposition_
 		if ($row === false)
 		{
 			// Group not found.
-			throw new phpbb_groupposition_exception('NO_GROUP');
+			throw new \phpbb\groupposition\exception('NO_GROUP');
 		}
 
 		return (int) $row['teampage_position'];
@@ -113,7 +115,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_groupposition_
 		if ($row === false)
 		{
 			// Group not found.
-			throw new phpbb_groupposition_exception('NO_GROUP');
+			throw new \phpbb\groupposition\exception('NO_GROUP');
 		}
 
 		return $row;
@@ -137,7 +139,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_groupposition_
 		if ($current_value === false)
 		{
 			// Group not found.
-			throw new phpbb_groupposition_exception('NO_GROUP');
+			throw new \phpbb\groupposition\exception('NO_GROUP');
 		}
 
 		return (int) $current_value;
@@ -161,7 +163,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_groupposition_
 		if ($row === false)
 		{
 			// Group not found.
-			throw new phpbb_groupposition_exception('NO_GROUP');
+			throw new \phpbb\groupposition\exception('NO_GROUP');
 		}
 
 		return $row;
@@ -261,7 +263,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_groupposition_
 	}
 
 	/**
-	* Adds a new category
+	* Adds a new \category
 	*
 	* @param	string	$category_name	Name of the category to be added
 	* @return	bool		True if the category was added successfully
@@ -431,7 +433,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_groupposition_
 			$sibling_count = 0;
 			$sibling_limit = $delta;
 
-			// Reset the delta, as we recalculate the new real delta
+			// Reset the delta, as we recalculate the new \real delta
 			$delta = 0;
 			while ($row = $this->db->sql_fetchrow($result))
 			{
@@ -519,7 +521,7 @@ class phpbb_groupposition_teampage implements phpbb_groupposition_groupposition_
 			$sibling_count = 0;
 			$sibling_limit = $delta;
 
-			// Reset the delta, as we recalculate the new real delta
+			// Reset the delta, as we recalculate the new \real delta
 			$delta = 0;
 			while ($row = $this->db->sql_fetchrow($result))
 			{

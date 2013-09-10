@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\config;
+
 /**
 * @ignore
 */
@@ -19,17 +21,17 @@ if (!defined('IN_PHPBB'))
 * Configuration container class
 * @package phpBB3
 */
-class phpbb_config_db extends phpbb_config
+class db extends \phpbb\config\config
 {
 	/**
 	* Cache instance
-	* @var phpbb_cache_driver_driver_interface
+	* @var \phpbb\cache\driver\driver_interface
 	*/
 	protected $cache;
 
 	/**
 	* Database connection
-	* @var phpbb_db_driver
+	* @var \phpbb\db\driver\driver
 	*/
 	protected $db;
 
@@ -42,11 +44,11 @@ class phpbb_config_db extends phpbb_config
 	/**
 	* Creates a configuration container with a default set of values
 	*
-	* @param phpbb_db_driver              $db    Database connection
-	* @param phpbb_cache_driver_driver_interface $cache Cache instance
+	* @param \phpbb\db\driver\driver              $db    Database connection
+	* @param \phpbb\cache\driver\driver_interface $cache Cache instance
 	* @param string                       $table Configuration table name
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_cache_driver_driver_interface $cache, $table)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\cache\driver\driver_interface $cache, $table)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
@@ -176,7 +178,7 @@ class phpbb_config_db extends phpbb_config
 	/**
 	* Increments an integer config value directly in the database.
 	*
-	* Using this method instead of setting the new value directly avoids race
+	* Using this method instead of setting the new \value directly avoids race
 	* conditions and unlike set_atomic it cannot fail.
 	*
 	* @param string $key       The configuration option's name

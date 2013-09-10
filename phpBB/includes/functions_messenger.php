@@ -27,7 +27,7 @@ class messenger
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
 	var $use_queue = true;
 
-	/** @var phpbb_template */
+	/** @var \phpbb\template\template */
 	protected $template;
 
 	var $eol = "\n";
@@ -645,12 +645,12 @@ class messenger
 	{
 		global $config, $phpbb_root_path, $phpEx, $user, $phpbb_extension_manager;
 
-		if ($this->template instanceof phpbb_template)
+		if ($this->template instanceof \phpbb\template\template)
 		{
 			return;
 		}
 
-		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context(), $phpbb_extension_manager);
+		$this->template = new \phpbb\template\twig\twig($phpbb_root_path, $phpEx, $config, $user, new \phpbb\template\context(), $phpbb_extension_manager);
 	}
 
 	/**
@@ -717,7 +717,7 @@ class queue
 	{
 		global $db, $config, $phpEx, $phpbb_root_path, $user;
 
-		$lock = new phpbb_lock_flock($this->cache_file);
+		$lock = new \phpbb\lock\flock($this->cache_file);
 		$lock->acquire();
 
 		// avoid races, check file existence once
@@ -887,7 +887,7 @@ class queue
 			return;
 		}
 
-		$lock = new phpbb_lock_flock($this->cache_file);
+		$lock = new \phpbb\lock\flock($this->cache_file);
 		$lock->acquire();
 
 		if (file_exists($this->cache_file))
@@ -1004,12 +1004,12 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	$smtp->add_backtrace('Connecting to ' . $config['smtp_host'] . ':' . $config['smtp_port']);
 
 	// Ok we have error checked as much as we can to this point let's get on it already.
-	if (!class_exists('phpbb_error_collector'))
+	if (!class_exists('\phpbb\error_collector'))
 	{
 		global $phpbb_root_path, $phpEx;
 		include($phpbb_root_path . 'includes/error_collector.' . $phpEx);
 	}
-	$collector = new phpbb_error_collector;
+	$collector = new \phpbb\error_collector;
 	$collector->install();
 	$smtp->socket = fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20);
 	$collector->uninstall();
@@ -1723,12 +1723,12 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	// Reference: http://bugs.php.net/bug.php?id=15841
 	$headers = implode($eol, $headers);
 
-	if (!class_exists('phpbb_error_collector'))
+	if (!class_exists('\phpbb\error_collector'))
 	{
 		include($phpbb_root_path . 'includes/error_collector.' . $phpEx);
 	}
 
-	$collector = new phpbb_error_collector;
+	$collector = new \phpbb\error_collector;
 	$collector->install();
 
 	// On some PHP Versions mail() *may* fail if there are newlines within the subject.

@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_notification_type_test extends phpbb_notification_type_base
+class phpbb_notification_type_test extends \phpbb\notification\type\base
 {
 	public function get_type()
 	{

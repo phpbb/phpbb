@@ -161,7 +161,7 @@ class acp_language
 					'method'		=> $method)
 				);
 
-				$hidden_data .= build_hidden_fields(array('entry' => $request->variable('entry', $request_default, true, phpbb_request_request_interface::POST)));
+				$hidden_data .= build_hidden_fields(array('entry' => $request->variable('entry', $request_default, true, \phpbb\request\request_interface::POST)));
 
 				$template->assign_vars(array(
 					'S_UPLOAD'	=> true,
@@ -218,7 +218,7 @@ class acp_language
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$entry_value = $request->variable('entry', $request_default, true, phpbb_request_request_interface::POST);
+				$entry_value = $request->variable('entry', $request_default, true, \phpbb\request\request_interface::POST);
 
 				if (!$lang_id || !$entry_value)
 				{

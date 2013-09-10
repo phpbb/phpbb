@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Session class
 * @package phpBB3
 */
-class phpbb_session
+class session
 {
 	var $cookie_data = array();
 	var $page = array();
@@ -197,7 +199,7 @@ class phpbb_session
 	* This is where all session activity begins. We gather various pieces of
 	* information from the client and server. We test to see if a session already
 	* exists. If it does, fine and dandy. If it doesn't we'll go on to create a
-	* new one ... pretty logical heh? We also examine the system load (if we're
+	* new \one ... pretty logical heh? We also examine the system load (if we're
 	* running on a system which makes such information readily available) and
 	* halt if it's above an admin definable limit.
 	*
@@ -243,7 +245,7 @@ class phpbb_session
 			$this->forwarded_for = '';
 		}
 
-		if ($request->is_set($config['cookie_name'] . '_sid', phpbb_request_request_interface::COOKIE) || $request->is_set($config['cookie_name'] . '_u', phpbb_request_request_interface::COOKIE))
+		if ($request->is_set($config['cookie_name'] . '_sid', \phpbb\request\request_interface::COOKIE) || $request->is_set($config['cookie_name'] . '_u', \phpbb\request\request_interface::COOKIE))
 		{
 			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0, false, true);
 			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '', false, true);
@@ -401,13 +403,13 @@ class phpbb_session
 					$session_expired = false;
 
 					// Check whether the session is still valid if we have one
-					$method = basename(trim($config['auth_method']));
+                    $method = basename(trim($config['auth_method']));
 
 					$provider = $phpbb_container->get('auth.provider.' . $method);
 
-					if (!($provider instanceof phpbb_auth_provider_provider_interface))
+					if (!($provider instanceof \phpbb\auth\provider\provider_interface))
 					{
-						throw new \RuntimeException($provider . ' must implement phpbb_auth_provider_provider_interface');
+						throw new \RuntimeException($provider . ' must implement \phpbb\auth\provider\provider_interface');
 					}
 
 					$ret = $provider->validate_session($this->data);
@@ -492,18 +494,18 @@ class phpbb_session
 			}
 		}
 
-		// If we reach here then no (valid) session exists. So we'll create a new one
+		// If we reach here then no (valid) session exists. So we'll create a new \one
 		return $this->session_create();
 	}
 
 	/**
-	* Create a new session
+	* Create a new \session
 	*
 	* If upon trying to start a session we discover there is nothing existing we
 	* jump here. Additionally this method is called directly during login to regenerate
 	* the session for the specific user. In this method we carry out a number of tasks;
 	* garbage collection, (search)bot checking, banned user comparison. Basically
-	* though this method will result in a new session for a specific user.
+	* though this method will result in a new \session for a specific user.
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
@@ -773,7 +775,7 @@ class phpbb_session
 
 		if (!defined('IN_ERROR_HANDLER') && (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows()))
 		{
-			// Limit new sessions in 1 minute period (if required)
+			// Limit new \sessions in 1 minute period (if required)
 			if (empty($this->data['session_time']) && $config['active_sessions'])
 			{
 //				$db->sql_return_on_error(false);
@@ -799,7 +801,7 @@ class phpbb_session
 
 		// Something quite important: session_page always holds the *last* page visited, except for the *first* visit.
 		// We are not able to simply have an empty session_page btw, therefore we need to tell phpBB how to detect this special case.
-		// If the session id is empty, we have a completely new one and will set an "identifier" here. This identifier is able to be checked later.
+		// If the session id is empty, we have a completely new \one and will set an "identifier" here. This identifier is able to be checked later.
 		if (empty($this->data['session_id']))
 		{
 			// This is a temporary variable, only set for the very first visit
@@ -1022,7 +1024,7 @@ class phpbb_session
 			{
 				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
 			}
-			phpbb_captcha_factory::garbage_collect($config['captcha_plugin']);
+			\phpbb_captcha_factory::garbage_collect($config['captcha_plugin']);
 
 			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
 				WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);

@@ -31,7 +31,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 	public function test_provider()
 	{
-		$provider = new phpbb_controller_provider;
+		$provider = new \phpbb\controller\provider;
 		$routes = $provider
 			->import_paths_from_finder($this->extension_manager->get_finder())
 			->find('./tests/controller/');
@@ -62,7 +62,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			include(__DIR__.'/phpbb/controller/foo.php');
 		}
 
-		$resolver = new phpbb_controller_resolver(new phpbb_user, $container);
+		$resolver = new \phpbb\controller\resolver(new \phpbb\user, $container);
 		$symfony_request = new Request();
 		$symfony_request->attributes->set('_controller', 'foo.controller:handle');
 

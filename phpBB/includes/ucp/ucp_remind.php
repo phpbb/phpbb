@@ -71,7 +71,7 @@ class ucp_remind
 			}
 
 			// Check users permissions
-			$auth2 = new phpbb_auth();
+			$auth2 = new \phpbb\auth\auth();
 			$auth2->acl($user_row);
 
 			if (!$auth2->acl_get('u_chgpasswd'))

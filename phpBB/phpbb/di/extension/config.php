@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\di\extension;
+
 /**
 * @ignore
 */
@@ -23,7 +25,7 @@ use Symfony\Component\Config\FileLocator;
 /**
 * Container config extension
 */
-class phpbb_di_extension_config extends Extension
+class config extends Extension
 {
 	public function __construct($config_file)
 	{

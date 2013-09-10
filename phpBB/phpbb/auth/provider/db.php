@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\auth\provider;
+
 /**
 * @ignore
 */
@@ -22,20 +24,20 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-class phpbb_auth_provider_db extends phpbb_auth_provider_base
+class db extends \phpbb\auth\provider\base
 {
 
 	/**
 	 * Database Authentication Constructor
 	 *
-	 * @param	phpbb_db_driver	$db
-	 * @param	phpbb_config 	$config
-	 * @param	phpbb_request	$request
-	 * @param	phpbb_user		$user
+	 * @param	\phpbb\db\driver\driver	$db
+	 * @param	\phpbb\config\config 	$config
+	 * @param	\phpbb\request\request	$request
+	 * @param	\phpbb\user		$user
 	 * @param	string			$phpbb_root_path
 	 * @param	string			$php_ext
 	 */
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_request $request, phpbb_user $user, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\request\request $request, \phpbb\user $user, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -149,7 +151,7 @@ class phpbb_auth_provider_db extends phpbb_auth_provider_base
 				include ($this->phpbb_root_path . 'includes/captcha/captcha_factory.' . $this->php_ext);
 			}
 
-			$captcha = phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
+			$captcha = \phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
 			$captcha->init(CONFIRM_LOGIN);
 			$vc_response = $captcha->validate($row);
 			if ($vc_response)
@@ -202,7 +204,7 @@ class phpbb_auth_provider_db extends phpbb_auth_provider_base
 				{
 					$hash = phpbb_hash($password_new_format);
 
-					// Update the password in the users table to the new format and remove user_pass_convert flag
+					// Update the password in the users table to the new \format and remove user_pass_convert flag
 					$sql = 'UPDATE ' . USERS_TABLE . '
 						SET user_password = \'' . $this->db->sql_escape($hash) . '\',
 							user_pass_convert = 0
@@ -239,7 +241,7 @@ class phpbb_auth_provider_db extends phpbb_auth_provider_base
 			{
 				$hash = phpbb_hash($password);
 
-				// Update the password in the users table to the new format
+				// Update the password in the users table to the new \format
 				$sql = 'UPDATE ' . USERS_TABLE . "
 					SET user_password = '" . $this->db->sql_escape($hash) . "',
 						user_pass_convert = 0

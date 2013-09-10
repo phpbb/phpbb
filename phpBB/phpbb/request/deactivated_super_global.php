@@ -1,11 +1,13 @@
 <?php
 /**
 *
-* @package phpbb_request
+* @package \phpbb\request\request
 * @copyright (c) 2010 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+namespace phpbb\request;
 
 /**
 * @ignore
@@ -16,12 +18,12 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Replacement for a superglobal (like $_GET or $_POST) which calls
+* Replacement for a superglobal (\like $_GET or $_POST) which calls
 * trigger_error on all operations but isset, overloads the [] operator with SPL.
 *
-* @package phpbb_request
+* @package \phpbb\request\request
 */
-class phpbb_request_deactivated_super_global implements ArrayAccess, Countable, IteratorAggregate
+class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAggregate
 {
 	/**
 	* @var	string	Holds the name of the superglobal this is replacing.
@@ -29,23 +31,23 @@ class phpbb_request_deactivated_super_global implements ArrayAccess, Countable, 
 	private $name;
 
 	/**
-	* @var	phpbb_request_request_interface::POST|GET|REQUEST|COOKIE	Super global constant.
+	* @var	\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE	Super global constant.
 	*/
 	private $super_global;
 
 	/**
-	* @var	phpbb_request_request_interface	The request class instance holding the actual request data.
+	* @var	\phpbb\request\request_interface	The request class instance holding the actual request data.
 	*/
 	private $request;
 
 	/**
 	* Constructor generates an error message fitting the super global to be used within the other functions.
 	*
-	* @param	phpbb_request_request_interface	$request	A request class instance holding the real super global data.
+	* @param	\phpbb\request\request_interface	$request	A request class instance holding the real super global data.
 	* @param	string					$name		Name of the super global this is a replacement for - e.g. '_GET'.
-	* @param	phpbb_request_request_interface::POST|GET|REQUEST|COOKIE	$super_global	The variable's super global constant.
+	* @param	\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE	$super_global	The variable's super global constant.
 	*/
-	public function __construct(phpbb_request_request_interface $request, $name, $super_global)
+	public function __construct(\phpbb\request\request_interface $request, $name, $super_global)
 	{
 		$this->request = $request;
 		$this->name = $name;
@@ -84,7 +86,7 @@ class phpbb_request_deactivated_super_global implements ArrayAccess, Countable, 
 	}
 
 	/**#@+
-	* Part of the ArrayAccess implementation, will always result in a FATAL error.
+	* Part of the \ArrayAccess implementation, will always result in a FATAL error.
 	*/
 	public function offsetGet($offset)
 	{
@@ -103,7 +105,7 @@ class phpbb_request_deactivated_super_global implements ArrayAccess, Countable, 
 	/**#@-*/
 
 	/**
-	* Part of the Countable implementation, will always result in a FATAL error
+	* Part of the \Countable implementation, will always result in a FATAL error
 	*/
 	public function count()
 	{

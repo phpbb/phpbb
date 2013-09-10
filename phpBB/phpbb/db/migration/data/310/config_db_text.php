@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_310_config_db_text extends phpbb_db_migration
+namespace phpbb\db\migration\data0;
+
+class config_db_text extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{

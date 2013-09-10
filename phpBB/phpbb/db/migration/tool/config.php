@@ -7,22 +7,24 @@
 *
 */
 
+namespace phpbb\db\migration\tool;
+
 /**
 * Migration config tool
 *
 * @package db
 */
-class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_tool_interface
+class config implements \phpbb\db\migration\tool\tool_interface
 {
-	/** @var phpbb_config */
+	/** @var \phpbb\config\config */
 	protected $config;
 
 	/**
 	* Constructor
 	*
-	* @param phpbb_config $config
+	* @param \phpbb\config\config $config
 	*/
-	public function __construct(phpbb_config $config)
+	public function __construct(\phpbb\config\config $config)
 	{
 		$this->config = $config;
 	}
@@ -67,7 +69,7 @@ class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_tool_int
 	{
 		if (!isset($this->config[$config_name]))
 		{
-			throw new phpbb_db_migration_exception('CONFIG_NOT_EXIST', $config_name);
+			throw new \phpbb\db\migration\exception('CONFIG_NOT_EXIST', $config_name);
 		}
 
 		$this->config->set($config_name, $config_value);
@@ -78,7 +80,7 @@ class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_tool_int
 	* current config value
 	*
 	* @param string $compare If equal to the current config value, will be
-	* 	updated to the new config value, otherwise not
+	* 	updated to the new \config value, otherwise not
 	* @param string $config_name The name of the config setting you would
 	* 	like to update
 	* @param mixed $config_value The value of the config setting
@@ -88,7 +90,7 @@ class phpbb_db_migration_tool_config implements phpbb_db_migration_tool_tool_int
 	{
 		if (!isset($this->config[$config_name]))
 		{
-			throw new phpbb_db_migration_exception('CONFIG_NOT_EXIST', $config_name);
+			throw new \phpbb\db\migration\exception('CONFIG_NOT_EXIST', $config_name);
 		}
 
 		$this->config->set_atomic($config_name, $compare, $config_value);

@@ -1,11 +1,13 @@
 <?php
 /**
 *
-* @package phpbb_log
+* @package \phpbb\log\log
 * @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+namespace phpbb\log;
 
 /**
 * @ignore
@@ -18,9 +20,9 @@ if (!defined('IN_PHPBB'))
 /**
 * The interface for the log-system.
 *
-* @package phpbb_log
+* @package \phpbb\log\log
 */
-interface phpbb_log_log_interface
+interface log_interface
 {
 	/**
 	* This function returns the state of the log system.

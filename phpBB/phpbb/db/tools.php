@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package dbal
 */
-class phpbb_db_tools
+class tools
 {
 	/**
 	* Current sql layer
@@ -300,10 +302,10 @@ class phpbb_db_tools
 	/**
 	* Constructor. Set DB Object and set {@link $return_statements return_statements}.
 	*
-	* @param phpbb_db_driver	$db					Database connection
+	* @param \phpbb\db\driver\driver	$db					Database connection
 	* @param bool		$return_statements	True if only statements should be returned and no SQL being executed
 	*/
-	public function __construct(phpbb_db_driver $db, $return_statements = false)
+	public function __construct(\phpbb\db\driver\driver $db, $return_statements = false)
 	{
 		$this->db = $db;
 		$this->return_statements = $return_statements;
@@ -491,7 +493,7 @@ class phpbb_db_tools
 				trigger_error("Index name '${column_name}_gen' on table '$table_name' is too long. The maximum auto increment column length is 26 characters.", E_USER_ERROR);
 			}
 
-			// here we add the definition of the new column to the list of columns
+			// here we add the definition of the new \column to the list of columns
 			switch ($this->sql_layer)
 			{
 				case 'mssql':
@@ -978,7 +980,7 @@ class phpbb_db_tools
 					$column_list[] = $entities[0];
 				}
 
-				// note down the primary key notation because sqlite only supports adding it to the end for the new table
+				// note down the primary key notation because sqlite only supports adding it to the end for the new \table
 				$primary_key = false;
 				$_new_cols = array();
 
@@ -1058,7 +1060,7 @@ class phpbb_db_tools
 				{
 					$new_table_cols[] = 'PRIMARY KEY (' . implode(', ', $sql_schema_changes['primary_key']) . ')';
 				}
-				// Add a new one or the old primary key
+				// Add a new \one or the old primary key
 				else if ($primary_key !== false)
 				{
 					$new_table_cols[] = $primary_key;
@@ -1066,7 +1068,7 @@ class phpbb_db_tools
 
 				$columns = implode(',', $column_list);
 
-				// create a new table and fill it up. destroy the temp one
+				// create a new \table and fill it up. destroy the temp one
 				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . implode(',', $new_table_cols) . ');';
 				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
@@ -1689,7 +1691,7 @@ class phpbb_db_tools
 	}
 
 	/**
-	* Add new column
+	* Add new \column
 	*/
 	function sql_column_add($table_name, $column_name, $column_data, $inline = false)
 	{
@@ -1798,7 +1800,7 @@ class phpbb_db_tools
 
 					$new_table_cols = $column_name . ' ' . $column_data['column_type_sql'] . ',' . $new_table_cols;
 
-					// create a new table and fill it up. destroy the temp one
+					// create a new \table and fill it up. destroy the temp one
 					$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
 					$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 					$statements[] = 'DROP TABLE ' . $table_name . '_temp';
@@ -1913,7 +1915,7 @@ class phpbb_db_tools
 
 					$new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
 
-					// create a new table and fill it up. destroy the temp one
+					// create a new \table and fill it up. destroy the temp one
 					$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
 					$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 					$statements[] = 'DROP TABLE ' . $table_name . '_temp';
@@ -2105,7 +2107,7 @@ class phpbb_db_tools
 
 				$columns = implode(',', $column_list);
 
-				// create a new table and fill it up. destroy the temp one
+				// create a new \table and fill it up. destroy the temp one
 				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ', PRIMARY KEY (' . implode(', ', $column) . '));';
 				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
@@ -2471,7 +2473,7 @@ class phpbb_db_tools
 
 				$columns = implode(',', $column_list);
 
-				// create a new table and fill it up. destroy the temp one
+				// create a new \table and fill it up. destroy the temp one
 				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . implode(',', $old_table_cols) . ');';
 				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 				$statements[] = 'DROP TABLE ' . $table_name . '_temp';

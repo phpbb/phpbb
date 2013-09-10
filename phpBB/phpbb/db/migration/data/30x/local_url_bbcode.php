@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_30x_local_url_bbcode extends phpbb_db_migration
+namespace phpbb\db\migration\datax;
+
+class local_url_bbcode extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
@@ -44,7 +46,7 @@ class phpbb_db_migration_data_30x_local_url_bbcode extends phpbb_db_migration
 			$bbcode_match = $row['bbcode_match'];
 			$bbcode_tpl = $row['bbcode_tpl'];
 
-			$acp_bbcodes = new acp_bbcodes();
+			$acp_bbcodes = new \acp_bbcodes();
 			$sql_ary = $acp_bbcodes->build_regexp($bbcode_match, $bbcode_tpl);
 
 			$sql = 'UPDATE ' . BBCODES_TABLE . '

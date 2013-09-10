@@ -59,10 +59,10 @@ class phpbb_session_testable_factory
 	/**
 	* Retrieve the configured session class instance
 	*
-	* @param phpbb_db_driver $dbal The database connection to use for session data
+	* @param \phpbb\db\driver\driver $dbal The database connection to use for session data
 	* @return phpbb_mock_session_testable A session instance
 	*/
-	public function get_session(phpbb_db_driver $dbal)
+	public function get_session(\phpbb\db\driver\driver $dbal)
 	{
 		// set up all the global variables used by session
 		global $SID, $_SID, $db, $config, $cache, $request;
@@ -75,7 +75,7 @@ class phpbb_session_testable_factory
 		);
 		request_var(null, null, null, null, $request);
 
-		$config = $this->config = new phpbb_config($this->get_config_data());
+		$config = $this->config = new \phpbb\config\config($this->get_config_data());
 		set_config(null, null, null, $config);
 
 		$db = $dbal;

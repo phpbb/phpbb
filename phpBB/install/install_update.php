@@ -108,7 +108,7 @@ class install_update extends module
 		unset($dbpasswd);
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
@@ -248,7 +248,7 @@ class install_update extends module
 		$this->include_file('includes/diff/renderer.' . $phpEx);
 
 		// Make sure we stay at the file check if checking the files again
-		if ($request->variable('check_again', false, false, phpbb_request_request_interface::POST))
+		if ($request->variable('check_again', false, false, \phpbb\request\request_interface::POST))
 		{
 			$sub = $this->p_master->sub = 'file_check';
 		}
@@ -355,7 +355,7 @@ class install_update extends module
 				$action = request_var('action', '');
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
-				$update_list = ($request->variable('check_again', false, false, phpbb_request_request_interface::POST)) ? false : $cache->get('_update_list');
+				$update_list = ($request->variable('check_again', false, false, \phpbb\request\request_interface::POST)) ? false : $cache->get('_update_list');
 				$modified = ($update_list !== false) ? @filemtime($cache->get_driver()->cache_dir . 'data_update_list.' . $phpEx) : 0;
 
 				// Make sure the list is up-to-date

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\feed;
+
 /**
 * @ignore
 */
@@ -23,7 +25,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_feed_overall extends phpbb_feed_post_base
+class overall extends \phpbb\feed\post_base
 {
 	function get_sql()
 	{

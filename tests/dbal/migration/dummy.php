@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_dbal_migration_dummy extends phpbb_db_migration
+class phpbb_dbal_migration_dummy extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
@@ -18,7 +18,7 @@ class phpbb_dbal_migration_dummy extends phpbb_db_migration
 	{
 		return array(
 			'add_columns' => array(
-				'phpbb_config' => array(
+				'\phpbb\config\config' => array(
 					'extra_column' => array('UINT', 1),
 				),
 			),

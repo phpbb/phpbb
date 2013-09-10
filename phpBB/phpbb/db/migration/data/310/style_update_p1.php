@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_310_style_update_p1 extends phpbb_db_migration
+namespace phpbb\db\migration\data0;
+
+class style_update_p1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -59,7 +61,7 @@ class phpbb_db_migration_data_310_style_update_p1 extends phpbb_db_migration
 		// Get list of valid 3.1 styles
 		$available_styles = array('prosilver');
 
-		$iterator = new DirectoryIterator($this->phpbb_root_path . 'styles');
+		$iterator = new \DirectoryIterator($this->phpbb_root_path . 'styles');
 		$skip_dirs = array('.', '..', 'prosilver');
 		foreach ($iterator as $fileinfo)
 		{

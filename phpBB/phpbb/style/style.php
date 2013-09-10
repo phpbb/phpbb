@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\style;
+
 /**
 * @ignore
 */
@@ -19,12 +21,12 @@ if (!defined('IN_PHPBB'))
 * Base Style class.
 * @package phpBB3
 */
-class phpbb_style
+class style
 {
 	/**
 	* Template class.
 	* Handles everything related to templates.
-	* @var phpbb_template
+	* @var \phpbb\template\template
 	*/
 	private $template;
 
@@ -42,25 +44,25 @@ class phpbb_style
 
 	/**
 	* phpBB config instance
-	* @var phpbb_config
+	* @var \phpbb\config\config
 	*/
 	private $config;
 
 	/**
 	* Current user
-	* @var phpbb_user
+	* @var \phpbb\user
 	*/
 	private $user;
 
 	/**
 	* Style resource locator
-	* @var phpbb_style_resource_locator
+	* @var \phpbb\style\resource_locator
 	*/
 	private $locator;
 
 	/**
 	* Style path provider
-	* @var phpbb_style_path_provider
+	* @var \phpbb\style\path_provider
 	*/
 	private $provider;
 
@@ -69,11 +71,11 @@ class phpbb_style
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
-	* @param phpbb_style_resource_locator $locator style resource locator
-	* @param phpbb_style_path_provider $provider style path provider
-	* @param phpbb_template $template template
+	* @param \phpbb\style\resource_locator $locator style resource locator
+	* @param \phpbb\style\path_provider $provider style path provider
+	* @param \phpbb\template\template $template template
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider, phpbb_template $template)
+	public function __construct($phpbb_root_path, $php_ext, $config, $user, \phpbb\style\resource_locator $locator, \phpbb\style\path_provider_interface $provider, \phpbb\template\template $template)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;

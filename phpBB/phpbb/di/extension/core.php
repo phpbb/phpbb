@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\di\extension;
+
 /**
 * @ignore
 */
@@ -23,7 +25,7 @@ use Symfony\Component\Config\FileLocator;
 /**
 * Container core extension
 */
-class phpbb_di_extension_core extends Extension
+class core extends Extension
 {
 	/**
 	* phpBB Root path

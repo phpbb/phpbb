@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\style;
+
 /**
 * @ignore
 */
@@ -22,7 +24,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_style_path_provider implements IteratorAggregate, phpbb_style_path_provider_interface
+class path_provider implements \IteratorAggregate, \phpbb\style\path_provider_interface
 {
 	protected $paths = array();
 
@@ -57,6 +59,6 @@ class phpbb_style_path_provider implements IteratorAggregate, phpbb_style_path_p
 	*/
 	public function getIterator()
 	{
-		return new ArrayIterator($this->paths);
+		return new \ArrayIterator($this->paths);
 	}
 }

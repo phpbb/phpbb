@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\auth\provider;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-interface phpbb_auth_provider_provider_interface
+interface provider_interface
 {
 	/**
 	 * Checks whether the user is currently identified to the authentication
@@ -70,7 +72,7 @@ interface phpbb_auth_provider_provider_interface
 	 * options with whatever configuraton values are passed to it as an array.
 	 * It then returns the name of the acp file related to this authentication
 	 * provider.
-	 * @param	array	$new_config Contains the new configuration values that
+	 * @param	array	$new_config Contains the new \configuration values that
 	 *								have been set in acp_board.
 	 * @return	array|null		Returns null if not implemented or an array with
 	 *							the template file name and an array of the vars
@@ -87,8 +89,8 @@ interface phpbb_auth_provider_provider_interface
 	 * Performs additional actions during logout.
 	 *
 	 * @param 	array	$data			An array corresponding to
-	 *									phpbb_session::data
-	 * @param 	boolean	$new_session	True for a new session, false for no new
+	 *									\phpbb\session::data
+	 * @param 	boolean	$new_session	True for a new \session, false for no new
 	 *									session.
 	 */
 	public function logout($data, $new_session);

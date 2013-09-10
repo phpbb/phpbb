@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\tree;
+
 /**
 * @ignore
 */
@@ -15,7 +17,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-interface phpbb_tree_tree_interface
+interface tree_interface
 {
 	/**
 	* Inserts an item into the database table and into the tree.
@@ -67,7 +69,7 @@ interface phpbb_tree_tree_interface
 	/**
 	* Moves all children of one item to another item
 	*
-	* If the new parent already has children, the new children are appended
+	* If the new parent already has children, the new \children are appended
 	* to the list.
 	*
 	* @param int	$current_parent_id	The current parent item
@@ -79,7 +81,7 @@ interface phpbb_tree_tree_interface
 	/**
 	* Change parent item
 	*
-	* Moves the item to the bottom of the new parent's list of children
+	* Moves the item to the bottom of the new \parent's list of children
 	*
 	* @param int	$item_id			The item to be moved
 	* @param int	$new_parent_id		The new parent item

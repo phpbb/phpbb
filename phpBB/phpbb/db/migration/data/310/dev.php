@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_310_dev extends phpbb_db_migration
+namespace phpbb\db\migration\data0;
+
+class dev extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -17,10 +19,10 @@ class phpbb_db_migration_data_310_dev extends phpbb_db_migration
 	static public function depends_on()
 	{
 		return array(
-			'phpbb_db_migration_data_310_extensions',
-			'phpbb_db_migration_data_310_style_update_p2',
-			'phpbb_db_migration_data_310_timezone_p2',
-			'phpbb_db_migration_data_310_reported_posts_display',
+			'\phpbb\db\migration\data0\extensions',
+			'\phpbb\db\migration\data0\style_update_p2',
+			'\phpbb\db\migration\data0\timezone_p2',
+			'\phpbb\db\migration\data0\reported_posts_display',
 		);
 	}
 
@@ -183,7 +185,7 @@ class phpbb_db_migration_data_310_dev extends phpbb_db_migration
 
 	public function move_customise_modules()
 	{
-		// Move language management to new location in the Customise tab
+		// Move language management to new \location in the Customise tab
 		// First get language module id
 		$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
 			WHERE module_basename = 'acp_language'";
@@ -206,7 +208,7 @@ class phpbb_db_migration_data_310_dev extends phpbb_db_migration
 		{
 			include($this->phpbb_root_path . 'includes/functions_acp.' . $this->php_ext);
 		}
-		$module_manager = new acp_modules();
+		$module_manager = new \acp_modules();
 		$module_manager->module_class = 'acp';
 		$module_manager->move_module($language_module_id, $language_management_module_id);
 	}

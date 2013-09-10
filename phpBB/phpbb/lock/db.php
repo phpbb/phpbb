@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\lock;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Database locking class
 * @package phpBB3
 */
-class phpbb_lock_db
+class db
 {
 	/**
 	* Name of the config variable this lock uses
@@ -42,13 +44,13 @@ class phpbb_lock_db
 
 	/**
 	* The phpBB configuration
-	* @var phpbb_config
+	* @var \phpbb\config\config
 	*/
 	private $config;
 
 	/**
 	* A database connection
-	* @var phpbb_db_driver
+	* @var \phpbb\db\driver\driver
 	*/
 	private $db;
 
@@ -59,9 +61,9 @@ class phpbb_lock_db
 	*
 	* @param	string	$config_name	A config variable to be used for locking
 	* @param	array	$config			The phpBB configuration
-	* @param	phpbb_db_driver	$db				A database connection
+	* @param	\phpbb\db\driver\driver	$db				A database connection
 	*/
-	public function __construct($config_name, phpbb_config $config, phpbb_db_driver $db)
+	public function __construct($config_name, \phpbb\config\config $config, \phpbb\db\driver\driver $db)
 	{
 		$this->config_name = $config_name;
 		$this->config = $config;

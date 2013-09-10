@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\event;
+
 /**
 * @ignore
 */
@@ -21,11 +23,11 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\EventListener\RouterListener;
 use Symfony\Component\Routing\RequestContext;
 
-class phpbb_event_kernel_request_subscriber implements EventSubscriberInterface
+class kernel_request_subscriber implements EventSubscriberInterface
 {
 	/**
 	* Extension finder object
-	* @var phpbb_extension_finder
+	* @var \phpbb\extension\finder
 	*/
 	protected $finder;
 
@@ -44,11 +46,11 @@ class phpbb_event_kernel_request_subscriber implements EventSubscriberInterface
 	/**
 	* Construct method
 	*
-	* @param phpbb_extension_finder $finder Extension finder object
+	* @param \phpbb\extension\finder $finder Extension finder object
 	* @param string $root_path Root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_extension_finder $finder, $root_path, $php_ext)
+	public function __construct(\phpbb\extension\finder $finder, $root_path, $php_ext)
 	{
 		$this->finder = $finder;
 		$this->root_path = $root_path;
@@ -63,14 +65,14 @@ class phpbb_event_kernel_request_subscriber implements EventSubscriberInterface
 	* @param GetResponseEvent $event
 	* @return null
 	*/
-	public function on_kernel_request(GetResponseEvent $event)
+	public function on_kernel_request(\GetResponseEvent $event)
 	{
 		$request = $event->getRequest();
-		$context = new RequestContext();
+		$context = new \RequestContext();
 		$context->fromRequest($request);
 
 		$matcher = phpbb_get_url_matcher($this->finder, $context, $this->root_path, $this->php_ext);
-		$router_listener = new RouterListener($matcher, $context);
+		$router_listener = new \RouterListener($matcher, $context);
 		$router_listener->onKernelRequest($event);
 	}
 

@@ -49,7 +49,7 @@ $action = request_var('action', '');
 $action_ary = request_var('action', array('' => 0));
 
 $forum_action = request_var('forum_action', '');
-if ($forum_action !== '' && $request->variable('sort', false, false, phpbb_request_request_interface::POST))
+if ($forum_action !== '' && $request->variable('sort', false, false, \phpbb\request\request_interface::POST))
 {
 	$action = $forum_action;
 }

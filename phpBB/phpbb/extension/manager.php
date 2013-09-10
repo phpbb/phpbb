@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\extension;
+
 /**
 * @ignore
 */
@@ -22,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 *
 * @package extension
 */
-class phpbb_extension_manager
+class manager
 {
 	/** @var ContainerInterface */
 	protected $container;
@@ -40,16 +42,16 @@ class phpbb_extension_manager
 	* Creates a manager and loads information from database
 	*
 	* @param ContainerInterface $container A container
-	* @param phpbb_db_driver $db A database connection
-	* @param phpbb_config $config phpbb_config
-	* @param phpbb_filesystem $filesystem
+	* @param \phpbb\db\driver\driver $db A database connection
+	* @param \phpbb\config\config $config \phpbb\config\config
+	* @param \phpbb\filesystem $filesystem
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
-	* @param phpbb_cache_driver_driver_interface $cache A cache instance or null
+	* @param \phpbb\cache\driver\driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, phpbb_db_driver $db, phpbb_config $config, phpbb_filesystem $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', phpbb_cache_driver_driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\filesystem $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->container = $container;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -126,8 +128,8 @@ class phpbb_extension_manager
 	* Instantiates the extension meta class for the extension with the given name
 	*
 	* @param string $name The extension name
-	* @return phpbb_extension_extension_interface Instance of the extension meta class or
-	*                     phpbb_extension_base if the class does not exist
+	* @return \phpbb\extension\extension_interface Instance of the extension meta class or
+	*                     \phpbb\extension\base if the class does not exist
 	*/
 	public function get_extension($name)
 	{
@@ -141,7 +143,7 @@ class phpbb_extension_manager
 		}
 		else
 		{
-			return new phpbb_extension_base($this->container, $this->get_finder(), $migrator, $name, $this->get_extension_path($name, true));
+			return new \phpbb\extension\base($this->container, $this->get_finder(), $migrator, $name, $this->get_extension_path($name, true));
 		}
 	}
 
@@ -150,11 +152,11 @@ class phpbb_extension_manager
 	*
 	* @param string $name The extension name
 	* @param string $template The template manager
-	* @return phpbb_extension_metadata_manager Instance of the metadata manager
+	* @return \phpbb\extension\metadata_manager Instance of the metadata manager
 	*/
-	public function create_extension_metadata_manager($name, phpbb_template $template)
+	public function create_extension_metadata_manager($name, \phpbb\template\template $template)
 	{
-		return new phpbb_extension_metadata_manager($name, $this->config, $this, $template, $this->phpbb_root_path);
+		return new \phpbb\extension\metadata_manager($name, $this->config, $this, $template, $this->phpbb_root_path);
 	}
 
 	/**
@@ -403,9 +405,9 @@ class phpbb_extension_manager
 			return $available;
 		}
 
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/', FilesystemIterator::NEW_CURRENT_AND_KEY | FilesystemIterator::FOLLOW_SYMLINKS),
-			RecursiveIteratorIterator::SELF_FIRST);
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/', \FilesystemIterator::NEW_CURRENT_AND_KEY | \FilesystemIterator::FOLLOW_SYMLINKS),
+			\RecursiveIteratorIterator::SELF_FIRST);
 		foreach ($iterator as $file_info)
 		{
 			if ($file_info->isFile() && $file_info->getFilename() == 'ext.' . $this->php_ext)
@@ -502,12 +504,12 @@ class phpbb_extension_manager
 	}
 
 	/**
-	* Instantiates a phpbb_extension_finder.
+	* Instantiates a \phpbb\extension\finder.
 	*
-	* @return phpbb_extension_finder An extension finder instance
+	* @return \phpbb\extension\finder An extension finder instance
 	*/
 	public function get_finder()
 	{
-		return new phpbb_extension_finder($this, $this->filesystem, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
+		return new \phpbb\extension\finder($this, $this->filesystem, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
 	}
 }

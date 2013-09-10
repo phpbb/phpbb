@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\search;
+
 /**
 */
 if (!defined('IN_PHPBB'))
@@ -26,7 +28,7 @@ define('SPHINX_CONNECT_WAIT_TIME', 300);
 * Fulltext search based on the sphinx search deamon
 * @package search
 */
-class phpbb_search_fulltext_sphinx
+class fulltext_sphinx
 {
 	/**
 	 * Associative array holding index stats
@@ -73,25 +75,25 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	 * Auth object
-	 * @var phpbb_auth
+	 * @var \phpbb\auth\auth
 	 */
 	protected $auth;
 
 	/**
 	 * Config object
-	 * @var phpbb_config
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
 	/**
 	 * Database connection
-	 * @var phpbb_db_driver
+	 * @var \phpbb\db\driver\driver
 	 */
 	protected $db;
 
 	/**
 	 * Database Tools object
-	 * @var phpbb_db_tools
+	 * @var \phpbb\db\tools
 	 */
 	protected $db_tools;
 
@@ -103,7 +105,7 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	 * User object
-	 * @var phpbb_user
+	 * @var \phpbb\user
 	 */
 	protected $user;
 
@@ -122,7 +124,7 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	 * Constructor
-	 * Creates a new phpbb_search_fulltext_postgres, which is used as a search backend
+	 * Creates a new \phpbb\search\fulltext_postgres, which is used as a search backend
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
 	 */
@@ -135,8 +137,8 @@ class phpbb_search_fulltext_sphinx
 		$this->db = $db;
 		$this->auth = $auth;
 
-		// Initialize phpbb_db_tools object
-		$this->db_tools = new phpbb_db_tools($this->db);
+		// Initialize \phpbb\db\tools object
+		$this->db_tools = new \phpbb\db\tools($this->db);
 
 		if(!$this->config['fulltext_sphinx_id'])
 		{
@@ -151,7 +153,7 @@ class phpbb_search_fulltext_sphinx
 		}
 
 		// Initialize sphinx client
-		$this->sphinx = new SphinxClient();
+		$this->sphinx = new \SphinxClient();
 
 		$this->sphinx->SetServer(($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost'), ($this->config['fulltext_sphinx_port'] ? (int) $this->config['fulltext_sphinx_port'] : 9312));
 
@@ -250,7 +252,7 @@ class phpbb_search_fulltext_sphinx
 		/* Now that we're sure everything was entered correctly,
 		generate a config for the index. We use a config value
 		fulltext_sphinx_id for this, as it should be unique. */
-		$config_object = new phpbb_search_sphinx_config($this->config_file_data);
+		$config_object = new \phpbb\search\sphinx\config($this->config_file_data);
 		$config_data = array(
 			'source source_phpbb_' . $this->id . '_main' => array(
 				array('type',						$this->dbtype . ' # mysql or pgsql'),
@@ -420,7 +422,7 @@ class phpbb_search_fulltext_sphinx
 			$this->sphinx->SetMatchMode(SPH_MATCH_ANY);
 		}
 
-		// Keep quotes and new lines
+		// Keep quotes and new \lines
 		$keywords = str_replace(array('&quot;', "\n"), array('"', ' '), trim($keywords));
 
 		if (strlen($keywords) > 0)

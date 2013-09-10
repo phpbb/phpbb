@@ -21,9 +21,9 @@ class phpbb_extension_style_path_provider_test extends phpbb_test_case
 
 	public function test_find()
 	{
-		$phpbb_style_path_provider = new phpbb_style_path_provider();
+		$phpbb_style_path_provider = new \phpbb\style\path_provider();
 		$phpbb_style_path_provider->set_styles(array($this->relative_root_path . 'styles/prosilver'));
-		$phpbb_style_extension_path_provider = new phpbb_style_extension_path_provider(new phpbb_mock_extension_manager(
+		$phpbb_style_extension_path_provider = new \phpbb\style\extension_path_provider(new phpbb_mock_extension_manager(
 			$this->root_path,
 			array(
 				'foo' => array(

@@ -30,7 +30,7 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 	public function test_resolve_path()
 	{
 		$prefix = dirname(__FILE__) . '/';
-		$class_loader = new phpbb_class_loader('phpbb_', $prefix . 'phpbb/');
+		$class_loader = new \phpbb\class_loader('phpbb_', $prefix . 'phpbb/');
 
 		$prefix .= 'phpbb/';
 
@@ -71,8 +71,8 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 		$cache = new phpbb_mock_cache($cache_map);
 
 		$prefix = dirname(__FILE__) . '/';
-		$class_loader = new phpbb_class_loader('phpbb_', $prefix . 'phpbb/', 'php', $cache);
-		$class_loader_ext = new phpbb_class_loader('phpbb_ext_', $prefix . 'phpbb/', 'php', $cache);
+		$class_loader = new \phpbb\class_loader('phpbb_', $prefix . 'phpbb/', 'php', $cache);
+		$class_loader_ext = new \phpbb\class_loader('phpbb_ext_', $prefix . 'phpbb/', 'php', $cache);
 
 		$prefix .= 'phpbb/';
 

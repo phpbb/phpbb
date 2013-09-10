@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\type;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Base notifications interface
 * @package notifications
 */
-interface phpbb_notification_type_type_interface
+interface type_interface
 {
 	/**
 	* Get notification type name

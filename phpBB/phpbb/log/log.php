@@ -1,11 +1,13 @@
 <?php
 /**
 *
-* @package phpbb_log
+* @package \phpbb\log\log
 * @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+namespace phpbb\log;
 
 /**
 * @ignore
@@ -18,9 +20,9 @@ if (!defined('IN_PHPBB'))
 /**
 * This class is used to add entries into the log table.
 *
-* @package phpbb_log
+* @package \phpbb\log\log
 */
-class phpbb_log implements phpbb_log_log_interface
+class log implements \phpbb\log\log_interface
 {
 	/**
 	* If set, administrative user profile links will be returned and messages
@@ -56,19 +58,19 @@ class phpbb_log implements phpbb_log_log_interface
 
 	/**
 	* Database object
-	* @var phpbb_db_driver
+	* @var \phpbb\db\driver\driver
 	*/
 	protected $db;
 
 	/**
 	* User object
-	* @var phpbb_user
+	* @var \phpbb\user
 	*/
 	protected $user;
 
 	/**
 	* Auth object
-	* @var phpbb_auth
+	* @var \phpbb\auth\auth
 	*/
 	protected $auth;
 
@@ -99,9 +101,9 @@ class phpbb_log implements phpbb_log_log_interface
 	/**
 	* Constructor
 	*
-	* @param	phpbb_db_driver	$db		Database object
-	* @param	phpbb_user		$user	User object
-	* @param	phpbb_auth		$auth	Auth object
+	* @param	\phpbb\db\driver\driver	$db		Database object
+	* @param	\phpbb\user		$user	User object
+	* @param	\phpbb\auth\auth		$auth	Auth object
 	* @param	phpbb_dispatcher	$phpbb_dispatcher	Event dispatcher
 	* @param	string		$phpbb_root_path		Root path
 	* @param	string		$relative_admin_path	Relative admin root path
@@ -123,7 +125,7 @@ class phpbb_log implements phpbb_log_log_interface
 		/*
 		* IN_ADMIN is set after the session is created,
 		* so we need to take ADMIN_START into account as well, otherwise
-		* it will not work for the phpbb_log object we create in common.php
+		* it will not work for the \phpbb\log\log object we create in common.php
 		*/
 		$this->set_is_admin((defined('ADMIN_START') && ADMIN_START) || (defined('IN_ADMIN') && IN_ADMIN));
 		$this->enable();

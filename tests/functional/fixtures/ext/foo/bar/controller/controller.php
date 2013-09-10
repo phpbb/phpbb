@@ -5,7 +5,7 @@ class phpbb_ext_foo_bar_controller
 {
 	protected $template;
 
-	public function __construct(phpbb_controller_helper $helper, phpbb_template $template)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\template\template $template)
 	{
 		$this->template = $template;
 		$this->helper = $helper;
@@ -30,6 +30,6 @@ class phpbb_ext_foo_bar_controller
 
 	public function exception()
 	{
-		throw new phpbb_controller_exception('Exception thrown from foo/exception route');
+		throw new \phpbb\controller\exception('Exception thrown from foo/exception route');
 	}
 }

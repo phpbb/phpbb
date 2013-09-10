@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\style;
+
 /**
 * @ignore
 */
@@ -22,7 +24,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_style_extension_path_provider extends phpbb_extension_provider implements phpbb_style_path_provider_interface
+class extension_path_provider extends \phpbb\extension\provider implements \phpbb\style\path_provider_interface
 {
 	/**
 	* Optional prefix for style paths searched within extensions.
@@ -36,7 +38,7 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 
 	/**
 	* A provider of paths to be searched for styles
-	* @var phpbb_style_path_provider
+	* @var \phpbb\style\path_provider
 	*/
 	protected $base_path_provider;
 
@@ -46,12 +48,12 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 	/**
 	* Constructor stores extension manager
 	*
-	* @param phpbb_extension_manager $extension_manager phpBB extension manager
-	* @param phpbb_style_path_provider $base_path_provider A simple path provider
+	* @param \phpbb\extension\manager $extension_manager phpBB extension manager
+	* @param \phpbb\style\path_provider $base_path_provider A simple path provider
 	*            to provide paths to be located in extensions
 	* @param string		$phpbb_root_path	phpBB root path
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, phpbb_style_path_provider $base_path_provider, $phpbb_root_path)
+	public function __construct(\phpbb\extension\manager $extension_manager, \phpbb\style\path_provider $base_path_provider, $phpbb_root_path)
 	{
 		parent::__construct($extension_manager);
 		$this->base_path_provider = $base_path_provider;

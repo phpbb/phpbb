@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cache\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * ACM Null Caching
 * @package acm
 */
-class phpbb_cache_driver_null extends phpbb_cache_driver_base
+class null extends \phpbb\cache\driver\base
 {
 	/**
 	* Set cache path
@@ -107,7 +109,7 @@ class phpbb_cache_driver_null extends phpbb_cache_driver_base
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_save(phpbb_db_driver $db, $query, $query_result, $ttl)
+	function sql_save(\phpbb\db\driver\driver $db, $query, $query_result, $ttl)
 	{
 		return $query_result;
 	}

@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_310_jquery_update extends phpbb_db_migration
+namespace phpbb\db\migration\data0;
+
+class jquery_update extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -17,7 +19,7 @@ class phpbb_db_migration_data_310_jquery_update extends phpbb_db_migration
 	static public function depends_on()
 	{
 		return array(
-			'phpbb_db_migration_data_310_dev',
+			'\phpbb\db\migration\data0\dev',
 		);
 	}
 

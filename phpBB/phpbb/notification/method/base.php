@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\method;
+
 /**
 * @ignore
 */
@@ -19,33 +21,33 @@ if (!defined('IN_PHPBB'))
 * Base notifications method class
 * @package notifications
 */
-abstract class phpbb_notification_method_base implements phpbb_notification_method_method_interface
+abstract class base implements \phpbb\notification\method\method_interface
 {
-	/** @var phpbb_notification_manager */
+	/** @var \phpbb\notification\manager */
 	protected $notification_manager;
 
-	/** @var phpbb_user_loader */
+	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
-	/** @var phpbb_cache_driver_driver_interface */
+	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
 
-	/** @var phpbb_template */
+	/** @var \phpbb\template\template */
 	protected $template;
 
-	/** @var phpbb_extension_manager */
+	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
 
-	/** @var phpbb_user */
+	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var phpbb_auth */
+	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var phpbb_config */
+	/** @var \phpbb\config\config */
 	protected $config;
 
 	/** @var string */
@@ -64,17 +66,17 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	/**
 	* Notification Method Base Constructor
 	* 
-	* @param phpbb_user_loader $user_loader
-	* @param phpbb_db_driver $db
-	* @param phpbb_cache_driver_driver_interface $cache
-	* @param phpbb_user $user
-	* @param phpbb_auth $auth
-	* @param phpbb_config $config
+	* @param \phpbb\user_loader $user_loader
+	* @param \phpbb\db\driver\driver $db
+	* @param \phpbb\cache\driver\driver_interface $cache
+	* @param \phpbb\user $user
+	* @param \phpbb\auth\auth $auth
+	* @param \phpbb\config\config $config
 	* @param string $phpbb_root_path
 	* @param string $php_ext
-	* @return phpbb_notification_method_base
+	* @return \phpbb\notification\method\base
 	*/
-	public function __construct(phpbb_user_loader $user_loader, phpbb_db_driver $db, phpbb_cache_driver_driver_interface $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;
@@ -89,9 +91,9 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	/**
 	* Set notification manager (required)
 	* 
-	* @param phpbb_notification_manager $notification_manager
+	* @param \phpbb\notification\manager $notification_manager
 	*/
-	public function set_notification_manager(phpbb_notification_manager $notification_manager)
+	public function set_notification_manager(\phpbb\notification\manager $notification_manager)
 	{
 		$this->notification_manager = $notification_manager;
 	}
@@ -99,9 +101,9 @@ abstract class phpbb_notification_method_base implements phpbb_notification_meth
 	/**
 	* Add a notification to the queue
 	*
-	* @param phpbb_notification_type_type_interface $notification
+	* @param \phpbb\notification\type\type_interface $notification
 	*/
-	public function add_to_queue(phpbb_notification_type_type_interface $notification)
+	public function add_to_queue(\phpbb\notification\type\type_interface $notification)
 	{
 		$this->queue[] = $notification;
 	}

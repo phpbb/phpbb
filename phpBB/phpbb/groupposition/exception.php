@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\groupposition;
+
 /**
 * @ignore
 */
@@ -18,6 +20,6 @@ if (!defined('IN_PHPBB'))
 /**
 * @package groupposition
 */
-class phpbb_groupposition_exception extends \Exception
+class exception extends \Exception
 {
 }

@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_310_notifications extends phpbb_db_migration
+namespace phpbb\db\migration\data0;
+
+class notifications extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -16,7 +18,7 @@ class phpbb_db_migration_data_310_notifications extends phpbb_db_migration
 
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_310_dev');
+		return array('\phpbb\db\migration\data0\dev');
 	}
 
 	public function update_schema()

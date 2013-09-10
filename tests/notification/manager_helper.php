@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Notifications service class
 * @package notifications
 */
-class phpbb_notification_manager_helper extends phpbb_notification_manager
+class phpbb_notification_manager_helper extends \phpbb\notification\manager
 {
 	public function set_var($name, $value)
 	{

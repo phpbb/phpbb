@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\driver;
+
 /**
 * @ignore
 */
@@ -24,7 +26,7 @@ if (!defined('IN_PHPBB'))
 * MySQL 5.0+
 * @package dbal
 */
-class phpbb_db_driver_mysql extends phpbb_db_driver_mysql_base
+class mysql extends \phpbb\db\driver\mysql_base
 {
 	var $multi_insert = true;
 	var $connect_error = '';

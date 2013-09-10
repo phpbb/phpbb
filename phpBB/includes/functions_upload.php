@@ -713,7 +713,7 @@ class fileupload
 		}
 
 		$this->common_checks($file);
-		$request->overwrite('local', $upload, phpbb_request_request_interface::FILES);
+		$request->overwrite('local', $upload, \phpbb\request\request_interface::FILES);
 
 		return $file;
 	}

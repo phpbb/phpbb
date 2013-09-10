@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\auth;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Permission/Auth class
 * @package phpBB3
 */
-class phpbb_auth
+class auth
 {
 	var $acl = array();
 	var $cache = array();
@@ -92,7 +94,7 @@ class phpbb_auth
 			}
 		}
 
-		// If a bitstring within the list does not match the options, we have a user with incorrect permissions set and need to renew them
+		// If a bitstring within the list does not match the options, we have a user with incorrect permissions set and need to renew \them
 		if ($renew)
 		{
 			$this->acl_cache($userdata);
@@ -993,7 +995,7 @@ class phpbb_auth
 				// Successful session creation
 				if ($result === true)
 				{
-					// If admin re-authentication we remove the old session entry because a new one has been created...
+					// If admin re-authentication we remove the old session entry because a new \one has been created...
 					if ($admin)
 					{
 						// the login array is used because the user ids do not differ for re-authentication

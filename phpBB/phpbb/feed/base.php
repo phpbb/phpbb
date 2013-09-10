@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\feed;
+
 /**
 * @ignore
 */
@@ -20,27 +22,27 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-abstract class phpbb_feed_base
+abstract class base
 {
 	/**
 	* Feed helper object
-	* @var phpbb_feed_helper
+	* @var \phpbb\feed\helper
 	*/
 	protected $helper;
 
-	/** @var phpbb_config */
+	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
-	/** @var phpbb_cache_driver_driver_interface */
+	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
 
-	/** @var phpbb_user */
+	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var phpbb_auth */
+	/** @var \phpbb\auth\auth */
 	protected $auth;
 
 	/** @var string */
@@ -74,17 +76,17 @@ abstract class phpbb_feed_base
 	/**
 	* Constructor
 	*
-	* @param phpbb_feed_helper $helper Feed helper
-	* @param phpbb_config		$config		Config object
-	* @param phpbb_db_driver	$db			Database connection
-	* @param phpbb_cache_driver_driver_interface	$cache			Cache object
-	* @param phpbb_user			$user		User object
-	* @param phpbb_auth			$auth		Auth object
-	* @param phpbb_content_visibility	$content_visibility		Auth object
+	* @param \phpbb\feed\helper $helper Feed helper
+	* @param \phpbb\config\config		$config		Config object
+	* @param \phpbb\db\driver\driver	$db			Database connection
+	* @param \phpbb\cache\driver\driver_interface	$cache			Cache object
+	* @param \phpbb\user			$user		User object
+	* @param \phpbb\auth\auth			$auth		Auth object
+	* @param \phpbb\content_visibility	$content_visibility		Auth object
 	* @param string				$phpEx		php file extension
 	* @return	null
 	*/
-	function __construct(phpbb_feed_helper $helper, phpbb_config $config, phpbb_db_driver $db, phpbb_cache_driver_driver_interface $cache, phpbb_user $user, phpbb_auth $auth, phpbb_content_visibility $content_visibility, $phpEx)
+	function __construct(\phpbb\feed\helper $helper, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\content_visibility $content_visibility, $phpEx)
 	{
 		$this->config = $config;
 		$this->helper = $helper;

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\search\sphinx;
+
 /**
 * @ignore
 */
@@ -16,12 +18,12 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* phpbb_search_sphinx_config
+* \phpbb\search\sphinx\config
 * An object representing the sphinx configuration
 * Can read it from file and write it back out after modification
 * @package search
 */
-class phpbb_search_sphinx_config
+class config
 {
 	private $sections = array();
 
@@ -44,7 +46,7 @@ class phpbb_search_sphinx_config
 	* Get a section object by its name
 	*
 	* @param	string 								$name	The name of the section that shall be returned
-	* @return	phpbb_search_sphinx_config_section			The section object or null if none was found
+	* @return	\phpbb\search\sphinx\config_section			The section object or null if none was found
 	*
 	* @access	public
 	*/
@@ -53,7 +55,7 @@ class phpbb_search_sphinx_config
 		for ($i = 0, $size = sizeof($this->sections); $i < $size; $i++)
 		{
 			// Make sure this is really a section object and not a comment
-			if (($this->sections[$i] instanceof phpbb_search_sphinx_config_section) && $this->sections[$i]->get_name() == $name)
+			if (($this->sections[$i] instanceof \phpbb\search\sphinx\config_section) && $this->sections[$i]->get_name() == $name)
 			{
 				return $this->sections[$i];
 			}
@@ -61,16 +63,16 @@ class phpbb_search_sphinx_config
 	}
 
 	/**
-	* Appends a new empty section to the end of the config
+	* Appends a new \empty section to the end of the config
 	*
-	* @param	string								$name	The name for the new section
-	* @return	phpbb_search_sphinx_config_section			The newly created section object
+	* @param	string								$name	The name for the new \section
+	* @return	\phpbb\search\sphinx\config_section			The newly created section object
 	*
 	* @access	public
 	*/
 	function add_section($name)
 	{
-		$this->sections[] = new phpbb_search_sphinx_config_section($name, '');
+		$this->sections[] = new \phpbb\search\sphinx\config_section($name, '');
 		return $this->sections[sizeof($this->sections) - 1];
 	}
 
@@ -109,7 +111,7 @@ class phpbb_search_sphinx_config
 				// that way they're not deleted when reassembling the file from the sections
 				if (!$line || $line[0] == '#')
 				{
-					$this->sections[] = new phpbb_search_sphinx_config_comment($config_file[$i]);
+					$this->sections[] = new \phpbb\search\sphinx\config_comment($config_file[$i]);
 					continue;
 				}
 				else
@@ -141,9 +143,9 @@ class phpbb_search_sphinx_config
 						$section_name .= $line[$j];
 					}
 
-					// And then we create the new section object
+					// And then we create the new \section object
 					$section_name = trim($section_name);
-					$section = new phpbb_search_sphinx_config_section($section_name, $section_name_comment);
+					$section = new \phpbb\search\sphinx\config_section($section_name, $section_name_comment);
 				}
 			}
 			else
@@ -158,7 +160,7 @@ class phpbb_search_sphinx_config
 					// of this section so they're not deleted on reassembly
 					if (!$line || $line[0] == '#')
 					{
-						$section->add_variable(new phpbb_search_sphinx_config_comment($config_file[$i]));
+						$section->add_variable(new \phpbb\search\sphinx\config_comment($config_file[$i]));
 						continue;
 					}
 	
@@ -174,7 +176,7 @@ class phpbb_search_sphinx_config
 						}
 						else
 						{
-							$section->add_variable(new phpbb_search_sphinx_config_comment($config_file[$i]));
+							$section->add_variable(new \phpbb\search\sphinx\config_comment($config_file[$i]));
 							continue;
 						}
 					}
@@ -240,10 +242,10 @@ class phpbb_search_sphinx_config
 					}
 
 					// If a name and an equal sign were found then we have append a 
-					// new variable object to the section
+					// new \variable object to the section
 					if ($name && $found_assignment)
 					{
-						$section->add_variable(new phpbb_search_sphinx_config_variable(trim($name), trim($value), ($end_section) ? '' : $comment));
+						$section->add_variable(new \phpbb\search\sphinx\config_variable(trim($name), trim($value), ($end_section) ? '' : $comment));
 						continue;
 					}
 
@@ -262,7 +264,7 @@ class phpbb_search_sphinx_config
 				// If we did not find anything meaningful up to here, then just treat it
 				// as a comment
 				$comment = ($skip_first) ? "\t" . substr(ltrim($config_file[$i]), 1) : $config_file[$i];
-				$section->add_variable(new phpbb_search_sphinx_config_comment($comment));
+				$section->add_variable(new \phpbb\search\sphinx\config_comment($comment));
 			}
 		}
 
