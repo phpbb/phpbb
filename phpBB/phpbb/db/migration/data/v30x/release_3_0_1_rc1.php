@@ -7,9 +7,9 @@
 *
 */
 
-namespace phpbb\db\migration\datax;
+namespace phpbb\db\migration\data\v30x;
 
-class 3_0_1_rc1 extends \phpbb\db\migration\migration
+class release_3_0_1_rc1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{

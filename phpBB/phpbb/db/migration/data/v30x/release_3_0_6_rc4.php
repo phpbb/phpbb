@@ -7,9 +7,9 @@
 *
 */
 
-namespace phpbb\db\migration\datax;
+namespace phpbb\db\migration\data\v30x;
 
-class 3_0_6_rc4 extends \phpbb\db\migration\migration
+class release_3_0_6_rc4 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -18,7 +18,7 @@ class 3_0_6_rc4 extends \phpbb\db\migration\migration
 
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_30x_3_0_6_rc3');
+		return array('\phpbb\db\migration\data\v30x\release_3_0_6_rc3');
 	}
 
 	public function update_data()
