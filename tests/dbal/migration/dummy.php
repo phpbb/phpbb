@@ -18,7 +18,7 @@ class phpbb_dbal_migration_dummy extends \phpbb\db\migration\migration
 	{
 		return array(
 			'add_columns' => array(
-				'\phpbb\config\config' => array(
+				'phpbb_config' => array(
 					'extra_column' => array('UINT', 1),
 				),
 			),

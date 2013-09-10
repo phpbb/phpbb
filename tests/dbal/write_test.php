@@ -39,11 +39,11 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$sql = 'INSERT INTO \phpbb\config\config ' . $db->sql_build_array('INSERT', $sql_ary);
+		$sql = 'INSERT INTO phpbb_config ' . $db->sql_build_array('INSERT', $sql_ary);
 		$result = $db->sql_query($sql);
 
 		$sql = "SELECT *
-			FROM \phpbb\config\config
+			FROM phpbb_config
 			WHERE config_name = '" . $sql_ary['config_name'] . "'";
 		$result = $db->sql_query_limit($sql, 1);
 
@@ -56,15 +56,15 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$sql = "DELETE FROM \phpbb\config\config
+		$sql = "DELETE FROM phpbb_config
 			WHERE config_name = 'config1'";
 		$result = $db->sql_query($sql);
 
 		$sql = 'SELECT *
-			FROM \phpbb\config\config';
+			FROM phpbb_config';
 		$result = $db->sql_query($sql);
 		$rows = $db->sql_fetchrowset($result);
-		
+
 		$this->assertEquals(1, sizeof($rows));
 		$this->assertEquals('config2', $rows[0]['config_name']);
 
@@ -76,7 +76,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 
 		// empty the table
-		$sql = 'DELETE FROM \phpbb\config\config';
+		$sql = 'DELETE FROM phpbb_config';
 		$db->sql_query($sql);
 
 		$batch_ary = array(
@@ -92,10 +92,10 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 			),
 		);
 
-		$result = $db->sql_multi_insert('\phpbb\config\config', $batch_ary);
+		$result = $db->sql_multi_insert('phpbb_config', $batch_ary);
 
 		$sql = 'SELECT *
-			FROM \phpbb\config\config
+			FROM phpbb_config
 			ORDER BY config_name ASC';
 		$result = $db->sql_query($sql);
 
@@ -155,12 +155,12 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$sql = 'UPDATE \phpbb\config\config
+		$sql = 'UPDATE phpbb_config
 			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . $where;
 		$result = $db->sql_query($sql);
 
 		$sql = 'SELECT *
-			FROM \phpbb\config\config
+			FROM phpbb_config
 			ORDER BY config_name ASC';
 		$result = $db->sql_query($sql);
 

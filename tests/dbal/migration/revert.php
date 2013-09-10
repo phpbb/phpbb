@@ -13,7 +13,7 @@ class phpbb_dbal_migration_revert extends \phpbb\db\migration\migration
 	{
 		return array(
 			'add_columns' => array(
-				'\phpbb\config\config' => array(
+				'phpbb_config' => array(
 					'bar_column' => array('UINT', 1),
 				),
 			),
@@ -24,7 +24,7 @@ class phpbb_dbal_migration_revert extends \phpbb\db\migration\migration
 	{
 		return array(
 			'drop_columns' => array(
-				'\phpbb\config\config' => array(
+				'phpbb_config' => array(
 					'bar_column',
 				),
 			),
