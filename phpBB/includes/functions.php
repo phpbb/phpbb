@@ -3206,7 +3206,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
 	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
-	global $request;
+	global $request, $phpbb_container;
 
 	if (!class_exists('phpbb_captcha_factory', false))
 	{
@@ -3233,7 +3233,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
-	if (isset($_POST['login']))
+	if ($request->is_set_post('login') || ($request->is_set('login') && $request->variable('login', '') == 'external'))
 	{
 		// Get credential
 		if ($admin)
@@ -3372,6 +3372,29 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if ($admin)
 	{
 		$s_hidden_fields['credential'] = $credential;
+	}
+
+	$auth_provider = $phpbb_container->get('auth.provider.' . $config['auth_method']);
+
+	$auth_provider_data = $auth_provider->get_login_data();
+	if ($auth_provider_data)
+	{
+		if (isset($auth_provider_data['VARS']))
+		{
+			$template->assign_vars($auth_provider_data['VARS']);
+		}
+
+		if (isset($auth_provider_data['BLOCK_VAR_NAME']))
+		{
+			foreach ($auth_provider_data['BLOCK_VARS'] as $block_vars)
+			{
+				$template->assign_block_vars($auth_provider_data['BLOCK_VAR_NAME'], $block_vars);
+			}
+		}
+
+		$template->assign_vars(array(
+			'PROVIDER_TEMPLATE_FILE' => $auth_provider_data['TEMPLATE_FILE'],
+		));
 	}
 
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
