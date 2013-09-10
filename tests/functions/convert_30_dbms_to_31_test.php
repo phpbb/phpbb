@@ -31,7 +31,7 @@ class phpbb_convert_30_dbms_to_31_test extends phpbb_test_case
 	*/
 	public function test_convert_30_dbms_to_31($input)
 	{
-		$expected = "phpbb_db_driver_$input";
+		$expected = "\\phpbb\\db\\driver\\$input";
 
 		$output = phpbb_convert_30_dbms_to_31($input);
 
