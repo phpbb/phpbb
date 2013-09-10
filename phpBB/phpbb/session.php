@@ -1489,7 +1489,7 @@ class phpbb_session
 	*/
 	function get_users_online_totals($item_id = 0, $item = 'forum')
 	{
-		return $this->db_user->get_users_online_totals($item_id, $item);
+		return $this->db_session->get_users_online_totals($item_id, $item);
 	}
 
 

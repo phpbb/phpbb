@@ -307,6 +307,17 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 		$time = ($time - ((int) ($time % 30)));
 		$sessions = $this->get_all_non_guests($time);
 
+		// Filter sessions if criteria is set
+		if ($item_id !== 0)
+		{
+			$sessions = array_filter($sessions,
+				function($session) use ($item_id, $item)
+				{
+					return $session["session_${item}_id"] == $item_id;
+				}
+			);
+		}
+
 		$online_users = array(
 			'online_users'			=> array(),
 			'hidden_users'			=> array(),
@@ -318,7 +329,7 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 
 		if ($config['load_online_guests'])
 		{
-			$online_users['guests_online'] = obtain_guest_count($item_id, $item);
+			$online_users['guests_online'] = $this->obtain_guest_count($item_id, $item);
 		}
 
 		foreach($sessions as $session)
