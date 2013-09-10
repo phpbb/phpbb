@@ -5756,6 +5756,8 @@ function phpbb_create_symfony_request(phpbb_request $request)
 */
 function phpbb_get_web_root_path(Request $symfony_request, $phpbb_root_path = '')
 {
+	global $phpbb_container;
+
 	static $path;
 	if (null !== $path)
 	{
@@ -5769,7 +5771,11 @@ function phpbb_get_web_root_path(Request $symfony_request, $phpbb_root_path = ''
 		return $path;
 	}
 
-	$corrections = substr_count($path_info, '/');
+	$filesystem = $phpbb_container->get('filesystem');
+	$path_info = $filesystem->clean_path($path_info);
+
+	// Do not count / at start of path
+	$corrections = substr_count(substr($path_info, 1), '/');
 
 	// When URL Rewriting is enabled, app.php is optional. We have to
 	// correct for it not being there
