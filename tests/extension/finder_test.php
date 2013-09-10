@@ -43,10 +43,10 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_default_implementation',
-				'phpbb_ext_bar_my_hidden_class',
-				'phpbb_ext_foo_a_class',
-				'phpbb_ext_foo_b_class',
+				'phpbb\default\implementation',
+				'phpbb\ext\bar\my\hidden_class',
+				'phpbb\ext\foo\a_class',
+				'phpbb\ext\foo\b_class',
 			),
 			$classes
 		);
@@ -88,8 +88,8 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_default_implementation',
-				'phpbb_ext_bar_my_hidden_class',
+				'phpbb\default\implementation',
+				'phpbb\ext\bar\my\hidden_class',
 			),
 			$classes
 		);
@@ -105,9 +105,9 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_default_implementation',
-				'phpbb_ext_foo_sub_type_alternative',
-				'phpbb_ext_foo_type_alternative',
+				'phpbb\default\implementation',
+				'phpbb\ext\foo\sub\type\alternative',
+				'phpbb\ext\foo\type\alternative',
 			),
 			$classes
 		);
@@ -122,7 +122,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_ext_foo_type_alternative',
+				'phpbb\ext\foo\type\alternative',
 			),
 			$classes
 		);
@@ -137,7 +137,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_ext_foo_sub_type_alternative',
+				'phpbb\ext\foo\sub\type\alternative',
 			),
 			$classes
 		);
@@ -152,7 +152,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_ext_foo_sub_type_alternative',
+				'phpbb\ext\foo\sub\type\alternative',
 			),
 			$classes
 		);
@@ -168,8 +168,8 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_ext_foo_type_alternative',
-				'phpbb_ext_foo_type_dummy_empty',
+				'phpbb\ext\foo\type\alternative',
+				'phpbb\ext\foo\type\dummy\empty',
 			),
 			$classes
 		);
