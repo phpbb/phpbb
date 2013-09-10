@@ -9,15 +9,16 @@
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
+require_once dirname(__FILE__) . '/../test_framework/phpbb_session_test_case.php';
 
-class phpbb_functions_obtain_online_test extends phpbb_database_test_case
+class phpbb_functions_obtain_online_test extends phpbb_session_test_case
 {
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/obtain_online.xml');
 	}
 
-	protected function setUp()
+	public function setUp()
 	{
 		parent::setUp();
 
@@ -42,7 +43,7 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	*/
 	public function test_obtain_guest_count($forum_id, $expected)
 	{
-		$this->db->sql_query('DELETE FROM phpbb_sessions');
+		$this->session->delete_all_sessions();
 
 		$time = time();
 		$this->create_guest_sessions($time);
@@ -108,7 +109,7 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	*/
 	public function test_obtain_users_online($forum_id, $display_guests, $expected)
 	{
-		$this->db->sql_query('DELETE FROM phpbb_sessions');
+		$this->session->delete_all_sessions();
 
 		global $config;
 		$config['load_online_guests'] = $display_guests;
@@ -154,7 +155,7 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	*/
 	public function test_obtain_users_online_string($forum_id, $display_guests, $expected)
 	{
-		$this->db->sql_query('DELETE FROM phpbb_sessions');
+		$this->session->delete_all_sessions();
 
 		global $config, $user, $auth, $phpbb_dispatcher;
 		$config['load_online_guests'] = $display_guests;
@@ -211,7 +212,7 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 			'session_time'			=> $time - $time_delta * 60,
 			'session_viewonline'	=> $view_online,
 		);
-		$this->db->sql_query('INSERT INTO phpbb_sessions ' . $this->db->sql_build_array('INSERT', $sql_ary));
+		$this->session->db_session->create($sql_ary);
 	}
 
 	protected function load_language()
