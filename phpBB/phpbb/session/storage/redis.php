@@ -27,16 +27,16 @@ if (!defined('PHPBB_ACM_REDIS_HOST'))
 
 class phpbb_session_storage_redis implements phpbb_session_storage_interface_session
 {
-	protected $native;
+	protected $db_user;
 	protected $db;
 	protected $time_now;
 	protected $redis;
 	const all_sessions = "ALL_SESSIONS";
 
-	function __construct($db, $time)
+	function __construct($db, $time, phpbb_session_storage_interface_user $db_user)
 	{
 		$this->db = $db;
-		$this->native = new phpbb_session_storage_native($db, time());
+		$this->db_user = $db_user;
 		$this->time_now = $time;
 		$this->redis = new Redis();
 		$ok = $this->redis->connect(PHPBB_ACM_REDIS_HOST, PHPBB_ACM_REDIS_PORT);
@@ -50,12 +50,13 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 	function set_time_now($time_now)
 	{
 		$this->time_now = $time_now;
+		$this->db_user->set_time_now($time_now);
 	}
 
-	function set_db($db)
+	function set_db(phpbb_db_driver $db)
 	{
 		$this->db = $db;
-		$this->native = new phpbb_session_storage_native($db, time());
+		$this->db_user->set_db($db);
 	}
 
 	protected function add_to($key, $expire, $value)
@@ -166,7 +167,7 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 	function get($session_id)
 	{
 		$session_data = $this->redis->get($session_id);
-		$session_user = $this->native->get_user_info((int) $session_data['session_user_id']);
+		$session_user = $this->db_user->get_user_info((int) $session_data['session_user_id']);
 		if(!is_array($session_data) || !is_array($session_user))
 		{
 			return false;
@@ -262,7 +263,7 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 
 	function get_newest_session($user_id)
 	{
-		return $this->get_session_data($this->get_newest_session_id($user_id));
+		return $this->get($this->get_newest_session_id($user_id));
 	}
 
 	function delete_all_sessions()
@@ -420,7 +421,7 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 
 	function map_certain_users_with_time($user_list, Closure $function)
 	{
-		$this->map_users_online($user_list, 60, $function);
+		return $this->map_users_online($user_list, 60, $function);
 	}
 
 	function unset_admin($session_id)
@@ -496,5 +497,28 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 		$time = $this->time_now - $session_length;
 		$sessions = $ids_only ? $this->get_all_ids('-inf', $time) : $this->get_all('-inf', $time);
 		return array_map($session_function, $sessions);
+	}
+
+	function map_friends_online($user_id, Closure $function)
+	{
+		$process_friend = function($friend)
+		{
+			$visibility = array();
+			$online_time = array();
+			foreach($this->get_user_sessions($friend['user_id'], 60) as $friend_session)
+			{
+				$visibility = $friend_session['session_viewonline'];
+				$online_time = $friend_session['session_time'];
+			}
+			$friend += array
+				(
+					'viewonline' => min($visibility),
+					'online_time' => max($online_time),
+				);
+			return $friend;
+		};
+		$processed_friends =
+			array_map($process_friend, $this->db_user->get_friends($user_id));
+		return array_map($function, $processed_friends);
 	}
 }

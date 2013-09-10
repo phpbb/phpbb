@@ -56,8 +56,11 @@ class phpbb_session
 		$this->db_banlist = is_null($db_banlist)  ? $native_storage : $db_banlist;
 		$this->db_cleanup = is_null( $db_cleanup) ? $native_storage : $db_cleanup;
 
-		$this->db_session = new phpbb_session_storage_redis($native_storage, time());
-		$this->db_session->set_db($db);
+		$this->db_session = new phpbb_session_storage_redis($db, time(), $this->db_user);
+		if (!is_null($db))
+		{
+			$this->db_session->set_db($db);
+		}
 	}
 
 	/**
@@ -1495,7 +1498,7 @@ class phpbb_session
 
 	function map_friends_online($user_id, Closure $function)
 	{
-		return $this->db_session->map_friends_online($user_id, $function);
+		return $this->db_user->map_friends_online($user_id, $function);
 	}
 
 	/**
