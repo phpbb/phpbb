@@ -25,7 +25,7 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 
 		$this->db = $this->new_dbal();
 
-		$this->migration = new \phpbb\db\migration\data0\notification_options_reconvert(
+		$this->migration = new \phpbb\db\migration\data\v310\notification_options_reconvert(
 			new \phpbb\config\config(array()),
 			$this->db,
 			new \phpbb\db\tools($this->db),

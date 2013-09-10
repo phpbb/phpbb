@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\type;
+
 /**
 * @ignore
 */
@@ -15,7 +17,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_notification_type_test extends \phpbb\notification\type\base
+class test extends \phpbb\notification\type\base
 {
 	public function get_type()
 	{

@@ -95,7 +95,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 	/**
 	* Notification Type Base Constructor
-	* 
+	*
 	* @param \phpbb\user_loader $user_loader
 	* @param \phpbb\db\driver\driver $db
 	* @param \phpbb\cache\driver\driver_interface $cache
@@ -128,7 +128,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 	/**
 	* Set notification manager (required)
-	* 
+	*
 	* @param \phpbb\notification\manager $notification_manager
 	*/
 	public function set_notification_manager(\phpbb\notification\manager $notification_manager)
@@ -152,7 +152,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 	/**
 	* Magic method to get data from this notification
-	* 
+	*
 	* @param mixed $name
 	* @return mixed
 	*/
@@ -164,7 +164,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 	/**
 	* Magic method to set data on this notification
-	* 
+	*
 	* @param mixed $name
 	* @return null
 	*/
@@ -176,9 +176,9 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 	/**
 	* Magic method to get a string of this notification
-	* 
+	*
 	* Primarily for testing
-	* 
+	*
 	* @param string $name
 	* @return mixed
 	*/
@@ -222,9 +222,9 @@ abstract class base implements \phpbb\notification\type\type_interface
 	{
 		// Defaults
 		$this->data = array_merge(array(
-			'item_id'				=> \static::get_item_id($type_data),
+			'item_id'				=> static::get_item_id($type_data),
 			'notification_type_id'	=> $this->notification_type_id,
-			'item_parent_id'		=> \static::get_item_parent_id($type_data),
+			'item_parent_id'		=> static::get_item_parent_id($type_data),
 
 			'notification_time'		=> time(),
 			'notification_read'		=> false,
@@ -285,7 +285,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 	/**
 	* Prepare to output the notification to the template
-	* 
+	*
 	* @return array Template variables
 	*/
 	public function prepare_for_display()
@@ -333,7 +333,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 	/**
 	* Get the user's avatar (fall back)
-	* 
+	*
 	* @return string
 	*/
 	public function get_avatar()
@@ -343,7 +343,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 	/**
 	* Get the special items to load (fall back)
-	* 
+	*
 	* @return array
 	*/
 	public function get_load_special()
@@ -361,7 +361,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 	/**
 	* Is available (fall back)
-	* 
+	*
 	* @return bool
 	*/
 	public function is_available()
@@ -371,7 +371,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 	/**
 	* Pre create insert array function (fall back)
-	* 
+	*
 	* @return array
 	*/
 	public function pre_create_insert_array($type_data, $notify_users)

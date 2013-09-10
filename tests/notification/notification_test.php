@@ -83,7 +83,7 @@ class phpbb_notification_test extends phpbb_database_test_case
 			'topic_in_queue',
 		) as $type)
 		{
-			$class = $this->build_type('phpbb_notification_type_' . $type);
+			$class = $this->build_type('\phpbb\notification\type\\' . $type);
 
 			$types[$type] = $class;
 			$this->container->set('notification.type.' . $type, $class);
