@@ -7,7 +7,7 @@
 *
 */
 
-namespace phpbb\db\migration\data0;
+namespace phpbb\db\migration\data\v310;
 
 class timezone_p2 extends \phpbb\db\migration\migration
 {
@@ -18,7 +18,7 @@ class timezone_p2 extends \phpbb\db\migration\migration
 
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data0\timezone');
+		return array('\phpbb\db\migration\data\v310\timezone');
 	}
 
 	public function update_schema()

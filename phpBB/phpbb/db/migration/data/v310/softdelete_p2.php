@@ -7,7 +7,7 @@
 *
 */
 
-namespace phpbb\db\migration\data0;
+namespace phpbb\db\migration\data\v310;
 
 class softdelete_p2 extends \phpbb\db\migration\migration
 {
@@ -19,8 +19,8 @@ class softdelete_p2 extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data0\dev',
-			'\phpbb\db\migration\data0\softdelete_p1',
+			'\phpbb\db\migration\data\v310\dev',
+			'\phpbb\db\migration\data\v310\softdelete_p1',
 		);
 	}
 

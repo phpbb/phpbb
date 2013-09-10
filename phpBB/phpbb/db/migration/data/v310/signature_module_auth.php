@@ -7,7 +7,7 @@
 *
 */
 
-namespace phpbb\db\migration\data0;
+namespace phpbb\db\migration\data\v310;
 
 class signature_module_auth extends \phpbb\db\migration\migration
 {
@@ -27,7 +27,7 @@ class signature_module_auth extends \phpbb\db\migration\migration
 
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_31x_dev');
+		return array('\phpbb\db\migration\data\v31x\dev');
 	}
 
 	public function update_data()

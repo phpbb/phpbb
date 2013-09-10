@@ -7,7 +7,7 @@
 *
 */
 
-namespace phpbb\db\migration\data0;
+namespace phpbb\db\migration\data\v310;
 
 class boardindex extends \phpbb\db\migration\migration
 {

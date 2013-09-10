@@ -7,7 +7,7 @@
 *
 */
 
-namespace phpbb\db\migration\data0;
+namespace phpbb\db\migration\data\v310;
 
 class reported_posts_display extends \phpbb\db\migration\migration
 {
@@ -18,7 +18,7 @@ class reported_posts_display extends \phpbb\db\migration\migration
 
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_30x_3_0_11');
+		return array('\phpbb\db\migration\data\v30x\release_3_0_11');
 	}
 
 	public function update_schema()

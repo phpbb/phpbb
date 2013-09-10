@@ -7,7 +7,7 @@
 *
 */
 
-namespace phpbb\db\migration\data0;
+namespace phpbb\db\migration\data\v310;
 
 class dev extends \phpbb\db\migration\migration
 {
@@ -19,10 +19,10 @@ class dev extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data0\extensions',
-			'\phpbb\db\migration\data0\style_update_p2',
-			'\phpbb\db\migration\data0\timezone_p2',
-			'\phpbb\db\migration\data0\reported_posts_display',
+			'\phpbb\db\migration\data\v310\extensions',
+			'\phpbb\db\migration\data\v310\style_update_p2',
+			'\phpbb\db\migration\data\v310\timezone_p2',
+			'\phpbb\db\migration\data\v310\reported_posts_display',
 		);
 	}
 

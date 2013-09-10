@@ -7,13 +7,13 @@
 *
 */
 
-namespace phpbb\db\migration\data0;
+namespace phpbb\db\migration\data\v310;
 
 class notification_options_reconvert extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data0\notifications_schema_fix');
+		return array('\phpbb\db\migration\data\v310\notifications_schema_fix');
 	}
 
 	public function update_data()

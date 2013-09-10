@@ -18,7 +18,7 @@ class 3_0_12_rc1 extends \phpbb\db\migration\migration
 		return version_compare($this->config['version'], '3.0.12-rc1', '>=');
 	}
 
- 	static public function depends_on()
+	static public function depends_on()
 	{
 		return array('phpbb_db_migration_data_30x_3_0_11');
 	}

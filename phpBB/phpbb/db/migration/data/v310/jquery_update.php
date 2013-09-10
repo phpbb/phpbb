@@ -7,7 +7,7 @@
 *
 */
 
-namespace phpbb\db\migration\data0;
+namespace phpbb\db\migration\data\v310;
 
 class jquery_update extends \phpbb\db\migration\migration
 {
@@ -19,7 +19,7 @@ class jquery_update extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data0\dev',
+			'\phpbb\db\migration\data\v310\dev',
 		);
 	}
 

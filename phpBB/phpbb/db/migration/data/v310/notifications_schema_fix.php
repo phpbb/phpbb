@@ -7,13 +7,13 @@
 *
 */
 
-namespace phpbb\db\migration\data0;
+namespace phpbb\db\migration\data\v310;
 
 class notifications_schema_fix extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data0\notifications');
+		return array('\phpbb\db\migration\data\v310\notifications');
 	}
 
 	public function update_schema()
