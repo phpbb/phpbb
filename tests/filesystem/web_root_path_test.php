@@ -33,7 +33,7 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 	*/
 	public function set_phpbb_root_path()
 	{
-		$this->phpbb_root_path = __DIR__ . './../../phpBB/';
+		$this->phpbb_root_path = dirname(__FILE__) . './../../phpBB/';
 	}
 
 	public function test_get_web_root_path()
