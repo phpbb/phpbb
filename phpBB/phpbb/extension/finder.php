@@ -277,9 +277,16 @@ class finder
 		$classes = array();
 		foreach ($files as $file => $ext_name)
 		{
-			$file = preg_replace('#^(phpbb|includes)/#', '', $file);
-
-			$classes[] = 'phpbb_' . str_replace('/', '_', substr($file, 0, -strlen('.' . $this->php_ext)));
+			if (preg_match('#^includes/#', $file))
+			{
+				$file = preg_replace('#^includes/#', '', $file);
+				$classes[] = 'phpbb_' . str_replace('/', '_', substr($file, 0, -strlen('.' . $this->php_ext)));
+			}
+			else
+			{
+				$file = preg_replace('#^phpbb/#', '', $file);
+				$classes[] = 'phpbb\\' . str_replace('/', '\\', substr($file, 0, -strlen('.' . $this->php_ext)));
+			}
 		}
 		return $classes;
 	}
