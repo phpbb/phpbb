@@ -18,9 +18,7 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 
 		$this->set_phpbb_root_path();
 
-		global $phpbb_filesystem;
-
-		$phpbb_filesystem = $this->filesystem = new phpbb_filesystem($this->phpbb_root_path);
+		$this->filesystem = new phpbb_filesystem($this->phpbb_root_path);
 	}
 
 	/**
@@ -49,7 +47,6 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 		return array(
 			array(
 				$this->phpbb_root_path . 'test.php',
-				$this->phpbb_root_path . 'test.php',
 			),
 			array(
 				'test.php',
@@ -57,7 +54,28 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 			),
 			array(
 				$this->phpbb_root_path . $this->phpbb_root_path . 'test.php',
-				$this->phpbb_root_path . $this->phpbb_root_path . 'test.php',
+			),
+			array(
+				$this->phpbb_root_path . 'test.php',
+				$this->phpbb_root_path . 'test.php',
+				'/',
+			),
+			array(
+				$this->phpbb_root_path . 'test.php',
+				$this->phpbb_root_path . 'test.php',
+				'//',
+			),
+			array(
+				$this->phpbb_root_path . 'test.php',
+				$this->phpbb_root_path . '../test.php',
+				'//',
+				'foo/bar.php',
+				'bar.php',
+			),
+			array(
+				$this->phpbb_root_path . 'test.php',
+				$this->phpbb_root_path . '../../test.php',
+				'////',
 			),
 		);
 	}
@@ -65,8 +83,25 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 	/**
 	* @dataProvider update_web_root_path_data
 	*/
-	public function test_update_web_root_path($input, $expected)
+	public function test_update_web_root_path($input, $expected = null, $getPathInfo = null, $getRequestUri = null, $getScriptName = null)
 	{
-		$this->assertEquals($expected, $this->filesystem->update_web_root_path($input));
+		$expected = ($expected === null) ? $input : $expected;
+
+		$symfony_request = null;
+		if ($getPathInfo !== null)
+		{
+			$symfony_request = $this->getMock("Symfony\Component\HttpFoundation\Request");
+			$symfony_request->expects($this->any())
+				->method('getPathInfo')
+				->will($this->returnValue($getPathInfo));
+			$symfony_request->expects($this->any())
+				->method('getRequestUri')
+				->will($this->returnValue($getRequestUri));
+			$symfony_request->expects($this->any())
+				->method('getScriptName')
+				->will($this->returnValue($getScriptName));
+		}
+
+		$this->assertEquals($expected, $this->filesystem->update_web_root_path($input, $symfony_request));
 	}
 }

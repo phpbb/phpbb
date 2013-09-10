@@ -26,6 +26,9 @@ class phpbb_filesystem
 	/** @var string */
 	protected $phpbb_root_path;
 
+	/** @var string */
+	protected $web_root_path;
+
 	/**
 	* Constructor
 	*
@@ -82,16 +85,15 @@ class phpbb_filesystem
 			return $this->phpbb_root_path;
 		}
 
-		static $path;
-		if (null !== $path)
+		if (null !== $this->web_root_path)
 		{
-			return $path;
+			return $this->web_root_path;
 		}
 
 		$path_info = $symfony_request->getPathInfo();
 		if ($path_info === '/')
 		{
-			return $path = $this->phpbb_root_path;
+			return $this->web_root_path = $this->phpbb_root_path;
 		}
 
 		$path_info = $this->clean_path($path_info);
@@ -106,7 +108,7 @@ class phpbb_filesystem
 			$corrections -= 1;
 		}
 
-		return $path = $this->phpbb_root_path . str_repeat('../', $corrections);
+		return $this->web_root_path = $this->phpbb_root_path . str_repeat('../', $corrections);
 	}
 
 	/**
