@@ -18,7 +18,9 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 
 		$this->set_phpbb_root_path();
 
-		$this->filesystem = new phpbb_filesystem($this->phpbb_root_path);
+		global $phpbb_filesystem;
+
+		$phpbb_filesystem = $this->filesystem = new phpbb_filesystem($this->phpbb_root_path);
 	}
 
 	/**

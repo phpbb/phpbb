@@ -2409,7 +2409,7 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
-	global $_SID, $_EXTRA_URL, $phpbb_hook;
+	global $_SID, $_EXTRA_URL, $phpbb_hook, $phpbb_filesystem;
 	global $phpbb_dispatcher;
 	global $symfony_request, $phpbb_root_path, $phpbb_container;
 
@@ -2420,8 +2420,10 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	}
 
 	// Update the root path with the correct relative web path
-	$phpbb_filesystem = $phpbb_container->get('filesystem');
-	$url = $phpbb_filesystem->update_web_root_path($url, $symfony_request);
+	if ($phpbb_filesystem instanceof phpbb_filesystem)
+	{
+		$url = $phpbb_filesystem->update_web_root_path($url, $symfony_request);
+	}
 
 	$append_sid_overwrite = false;
 
@@ -5719,6 +5721,6 @@ function phpbb_create_symfony_request(phpbb_request $request)
 	array_walk_recursive($get_parameters, $sanitizer);
 	array_walk_recursive($post_parameters, $sanitizer);
 
-	$symfony_request = new Request($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
+	$symfony_request = new Symfony\Component\HttpFoundation\Request($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
 	return $symfony_request;
 }
