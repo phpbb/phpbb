@@ -7,66 +7,72 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_container.php';
-
-class phpbb_di_container_test extends phpbb_test_case
+namespace
 {
-    public function test_phpbb_create_container()
-    {
-        $phpbb_root_path = __DIR__ . '/../../phpBB/';
-        $extensions = array(
-            new \phpbb\di\extension\config(__DIR__ . '/fixtures/config.php'),
-            new \phpbb\di\extension\core($phpbb_root_path),
-        );
-        $container = phpbb_create_container($extensions, $phpbb_root_path, 'php');
+	require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+	require_once dirname(__FILE__) . '/../../phpBB/includes/functions_container.php';
 
-        $this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
-    }
+	class phpbb_di_container_test extends phpbb_test_case
+	{
+		public function test_phpbb_create_container()
+		{
+			$phpbb_root_path = __DIR__ . '/../../phpBB/';
+			$extensions = array(
+				new \phpbb\di\extension\config(__DIR__ . '/fixtures/config.php'),
+				new \phpbb\di\extension\core($phpbb_root_path),
+			);
+			$container = phpbb_create_container($extensions, $phpbb_root_path, 'php');
 
-    public function test_phpbb_create_install_container()
-    {
-        $phpbb_root_path = __DIR__ . '/../../phpBB/';
-        $extensions = array(
-            new \phpbb\di\extension\config(__DIR__ . '/fixtures/config.php'),
-            new \phpbb\di\extension\core($phpbb_root_path),
-        );
-        $container = phpbb_create_install_container($phpbb_root_path, 'php');
+			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
+		}
 
-        $this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
-        $this->assertTrue($container->isFrozen());
-    }
+		public function test_phpbb_create_install_container()
+		{
+			$phpbb_root_path = __DIR__ . '/../../phpBB/';
+			$extensions = array(
+				new \phpbb\di\extension\config(__DIR__ . '/fixtures/config.php'),
+				new \phpbb\di\extension\core($phpbb_root_path),
+			);
+			$container = phpbb_create_install_container($phpbb_root_path, 'php');
 
-    public function test_phpbb_create_compiled_container()
-    {
-        $phpbb_root_path = __DIR__ . '/../../phpBB/';
-        $config_file = __DIR__ . '/fixtures/config.php';
-        $extensions = array(
-            new \phpbb\di\extension\config(__DIR__ . '/fixtures/config.php'),
-            new \phpbb\di\extension\core($phpbb_root_path),
-        );
-        $container = phpbb_create_compiled_container($config_file, $extensions, array(), $phpbb_root_path, 'php');
+			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
+			$this->assertTrue($container->isFrozen());
+		}
 
-        $this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
-        $this->assertTrue($container->isFrozen());
-    }
+		public function test_phpbb_create_compiled_container()
+		{
+			$phpbb_root_path = __DIR__ . '/../../phpBB/';
+			$config_file = __DIR__ . '/fixtures/config.php';
+			$extensions = array(
+				new \phpbb\di\extension\config(__DIR__ . '/fixtures/config.php'),
+				new \phpbb\di\extension\core($phpbb_root_path),
+			);
+			$container = phpbb_create_compiled_container($config_file, $extensions, array(), $phpbb_root_path, 'php');
+
+			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
+			$this->assertTrue($container->isFrozen());
+		}
+	}
 }
 
-class phpbb_db_driver_container_mock extends \phpbb\db\driver\driver
+namespace phpbb\db\driver
 {
-    public function sql_connect()
-    {
-    }
+	class container_mock extends \phpbb\db\driver\driver
+	{
+		public function sql_connect()
+		{
+		}
 
-    public function sql_query()
-    {
-    }
+		public function sql_query()
+		{
+		}
 
-    public function sql_fetchrow()
-    {
-    }
+		public function sql_fetchrow()
+		{
+		}
 
-    public function sql_freeresult()
-    {
-    }
+		public function sql_freeresult()
+		{
+		}
+	}
 }
