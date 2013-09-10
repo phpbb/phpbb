@@ -227,4 +227,15 @@ interface phpbb_session_storage_interface_session
 	* @return array an array containing the results of $session_function
 	*/
 	function map_recently_expired($session_length, Closure $session_function, $batch_size);
+
+	/**
+	 * Map over all friends of user with user_id
+	 *
+	 * @param          $user_id		user_id of who we should find friends to map over
+	 * @param callable $function	function to map with
+	 * 									(function should take $user param containing friend of user)
+	 *
+	 * @return array	Array containing results of the function
+	 */
+	function map_friends_online($user_id, Closure $function);
 }

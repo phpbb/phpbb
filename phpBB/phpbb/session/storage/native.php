@@ -695,4 +695,26 @@ class phpbb_session_storage_native implements
 			GROUP BY session_user_id";
 		return $this->query($sql);
 	}
+
+	/** Gets friends from zebra table with user_id
+	 *
+	 * @param $user_id
+	 * @return mixed
+	 */
+	function get_friends($user_id)
+	{
+		$sql_ary = array(
+			'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour',
+			'FROM'		=> array(
+				USERS_TABLE		=> 'u',
+				ZEBRA_TABLE		=> 'z',
+			),
+			'WHERE'		=> 'z.user_id = ' . $user_id . '
+			AND z.friend = 1
+			AND u.user_id = z.zebra_id',
+		);
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
+		return $this->query_return_all($sql);
+	}
 }
