@@ -60,7 +60,7 @@ class phpbb_db_migration_data_310_auth_provider_oauth extends phpbb_db_migration
 		return array(
 			array('module.add', array(
 				'ucp',
-				'UCP_AUTH_LINK',
+				'UCP_PROFILE',
 				array(
 					'module_basename'	=> 'ucp_auth_link',
 					'modes'				=> array('auth_link'),
