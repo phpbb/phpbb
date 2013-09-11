@@ -282,8 +282,8 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 
 	function get_user_online_time($user_id)
 	{
-		$session_time = array();
-		$viewonline = array(true);
+		$session_time = array(0);
+		$viewonline = array(1);
 		foreach($this->get_user_sessions($user_id) as $session)
 		{
 			$session_time[] = $session['session_time'];
@@ -421,7 +421,9 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 
 	function map_certain_users_with_time($user_list, Closure $function)
 	{
-		return $this->map_users_online($user_list, 60, $function);
+		$processed_users =
+			array_map(array($this, 'get_user_online_time'), $user_list);
+		return array_map($function, $processed_users);
 	}
 
 	function unset_admin($session_id)
@@ -501,24 +503,6 @@ class phpbb_session_storage_redis implements phpbb_session_storage_interface_ses
 
 	function map_friends_online($user_id, Closure $function)
 	{
-		$process_friend = function($friend)
-		{
-			$visibility = array();
-			$online_time = array();
-			foreach($this->get_user_sessions($friend['user_id'], 60) as $friend_session)
-			{
-				$visibility = $friend_session['session_viewonline'];
-				$online_time = $friend_session['session_time'];
-			}
-			$friend += array
-				(
-					'viewonline' => min($visibility),
-					'online_time' => max($online_time),
-				);
-			return $friend;
-		};
-		$processed_friends =
-			array_map($process_friend, $this->db_user->get_friends($user_id));
-		return array_map($function, $processed_friends);
+		return $this->map_certain_users_with_time($this->db_user->get_friends($user_id), $function);
 	}
 }
