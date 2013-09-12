@@ -430,7 +430,7 @@ abstract class phpbb_session_storage_keyvalue implements phpbb_session_storage_i
 		{
 			$visibility = array();
 			$online_time = array();
-			foreach($this->get_user_sessions($friend['user_id'], 60) as $friend_session)
+			foreach($this->get_user_sessions($friend['user_id']) as $friend_session)
 			{
 				$visibility = $friend_session['session_viewonline'];
 				$online_time = $friend_session['session_time'];
