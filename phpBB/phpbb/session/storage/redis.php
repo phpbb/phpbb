@@ -128,8 +128,7 @@ class phpbb_session_storage_redis
 		return array_map(array($this, 'get_session_data'), $this->redis->zRevRangeByScore(
 			"USER_{$user_id}",
 			$max,
-			$min,
-			array('limit' => array(0, 1))
+			$min
 		));
 	}
 
