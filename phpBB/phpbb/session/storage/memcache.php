@@ -77,6 +77,10 @@ class phpbb_session_storage_memcache
 
 	protected function atomic_operation($key, Closure $operation, $retry_usleep_time = 10000, $retries=0)
 	{
+		if (!$key)
+		{
+			return;
+		}
 		if ($retries > 9)
 		{
 			trigger_error('An error occurred processing session data.');
@@ -103,12 +107,18 @@ class phpbb_session_storage_memcache
 
 	protected function delete_session($session_id)
 	{
-		$this->memcache->delete($session_id);
+		if ($session_id)
+		{
+			$this->memcache->delete($session_id);
+		}
 	}
 
 	function get_session_data($session_id)
 	{
-		return $this->memcache->get($session_id);
+		if ($session_id)
+		{
+			return $this->memcache->get($session_id);
+		}
 	}
 
 	function num_active_sessions($minutes_considered_active)
@@ -136,6 +146,7 @@ class phpbb_session_storage_memcache
 	protected function get_newest_session_id($user_id)
 	{
 		$sessions = $this->memcache->get("USER_{$user_id}");
+		$sessions = $sessions ? $sessions : array();
 		return array_keys($sessions)[0];
 	}
 
