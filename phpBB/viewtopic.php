@@ -1012,7 +1012,7 @@ while ($row = $db->sql_fetchrow($result))
 		}
 	}
 
-	$rowset[$row['post_id']] = array(
+	$rowset_data = array(
 		'hide_post'			=> (($row['foe'] || $row['post_visibility'] == ITEM_DELETED) && ($view != 'show' || $post_id != $row['post_id'])) ? true : false,
 
 		'post_id'			=> $row['post_id'],
@@ -1046,6 +1046,19 @@ while ($row = $db->sql_fetchrow($result))
 		'friend'			=> $row['friend'],
 		'foe'				=> $row['foe'],
 	);
+
+	/**
+	* Modify the post rowset containing data to be displayed with posts
+	*
+	* @event core.viewtopic_post_rowset_data
+	* @var	array	rowset_data	Array with the rowset data for this post
+	* @var	array	row			Array with original user and post data
+	* @since 3.1-A1
+	*/
+	$vars = array('rowset_data', 'row');
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_post_rowset_data', compact($vars)));
+
+	$rowset[$row['post_id']] = $rowset_data;
 
 	// Define the global bbcode bitfield, will be used to load bbcodes
 	$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
