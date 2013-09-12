@@ -56,7 +56,7 @@ class phpbb_session
 		$this->db_banlist = is_null($db_banlist)  ? $native_storage : $db_banlist;
 		$this->db_cleanup = is_null( $db_cleanup) ? $native_storage : $db_cleanup;
 
-		$this->db_session = new phpbb_session_storage_redis($db, time(), $this->db_user);
+		$this->db_session = new phpbb_session_storage_memcache($db, time(), $this->db_user);
 		if (!is_null($db))
 		{
 			$this->db_session->set_db($db);

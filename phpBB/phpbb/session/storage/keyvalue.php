@@ -192,9 +192,9 @@ abstract class phpbb_session_storage_keyvalue implements phpbb_session_storage_i
 
 	function delete_all_sessions()
 	{
-		foreach($this->get_all() as $session)
+		foreach($this->get_all_ids() as $session_id)
 		{
-			$this->delete($session['session_id']);
+			$this->delete($session_id);
 		}
 	}
 
