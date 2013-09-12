@@ -28,7 +28,7 @@
 		</tr>
 	<!-- ENDIF -->
 	<tr>
-		<td class="cat" align="center" colspan="2"><!-- IF S_POST_REPORTED --><input class="btnmain" type="submit" value="{L_CLOSE_REPORT}" name="action[close]" /><!-- ELSE -->{L_REPORT_CLOSED}<!-- ENDIF --> &nbsp; <input class="btnlite" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" /></td>
+		<td class="cat" align="center" colspan="2"><!-- IF not S_REPORT_CLOSED --><input class="btnmain" type="submit" value="{L_CLOSE_REPORT}" name="action[close]" /><!-- ELSE -->{L_REPORT_CLOSED}<!-- ENDIF --> &nbsp; <input class="btnlite" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" /></td>
 	</tr>
 	</table>
 
