@@ -1502,16 +1502,14 @@ class phpbb_session
 	}
 
 	/**
-	 * Synchronize
-	 * This function goes through ALL the sessions in the session sql table
-	 * and replaces it into whatever db_session driver you are using.
-	 *
-	 * Then it goes through and does the reverse.
-	 *
-	 * Only syncs if the db_session driver is not native.
-	 *
-	 * Written for testing purposes only.
-	 */
+	* Synchronize
+	* This function goes through ALL the sessions in the session sql table
+	* and replaces it into whatever db_session driver you are using,
+	* then it goes through and does the reverse.
+	*
+	* Only syncs if the db_session driver is not native.
+	* Written for testing purposes only.
+	*/
 	function db_synchronize()
 	{
 		if (!is_a($this->db_session, 'phpbb_session_storage_native'))
