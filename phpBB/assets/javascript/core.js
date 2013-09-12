@@ -8,7 +8,9 @@ phpbb.alertTime = 100;
 // define a couple constants for keydown functions.
 var keymap = {
 	ENTER: 13,
-	ESC: 27
+	ESC: 27,
+    UP: 38,
+    DOWN: 40
 };
 
 var dark = $('#darkenwrapper');
@@ -836,6 +838,417 @@ $(document).ready(function() {
 	$('textarea[data-bbcode]').each(function() {
 		phpbb.applyCodeEditor(this);
 	});
+});
+
+
+/**
+ * Shows options when user inputs something like jQuery UI Autocomplete
+ *
+ * @param {Object} config Basic Suggest Configuration. See the parameters below.
+ *
+ * Mandatory Parameters
+ * src {String} The page from where to get the suggestions
+ * inputID {String} The ID of the input/textarea
+ * 
+ * Optional Parameters
+ * allowMultiple {Bool} Whether to allow multiple values on input. Default False.
+ * minCharacters {Number} Mininmum characters typed before its starts suggesting. Default 2.
+ * maxOptions {Number} Maximum no of Results to show. Default 20.
+ * delim {String} Delimiter for multiple options (allowMultiple should be set to true). Default \n.
+ * 
+ * You can also invoke this using markup and without using Javascript using the given attributes
+ * Add data-suggest in the controller element to invoke this e.g. data-suggest='username'
+ * Using data-allowmultiple you can set whether multiple options are possible or not
+ * Using data-delim you can set the delimiter which will be used to seperate multiple options e.g. data-delim=","
+ *
+ * @return null
+ */
+
+phpbb.suggest = function(config)
+{
+    var options = {
+        inputID: null,
+        src: null,
+        delim: '\n',
+        minCharacters: 2,
+        maxOptions: 20,
+        allowMultiple: false
+    };
+
+    config = $.extend(options, config);
+    var control = $("#" + config.inputID); //The input box
+
+    //Only allow multiple values for textarea
+    config.allowMultiple = config.allowMultiple && config.delim && control.is("textarea");
+
+    // Prevent browser suggestions
+    control.attr("autocomplete","off");
+
+    control.keydown(function (e)
+    {
+        if (e.keyCode == keymap.UP || e.keyCode == keymap.DOWN || e.keyCode == keymap.ENTER)
+        {
+            //Supress the default behaviour of the above keys
+            e.preventDefault();
+        }
+            
+    });
+    
+    //When someones inputs something
+    control.keyup(function (e)
+    {
+        var partialLen = partialText().length;
+        
+        //Capture the key up/down events
+        //And if captured then don't proceed forward as user has only pressed arrow key
+        if (keyCapture($(this), e.keyCode))
+        {
+            return false;
+        }
+
+        //If users deletes everthing
+        if (partialLen == 0)
+        {
+            hideUl();
+        }
+                    
+        //Let the length of the string be more than
+        //minCharacters
+        if (partialLen <= config.minCharacters)
+        {
+            hideUl();
+            return;
+        }
+
+        //Now make the request
+        sendRequest(partialText());
+
+        
+    });
+
+    /*
+     * This is a private function. It captures keyboard events and performs appropriate actions
+     *
+     * @param {jQuery} element The input whose keyboard events is to be monitored
+     * @param {Number} keyCode The code of the key pressed
+     *
+     * @return true If some action key was pressed such as ENTER, UP ARROW
+     * @return false If key pressed was not an action key
+     */
+
+    function keyCapture(element, keyCode)
+    {
+
+        var validKey = false,
+        allowedKeys = [13, 38, 40, 27]; //Allowed: UP, DOWN, ENTER, ESC
+
+        $.each(allowedKeys, function (key, value)
+        {
+            if (keyCode == value)
+            {
+                validKey = true;
+            }
+        });
+
+        //Was valid action taking key was pressed?
+        if (!validKey)
+        {
+            return false;
+        }
+
+        var children = $("#" + element.attr("ul-container")).children("li")
+        ,selectedOption;
+        
+        //Check for any previously selected option
+        $.each(children, function(key, value) 
+        {
+                if ($(value).attr("ul-selected") == "1")
+                {
+                    selectedOption = $(value);
+                }
+        });
+        
+        //If some option is already selected
+        if (selectedOption)
+        {
+            //If UP arrow was pressed
+            if (keyCode == keymap.UP)
+            {
+                //Was the first option previously selected?
+                if (selectedOption == $(children[0]))
+                {
+                    //Now its time to give focus to the input as there is nothing to select
+                    element.focus();
+                }
+                else
+                {
+                    //Select the previous option
+                    selectOption(selectedOption, selectedOption.prev("li"));
+                }
+            }
+            else if (keyCode == keymap.DOWN)
+            {
+                //Was the last element previously selected?
+                if (selectedOption == $(children[children.length-1]))
+                {
+                    //Now its time to give focus to the input as there is nothing to select
+                    element.focus();
+                }
+                else
+                {
+                    //Select the next option
+                    selectOption(selectedOption, selectedOption.next("li"));
+                }
+            }
+            else if (keyCode == keymap.ENTER)
+            {
+                selectedOption.click();
+                hideUl();
+                selectOption(selectedOption, false);
+            }
+        }
+        else
+        {
+            if (keyCode == keymap.UP)
+            {
+                //Select the last option
+                selectOption(false, children[children.length-1]);
+            }
+            else if (keyCode == keymap.DOWN)
+            {
+                //Select the first option
+                selectOption(false, children[0]);
+            }
+        }
+
+        if (keyCode == keymap.ESC)
+        {
+            hideUl();
+        }
+        return true; //Arrow Key event captured
+
+    }
+    
+    /*
+     * Highlights the given option and de-Highlights the given one
+     *
+     * @param {jQuery} deselect The handle of the LI Element to de-Highlight
+     * @param {jQuery} select   The handle of the LI Element to Highlight
+     *
+     * @return null
+     */
+
+    function selectOption(deselect, select)
+    {
+        $(select).addClass("phpbb-suggest-select")
+                  .attr("ul-selected","1");
+        $(deselect).removeClass("phpbb-suggest-select")
+                   .removeAttr("ul-selected");
+    }
+    
+    /*
+     * Extracts the partial text that the user has entered
+     * If multiple options are enabled then return the last one
+     *
+     * @return {String} The partial text
+     */
+
+    function partialText()
+    {
+        if (config.allowMultiple)
+        {
+            var partialValues = control.val().split(config.delim);
+            
+            //return the last value of the array
+            return partialValues[partialValues.length-1];
+        }
+        else
+        {
+            return control.val();
+        }
+    }
+    
+    /*
+     * This function is used to make an AJAX Request and to get the options
+     *
+     * @param {String} partial The partial text that user has entered
+     *
+     * @return null
+     */
+
+    function sendRequest(partial)
+    {
+        $.post(config.src, {
+            partial: partial
+        },
+        function (data)
+        {
+            var usrAry = $.parseJSON(data);
+
+            //Now show the floating div in appropriate
+            //position
+            //pass the array for peace of mind
+            showUl(usrAry);
+
+        });
+
+    }
+    
+    /*
+     * This is a private function which creates a UL division to put the suggestions into
+     * and returns the jQuery handle of UL division
+     * OR Returns the jQuery handle if UL is already there
+     *
+     * @return {jQuery} Handle to the UL Element
+     *
+     */
+
+    function createContainer() 
+    {
+        //If ul already present then return handle to it
+        if ($("#" + config.inputID + "-suggest").length != 0 || control.attr("ul-container"))
+        {
+            // Reposition as the size of the text area changes according to the input
+            return $("#" + config.inputID + "-suggest")
+                    .css("top",control.offset().top+control.outerHeight());
+        }
+
+        //Else create a new ul
+        else
+        {
+            var id      = config.inputID+"-suggest";
+            var cont    = document.createElement("ul");
+            cont.id     = id;
+
+            //Add just next to the input
+            control.after(cont);
+
+            //Stores the id of the ul container
+            control.attr("ul-container", id);
+
+            //Set the CSS and position of ul
+            cont=$(cont);
+            cont.addClass("phpbb-suggest")
+                .css("left",control.offset().left)
+                .css("top",control.offset().top+control.outerHeight())
+                .css("min-width",control.outerWidth());
+            return cont;
+        }
+    }
+
+    /*
+     * This is a private function.It shows the UL division to the user
+     *
+     * @param {Array} usersArray Array consisting of all the Options to suggest
+     *
+     * @return null
+     */
+
+    function showUl(usersArray)
+    {
+        //If empty then don't even bother
+        if (usersArray.length == 0)
+        {
+            hideUl()
+            return;
+        }
+        //Uptil now we have result stored in users_array
+        var cont = createContainer();
+
+        //Remove any previous results stored
+        cont.empty();
+
+
+        //Show users in the list
+        var newLi;
+        $.each(usersArray, function (key, value)
+        {
+            newLi       = document.createElement("li");
+            var input   = $("[ul-container="+cont.attr("id")+"]");
+
+            //decide what happens when user selects any option
+            $(newLi).text(value).click(function ()
+            {
+                if (config.allowMultiple)
+                {
+                    //Get all the values of the textarea and split into array
+                    var usernameList = control.val().split(config.delim);
+                    usernameList[usernameList.length-1] = value+config.delim;
+
+                    //Join all the values and insert it into textarea
+                    input.val(usernameList.join(config.delim));
+
+                }
+                else
+                {
+                    input.val(value);
+                }
+                
+                //Now place the cursor to the end of the string
+                input[0].setSelectionRange(input.val().length, input.val().length);
+                input.focus();
+
+                cont.hide();
+            
+            });
+
+            
+            //Add the options to the UL list
+            cont.append(newLi);
+        });
+                    
+                    
+        //show the div to the user
+        cont.show();
+    }
+    
+    /*
+     * This is a private function. This hides the UL Division from the user
+     *
+     * @return null
+     */
+
+    function hideUl()
+    {
+        $("#" + config.inputID+"-suggest").hide();
+    }
+                
+
+
+}
+
+// Map here the URL to the available options
+var suggestMap = {
+    username: "memberlist.php"
+}
+
+
+$('[data-suggest]').each(function () {
+    var $this = $(this),
+        ajax = $this.attr('data-suggest'),
+        allowMultiple = $this.attr('data-allowmultiple') !== undefined ? $this.attr('data-allowmultiple') : false,
+        delim = $this.attr('data-delim') !== undefined ? $this.attr('data-delim') : false;
+    if (allowMultiple == 'true')
+    {
+        if (!delim)
+        {
+            delim = undefined;
+        }
+        phpbb.suggest({
+            src: "memberlist.php", //Get from suggestMap
+            allowMultiple: true,
+            delim: delim,
+            inputID: this.id
+        });
+            
+    }
+    else
+    {
+        phpbb.suggest({
+            src: "memberlist.php", //Get from suggestMap
+            inputID: this.id
+        });
+    }
 });
 
 })(jQuery); // Avoid conflicts with other libraries

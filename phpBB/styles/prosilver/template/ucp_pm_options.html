@@ -47,9 +47,9 @@
 				<dd>
 					<!-- IF S_COND_SELECT -->
 						<!-- IF S_TEXT_CONDITION -->
-							<input type="text" name="rule_string" value="{CURRENT_STRING}" class="inputbox medium" maxlength="250" />
+							<input type="text" name="rule_string" value="{CURRENT_STRING}" class="inputbox medium" maxlength="250" data-suggest="username" />
 						<!-- ELSEIF S_USER_CONDITION -->
-							<input type="text" name="rule_string" value="{CURRENT_STRING}" class="inputbox tiny" />&nbsp;<span>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</span>
+							<input type="text" name="rule_string" value="{CURRENT_STRING}" class="inputbox tiny" data-suggest="username" />&nbsp;<span>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</span>
 						<!-- ELSEIF S_GROUP_CONDITION -->
 							<input type="hidden" name="rule_string" value="{CURRENT_STRING}" /><!-- IF S_GROUP_OPTIONS --><select name="rule_group_id">{S_GROUP_OPTIONS}</select><!-- ELSE -->{L_NO_GROUPS}<!-- ENDIF -->
 						<!-- ENDIF -->

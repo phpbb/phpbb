@@ -31,7 +31,7 @@
 			<!-- ENDIF -->
 			<!-- IF not S_EDIT_POST -->
 			<dl class="pmlist">
-				<dt><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></dt>
+				<dt><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1" data-suggest="username" data-allowmultiple="true"></textarea></dt>
 				<dd><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></span></dd>
 				<dd><input type="submit" name="add_to" value="{L_ADD}" class="button2" tabindex="1" /></dd>
 				<dd><input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" tabindex="1" /></dd>
@@ -51,7 +51,7 @@
 				<!-- ENDIF -->
 
 				<!-- IF not S_EDIT_POST -->
-				<dd><input class="inputbox" type="text" name="username_list" id="username_list" size="20" value="" /> <input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
+				<dd><input class="inputbox" type="text" name="username_list" id="username_list" size="20" value="" data-suggest="username" /> <input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
 				<!-- ENDIF -->
 			</dl>
 		<!-- ENDIF -->
