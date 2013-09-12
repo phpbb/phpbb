@@ -93,15 +93,15 @@ class phpbb_filesystem
 		// Path info (e.g. /foo/bar)
 		$path_info = $this->clean_path($symfony_request->getPathInfo());
 
-		// Full request URI (e.g. phpBB/index.php/foo/bar)
+		// Full request URI (e.g. phpBB/app.php/foo/bar)
 		$request_uri = $symfony_request->getRequestUri();
 
-		// Script name URI (e.g. phpBB/index.php)
+		// Script name URI (e.g. phpBB/app.php)
 		$script_name = $symfony_request->getScriptName();
 
 		/*
 		* If the path info is empty (single /), then we're not using
-		*	a route like index.php/foo/bar
+		*	a route like app.php/foo/bar
 		*/
 		if ($path_info === '/')
 		{
