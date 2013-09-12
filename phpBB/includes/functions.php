@@ -5733,7 +5733,6 @@ function phpbb_create_symfony_request(phpbb_request $request)
 */
 function phpbb_get_web_root_path(Request $symfony_request, $phpbb_root_path = '')
 {
-	global $phpEx;
 	static $path;
 	if (null !== $path)
 	{
@@ -5749,8 +5748,9 @@ function phpbb_get_web_root_path(Request $symfony_request, $phpbb_root_path = ''
 
 	$corrections = substr_count($path_info, '/');
 
-	// We need to account for whether or not app.php is in the URL
-	if (strpos($symfony_request->server->get('REQUEST_URI', ''), 'app.' . $phpEx . '/') === false)
+	// When URL Rewriting is enabled, app.php is optional. We have to
+	// correct for it not being there
+	if (strpos($symfony_request->getRequestUri(), $symfony_request->getScriptName()) === false)
 	{
 		$corrections -= 1;
 	}
