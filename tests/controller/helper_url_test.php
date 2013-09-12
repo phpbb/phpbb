@@ -40,6 +40,23 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 		);
 	}
 
+	/**
+	* @dataProvider helper_url_data_no_rewrite()
+	*/
+	public function test_helper_url_no_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
+	{
+		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
+		$this->user = $this->getMock('phpbb_user');
+		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $this->user, new phpbb_template_context());
+
+		// We don't use mod_rewrite in these tests
+		$config = new phpbb_config(array('enable_mod_rewrite' => '0'));
+		$helper = new phpbb_controller_helper($this->template, $this->user, $config, '', 'php');
+		$this->assertEquals($helper->url($route, $params, $is_amp, $session_id), $expected);
+	}
+
 	public function helper_url_data_with_rewrite()
 	{
 		return array(
@@ -69,23 +86,6 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 	}
 
 	/**
-	* @dataProvider helper_url_data_no_rewrite()
-	*/
-	public function test_helper_url_no_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
-	{
-		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
-
-		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
-		$this->user = $this->getMock('phpbb_user');
-		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $this->user, new phpbb_template_context());
-
-		// We don't use mod_rewrite in tests
-		$config = new phpbb_config(array('enable_mod_rewrite' => '0'));
-		$helper = new phpbb_controller_helper($this->template, $this->user, $config, '', 'php');
-		$this->assertEquals($helper->url($route, $params, $is_amp, $session_id), $expected);
-	}
-
-	/**
 	* @dataProvider helper_url_data_with_rewrite()
 	*/
 	public function test_helper_url_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
@@ -96,7 +96,6 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 		$this->user = $this->getMock('phpbb_user');
 		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $this->user, new phpbb_template_context());
 
-		// We don't use mod_rewrite in tests
 		$config = new phpbb_config(array('enable_mod_rewrite' => '1'));
 		$helper = new phpbb_controller_helper($this->template, $this->user, $config, '', 'php');
 		$this->assertEquals($helper->url($route, $params, $is_amp, $session_id), $expected);
