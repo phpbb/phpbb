@@ -173,7 +173,28 @@ class phpbb_storage_db_session extends phpbb_session_test_case
 	}
 
 	function test_map_certain_users_with_time()
-	{}
+	{
+		$sessions =
+			$this
+				->session
+				->db_session
+				->map_certain_users_with_time(
+					array(ANONYMOUS),
+					function ($u) {return $u;}
+				);
+		$this->assert_array_content_equals(
+			array
+			(
+				array
+				(
+					'session_user_id' => ANONYMOUS,
+					'online_time' => $this->set_time,
+					'viewonline' => 1,
+				)
+			),
+			$sessions
+		);
+	}
 
 	function test_unset_admin()
 	{
