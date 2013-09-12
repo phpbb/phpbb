@@ -573,6 +573,31 @@ $schema_data['phpbb_notifications'] = array(
 	),
 );
 
+$schema_data['phpbb_oauth_accounts'] = array(
+	'COLUMNS' => array(
+		'user_id'			=> array('UINT', 0),
+		'provider'			=> array('VCHAR', ''),
+		'oauth_provider_id'	=> array('TEXT_UNI', ''),
+	),
+	'PRIMARY_KEY' => array(
+		'user_id',
+		'provider',
+	),
+);
+
+$schema_data['phpbb_oauth_tokens'] = array(
+	'COLUMNS' => array(
+		'user_id'			=> array('UINT', 0), // phpbb_users.user_id
+		'session_id'		=> array('CHAR:32', ''), // phpbb_sessions.session_id used only when user_id not set
+		'provider'			=> array('VCHAR', ''), // Name of the OAuth provider
+		'oauth_token'		=> array('MTEXT', ''), // Serialized token
+	),
+	'KEYS' => array(
+		'user_id'			=> array('INDEX', 'user_id'),
+		'provider'			=> array('INDEX', 'provider'),
+	),
+);
+
 $schema_data['phpbb_poll_options'] = array(
 	'COLUMNS'		=> array(
 		'poll_option_id'		=> array('TINT:4', 0),
