@@ -101,6 +101,7 @@ $cache = $phpbb_container->get('cache');
 
 // Instantiate some basic classes
 $phpbb_dispatcher = $phpbb_container->get('dispatcher');
+$phpbb_filesystem = $phpbb_container->get('filesystem');
 $request	= $phpbb_container->get('request');
 $user		= $phpbb_container->get('user');
 $auth		= $phpbb_container->get('auth');
