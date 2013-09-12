@@ -90,25 +90,49 @@ class phpbb_filesystem
 			return $this->web_root_path;
 		}
 
-		$path_info = $symfony_request->getPathInfo();
+		// Path info (e.g. /foo/bar)
+		$path_info = $this->clean_path($symfony_request->getPathInfo());
+
+		// Full request URI (e.g. phpBB/index.php/foo/bar)
+		$request_uri = $symfony_request->getRequestUri();
+
+		// Script name URI (e.g. phpBB/index.php)
+		$script_name = $symfony_request->getScriptName();
+
+		/*
+		* If the path info is empty (single /), then we're not using
+		*	a route like index.php/foo/bar
+		*/
 		if ($path_info === '/')
 		{
 			return $this->web_root_path = $this->phpbb_root_path;
 		}
 
-		$path_info = $this->clean_path($path_info);
+		// How many corrections might we need?
+		$corrections = substr_count($path_info, '/');
 
-		// Do not count / at start of path
-		$corrections = substr_count(substr($path_info, 1), '/');
-
-		// When URL Rewriting is enabled, app.php is optional. We have to
-		// correct for it not being there
-		if (strpos($symfony_request->getRequestUri(), $symfony_request->getScriptName()) === false)
+		/*
+		* If the script name (e.g. phpBB/app.php) exists in the
+		*	requestUri (e.g. phpBB/app.php/foo/template), then we
+		*	are have a non-rewritten URL.
+		*/
+		if (strpos($request_uri, $script_name) === 0)
 		{
-			$corrections -= 1;
+			/*
+			* Append ../ to the end of the phpbb_root_path as many times
+			*	as / exists in path_info
+			*/
+			return $this->web_root_path = $this->phpbb_root_path . str_repeat('../', $corrections);
 		}
 
-		return $this->web_root_path = $this->phpbb_root_path . str_repeat('../', $corrections);
+		/*
+		* If we're here it means we're at a re-written path, so we must
+		*	correct the relative path for web URLs. We must append ../
+		*	to the end of the root path as many times as / exists in path_info
+		*	less one time (because the script, e.g. /app.php, doesn't exist in
+		*	the URL)
+		*/
+		return $this->web_root_path = $this->phpbb_root_path . str_repeat('../', $corrections - 1);
 	}
 
 	/**

@@ -62,7 +62,7 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 			),
 			array(
 				$this->phpbb_root_path . 'test.php',
-				$this->phpbb_root_path . 'test.php',
+				$this->phpbb_root_path . '../test.php',
 				'//',
 			),
 			array(
@@ -75,7 +75,16 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 			array(
 				$this->phpbb_root_path . 'test.php',
 				$this->phpbb_root_path . '../../test.php',
-				'////',
+				'/foo/template',
+				'/phpbb3-fork/phpBB/app.php/foo/template',
+				'/phpbb3-fork/phpBB/app.php',
+			),
+			array(
+				$this->phpbb_root_path . 'test.php',
+				$this->phpbb_root_path . '../test.php',
+				'/foo/template',
+				'/phpbb3-fork/phpBB/foo/template',
+				'/phpbb3-fork/phpBB/app.php',
 			),
 		);
 	}
