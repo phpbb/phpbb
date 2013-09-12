@@ -2814,8 +2814,22 @@ function build_url($strip_vars = false)
 {
 	global $user, $phpbb_root_path;
 
+	$page = $user->page['page'];
+
+	// We need to be cautious here.
+	// On some situations, the redirect path is an absolute URL, sometimes a relative path
+	// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
+	// else we use the URL directly.
+	$url_parts = @parse_url($page);
+
+	// URL
+	if ($url_parts !== false && !empty($url_parts['scheme']) && !empty($url_parts['host']))
+	{
+		$page = $phpbb_root_path . $page;
+	}
+
 	// Append SID
-	$redirect = append_sid($user->page['page'], false, false);
+	$redirect = append_sid($page, false, false);
 
 	// Add delimiter if not there...
 	if (strpos($redirect, '?') === false)
@@ -2870,19 +2884,7 @@ function build_url($strip_vars = false)
 		$redirect .= ($query) ? '?' . $query : '';
 	}
 
-	// We need to be cautious here.
-	// On some situations, the redirect path is an absolute URL, sometimes a relative path
-	// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
-	// else we use the URL directly.
-	$url_parts = @parse_url($redirect);
-
-	// URL
-	if ($url_parts !== false && !empty($url_parts['scheme']) && !empty($url_parts['host']))
-	{
-		return str_replace('&', '&amp;', $redirect);
-	}
-
-	return $phpbb_root_path . str_replace('&', '&amp;', $redirect);
+	return str_replace('&', '&amp;', $redirect);
 }
 
 /**
@@ -5079,7 +5081,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container, $symfony_request;
+	global $phpbb_dispatcher, $request, $phpbb_container, $symfony_request, $adm_relative_path;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5379,7 +5381,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_FORUM_ID'			=> $forum_id,
 		'S_TOPIC_ID'			=> $topic_id,
 
-		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id)),
+		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$phpbb_root_path}{$adm_relative_path}index.$phpEx", false, true, $user->session_id)),
 		'S_LOGIN_REDIRECT'		=> build_hidden_fields(array('redirect' => build_url())),
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
