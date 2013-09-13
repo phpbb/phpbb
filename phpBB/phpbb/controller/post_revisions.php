@@ -480,7 +480,7 @@ class phpbb_controller_post_revisions
 		{
 			$error = '';
 			$code = 500;
-			if (!check_form_key('restore', 120))
+			if (!check_form_key('restore'))
 			{
 				$error = 'FORM_INVALID';
 			}
