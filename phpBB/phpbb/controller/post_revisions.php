@@ -366,7 +366,7 @@ class phpbb_controller_post_revisions
 	/**
 	* Helper method for deleting one or more post revisions
 	*
-	* This does NOT check authorization, but should not be called without
+	* This does NOT check authorization, so it should not be called without
 	* checking for m_revisions_delete
 	*
 	* @param mixed $revision_id Revision ID or array of revision IDs
@@ -408,7 +408,7 @@ class phpbb_controller_post_revisions
 		{
 			foreach ($post_ids as $post_id => $deleted_revisions_count)
 			{
-				$sql = 'UPDATE ' . POSTS_TABLE . ' SET post_edit_count = post_edit_count - ' . (int) $deleted_revisions_count .
+				$sql = 'UPDATE ' . POSTS_TABLE . ' SET post_revision_count = post_revision_count - ' . (int) $deleted_revisions_count .
 					' WHERE post_id = ' . (int) $post_id;
 				$result = $this->db->sql_query($sql);
 			}

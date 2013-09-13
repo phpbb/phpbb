@@ -72,12 +72,12 @@ class phpbb_db_migration_data_310_revisions extends phpbb_db_migration
 	public function update_data()
 	{
 		return array(
-			array('permission.add', array('f_revisions', false)),
+			array('permission.add', array('f_revisions', 'f_edit')),
 			array('permission.add', array('f_wiki_create', false)),
 			array('permission.add', array('f_wiki_edit', false)),
-			array('permission.add', array('m_revisions', false)),
-			array('permission.add', array('m_delete_revisions', false)),
-			array('permission.add', array('m_protect_revisions', false)),
+			array('permission.add', array('m_revisions', 'm_edit')),
+			array('permission.add', array('m_delete_revisions', 'm_edit')),
+			array('permission.add', array('m_protect_revisions', 'm_edit')),
 
 			array('permission.permission_unset', array('ROLE_FORUM_STANDARD', 'f_revisions')),
 			array('permission.permission_unset', array('ROLE_FORUM_STANDARD', 'f_wiki_create')),

@@ -121,6 +121,11 @@ class phpbb_revisions_comparison
 	/**
 	* Assign template vars for the comparison
 	*
+	* Note that calling this function multiple times will destroy any previous
+	*	output from this function or to the template loop revision. If you must
+	*	output multiple posts, catch the output from this function and output
+	*	it to the template.
+	*
 	* @var phpbb_revisions_post $post The post containing the compared revisions
 	* @var phpbb_template $template Template object
 	* @var phpbb_user $user User object
@@ -133,10 +138,13 @@ class phpbb_revisions_comparison
 	* @var array $ajax_data Array of data to be sent with the JSON request
 	* @var bool $full_mode When false, revisions are listed without comparison
 	*						or management options
-	* @return null
+	* @return string parsed template output
 	*/
 	public function output_template_block(phpbb_revisions_post $post, phpbb_template $template, phpbb_user $user, phpbb_auth $auth, phpbb_request $request, $can_restore, $phpbb_root_path, $phpEx, $full_mode = true)
 	{
+		// Destroy existing loops
+		$template->destroy_block_vars('revision');
+
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
 		if (!$full_mode)
@@ -238,6 +246,12 @@ class phpbb_revisions_comparison
 				'lines_changed'			=> $l_lines_added_removed,
 			));
 		}
+
+		$template->set_filenames(array(
+			'revisions_comparison_list'	=> 'revisions_comparison_list.html',
+		));
+
+		return $template->assign_display('revisions_comparison_list', '', true);
 	}
 
 	/**
