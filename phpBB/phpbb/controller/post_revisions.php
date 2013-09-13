@@ -366,7 +366,7 @@ class phpbb_controller_post_revisions
 	/**
 	* Helper method for deleting one or more post revisions
 	*
-	* This does NOT check authorization, but should not be called without
+	* This does NOT check authorization, so it should not be called without
 	* checking for m_revisions_delete
 	*
 	* @param mixed $revision_id Revision ID or array of revision IDs
