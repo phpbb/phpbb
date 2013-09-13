@@ -3167,29 +3167,13 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
  */
 function phpbb_purge_post_revisions(phpbb_db_driver $db)
 {
-	// Get all post IDs of affected posts (not all posts will have revisions)
-	$post_ids = array();
-	$sql = 'SELECT post_id
-		FROM ' . POST_REVISIONS_TABLE;
-	$result = $db->sql_query($sql);
-	while($row = $db->sql_fetchrow($result));
-	{
-		if (in_array($row['post_id'], $post_ids))
-		{
-			continue;
-		}
-
-		$post_ids[] = $row['post_id'];
-	}
-
 	$db->sql_transaction('begin');
 
 	$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE;
 	$db->sql_query($sql);
 
 	$sql = 'UPDATE ' . POSTS_TABLE . '
-		SET post_revision_count = 0
-		WHERE ' . $db->sql_in_set('post_id', $post_ids);
+		SET post_revision_count = 0';
 	$db->sql_query($sql);
 
 	$db->sql_transaction('commit');

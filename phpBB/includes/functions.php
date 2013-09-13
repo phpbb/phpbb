@@ -5806,22 +5806,13 @@ function phpbb_get_revision_post_id($revision_ids, dbal $db)
 		$revision_ids = array($revision_ids);
 	}
 
-	foreach ($revision_ids as $revision_id)
-	{
-		if (!$revision_id)
-		{
-			continue;
-		}
+	$sql = 'SELECT post_id
+		FROM ' . POST_REVISIONS_TABLE . '
+		WHERE revision_id IN (' . implode(',', $revision_ids) . ')
+			AND post_id <> 0';
+	$result = $db->sql_query_limit($sql, 1);
+	$post_id = $db->sql_fetchfield('post_id') ?: 0;
+	$db->sql_freeresult($result);
 
-		$sql = 'SELECT post_id
-			FROM ' . POST_REVISIONS_TABLE . '
-			WHERE revision_id = ' . (int) $revision_id;
-		$result = $db->sql_query($sql);
-		$post_id = $db->sql_fetchfield('post_id') ?: 0;
-		$db->sql_freeresult($result);
-
-		return (int) $post_id;
-	}
-
-	return false;
+	return $post_id ?: false;
 }

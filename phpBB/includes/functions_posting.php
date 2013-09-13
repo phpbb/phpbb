@@ -1642,8 +1642,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			if ($config['track_post_revisions']
 				&& !empty($data['original_post_data'])
 				&& (($data['poster_id'] == $user->data['user_id'] && !$data['post_edit_locked'])
-				|| $auth->acl_getf('m_edit', $data['forum_id'])
-				|| ($data['post_wiki'] && $auth->acl_getf('f_wiki_edit', $data['forum_id']))))
+					|| $auth->acl_getf('m_edit', $data['forum_id'])
+					|| ($data['post_wiki'] && $auth->acl_getf('f_wiki_edit', $data['forum_id']))))
 			{
 				$sql_data[POST_REVISIONS_TABLE]['sql'] = array(
 					'post_id'				=> $data['original_post_data']['post_id'],
@@ -1889,7 +1889,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			$sql = 'UPDATE ' . POST_REVISIONS_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', array('revision_protected' => 1)) . '
-				WHERE post_id = ' . $data['post_id'];
+				WHERE post_id = ' . (int) $data['post_id'];
 			$db->sql_query($sql);
 		}
 
