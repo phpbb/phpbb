@@ -408,7 +408,7 @@ class phpbb_controller_post_revisions
 		{
 			foreach ($post_ids as $post_id => $deleted_revisions_count)
 			{
-				$sql = 'UPDATE ' . POSTS_TABLE . ' SET post_edit_count = post_edit_count - ' . (int) $deleted_revisions_count .
+				$sql = 'UPDATE ' . POSTS_TABLE . ' SET post_revision_count = post_revision_count - ' . (int) $deleted_revisions_count .
 					' WHERE post_id = ' . (int) $post_id;
 				$result = $this->db->sql_query($sql);
 			}
