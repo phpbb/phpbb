@@ -38,7 +38,8 @@ class phpbb_notification_type_group_request extends phpbb_notification_type_base
 	public function is_available()
 	{
 		// Leader of any groups?
-		$sql = 'SELECT group_id FROM ' . USER_GROUP_TABLE . '
+		$sql = 'SELECT group_id
+			FROM ' . USER_GROUP_TABLE . '
 			WHERE user_id = ' . (int) $this->user->data['user_id'] . '
 				AND group_leader = 1';
 		$result = $this->db->sql_query_limit($sql, 1);
@@ -74,7 +75,8 @@ class phpbb_notification_type_group_request extends phpbb_notification_type_base
 			'ignore_users'		=> array(),
 		), $options);
 
-		$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . '
+		$sql = 'SELECT user_id
+			FROM ' . USER_GROUP_TABLE . '
 			WHERE group_leader = 1
 				AND group_id = ' . (int) $group['group_id'];
 		$result = $this->db->sql_query($sql);
