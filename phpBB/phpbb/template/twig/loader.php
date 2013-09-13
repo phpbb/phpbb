@@ -110,7 +110,7 @@ class phpbb_template_twig_loader extends Twig_Loader_Filesystem
 
 		try
 		{
-		// Try validating the name (which may throw an exception)
+			// Try validating the name (which may throw an exception)
 			parent::validateName($name);
 		}
 		catch (Twig_Error_Loader $e)
