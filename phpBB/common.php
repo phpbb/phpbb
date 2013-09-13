@@ -47,7 +47,12 @@ if (!defined('PHPBB_INSTALLED'))
 
 	// Eliminate . and .. from the path
 	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
-	$phpbb_filesystem = new phpbb_filesystem($phpbb_root_path);
+	$phpbb_filesystem = new phpbb_filesystem(
+		new phpbb_symfony_request(
+			new phpbb_request()
+		),
+		$phpbb_root_path
+	);
 	$script_path = $phpbb_filesystem->clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;

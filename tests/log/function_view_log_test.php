@@ -23,10 +23,8 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 	public static function view_log_function_data()
 	{
-		global $phpEx, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path;
+		global $phpEx, $phpbb_dispatcher;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$phpbb_container = new phpbb_mock_container_builder();
-		$phpbb_container->set('filesystem', new phpbb_filesystem($phpbb_root_path));
 
 		$expected_data_sets = array(
 			1 => array(

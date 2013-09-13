@@ -2411,7 +2411,6 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook, $phpbb_filesystem;
 	global $phpbb_dispatcher;
-	global $symfony_request, $phpbb_root_path, $phpbb_container;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -2422,7 +2421,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	// Update the root path with the correct relative web path
 	if ($phpbb_filesystem instanceof phpbb_filesystem)
 	{
-		$url = $phpbb_filesystem->update_web_root_path($url, $symfony_request);
+		$url = $phpbb_filesystem->update_web_root_path($url);
 	}
 
 	$append_sid_overwrite = false;
@@ -2820,7 +2819,7 @@ function build_url($strip_vars = false)
 	// On some situations, the redirect path is an absolute URL, sometimes a relative path
 	// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
 	// else we use the URL directly.
-	$url_parts = @parse_url($page);
+	$url_parts = parse_url($page);
 
 	// URL
 	if ($url_parts !== false && !empty($url_parts['scheme']) && !empty($url_parts['host']))
@@ -5081,7 +5080,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container, $symfony_request, $adm_relative_path;
+	global $phpbb_dispatcher, $request, $phpbb_container, $adm_relative_path;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5242,7 +5241,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// call below. We need to correct it in case we are accessing from a
 	// controller because the web paths will be incorrect otherwise.
 	$phpbb_filesystem = $phpbb_container->get('filesystem');
-	$corrected_path = $phpbb_filesystem->get_web_root_path($symfony_request);
+	$corrected_path = $phpbb_filesystem->get_web_root_path();
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 	// Send a proper content-language to the output
