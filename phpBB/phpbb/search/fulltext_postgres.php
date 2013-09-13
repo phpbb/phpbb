@@ -603,7 +603,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_firstpost = ($firstpost_only) ? ' AND p.post_id = t.topic_first_post_id' : '';
-		$sql_wiki		= ($searc_wiki) ? ' AND p.post_wiki' : '';
+		$sql_wiki		= ($search_wiki) ? ' AND p.post_wiki' : '';
 
 		// Build sql strings for sorting
 		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
