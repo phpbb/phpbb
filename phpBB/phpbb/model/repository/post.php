@@ -86,6 +86,23 @@ class phpbb_model_repository_post
 			return false;
 		}
 
+		$this->auth->acl($user_data);
+
+		if ($data['topic_id'] == 0)
+		{
+			if (!$this->auth->acl_get('f_post', $data['forum_id']))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			if (!$this->auth->acl_get('f_reply', $data['forum_id']))
+			{
+				return false;
+			}
+		}
+
 		$old_user_data = $this->user->data;
 		$this->user->data['user_id'] = $user_id;
 		$this->user->data['username'] = $user_data['username'];
