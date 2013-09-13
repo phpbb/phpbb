@@ -22,6 +22,7 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 			parent::get_notification_types(),
 			array(
 				'group_request',
+				'group_request_approved',
 			)
 		);
 	}
@@ -74,6 +75,34 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 			),
 			array(
 				'user_id'		=> 2,
+			)
+		);
+
+		// Approve user 3 joining the group
+		group_user_attributes('approve', $group_id, array(3));
+
+		// user 3 pending notification should have been deleted
+		$this->assert_notifications(
+			array(),
+			array(
+				'user_id'		=> 2,
+			)
+		);
+
+		$this->assert_notifications(
+			array(
+				// user 3 approved notification
+				array(
+					'item_id'				=> $group_id, // user_id of requesting join
+					'user_id'	   			=> 3,
+					'notification_read'		=> 0,
+					'notification_data'	   	=> array(
+						'group_name'			=> 'test',
+					),
+				),
+			),
+			array(
+				'user_id'		=> 3,
 			)
 		);
 	}
