@@ -2226,6 +2226,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		update_forum_tracking_info($data['forum_id'], $forum_last_post_time, $f_mark_time, false);
 	}
 
+	// If a username was supplied or the poster is a guest, we will use the supplied username.
+	// Doing it this way we can use "...post by guest-username..." in notifications when
+	// "guest-username" is supplied or ommit the username if it is not.
+	$username = ($username !== '' || !$user->data['is_registered']) ? $username : $user->data['username'];
+
 	// Send Notifications
 	$notification_data = array_merge($data, array(
 		'topic_title'		=> (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
