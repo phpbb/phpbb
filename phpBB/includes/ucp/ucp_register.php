@@ -42,6 +42,7 @@ class ucp_register
 		$submit			= $request->is_set_post('submit');
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
+		$register_mode	= $request->variable('register_mode', '');
 
 		if ($agreed)
 		{
@@ -81,7 +82,9 @@ class ucp_register
 		$cp = new custom_profile();
 
 		$error = $cp_data = $cp_error = array();
-		$s_hidden_fields = array();
+		$s_hidden_fields = array(
+			'register_mode'	=> $register_mode,
+		);
 
 		// Handle login_link data added to $_hidden_fields
 		$login_link_data = $this->get_login_link_data_array();
@@ -99,6 +102,13 @@ class ucp_register
 			}
 
 			$s_hidden_fields = array_merge($s_hidden_fields, $this->get_login_link_data_for_hidden_fields($login_link_data));
+
+			// Ask user if they wish to register with an external account or create a board account
+			if (!$register_mode)
+			{
+				$this->tpl_name = 'ucp_register_mode_select.html';
+				return;
+			}
 		}
 
 		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
