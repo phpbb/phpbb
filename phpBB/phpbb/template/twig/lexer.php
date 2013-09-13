@@ -75,7 +75,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 
 		// Fix tokens that may have inline variables (e.g. <!-- DEFINE $TEST = '{FOO}')
 		$code = $this->fix_inline_variable_tokens(array(
-			'DEFINE.+=',
+			'DEFINE \$[a-zA-Z0-9_]+ =',
 			'INCLUDE',
 			'INCLUDEPHP',
 			'INCLUDEJS',
@@ -161,6 +161,9 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			$subset = trim(substr($matches[2], 1, -1)); // Remove parenthesis
 			$body = $matches[3];
 
+			// Replace <!-- BEGINELSE -->
+			$body = str_replace('<!-- BEGINELSE -->', '{% else %}', $body);
+
 			// Is the designer wanting to call another loop in a loop?
 			// <!-- BEGIN loop -->
 			// <!-- BEGIN !loop2 -->
@@ -205,9 +208,6 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			return "{% for {$name} in {$parent}{$name}{$subset} %}{$body}{% endfor %}";
 		};
 
-		// Replace <!-- BEGINELSE --> correctly, only needs to be done once
-		$code = str_replace('<!-- BEGINELSE -->', '{% else %}', $code);
-
 		return preg_replace_callback('#<!-- BEGIN ([!a-zA-Z0-9_]+)(\([0-9,\-]+\))? -->(.+?)<!-- END \1 -->#s', $callback, $code);
 	}
 
@@ -229,18 +229,18 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		{
 			$inner = $matches[2];
 			// Replace $TEST with definition.TEST
-			$inner = preg_replace('#\s\$([a-zA-Z_0-9]+)#', ' definition.$1', $inner);
+			$inner = preg_replace('#(\s\(?!?)\$([a-zA-Z_0-9]+)#', '$1definition.$2', $inner);
 
 			// Replace .foo with loops.foo|length
-			$inner = preg_replace('#\s\.([a-zA-Z_0-9]+)([^a-zA-Z_0-9\.])#', ' loops.$1|length$2', $inner);
+			$inner = preg_replace('#(\s\(?!?)\.([a-zA-Z_0-9]+)([^a-zA-Z_0-9\.])#', '$1loops.$2|length$3', $inner);
 
 			// Replace .foo.bar with foo.bar|length
-			$inner = preg_replace('#\s\.([a-zA-Z_0-9\.]+)([^a-zA-Z_0-9\.])#', ' $1|length$2', $inner);
+			$inner = preg_replace('#(\s\(?!?)\.([a-zA-Z_0-9\.]+)([^a-zA-Z_0-9\.])#', '$1$2|length$3', $inner);
 
 			return "<!-- {$matches[1]}IF{$inner}-->";
 		};
 
-		return preg_replace_callback('#<!-- (ELSE)?IF((.*)[\s][\$|\.|!]([^\s]+)(.*))-->#', $callback, $code);
+		return preg_replace_callback('#<!-- (ELSE)?IF((.*?) \(?!?[\$|\.]([^\s]+)(.*?))-->#', $callback, $code);
 	}
 
 	/**
@@ -264,10 +264,10 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		*/
 
 		// Replace <!-- DEFINE $NAME with {% DEFINE definition.NAME
-		$code = preg_replace('#<!-- DEFINE \$(.*)-->#', '{% DEFINE $1 %}', $code);
+		$code = preg_replace('#<!-- DEFINE \$(.*?) -->#', '{% DEFINE $1 %}', $code);
 
 		// Changing UNDEFINE NAME to DEFINE NAME = null to save from creating an extra token parser/node
-		$code = preg_replace('#<!-- UNDEFINE \$(.*)-->#', '{% DEFINE $1= null %}', $code);
+		$code = preg_replace('#<!-- UNDEFINE \$(.*?)-->#', '{% DEFINE $1= null %}', $code);
 
 		// Replace all of our variables, {$VARNAME}, with Twig style, {{ definition.VARNAME }}
 		$code = preg_replace('#{\$([a-zA-Z0-9_\.]+)}#', '{{ definition.$1 }}', $code);

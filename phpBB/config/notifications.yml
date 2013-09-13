@@ -103,6 +103,42 @@ services:
         tags:
             - { name: notification.type }
 
+    notification.type.group_request:
+        class: phpbb_notification_type_group_request
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
+        tags:
+            - { name: notification.type }
+
+    notification.type.group_request_approved:
+        class: phpbb_notification_type_group_request_approved
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
+        tags:
+            - { name: notification.type }
+
     notification.type.pm:
         class: phpbb_notification_type_pm
         scope: prototype # scope MUST be prototype for this to work!

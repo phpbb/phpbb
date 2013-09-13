@@ -158,7 +158,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
 				array(),
-				"xyz\nabc\n\$VALUE == 'abc'abc\nbar\nbar\nabc\ntest!@#$%^&*()_-=+{}[]:;\",<.>/?\n[]",
+				"xyz\nabc\n\$VALUE == 'abc'\n(\$VALUE == 'abc')\n!\$DOESNT_EXIST\n(!\$DOESNT_EXIST)\nabc\nbar\nbar\nabc\ntest!@#$%^&*()_-=+{}[]:;\",<.>/?[]|foobar|",
 			),
 			array(
 				'define_advanced.html',
@@ -237,7 +237,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('VARIABLE' => 'variable.html'),
 				array(),
 				array(),
-				'variable.html',
+				"variable.html\nvariable.html\nvariable.html",
 			),
 			array(
 				'include_loop_define.html',
