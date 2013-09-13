@@ -94,7 +94,7 @@ $lang = array_merge($lang, array(
 	),
 	'REVISION_DELETED_SUCCESS_NO_MORE'	=> array(
 		1 => 'The selected revision has been deleted. There are no more revisions to display.',
-		2 => 'The selected revisions have been deletd. There are no more revisions to display.',
+		2 => 'The selected revisions have been deleted. There are no more revisions to display.',
 	),
 	'REVISION_DELETE_FAIL'				=> array(
 		1 => 'The selected revision could not be deleted.',
