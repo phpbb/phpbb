@@ -797,11 +797,13 @@ class phpbb_notification_manager
 	* Delete all notifications older than a certain time
 	*
 	* @param int $timestamp Unix timestamp to delete all notifications that were created before
+	* @param bool $only_unread True (default) to only prune read notifications
 	*/
-	public function prune_notifications($timestamp)
+	public function prune_notifications($timestamp, $only_read = true)
 	{
 		$sql = 'DELETE FROM ' . $this->notifications_table . '
-			WHERE notification_time < ' . (int) $timestamp;
+			WHERE notification_time < ' . (int) $timestamp .
+				(($only_read) ? ' AND notification_read = 1' : '');
 		$this->db->sql_query($sql);
 	}
 
