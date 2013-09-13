@@ -91,7 +91,7 @@ class phpbb_template_twig extends phpbb_template_base
 		$this->cachepath = $phpbb_root_path . 'cache/twig/';
 
 		// Initiate the loader, __main__ namespace paths will be setup later in set_style_names()
-		$loader = new Twig_Loader_Filesystem('');
+		$loader = new phpbb_template_twig_loader('');
 
 		$this->twig = new phpbb_template_twig_environment(
 			$this->config,
@@ -181,11 +181,15 @@ class phpbb_template_twig extends phpbb_template_base
 		{
 			foreach ($names as $name)
 			{
-				$path = $this->phpbb_root_path . trim($directory, '/') . "/{$name}/template/";
+				$path = $this->phpbb_root_path . trim($directory, '/') . "/{$name}/";
+				$template_path = $path . 'template/';
 
-				if (is_dir($path))
+				if (is_dir($template_path))
 				{
-					$paths[] = $path;
+					// Add the base style directory as a safe directory
+					$this->twig->getLoader()->addSafeDirectory($path);
+
+					$paths[] = $template_path;
 				}
 			}
 		}
@@ -233,11 +237,15 @@ class phpbb_template_twig extends phpbb_template_base
 
 				foreach ($names as $style_name)
 				{
-					$ext_style_path = $ext_path . 'styles/' . $style_name . '/template';
+					$ext_style_path = $ext_path . 'styles/' . $style_name . '/';
+					$ext_style_template_path = $ext_style_path . 'template/';
 
-					if (is_dir($ext_style_path))
+					if (is_dir($ext_style_template_path))
 					{
-						$paths[] = $ext_style_path;
+						// Add the base style directory as a safe directory
+						$this->twig->getLoader()->addSafeDirectory($ext_style_path);
+
+						$paths[] = $ext_style_template_path;
 					}
 				}
 
