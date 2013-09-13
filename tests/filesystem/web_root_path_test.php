@@ -18,8 +18,13 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 
 		$this->set_phpbb_root_path();
 
-		$symfony_request = new phpbb_symfony_request(new phpbb_mock_request());
-		$this->filesystem = new phpbb_filesystem($symfony_request, $this->phpbb_root_path);
+		$this->filesystem = new phpbb_filesystem(
+			new phpbb_symfony_request(
+				new phpbb_mock_request()
+			),
+			$this->phpbb_root_path,
+			'php'
+		);
 	}
 
 	/**
@@ -126,7 +131,11 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 			->method('getScriptName')
 			->will($this->returnValue($getScriptName));
 
-		$filesystem = new phpbb_filesystem($symfony_request, $this->phpbb_root_path);
+		$filesystem = new phpbb_filesystem(
+			$symfony_request,
+			$this->phpbb_root_path,
+			'php'
+		);
 
 		$this->assertEquals($expected, $filesystem->update_web_root_path($input, $symfony_request));
 	}

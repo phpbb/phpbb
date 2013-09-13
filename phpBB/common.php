@@ -51,7 +51,8 @@ if (!defined('PHPBB_INSTALLED'))
 		new phpbb_symfony_request(
 			new phpbb_request()
 		),
-		$phpbb_root_path
+		$phpbb_root_path,
+		$phpEx
 	);
 	$script_path = $phpbb_filesystem->clean_path($script_path);
 

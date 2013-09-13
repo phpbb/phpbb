@@ -172,6 +172,8 @@ services:
         arguments:
             - @symfony_request
             - %core.root_path%
+            - %core.php_ext%
+            - %core.adm_relative_path%
 
     groupposition.legend:
         class: phpbb_groupposition_legend
@@ -263,13 +265,11 @@ services:
     template:
         class: phpbb_template_twig
         arguments:
-            - %core.root_path%
-            - %core.php_ext%
+            - @filesystem
             - @config
             - @user
             - @template_context
             - @ext.manager
-            - %core.adm_relative_path%
 
     template_context:
         class: phpbb_template_context

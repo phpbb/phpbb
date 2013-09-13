@@ -1070,7 +1070,14 @@ function phpbb_clean_path($path)
 			global $phpbb_root_path, $phpEx;
 			require($phpbb_root_path . 'includes/filesystem.' . $phpEx);
 		}
-		$phpbb_filesystem = new phpbb_filesystem();
+
+		$phpbb_filesystem = new phpbb_filesystem(
+			new phpbb_symfony_request(
+				new phpbb_request()
+			),
+			$phpbb_root_path,
+			$phpEx
+		);
 	}
 
 	return $phpbb_filesystem->clean_path($path);

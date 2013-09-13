@@ -207,7 +207,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 				new phpbb_symfony_request(
 					new phpbb_mock_request()
 				),
-				$phpbb_root_path
+				$phpbb_root_path,
+				$php_ext
 			),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',

@@ -118,7 +118,8 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 				new phpbb_symfony_request(
 					new phpbb_mock_request()
 				),
-				$phpbb_root_path
+				$phpbb_root_path,
+				$php_ext
 			),
 			'phpbb_ext',
 			dirname(__FILE__) . '/',

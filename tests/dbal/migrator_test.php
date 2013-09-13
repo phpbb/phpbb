@@ -63,7 +63,8 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 				new phpbb_symfony_request(
 					new phpbb_mock_request()
 				),
-				dirname(__FILE__) . '/../../phpBB/'
+				dirname(__FILE__) . '/../../phpBB/',
+				'php'
 			),
 			'phpbb_ext',
 			dirname(__FILE__) . '/../../phpBB/',

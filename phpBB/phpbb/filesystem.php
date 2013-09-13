@@ -28,18 +28,27 @@ class phpbb_filesystem
 	protected $phpbb_root_path;
 
 	/** @var string */
+	protected $adm_relative_path;
+
+	/** @var string */
+	protected $php_ext;
+
+	/** @var string */
 	protected $web_root_path;
 
 	/**
 	* Constructor
 	*
 	* @param phpbb_symfony_request $symfony_request
-	* @param string $phpbb_root_path
+	* @param string $phpbb_root_path Relative path to phpBB root
+	* @param string $php_ext PHP extension (php)
 	*/
-	public function __construct(phpbb_symfony_request $symfony_request, $phpbb_root_path)
+	public function __construct(phpbb_symfony_request $symfony_request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
 	{
 		$this->symfony_request = $symfony_request;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+		$this->adm_relative_path = $adm_relative_path;
 	}
 
 	/**
@@ -50,6 +59,26 @@ class phpbb_filesystem
 	public function get_phpbb_root_path()
 	{
 		return $this->phpbb_root_path;
+	}
+
+	/**
+	* Get the adm root path
+	*
+	* @return string
+	*/
+	public function get_adm_relative_path()
+	{
+		return $this->adm_relative_path;
+	}
+
+	/**
+	* Get the php extension
+	*
+	* @return string
+	*/
+	public function get_php_ext()
+	{
+		return $this->php_ext;
 	}
 
 	/**

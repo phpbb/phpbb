@@ -37,7 +37,7 @@ abstract class phpbb_template_twig_node_includeasset extends Twig_Node
 			->write("if (substr(\$asset_file, 0, 2) !== './' && \$asset->is_relative()) {\n")
 			->indent()
 				->write("\$asset_path = \$asset->get_path();")
-				->write("\$local_file = \$this->getEnvironment()->get_phpbb_root_path() . \$asset_path;\n")
+				->write("\$local_file = \$this->getEnvironment()->get_web_root_path() . \$asset_path;\n")
 				->write("if (!file_exists(\$local_file)) {\n")
 				->indent()
 					->write("\$local_file = \$this->getEnvironment()->findTemplate(\$asset_path);\n")
