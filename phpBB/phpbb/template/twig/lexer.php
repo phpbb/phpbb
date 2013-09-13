@@ -75,7 +75,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 
 		// Fix tokens that may have inline variables (e.g. <!-- DEFINE $TEST = '{FOO}')
 		$code = $this->fix_inline_variable_tokens(array(
-			'DEFINE.+=',
+			'DEFINE \$[a-zA-Z0-9]+ =',
 			'INCLUDE',
 			'INCLUDEPHP',
 			'INCLUDEJS',
@@ -240,7 +240,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 			return "<!-- {$matches[1]}IF{$inner}-->";
 		};
 
-		return preg_replace_callback('#<!-- (ELSE)?IF((.*)[\s][\$|\.|!]([^\s]+)(.*))-->#', $callback, $code);
+		return preg_replace_callback('#<!-- (ELSE)?IF((.*?)[\s][\$|\.|!]([^\s]+)(.*?))-->#', $callback, $code);
 	}
 
 	/**
@@ -264,10 +264,10 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		*/
 
 		// Replace <!-- DEFINE $NAME with {% DEFINE definition.NAME
-		$code = preg_replace('#<!-- DEFINE \$(.*)-->#', '{% DEFINE $1 %}', $code);
+		$code = preg_replace('#<!-- DEFINE \$(.*?) -->#', '{% DEFINE $1 %}', $code);
 
 		// Changing UNDEFINE NAME to DEFINE NAME = null to save from creating an extra token parser/node
-		$code = preg_replace('#<!-- UNDEFINE \$(.*)-->#', '{% DEFINE $1= null %}', $code);
+		$code = preg_replace('#<!-- UNDEFINE \$(.*?)-->#', '{% DEFINE $1= null %}', $code);
 
 		// Replace all of our variables, {$VARNAME}, with Twig style, {{ definition.VARNAME }}
 		$code = preg_replace('#{\$([a-zA-Z0-9_\.]+)}#', '{{ definition.$1 }}', $code);
