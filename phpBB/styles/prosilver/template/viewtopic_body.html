@@ -276,7 +276,7 @@
 <!-- IF postrow.S_VIEW_POST_REVISIONS -->
 	<div id="p{postrow.POST_ID}_revisions" class="no-display">
 		<h3>{L_LAST_FIVE_REVISIONS} (<a href="{postrow.U_VIEW_POST_REVISIONS}">{L_VIEW_ALL}</a>)</h3>
-		<!-- INCLUDE revisions_comparison_list.html -->
+		{postrow.POST_REVISION_COMPARISON_OUTPUT}
 	</div>
 <!-- ENDIF -->
 

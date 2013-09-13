@@ -1603,6 +1603,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		);
 
 	// List the most recent revisions
+	$post_revision_comparison_output = '';
 	if ($can_view_revisions)
 	{
 		$user->add_lang('revisions');
@@ -1612,7 +1613,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		if (sizeof($revisions))
 		{
 			$comparison = new phpbb_revisions_comparison(current($revisions), $revisions_post->get_current_revision());
-			$comparison->output_template_block($revisions_post, $template, $user, $auth, $request, true, $phpbb_root_path, $phpEx, false);
+			$post_revision_comparison_output = $comparison->output_template_block($revisions_post, $template, $user, $auth, $request, true, $phpbb_root_path, $phpEx, false);
 		}
 	}
 
@@ -1702,6 +1703,8 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
 		'S_POST_HIDDEN'		=> $row['hide_post'],
 		'L_POST_DISPLAY'	=> ($row['hide_post']) ? $user->lang('POST_DISPLAY', '<a class="display_post" data-post-id="' . $row['post_id'] . '" href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
+
+		'POST_REVISION_COMPARISON_OUTPUT'	=> $post_revision_comparison_output,
 	);
 
 	$user_poster_data = $user_cache[$poster_id];
