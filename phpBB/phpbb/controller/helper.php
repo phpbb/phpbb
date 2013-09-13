@@ -109,7 +109,7 @@ class phpbb_controller_helper
 			$route = substr($route, 0, $route_delim);
 		}
 
-		// If enable_mod_rewrite is false, we not need to include app.php
+		// If enable_mod_rewrite is false, we need to include app.php
 		$route_prefix = $this->phpbb_root_path;
 		if (empty($this->config['enable_mod_rewrite']))
 		{
