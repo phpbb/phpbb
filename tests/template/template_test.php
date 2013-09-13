@@ -237,7 +237,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('VARIABLE' => 'variable.html'),
 				array(),
 				array(),
-				'variable.htmlvariable.html',
+				"variable.html\nvariable.html\nvariable.html",
 			),
 			array(
 				'include_loop_define.html',
