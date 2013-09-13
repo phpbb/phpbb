@@ -91,18 +91,18 @@ class phpbb_template_twig_loader extends Twig_Loader_Filesystem
 	* Override for Twig_Loader_Filesystem::findTemplate to add support
 	*	for loading from safe directories.
 	*/
-    protected function findTemplate($name)
-    {
-        $name = (string) $name;
+	protected function findTemplate($name)
+	{
+		$name = (string) $name;
 
-        // normalize name
-        $name = preg_replace('#/{2,}#', '/', strtr($name, '\\', '/'));
+		// normalize name
+		$name = preg_replace('#/{2,}#', '/', strtr($name, '\\', '/'));
 
 		// If this is in the cache we can skip the entire process below
 		//	as it should have already been validated
-        if (isset($this->cache[$name])) {
-            return $this->cache[$name];
-        }
+		if (isset($this->cache[$name])) {
+			return $this->cache[$name];
+		}
 
 		// First, find the template name. The override above of validateName
 		//	causes the validateName process to be skipped for this call
@@ -110,7 +110,7 @@ class phpbb_template_twig_loader extends Twig_Loader_Filesystem
 
 		try
 		{
-			// Try validating the name (which may throw an exception)
+		// Try validating the name (which may throw an exception)
 			parent::validateName($name);
 		}
 		catch (Twig_Error_Loader $e)
