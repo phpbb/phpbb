@@ -101,7 +101,6 @@ $cache = $phpbb_container->get('cache');
 
 // Instantiate some basic classes
 $phpbb_dispatcher = $phpbb_container->get('dispatcher');
-$phpbb_filesystem = $phpbb_container->get('filesystem');
 $request	= $phpbb_container->get('request');
 $user		= $phpbb_container->get('user');
 $auth		= $phpbb_container->get('auth');
@@ -111,7 +110,8 @@ $db			= $phpbb_container->get('dbal.conn');
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Create a Symfony Request object from our phpbb_request object
-$symfony_request = phpbb_create_symfony_request($request);
+$symfony_request = $phpbb_container->get('symfony_request');
+$phpbb_filesystem = $phpbb_container->get('filesystem');
 
 // Grab global variables, re-cache if necessary
 $config = $phpbb_container->get('config');

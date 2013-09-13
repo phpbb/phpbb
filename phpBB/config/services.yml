@@ -170,6 +170,7 @@ services:
     filesystem:
         class: phpbb_filesystem
         arguments:
+            - @symfony_request
             - %core.root_path%
 
     groupposition.legend:
@@ -253,6 +254,11 @@ services:
 
     request:
         class: phpbb_request
+
+    symfony_request:
+        class: phpbb_symfony_request
+        arguments:
+            - @request
 
     template:
         class: phpbb_template_twig

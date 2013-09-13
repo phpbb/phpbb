@@ -18,7 +18,8 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 
 		$this->set_phpbb_root_path();
 
-		$this->filesystem = new phpbb_filesystem($this->phpbb_root_path);
+		$symfony_request = new phpbb_symfony_request(new phpbb_mock_request());
+		$this->filesystem = new phpbb_filesystem($symfony_request, $this->phpbb_root_path);
 	}
 
 	/**
@@ -40,12 +41,13 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 		$this->assertEquals($this->phpbb_root_path, $this->filesystem->get_web_root_path());
 	}
 
-	public function update_web_root_path_data()
+	public function basic_update_web_root_path_data()
 	{
 		$this->set_phpbb_root_path();
 
 		return array(
 			array(
+				$this->phpbb_root_path . 'test.php',
 				$this->phpbb_root_path . 'test.php',
 			),
 			array(
@@ -54,7 +56,24 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 			),
 			array(
 				$this->phpbb_root_path . $this->phpbb_root_path . 'test.php',
+				$this->phpbb_root_path . $this->phpbb_root_path . 'test.php',
 			),
+		);
+	}
+
+	/**
+	* @dataProvider basic_update_web_root_path_data
+	*/
+	public function test_basic_update_web_root_path($input, $expected)
+	{
+		$this->assertEquals($expected, $this->filesystem->update_web_root_path($input, $symfony_request));
+	}
+
+	public function update_web_root_path_data()
+	{
+		$this->set_phpbb_root_path();
+
+		return array(
 			array(
 				$this->phpbb_root_path . 'test.php',
 				$this->phpbb_root_path . 'test.php',
@@ -92,25 +111,23 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 	/**
 	* @dataProvider update_web_root_path_data
 	*/
-	public function test_update_web_root_path($input, $expected = null, $getPathInfo = null, $getRequestUri = null, $getScriptName = null)
+	public function test_update_web_root_path($input, $expected, $getPathInfo, $getRequestUri = null, $getScriptName = null)
 	{
-		$expected = ($expected === null) ? $input : $expected;
+		$symfony_request = $this->getMock("phpbb_symfony_request", array(), array(
+			new phpbb_mock_request(),
+		));
+		$symfony_request->expects($this->any())
+			->method('getPathInfo')
+			->will($this->returnValue($getPathInfo));
+		$symfony_request->expects($this->any())
+			->method('getRequestUri')
+			->will($this->returnValue($getRequestUri));
+		$symfony_request->expects($this->any())
+			->method('getScriptName')
+			->will($this->returnValue($getScriptName));
 
-		$symfony_request = null;
-		if ($getPathInfo !== null)
-		{
-			$symfony_request = $this->getMock("Symfony\Component\HttpFoundation\Request");
-			$symfony_request->expects($this->any())
-				->method('getPathInfo')
-				->will($this->returnValue($getPathInfo));
-			$symfony_request->expects($this->any())
-				->method('getRequestUri')
-				->will($this->returnValue($getRequestUri));
-			$symfony_request->expects($this->any())
-				->method('getScriptName')
-				->will($this->returnValue($getScriptName));
-		}
+		$filesystem = new phpbb_filesystem($symfony_request, $this->phpbb_root_path);
 
-		$this->assertEquals($expected, $this->filesystem->update_web_root_path($input, $symfony_request));
+		$this->assertEquals($expected, $filesystem->update_web_root_path($input, $symfony_request));
 	}
 }

@@ -7,8 +7,6 @@
 *
 */
 
-use Symfony\Component\HttpFoundation\Request;
-
 /**
 * @ignore
 */
@@ -23,6 +21,9 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_filesystem
 {
+	/** @var phpbb_symfony_request */
+	protected $symfony_request;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -32,10 +33,12 @@ class phpbb_filesystem
 	/**
 	* Constructor
 	*
+	* @param phpbb_symfony_request $symfony_request
 	* @param string $phpbb_root_path
 	*/
-	public function __construct($phpbb_root_path)
+	public function __construct(phpbb_symfony_request $symfony_request, $phpbb_root_path)
 	{
+		$this->symfony_request = $symfony_request;
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
@@ -57,12 +60,12 @@ class phpbb_filesystem
 	*	is not at the beginning of $path, just prepends the
 	*	web root path
 	*
-	* @param Request $symfony_request Symfony Request object
+	* @param string $path The path to be updated
 	* @return string
 	*/
-	public function update_web_root_path($path, Request $symfony_request = null)
+	public function update_web_root_path($path)
 	{
-		$web_root_path = $this->get_web_root_path($symfony_request);
+		$web_root_path = $this->get_web_root_path($this->symfony_request);
 
 		if (strpos($path, $this->phpbb_root_path) === 0)
 		{
@@ -75,12 +78,11 @@ class phpbb_filesystem
 	/**
 	* Get a relative root path from the current URL
 	*
-	* @param Request $symfony_request Symfony Request object
 	* @return string
 	*/
-	public function get_web_root_path(Request $symfony_request = null)
+	public function get_web_root_path()
 	{
-		if ($symfony_request === null)
+		if ($this->symfony_request === null)
 		{
 			return $this->phpbb_root_path;
 		}
@@ -91,13 +93,13 @@ class phpbb_filesystem
 		}
 
 		// Path info (e.g. /foo/bar)
-		$path_info = $this->clean_path($symfony_request->getPathInfo());
+		$path_info = $this->clean_path($this->symfony_request->getPathInfo());
 
 		// Full request URI (e.g. phpBB/app.php/foo/bar)
-		$request_uri = $symfony_request->getRequestUri();
+		$request_uri = $this->symfony_request->getRequestUri();
 
 		// Script name URI (e.g. phpBB/app.php)
-		$script_name = $symfony_request->getScriptName();
+		$script_name = $this->symfony_request->getScriptName();
 
 		/*
 		* If the path info is empty (single /), then we're not using
