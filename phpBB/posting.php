@@ -470,7 +470,7 @@ if ($config['track_post_revisions'] && $mode == 'edit')
 		'bbcode_uid'			=> $post_data['bbcode_uid'],
 		'post_edit_reason'		=> $post_data['post_edit_reason'],
 		'post_edit_user'		=> $post_data['post_edit_user'],
-		'post_revision_count'	=> $post_data['post_revision_count']
+		'post_revision_count'	=> $post_data['post_revision_count'],
 	);
 }
 
