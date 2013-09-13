@@ -12,7 +12,7 @@ Username: {USERNAME}
 Board URL: {U_BOARD}
 ----------------------------
 
-Useful information regarding the phpBB software can be found in the docs folder of your installation and on phpBB.com's support page - http://www.phpbb.com/support/
+Useful information regarding the phpBB software can be found in the docs folder of your installation and on phpBB.com's support page - https://www.phpbb.com/support/
 
 In order to keep your board safe and secure, we highly recommended keeping current with software releases. For your convenience, a mailing list is available at the page referenced above.
 

@@ -64,6 +64,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			),
 			array(
 				'if.html',
+				array('S_OTHER_OTHER_VALUE' => true),
+				array(),
+				array(),
+				'|S_OTHER_OTHER_VALUE|!false',
+			),
+			array(
+				'if.html',
 				array('S_VALUE' => false, 'S_OTHER_VALUE' => true),
 				array(),
 				array(),
@@ -93,49 +100,49 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			array(
 				'loop.html',
 				array(),
-				array('loop' => array(array())),
+				array('test_loop' => array(array())),
 				array(),
 				"loop\nloop",
 			),
 			array(
 				'loop.html',
 				array(),
-				array('loop' => array(array(), array()), 'loop.block' => array(array())),
+				array('test_loop' => array(array(), array()), 'test_loop.block' => array(array())),
 				array(),
 				"loop\nloop\nloop\nloop",
 			),
 			array(
 				'loop.html',
 				array(),
-				array('loop' => array(array(), array()), 'loop.block' => array(array()), 'block' => array(array(), array())),
+				array('test_loop' => array(array(), array()), 'test_loop.block' => array(array()), 'block' => array(array(), array())),
 				array(),
 				"loop\nloop\nloop\nloop\nloop#0-block#0\nloop#0-block#1\nloop#1-block#0\nloop#1-block#1",
 			),
 			array(
 				'loop_vars.html',
 				array(),
-				array('loop' => array(array('VARIABLE' => 'x'))),
+				array('test_loop' => array(array('VARIABLE' => 'x'))),
 				array(),
 				"first\n0 - a\nx - b\nset\nlast",
 			),
 			array(
 				'loop_vars.html',
 				array(),
-				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y'))),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y'))),
 				array(),
 				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast",
 			),
 			array(
 				'loop_vars.html',
 				array(),
-				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'test_loop.inner' => array(array(), array())),
 				array(),
 				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast\n0 - c\n1 - c\nlast inner",
 			),
 			array(
 				'loop_advanced.html',
 				array(),
-				array('loop' => array(array(), array(), array(), array(), array(), array(), array())),
+				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array())),
 				array(),
 				"101234561\nx\n101234561\nx\n101234561\nx\n1234561\nx\n1\nx\n101\nx\n234\nx\n10\nx\n561\nx\n561",
 			),
@@ -149,14 +156,14 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			array(
 				'define.html',
 				array(),
-				array('loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
+				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
 				array(),
-				"xyz\nabc\n\$VALUE == 'abc'abc\nbar\nbar\nabc\ntest!@#$%^&*()_-=+{}[]:;\",<.>/?",
+				"xyz\nabc\n\$VALUE == 'abc'\n(\$VALUE == 'abc')\n!\$DOESNT_EXIST\n(!\$DOESNT_EXIST)\nabc\nbar\nbar\nabc\ntest!@#$%^&*()_-=+{}[]:;\",<.>/?[]|foobar|",
 			),
 			array(
 				'define_advanced.html',
 				array(),
-				array('loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
+				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
 				array(),
 				"abc\nzxc\ncde\nbcd",
 			),
@@ -200,7 +207,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			array(
 				'include_loop.html',
 				array(),
-				array('loop' => array(array('NESTED_FILE' => 'include_loop1.html')), 'loop.inner' => array(array('NESTED_FILE' => 'include_loop1.html'), array('NESTED_FILE' => 'include_loop2.html'), array('NESTED_FILE' => 'include_loop3.html'))),
+				array('test_loop' => array(array('NESTED_FILE' => 'include_loop1.html')), 'test_loop.inner' => array(array('NESTED_FILE' => 'include_loop1.html'), array('NESTED_FILE' => 'include_loop2.html'), array('NESTED_FILE' => 'include_loop3.html'))),
 				array(),
 				"1\n_1\n_02\n_3",
 			),
@@ -221,8 +228,8 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			array(
 				'loop_vars.html',
 				array(),
-				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
-				array('loop'),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'test_loop.inner' => array(array(), array())),
+				array('test_loop'),
 				'',
 			),
 			array(
@@ -235,7 +242,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			array(
 				'include_loop_define.html',
 				array('VARIABLE' => 'value'),
-				array('loop' => array(array('NESTED_FILE' => 'variable.html'))),
+				array('test_loop' => array(array('NESTED_FILE' => 'variable.html'))),
 				array(),
 				'value',
 			),
@@ -243,8 +250,8 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			array(
 				'loop_vars.html',
 				array(),
-				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
-				array('loop.inner'),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'test_loop.inner' => array(array(), array())),
+				array('test_loop.inner'),
 				"first\n0\n0\n2\nx\nset\n1\n1\n2\ny\nset\nlast",
 			),*/
 			array(
@@ -295,7 +302,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			array(
 				'loop_size.html',
 				array(),
-				array('loop' => array(array()), 'empty_loop' => array()),
+				array('test_loop' => array(array()), 'empty_loop' => array()),
 				array(),
 				"nonexistent = 0\n! nonexistent\n\nempty = 0\n! empty\nloop\n\nin loop",
 			),
@@ -410,7 +417,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 
 		$this->setup_engine(array('tpl_allow_php' => true));
 
-		$this->style->set_custom_style('tests', $cache_dir, array(), '');
+		$this->template->set_custom_style('tests', $cache_dir);
 
 		$this->run_template('php.html', array(), array(), array(), 'test');
 	}

@@ -659,6 +659,13 @@ class acp_board
 				$auth_tpl = $provider->get_acp_template($this->new_config);
 				if ($auth_tpl)
 				{
+					if (array_key_exists('BLOCK_VAR_NAME', $auth_tpl))
+					{
+						foreach ($auth_tpl['BLOCK_VARS'] as $block_vars)
+						{
+							$template->assign_block_vars($auth_tpl['BLOCK_VAR_NAME'], $block_vars);
+						}
+					}
 					$template->assign_vars($auth_tpl['TEMPLATE_VARS']);
 					$template->assign_block_vars('auth_tpl', array(
 						'TEMPLATE_FILE'	=> $auth_tpl['TEMPLATE_FILE'],

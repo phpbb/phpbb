@@ -490,15 +490,15 @@ class phpbb_notification_manager
 	*
 	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $item_id is identical for the specified types)
 	* @param int|array $item_id Identifier within the type (or array of ids)
-	* @param array $data Data specific for this type that will be updated
+	* @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
 	*/
-	public function delete_notifications($notification_type_name, $item_id)
+	public function delete_notifications($notification_type_name, $item_id, $parent_id = false)
 	{
 		if (is_array($notification_type_name))
 		{
 			foreach ($notification_type_name as $type)
 			{
-				$this->delete_notifications($type, $item_id);
+				$this->delete_notifications($type, $item_id, $parent_id);
 			}
 
 			return;
@@ -508,7 +508,8 @@ class phpbb_notification_manager
 
 		$sql = 'DELETE FROM ' . $this->notifications_table . '
 			WHERE notification_type_id = ' . (int) $notification_type_id . '
-				AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id);
+				AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) .
+				(($parent_id !== false) ? ' AND ' . ((is_array($parent_id) ? $this->db->sql_in_set('item_parent_id', $parent_id) : 'item_parent_id = ' . (int) $parent_id)) : '');
 		$this->db->sql_query($sql);
 	}
 

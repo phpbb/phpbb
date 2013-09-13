@@ -2018,14 +2018,11 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 
 			$decoded_message = bbcode_nl2br($decoded_message);
 		}
-
-		if ($row['bbcode_bitfield'])
-		{
-			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
-		}
-
-		$message = bbcode_nl2br($message);
-		$message = smiley_text($message, !$row['enable_smilies']);
+		
+		$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0);
+		$parse_flags |= ($row['enable_smilies'] ? OPTION_FLAG_SMILIES : 0);
+		
+		$message = generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, false);
 
 		$subject = censor_text($subject);
 
