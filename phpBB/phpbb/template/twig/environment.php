@@ -137,4 +137,39 @@ class phpbb_template_twig_environment extends Twig_Environment
 			return parent::loadTemplate($name, $index);
 		}
 	}
+
+	/**
+	 * Finds a template by name.
+	 *
+	 * @param string  $name  The template name
+	 * @return string
+	 */
+	public function findTemplate($name)
+	{
+		if (strpos($name, '@') === false)
+		{
+			foreach ($this->getNamespaceLookUpOrder() as $namespace)
+			{
+				try
+				{
+					if ($namespace === '__main__')
+					{
+						return parent::getLoader()->getCacheKey($name);
+					}
+
+					return parent::getLoader()->getCacheKey('@' . $namespace . '/' . $name);
+				}
+				catch (Twig_Error_Loader $e)
+				{
+				}
+			}
+
+			// We were unable to load any templates
+			throw $e;
+		}
+		else
+		{
+			return parent::getLoader()->getCacheKey($name);
+		}
+	}
 }
