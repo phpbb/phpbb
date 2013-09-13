@@ -173,12 +173,14 @@ class phpbb_revisions_comparison
 				'FIRST_IN_COMPARE'	=> $revision->get_id() == $first_id,
 				'LAST_IN_COMPARE'	=> $revision->get_id() == $last_id,
 
-				'U_RESTORE'			=> $can_restore ? append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/restore/$this_revision_id")) : '',
-				'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$this_revision_id")),
-				'U_DELETE'			=> $auth->acl_get('m_delete_revisions') ? append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$this_revision_id/delete")) : '',
-				'U_PROTECT'			=> append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$this_revision_id/protect")),
-				'U_UNPROTECT'		=> append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$this_revision_id/unprotect")),
+				'U_RESTORE'			=> append_sid("{$phpbb_root_path}app.$phpEx/post/$post_id/restore/$this_revision_id"),
+				'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}app.$phpEx/post/$post_id/revision/$this_revision_id"),
+				'U_DELETE'			=> append_sid("{$phpbb_root_path}app.$phpEx/post/$post_id/revision/$this_revision_id/delete"),
+				'U_PROTECT'			=> append_sid("{$phpbb_root_path}app.$phpEx/post/$post_id/revision/$this_revision_id/protect"),
+				'U_UNPROTECT'		=> append_sid("{$phpbb_root_path}app.$phpEx/post/$post_id/revision/$this_revision_id/unprotect"),
 
+				'S_RESTORE'			=> $can_restore,
+				'S_DELETE'			=> $auth->acl_get('m_delete_revisions'),
 				'S_PROTECT'			=> !$revision->is_protected() && $auth->acl_get('m_protect_revisions'),
 				'S_UNPROTECT'		=> $revision->is_protected() && $auth->acl_get('m_protect_revisions'),
 
@@ -209,8 +211,8 @@ class phpbb_revisions_comparison
 
 		$l_first_revision = $this->first->get_id() ? $user->lang('REVISION') . ' ' . $this->first->get_id() : $user->lang('CURRENT_REVISION');
 		$l_last_revision = $last_id ? $user->lang('REVISION') . ' ' . $last_id : $user->lang('CURRENT_REVISION');
-		$u_first_revision = append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$first_id"));
-		$u_last_revision = append_sid("{$phpbb_root_path}app.$phpEx", array('controller' => "post/$post_id/revision/$last_id"));
+		$u_first_revision = append_sid("{$phpbb_root_path}app.$phpEx/post/$post_id/revision/$first_id");
+		$u_last_revision = append_sid("{$phpbb_root_path}app.$phpEx/post/$post_id/revision/$last_id");
 
 		$template->assign_vars(array(
 			'S_DISPLAY_COMPARISON'	=> $full_mode,

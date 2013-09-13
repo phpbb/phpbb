@@ -27,7 +27,7 @@ class phpbb_functional_post_revisions_test extends phpbb_functional_test_case
 		$this->assertContains('I am a post that has been edited by the test framework.', $crawler->filter('html')->text());
 
 		// Now make sure a revision was created
-		$crawler = $this->request('GET', "app.php?controller=post/1/revisions&sid={$this->sid}");
+		$crawler = $this->request('GET', "app.php/post/1/revisions&sid={$this->sid}");
 		$revisions = 0;
 		// Count the number of revision rows. Even though the post has been
 		// revised only once, the original version of the post is considered

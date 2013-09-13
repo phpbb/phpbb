@@ -73,8 +73,8 @@
 						<!-- IF not revision.IS_CURRENT_POST -->
 							<a href="{revision.U_PROTECT}" id="link_protect"<!-- IF not revision.S_PROTECT --> style="display:none"<!-- ENDIF --> data-ajax="revision.protect">({L_PROTECT})</a>
 							<a href="{revision.U_UNPROTECT}" id="link_unprotect"<!-- IF not revision.S_UNPROTECT --> style="display:none"<!-- ENDIF --> data-ajax="revision.unprotect">({L_UNPROTECT})</a>
-							<a href="{revision.U_REVERT_TO}" id="link_revert"<!-- IF not revision.U_REVERT_TO --> style="display:none"<!-- ENDIF --> data-ajax="revision.revert">({L_REVERT})</a>
-							<a href="{revision.U_DELETE}" id="link_delete"<!-- IF not revision.U_DELETE --> style="display:none"<!-- ENDIF --> data-ajax="revision.delete" data-refresh="true">{revision.DELETE_IMG}</a>
+							<a href="{revision.U_RESTORE}" id="link_revert"<!-- IF not revision.S_RESTORE --> style="display:none"<!-- ENDIF --> data-ajax="revision.revert">({L_RESTORE})</a>
+							<a href="{revision.U_DELETE}" id="link_delete"<!-- IF not revision.S_DELETE --> style="display:none"<!-- ENDIF --> data-ajax="revision.delete" data-refresh="true">{revision.DELETE_IMG}</a>
 						<!-- ELSE -->
 							<strong>{L_CURRENT_REVISION}</strong>
 						<!-- ENDIF -->

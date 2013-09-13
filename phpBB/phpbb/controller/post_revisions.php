@@ -62,7 +62,7 @@ class phpbb_controller_post_revisions
 	*/
 	protected function url($route)
 	{
-		return append_sid($this->phpbb_root_path . 'app.' . $this->php_ext, array('controller' => $route));
+		return $this->helper->url($route);
 	}
 
 	/**
