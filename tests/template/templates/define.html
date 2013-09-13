@@ -7,6 +7,15 @@ $VALUE != 'abc'
 <!-- ELSEIF $VALUE == 'abc' -->
 $VALUE == 'abc'
 <!-- ENDIF -->
+<!-- IF ($VALUE == 'abc') -->
+($VALUE == 'abc')
+<!-- ENDIF -->
+<!-- IF !$DOESNT_EXIST -->
+!$DOESNT_EXIST
+<!-- ENDIF -->
+<!-- IF (!$DOESNT_EXIST) -->
+(!$DOESNT_EXIST)
+<!-- ENDIF -->
 <!-- INCLUDE define_include.html -->
 {$INCLUDED_VALUE}
 {$VALUE}
@@ -16,3 +25,4 @@ $VALUE == 'abc'
 {$VALUE}
 <!-- DEFINE $VALUE = '' -->
 [{$VALUE}]
+<!-- DEFINE $TEST -->foobar<!-- ENDDEFINE -->|{$TEST}|

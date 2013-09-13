@@ -45,6 +45,11 @@ interface phpbb_auth_provider_interface
 	 *							'error_msg' => string
 	 *							'user_row' => array
 	 *						)
+	 *					A fourth key of the array may be present:
+	 *					'redirect_data'	This key is only used when 'status' is
+	 *					equal to LOGIN_SUCCESS_LINK_PROFILE and its value is an
+	 *					associative array that is turned into GET variables on
+	 *					the redirect url.
 	 */
 	public function login($username, $password);
 
@@ -80,8 +85,47 @@ interface phpbb_auth_provider_interface
 	 *								'TEMPLATE_FILE'	=> string,
 	 *								'TEMPLATE_VARS'	=> array(...),
 	 *							)
+	 *							An optional third element may be added to this
+	 *							array: 'BLOCK_VAR_NAME'. If this is present,
+	 *							then its value should be a string that is used
+	 *							to designate the name of the loop used in the
+	 *							ACP template file. When this is present, an
+	 *							additional key named 'BLOCK_VARS' is required.
+	 *							This must be an array containing at least one
+	 *							array of variables that will be assigned during
+	 *							the loop in the template. An example of this is
+	 *							presented below:
+	 *							array(
+	 *								'BLOCK_VAR_NAME'	=> string,
+	 *								'BLOCK_VARS'		=> array(
+	 *									'KEY IS UNIMPORTANT' => array(...),
+	 *								),
+	 *								'TEMPLATE_FILE'	=> string,
+	 *								'TEMPLATE_VARS'	=> array(...),
+	 *							)
 	 */
 	public function get_acp_template($new_config);
+
+	/**
+	* Returns an array of data necessary to build custom elements on the login
+	* form.
+	*
+	* @return	array|null	If this function is not implemented on an auth
+	*						provider then it returns null. If it is implemented
+	*						it will return an array of up to four elements of
+	*						which only 'TEMPLATE_FILE'. If 'BLOCK_VAR_NAME' is
+	*						present then 'BLOCK_VARS' must also be present in
+	*						the array. The fourth element 'VARS' is also
+	*						optional. The array, with all four elements present
+	*						looks like the following:
+	*						array(
+	*							'TEMPLATE_FILE'		=> string,
+	*							'BLOCK_VAR_NAME'	=> string,
+	*							'BLOCK_VARS'		=> array(...),
+	*							'VARS'				=> array(...),
+	*						)
+	*/
+	public function get_login_data();
 
 	/**
 	 * Performs additional actions during logout.
@@ -102,4 +146,52 @@ interface phpbb_auth_provider_interface
 	 * 					session should be closed, or null if not implemented.
 	 */
 	public function validate_session($user);
+
+	/**
+	* Checks to see if $login_link_data contains all information except for the
+	* user_id of an account needed to successfully link an external account to
+	* a forum account.
+	*
+	* @param	array	$link_data	Any data needed to link a phpBB account to
+	*								an external account.
+	* @return	string|null	Returns a string with a language constant if there
+	*						is data missing or null if there is no error.
+	*/
+	public function login_link_has_necessary_data($login_link_data);
+
+	/**
+	* Links an external account to a phpBB account.
+	*
+	* @param	array	$link_data	Any data needed to link a phpBB account to
+	*								an external account.
+	*/
+	public function link_account(array $link_data);
+
+	/**
+	* Returns an array of data necessary to build the ucp_auth_link page
+	*
+	* @return	array|null	If this function is not implemented on an auth
+	*						provider then it returns null. If it is implemented
+	*						it will return an array of up to four elements of
+	*						which only 'TEMPLATE_FILE'. If 'BLOCK_VAR_NAME' is
+	*						present then 'BLOCK_VARS' must also be present in
+	*						the array. The fourth element 'VARS' is also
+	*						optional. The array, with all four elements present
+	*						looks like the following:
+	*						array(
+	*							'TEMPLATE_FILE'		=> string,
+	*							'BLOCK_VAR_NAME'	=> string,
+	*							'BLOCK_VARS'		=> array(...),
+	*							'VARS'				=> array(...),
+	*						)
+	*/
+	public function get_auth_link_data();
+
+	/**
+	* Unlinks an external account from a phpBB account.
+	*
+	* @param	array	$link_data	Any data needed to unlink a phpBB account
+	*								from a phpbb account.
+	*/
+	public function unlink_account(array $link_data);
 }
