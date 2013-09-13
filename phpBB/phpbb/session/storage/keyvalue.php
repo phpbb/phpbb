@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 /** This class contains shared functions that are designed to work with
 *   Key/Value stores such as Redis or Memcache.
 */
-abstract class phpbb_session_storage_keyvalue implements phpbb_session_storage_interface_session
+abstract class phpbb_session_storage_keyvalue
 {
 	protected $db_user;
 	protected $db;
@@ -56,8 +56,6 @@ abstract class phpbb_session_storage_keyvalue implements phpbb_session_storage_i
 	abstract protected function delete_session($session_id);
 
 	abstract function get_session_data($session_id);
-
-	abstract function num_active_sessions($minutes_considered_active);
 
 	protected function add_to_all_users($expire, $value)
 	{

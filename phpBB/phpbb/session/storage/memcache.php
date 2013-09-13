@@ -147,7 +147,8 @@ class phpbb_session_storage_memcache
 	{
 		$sessions = $this->memcache->get("USER_{$user_id}");
 		$sessions = $sessions ? $sessions : array();
-		return array_keys($sessions)[0];
+		$session_keys = array_keys($sessions);
+		return $session_keys[0];
 	}
 
 	protected function sort_by_time($values)
