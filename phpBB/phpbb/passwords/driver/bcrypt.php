@@ -16,9 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package crypto
+* @package passwords
 */
-class phpbb_crypto_driver_bcrypt extends phpbb_crypto_driver_base
+class phpbb_passwords_driver_bcrypt extends phpbb_passwords_driver_base
 {
 	const PREFIX = '$2a$';
 

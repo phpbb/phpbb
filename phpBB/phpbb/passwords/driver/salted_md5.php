@@ -16,9 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package crypto
+* @package passwords
 */
-class phpbb_crypto_driver_salted_md5 extends phpbb_crypto_driver_base
+class phpbb_passwords_driver_salted_md5 extends phpbb_passwords_driver_base
 {
 	const PREFIX = '$H$';
 

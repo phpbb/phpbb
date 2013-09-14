@@ -16,9 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package crypto
+* @package passwords
 */
-class phpbb_crypto_manager
+class phpbb_passwords_manager
 {
 	/**
 	* Default hashing method
@@ -37,7 +37,7 @@ class phpbb_crypto_manager
 
 	/**
 	* Crypto helper
-	* @var phpbb_crypto_helper
+	* @var phpbb_passwords_helper
 	*/
 	protected $helper;
 
@@ -54,7 +54,7 @@ class phpbb_crypto_manager
 	protected $container;
 
 	/**
-	* Construct a crypto object
+	* Construct a passwords object
 	*
 	* @param phpbb_config $config phpBB configuration
 	*/
@@ -65,7 +65,7 @@ class phpbb_crypto_manager
 		$this->type = $default;
 
 		$this->fill_type_map($hashing_algorithms);
-		$this->load_crypto_helper();
+		$this->load_passwords_helper();
 	}
 
 	/**
@@ -85,13 +85,13 @@ class phpbb_crypto_manager
 	}
 
 	/**
-	* Load crypto helper class
+	* Load passwords helper class
 	*/
-	protected function load_crypto_helper()
+	protected function load_passwords_helper()
 	{
 		if ($this->helper === null)
 		{
-			$this->helper = new phpbb_crypto_helper($this, $this->container);
+			$this->helper = new phpbb_passwords_helper($this, $this->container);
 		}
 	}
 
@@ -170,7 +170,7 @@ class phpbb_crypto_manager
 
 		$hashing_algorithm = $this->container->get($type);
 		// Do not support 8-bit characters with $2a$ bcrypt
-		if ($type === 'crypto.driver.bcrypt' || ($type === 'crypto.driver.bcrypt_2y' && !$hashing_algorithm->is_supported()))
+		if ($type === 'passwords.driver.bcrypt' || ($type === 'passwords.driver.bcrypt_2y' && !$hashing_algorithm->is_supported()))
 		{
 			if (ord($password[strlen($password)-1]) & 128)
 			{

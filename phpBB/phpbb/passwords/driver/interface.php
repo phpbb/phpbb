@@ -16,9 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package crypto
+* @package passwords
 */
-interface phpbb_crypto_driver_interface
+interface phpbb_passwords_driver_interface
 {
 	/**
 	* Check if hash type is supported

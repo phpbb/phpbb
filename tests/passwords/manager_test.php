@@ -8,15 +8,15 @@
 */
 
 require_once dirname(__FILE__) . '/../mock/container_builder.php';
-require_once dirname(__FILE__) . '/../../phpBB/phpbb/crypto/driver/bcrypt.php';
-require_once dirname(__FILE__) . '/../../phpBB/phpbb/crypto/driver/bcrypt_2y.php';
-require_once dirname(__FILE__) . '/../../phpBB/phpbb/crypto/driver/salted_md5.php';
-require_once dirname(__FILE__) . '/../../phpBB/phpbb/crypto/driver/phpass.php';
-require_once dirname(__FILE__) . '/../../phpBB/phpbb/crypto/driver/helper.php';
+require_once dirname(__FILE__) . '/../../phpBB/phpbb/passwords/driver/bcrypt.php';
+require_once dirname(__FILE__) . '/../../phpBB/phpbb/passwords/driver/bcrypt_2y.php';
+require_once dirname(__FILE__) . '/../../phpBB/phpbb/passwords/driver/salted_md5.php';
+require_once dirname(__FILE__) . '/../../phpBB/phpbb/passwords/driver/phpass.php';
+require_once dirname(__FILE__) . '/../../phpBB/phpbb/passwords/driver/helper.php';
 
-class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
+class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 {
-	protected $crypto_drivers;
+	protected $passwords_drivers;
 
 	protected $pw_characters = '0123456789abcdefghijklmnopqrstuvwyzABCDEFGHIJKLMNOPQRSTUVXYZ.,_!?/\\';
 
@@ -32,21 +32,21 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		// Prepare dependencies for manager and driver
 		$config = new phpbb_config(array());
 
-		$this->crypto_drivers = array(
-			'crypto.driver.bcrypt'		=> new phpbb_crypto_driver_bcrypt($config),
-			'crypto.driver.bcrypt_2y'	=> new phpbb_crypto_driver_bcrypt_2y($config),
-			'crypto.driver.salted_md5'	=> new phpbb_crypto_driver_salted_md5($config),
-			'crypto.driver.phpass'		=> new phpbb_crypto_driver_phpass($config),
+		$this->passwords_drivers = array(
+			'passwords.driver.bcrypt'		=> new phpbb_passwords_driver_bcrypt($config),
+			'passwords.driver.bcrypt_2y'	=> new phpbb_passwords_driver_bcrypt_2y($config),
+			'passwords.driver.salted_md5'	=> new phpbb_passwords_driver_salted_md5($config),
+			'passwords.driver.phpass'		=> new phpbb_passwords_driver_phpass($config),
 		);
 
-		foreach ($this->crypto_drivers as $key => $driver)
+		foreach ($this->passwords_drivers as $key => $driver)
 		{
 			$driver->set_name($key);
 			$this->phpbb_container->set($key, $driver);
 		}
 
 		// Set up avatar manager
-		$this->manager = new phpbb_crypto_manager($config, $this->phpbb_container, $this->crypto_drivers, 'crypto.driver.bcrypt_2y');
+		$this->manager = new phpbb_passwords_manager($config, $this->phpbb_container, $this->passwords_drivers, 'passwords.driver.bcrypt_2y');
 	}
 
 	public function hash_password_data()
@@ -55,18 +55,18 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		{
 			return array(
 				array('', '2a', 60),
-				array('crypto.driver.bcrypt_2y', '2a', 60),
-				array('crypto.driver.bcrypt', '2a', 60),
-				array('crypto.driver.salted_md5', 'H', 34),
+				array('passwords.driver.bcrypt_2y', '2a', 60),
+				array('passwords.driver.bcrypt', '2a', 60),
+				array('passwords.driver.salted_md5', 'H', 34),
 			);
 		}
 		else
 		{
 			return array(
 				array('', '2y', 60),
-				array('crypto.driver.bcrypt_2y', '2y', 60),
-				array('crypto.driver.bcrypt', '2a', 60),
-				array('crypto.driver.salted_md5', 'H', 34),
+				array('passwords.driver.bcrypt_2y', '2y', 60),
+				array('passwords.driver.bcrypt', '2a', 60),
+				array('passwords.driver.salted_md5', 'H', 34),
 			);
 		}
 	}
@@ -95,18 +95,18 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		if (version_compare(PHP_VERSION, '5.3.7', '<'))
 		{
 			return array(
-				array('crypto.driver.bcrypt'),
-				array('crypto.driver.salted_md5'),
-				array('crypto.driver.phpass'),
+				array('passwords.driver.bcrypt'),
+				array('passwords.driver.salted_md5'),
+				array('passwords.driver.phpass'),
 			);
 		}
 		else
 		{
 			return array(
-				array('crypto.driver.bcrypt_2y'),
-				array('crypto.driver.bcrypt'),
-				array('crypto.driver.salted_md5'),
-				array('crypto.driver.phpass'),
+				array('passwords.driver.bcrypt_2y'),
+				array('passwords.driver.bcrypt'),
+				array('passwords.driver.salted_md5'),
+				array('passwords.driver.phpass'),
 			);
 		}
 	}
@@ -128,7 +128,7 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		}
 
 		// Check if convert_flag is correctly set
-		$this->assertEquals(($hash_type !== 'crypto.driver.bcrypt_2y'), $this->manager->convert_flag);
+		$this->assertEquals(($hash_type !== 'passwords.driver.bcrypt_2y'), $this->manager->convert_flag);
 	}
 
 
@@ -154,7 +154,7 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 
 	public function test_hash_password_length()
 	{
-		foreach ($this->crypto_drivers as $driver)
+		foreach ($this->passwords_drivers as $driver)
 		{
 			$this->assertEquals(false, $driver->hash('foobar', 'foobar'));
 		}
@@ -162,7 +162,7 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 
 	public function test_hash_password_8bit_bcrypt()
 	{
-		$this->assertEquals(false, $this->manager->hash_password('foobar𝄞', 'crypto.driver.bcrypt'));
+		$this->assertEquals(false, $this->manager->hash_password('foobar𝄞', 'passwords.driver.bcrypt'));
 	}
 
 	public function test_combined_hash_data()
@@ -171,20 +171,20 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		{
 			return array(
 				array(
-					'crypto.driver.salted_md5',
-					array('crypto.driver.bcrypt'),
+					'passwords.driver.salted_md5',
+					array('passwords.driver.bcrypt'),
 				),
 				array(
-					'crypto.driver.phpass',
-					array('crypto.driver.salted_md5'),
+					'passwords.driver.phpass',
+					array('passwords.driver.salted_md5'),
 				),
 				array(
-					'crypto.driver.salted_md5',
-					array('crypto.driver.phpass', 'crypto.driver.bcrypt'),
+					'passwords.driver.salted_md5',
+					array('passwords.driver.phpass', 'passwords.driver.bcrypt'),
 				),
 				array(
-					'crypto.driver.salted_md5',
-					array('crypto.driver.salted_md5'),
+					'passwords.driver.salted_md5',
+					array('passwords.driver.salted_md5'),
 					false,
 				),
 			);
@@ -193,24 +193,24 @@ class phpbb_crypto_manager_test extends PHPUnit_Framework_TestCase
 		{
 			return array(
 				array(
-					'crypto.driver.salted_md5',
-					array('crypto.driver.bcrypt_2y'),
+					'passwords.driver.salted_md5',
+					array('passwords.driver.bcrypt_2y'),
 				),
 				array(
-					'crypto.driver.salted_md5',
-					array('crypto.driver.bcrypt'),
+					'passwords.driver.salted_md5',
+					array('passwords.driver.bcrypt'),
 				),
 				array(
-					'crypto.driver.phpass',
-					array('crypto.driver.salted_md5'),
+					'passwords.driver.phpass',
+					array('passwords.driver.salted_md5'),
 				),
 				array(
-					'crypto.driver.salted_md5',
-					array('crypto.driver.bcrypt_2y', 'crypto.driver.bcrypt'),
+					'passwords.driver.salted_md5',
+					array('passwords.driver.bcrypt_2y', 'passwords.driver.bcrypt'),
 				),
 				array(
-					'crypto.driver.salted_md5',
-					array('crypto.driver.salted_md5'),
+					'passwords.driver.salted_md5',
+					array('passwords.driver.salted_md5'),
 					false,
 				),
 			);

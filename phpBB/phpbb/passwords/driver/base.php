@@ -16,28 +16,28 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package crypto
+* @package passwords
 */
-abstract class phpbb_crypto_driver_base implements phpbb_crypto_driver_interface
+abstract class phpbb_passwords_driver_base implements phpbb_passwords_driver_interface
 {
 	/** @var phpbb_config */
 	protected $config;
 
-	/** @var phpbb_crypto_driver_helper */
+	/** @var phpbb_passwords_driver_helper */
 	protected $helper;
 
 	/** @var driver name */
 	protected $name;
 
 	/**
-	* Constructor of crypto driver object
+	* Constructor of passwords driver object
 	*
 	* @return string	Hash prefix
 	*/
 	public function __construct(phpbb_config $config)
 	{
 		$this->config = $config;
-		$this->helper = new phpbb_crypto_driver_helper($this);
+		$this->helper = new phpbb_passwords_driver_helper($this);
 	}
 
 	/**

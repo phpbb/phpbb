@@ -16,12 +16,12 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package crypto
+* @package passwords
 */
-class phpbb_crypto_helper
+class phpbb_passwords_helper
 {
 	/**
-	* @var phpbb_crypto_manager
+	* @var phpbb_passwords_manager
 	*/
 	protected $manager;
 
@@ -31,9 +31,9 @@ class phpbb_crypto_helper
 	protected $container;
 
 	/**
-	* Construct a phpbb_crypto_helper object
+	* Construct a phpbb_passwords_helper object
 	*
-	* @param phpbb_crypto_manager $manager Crypto manager object
+	* @param phpbb_passwords_manager $manager Crypto manager object
 	* @param phpbb_container $container phpBB container object
 	*/
 	public function __construct($manager, $container)

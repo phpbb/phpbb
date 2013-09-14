@@ -16,9 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package crypto
+* @package passwords
 */
-class phpbb_crypto_driver_helper
+class phpbb_passwords_driver_helper
 {
 	/** @var phpbb_config */
 	protected $driver;
@@ -30,7 +30,7 @@ class phpbb_crypto_driver_helper
 	public $itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
 	/**
-	* Constructor of crypto driver helper object
+	* Constructor of passwords driver helper object
 	*/
 	public function __construct($driver)
 	{
