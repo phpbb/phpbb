@@ -414,6 +414,9 @@ function insert_single_user(formId, user)
 */
 (function($) {
 	$(document).ready(function() {
+		// Swap .nojs and .hasjs
+		$('#phpbb.nojs').toggleClass('nojs hasjs');
+
 		// Focus forms
 		$('form[data-focus]:first').each(function() {
 			$('#' + this.getAttribute('data-focus')).focus();
