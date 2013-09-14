@@ -330,16 +330,24 @@ abstract class phpbb_session_storage_keyvalue
 
 	function map_users_online($user_list, $session_length, Closure $function)
 	{
-		return $this->map_recently_expired($session_length,
-			function($session) use ($user_list, $function)
+		$time_allowed = $this->time_now - $session_length;
+		$get_visable_older_than =
+			function($session) use ($time_allowed, $function)
 			{
-				if (in_array($session['session_user_id'], $user_list) )
+				if ($session['onlinetime'] < $time_allowed &&
+				    $session['viewonline'])
 				{
-					$function($session);
+					return $function(array(
+							'session_user_id' => $session['session_user_id'],
+							'session_time' => $session['onlinetime'],
+						)
+					);
 				}
-			},
-			99
-		);
+				return null;
+			};
+		$sessions = $this->map_certain_users_with_time($user_list, $get_visable_older_than);
+		// Don't return values that are null
+		return array_filter($sessions, function($v) {return !is_null($v);});
 	}
 
 	function map_certain_users_with_time($user_list, Closure $function)

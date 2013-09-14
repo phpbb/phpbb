@@ -170,9 +170,14 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 	function test_map_users_online()
 	{
 		$this->assert_array_content_equals(
-			array(),
+			array(
+				array(
+					'session_user_id' => ANONYMOUS,
+					'session_time' => $this->set_time
+				)
+        	),
 			$this->session->db_session->map_users_online(
-				array(self::annon_id), 60, function ($s) {return $s;})
+				array(ANONYMOUS), 60, function ($s) {return $s;})
 		);
 	}
 
