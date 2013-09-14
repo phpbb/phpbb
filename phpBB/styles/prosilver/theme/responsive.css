@@ -122,6 +122,17 @@ ul.topiclist.forums dd.topics, ul.topiclist.topics dd.posts {
 	line-height: 1em;
 }
 
+ul.topiclist dd.mark {
+	display: block;
+	position: absolute;
+	right: 5px;
+	top: 0;
+	margin: 0;
+	width: auto;
+	min-width: 0;
+	text-align: left;
+}
+
 ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 	position: relative;
 	left: 0;
