@@ -1509,13 +1509,17 @@ class phpbb_session
 	* Only syncs if the db_session driver is not native.
 	* Written for testing purposes only.
 	*/
-	function db_synchronize()
+	function db_synchronize($delete_all_sessions = false)
 	{
 		if (!is_a($this->db_session, 'phpbb_session_storage_native'))
 		{
 			global $db;
 			$native_storage = new phpbb_session_storage_native($db, time());
 			$db_session = $this->db_session;
+			if ($delete_all_sessions === true)
+			{
+				$db_session->delete_all_sessions();
+			}
 			$native_storage->map_all(function ($session) use ($db_session) {
 				$db_session->create($session);
 			});

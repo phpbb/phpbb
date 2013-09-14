@@ -7,7 +7,7 @@
  *
  */
 
-class phpbb_storage_db_session extends phpbb_session_test_case
+class phpbb_storage_db_session extends phpbb_database_test_case
 {
 	var $session;
 	const annon_id = 'anon_session00000000000000000000';
@@ -22,9 +22,13 @@ class phpbb_storage_db_session extends phpbb_session_test_case
 	public function setUp()
 	{
 		parent::setUp();
+		global $db;
+		$db = $this->new_dbal();
 		$this->session = new phpbb_session();
 		$this->session->db_session->set_db($this->new_dbal());
+		$this->session->db_synchronize(true);
 		$this->set_time = time();
+		$this->session->db_session->set_time_now($this->set_time);
 		// Update time stamps on all sessions
 		foreach(array(self::annon_id, self::bar_id) as $session_id)
 		{

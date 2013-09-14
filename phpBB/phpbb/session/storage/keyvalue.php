@@ -344,7 +344,7 @@ abstract class phpbb_session_storage_keyvalue
 
 	function map_certain_users_with_time($user_list, Closure $function)
 	{
-		return $this->map_users_online($user_list, 60, $function);
+		return array_map($function, array_map(array($this, 'get_user_online_time'), $user_list));
 	}
 
 	function unset_admin($session_id)

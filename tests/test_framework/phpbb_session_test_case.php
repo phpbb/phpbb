@@ -25,8 +25,7 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 		$this->session_facade =
 			new phpbb_session_testable_facade($this->db, $this->session_factory);
 		$this->session = $this->session_factory->get_session($this->db);
-		$this->session->delete_all_sessions();
-		$this->session->db_synchronize();
+		$this->session->db_synchronize(true);
 	}
 
 	protected function check_sessions_equals($expected_sessions, $message)
