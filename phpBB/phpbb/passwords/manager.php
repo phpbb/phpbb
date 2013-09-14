@@ -140,6 +140,7 @@ class phpbb_passwords_manager
 			}
 			return $return_ary;
 		}
+
 		if (isset($this->type_map[$match[0]]))
 		{
 			return $this->type_map[$match[0]];
@@ -169,7 +170,9 @@ class phpbb_passwords_manager
 		}
 
 		$hashing_algorithm = $this->container->get($type);
+
 		// Do not support 8-bit characters with $2a$ bcrypt
+		// Also see http://www.php.net/security/crypt_blowfish.php
 		if ($type === 'passwords.driver.bcrypt' || ($type === 'passwords.driver.bcrypt_2y' && !$hashing_algorithm->is_supported()))
 		{
 			if (ord($password[strlen($password)-1]) & 128)
@@ -181,6 +184,14 @@ class phpbb_passwords_manager
 		return $this->container->get($type)->hash($password);
 	}
 
+	/**
+	* Check supplied password against hash and set convert_flag if password
+	* needs to be converted to different format (preferrably newer one)
+	*
+	* @param string $password Password that should be checked
+	* @param string $hash Stored hash
+	* @return string|bool True if password is correct, false if not
+	*/
 	public function check_hash($password, $hash)
 	{
 		// First find out what kind of hash we're dealing with
