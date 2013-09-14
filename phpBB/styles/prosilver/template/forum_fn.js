@@ -481,6 +481,12 @@ function insert_single_user(formId, user)
 			maxHeight = $this.height() + 1;
 			$this.css('white-space', '');
 
+			// Set tooltips
+			$this.find('a').each(function() {
+				var $link = $(this);
+				$link.attr('title', $link.text());
+			});
+
 			// Funciton that checks breadcrumbs
 			function check() {
 				var height = $this.height(),
