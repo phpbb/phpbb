@@ -1,7 +1,8 @@
 /* Responsive Design
 ---------------------------------------- */
 
-/* Content wrapper */
+/* Content wrappers
+----------------------------------------*/
 html {
 	height: auto;
 }
@@ -15,14 +16,16 @@ body {
 	padding: 0;
 }
 
-/* Common block wrappers */
+/* Common block wrappers
+----------------------------------------*/
 .headerbar, .navbar, .forabg, .forumbg, .post, .panel {
 	border-radius: 0;
 	margin-left: -5px;
 	margin-right: -5px;
 }
 
-/* Logo block */
+/* Logo block
+----------------------------------------*/
 #site-description {
 	float: none;
 	width: auto;
@@ -47,7 +50,14 @@ body {
 	display: none;
 }
 
-/* .topiclist lists */
+/* Navigation
+----------------------------------------*/
+.headerbar + .navbar {
+	margin-top: -5px;
+}
+
+/* .topiclist lists
+----------------------------------------*/
 li.header dt {
 	text-align: center;
 	text-transform: none;
@@ -76,7 +86,8 @@ ul.topiclist dd.mark {
 	display: block; 
 }
 
-/* Forums and topics lists */
+/* Forums and topics lists
+----------------------------------------*/
 ul.topiclist.forums dt, ul.topiclist.topics dt {
 	margin-right: -250px;
 }
