@@ -281,6 +281,9 @@ class phpbb_session
 			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '', false, true);
 			$this->session_id 		= request_var($config['cookie_name'] . '_sid', '', false, true);
 
+			$this->cookie_data['k'] = $this->escape_session_id($this->cookie_data['k']);
+			$this->session_id = $this->escape_session_id($this->session_id);
+
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 			$_SID = (defined('NEED_SID')) ? $this->session_id : '';
 
@@ -1376,6 +1379,14 @@ class phpbb_session
 		}
 
 		return true;
+	}
+
+	/** Escape Session Id
+	*  Strip characters that are not allowed and limit to 32 characters.
+	*/
+	function escape_session_id($session_id)
+	{
+		return substr(preg_replace("/[^a-z0-9]+/i", '', $session_id), 0, 32);
 	}
 
 	/**
