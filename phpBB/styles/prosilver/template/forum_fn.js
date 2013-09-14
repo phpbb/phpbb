@@ -25,8 +25,19 @@ function popup(url, width, height, name) {
 /**
 * Jump to page
 */
-function jumpto() {
-	var page = prompt(jump_page, on_page);
+function jumpto(item) {
+	if (!item || !item.length) {
+		item = $('a.pagination-trigger[data-lang-jump-page]');
+		if (!item.length) {
+			return;
+		}
+	}
+
+	var jump_page = item.attr('data-lang-jump-page'),
+		on_page = item.attr('data-on-page'),
+		per_page = item.attr('data-per-page'),
+		base_url = item.attr('data-base-url'),
+		page = prompt(jump_page, on_page);
 
 	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0) {
 		if (base_url.indexOf('?') === -1) {
@@ -266,8 +277,6 @@ function phpbb_check_key(event) {
 
 /**
 * Apply onkeypress event for forcing default submit button on ENTER key press
-* The jQuery snippet used is based on http://greatwebguy.com/programming/dom/default-html-button-submit-on-enter-with-jquery/
-* The non-jQuery code is a mimick of the jQuery code ;)
 */
 function apply_onkeypress_event() {
 	jQuery('form input[type=text], form input[type=password]').on('keypress', function (e) {
@@ -293,20 +302,137 @@ function apply_onkeypress_event() {
 jQuery(document).ready(apply_onkeypress_event);
 
 /**
-* Adjust HTML code for IE8 and older versions
+* Run MSN action
+*/
+function msn_action(action, address)
+{
+	// Does the browser support the MSNM object?
+	var app = document.getElementById('objMessengerApp');
+
+	if (!app || !app.MyStatus) {
+		var lang = $('form[data-lang-im-msnm-browser]');
+		if (lang.length) {
+			alert(lang.attr('data-lang-im-msnm-browser'));
+		}
+		return false;
+	}
+
+	// Is MSNM connected?
+	if (app.MyStatus == 1) {
+		var lang = $('form[data-lang-im-msnm-connect]');
+		if (lang.length) {
+			alert(lang.attr('data-lang-im-msnm-connect'));
+		}
+		return false;
+	}
+
+	// Do stuff
+	try {
+		switch (action) {
+			case 'add':
+				app.AddContact(0, address);
+				break;
+
+			case 'im':
+				app.InstantMessage(address);
+				break;
+		}
+	}
+	catch (e) {
+		return;
+	}
+}
+
+/**
+* Add to your contact list
+*/
+function add_contact(address) 
+{
+	msn_action('add', address);
+}
+
+/**
+* Write IM to contact
+*/
+function im_contact(address)
+{
+	msn_action('im', address);
+}
+
+/**
+* Functions for user search popup
+*/
+function insert_user(formId, value)
+{
+	var form = jQuery(formId),
+		formName = form.attr('data-form-name'),
+		fieldName = form.attr('data-field-name'),
+		item = opener.document.forms[formName][fieldName];
+
+	if (item.value.length && item.type == 'textarea') {
+		value = item.value + "\n" + value;
+	}
+
+	item.value = value;
+}
+
+function insert_marked_users(formId, users)
+{
+	if (typeof(users.length) == "undefined")
+	{
+		if (users.checked)
+		{
+			insert_user(formId, users.value);
+		}
+	}
+	else if (users.length > 0)
+	{
+		for (i = 0; i < users.length; i++)
+		{
+			if (users[i].checked)
+			{
+				insert_user(formId, users[i].value);
+			}
+		}
+	}
+
+	self.close();
+}
+
+function insert_single_user(formId, user)
+{
+	insert_user(formId, user);
+	self.close();
+}
+
+/**
+* Run onload functions
 */
 (function($) {
 	$(document).ready(function() {
+		// Focus forms
+		$('form[data-focus]:first').each(function() {
+			$('#' + this.getAttribute('data-focus')).focus();
+		});
+
+		// Reset avatar dimensions when changing URL or EMAIL
+		$('input[data-reset-on-edit]').bind('keyup', function() {
+			$(this.getAttribute('data-reset-on-edit')).val('');
+		});
+
+		// Pagination
+		$('a.pagination-trigger').click(function() {
+			jumpto($(this));
+		});
+
+		// Adjust HTML code for IE8 and older versions		
 		var test = document.createElement('div'),
 			oldBrowser = (typeof test.style.borderRadius == 'undefined');
 		delete test;
 
-		if (!oldBrowser) {
-			return;
+		if (oldBrowser) {
+			// Fix .linkslist.bulletin lists
+			$('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
 		}
-
-		// Fix .linkslist.bulletin lists
-		$('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
 	});
 })(jQuery);
-
