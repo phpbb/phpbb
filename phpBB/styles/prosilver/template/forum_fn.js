@@ -446,7 +446,7 @@ function insert_single_user(formId, user)
 		$('.breadcrumbs').each(function() {
 			var $this = $(this),
 				$body = $('body'),
-				links = $this.find('a'),
+				links = $this.find('.crumb'),
 				length = links.length,
 				classes = ['wrapped-wide', 'wrapped-medium', 'wrapped-small'],
 				classesLength = classes.length,
@@ -474,7 +474,7 @@ function insert_single_user(formId, user)
 				lastWidth = width;
 
 				if (wrapped) {
-					$this.find('a.wrapped').removeClass('wrapped ' + classes.join(' '));
+					$this.find('.crumb.wrapped').removeClass('wrapped ' + classes.join(' '));
 					wrapped = false;
 					if ($this.height() <= maxHeight) return;
 				}

@@ -380,19 +380,19 @@ ul.linklist.bulletin li.no-bulletin:before {
 
 /* Responsive breadcrumbs
 ----------------------------------------*/
-.breadcrumbs a {
+.breadcrumbs .crumb {
 	display: inline-block;
+	vertical-align: bottom;
 }
 
-.breadcrumbs a.wrapped {
+.breadcrumbs .crumb.wrapped {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	vertical-align: bottom;
 }
-.breadcrumbs a.wrapped-wide { max-width: 120px; }
-.breadcrumbs a.wrapped-medium { max-width: 80px; }
-.breadcrumbs a.wrapped-small { max-width: 30px; }
+.breadcrumbs .crumb.wrapped-wide { max-width: 120px; }
+.breadcrumbs .crumb.wrapped-medium { max-width: 80px; }
+.breadcrumbs .crumb.wrapped-small { max-width: 30px; }
 
 /* Table styles
 ----------------------------------------*/
