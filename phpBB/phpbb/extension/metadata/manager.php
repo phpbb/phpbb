@@ -101,6 +101,7 @@ class phpbb_extension_metadata_manager
 		// Clean the metadata
 		$this->clean_metadata_array();
 
+		// This bit needs re-doing.
 		switch ($element)
 		{
 			case 'all':
@@ -188,58 +189,11 @@ class phpbb_extension_metadata_manager
 		return $this->metadata;
 	}
 
-	/**
-	* Validate fields
-	*
-	* @param string $name  ("all" for display and enable validation
-	* 						"display" for name, type, and authors
-	* 						"name", "type")
-	* @return Bool True if valid, throws an exception if invalid
-	*/
-	public function validate($name = 'display')
+	public function validate()
     {
-    	// Basic fields
-    	$fields = array(
-    		'name'		=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
-    		'type'		=> '#^phpbb3-extension$#',
-    		'licence'	=> '#.+#',
-    		'version'	=> '#.+#',
-    	);
-
-    	switch ($name)
-    	{
-    		case 'all':
-    			$this->validate('display');
-
-				$this->validate_enable();
-    		break;
-
-    		case 'display':
-    			foreach ($fields as $field => $data)
-				{
-					$this->validate($field);
-				}
-
-				$this->validate_authors();
-    		break;
-
-    		default:
-    			if (isset($fields[$name]))
-    			{
-    				if (!isset($this->metadata[$name]))
-    				{
-    					throw new phpbb_extension_exception("Required meta field '$name' has not been set.");
-					}
-
-					if (!preg_match($fields[$name], $this->metadata[$name]))
-					{
-    					throw new phpbb_extension_exception("Meta field '$name' is invalid.");
-					}
-				}
-			break;
-		}
-
-		return true;
+    	// Get the validator with the container (set metadata in construct)
+    	// Run validate_metadata()
+    	// Throw exceptions if there are problems
     }
 
 	/**
