@@ -255,7 +255,7 @@ class phpbb_captcha_qa
 		$sql = 'SELECT c.confirm_id
 				FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' c
 				WHERE c.session_id IS NULL' .
-				((empty($type)) ? '' : ' AND c.confirm_type = ' . (int)$type);
+				((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))

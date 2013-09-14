@@ -174,7 +174,7 @@ class phpbb_session_storage_memcache
 				if (!($session_time > $min && $session_time < $max))
 				{
 					unset($sessions[$session_id]);
-				};
+				}
 			}
 		}
 		if ($limit !== false)

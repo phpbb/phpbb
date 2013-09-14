@@ -57,7 +57,7 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 
 	$user_ip = $user->get_user_ip_from_session($session_id);
 
-	if ($user_ip != null)
+	if ($user_ip !== null)
 	{
 		$template->assign_var('WHOIS', user_ipwhois($user_ip));
 	}

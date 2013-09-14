@@ -36,7 +36,7 @@ interface phpbb_session_storage_interface_session
 
 	/** Replace a session from session_id with session_data
 	*
-	* @param int $session_id
+	* @param string $session_id
 	* @param array $session_data Data to replace session_id with
 	* @return null
 	*/
@@ -44,7 +44,7 @@ interface phpbb_session_storage_interface_session
 
 	/** Get session data associated with session_id
 	*
-	* @param int $session_id
+	* @param string $session_id
 	* @return array
 	*/
 	function get($session_id);
