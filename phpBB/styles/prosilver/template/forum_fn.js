@@ -442,6 +442,28 @@ function insert_single_user(formId, user)
 			$('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
 		}
 
+		// Resize navigation block to keep all links on same line
+		$('.navlinks').each(function() {
+			var $this = $(this),
+				left = $this.children().not('.rightside'),
+				right = $this.children('.rightside');
+
+			if (left.length !== 1 || !right.length) return;
+
+			function resize() {
+				var width = 0,
+					diff = left.outerWidth(true) - left.width();
+
+				right.each(function() {
+					width += $(this).outerWidth(true);
+				});
+				left.css('max-width', Math.floor($this.width() - width - diff) + 'px');
+			}
+
+			resize();
+			$(window).resize(resize);
+		});
+
 		// Responsive breadcrumbs
 		$('.breadcrumbs').each(function() {
 			var $this = $(this),
