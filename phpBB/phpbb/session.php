@@ -1386,7 +1386,7 @@ class phpbb_session
 	*/
 	function escape_session_id($session_id)
 	{
-		return substr(preg_replace("/[^a-z0-9]+/i", '', $session_id), 0, 32);
+		return substr(preg_replace("/[^a-z0-9_]+/i", '', $session_id), 0, 32);
 	}
 
 	/**
