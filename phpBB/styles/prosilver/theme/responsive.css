@@ -1,2 +1,49 @@
 /* Responsive Design
 ---------------------------------------- */
+
+/* Content wrapper */
+html {
+	height: auto;
+}
+
+body {
+	padding: 0 5px;
+}
+
+#wrap {
+	min-width: 320px;
+	padding: 0;
+}
+
+/* Common block wrappers */
+.headerbar, .navbar, .forabg, .forumbg, .post, .panel {
+	border-radius: 0;
+	margin-left: -5px;
+	margin-right: -5px;
+}
+
+/* Logo block */
+#site-description {
+	float: none;
+	width: auto;
+	text-align: center;
+}
+
+#logo {
+	/* change display value to inline-block to show logo */
+	display: none;
+	float: none;
+	padding: 10px;
+}
+
+#site-description h1, #site-description p {
+	text-align: inherit;
+	float: none;
+	margin: 5px;
+	line-height: 1.2em;
+}
+
+#site-description p, #search-box {
+	display: none;
+}
+
