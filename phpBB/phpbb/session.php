@@ -289,14 +289,14 @@ class phpbb_session
 
 			if (empty($this->session_id))
 			{
-				$this->session_id = $_SID = request_var('sid', '');
+				$this->session_id = $_SID = $this->escape_session_id(request_var('sid', ''));
 				$SID = '?sid=' . $this->session_id;
 				$this->cookie_data = array('u' => 0, 'k' => '');
 			}
 		}
 		else
 		{
-			$this->session_id = $_SID = request_var('sid', '');
+			$this->session_id = $_SID = $this->escape_session_id(request_var('sid', ''));
 			$SID = '?sid=' . $this->session_id;
 		}
 
