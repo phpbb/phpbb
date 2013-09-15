@@ -167,6 +167,9 @@ services:
             - %core.php_ext%
             - _ext_finder
 
+    ext.metadata.validator:
+        class: phpbb_extension_metadata_validator
+
     filesystem:
         class: phpbb_filesystem
 

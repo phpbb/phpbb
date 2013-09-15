@@ -8,7 +8,8 @@
 		"symfony/http-kernel": "2.3.*",
 		"symfony/routing": "2.3.*",
 		"symfony/yaml": "2.3.*",
-		"twig/twig": "1.13.*"
+		"twig/twig": "1.13.*",
+		"composer/composer": "dev-master@dev"
 	},
 	"require-dev": {
 		"fabpot/goutte": "v0.1.0",

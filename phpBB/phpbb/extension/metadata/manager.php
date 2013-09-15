@@ -29,6 +29,12 @@ class phpbb_extension_metadata_manager
 	protected $config;
 
 	/**
+	* phpBB Container instance
+	* @var phpbb_container
+	*/
+	protected $container;
+
+	/**
 	* phpBB Extension Manager
 	* @var phpbb_extension_manager
 	*/
@@ -69,13 +75,15 @@ class phpbb_extension_metadata_manager
 	*
 	* @param string				$ext_name			Name (including vendor) of the extension
 	* @param phpbb_config		$config				phpBB Config instance
+	* @param ContainerInterface $container 			A container
 	* @param phpbb_extension_manager	$extension_manager An instance of the phpBBb extension manager
 	* @param phpbb_template		$template			phpBB Template instance
 	* @param string				$phpbb_root_path	Path to the phpbb includes directory.
 	*/
-	public function __construct($ext_name, phpbb_config $config, phpbb_extension_manager $extension_manager, phpbb_template $template, $phpbb_root_path)
+	public function __construct($ext_name, phpbb_config $config, ContainerInterface $container, phpbb_extension_manager $extension_manager, phpbb_template $template, $phpbb_root_path)
 	{
 		$this->config = $config;
+		$this->container = $container;
 		$this->extension_manager = $extension_manager;
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -98,25 +106,23 @@ class phpbb_extension_metadata_manager
 		// Fetch the metadata
 		$this->fetch_metadata();
 
-		// Clean the metadata
-		$this->clean_metadata_array();
+		$validation_result = $this->validate();
+
+		if (!($validation_result === true))
+		{
+			throw new phpbb_extension_exception($validation_result);
+		}
 
 		// This bit needs re-doing.
 		switch ($element)
 		{
 			case 'all':
 			default:
-				// Validate the metadata
-				if (!$this->validate())
-				{
-					return false;
-				}
-
 				return $this->metadata;
 			break;
 
 			case 'name':
-				return ($this->validate('name')) ? $this->metadata['name'] : false;
+				return $this->metadata['name'];
 			break;
 
 			case 'display-name':
@@ -126,12 +132,11 @@ class phpbb_extension_metadata_manager
 				}
 				else
 				{
-					return ($this->validate('name')) ? $this->metadata['name'] : false;
+					return ($this->metadata['name']);
 				}
 			break;
 		}
 	}
-
 	/**
 	 * Sets the filepath of the metadata file
 	 *
@@ -146,7 +151,7 @@ class phpbb_extension_metadata_manager
 
 		if (!file_exists($this->metadata_file))
 		{
-    		throw new phpbb_extension_exception('The required file does not exist: ' . $this->metadata_file);
+			throw new phpbb_extension_exception('The required file does not exist: ' . $this->metadata_file);
 		}
 	}
 
@@ -165,12 +170,12 @@ class phpbb_extension_metadata_manager
 		{
 			if (!($file_contents = file_get_contents($this->metadata_file)))
 			{
-    			throw new phpbb_extension_exception('file_get_contents failed on ' . $this->metadata_file);
+				throw new phpbb_extension_exception('file_get_contents failed on ' . $this->metadata_file);
 			}
 
 			if (($metadata = json_decode($file_contents, true)) === NULL)
 			{
-    			throw new phpbb_extension_exception('json_decode failed on ' . $this->metadata_file);
+				throw new phpbb_extension_exception('json_decode failed on ' . $this->metadata_file);
 			}
 
 			$this->metadata = $metadata;
@@ -179,22 +184,14 @@ class phpbb_extension_metadata_manager
 		}
 	}
 
-	/**
-	 * This array handles the cleaning of the array
-	 *
-	 * @return array Contains the cleaned metadata array
-	 */
-	private function clean_metadata_array()
-	{
-		return $this->metadata;
-	}
-
 	public function validate()
-    {
-    	// Get the validator with the container (set metadata in construct)
-    	// Run validate_metadata()
-    	// Throw exceptions if there are problems
-    }
+	{
+		$validator = $this->container->get('ext.metadata.validator');
+		$validator->set_metadata($this->metadata);
+		$result = $validator->validate_metadata();
+
+		return $result;
+	}
 
 	/**
 	 * Validates the contents of the authors field
@@ -205,14 +202,14 @@ class phpbb_extension_metadata_manager
 	{
 		if (empty($this->metadata['authors']))
 		{
-    		throw new phpbb_extension_exception("Required meta field 'authors' has not been set.");
+			throw new phpbb_extension_exception("Required meta field 'authors' has not been set.");
 		}
 
 		foreach ($this->metadata['authors'] as $author)
 		{
 			if (!isset($author['name']))
 			{
-    			throw new phpbb_extension_exception("Required meta field 'author name' has not been set.");
+				throw new phpbb_extension_exception("Required meta field 'author name' has not been set.");
 			}
 		}
 
@@ -275,14 +272,7 @@ class phpbb_extension_metadata_manager
 	*/
 	private function _validate_version($string, $current_version)
 	{
-		// Allow them to specify their own comparison operator (ex: <3.1.2, >=3.1.0)
-		$comparison_matches = false;
-		preg_match('#[=<>]+#', $string, $comparison_matches);
-
-		if (!empty($comparison_matches))
-		{
-			return version_compare($current_version, str_replace(array($comparison_matches[0], ' '), '', $string), $comparison_matches[0]);
-		}
+		// Needs re-doing to use composer
 
 		return version_compare($current_version, $string, '>=');
 	}

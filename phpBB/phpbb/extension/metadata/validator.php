@@ -25,10 +25,16 @@ class phpbb_extension_metadata_validator
 	protected $metadata;
 	protected $schema;
 
-	public function __construct($metadata)
+	public function __construct()
+	{
+		$this->set_schema();
+	}
+
+	public function set_metadata($metadata)
 	{
 		$this->metadata = $metadata;
-		$this->set_schema();
+
+		return $metadata;
 	}
 
 	public function check_for_required_elements()
@@ -54,6 +60,11 @@ class phpbb_extension_metadata_validator
 
 	public function validate_metadata()
 	{
+		if (!isset($this->metadata))
+		{
+			throw new phpbb_extension_exception('Metadata is not set for validator');
+		}
+
 		if (!$this->check_for_required_elements())
 		{
 			return 'Not all required elements were found';
@@ -116,6 +127,11 @@ class phpbb_extension_metadata_validator
 
 	private function validate_authors()
 	{
+		if (!isset($this->metadata))
+		{
+			throw new phpbb_extension_exception('Metadata is not set for validator');
+		}
+
 		foreach ($this->metadata['authors'] as $author)
 		{
 			if (!isset($author['name']))
@@ -155,6 +171,11 @@ class phpbb_extension_metadata_validator
 
 	private function validate_existence($element1, $element2 = '', $element3 = '')
 	{
+		if (!isset($this->metadata))
+		{
+			throw new phpbb_extension_exception('Metadata is not set for validator');
+		}
+
 		if ($element1 && !$element2 && !$element3)
 		{
 			if (!isset($this->metadata[$element1]))
