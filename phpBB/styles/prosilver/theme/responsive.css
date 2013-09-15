@@ -199,8 +199,18 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 
 #navigation { 
 	padding: 0; 
+	margin: 0 auto;
+	max-width: 320px;
 }
 
 #navigation a {
 	background-image: none;
+}
+
+#navigation li:first-child a {
+	border-radius: 5px 5px 0 0;
+}
+
+#navigation li:last-child a {
+	border-radius: 0 0 5px 5px;
 }
