@@ -380,7 +380,7 @@ class phpbb_session
 		// if session id is set
 		if (!empty($this->session_id))
 		{
-			$this->data = $this->db_session->get($this->session_id);
+			$this->data = $this->db_session->get_session_and_user_data($this->session_id);
 
 			// Did the session exist in the DB?
 			if (isset($this->data['user_id']))
@@ -646,7 +646,7 @@ class phpbb_session
 			else
 			{
 				// We give bots always the same session if it is not yet expired.
-				$this->data = $this->db_session->get_with_user_id($bot);
+				$this->data = $this->db_session->get_session_and_user_data_with_id($bot);
 			}
 
 		}
@@ -825,7 +825,7 @@ class phpbb_session
 			unset($cookie_expire);
 
 			$timeframe_to_search = max($config['session_length'], $config['form_token_lifetime']);
-			$num_sessions = $this->db_session->num_sessions(
+			$num_sessions = $this->db_session->num_active_sessions_for_user(
 				$this->data['user_id'],
 				$timeframe_to_search
 			);
@@ -942,7 +942,7 @@ class phpbb_session
 		}, $batch_size);
 
         // Delete expired sessions
-        $this->db_session->cleanup_expired_sessions($del_user_ids, $config['session_length']);
+        $this->db_session->cleanup_certain_expired_sessions($del_user_ids, $config['session_length']);
 
 		if (sizeof($del_user_ids) < $batch_size)
 		{
@@ -952,7 +952,7 @@ class phpbb_session
 
 			if ($config['max_autologin_time'])
 			{
-				$this->db_keys->cleanup_long_session_keys($config['max_autologin_time']);
+				$this->db_keys->cleanup_session_keys($config['max_autologin_time']);
 			}
 
 			// only called from CRON; should be a safe workaround until the infrastructure gets going
@@ -1383,7 +1383,7 @@ class phpbb_session
 	
 	function get_user_online_time($user_id)
 	{
-		return $this->db_session->get_user_online_time($user_id);
+		return $this->db_session->get_all_users_time_visibility($user_id);
 	}
 
 	function set_viewonline($viewonline)
@@ -1416,7 +1416,7 @@ class phpbb_session
 	{
 		if (is_null($session_id) && !is_null($user_id))
 		{
-			$session_id = $this->db_session->get_newest_session($user_id);
+			$session_id = $this->db_session->get_user_data_and_newest_session($user_id);
 			$this->db_session->update($session_id, $session_data);
 		}
 		else
@@ -1448,12 +1448,12 @@ class phpbb_session
 
 	function get_newest_session($user_id)
 	{
-		return $this->db_session->get_newest_session($user_id);
+		return $this->db_session->get_user_data_and_newest_session($user_id);
 	}
 
 	function get_user_ip_from_session($session_id)
 	{
-		return $this->db_session->get_user_ip_from_session($session_id);
+		return $this->db_session->get_user_data_and_ip_from_session($session_id);
 	}
 
 	function obtain_guest_count($item_id = 0, $item = 'forum')
