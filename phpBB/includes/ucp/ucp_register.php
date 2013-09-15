@@ -43,6 +43,8 @@ class ucp_register
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
 		$register_mode	= $request->variable('register_mode', '');
+		$auth_provider	= 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
+		$auth_provider	= $phpbb_container->get($auth_provider);
 
 		if ($agreed)
 		{
@@ -92,9 +94,6 @@ class ucp_register
 		if (!empty($login_link_data))
 		{
 			// Confirm that we have all necessary data
-			$auth_provider = 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
-			$auth_provider = $phpbb_container->get($auth_provider);
-
 			$result = $auth_provider->login_link_has_necessary_data($login_link_data);
 			if ($result !== null)
 			{
@@ -102,13 +101,6 @@ class ucp_register
 			}
 
 			$s_hidden_fields = array_merge($s_hidden_fields, $this->get_login_link_data_for_hidden_fields($login_link_data));
-
-			// Ask user if they wish to register with an external account or create a board account
-			if (!$register_mode)
-			{
-				$this->tpl_name = 'ucp_register_mode_select.html';
-				return;
-			}
 		}
 
 		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
@@ -183,6 +175,14 @@ class ucp_register
 			unset($lang_row);
 
 			$this->tpl_name = 'ucp_agreement';
+			return;
+		}
+
+		// Ask user if they wish to register with an external account or create a board account
+		$auth_provider_data = $auth_provider->get_register_data();
+		if (empty($login_link_data) && !empty($auth_provider_data) && $register_mode === '')
+		{
+			$this->tpl_name = 'ucp_register_mode_select';
 			return;
 		}
 
