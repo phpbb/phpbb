@@ -44,18 +44,26 @@ class phpbb_extension_metadata_validator
 
 		foreach ($required_elements_level_1 as $element)
 		{
-			$this->validate_existence($element);
+			if(!($this->validate_existence($element)))
+			{
+				return false;
+			}
 		}
 
 		// Level 2 Required Elements
-		$this->validate_existence('require','phpbb/phpbb');
+		if(!($this->validate_existence('require','phpbb/phpbb')))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	public function change_schema($element, $replacement)
 	{
 		$this->schema[$element] = $replacement;
 
-		return;
+		return $this->schema;
 	}
 
 	public function validate_metadata()
@@ -111,18 +119,29 @@ class phpbb_extension_metadata_validator
 				case 'homepage':
 				case 'time':
 				case 'license':
-					return ((preg_match($this->schema[$element], $this->metadata[$element])) ? true : "There was a problem with validating $element");
+					if (!preg_match($this->schema[$element], $this->metadata[$element]))
+					{
+						return '$element metadata is invalid';
+					}
 				break;
 
 				case 'authors':
-					return ($this->validate_authors());
+					if(!$this->validate_authors())
+					{
+						return 'Authors were not valid';
+					}
 				break;
 
 				case 'extra':
-					return ((preg_match($this->schema['display-name'], $this->metadata['extra']['display-name'])) ? true : "There was a problem with validating $element");
+					if(!preg_match($this->schema['display-name'], $this->metadata['extra']['display-name']))
+					{
+						return 'Display name is invalid';
+					}
 				break;
 			}
 		}
+
+		return true;
 	}
 
 	private function validate_authors()
