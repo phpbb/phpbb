@@ -606,12 +606,6 @@ function insert_single_user(formId, user)
 			$(window).resize(check);
 		});
 
-		$('#phpbb').click(function(e) {
-			if (!$(e.target).parents().is('.responsive-menu.visible')) {
-				$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup').hide();
-			}
-		});
-
 		// Responsive tabs
 		$('#tabs').not('.skip-responsive').each(function() {
 			var $this = $(this),
@@ -673,6 +667,17 @@ function insert_single_user(formId, user)
 
 			check(true);
 			$(window).resize(check);
+		});
+
+		// Hide responsive menu and tabs
+		$('#phpbb').click(function(e) {
+			var parents = $(e.target).parents();
+			if (!parents.is('.responsive-menu.visible')) {
+				$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup').hide();
+			}
+			if (!parents.is('.responsive-tab')) {
+				$('.responsive-tabs').hide();
+			}
 		});
 	});
 })(jQuery);
