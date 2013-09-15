@@ -22,9 +22,12 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 	public function setUp()
 	{
 		parent::setUp();
+		global $db;
+		$db = $this->new_dbal();
 		$this->session = new phpbb_session();
 		$this->session->db_session->set_db($this->new_dbal());
 		$this->set_time = time();
+		$this->session->db_session->set_time_now($this->set_time);
 		// Update time stamps on all sessions
 		foreach(array(self::annon_id, self::bar_id) as $session_id)
 		{
@@ -54,10 +57,7 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 
 	function test_update_session()
 	{
-		$data = array(
-			'session_admin' => 1
-		);
-		$this->session->db_session->update(self::annon_id, $data);
+		$this->session->db_session->update(self::annon_id, array('session_admin' => 1));
 		$results = $this->session->db_session->get_session_and_user_data(self::annon_id);
 		$this->assertEquals(1, $results['session_admin']);
 	}
@@ -153,13 +153,16 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 		$sessions =
 			$this->session->db_session->get_user_list(true, 60, 'session_time', $phpbb_dispatcher);
 		$this->assertEquals(2, count($sessions));
+		// All that is important is that both arrays
+		// contain certain keys
+		$important_keys = array('user_id', 'username', 'username_clean',
+			'user_type', 'user_colour', 'session_id',
+			'session_time', 'session_page', 'session_ip',
+			'session_browser', 'session_viewonline',
+			'session_forum_id',);
 		$this->assert_array_content_equals(
-			array('user_id', 'username', 'username_clean',
-				'user_type', 'user_colour', 'session_id',
-				'session_time', 'session_page', 'session_ip',
-				'session_browser', 'session_viewonline',
-				'session_forum_id',),
-			array_keys($sessions[0])
+			$important_keys,
+			array_intersect($important_keys, array_keys($sessions[0]))
 		);
 	}
 
@@ -170,7 +173,7 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 				array(
 					'session_user_id' => ANONYMOUS,
 					'session_time' => $this->set_time
-        		)
+				)
 			),
 			$this->session->db_session->map_users_online(
 				array(ANONYMOUS), 60, function ($s) {return $s;})
@@ -178,7 +181,28 @@ class phpbb_storage_db_session extends phpbb_database_test_case
 	}
 
 	function test_map_certain_users_with_time()
-	{}
+	{
+		$sessions =
+			$this
+				->session
+				->db_session
+				->map_certain_users_with_time(
+					array(ANONYMOUS),
+					function ($u) {return $u;}
+				);
+		$this->assert_array_content_equals(
+			array
+			(
+				array
+				(
+					'session_user_id' => ANONYMOUS,
+					'online_time' => $this->set_time,
+					'viewonline' => 1,
+				)
+			),
+			$sessions
+		);
+	}
 
 	function test_unset_admin()
 	{
