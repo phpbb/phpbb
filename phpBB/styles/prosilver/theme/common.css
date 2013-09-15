@@ -384,6 +384,10 @@ ul.linklist li.responsive-menu a.responsive-menu-link:before {
 	border-top: 0.375em double transparent;
 }
 
+.hasjs ul.linklist.leftside, .hasjs ul.linklist.rightside {
+	max-width: 48%;
+}
+
 /* Bulletin icons for list items
 ----------------------------------------*/
 ul.linklist.bulletin li:before {
