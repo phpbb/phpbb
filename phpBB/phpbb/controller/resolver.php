@@ -40,23 +40,23 @@ class resolver implements ControllerResolverInterface
 	protected $container;
 
 	/**
-	* \phpbb\style\style object
-	* @var \phpbb\style\style
+	* phpbb\template\template object
+	* @var phpbb\template\template
 	*/
-	protected $style;
+	protected $template;
 
 	/**
 	* Construct method
 	*
 	* @param \phpbb\user $user User Object
 	* @param ContainerInterface $container ContainerInterface object
-	* @param \phpbb\style\style $style
+	* @param \phpbb\template\template $template
 	*/
-	public function __construct(\phpbb\user $user, ContainerInterface $container, \phpbb\style\style $style = null)
+	public function __construct(\phpbb\user $user, ContainerInterface $container, \phpbb\template\template $template = null)
 	{
 		$this->user = $user;
 		$this->container = $container;
-		$this->style = $style;
+		$this->template = $template;
 	}
 
 	/**
@@ -98,13 +98,13 @@ class resolver implements ControllerResolverInterface
 		$controller_dir = explode('_', get_class($controller_object));
 
 		// 0 phpbb, 1 ext, 2 vendor, 3 extension name, ...
-		if (!is_null($this->style) && isset($controller_dir[3]) && $controller_dir[1] === 'ext')
+		if (!is_null($this->template) && isset($controller_dir[3]) && $controller_dir[1] === 'ext')
 		{
 			$controller_style_dir = 'ext/' . $controller_dir[2] . '/' . $controller_dir[3] . '/styles';
 
 			if (is_dir($controller_style_dir))
 			{
-				$this->style->set_style(array($controller_style_dir, 'styles'));
+				$this->template->set_style(array($controller_style_dir, 'styles'));
 			}
 		}
 

@@ -379,6 +379,7 @@ class acp_modules
 				$json_response->send(array(
 					'MESSAGE_TITLE'	=> $user->lang('ERROR'),
 					'MESSAGE_TEXT'	=> implode('<br />', $errors),
+					'SUCCESS'	=> false,
 				));
 			}
 

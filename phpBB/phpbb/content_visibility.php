@@ -362,6 +362,11 @@ class content_visibility
 		// Sync the first/last topic information if needed
 		if (!$is_starter && $is_latest)
 		{
+			if (!function_exists('update_post_information'))
+			{
+				include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
+			}
+
 			// update_post_information can only update the last post info ...
 			if ($topic_id)
 			{

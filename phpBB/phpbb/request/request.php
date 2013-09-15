@@ -414,4 +414,12 @@ class request implements \phpbb\request\request_interface
 
 		return $var;
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_super_global($super_global = \phpbb\request\request_interface::REQUEST)
+	{
+		return $this->input[$super_global];
+	}
 }

@@ -13,7 +13,7 @@ class release_3_0_3_rc1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.0.3-rc1', '>=');
+		return phpbb_version_compare($this->config['version'], '3.0.3-RC1', '>=');
 	}
 
 	static public function depends_on()
@@ -62,7 +62,7 @@ class release_3_0_3_rc1 extends \phpbb\db\migration\migration
 			array('permission.add', array('u_masspm_group', true, 'u_masspm')),
 			array('custom', array(array(&$this, 'correct_acp_email_permissions'))),
 
-			array('config.update', array('version', '3.0.3-rc1')),
+			array('config.update', array('version', '3.0.3-RC1')),
 		);
 	}
 

@@ -13,7 +13,7 @@ class release_3_0_7_rc2 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.0.7-rc2', '>=');
+		return phpbb_version_compare($this->config['version'], '3.0.7-RC2', '>=');
 	}
 
 	static public function depends_on()
@@ -26,7 +26,7 @@ class release_3_0_7_rc2 extends \phpbb\db\migration\migration
 		return array(
 			array('custom', array(array(&$this, 'update_email_hash'))),
 
-			array('config.update', array('version', '3.0.7-rc2')),
+			array('config.update', array('version', '3.0.7-RC2')),
 		);
 	}
 

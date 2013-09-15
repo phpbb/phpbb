@@ -532,13 +532,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new \phpbb\cache\driver\null();
-		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
-		$phpbb_container
-			->expects($this->any())
-			->method('get')
-			->with('cache.driver')
-			->will($this->returnValue($cache_driver));
+		$cache_driver = new phpbb_cache_driver_null();
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->set('cache.driver', $cache_driver);
+		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
 
 		if (!function_exists('utf_clean_string'))
 		{
@@ -747,6 +744,27 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
 	}
 
+	/*
+	* Perform some basic assertions for an xml page
+	*
+	* Checks for debug/error output before the actual page content and the status code
+	*
+	* @param mixed $status_code		Expected status code, false to disable check
+	* @return null
+	*/
+	static public function assert_response_xml($status_code = 200)
+	{
+		if ($status_code !== false)
+		{
+			self::assert_response_status_code($status_code);
+		}
+
+		// Any output before the xml opening means there was an error
+		$content = self::$client->getResponse()->getContent();
+		self::assertNotContains('[phpBB Debug]', $content);
+		self::assertStringStartsWith('<?xml', trim($content), 'Output found before XML specification.');
+	}
+
 	/**
 	* Heuristic function to check that the response is success.
 	*
@@ -907,7 +925,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$hidden_fields = array(
 			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
-				return array('name' => $node->getAttribute('name'), 'value' => $node->getAttribute('value'));
+				return array('name' => $node->attr('name'), 'value' => $node->attr('value'));
 			}),
 		);
 
@@ -936,7 +954,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 	}
 
-	/*
+	/**
 	* Returns the requested parameter from a URL
 	*
 	* @param	string	$url

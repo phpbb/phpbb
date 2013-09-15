@@ -138,7 +138,7 @@ class phpbb_database_test_connection_manager
 		catch (PDOException $e)
 		{
 			$cleaned_dsn = str_replace($this->config['dbpasswd'], '*password*', $dsn);
-			throw new Exception("Unable do connect to $cleaned_dsn using PDO with error: {$e->getMessage()}");
+			throw new Exception("Unable to connect to $cleaned_dsn using PDO with error: {$e->getMessage()}");
 		}
 
 		$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

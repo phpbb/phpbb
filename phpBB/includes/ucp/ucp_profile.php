@@ -546,6 +546,9 @@ class ucp_profile
 				// Build custom bbcodes array
 				display_custom_bbcodes();
 
+				// Generate smiley listing
+				generate_smilies('inline', 0);
+
 			break;
 
 			case 'avatar':

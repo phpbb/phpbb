@@ -101,6 +101,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_function_nam
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_max_chunk_size', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_mod_rewrite', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '1');
@@ -170,7 +171,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_search_load'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_anon_lastread', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_birthdays', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_memberlist', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_profile', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_pm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewprofile', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewtopic', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread', '1');

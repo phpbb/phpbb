@@ -832,39 +832,14 @@ if (!empty($topic_data['poll_start']))
 		$poll_total += $poll_option['poll_option_total'];
 	}
 
-	if ($poll_info[0]['bbcode_bitfield'])
-	{
-		$poll_bbcode = new bbcode();
-	}
-	else
-	{
-		$poll_bbcode = false;
-	}
+	$parse_flags = ($poll_info[0]['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
 
 	for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
 	{
-		$poll_info[$i]['poll_option_text'] = censor_text($poll_info[$i]['poll_option_text']);
-
-		if ($poll_bbcode !== false)
-		{
-			$poll_bbcode->bbcode_second_pass($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield']);
-		}
-
-		$poll_info[$i]['poll_option_text'] = bbcode_nl2br($poll_info[$i]['poll_option_text']);
-		$poll_info[$i]['poll_option_text'] = smiley_text($poll_info[$i]['poll_option_text']);
+		$poll_info[$i]['poll_option_text'] = generate_text_for_display($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield'], $parse_flags, true);
 	}
 
-	$topic_data['poll_title'] = censor_text($topic_data['poll_title']);
-
-	if ($poll_bbcode !== false)
-	{
-		$poll_bbcode->bbcode_second_pass($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
-	}
-
-	$topic_data['poll_title'] = bbcode_nl2br($topic_data['poll_title']);
-	$topic_data['poll_title'] = smiley_text($topic_data['poll_title']);
-
-	unset($poll_bbcode);
+	$topic_data['poll_title'] = generate_text_for_display($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield'], $parse_flags, true);
 
 	foreach ($poll_info as $poll_option)
 	{
@@ -1037,7 +1012,7 @@ while ($row = $db->sql_fetchrow($result))
 		}
 	}
 
-	$rowset[$row['post_id']] = array(
+	$rowset_data = array(
 		'hide_post'			=> (($row['foe'] || $row['post_visibility'] == ITEM_DELETED) && ($view != 'show' || $post_id != $row['post_id'])) ? true : false,
 
 		'post_id'			=> $row['post_id'],
@@ -1071,6 +1046,19 @@ while ($row = $db->sql_fetchrow($result))
 		'friend'			=> $row['friend'],
 		'foe'				=> $row['foe'],
 	);
+
+	/**
+	* Modify the post rowset containing data to be displayed with posts
+	*
+	* @event core.viewtopic_post_rowset_data
+	* @var	array	rowset_data	Array with the rowset data for this post
+	* @var	array	row			Array with original user and post data
+	* @since 3.1-A1
+	*/
+	$vars = array('rowset_data', 'row');
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_post_rowset_data', compact($vars)));
+
+	$rowset[$row['post_id']] = $rowset_data;
 
 	// Define the global bbcode bitfield, will be used to load bbcodes
 	$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
@@ -1406,29 +1394,13 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// End signature parsing, only if needed
 	if ($user_cache[$poster_id]['sig'] && $row['enable_sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
-		$user_cache[$poster_id]['sig'] = censor_text($user_cache[$poster_id]['sig']);
-
-		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
-		{
-			$bbcode->bbcode_second_pass($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield']);
-		}
-
-		$user_cache[$poster_id]['sig'] = bbcode_nl2br($user_cache[$poster_id]['sig']);
-		$user_cache[$poster_id]['sig'] = smiley_text($user_cache[$poster_id]['sig']);
-		$user_cache[$poster_id]['sig_parsed'] = true;
+		$parse_flags = ($user_cache[$poster_id]['sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+		$user_cache[$poster_id]['sig'] = generate_text_for_display($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield'],  $parse_flags, true);
 	}
 
 	// Parse the message and subject
-	$message = censor_text($row['post_text']);
-
-	// Second parse bbcode here
-	if ($row['bbcode_bitfield'])
-	{
-		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
-	}
-
-	$message = bbcode_nl2br($message);
-	$message = smiley_text($message);
+	$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+	$message = generate_text_for_display($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, true);
 
 	if (!empty($attachments[$row['post_id']]))
 	{

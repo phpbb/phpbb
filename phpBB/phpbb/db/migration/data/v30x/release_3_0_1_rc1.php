@@ -13,7 +13,7 @@ class release_3_0_1_rc1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.0.1-rc1', '>=');
+		return phpbb_version_compare($this->config['version'], '3.0.1-RC1', '>=');
 	}
 
 	public function update_schema()
@@ -76,7 +76,7 @@ class release_3_0_1_rc1 extends \phpbb\db\migration\migration
 			array('custom', array(array(&$this, 'fix_unset_last_view_time'))),
 			array('custom', array(array(&$this, 'reset_smiley_size'))),
 
-			array('config.update', array('version', '3.0.1-rc1')),
+			array('config.update', array('version', '3.0.1-RC1')),
 		);
 	}
 

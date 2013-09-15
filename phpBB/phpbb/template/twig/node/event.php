@@ -20,6 +20,12 @@ if (!defined('IN_PHPBB'))
 
 class event extends \Twig_Node
 {
+	/** 
+	 * The subdirectory in which all template listener files must be placed
+	 * @var string
+	 */
+	protected $listener_directory = 'event/';
+
 	/** @var Twig_Environment */
 	protected $environment;
 
@@ -39,7 +45,7 @@ class event extends \Twig_Node
 	{
 		$compiler->addDebugInfo($this);
 
-		$location = $this->getNode('expr')->getAttribute('name');
+		$location = $this->listener_directory . $this->getNode('expr')->getAttribute('name');
 
 		foreach ($this->environment->get_phpbb_extensions() as $ext_namespace => $ext_path)
 		{

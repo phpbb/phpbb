@@ -132,11 +132,8 @@ class bbcode
 		{
 			$this->template_bitfield = new bitfield($user->style['bbcode_bitfield']);
 
-			$style_resource_locator = new \phpbb\style\resource_locator();
-			$style_path_provider = new \phpbb\style\extension_path_provider($phpbb_extension_manager, new \phpbb\style\path_provider(), $phpbb_root_path);
-			$template = new \phpbb\template\twig\twig($phpbb_root_path, $phpEx, $config, $user, new \phpbb\template\context(), $phpbb_extension_manager);
-			$style = new \phpbb\style\style($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, $style_path_provider, $template);
-			$style->set_style();
+			$template = new \phpbb\template\twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context(), $phpbb_extension_manager);
+			$template->set_style();
 			$template->set_filenames(array('bbcode.html' => 'bbcode.html'));
 			$this->template_filename = $template->get_source_file_for_handle('bbcode.html');
 		}

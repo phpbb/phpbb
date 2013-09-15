@@ -8,6 +8,12 @@ imports:
     - { resource: auth_providers.yml }
 
 services:
+    acl.permissions:
+        class: phpbb_permissions
+        arguments:
+            - @dispatcher
+            - @user
+
     auth:
         class: phpbb\auth\auth
 
@@ -84,6 +90,7 @@ services:
         arguments:
             - @template
             - @user
+            - @config
             - %core.root_path%
             - %core.php_ext%
 
@@ -92,7 +99,7 @@ services:
         arguments:
             - @user
             - @service_container
-            - @style
+            - @template
 
     cron.task_collection:
         class: phpbb\di\service_collection
@@ -239,32 +246,11 @@ services:
             - %tables.notifications%
             - %tables.user_notifications%
 
+    php_ini:
+        class: phpbb_php_ini
+
     request:
         class: phpbb\request\request
-
-    style:
-        class: phpbb\style\style
-        arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @config
-            - @user
-            - @style.resource_locator
-            - @style.path_provider_ext
-            - @template
-
-    style.resource_locator:
-        class: phpbb\style\resource_locator
-
-    style.path_provider_ext:
-        class: phpbb\style\extension_path_provider
-        arguments:
-            - @ext.manager
-            - @style.path_provider
-            - %core.root_path%
-
-    style.path_provider:
-        class: phpbb\style\path_provider
 
     template:
         class: phpbb\template\twig\twig

@@ -121,6 +121,7 @@ if (sizeof($package->old_packages))
 
 		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/docs ' . $dest_filename_dir);
 		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/install ' . $dest_filename_dir);
+		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/vendor ' . $dest_filename_dir);
 
 		$package->run_command('mkdir ' . $dest_filename_dir . '/install/update');
 		$package->run_command('mkdir ' . $dest_filename_dir . '/install/update/old');
@@ -256,6 +257,7 @@ $update_info = array(
 	// Copy the install files to their respective locations
 	$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/docs ' . $package->get('patch_directory'));
 	$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/install ' . $package->get('patch_directory'));
+	$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/vendor ' . $package->get('patch_directory'));
 
 	// Remove some files
 	chdir($package->get('patch_directory') . '/install');

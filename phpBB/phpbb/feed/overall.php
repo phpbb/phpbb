@@ -74,7 +74,7 @@ class overall extends \phpbb\feed\post_base
 				),
 			),
 			'WHERE'		=> $this->db->sql_in_set('p.topic_id', $topic_ids) . '
-							AND ' . $this->content_visibility->get_visibility_sql('post', array(), 'p.') . '
+							AND ' . $this->content_visibility->get_forums_visibility_sql('post', $forum_ids, 'p.') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND u.user_id = p.poster_id',
 			'ORDER_BY'	=> 'p.post_time DESC',

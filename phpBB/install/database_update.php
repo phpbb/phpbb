@@ -21,26 +21,6 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-if (!function_exists('phpbb_require_updated'))
-{
-	function phpbb_require_updated($path, $optional = false)
-	{
-		global $phpbb_root_path;
-
-		$new_path = $phpbb_root_path . 'install/update/new/' . $path;
-		$old_path = $phpbb_root_path . $path;
-
-		if (file_exists($new_path))
-		{
-			require($new_path);
-		}
-		else if (!$optional || file_exists($old_path))
-		{
-			require($old_path);
-		}
-	}
-}
-
 function phpbb_end_update($cache, $config)
 {
 	$cache->purge();
@@ -69,7 +49,7 @@ function phpbb_end_update($cache, $config)
 	exit_handler();
 }
 
-phpbb_require_updated('includes/startup.' . $phpEx);
+require($phpbb_root_path . 'includes/startup.' . $phpEx);
 
 include($phpbb_root_path . 'config.' . $phpEx);
 if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
@@ -88,7 +68,9 @@ require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 
+require($phpbb_root_path . 'config.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
+include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Set PHP error handler to ours
@@ -101,11 +83,10 @@ $phpbb_class_loader->register();
 // Set up container (must be done here because extensions table may not exist)
 $container_extensions = array(
 	new \phpbb\di\extension\config($phpbb_root_path . 'config.' . $phpEx),
-	new \phpbb\di\extension\core($phpbb_root_path),
+	new \phpbb\di\extension\core($phpbb_root_path . 'config/'),
 );
 $container_passes = array(
 	new \phpbb\di\pass\collection_pass(),
-	//new \phpbb\di\pass\kernel_pass(),
 );
 $phpbb_container = phpbb_create_container($container_extensions, $phpbb_root_path, $phpEx);
 
@@ -263,8 +244,8 @@ while (!$migrator->finished())
 	// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 	if ((time() - $update_start_time) >= $safe_time_limit)
 	{
-		echo $user->lang['DATABASE_UPDATE_NOT_COMPLETED'] . '<br />';
-		echo '<a href="' . append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=' . $request->variable('type', 0) . '&amp;language=' . $user->lang['USER_LANG']) . '">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
+		echo '<br />' . $user->lang['DATABASE_UPDATE_NOT_COMPLETED'] . '<br /><br />';
+		echo '<a href="' . append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=' . $request->variable('type', 0) . '&amp;language=' . $request->variable('language', 'en')) . '" class="button1">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
 
 		phpbb_end_update($cache, $config);
 	}
@@ -280,7 +261,7 @@ echo $user->lang['DATABASE_UPDATE_COMPLETE'] . '<br />';
 if ($request->variable('type', 0))
 {
 	echo $user->lang['INLINE_UPDATE_SUCCESSFUL'] . '<br /><br />';
-	echo '<a href="' . append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update&amp;sub=file_check&amp;language=' . $user->lang['USER_LANG']) . '" class="button1">' . $user->lang['CONTINUE_UPDATE_NOW'] . '</a>';
+	echo '<a href="' . append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update&amp;sub=update_db&amp;language=' . $request->variable('language', 'en')) . '" class="button1">' . $user->lang['CONTINUE_UPDATE_NOW'] . '</a>';
 }
 else
 {

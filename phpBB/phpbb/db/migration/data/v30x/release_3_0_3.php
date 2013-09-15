@@ -13,7 +13,7 @@ class release_3_0_3 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.0.3', '>=');
+		return phpbb_version_compare($this->config['version'], '3.0.3', '>=');
 	}
 
 	static public function depends_on()

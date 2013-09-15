@@ -28,6 +28,10 @@ select {
 	font-size: 1em;
 }
 
+select:focus {
+	outline-style: none;
+}
+
 option {
 	padding-right: 1em;
 }
@@ -271,6 +275,7 @@ fieldset.submit-buttons input {
 
 .inputbox:hover, .inputbox:focus {
 	border: 1px solid transparent;
+	outline-style: none;
 }
 
 input.inputbox	{ width: 85%; }
@@ -345,6 +350,11 @@ a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, inpu
 
 input.disabled {
 	font-weight: normal;
+}
+
+/* Focus states */
+input.button1:focus, input.button2:focus, input.button3:focus {
+	outline-style: none;
 }
 
 /* Topic and forum Search */

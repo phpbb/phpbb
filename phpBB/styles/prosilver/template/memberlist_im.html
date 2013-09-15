@@ -3,7 +3,7 @@
 <!-- MSNM info from http://www.cdolive.net/ - doesn't seem to work with MSN Messenger -->
 <h2 class="solo">{L_SEND_IM}</h2>
 
-<form method="post" action="{S_IM_ACTION}">
+<form method="post" action="{S_IM_ACTION}" data-lang-im-msnm-connect="{L_IM_MSNM_CONNECT|e('html_attr')}" data-lang-im-msnm-browser="{L_IM_MSNM_BROWSER|e('html_attr')}">
 
 <div class="panel bg2">
 	<div class="inner">
@@ -84,75 +84,5 @@
 </form>
 
 <a href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a>
-
-<script type="text/javascript">
-// <![CDATA[
-
-	/** The following will not work with Windows Vista **/
-
-	var app = document.getElementById('objMessengerApp');
-
-	/**
-	* Check whether the browser supports this and whether MSNM is connected
-	*/
-	function msn_supported()
-	{
-		// Does the browser support the MSNM object?
-		if (app.MyStatus)
-		{
-			// Is MSNM connected?
-			if (app.MyStatus == 1)
-			{
-				alert('{LA_IM_MSNM_CONNECT}');
-				return false;
-			}
-		}
-		else
-		{
-			alert('{LA_IM_MSNM_BROWSER}');
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	* Add to your contact list
-	*/
-	function add_contact(address) 
-	{
-		if (msn_supported()) 
-		{
-			// Could return an error while MSNM is connecting, don't want that
-			try
-			{
-				app.AddContact(0, address);
-			}
-			catch (e)
-			{
-				return;
-			}
-	}
-}
-
-/**
-* Write IM to contact
-*/
-function im_contact(address)
-{
-	if (msn_supported())
-	{
-		// Could return an error while MSNM is connecting, don't want that
-		try
-		{
-			app.InstantMessage(address);
-		}
-		catch (e)
-		{
-			return;
-		}
-	}
-}
-// ]]>
-</script>
 
 <!-- INCLUDE simple_footer.html -->

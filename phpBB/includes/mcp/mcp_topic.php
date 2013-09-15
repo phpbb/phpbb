@@ -207,13 +207,8 @@ function mcp_topic_view($id, $mode, $action)
 		$message = $row['post_text'];
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_info['topic_title'];
 
-		if ($row['bbcode_bitfield'])
-		{
-			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
-		}
-
-		$message = bbcode_nl2br($message);
-		$message = smiley_text($message);
+		$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+		$message = generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, false);
 
 		if (!empty($attachments[$row['post_id']]))
 		{
@@ -674,10 +669,10 @@ function merge_posts($topic_id, $to_topic_id)
 			}
 
 			// If the topic no longer exist, we will update the topic watch table.
-			phpbb_update_rows_avoiding_duplicates_notify_status($db, TOPICS_WATCH_TABLE, 'topic_id', $topic_ids, $to_topic_id);
+			phpbb_update_rows_avoiding_duplicates_notify_status($db, TOPICS_WATCH_TABLE, 'topic_id', array($topic_id), $to_topic_id);
 
 			// If the topic no longer exist, we will update the bookmarks table.
-			phpbb_update_rows_avoiding_duplicates($db, BOOKMARKS_TABLE, 'topic_id', $topic_id, $to_topic_id);
+			phpbb_update_rows_avoiding_duplicates($db, BOOKMARKS_TABLE, 'topic_id', array($topic_id), $to_topic_id);
 		}
 
 		// Link to the new topic

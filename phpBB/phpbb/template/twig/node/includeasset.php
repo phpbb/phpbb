@@ -9,7 +9,7 @@
 
 namespace phpbb\template\twig\node;
 
-class includeasset extends \Twig_Node
+abstract class includeasset extends \Twig_Node
 {
 	/** @var Twig_Environment */
 	protected $environment;
@@ -42,10 +42,10 @@ class includeasset extends \Twig_Node
 				->write("\$local_file = \$this->getEnvironment()->get_phpbb_root_path() . \$asset_path;\n")
 				->write("if (!file_exists(\$local_file)) {\n")
 				->indent()
-					->write("\$local_file = \$this->getEnvironment()->getLoader()->getCacheKey(\$asset_path);\n")
+					->write("\$local_file = \$this->getEnvironment()->findTemplate(\$asset_path);\n")
 					->write("\$asset->set_path(\$local_file, true);\n")
 				->outdent()
-				->write("\$asset->add_assets_version({$config['assets_version']});\n")
+				->write("\$asset->add_assets_version('{$config['assets_version']}');\n")
 				->write("\$asset_file = \$asset->get_url();\n")
 				->write("}\n")
 			->outdent()
@@ -59,4 +59,19 @@ class includeasset extends \Twig_Node
 			->raw("\n');\n")
 		;
 	}
+
+	/**
+	* Get the definition name
+	*
+	* @return string (e.g. 'SCRIPTS')
+	*/
+	abstract public function get_definition_name();
+
+	/**
+	* Append the output code for the asset
+	*
+	* @param Twig_Compiler A Twig_Compiler instance
+	* @return null
+	*/
+	abstract protected function append_asset(Twig_Compiler $compiler);
 }

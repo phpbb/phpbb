@@ -2,10 +2,13 @@
 /**
 *
 * @package testing
-* @copyright (c) 2011 phpBB Group
+* @copyright (c) 2013 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+require_once dirname(__FILE__) . '/../mock/container_builder.php';
+require_once dirname(__FILE__) . '/../mock/auth_provider.php';
 
 /**
 * This class exists to setup an instance of phpbb's session class for testing.
@@ -16,6 +19,7 @@
 */
 class phpbb_session_testable_factory
 {
+	protected $container;
 	protected $config_data;
 	protected $cache_data;
 	protected $cookies;
@@ -65,7 +69,7 @@ class phpbb_session_testable_factory
 	public function get_session(\phpbb\db\driver\driver $dbal)
 	{
 		// set up all the global variables used by session
-		global $SID, $_SID, $db, $config, $cache, $request;
+		global $SID, $_SID, $db, $config, $cache, $request, $phpbb_container;
 
 		$request = $this->request = new phpbb_mock_request(
 			array(),
@@ -82,6 +86,12 @@ class phpbb_session_testable_factory
 
 		$cache = $this->cache = new phpbb_mock_cache($this->get_cache_data());
 		$SID = $_SID = null;
+
+		$phpbb_container = $this->container = new phpbb_mock_container_builder();
+		$phpbb_container->set(
+			'auth.provider.db',
+			new phpbb_mock_auth_provider()
+		);
 
 		$session = new phpbb_mock_session_testable;
 		return $session;
@@ -162,6 +172,32 @@ class phpbb_session_testable_factory
 	public function merge_server_data($server_data)
 	{
 		return $this->server_data = array_merge($this->server_data, $server_data);
+	}
+
+	/**
+	 * Set cookies, merge config and server data in one step.
+	 *
+	 * New values overwrite old ones.
+	 *
+	 * @param $session_id
+	 * @param $user_id
+	 * @param $user_agent
+	 * @param $ip
+	 * @param int $time
+	 */
+	public function merge_test_data($session_id, $user_id, $user_agent, $ip, $time = 0)
+	{
+		$this->set_cookies(array(
+			'_sid' => $session_id,
+			'_u' => $user_id,
+		));
+		$this->merge_config_data(array(
+			'session_length' => time() + $time, // need to do this to allow sessions started at time 0
+		));
+		$this->merge_server_data(array(
+			'HTTP_USER_AGENT' => $user_agent,
+			'REMOTE_ADDR' => $ip,
+		));
 	}
 
 	/**

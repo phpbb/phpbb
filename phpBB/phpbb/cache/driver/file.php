@@ -207,28 +207,34 @@ class file extends \phpbb\cache\driver\base
 	function purge()
 	{
 		// Purge all phpbb cache files
-		$dir = @opendir($this->cache_dir);
-
-		if (!$dir)
+		try 
+		{
+			$iterator = new DirectoryIterator($this->cache_dir);
+		}
+		catch (Exception $e)
 		{
 			return;
 		}
 
-		while (($entry = readdir($dir)) !== false)
+		foreach ($iterator as $fileInfo)
 		{
-			if (strpos($entry, 'container_') !== 0 &&
-				strpos($entry, 'url_matcher') !== 0 &&
-				strpos($entry, 'sql_') !== 0 &&
-				strpos($entry, 'data_') !== 0 &&
-				strpos($entry, 'ctpl_') !== 0 &&
-				strpos($entry, 'tpl_') !== 0)
+			if ($fileInfo->isDot())
 			{
 				continue;
 			}
-
-			$this->remove_file($this->cache_dir . $entry);
+			$filename = $fileInfo->getFilename();
+			if ($fileInfo->isDir())
+			{
+				$this->remove_dir($fileInfo->getPathname());
+			}
+			elseif (strpos($filename, 'container_') === 0 ||
+				strpos($filename, 'url_matcher') === 0 ||
+				strpos($filename, 'sql_') === 0 ||
+				strpos($filename, 'data_') === 0)
+			{
+				$this->remove_file($fileInfo->getPathname());
+			}
 		}
-		closedir($dir);
 
 		unset($this->vars);
 		unset($this->var_expires);
@@ -241,6 +247,44 @@ class file extends \phpbb\cache\driver\base
 		$this->sql_row_pointer = array();
 
 		$this->is_modified = false;
+	}
+
+	/**
+	* Remove directory
+	*
+	* @param string $dir Directory to remove
+	*
+	* @return null
+	*/
+	protected function remove_dir($dir)
+	{
+		try 
+		{
+			$iterator = new DirectoryIterator($dir);
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
+
+		foreach ($iterator as $fileInfo)
+		{
+			if ($fileInfo->isDot())
+			{
+				continue;
+			}
+
+			if ($fileInfo->isDir())
+			{
+				$this->remove_dir($fileInfo->getPathname());
+			}
+			else
+			{
+				$this->remove_file($fileInfo->getPathname());
+			}
+		}
+
+		@rmdir($dir);
 	}
 
 	/**

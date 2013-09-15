@@ -61,7 +61,7 @@ class manager
 
 	/**
 	* Notification Constructor
-	* 
+	*
 	* @param array $notification_types
 	* @param array $notification_methods
 	* @param ContainerBuilder $phpbb_container
@@ -492,15 +492,15 @@ class manager
 	*
 	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $item_id is identical for the specified types)
 	* @param int|array $item_id Identifier within the type (or array of ids)
-	* @param array $data Data specific for this type that will be updated
+	* @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
 	*/
-	public function delete_notifications($notification_type_name, $item_id)
+	public function delete_notifications($notification_type_name, $item_id, $parent_id = false)
 	{
 		if (is_array($notification_type_name))
 		{
 			foreach ($notification_type_name as $type)
 			{
-				$this->delete_notifications($type, $item_id);
+				$this->delete_notifications($type, $item_id, $parent_id);
 			}
 
 			return;
@@ -510,7 +510,8 @@ class manager
 
 		$sql = 'DELETE FROM ' . $this->notifications_table . '
 			WHERE notification_type_id = ' . (int) $notification_type_id . '
-				AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id);
+				AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) .
+				(($parent_id !== false) ? ' AND ' . ((is_array($parent_id) ? $this->db->sql_in_set('item_parent_id', $parent_id) : 'item_parent_id = ' . (int) $parent_id)) : '');
 		$this->db->sql_query($sql);
 	}
 
@@ -798,11 +799,13 @@ class manager
 	* Delete all notifications older than a certain time
 	*
 	* @param int $timestamp Unix timestamp to delete all notifications that were created before
+	* @param bool $only_unread True (default) to only prune read notifications
 	*/
-	public function prune_notifications($timestamp)
+	public function prune_notifications($timestamp, $only_read = true)
 	{
 		$sql = 'DELETE FROM ' . $this->notifications_table . '
-			WHERE notification_time < ' . (int) $timestamp;
+			WHERE notification_time < ' . (int) $timestamp .
+				(($only_read) ? ' AND notification_read = 1' : '');
 		$this->db->sql_query($sql);
 	}
 
@@ -836,12 +839,12 @@ class manager
 	protected function load_object($object_name)
 	{
 		$object = $this->phpbb_container->get($object_name);
-		
+
 		if (method_exists($object, 'set_notification_manager'))
 		{
 			$object->set_notification_manager($this);
 		}
-		
+
 		return $object;
 	}
 

@@ -36,14 +36,32 @@ interface template
 	public function set_filenames(array $filename_array);
 
 	/**
-	* Sets the style names/paths corresponding to style hierarchy being compiled
-	* and/or rendered.
+	* Get the style tree of the style preferred by the current user
 	*
-	* @param array $style_names List of style names in inheritance tree order
-	* @param array $style_paths List of style paths in inheritance tree order
+	* @return array Style tree, most specific first
+	*/
+	public function get_user_style();
+
+	/**
+	* Set style location based on (current) user's chosen style.
+	*
+	* @param array $style_directories The directories to add style paths for
+	* 	E.g. array('ext/foo/bar/styles', 'styles')
+	* 	Default: array('styles') (phpBB's style directory)
 	* @return \phpbb\template\template $this
 	*/
-	public function set_style_names(array $style_names, array $style_paths);
+	public function set_style($style_directories = array('styles'));
+
+	/**
+	* Set custom style location (able to use directory outside of phpBB).
+	*
+	* Note: Templates are still compiled to phpBB's cache directory.
+	*
+	* @param string|array $names Array of names or string of name of template(s) in inheritance tree order, used by extensions.
+	* @param string|array or string $paths Array of style paths, relative to current root directory
+	* @return \phpbb\template\template $this
+	*/
+	public function set_custom_style($names, $paths);
 
 	/**
 	* Clears all variables and blocks assigned to this template.

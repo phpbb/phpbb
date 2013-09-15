@@ -13,7 +13,7 @@ class release_3_0_6_rc1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.0.6-rc1', '>=');
+		return phpbb_version_compare($this->config['version'], '3.0.6-RC1', '>=');
 	}
 
 	static public function depends_on()
@@ -187,7 +187,7 @@ class release_3_0_6_rc1 extends \phpbb\db\migration\migration
 			array('custom', array(array(&$this, 'add_newly_registered_group'))),
 			array('custom', array(array(&$this, 'set_user_options_default'))),
 
-			array('config.update', array('version', '3.0.6-rc1')),
+			array('config.update', array('version', '3.0.6-RC1')),
 		);
 	}
 

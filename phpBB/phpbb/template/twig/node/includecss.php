@@ -11,17 +11,18 @@ namespace phpbb\template\twig\node;
 
 class includecss extends \phpbb\template\twig\node\includeasset
 {
+	/**
+	* {@inheritdoc}
+	*/
 	public function get_definition_name()
 	{
 		return 'STYLESHEETS';
 	}
 
 	/**
-	 * Compiles the node to PHP.
-	 *
-	 * @param Twig_Compiler A Twig_Compiler instance
-	 */
-	public function append_asset(\Twig_Compiler $compiler)
+	* {@inheritdoc}
+	*/
+	public function append_asset(Twig_Compiler $compiler)
 	{
 		$compiler
 			->raw("<link href=\"' . ")

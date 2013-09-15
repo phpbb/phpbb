@@ -19,7 +19,7 @@ namespace
 			$phpbb_root_path = __DIR__ . '/../../phpBB/';
 			$extensions = array(
 				new \phpbb\di\extension\config(__DIR__ . '/fixtures/config.php'),
-				new \phpbb\di\extension\core($phpbb_root_path),
+				new \phpbb\di\extension\core($phpbb_root_path . 'config'),
 			);
 			$container = phpbb_create_container($extensions, $phpbb_root_path, 'php');
 
@@ -31,7 +31,7 @@ namespace
 			$phpbb_root_path = __DIR__ . '/../../phpBB/';
 			$extensions = array(
 				new \phpbb\di\extension\config(__DIR__ . '/fixtures/config.php'),
-				new \phpbb\di\extension\core($phpbb_root_path),
+				new \phpbb\di\extension\core($phpbb_root_path . 'config'),
 			);
 			$container = phpbb_create_install_container($phpbb_root_path, 'php');
 
@@ -45,7 +45,7 @@ namespace
 			$config_file = __DIR__ . '/fixtures/config.php';
 			$extensions = array(
 				new \phpbb\di\extension\config(__DIR__ . '/fixtures/config.php'),
-				new \phpbb\di\extension\core($phpbb_root_path),
+				new \phpbb\di\extension\core($phpbb_root_path . 'config'),
 			);
 			$container = phpbb_create_compiled_container($config_file, $extensions, array(), $phpbb_root_path, 'php');
 

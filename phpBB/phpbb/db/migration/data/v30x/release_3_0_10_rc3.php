@@ -13,7 +13,7 @@ class release_3_0_10_rc3 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.0.10-rc3', '>=');
+		return phpbb_version_compare($this->config['version'], '3.0.10-RC3', '>=');
 	}
 
 	static public function depends_on()
@@ -24,7 +24,7 @@ class release_3_0_10_rc3 extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-			array('config.update', array('version', '3.0.10-rc3')),
+			array('config.update', array('version', '3.0.10-RC3')),
 		);
 	}
 }

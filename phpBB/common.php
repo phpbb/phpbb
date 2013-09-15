@@ -109,6 +109,9 @@ $db			= $phpbb_container->get('dbal.conn');
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
+// Create a Symfony Request object from our phpbb_request object
+$symfony_request = phpbb_create_symfony_request($request);
+
 // Grab global variables, re-cache if necessary
 $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
@@ -121,7 +124,6 @@ $phpbb_extension_manager = $phpbb_container->get('ext.manager');
 $phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 
 $template = $phpbb_container->get('template');
-$phpbb_style = $phpbb_container->get('style');
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);

@@ -80,6 +80,16 @@ Zeta test event in all',
 				array(),
 'two in silver in omega',
 			),
+			array(
+				'EVENT in loop',
+				'ext_trivial',
+				array('silver'),
+				'event_loop.html',
+				array(),
+				array('event_loop' => array(array(), array(), array())),
+				array(),
+				'event_loop0|event_loop1|event_loop2',
+			),
 		);
 	}
 
@@ -103,13 +113,10 @@ Zeta test event in all',
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
 		$this->template_path = dirname(__FILE__) . "/datasets/$dataset/styles/silver/template";
-		$this->style_resource_locator = new \phpbb\style\resource_locator();
 		$this->extension_manager = new phpbb_mock_filesystem_extension_manager(
 			dirname(__FILE__) . "/datasets/$dataset/"
 		);
 		$this->template = new \phpbb\template\twig\twig($phpbb_root_path, $phpEx, $config, $user, new \phpbb\template\context, $this->extension_manager);
-		$this->style_provider = new \phpbb\style\path_provider();
-		$this->style = new \phpbb\style\style($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider, $this->template);
-		$this->style->set_custom_style('silver', array($this->template_path), $style_names, '');
+		$this->template->set_custom_style(((!empty($style_names)) ? $style_names : 'silver'), array($this->template_path));
 	}
 }

@@ -35,3 +35,45 @@ services:
             - @user
         tags:
             - { name: auth.provider }
+    auth.provider.oauth:
+        class: phpbb_auth_provider_oauth
+        arguments:
+            - @dbal.conn
+            - @config
+            - @request
+            - @user
+            - %tables.auth_provider_oauth_token_storage%
+            - %tables.auth_provider_oauth_account_assoc%
+            - @auth.provider.oauth.service_collection
+            - %tables.users%
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: auth.provider }
+    auth.provider.oauth.service_collection:
+        class: phpbb_di_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: auth.provider.oauth.service }
+    auth.provider.oauth.service.bitly:
+        class: phpbb_auth_provider_oauth_service_bitly
+        arguments:
+            - @config
+            - @request
+        tags:
+            - { name: auth.provider.oauth.service }
+    auth.provider.oauth.service.facebook:
+        class: phpbb_auth_provider_oauth_service_facebook
+        arguments:
+            - @config
+            - @request
+        tags:
+            - { name: auth.provider.oauth.service }
+    auth.provider.oauth.service.google:
+        class: phpbb_auth_provider_oauth_service_google
+        arguments:
+            - @config
+            - @request
+        tags:
+            - { name: auth.provider.oauth.service }

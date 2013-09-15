@@ -77,7 +77,7 @@ class user extends \phpbb\session
 	*/
 	function setup($lang_set = false, $style_id = false)
 	{
-		global $db, $phpbb_style, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
+		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 		global $phpbb_dispatcher;
 
 		if ($this->data['user_id'] != ANONYMOUS)
@@ -130,6 +130,7 @@ class user extends \phpbb\session
 		}
 
 		$user_data = $this->data;
+		$lang_set_ext = array();
 
 		/**
 		* Event to load language files and modify user data on every page
@@ -141,10 +142,18 @@ class user extends \phpbb\session
 		* @var	string	user_timezone		User's timezone, should be one of
 		*							http://www.php.net/manual/en/timezones.php
 		* @var	mixed	lang_set			String or array of language files
+		* @var	array	lang_set_ext		Array containing entries of format
+		* 					array(
+		* 						'ext_name' => (string) [extension name],
+		* 						'lang_set' => (string|array) [language files],
+		* 					)
+		* 					For performance reasons, only load translations
+		* 					that are absolutely needed globally using this
+		* 					event. Use local events otherwise.
 		* @var	mixed	style_id			Style we are going to display
 		* @since 3.1-A1
 		*/
-		$vars = array('user_data', 'user_lang_name', 'user_date_format', 'user_timezone', 'lang_set', 'style_id');
+		$vars = array('user_data', 'user_lang_name', 'user_date_format', 'user_timezone', 'lang_set', 'lang_set_ext', 'style_id');
 		extract($phpbb_dispatcher->trigger_event('core.user_setup', compact($vars)));
 
 		$this->data = $user_data;
@@ -174,6 +183,12 @@ class user extends \phpbb\session
 
 		$this->add_lang($lang_set);
 		unset($lang_set);
+
+		foreach ($lang_set_ext as $ext_lang_pair)
+		{
+			$this->add_lang_ext($ext_lang_pair['ext_name'], $ext_lang_pair['lang_set']);
+		}
+		unset($lang_set_ext);
 
 		$style_request = request_var('style', 0);
 		if ($style_request && $auth->acl_get('a_styles') && !defined('ADMIN_START'))
@@ -238,7 +253,7 @@ class user extends \phpbb\session
 			}
 		}
 
-		$phpbb_style->set_style();
+		$template->set_style();
 
 		$this->img_lang = $this->lang_name;
 
@@ -590,6 +605,13 @@ class user extends \phpbb\session
 			else
 			{
 				$language_filename = $lang_path . $this->lang_name . '/' . $filename . '.' . $phpEx;
+			}
+
+			// If we are in install, try to use the updated version, when available
+			$install_language_filename = str_replace('language/', 'install/update/new/language/', $language_filename);
+			if (defined('IN_INSTALL') && file_exists($install_language_filename))
+			{
+				$language_filename = $install_language_filename;
 			}
 
 			if (!file_exists($language_filename))

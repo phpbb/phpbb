@@ -1,0 +1,19 @@
+<!-- INCLUDE ucp_header.html -->
+
+<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th colspan="4">{L_UCP_AUTH_LINK_TITLE}</th>
+	</tr>
+
+	<!-- IF ERROR -->
+		<tr>
+			<td class="row1" colspan="2" align="center"><span class="genmed error">{ERROR}</span></td>
+		</tr>
+	<!-- ENDIF -->
+
+	<!-- IF PROVIDER_TEMPLATE_FILE -->
+		<!-- INCLUDE {PROVIDER_TEMPLATE_FILE} -->
+	<!-- ENDIF -->
+</table>
+
+<!-- INCLUDE ucp_footer.html -->

@@ -101,6 +101,8 @@ class ucp_remind
 
 			$messenger->set_addresses($user_row);
 
+			$messenger->anti_abuse_headers($config, $user);
+
 			$messenger->assign_vars(array(
 				'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 				'PASSWORD'		=> htmlspecialchars_decode($user_password),

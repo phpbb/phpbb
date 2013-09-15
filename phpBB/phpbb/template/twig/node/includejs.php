@@ -11,17 +11,18 @@ namespace phpbb\template\twig\node;
 
 class includejs extends \phpbb\template\twig\node\includeasset
 {
+	/**
+	* {@inheritdoc}
+	*/
 	public function get_definition_name()
 	{
 		return 'SCRIPTS';
 	}
 
 	/**
-	 * Compiles the node to PHP.
-	 *
-	 * @param Twig_Compiler A Twig_Compiler instance
-	 */
-	protected function append_asset(\Twig_Compiler $compiler)
+	* {@inheritdoc}
+	*/
+	protected function append_asset(Twig_Compiler $compiler)
 	{
 		$config = $this->environment->get_phpbb_config();
 

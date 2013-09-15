@@ -21,7 +21,7 @@ require($phpbb_root_path . 'includes/functions_module.' . $phpEx);
 $id 	= request_var('i', '');
 $mode	= request_var('mode', '');
 
-if (in_array($mode, array('login', 'logout', 'confirm', 'sendpassword', 'activate')))
+if (in_array($mode, array('login', 'login_link', 'logout', 'confirm', 'sendpassword', 'activate')))
 {
 	define('IN_LOGIN', true);
 }
@@ -78,6 +78,16 @@ switch ($mode)
 		}
 
 		login_box(request_var('redirect', "index.$phpEx"));
+	break;
+
+	case 'login_link':
+		if ($user->data['is_registered'])
+		{
+			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+		}
+
+		$module->load('ucp', 'login_link');
+		$module->display($user->lang['UCP_LOGIN_LINK']);
 	break;
 
 	case 'logout':

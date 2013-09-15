@@ -685,23 +685,28 @@ div.rules ul, div.rules ol {
 	margin-left: 20px;
 }
 
-p.rules {
-	background-image: none;
+p.post-notice {
+	position: relative;
 	padding: 5px;
+	padding-left: 26px;
+	min-height: 14px;
+	margin-bottom: 1em;
 }
 
-p.rules img {
-	vertical-align: middle;
+p.post-notice:before {
+	content: '';
+	display: block;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 28px;
+	background: transparent none 50% 50% no-repeat;
+	pointer-events: none;
 }
 
-p.rules strong {
-	vertical-align: middle;
-	padding-top: 5px;
-}
-
-p.rules a {
-	vertical-align: middle;
-	clear: both;
+form > p.post-notice strong {
+	line-height: 20px;
 }
 
 #top {
@@ -756,6 +761,10 @@ p.rules a {
 	list-style-type: none;
 	font-size: 0.95em;
 	clear: both;
+}
+
+#notification_list ul li:before, #notification_list ul li:after {
+	display: none;
 }
 
 #notification_list > .header {

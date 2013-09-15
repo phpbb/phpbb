@@ -52,6 +52,36 @@ index_body_stat_blocks_before
     + styles/subsilver2/template/index_body.html
 * Purpose: Add new statistic blocks above the Who Is Online and Board Statistics blocks
 
+memberlist_body_username_append
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+    + styles/subsilver2/template/memberlist_body.html
+* Purpose: Add information after every username in the memberlist. Works in
+all display modes (leader, group and normal memberlist).
+
+memberlist_body_username_prepend
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+    + styles/subsilver2/template/memberlist_body.html
+* Purpose: Add information before every username in the memberlist. Works in
+all display modes (leader, group and normal memberlist).
+
+memberlist_view_user_statistics_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+    + styles/subsilver2/template/memberlist_view.html
+* Purpose: Add entries after the user statistics part of any user profile
+
+memberlist_view_user_statistics_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+    + styles/subsilver2/template/memberlist_view.html
+* Purpose: Add entries before the user statistics part of any user profile
+
 overall_footer_after
 ===
 * Locations:
@@ -114,10 +144,100 @@ simple_footer_after
 * Location: styles/prosilver/template/simple_footer.html
 * Purpose: Add content directly prior to the `</body>` tag of the simple footer
 
+topiclist_row_prepend
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/search_results.html
+    + styles/subsilver2/template/viewforum_body.html
+* Purpose: Add content into topic rows (inside the elements containing topic titles)
+
+topiclist_row_append
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/search_results.html
+    + styles/subsilver2/template/viewforum_body.html
+* Purpose: Add content into topic rows (inside the elements containing topic titles)
+
+ucp_pm_viewmessage_custom_fields_after
+===
+* Location: styles/prosilver/template/ucp_pm_viewmessage.html
+* Purpose: Add data after the custom fields on the user profile when viewing
+a private message
+
+ucp_pm_viewmessage_custom_fields_before
+===
+* Location: styles/prosilver/template/ucp_pm_viewmessage.html
+* Purpose: Add data before the custom fields on the user profile when viewing
+a private message
+
 ucp_pm_viewmessage_print_head_append
 ===
 * Location: styles/prosilver/template/ucp_pm_viewmessage_print.html
 * Purpose: Add asset calls directly before the `</head>` tag of the Print PM screen
+
+ucp_prefs_personal_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_personal.html
+    + styles/subsilver2/template/ucp_prefs_personal.html
+* Purpose: Add user options to the top of the Edit Global Settings block
+
+ucp_prefs_personal_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_personal.html
+    + styles/subsilver2/template/ucp_prefs_personal.html
+* Purpose: Add user options to the bottom of the Edit Global Settings block
+
+ucp_prefs_post_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_post.html
+    + styles/subsilver2/template/ucp_prefs_post.html
+* Purpose: Add user options to the top of the Edit Posting Defaults block
+
+ucp_prefs_post_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_post.html
+    + styles/subsilver2/template/ucp_prefs_post.html
+* Purpose: Add user options to the bottom of the Edit Posting Defaults block
+
+ucp_prefs_view_radio_buttons_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_view.html
+    + styles/subsilver2/template/ucp_prefs_view.html
+* Purpose: Add options to the top of the radio buttons block of the Edit 
+Display Options screen
+
+ucp_prefs_view_radio_buttons_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_view.html
+    + styles/subsilver2/template/ucp_prefs_view.html
+* Purpose: Add options to the bottom of the radio buttons block of the Edit 
+Display Options screen
+
+ucp_prefs_view_select_menu_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_view.html
+    + styles/subsilver2/template/ucp_prefs_view.html
+* Purpose: Add options to the top of the drop-down lists block of the Edit 
+Display Options screen
+
+ucp_prefs_view_select_menu_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_view.html
+    + styles/subsilver2/template/ucp_prefs_view.html
+* Purpose: Add options to the bottom of the drop-down lists block of the Edit 
+Display Options screen
 
 viewtopic_print_head_append
 ===
@@ -132,6 +252,38 @@ viewtopic_body_footer_before
 * Purpose: Add content to the bottom of the View topic screen below the posts
 and quick reply, directly before the jumpbox in Prosilver, breadcrumbs in
 Subsilver2.
+
+viewtopic_body_post_buttons_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Purpose: Add post button to posts (next to edit, quote etc), at the end of
+the list.
+
+viewtopic_body_post_buttons_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Purpose: Add post button to posts (next to edit, quote etc), at the start of
+the list.
+
+viewtopic_body_postrow_custom_fields_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Purpose: Add data after the custom fields on the user profile when viewing
+a post
+
+viewtopic_body_postrow_custom_fields_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Purpose: Add data before the custom fields on the user profile when viewing
+a post
 
 viewtopic_topic_title_prepend
 ===

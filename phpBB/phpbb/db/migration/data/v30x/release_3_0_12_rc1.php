@@ -15,7 +15,7 @@ class release_3_0_12_rc1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.0.12-rc1', '>=');
+		return phpbb_version_compare($this->config['version'], '3.0.12-RC1', '>=');
 	}
 
 	static public function depends_on()
@@ -30,7 +30,7 @@ class release_3_0_12_rc1 extends \phpbb\db\migration\migration
 			array('custom', array(array(&$this, 'update_bots'))),
 			array('custom', array(array(&$this, 'disable_bots_from_receiving_pms'))),
 
-			array('config.update', array('version', '3.0.12-rc1')),
+			array('config.update', array('version', '3.0.12-RC1')),
 		);
 	}
 
@@ -110,7 +110,7 @@ class release_3_0_12_rc1 extends \phpbb\db\migration\migration
 						WHERE user_id = $bot_user_id";
 					$this->sql_query($sql);
 
-					user_delete('remove', $bot_user_id);
+					user_delete('retain', $bot_user_id);
 				}
 				else
 				{

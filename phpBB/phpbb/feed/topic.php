@@ -45,7 +45,7 @@ class topic extends \phpbb\feed\post_base
 
 	function open()
 	{
-		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_visibility, t.topic_title, t.topic_time, t.topic_views, t.topic_replies, t.topic_type
+		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_visibility, t.topic_title, t.topic_time, t.topic_views, t.topic_posts_approved, t.topic_type
 			FROM ' . TOPICS_TABLE . ' t
 			LEFT JOIN ' . FORUMS_TABLE . ' f
 				ON (f.forum_id = t.forum_id)
@@ -62,7 +62,7 @@ class topic extends \phpbb\feed\post_base
 		$this->forum_id = (int) $this->topic_data['forum_id'];
 
 		// Make sure topic is either approved or user authed
-		if (!$this->topic_data['topic_approved'] && !$this->auth->acl_get('m_approve', $this->forum_id))
+		if ($this->topic_data['topic_visibility'] != ITEM_APPROVED && !$this->auth->acl_get('m_approve', $this->forum_id))
 		{
 			trigger_error('SORRY_AUTH_READ');
 		}
