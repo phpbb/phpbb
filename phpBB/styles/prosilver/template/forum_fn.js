@@ -440,6 +440,9 @@ function insert_single_user(formId, user)
 		if (oldBrowser) {
 			// Fix .linkslist.bulletin lists
 			$('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
+
+			// Do not run functions below for old browsers
+			return;
 		}
 
 		// Resize navigation block to keep all links on same line
