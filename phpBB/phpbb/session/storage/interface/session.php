@@ -47,7 +47,7 @@ interface phpbb_session_storage_interface_session
 	* @param string $session_id
 	* @return array
 	*/
-	function get($session_id);
+	function get_session_and_user_data($session_id);
 
 	/**
 	* Delete session data
@@ -73,7 +73,7 @@ interface phpbb_session_storage_interface_session
 	*
 	* @return null|string -- Either the ip address or null if none found
 	*/
-	public function get_user_ip_from_session($session_id);
+	public function get_user_data_and_ip_from_session($session_id);
 
 	/**
 	* Get newest user and session data for this $user_id
@@ -82,7 +82,7 @@ interface phpbb_session_storage_interface_session
 	*
 	* @return user and session data as an array
 	*/
-	public function get_newest_session($user_id);
+	public function get_user_data_and_newest_session($user_id);
 
 	/**
 	 * Get the longest session, and visibility for $user_id
@@ -91,7 +91,7 @@ interface phpbb_session_storage_interface_session
 	 *
 	 * @return array Array containing user_id, online_time, viewonline
 	 */
-	function get_user_online_time($user_id);
+	function get_all_users_time_visibility($user_id);
 
 	// Functions below involving user_ids
 
@@ -184,14 +184,14 @@ interface phpbb_session_storage_interface_session
 	* @param int $max_time
 	* @return int number of sessions for user_id within max_time
 	*/
-	function num_sessions($user_id, $max_time);
+	function num_active_sessions_for_user($user_id, $max_time);
 
 	/** Get session & user data associated with user_id
 	*
 	* @param int $user_id
 	* @return array
 	*/
-	function get_with_user_id($user_id);
+	function get_session_and_user_data_with_id($user_id);
 
 	/** Set user session visibility
 	*
@@ -217,7 +217,7 @@ interface phpbb_session_storage_interface_session
 	* @param int $session_length (in seconds) remove sessions older than time - session_length
 	* @return null
 	*/
-	function cleanup_expired_sessions(array $user_ids, $session_length);
+	function cleanup_certain_expired_sessions(array $user_ids, $session_length);
 
 	/** For sessions older than length, run a function and collect results.
 	*

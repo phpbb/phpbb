@@ -106,7 +106,7 @@ class phpbb_session_storage_native implements
 		return $this->update_query($sql);
 	}
 
-	function get($session_id)
+	function get_session_and_user_data($session_id)
 	{
 		$sql = 'SELECT u.*, s.*
 				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
@@ -115,7 +115,7 @@ class phpbb_session_storage_native implements
 		return $this->query($sql);
 	}
 
-	function get_with_user_id($user_id)
+	function get_session_and_user_data_with_id($user_id)
 	{
 		$sql = 'SELECT u.*, s.*
 				FROM ' . USERS_TABLE . ' u
@@ -210,7 +210,7 @@ class phpbb_session_storage_native implements
 		return $results['sessions'];
 	}
 
-	function num_sessions($user_id, $max_time)
+	function num_active_sessions_for_user($user_id, $max_time)
 	{
 		$sql = 'SELECT COUNT(session_id) AS sessions
 				FROM ' . SESSIONS_TABLE . '
@@ -293,7 +293,7 @@ class phpbb_session_storage_native implements
 		);
 	}
 
-	function cleanup_expired_sessions(array $user_ids, $session_length)
+	function cleanup_certain_expired_sessions(array $user_ids, $session_length)
 	{
 		if (sizeof($user_ids))
 		{
@@ -328,7 +328,7 @@ class phpbb_session_storage_native implements
 		return $this->map_query("SELECT * FROM $sessions_table", $function, $batch_size);
 	}
 
-	function cleanup_long_session_keys($max_autologin_time)
+	function cleanup_session_keys($max_autologin_time)
 	{
 		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
 				WHERE last_login < ' . (time() - (86400 * (int) $max_autologin_time));
@@ -414,7 +414,7 @@ class phpbb_session_storage_native implements
 	 *
 	 * @return null|string -- Either the ip address or null if none found
 	 */
-	public function get_user_ip_from_session($session_id)
+	public function get_user_data_and_ip_from_session($session_id)
 	{
 		$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
 		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
@@ -438,7 +438,7 @@ class phpbb_session_storage_native implements
 	 *
 	 * @return user and session data as an array
 	 */
-	public function get_newest_session($user_id)
+	public function get_user_data_and_newest_session($user_id)
 	{
 		$sql = 'SELECT u.*, s.*
 				FROM ' . USERS_TABLE . ' u
@@ -687,7 +687,7 @@ class phpbb_session_storage_native implements
 	 *
 	 * @return array Array containing user_id, online_time, viewonline
 	 */
-	function get_user_online_time($user_id)
+	function get_all_users_time_visibility($user_id)
 	{
 		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
 			FROM ' . SESSIONS_TABLE . "
