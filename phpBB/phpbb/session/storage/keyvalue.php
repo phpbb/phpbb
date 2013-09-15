@@ -61,7 +61,7 @@ abstract class phpbb_session_storage_keyvalue
 	
 	abstract protected function get_user_sessions($user_id, $min = '-inf', $max = '+inf');
 
-	abstract protected function get_newest_session_id($user_id);
+	abstract protected function get_user_data_and_newest_session_id($user_id);
 	
 	// The rest of these functions use the functions above
 	// (or each other) to perform different types of queries
@@ -147,7 +147,7 @@ abstract class phpbb_session_storage_keyvalue
 		}
 	}
 
-	function get($session_id)
+	function get_session_and_user_data($session_id)
 	{
 		$session_data = $this->get_session_data($session_id);
 		$session_user = $this->db_user->get_user_info((int) $session_data['session_user_id']);
@@ -196,9 +196,9 @@ abstract class phpbb_session_storage_keyvalue
 			});
 	}
 
-	function get_newest_session($user_id)
+	function get_user_data_and_newest_session($user_id)
 	{
-		return $this->get($this->get_newest_session_id($user_id));
+		return $this->get_session_and_user_data($this->get_newest_session_id($user_id));
 	}
 
 	function delete_all_sessions()
@@ -215,7 +215,7 @@ abstract class phpbb_session_storage_keyvalue
 		return $session['session_ip'];
 	}
 
-	function get_user_online_time($user_id)
+	function get_all_users_time_visibility($user_id)
 	{
 		$session_time = array();
 		$viewonline = array(true);
@@ -363,7 +363,7 @@ abstract class phpbb_session_storage_keyvalue
 
 	function map_certain_users_with_time($user_list, Closure $function)
 	{
-		return array_map($function, array_map(array($this, 'get_user_online_time'), $user_list));
+		return array_map($function, array_map(array($this, 'get_all_users_time_visibility'), $user_list));
 	}
 
 	function unset_admin($session_id)
@@ -385,14 +385,14 @@ abstract class phpbb_session_storage_keyvalue
 		}
 	}
 
-	function num_sessions($user_id, $max_time)
+	function num_active_sessions_for_user($user_id, $max_time)
 	{
 		return count($this->get_user_sessions($user_id, $this->time_now - $max_time));
 	}
 
-	function get_with_user_id($user_id)
+	function get_session_and_user_data_with_id($user_id)
 	{
-		return $this->get($this->get_newest_session_id($user_id));
+		return $this->get_session_and_user_data($this->get_newest_session_id($user_id));
 	}
 
 	function set_viewonline($user_id, $viewonline)
@@ -414,7 +414,7 @@ abstract class phpbb_session_storage_keyvalue
 		);
 	}
 
-	function cleanup_expired_sessions(array $user_ids, $session_length)
+	function cleanup_certain_expired_sessions(array $user_ids, $session_length)
 	{
 		$host = $this;
 		$this->map_recently_expired($session_length,
