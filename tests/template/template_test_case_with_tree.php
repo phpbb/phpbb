@@ -18,7 +18,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		$defaults = $this->config_defaults();
 		$config = new phpbb_config(array_merge($defaults, $new_config));
 
-		$phpbb_filesystem = new phpbb_filesystem(
+		$this->phpbb_filesystem = new phpbb_filesystem(
 			new phpbb_symfony_request(
 				new phpbb_mock_request()
 			),
@@ -28,7 +28,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 
 		$this->template_path = $this->test_path . '/templates';
 		$this->parent_template_path = $this->test_path . '/parent_templates';
-		$this->template = new phpbb_template_twig($phpbb_filesystem, $config, $user, new phpbb_template_context());
+		$this->template = new phpbb_template_twig($this->phpbb_filesystem, $config, $user, new phpbb_template_context());
 		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path));
 	}
 }
