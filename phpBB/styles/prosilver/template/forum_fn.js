@@ -516,7 +516,7 @@ function insert_single_user(formId, user)
 				}
 
 				for (i = 0; i < classesLength; i ++) {
-					for (j = length; j >= 0; j --) {
+					for (j = length; j > 0; j --) {
 						links.eq(j).addClass('wrapped ' + classes[i]);
 						if ($this.height() <= maxHeight) {
 							return;
@@ -547,7 +547,8 @@ function insert_single_user(formId, user)
 			}
 
 			var toggle = $this.children('.responsive-menu'),
-				menu = toggle.find('.responsive-popup'),
+				toggleLink = toggle.find('a.responsive-menu-link'),
+				menu = toggle.find('ul.responsive-popup'),
 				lastWidth = false,
 				responsive = false,
 				copied = false;
@@ -591,7 +592,7 @@ function insert_single_user(formId, user)
 				$this.addClass('responsive');
 			}
 
-			toggle.click(function() {
+			toggleLink.click(function() {
 				if (!responsive) return;
 				if (!toggle.hasClass('visible')) {
 					// Hide other popups
@@ -609,6 +610,69 @@ function insert_single_user(formId, user)
 			if (!$(e.target).parents().is('.responsive-menu.visible')) {
 				$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup').hide();
 			}
+		});
+
+		// Responsive tabs
+		$('#tabs').not('.skip-responsive').each(function() {
+			var $this = $(this),
+				$body = $('body'),
+				ul = $this.children(),
+				tabs = ul.children().not('.skip-responsive'),
+				links = tabs.children('a'),
+				toggle = ul.append('<li class="responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link"><span>&nbsp;</span></a><ul class="responsive-tabs" style="display:none;" /></li>').find('li.responsive-tab'),
+				toggleLink = toggle.find('a.responsive-tab-link'),
+				menu = toggle.find('ul.responsive-tabs'),
+				maxHeight = 0,
+				lastWidth = false,
+				responsive = false;
+
+			links.each(function() {
+				maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+			})
+
+			function check() {
+				var width = $body.width(),
+					height = $this.height();
+
+				if (arguments.length == 0 && (!responsive || width <= lastWidth) && height <= maxHeight) {
+					return;
+				}
+
+				tabs.show();
+				toggle.hide();
+
+				lastWidth = width;
+				height = $this.height();
+				if (height <= maxHeight) {
+					responsive = false;
+					return;
+				}
+
+				responsive = true;
+				toggle.show();
+				menu.hide().html('');
+
+				var availableTabs = tabs.filter(':not(.activetab, .responsive-tab)'),
+					total = availableTabs.length,
+					i, tab;
+
+				for (i = total; i > 0; i --) {
+					tab = availableTabs.eq(i);
+					menu.prepend(tab.clone(true));
+					tab.hide();
+					if ($this.height() <= maxHeight) {
+						return;
+					}
+				}
+			}
+
+			toggleLink.click(function() {
+				if (!responsive) return;
+				menu.toggle();
+			});
+
+			check(true);
+			$(window).resize(check);
 		});
 	});
 })(jQuery);

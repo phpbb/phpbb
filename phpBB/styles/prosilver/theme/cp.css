@@ -118,13 +118,19 @@ ul.cplist {
 #tabs {
 	line-height: normal;
 	margin: 20px 0 -1px 7px;
-	min-width: 570px;
+	*overflow: hidden;
 }
 
 #tabs ul {
 	margin:0;
 	padding: 0;
 	list-style: none;
+}
+
+#tabs ul:after {
+	content: '';
+	display: block;
+	clear: both;
 }
 
 #tabs li {
@@ -208,6 +214,57 @@ ul.cplist {
 
 #minitabs a:hover {
 	text-decoration: none;
+}
+
+/* Responsive tabs
+----------------------------------------*/
+.responsive-tab .responsive-tab-link span {
+	display: inline-block;
+	font-size: 16px;
+	position: relative;
+	width: 16px;
+	line-height: 14px;
+	text-decoration: none;
+}
+
+.responsive-tab .responsive-tab-link span:before {
+	content: '';
+	position: absolute;
+	left: 5px;
+	top: 8px;
+	height: .125em;
+	width: 14px;
+	border-bottom: 0.125em solid transparent;
+	border-top: 0.375em double transparent;
+}
+
+#tabs ul {
+	position: relative;
+}
+
+#tabs ul.responsive-tabs {
+	position: absolute;
+	right: 0;
+	top: 26px;
+	z-index: 2;
+	border: 1px solid transparent;
+	border-radius: 5px;
+}
+
+#tabs .responsive-tabs li {
+	display: block !important;
+}
+
+#tabs .responsive-tabs a, #tabs .responsive-tabs a span {
+	background: transparent;
+	float: none;
+	margin: 0;
+	padding: 0;
+	text-align: right;
+}
+
+#tabs .responsive-tabs a span {
+	padding: 5px;
 }
 
 /* UCP navigation menu

@@ -857,6 +857,16 @@ ul.cplist {
 	color: #333333;
 }
 
+/* Responsive tabs
+----------------------------------------*/
+.responsive-tab .responsive-tab-link span:before {
+	border-color: #536482;
+}
+
+.responsive-tab .responsive-tab-link:hover span:before {
+	border-color: #BC2A4D;
+}
+
 /* UCP navigation menu
 ----------------------------------------*/
 
@@ -1142,4 +1152,10 @@ ul.responsive-popup {
 }
 .navbar ul.responsive-popup {
 	background-color: #CADCEB;
+}
+
+#tabs ul.responsive-tabs {
+	background: #CADCEB;
+	border-color: #c0c9d5;
+	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.4);
 }
