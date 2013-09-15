@@ -31,6 +31,7 @@ class acp_extensions
 	{
 		// Start the page
 		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx;
+		global $phpbb_container;
 
 		$this->db = $db;
 		$this->config = $config;
@@ -58,7 +59,7 @@ class acp_extensions
 		// If they've specified an extension, let's load the metadata manager and validate it.
 		if ($ext_name)
 		{
-			$md_manager = new phpbb_extension_metadata_manager($ext_name, $config, $phpbb_extension_manager, $template, $phpbb_root_path);
+			$md_manager = new phpbb_extension_metadata_manager($ext_name, $config, $phpbb_container, $phpbb_extension_manager, $template, $phpbb_root_path);
 
 			try
 			{
