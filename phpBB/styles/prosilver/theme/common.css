@@ -445,6 +445,7 @@ ul.responsive-popup li {
 	float: none;
 	margin: 0;
 	white-space: nowrap;
+	text-align: left;
 }
 
 ul.responsive-popup li:before, ul.responsive-popup li:after {
