@@ -519,7 +519,7 @@ function insert_single_user(formId, user)
 				}
 
 				for (i = 0; i < classesLength; i ++) {
-					for (j = length; j > 0; j --) {
+					for (j = length - 1; j >= 0; j --) {
 						links.eq(j).addClass('wrapped ' + classes[i]);
 						if ($this.height() <= maxHeight) {
 							return;
@@ -653,14 +653,16 @@ function insert_single_user(formId, user)
 					total = availableTabs.length,
 					i, tab;
 
-				for (i = total; i > 0; i --) {
+				for (i = total - 1; i >= 0; i --) {
 					tab = availableTabs.eq(i);
 					menu.prepend(tab.clone(true));
 					tab.hide();
 					if ($this.height() <= maxHeight) {
+						menu.find('a').click(function() { check(true); });
 						return;
 					}
 				}
+				menu.find('a').click(function() { check(true); });
 			}
 
 			toggleLink.click(function() {
