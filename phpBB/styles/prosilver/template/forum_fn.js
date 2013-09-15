@@ -535,7 +535,18 @@ function insert_single_user(formId, user)
 			var $this = $(this),
 				$body = $('body'),
 				links = $this.children().not('.skip-responsive'),
-				toggle = $this.append('<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><ul class="responsive-popup" style="display:none;" /></li>').children('.responsive-menu'),
+				html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><ul class="responsive-popup" style="display:none;" /></li>';
+
+			if (links.is('.rightside'))
+			{
+				links.filter('.rightside:first').before(html);
+			}
+			else
+			{
+				$this.append(html);
+			}
+
+			var toggle = $this.children('.responsive-menu'),
 				menu = toggle.find('.responsive-popup'),
 				lastWidth = false,
 				responsive = false,
