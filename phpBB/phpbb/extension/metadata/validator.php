@@ -110,35 +110,45 @@ class phpbb_extension_metadata_validator
 				return "$element is invalid and not an acceptable top level item. If you have custom meta-data put them under 'extra'.";
 			}
 
-			switch ($element)
+			if (!validate_element($element))
 			{
-				case 'name':
-				case 'type':
-				case 'version':
-				case 'description':
-				case 'homepage':
-				case 'time':
-				case 'license':
-					if (!preg_match($this->schema[$element], $this->metadata[$element]))
-					{
-						return '$element metadata is invalid';
-					}
-				break;
-
-				case 'authors':
-					if(!$this->validate_authors())
-					{
-						return 'Authors were not valid';
-					}
-				break;
-
-				case 'extra':
-					if(!preg_match($this->schema['display-name'], $this->metadata['extra']['display-name']))
-					{
-						return 'Display name is invalid';
-					}
-				break;
+				return "$element metadata element is invalid";
 			}
+		}
+
+		return true;
+	}
+
+	public function validate_element($element)
+	{
+		switch ($element)
+		{
+			case 'name':
+			case 'type':
+			case 'version':
+			case 'description':
+			case 'homepage':
+			case 'time':
+			case 'license':
+				if (!preg_match($this->schema[$element], $this->metadata[$element]))
+				{
+					return false;
+				}
+			break;
+
+			case 'authors':
+				if(!$this->validate_authors())
+				{
+					return false;
+				}
+			break;
+
+			case 'extra':
+				if(!preg_match($this->schema['display-name'], $this->metadata['extra']['display-name']))
+				{
+					return  false;
+				}
+			break;
 		}
 
 		return true;
