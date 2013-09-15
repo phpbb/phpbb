@@ -183,22 +183,32 @@ abstract class phpbb_session_storage_keyvalue
 	protected function get_all_non_guests($min = '-inf', $max = '+inf')
 	{
 		return array_filter($this->get_all($min, $max),
-			function ($session) {
+			function ($session)
+			{
 				return $session['session_user_id'] != ANONYMOUS;
-			});
+			}
+		);
 	}
 
 	protected function get_all_guests($min = '-inf', $max = '+inf')
 	{
 		return array_filter($this->get_all($min, $max),
-			function ($session) {
+			function ($session)
+			{
 				return $session['session_user_id'] == ANONYMOUS;
-			});
+			}
+		);
 	}
 
 	function get_user_data_and_newest_session($user_id)
 	{
 		return $this->get_session_and_user_data($this->get_newest_session_id($user_id));
+	}
+
+	// Basically just an alias
+	function get_session_and_user_data_with_id($user_id)
+	{
+		return $this->get_user_data_and_newest_session($user_id);
 	}
 
 	function delete_all_sessions()
@@ -319,9 +329,11 @@ abstract class phpbb_session_storage_keyvalue
 		if (!$show_guests)
 		{
 			$sessions = array_filter($sessions,
-				function ($session) {
+				function ($session)
+				{
 					return $session['session_user_id'] != ANONYMOUS;
-				});
+				}
+			);
 		}
 
 		// Sort sessions by order_by
@@ -388,11 +400,6 @@ abstract class phpbb_session_storage_keyvalue
 	function num_active_sessions_for_user($user_id, $max_time)
 	{
 		return count($this->get_user_sessions($user_id, $this->time_now - $max_time));
-	}
-
-	function get_session_and_user_data_with_id($user_id)
-	{
-		return $this->get_session_and_user_data($this->get_newest_session_id($user_id));
 	}
 
 	function set_viewonline($user_id, $viewonline)
