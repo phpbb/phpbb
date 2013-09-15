@@ -188,3 +188,19 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 .pagination {
 	margin: 5px 0;
 }
+
+/* *CP navigation
+----------------------------------------*/
+#cp-menu, #navigation, #cp-main {
+	float: none;
+	width: auto;
+	margin: 0;
+}
+
+#navigation { 
+	padding: 0; 
+}
+
+#navigation a {
+	background-image: none;
+}
