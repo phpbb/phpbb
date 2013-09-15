@@ -4,6 +4,7 @@
 .responsive-hide { display: none !important; }
 .responsive-show { display: block !important; }
 .responsive-show-inline { display: inline !important; }
+.responsive-show-inline-block { display: inline-block !important; }
 
 /* Content wrappers
 ----------------------------------------*/
@@ -220,4 +221,47 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 
 #navigation li:last-child a {
 	border-radius: 0 0 5px 5px;
+}
+
+/* Misc stuff
+----------------------------------------*/
+h2 {
+	margin-top: .5em;
+}
+
+p {
+	margin-bottom: .5em;
+	overflow: hidden;
+}
+
+p.rightside {
+	margin-bottom: 0;
+}
+
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
+{
+	p.responsive-center {
+		float: none;
+		text-align: center;
+		margin: 0;
+	}
+
+	.topic-actions > div {
+		float: none;
+		overflow: hidden;
+		clear: both;
+	}
+
+	.topic-actions > .pagination, fieldset.jumpbox {
+		text-align: center;
+	}
+
+	.topic-actions > div.search-box, p.jumpbox-return {
+		display: none;
+	}
+
+	.display-options > label:nth-child(1) {
+		display: block;
+		margin-bottom: 5px;
+	}
 }
