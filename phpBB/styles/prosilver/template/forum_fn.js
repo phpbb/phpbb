@@ -502,12 +502,15 @@ function insert_single_user(formId, user)
 				lastWidth = width;
 
 				if (wrapped) {
-					$this.find('.crumb.wrapped').removeClass('wrapped ' + classes.join(' '));
+					$this.removeClass('wrapped').find('.crumb.wrapped').removeClass('wrapped ' + classes.join(' '));
 					wrapped = false;
 					if ($this.height() <= maxHeight) return;
 				}
 
 				wrapped = true;
+				$this.addClass('wrapped');
+				if ($this.height() <= maxHeight) return;
+
 				for (i = 0; i < classesLength; i ++) {
 					for (j = length; j >= 0; j --) {
 						links.eq(j).addClass('wrapped ' + classes[i]);

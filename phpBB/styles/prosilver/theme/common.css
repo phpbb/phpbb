@@ -385,6 +385,10 @@ ul.linklist.bulletin li.no-bulletin:before {
 	vertical-align: bottom;
 }
 
+.breadcrumbs.wrapped .crumb {
+	letter-spacing: -.5px;
+}
+
 .breadcrumbs .crumb.wrapped {
 	white-space: nowrap;
 	overflow: hidden;
