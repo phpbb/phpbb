@@ -116,7 +116,14 @@ Zeta test event in all',
 		$this->extension_manager = new phpbb_mock_filesystem_extension_manager(
 			dirname(__FILE__) . "/datasets/$dataset/"
 		);
-		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context, $this->extension_manager);
+		$phpbb_filesystem = new phpbb_filesystem(
+			new phpbb_symfony_request(
+				new phpbb_mock_request()
+			),
+			$phpbb_root_path,
+			$phpEx
+		);
+		$this->template = new phpbb_template_twig($phpbb_filesystem, $config, $user, new phpbb_template_context, $this->extension_manager);
 		$this->template->set_custom_style(((!empty($style_names)) ? $style_names : 'silver'), array($this->template_path));
 	}
 }

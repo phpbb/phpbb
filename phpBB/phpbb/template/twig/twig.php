@@ -31,6 +31,12 @@ class phpbb_template_twig extends phpbb_template_base
 	private $cachepath = '';
 
 	/**
+	* phpBB filesystem
+	* @var phpbb_filesystem
+	*/
+	protected $phpbb_filesystem;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -71,24 +77,23 @@ class phpbb_template_twig extends phpbb_template_base
 	/**
 	* Constructor.
 	*
-	* @param string $phpbb_root_path phpBB root path
-	* @param string $php_ext php extension (typically 'php')
+	* @param phpbb_filesystem $phpbb_filesystem
 	* @param phpbb_config $config
 	* @param phpbb_user $user
 	* @param phpbb_template_context $context template context
 	* @param phpbb_extension_manager $extension_manager extension manager, if null then template events will not be invoked
-	* @param string $adm_relative_path relative path to adm directory
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $config, $user, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null, $adm_relative_path = null)
+	public function __construct(phpbb_filesystem $phpbb_filesystem, $config, $user, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
+		$this->phpbb_filesystem = $phpbb_filesystem;
+		$this->phpbb_root_path = $phpbb_filesystem->get_phpbb_root_path();
+		$this->php_ext = $phpbb_filesystem->get_php_ext();
 		$this->config = $config;
 		$this->user = $user;
 		$this->context = $context;
 		$this->extension_manager = $extension_manager;
 
-		$this->cachepath = $phpbb_root_path . 'cache/twig/';
+		$this->cachepath = $this->phpbb_root_path . 'cache/twig/';
 
 		// Initiate the loader, __main__ namespace paths will be setup later in set_style_names()
 		$loader = new phpbb_template_twig_loader('');
@@ -96,7 +101,7 @@ class phpbb_template_twig extends phpbb_template_base
 		$this->twig = new phpbb_template_twig_environment(
 			$this->config,
 			($this->extension_manager) ? $this->extension_manager->all_enabled() : array(),
-			$this->phpbb_root_path,
+			$this->phpbb_filesystem,
 			$loader,
 			array(
 				'cache'			=> (defined('IN_INSTALL')) ? false : $this->cachepath,
@@ -118,9 +123,9 @@ class phpbb_template_twig extends phpbb_template_base
 		$this->twig->setLexer($lexer);
 
 		// Add admin namespace
-		if ($adm_relative_path !== null && is_dir($this->phpbb_root_path . $adm_relative_path . 'style/'))
+		if ($this->phpbb_filesystem->get_adm_relative_path() !== null && is_dir($this->phpbb_root_path . $this->phpbb_filesystem->get_adm_relative_path() . 'style/'))
 		{
-			$this->twig->getLoader()->setPaths($this->phpbb_root_path . $adm_relative_path . 'style/', 'admin');
+			$this->twig->getLoader()->setPaths($this->phpbb_root_path . $this->phpbb_filesystem->get_adm_relative_path() . 'style/', 'admin');
 		}
 	}
 
