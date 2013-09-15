@@ -119,11 +119,11 @@ class phpbb_session_storage_redis
 
 	// Though it would be faster to let Redis handle the expire
 	// detail as the sorted set key, and simply replace the key as it comes
-	// out of redis with a the withscores=>true option, this isn't possible
-	// because of the way the redis driver handles serialized arrays.
+	// out of Redis with a the withscores=>true option, this isn't possible
+	// because of the way the Redis driver handles serialized arrays.
 	// (Basically withscores flips the array's keys/values and would make
-	//  the session data the keys of the array itself, which isn't possible in php)
-	protected function get_user_sessions($user_id, $min='-inf', $max='+inf')
+	//  the session data the keys of the array itself, which isn't possible in php).
+	protected function get_user_sessions($user_id, $min = '-inf', $max = '+inf')
 	{
 		return array_map(array($this, 'get_session_data'), $this->redis->zRevRangeByScore(
 			"USER_{$user_id}",

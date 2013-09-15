@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/** This class contains shared functions that are designed to work with
+/** Shared Session Storage functions that are common to
 *   Key/Value stores such as Redis or Memcache.
 */
 abstract class phpbb_session_storage_keyvalue
@@ -49,14 +49,23 @@ abstract class phpbb_session_storage_keyvalue
 
 	abstract protected function remove_from($key, $value);
 
-	abstract protected function atomic_operation($key, Closure $operation, $retry_usleep_time = 10000, $retries=0);
+	abstract protected function atomic_operation($key, Closure $operation, $retry_usleep_time = 10000, $retries = 0);
 
 	abstract protected function set_session_data($session_id, $data);
 
 	abstract protected function delete_session($session_id);
 
 	abstract function get_session_data($session_id);
+	
+	abstract protected function get_all_ids($min = '-inf', $max = '+inf');
+	
+	abstract protected function get_user_sessions($user_id, $min = '-inf', $max = '+inf');
 
+	abstract protected function get_newest_session_id($user_id);
+	
+	// The rest of these functions use the functions above
+	// (or each other) to perform different types of queries
+	// on the session data.
 	protected function add_to_all_users($expire, $value)
 	{
 		$this->add_to(self::all_sessions, $expire, $value);
@@ -93,12 +102,24 @@ abstract class phpbb_session_storage_keyvalue
 		$id = $session_data['session_id'];
 		$expire = $session_data['session_time'];
 		$user = $session_data['session_user_id'];
+		
+		// Key/Value stores contain the session data and 2 'indicies' (of sorts)
+		// on the data.
+		
+		// Session_id -> array session_data.
+		// This is the one that contains all the actual session data
 		$this->set_session_data($id, $session_data);
+		// ALL_SESSIONS -> array [session_id] => [session_time]
+		// this one contains all of the sessions that exist
+		// in the system (that haven't been cleaned up yet essentially)
+		// Useful for finding all users logged in, removing all, etc.
 		$this->add_to_all_users($expire, $id);
+		// USER_{$user_id} -> array [session_id] => [session_time]
+		// this one contains all the sessions that exist
+		// for a user id. Useful for finding the newest
+		// session or finding visibility.
 		$this->add_to_user($user, $expire, $id);
 	}
-
-
 
 	function update($session_id, $session_data_to_change)
 	{
@@ -109,7 +130,7 @@ abstract class phpbb_session_storage_keyvalue
 			{
 				// If session time is updated, other procedures may need to be run as well
 				if (array_key_exists('session_time', $session_data_to_change) &&
-					is_int($session_data_to_change['session_time']))
+					  is_int($session_data_to_change['session_time']))
 				{
 					$update_session_time = $session_data_to_change['session_time'];
 					$update_session_time_user = $session_data['session_user_id'];
@@ -136,9 +157,7 @@ abstract class phpbb_session_storage_keyvalue
 		}
 		return array_merge($session_data, $session_user);
 	}
-
-
-
+	
 	function delete($session_id = false, $user_id = false)
 	{
 		if ($user_id === false)
@@ -151,9 +170,7 @@ abstract class phpbb_session_storage_keyvalue
 		$this->remove_from_user($user_id, $session_id);
 	}
 
-	abstract protected function get_all_ids($min='-inf', $max='+inf');
-
-	protected function get_all($min='-inf', $max='+inf')
+	protected function get_all($min = '-inf', $max = '+inf')
 	{
 		return array_map(array($this, 'get_session_data'), $this->get_all_ids($min, $max));
 	}
@@ -163,7 +180,7 @@ abstract class phpbb_session_storage_keyvalue
 		return array_map($function, $this->get_all());
 	}
 
-	protected function get_all_non_guests($min='-inf', $max='+inf')
+	protected function get_all_non_guests($min = '-inf', $max = '+inf')
 	{
 		return array_filter($this->get_all($min, $max),
 			function ($session) {
@@ -171,17 +188,13 @@ abstract class phpbb_session_storage_keyvalue
 			});
 	}
 
-	protected function get_all_guests($min='-inf', $max='+inf')
+	protected function get_all_guests($min = '-inf', $max = '+inf')
 	{
 		return array_filter($this->get_all($min, $max),
 			function ($session) {
 				return $session['session_user_id'] == ANONYMOUS;
 			});
 	}
-
-	abstract protected function get_user_sessions($user_id, $min='-inf', $max='+inf');
-
-	abstract protected function get_newest_session_id($user_id);
 
 	function get_newest_session($user_id)
 	{
@@ -217,9 +230,7 @@ abstract class phpbb_session_storage_keyvalue
 			'viewonline' 	=> min($viewonline),
 		);
 	}
-
-
-
+	
 	function get_users_online_totals($item_id = 0, $item = 'forum')
 	{
 		global $config;
@@ -363,7 +374,6 @@ abstract class phpbb_session_storage_keyvalue
 
 	function get_newest($user_id)
 	{
-		// They guaranteed sorted by newest by zRevRangeByScore
 		return $this->get_user_sessions($user_id);
 	}
 
@@ -380,11 +390,6 @@ abstract class phpbb_session_storage_keyvalue
 		return count($this->get_user_sessions($user_id, $this->time_now - $max_time));
 	}
 
-	/** Get session & user data associated with user_id
-	 *
-	 * @param int $user_id
-	 * @return array
-	 */
 	function get_with_user_id($user_id)
 	{
 		return $this->get($this->get_newest_session_id($user_id));
@@ -423,7 +428,9 @@ abstract class phpbb_session_storage_keyvalue
 		);
 	}
 
-	function map_recently_expired($session_length, Closure $session_function, $batch_size=99, $ids_only=false)
+  // batch_size is here because it matches the interface
+  // but it isn't used here (it's only used in the native sql driver).
+	function map_recently_expired($session_length, Closure $session_function, $batch_size = 99, $ids_only = false)
 	{
 		$time = $this->time_now - $session_length;
 		$sessions = $ids_only ? $this->get_all_ids('-inf', $time) : $this->get_all('-inf', $time);
@@ -432,24 +439,27 @@ abstract class phpbb_session_storage_keyvalue
 
 	function map_friends_online($user_id, Closure $function)
 	{
-		$process_friend = function($friend)
-		{
-			$visibility = array();
-			$online_time = array();
-			foreach($this->get_user_sessions($friend['user_id']) as $friend_session)
-			{
-				$visibility = $friend_session['session_viewonline'];
-				$online_time = $friend_session['session_time'];
-			}
-			$friend += array
-			(
-				'viewonline' => min($visibility),
-				'online_time' => max($online_time),
-			);
-			return $friend;
-		};
-		$processed_friends =
-			array_map($process_friend, $this->db_user->get_friends($user_id));
+	  $friends = $this->db_user->get_friends($user_id);
+		$processed_friends = array_map(
+      function($friend)
+      {
+        $visibility = array();
+        $online_time = array();
+        foreach($this->get_user_sessions($friend['user_id']) as $friend_session)
+        {
+          $visibility = $friend_session['session_viewonline'];
+          $online_time = $friend_session['session_time'];
+        }
+        $friend += array
+        (
+          'viewonline' => min($visibility),
+          'online_time' => max($online_time),
+        );
+        return $friend;
+      },
+      $friends
+    );
+    
 		return array_map($function, $processed_friends);
 	}
 }

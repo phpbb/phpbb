@@ -185,6 +185,5 @@ class phpbb_session_storage_memcache
 		{
 			return array_keys($sessions);
 		}
-
 	}
 }
