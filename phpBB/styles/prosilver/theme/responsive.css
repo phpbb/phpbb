@@ -191,6 +191,13 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 
 /* *CP navigation
 ----------------------------------------*/
+.nojs #tabs a span, .nojs #minitabs a span {
+	max-width: 40px; 
+	overflow: hidden;
+	text-overflow: ellipsis;
+	letter-spacing: -.5px;
+}
+
 #cp-menu, #navigation, #cp-main {
 	float: none;
 	width: auto;

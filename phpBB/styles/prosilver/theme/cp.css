@@ -227,6 +227,10 @@ ul.cplist {
 	text-decoration: none;
 }
 
+#minitabs .responsive-tab .responsive-tab-link span {
+	display: block;
+}
+
 .responsive-tab .responsive-tab-link span:before {
 	content: '';
 	position: absolute;
@@ -238,11 +242,16 @@ ul.cplist {
 	border-top: 0.375em double transparent;
 }
 
-#tabs ul {
+#minitabs .responsive-tab .responsive-tab-link span:before {
+	left: 0;
+	top: 2px;
+}
+
+#tabs ul, #minitabs ul {
 	position: relative;
 }
 
-#tabs ul.responsive-tabs {
+#tabs ul.responsive-tabs, #minitabs ul.responsive-tabs {
 	position: absolute;
 	right: 0;
 	top: 26px;
@@ -251,11 +260,20 @@ ul.cplist {
 	border-radius: 5px;
 }
 
-#tabs .responsive-tabs li {
+#minitabs ul.responsive-tabs {
+	top: 23px;
+}
+
+.tabs-container #minitabs ul.responsive-tabs {
+	right: auto;
+	left: 0;
+}
+
+#tabs .responsive-tabs li, #minitabs .responsive-tabs li {
 	display: block !important;
 }
 
-#tabs .responsive-tabs a, #tabs .responsive-tabs a span {
+#tabs .responsive-tabs a, #tabs .responsive-tabs a span, #minitabs .responsive-tabs a, #minitabs .responsive-tabs a span {
 	background: transparent;
 	float: none;
 	margin: 0;
@@ -263,7 +281,11 @@ ul.cplist {
 	text-align: right;
 }
 
-#tabs .responsive-tabs a span {
+.tabs-container #minitabs .responsive-tabs a span {
+	text-align: left;
+}
+
+#tabs .responsive-tabs a span, #minitabs .responsive-tabs a span {
 	padding: 5px;
 }
 

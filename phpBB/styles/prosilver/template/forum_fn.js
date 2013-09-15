@@ -610,7 +610,7 @@ function insert_single_user(formId, user)
 		});
 
 		// Responsive tabs
-		$('#tabs').not('.skip-responsive').each(function() {
+		$('#tabs, #minitabs').not('.skip-responsive').each(function() {
 			var $this = $(this),
 				$body = $('body'),
 				ul = $this.children(),

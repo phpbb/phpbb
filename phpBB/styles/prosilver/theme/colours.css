@@ -1154,7 +1154,7 @@ ul.responsive-popup {
 	background-color: #CADCEB;
 }
 
-#tabs ul.responsive-tabs {
+#tabs ul.responsive-tabs, #minitabs ul.responsive-tabs {
 	background: #ddedfb;
 	border-color: #c0c9d5;
 	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.4);
