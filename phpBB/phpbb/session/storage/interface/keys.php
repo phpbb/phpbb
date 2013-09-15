@@ -57,5 +57,5 @@ interface phpbb_session_storage_interface_keys
 	* @param int $max_autologin_time (in seconds)
 	* @return null
 	*/
-	function cleanup_long_session_keys($max_autologin_time);
+	function cleanup_session_keys($max_autologin_time);
 }
