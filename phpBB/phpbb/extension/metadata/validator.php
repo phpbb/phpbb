@@ -166,6 +166,8 @@ class phpbb_extension_metadata_validator
 				return false;
 			}
 		}
+
+		return true;
 	}
 
 	private function set_basic_schema()
@@ -186,6 +188,8 @@ class phpbb_extension_metadata_validator
 			'author_email' => '^[a-z0-9_\+-]+(\.[a-z0-9_\+-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.([a-z]{2,4})$',
 			'license' => 'GPL-2.0',
 		);
+
+		return $this->schema;
 	}
 
 	private function validate_existence($element1, $element2 = '', $element3 = '')
@@ -216,5 +220,7 @@ class phpbb_extension_metadata_validator
 				return false;
 			}
 		}
+
+		return true;
 	}
 }
