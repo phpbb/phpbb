@@ -322,6 +322,12 @@ class phpbb_session_storage_native implements
 		return $this->map_query($sql, $session_function, $batch_size);
 	}
 
+	function map_all(Closure $function, $batch_size=25)
+	{
+		$sessions_table = SESSIONS_TABLE;
+		return $this->map_query("SELECT * FROM $sessions_table", $function, $batch_size);
+	}
+
 	function cleanup_session_keys($max_autologin_time)
 	{
 		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
@@ -688,5 +694,27 @@ class phpbb_session_storage_native implements
 			WHERE session_user_id = $user_id
 			GROUP BY session_user_id";
 		return $this->query($sql);
+	}
+
+	/** Gets friends from zebra table with user_id
+	 *
+	 * @param $user_id
+	 * @return mixed
+	 */
+	function get_friends($user_id)
+	{
+		$sql_ary = array(
+			'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour',
+			'FROM'		=> array(
+				USERS_TABLE		=> 'u',
+				ZEBRA_TABLE		=> 'z',
+			),
+			'WHERE'		=> 'z.user_id = ' . $user_id . '
+			AND z.friend = 1
+			AND u.user_id = z.zebra_id',
+		);
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
+		return $this->query_return_all($sql);
 	}
 }
