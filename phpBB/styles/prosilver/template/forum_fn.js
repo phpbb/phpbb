@@ -560,6 +560,7 @@ function insert_single_user(formId, user)
 				});
 
 				if ($this.height() <= maxHeight) {
+					toggle.removeClass('visible');
 					menu.hide();
 					return;
 				}
@@ -581,6 +582,11 @@ function insert_single_user(formId, user)
 
 			toggle.click(function() {
 				if (!responsive) return;
+				if (!toggle.hasClass('visible')) {
+					// Hide other popups
+					$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup').hide();
+				}
+				toggle.toggleClass('visible');
 				menu.toggle();
 			});
 
@@ -589,10 +595,8 @@ function insert_single_user(formId, user)
 		});
 
 		$('#phpbb').click(function(e) {
-			var target = $(e.target);
-
-			if (!target.parents().is('.responsive-menu')) {
-				$('.responsive-popup').hide();
+			if (!$(e.target).parents().is('.responsive-menu.visible')) {
+				$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup').hide();
 			}
 		});
 	});
