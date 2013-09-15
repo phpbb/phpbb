@@ -333,13 +333,7 @@ function get_user_information($user_id, $user_row)
 	// Generate online information for user
 	if ($config['load_onlinetrack'])
 	{
-		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
-			FROM ' . SESSIONS_TABLE . "
-			WHERE session_user_id = $user_id
-			GROUP BY session_user_id";
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$row = $user->get_user_online_time($user_id);
 
 		$update_time = $config['load_online_time'] * 60;
 		if ($row)
