@@ -109,4 +109,12 @@ abstract class phpbb_auth_provider_base implements phpbb_auth_provider_interface
 	{
 		return;
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_register_data()
+	{
+		return;
+	}
 }
