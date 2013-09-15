@@ -156,3 +156,17 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 	}
 }
 
+/* Notifications list
+----------------------------------------*/
+@media only screen and (max-width: 350px), only screen and (max-device-width: 350px)
+{
+	#notification_list {
+		width: 250px;
+	}
+}
+
+/* Pagination
+----------------------------------------*/
+.pagination {
+	margin: 5px 0;
+}
