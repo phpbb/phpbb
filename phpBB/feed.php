@@ -352,6 +352,9 @@ function feed_generate_content($content, $uid, $bitfield, $options, $forum_id, $
 	// Other control characters
 	$content = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $content);
 
+	// Convert attachments' relative path to absolute path
+	$content = str_replace($phpbb_root_path . 'download', $board_url . '/download', $content);
+
 	return $content;
 }
 
