@@ -3423,28 +3423,6 @@ function login_forum_box($forum_data)
 
 	if ($password)
 	{
-		// Remove expired authorised sessions
-		$sql = 'SELECT f.session_id
-			FROM ' . FORUMS_ACCESS_TABLE . ' f
-			WHERE f.session_id IS NULL';
-		$result = $db->sql_query($sql);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$sql_in = array();
-			do
-			{
-				$sql_in[] = (string) $row['session_id'];
-			}
-			while ($row = $db->sql_fetchrow($result));
-
-			// Remove expired sessions
-			$sql = 'DELETE FROM ' . FORUMS_ACCESS_TABLE . '
-				WHERE ' . $db->sql_in_set('session_id', $sql_in);
-			$db->sql_query($sql);
-		}
-		$db->sql_freeresult($result);
-
 		if (phpbb_check_hash($password, $forum_data['forum_password']))
 		{
 			$sql_ary = array(

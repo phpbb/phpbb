@@ -1007,10 +1007,14 @@ class phpbb_session
 			{
 				$sessions_to_del[] = $row['session_id'];
 			}
-			$sql = 'DELETE FROM' .SESSIONS_TABLE . '
-			 		WHERE ' . $db->sql_in_set('session_id', $sessions_to_del);
-			$db->sql_query($sql);
+			$db->sql_freeresult($result);
 
+			if (!empty($sessions_to_del))
+			{
+				$sql = 'DELETE FROM' .SESSIONS_TABLE . '
+			 			WHERE ' . $db->sql_in_set('session_id', $sessions_to_del);
+				$db->sql_query($sql);
+			}
 		}
 
 		if ($del_sessions < $batch_size)
@@ -1031,12 +1035,20 @@ class phpbb_session
 			{
 				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
 			}
-			$captcha_factory = new phpbb_captcha_factory();
-			$captcha_factory->garbage_collect($config['captcha_plugin'], $sessions_to_del);
 
 			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
 				WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);
 			$db->sql_query($sql);
+
+			if (!empty($sessions_to_del))
+			{
+				$captcha_factory = new phpbb_captcha_factory();
+				$captcha_factory->garbage_collect($config['captcha_plugin'], $sessions_to_del);
+
+				$sql = 'DELETE FROM ' . FORUMS_ACCESS_TABLE . '
+						WHERE ' . $db->sql_in_set('session_id', $sessions_to_del);
+				$db->sql_query($sql);
+			}
 		}
 
 		return;
