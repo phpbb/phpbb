@@ -248,13 +248,18 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	function garbage_collect($type = 0)
+	function garbage_collect($type = 0, $session_ids = false)
 	{
 		global $db;
 
-		$sql = 'SELECT c.confirm_id
+		// Don't know what to cleanup without ids
+		if ($session_ids === false)
+		{
+			return;
+		}
+		$sql = 'SELECT c.confirm_id,c.session_id
 				FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' c
-				WHERE c.session_id IS NULL' .
+				WHERE ' . $db->sql_in_set('session_id', $session_ids) .
 				((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
 		$result = $db->sql_query($sql);
 
@@ -283,7 +288,6 @@ class phpbb_captcha_qa
 	*/
 	function uninstall()
 	{
-		$this->garbage_collect(0);
 	}
 
 	/**

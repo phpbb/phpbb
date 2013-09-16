@@ -998,10 +998,19 @@ class phpbb_session
 		if (sizeof($del_user_id))
 		{
 			// Delete expired sessions
-			$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+			$sql = 'SELECT session_id FROM ' . SESSIONS_TABLE . '
 				WHERE ' . $db->sql_in_set('session_user_id', $del_user_id) . '
 					AND session_time < ' . ($this->time_now - $config['session_length']);
+			$sessions_to_del = array();
+			$result = $db->sql_query_limit($sql, $batch_size);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$sessions_to_del[] = $row['session_id'];
+			}
+			$sql = 'DELETE FROM' .SESSIONS_TABLE . '
+			 		WHERE ' . $db->sql_in_set('session_id', $sessions_to_del);
 			$db->sql_query($sql);
+
 		}
 
 		if ($del_sessions < $batch_size)
@@ -1023,7 +1032,7 @@ class phpbb_session
 				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
 			}
 			$captcha_factory = new phpbb_captcha_factory();
-			$captcha_factory->garbage_collect($config['captcha_plugin']);
+			$captcha_factory->garbage_collect($config['captcha_plugin'], $sessions_to_del);
 
 			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
 				WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);
