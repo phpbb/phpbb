@@ -22,7 +22,7 @@ class includecss extends \phpbb\template\twig\node\includeasset
 	/**
 	* {@inheritdoc}
 	*/
-	public function append_asset(Twig_Compiler $compiler)
+	public function append_asset(\Twig_Compiler $compiler)
 	{
 		$compiler
 			->raw("<link href=\"' . ")

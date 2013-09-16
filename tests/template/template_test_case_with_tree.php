@@ -20,7 +20,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 
 		$this->template_path = $this->test_path . '/templates';
 		$this->parent_template_path = $this->test_path . '/parent_templates';
-		$this->template = new \phpbb\template\twig($phpbb_root_path, $phpEx, $config, $user, new \phpbb\template\context());
+		$this->template = new \phpbb\template\twig\twig($phpbb_root_path, $phpEx, $config, $user, new \phpbb\template\context());
 		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path));
 	}
 }

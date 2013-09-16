@@ -22,7 +22,7 @@ class includejs extends \phpbb\template\twig\node\includeasset
 	/**
 	* {@inheritdoc}
 	*/
-	protected function append_asset(Twig_Compiler $compiler)
+	protected function append_asset(\Twig_Compiler $compiler)
 	{
 		$config = $this->environment->get_phpbb_config();
 

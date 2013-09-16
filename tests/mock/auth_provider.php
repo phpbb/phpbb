@@ -10,7 +10,7 @@
 /**
  * Mock auth provider class with basic functions to help test sessions.
  */
-class phpbb_mock_auth_provider extends phpbb_auth_provider_base
+class phpbb_mock_auth_provider extends \phpbb\auth\provider\base
 {
 	public function login($username, $password)
 	{

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template;
+
 /**
 * @ignore
 */
@@ -15,13 +17,13 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-abstract class phpbb_template_base implements phpbb_template
+abstract class base implements template
 {
 	/**
 	* Template context.
 	* Stores template data used during template rendering.
 	*
-	* @var phpbb_template_context
+	* @var \phpbb\template\context
 	*/
 	protected $context;
 

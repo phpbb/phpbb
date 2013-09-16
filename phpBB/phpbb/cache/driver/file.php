@@ -207,9 +207,9 @@ class file extends \phpbb\cache\driver\base
 	function purge()
 	{
 		// Purge all phpbb cache files
-		try 
+		try
 		{
-			$iterator = new DirectoryIterator($this->cache_dir);
+			$iterator = new \DirectoryIterator($this->cache_dir);
 		}
 		catch (Exception $e)
 		{
@@ -258,7 +258,7 @@ class file extends \phpbb\cache\driver\base
 	*/
 	protected function remove_dir($dir)
 	{
-		try 
+		try
 		{
 			$iterator = new DirectoryIterator($dir);
 		}

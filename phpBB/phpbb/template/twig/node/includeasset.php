@@ -73,5 +73,5 @@ abstract class includeasset extends \Twig_Node
 	* @param Twig_Compiler A Twig_Compiler instance
 	* @return null
 	*/
-	abstract protected function append_asset(Twig_Compiler $compiler);
+	abstract protected function append_asset(\Twig_Compiler $compiler);
 }

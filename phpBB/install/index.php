@@ -244,20 +244,11 @@ $config = new \phpbb\config\config(array(
 	'load_tplcompile'	=> '1'
 ));
 
-<<<<<<< HEAD
-$phpbb_style_resource_locator = new \phpbb\style\resource_locator();
-$phpbb_style_path_provider = new \phpbb\style\path_provider();
 $template = new \phpbb\template\twig\twig($phpbb_root_path, $phpEx, $config, $user, new \phpbb\template\context());
-$phpbb_style = new \phpbb\style\style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
-$phpbb_style->set_ext_dir_prefix('adm/');
-$phpbb_style->set_custom_style('admin', $phpbb_admin_path . 'style', array(), '');
-=======
-$template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
 $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
 $paths = array_filter($paths, 'is_dir');
 $template->set_custom_style('adm', $paths);
 
->>>>>>> github-phpbb/develop
 $template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
 
