@@ -114,7 +114,13 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$container,
 			$db,
 			$config,
-			new phpbb_filesystem(),
+			new phpbb_filesystem(
+				new phpbb_symfony_request(
+					new phpbb_mock_request()
+				),
+				$phpbb_root_path,
+				$php_ext
+			),
 			'phpbb_ext',
 			dirname(__FILE__) . '/',
 			$php_ext,

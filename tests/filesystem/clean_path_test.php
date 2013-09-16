@@ -14,7 +14,13 @@ class phpbb_filesystem_clean_path_test extends phpbb_test_case
 	public function setUp()
 	{
 		parent::setUp();
-		$this->filesystem = new phpbb_filesystem();
+		$this->filesystem = new phpbb_filesystem(
+			new phpbb_symfony_request(
+				new phpbb_mock_request()
+			),
+			dirname(__FILE__) . './../../phpBB/',
+			'php'
+		);
 	}
 
 	public function clean_path_data()

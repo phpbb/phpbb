@@ -244,7 +244,8 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
-$template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
+$phpbb_filesystem = $phpbb_container->get('filesystem');
+$template = new phpbb_template_twig($phpbb_filesystem, $config, $user, new phpbb_template_context());
 $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
 $paths = array_filter($paths, 'is_dir');
 $template->set_custom_style('adm', $paths);

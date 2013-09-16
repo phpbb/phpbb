@@ -19,13 +19,18 @@ class phpbb_template_asset
 {
 	protected $components = array();
 
+	/** @var phpbb_filesystem **/
+	protected $phpbb_filesystem;
+
 	/**
 	* Constructor
 	*
 	* @param string $url URL
 	*/
-	public function __construct($url)
+	public function __construct($url, phpbb_filesystem $phpbb_filesystem)
 	{
+		$this->phpbb_filesystem = $phpbb_filesystem;
+
 		$this->set_url($url);
 	}
 
@@ -112,7 +117,7 @@ class phpbb_template_asset
 	*/
 	public function get_url()
 	{
-		return $this->join_url($this->components);
+		return $this->phpbb_filesystem->update_web_root_path($this->join_url($this->components));
 	}
 
 	/**

@@ -626,14 +626,14 @@ class messenger
 	*/
 	protected function setup_template()
 	{
-		global $config, $phpbb_root_path, $phpEx, $user, $phpbb_extension_manager;
+		global $config, $phpbb_filesystem, $user, $phpbb_extension_manager;
 
 		if ($this->template instanceof phpbb_template)
 		{
 			return;
 		}
 
-		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context(), $phpbb_extension_manager);
+		$this->template = new phpbb_template_twig($phpbb_filesystem, $config, $user, new phpbb_template_context(), $phpbb_extension_manager);
 	}
 
 	/**
