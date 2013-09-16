@@ -94,7 +94,7 @@ class auth
 			}
 		}
 
-		// If a bitstring within the list does not match the options, we have a user with incorrect permissions set and need to renew \them
+		// If a bitstring within the list does not match the options, we have a user with incorrect permissions set and need to renew them
 		if ($renew)
 		{
 			$this->acl_cache($userdata);
