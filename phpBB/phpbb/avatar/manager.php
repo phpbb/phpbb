@@ -264,7 +264,7 @@ class manager
 		$config_name = $this->get_driver_config_name($driver);
 
 		return array(
-			'allow_avatar_' . $config_name	=> array('lang' => 'ALLOW_' . strtoupper($config_name),		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+			'allow_avatar_' . $config_name	=> array('lang' => 'ALLOW_' . strtoupper(str_replace('\\', '_', $config_name)),		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 		);
 	}
 
