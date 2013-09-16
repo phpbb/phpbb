@@ -78,7 +78,7 @@ class config extends Extension
 	{
 		if (preg_match('#^[a-z]+$#', $acm_type))
 		{
-			return 'phpbb_cache_driver_'.$acm_type;
+			return '\\phpbb\cache\driver\\'.$acm_type;
 		}
 
 		return $acm_type;
