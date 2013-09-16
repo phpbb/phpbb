@@ -30,7 +30,7 @@ class oauth extends \phpbb\auth\provider\base
 	/**
 	* Database driver
 	*
-	* @var \phpbb\db\driver
+	* @var \phpbb\db\driver\driver
 	*/
 	protected $db;
 
@@ -107,7 +107,7 @@ class oauth extends \phpbb\auth\provider\base
 	/**
 	* OAuth Authentication Constructor
 	*
-	* @param	\phpbb\db\driver	$db
+	* @param	\phpbb\db\driver\driver	$db
 	* @param	\phpbb\config\config	$config
 	* @param	\phpbb\request\request_interface	$request
 	* @param	\phpbb\user		$user
@@ -118,7 +118,7 @@ class oauth extends \phpbb\auth\provider\base
 	* @param	string			$phpbb_root_path
 	* @param	string			$php_ext
 	*/
-	public function __construct(\phpbb\db\driver $db, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;

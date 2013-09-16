@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\auth\provider\oauth\service;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-interface phpbb_auth_provider_oauth_service_interface
+interface service_interface
 {
 	/**
 	* Returns an array of the scopes necessary for auth
@@ -52,7 +54,7 @@ interface phpbb_auth_provider_oauth_service_interface
 	/**
 	* Returns the results of the authentication in json format
 	*
-	* @throws	phpbb_auth_provider_oauth_service_exception
+	* @throws	\phpbb\auth\provider\oauth\service\exception
 	* @return	string	The unique identifier returned by the service provider
 	*					that is used to authenticate the user with phpBB.
 	*/
@@ -62,7 +64,7 @@ interface phpbb_auth_provider_oauth_service_interface
 	* Returns the results of the authentication in json format
 	* Use this function when the user already has an access token
 	*
-	* @throws	phpbb_auth_provider_oauth_service_exception
+	* @throws	\phpbb\auth\provider\oauth\service\exception
 	* @return	string	The unique identifier returned by the service provider
 	*					that is used to authenticate the user with phpBB.
 	*/
