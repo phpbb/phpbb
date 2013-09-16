@@ -277,7 +277,7 @@ class manager
 	*/
 	public function get_driver_config_name($driver)
 	{
-		return preg_replace('#^phpbb_avatar_driver_#', '', get_class($driver));
+		return preg_replace('#^phpbb\\\\avatar\\\\driver\\\\#', '', get_class($driver));
 	}
 
 	/**
