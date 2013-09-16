@@ -33,7 +33,7 @@ class phpbb_module_manager
 			'ACP_CAT_CUSTOMISE'		=> array(
 				'ACP_STYLE_MANAGEMENT' => array(),
 				'ACP_EXTENSION_MANAGEMENT' => array(),
-				'ACP_LANGUAGE',
+				'ACP_LANGUAGE' => array(),
 			),
 			'ACP_CAT_MAINTENANCE'	=> array(
 				'ACP_FORUM_LOGS' => array(),
