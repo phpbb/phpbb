@@ -235,7 +235,7 @@ class manager
 	*/
 	static public function prepare_driver_name($name)
 	{
-		return str_replace('.', '_', $name);
+		return str_replace(array('\\', '.'), '_', $name);
 	}
 
 	/**
