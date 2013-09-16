@@ -104,16 +104,16 @@ $users = $user->get_user_list(
 $prev_id = $prev_ip = $user_list = array();
 $logged_visible_online = $logged_hidden_online = $counter = 0;
 
-foreach ($users as $current_user)
+foreach ($users as $row)
 {
-	if ($current_user['user_id'] != ANONYMOUS && !isset($prev_id[$current_user['user_id']]))
+	if ($row['user_id'] != ANONYMOUS && !isset($prev_id[$row['user_id']]))
 	{
 		$view_online = $s_user_hidden = false;
-		$user_colour = ($current_user['user_colour']) ? ' style="color:#' . $current_user['user_colour'] . '" class="username-coloured"' : '';
+		$user_colour = ($row['user_colour']) ? ' style="color:#' . $row['user_colour'] . '" class="username-coloured"' : '';
 
-		$username_full = ($current_user['user_type'] != USER_IGNORE) ? get_username_string('full', $current_user['user_id'], $current_user['username'], $current_user['user_colour']) : '<span' . $user_colour . '>' . $current_user['username'] . '</span>';
+		$username_full = ($row['user_type'] != USER_IGNORE) ? get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']) : '<span' . $user_colour . '>' . $row['username'] . '</span>';
 
-		if (!$current_user['session_viewonline'])
+		if (!$row['session_viewonline'])
 		{
 			$view_online = ($auth->acl_get('u_viewonline')) ? true : false;
 			$logged_hidden_online++;
@@ -127,7 +127,7 @@ foreach ($users as $current_user)
 			$logged_visible_online++;
 		}
 
-		$prev_id[$current_user['user_id']] = 1;
+		$prev_id[$row['user_id']] = 1;
 
 		if ($view_online)
 		{
@@ -139,9 +139,9 @@ foreach ($users as $current_user)
 			continue;
 		}
 	}
-	else if ($show_guests && $current_user['user_id'] == ANONYMOUS && !isset($prev_ip[$current_user['session_ip']]))
+	else if ($show_guests && $row['user_id'] == ANONYMOUS && !isset($prev_ip[$row['session_ip']]))
 	{
-		$prev_ip[$current_user['session_ip']] = 1;
+		$prev_ip[$row['session_ip']] = 1;
 		$guest_counter++;
 		$counter++;
 
@@ -151,14 +151,14 @@ foreach ($users as $current_user)
 		}
 
 		$s_user_hidden = false;
-		$username_full = get_username_string('full', $current_user['user_id'], $user->lang['GUEST']);
+		$username_full = get_username_string('full', $row['user_id'], $user->lang['GUEST']);
 	}
 	else
 	{
 		continue;
 	}
 
-	preg_match('#^([a-z0-9/_-]+)#i', $current_user['session_page'], $on_page);
+	preg_match('#^([a-z0-9/_-]+)#i', $row['session_page'], $on_page);
 	if (!sizeof($on_page))
 	{
 		$on_page[1] = '';
@@ -179,7 +179,7 @@ foreach ($users as $current_user)
 		case 'posting':
 		case 'viewforum':
 		case 'viewtopic':
-			$forum_id = $current_user['session_forum_id'];
+			$forum_id = $row['session_forum_id'];
 
 			if ($forum_id && $auth->acl_get('f_list', $forum_id))
 			{
@@ -195,7 +195,7 @@ foreach ($users as $current_user)
 				switch ($on_page[1])
 				{
 					case 'posting':
-						preg_match('#mode=([a-z]+)#', $current_user['session_page'], $on_page);
+						preg_match('#mode=([a-z]+)#', $row['session_page'], $on_page);
 						$posting_mode = (!empty($on_page[1])) ? $on_page[1] : '';
 
 						switch ($posting_mode)
@@ -243,7 +243,7 @@ foreach ($users as $current_user)
 		break;
 
 		case 'memberlist':
-			$location = (strpos($current_user['session_page'], 'mode=viewprofile') !== false) ? $user->lang['VIEWING_MEMBER_PROFILE'] : $user->lang['VIEWING_MEMBERS'];
+			$location = (strpos($row['session_page'], 'mode=viewprofile') !== false) ? $user->lang['VIEWING_MEMBER_PROFILE'] : $user->lang['VIEWING_MEMBERS'];
 			$location_url = append_sid("{$phpbb_root_path}memberlist.$phpEx");
 		break;
 
@@ -266,7 +266,7 @@ foreach ($users as $current_user)
 
 			foreach ($url_params as $param => $lang)
 			{
-				if (strpos($current_user['session_page'], $param) !== false)
+				if (strpos($row['session_page'], $param) !== false)
 				{
 					$location = $user->lang[$lang];
 					break;
@@ -306,22 +306,22 @@ foreach ($users as $current_user)
 	extract($phpbb_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));
 
 	$template->assign_block_vars('user_row', array(
-		'USERNAME' 			=> $current_user['username'],
-		'USERNAME_COLOUR'	=> $current_user['user_colour'],
+		'USERNAME' 			=> $row['username'],
+		'USERNAME_COLOUR'	=> $row['user_colour'],
 		'USERNAME_FULL'		=> $username_full,
-		'LASTUPDATE'		=> $user->format_date($current_user['session_time']),
+		'LASTUPDATE'		=> $user->format_date($row['session_time']),
 		'FORUM_LOCATION'	=> $location,
-		'USER_IP'			=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $current_user['session_id']) ? gethostbyaddr($current_user['session_ip']) : $current_user['session_ip']) : '',
-		'USER_BROWSER'		=> ($auth->acl_get('a_user')) ? $current_user['session_browser'] : '',
+		'USER_IP'			=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '',
+		'USER_BROWSER'		=> ($auth->acl_get('a_user')) ? $row['session_browser'] : '',
 
-		'U_USER_PROFILE'	=> ($current_user['user_type'] != USER_IGNORE) ? get_username_string('profile', $current_user['user_id'], '') : '',
-		'U_USER_IP'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=lookup' . (($mode != 'lookup' || $current_user['session_id'] != $session_id) ? '&amp;s=' . $current_user['session_id'] : '') . "&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir"),
-		'U_WHOIS'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=whois&amp;s=' . $current_user['session_id']),
+		'U_USER_PROFILE'	=> ($row['user_type'] != USER_IGNORE) ? get_username_string('profile', $row['user_id'], '') : '',
+		'U_USER_IP'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=lookup' . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir"),
+		'U_WHOIS'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=whois&amp;s=' . $row['session_id']),
 		'U_FORUM_LOCATION'	=> $location_url,
 
 		'S_USER_HIDDEN'		=> $s_user_hidden,
-		'S_GUEST'			=> ($current_user['user_id'] == ANONYMOUS) ? true : false,
-		'S_USER_TYPE'		=> $current_user['user_type'],
+		'S_GUEST'			=> ($row['user_id'] == ANONYMOUS) ? true : false,
+		'S_USER_TYPE'		=> $row['user_type'],
 	));
 }
 unset($prev_id, $prev_ip);
