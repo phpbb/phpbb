@@ -9,7 +9,7 @@ imports:
 
 services:
     acl.permissions:
-        class: phpbb_permissions
+        class: phpbb\permissions
         arguments:
             - @dispatcher
             - @user
@@ -42,7 +42,7 @@ services:
     class_loader:
         class: phpbb\class_loader
         arguments:
-            - phpbb_
+            - phpbb\
             - %core.root_path%includes/
             - %core.php_ext%
         calls:
@@ -52,7 +52,7 @@ services:
     class_loader.ext:
         class: phpbb\class_loader
         arguments:
-            - phpbb_ext_
+            - phpbb\ext\
             - %core.root_path%ext/
             - %core.php_ext%
         calls:
@@ -247,7 +247,7 @@ services:
             - %tables.user_notifications%
 
     php_ini:
-        class: phpbb_php_ini
+        class: phpbb\php\ini
 
     request:
         class: phpbb\request\request
