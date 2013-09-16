@@ -265,7 +265,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertContains('Database configuration', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
 			// Installer uses 3.0-style dbms name
-			'dbms'			=> str_replace('phpbb_db_driver_', '',  self::$config['dbms']),
+			'dbms'			=> str_replace('phpbb\db\driver\\', '',  self::$config['dbms']),
 			'dbhost'		=> self::$config['dbhost'],
 			'dbport'		=> self::$config['dbport'],
 			'dbname'		=> self::$config['dbname'],
