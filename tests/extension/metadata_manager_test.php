@@ -14,6 +14,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 	protected $cache;
 	protected $config;
+	protected $container;
 	protected $db;
 	protected $phpbb_root_path;
 	protected $phpEx;
@@ -63,11 +64,11 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->table_prefix,
 			array()
 		);
-		$container = new phpbb_mock_container_builder();
-		$container->set('migrator', $migrator);
+		$this->container = new phpbb_mock_container_builder();
+		$this->container->set('migrator', $migrator);
 
 		$this->extension_manager = new phpbb_extension_manager(
-			$container,
+			$this->container,
 			$this->db,
 			$this->config,
 			new phpbb_filesystem(
