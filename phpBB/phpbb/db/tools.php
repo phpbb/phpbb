@@ -1703,7 +1703,7 @@ class tools
 	}
 
 	/**
-	* Add new \column
+	* Add new column
 	*/
 	function sql_column_add($table_name, $column_name, $column_data, $inline = false)
 	{

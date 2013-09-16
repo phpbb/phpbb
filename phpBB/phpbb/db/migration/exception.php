@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* The migrator is responsible for applying new \migrations in the correct order.
+* The migrator is responsible for applying new migrations in the correct order.
 *
 * @package db
 */
@@ -66,8 +66,8 @@ class exception extends \Exception
 	}
 
 	/**
-	* Get localised message (\with $user->lang()) 
-	* 
+	* Get localised message (with $user->lang())
+	*
 	* @param \phpbb\user $user
 	* @return string
 	*/

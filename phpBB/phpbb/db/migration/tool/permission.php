@@ -238,7 +238,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	}
 
 	/**
-	* Add a new \permission role
+	* Add a new permission role
 	*
 	* @param string $role_name The new \role name
 	* @param sting $role_type The type (u_, m_, a_)

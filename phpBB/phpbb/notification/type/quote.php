@@ -168,7 +168,7 @@ class quote extends \phpbb\notification\type\post
 		}
 		$this->db->sql_freeresult($result);
 
-		// Find the new \users to notify
+		// Find the new users to notify
 		$notifications = $this->find_users_for_notification($post);
 
 		// Find the notifications we must delete

@@ -185,7 +185,7 @@ class dev extends \phpbb\db\migration\migration
 
 	public function move_customise_modules()
 	{
-		// Move language management to new \location in the Customise tab
+		// Move language management to new location in the Customise tab
 		// First get language module id
 		$sql = 'SELECT module_id FROM ' . MODULES_TABLE . "
 			WHERE module_basename = 'acp_language'";

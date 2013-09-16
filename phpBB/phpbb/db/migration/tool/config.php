@@ -80,7 +80,7 @@ class config implements \phpbb\db\migration\tool\tool_interface
 	* current config value
 	*
 	* @param string $compare If equal to the current config value, will be
-	* 	updated to the new \config value, otherwise not
+	* 	updated to the new config value, otherwise not
 	* @param string $config_name The name of the config setting you would
 	* 	like to update
 	* @param mixed $config_value The value of the config setting

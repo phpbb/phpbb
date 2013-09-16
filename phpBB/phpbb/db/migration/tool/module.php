@@ -131,7 +131,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	/**
 	* Module Add
 	*
-	* Add a new \module
+	* Add a new module
 	*
 	* @param string $class The module class(acp|mcp|ucp)
 	* @param int|string $parent The parent module_id|module_langname (0 for no parent)

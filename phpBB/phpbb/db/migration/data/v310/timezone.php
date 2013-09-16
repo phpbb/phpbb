@@ -65,7 +65,7 @@ class timezone extends \phpbb\db\migration\migration
 	}
 
 	/**
-	* Determine the new \timezone for a given phpBB 3.0 timezone and
+	* Determine the new timezone for a given phpBB 3.0 timezone and
 	* "Daylight Saving Time" option
 	*
 	*	@param	$timezone	float	Users timezone in 3.0

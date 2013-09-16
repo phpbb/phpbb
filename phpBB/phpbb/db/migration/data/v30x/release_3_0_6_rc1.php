@@ -216,7 +216,7 @@ class release_3_0_6_rc1 extends \phpbb\db\migration\migration
 			$group_id = $this->db->sql_nextid();
 		}
 
-		// Insert new \user role... at the end of the chain
+		// Insert new user role... at the end of the chain
 		$sql = 'SELECT role_id
 			FROM ' . ACL_ROLES_TABLE . "
 			WHERE role_name = 'ROLE_USER_NEW_MEMBER'
@@ -241,7 +241,7 @@ class release_3_0_6_rc1 extends \phpbb\db\migration\migration
 			$u_role = $this->db->sql_nextid();
 
 			// Now add the correct data to the roles...
-			// The standard role says that new \users are not able to send a PM, Mass PM, are not able to PM groups
+			// The standard role says that new users are not able to send a PM, Mass PM, are not able to PM groups
 			$sql = 'INSERT INTO ' . ACL_ROLES_DATA_TABLE . " (role_id, auth_option_id, auth_setting) SELECT $u_role, auth_option_id, 0 FROM " . ACL_OPTIONS_TABLE . " WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_sendpm', 'u_masspm', 'u_masspm_group')";
 			$this->sql_query($sql);
 
@@ -250,7 +250,7 @@ class release_3_0_6_rc1 extends \phpbb\db\migration\migration
 			$this->sql_query($sql);
 		}
 
-		// Insert new \forum role
+		// Insert new forum role
 		$sql = 'SELECT role_id
 			FROM ' . ACL_ROLES_TABLE . "
 			WHERE role_name = 'ROLE_FORUM_NEW_MEMBER'
@@ -278,7 +278,7 @@ class release_3_0_6_rc1 extends \phpbb\db\migration\migration
 			$this->sql_query($sql);
 		}
 
-		// Set every members user_new \column to 0 (old users) only if there is no one yet (this makes sure we do not execute this more than once)
+		// Set every members user_new column to 0 (old users) only if there is no one yet (this makes sure we do not execute this more than once)
 		$sql = 'SELECT 1
 			FROM ' . USERS_TABLE . '
 			WHERE user_new = 0';
