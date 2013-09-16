@@ -102,6 +102,9 @@ class p_master
 			}
 			$db->sql_freeresult($result);
 
+			$phpbb_module_manager = new phpbb_module_manager();
+			$rows = $phpbb_module_manager->get_flat($this->p_class);
+
 			$this->module_cache = array();
 			foreach ($rows as $module_id => $row)
 			{
@@ -380,7 +383,22 @@ class p_master
 		$module_auth = str_replace(' , ', ',', $module_auth);
 
 		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z0-9_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z0-9_]+)#', '#cfg_([a-z0-9_]+)#', '#request_([a-zA-Z0-9_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']', '$request->variable(\'\\1\', false)'), $module_auth) . ');');
+		eval('$is_auth = (int) (' . preg_replace(
+			array(
+				'#acl_([a-z0-9_]+)(,\$id)?#',
+				'#\$id#',
+				'#aclf_([a-z0-9_]+)#',
+				'#cfg_([a-z0-9_]+)#',
+				'#request_([a-zA-Z0-9_]+)#',
+			), array(
+				'(int) $auth->acl_get(\'\\1\'\\2)',
+				'(int) $forum_id',
+				'(int) $auth->acl_getf_global(\'\\1\')',
+				'(int) $config[\'\\1\']',
+				'$request->variable(\'\\1\', false)'
+			),
+			$module_auth
+		) . ');');
 
 		return $is_auth;
 	}
